@@ -1,5 +1,5 @@
 {
-  "name": "untitled-css-in-js-project",
+  "name": "@untitled/css-in-js-project",
   "version": "0.0.0",
   "description": "Compile away your css in js problems. Made for Component Libraries.",
   "keywords": [
@@ -15,18 +15,33 @@
   "scripts": {
     "test": "jest",
     "test:cover": "jest --collectCoverage",
-    "build": "tsc"
+    "build": "tsc",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
+    "stylis": "^3.5.4",
     "typescript": "^3.7.3"
   },
+  "peerDependencies": {
+    "react": "^16.12.0"
+  },
   "devDependencies": {
+    "@babel/core": "^7.7.5",
+    "@storybook/addon-actions": "^5.2.8",
+    "@storybook/addon-links": "^5.2.8",
+    "@storybook/addons": "^5.2.8",
+    "@storybook/react": "^5.2.8",
     "@types/jest": "24.0.23",
+    "babel-loader": "^8.0.6",
     "husky": "^3.1.0",
     "jest": "24.9.0",
     "prettier": "^1.19.1",
     "pretty-quick": "^2.0.1",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
     "ts-jest": "24.2.0",
+    "ts-loader": "^6.2.1",
     "ts-node": "8.5.2",
     "ts-node-dev": "1.0.0-pre.44",
     "ttypescript": "^1.5.8"
