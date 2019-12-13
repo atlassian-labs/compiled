@@ -22,7 +22,10 @@
   },
   "devDependencies": {
     "@types/jest": "24.0.23",
+    "husky": "^3.1.0",
     "jest": "24.9.0",
+    "prettier": "^1.19.1",
+    "pretty-quick": "^2.0.1",
     "ts-jest": "24.2.0",
     "ts-node": "8.5.2",
     "ts-node-dev": "1.0.0-pre.44",
@@ -35,27 +38,9 @@
       "**/src/**/*.test.ts*"
     ]
   },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ],
-    "rules": {
-      "scope-case": [
-        2,
-        "always",
-        "sentence-case"
-      ],
-      "subject-case": [
-        2,
-        "always",
-        "sentence-case"
-      ]
-    }
-  },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+      "pre-commit": "pretty-quick --staged"
     }
   },
   "prettier": {
