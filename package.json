@@ -1,0 +1,71 @@
+{
+  "name": "untitled-css-in-js-project",
+  "version": "0.0.0",
+  "description": "Compile away your css in js problems. Made for Component Libraries.",
+  "keywords": [
+    "css-in-js"
+  ],
+  "author": "Michael Dougall",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "test": "jest",
+    "test:cover": "jest --collectCoverage",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "typescript": "^3.7.3"
+  },
+  "devDependencies": {
+    "@types/jest": "24.0.23",
+    "jest": "24.9.0",
+    "ts-jest": "24.2.0",
+    "ts-node": "8.5.2",
+    "ts-node-dev": "1.0.0-pre.44",
+    "ttypescript": "^1.5.8"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/src/**/*.test.ts*"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "scope-case": [
+        2,
+        "always",
+        "sentence-case"
+      ],
+      "subject-case": [
+        2,
+        "always",
+        "sentence-case"
+      ]
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "prettier": {
+    "jsxBracketSameLine": true,
+    "bracketSpacing": true,
+    "semi": true,
+    "tabWidth": 2,
+    "printWidth": 100,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "useTabs": false
+  }
+}

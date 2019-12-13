@@ -1,0 +1,23 @@
+{
+  /* See https://www.typescriptlang.org/docs/handbook/compiler-options.html */
+  "compilerOptions": {
+    /* 
+      ECMAScript target version. 
+      We use the version supported by previous and lated LTS Node.
+      See https://node.green
+    */
+    "target": "es2018",
+    "module": "commonjs",
+    /* Generate type definitions */
+    "declaration": true,
+    /* Redirect output files to dist folder */
+    "outDir": "./dist",
+    /* Enable all strict type checking options. */
+    "strict": true,
+    /* Include modules imported with .json extension. */
+    "resolveJsonModule": true,
+    /* Avoid `import * as` syntax */
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*"]
+}
