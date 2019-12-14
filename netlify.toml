@@ -1,0 +1,10 @@
+[build]
+  base = "/"
+  publish = "storybook-static/"
+  command = "yarn build-storybook"
+  environment = { YARN_VERSION = "1.9.4" }
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
