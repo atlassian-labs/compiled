@@ -4,8 +4,14 @@ import { IS_CSS_FREEDOM_COMPILED } from '../../jsx/index';
 
 const UNCOMPILED_GUARD_VARIABLE_NAME = Object.keys({ IS_CSS_FREEDOM_COMPILED })[0];
 
+const getEscapedText = (node: ts.BindingName): string => {
+  return (node as ts.Identifier).escapedText as string;
+};
+
 const isCssFreedomCompiledNode = (node: ts.Node): node is ts.VariableDeclaration => {
-  return ts.isVariableDeclaration(node) && node.name.getText() === UNCOMPILED_GUARD_VARIABLE_NAME;
+  return (
+    ts.isVariableDeclaration(node) && getEscapedText(node.name) === UNCOMPILED_GUARD_VARIABLE_NAME
+  );
 };
 
 export default function removePragmaRuntime() {
@@ -18,7 +24,7 @@ export default function removePragmaRuntime() {
           // Reassign the variable declarations to `true` so it doesn't blow up at runtime.
           const newNode = ts.updateVariableDeclaration(
             node,
-            ts.createIdentifier(node.name.getText()),
+            ts.createIdentifier(getEscapedText(node.name)),
             ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
             ts.createTrue()
           );

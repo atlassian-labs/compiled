@@ -41,6 +41,7 @@ export default function cssPropTransformer() {
         sourceFileNeedsToBeTransformed = true;
         transformedSourceFile = visitSourceFileEnsureDefaultReactImport(sourceFile);
       } else {
+        // nothing to do - return source file and nothing will be transformed.
         return sourceFile;
       }
 
