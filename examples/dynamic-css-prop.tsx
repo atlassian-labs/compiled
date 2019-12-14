@@ -6,7 +6,7 @@ export default {
   title: 'dynamic',
 };
 
-export const dynamicCssProp = () => {
+export var dynamicCssProp = () => {
   // works with var, but not let or const ????
   var [color, setColor] = useState('red');
 

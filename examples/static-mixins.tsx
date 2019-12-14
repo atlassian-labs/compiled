@@ -9,7 +9,7 @@ export default {
   title: 'static-mixins',
 };
 
-export const staticMixins = () => {
+export var staticMixins = () => {
   return (
     <div
       css={{
