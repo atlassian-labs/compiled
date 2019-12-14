@@ -9,7 +9,7 @@ module.exports = ({ config }) => {
         options: {
           transpileOnly: true,
           getCustomTransformers: () => ({
-            before: [createCssFreedomTransformer({ debug: true })],
+            before: createCssFreedomTransformer({ debug: true }),
           }),
         },
       },

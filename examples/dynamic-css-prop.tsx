@@ -3,7 +3,7 @@ import { jsx } from '../src';
 import { useState } from 'react';
 
 export default {
-  title: 'dynamic-css-prop',
+  title: 'dynamic',
 };
 
 export const dynamicCssProp = () => {

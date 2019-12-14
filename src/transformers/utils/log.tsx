@@ -6,7 +6,10 @@ export const setEnabled = (on: boolean) => {
   enabled = on;
 };
 
-export const log = (msg: string, suffix: string = `  ${packageName} ==> `) => {
+const defaultSuffix = `
+  ${packageName} ==> `;
+
+export const log = (msg: string, suffix: string = defaultSuffix) => {
   if (enabled) {
     console.log(`${suffix}${msg}`);
   }

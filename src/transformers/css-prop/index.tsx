@@ -1,9 +1,9 @@
 import * as ts from 'typescript';
 import stylis from 'stylis';
-import kebabCase from './utils/kebab-case';
-import * as log from './utils/log';
-import SequentialCharacterGenerator from './utils/sequential-chars';
-import { name as packageName } from '../../package.json';
+import kebabCase from '../utils/kebab-case';
+import * as logger from '../utils/log';
+import SequentialCharacterGenerator from '../utils/sequential-chars';
+import { name as packageName } from '../../../package.json';
 
 const JSX_PRAGMA = 'jsx';
 const CSS_PROP = 'css';
@@ -123,9 +123,6 @@ interface TransformerOptions {
 }
 
 export default function transformer({ debug }: TransformerOptions = {}) {
-  log.setEnabled(!!debug);
-  log.log(`typescript transformer has been enabled and has debug is \`true\`.`);
-
   const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
     const classNameIds = new SequentialCharacterGenerator();
     const cssVariableIds = new SequentialCharacterGenerator();
@@ -148,7 +145,7 @@ export default function transformer({ debug }: TransformerOptions = {}) {
               (statement.moduleSpecifier && statement.moduleSpecifier.getText() === '../src'))
         )
       ) {
-        log.log('file needs to be transformed');
+        logger.log('file needs to be transformed');
 
         needsCssTransform = true;
       }
@@ -174,7 +171,7 @@ export default function transformer({ debug }: TransformerOptions = {}) {
         ) as ts.ImportDeclaration;
 
         if (reactImportNode) {
-          log.log('react module found, ensuring it has a default export');
+          logger.log('react module found, ensuring it has a default export');
 
           // Ok it exists, lets ensure it has the default export as "React".
           rootNode = ts.updateSourceFileNode(rootNode, [
@@ -190,7 +187,7 @@ export default function transformer({ debug }: TransformerOptions = {}) {
             ...rootNode.statements,
           ]);
         } else {
-          log.log('react module not found, adding it');
+          logger.log('react module not found, adding it');
 
           rootNode = ts.updateSourceFileNode(rootNode, [
             ts.createImportDeclaration(
@@ -206,7 +203,7 @@ export default function transformer({ debug }: TransformerOptions = {}) {
 
       const visitor = (node: ts.Node): ts.Node => {
         if (!needsCssTransform && isCssFreedomCompiledNode(node)) {
-          log.log(`setting ${UNCOMPILED_GUARD_NAME} variable to true`);
+          logger.log(`setting "${UNCOMPILED_GUARD_NAME}" variable to true`);
 
           // Reassign the variable declarations to `true` so it doesn't blow up at runtime.
           const newNode = ts.updateVariableDeclaration(
@@ -236,7 +233,7 @@ export default function transformer({ debug }: TransformerOptions = {}) {
           ) as ts.JsxAttribute;
           const cssPropExpression = cssJsxAttribute.initializer;
 
-          log.log('processing css');
+          logger.log('processing css');
 
           // Compile the CSS from the styles object node.
           const className = classNameIds.next();
@@ -270,7 +267,7 @@ export default function transformer({ debug }: TransformerOptions = {}) {
             // - remove types from object literals e.g. 'blah' as const - remove as const.
           }
 
-          log.log('removing css prop');
+          logger.log('removing css prop');
 
           // Remove css prop from the react element.
           const nodeToTransform = ts.getMutableClone(node);
@@ -328,7 +325,7 @@ export default function transformer({ debug }: TransformerOptions = {}) {
             ts.createJsxJsxClosingFragment()
           );
 
-          log.log('returning composed component with fragment');
+          logger.log('returning composed component with fragment');
 
           // TODO: Why does const/let blow up but not var?????
           return ts.visitEachChild(newFragmentParent, visitor, context);

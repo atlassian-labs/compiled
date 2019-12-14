@@ -1,1 +1,1 @@
-export { default } from './transformer/index';
+export { default } from './transformers/index';
