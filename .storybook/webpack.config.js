@@ -1,3 +1,5 @@
+const createCssFreedomTransformer = require('../dist/src/transformer').default;
+
 module.exports = ({ config }) => {
   config.module.rules.push({
     test: /\.tsx$/,
@@ -6,6 +8,9 @@ module.exports = ({ config }) => {
         loader: require.resolve('ts-loader'),
         options: {
           transpileOnly: true,
+          getCustomTransformers: () => ({
+            before: [createCssFreedomTransformer({ debug: true })],
+          }),
         },
       },
     ],

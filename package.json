@@ -13,10 +13,10 @@
     "/dist"
   ],
   "scripts": {
+    "start": "npx nodemon --exec \"tsc --module commonjs && start-storybook -p 6006 --ci\" src/transformer/ -e tsx",
     "test": "jest",
     "test:cover": "jest --collectCoverage",
     "build": "tsc",
-    "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
   "dependencies": {

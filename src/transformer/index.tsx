@@ -1,104 +1,92 @@
-const ts = require('typescript');
-const stylis = require('stylis');
+import * as ts from 'typescript';
+import stylis from 'stylis';
+import kebabCase from './utils/kebab-case';
+import * as log from './utils/log';
+import SequentialCharacterGenerator from './utils/sequential-chars';
+import { name as packageName } from '../../package.json';
 
 const JSX_PRAGMA = 'jsx';
 const CSS_PROP = 'css';
 const UNCOMPILED_GUARD_NAME = 'IS_CSS_FREEDOM_COMPILED';
 
-class SequentialCharacterGenerator {
-  constructor(chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
-    this._chars = chars;
-    this._nextId = [0];
+const getJsxNodeAttributes = (node: ts.JsxElement | ts.JsxSelfClosingElement) => {
+  if ('attributes' in node) {
+    return node.attributes;
   }
 
-  next() {
-    const r = [];
-    for (const char of this._nextId) {
-      r.unshift(this._chars[char]);
-    }
-    this._increment();
-    return r.join('');
-  }
-
-  _increment() {
-    for (let i = 0; i < this._nextId.length; i++) {
-      const val = ++this._nextId[i];
-      if (val >= this._chars.length) {
-        this._nextId[i] = 0;
-      } else {
-        return;
-      }
-    }
-    this._nextId.push(0);
-  }
-
-  *[Symbol.iterator]() {
-    while (true) {
-      yield this.next();
-    }
-  }
-}
-
-const KEBAB_REGEX = /[A-Z\u00C0-\u00D6\u00D8-\u00DE]/g;
-function kebabCase(str) {
-  return str.replace(KEBAB_REGEX, match => {
-    return `-${match.toLowerCase()}`;
-  });
-}
-
-const isCssFreedomCompiledNode = node => {
-  return ts.isVariableDeclaration(node) && node.name.text === UNCOMPILED_GUARD_NAME;
+  return node.openingElement.attributes;
 };
 
-const isJsxWithCssProp = node => {
-  return (
+const isCssFreedomCompiledNode = (node: ts.Node): node is ts.VariableDeclaration => {
+  return ts.isVariableDeclaration(node) && node.name.getText() === UNCOMPILED_GUARD_NAME;
+};
+
+const isJsxWithCssProp = (node: ts.Node): node is ts.JsxElement | ts.JsxSelfClosingElement => {
+  return !!(
     (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) &&
     getJsxNodeAttributes(node).properties.find(
-      prop => prop.name && prop.name.escapedText === CSS_PROP
+      prop => ts.isJsxAttribute(prop) && prop.name.getText() === CSS_PROP
     )
   );
 };
 
-const processCssProperties = (properties, { cssVariableIds, scopedVariables }) => {
-  let cssVariables = [];
+interface CssVariable {
+  name: string;
+  expression: ts.Expression;
+}
 
-  const css = properties.reduce((acc, prop) => {
+interface ProcessOpts {
+  cssVariableIds: SequentialCharacterGenerator;
+  scopedVariables: VariableStore;
+}
+
+const processCssProperties = (
+  objectLiteral: ts.ObjectLiteralExpression,
+  { cssVariableIds, scopedVariables }: ProcessOpts
+) => {
+  const properties = objectLiteral.properties;
+  let cssVariables: CssVariable[] = [];
+
+  const css: string = properties.reduce((acc, prop) => {
     // if is spread
-    if (ts.isSpreadAssignment(prop)) {
-      // Ok it's a spread e.g. "...prop"
+    // if (ts.isSpreadAssignment(prop.initializer)) {
+    //   // Ok it's a spread e.g. "...prop"
 
-      // Reference to the identifier that we are spreading in, e.g. "prop".
-      const objectReferenceNode = scopedVariables[prop.expression.escapedText];
-      if (!objectReferenceNode) {
-        throw new Error('variable doesnt exist in scope');
-      }
-      // Spread can either be from an object, or a function. Probably not an array.
+    //   // Reference to the identifier that we are spreading in, e.g. "prop".
+    //   const objectReferenceNode = scopedVariables[prop.expression.getText()];
+    //   if (!objectReferenceNode) {
+    //     throw new Error('variable doesnt exist in scope');
+    //   }
+    //   // Spread can either be from an object, or a function. Probably not an array.
 
-      const result = processCssProperties(objectReferenceNode.initializer.properties, {
-        cssVariableIds,
-        scopedVariables,
-      });
-      cssVariables = cssVariables.concat(result.cssVariables);
+    //   const result = processCssProperties(objectReferenceNode.initializer.properties, {
+    //     cssVariableIds,
+    //     scopedVariables,
+    //   });
+    //   cssVariables = cssVariables.concat(result.cssVariables);
 
-      return `${acc}
-      ${result.css}
-      `;
-    }
+    //   return `${acc}
+    //   ${result.css}
+    //   `;
+    // }
 
-    const key = kebabCase(prop.symbol.escapedName);
+    const key = kebabCase(prop.getText());
     let value;
 
-    if (ts.isShorthandPropertyAssignment(prop) || ts.isIdentifier(prop.initializer)) {
-      // We have a prop assignment using a variable, e.g. "fontSize: props.fontSize"
+    if (
+      ts.isShorthandPropertyAssignment(prop) ||
+      (ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.initializer))
+    ) {
+      // We have a prop assignment using a variable, e.g. "fontSize: props.fontSize" or "fontSize".
       // Time to turn it into a css variable.
       const cssVariable = `--${key}-${cssVariableIds.next()}`;
       value = `var(${cssVariable});`;
       cssVariables.push({
-        var: cssVariable,
-        nodeReference: prop.initializer || prop.name,
+        name: cssVariable,
+        expression: 'initializer' in prop ? prop.initializer : prop.name,
       });
-    } else if (ts.isObjectLiteralExpression(prop.initializer)) {
-      const result = processCssProperties(prop.initializer.properties, {
+    } else if (ts.isPropertyAssignment(prop) && ts.isObjectLiteralExpression(prop.initializer)) {
+      const result = processCssProperties(prop.initializer, {
         cssVariableIds,
         scopedVariables,
       });
@@ -109,9 +97,11 @@ const processCssProperties = (properties, { cssVariableIds, scopedVariables }) =
         ${result.css}
       }
       `;
-    } else {
+    } else if (ts.isPropertyAssignment(prop) && ts.isStringLiteral(prop.initializer)) {
       // We have a regular static assignment, e.g. "fontSize: '20px'"
-      value = `${prop.initializer.text};`;
+      value = `${prop.initializer.getText()}`;
+    } else {
+      throw new Error('unsupported value in css prop object');
     }
 
     return `${acc}
@@ -124,48 +114,41 @@ const processCssProperties = (properties, { cssVariableIds, scopedVariables }) =
   };
 };
 
-const getJsxNodeAttributes = node => {
-  return node.attributes || node.openingElement.attributes;
-};
+interface VariableStore {
+  [moduleName: string]: ts.Node;
+}
 
-// @flow
-const transformer = ({ debug } = {}) => {
-  const log = msg => debug && console.log(`  @atlaskit/css-freedom ==> ${msg}`);
-  const classNameIds = new SequentialCharacterGenerator();
-  const cssVariableIds = new SequentialCharacterGenerator();
+interface TransformerOptions {
+  debug?: boolean;
+}
 
-  debug &&
-    console.log(`
+export default function transformer({ debug }: TransformerOptions = {}) {
+  log.setEnabled(!!debug);
+  log.log(`typescript transformer has been enabled and has debug is \`true\`.`);
 
-@atlaskit/css-freedom typescript transformer has been enabled and has logging turned on.
-Have feedback? Post it to http://go/dst-sd
-`);
+  const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
+    const classNameIds = new SequentialCharacterGenerator();
+    const cssVariableIds = new SequentialCharacterGenerator();
 
-  /**
-   * Built primarily using https://ts-ast-viewer.com, typescript typedefs, and google.
-   * If you want to touch this 100% recommend using all!
-   * @param {*} context
-   */
-  const transformer = context => {
     return sourceFile => {
-      const foundVariables = {};
-
+      const foundVariables: VariableStore = {};
       let rootNode = sourceFile;
       let needsCssTransform = false;
 
       if (
         // Only continue if the jsx pragma is enabled.
-        rootNode.localJsxNamespace === JSX_PRAGMA &&
-        // Only continue if we've found an import for css-freedom.
+        // localJsxNamespace not found???
+        (rootNode as any).localJsxNamespace === JSX_PRAGMA &&
+        // Only continue if we've found an import for this pkg.
         rootNode.statements.find(
           statement =>
-            (statement.moduleSpecifier &&
-              statement.moduleSpecifier.text === '@atlaskit/css-freedom') ||
-            // Hack for local development
-            (statement.moduleSpecifier && statement.moduleSpecifier.text === '../src')
+            ts.isImportDeclaration(statement) &&
+            ((statement.moduleSpecifier && statement.moduleSpecifier.getText() === packageName) ||
+              // Hack for local development
+              (statement.moduleSpecifier && statement.moduleSpecifier.getText() === '../src'))
         )
       ) {
-        log('file needs to be transformed');
+        log.log('file needs to be transformed');
 
         needsCssTransform = true;
       }
@@ -175,31 +158,39 @@ Have feedback? Post it to http://go/dst-sd
         // Only add React if it's not found.
         !rootNode.statements.find(
           statement =>
+            ts.isImportDeclaration(statement) &&
             statement.importClause &&
             statement.importClause.name &&
-            statement.importClause.name.escapedText === 'React'
+            statement.importClause.name.getText() === 'React'
         )
       ) {
         // Okay so React doesn't exist anywhere. But the 'react' import could still be around. Let's do another search.
-        const reactImportNode = rootNode.statements.find(statement => {
-          return statement.moduleSpecifier && statement.moduleSpecifier.text === 'react';
-        });
+        const reactImportNode: ts.ImportDeclaration | undefined = rootNode.statements.find(
+          statement => {
+            return (
+              ts.isImportDeclaration(statement) && statement.moduleSpecifier.getText() === 'react'
+            );
+          }
+        ) as ts.ImportDeclaration;
 
         if (reactImportNode) {
-          log('react module found, ensuring it has a default export');
+          log.log('react module found, ensuring it has a default export');
 
           // Ok it exists, lets ensure it has the default export as "React".
           rootNode = ts.updateSourceFileNode(rootNode, [
             ts.createImportDeclaration(
               /* decorators */ undefined,
               /* modifiers */ undefined,
-              ts.createImportClause(ts.createIdentifier('React'), reactImportNode.namedBindings),
+              ts.createImportClause(
+                ts.createIdentifier('React'),
+                reactImportNode.importClause && reactImportNode.importClause.namedBindings
+              ),
               ts.createLiteral('react')
             ),
             ...rootNode.statements,
           ]);
         } else {
-          log('react module not found, adding it');
+          log.log('react module not found, adding it');
 
           rootNode = ts.updateSourceFileNode(rootNode, [
             ts.createImportDeclaration(
@@ -213,14 +204,14 @@ Have feedback? Post it to http://go/dst-sd
         }
       }
 
-      const visitor = node => {
+      const visitor = (node: ts.Node): ts.Node => {
         if (!needsCssTransform && isCssFreedomCompiledNode(node)) {
-          log(`setting ${UNCOMPILED_GUARD_NAME} variable to true`);
+          log.log(`setting ${UNCOMPILED_GUARD_NAME} variable to true`);
 
           // Reassign the variable declarations to `true` so it doesn't blow up at runtime.
           const newNode = ts.updateVariableDeclaration(
             node,
-            node.name.text,
+            ts.createIdentifier(node.name.getText()),
             ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
             ts.createTrue()
           );
@@ -234,36 +225,39 @@ Have feedback? Post it to http://go/dst-sd
 
         if (ts.isVariableDeclaration(node)) {
           // we may need this later, let's store it in a basic object for quick access.
-          foundVariables[node.name.escapedText] = node;
+          foundVariables[node.name.getText()] = node;
           return ts.visitEachChild(node, visitor, context);
         }
 
         if (isJsxWithCssProp(node)) {
           // Grab the css prop node
-          const cssPropNode = (node.attributes || node.openingElement.attributes).properties.find(
-            prop => prop.name.escapedText === CSS_PROP
-          );
+          const cssJsxAttribute = getJsxNodeAttributes(node).properties.find(
+            prop => ts.isJsxAttribute(prop) && prop.name.getText() === CSS_PROP
+          ) as ts.JsxAttribute;
+          const cssPropExpression = cssJsxAttribute.initializer;
 
-          log('processing css');
+          log.log('processing css');
 
           // Compile the CSS from the styles object node.
           const className = classNameIds.next();
           let compiledCss;
-          let cssVariables = [];
+          let cssVariables: CssVariable[] = [];
 
-          if (ts.isObjectLiteralExpression(cssPropNode.initializer.expression)) {
+          if (!cssPropExpression) {
+            // Do nothing.
+          } else if (ts.isObjectLiteralExpression(cssPropExpression)) {
             // object literal found e..g css={{ fontSize: '20px' }}
-            const processedCssObject = processCssProperties(
-              cssPropNode.initializer.expression.properties,
-              { cssVariableIds, scopedVariables: foundVariables }
-            );
+            const processedCssObject = processCssProperties(cssPropExpression, {
+              cssVariableIds,
+              scopedVariables: foundVariables,
+            });
             cssVariables = processedCssObject.cssVariables;
             compiledCss = stylis(`.${className}`, processedCssObject.css);
           } else if (
             // static string literal found e.g. css={`font-size: 20px;`}
-            ts.isNoSubstitutionTemplateLiteral(cssPropNode.initializer.expression)
+            ts.isNoSubstitutionTemplateLiteral(cssPropExpression)
           ) {
-            compiledCss = stylis(`.${className}`, cssPropNode.initializer.expression.text);
+            compiledCss = stylis(`.${className}`, cssPropExpression.getText());
           } else {
             throw new Error('unsupported value in css prop');
             // how do we handle mixins/function expressions?
@@ -276,14 +270,16 @@ Have feedback? Post it to http://go/dst-sd
             // - remove types from object literals e.g. 'blah' as const - remove as const.
           }
 
-          log('removing css prop');
+          log.log('removing css prop');
 
           // Remove css prop from the react element.
           const nodeToTransform = ts.getMutableClone(node);
-          getJsxNodeAttributes(nodeToTransform).properties = getJsxNodeAttributes(
-            nodeToTransform
-          ).properties.filter(prop => prop.name.escapedText !== CSS_PROP);
-          getJsxNodeAttributes(nodeToTransform).properties.push(
+          const mutableNodeAttributes = getJsxNodeAttributes(nodeToTransform);
+
+          (mutableNodeAttributes.properties as any) = mutableNodeAttributes.properties.filter(
+            prop => prop.name && prop.name.getText() !== CSS_PROP
+          );
+          (mutableNodeAttributes.properties as any).push(
             ts.createJsxAttribute(
               ts.createIdentifier('className'),
               ts.createStringLiteral(className)
@@ -291,7 +287,7 @@ Have feedback? Post it to http://go/dst-sd
           );
 
           if (cssVariables.length) {
-            getJsxNodeAttributes(nodeToTransform).properties.push(
+            (mutableNodeAttributes.properties as any).push(
               ts.createJsxAttribute(
                 ts.createIdentifier('style'),
                 ts.createJsxExpression(
@@ -299,8 +295,8 @@ Have feedback? Post it to http://go/dst-sd
                   ts.createObjectLiteral(
                     cssVariables.map(variable => {
                       return ts.createPropertyAssignment(
-                        ts.createStringLiteral(variable.var),
-                        variable.nodeReference
+                        ts.createStringLiteral(variable.name),
+                        variable.expression
                       );
                     }),
                     false
@@ -332,7 +328,7 @@ Have feedback? Post it to http://go/dst-sd
             ts.createJsxJsxClosingFragment()
           );
 
-          log('returning composed component with fragment');
+          log.log('returning composed component with fragment');
 
           // TODO: Why does const/let blow up but not var?????
           return ts.visitEachChild(newFragmentParent, visitor, context);
@@ -345,7 +341,5 @@ Have feedback? Post it to http://go/dst-sd
     };
   };
 
-  return transformer;
-};
-
-export default transformer;
+  return transformerFactory;
+}

@@ -1,5 +1,6 @@
 import { createElement, ElementType, ReactNode } from 'react';
 import './types';
+import { name as packageName } from '../../package.json';
 
 const IS_CSS_FREEDOM_COMPILED = false;
 
@@ -32,10 +33,10 @@ const IS_CSS_FREEDOM_COMPILED = false;
  */
 export default function<P extends {}>(type: ElementType<P>, props: P, ...children: ReactNode[]) {
   if (process.env.NODE_ENV !== 'production' && !IS_CSS_FREEDOM_COMPILED) {
-    throw new Error(`@atlaskit/css-freedom
+    throw new Error(`${packageName}
 
-You need to apply the typescript transform to use this, sorry!
-You can apply it from \`@atlaskit/css-freedom/ts\`.`);
+You need to apply the typescript transformer to use this!
+You can apply it from \`${packageName}/transformer\`.`);
   }
 
   return createElement(type, props, ...children);
