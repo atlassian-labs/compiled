@@ -1,16 +1,14 @@
 import * as ts from 'typescript';
 import * as logger from '../utils/log';
 import { IS_CSS_FREEDOM_COMPILED } from '../../jsx/index';
+import { getIdentifierText } from '../utils/ast-node';
 
 const UNCOMPILED_GUARD_VARIABLE_NAME = Object.keys({ IS_CSS_FREEDOM_COMPILED })[0];
 
-const getEscapedText = (node: ts.BindingName): string => {
-  return (node as ts.Identifier).escapedText as string;
-};
-
 const isCssFreedomCompiledNode = (node: ts.Node): node is ts.VariableDeclaration => {
   return (
-    ts.isVariableDeclaration(node) && getEscapedText(node.name) === UNCOMPILED_GUARD_VARIABLE_NAME
+    ts.isVariableDeclaration(node) &&
+    getIdentifierText(node.name) === UNCOMPILED_GUARD_VARIABLE_NAME
   );
 };
 
@@ -24,7 +22,7 @@ export default function removePragmaRuntime() {
           // Reassign the variable declarations to `true` so it doesn't blow up at runtime.
           const newNode = ts.updateVariableDeclaration(
             node,
-            ts.createIdentifier(getEscapedText(node.name)),
+            ts.createIdentifier(getIdentifierText(node.name)),
             ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
             ts.createTrue()
           );

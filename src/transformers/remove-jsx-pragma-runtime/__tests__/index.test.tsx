@@ -1,6 +1,6 @@
-import removePragmaRuntime from '../index';
 import * as ts from 'typescript';
 import * as fs from 'fs';
+import removePragmaRuntime from '../index';
 
 const printer = ts.createPrinter();
 

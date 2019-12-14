@@ -4,6 +4,7 @@ import { VariableDeclarations, CssVariableExpressions } from './types';
 import { nextClassName } from '../utils/identifiers';
 import { objectLiteralToCssString } from './utils/object-literal-to-css';
 import * as logger from '../utils/log';
+import { getIdentifierText } from '../utils/ast-node';
 
 const CSS_PROP = 'css';
 
@@ -23,7 +24,7 @@ export const visitJsxElementWithCssProp = (
 
   // Grab the css prop node
   const cssJsxAttribute = getJsxNodeAttributes(node).properties.find(
-    prop => ts.isJsxAttribute(prop) && prop.name.getText() === CSS_PROP
+    prop => ts.isJsxAttribute(prop) && prop.name.escapedText === CSS_PROP
   ) as ts.JsxAttribute;
 
   if (!cssJsxAttribute || !cssJsxAttribute.initializer) {
@@ -66,7 +67,7 @@ export const visitJsxElementWithCssProp = (
   const nodeToTransform = ts.getMutableClone(node);
   const mutableNodeAttributes = getJsxNodeAttributes(nodeToTransform);
   (mutableNodeAttributes.properties as any) = mutableNodeAttributes.properties.filter(
-    prop => prop.name && prop.name.getText() !== CSS_PROP
+    prop => prop.name && getIdentifierText(prop.name) !== CSS_PROP
   );
   (mutableNodeAttributes.properties as any).push(
     ts.createJsxAttribute(ts.createIdentifier('className'), ts.createStringLiteral(className))

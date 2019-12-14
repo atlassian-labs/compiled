@@ -10,7 +10,7 @@ const isDefaultReactImportFound = (sourceFile: ts.SourceFile) => {
       ts.isImportDeclaration(statement) &&
       statement.importClause &&
       statement.importClause.name &&
-      statement.importClause.name.getText() === REACT_DEFAULT_IMPORT_NAME
+      statement.importClause.name.escapedText === REACT_DEFAULT_IMPORT_NAME
   );
 };
 

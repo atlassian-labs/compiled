@@ -13,7 +13,7 @@ const LOCAL_DEVELOPMENT_MODULE = '../src';
 
 const isJsxPragmaFoundWithOurJsxFunction = (sourceFile: ts.SourceFile) => {
   return (
-    (sourceFile as any).localJsxNamespace === JSX_PRAGMA &&
+    (sourceFile as any).pragmas.get(JSX_PRAGMA) &&
     // Only continue if we've found an import for this pkg.
     sourceFile.statements.find(statement => {
       if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) {

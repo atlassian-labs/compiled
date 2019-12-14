@@ -7,3 +7,7 @@ export const getExpressionText = (node: ts.Expression) => {
 
   return (node as ts.StringLiteral).text;
 };
+
+export const getIdentifierText = (node: ts.PropertyName | ts.BindingName): string => {
+  return (node as ts.Identifier).escapedText as string;
+};

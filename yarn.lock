@@ -1579,11 +1579,17 @@
     "@types/istanbul-lib-coverage" "*"
     "@types/istanbul-lib-report" "*"
 
-"@types/jest@24.0.23":
-  version "24.0.23"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-24.0.23.tgz#046f8e2ade026fe831623e361a36b6fb9a4463e4"
+"@types/jest-diff@*":
+  version "24.3.0"
+  resolved "https://registry.yarnpkg.com/@types/jest-diff/-/jest-diff-24.3.0.tgz#29e237a3d954babfe6e23cc59b57ecd8ca8d858d"
   dependencies:
-    jest-diff "^24.3.0"
+    jest-diff "*"
+
+"@types/jest@24.0.19":
+  version "24.0.19"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-24.0.19.tgz#f7036058d2a5844fe922609187c0ad8be430aff5"
+  dependencies:
+    "@types/jest-diff" "*"
 
 "@types/minimatch@^3.0.3":
   version "3.0.3"
@@ -5162,7 +5168,7 @@ jest-config@^24.9.0:
     pretty-format "^24.9.0"
     realpath-native "^1.1.0"
 
-jest-diff@^24.3.0, jest-diff@^24.9.0:
+jest-diff@*, jest-diff@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/jest-diff/-/jest-diff-24.9.0.tgz#931b7d0d5778a1baf7452cb816e325e3724055da"
   dependencies:
