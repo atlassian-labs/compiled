@@ -1,6 +1,7 @@
 import { TransformerFactory, SourceFile } from 'typescript';
 import * as logger from './utils/log';
-import jsxPragmaTransformer from './remove-jsx-pragma-runtime';
+import removeJsxPragmaRuntimeTransformer from './remove-jsx-pragma-runtime';
+import cssPropTransformer from './css-prop';
 
 interface TransformerOptions {
   debug?: boolean;
@@ -8,8 +9,13 @@ interface TransformerOptions {
 
 export default function transformers(opts: TransformerOptions) {
   logger.setEnabled(!!opts.debug);
-  logger.log('typescript transformer has been enabled in debug mode');
+  logger.log(
+    'typescript transformer has been enabled in debug mode, you will see logs in your console just like this one!'
+  );
 
-  const transformers: TransformerFactory<SourceFile>[] = [jsxPragmaTransformer()];
+  const transformers: TransformerFactory<SourceFile>[] = [
+    removeJsxPragmaRuntimeTransformer(),
+    cssPropTransformer(),
+  ];
   return transformers;
 }

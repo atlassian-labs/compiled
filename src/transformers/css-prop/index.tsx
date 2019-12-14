@@ -4,10 +4,12 @@ import kebabCase from '../utils/kebab-case';
 import * as logger from '../utils/log';
 import SequentialCharacterGenerator from '../utils/sequential-chars';
 import { name as packageName } from '../../../package.json';
+import { CssVariable, ProcessOpts, VariableStore } from './types';
+import { ensureDefaultReactImport } from './ensure-default-react-import';
 
 const JSX_PRAGMA = 'jsx';
 const CSS_PROP = 'css';
-const UNCOMPILED_GUARD_NAME = 'IS_CSS_FREEDOM_COMPILED';
+const LOCAL_DEVELOPMENT_MODULE = '../src';
 
 const getJsxNodeAttributes = (node: ts.JsxElement | ts.JsxSelfClosingElement) => {
   if ('attributes' in node) {
@@ -15,10 +17,6 @@ const getJsxNodeAttributes = (node: ts.JsxElement | ts.JsxSelfClosingElement) =>
   }
 
   return node.openingElement.attributes;
-};
-
-const isCssFreedomCompiledNode = (node: ts.Node): node is ts.VariableDeclaration => {
-  return ts.isVariableDeclaration(node) && node.name.getText() === UNCOMPILED_GUARD_NAME;
 };
 
 const isJsxWithCssProp = (node: ts.Node): node is ts.JsxElement | ts.JsxSelfClosingElement => {
@@ -29,16 +27,6 @@ const isJsxWithCssProp = (node: ts.Node): node is ts.JsxElement | ts.JsxSelfClos
     )
   );
 };
-
-interface CssVariable {
-  name: string;
-  expression: ts.Expression;
-}
-
-interface ProcessOpts {
-  cssVariableIds: SequentialCharacterGenerator;
-  scopedVariables: VariableStore;
-}
 
 const processCssProperties = (
   objectLiteral: ts.ObjectLiteralExpression,
@@ -114,227 +102,198 @@ const processCssProperties = (
   };
 };
 
-interface VariableStore {
-  [moduleName: string]: ts.Node;
-}
+const isJsxPragmaFoundWithOurJsxFunction = (sourceFile: ts.SourceFile) => {
+  return (
+    (sourceFile as any).localJsxNamespace === JSX_PRAGMA &&
+    // Only continue if we've found an import for this pkg.
+    sourceFile.statements.find(statement => {
+      if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) {
+        return false;
+      }
 
-interface TransformerOptions {
-  debug?: boolean;
-}
+      return (
+        // Probably also want to check the consumer is using "jsx" here.
+        statement.moduleSpecifier.text === packageName ||
+        statement.moduleSpecifier.text === LOCAL_DEVELOPMENT_MODULE
+      );
+    })
+  );
+};
 
-export default function transformer({ debug }: TransformerOptions = {}) {
+export default function cssPropTransformer() {
   const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
     const classNameIds = new SequentialCharacterGenerator();
     const cssVariableIds = new SequentialCharacterGenerator();
 
     return sourceFile => {
       const foundVariables: VariableStore = {};
-      let rootNode = sourceFile;
-      let needsCssTransform = false;
+      let transformedSourceFile = sourceFile;
+      let sourceFileNeedsToBeTransformed = false;
 
-      if (
-        // Only continue if the jsx pragma is enabled.
-        // localJsxNamespace not found???
-        (rootNode as any).localJsxNamespace === JSX_PRAGMA &&
-        // Only continue if we've found an import for this pkg.
-        rootNode.statements.find(
-          statement =>
-            ts.isImportDeclaration(statement) &&
-            ((statement.moduleSpecifier && statement.moduleSpecifier.getText() === packageName) ||
-              // Hack for local development
-              (statement.moduleSpecifier && statement.moduleSpecifier.getText() === '../src'))
-        )
-      ) {
-        logger.log('file needs to be transformed');
-
-        needsCssTransform = true;
+      if (isJsxPragmaFoundWithOurJsxFunction(sourceFile)) {
+        logger.log(`found source file with ${packageName} usage`);
+        sourceFileNeedsToBeTransformed = true;
+        transformedSourceFile = ensureDefaultReactImport(sourceFile);
+      } else {
+        return sourceFile;
       }
 
-      if (
-        needsCssTransform &&
-        // Only add React if it's not found.
-        !rootNode.statements.find(
-          statement =>
-            ts.isImportDeclaration(statement) &&
-            statement.importClause &&
-            statement.importClause.name &&
-            statement.importClause.name.getText() === 'React'
-        )
-      ) {
-        // Okay so React doesn't exist anywhere. But the 'react' import could still be around. Let's do another search.
-        const reactImportNode: ts.ImportDeclaration | undefined = rootNode.statements.find(
-          statement => {
-            return (
-              ts.isImportDeclaration(statement) && statement.moduleSpecifier.getText() === 'react'
-            );
-          }
-        ) as ts.ImportDeclaration;
+      // if (sourceFileNeedsToBeTransformed && !isDefaultReactImportFound(transformedSourceFile)) {
+      //   // Okay so React doesn't exist anywhere. But the react import could still be around. Let's do another search.
+      //   const reactImportDeclaration = findReactImportDeclaration(transformedSourceFile);
 
-        if (reactImportNode) {
-          logger.log('react module found, ensuring it has a default export');
+      //   if (reactImportDeclaration) {
+      //     logger.log('react module found, ensuring it has a default export');
 
-          // Ok it exists, lets ensure it has the default export as "React".
-          rootNode = ts.updateSourceFileNode(rootNode, [
-            ts.createImportDeclaration(
-              /* decorators */ undefined,
-              /* modifiers */ undefined,
-              ts.createImportClause(
-                ts.createIdentifier('React'),
-                reactImportNode.importClause && reactImportNode.importClause.namedBindings
-              ),
-              ts.createLiteral('react')
-            ),
-            ...rootNode.statements,
-          ]);
-        } else {
-          logger.log('react module not found, adding it');
+      //     // Ok it exists, lets ensure it has the default export as "React".
+      //     transformedSourceFile = ts.updateSourceFileNode(transformedSourceFile, [
+      //       ts.createImportDeclaration(
+      //         /* decorators */ undefined,
+      //         /* modifiers */ undefined,
+      //         ts.createImportClause(
+      //           ts.createIdentifier(REACT_DEFAULT_IMPORT_NAME),
+      //           reactImportDeclaration.importClause &&
+      //             reactImportDeclaration.importClause.namedBindings
+      //         ),
+      //         ts.createLiteral(REACT_PKG)
+      //       ),
+      //       ...transformedSourceFile.statements,
+      //     ]);
+      //   } else {
+      //     logger.log('react module not found, adding it');
 
-          rootNode = ts.updateSourceFileNode(rootNode, [
-            ts.createImportDeclaration(
-              /* decorators */ undefined,
-              /* modifiers */ undefined,
-              ts.createImportClause(ts.createIdentifier('React'), undefined),
-              ts.createLiteral('react')
-            ),
-            ...rootNode.statements,
-          ]);
-        }
-      }
+      //     transformedSourceFile = ts.updateSourceFileNode(transformedSourceFile, [
+      //       ts.createImportDeclaration(
+      //         /* decorators */ undefined,
+      //         /* modifiers */ undefined,
+      //         ts.createImportClause(ts.createIdentifier(REACT_DEFAULT_IMPORT_NAME), undefined),
+      //         ts.createLiteral(REACT_PKG)
+      //       ),
+      //       ...transformedSourceFile.statements,
+      //     ]);
+      //   }
+      // }
 
       const visitor = (node: ts.Node): ts.Node => {
-        if (!needsCssTransform && isCssFreedomCompiledNode(node)) {
-          logger.log(`setting "${UNCOMPILED_GUARD_NAME}" variable to true`);
-
-          // Reassign the variable declarations to `true` so it doesn't blow up at runtime.
-          const newNode = ts.updateVariableDeclaration(
-            node,
-            ts.createIdentifier(node.name.getText()),
-            ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-            ts.createTrue()
-          );
-
-          return newNode;
-        }
-
-        if (!needsCssTransform) {
+        if (!sourceFileNeedsToBeTransformed) {
           return node;
         }
 
         if (ts.isVariableDeclaration(node)) {
-          // we may need this later, let's store it in a basic object for quick access.
+          // we may need this later, let's store it in a POJO for quick access.
           foundVariables[node.name.getText()] = node;
           return ts.visitEachChild(node, visitor, context);
         }
 
-        if (isJsxWithCssProp(node)) {
-          // Grab the css prop node
-          const cssJsxAttribute = getJsxNodeAttributes(node).properties.find(
-            prop => ts.isJsxAttribute(prop) && prop.name.getText() === CSS_PROP
-          ) as ts.JsxAttribute;
-          const cssPropExpression = cssJsxAttribute.initializer;
+        // if (isJsxWithCssProp(node)) {
+        //   // Grab the css prop node
+        //   const cssJsxAttribute = getJsxNodeAttributes(node).properties.find(
+        //     prop => ts.isJsxAttribute(prop) && prop.name.getText() === CSS_PROP
+        //   ) as ts.JsxAttribute;
+        //   const cssPropExpression = cssJsxAttribute.initializer;
 
-          logger.log('processing css');
+        //   logger.log('processing css');
 
-          // Compile the CSS from the styles object node.
-          const className = classNameIds.next();
-          let compiledCss;
-          let cssVariables: CssVariable[] = [];
+        //   // Compile the CSS from the styles object node.
+        //   const className = classNameIds.next();
+        //   let compiledCss;
+        //   let cssVariables: CssVariable[] = [];
 
-          if (!cssPropExpression) {
-            // Do nothing.
-          } else if (ts.isObjectLiteralExpression(cssPropExpression)) {
-            // object literal found e..g css={{ fontSize: '20px' }}
-            const processedCssObject = processCssProperties(cssPropExpression, {
-              cssVariableIds,
-              scopedVariables: foundVariables,
-            });
-            cssVariables = processedCssObject.cssVariables;
-            compiledCss = stylis(`.${className}`, processedCssObject.css);
-          } else if (
-            // static string literal found e.g. css={`font-size: 20px;`}
-            ts.isNoSubstitutionTemplateLiteral(cssPropExpression)
-          ) {
-            compiledCss = stylis(`.${className}`, cssPropExpression.getText());
-          } else {
-            throw new Error('unsupported value in css prop');
-            // how do we handle mixins/function expressions?
-            // can we execute functions somehow?
+        //   if (!cssPropExpression) {
+        //     // Do nothing.
+        //   } else if (ts.isObjectLiteralExpression(cssPropExpression)) {
+        //     // object literal found e..g css={{ fontSize: '20px' }}
+        //     const processedCssObject = processCssProperties(cssPropExpression, {
+        //       cssVariableIds,
+        //       scopedVariables: foundVariables,
+        //     });
+        //     cssVariables = processedCssObject.cssVariables;
+        //     compiledCss = stylis(`.${className}`, processedCssObject.css);
+        //   } else if (
+        //     // static string literal found e.g. css={`font-size: 20px;`}
+        //     ts.isNoSubstitutionTemplateLiteral(cssPropExpression)
+        //   ) {
+        //     compiledCss = stylis(`.${className}`, cssPropExpression.getText());
+        //   } else {
+        //     throw new Error('unsupported value in css prop');
+        //     // how do we handle mixins/function expressions?
+        //     // can we execute functions somehow?
 
-            // css prop TODO:
-            // - tagged templates with variables e.g. css={`color: ${redVar};`}
-            // - function expressions e.g. css={functionCall}
-            // - spreading values as props e.g. css={{ ...mixin, color: 'red' }}
-            // - remove types from object literals e.g. 'blah' as const - remove as const.
-          }
+        //     // css prop TODO:
+        //     // - tagged templates with variables e.g. css={`color: ${redVar};`}
+        //     // - function expressions e.g. css={functionCall}
+        //     // - spreading values as props e.g. css={{ ...mixin, color: 'red' }}
+        //     // - remove types from object literals e.g. 'blah' as const - remove as const.
+        //   }
 
-          logger.log('removing css prop');
+        //   logger.log('removing css prop');
 
-          // Remove css prop from the react element.
-          const nodeToTransform = ts.getMutableClone(node);
-          const mutableNodeAttributes = getJsxNodeAttributes(nodeToTransform);
+        //   // Remove css prop from the react element.
+        //   const nodeToTransform = ts.getMutableClone(node);
+        //   const mutableNodeAttributes = getJsxNodeAttributes(nodeToTransform);
 
-          (mutableNodeAttributes.properties as any) = mutableNodeAttributes.properties.filter(
-            prop => prop.name && prop.name.getText() !== CSS_PROP
-          );
-          (mutableNodeAttributes.properties as any).push(
-            ts.createJsxAttribute(
-              ts.createIdentifier('className'),
-              ts.createStringLiteral(className)
-            )
-          );
+        //   (mutableNodeAttributes.properties as any) = mutableNodeAttributes.properties.filter(
+        //     prop => prop.name && prop.name.getText() !== CSS_PROP
+        //   );
+        //   (mutableNodeAttributes.properties as any).push(
+        //     ts.createJsxAttribute(
+        //       ts.createIdentifier('className'),
+        //       ts.createStringLiteral(className)
+        //     )
+        //   );
 
-          if (cssVariables.length) {
-            (mutableNodeAttributes.properties as any).push(
-              ts.createJsxAttribute(
-                ts.createIdentifier('style'),
-                ts.createJsxExpression(
-                  undefined,
-                  ts.createObjectLiteral(
-                    cssVariables.map(variable => {
-                      return ts.createPropertyAssignment(
-                        ts.createStringLiteral(variable.name),
-                        variable.expression
-                      );
-                    }),
-                    false
-                  )
-                )
-              )
-            );
-          }
+        //   if (cssVariables.length) {
+        //     (mutableNodeAttributes.properties as any).push(
+        //       ts.createJsxAttribute(
+        //         ts.createIdentifier('style'),
+        //         ts.createJsxExpression(
+        //           undefined,
+        //           ts.createObjectLiteral(
+        //             cssVariables.map(variable => {
+        //               return ts.createPropertyAssignment(
+        //                 ts.createStringLiteral(variable.name),
+        //                 variable.expression
+        //               );
+        //             }),
+        //             false
+        //           )
+        //         )
+        //       )
+        //     );
+        //   }
 
-          // Create the style element that will precede the node that had the css prop.
-          const styleNode = ts.createJsxElement(
-            ts.createJsxOpeningElement(
-              ts.createIdentifier('style'),
-              [],
-              ts.createJsxAttributes([])
-            ),
-            [ts.createJsxText(compiledCss)],
-            ts.createJsxClosingElement(ts.createIdentifier('style'))
-          );
+        //   // Create the style element that will precede the node that had the css prop.
+        //   const styleNode = ts.createJsxElement(
+        //     ts.createJsxOpeningElement(
+        //       ts.createIdentifier('style'),
+        //       [],
+        //       ts.createJsxAttributes([])
+        //     ),
+        //     [ts.createJsxText(compiledCss)],
+        //     ts.createJsxClosingElement(ts.createIdentifier('style'))
+        //   );
 
-          // Create a new fragment that will wrap both the style and the node we found initially.
-          const newFragmentParent = ts.createJsxFragment(
-            ts.createJsxOpeningFragment(),
-            [
-              // important that the style goes before the node
-              styleNode,
-              nodeToTransform,
-            ],
-            ts.createJsxJsxClosingFragment()
-          );
+        //   // Create a new fragment that will wrap both the style and the node we found initially.
+        //   const newFragmentParent = ts.createJsxFragment(
+        //     ts.createJsxOpeningFragment(),
+        //     [
+        //       // important that the style goes before the node
+        //       styleNode,
+        //       nodeToTransform,
+        //     ],
+        //     ts.createJsxJsxClosingFragment()
+        //   );
 
-          logger.log('returning composed component with fragment');
+        //   logger.log('returning composed component with fragment');
 
-          // TODO: Why does const/let blow up but not var?????
-          return ts.visitEachChild(newFragmentParent, visitor, context);
-        }
+        //   // TODO: Why does const/let blow up but not var?????
+        //   return ts.visitEachChild(newFragmentParent, visitor, context);
+        // }
 
         return ts.visitEachChild(node, visitor, context);
       };
 
-      return ts.visitNode(rootNode, visitor);
+      return ts.visitNode(transformedSourceFile, visitor);
     };
   };
 
