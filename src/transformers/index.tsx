@@ -2,6 +2,7 @@ import { TransformerFactory, SourceFile } from 'typescript';
 import * as logger from './utils/log';
 import removeJsxPragmaRuntimeTransformer from './remove-jsx-pragma-runtime';
 import cssPropTransformer from './css-prop';
+import styledComponentTransformer from './styled-component';
 
 interface TransformerOptions {
   debug?: boolean;
@@ -16,6 +17,7 @@ export default function transformers(opts: TransformerOptions) {
   const transformers: TransformerFactory<SourceFile>[] = [
     removeJsxPragmaRuntimeTransformer(),
     cssPropTransformer(),
+    styledComponentTransformer(),
   ];
   return transformers;
 }
