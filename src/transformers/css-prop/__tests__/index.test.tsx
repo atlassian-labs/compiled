@@ -84,7 +84,20 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{font-size:20px;}</style>');
     });
 
-    it.todo('should transform template string literal with string variable');
+    it('should transform template string literal with string variable', () => {
+      const actual = transform(`
+          /** @jsx jsx */
+          import { jsx } from '${pkg.name}';
+
+          const color = 'blue';
+          <div css={\`color: \${color};\`}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+      expect(actual).toInclude(
+        '<div className="test-class" style={{ "--color-test-css-variable": color }}>hello world</div>'
+      );
+    });
 
     it.todo('should transform template string literal with string import');
 

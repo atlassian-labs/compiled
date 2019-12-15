@@ -8,3 +8,8 @@ export interface CssVariableExpressions {
 export interface VariableDeclarations {
   [moduleName: string]: ts.VariableDeclaration;
 }
+
+export interface ToCssReturnType {
+  css: string;
+  cssVariables: CssVariableExpressions[];
+}

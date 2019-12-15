@@ -3,6 +3,7 @@ import stylis from 'stylis';
 import { VariableDeclarations, CssVariableExpressions } from './types';
 import { nextClassName } from '../utils/identifiers';
 import { objectLiteralToCssString } from './utils/object-literal-to-css';
+import { templateLiteralToCss } from './utils/template-literal-to-css';
 import * as logger from '../utils/log';
 import { getIdentifierText } from '../utils/ast-node';
 
@@ -40,17 +41,26 @@ export const visitJsxElementWithCssProp = (
   } else if (!cssJsxAttribute.initializer.expression) {
     // expression was empty e.g. css={}
     // do nothing
+  } else if (ts.isTemplateExpression(cssJsxAttribute.initializer.expression)) {
+    // string literal found with substitutions e.g. css={`color: ${color}`}
+    const processed = templateLiteralToCss(
+      cssJsxAttribute.initializer.expression,
+      variableDeclarations
+    );
+    cssVariables = processed.cssVariables;
+    cssToPassThroughCompiler = processed.css;
   } else if (ts.isNoSubstitutionTemplateLiteral(cssJsxAttribute.initializer.expression)) {
+    console.log('uh');
     // static string literal found e.g. css={`font-size: 20px;`}
     cssToPassThroughCompiler = cssJsxAttribute.initializer.expression.text;
   } else if (ts.isObjectLiteralExpression(cssJsxAttribute.initializer.expression)) {
     // object literal found e..g css={{ fontSize: '20px' }}
-    const processedCssObject = objectLiteralToCssString(
+    const processed = objectLiteralToCssString(
       cssJsxAttribute.initializer.expression,
       variableDeclarations
     );
-    cssVariables = processedCssObject.cssVariables;
-    cssToPassThroughCompiler = processedCssObject.css;
+    cssVariables = processed.cssVariables;
+    cssToPassThroughCompiler = processed.css;
   } else {
     // console.log(cssJsxAttribute.initializer.expression.getText());
     logger.log('unsupported value in css prop');

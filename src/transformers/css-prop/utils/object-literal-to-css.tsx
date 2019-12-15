@@ -1,14 +1,14 @@
 import * as ts from 'typescript';
 import kebabCase from '../../utils/kebab-case';
-import { VariableDeclarations, CssVariableExpressions } from '../types';
+import { VariableDeclarations, CssVariableExpressions, ToCssReturnType } from '../types';
 import { nextCssVariableName } from '../../utils/identifiers';
-import { getIdentifierText, getExpressionText } from '../../utils/ast-node';
+import { getIdentifierText } from '../../utils/ast-node';
 import * as logger from '../../utils/log';
 
 export const objectLiteralToCssString = (
   objectLiteral: ts.ObjectLiteralExpression,
   scopedVariables: VariableDeclarations
-) => {
+): ToCssReturnType => {
   const properties = objectLiteral.properties;
   let cssVariables: CssVariableExpressions[] = [];
 
@@ -20,12 +20,11 @@ export const objectLiteralToCssString = (
       // Ok it's a spread e.g. "...prop"
       // Reference to the identifier that we are spreading in, e.g. "prop".
       const variableDeclaration = scopedVariables[getIdentifierText(prop.expression)];
-      if (
-        !variableDeclaration ||
-        !variableDeclaration.initializer ||
-        !ts.isObjectLiteralExpression(variableDeclaration.initializer)
-      ) {
+      if (!variableDeclaration || !variableDeclaration.initializer) {
         throw new Error('variable doesnt exist in scope');
+      }
+      if (!ts.isObjectLiteralExpression(variableDeclaration.initializer)) {
+        throw new Error('variable not an object');
       }
       // Spread can either be from an object, or a function. Probably not an array.
 
