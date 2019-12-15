@@ -50,7 +50,6 @@ export const visitJsxElementWithCssProp = (
     cssVariables = processed.cssVariables;
     cssToPassThroughCompiler = processed.css;
   } else if (ts.isNoSubstitutionTemplateLiteral(cssJsxAttribute.initializer.expression)) {
-    console.log('uh');
     // static string literal found e.g. css={`font-size: 20px;`}
     cssToPassThroughCompiler = cssJsxAttribute.initializer.expression.text;
   } else if (ts.isObjectLiteralExpression(cssJsxAttribute.initializer.expression)) {
