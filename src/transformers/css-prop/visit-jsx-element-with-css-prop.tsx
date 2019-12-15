@@ -36,13 +36,13 @@ export const visitJsxElementWithCssProp = (
 
   if (ts.isStringLiteral(cssJsxAttribute.initializer)) {
     // static string literal found e.g. css="font-size: 20px;"
-    cssToPassThroughCompiler = cssJsxAttribute.initializer.getText();
+    cssToPassThroughCompiler = cssJsxAttribute.initializer.text;
   } else if (!cssJsxAttribute.initializer.expression) {
     // expression was empty e.g. css={}
     // do nothing
   } else if (ts.isNoSubstitutionTemplateLiteral(cssJsxAttribute.initializer.expression)) {
     // static string literal found e.g. css={`font-size: 20px;`}
-    cssToPassThroughCompiler = cssJsxAttribute.initializer.expression.getText();
+    cssToPassThroughCompiler = cssJsxAttribute.initializer.expression.text;
   } else if (ts.isObjectLiteralExpression(cssJsxAttribute.initializer.expression)) {
     // object literal found e..g css={{ fontSize: '20px' }}
     const processedCssObject = objectLiteralToCssString(

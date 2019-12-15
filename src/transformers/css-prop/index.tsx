@@ -7,6 +7,7 @@ import {
   visitJsxElementWithCssProp,
 } from './visit-jsx-element-with-css-prop';
 import { visitSourceFileEnsureDefaultReactImport } from './visit-source-file-ensure-default-react-import';
+import { getIdentifierText } from '../utils/ast-node';
 
 const JSX_PRAGMA = 'jsx';
 const LOCAL_DEVELOPMENT_MODULE = '../src';
@@ -52,7 +53,7 @@ export default function cssPropTransformer() {
 
         if (ts.isVariableDeclaration(node)) {
           // we may need this later, let's store it in a POJO for quick access.
-          foundVariableDeclarations[node.name.getText()] = node;
+          foundVariableDeclarations[getIdentifierText(node.name)] = node;
           return ts.visitEachChild(node, visitor, context);
         }
 

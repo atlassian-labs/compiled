@@ -2,6 +2,7 @@ import * as ts from 'typescript';
 import kebabCase from '../../utils/kebab-case';
 import { VariableDeclarations, CssVariableExpressions } from '../types';
 import { nextCssVariableName } from '../../utils/identifiers';
+import { getIdentifierText, getExpressionText } from '../../utils/ast-node';
 import * as logger from '../../utils/log';
 
 export const objectLiteralToCssString = (
@@ -12,16 +13,13 @@ export const objectLiteralToCssString = (
   let cssVariables: CssVariableExpressions[] = [];
 
   const css: string = properties.reduce((acc, prop) => {
-    // if is spread
-
     let key: string;
     let value: string;
 
     if (ts.isSpreadAssignment(prop)) {
       // Ok it's a spread e.g. "...prop"
-
       // Reference to the identifier that we are spreading in, e.g. "prop".
-      const variableDeclaration = scopedVariables[prop.expression.getText()];
+      const variableDeclaration = scopedVariables[getIdentifierText(prop.expression)];
       if (
         !variableDeclaration ||
         !variableDeclaration.initializer ||
@@ -41,7 +39,7 @@ export const objectLiteralToCssString = (
       ts.isShorthandPropertyAssignment(prop) ||
       (ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.initializer))
     ) {
-      key = kebabCase(prop.name.getText());
+      key = kebabCase(getIdentifierText(prop.name));
 
       // We have a prop assignment using a variable, e.g. "fontSize: props.fontSize" or "fontSize".
       // Time to turn it into a css variable.
@@ -63,13 +61,16 @@ export const objectLiteralToCssString = (
         ${result.css}
       }
       `;
-    } else if (ts.isPropertyAssignment(prop) && ts.isStringLiteral(prop.initializer)) {
+    } else if (
+      ts.isPropertyAssignment(prop) &&
+      (ts.isStringLiteral(prop.initializer) || ts.isNumericLiteral(prop.initializer))
+    ) {
       // We have a regular static assignment, e.g. "fontSize: '20px'"
-      key = kebabCase(prop.name.getText());
+      key = kebabCase(getIdentifierText(prop.name));
       value = `${prop.initializer.text}`;
     } else {
       logger.log('unsupported value in css prop object');
-      key = prop.name ? kebabCase(prop.name.getText()) : 'unspported';
+      key = prop.name ? kebabCase(getIdentifierText(prop.name)) : 'unspported';
       value = 'unsupported';
     }
 

@@ -8,6 +8,8 @@ export const getExpressionText = (node: ts.Expression) => {
   return (node as ts.StringLiteral).text;
 };
 
-export const getIdentifierText = (node: ts.PropertyName | ts.BindingName): string => {
+export const getIdentifierText = (
+  node: ts.PropertyName | ts.BindingName | ts.Expression
+): string => {
   return (node as ts.Identifier).escapedText as string;
 };
