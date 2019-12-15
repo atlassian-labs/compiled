@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import * as logger from '../utils/log';
+import * as logger from '../../utils/log';
 
 const REACT_PKG = 'react';
 const REACT_DEFAULT_IMPORT_NAME = 'React';

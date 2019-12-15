@@ -5,8 +5,8 @@ import { VariableDeclarations } from './types';
 import {
   isJsxElementWithCssProp,
   visitJsxElementWithCssProp,
-} from './visit-jsx-element-with-css-prop';
-import { visitSourceFileEnsureDefaultReactImport } from './visit-source-file-ensure-default-react-import';
+} from './visitors/visit-jsx-element-with-css-prop';
+import { visitSourceFileEnsureDefaultReactImport } from './visitors/visit-source-file-ensure-default-react-import';
 import { getIdentifierText } from '../utils/ast-node';
 
 const JSX_PRAGMA = 'jsx';

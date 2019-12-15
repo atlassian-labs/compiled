@@ -1,11 +1,11 @@
 import * as ts from 'typescript';
 import stylis from 'stylis';
-import { VariableDeclarations, CssVariableExpressions } from './types';
-import { nextClassName } from '../utils/identifiers';
-import { objectLiteralToCssString } from './utils/object-literal-to-css';
-import { templateLiteralToCss } from './utils/template-literal-to-css';
-import * as logger from '../utils/log';
-import { getIdentifierText } from '../utils/ast-node';
+import { VariableDeclarations, CssVariableExpressions } from '../types';
+import { nextClassName } from '../../utils/identifiers';
+import { objectLiteralToCssString } from '../utils/object-literal-to-css';
+import { templateLiteralToCss } from '../utils/template-literal-to-css';
+import * as logger from '../../utils/log';
+import { getIdentifierText } from '../../utils/ast-node';
 
 const CSS_PROP = 'css';
 
