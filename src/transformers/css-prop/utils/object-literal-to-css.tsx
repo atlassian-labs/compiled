@@ -2,13 +2,16 @@ import * as ts from 'typescript';
 import kebabCase from '../../utils/kebab-case';
 import { VariableDeclarations, CssVariableExpressions, ToCssReturnType } from '../types';
 import { nextCssVariableName } from '../../utils/identifiers';
-import { getIdentifierText } from '../../utils/ast-node';
+import {
+  getIdentifierText,
+  getAssignmentIdentifierText,
+  getAssignmentIdentifier,
+} from '../../utils/ast-node';
 import * as logger from '../../utils/log';
 
 export const objectLiteralToCssString = (
   objectLiteral: ts.ObjectLiteralExpression,
-  scopedVariables: VariableDeclarations,
-  context: ts.TransformationContext
+  scopedVariables: VariableDeclarations
 ): ToCssReturnType => {
   const properties = objectLiteral.properties;
   let cssVariables: CssVariableExpressions[] = [];
@@ -48,7 +51,7 @@ export const objectLiteralToCssString = (
       }
       // Spread can either be from an object, or a function. Probably not an array.
 
-      const result = objectLiteralToCssString(nodeToExtractCssFrom, scopedVariables, context);
+      const result = objectLiteralToCssString(nodeToExtractCssFrom, scopedVariables);
       cssVariables = cssVariables.concat(result.cssVariables);
 
       return `${acc}
@@ -60,19 +63,38 @@ export const objectLiteralToCssString = (
     ) {
       key = kebabCase(getIdentifierText(prop.name));
 
-      // We have a prop assignment using a variable, e.g. "fontSize: props.fontSize" or "fontSize".
+      const variableDeclaration = scopedVariables[getAssignmentIdentifierText(prop)];
+      if (!variableDeclaration || !variableDeclaration.initializer) {
+        logger.log('variable not found');
+      }
+      if (
+        variableDeclaration &&
+        variableDeclaration.initializer &&
+        ts.isObjectLiteralExpression(variableDeclaration.initializer)
+      ) {
+        // we are referencing an object. so we want to just parse it  and use it.
+        const result = objectLiteralToCssString(variableDeclaration.initializer, scopedVariables);
+        cssVariables = cssVariables.concat(result.cssVariables);
+        return `${acc}
+        ${key} {
+          ${result.css}
+        }
+        `;
+      }
+
+      // We have a prop assignment using a SIMPLE variable, e.g. "fontSize: props.fontSize" or "fontSize".
       // Time to turn it into a css variable.
       const cssVariable = `--${key}-${nextCssVariableName()}`;
       value = `var(${cssVariable})`;
       cssVariables.push({
         name: cssVariable,
-        expression: 'initializer' in prop ? prop.initializer : prop.name,
+        expression: getAssignmentIdentifier(prop),
       });
     } else if (ts.isPropertyAssignment(prop) && ts.isObjectLiteralExpression(prop.initializer)) {
       key = kebabCase((prop.name as ts.Identifier).text);
 
       // We found an object selector, e.g. ":hover": { color: 'red' }
-      const result = objectLiteralToCssString(prop.initializer, scopedVariables, context);
+      const result = objectLiteralToCssString(prop.initializer, scopedVariables);
       cssVariables = cssVariables.concat(result.cssVariables);
 
       return `${acc}

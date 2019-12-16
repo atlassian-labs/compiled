@@ -12,7 +12,7 @@ const isCssFreedomCompiledNode = (node: ts.Node): node is ts.VariableDeclaration
   );
 };
 
-export default function removePragmaRuntime() {
+export default function removePragmaRuntime(_: ts.Program): ts.TransformerFactory<ts.SourceFile> {
   const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
     return sourceFile => {
       const visitor = (node: ts.Node): ts.Node => {

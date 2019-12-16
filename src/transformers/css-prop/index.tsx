@@ -7,7 +7,7 @@ import {
   visitJsxElementWithCssProp,
 } from './visitors/visit-jsx-element-with-css-prop';
 import { visitSourceFileEnsureDefaultReactImport } from './visitors/visit-source-file-ensure-default-react-import';
-import { getIdentifierText } from '../utils/ast-node';
+import { getIdentifierText, getExpressionText } from '../utils/ast-node';
 
 const JSX_PRAGMA = 'jsx';
 const LOCAL_DEVELOPMENT_MODULE = '../src';
@@ -30,7 +30,9 @@ const isJsxPragmaFoundWithOurJsxFunction = (sourceFile: ts.SourceFile) => {
   );
 };
 
-export default function cssPropTransformer() {
+export default function cssPropTransformer(
+  program: ts.Program
+): ts.TransformerFactory<ts.SourceFile> {
   const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
     return sourceFile => {
       const foundVariableDeclarations: VariableDeclarations = {};
@@ -55,6 +57,31 @@ export default function cssPropTransformer() {
           // we may need this later, let's store it in a POJO for quick access.
           foundVariableDeclarations[getIdentifierText(node.name)] = node;
           return ts.visitEachChild(node, visitor, context);
+        }
+
+        if (ts.isImportDeclaration(node)) {
+          // we may use these. store for later and if needed then resolve them.
+          // TODO: Get name and shit properly.
+          if (getExpressionText(node.moduleSpecifier) === './1') {
+            const resolvedFileSource = program.getSourceFile(
+              // @ts-ignore
+              sourceFile.resolvedModules.get('./1').resolvedFileName
+            );
+
+            const visitor = (node: ts.Node): ts.Node => {
+              // TODO: Clean this shit up.
+              if (ts.isVariableStatement(node) && node.modifiers && node.modifiers[0]) {
+                // we may need this later, let's store it in a POJO for quick access.
+                const variableDeclaration = node.declarationList.declarations[0];
+                foundVariableDeclarations[getIdentifierText(variableDeclaration.name)] =
+                  node.declarationList.declarations[0];
+                return node;
+              }
+
+              return ts.visitEachChild(node, visitor, context);
+            };
+            ts.visitNode(resolvedFileSource, visitor);
+          }
         }
 
         if (isJsxElementWithCssProp(node)) {

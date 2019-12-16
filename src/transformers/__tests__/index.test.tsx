@@ -4,7 +4,7 @@ import pkg from '../../../package.json';
 
 describe('root transformer', () => {
   it('should not blow up when transforming with const', () => {
-    const transformer = rootTransformer({});
+    const transformer = rootTransformer({} as ts.Program, {});
 
     expect(() => {
       ts.transpileModule(
@@ -22,7 +22,7 @@ describe('root transformer', () => {
   });
 
   it('should not blow up when transforming with var', () => {
-    const transformer = rootTransformer({});
+    const transformer = rootTransformer({} as ts.Program, {});
 
     expect(() => {
       ts.transpileModule(

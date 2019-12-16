@@ -8,8 +8,8 @@ module.exports = ({ config }) => {
         loader: require.resolve('ts-loader'),
         options: {
           transpileOnly: true,
-          getCustomTransformers: () => ({
-            before: createCssFreedomTransformer({ debug: true }),
+          getCustomTransformers: program => ({
+            before: createCssFreedomTransformer(program, { debug: true }),
           }),
         },
       },

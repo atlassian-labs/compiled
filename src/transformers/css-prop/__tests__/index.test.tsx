@@ -1,4 +1,6 @@
 import * as ts from 'typescript';
+import * as fs from 'fs';
+import * as path from 'path';
 import cssPropTransformer from '../index';
 import pkg from '../../../../package.json';
 
@@ -6,8 +8,63 @@ jest.mock('../../utils/identifiers');
 
 const printer = ts.createPrinter();
 
+/**
+ * This creates a full project which will resolve all modules.
+ * Only use this when wanting to test imports tbh. It's slow.
+ */
+const fullTransform = (...sources: string[]): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    try {
+      fs.rmdirSync(`${__dirname}/.tmp`, { recursive: true });
+    } catch {}
+
+    fs.mkdirSync(`${__dirname}/.tmp`);
+    const files: string[] = [];
+    sources.forEach((source, index) => {
+      const filename = index === 0 ? 'index.tsx' : `${index}.tsx`;
+      const filepath = path.resolve(`${__dirname}/.tmp/${filename}`);
+      files.push(filepath);
+      fs.writeFileSync(filepath, source);
+    });
+
+    const [rootFile] = files;
+    const config: ts.CompilerOptions = {
+      jsx: ts.JsxEmit.Preserve,
+      module: ts.ModuleKind.ESNext,
+      suppressImplicitAnyIndexErrors: true,
+      target: ts.ScriptTarget.ESNext,
+      // Uncomment this if shit isn't working.
+      // noEmitOnError: true,
+    };
+    const compilerHost = ts.createCompilerHost(config, true);
+    const program = ts.createProgram([rootFile], config, compilerHost);
+
+    const { emitSkipped, diagnostics, emittedFiles } = program.emit(
+      undefined,
+      (filename, data) => {
+        if (filename.endsWith('index.jsx')) {
+          resolve(data);
+        }
+      },
+      undefined,
+      false,
+      {
+        before: [cssPropTransformer(program)],
+      }
+    );
+
+    if (emitSkipped) {
+      return reject(new Error(diagnostics.map(diagnostic => diagnostic.messageText).join('\n')));
+    }
+
+    if (!emittedFiles) {
+      return reject(new Error('Nothing was emitted'));
+    }
+  });
+};
+
 const transform = (source: string): string => {
-  const transformer = cssPropTransformer();
+  const transformer = cssPropTransformer({} as any);
   const sourceFile = ts.createSourceFile('index.tsx', source, ts.ScriptTarget.Latest);
   const actual = ts.transform(sourceFile, [transformer]).transformed[0];
   return printer.printFile(actual).toString();
@@ -155,7 +212,22 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class:hover{color:blue;}</style>');
     });
 
-    it.todo('should transform object with object selector from variable');
+    it('should transform object with object selector from variable', async () => {
+      const actual = await fullTransform(
+        `
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { mixin } from './1';
+
+        <div css={{ ':hover': mixin }}>hello world</div>
+      `,
+        `
+        export const mixin = { color: 'blue' };
+      `
+      );
+
+      expect(actual).toInclude('<style>.test-class:hover{color:blue;}</style>');
+    });
 
     it.todo('should transform object with object selector from import');
 
@@ -170,6 +242,22 @@ describe('css prop transformer', () => {
 
       expect(actual).toInclude(
         '<div className="test-class" style={{ "--color-test-css-variable": blue }}>hello world</div>'
+      );
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+    });
+
+    it('should transform object that has a destructured variable reference', () => {
+      const actual = transform(`
+        /** @jsx jsx */
+        import { useState } from 'react';
+        import { jsx } from '${pkg.name}';
+
+        const [color, setColor] = useState('blue');
+        <div css={{ color }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        '<div className="test-class" style={{ "--color-test-css-variable": color }}>hello world</div>'
       );
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
     });

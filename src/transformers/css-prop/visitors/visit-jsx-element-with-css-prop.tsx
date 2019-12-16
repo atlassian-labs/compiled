@@ -57,13 +57,11 @@ export const visitJsxElementWithCssProp = (
     // object literal found e.g css={{ fontSize: '20px' }}
     const processed = objectLiteralToCssString(
       cssJsxAttribute.initializer.expression,
-      variableDeclarations,
-      context
+      variableDeclarations
     );
     cssVariables = processed.cssVariables;
     cssToPassThroughCompiler = processed.css;
   } else {
-    // console.log(cssJsxAttribute.initializer.expression.getText());
     logger.log('unsupported value in css prop');
     // how do we handle mixins/function expressions?
     // can we execute functions somehow?

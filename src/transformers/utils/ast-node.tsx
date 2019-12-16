@@ -13,3 +13,15 @@ export const getIdentifierText = (
 ): string => {
   return ((node as ts.Identifier).escapedText as string) || (node as ts.Identifier).text;
 };
+
+export const getAssignmentIdentifier = (
+  node: ts.ShorthandPropertyAssignment | ts.PropertyAssignment
+) => {
+  return 'initializer' in node ? node.initializer : node.name;
+};
+
+export const getAssignmentIdentifierText = (
+  node: ts.ShorthandPropertyAssignment | ts.PropertyAssignment
+) => {
+  return getIdentifierText(getAssignmentIdentifier(node));
+};
