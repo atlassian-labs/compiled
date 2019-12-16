@@ -19,7 +19,8 @@ const getJsxNodeAttributes = (node: ts.JsxElement | ts.JsxSelfClosingElement): t
 
 export const visitJsxElementWithCssProp = (
   node: ts.JsxElement | ts.JsxSelfClosingElement,
-  variableDeclarations: VariableDeclarations
+  variableDeclarations: VariableDeclarations,
+  context: ts.TransformationContext
 ) => {
   logger.log('visiting a jsx element with a css prop');
 
@@ -53,10 +54,11 @@ export const visitJsxElementWithCssProp = (
     // static string literal found e.g. css={`font-size: 20px;`}
     cssToPassThroughCompiler = cssJsxAttribute.initializer.expression.text;
   } else if (ts.isObjectLiteralExpression(cssJsxAttribute.initializer.expression)) {
-    // object literal found e..g css={{ fontSize: '20px' }}
+    // object literal found e.g css={{ fontSize: '20px' }}
     const processed = objectLiteralToCssString(
       cssJsxAttribute.initializer.expression,
-      variableDeclarations
+      variableDeclarations,
+      context
     );
     cssVariables = processed.cssVariables;
     cssToPassThroughCompiler = processed.css;
@@ -66,10 +68,7 @@ export const visitJsxElementWithCssProp = (
     // how do we handle mixins/function expressions?
     // can we execute functions somehow?
     // css prop TODO:
-    // - tagged templates with variables e.g. css={`color: ${redVar};`}
     // - function expressions e.g. css={functionCall}
-    // - spreading values as props e.g. css={{ ...mixin, color: 'red' }}
-    // - remove types from object literals e.g. 'blah' as const - remove as const.
   }
 
   const className = nextClassName();

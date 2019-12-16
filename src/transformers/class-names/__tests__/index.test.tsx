@@ -22,9 +22,21 @@ describe('class names transformer', () => {
 
     it.todo('should transform template string literal with array import');
 
-    it.todo('should transform template string literal with function variable');
+    it.todo('should transform template string with no argument arrow function variable');
 
-    it.todo('should transform template string literal with function import');
+    it.todo('should transform template string with no argument arrow function import');
+
+    it.todo('should transform template string with no argument function variable');
+
+    it.todo('should transform template string with no argument function import');
+
+    it.todo('should transform template string with argument function variable');
+
+    it.todo('should transform template string with argument function import');
+
+    it.todo('should transform template string with argument arrow function variable');
+
+    it.todo('should transform template string with argument arrow function import');
   });
 
   describe('using an object literal', () => {
@@ -54,8 +66,20 @@ describe('class names transformer', () => {
 
     it.todo('should transform object with array import');
 
-    it.todo('should transform object with function variable');
+    it.todo('should transform object with no argument arrow function variable');
 
-    it.todo('should transform object with function import');
+    it.todo('should transform object with no argument arrow function import');
+
+    it.todo('should transform object with no argument function variable');
+
+    it.todo('should transform object with no argument function import');
+
+    it.todo('should transform object with argument function variable');
+
+    it.todo('should transform object with argument function import');
+
+    it.todo('should transform object with argument arrow function variable');
+
+    it.todo('should transform object with argument arrow function import');
   });
 });

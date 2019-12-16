@@ -7,7 +7,8 @@ import * as logger from '../../utils/log';
 
 export const objectLiteralToCssString = (
   objectLiteral: ts.ObjectLiteralExpression,
-  scopedVariables: VariableDeclarations
+  scopedVariables: VariableDeclarations,
+  context: ts.TransformationContext
 ): ToCssReturnType => {
   const properties = objectLiteral.properties;
   let cssVariables: CssVariableExpressions[] = [];
@@ -17,18 +18,37 @@ export const objectLiteralToCssString = (
     let value: string;
 
     if (ts.isSpreadAssignment(prop)) {
-      // Ok it's a spread e.g. "...prop"
-      // Reference to the identifier that we are spreading in, e.g. "prop".
-      const variableDeclaration = scopedVariables[getIdentifierText(prop.expression)];
-      if (!variableDeclaration || !variableDeclaration.initializer) {
-        throw new Error('variable doesnt exist in scope');
+      let nodeToExtractCssFrom: ts.Node;
+
+      if (ts.isCallExpression(prop.expression)) {
+        // we are spreading the result of a function call
+        const functionDeclaration = scopedVariables[getIdentifierText(prop.expression.expression)];
+        const functionNode = functionDeclaration.initializer;
+
+        if (!functionNode || !ts.isArrowFunction(functionNode)) {
+          throw new Error('how is this not a function');
+        }
+
+        if (!ts.isParenthesizedExpression(functionNode.body)) {
+          throw new Error('only function like () => ({}) supported');
+        }
+
+        nodeToExtractCssFrom = functionNode.body.expression;
+      } else {
+        // we are spreading a variable
+        const variableDeclaration = scopedVariables[getIdentifierText(prop.expression)];
+        if (!variableDeclaration || !variableDeclaration.initializer) {
+          throw new Error('variable not in scope');
+        }
+        nodeToExtractCssFrom = variableDeclaration.initializer;
       }
-      if (!ts.isObjectLiteralExpression(variableDeclaration.initializer)) {
+
+      if (!ts.isObjectLiteralExpression(nodeToExtractCssFrom)) {
         throw new Error('variable not an object');
       }
       // Spread can either be from an object, or a function. Probably not an array.
 
-      const result = objectLiteralToCssString(variableDeclaration.initializer, scopedVariables);
+      const result = objectLiteralToCssString(nodeToExtractCssFrom, scopedVariables, context);
       cssVariables = cssVariables.concat(result.cssVariables);
 
       return `${acc}
@@ -52,7 +72,7 @@ export const objectLiteralToCssString = (
       key = kebabCase((prop.name as ts.Identifier).text);
 
       // We found an object selector, e.g. ":hover": { color: 'red' }
-      const result = objectLiteralToCssString(prop.initializer, scopedVariables);
+      const result = objectLiteralToCssString(prop.initializer, scopedVariables, context);
       cssVariables = cssVariables.concat(result.cssVariables);
 
       return `${acc}

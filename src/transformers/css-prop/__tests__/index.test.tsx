@@ -115,9 +115,21 @@ describe('css prop transformer', () => {
 
     it.todo('should transform template string literal with array import');
 
-    it.todo('should transform template string literal with function variable');
+    it.todo('should transform template string with no argument arrow function variable');
 
-    it.todo('should transform template string literal with function import');
+    it.todo('should transform template string with no argument arrow function import');
+
+    it.todo('should transform template string with no argument function variable');
+
+    it.todo('should transform template string with no argument function import');
+
+    it.todo('should transform template string with argument function variable');
+
+    it.todo('should transform template string with argument function import');
+
+    it.todo('should transform template string with argument arrow function variable');
+
+    it.todo('should transform template string with argument arrow function import');
   });
 
   describe('using an object literal', () => {
@@ -188,8 +200,31 @@ describe('css prop transformer', () => {
 
     it.todo('should transform object with array import');
 
-    it.todo('should transform object with function variable');
+    it('should transform object with no argument arrow function variable', () => {
+      const actual = transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
 
-    it.todo('should transform object with function import');
+        const mixin = () => ({ color: 'red' });
+
+        <div css={{ color: 'blue', ...mixin() }}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:blue;color:red;}</style>');
+    });
+
+    it.todo('should transform object with no argument arrow function import');
+
+    it.todo('should transform object with no argument function variable');
+
+    it.todo('should transform object with no argument function import');
+
+    it.todo('should transform object with argument function variable');
+
+    it.todo('should transform object with argument function import');
+
+    it.todo('should transform object with argument arrow function variable');
+
+    it.todo('should transform object with argument arrow function import');
   });
 });

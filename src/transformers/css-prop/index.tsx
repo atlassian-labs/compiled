@@ -58,7 +58,7 @@ export default function cssPropTransformer() {
         }
 
         if (isJsxElementWithCssProp(node)) {
-          const newNode = visitJsxElementWithCssProp(node, foundVariableDeclarations);
+          const newNode = visitJsxElementWithCssProp(node, foundVariableDeclarations, context);
           return ts.visitEachChild(newNode, visitor, context);
         }
 
