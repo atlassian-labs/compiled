@@ -61,7 +61,13 @@ describe('css prop transformer', () => {
     expect(actual).toIncludeRepeated('import { useState } from "react";', 1);
   });
 
-  describe('css prop with string', () => {
+  it.todo('should concat explicit use of class name prop on an element');
+
+  it.todo('should concat implicit use of class name prop where props are spread into an element');
+
+  it.todo('should concat use of inline styles when there is use of dynamic css');
+
+  describe('using strings', () => {
     it('should transform string literal', () => {
       const actual = transform(`
         /** @jsx jsx */
@@ -114,7 +120,7 @@ describe('css prop transformer', () => {
     it.todo('should transform template string literal with function import');
   });
 
-  describe('css prop with object literal', () => {
+  describe('using an object literal', () => {
     it('should transform object with simple values', () => {
       const actual = transform(`
         /** @jsx jsx */
@@ -141,7 +147,7 @@ describe('css prop transformer', () => {
 
     it.todo('should transform object with object selector from import');
 
-    it('should transform object with variable', () => {
+    it('should transform object that has a variable reference', () => {
       const actual = transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';

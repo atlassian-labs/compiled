@@ -3,6 +3,7 @@ import * as logger from './utils/log';
 import removeJsxPragmaRuntimeTransformer from './remove-jsx-pragma-runtime';
 import cssPropTransformer from './css-prop';
 import styledComponentTransformer from './styled-component';
+import classNamesTransformer from './class-names';
 
 interface TransformerOptions {
   debug?: boolean;
@@ -18,6 +19,7 @@ export default function transformers(opts: TransformerOptions) {
     removeJsxPragmaRuntimeTransformer(),
     cssPropTransformer(),
     styledComponentTransformer(),
+    classNamesTransformer(),
   ];
   return transformers;
 }

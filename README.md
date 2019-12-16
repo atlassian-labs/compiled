@@ -15,18 +15,16 @@ In initial development.
 Transforms:
 
 ```jsx
-const Item = () => <div css={{ fontSize: '20px' }}>hello, world!</div>;
+<div css={{ fontSize: '20px' }}>hello, world!</div>
 ```
 
 Into:
 
 ```jsx
-const Item = () => (
-  <>
-    <style>{'.a { font-size: 20px; }'}</style>
-    <div className="a">hello, world!</div>
-  </>
-);
+<>
+  <style>{'.a { font-size: 20px; }'}</style>
+  <div className="a">hello, world!</div>
+</>
 ```
 
 ## `styled` component
@@ -48,4 +46,23 @@ const Item = props => (
     <div className="a">{props.children}</div>
   </>
 );
+```
+
+## `ClassNames` component
+
+Transforms:
+
+```jsx
+<ClassNames>
+  {({ css }) => <div className={css({ fontSize: '20px' })}>hello, world!</div>}
+</ClassNames>
+```
+
+To:
+
+```jsx
+<>
+  <style>{'.a { font-size: 20px; }'}</style>
+  <div className="a">hello, world!</div>
+</>
 ```
