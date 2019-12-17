@@ -18,6 +18,18 @@ describe('styled component transformer', () => {
     );
   });
 
+  it('should remove styled import', () => {
+    const actual = transform(`
+      import { styled } from '${pkg.name}';
+
+      const ListItem = styled.div({
+        fontSize: '20px',
+      });
+    `);
+
+    expect(actual).not.toInclude(`import { styled } from '${pkg.name}';`);
+  });
+
   it.todo('should replace string literal styled component with component');
 
   it.todo('should add react default import if missing');

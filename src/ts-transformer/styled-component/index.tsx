@@ -30,6 +30,10 @@ export default function styledComponentTransformer(
           return visitObjectStyledComponent(node);
         }
 
+        if (isPackageModuleImport(node, STYLED_NAME)) {
+          return ts.createEmptyStatement();
+        }
+
         return ts.visitEachChild(node, visitor, context);
       };
 

@@ -39,7 +39,7 @@ export const getJsxNodeAttributes = (
   return node.openingElement.attributes;
 };
 
-export const isPackageModuleImport = (statement: ts.Statement, namedImport: string): boolean => {
+export const isPackageModuleImport = (statement: ts.Node, namedImport: string): boolean => {
   if (
     !ts.isImportDeclaration(statement) ||
     !ts.isStringLiteral(statement.moduleSpecifier) ||
