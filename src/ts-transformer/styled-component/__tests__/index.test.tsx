@@ -1,6 +1,7 @@
 import { createTransform } from '../../../__tests__/utils/transform';
 import pkg from '../../../../package.json';
 import styledComponentTransformer from '../index';
+
 const transform = createTransform(styledComponentTransformer);
 
 describe('styled component transformer', () => {

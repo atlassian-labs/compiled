@@ -1,5 +1,25 @@
+import { createTransform } from '../../../__tests__/utils/transform';
+import pkg from '../../../../package.json';
+import classNamesTransformer from '../index';
+
+const transformer = createTransform(classNamesTransformer);
+
 describe('class names transformer', () => {
   it.todo('should replace class names component style element');
+
+  it('should remove class names import', () => {
+    const actual = transformer(`
+      import { ClassNames } from '${pkg.name}';
+
+      const ListItem = () => (
+        <ClassNames>
+          {({ css }) => <div className={css({ fontSize: '20px' })}>hello, world!</div>
+        }</ClassNames>
+      );
+    `);
+
+    expect(actual).not.toInclude(`import { ClassNames } from "${pkg.name}";`);
+  });
 
   it.todo('should add react default import if missing');
 
