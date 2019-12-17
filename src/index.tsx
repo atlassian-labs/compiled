@@ -1,1 +1,2 @@
-export { default as jsx } from './jsx';
+export { jsx } from './jsx';
+export { styled } from './styled';

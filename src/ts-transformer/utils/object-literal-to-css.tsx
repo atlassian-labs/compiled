@@ -1,13 +1,13 @@
 import * as ts from 'typescript';
-import kebabCase from '../../utils/kebab-case';
+import kebabCase from './kebab-case';
 import { VariableDeclarations, CssVariableExpressions, ToCssReturnType } from '../types';
-import { nextCssVariableName } from '../../utils/identifiers';
+import { nextCssVariableName } from './identifiers';
 import {
   getIdentifierText,
   getAssignmentIdentifierText,
   getAssignmentIdentifier,
-} from '../../utils/ast-node';
-import * as logger from '../../utils/log';
+} from './ast-node';
+import * as logger from './log';
 
 export const objectLiteralToCssString = (
   objectLiteral: ts.ObjectLiteralExpression,

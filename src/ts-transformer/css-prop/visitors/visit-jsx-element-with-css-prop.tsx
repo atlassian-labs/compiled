@@ -1,21 +1,13 @@
 import * as ts from 'typescript';
 import stylis from 'stylis';
-import { VariableDeclarations, CssVariableExpressions } from '../types';
+import { VariableDeclarations, CssVariableExpressions } from '../../types';
 import { nextClassName } from '../../utils/identifiers';
-import { objectLiteralToCssString } from '../utils/object-literal-to-css';
-import { templateLiteralToCss } from '../utils/template-literal-to-css';
+import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
+import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import * as logger from '../../utils/log';
-import { getIdentifierText } from '../../utils/ast-node';
+import { getIdentifierText, getJsxNodeAttributes } from '../../utils/ast-node';
 
 const CSS_PROP = 'css';
-
-const getJsxNodeAttributes = (node: ts.JsxElement | ts.JsxSelfClosingElement): ts.JsxAttributes => {
-  if ('attributes' in node) {
-    return node.attributes;
-  }
-
-  return node.openingElement.attributes;
-};
 
 export const visitJsxElementWithCssProp = (
   node: ts.JsxElement | ts.JsxSelfClosingElement,

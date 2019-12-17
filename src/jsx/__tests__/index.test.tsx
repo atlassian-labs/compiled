@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import jsx from '../index';
+import { jsx } from '../index';
 import { render } from '@testing-library/react';
 
 describe('jsx pragma runtime', () => {

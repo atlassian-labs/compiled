@@ -1,5 +1,24 @@
+import { createTransform } from '../../../__tests__/utils/transform';
+import pkg from '../../../../package.json';
+import styledComponentTransformer from '../index';
+const transform = createTransform(styledComponentTransformer);
+
 describe('styled component transformer', () => {
-  it.todo('should replace styled component with component');
+  it('should replace object literal styled component with component', () => {
+    const actual = transform(`
+      import { styled } from '${pkg.name}';
+
+      const ListItem = styled.div({
+        fontSize: '20px',
+      });
+    `);
+
+    expect(actual).toInclude(
+      'const ListItem = props => <><style>.a{font-size:20px;}</style><div className="a">{props.children}</div></>'
+    );
+  });
+
+  it.todo('should replace string literal styled component with component');
 
   it.todo('should add react default import if missing');
 

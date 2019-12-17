@@ -1,4 +1,7 @@
 import * as ts from 'typescript';
+import { name as packageName } from '../../../package.json';
+
+const LOCAL_DEVELOPMENT_MODULE = '../src';
 
 export const getExpressionText = (node: ts.Expression) => {
   if (!ts.isStringLiteral(node)) {
@@ -24,4 +27,40 @@ export const getAssignmentIdentifierText = (
   node: ts.ShorthandPropertyAssignment | ts.PropertyAssignment
 ) => {
   return getIdentifierText(getAssignmentIdentifier(node));
+};
+
+export const getJsxNodeAttributes = (
+  node: ts.JsxElement | ts.JsxSelfClosingElement
+): ts.JsxAttributes => {
+  if ('attributes' in node) {
+    return node.attributes;
+  }
+
+  return node.openingElement.attributes;
+};
+
+export const isPackageModuleImport = (statement: ts.Statement, namedImport: string): boolean => {
+  if (
+    !ts.isImportDeclaration(statement) ||
+    !ts.isStringLiteral(statement.moduleSpecifier) ||
+    !statement.importClause?.namedBindings ||
+    !ts.isNamedImports(statement.importClause?.namedBindings)
+  ) {
+    return false;
+  }
+
+  const isLibraryImport =
+    statement.moduleSpecifier.text === packageName ||
+    statement.moduleSpecifier.text === LOCAL_DEVELOPMENT_MODULE;
+
+  if (!isLibraryImport) {
+    return false;
+  }
+
+  const isStyledImported =
+    statement.importClause.namedBindings.elements.filter(
+      specifier => specifier.name.escapedText === namedImport
+    ).length > 0;
+
+  return isStyledImported;
 };

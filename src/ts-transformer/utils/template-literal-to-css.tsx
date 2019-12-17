@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import { ToCssReturnType, CssVariableExpressions, VariableDeclarations } from '../types';
-import { getIdentifierText } from '../../utils/ast-node';
-import { nextCssVariableName } from '../../utils/identifiers';
+import { getIdentifierText } from './ast-node';
+import { nextCssVariableName } from './identifiers';
 
 export const templateLiteralToCss = (
   node: ts.TemplateExpression,
