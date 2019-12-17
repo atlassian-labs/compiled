@@ -1,4 +1,4 @@
-const createCssFreedomTransformer = require('../dist/src/transformer').default;
+const createTransformers = require('../dist/src/ts-transformer').default;
 
 module.exports = ({ config }) => {
   config.module.rules.push({
@@ -9,7 +9,7 @@ module.exports = ({ config }) => {
         options: {
           transpileOnly: true,
           getCustomTransformers: program => ({
-            before: createCssFreedomTransformer(program, { debug: true }),
+            before: createTransformers(program, { debug: true }),
           }),
         },
       },

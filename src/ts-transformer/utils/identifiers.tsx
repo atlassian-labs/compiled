@@ -1,4 +1,4 @@
-import SequentialCharacterGenerator from '../utils/sequential-chars';
+import SequentialCharacterGenerator from './sequential-chars';
 
 const classNameIds = new SequentialCharacterGenerator();
 const cssVariableIds = new SequentialCharacterGenerator();
