@@ -7,13 +7,13 @@ import { CssVariableExpressions } from '../../types';
 
 const STYLE_IDENTIFIER = 'style';
 
-const visitCssCallExpression = (node: ts.CallExpression) => {
+const visitCssCallExpression = (node: ts.CallExpression, context: ts.TransformationContext) => {
   if (!ts.isObjectLiteralExpression(node.arguments[0])) {
     throw new Error('only support object literal atm');
   }
 
   const cssArgument: ts.ObjectLiteralExpression = node.arguments[0] as ts.ObjectLiteralExpression;
-  const extracted = objectLiteralToCssString(cssArgument, {});
+  const extracted = objectLiteralToCssString(cssArgument, {}, context);
   const className = nextClassName();
 
   return {
@@ -47,7 +47,7 @@ export const visitClassNamesJsxElement = (
 
   const visitor = (node: ts.Node): ts.Node => {
     if (isCssCallExpression(node)) {
-      const result = visitCssCallExpression(node);
+      const result = visitCssCallExpression(node, context);
       css += result.extracted.css;
 
       cssVariables = cssVariables.concat(result.extracted.cssVariables);

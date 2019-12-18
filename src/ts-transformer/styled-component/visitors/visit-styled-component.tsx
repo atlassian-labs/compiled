@@ -2,7 +2,10 @@ import ts from 'typescript';
 import { createJsxElement } from '../../utils/create-jsx-element';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 
-export const visitObjectStyledComponent = (node: ts.CallExpression): ts.Node => {
+export const visitObjectStyledComponent = (
+  node: ts.CallExpression,
+  context: ts.TransformationContext
+): ts.Node => {
   if (!ts.isPropertyAccessExpression(node.expression)) {
     throw new Error('expected property access');
   }
@@ -13,7 +16,7 @@ export const visitObjectStyledComponent = (node: ts.CallExpression): ts.Node => 
     throw new Error('expected object literal');
   }
 
-  const result = objectLiteralToCssString(objectLiteral, {});
+  const result = objectLiteralToCssString(objectLiteral, {}, context);
 
   const newElement = createJsxElement(tagNode, {
     ...result,

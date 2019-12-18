@@ -9,9 +9,31 @@ import {
 } from './ast-node';
 import * as logger from './log';
 
+const getCssVariableFromArrowFunction = (
+  node: ts.ArrowFunction,
+  context: ts.TransformationContext
+): CssVariableExpressions => {
+  let identifier: ts.Identifier = ts.createIdentifier('');
+  let name: string = '';
+
+  const visitor = (node: ts.Node) => {
+    if (ts.isPropertyAccessExpression(node)) {
+      identifier = ts.createIdentifier(node.getText());
+      name = `--${node.name.escapedText}-${nextCssVariableName()}`;
+    }
+
+    return node;
+  };
+
+  ts.visitEachChild(node, visitor, context);
+
+  return { identifier, name };
+};
+
 export const objectLiteralToCssString = (
   objectLiteral: ts.ObjectLiteralExpression,
-  scopedVariables: VariableDeclarations
+  scopedVariables: VariableDeclarations,
+  context: ts.TransformationContext
 ): ToCssReturnType => {
   const properties = objectLiteral.properties;
   let cssVariables: CssVariableExpressions[] = [];
@@ -51,7 +73,7 @@ export const objectLiteralToCssString = (
       }
       // Spread can either be from an object, or a function. Probably not an array.
 
-      const result = objectLiteralToCssString(nodeToExtractCssFrom, scopedVariables);
+      const result = objectLiteralToCssString(nodeToExtractCssFrom, scopedVariables, context);
       cssVariables = cssVariables.concat(result.cssVariables);
 
       return `${acc}
@@ -73,7 +95,11 @@ export const objectLiteralToCssString = (
         ts.isObjectLiteralExpression(variableDeclaration.initializer)
       ) {
         // we are referencing an object. so we want to just parse it  and use it.
-        const result = objectLiteralToCssString(variableDeclaration.initializer, scopedVariables);
+        const result = objectLiteralToCssString(
+          variableDeclaration.initializer,
+          scopedVariables,
+          context
+        );
         cssVariables = cssVariables.concat(result.cssVariables);
         return `${acc}
         ${key} {
@@ -94,7 +120,7 @@ export const objectLiteralToCssString = (
       key = kebabCase((prop.name as ts.Identifier).text);
 
       // We found an object selector, e.g. ":hover": { color: 'red' }
-      const result = objectLiteralToCssString(prop.initializer, scopedVariables);
+      const result = objectLiteralToCssString(prop.initializer, scopedVariables, context);
       cssVariables = cssVariables.concat(result.cssVariables);
 
       return `${acc}
@@ -109,6 +135,11 @@ export const objectLiteralToCssString = (
       // We have a regular static assignment, e.g. "fontSize: '20px'"
       key = kebabCase(getIdentifierText(prop.name));
       value = `${prop.initializer.text}`;
+    } else if (ts.isPropertyAssignment(prop) && ts.isArrowFunction(prop.initializer)) {
+      key = kebabCase(getIdentifierText(prop.name));
+      const cssResult = getCssVariableFromArrowFunction(prop.initializer, context);
+      value = `var(${cssResult.name})`;
+      cssVariables.push(cssResult);
     } else {
       logger.log('unsupported value in css prop object');
       key = prop.name ? kebabCase(getIdentifierText(prop.name)) : 'unspported';

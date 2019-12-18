@@ -49,7 +49,8 @@ export const visitJsxElementWithCssProp = (
     // object literal found e.g css={{ fontSize: '20px' }}
     const processed = objectLiteralToCssString(
       cssJsxAttribute.initializer.expression,
-      variableDeclarations
+      variableDeclarations,
+      context
     );
     cssVariables = processed.cssVariables;
     cssToPassThroughCompiler = processed.css;

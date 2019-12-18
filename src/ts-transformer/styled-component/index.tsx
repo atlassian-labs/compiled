@@ -27,7 +27,7 @@ export default function styledComponentTransformer(
 
       const visitor = (node: ts.Node): ts.Node => {
         if (isObjectStyledComponent(node)) {
-          return visitObjectStyledComponent(node);
+          return visitObjectStyledComponent(node, context);
         }
 
         if (isPackageModuleImport(node, STYLED_NAME)) {

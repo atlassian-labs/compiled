@@ -17,7 +17,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = props => <><style>.a{font-size:20px;}</style><div className="a">{props.children}</div></>'
+      'const ListItem = props => <><style>.test-class{font-size:20px;}</style><div className="test-class">{props.children}</div></>'
     );
   });
 
@@ -51,6 +51,8 @@ describe('styled component transformer', () => {
     it.todo('should transform no template string literal');
 
     it.todo('should transform template string literal with string variable');
+
+    it.todo('should transform template string literal with prop reference');
 
     it.todo('should transform template string literal with string import');
 
@@ -88,7 +90,37 @@ describe('styled component transformer', () => {
 
     it.todo('should transform object with object selector from import');
 
-    it.todo('should transform object that has a variable reference');
+    it('should transform template object with string variable', () => {
+      const actual = transform(`
+        import { styled } from '${pkg.name}';
+
+        const color = 'blue';
+
+        const ListItem = styled.div({
+          color,
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+      expect(actual).toInclude(
+        '<div className="test-class" style={{ "--color-test-css-variable": color }}>{props.children}</div>'
+      );
+    });
+
+    it('should transform template object with prop reference', () => {
+      const actual = transform(`
+        import { styled } from '${pkg.name}';
+
+        const ListItem = styled.div({
+          color: props => props.color,
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+      expect(actual).toInclude(
+        '<div className="test-class" style={{ "--color-test-css-variable": props.color }}>{props.children}</div>'
+      );
+    });
 
     it.todo('should transform object spread from variable');
 
