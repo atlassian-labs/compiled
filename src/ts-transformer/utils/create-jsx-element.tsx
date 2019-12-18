@@ -77,7 +77,7 @@ export const createJsxElement = (tagNode: string, opts: JsxElementOpts) => {
             opts.cssVariables.map(variable => {
               return ts.createPropertyAssignment(
                 ts.createStringLiteral(variable.name),
-                variable.expression
+                variable.identifier
               );
             }),
             false

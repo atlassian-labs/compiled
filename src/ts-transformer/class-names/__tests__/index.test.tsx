@@ -13,7 +13,7 @@ describe('class names transformer', () => {
 
       const ListItem = () => (
         <ClassNames>
-          {({ css }) => <div className={css({ fontSize: '20px' })}>hello, world!</div>}
+          {({ css }) => (<div className={css({ fontSize: '20px' })}>hello, world!</div>)}
         </ClassNames>
       );
     `);
@@ -90,7 +90,24 @@ describe('class names transformer', () => {
 
     it.todo('should transform object spread from import');
 
-    it.todo('should transform object with string variable');
+    it('should transform object with string variable', () => {
+      const actual = transformer(`
+      import { ClassNames } from '${pkg.name}';
+
+      const color = 'blue';
+
+      const ListItem = () => (
+        <ClassNames>
+          {({ css, style }) => <div style={style} className={css({ color })}>hello, world!</div>}
+        </ClassNames>
+      );
+    `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+      expect(actual).toInclude(
+        '<div style={{ "--color-test-css-variable": color }} className={"test-class"}>hello, world!</div>'
+      );
+    });
 
     it.todo('should transform object with string import');
 

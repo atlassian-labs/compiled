@@ -67,7 +67,7 @@ export const createTransform = (programTransformer: ProgramTransformer) => (
   source: string
 ): string => {
   const transformer = programTransformer({} as any);
-  const sourceFile = ts.createSourceFile('index.tsx', source, ts.ScriptTarget.Latest);
+  const sourceFile = ts.createSourceFile('index.tsx', source, ts.ScriptTarget.Latest, true);
   const actual = ts.transform(sourceFile, [transformer]).transformed[0];
   return printer.printFile(actual).toString();
 };

@@ -27,7 +27,7 @@ export const templateLiteralToCss = (
     const cssVariableReference = `var(${variableName})`;
     cssVariables.push({
       name: variableName,
-      expression: span.expression,
+      identifier: span.expression as ts.Identifier,
     });
 
     css += `${cssVariableReference}${span.literal.text}`;

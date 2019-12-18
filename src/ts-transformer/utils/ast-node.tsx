@@ -19,8 +19,8 @@ export const getIdentifierText = (
 
 export const getAssignmentIdentifier = (
   node: ts.ShorthandPropertyAssignment | ts.PropertyAssignment
-) => {
-  return 'initializer' in node ? node.initializer : node.name;
+): ts.Identifier => {
+  return 'initializer' in node ? node.initializer : (node.name as any);
 };
 
 export const getAssignmentIdentifierText = (
