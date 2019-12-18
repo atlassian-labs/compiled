@@ -7,8 +7,38 @@ import { CssVariableExpressions } from '../types';
 interface JsxElementOpts {
   css: string;
   cssVariables: CssVariableExpressions[];
-  children?: ts.JsxElement | ts.JsxExpression;
+  selector?: string;
+  children?: ts.JsxChild;
 }
+
+export const createStyleFragment = ({
+  selector = `.${nextClassName()}`,
+  ...opts
+}: JsxElementOpts) => {
+  const compiledCss = stylis(selector, opts.css);
+
+  // Create the style element that will precede the node that had the css prop.
+  const styleNode = ts.createJsxElement(
+    ts.createJsxOpeningElement(ts.createIdentifier('style'), [], ts.createJsxAttributes([])),
+    // should this be text or an jsx expression?
+    [ts.createJsxText(compiledCss)],
+    ts.createJsxClosingElement(ts.createIdentifier('style'))
+  );
+
+  const children: ts.JsxChild[] = [
+    // important that the style goes before the node
+    styleNode,
+  ];
+
+  // Create a new fragment that will wrap both the style and the node we found initially.
+  const newFragmentParent = ts.createJsxFragment(
+    ts.createJsxOpeningFragment(),
+    children.concat(opts.children ? opts.children : []),
+    ts.createJsxJsxClosingFragment()
+  );
+
+  return newFragmentParent;
+};
 
 export const createJsxElement = (tagNode: string, opts: JsxElementOpts) => {
   const className = nextClassName();

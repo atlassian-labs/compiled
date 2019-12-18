@@ -1,3 +1,6 @@
 import { CSSProperties } from 'react';
 
-export type ObjectLiteralCSS = CSSProperties | { [key: string]: CSSProperties };
+export type ObjectLiteralCSS =
+  | TemplateStringsArray
+  | CSSProperties
+  | { [key: string]: CSSProperties };
