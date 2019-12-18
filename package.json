@@ -16,7 +16,7 @@
     "start": "npx nodemon --exec \"tsc --module commonjs && start-storybook -p 6006 --ci\" --watch src/transformers/ -e tsx",
     "test": "jest",
     "test:cover": "jest --collectCoverage",
-    "build": "tsc",
+    "build": "tsc --module commonjs",
     "build-storybook": "build-storybook"
   },
   "dependencies": {

@@ -9,7 +9,7 @@ module.exports = ({ config }) => {
         options: {
           transpileOnly: true,
           getCustomTransformers: program => ({
-            before: createTransformers(program, { debug: true }),
+            before: createTransformers(program, { debug: process.env.NODE_ENV !== 'production' }),
           }),
         },
       },
