@@ -1,6 +1,20 @@
-import { createElement, ElementType, ReactNode } from 'react';
-import './types';
+import { createElement, ElementType, ReactNode, CSSProperties } from 'react';
+import { CSSProp } from './types';
 import { name as packageName } from '../../package.json';
+
+declare module 'react' {
+  interface DOMAttributes<T> {
+    css?: CSSProp | { [key: string]: CSSProp } | string;
+  }
+}
+
+declare global {
+  namespace JSX {
+    interface IntrinsicAttributes {
+      css?: CSSProp;
+    }
+  }
+}
 
 export const IS_CSS_FREEDOM_COMPILED = false;
 

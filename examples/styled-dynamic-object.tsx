@@ -5,9 +5,13 @@ export default {
   title: 'styled component dynamic object',
 };
 
-var Thing = styled.div<{ color: string }>({
+var Highlight = styled.div<{ primary: string }>({
   fontSize: '20px',
-  color: props => props.color,
+  color: props => props.primary,
+  margin: '20px',
+  ':hover': {
+    color: 'red',
+  },
 });
 
 export var objectLiteral = () => {
@@ -15,7 +19,8 @@ export var objectLiteral = () => {
 
   return (
     <>
-      <Thing color={color}>hello world</Thing>
+      <Highlight primary={color}>hello world</Highlight>
+
       <button onClick={() => setColor('red')}>red</button>
       <button onClick={() => setColor('green')}>green</button>
       <button onClick={() => setColor('blue')}>blue</button>
