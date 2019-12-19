@@ -39,7 +39,7 @@ describe('css prop transformer', () => {
       <div css={{}}>hello world</div>
     `);
 
-    expect(actual).toIncludeRepeated('import React from "react";', 1);
+    expect(actual).toIncludeRepeated("import React from 'react';", 1);
   });
 
   it('should add react default import if it only has named imports', () => {
@@ -52,7 +52,7 @@ describe('css prop transformer', () => {
     `);
 
     expect(actual).toIncludeRepeated('import React from "react";', 1);
-    expect(actual).toIncludeRepeated('import { useState } from "react";', 1);
+    expect(actual).toIncludeRepeated("import { useState } from 'react';", 1);
   });
 
   it.todo('should concat explicit use of class name prop on an element');
@@ -213,58 +213,17 @@ describe('css prop transformer', () => {
 
     it.todo('should transform object spread from import');
 
-    it.todo('should transform object with string variable', () => {
-      const actual = transform(`
-        /** @jsx jsx */
-        import { jsx } from '${pkg.name}';
+    it.todo('should transform object with string variable');
 
-        const color = 'red';
-        <div css={{ color: color, }}>hello world</div>
-      `);
-    });
-
-    it.todo('should transform object with string variable using shorthand notation', () => {
-      const actual = transform(`
-        /** @jsx jsx */
-        import { jsx } from '${pkg.name}';
-
-        const color = 'red';
-        <div css={{ color }}>hello world</div>
-      `);
-    });
+    it.todo('should transform object with string variable using shorthand notation');
 
     it.todo('should transform object with string import');
 
-    it.todo('should transform object with obj variable', () => {
-      const actual = transform(`
-        /** @jsx jsx */
-        import { jsx } from '${pkg.name}';
-
-        const elementColors = {
-            color: 'orange',
-            backgroundColor: 'blue',
-        };
-
-        <div css={{ color: 'blue', '& .name': elementColors }}>hello world</div>
-      `);
-    });
+    it.todo('should transform object with obj variable');
 
     it.todo('should transform object with obj import');
 
-    it.todo('should transform object with array variable', () => {
-      const actual = transform(`
-        /** @jsx jsx */
-        import { jsx } from '${pkg.name}';
-
-        const cssProperties = [
-          { color: 'darkorchid' },
-          { backgroundColor: 'hotpink' },
-          { padding: 8 }
-        ];
-
-        <div css={{ color: 'blue', '& .name': cssProperties }}>hello world</div>
-      `);
-    });
+    it.todo('should transform object with array variable');
 
     it.todo('should transform object with array import');
 
@@ -283,61 +242,15 @@ describe('css prop transformer', () => {
 
     it.todo('should transform object with no argument arrow function import');
 
-    it.todo('should transform object with no argument function variable', () => {
-      const actual = transform(`
-        /** @jsx jsx */
-        import { jsx } from '${pkg.name}';
-
-        function getCss() {
-          return {
-            color: 'red',
-            backgroundColor: 'blue',
-          };
-        };
-
-        <div css={{ color: 'blue', '& .name': getCss() }}>hello world</div>
-      `);
-    });
+    it.todo('should transform object with no argument function variable');
 
     it.todo('should transform object with no argument function import');
 
-    it.todo('should transform object with argument function variable', () => {
-      const actual = transform(`
-        /** @jsx jsx */
-        import { jsx } from '${pkg.name}';
-
-        const myColor = 'red';
-
-        function getCss(color) {
-          return {
-            color: color,
-            backgroundColor: 'blue',
-          };
-        };
-
-        <div css={{ color: 'blue', '& .name': getCss(myColor) }}>hello world</div>
-      `);
-    });
+    it.todo('should transform object with argument function variable');
 
     it.todo('should transform object with argument function import');
 
-    it.todo('should transform object with argument arrow function variable', () => {
-      const actual = transform(`
-        /** @jsx jsx */
-        import { jsx } from '${pkg.name}';
-
-        const myColor = 'red';
-
-        const getCss = (color) => {
-          return {
-            color: color,
-            backgroundColor: 'blue',
-          };
-        };
-
-        <div css={{ color: 'blue', '& .name': getCss(myColor) }}>hello world</div>
-      `);
-    });
+    it.todo('should transform object with argument arrow function variable');
 
     it.todo('should transform object with argument arrow function import');
   });
