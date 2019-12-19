@@ -38,7 +38,8 @@ export const visitJsxElementWithCssProp = (
     // string literal found with substitutions e.g. css={`color: ${color}`}
     const processed = templateLiteralToCss(
       cssJsxAttribute.initializer.expression,
-      variableDeclarations
+      variableDeclarations,
+      context
     );
     cssVariables = processed.cssVariables;
     cssToPassThroughCompiler = processed.css;
