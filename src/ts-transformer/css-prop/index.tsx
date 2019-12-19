@@ -7,25 +7,17 @@ import {
   visitJsxElementWithCssProp,
 } from './visitors/visit-jsx-element-with-css-prop';
 import { visitSourceFileEnsureDefaultReactImport } from './visitors/visit-source-file-ensure-default-react-import';
-import { getIdentifierText, getExpressionText } from '../utils/ast-node';
+import { getIdentifierText, getExpressionText, isPackageModuleImport } from '../utils/ast-node';
 
 const JSX_PRAGMA = 'jsx';
-const LOCAL_DEVELOPMENT_MODULE = '../src';
 
 const isJsxPragmaFoundWithOurJsxFunction = (sourceFile: ts.SourceFile) => {
   return (
+    // __HACK_ALERT__!! This isn't in the TS types. Is this bad?
     (sourceFile as any).pragmas.get(JSX_PRAGMA) &&
     // Only continue if we've found an import for this pkg.
     sourceFile.statements.find(statement => {
-      if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) {
-        return false;
-      }
-
-      return (
-        // Probably also want to check the consumer is using "jsx" here.
-        statement.moduleSpecifier.text === packageName ||
-        statement.moduleSpecifier.text === LOCAL_DEVELOPMENT_MODULE
-      );
+      return isPackageModuleImport(statement, JSX_PRAGMA);
     })
   );
 };
@@ -59,29 +51,39 @@ export default function cssPropTransformer(
           return ts.visitEachChild(node, visitor, context);
         }
 
-        if (ts.isImportDeclaration(node)) {
+        if (ts.isImportDeclaration(node) && 'resolvedModules' in sourceFile) {
           // we may use these. store for later and if needed then resolve them.
-          // TODO: Get name and shit properly.
-          if (getExpressionText(node.moduleSpecifier) === './1') {
-            const resolvedFileSource = program.getSourceFile(
-              // @ts-ignore
-              sourceFile.resolvedModules.get('./1').resolvedFileName
-            );
-
-            const visitor = (node: ts.Node): ts.Node => {
-              // TODO: Clean this shit up.
-              if (ts.isVariableStatement(node) && node.modifiers && node.modifiers[0]) {
-                // we may need this later, let's store it in a POJO for quick access.
-                const variableDeclaration = node.declarationList.declarations[0];
-                foundVariableDeclarations[getIdentifierText(variableDeclaration.name)] =
-                  node.declarationList.declarations[0];
-                return node;
-              }
-
-              return ts.visitEachChild(node, visitor, context);
-            };
-            ts.visitNode(resolvedFileSource, visitor);
+          const moduleName = getExpressionText(node.moduleSpecifier);
+          // __HACK_ALERT__!! There isn't any other way to get the resolved module it seems.
+          const resolvedModule: ts.SourceFile | undefined = (sourceFile as any).resolvedModules.get(
+            moduleName
+          );
+          if (!resolvedModule) {
+            logger.log(`module "${moduleName}" was not resolved`);
+            return node;
           }
+
+          // __HACK_ALERT__!! There isn't any other way to get the resolved file name it seems.
+          const resolvedModuleFileName = (resolvedModule as any).resolvedFileName;
+          const resolvedFileSource = program.getSourceFile(resolvedModuleFileName);
+          if (!resolvedFileSource) {
+            logger.log(`source file for module "${moduleName}" was not resolved`);
+            return node;
+          }
+
+          const visitor = (node: ts.Node): ts.Node => {
+            if (ts.isVariableStatement(node) && node.modifiers && node.modifiers[0]) {
+              // we may need this later, let's store it in a POJO for quick access.
+              const variableDeclaration = node.declarationList.declarations[0];
+              foundVariableDeclarations[getIdentifierText(variableDeclaration.name)] =
+                node.declarationList.declarations[0];
+              return node;
+            }
+
+            return ts.visitEachChild(node, visitor, context);
+          };
+
+          ts.visitNode(resolvedFileSource, visitor);
         }
 
         if (isJsxElementWithCssProp(node)) {

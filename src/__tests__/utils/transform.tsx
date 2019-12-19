@@ -10,9 +10,16 @@ type ProgramTransformer = (program: ts.Program) => ts.TransformerFactory<ts.Sour
  * This creates a full project which will resolve all modules.
  * Only use this when wanting to test imports tbh. It's slow.
  */
-export const createFullTransform = (programTransformer: ProgramTransformer, dir: string) => (
-  ...sources: string[]
-): Promise<string> => {
+export const createFullTransform = (
+  programTransformer: ProgramTransformer,
+  dir: string
+) => (sources: {
+  /**
+   * This is the root file for the transform.
+   */
+  index: string;
+  [key: string]: string;
+}): Promise<string> => {
   return new Promise((resolve, reject) => {
     try {
       fs.rmdirSync(`${dir}/.tmp`, { recursive: true });
@@ -20,8 +27,9 @@ export const createFullTransform = (programTransformer: ProgramTransformer, dir:
 
     fs.mkdirSync(`${dir}/.tmp`);
     const files: string[] = [];
-    sources.forEach((source, index) => {
-      const filename = index === 0 ? 'index.tsx' : `${index}.tsx`;
+    Object.keys(sources).forEach(key => {
+      const source = sources[key];
+      const filename = `${key}.tsx`;
       const filepath = path.resolve(`${dir}/.tmp/${filename}`);
       files.push(filepath);
       fs.writeFileSync(filepath, source);

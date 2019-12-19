@@ -149,21 +149,31 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class:hover{color:blue;}</style>');
     });
 
-    it('should transform object with object selector from variable', async () => {
-      const actual = await fullTransform(
-        `
-        /** @jsx jsx */
-        import { jsx } from '${pkg.name}';
-        import { mixin } from './1';
+    it.only('should transform object with object selector from variable', async () => {
+      const actual = await fullTransform({
+        index: `
+          /** @jsx jsx */
+          import { jsx } from '${pkg.name}';
+          import { mixin } from './mixins';
 
-        <div css={{ ':hover': mixin }}>hello world</div>
-      `,
-        `
-        export const mixin = { color: 'blue' };
-      `
+          <div
+            css={{
+              display: 'flex',
+              fontSize: '50px',
+              color: 'blue',
+              ':hover': mixin,
+            }}>
+            Hello, world!
+          </div>
+        `,
+        mixins: `
+          export const mixin = { color: 'blue' };
+        `,
+      });
+
+      expect(actual).toInclude(
+        '<style>.test-class{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;font-size:50px;color:blue;}.test-class:hover{color:blue;}</style>'
       );
-
-      expect(actual).toInclude('<style>.test-class:hover{color:blue;}</style>');
     });
 
     it.todo('should transform object with object selector from import');
@@ -173,7 +183,7 @@ describe('css prop transformer', () => {
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
-        const blue = 'blue';
+        const blue: string = 'blue';
         <div css={{ color: blue }}>hello world</div>
       `);
 
