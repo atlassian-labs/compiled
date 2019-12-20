@@ -5,7 +5,7 @@ import { createFullTransform, createTransform } from '../../../__tests__/utils/t
 jest.mock('../../utils/identifiers');
 
 const transform = createTransform(cssPropTransformer);
-const fullTransform = createFullTransform(cssPropTransformer, __dirname);
+const fullTransform = createFullTransform(cssPropTransformer);
 
 describe('css prop transformer', () => {
   it('should replace css prop with class name', () => {
@@ -99,8 +99,6 @@ describe('css prop transformer', () => {
       );
     });
 
-    it.todo('should transform template string literal with string import');
-
     it('should transform template string literal with obj variable', () => {
       const actual = transform(`
         /** @jsx jsx */
@@ -159,7 +157,7 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class:hover{color:blue;}</style>');
     });
 
-    it.only('should transform object with object selector from variable', async () => {
+    it('should transform object with object selector from variable', async () => {
       const actual = await fullTransform({
         index: `
           /** @jsx jsx */

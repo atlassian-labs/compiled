@@ -1,51 +1,120 @@
+import * as Fs from 'fs';
 import * as ts from 'typescript';
-import * as fs from 'fs';
+import { Volume } from 'memfs';
 import * as path from 'path';
+import * as resolveModule from 'resolve';
+import pkg from '../../../package.json';
+import { copy, mkdirp } from './memfs';
 
 const printer = ts.createPrinter();
 
+declare module 'resolve' {
+  export interface SyncOpts extends resolveModule.Opts {
+    /** how to read files synchronously (defaults to fs.readFileSync) */
+    readFileSync?: (file: string, charset: string) => string | Buffer;
+    /** function to synchronously test whether a file exists */
+    isFile?: (file: string) => boolean;
+    /** function to synchronously test whether a directory exists */
+    isDirectory?: (directory: string) => boolean;
+  }
+}
+
 type ProgramTransformer = (program: ts.Program) => ts.TransformerFactory<ts.SourceFile>;
 
-/**
- * This creates a full project which will resolve all modules.
- * Only use this when wanting to test imports tbh. It's slow.
- */
-export const createFullTransform = (
-  programTransformer: ProgramTransformer,
-  dir: string
-) => (sources: {
+interface Sources {
   /**
    * This is the root file for the transform.
    */
   index: string;
   [key: string]: string;
-}): Promise<string> => {
+}
+
+/**
+ * This creates a full project which will resolve all modules.
+ * Only use this when wanting to test imports tbh. It's slow.
+ */
+export const createFullTransform = (programTransformer: ProgramTransformer) => (
+  sources: Sources
+): Promise<string> => {
   return new Promise((resolve, reject) => {
-    try {
-      fs.rmdirSync(`${dir}/.tmp`, { recursive: true });
-    } catch {}
+    const fs = (Volume.fromJSON(
+      Object.entries(sources).reduce<Record<string, string>>(
+        (acc, [name, content]) => ({
+          ...acc,
+          [`/${name}.tsx`]: content,
+        }),
+        {}
+      )
+    ) as unknown) as typeof Fs;
 
-    fs.mkdirSync(`${dir}/.tmp`);
-    const files: string[] = [];
-    Object.keys(sources).forEach(key => {
-      const source = sources[key];
-      const filename = `${key}.tsx`;
-      const filepath = path.resolve(`${dir}/.tmp/${filename}`);
-      files.push(filepath);
-      fs.writeFileSync(filepath, source);
-    });
+    // Create mock "@untitled/css-in-js-project"
+    createMockModule(pkg.name, fs);
 
-    const [rootFile] = files;
     const config: ts.CompilerOptions = {
       jsx: ts.JsxEmit.Preserve,
+      lib: ['/node_modules/typescript/lib/lib.esnext.full.d.ts'],
       module: ts.ModuleKind.ESNext,
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
       suppressImplicitAnyIndexErrors: true,
+      resolveJsonModule: true,
+      skipLibCheck: true,
       target: ts.ScriptTarget.ESNext,
+      types: [],
       // Uncomment this if shit isn't working.
       // noEmitOnError: true,
     };
+
     const compilerHost = ts.createCompilerHost(config, true);
-    const program = ts.createProgram([rootFile], config, compilerHost);
+
+    copy(
+      { fs: Fs, path: compilerHost.getDefaultLibLocation!() },
+      { fs, path: '/node_modules/typescript/lib/' }
+    );
+
+    compilerHost.getDefaultLibLocation = () => '/node_modules/typescript/lib/';
+
+    compilerHost.fileExists = file => fs.existsSync(file);
+
+    compilerHost.resolveModuleNames = (names, containingFile) => {
+      return names.map(name => {
+        return {
+          resolvedFileName: resolveModule.sync(name, {
+            basedir: path.dirname(containingFile),
+            extensions: ['.js', '.json', '.node', '.tsx', '.ts', '.d.ts'],
+            readFileSync: path => fs.readFileSync(path),
+            isFile: (name: string) => {
+              try {
+                return fs.statSync(name).isFile();
+              } catch (err) {
+                return false;
+              }
+            },
+            isDirectory: (name: string) => {
+              try {
+                return fs.statSync(name).isDirectory();
+              } catch (err) {
+                return false;
+              }
+            },
+          }),
+        };
+      });
+    };
+
+    compilerHost.getSourceFile = (filename, version) => {
+      return ts.createSourceFile(
+        filename,
+        String(fs.readFileSync(path.join('/', `${filename}`))),
+        version
+      );
+    };
+
+    compilerHost.writeFile = (filename, data) => {
+      mkdirp({ fs, path: path.dirname(filename) });
+      fs.writeFileSync(filename, data);
+    };
+
+    const program = ts.createProgram(['/index.tsx'], config, compilerHost);
 
     const { emitSkipped, diagnostics, emittedFiles } = program.emit(
       undefined,
@@ -79,3 +148,22 @@ export const createTransform = (programTransformer: ProgramTransformer) => (
   const actual = ts.transform(sourceFile, [transformer]).transformed[0];
   return printer.printFile(actual).toString();
 };
+
+function createMockModule(name: string, fs: typeof Fs) {
+  mkdirp({ path: `/node_modules/${name}`, fs });
+
+  fs.writeFileSync(`/node_modules/${name}/index.js`, `module.exports = {};`);
+  fs.writeFileSync(
+    `/node_modules/${name}/index.d.ts`,
+    `declare module "${name}" {
+    export function jsx<P>(type: any, props: any, ...children: any[]) }
+    export function styledFunction<P>( strings: any, ...interpoltations: any[]): any
+    export function ClassNames(props: any): any
+  `
+  );
+
+  fs.writeFileSync(
+    `/node_modules/${name}/package.json`,
+    JSON.stringify({ name, main: './src/index.tsx' })
+  );
+}
