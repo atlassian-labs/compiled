@@ -8,17 +8,6 @@ import { copy, mkdirp } from './memfs';
 
 const printer = ts.createPrinter();
 
-declare module 'resolve' {
-  export interface SyncOpts extends resolveModule.Opts {
-    /** how to read files synchronously (defaults to fs.readFileSync) */
-    readFileSync?: (file: string, charset: string) => string | Buffer;
-    /** function to synchronously test whether a file exists */
-    isFile?: (file: string) => boolean;
-    /** function to synchronously test whether a directory exists */
-    isDirectory?: (directory: string) => boolean;
-  }
-}
-
 type ProgramTransformer = (program: ts.Program) => ts.TransformerFactory<ts.SourceFile>;
 
 interface Sources {
