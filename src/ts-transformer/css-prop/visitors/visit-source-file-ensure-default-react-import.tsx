@@ -20,15 +20,20 @@ export const visitSourceFileEnsureDefaultReactImport = (
   if (!isDefaultReactImportFound(sourceFile)) {
     logger.log('default import for react was not found - adding it');
 
+    const reactDeclaration = ts.createImportDeclaration(
+      /* decorators */ undefined,
+      /* modifiers */ undefined,
+      ts.createImportClause(ts.createIdentifier(REACT_DEFAULT_IMPORT_NAME), undefined),
+      ts.createLiteral(REACT_PKG)
+    );
+
     const newSourceFile = ts.updateSourceFileNode(sourceFile, [
-      ts.createImportDeclaration(
-        /* decorators */ undefined,
-        /* modifiers */ undefined,
-        ts.createImportClause(ts.createIdentifier(REACT_DEFAULT_IMPORT_NAME), undefined),
-        ts.createLiteral(REACT_PKG)
-      ),
+      reactDeclaration,
       ...sourceFile.statements,
     ]);
+
+    reactDeclaration.parent = newSourceFile;
+    newSourceFile.parent = sourceFile.parent;
 
     return newSourceFile;
   }

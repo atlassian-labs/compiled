@@ -22,12 +22,17 @@ interface Sources {
  * This creates a full project which will resolve all modules.
  * Only use this when wanting to test imports tbh. It's slow.
  */
-export const createFullTransform = (programTransformer: ProgramTransformer) => (
-  sources: Sources
-): Promise<string> => {
+export const createFullTransform = (
+  programTransformer: ProgramTransformer | ProgramTransformer[]
+) => (sources: Sources | string): Promise<string> => {
+  const actualSources = typeof sources === 'string' ? { index: sources } : sources;
+  const transformers = Array.isArray(programTransformer)
+    ? programTransformer
+    : [programTransformer];
+
   return new Promise((resolve, reject) => {
     const memfs = Volume.fromJSON(
-      Object.entries(sources).reduce<Record<string, string>>(
+      Object.entries(actualSources).reduce<Record<string, string>>(
         (acc, [name, content]) => ({
           ...acc,
           [`/${name}.tsx`]: content,
@@ -49,8 +54,7 @@ export const createFullTransform = (programTransformer: ProgramTransformer) => (
       skipLibCheck: true,
       target: ts.ScriptTarget.ESNext,
       types: [],
-      // Uncomment this if shit isn't working.
-      // noEmitOnError: true,
+      noEmitOnError: true,
     };
 
     const compilerHost = ts.createCompilerHost(config, true);
@@ -115,7 +119,7 @@ export const createFullTransform = (programTransformer: ProgramTransformer) => (
       undefined,
       false,
       {
-        before: [programTransformer(program)],
+        before: transformers.map(transformer => transformer(program)),
       }
     );
 

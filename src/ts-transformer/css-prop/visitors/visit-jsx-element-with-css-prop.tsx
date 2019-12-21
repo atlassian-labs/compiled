@@ -69,28 +69,35 @@ export const visitJsxElementWithCssProp = (
   (mutableNodeAttributes.properties as any) = mutableNodeAttributes.properties.filter(
     prop => prop.name && getIdentifierText(prop.name) !== CSS_PROP
   );
-  (mutableNodeAttributes.properties as any).push(
-    ts.createJsxAttribute(ts.createIdentifier('className'), ts.createStringLiteral(className))
-  );
+  const classNameIdentifier = ts.createIdentifier('className');
+  const classNameStringLiteral = ts.createStringLiteral(className);
+  const newClassNameAttribute = ts.createJsxAttribute(classNameIdentifier, classNameStringLiteral);
+  classNameStringLiteral.parent = newClassNameAttribute;
+  classNameIdentifier.parent = newClassNameAttribute;
+  newClassNameAttribute.parent = mutableNodeAttributes;
+  (mutableNodeAttributes.properties as any).push(newClassNameAttribute);
 
   if (cssVariables.length) {
-    (mutableNodeAttributes.properties as any).push(
-      ts.createJsxAttribute(
-        ts.createIdentifier('style'),
-        ts.createJsxExpression(
-          undefined,
-          ts.createObjectLiteral(
-            cssVariables.map(variable => {
-              return ts.createPropertyAssignment(
-                ts.createStringLiteral(variable.name),
-                variable.identifier
-              );
-            }),
-            false
-          )
-        )
+    const identifier = ts.createIdentifier('style');
+    const expression = ts.createJsxExpression(
+      undefined,
+      ts.createObjectLiteral(
+        cssVariables.map(variable => {
+          return ts.createPropertyAssignment(
+            ts.createStringLiteral(variable.name),
+            ts.createIdentifier(getIdentifierText(variable.identifier))
+          );
+        }),
+        false
       )
     );
+
+    const newStyleAttribute = ts.createJsxAttribute(identifier, expression);
+
+    identifier.parent = newStyleAttribute;
+    expression.parent = newStyleAttribute;
+    newStyleAttribute.parent = mutableNodeAttributes;
+    (mutableNodeAttributes.properties as any).push(newStyleAttribute);
   }
 
   const compiledCss = stylis(`.${className}`, cssToPassThroughCompiler);
@@ -112,6 +119,10 @@ export const visitJsxElementWithCssProp = (
     ],
     ts.createJsxJsxClosingFragment()
   );
+
+  styleNode.parent = newFragmentParent;
+  newFragmentParent.parent = node.parent;
+  nodeToTransform.parent = newFragmentParent;
 
   logger.log('returning fragment with style and parsed jsx element with css prop');
 

@@ -1,15 +1,14 @@
 import cssPropTransformer from '../index';
 import pkg from '../../../../package.json';
-import { createFullTransform, createTransform } from '../../../__tests__/utils/transform';
+import { createFullTransform } from '../../../__tests__/utils/transform';
 
 jest.mock('../../utils/identifiers');
 
-const transform = createTransform(cssPropTransformer);
 const fullTransform = createFullTransform(cssPropTransformer);
 
 describe('css prop transformer', () => {
-  it('should replace css prop with class name', () => {
-    const actual = transform(`
+  it('should replace css prop with class name', async () => {
+    const actual = await fullTransform(`
       /** @jsx jsx */
       import { jsx } from '${pkg.name}';
 
@@ -19,8 +18,8 @@ describe('css prop transformer', () => {
     expect(actual).toInclude('<div className="test-class">hello world</div>');
   });
 
-  it('should add react default import if missing', () => {
-    const actual = transform(`
+  it('should add react default import if missing', async () => {
+    const actual = await fullTransform(`
       /** @jsx jsx */
       import { jsx } from '${pkg.name}';
 
@@ -30,8 +29,8 @@ describe('css prop transformer', () => {
     expect(actual).toInclude('import React from "react";');
   });
 
-  it('should do nothing if react default import is already defined', () => {
-    const actual = transform(`
+  it('should do nothing if react default import is already defined', async () => {
+    const actual = await fullTransform(`
       /** @jsx jsx */
       import React from 'react';
       import { jsx } from '${pkg.name}';
@@ -42,8 +41,8 @@ describe('css prop transformer', () => {
     expect(actual).toIncludeRepeated("import React from 'react';", 1);
   });
 
-  it('should add react default import if it only has named imports', () => {
-    const actual = transform(`
+  it('should add react default import if it only has named imports', async () => {
+    const actual = await fullTransform(`
       /** @jsx jsx */
       import { useState } from 'react';
       import { jsx } from '${pkg.name}';
@@ -62,8 +61,8 @@ describe('css prop transformer', () => {
   it.todo('should concat use of inline styles when there is use of dynamic css');
 
   describe('using strings', () => {
-    it('should transform string literal', () => {
-      const actual = transform(`
+    it.only('should transform string literal', async () => {
+      const actual = await fullTransform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -73,8 +72,8 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{font-size:20px;}</style>');
     });
 
-    it('should transform no template string literal', () => {
-      const actual = transform(`
+    it('should transform no template string literal', async () => {
+      const actual = await fullTransform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -84,8 +83,8 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{font-size:20px;}</style>');
     });
 
-    it('should transform template string literal with string variable', () => {
-      const actual = transform(`
+    it('should transform template string literal with string variable', async () => {
+      const actual = await fullTransform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -99,8 +98,8 @@ describe('css prop transformer', () => {
       );
     });
 
-    it('should transform template string literal with obj variable', () => {
-      const actual = transform(`
+    it('should transform template string literal with obj variable', async () => {
+      const actual = await fullTransform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -135,8 +134,8 @@ describe('css prop transformer', () => {
   });
 
   describe('using an object literal', () => {
-    it('should transform object with simple values', () => {
-      const actual = transform(`
+    it('should transform object with simple values', async () => {
+      const actual = await fullTransform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -146,8 +145,8 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{font-size:20;color:blue;}</style>');
     });
 
-    it('should transform object with nested object into a selector', () => {
-      const actual = transform(`
+    it('should transform object with nested object into a selector', async () => {
+      const actual = await fullTransform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -186,8 +185,8 @@ describe('css prop transformer', () => {
 
     it.todo('should transform object with object selector from import');
 
-    it('should transform object that has a variable reference', () => {
-      const actual = transform(`
+    it('should transform object that has a variable reference', async () => {
+      const actual = await fullTransform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -201,8 +200,8 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
     });
 
-    it('should transform object that has a destructured variable reference', () => {
-      const actual = transform(`
+    it('should transform object that has a destructured variable reference', async () => {
+      const actual = await fullTransform(`
         /** @jsx jsx */
         import { useState } from 'react';
         import { jsx } from '${pkg.name}';
@@ -217,8 +216,8 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
     });
 
-    it('should transform object spread from variable', () => {
-      const actual = transform(`
+    it('should transform object spread from variable', async () => {
+      const actual = await fullTransform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -245,8 +244,8 @@ describe('css prop transformer', () => {
 
     it.todo('should transform object with array import');
 
-    it('should transform object with no argument arrow function variable', () => {
-      const actual = transform(`
+    it('should transform object with no argument arrow function variable', async () => {
+      const actual = await fullTransform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
