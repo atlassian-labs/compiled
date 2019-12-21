@@ -4,3 +4,4 @@ node_modules
 dist
 storybook-static
 .tmp
+coverage
