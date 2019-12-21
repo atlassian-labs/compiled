@@ -26,7 +26,7 @@ export const createFullTransform = (programTransformer: ProgramTransformer) => (
   sources: Sources
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
-    const fs = Volume.fromJSON(
+    const memfs = Volume.fromJSON(
       Object.entries(sources).reduce<Record<string, string>>(
         (acc, [name, content]) => ({
           ...acc,
@@ -37,7 +37,7 @@ export const createFullTransform = (programTransformer: ProgramTransformer) => (
     ) as IFs;
 
     // Create mock "@untitled/css-in-js-project"
-    createMockModule(pkg.name, fs);
+    createMockModule(pkg.name, memfs);
 
     const config: ts.CompilerOptions = {
       jsx: ts.JsxEmit.Preserve,
@@ -57,12 +57,12 @@ export const createFullTransform = (programTransformer: ProgramTransformer) => (
 
     copy(
       { fs: Fs, path: compilerHost.getDefaultLibLocation!() },
-      { fs, path: '/node_modules/typescript/lib/' }
+      { fs: memfs, path: '/node_modules/typescript/lib/' }
     );
 
     compilerHost.getDefaultLibLocation = () => '/node_modules/typescript/lib/';
 
-    compilerHost.fileExists = file => fs.existsSync(file);
+    compilerHost.fileExists = file => memfs.existsSync(file);
 
     compilerHost.resolveModuleNames = (names, containingFile) => {
       return names.map(name => {
@@ -70,17 +70,17 @@ export const createFullTransform = (programTransformer: ProgramTransformer) => (
           resolvedFileName: resolveModule.sync(name, {
             basedir: path.dirname(containingFile),
             extensions: ['.js', '.json', '.node', '.tsx', '.ts', '.d.ts'],
-            readFileSync: path => fs.readFileSync(path),
+            readFileSync: path => memfs.readFileSync(path),
             isFile: (name: string) => {
               try {
-                return fs.statSync(name).isFile();
+                return memfs.statSync(name).isFile();
               } catch (err) {
                 return false;
               }
             },
             isDirectory: (name: string) => {
               try {
-                return fs.statSync(name).isDirectory();
+                return memfs.statSync(name).isDirectory();
               } catch (err) {
                 return false;
               }
@@ -93,14 +93,14 @@ export const createFullTransform = (programTransformer: ProgramTransformer) => (
     compilerHost.getSourceFile = (filename, version) => {
       return ts.createSourceFile(
         filename,
-        String(fs.readFileSync(path.join('/', `${filename}`))),
+        String(memfs.readFileSync(path.join('/', `${filename}`))),
         version
       );
     };
 
     compilerHost.writeFile = (filename, data) => {
-      mkdirp({ fs, path: path.dirname(filename) });
-      fs.writeFileSync(filename, data);
+      mkdirp({ fs: memfs, path: path.dirname(filename) });
+      memfs.writeFileSync(filename, data);
     };
 
     const program = ts.createProgram(['/index.tsx'], config, compilerHost);
