@@ -1,10 +1,10 @@
 import * as Fs from 'fs';
 import * as ts from 'typescript';
-import { Volume } from 'memfs';
+import { Volume, IFs } from 'memfs';
 import * as path from 'path';
 import * as resolveModule from 'resolve';
 import pkg from '../../../package.json';
-import { copy, mkdirp } from './memfs';
+import { copy, mkdirp, createMockModule } from './memfs';
 
 const printer = ts.createPrinter();
 
@@ -26,7 +26,7 @@ export const createFullTransform = (programTransformer: ProgramTransformer) => (
   sources: Sources
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
-    const fs = (Volume.fromJSON(
+    const fs = Volume.fromJSON(
       Object.entries(sources).reduce<Record<string, string>>(
         (acc, [name, content]) => ({
           ...acc,
@@ -34,7 +34,7 @@ export const createFullTransform = (programTransformer: ProgramTransformer) => (
         }),
         {}
       )
-    ) as unknown) as typeof Fs;
+    ) as IFs;
 
     // Create mock "@untitled/css-in-js-project"
     createMockModule(pkg.name, fs);
@@ -137,22 +137,3 @@ export const createTransform = (programTransformer: ProgramTransformer) => (
   const actual = ts.transform(sourceFile, [transformer]).transformed[0];
   return printer.printFile(actual).toString();
 };
-
-function createMockModule(name: string, fs: typeof Fs) {
-  mkdirp({ path: `/node_modules/${name}`, fs });
-
-  fs.writeFileSync(`/node_modules/${name}/index.js`, `module.exports = {};`);
-  fs.writeFileSync(
-    `/node_modules/${name}/index.d.ts`,
-    `declare module "${name}" {
-    export function jsx<P>(type: any, props: any, ...children: any[]) }
-    export function styledFunction<P>( strings: any, ...interpoltations: any[]): any
-    export function ClassNames(props: any): any
-  `
-  );
-
-  fs.writeFileSync(
-    `/node_modules/${name}/package.json`,
-    JSON.stringify({ name, main: './src/index.tsx' })
-  );
-}

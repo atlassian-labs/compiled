@@ -1,10 +1,13 @@
 import * as Fs from 'fs';
 import * as path from 'path';
+import { IFs } from 'memfs';
 
 interface FsOrigin {
-  fs: typeof Fs;
+  fs: FsLike;
   path: string;
 }
+
+type FsLike = IFs | typeof Fs;
 
 export function mkdirp(at: FsOrigin): void {
   const fragments = at.path.split('/');
@@ -25,13 +28,14 @@ export function copy(from: FsOrigin, to: FsOrigin): void {
   });
 }
 
-export function list(dir: string, fs: typeof Fs, basedir?: string): string[] {
+export function list(dir: string, fs: FsLike, basedir?: string): string[] {
   const base = typeof basedir === 'string' ? basedir : dir;
+  const fileList = fs.readdirSync(dir, { encoding: 'buffer' });
+  const paths = (fileList as unknown[]).map(item => String(item));
 
-  return fs
-    .readdirSync(dir)
+  return paths
     .map((subPath: string) => {
-      const p = path.resolve(dir, subPath);
+      const p = path.resolve(dir, String(subPath));
       const stat = fs.statSync(p);
 
       if (stat.isDirectory()) {
@@ -41,4 +45,23 @@ export function list(dir: string, fs: typeof Fs, basedir?: string): string[] {
       }
     })
     .reduce((acc, ps) => [...acc, ...ps], []);
+}
+
+export function createMockModule(name: string, fs: FsLike) {
+  mkdirp({ path: `/node_modules/${name}`, fs });
+
+  fs.writeFileSync(`/node_modules/${name}/index.js`, `module.exports = {};`);
+  fs.writeFileSync(
+    `/node_modules/${name}/index.d.ts`,
+    `declare module "${name}" {
+    export function jsx<P>(type: any, props: any, ...children: any[]) }
+    export function styledFunction<P>( strings: any, ...interpoltations: any[]): any
+    export function ClassNames(props: any): any
+  `
+  );
+
+  fs.writeFileSync(
+    `/node_modules/${name}/package.json`,
+    JSON.stringify({ name, main: './src/index.tsx' })
+  );
 }
