@@ -52,16 +52,6 @@
     "ts-node-dev": "1.0.0-pre.44",
     "ttypescript": "^1.5.8"
   },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "testMatch": [
-      "**/src/**/*.test.ts*"
-    ],
-    "setupFilesAfterEnv": [
-      "jest-extended"
-    ]
-  },
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
