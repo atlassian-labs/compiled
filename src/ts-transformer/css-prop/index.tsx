@@ -103,7 +103,7 @@ export default function cssPropTransformer(
       // We need to rebind after transforming. Why isn't this in the typed API?
       // @ts-ignore
       ts.bindSourceFile(completedNode, {});
-      console.log(completedNode);
+      // console.log(completedNode);
 
       // const checkers = program.getTypeChecker()
       // checkers.

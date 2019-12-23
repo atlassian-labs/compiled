@@ -1,16 +1,18 @@
-import { createTransform } from '../../../__tests__/utils/transform';
+import { Transformer } from 'ts-transformer-testing-library';
 import pkg from '../../../../package.json';
 import styledComponentTransformer from '../index';
 
 jest.mock('../../utils/identifiers');
 
-const transform = createTransform(styledComponentTransformer);
+const transformer = new Transformer()
+  .addTransformer(styledComponentTransformer)
+  .addMock({ name: pkg.name, content: `export const styled: any = () => null` })
+  .setFilePath('/index.tsx');
 
 describe('styled component transformer', () => {
   it('should replace object literal styled component with component', () => {
-    const actual = transform(`
+    const actual = transformer.transform(`
       import { styled } from '${pkg.name}';
-
       const ListItem = styled.div({
         fontSize: '20px',
       });
@@ -22,9 +24,8 @@ describe('styled component transformer', () => {
   });
 
   it('should remove styled import', () => {
-    const actual = transform(`
+    const actual = transformer.transform(`
       import { styled } from '${pkg.name}';
-
       const ListItem = styled.div({
         fontSize: '20px',
       });
@@ -91,15 +92,14 @@ describe('styled component transformer', () => {
     it.todo('should transform object with object selector from import');
 
     it('should transform template object with string variable', () => {
-      const actual = transform(`
+      const actual = transformer.transform(`
         import { styled } from '${pkg.name}';
 
         const color = 'blue';
 
         const ListItem = styled.div({
           color,
-        });
-      `);
+        });`);
 
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
       expect(actual).toInclude(
@@ -108,7 +108,7 @@ describe('styled component transformer', () => {
     });
 
     it('should transform template object with prop reference', () => {
-      const actual = transform(`
+      const actual = transformer.transform(`
         import { styled } from '${pkg.name}';
 
         const ListItem = styled.div({

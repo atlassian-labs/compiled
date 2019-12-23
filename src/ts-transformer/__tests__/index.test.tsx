@@ -1,14 +1,16 @@
-import * as ts from 'typescript';
+import { Transformer } from 'ts-transformer-testing-library';
 import { rawTransformers } from '../index';
 import pkg from '../../../package.json';
-import { createFullTransform } from '../../__tests__/utils/transform';
 
-const fullTransform = createFullTransform(rawTransformers);
+const transformer = new Transformer()
+  .addTransformers(rawTransformers)
+  .addMock({ name: pkg.name, content: `export const jsx: any = () => null` })
+  .setFilePath('/index.tsx');
 
 describe('root transformer', () => {
   it('should not blow up when transforming with const', () => {
     expect(() => {
-      fullTransform(
+      transformer.transform(
         `
           /** @jsx jsx */
           import { jsx } from '${pkg.name}';
@@ -20,7 +22,7 @@ describe('root transformer', () => {
 
   it('should not blow up when transforming with var', () => {
     expect(() => {
-      fullTransform(
+      transformer.transform(
         `
           /** @jsx jsx */
           import { jsx } from '${pkg.name}';
