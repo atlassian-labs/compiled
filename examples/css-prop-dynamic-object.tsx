@@ -1,6 +1,9 @@
 /** @jsx jsx */
+import React from 'react';
 import { jsx } from '../src';
 import { useState } from 'react';
+
+console.log(useState, jsx, React);
 
 export default {
   title: 'css prop dynamic object',

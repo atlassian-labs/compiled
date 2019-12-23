@@ -79,21 +79,24 @@ export const visitJsxElementWithCssProp = (
 
   if (cssVariables.length) {
     const identifier = ts.createIdentifier('style');
-    const expression = ts.createJsxExpression(
-      undefined,
-      ts.createObjectLiteral(
-        cssVariables.map(variable => {
-          return ts.createPropertyAssignment(
-            ts.createStringLiteral(variable.name),
-            ts.createIdentifier(getIdentifierText(variable.identifier))
-          );
-        }),
-        false
-      )
-    );
+    const styleObjectLiteral = ts.createObjectLiteral(
+      cssVariables.map(variable => {
+        const propy = ts.createStringLiteral(variable.name);
+        const refy = ts.createIdentifier(getIdentifierText(variable.identifier));
+        const assignment = ts.createPropertyAssignment(propy, refy);
 
+        propy.parent = assignment;
+        refy.parent = assignment;
+        assignment.parent = styleObjectLiteral;
+
+        return assignment;
+      }),
+      false
+    );
+    const expression = ts.createJsxExpression(undefined, styleObjectLiteral);
     const newStyleAttribute = ts.createJsxAttribute(identifier, expression);
 
+    styleObjectLiteral.parent = expression;
     identifier.parent = newStyleAttribute;
     expression.parent = newStyleAttribute;
     newStyleAttribute.parent = mutableNodeAttributes;
@@ -103,22 +106,37 @@ export const visitJsxElementWithCssProp = (
   const compiledCss = stylis(`.${className}`, cssToPassThroughCompiler);
 
   // Create the style element that will precede the node that had the css prop.
-  const styleNode = ts.createJsxElement(
-    ts.createJsxOpeningElement(ts.createIdentifier('style'), [], ts.createJsxAttributes([])),
-    [ts.createJsxText(compiledCss)],
-    ts.createJsxClosingElement(ts.createIdentifier('style'))
-  );
+
+  const text = ts.createJsxText(compiledCss);
+  const styleId = ts.createIdentifier('style');
+  const styleIdd = ts.createIdentifier('style');
+  const emptyJsx = ts.createJsxAttributes([]);
+  const styleOpen = ts.createJsxOpeningElement(styleId, [], emptyJsx);
+  const styleClose = ts.createJsxClosingElement(styleIdd);
+  const styleNode = ts.createJsxElement(styleOpen, [text], styleClose);
+
+  emptyJsx.parent = styleOpen;
+  styleIdd.parent = styleClose;
+  styleId.parent = styleOpen;
+  styleOpen.parent = styleNode;
+  styleClose.parent = styleNode;
+  text.parent = styleNode;
+
+  const open = ts.createJsxOpeningFragment();
+  const close = ts.createJsxJsxClosingFragment();
 
   // Create a new fragment that will wrap both the style and the node we found initially.
   const newFragmentParent = ts.createJsxFragment(
-    ts.createJsxOpeningFragment(),
+    open,
     [
       // important that the style goes before the node
       styleNode,
       nodeToTransform,
     ],
-    ts.createJsxJsxClosingFragment()
+    close
   );
+
+  (open.parent = newFragmentParent), (close.parent = newFragmentParent);
 
   styleNode.parent = newFragmentParent;
   newFragmentParent.parent = node.parent;
