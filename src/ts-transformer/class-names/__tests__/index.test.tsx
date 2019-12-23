@@ -1,14 +1,17 @@
-import { createTransform } from '../../../__tests__/utils/transform';
+import { Transformer } from 'ts-transformer-testing-library';
 import pkg from '../../../../package.json';
 import classNamesTransformer from '../index';
 
 jest.mock('../../utils/identifiers');
 
-const transformer = createTransform(classNamesTransformer);
+const transformer = new Transformer()
+  .addTransformer(classNamesTransformer)
+  .addMock({ name: pkg.name, content: `export const ClassNames: any = () => null` })
+  .setFilePath('/index.tsx');
 
 describe('class names transformer', () => {
   it('should replace class names component style element', () => {
-    const actual = transformer(`
+    const actual = transformer.transform(`
       import { ClassNames } from '${pkg.name}';
 
       const ListItem = () => (
@@ -24,7 +27,7 @@ describe('class names transformer', () => {
   });
 
   it('should remove class names import', () => {
-    const actual = transformer(`
+    const actual = transformer.transform(`
       import { ClassNames } from '${pkg.name}';
 
       const ListItem = () => (
@@ -91,17 +94,17 @@ describe('class names transformer', () => {
     it.todo('should transform object spread from import');
 
     it('should transform object with string variable', () => {
-      const actual = transformer(`
-      import { ClassNames } from '${pkg.name}';
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
 
-      const color = 'blue';
+        const color = 'blue';
 
-      const ListItem = () => (
-        <ClassNames>
-          {({ css, style }) => <div style={style} className={css({ color })}>hello, world!</div>}
-        </ClassNames>
-      );
-    `);
+        const ListItem = () => (
+          <ClassNames>
+            {({ css, style }) => <div style={style} className={css({ color })}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
 
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
       expect(actual).toInclude(

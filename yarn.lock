@@ -1595,7 +1595,7 @@
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
 
-"@types/node@*", "@types/node@^12.12.17":
+"@types/node@^12.12.17":
   version "12.12.21"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.21.tgz#aa44a6363291c7037111c47e4661ad210aded23f"
 
@@ -1646,12 +1646,6 @@
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
-
-"@types/resolve@^0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@types/resolve/-/resolve-0.0.8.tgz#f26074d238e02659e323ce1a13d041eee280e194"
-  dependencies:
-    "@types/node" "*"
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
@@ -8492,6 +8486,14 @@ ts-node@8.5.2:
 ts-pnp@^1.1.2:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.1.5.tgz#840e0739c89fce5f3abd9037bb091dbff16d9dec"
+
+ts-transformer-testing-library@^1.0.0-alpha.4:
+  version "1.0.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/ts-transformer-testing-library/-/ts-transformer-testing-library-1.0.0-alpha.4.tgz#48b564e68042aca3739bfd4fbcc73ac8792fa1ec"
+  integrity sha512-9YhuweBSz+Dn+CWuGWlgOVLkYGs3FheiGjcFKyzQu86VTLPnqZLn99x5bDXnS40Qs5oh3ruRODgl4/5ITFl7NA==
+  dependencies:
+    memfs "^3.0.1"
+    resolve "^1.14.1"
 
 tsconfig@^7.0.0:
   version "7.0.0"
