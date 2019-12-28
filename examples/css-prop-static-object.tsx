@@ -1,5 +1,4 @@
 /** @jsx jsx */
-import React from 'react';
 import { jsx } from '../src';
 import { hover } from './mixins/mixins';
 

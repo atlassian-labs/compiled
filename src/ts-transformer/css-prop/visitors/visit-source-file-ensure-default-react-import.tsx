@@ -1,42 +1,58 @@
 import * as ts from 'typescript';
-import * as logger from '../../utils/log';
 
 const REACT_PKG = 'react';
 const REACT_DEFAULT_IMPORT_NAME = 'React';
 
-const isDefaultReactImportFound = (sourceFile: ts.SourceFile) => {
+const isReactImportFound = (sourceFile: ts.SourceFile) => {
   return sourceFile.statements.find(
     statement =>
       ts.isImportDeclaration(statement) &&
-      statement.importClause &&
-      statement.importClause.name &&
-      statement.importClause.name.escapedText === REACT_DEFAULT_IMPORT_NAME
+      ts.isStringLiteral(statement.moduleSpecifier) &&
+      statement.moduleSpecifier.text === REACT_PKG
   );
 };
 
 export const visitSourceFileEnsureDefaultReactImport = (
-  sourceFile: ts.SourceFile
+  sourceFile: ts.SourceFile,
+  context: ts.TransformationContext
 ): ts.SourceFile => {
-  if (!isDefaultReactImportFound(sourceFile)) {
-    logger.log('default import for react was not found - adding it');
-
-    const reactDeclaration = ts.createImportDeclaration(
-      /* decorators */ undefined,
-      /* modifiers */ undefined,
-      ts.createImportClause(ts.createIdentifier(REACT_DEFAULT_IMPORT_NAME), undefined),
-      ts.createLiteral(REACT_PKG)
-    );
-
+  if (!isReactImportFound(sourceFile)) {
     const newSourceFile = ts.updateSourceFileNode(sourceFile, [
-      reactDeclaration,
+      ts.createImportDeclaration(
+        /* decorators */ undefined,
+        /* modifiers */ undefined,
+        ts.createImportClause(ts.createIdentifier(REACT_DEFAULT_IMPORT_NAME), undefined),
+        ts.createLiteral(REACT_PKG)
+      ),
       ...sourceFile.statements,
     ]);
-
-    reactDeclaration.parent = newSourceFile;
-    newSourceFile.parent = sourceFile.parent;
 
     return newSourceFile;
   }
 
-  return sourceFile;
+  // There is a react import declaration somewhere.
+  // Let's find it and ensure the default export "React" exists.
+
+  const visitor = (node: ts.Node): ts.Node => {
+    if (
+      ts.isImportDeclaration(node) &&
+      ts.isStringLiteral(node.moduleSpecifier) &&
+      node.moduleSpecifier.text === REACT_PKG
+    ) {
+      return ts.updateImportDeclaration(
+        node,
+        /* decorators */ undefined,
+        /* modifiers */ undefined,
+        ts.createImportClause(
+          ts.createIdentifier(REACT_DEFAULT_IMPORT_NAME),
+          node.importClause && node.importClause.namedBindings
+        ),
+        ts.createLiteral(REACT_PKG)
+      );
+    }
+
+    return ts.visitEachChild(node, visitor, context);
+  };
+
+  return ts.visitNode(sourceFile, visitor);
 };

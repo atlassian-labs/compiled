@@ -34,7 +34,7 @@ export default function cssPropTransformer(
       if (isJsxPragmaFoundWithOurJsxFunction(sourceFile)) {
         logger.log(`found source file with ${packageName} usage`);
         sourceFileNeedsToBeTransformed = true;
-        transformedSourceFile = visitSourceFileEnsureDefaultReactImport(sourceFile);
+        transformedSourceFile = visitSourceFileEnsureDefaultReactImport(sourceFile, context);
       } else {
         // nothing to do - return source file and nothing will be transformed.
         return sourceFile;
@@ -98,11 +98,7 @@ export default function cssPropTransformer(
         return ts.visitEachChild(node, visitor, context);
       };
 
-      const completedNode = ts.visitNode(transformedSourceFile, visitor);
-      logger.log(`binding source file`);
-      logger.log(`finished binding`);
-      logger.log(`finished transforming css prop`);
-      return completedNode;
+      return ts.visitNode(transformedSourceFile, visitor);
     };
   };
 

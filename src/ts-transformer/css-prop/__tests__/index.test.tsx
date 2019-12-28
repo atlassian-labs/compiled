@@ -45,7 +45,7 @@ describe('css prop transformer', () => {
       <div css={{}}>hello world</div>
     `);
 
-    expect(actual).toIncludeRepeated("import React from 'react';", 1);
+    expect(actual).toIncludeRepeated(`import React from "react";`, 1);
   });
 
   it('should add react default import if it only has named imports', () => {
@@ -57,8 +57,7 @@ describe('css prop transformer', () => {
       <div css={{}}>hello world</div>
     `);
 
-    expect(actual).toIncludeRepeated('import React from "react";', 1);
-    expect(actual).toIncludeRepeated("import { useState } from 'react';", 1);
+    expect(actual).toIncludeRepeated('import React, { useState } from "react"', 1);
   });
 
   it.todo('should concat explicit use of class name prop on an element');
