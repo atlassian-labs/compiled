@@ -1,15 +1,21 @@
+import { Transformer } from 'ts-transformer-testing-library';
 import cssPropTransformer from '../index';
 import pkg from '../../../../package.json';
-import { createFullTransform, createTransform } from '../../../__tests__/utils/transform';
 
 jest.mock('../../utils/identifiers');
 
-const transform = createTransform(cssPropTransformer);
-const fullTransform = createFullTransform(cssPropTransformer);
+const transformer = new Transformer()
+  .addTransformer(cssPropTransformer)
+  .addMock({ name: pkg.name, content: `export const jsx: any = () => null` })
+  .addMock({
+    name: 'react',
+    content: `export default {} as any; export const useState = {} as any;`,
+  })
+  .setFilePath('/index.tsx');
 
 describe('css prop transformer', () => {
   it('should replace css prop with class name', () => {
-    const actual = transform(`
+    const actual = transformer.transform(`
       /** @jsx jsx */
       import { jsx } from '${pkg.name}';
 
@@ -20,7 +26,7 @@ describe('css prop transformer', () => {
   });
 
   it('should add react default import if missing', () => {
-    const actual = transform(`
+    const actual = transformer.transform(`
       /** @jsx jsx */
       import { jsx } from '${pkg.name}';
 
@@ -31,7 +37,7 @@ describe('css prop transformer', () => {
   });
 
   it('should do nothing if react default import is already defined', () => {
-    const actual = transform(`
+    const actual = transformer.transform(`
       /** @jsx jsx */
       import React from 'react';
       import { jsx } from '${pkg.name}';
@@ -39,11 +45,11 @@ describe('css prop transformer', () => {
       <div css={{}}>hello world</div>
     `);
 
-    expect(actual).toIncludeRepeated("import React from 'react';", 1);
+    expect(actual).toIncludeRepeated(`import React from "react";`, 1);
   });
 
   it('should add react default import if it only has named imports', () => {
-    const actual = transform(`
+    const actual = transformer.transform(`
       /** @jsx jsx */
       import { useState } from 'react';
       import { jsx } from '${pkg.name}';
@@ -51,8 +57,7 @@ describe('css prop transformer', () => {
       <div css={{}}>hello world</div>
     `);
 
-    expect(actual).toIncludeRepeated('import React from "react";', 1);
-    expect(actual).toIncludeRepeated("import { useState } from 'react';", 1);
+    expect(actual).toIncludeRepeated('import React, { useState } from "react"', 1);
   });
 
   it.todo('should concat explicit use of class name prop on an element');
@@ -63,7 +68,7 @@ describe('css prop transformer', () => {
 
   describe('using strings', () => {
     it('should transform string literal', () => {
-      const actual = transform(`
+      const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -74,7 +79,7 @@ describe('css prop transformer', () => {
     });
 
     it('should transform no template string literal', () => {
-      const actual = transform(`
+      const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -85,7 +90,7 @@ describe('css prop transformer', () => {
     });
 
     it('should transform template string literal with string variable', () => {
-      const actual = transform(`
+      const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -100,7 +105,7 @@ describe('css prop transformer', () => {
     });
 
     it('should transform template string literal with obj variable', () => {
-      const actual = transform(`
+      const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -136,7 +141,7 @@ describe('css prop transformer', () => {
 
   describe('using an object literal', () => {
     it('should transform object with simple values', () => {
-      const actual = transform(`
+      const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -147,7 +152,7 @@ describe('css prop transformer', () => {
     });
 
     it('should transform object with nested object into a selector', () => {
-      const actual = transform(`
+      const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -157,27 +162,25 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class:hover{color:blue;}</style>');
     });
 
-    it('should transform object with object selector from variable', async () => {
-      const actual = await fullTransform({
-        index: `
-          /** @jsx jsx */
-          import { jsx } from '${pkg.name}';
-          import { mixin } from './mixins';
+    it('should transform object with object selector from variable', () => {
+      const actual = transformer.addSource({
+        path: '/mixins.ts',
+        contents: "export const mixin = { color: 'blue' };",
+      }).transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { mixin } from './mixins';
 
-          <div
-            css={{
-              display: 'flex',
-              fontSize: '50px',
-              color: 'blue',
-              ':hover': mixin,
-            }}>
-            Hello, world!
-          </div>
-        `,
-        mixins: `
-          export const mixin = { color: 'blue' };
-        `,
-      });
+        <div
+          css={{
+            display: 'flex',
+            fontSize: '50px',
+            color: 'blue',
+            ':hover': mixin,
+          }}>
+          Hello, world!
+        </div>
+    `);
 
       expect(actual).toInclude(
         '<style>.test-class{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;font-size:50px;color:blue;}.test-class:hover{color:blue;}</style>'
@@ -187,7 +190,7 @@ describe('css prop transformer', () => {
     it.todo('should transform object with object selector from import');
 
     it('should transform object that has a variable reference', () => {
-      const actual = transform(`
+      const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -202,7 +205,7 @@ describe('css prop transformer', () => {
     });
 
     it('should transform object that has a destructured variable reference', () => {
-      const actual = transform(`
+      const actual = transformer.transform(`
         /** @jsx jsx */
         import { useState } from 'react';
         import { jsx } from '${pkg.name}';
@@ -218,7 +221,7 @@ describe('css prop transformer', () => {
     });
 
     it('should transform object spread from variable', () => {
-      const actual = transform(`
+      const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
@@ -246,7 +249,7 @@ describe('css prop transformer', () => {
     it.todo('should transform object with array import');
 
     it('should transform object with no argument arrow function variable', () => {
-      const actual = transform(`
+      const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 

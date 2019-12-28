@@ -13,10 +13,12 @@
     "/dist"
   ],
   "scripts": {
-    "start": "npx nodemon --exec \"tsc --module commonjs && start-storybook -p 6006 --ci\" --watch src/transformers/ -e tsx",
+    "start": "npx nodemon --exec \"yarn build && start-storybook -p 6006 --ci\" --watch src/ts-transformer/ -e tsx",
+    "start:inspect": "npx nodemon --exec \"yarn build && node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch src/ts-transformer/ -e tsx",
     "test": "jest",
     "test:cover": "jest --collectCoverage",
     "build": "tsc --module commonjs",
+    "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js --module commonjs",
     "build-storybook": "build-storybook"
   },
   "dependencies": {
@@ -35,21 +37,19 @@
     "@testing-library/react": "^9.4.0",
     "@types/jest": "24.0.19",
     "@types/node": "^12.12.17",
-    "@types/resolve": "^0.0.8",
     "babel-loader": "^8.0.6",
     "husky": "^3.1.0",
     "jest": "24.9.0",
     "jest-extended": "^0.11.2",
-    "memfs": "^3.0.1",
     "prettier": "^1.19.1",
     "pretty-quick": "^2.0.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "resolve": "^1.14.1",
     "ts-jest": "24.2.0",
     "ts-loader": "^6.2.1",
     "ts-node": "8.5.2",
     "ts-node-dev": "1.0.0-pre.44",
+    "ts-transformer-testing-library": "^1.0.0-alpha.4",
     "ttypescript": "^1.5.8"
   },
   "husky": {

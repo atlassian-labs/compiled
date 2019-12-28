@@ -46,7 +46,7 @@ export const objectLiteralToCssString = (
       let nodeToExtractCssFrom: ts.Node;
 
       if (ts.isCallExpression(prop.expression)) {
-        // we are spreading the result of a function call
+        // we are spreading the result of a function call e.g: css={{ ...mixin() }}
         const functionDeclaration = scopedVariables[getIdentifierText(prop.expression.expression)];
         const functionNode = functionDeclaration.initializer;
 
@@ -60,7 +60,7 @@ export const objectLiteralToCssString = (
 
         nodeToExtractCssFrom = functionNode.body.expression;
       } else {
-        // we are spreading a variable
+        // we are spreading a variable e.g: css={{ ...mixin }}
         const variableDeclaration = scopedVariables[getIdentifierText(prop.expression)];
         if (!variableDeclaration || !variableDeclaration.initializer) {
           throw new Error('variable not in scope');
@@ -71,8 +71,7 @@ export const objectLiteralToCssString = (
       if (!ts.isObjectLiteralExpression(nodeToExtractCssFrom)) {
         throw new Error('variable not an object');
       }
-      // Spread can either be from an object, or a function. Probably not an array.
-
+      // Spread can either be from an object, or a function. Not an array yet not supported (:
       const result = objectLiteralToCssString(nodeToExtractCssFrom, scopedVariables, context);
       cssVariables = cssVariables.concat(result.cssVariables);
 
@@ -84,12 +83,12 @@ export const objectLiteralToCssString = (
       (ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.initializer))
     ) {
       key = kebabCase(getIdentifierText(prop.name));
+      const identifierName = getAssignmentIdentifierText(prop);
 
-      const variableDeclaration = scopedVariables[getAssignmentIdentifierText(prop)];
+      const variableDeclaration = scopedVariables[identifierName];
       if (!variableDeclaration || !variableDeclaration.initializer) {
-        logger.log('variable not found');
-      }
-      if (
+        logger.log(`could not find variable "${identifierName}", ignoring`);
+      } else if (
         variableDeclaration &&
         variableDeclaration.initializer &&
         ts.isObjectLiteralExpression(variableDeclaration.initializer)
@@ -100,6 +99,7 @@ export const objectLiteralToCssString = (
           scopedVariables,
           context
         );
+
         cssVariables = cssVariables.concat(result.cssVariables);
         return `${acc}
         ${key} {

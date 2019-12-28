@@ -34,7 +34,7 @@ export default function cssPropTransformer(
       if (isJsxPragmaFoundWithOurJsxFunction(sourceFile)) {
         logger.log(`found source file with ${packageName} usage`);
         sourceFileNeedsToBeTransformed = true;
-        transformedSourceFile = visitSourceFileEnsureDefaultReactImport(sourceFile);
+        transformedSourceFile = visitSourceFileEnsureDefaultReactImport(sourceFile, context);
       } else {
         // nothing to do - return source file and nothing will be transformed.
         return sourceFile;
@@ -54,10 +54,12 @@ export default function cssPropTransformer(
         if (ts.isImportDeclaration(node) && 'resolvedModules' in sourceFile) {
           // we may use these. store for later and if needed then resolve them.
           const moduleName = getExpressionText(node.moduleSpecifier);
+          logger.log(`found a module "${moduleName}"`);
           // __HACK_ALERT__!! There isn't any other way to get the resolved module it seems.
           const resolvedModule: ts.SourceFile | undefined = (sourceFile as any).resolvedModules.get(
             moduleName
           );
+
           if (!resolvedModule) {
             logger.log(`module "${moduleName}" was not resolved`);
             return node;
@@ -67,11 +69,11 @@ export default function cssPropTransformer(
           const resolvedModuleFileName = (resolvedModule as any).resolvedFileName;
           const resolvedFileSource = program.getSourceFile(resolvedModuleFileName);
           if (!resolvedFileSource) {
-            logger.log(`source file for module "${moduleName}" was not resolved`);
+            logger.log(`module source file for "${moduleName}" was not resolved`);
             return node;
           }
 
-          const visitor = (node: ts.Node): ts.Node => {
+          const visitResolvedNode = (node: ts.Node): ts.Node => {
             if (ts.isVariableStatement(node) && node.modifiers && node.modifiers[0]) {
               // we may need this later, let's store it in a POJO for quick access.
               const variableDeclaration = node.declarationList.declarations[0];
@@ -80,10 +82,12 @@ export default function cssPropTransformer(
               return node;
             }
 
-            return ts.visitEachChild(node, visitor, context);
+            return ts.visitEachChild(node, visitResolvedNode, context);
           };
 
-          ts.visitNode(resolvedFileSource, visitor);
+          logger.log(`visting "${moduleName}" to extract variable references`);
+          ts.visitNode(resolvedFileSource, visitResolvedNode);
+          logger.log(`finished visiting`);
         }
 
         if (isJsxElementWithCssProp(node)) {
