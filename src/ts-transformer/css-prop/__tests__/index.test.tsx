@@ -7,6 +7,10 @@ jest.mock('../../utils/identifiers');
 const transformer = new Transformer()
   .addTransformer(cssPropTransformer)
   .addMock({ name: pkg.name, content: `export const jsx: any = () => null` })
+  .addMock({
+    name: 'react',
+    content: `export default {} as any; export const useState = {} as any;`,
+  })
   .setFilePath('/index.tsx');
 
 describe('css prop transformer', () => {
@@ -64,7 +68,7 @@ describe('css prop transformer', () => {
   it.todo('should concat use of inline styles when there is use of dynamic css');
 
   describe('using strings', () => {
-    it.only('should transform string literal', () => {
+    it('should transform string literal', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
@@ -161,7 +165,7 @@ describe('css prop transformer', () => {
 
     it('should transform object with object selector from variable', () => {
       const actual = transformer.addSource({
-        path: '/mixin.ts',
+        path: '/mixins.ts',
         contents: "export const mixin = { color: 'blue' };",
       }).transform(`
         /** @jsx jsx */

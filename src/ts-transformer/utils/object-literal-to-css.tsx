@@ -88,9 +88,7 @@ export const objectLiteralToCssString = (
       const variableDeclaration = scopedVariables[identifierName];
       if (!variableDeclaration || !variableDeclaration.initializer) {
         logger.log(`could not find variable "${identifierName}", ignoring`);
-        // throw new Error('not found variable man');
-      }
-      if (
+      } else if (
         variableDeclaration &&
         variableDeclaration.initializer &&
         ts.isObjectLiteralExpression(variableDeclaration.initializer)

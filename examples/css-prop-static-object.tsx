@@ -3,8 +3,6 @@ import React from 'react';
 import { jsx } from '../src';
 import { hover } from './mixins/mixins';
 
-console.log(React, jsx, hover);
-
 var inlineMixinFunc = () => ({
   color: 'red',
 });
@@ -28,7 +26,7 @@ export var objectLiteralSpreadFromFunc = () => {
         display: 'flex',
         fontSize: '50px',
         color: 'blue',
-        // ...inlineMixinFunc(),
+        ...inlineMixinFunc(),
       }}>
       Hello, world!
     </div>
@@ -42,7 +40,7 @@ export var objectLiteralSpreadFromObj = () => {
         display: 'flex',
         fontSize: '50px',
         color: 'blue',
-        // ...inlineMixinObj,
+        ...inlineMixinObj,
       }}>
       Hello, world!
     </div>
@@ -56,7 +54,7 @@ export var objectLiteralLocalObj = () => {
         display: 'flex',
         fontSize: '50px',
         color: 'blue',
-        // ':hover': inlineMixinObj,
+        ':hover': inlineMixinObj,
       }}>
       Hello, world!
     </div>
@@ -70,7 +68,7 @@ export var objectLiteralImportedObj = () => {
         display: 'flex',
         fontSize: '50px',
         color: 'blue',
-        // ':hover': hover,
+        ':hover': hover,
       }}>
       Hello, world!
     </div>
