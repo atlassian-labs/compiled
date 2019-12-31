@@ -7,10 +7,6 @@ module.exports = ({ config }) => {
       {
         loader: require.resolve('ts-loader'),
         options: {
-          // This NEEDS to be false for us to be able to go beyond module boundaries.
-          // Might need to raise a ticket to figure out how we can get around this if we just want to transpile.
-          // Does transpiling do it file by file instead of project?
-          transpileOnly: true,
           getCustomTransformers: program => ({
             before: createTransformers(program, { debug: process.env.NODE_ENV !== 'production' }),
           }),
