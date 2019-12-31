@@ -97,20 +97,31 @@ export const visitJsxElementWithCssProp = (
 
   // Create the style element that will precede the node that had the css prop.
   const styleNode = ts.createJsxElement(
-    ts.createJsxOpeningElement(ts.createIdentifier('style'), [], ts.createJsxAttributes([])),
+    // We use setOriginalNode() here to work around createJsx not working without the original node.
+    // See: https://github.com/microsoft/TypeScript/issues/35686
+    ts.setOriginalNode(
+      ts.createJsxOpeningElement(ts.createIdentifier('style'), [], ts.createJsxAttributes([])),
+      node
+    ),
     [ts.createJsxText(compiledCss)],
-    ts.createJsxClosingElement(ts.createIdentifier('style'))
+    // We use setOriginalNode() here to work around createJsx not working without the original node.
+    // See: https://github.com/microsoft/TypeScript/issues/35686
+    ts.setOriginalNode(ts.createJsxClosingElement(ts.createIdentifier('style')), node)
   );
 
   // Create a new fragment that will wrap both the style and the node we found initially.
   const newFragmentParent = ts.createJsxFragment(
-    ts.createJsxOpeningFragment(),
+    // We use setOriginalNode() here to work around createJsx not working without the original node.
+    // See: https://github.com/microsoft/TypeScript/issues/35686
+    ts.setOriginalNode(ts.createJsxOpeningFragment(), node),
     [
       // important that the style goes before the node
       styleNode,
       nodeToTransform,
     ],
-    ts.createJsxJsxClosingFragment()
+    // We use setOriginalNode() here to work around createJsx not working without the original node.
+    // See: https://github.com/microsoft/TypeScript/issues/35686
+    ts.setOriginalNode(ts.createJsxJsxClosingFragment(), node)
   );
 
   logger.log('returning fragment with style and parsed jsx element with css prop');

@@ -6,9 +6,9 @@ export default {
   title: 'css prop dynamic object',
 };
 
-export var dynamicCssProp = () => {
-  // works with var, but not let or const ????
-  var [color, setColor] = useState('red');
+export const dynamicCssProp = () => {
+  // works with const, but not let or const ????
+  const [color, setColor] = useState('red');
 
   return (
     <div

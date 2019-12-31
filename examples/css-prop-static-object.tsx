@@ -2,11 +2,11 @@
 import { jsx } from '../src';
 import { hover } from './mixins/mixins';
 
-var inlineMixinFunc = () => ({
+const inlineMixinFunc = () => ({
   color: 'red',
 });
 
-var inlineMixinObj = {
+const inlineMixinObj = {
   color: 'green',
 };
 
@@ -14,11 +14,11 @@ export default {
   title: 'css prop static object',
 };
 
-export var objectLiteral = () => {
+export const objectLiteral = () => {
   return <div css={{ display: 'flex', fontSize: '50px', color: 'blue' }}>Hello, world!</div>;
 };
 
-export var objectLiteralSpreadFromFunc = () => {
+export const objectLiteralSpreadFromFunc = () => {
   return (
     <div
       css={{
@@ -32,7 +32,7 @@ export var objectLiteralSpreadFromFunc = () => {
   );
 };
 
-export var objectLiteralSpreadFromObj = () => {
+export const objectLiteralSpreadFromObj = () => {
   return (
     <div
       css={{
@@ -46,7 +46,7 @@ export var objectLiteralSpreadFromObj = () => {
   );
 };
 
-export var objectLiteralLocalObj = () => {
+export const objectLiteralLocalObj = () => {
   return (
     <div
       css={{
@@ -60,7 +60,7 @@ export var objectLiteralLocalObj = () => {
   );
 };
 
-export var objectLiteralImportedObj = () => {
+export const objectLiteralImportedObj = () => {
   return (
     <div
       css={{

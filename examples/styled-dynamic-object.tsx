@@ -5,7 +5,7 @@ export default {
   title: 'styled component dynamic object',
 };
 
-var Highlight = styled.div<{ primary: string }>({
+const Highlight = styled.div<{ primary: string }>({
   fontSize: '20px',
   color: props => props.primary,
   margin: '20px',
@@ -14,8 +14,8 @@ var Highlight = styled.div<{ primary: string }>({
   },
 });
 
-export var objectLiteral = () => {
-  var [color, setColor] = useState('blue');
+export const objectLiteral = () => {
+  const [color, setColor] = useState('blue');
 
   return (
     <>

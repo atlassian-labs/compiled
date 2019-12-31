@@ -99,6 +99,7 @@ export const visitClassNamesJsxElement = (
     selector: '',
     css,
     cssVariables,
+    originalNode: classNamesNode,
     children: children as any,
   });
 };

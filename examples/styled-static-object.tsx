@@ -5,9 +5,9 @@ export default {
   title: 'styled component static object',
 };
 
-var Thing = styled.div({
+const Thing = styled.div({
   fontSize: '20px',
   color: 'red',
 });
 
-export var objectLiteral = () => <Thing>hello world</Thing>;
+export const objectLiteral = () => <Thing>hello world</Thing>;

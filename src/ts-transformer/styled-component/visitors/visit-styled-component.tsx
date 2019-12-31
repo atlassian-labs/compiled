@@ -18,10 +18,15 @@ export const visitObjectStyledComponent = (
 
   const result = objectLiteralToCssString(objectLiteral, {}, context);
 
-  const newElement = createJsxElement(tagNode, {
-    ...result,
-    children: ts.createJsxExpression(undefined, ts.createIdentifier('props.children')),
-  });
+  const newElement = createJsxElement(
+    tagNode,
+    {
+      ...result,
+      originalNode: node,
+      children: ts.createJsxExpression(undefined, ts.createIdentifier('props.children')),
+    },
+    node
+  );
 
   return ts.createArrowFunction(
     undefined,
