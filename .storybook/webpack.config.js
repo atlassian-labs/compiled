@@ -1,5 +1,3 @@
-const createTransformers = require('../dist/src/ts-transformer').default;
-
 module.exports = ({ config }) => {
   config.module.rules.push({
     test: /\.tsx$/,
@@ -7,9 +5,7 @@ module.exports = ({ config }) => {
       {
         loader: require.resolve('ts-loader'),
         options: {
-          getCustomTransformers: program => ({
-            before: createTransformers(program, { debug: process.env.NODE_ENV !== 'production' }),
-          }),
+          compiler: 'ttypescript',
         },
       },
     ],

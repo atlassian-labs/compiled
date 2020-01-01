@@ -11,7 +11,8 @@
     "strict": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "plugins": [{ "transform": "./dist/src/ts-transformer.js", "debug": true }]
   },
   "include": ["src/*", "src/**/*", "examples/*"],
   "exclude": ["node_modules"]

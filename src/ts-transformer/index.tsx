@@ -9,21 +9,26 @@ interface TransformerOptions {
   debug?: boolean;
 }
 
-export const rawTransformers = [
+const transformers = [
   removeJsxPragmaRuntimeTransformer,
   cssPropTransformer,
   styledComponentTransformer,
   classNamesTransformer,
 ];
 
-export default function transformers(program: ts.Program, opts: TransformerOptions) {
+export default function transformer(
+  program: ts.Program,
+  opts: TransformerOptions = {}
+): ts.TransformerFactory<ts.SourceFile> {
   logger.setEnabled(!!opts.debug);
-  logger.log(
-    'typescript transformer has been enabled in debug mode, you will see logs in your console just like this one!'
-  );
 
-  const transformers: ts.TransformerFactory<ts.SourceFile>[] = rawTransformers.map(transformer =>
-    transformer(program)
-  );
-  return transformers;
+  return context => {
+    const initializedTransformers = transformers.map(transformer => transformer(program)(context));
+
+    return sourceFile => {
+      return initializedTransformers.reduce((source, transformer) => {
+        return transformer(source);
+      }, sourceFile);
+    };
+  };
 }
