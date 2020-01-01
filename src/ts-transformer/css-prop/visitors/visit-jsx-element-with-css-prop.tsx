@@ -64,34 +64,36 @@ export const visitJsxElementWithCssProp = (
   }
 
   const className = nextClassName();
-  const nodeToTransform = ts.getMutableClone(node);
-  const mutableNodeAttributes = getJsxNodeAttributes(nodeToTransform);
-  (mutableNodeAttributes.properties as any) = mutableNodeAttributes.properties.filter(
-    prop => prop.name && getIdentifierText(prop.name) !== CSS_PROP
-  );
-  (mutableNodeAttributes.properties as any).push(
-    ts.createJsxAttribute(ts.createIdentifier('className'), ts.createStringLiteral(className))
-  );
 
-  if (cssVariables.length) {
-    (mutableNodeAttributes.properties as any).push(
-      ts.createJsxAttribute(
-        ts.createIdentifier('style'),
-        ts.createJsxExpression(
-          undefined,
-          ts.createObjectLiteral(
-            cssVariables.map(variable => {
-              return ts.createPropertyAssignment(
-                ts.createStringLiteral(variable.name),
-                variable.identifier
-              );
-            }),
-            false
+  const attributedNode = ts.isJsxSelfClosingElement(node) ? node : node.openingElement;
+
+  const attributes = [
+    // Filter out css prop, carry over others
+    ...attributedNode.attributes.properties.filter(
+      prop => prop.name && getIdentifierText(prop.name) !== CSS_PROP
+    ),
+    // Reference style via className
+    ts.createJsxAttribute(ts.createIdentifier('className'), ts.createStringLiteral(className)),
+    // Add a style prop if css variables are applied
+    cssVariables.length
+      ? ts.createJsxAttribute(
+          ts.createIdentifier('style'),
+          ts.createJsxExpression(
+            undefined,
+            ts.createObjectLiteral(
+              cssVariables.map(cssVariable =>
+                ts.createPropertyAssignment(
+                  ts.createStringLiteral(cssVariable.name),
+                  cssVariable.identifier
+                )
+              )
+            )
           )
         )
-      )
-    );
-  }
+      : undefined,
+  ].filter(
+    (item): item is ts.JsxAttribute => typeof item !== 'undefined' && ts.isJsxAttribute(item)
+  );
 
   const compiledCss = stylis(`.${className}`, cssToPassThroughCompiler);
 
@@ -117,7 +119,20 @@ export const visitJsxElementWithCssProp = (
     [
       // important that the style goes before the node
       styleNode,
-      nodeToTransform,
+      ts.isJsxSelfClosingElement(node)
+        ? ts.createJsxSelfClosingElement(node.tagName, node.typeArguments, node.attributes)
+        : ts.createJsxElement(
+            ts.setOriginalNode(
+              ts.createJsxOpeningElement(
+                node.openingElement.tagName,
+                node.openingElement.typeArguments,
+                ts.createJsxAttributes(attributes)
+              ),
+              node
+            ),
+            node.children,
+            ts.setOriginalNode(ts.createJsxClosingElement(node.closingElement.tagName), node)
+          ),
     ],
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
