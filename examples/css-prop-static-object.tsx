@@ -2,6 +2,8 @@
 import { jsx } from '../src';
 import { hover } from './mixins/mixins';
 
+console.log(hover);
+
 export const objectLiteralImportedObj = () => {
   return (
     <div
@@ -9,7 +11,6 @@ export const objectLiteralImportedObj = () => {
         display: 'flex',
         fontSize: '50px',
         color: 'blue',
-        ':hover': hover,
       }}>
       Hello, world!
     </div>
