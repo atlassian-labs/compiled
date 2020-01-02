@@ -41,9 +41,35 @@ describe('class names transformer', () => {
   });
 
   describe('using a string literal', () => {
-    it.todo('should transform no template string literal');
+    it('should transform no template string literal', () => {
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
 
-    it.todo('should transform template string literal with string variable');
+        const ListItem = () => (
+          <ClassNames>
+            {({ css }) => <div className={css\`\`}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude('<style></style>');
+    });
+
+    xit('should transform template string literal with string variable', () => {
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
+
+        const fontSize = 12;
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css }) => <div className={css\`font-size: \${fontSize}px\`}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude(`<style></style>`);
+    });
 
     it.todo('should transform template string literal with string import');
 
