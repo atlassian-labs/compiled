@@ -3,9 +3,15 @@ import { Transformer } from 'ts-transformer-testing-library';
 import rootTransformer from '../index';
 import pkg from '../../../package.json';
 
+const stubProgam: ts.Program = ({
+  getTypeChecker: () => ({
+    getSymbolAtLocation: () => undefined,
+  }),
+} as never) as ts.Program;
+
 describe('root transformer', () => {
   it('should not blow up when transforming with const', () => {
-    const transformer = rootTransformer({} as ts.Program, {});
+    const transformer = rootTransformer(stubProgam, {});
 
     expect(() => {
       ts.transpileModule(
@@ -23,7 +29,7 @@ describe('root transformer', () => {
   });
 
   it('should not blow up when transforming with var', () => {
-    const transformer = rootTransformer({} as ts.Program, {});
+    const transformer = rootTransformer(stubProgam, {});
 
     expect(() => {
       ts.transpileModule(
