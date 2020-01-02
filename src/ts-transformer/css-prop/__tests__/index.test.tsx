@@ -116,13 +116,59 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:blue;font-size:30px;}</style>');
     });
 
-    it.todo('should transform template string literal with obj import');
+    it('should transform template string literal with obj import', () => {
+      const actual = transformer.addSource({
+        path: '/mixins.ts',
+        contents: `export const style = { color: 'blue', fontSize: '30px' };`,
+      }).transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { style } from './mixins';
+
+        <div
+          css={\`
+            :last-child {
+              \${style};
+            }
+          \`}
+          >
+          hello world
+        </div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class:last-child{color:blue;font-size:30px;}</style>');
+    });
+
+    it('should transform template string literal with obj import being used as a selector', () => {
+      const actual = transformer.addSource({
+        path: '/mixins.ts',
+        contents: `export const style = { ':hover': { color: 'blue', fontSize: '30px' } };`,
+      }).transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { style } from './mixins';
+
+        <div css={\`\${style}\`}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class:hover{color:blue;font-size:30px;}</style>');
+    });
 
     it.todo('should transform template string literal with array variable');
 
     it.todo('should transform template string literal with array import');
 
-    it.todo('should transform template string with no argument arrow function variable');
+    xit('should transform template string with no argument arrow function variable', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        const style = () => ({ color: 'blue', fontSize: '30px' });
+        <div css={\`\${style}\`}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:blue;font-size:30px;}</style>');
+    });
 
     it.todo('should transform template string with no argument arrow function import');
 
@@ -205,15 +251,95 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:blue;color:red;}</style>');
     });
 
-    it.todo('should transform object spread from import');
+    xit('should transform object spread from import', () => {
+      const actual = transformer.addSource({
+        path: '/mixins.ts',
+        contents: `export const mixin = { color: 'red' };`,
+      }).transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { mixin } from './mixins';
 
-    it.todo('should transform object with string variable');
+        <div css={{ color: 'blue', ...mixin }}>hello world</div>
+      `);
 
-    it.todo('should transform object with string variable using shorthand notation');
+      expect(actual).toInclude('<style>.test-class{color:blue;color:red;}</style>');
+    });
 
-    it.todo('should transform object with string import');
+    it('should transform object with string variable', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        const text = 'red';
+
+        <div css={{ color: text }}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+      expect(actual).toInclude(
+        '<div className="test-class" style={{ "--color-test-css-variable": text }}>'
+      );
+    });
+
+    it('should transform object with string variable using shorthand notation', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        const color = 'red';
+
+        <div css={{ color }}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+      expect(actual).toInclude(
+        '<div className="test-class" style={{ "--color-test-css-variable": color }}>'
+      );
+    });
+
+    it('should transform object with string import', () => {
+      const actual = transformer.addSource({
+        path: '/colors.tsx',
+        contents: `export const color = 'red';`,
+      }).transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { color } from './colors';
+
+        <div css={{ color }}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+      expect(actual).toInclude(
+        '<div className="test-class" style={{ "--color-test-css-variable": color }}>'
+      );
+    });
 
     it('should transform object with obj variable', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        const mixin = { color: 'blue' };
+
+        <div
+          css={{
+            display: 'flex',
+            fontSize: '50px',
+            color: 'blue',
+            ':hover': mixin,
+          }}>
+          Hello, world!
+        </div>
+    `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;font-size:50px;color:blue;}.test-class:hover{color:blue;}</style>'
+      );
+    });
+
+    it('should transform object with obj import', () => {
       const actual = transformer.addSource({
         path: '/mixins.ts',
         contents: "export const mixin = { color: 'blue' };",
@@ -238,13 +364,43 @@ describe('css prop transformer', () => {
       );
     });
 
-    it.todo('should transform object with obj import');
-
     it.todo('should transform object with array variable');
 
     it.todo('should transform object with array import');
 
-    it('should transform object with no argument arrow function variable', () => {
+    xit('should transform object with no argument arrow function variable', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        const mixin = () => ({ color: 'red' });
+
+        <div css={{ color: 'blue', ...mixin }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        `<style>.test-class{color:blue;}.test-class:hover{color:red;}</style>`
+      );
+    });
+
+    xit('should transform object with no argument arrow function import', () => {
+      const actual = transformer.addSource({
+        path: '/mixins.ts',
+        contents: `export const mixin = () => ({ color: 'red' });`,
+      }).transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { mixin } from './mixins';
+
+        <div css={{ color: 'blue', ...mixin }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        `<style>.test-class{color:blue;}.test-class:hover{color:red;}</style>`
+      );
+    });
+
+    it('should transform object spread with no argument arrow function variable', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
@@ -257,11 +413,92 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:blue;color:red;}</style>');
     });
 
-    it.todo('should transform object with no argument arrow function import');
+    it('should transform object spread with no argument arrow function import', () => {
+      const actual = transformer.addSource({
+        path: '/mixins.ts',
+        contents: `export const mixin = () => ({ color: 'red' });`,
+      }).transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { mixin } from './mixins';
 
-    it.todo('should transform object with no argument function variable');
+        <div css={{ color: 'blue', ...mixin() }}>hello world</div>
+      `);
 
-    it.todo('should transform object with no argument function import');
+      expect(actual).toInclude('<style>.test-class{color:blue;color:red;}</style>');
+    });
+
+    xit('should transform object with no argument function variable', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        function mixin() {
+          return { color: 'red' };
+        }
+
+        <div css={{ color: 'blue', ':hover': mixin() }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        `<style>.test-class{color:blue;}.test-class:hover{color:red;}</style>`
+      );
+    });
+
+    xit('should transform object with no argument function import', () => {
+      const actual = transformer.addSource({
+        path: '/mixins.ts',
+        contents: `
+          export function mixin() {
+            return { color: 'red' };
+          }
+        `,
+      }).transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { mixin } from './mixins';
+
+        <div css={{ color: 'blue', ':hover': mixin() }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        `<style>.test-class{color:blue;}.test-class:hover{color:red;}</style>`
+      );
+    });
+
+    xit('should transform object spread with no argument function variable', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        function mixin() {
+          return { color: 'red' };
+        }
+
+        <div css={{ color: 'blue', ...mixin() }}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:blue;color:red;}</style>');
+    });
+
+    xit('should transform object spread with no argument function import', () => {
+      const actual = transformer.addSource({
+        path: '/mixins.ts',
+        contents: `
+          export function mixin() {
+            return { color: 'red' };
+          }
+        `,
+      }).transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { mixin } from './mixins';
+
+        <div css={{ color: 'blue', ...mixin() }}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:blue;color:red;}</style>');
+    });
 
     it.todo('should transform object with argument function variable');
 

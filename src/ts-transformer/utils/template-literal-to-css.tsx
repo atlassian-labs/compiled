@@ -6,29 +6,25 @@ import { objectLiteralToCssString } from './object-literal-to-css';
 
 export const templateLiteralToCss = (
   node: ts.TemplateExpression,
-  scopedVariables: VariableDeclarations,
+  collectedDeclarations: VariableDeclarations,
   context: ts.TransformationContext
 ): ToCssReturnType => {
   let cssVariables: CssVariableExpressions[] = [];
-  let css = '';
+  let css = node.head.text;
 
-  css = node.head.text;
   node.templateSpans.forEach(span => {
     const key = getIdentifierText(span.expression);
     const variableName = `--${key}-${nextCssVariableName()}`;
-    const value = scopedVariables[key];
-
+    const value = collectedDeclarations[key];
     if (!value || !value.initializer) {
       throw new Error('variable doesnt exist in scope');
     }
 
     if (ts.isObjectLiteralExpression(value.initializer)) {
-      const processed = objectLiteralToCssString(value.initializer, scopedVariables, context);
-      css = processed.css;
+      const processed = objectLiteralToCssString(value.initializer, collectedDeclarations, context);
+      css += processed.css;
       cssVariables = cssVariables.concat(processed.cssVariables);
-    } else if (!ts.isStringLiteral(value.initializer)) {
-      throw new Error('only string literals supported atm');
-    } else {
+    } else if (ts.isStringLiteral(value.initializer)) {
       const cssVariableReference = `var(${variableName})`;
       cssVariables.push({
         name: variableName,
@@ -36,6 +32,8 @@ export const templateLiteralToCss = (
       });
 
       css += `${cssVariableReference}${span.literal.text}`;
+    } else {
+      throw new Error('unsupported');
     }
   });
 

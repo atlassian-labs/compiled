@@ -32,7 +32,7 @@ const getCssVariableFromArrowFunction = (
 
 export const objectLiteralToCssString = (
   objectLiteral: ts.ObjectLiteralExpression,
-  scopedVariables: VariableDeclarations,
+  collectedDeclarations: VariableDeclarations,
   context: ts.TransformationContext
 ): ToCssReturnType => {
   const properties = objectLiteral.properties;
@@ -47,7 +47,8 @@ export const objectLiteralToCssString = (
 
       if (ts.isCallExpression(prop.expression)) {
         // we are spreading the result of a function call e.g: css={{ ...mixin() }}
-        const functionDeclaration = scopedVariables[getIdentifierText(prop.expression.expression)];
+        const functionDeclaration =
+          collectedDeclarations[getIdentifierText(prop.expression.expression)];
         const functionNode = functionDeclaration.initializer;
 
         if (!functionNode || !ts.isArrowFunction(functionNode)) {
@@ -61,7 +62,7 @@ export const objectLiteralToCssString = (
         nodeToExtractCssFrom = functionNode.body.expression;
       } else {
         // we are spreading a variable e.g: css={{ ...mixin }}
-        const variableDeclaration = scopedVariables[getIdentifierText(prop.expression)];
+        const variableDeclaration = collectedDeclarations[getIdentifierText(prop.expression)];
         if (!variableDeclaration || !variableDeclaration.initializer) {
           throw new Error('variable not in scope');
         }
@@ -72,7 +73,7 @@ export const objectLiteralToCssString = (
         throw new Error('variable not an object');
       }
       // Spread can either be from an object, or a function. Not an array yet not supported (:
-      const result = objectLiteralToCssString(nodeToExtractCssFrom, scopedVariables, context);
+      const result = objectLiteralToCssString(nodeToExtractCssFrom, collectedDeclarations, context);
       cssVariables = cssVariables.concat(result.cssVariables);
 
       return `${acc}
@@ -85,7 +86,7 @@ export const objectLiteralToCssString = (
       key = kebabCase(getIdentifierText(prop.name));
       const identifierName = getAssignmentIdentifierText(prop);
 
-      const variableDeclaration = scopedVariables[identifierName];
+      const variableDeclaration = collectedDeclarations[identifierName];
       if (!variableDeclaration || !variableDeclaration.initializer) {
         logger.log(`could not find variable "${identifierName}", ignoring`);
       } else if (
@@ -96,7 +97,7 @@ export const objectLiteralToCssString = (
         // we are referencing an object. so we want to just parse it  and use it.
         const result = objectLiteralToCssString(
           variableDeclaration.initializer,
-          scopedVariables,
+          collectedDeclarations,
           context
         );
 
@@ -120,7 +121,7 @@ export const objectLiteralToCssString = (
       key = kebabCase((prop.name as ts.Identifier).text);
 
       // We found an object selector, e.g. ":hover": { color: 'red' }
-      const result = objectLiteralToCssString(prop.initializer, scopedVariables, context);
+      const result = objectLiteralToCssString(prop.initializer, collectedDeclarations, context);
       cssVariables = cssVariables.concat(result.cssVariables);
 
       return `${acc}
