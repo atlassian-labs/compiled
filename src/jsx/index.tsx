@@ -23,7 +23,7 @@ export function jsx<P extends {}>(type: ElementType<P>, props: P, ...children: R
     throw new Error(`${packageName}
 
 You need to apply the typescript transformer to use this!
-You can apply it from \`${packageName}/transformer\`.`);
+You can apply it from \`${packageName}/ts-transformer\`.`);
   }
 
   return createElement(type, props, ...children);

@@ -1,15 +1,17 @@
-# untitled-css-in-js-project
+# @compiled/css-in-js
 
-Typescript first css-in-js library that compiles away all your problems.
+> Typescript first CSS in JS library that compiles away to nothing 🔧🚧
+
 Inspired by the `css` prop and zero config SSR of [Emotion](https://emotion.sh),
 the zero runtime of [Linaria](https://linaria.now.sh),
-and the `styled` api from [Styled Components](https://www.styled-components.com) to create _the_ css-in-js solution for component libraries. No runtime,
-server side rendering out-of-the-box,
-made for component libraries.
+and the `styled` api from [Styled Components](https://www.styled-components.com) to create _the_ css-in-js solution for component libraries.
 
-Currently in initial development -
-Typescript transformer first,
-Babel plugin later.
+- 🙅 No runtime (but actually no runtime)
+- 🌍 Server side rendering out-of-the-box (run anywhere with zero config)
+- 📦 Made for consumers consumers (developers who consume your components)
+
+Currently in initial development.
+Reach out to me [@itsmadou](https://twitter.com/itsmadou) if this sounds interesting to you.
 
 ## `css` prop
 

@@ -1,7 +1,7 @@
 {
-  "name": "@untitled/css-in-js-project",
+  "name": "@compiled/css-in-js",
   "version": "0.0.0",
-  "description": "Compile away your css in js problems. Made for Component Libraries.",
+  "description": "Typescript first CSS in JS library that compiles away to nothing 🔧🚧",
   "keywords": [
     "css-in-js"
   ],
