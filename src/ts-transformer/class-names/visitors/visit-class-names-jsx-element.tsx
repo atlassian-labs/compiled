@@ -3,17 +3,21 @@ import { getIdentifierText } from '../../utils/ast-node';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { nextClassName } from '../../utils/identifiers';
 import { createStyleFragment } from '../../utils/create-jsx-element';
-import { CssVariableExpressions } from '../../types';
+import { CssVariableExpressions, VariableDeclarations } from '../../types';
 
 const STYLE_IDENTIFIER = 'style';
 
-const visitCssCallExpression = (node: ts.CallExpression, context: ts.TransformationContext) => {
+const visitCssCallExpression = (
+  node: ts.CallExpression,
+  context: ts.TransformationContext,
+  collectedDeclarations: VariableDeclarations
+) => {
   if (!ts.isObjectLiteralExpression(node.arguments[0])) {
     throw new Error('only support object literal atm');
   }
 
   const cssArgument: ts.ObjectLiteralExpression = node.arguments[0] as ts.ObjectLiteralExpression;
-  const extracted = objectLiteralToCssString(cssArgument, {}, context);
+  const extracted = objectLiteralToCssString(cssArgument, collectedDeclarations, context);
   const className = nextClassName();
 
   return {
@@ -39,7 +43,8 @@ const isStyleIdentifier = (node: ts.Node): node is ts.Identifier => {
 
 export const visitClassNamesJsxElement = (
   classNamesNode: ts.JsxElement,
-  context: ts.TransformationContext
+  context: ts.TransformationContext,
+  collectedDeclarations: VariableDeclarations
 ): ts.Node => {
   let css = '';
   let cssVariables: CssVariableExpressions[] = [];
@@ -47,7 +52,7 @@ export const visitClassNamesJsxElement = (
 
   const visitor = (node: ts.Node): ts.Node => {
     if (isCssCallExpression(node)) {
-      const result = visitCssCallExpression(node, context);
+      const result = visitCssCallExpression(node, context, collectedDeclarations);
       css += result.extracted.css;
 
       cssVariables = cssVariables.concat(result.extracted.cssVariables);

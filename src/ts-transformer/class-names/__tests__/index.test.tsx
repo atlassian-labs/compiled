@@ -40,12 +40,6 @@ describe('class names transformer', () => {
     expect(actual).not.toInclude(`import { ClassNames } from "${pkg.name}";`);
   });
 
-  it.todo('should add react default import if missing');
-
-  it.todo('should add react default import if it only has named imports');
-
-  it.todo('should do nothing if react default import is already defined');
-
   describe('using a string literal', () => {
     it.todo('should transform no template string literal');
 
@@ -83,10 +77,6 @@ describe('class names transformer', () => {
 
     it.todo('should transform object with nested object into a selector');
 
-    it.todo('should transform object with object selector from variable');
-
-    it.todo('should transform object with object selector from import');
-
     it.todo('should transform object that has a variable reference');
 
     it.todo('should transform object spread from variable');
@@ -116,7 +106,25 @@ describe('class names transformer', () => {
 
     it.todo('should transform object with obj variable');
 
-    it.todo('should transform object with obj import');
+    it('should transform object with obj import', () => {
+      const actual = transformer.addSource({
+        contents: `export const hover = { color: 'red' };`,
+        path: './mixins.tsx',
+      }).transform(`
+        import { ClassNames } from '${pkg.name}';
+        import { hover } from './mixins';
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css }) => <div className={css({ fontSize: '20px', ':hover': hover })}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:20px;}.test-class:hover{color:red;}</style>'
+      );
+    });
 
     it.todo('should transform object with array variable');
 

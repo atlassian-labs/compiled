@@ -1,6 +1,8 @@
 import * as ts from 'typescript';
 import { isPackageModuleImport, getIdentifierText } from '../utils/ast-node';
 import { visitClassNamesJsxElement } from './visitors/visit-class-names-jsx-element';
+import { collectDeclarationsFromNode } from '../utils/collect-declarations';
+import { VariableDeclarations } from '../types';
 
 const CLASS_NAMES_NAME = 'ClassNames';
 
@@ -16,20 +18,26 @@ const isClassNameComponent = (node: ts.Node): node is ts.JsxElement => {
   );
 };
 
-export default function classNamesTransformer(_: ts.Program): ts.TransformerFactory<ts.SourceFile> {
+export default function classNamesTransformer(
+  program: ts.Program
+): ts.TransformerFactory<ts.SourceFile> {
   const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
     return sourceFile => {
       if (!isClassNamesFound(sourceFile)) {
         return sourceFile;
       }
 
+      const collectedDeclarations: VariableDeclarations = {};
+
       const visitor = (node: ts.Node): ts.Node => {
+        collectDeclarationsFromNode(node, program, collectedDeclarations);
+
         if (isPackageModuleImport(node, CLASS_NAMES_NAME)) {
           return ts.createEmptyStatement();
         }
 
         if (isClassNameComponent(node)) {
-          return visitClassNamesJsxElement(node, context);
+          return visitClassNamesJsxElement(node, context, collectedDeclarations);
         }
 
         return ts.visitEachChild(node, visitor, context);

@@ -87,10 +87,6 @@ describe('styled component transformer', () => {
 
     it.todo('should transform object with nested object into a selector');
 
-    it.todo('should transform object with object selector from variable');
-
-    it.todo('should transform object with object selector from import');
-
     it('should transform template object with string variable', () => {
       const actual = transformer.transform(`
         import { styled } from '${pkg.name}';
@@ -132,7 +128,24 @@ describe('styled component transformer', () => {
 
     it.todo('should transform object with obj variable');
 
-    it.todo('should transform object with obj import');
+    it('should transform object with obj import', () => {
+      const actual = transformer.addSource({
+        contents: `export const hover = { color: 'red' };`,
+        path: './mixins.tsx',
+      }).transform(`
+        import { styled } from '${pkg.name}';
+        import { hover } from './mixins';
+
+        const ListItem = styled.div({
+          fontSize: '20px',
+          ':hover': hover,
+        });
+      `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:20px;}.test-class:hover{color:red;}</style>'
+      );
+    });
 
     it.todo('should transform object with array variable');
 

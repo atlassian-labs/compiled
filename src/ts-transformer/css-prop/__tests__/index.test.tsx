@@ -162,33 +162,6 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class:hover{color:blue;}</style>');
     });
 
-    it('should transform object with object selector from variable', () => {
-      const actual = transformer.addSource({
-        path: '/mixins.ts',
-        contents: "export const mixin = { color: 'blue' };",
-      }).transform(`
-        /** @jsx jsx */
-        import { jsx } from '${pkg.name}';
-        import { mixin } from './mixins';
-
-        <div
-          css={{
-            display: 'flex',
-            fontSize: '50px',
-            color: 'blue',
-            ':hover': mixin,
-          }}>
-          Hello, world!
-        </div>
-    `);
-
-      expect(actual).toInclude(
-        '<style>.test-class{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;font-size:50px;color:blue;}.test-class:hover{color:blue;}</style>'
-      );
-    });
-
-    it.todo('should transform object with object selector from import');
-
     it('should transform object that has a variable reference', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */
@@ -240,7 +213,30 @@ describe('css prop transformer', () => {
 
     it.todo('should transform object with string import');
 
-    it.todo('should transform object with obj variable');
+    it('should transform object with obj variable', () => {
+      const actual = transformer.addSource({
+        path: '/mixins.ts',
+        contents: "export const mixin = { color: 'blue' };",
+      }).transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { mixin } from './mixins';
+
+        <div
+          css={{
+            display: 'flex',
+            fontSize: '50px',
+            color: 'blue',
+            ':hover': mixin,
+          }}>
+          Hello, world!
+        </div>
+    `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;font-size:50px;color:blue;}.test-class:hover{color:blue;}</style>'
+      );
+    });
 
     it.todo('should transform object with obj import');
 

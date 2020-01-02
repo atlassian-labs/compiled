@@ -1,6 +1,8 @@
 import * as ts from 'typescript';
 import { visitObjectStyledComponent } from './visitors/visit-styled-component';
 import { getIdentifierText, isPackageModuleImport } from '../utils/ast-node';
+import { VariableDeclarations } from '../types';
+import { collectDeclarationsFromNode } from '../utils/collect-declarations';
 
 const STYLED_NAME = 'styled';
 
@@ -17,7 +19,7 @@ const isObjectStyledComponent = (node: ts.Node): node is ts.CallExpression => {
 };
 
 export default function styledComponentTransformer(
-  _: ts.Program
+  program: ts.Program
 ): ts.TransformerFactory<ts.SourceFile> {
   const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
     return sourceFile => {
@@ -25,13 +27,17 @@ export default function styledComponentTransformer(
         return sourceFile;
       }
 
+      const collectedDeclarations: VariableDeclarations = {};
+
       const visitor = (node: ts.Node): ts.Node => {
-        if (isObjectStyledComponent(node)) {
-          return visitObjectStyledComponent(node, context);
-        }
+        collectDeclarationsFromNode(node, program, collectedDeclarations);
 
         if (isPackageModuleImport(node, STYLED_NAME)) {
           return ts.createEmptyStatement();
+        }
+
+        if (isObjectStyledComponent(node)) {
+          return visitObjectStyledComponent(node, context, collectedDeclarations);
         }
 
         return ts.visitEachChild(node, visitor, context);
