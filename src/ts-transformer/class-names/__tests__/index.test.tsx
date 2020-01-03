@@ -111,9 +111,39 @@ describe('class names transformer', () => {
       );
     });
 
-    it.todo('should transform template string literal with obj variable');
+    it('should transform template string literal with obj variable', () => {
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
 
-    it.todo('should transform template string literal with obj import');
+        const color = { color: 'blue' };
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css }) => <div className={css\`\${color}\`}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude(`<style>.test-class{color:blue;}</style>`);
+    });
+
+    it('should transform template string literal with obj import', () => {
+      const actual = transformer.addSource({
+        path: '/mix.ts',
+        contents: `export const color = { color: 'blue' };`,
+      }).transform(`
+        import { ClassNames } from '${pkg.name}';
+        import { color } from './mix';
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css }) => <div className={css\`\${color}\`}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude(`<style>.test-class{color:blue;}</style>`);
+    });
 
     it.todo('should transform template string literal with array variable');
 
@@ -137,15 +167,87 @@ describe('class names transformer', () => {
   });
 
   describe('using an object literal', () => {
-    it.todo('should transform object with simple values');
+    it('should transform object with simple values', () => {
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
 
-    it.todo('should transform object with nested object into a selector');
+        const ListItem = () => (
+          <ClassNames>
+            {({ css, style }) => <div style={style} className={css({ color: 'red', margin: 0 })}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
 
-    it.todo('should transform object that has a variable reference');
+      expect(actual).toInclude('<style>.test-class{color:red;margin:0;}</style>');
+    });
 
-    it.todo('should transform object spread from variable');
+    it('should transform object with nested object into a selector', () => {
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
 
-    it.todo('should transform object spread from import');
+        const ListItem = () => (
+          <ClassNames>
+            {({ css, style }) => <div style={style} className={css({ ':hover': { color: 'red', margin: 0 } })}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude('<style>.test-class:hover{color:red;margin:0;}</style>');
+    });
+
+    it('should transform object that has a variable reference', () => {
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
+
+        const color = 'red';
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css, style }) => <div style={style} className={css({ color, margin: 0 })}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{color:var(--color-test-css-variable);margin:0;}</style>'
+      );
+    });
+
+    it('should transform object spread from variable', () => {
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
+
+        const mixin = {
+          color: 'red',
+        };
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css, style }) => <div style={style} className={css({ color: 'blue', ...mixin })}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:blue;color:red;}</style>');
+    });
+
+    it('should transform object spread from import', () => {
+      const actual = transformer.addSource({
+        path: '/mixy.ts',
+        contents: "export const mixin = { color: 'red' };",
+      }).transform(`
+        import { ClassNames } from '${pkg.name}';
+        import { mixin } from './mixy';
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css, style }) => <div style={style} className={css({ color: 'blue', ...mixin })}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:blue;color:red;}</style>');
+    });
 
     it('should transform object with string variable', () => {
       const actual = transformer.transform(`
@@ -166,9 +268,41 @@ describe('class names transformer', () => {
       );
     });
 
-    it.todo('should transform object with string import');
+    it('should transform object with string import', () => {
+      const actual = transformer.addSource({
+        path: '/mixy.ts',
+        contents: "export const color = 'red';",
+      }).transform(`
+        import { ClassNames } from '${pkg.name}';
+        import { color } from './mixy';
 
-    it.todo('should transform object with obj variable');
+        const ListItem = () => (
+          <ClassNames>
+            {({ css, style }) => <div style={style} className={css({ color })}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+    });
+
+    it('should transform object with obj variable', () => {
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
+
+        const hover = { color: 'red' };
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css }) => <div className={css({ fontSize: '20px', ':hover': hover })}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:20px;}.test-class:hover{color:red;}</style>'
+      );
+    });
 
     it('should transform object with obj import', () => {
       const actual = transformer.addSource({
