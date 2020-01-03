@@ -23,8 +23,22 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = props => <><style>.test-class{font-size:20px;}</style><div className="test-class">{props.children}</div></>'
+      'const ListItem = props => <><style>.test-class{font-size:20px;}</style><div {...props} className="test-class"></div></>'
     );
+  });
+
+  xit('should compose using a previously created component', () => {
+    const actual = transformer.transform(`
+      import { styled } from '${pkg.name}';
+
+      const MyButton = ({ children, ...props }: any) => <button {...props}>{children}</button>
+
+      const ListItem = styled(MyButton)({
+        fontSize: '20px',
+      });
+    `);
+
+    expect(actual).toInclude('<MyButton {...props} className="test-class" />');
   });
 
   it('should remove styled import', () => {
@@ -47,7 +61,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = props => <><style>.test-class{font-size:20px;}</style><div className="test-class">{props.children}</div></>'
+      'const ListItem = props => <><style>.test-class{font-size:20px;}</style><div {...props} className="test-class"></div></>'
     );
   });
 
@@ -72,6 +86,18 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude('import React, { useState } from "react";');
+  });
+
+  it('should spread down props to element', () => {
+    const actual = transformer.transform(`
+      import { styled } from '${pkg.name}';
+
+      const ListItem = styled.div\`
+        font-size: 20px;
+      \`;
+    `);
+
+    expect(actual).toInclude('<div {...props}');
   });
 
   it('should do nothing if react default import is already defined', () => {
@@ -147,9 +173,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
-      expect(actual).toInclude(
-        '<div className="test-class" style={{ "--color-test-css-variable": props.color }}>{props.children}</div>'
-      );
+      expect(actual).toInclude('style={{ "--color-test-css-variable": props.color }}');
     });
 
     it('should transform template string literal with string import', () => {
@@ -262,9 +286,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
-      expect(actual).toInclude(
-        '<div className="test-class" style={{ "--color-test-css-variable": color }}>{props.children}</div>'
-      );
+      expect(actual).toInclude('style={{ "--color-test-css-variable": color }}>');
     });
 
     it('should transform template object with prop reference', () => {
@@ -277,9 +299,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
-      expect(actual).toInclude(
-        '<div className="test-class" style={{ "--color-test-css-variable": props.color }}>{props.children}</div>'
-      );
+      expect(actual).toInclude('style={{ "--color-test-css-variable": props.color }}');
     });
 
     it('should transform object spread from variable', () => {

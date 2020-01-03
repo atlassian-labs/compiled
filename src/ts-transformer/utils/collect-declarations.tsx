@@ -36,7 +36,8 @@ export const collectDeclarationsFromNode = (
         exportSymbol.valueDeclaration &&
         !ts.isVariableDeclaration(exportSymbol.valueDeclaration)
       ) {
-        throw new Error('only variable exports supported atm');
+        logger.log('only variable exports supported atm - skipping');
+        return;
       }
 
       outDeclarationsMap[exportSymbol.getName()] = exportSymbol.valueDeclaration;

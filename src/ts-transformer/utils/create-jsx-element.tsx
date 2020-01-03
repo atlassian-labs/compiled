@@ -8,10 +8,18 @@ interface JsxElementOpts {
   css: string;
   cssVariables: CssVariableExpressions[];
   originalNode: ts.Node;
+  jsxAttributes?: (ts.JsxAttribute | ts.JsxSpreadAttribute)[];
   selector?: string;
   children?: ts.JsxChild;
 }
 
+/**
+ * Will return something like this:
+ * <>
+ *  <style></style>
+ *  {opts.children}
+ * </>
+ */
 export const createStyleFragment = ({
   selector = `.${nextClassName()}`,
   originalNode,
@@ -80,6 +88,8 @@ export const createJsxElement = (tagNode: string, opts: JsxElementOpts, original
         ts.createIdentifier(tagNode),
         [],
         ts.createJsxAttributes([
+          ...(opts.jsxAttributes || []),
+          // className should always be last
           ts.createJsxAttribute(
             ts.createIdentifier('className'),
             ts.createStringLiteral(className)

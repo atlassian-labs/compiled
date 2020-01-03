@@ -48,7 +48,7 @@ export const visitStyledComponent = (
     {
       ...result,
       originalNode: node,
-      children: ts.createJsxExpression(undefined, ts.createIdentifier('props.children')),
+      jsxAttributes: [ts.createJsxSpreadAttribute(ts.createIdentifier('props'))],
     },
     node
   );
