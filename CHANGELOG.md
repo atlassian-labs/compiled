@@ -1,4 +1,4 @@
 # Change Log
 
-All notable changes to this project will be documented in this file.
-See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+This project adheres to [Semantic Versioning 2.0](http://semver.org/).
+All release notes and upgrade notes can be found on our [Github Releases](https://github.com/compiled/css-in-js/releases) page.

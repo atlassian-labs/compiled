@@ -19,7 +19,9 @@
     "test:cover": "jest --collectCoverage",
     "build": "tsc --module commonjs",
     "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js --module commonjs",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "preversion": "yarn test && yarn build",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "stylis": "^3.5.4",
