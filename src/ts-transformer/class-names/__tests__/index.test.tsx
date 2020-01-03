@@ -47,15 +47,33 @@ describe('class names transformer', () => {
 
         const ListItem = () => (
           <ClassNames>
-            {({ css }) => <div className={css\`\`}>hello, world!</div>}
+            {({ css }) => <div className={css\`font-size: 20px\`}>hello, world!</div>}
           </ClassNames>
         );
       `);
 
-      expect(actual).toInclude('<style></style>');
+      expect(actual).toInclude('<style>.test-class{font-size:20px;}</style>');
     });
 
-    xit('should transform template string literal with string variable', () => {
+    it('should transform template string literal with string variable', () => {
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
+
+        const fontSize = '12px';
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css }) => <div className={css\`font-size: \${fontSize};\`}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude(
+        `<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>`
+      );
+    });
+
+    it('should transform template string literal with numeric variable', () => {
       const actual = transformer.transform(`
         import { ClassNames } from '${pkg.name}';
 
@@ -63,15 +81,35 @@ describe('class names transformer', () => {
 
         const ListItem = () => (
           <ClassNames>
-            {({ css }) => <div className={css\`font-size: \${fontSize}px\`}>hello, world!</div>}
+            {({ css }) => <div className={css\`font-size: \${fontSize};\`}>hello, world!</div>}
           </ClassNames>
         );
       `);
 
-      expect(actual).toInclude(`<style></style>`);
+      expect(actual).toInclude(
+        `<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>`
+      );
     });
 
-    it.todo('should transform template string literal with string import');
+    it('should transform template string literal with string import', () => {
+      const actual = transformer.addSource({
+        path: '/constants.ts',
+        contents: "export const fontSize = '12px';",
+      }).transform(`
+        import { ClassNames } from '${pkg.name}';
+        import { fontSize } from './constants';
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css }) => <div className={css\`font-size: \${fontSize};\`}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude(
+        `<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>`
+      );
+    });
 
     it.todo('should transform template string literal with obj variable');
 

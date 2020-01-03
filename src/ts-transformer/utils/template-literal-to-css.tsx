@@ -31,7 +31,7 @@ export const templateLiteralToCss = (
       const processed = objectLiteralToCssString(value.initializer, collectedDeclarations, context);
       css += processed.css;
       cssVariables = cssVariables.concat(processed.cssVariables);
-    } else if (ts.isStringLiteral(value.initializer)) {
+    } else if (ts.isStringLiteral(value.initializer) || ts.isNumericLiteral(value.initializer)) {
       const cssVariableReference = `var(${variableName})`;
       cssVariables.push({
         name: variableName,

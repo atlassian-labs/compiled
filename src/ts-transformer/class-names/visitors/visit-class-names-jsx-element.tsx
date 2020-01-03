@@ -27,10 +27,6 @@ const visitCssTaggedTemplateExpression = (
   context: ts.TransformationContext,
   collectedDeclarations: VariableDeclarations
 ): ToCssReturnType => {
-  if (!ts.isTemplateExpression(node.template)) {
-    return { css: node.template.text, cssVariables: [] };
-  }
-
   return templateLiteralToCss(node.template, collectedDeclarations, context);
 };
 
