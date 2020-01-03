@@ -6,6 +6,10 @@ jest.mock('../../utils/identifiers');
 
 const transformer = new Transformer()
   .addTransformer(styledComponentTransformer)
+  .addMock({
+    name: 'react',
+    content: 'export const useState: any = {}; export default () => {} as any;',
+  })
   .addMock({ name: pkg.name, content: `export const styled: any = () => null` })
   .setFilePath('/index.tsx');
 
@@ -34,13 +38,53 @@ describe('styled component transformer', () => {
     expect(actual).not.toInclude(`import { styled } from '${pkg.name}';`);
   });
 
-  it.todo('should replace string literal styled component with component');
+  it('should replace string literal styled component with component', () => {
+    const actual = transformer.transform(`
+      import { styled } from '${pkg.name}';
+      const ListItem = styled.div\`
+        font-size: 20px;
+      \`;
+    `);
 
-  it.todo('should add react default import if missing');
+    expect(actual).toInclude(
+      'const ListItem = props => <><style>.test-class{font-size:20px;}</style><div className="test-class">{props.children}</div></>'
+    );
+  });
 
-  it.todo('should add react default import if it only has named imports');
+  it('should add react default import if missing', () => {
+    const actual = transformer.transform(`
+      import { styled } from '${pkg.name}';
+      const ListItem = styled.div\`
+        font-size: 20px;
+      \`;
+    `);
 
-  it.todo('should do nothing if react default import is already defined');
+    expect(actual).toInclude('import React from "react";');
+  });
+
+  it('should add react default import if it only has named imports', () => {
+    const actual = transformer.transform(`
+      import { useState } from 'react';
+      import { styled } from '${pkg.name}';
+      const ListItem = styled.div\`
+        font-size: 20px;
+      \`;
+    `);
+
+    expect(actual).toInclude('import React, { useState } from "react";');
+  });
+
+  it('should do nothing if react default import is already defined', () => {
+    const actual = transformer.transform(`
+      import React from 'react';
+      import { styled } from '${pkg.name}';
+      const ListItem = styled.div\`
+        font-size: 20px;
+      \`;
+    `);
+
+    expect(actual).toInclude('import React from "react";');
+  });
 
   it.todo('should concat explicit use of class name prop on an element');
 

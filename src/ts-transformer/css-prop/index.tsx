@@ -6,7 +6,7 @@ import {
   isJsxElementWithCssProp,
   visitJsxElementWithCssProp,
 } from './visitors/visit-jsx-element-with-css-prop';
-import { visitSourceFileEnsureDefaultReactImport } from './visitors/visit-source-file-ensure-default-react-import';
+import { visitSourceFileEnsureDefaultReactImport } from '../utils/visit-source-file-ensure-default-react-import';
 import { getIdentifierText, getExpressionText, isPackageModuleImport } from '../utils/ast-node';
 import { collectDeclarationsFromNode } from '../utils/collect-declarations';
 

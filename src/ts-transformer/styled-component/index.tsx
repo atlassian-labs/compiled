@@ -1,8 +1,9 @@
 import * as ts from 'typescript';
-import { visitObjectStyledComponent } from './visitors/visit-styled-component';
+import { visitStyledComponent } from './visitors/visit-styled-component';
 import { getIdentifierText, isPackageModuleImport } from '../utils/ast-node';
 import { VariableDeclarations } from '../types';
 import { collectDeclarationsFromNode } from '../utils/collect-declarations';
+import { visitSourceFileEnsureDefaultReactImport } from '../utils/visit-source-file-ensure-default-react-import';
 
 const STYLED_NAME = 'styled';
 
@@ -10,12 +11,26 @@ const isStyledImportFound = (sourceFile: ts.SourceFile): boolean => {
   return !!sourceFile.statements.find(statement => isPackageModuleImport(statement, STYLED_NAME));
 };
 
-const isObjectStyledComponent = (node: ts.Node): node is ts.CallExpression => {
-  if (!ts.isCallExpression(node) || !ts.isPropertyAccessExpression(node.expression)) {
-    return false;
+const isStyledComponent = (
+  node: ts.Node
+): node is ts.CallExpression | ts.TaggedTemplateExpression => {
+  if (
+    ts.isCallExpression(node) &&
+    ts.isPropertyAccessExpression(node.expression) &&
+    getIdentifierText(node.expression.expression) === STYLED_NAME
+  ) {
+    return true;
   }
 
-  return getIdentifierText(node.expression.expression) === STYLED_NAME;
+  if (
+    ts.isTaggedTemplateExpression(node) &&
+    ts.isPropertyAccessExpression(node.tag) &&
+    getIdentifierText(node.tag.expression) === STYLED_NAME
+  ) {
+    return true;
+  }
+
+  return false;
 };
 
 export default function styledComponentTransformer(
@@ -27,6 +42,7 @@ export default function styledComponentTransformer(
         return sourceFile;
       }
 
+      const transformedSourceFile = visitSourceFileEnsureDefaultReactImport(sourceFile, context);
       const collectedDeclarations: VariableDeclarations = {};
 
       const visitor = (node: ts.Node): ts.Node => {
@@ -36,14 +52,14 @@ export default function styledComponentTransformer(
           return ts.createEmptyStatement();
         }
 
-        if (isObjectStyledComponent(node)) {
-          return visitObjectStyledComponent(node, context, collectedDeclarations);
+        if (isStyledComponent(node)) {
+          return visitStyledComponent(node, context, collectedDeclarations);
         }
 
         return ts.visitEachChild(node, visitor, context);
       };
 
-      return ts.visitNode(sourceFile, visitor);
+      return ts.visitNode(transformedSourceFile, visitor);
     };
   };
 

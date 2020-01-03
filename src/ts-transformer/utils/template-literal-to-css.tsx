@@ -5,10 +5,17 @@ import { nextCssVariableName } from './identifiers';
 import { objectLiteralToCssString } from './object-literal-to-css';
 
 export const templateLiteralToCss = (
-  node: ts.TemplateExpression,
+  node: ts.TemplateExpression | ts.NoSubstitutionTemplateLiteral,
   collectedDeclarations: VariableDeclarations,
   context: ts.TransformationContext
 ): ToCssReturnType => {
+  if (ts.isNoSubstitutionTemplateLiteral(node)) {
+    return {
+      css: node.text,
+      cssVariables: [],
+    };
+  }
+
   let cssVariables: CssVariableExpressions[] = [];
   let css = node.head.text;
 
