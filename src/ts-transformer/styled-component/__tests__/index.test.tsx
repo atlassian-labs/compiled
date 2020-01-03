@@ -152,11 +152,53 @@ describe('styled component transformer', () => {
       );
     });
 
-    it.todo('should transform template string literal with string import');
+    it('should transform template string literal with string import', () => {
+      const actual = transformer.addSource({
+        path: '/fonts.ts',
+        contents: 'export const fontSize = "20px";',
+      }).transform(`
+        import { styled } from '${pkg.name}';
+        import { fontSize } from './fonts';
 
-    it.todo('should transform template string literal with obj variable');
+        const ListItem = styled.div\`
+          font-size: \${fontSize};
+        \`;
+      `);
 
-    it.todo('should transform template string literal with obj import');
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
+      );
+    });
+
+    it('should transform template string literal with obj variable', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const h200 = { fontSize: '12px' };
+
+        const ListItem = styled.div\`
+          font-size: \${h200};
+        \`;
+      `);
+
+      expect(actual).toInclude('<style>.test-class{font-size: font-size:12px;}</style>');
+    });
+
+    it('should transform template string literal with obj import', () => {
+      const actual = transformer.addSource({
+        path: '/typo.ts',
+        contents: `export const h200 = { fontSize: '12px' };`,
+      }).transform(`
+        import { styled } from '${pkg.name}';
+        import { h200 } from './typo';
+
+        const ListItem = styled.div\`
+          font-size: \${h200};
+        \`;
+      `);
+
+      expect(actual).toInclude('<style>.test-class{font-size: font-size:12px;}</style>');
+    });
 
     it.todo('should transform template string literal with array variable');
 
@@ -180,9 +222,33 @@ describe('styled component transformer', () => {
   });
 
   describe('using an object literal', () => {
-    it.todo('should transform object with simple values');
+    it('should transform object with simple values', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
 
-    it.todo('should transform object with nested object into a selector');
+        const ListItem = styled.div({
+          color: 'blue',
+          margin: 0,
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:blue;margin:0;}</style>');
+    });
+
+    it('should transform object with nested object into a selector', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const ListItem = styled.div({
+          ':hover': {
+            color: 'blue',
+            margin: 0,
+          },
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class:hover{color:blue;margin:0;}</style>');
+    });
 
     it('should transform template object with string variable', () => {
       const actual = transformer.transform(`
@@ -192,7 +258,8 @@ describe('styled component transformer', () => {
 
         const ListItem = styled.div({
           color,
-        });`);
+        });
+      `);
 
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
       expect(actual).toInclude(
@@ -215,15 +282,84 @@ describe('styled component transformer', () => {
       );
     });
 
-    it.todo('should transform object spread from variable');
+    it('should transform object spread from variable', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
 
-    it.todo('should transform object spread from import');
+        const h100 = { fontSize: '12px' };
 
-    it.todo('should transform object with string variable');
+        const ListItem = styled.div({
+          ...h100,
+        });
+      `);
 
-    it.todo('should transform object with string import');
+      expect(actual).toInclude('<style>.test-class{font-size:12px;}</style>');
+    });
 
-    it.todo('should transform object with obj variable');
+    it('should transform object spread from import', () => {
+      const actual = transformer.addSource({
+        path: '/tip.ts',
+        contents: `export const h100 = { fontSize: '12px' };`,
+      }).transform(`
+        import { styled } from '${pkg.name}';
+        import { h100 } from './tip';
+
+        const ListItem = styled.div({
+          ...h100,
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class{font-size:12px;}</style>');
+    });
+
+    it('should transform object with string variable', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const color = 'blue';
+
+        const ListItem = styled.div({
+          color: color,
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+      expect(actual).toInclude('style={{ "--color-test-css-variable": color }}');
+    });
+
+    it('should transform object with string import', () => {
+      const actual = transformer.addSource({
+        path: '/colors.ts',
+        contents: `export const color = 'blue';`,
+      }).transform(`
+        import { styled } from '${pkg.name}';
+        import { color } from './colors';
+
+        const ListItem = styled.div({
+          color,
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+      expect(actual).toInclude('style={{ "--color-test-css-variable": color }}');
+    });
+
+    it('should transform object with obj variable', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const hover = { color: 'red' };
+
+        const ListItem = styled.div({
+          fontSize: '20px',
+          ':hover': hover,
+        });
+      `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:20px;}.test-class:hover{color:red;}</style>'
+      );
+    });
 
     it('should transform object with obj import', () => {
       const actual = transformer.addSource({
