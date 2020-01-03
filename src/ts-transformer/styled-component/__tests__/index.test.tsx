@@ -93,11 +93,64 @@ describe('styled component transformer', () => {
   it.todo('should concat use of inline styles when there is use of dynamic css');
 
   describe('using a string literal', () => {
-    it.todo('should transform no template string literal');
+    it('should transform no template string literal', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
 
-    it.todo('should transform template string literal with string variable');
+        const ListItem = styled.div\`
+          font-size: 20px;
+        \`;
+      `);
 
-    it.todo('should transform template string literal with prop reference');
+      expect(actual).toInclude('<style>.test-class{font-size:20px;}</style>');
+    });
+
+    it('should transform template string literal with string variable', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const fontSize = '20px';
+
+        const ListItem = styled.div\`
+          font-size: \${fontSize};
+        \`;
+      `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
+      );
+    });
+
+    it('should transform template string literal with numeric variable', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const margin = 0;
+
+        const ListItem = styled.div\`
+          margin: \${margin};
+        \`;
+      `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{margin:var(--margin-test-css-variable);}</style>'
+      );
+    });
+
+    it('should transform template string literal with prop reference', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const ListItem = styled.div\`
+          color: \${props => props.color};
+        \`;
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+      expect(actual).toInclude(
+        '<div className="test-class" style={{ "--color-test-css-variable": props.color }}>{props.children}</div>'
+      );
+    });
 
     it.todo('should transform template string literal with string import');
 

@@ -8,27 +8,7 @@ import {
   getAssignmentIdentifier,
 } from './ast-node';
 import * as logger from './log';
-
-const getCssVariableFromArrowFunction = (
-  node: ts.ArrowFunction,
-  context: ts.TransformationContext
-): CssVariableExpressions => {
-  let identifier: ts.Identifier = ts.createIdentifier('');
-  let name: string = '';
-
-  const visitor = (node: ts.Node) => {
-    if (ts.isPropertyAccessExpression(node)) {
-      identifier = ts.createIdentifier(node.getText());
-      name = `--${node.name.escapedText}-${nextCssVariableName()}`;
-    }
-
-    return node;
-  };
-
-  ts.visitEachChild(node, visitor, context);
-
-  return { identifier, name };
-};
+import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
 
 export const objectLiteralToCssString = (
   objectLiteral: ts.ObjectLiteralExpression,
@@ -138,7 +118,7 @@ export const objectLiteralToCssString = (
       value = `${prop.initializer.text}`;
     } else if (ts.isPropertyAssignment(prop) && ts.isArrowFunction(prop.initializer)) {
       key = kebabCase(getIdentifierText(prop.name));
-      const cssResult = getCssVariableFromArrowFunction(prop.initializer, context);
+      const cssResult = extractCssVarFromArrowFunction(prop.initializer, context);
       value = `var(${cssResult.name})`;
       cssVariables.push(cssResult);
     } else {
