@@ -26,7 +26,10 @@ jobs:
       - name: Install packages
         run: yarn
 
-      - name: Build sources
+      - name: Test source
+        run: yarn test
+
+      - name: Build source
         run: yarn build
 
   publish-npm:
@@ -38,6 +41,7 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
+
       - name: Publish to npm registry
         run: npm publish
         env:
@@ -53,6 +57,7 @@ jobs:
           node-version: 12
           registry-url: https://npm.pkg.github.com/
           scope: '@compiled'
+
       - name: Publish to github registry
         run: npm publish
         env:
