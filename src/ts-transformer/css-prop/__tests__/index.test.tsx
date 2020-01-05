@@ -158,7 +158,7 @@ describe('css prop transformer', () => {
 
     it.todo('should transform template string literal with array import');
 
-    xit('should transform template string with no argument arrow function variable', () => {
+    it('should transform template string with no argument arrow function variable', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
@@ -170,7 +170,32 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:blue;font-size:30px;}</style>');
     });
 
-    it.todo('should transform template string with no argument arrow function import');
+    it('should transform template string with no argument arrow function call variable', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        const style = () => ({ color: 'blue', fontSize: '30px' });
+        <div css={\`\${style()}\`}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:blue;font-size:30px;}</style>');
+    });
+
+    it('should transform template string with no argument arrow function call import', () => {
+      const actual = transformer.addSource({
+        path: '/stylez.ts',
+        contents: `export const style = () => ({ color: 'blue', fontSize: '30px' });`,
+      }).transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { style } from './stylez';
+
+        <div css={\`\${style()}\`}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:blue;font-size:30px;}</style>');
+    });
 
     it.todo('should transform template string with no argument function variable');
 
@@ -180,7 +205,21 @@ describe('css prop transformer', () => {
 
     it.todo('should transform template string with argument function import');
 
-    it.todo('should transform template string with argument arrow function variable');
+    xit('should transform template string with argument arrow function variable', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        const style = (color: string) => ({ color, fontSize: '30px' });
+        const primary = 'red';
+        <div css={\`\${style(primary)}\`}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{color:var(--color-test-css-variable);font-size:30px;}</style>'
+      );
+      expect(actual).toInclude('style={{ "--color-test-css-variable": primary }}');
+    });
 
     it.todo('should transform template string with argument arrow function import');
   });
@@ -251,7 +290,7 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:blue;color:red;}</style>');
     });
 
-    xit('should transform object spread from import', () => {
+    it('should transform object spread from import', () => {
       const actual = transformer.addSource({
         path: '/mixins.ts',
         contents: `export const mixin = { color: 'red' };`,
@@ -368,22 +407,20 @@ describe('css prop transformer', () => {
 
     it.todo('should transform object with array import');
 
-    xit('should transform object with no argument arrow function variable', () => {
+    it('should transform object with no argument arrow function variable', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
         const mixin = () => ({ color: 'red' });
 
-        <div css={{ color: 'blue', ...mixin }}>hello world</div>
+        <div css={{ color: 'blue', ...mixin() }}>hello world</div>
       `);
 
-      expect(actual).toInclude(
-        `<style>.test-class{color:blue;}.test-class:hover{color:red;}</style>`
-      );
+      expect(actual).toInclude(`<style>.test-class{color:blue;color:red;}</style>`);
     });
 
-    xit('should transform object with no argument arrow function import', () => {
+    it('should transform object with no argument arrow function import', () => {
       const actual = transformer.addSource({
         path: '/mixins.ts',
         contents: `export const mixin = () => ({ color: 'red' });`,
@@ -392,12 +429,10 @@ describe('css prop transformer', () => {
         import { jsx } from '${pkg.name}';
         import { mixin } from './mixins';
 
-        <div css={{ color: 'blue', ...mixin }}>hello world</div>
+        <div css={{ color: 'blue', ...mixin() }}>hello world</div>
       `);
 
-      expect(actual).toInclude(
-        `<style>.test-class{color:blue;}.test-class:hover{color:red;}</style>`
-      );
+      expect(actual).toInclude(`<style>.test-class{color:blue;color:red;}</style>`);
     });
 
     it('should transform object spread with no argument arrow function variable', () => {
@@ -504,8 +539,41 @@ describe('css prop transformer', () => {
 
     it.todo('should transform object with argument function import');
 
-    it.todo('should transform object with argument arrow function variable');
+    it('should transform object with argument arrow function variable', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
 
-    it.todo('should transform object with argument arrow function import');
+        const mixin = (color: string) => ({ color });
+        const color = 'red';
+
+        <div css={{ color: 'blue', ...mixin(color) }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{color:blue;color:var(--color-test-css-variable);}</style>'
+      );
+      expect(actual).toInclude('style={{ "--color-test-css-variable": color }}>');
+    });
+
+    it('should transform object with argument arrow function import', () => {
+      const actual = transformer.addSource({
+        path: '/styles.ts',
+        contents: 'export const mixin = (color: string) => ({ color });',
+      }).transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { mixin } from './styles';
+
+        const color = 'red';
+
+        <div css={{ color: 'blue', ...mixin(color) }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{color:blue;color:var(--color-test-css-variable);}</style>'
+      );
+      expect(actual).toInclude('style={{ "--color-test-css-variable": color }}>');
+    });
   });
 });

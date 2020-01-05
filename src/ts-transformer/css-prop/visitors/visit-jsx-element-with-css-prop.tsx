@@ -34,7 +34,10 @@ export const visitJsxElementWithCssProp = (
   } else if (!cssJsxAttribute.initializer.expression) {
     // expression was empty e.g. css={}
     // do nothing
-  } else if (ts.isTemplateExpression(cssJsxAttribute.initializer.expression)) {
+  } else if (
+    ts.isTemplateExpression(cssJsxAttribute.initializer.expression) ||
+    ts.isNoSubstitutionTemplateLiteral(cssJsxAttribute.initializer.expression)
+  ) {
     // string literal found with substitutions e.g. css={`color: ${color}`}
     const processed = templateLiteralToCss(
       cssJsxAttribute.initializer.expression,
@@ -43,9 +46,6 @@ export const visitJsxElementWithCssProp = (
     );
     cssVariables = processed.cssVariables;
     cssToPassThroughCompiler = processed.css;
-  } else if (ts.isNoSubstitutionTemplateLiteral(cssJsxAttribute.initializer.expression)) {
-    // static string literal found e.g. css={`font-size: 20px;`}
-    cssToPassThroughCompiler = cssJsxAttribute.initializer.expression.text;
   } else if (ts.isObjectLiteralExpression(cssJsxAttribute.initializer.expression)) {
     // object literal found e.g css={{ fontSize: '20px' }}
     const processed = objectLiteralToCssString(

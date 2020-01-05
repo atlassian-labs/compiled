@@ -7,7 +7,7 @@ import {
   visitJsxElementWithCssProp,
 } from './visitors/visit-jsx-element-with-css-prop';
 import { visitSourceFileEnsureDefaultReactImport } from '../utils/visit-source-file-ensure-default-react-import';
-import { getIdentifierText, getExpressionText, isPackageModuleImport } from '../utils/ast-node';
+import { isPackageModuleImport } from '../utils/ast-node';
 import { collectDeclarationsFromNode } from '../utils/collect-declarations';
 
 const JSX_PRAGMA = 'jsx';
