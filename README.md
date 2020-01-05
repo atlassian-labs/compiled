@@ -7,35 +7,43 @@ the zero runtime of [Linaria](https://linaria.now.sh),
 and the `styled` api from [Styled Components](https://www.styled-components.com) to create _the_ css-in-js solution for component libraries.
 
 - 🙅 No runtime (but actually no runtime)
-- 🌍 Server side rendering out-of-the-box (run anywhere with zero config)
+- 🌍 Run anywhere with zero config (server side rendering out-of-the-box)
 - 📦 Made for consumers consumers (developers who consume your components)
 
 Currently in initial development.
 Reach out to me [@itsmadou](https://twitter.com/itsmadou) if this sounds interesting to you.
 
-## `css` prop
+## Usage
+
+### `css` prop
 
 Transforms:
 
 ```jsx
-<div css={{ color: 'blue' }}>hello, world!</div>
+import { jsx } from '@compiled/css-in-js';
+
+() => <div css={{ color: 'blue' }}>hello, world!</div>;
 ```
 
 Into:
 
 ```jsx
-<>
-  <style>{'.a { color: blue; }'}</style>
-  <div className="a">hello, world!</div>
-</>
+() => (
+  <>
+    <style>{'.a { color: blue; }'}</style>
+    <div className="a">hello, world!</div>
+  </>
+);
 ```
 
-## `styled` component
+### `styled` component
 
 Transforms:
 
 ```jsx
-const Item = styled.div`
+import { styled } from '@compiled/css-in-js';
+
+styled.div`
   color: blue;
 `;
 ```
@@ -43,7 +51,7 @@ const Item = styled.div`
 Into:
 
 ```jsx
-const Item = props => (
+props => (
   <>
     <style>{'.a { color: blue; }'}</style>
     <div className="a">{props.children}</div>
@@ -51,21 +59,29 @@ const Item = props => (
 );
 ```
 
-## `ClassNames` component
+### `ClassNames` component
 
 Transforms:
 
 ```jsx
-<ClassNames>{({ css }) => <div className={css({ color: 'blue' })}>hello, world!</div>}</ClassNames>
+import { ClassNames } from '@compiled/css-in-js';
+
+() => (
+  <ClassNames>
+    {({ css }) => <div className={css({ color: 'blue' })}>hello, world!</div>}
+  </ClassNames>
+);
 ```
 
 To:
 
 ```jsx
-<>
-  <style>{'.a { font-size: 20px; }'}</style>
-  <div className="a">hello, world!</div>
-</>
+() => (
+  <>
+    <style>{'.a { font-size: 20px; }'}</style>
+    <div className="a">hello, world!</div>
+  </>
+);
 ```
 
 ## Dynamic behaviour
@@ -80,7 +96,7 @@ Transforms:
 ```jsx
 const [color] = useState('blue');
 
-<div css={{ color }}>hello, world!</div>;
+() => <div css={{ color }}>hello, world!</div>;
 ```
 
 Into:
@@ -88,10 +104,12 @@ Into:
 ```jsx
 const [color] = useState('blue');
 
-<>
-  <style>{'.a { color: var(--color-a); }'}</style>
-  <div className="a" style={{ '--color-a': color }}>
-    hello, world!
-  </div>
-</>;
+() => (
+  <>
+    <style>{'.a { color: var(--color-a); }'}</style>
+    <div className="a" style={{ '--color-a': color }}>
+      hello, world!
+    </div>
+  </>
+);
 ```

@@ -236,6 +236,22 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{font-size:20;color:blue;}</style>');
     });
 
+    xit('should move right hand value (px, em, etc) after variable into style attribute', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        const fontSize = 12;
+
+        <div css={{ fontSize: \`\${fontSize}px\` }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:var(--fontSize--test-css-variable);}</style>'
+      );
+      expect(actual).toInclude('style={{ "--color-test-css-variable": `${fontSize}px` }}');
+    });
+
     it('should transform object with nested object into a selector', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */
@@ -256,9 +272,7 @@ describe('css prop transformer', () => {
         <div css={{ color: blue }}>hello world</div>
       `);
 
-      expect(actual).toInclude(
-        '<div className="test-class" style={{ "--color-test-css-variable": blue }}>hello world</div>'
-      );
+      expect(actual).toInclude('style={{ "--color-test-css-variable": blue }}');
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
     });
 

@@ -15,21 +15,19 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "/dist",
-    "/dist/**/*",
-    "/src",
-    "/src/**/*"
+    "dist",
+    "src"
   ],
   "scripts": {
     "start": "npx nodemon --exec \"yarn build && start-storybook -p 6006 --ci\" --watch src/ts-transformer/ -e tsx",
     "start:inspect": "npx nodemon --exec \"yarn build && node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch src/ts-transformer/ -e tsx",
     "test": "jest",
     "test:cover": "jest --collectCoverage",
-    "build": "rm -rf dist && tsc && mv dist/src/* dist",
+    "build": "rm -rf dist && tsc && mv dist/src/* dist && rm dist/package.json",
     "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js",
     "build-storybook": "build-storybook",
     "preversion": "yarn test && yarn build",
-    "postversion": "git push && git push --tags"
+    "postversion": "echo 'make sure to push \"git push && git push --tags\"'"
   },
   "dependencies": {
     "stylis": "^3.5.4",
