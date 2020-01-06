@@ -60,9 +60,31 @@ describe('css prop transformer', () => {
     expect(actual).toIncludeRepeated('import React, { useState } from "react"', 1);
   });
 
-  it.todo('should concat explicit use of class name prop on an element');
+  it('should concat explicit use of class name prop on an element', () => {
+    const actual = transformer.transform(`
+      /** @jsx jsx */
+      import { jsx } from '${pkg.name}';
+
+      <div className="foobar" css={{}}>hello world</div>
+    `);
+
+    expect(actual).toInclude('className={"test-class" + " " + "foobar"}');
+  });
 
   it.todo('should concat implicit use of class name prop where props are spread into an element');
+
+  it('should concat implicit use of class name prop where class name is a jsx expression', () => {
+    const actual = transformer.transform(`
+      /** @jsx jsx */
+      import { jsx } from '${pkg.name}';
+
+      const getFoo = () => 'foobar';
+
+      <div css={{}} className={getFoo()}>hello world</div>
+    `);
+
+    expect(actual).toInclude('className={"test-class" + " " + getFoo()}');
+  });
 
   it.todo('should concat use of inline styles when there is use of dynamic css');
 

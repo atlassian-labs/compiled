@@ -4,10 +4,16 @@ import { VariableDeclarations, CssVariableExpressions } from '../../types';
 import { nextClassName } from '../../utils/identifiers';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
+import { joinStringLiteralExpression } from '../../utils/expression-operators';
 import * as logger from '../../utils/log';
-import { getIdentifierText, getJsxNodeAttributes } from '../../utils/ast-node';
+import {
+  getIdentifierText,
+  getJsxNodeAttributes,
+  getJsxNodeAttributesValue,
+} from '../../utils/ast-node';
 
 const CSS_PROP = 'css';
+const CLASSNAME_PROP = 'className';
 
 export const visitJsxElementWithCssProp = (
   node: ts.JsxElement | ts.JsxSelfClosingElement,
@@ -64,16 +70,35 @@ export const visitJsxElementWithCssProp = (
   }
 
   const className = nextClassName();
+  const suppliedClassNameAttribute = getJsxNodeAttributesValue(node, CLASSNAME_PROP);
+
+  let classNameInitializer: ts.JsxExpression | ts.StringLiteral = ts.createStringLiteral(className);
+
+  if (suppliedClassNameAttribute && ts.isJsxExpression(suppliedClassNameAttribute)) {
+    classNameInitializer = joinStringLiteralExpression(
+      ts.createStringLiteral(className),
+      suppliedClassNameAttribute.expression!
+    );
+  } else if (suppliedClassNameAttribute && ts.isStringLiteral(suppliedClassNameAttribute)) {
+    classNameInitializer = joinStringLiteralExpression(
+      ts.createStringLiteral(className),
+      suppliedClassNameAttribute
+    );
+  }
 
   const attributedNode = ts.isJsxSelfClosingElement(node) ? node : node.openingElement;
 
   const attributes = [
     // Filter out css prop, carry over others
     ...attributedNode.attributes.properties.filter(
-      prop => prop.name && getIdentifierText(prop.name) !== CSS_PROP
+      prop =>
+        prop.name &&
+        getIdentifierText(prop.name) !== CSS_PROP &&
+        getIdentifierText(prop.name) !== CLASSNAME_PROP
     ),
     // Reference style via className
-    ts.createJsxAttribute(ts.createIdentifier('className'), ts.createStringLiteral(className)),
+    ts.createJsxAttribute(ts.createIdentifier('className'), classNameInitializer),
+
     // Add a style prop if css variables are applied
     cssVariables.length
       ? ts.createJsxAttribute(

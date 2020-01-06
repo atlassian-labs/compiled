@@ -39,6 +39,17 @@ export const getJsxNodeAttributes = (
   return node.openingElement.attributes;
 };
 
+export const getJsxNodeAttributesValue = (
+  node: ts.JsxElement | ts.JsxSelfClosingElement,
+  propertyName: string
+) => {
+  const attribute = getJsxNodeAttributes(node).properties.find(
+    prop => ts.isJsxAttribute(prop) && prop.name.escapedText === propertyName
+  ) as ts.JsxAttribute | undefined;
+
+  return attribute?.initializer ? attribute.initializer : undefined;
+};
+
 export const isPackageModuleImport = (statement: ts.Node, namedImport: string): boolean => {
   if (
     !ts.isImportDeclaration(statement) ||
