@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import * as log from './log';
 
 const REACT_PKG = 'react';
 const REACT_DEFAULT_IMPORT_NAME = 'React';
@@ -17,6 +18,8 @@ export const visitSourceFileEnsureDefaultReactImport = (
   context: ts.TransformationContext
 ): ts.SourceFile => {
   if (!isReactImportFound(sourceFile)) {
+    log.log('react import not found, adding one with default export');
+
     const newSourceFile = ts.updateSourceFileNode(sourceFile, [
       ts.createImportDeclaration(
         /* decorators */ undefined,
@@ -30,6 +33,8 @@ export const visitSourceFileEnsureDefaultReactImport = (
     return newSourceFile;
   }
 
+  log.log('react import found');
+
   // There is a react import declaration somewhere.
   // Let's find it and ensure the default export "React" exists.
 
@@ -39,6 +44,8 @@ export const visitSourceFileEnsureDefaultReactImport = (
       ts.isStringLiteral(node.moduleSpecifier) &&
       node.moduleSpecifier.text === REACT_PKG
     ) {
+      log.log('ensuring react default export is defined');
+
       return ts.updateImportDeclaration(
         node,
         /* decorators */ undefined,

@@ -23,5 +23,8 @@ jobs:
       - name: Install packages
         run: yarn
 
+      - name: Build sources
+        run: yarn build
+
       - name: Run tests
         run: yarn test:cover --ci

@@ -26,11 +26,11 @@ jobs:
       - name: Install packages
         run: yarn
 
-      - name: Test source
-        run: yarn test
-
       - name: Build source
         run: yarn build
+
+      - name: Test source
+        run: yarn test
 
   publish-npm:
     needs: build

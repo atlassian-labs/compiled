@@ -1,17 +1,12 @@
 /** @jsx jsx */
-import { jsx } from '../index';
+import { jsx } from '@compiled/css-in-js';
+import React from 'react';
 import { render } from '@testing-library/react';
-import * as pkg from '../../../package.json';
 
-describe('jsx pragma runtime', () => {
-  it('should blow up if not compiled', () => {
-    expect(() => {
-      render(<div>hello world</div>);
-    }).toThrowErrorMatchingInlineSnapshot(`
-"${pkg.name}
+describe('css prop', () => {
+  it('should render a simple styled div', () => {
+    const { getByText } = render(<div css={{ fontSize: '15px' }}>hello world</div>);
 
-You need to apply the typescript transformer to use this!
-You can apply it from \`${pkg.name}/ts-transformer\`."
-`);
+    expect(getByText('hello world')).toHaveCssRule('font-size', '15px');
   });
 });

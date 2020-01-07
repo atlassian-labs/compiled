@@ -12,8 +12,12 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "plugins": [{ "transform": "./dist/ts-transformer.js", "debug": true }]
+    "plugins": [{ "transform": "./dist/ts-transformer.js", "debug": true }],
+    "baseUrl": ".",
+    "paths": {
+      "@compiled/css-in-js": ["src/index.tsx"]
+    }
   },
   "include": ["src/*", "src/**/*"],
-  "exclude": ["node_modules", "examples", "dist", "**/__tests__/**"]
+  "exclude": ["node_modules", "examples", "dist"]
 }
