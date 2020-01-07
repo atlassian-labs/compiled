@@ -23,7 +23,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = props => <><style>.test-class{font-size:20px;}</style><div {...props} className="test-class"></div></>'
+      'const ListItem = props => <><style>.test-class{font-size:20px;}</style><div {...props} className='
     );
   });
 
@@ -38,7 +38,7 @@ describe('styled component transformer', () => {
       });
     `);
 
-    expect(actual).toInclude('<MyButton {...props} className="test-class" />');
+    expect(actual).toInclude('<MyButton {...props} className');
   });
 
   it('should remove styled import', () => {
@@ -61,7 +61,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = props => <><style>.test-class{font-size:20px;}</style><div {...props} className="test-class"></div></>'
+      'const ListItem = props => <><style>.test-class{font-size:20px;}</style><div {...props} className'
     );
   });
 
@@ -112,9 +112,18 @@ describe('styled component transformer', () => {
     expect(actual).toInclude('import React from "react";');
   });
 
-  it.todo('should concat explicit use of class name prop on an element');
+  it('should concat class name prop if defined', () => {
+    const actual = transformer.transform(`
+      import { styled } from '${pkg.name}';
+      const ListItem = styled.div\`
+        font-size: 20px;
+      \`;
+    `);
 
-  it.todo('should concat implicit use of class name prop where props are spread into an element');
+    expect(actual).toInclude(
+      `className={\"test-class\" + (props.className ? \" \" + props.className : \"\")}`
+    );
+  });
 
   it.todo('should concat use of inline styles when there is use of dynamic css');
 

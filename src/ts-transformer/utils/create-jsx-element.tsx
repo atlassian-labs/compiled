@@ -8,6 +8,7 @@ interface JsxElementOpts {
   css: string;
   cssVariables: CssVariableExpressions[];
   originalNode: ts.Node;
+  classNameFactory?: (node: ts.StringLiteral) => ts.StringLiteral | ts.JsxExpression;
   jsxAttributes?: (ts.JsxAttribute | ts.JsxSpreadAttribute)[];
   selector?: string;
   children?: ts.JsxChild;
@@ -92,7 +93,9 @@ export const createJsxElement = (tagNode: string, opts: JsxElementOpts, original
           // className should always be last
           ts.createJsxAttribute(
             ts.createIdentifier('className'),
-            ts.createStringLiteral(className)
+            opts.classNameFactory
+              ? opts.classNameFactory(ts.createStringLiteral(className))
+              : ts.createStringLiteral(className)
           ),
         ])
       ),
