@@ -8,6 +8,7 @@ and the `styled` api from [Styled Components](https://www.styled-components.com)
 
 - 🙅 No runtime (but actually no runtime)
 - 🌍 Run anywhere with zero config (server side rendering out-of-the-box)
+- ⛓️ Optional transformer to extract styles to stylesheets
 - 📦 Made for consumers consumers (developers who consume your components)
 
 Currently in initial development.
