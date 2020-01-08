@@ -8,7 +8,7 @@ export type ObjectLiteralCSS<TExtraProps = CSSProperties> =
 declare global {
   namespace jest {
     interface Matchers<R> {
-      toHaveCssRule(property: string, value: any): R;
+      toHaveCompiledCss(property: string, value: any): R;
     }
   }
 }

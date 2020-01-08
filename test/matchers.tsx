@@ -1,4 +1,4 @@
-const toHaveCssRule: jest.CustomMatcher = (element: HTMLElement, ...args: [string, string]) => {
+const toHaveCompiledCss: jest.CustomMatcher = (element: HTMLElement, ...args: [string, string]) => {
   const [property, value] = args;
   const styleElement = element.parentElement && element.parentElement.querySelector('style');
   const styleToFind = `${property}:${value}`;
@@ -31,5 +31,5 @@ ${styleElement.textContent}`,
 };
 
 expect.extend({
-  toHaveCssRule,
+  toHaveCompiledCss,
 });
