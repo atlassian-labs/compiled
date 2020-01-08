@@ -7,9 +7,11 @@ type CssObject<TProps> =
   | CSSProperties
   | Record<string, CSSProperties | ((props: TProps) => string | number) | string | number>;
 
+type Interpoltation<TProps> = string | number | ((props: TProps) => string | number);
+
 function styledFunction<TProps extends {}>(
   strings: CssObject<TProps> | TemplateStringsArray,
-  ...interpoltations: any[]
+  ...interpoltations: Interpoltation<TProps>[]
 ): React.ComponentType<TProps & { children?: ReactNode }> {
   if (process.env.NODE_ENV !== 'production' && !IS_CSS_FREEDOM_COMPILED) {
     throw new Error(`${packageName}

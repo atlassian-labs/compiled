@@ -10,11 +10,20 @@ const toHaveCompiledCss: jest.CustomMatcher = (element: HTMLElement, ...args: [s
     };
   }
 
-  if (
-    styleElement.textContent &&
-    styleElement.textContent.includes(`.${element.className}`) &&
-    styleElement.textContent.includes(styleToFind)
-  ) {
+  // This is a hack to get ahold of the styles.
+  // Unfortunately JSDOM doesn't handle css variables properly
+  // See: https://github.com/jsdom/jsdom/issues/1895
+  // @ts-ignore
+  const styles = element[Object.keys(element)[0]].memoizedProps.style;
+  let css = styleElement.textContent || '';
+
+  if (styles && Object.keys(styles).length > 0) {
+    Object.entries(styles).forEach(([key, value]: any) => {
+      css = css.replace(`var(${key})`, value);
+    });
+  }
+
+  if (css.includes(`.${element.className}`) && css.includes(styleToFind)) {
     return {
       pass: true,
       message: () => '',
@@ -26,7 +35,7 @@ const toHaveCompiledCss: jest.CustomMatcher = (element: HTMLElement, ...args: [s
     message: () => `Could not find "${styleToFind}" on <${element.nodeName.toLowerCase()}> element.
 
 Found styles:
-${styleElement.textContent}`,
+${css}`,
   };
 };
 

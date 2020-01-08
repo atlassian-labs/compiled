@@ -22,4 +22,15 @@ describe('styled component', () => {
 
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '30px');
   });
+
+  it('should interpolate a simple number value', () => {
+    const size = '12px';
+    const StyledDiv = styled.div<{ fontSize: string }>`
+      font-size: ${props => props.fontSize};
+    `;
+
+    const { getByText } = render(<StyledDiv fontSize={size}>hello world</StyledDiv>);
+
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
+  });
 });
