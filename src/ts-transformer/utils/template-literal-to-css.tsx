@@ -20,9 +20,17 @@ const extractSuffix = (tail: string) => {
   } else {
     // Sometimes people forget to put a comma at the end.
     // This handles that case.
-    const tailIndex = tail.indexOf(';') === -1 ? tail.indexOf('\n') : tail.indexOf(';');
+    let tailIndex = tail.indexOf(';') === -1 ? tail.indexOf('\n') : tail.indexOf(';');
+    if (tailIndex === -1) {
+      // Ok still nothing. This means everything is a suffix!
+      tailIndex = tail.length;
+    }
+
     suffix = tail.slice(0, tailIndex);
     rest = tail.slice(tailIndex);
+    if (!rest) {
+      rest = ';';
+    }
   }
 
   return {
@@ -82,9 +90,20 @@ export const templateLiteralToCss = (
       }
     } else if (ts.isArrowFunction(span.expression)) {
       // We an an inline arrow function - e.g. css`${props => props.color}`
+      const extractedSuffix = extractSuffix(span.literal.text);
       const result = extractCssVarFromArrowFunction(span.expression, context);
-      cssVariables.push(result);
-      css += `var(${result.name})${span.literal.text}`;
+      cssVariables.push({
+        name: result.name,
+        identifier: extractedSuffix.suffix
+          ? // Join left + right if suffix is defined
+            joinToBinaryExpression(
+              result.identifier,
+              ts.createStringLiteral(extractedSuffix.suffix)
+            )
+          : // Else just return the expression we found
+            result.identifier,
+      });
+      css += `var(${result.name})${extractedSuffix.rest}`;
     } else if (ts.isCallExpression(span.expression)) {
       // We found a call expression - e.g. const funcVar = () => ({}); css`${funcVar()}`
       const key = getIdentifierText(span.expression.expression);

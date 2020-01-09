@@ -186,7 +186,7 @@ describe('class names transformer', () => {
   });
 
   describe('using an object literal', () => {
-    xit('should persist suffix of dynamic property value into inline styles', () => {
+    it('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transformer.transform(`
         import { ClassNames } from '${pkg.name}';
 

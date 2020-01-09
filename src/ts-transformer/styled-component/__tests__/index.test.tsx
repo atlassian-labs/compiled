@@ -289,7 +289,7 @@ describe('styled component transformer', () => {
   });
 
   describe('using an object literal', () => {
-    xit('should persist suffix of dynamic property value into inline styles', () => {
+    it('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transformer.transform(`
         import { styled } from '${pkg.name}';
 
@@ -300,7 +300,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('"--fontSize-test-css-variable": fontSize + "px" }}');
+      expect(actual).toInclude('"--fontSize-test-css-variable": props.fontSize + "px" }}');
       expect(actual).toInclude(
         '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
       );

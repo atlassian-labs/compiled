@@ -276,7 +276,7 @@ describe('css prop transformer', () => {
   });
 
   describe('using an object literal', () => {
-    xit('should persist suffix of dynamic property value into inline styles', () => {
+    it('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
@@ -303,7 +303,7 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{font-size:20;color:blue;}</style>');
     });
 
-    xit('should move right hand value (px, em, etc) after variable into style attribute', () => {
+    it('should move right hand value (px, em, etc) after variable into style attribute', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
@@ -314,9 +314,9 @@ describe('css prop transformer', () => {
       `);
 
       expect(actual).toInclude(
-        '<style>.test-class{font-size:var(--fontSize--test-css-variable);}</style>'
+        '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
       );
-      expect(actual).toInclude('style={{ "--color-test-css-variable": `${fontSize}px` }}');
+      expect(actual).toInclude('style={{ "--fontSize-test-css-variable": fontSize + "px" }}');
     });
 
     it('should transform object with nested object into a selector', () => {

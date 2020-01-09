@@ -9,6 +9,7 @@ import {
 } from './ast-node';
 import * as logger from './log';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
+import { templateLiteralToCss } from './template-literal-to-css';
 
 export const objectLiteralToCssString = (
   objectLiteral: ts.ObjectLiteralExpression,
@@ -121,8 +122,15 @@ export const objectLiteralToCssString = (
       const cssResult = extractCssVarFromArrowFunction(prop.initializer, context);
       value = `var(${cssResult.name})`;
       cssVariables.push(cssResult);
+    } else if (ts.isPropertyAssignment(prop) && ts.isTemplateExpression(prop.initializer)) {
+      const result = templateLiteralToCss(prop.initializer, collectedDeclarations, context);
+      const key = kebabCase(getIdentifierText(prop.name));
+      cssVariables = cssVariables.concat(result.cssVariables);
+      return `${acc}
+        ${key}:${result.css}
+      `;
     } else {
-      logger.log('unsupported value in css prop object');
+      logger.log('unsupported value found in css object');
       key = prop.name ? kebabCase(getIdentifierText(prop.name)) : 'unspported';
       value = 'unsupported';
     }
