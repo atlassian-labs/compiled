@@ -5,6 +5,31 @@ import { nextCssVariableName } from './identifiers';
 import { objectLiteralToCssString } from './object-literal-to-css';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
 import { evaluateFunction } from './evalulate-function';
+import { joinToBinaryExpression } from './expression-operators';
+
+/**
+ * Extracts a suffix from a css property e.g:
+ * 'px;font-size: 20px; would return "px" as the suffix and ";font-size: 20px;" as rest.
+ */
+const extractSuffix = (tail: string) => {
+  let suffix = '';
+  let rest = '';
+
+  if (tail[0] === '\n' || tail[0] === ';') {
+    rest = tail;
+  } else {
+    // Sometimes people forget to put a comma at the end.
+    // This handles that case.
+    const tailIndex = tail.indexOf(';') === -1 ? tail.indexOf('\n') : tail.indexOf(';');
+    suffix = tail.slice(0, tailIndex);
+    rest = tail.slice(tailIndex);
+  }
+
+  return {
+    suffix,
+    rest,
+  };
+};
 
 export const templateLiteralToCss = (
   node: ts.TemplateExpression | ts.NoSubstitutionTemplateLiteral | ts.StringLiteral,
@@ -38,11 +63,16 @@ export const templateLiteralToCss = (
         cssVariables = cssVariables.concat(result.cssVariables);
       } else if (ts.isStringLiteral(value.initializer) || ts.isNumericLiteral(value.initializer)) {
         // We found a literal expression e.g. const stringVar = ''; css`${stringVar}`
+        const result = extractSuffix(span.literal.text);
         cssVariables.push({
           name: variableName,
-          identifier: span.expression,
+          identifier: result.suffix
+            ? // Join left + right if suffix is defined
+              joinToBinaryExpression(span.expression, ts.createStringLiteral(result.suffix))
+            : // Else just return the expression we found
+              span.expression,
         });
-        css += `var(${variableName})${span.literal.text}`;
+        css += `var(${variableName})${result.rest}`;
       } else if (ts.isArrowFunction(value.initializer)) {
         // We found a arrow func expression e.g. const funcVar = () => ({}); css`${funcVar}`
         // We want to "execute" it and then add the result to the css.

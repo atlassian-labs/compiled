@@ -41,6 +41,25 @@ describe('class names transformer', () => {
   });
 
   describe('using a string literal', () => {
+    it('should persist suffix of dynamic property value into inline styles', () => {
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
+
+        const fontSize = 20;
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css, style }) => <div style={style} className={css\`font-size \${fontSize}px;\`}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude('style={{ "--fontSize-test-css-variable": fontSize + "px" }}');
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
+      );
+    });
+
     it('should transform no template string literal', () => {
       const actual = transformer.transform(`
         import { ClassNames } from '${pkg.name}';
@@ -167,6 +186,25 @@ describe('class names transformer', () => {
   });
 
   describe('using an object literal', () => {
+    xit('should persist suffix of dynamic property value into inline styles', () => {
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
+
+        const fontSize = 20;
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css, style }) => <div style={style} className={css({ fontSize: \`\${fontSize}px\` })}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude('style={{ "--fontSize-test-css-variable": fontSize + "px" }}');
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
+      );
+    });
+
     it('should transform object with simple values', () => {
       const actual = transformer.transform(`
         import { ClassNames } from '${pkg.name}';

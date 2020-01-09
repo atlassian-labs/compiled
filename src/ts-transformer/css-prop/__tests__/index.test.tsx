@@ -89,6 +89,22 @@ describe('css prop transformer', () => {
   it.todo('should concat use of inline styles when there is use of dynamic css');
 
   describe('using strings', () => {
+    it('should persist suffix of dynamic property value into inline styles', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        const fontSize = 20;
+
+        <div css={\`font-size: \${fontSize}px;\`}>hello world</div>
+      `);
+
+      expect(actual).toInclude('style={{ "--fontSize-test-css-variable": fontSize + "px" }}');
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
+      );
+    });
+
     it('should transform string literal', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */
@@ -247,6 +263,22 @@ describe('css prop transformer', () => {
   });
 
   describe('using an object literal', () => {
+    xit('should persist suffix of dynamic property value into inline styles', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        const fontSize = 20;
+
+        <div css={{ fontSize: \`\${fontSize}px\` }}>hello world</div>
+      `);
+
+      expect(actual).toInclude('style={{ "--fontSize-test-css-variable": fontSize + "px" }}');
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
+      );
+    });
+
     it('should transform object with simple values', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */

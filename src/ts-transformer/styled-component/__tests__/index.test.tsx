@@ -128,6 +128,40 @@ describe('styled component transformer', () => {
   it.todo('should concat use of inline styles when there is use of dynamic css');
 
   describe('using a string literal', () => {
+    it('should persist suffix of dynamic property value into inline styles', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const fontSize = 20;
+
+        const ListItem = styled.div\`
+          font-size: \${fontSize}px;
+        \`;
+      `);
+
+      expect(actual).toInclude('style={{ "--fontSize-test-css-variable": fontSize + "px" }}');
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
+      );
+    });
+
+    it('should persist suffix of dynamic property value into inline styles when missing a semi colon', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const fontSize = 20;
+
+        const ListItem = styled.div\`
+          font-size: \${fontSize}px
+        \`;
+      `);
+
+      expect(actual).toInclude('style={{ "--fontSize-test-css-variable": fontSize + "px" }}');
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
+      );
+    });
+
     it('should transform no template string literal', () => {
       const actual = transformer.transform(`
         import { styled } from '${pkg.name}';
@@ -255,6 +289,23 @@ describe('styled component transformer', () => {
   });
 
   describe('using an object literal', () => {
+    xit('should persist suffix of dynamic property value into inline styles', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const fontSize = 20;
+
+        const ListItem = styled.div({
+          fontSize: \`\${props => props.fontSize}px\`,
+        });
+      `);
+
+      expect(actual).toInclude('style={{ "--fontSize-test-css-variable": fontSize + "px" }}');
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
+      );
+    });
+
     it('should transform object with simple values', () => {
       const actual = transformer.transform(`
         import { styled } from '${pkg.name}';

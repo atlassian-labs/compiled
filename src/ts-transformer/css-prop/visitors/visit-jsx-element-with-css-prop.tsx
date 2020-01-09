@@ -4,7 +4,7 @@ import { VariableDeclarations, CssVariableExpressions } from '../../types';
 import { nextClassName } from '../../utils/identifiers';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
-import { joinStringLiteralExpression } from '../../utils/expression-operators';
+import { joinToJsxExpression } from '../../utils/expression-operators';
 import * as logger from '../../utils/log';
 import {
   getIdentifierText,
@@ -75,12 +75,12 @@ export const visitJsxElementWithCssProp = (
   let classNameInitializer: ts.JsxExpression | ts.StringLiteral = ts.createStringLiteral(className);
 
   if (suppliedClassNameAttribute && ts.isJsxExpression(suppliedClassNameAttribute)) {
-    classNameInitializer = joinStringLiteralExpression(
+    classNameInitializer = joinToJsxExpression(
       ts.createStringLiteral(className),
       suppliedClassNameAttribute.expression!
     );
   } else if (suppliedClassNameAttribute && ts.isStringLiteral(suppliedClassNameAttribute)) {
-    classNameInitializer = joinStringLiteralExpression(
+    classNameInitializer = joinToJsxExpression(
       ts.createStringLiteral(className),
       suppliedClassNameAttribute
     );

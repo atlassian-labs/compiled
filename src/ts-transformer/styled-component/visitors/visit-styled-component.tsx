@@ -3,7 +3,7 @@ import { createJsxElement } from '../../utils/create-jsx-element';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import { VariableDeclarations } from '../../types';
-import { joinStringLiteralExpression } from '../../utils/expression-operators';
+import { joinToJsxExpression } from '../../utils/expression-operators';
 
 const getTagName = (node: ts.CallExpression | ts.TaggedTemplateExpression): string => {
   if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
@@ -50,7 +50,7 @@ export const visitStyledComponent = (
       ...result,
       originalNode: node,
       classNameFactory: className =>
-        joinStringLiteralExpression(className, ts.createIdentifier('props.className'), {
+        joinToJsxExpression(className, ts.createIdentifier('props.className'), {
           conditional: true,
         }),
       jsxAttributes: [ts.createJsxSpreadAttribute(ts.createIdentifier('props'))],
