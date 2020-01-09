@@ -74,7 +74,7 @@ export const templateLiteralToCss = (
         const result = extractSuffix(span.literal.text);
         cssVariables.push({
           name: variableName,
-          identifier: result.suffix
+          expression: result.suffix
             ? // Join left + right if suffix is defined
               joinToBinaryExpression(span.expression, ts.createStringLiteral(result.suffix))
             : // Else just return the expression we found
@@ -94,14 +94,14 @@ export const templateLiteralToCss = (
       const result = extractCssVarFromArrowFunction(span.expression, context);
       cssVariables.push({
         name: result.name,
-        identifier: extractedSuffix.suffix
+        expression: extractedSuffix.suffix
           ? // Join left + right if suffix is defined
             joinToBinaryExpression(
-              result.identifier,
+              result.expression,
               ts.createStringLiteral(extractedSuffix.suffix)
             )
           : // Else just return the expression we found
-            result.identifier,
+            result.expression,
       });
       css += `var(${result.name})${extractedSuffix.rest}`;
     } else if (ts.isCallExpression(span.expression)) {

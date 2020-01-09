@@ -68,7 +68,7 @@ export const visitClassNamesJsxElement = (
         // create new object literal using original object literal properties
         styleObjectLiteral.properties.concat(
           cssVariables.map(cssVar =>
-            ts.createPropertyAssignment(ts.createStringLiteral(cssVar.name), cssVar.identifier)
+            ts.createPropertyAssignment(ts.createStringLiteral(cssVar.name), cssVar.expression)
           )
         )
       );

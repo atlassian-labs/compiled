@@ -30,6 +30,7 @@
     "postversion": "echo 'make sure to push \"git push && git push --tags\"'"
   },
   "dependencies": {
+    "@emotion/is-prop-valid": "^0.8.6",
     "stylis": "^3.5.4",
     "typescript": "^3.7.3"
   },

@@ -128,7 +128,7 @@ export const visitJsxElementWithCssProp = (
                 cssVariables.map(cssVariable =>
                   ts.createPropertyAssignment(
                     ts.createStringLiteral(cssVariable.name),
-                    cssVariable.identifier
+                    cssVariable.expression
                   )
                 )
               )

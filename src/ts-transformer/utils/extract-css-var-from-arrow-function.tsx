@@ -24,5 +24,5 @@ export const extractCssVarFromArrowFunction = (
 
   ts.visitEachChild(node, visitor, context);
 
-  return { identifier, name };
+  return { expression: identifier, name };
 };

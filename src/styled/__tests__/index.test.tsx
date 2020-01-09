@@ -33,4 +33,17 @@ describe('styled component', () => {
 
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
   });
+
+  it('should not pass down invalid html attributes to the node', () => {
+    const size = '12px';
+    const StyledDiv = styled.div<{ fonty: string }>`
+      font-size: ${props => props.fonty};
+    `;
+
+    const { getByText, debug } = render(<StyledDiv fonty={size}>hello world</StyledDiv>);
+
+    debug();
+
+    expect(getByText('hello world').getAttribute('fonty')).toBe(null);
+  });
 });

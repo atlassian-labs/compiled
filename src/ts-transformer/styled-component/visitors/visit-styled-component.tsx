@@ -1,9 +1,11 @@
 import ts from 'typescript';
+import isPropValid from '@emotion/is-prop-valid';
 import { createJsxElement } from '../../utils/create-jsx-element';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import { VariableDeclarations } from '../../types';
 import { joinToJsxExpression } from '../../utils/expression-operators';
+import { getIdentifierText } from '../../utils/ast-node';
 
 const getTagName = (node: ts.CallExpression | ts.TaggedTemplateExpression): string => {
   if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
@@ -15,6 +17,14 @@ const getTagName = (node: ts.CallExpression | ts.TaggedTemplateExpression): stri
   }
 
   throw new Error('tag should have been here');
+};
+
+const getPropertyAccessName = (propertyAccess?: string): string => {
+  if (!propertyAccess) {
+    return '';
+  }
+
+  return propertyAccess.indexOf('.') > 0 ? propertyAccess.split('.')[1] : propertyAccess;
 };
 
 const getObjectLiteralOrTemplateLiteral = (
@@ -44,12 +54,35 @@ export const visitStyledComponent = (
     ? objectLiteralToCssString(dataToTransform, collectedDeclarations, context)
     : templateLiteralToCss(dataToTransform, collectedDeclarations, context);
 
+  const propsToDestructure = result.cssVariables
+    .map(({ expression }) => {
+      if (ts.isIdentifier(expression)) {
+        // referencing an identifier straight e.g. props.fontSize
+        const propName = getPropertyAccessName(expression.text);
+        if (!isPropValid(propName)) {
+          return propName;
+        }
+      } else {
+        // is an expression e.g. props.fontSize + 'px'
+      }
+    })
+    .filter(Boolean) as string[];
+
   const newElement = createJsxElement(
     tagName,
     {
       ...result,
       originalNode: node,
-      styleProperties: [ts.createSpreadAssignment(ts.createIdentifier('props.style'))],
+      styleFactory: props => [
+        ts.createSpreadAssignment(ts.createIdentifier('props.style')),
+        ...props.map(prop => {
+          const propName = getPropertyAccessName(getIdentifierText(prop.initializer));
+          if (propsToDestructure.includes(propName)) {
+            prop.initializer = ts.createIdentifier(propName);
+          }
+          return prop;
+        }),
+      ],
       classNameFactory: className =>
         joinToJsxExpression(className, ts.createIdentifier('props.className'), {
           conditional: true,
@@ -67,7 +100,21 @@ export const visitStyledComponent = (
         undefined,
         undefined,
         undefined,
-        ts.createIdentifier('props'),
+        propsToDestructure.length
+          ? // We want to destructure props so it doesn't contain any invalid html attributes.
+            ts.createObjectBindingPattern([
+              ...propsToDestructure.map(prop =>
+                ts.createBindingElement(undefined, undefined, ts.createIdentifier(prop), undefined)
+              ),
+              ts.createBindingElement(
+                ts.createToken(ts.SyntaxKind.DotDotDotToken),
+                undefined,
+                ts.createIdentifier('props'),
+                undefined
+              ),
+            ])
+          : // They're all valid so we don't need to destructure.
+            ts.createIdentifier('props'),
         undefined,
         undefined,
         undefined

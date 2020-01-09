@@ -8,7 +8,9 @@ interface JsxElementOpts {
   css: string;
   cssVariables: CssVariableExpressions[];
   originalNode: ts.Node;
-  styleProperties?: (ts.PropertyAssignment | ts.SpreadAssignment)[];
+  styleFactory?: (
+    props: ts.PropertyAssignment[]
+  ) => (ts.PropertyAssignment | ts.SpreadAssignment)[];
   classNameFactory?: (node: ts.StringLiteral) => ts.StringLiteral | ts.JsxExpression;
   jsxAttributes?: (ts.JsxAttribute | ts.JsxSpreadAttribute)[];
   selector?: string;
@@ -109,6 +111,13 @@ export const createJsxElement = (tagNode: string, opts: JsxElementOpts, original
   );
 
   if (opts.cssVariables.length) {
+    const styleProps = opts.cssVariables.map(variable => {
+      return ts.createPropertyAssignment(
+        ts.createStringLiteral(variable.name),
+        variable.expression
+      );
+    });
+
     // TODO: we could pass this into jsx opening element
     const elementNodeAttributes = getJsxNodeAttributes(elementNode);
     (elementNodeAttributes.properties as any).push(
@@ -117,14 +126,7 @@ export const createJsxElement = (tagNode: string, opts: JsxElementOpts, original
         ts.createJsxExpression(
           undefined,
           ts.createObjectLiteral(
-            (opts.styleProperties || []).concat(
-              opts.cssVariables.map(variable => {
-                return ts.createPropertyAssignment(
-                  ts.createStringLiteral(variable.name),
-                  variable.identifier
-                );
-              })
-            ),
+            opts.styleFactory ? opts.styleFactory(styleProps) : styleProps,
             false
           )
         )

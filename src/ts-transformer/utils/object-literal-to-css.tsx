@@ -96,7 +96,7 @@ export const objectLiteralToCssString = (
       value = `var(${cssVariable})`;
       cssVariables.push({
         name: cssVariable,
-        identifier: getAssignmentIdentifier(prop),
+        expression: getAssignmentIdentifier(prop),
       });
     } else if (ts.isPropertyAssignment(prop) && ts.isObjectLiteralExpression(prop.initializer)) {
       key = kebabCase((prop.name as ts.Identifier).text);

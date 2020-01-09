@@ -895,9 +895,19 @@
   dependencies:
     "@emotion/memoize" "0.7.3"
 
+"@emotion/is-prop-valid@^0.8.6":
+  version "0.8.6"
+  resolved "https://registry.yarnpkg.com/@emotion/is-prop-valid/-/is-prop-valid-0.8.6.tgz#4757646f0a58e9dec614c47c838e7147d88c263c"
+  dependencies:
+    "@emotion/memoize" "0.7.4"
+
 "@emotion/memoize@0.7.3":
   version "0.7.3"
   resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.7.3.tgz#5b6b1c11d6a6dddf1f2fc996f74cf3b219644d78"
+
+"@emotion/memoize@0.7.4":
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.7.4.tgz#19bf0f5af19149111c40d98bb0cf82119f5d9eeb"
 
 "@emotion/serialize@^0.11.12", "@emotion/serialize@^0.11.14":
   version "0.11.14"

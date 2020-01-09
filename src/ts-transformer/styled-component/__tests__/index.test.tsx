@@ -27,6 +27,18 @@ describe('styled component transformer', () => {
     );
   });
 
+  it('should not pass down invalid html attributes to the node', () => {
+    const actual = transformer.transform(`
+      import { styled } from '${pkg.name}';
+      const ListItem = styled.div({
+        fontSize: props => props.textSize,
+      });
+    `);
+
+    expect(actual).toInclude('({ textSize, ...props }) =>');
+    expect(actual).toInclude('"--textSize-test-css-variable": textSize');
+  });
+
   xit('should compose using a previously created component', () => {
     const actual = transformer.transform(`
       import { styled } from '${pkg.name}';
