@@ -14,6 +14,7 @@ import {
 
 const CSS_PROP = 'css';
 const CLASSNAME_PROP = 'className';
+const STYLE_PROP = 'style';
 
 export const visitJsxElementWithCssProp = (
   node: ts.JsxElement | ts.JsxSelfClosingElement,
@@ -88,13 +89,30 @@ export const visitJsxElementWithCssProp = (
 
   const attributedNode = ts.isJsxSelfClosingElement(node) ? node : node.openingElement;
 
+  const previousStyleAttribute = attributedNode.attributes.properties.filter(
+    prop => prop.name && getIdentifierText(prop.name) === STYLE_PROP
+  )[0];
+  let previousStyleProps: ts.ObjectLiteralElementLike[] = [];
+
+  if (
+    previousStyleAttribute &&
+    ts.isJsxAttribute(previousStyleAttribute) &&
+    previousStyleAttribute.initializer &&
+    ts.isJsxExpression(previousStyleAttribute.initializer) &&
+    previousStyleAttribute.initializer.expression &&
+    ts.isObjectLiteralExpression(previousStyleAttribute.initializer.expression)
+  ) {
+    previousStyleProps = previousStyleAttribute.initializer.expression.properties.map(x => x);
+  }
+
   const attributes = [
     // Filter out css prop, carry over others
     ...attributedNode.attributes.properties.filter(
       prop =>
         prop.name &&
         getIdentifierText(prop.name) !== CSS_PROP &&
-        getIdentifierText(prop.name) !== CLASSNAME_PROP
+        getIdentifierText(prop.name) !== CLASSNAME_PROP &&
+        getIdentifierText(prop.name) !== STYLE_PROP
     ),
     // Reference style via className
     ts.createJsxAttribute(ts.createIdentifier('className'), classNameInitializer),
@@ -106,10 +124,12 @@ export const visitJsxElementWithCssProp = (
           ts.createJsxExpression(
             undefined,
             ts.createObjectLiteral(
-              cssVariables.map(cssVariable =>
-                ts.createPropertyAssignment(
-                  ts.createStringLiteral(cssVariable.name),
-                  cssVariable.identifier
+              previousStyleProps.concat(
+                cssVariables.map(cssVariable =>
+                  ts.createPropertyAssignment(
+                    ts.createStringLiteral(cssVariable.name),
+                    cssVariable.identifier
+                  )
                 )
               )
             )

@@ -49,6 +49,7 @@ export const visitStyledComponent = (
     {
       ...result,
       originalNode: node,
+      styleProperties: [ts.createSpreadAssignment(ts.createIdentifier('props.style'))],
       classNameFactory: className =>
         joinToJsxExpression(className, ts.createIdentifier('props.className'), {
           conditional: true,

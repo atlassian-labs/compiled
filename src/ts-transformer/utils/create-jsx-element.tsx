@@ -8,6 +8,7 @@ interface JsxElementOpts {
   css: string;
   cssVariables: CssVariableExpressions[];
   originalNode: ts.Node;
+  styleProperties?: (ts.PropertyAssignment | ts.SpreadAssignment)[];
   classNameFactory?: (node: ts.StringLiteral) => ts.StringLiteral | ts.JsxExpression;
   jsxAttributes?: (ts.JsxAttribute | ts.JsxSpreadAttribute)[];
   selector?: string;
@@ -116,12 +117,14 @@ export const createJsxElement = (tagNode: string, opts: JsxElementOpts, original
         ts.createJsxExpression(
           undefined,
           ts.createObjectLiteral(
-            opts.cssVariables.map(variable => {
-              return ts.createPropertyAssignment(
-                ts.createStringLiteral(variable.name),
-                variable.identifier
-              );
-            }),
+            (opts.styleProperties || []).concat(
+              opts.cssVariables.map(variable => {
+                return ts.createPropertyAssignment(
+                  ts.createStringLiteral(variable.name),
+                  variable.identifier
+                );
+              })
+            ),
             false
           )
         )

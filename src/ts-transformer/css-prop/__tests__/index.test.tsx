@@ -86,7 +86,20 @@ describe('css prop transformer', () => {
     expect(actual).toInclude('className={"test-class" + " " + getFoo()}');
   });
 
-  it.todo('should concat use of inline styles when there is use of dynamic css');
+  it('should concat use of inline styles when there is use of dynamic css', () => {
+    const actual = transformer.transform(`
+      /** @jsx jsx */
+      import { jsx } from '${pkg.name}';
+
+      const color = 'blue';
+
+      <div css={{ color: color }} style={{ display: "block" }}>hello world</div>
+    `);
+
+    expect(actual).toInclude('style={{ display: "block", "--color-test-css-variable": color }}');
+  });
+
+  it.todo('should concat implicit use of style prop where props are spread into an element');
 
   describe('using strings', () => {
     it('should persist suffix of dynamic property value into inline styles', () => {

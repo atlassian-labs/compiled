@@ -125,8 +125,6 @@ describe('styled component transformer', () => {
     );
   });
 
-  it.todo('should concat use of inline styles when there is use of dynamic css');
-
   describe('using a string literal', () => {
     it('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transformer.transform(`
@@ -139,7 +137,9 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('style={{ "--fontSize-test-css-variable": fontSize + "px" }}');
+      expect(actual).toInclude(
+        'style={{ ...props.style, "--fontSize-test-css-variable": fontSize + "px" }}'
+      );
       expect(actual).toInclude(
         '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
       );
@@ -156,7 +156,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('style={{ "--fontSize-test-css-variable": fontSize + "px" }}');
+      expect(actual).toInclude('"--fontSize-test-css-variable": fontSize + "px" }}');
       expect(actual).toInclude(
         '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
       );
@@ -216,7 +216,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
-      expect(actual).toInclude('style={{ "--color-test-css-variable": props.color }}');
+      expect(actual).toInclude('"--color-test-css-variable": props.color }}');
     });
 
     it('should transform template string literal with string import', () => {
@@ -300,7 +300,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('style={{ "--fontSize-test-css-variable": fontSize + "px" }}');
+      expect(actual).toInclude('"--fontSize-test-css-variable": fontSize + "px" }}');
       expect(actual).toInclude(
         '<style>.test-class{font-size:var(--fontSize-test-css-variable);}</style>'
       );
@@ -346,7 +346,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
-      expect(actual).toInclude('style={{ "--color-test-css-variable": color }}>');
+      expect(actual).toInclude('"--color-test-css-variable": color }}>');
     });
 
     it('should transform template object with prop reference', () => {
@@ -359,7 +359,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
-      expect(actual).toInclude('style={{ "--color-test-css-variable": props.color }}');
+      expect(actual).toInclude('"--color-test-css-variable": props.color }}');
     });
 
     it('should transform object spread from variable', () => {
@@ -404,7 +404,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
-      expect(actual).toInclude('style={{ "--color-test-css-variable": color }}');
+      expect(actual).toInclude('"--color-test-css-variable": color }}');
     });
 
     it('should transform object with string import', () => {
@@ -421,7 +421,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
-      expect(actual).toInclude('style={{ "--color-test-css-variable": color }}');
+      expect(actual).toInclude('"--color-test-css-variable": color }}');
     });
 
     it('should transform object with obj variable', () => {
