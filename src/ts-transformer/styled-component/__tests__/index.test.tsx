@@ -138,6 +138,17 @@ describe('styled component transformer', () => {
   });
 
   describe('using a string literal', () => {
+    it('should respect missing units', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+        const ListItem = styled.div\`
+          font-size: 12;
+        \`;
+      `);
+
+      expect(actual).toInclude('<style>.test-class{font-size:12;}</style>');
+    });
+
     xit('should not pass down invalid html attributes to the node when property has a suffix', () => {
       const actual = transformer.transform(`
         import { styled } from '${pkg.name}';
@@ -313,6 +324,17 @@ describe('styled component transformer', () => {
   });
 
   describe('using an object literal', () => {
+    it('should append "px" on numeric literals if missing', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+        const ListItem = styled.div({
+          fontSize: 12,
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class{font-size:12px;}</style>');
+    });
+
     xit('should not pass down invalid html attributes to the node when property has a suffix', () => {
       const actual = transformer.transform(`
         import { styled } from '${pkg.name}';

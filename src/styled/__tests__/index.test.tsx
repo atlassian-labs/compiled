@@ -42,8 +42,6 @@ describe('styled component', () => {
 
     const { getByText, debug } = render(<StyledDiv fonty={size}>hello world</StyledDiv>);
 
-    debug();
-
     expect(getByText('hello world').getAttribute('fonty')).toBe(null);
   });
 });

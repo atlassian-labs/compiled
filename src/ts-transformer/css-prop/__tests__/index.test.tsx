@@ -297,10 +297,10 @@ describe('css prop transformer', () => {
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
 
-        <div css={{ fontSize: 20, color: 'blue' }}>hello world</div>
+        <div css={{ lineHeight: 20, color: 'blue' }}>hello world</div>
       `);
 
-      expect(actual).toInclude('<style>.test-class{font-size:20;color:blue;}</style>');
+      expect(actual).toInclude('<style>.test-class{line-height:20;color:blue;}</style>');
     });
 
     it('should move right hand value (px, em, etc) after variable into style attribute', () => {

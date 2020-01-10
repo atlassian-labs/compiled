@@ -10,6 +10,7 @@ import {
 import * as logger from './log';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
 import { templateLiteralToCss } from './template-literal-to-css';
+import { addUnitIfNeeded } from './css-property';
 
 export const objectLiteralToCssString = (
   objectLiteral: ts.ObjectLiteralExpression,
@@ -115,8 +116,13 @@ export const objectLiteralToCssString = (
       (ts.isStringLiteral(prop.initializer) || ts.isNumericLiteral(prop.initializer))
     ) {
       // We have a regular static assignment, e.g. "fontSize: '20px'"
-      key = kebabCase(getIdentifierText(prop.name));
-      value = `${prop.initializer.text}`;
+      const propertyName = getIdentifierText(prop.name);
+      const parsedValue = ts.isNumericLiteral(prop.initializer)
+        ? Number(prop.initializer.text)
+        : prop.initializer.text;
+
+      key = kebabCase(propertyName);
+      value = addUnitIfNeeded(propertyName, parsedValue);
     } else if (ts.isPropertyAssignment(prop) && ts.isArrowFunction(prop.initializer)) {
       key = kebabCase(getIdentifierText(prop.name));
       const cssResult = extractCssVarFromArrowFunction(prop.initializer, context);
