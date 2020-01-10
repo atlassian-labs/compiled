@@ -9,7 +9,7 @@ export interface CssVariableExpressions {
   /**
    * Identifier of the css variable, as in the literal ts.Identifier.
    */
-  expression: ts.Identifier | ts.BinaryExpression;
+  expression: ts.Identifier | ts.BinaryExpression | ts.Expression;
 }
 
 export interface VariableDeclarations {

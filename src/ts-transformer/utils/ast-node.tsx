@@ -75,3 +75,11 @@ export const isPackageModuleImport = (statement: ts.Node, namedImport: string): 
 
   return isStyledImported;
 };
+
+export const createNodeError = (message: string, node: ts.Node) => {
+  // Throws a string so we don't get a stack trace.
+  throw `${packageName} => ${message}
+
+${node.getText()}
+`;
+};

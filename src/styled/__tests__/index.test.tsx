@@ -40,8 +40,34 @@ describe('styled component', () => {
       font-size: ${props => props.fonty};
     `;
 
-    const { getByText, debug } = render(<StyledDiv fonty={size}>hello world</StyledDiv>);
+    const { getByText } = render(<StyledDiv fonty={size}>hello world</StyledDiv>);
 
     expect(getByText('hello world').getAttribute('fonty')).toBe(null);
+  });
+
+  it('should automatically add suffix on template literal', () => {
+    const size = 12;
+    const StyledDiv = styled.div<{ size: number }>`
+      height: ${props => props.size}px;
+      width: ${props => props.size}px;
+    `;
+
+    const { getByText } = render(<StyledDiv size={size}>hello world</StyledDiv>);
+
+    expect(getByText('hello world')).toHaveCompiledCss('height', '12px');
+    expect(getByText('hello world')).toHaveCompiledCss('width', '12px');
+  });
+
+  it('should automatically add suffix on css object', () => {
+    const size = 12;
+    const StyledDiv = styled.div<{ size: number }>({
+      height: props => `${props.size}px`,
+      width: props => `${props.size}px`,
+    });
+
+    const { getByText } = render(<StyledDiv size={size}>hello world</StyledDiv>);
+
+    expect(getByText('hello world')).toHaveCompiledCss('height', '12px');
+    expect(getByText('hello world')).toHaveCompiledCss('width', '12px');
   });
 });

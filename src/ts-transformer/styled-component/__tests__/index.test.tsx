@@ -149,7 +149,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('<style>.test-class{font-size:12;}</style>');
     });
 
-    xit('should not pass down invalid html attributes to the node when property has a suffix', () => {
+    it('should not pass down invalid html attributes to the node when property has a suffix', () => {
       const actual = transformer.transform(`
         import { styled } from '${pkg.name}';
         const ListItem = styled.div\`
@@ -157,6 +157,9 @@ describe('styled component transformer', () => {
         \`;
       `);
 
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:var(--textSize-test-css-variable);}</style>'
+      );
       expect(actual).toInclude('({ textSize, ...props }) =>');
       expect(actual).toInclude('"--textSize-test-css-variable": textSize + "px"');
     });
@@ -387,7 +390,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('<style>.test-class{font-size:12px;}</style>');
     });
 
-    xit('should not pass down invalid html attributes to the node when property has a suffix', () => {
+    it('should not pass down invalid html attributes to the node when property has a suffix', () => {
       const actual = transformer.transform(`
         import { styled } from '${pkg.name}';
         const ListItem = styled.div({
@@ -395,6 +398,24 @@ describe('styled component transformer', () => {
         });
       `);
 
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:var(--textSize-test-css-variable);}</style>'
+      );
+      expect(actual).toInclude('({ textSize, ...props }) =>');
+      expect(actual).toInclude('"--textSize-test-css-variable": `${textSize}px`');
+    });
+
+    it('should not pass down invalid html attributes to the node when property has a suffix when func in template literal', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+        const ListItem = styled.div({
+          fontSize: \`\${props => props.textSize}px\`,
+        });
+      `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{font-size:var(--textSize-test-css-variable);}</style>'
+      );
       expect(actual).toInclude('({ textSize, ...props }) =>');
       expect(actual).toInclude('"--textSize-test-css-variable": textSize + "px"');
     });

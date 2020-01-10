@@ -62,8 +62,28 @@ export const visitStyledComponent = (
         if (!isPropValid(propName)) {
           return propName;
         }
-      } else {
+      } else if (ts.isBinaryExpression(expression)) {
         // is an expression e.g. props.fontSize + 'px'
+        const propName = getPropertyAccessName(getIdentifierText(expression.left));
+        if (!isPropValid(propName)) {
+          // ok its not valid. we want to do two things:
+          // 1. rename identifier from props.fontSize to fontSize
+          expression.left = ts.createIdentifier(propName);
+          // 2. destructure fontSize from the props object
+          return propName;
+        }
+      } else if (ts.isTemplateExpression(expression)) {
+        // TODO: Handle multiple spans.
+        let propName = '';
+
+        expression.templateSpans.forEach(span => {
+          if (ts.isPropertyAccessExpression(span.expression)) {
+            propName = span.expression.name.escapedText.toString();
+            span.expression = ts.createIdentifier(propName);
+          }
+        });
+
+        return propName;
       }
     })
     .filter(Boolean) as string[];
