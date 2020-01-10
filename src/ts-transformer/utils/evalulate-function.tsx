@@ -2,7 +2,20 @@ import * as ts from 'typescript';
 import { VariableDeclarations, ToCssReturnType } from '../types';
 import { objectLiteralToCssString } from './object-literal-to-css';
 import { templateLiteralToCss } from './template-literal-to-css';
-import { getIdentifierText } from './ast-node';
+
+export const isReturnCssLike = (node: ts.Expression): node is ts.ArrowFunction => {
+  if (!ts.isArrowFunction(node)) {
+    return false;
+  }
+
+  const functionBody = ts.isParenthesizedExpression(node.body) ? node.body.expression : node.body;
+  return (
+    ts.isObjectLiteralExpression(functionBody) ||
+    ts.isTemplateLiteral(functionBody) ||
+    ts.isNoSubstitutionTemplateLiteral(functionBody) ||
+    ts.isStringLiteral(functionBody)
+  );
+};
 
 /**
  * Will "evaluate" a function and return its CSS representation.
@@ -35,5 +48,5 @@ export const evaluateFunction = (
     return templateLiteralToCss(functionBody, collectedDeclarations, context);
   }
 
-  throw new Error('function body not supported');
+  throw 'function body not supported';
 };

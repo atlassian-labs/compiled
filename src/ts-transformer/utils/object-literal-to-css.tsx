@@ -145,10 +145,20 @@ export const objectLiteralToCssString = (
       return `${acc}
         ${key}:${result.css}
       `;
+    } else if (ts.isPropertyAssignment(prop) && ts.isCallExpression(prop.initializer)) {
+      // We've found a call expression prop, e.g. color: lighten('ok')
+      // Interrogate if it is going to return css if it doesn't just move the call expression to a css variable.
+      key = kebabCase(getIdentifierText(prop.name));
+      const cssVarName = `--${key}-${nextCssVariableName()}`;
+      value = `var(${cssVarName})`;
+      cssVariables.push({
+        expression: prop.initializer,
+        name: cssVarName,
+      });
     } else {
       logger.log('unsupported value found in css object');
-      key = prop.name ? kebabCase(getIdentifierText(prop.name)) : 'unspported';
-      value = 'unsupported';
+      key = prop.name ? kebabCase(getIdentifierText(prop.name)) : 'UNSUPPORTED_PROPERTY_FOUND';
+      value = 'UNSUPPORTED_PROPERTY_FOUND';
     }
 
     return `${acc}

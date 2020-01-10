@@ -305,6 +305,37 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('<style>.test-class{font-size: font-size:12px;}</style>');
     });
 
+    it('should reference identifier pointing to a call expression if it returns simple value', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const em = (str: string) => str;
+        const color = em('blue');
+
+        const ListItem = styled.div\`
+          color: \${color};
+        \`;
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+      expect(actual).toInclude('"--color-test-css-variable": color }}>');
+    });
+
+    it('should inline call if it returns simple value', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const em = (str: string) => str;
+
+        const ListItem = styled.div\`
+          color: \${em('blue')};
+        \`;
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--em-test-css-variable);}</style>');
+      expect(actual).toInclude('"--em-test-css-variable": em(\'blue\') }}>');
+    });
+
     it.todo('should transform template string literal with array variable');
 
     it.todo('should transform template string literal with array import');
@@ -463,6 +494,37 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('<style>.test-class:hover{color:blue;margin:0;}</style>');
+    });
+
+    it('should reference identifier pointing to a call expression if it returns simple value', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const em = (str: string) => str;
+        const color = em('blue');
+
+        const ListItem = styled.div({
+          color,
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+      expect(actual).toInclude('"--color-test-css-variable": color }}>');
+    });
+
+    it('should inline call if it returns simple value', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        const em = (str: string) => str;
+
+        const ListItem = styled.div({
+          color: em('blue'),
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:var(--color-test-css-variable);}</style>');
+      expect(actual).toInclude('"--color-test-css-variable": em(\'blue\') }}>');
     });
 
     it('should transform template object with string variable', () => {

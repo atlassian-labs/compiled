@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import { styled } from '@compiled/css-in-js';
+import { em } from 'polished';
 
 describe('styled component', () => {
   it('should render a simple styled div using an object', () => {
@@ -32,6 +33,28 @@ describe('styled component', () => {
     const { getByText } = render(<StyledDiv fontSize={size}>hello world</StyledDiv>);
 
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
+  });
+
+  it('should at runtime use a call expression inline', () => {
+    const size = 12;
+    const StyledDiv = styled.div({
+      fontSize: em(size),
+    });
+
+    const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
+
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '0.75em');
+  });
+
+  it('should at runtime use a identifier referencing a call expression', () => {
+    const size = em(12);
+    const StyledDiv = styled.div({
+      fontSize: size,
+    });
+
+    const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
+
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '0.75em');
   });
 
   it('should not pass down invalid html attributes to the node', () => {

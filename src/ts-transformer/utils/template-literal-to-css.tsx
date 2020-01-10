@@ -4,7 +4,7 @@ import { getIdentifierText } from './ast-node';
 import { nextCssVariableName } from './identifiers';
 import { objectLiteralToCssString } from './object-literal-to-css';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
-import { evaluateFunction } from './evalulate-function';
+import { evaluateFunction, isReturnCssLike } from './evalulate-function';
 import { joinToBinaryExpression } from './expression-operators';
 
 /**
@@ -87,6 +87,15 @@ export const templateLiteralToCss = (
         const result = evaluateFunction(value.initializer, collectedDeclarations, context);
         css += result.css;
         cssVariables = cssVariables.concat(result.cssVariables);
+      } else if (ts.isCallExpression(value.initializer)) {
+        // We found something like this: const val = fun(); css`${val}`;
+        // Inline the expression as a css variable - we will need to check if it returns something css like.. but later.
+        const variableName = `--${key}-${nextCssVariableName()}`;
+        css += `var(${variableName})`;
+        cssVariables.push({
+          expression: span.expression,
+          name: variableName,
+        });
       }
     } else if (ts.isArrowFunction(span.expression)) {
       // We an an inline arrow function - e.g. css`${props => props.color}`
@@ -111,10 +120,21 @@ export const templateLiteralToCss = (
       if (!value || !value.initializer) {
         throw new Error('could not find');
       }
-      // We want to "execute" it and then add the result to the css.
-      const result = evaluateFunction(value.initializer, collectedDeclarations, context);
-      css += result.css;
-      cssVariables = cssVariables.concat(result.cssVariables);
+
+      if (isReturnCssLike(value.initializer)) {
+        // We want to "evaluate" it and then add the result to the css.
+        const result = evaluateFunction(value.initializer, collectedDeclarations, context);
+        css += result.css;
+        cssVariables = cssVariables.concat(result.cssVariables);
+      } else {
+        // Ok it doesnt return css just inline the expression as a css variable
+        const variableName = `--${key}-${nextCssVariableName()}`;
+        css += `var(${variableName})`;
+        cssVariables.push({
+          expression: span.expression,
+          name: variableName,
+        });
+      }
     } else {
       throw new Error('unsupported');
     }
