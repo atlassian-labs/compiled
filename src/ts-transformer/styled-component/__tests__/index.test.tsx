@@ -324,6 +324,58 @@ describe('styled component transformer', () => {
   });
 
   describe('using an object literal', () => {
+    it('should respect the definition of pseudo element content ala emotion with double quotes', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+        const ListItem = styled.div({
+          ':after': {
+            content: '""',
+          },
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class:after{content:"";}</style>');
+    });
+
+    it('should respect the definition of pseudo element content ala emotion with single quotes', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+        const ListItem = styled.div({
+          ':after': {
+            content: "''",
+          },
+        });
+      `);
+
+      expect(actual).toInclude("<style>.test-class:after{content:'';}</style>");
+    });
+
+    it('should respect the definition of pseudo element content ala styled components with no content', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+        const ListItem = styled.div({
+          ':after': {
+            content: '',
+          },
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class:after{content:"";}</style>');
+    });
+
+    it('should respect the definition of pseudo element content ala styled components with content', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+        const ListItem = styled.div({
+          ':after': {
+            content: '😎',
+          },
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class:after{content:"😎";}</style>');
+    });
+
     it('should append "px" on numeric literals if missing', () => {
       const actual = transformer.transform(`
         import { styled } from '${pkg.name}';

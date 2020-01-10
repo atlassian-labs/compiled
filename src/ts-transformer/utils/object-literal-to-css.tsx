@@ -120,9 +120,19 @@ export const objectLiteralToCssString = (
       const parsedValue = ts.isNumericLiteral(prop.initializer)
         ? Number(prop.initializer.text)
         : prop.initializer.text;
-
       key = kebabCase(propertyName);
-      value = addUnitIfNeeded(propertyName, parsedValue);
+
+      if (propertyName === 'content' && typeof parsedValue === 'string') {
+        if (parsedValue[0] === '"' || parsedValue[0] === "'") {
+          // Its already escaped, probably. Skip.
+          value = parsedValue;
+        } else {
+          // Ensure that it has quotes around it
+          value = `"${parsedValue}"`;
+        }
+      } else {
+        value = addUnitIfNeeded(propertyName, parsedValue);
+      }
     } else if (ts.isPropertyAssignment(prop) && ts.isArrowFunction(prop.initializer)) {
       key = kebabCase(getIdentifierText(prop.name));
       const cssResult = extractCssVarFromArrowFunction(prop.initializer, context);
