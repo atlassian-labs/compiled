@@ -138,6 +138,18 @@ describe('styled component transformer', () => {
   });
 
   describe('using a string literal', () => {
+    xit('should not pass down invalid html attributes to the node when property has a suffix', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+        const ListItem = styled.div\`
+          font-size: \${props => props.textSize}px;
+        \`;
+      `);
+
+      expect(actual).toInclude('({ textSize, ...props }) =>');
+      expect(actual).toInclude('"--textSize-test-css-variable": textSize + "px"');
+    });
+
     it('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transformer.transform(`
         import { styled } from '${pkg.name}';
@@ -301,6 +313,18 @@ describe('styled component transformer', () => {
   });
 
   describe('using an object literal', () => {
+    xit('should not pass down invalid html attributes to the node when property has a suffix', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+        const ListItem = styled.div({
+          fontSize: props => \`\${props.textSize}px\`,
+        });
+      `);
+
+      expect(actual).toInclude('({ textSize, ...props }) =>');
+      expect(actual).toInclude('"--textSize-test-css-variable": textSize + "px"');
+    });
+
     it('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transformer.transform(`
         import { styled } from '${pkg.name}';
