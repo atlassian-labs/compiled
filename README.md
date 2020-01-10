@@ -79,7 +79,7 @@ To:
 ```jsx
 () => (
   <>
-    <style>{'.a { font-size: 20px; }'}</style>
+    <style>{'.a { color: blue; }'}</style>
     <div className="a">hello, world!</div>
   </>
 );
