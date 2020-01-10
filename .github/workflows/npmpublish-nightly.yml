@@ -62,7 +62,7 @@ jobs:
       - name: Publish to npm registry
         run: npm publish --tag nightly
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{secrets.COMPILED_CSS_IN_JS_NPM_TOKEN}}
 
   publish-gpr:
     needs: build
@@ -95,4 +95,4 @@ jobs:
       - name: Publish to github registry
         run: npm publish --tag nightly
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NODE_AUTH_TOKEN: ${{secrets.COMPILED_CSS_IN_JS_GITHUB}}
