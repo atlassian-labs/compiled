@@ -63,36 +63,3 @@ jobs:
         run: npm publish --tag nightly
         env:
           NODE_AUTH_TOKEN: ${{secrets.COMPILED_CSS_IN_JS_NPM_TOKEN}}
-
-  publish-gpr:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-          registry-url: https://npm.pkg.github.com/
-          scope: '@compiled'
-
-      - name: Get yarn cache
-        id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - name: Install packages
-        run: yarn
-
-      - name: Build & increment
-        run: npm version prerelease --no-git-tag-version --preid=$(git rev-parse HEAD)
-
-      - name: Publish to github registry
-        run: npm publish --tag nightly
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.COMPILED_CSS_IN_JS_GITHUB}}
