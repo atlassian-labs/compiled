@@ -248,9 +248,37 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:blue;font-size:30px;}</style>');
     });
 
-    it.todo('should transform template string with no argument function variable');
+    xit('should transform template string with no argument function variable', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
 
-    it.todo('should transform template string with no argument function import');
+        function mixin() {
+          return { color: 'red' };
+        }
+
+        <div css={\`\${mixin()}\`}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:red;}</style>');
+    });
+
+    xit('should transform template string with no argument function import', () => {
+      const actual = transformer.addSource({
+        path: '/func-mixin.ts',
+        contents: `
+          export function mixin() {
+            return { color: 'red' };
+          }
+        `,
+      }).transform(`
+        import { styled } from '${pkg.name}';
+        import { mixin } from './func-mixin';
+
+        <div css={\`\${mixin()}\`}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:red;}</style>');
+    });
 
     it.todo('should transform template string with argument function variable');
 
@@ -272,7 +300,24 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('style={{ "--color-test-css-variable": primary }}');
     });
 
-    it.todo('should transform template string with argument arrow function import');
+    xit('should transform template string with argument arrow function import', () => {
+      const actual = transformer.addSource({
+        path: '/mixy-in.ts',
+        contents: `export const style = (color: string) => ({ color, fontSize: '30px' });`,
+      }).transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+        import { style } from './mixy-in';
+
+        const primary = 'red';
+        <div css={\`\${style(primary)}\`}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        '<style>.test-class{color:var(--color-test-css-variable);font-size:30px;}</style>'
+      );
+      expect(actual).toInclude('style={{ "--color-test-css-variable": primary }}');
+    });
   });
 
   describe('using an object literal', () => {

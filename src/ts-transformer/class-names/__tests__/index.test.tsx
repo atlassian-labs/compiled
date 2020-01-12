@@ -168,13 +168,75 @@ describe('class names transformer', () => {
 
     it.todo('should transform template string literal with array import');
 
-    it.todo('should transform template string with no argument arrow function variable');
+    it('should transform template string with no argument arrow function variable', () => {
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
 
-    it.todo('should transform template string with no argument arrow function import');
+        const color = () => ({ color: 'blue' });
 
-    it.todo('should transform template string with no argument function variable');
+        const ListItem = () => (
+          <ClassNames>
+            {({ css }) => <div className={css\`\${color()}\`}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
 
-    it.todo('should transform template string with no argument function import');
+      expect(actual).toInclude(`<style>.test-class{color:blue;}</style>`);
+    });
+
+    it('should transform template string with no argument arrow function import', () => {
+      const actual = transformer.addSource({
+        path: '/mixin.ts',
+        contents: `export const color = () => ({ color: 'blue' });`,
+      }).transform(`
+        import { ClassNames } from '${pkg.name}';
+        import { color } from './mixin';
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css }) => <div className={css\`\${color()}\`}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude(`<style>.test-class{color:blue;}</style>`);
+    });
+
+    xit('should transform template string with no argument function variable', () => {
+      const actual = transformer.transform(`
+        import { ClassNames } from '${pkg.name}';
+
+        function color() { return { color: 'blue' }; }
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css }) => <div className={css\`\${color()}\`}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude(`<style>.test-class{color:blue;}</style>`);
+    });
+
+    xit('should transform template string with no argument function import', () => {
+      const actual = transformer.addSource({
+        path: '/mixin.ts',
+        contents: `
+          export function color() { return { color: 'blue' }; }
+        `,
+      }).transform(`
+        import { ClassNames } from '${pkg.name}';
+        import { color } from './mixin';
+
+        const ListItem = () => (
+          <ClassNames>
+            {({ css }) => <div className={css\`\${color()}\`}>hello, world!</div>}
+          </ClassNames>
+        );
+      `);
+
+      expect(actual).toInclude(`<style>.test-class{color:blue;}</style>`);
+    });
 
     it.todo('should transform template string with argument function variable');
 

@@ -340,13 +340,71 @@ describe('styled component transformer', () => {
 
     it.todo('should transform template string literal with array import');
 
-    it.todo('should transform template string with no argument arrow function variable');
+    it('should transform template string with no argument arrow function variable', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
 
-    it.todo('should transform template string with no argument arrow function import');
+        const mixin = () => ({ color: 'red' });
 
-    it.todo('should transform template string with no argument function variable');
+        const ListItem = styled.div\`
+          \${mixin()};
+        \`;
+      `);
 
-    it.todo('should transform template string with no argument function import');
+      expect(actual).toInclude('<style>.test-class{color:red;}</style>');
+    });
+
+    it('should transform template string with no argument arrow function import', () => {
+      const actual = transformer.addSource({
+        path: '/mixin.ts',
+        contents: "export const mixin = () => ({ color: 'red' });",
+      }).transform(`
+        import { styled } from '${pkg.name}';
+        import { mixin } from './mixin';
+
+        const ListItem = styled.div\`
+          \${mixin()};
+        \`;
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:red;}</style>');
+    });
+
+    xit('should transform template string with no argument function variable', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        function mixin() {
+          return { color: 'red' };
+        }
+
+        const ListItem = styled.div\`
+          \${mixin()};
+        \`;
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:red;}</style>');
+    });
+
+    xit('should transform template string with no argument function import', () => {
+      const actual = transformer.addSource({
+        path: '/func-mixin.ts',
+        contents: `
+          export function mixin() {
+            return { color: 'red' };
+          }
+        `,
+      }).transform(`
+        import { styled } from '${pkg.name}';
+        import { mixin } from './func-mixin';
+
+        const ListItem = styled.div\`
+          \${mixin()};
+        \`;
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:red;}</style>');
+    });
 
     it.todo('should transform template string with argument function variable');
 
@@ -657,13 +715,71 @@ describe('styled component transformer', () => {
 
     it.todo('should transform object with array import');
 
-    it.todo('should transform object with no argument arrow function variable');
+    it('should transform object with no argument arrow function variable', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
 
-    it.todo('should transform object with no argument arrow function import');
+        const mixin = () => ({ color: 'red' });
 
-    it.todo('should transform object with no argument function variable');
+        const ListItem = styled.div({
+          ...mixin(),
+        });
+      `);
 
-    it.todo('should transform object with no argument function import');
+      expect(actual).toInclude('<style>.test-class{color:red;}</style>');
+    });
+
+    it('should transform object with no argument arrow function import', () => {
+      const actual = transformer.addSource({
+        path: '/mixin.ts',
+        contents: "export const mixin = () => ({ color: 'red' });",
+      }).transform(`
+        import { styled } from '${pkg.name}';
+        import { mixin } from './mixin';
+
+        const ListItem = styled.div({
+          ...mixin(),
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:red;}</style>');
+    });
+
+    xit('should transform object with no argument function variable', () => {
+      const actual = transformer.transform(`
+        import { styled } from '${pkg.name}';
+
+        function mixin() {
+          return { color: 'red' };
+        }
+
+        const ListItem = styled.div({
+          ...mixin(),
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:red;}</style>');
+    });
+
+    xit('should transform object with no argument function import', () => {
+      const actual = transformer.addSource({
+        path: '/mixin.ts',
+        contents: `
+          export function mixin() {
+            return { color: 'red' };
+          }
+        `,
+      }).transform(`
+        import { styled } from '${pkg.name}';
+        import { mixin } from './mixin';
+
+        const ListItem = styled.div({
+          ...mixin(),
+        });
+      `);
+
+      expect(actual).toInclude('<style>.test-class{color:red;}</style>');
+    });
 
     it.todo('should transform object with argument function variable');
 
