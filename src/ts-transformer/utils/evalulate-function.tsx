@@ -7,17 +7,30 @@ import { createNodeError } from './ast-node';
 export const isReturnCssLike = (
   node: ts.Expression | ts.FunctionDeclaration
 ): node is ts.ArrowFunction => {
-  if (!ts.isArrowFunction(node)) {
-    return false;
+  if (ts.isArrowFunction(node)) {
+    const functionBody = ts.isParenthesizedExpression(node.body) ? node.body.expression : node.body;
+    return (
+      ts.isObjectLiteralExpression(functionBody) ||
+      ts.isTemplateLiteral(functionBody) ||
+      ts.isNoSubstitutionTemplateLiteral(functionBody) ||
+      ts.isStringLiteral(functionBody)
+    );
   }
 
-  const functionBody = ts.isParenthesizedExpression(node.body) ? node.body.expression : node.body;
-  return (
-    ts.isObjectLiteralExpression(functionBody) ||
-    ts.isTemplateLiteral(functionBody) ||
-    ts.isNoSubstitutionTemplateLiteral(functionBody) ||
-    ts.isStringLiteral(functionBody)
-  );
+  if (ts.isFunctionDeclaration(node) && node.body) {
+    const firstStatement = node.body.statements[0];
+    if (
+      firstStatement &&
+      ts.isReturnStatement(firstStatement) &&
+      firstStatement.expression &&
+      (ts.isObjectLiteralExpression(firstStatement.expression) ||
+        ts.isTemplateLiteral(firstStatement.expression))
+    ) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 /**
@@ -34,22 +47,38 @@ export const evaluateFunction = (
   collectedDeclarations: Declarations,
   context: ts.TransformationContext
 ): ToCssReturnType => {
-  if (!ts.isArrowFunction(node)) {
-    throw createNodeError('only can eval arrow funcs atm', node);
+  if (ts.isArrowFunction(node)) {
+    const functionBody = ts.isParenthesizedExpression(node.body) ? node.body.expression : node.body;
+    if (ts.isObjectLiteralExpression(functionBody)) {
+      return objectLiteralToCssString(functionBody, collectedDeclarations, context);
+    }
+
+    if (
+      ts.isTemplateLiteral(functionBody) ||
+      ts.isNoSubstitutionTemplateLiteral(functionBody) ||
+      ts.isStringLiteral(functionBody)
+    ) {
+      return templateLiteralToCss(functionBody, collectedDeclarations, context);
+    }
   }
 
-  const functionBody = ts.isParenthesizedExpression(node.body) ? node.body.expression : node.body;
-  if (ts.isObjectLiteralExpression(functionBody)) {
-    return objectLiteralToCssString(functionBody, collectedDeclarations, context);
+  if (ts.isFunctionDeclaration(node) && node.body) {
+    const firstStatement = node.body.statements[0];
+
+    if (firstStatement && ts.isReturnStatement(firstStatement) && firstStatement.expression) {
+      if (ts.isObjectLiteralExpression(firstStatement.expression)) {
+        return objectLiteralToCssString(firstStatement.expression, collectedDeclarations, context);
+      }
+
+      if (
+        ts.isTemplateLiteral(firstStatement.expression) ||
+        ts.isNoSubstitutionTemplateLiteral(firstStatement.expression) ||
+        ts.isStringLiteral(firstStatement.expression)
+      ) {
+        return templateLiteralToCss(firstStatement.expression, collectedDeclarations, context);
+      }
+    }
   }
 
-  if (
-    ts.isTemplateLiteral(functionBody) ||
-    ts.isNoSubstitutionTemplateLiteral(functionBody) ||
-    ts.isStringLiteral(functionBody)
-  ) {
-    return templateLiteralToCss(functionBody, collectedDeclarations, context);
-  }
-
-  throw createNodeError('function body not supported', functionBody);
+  throw createNodeError('function body not supported', node);
 };

@@ -248,9 +248,10 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:blue;font-size:30px;}</style>');
     });
 
-    xit('should transform template string with no argument function variable', () => {
+    it('should transform template string with no argument function variable', () => {
       const actual = transformer.transform(`
-        import { styled } from '${pkg.name}';
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
 
         function mixin() {
           return { color: 'red' };
@@ -271,7 +272,8 @@ describe('css prop transformer', () => {
           }
         `,
       }).transform(`
-        import { styled } from '${pkg.name}';
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
         import { mixin } from './func-mixin';
 
         <div css={\`\${mixin()}\`}>hello world</div>

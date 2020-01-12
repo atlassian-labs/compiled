@@ -149,7 +149,7 @@ export const templateLiteralToCss = (
         });
       }
     } else {
-      throw new Error('unsupported');
+      throw createNodeError('unsupported node', span);
     }
   });
 
