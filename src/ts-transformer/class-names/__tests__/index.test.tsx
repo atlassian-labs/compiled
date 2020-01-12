@@ -218,7 +218,7 @@ describe('class names transformer', () => {
       expect(actual).toInclude(`<style>.test-class{color:blue;}</style>`);
     });
 
-    xit('should transform template string with no argument function import', () => {
+    it('should transform template string with no argument function import', () => {
       const actual = transformer.addSource({
         path: '/mixin.ts',
         contents: `

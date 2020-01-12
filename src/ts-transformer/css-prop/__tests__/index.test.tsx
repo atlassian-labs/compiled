@@ -263,7 +263,7 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:red;}</style>');
     });
 
-    xit('should transform template string with no argument function import', () => {
+    it('should transform template string with no argument function import', () => {
       const actual = transformer.addSource({
         path: '/func-mixin.ts',
         contents: `

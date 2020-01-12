@@ -36,16 +36,22 @@ export const collectDeclarationsFromNode = (
 
     const exportSymbols = typeChecker.getExportsOfModule(importSymbol);
     exportSymbols.forEach(exportSymbol => {
-      if (
-        // valueDeclaration can be undefined believe it or not.
-        exportSymbol.valueDeclaration &&
-        !ts.isVariableDeclaration(exportSymbol.valueDeclaration)
-      ) {
-        logger.log('only variable exports supported atm - skipping');
+      if (!exportSymbol.valueDeclaration) {
+        logger.log('declaration is undefined - skipping');
         return;
       }
 
-      outDeclarationsMap[exportSymbol.getName()] = exportSymbol.valueDeclaration;
+      if (ts.isVariableDeclaration(exportSymbol.valueDeclaration)) {
+        outDeclarationsMap[exportSymbol.getName()] = exportSymbol.valueDeclaration;
+        return;
+      }
+
+      if (ts.isFunctionDeclaration(exportSymbol.valueDeclaration)) {
+        outDeclarationsMap[exportSymbol.getName()] = exportSymbol.valueDeclaration;
+        return;
+      }
+
+      logger.log('only variable exports supported atm - skipping');
     });
 
     return true;
