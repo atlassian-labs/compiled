@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 import { isPackageModuleImport, getIdentifierText } from '../utils/ast-node';
 import { visitClassNamesJsxElement } from './visitors/visit-class-names-jsx-element';
 import { collectDeclarationsFromNode } from '../utils/collect-declarations';
-import { VariableDeclarations } from '../types';
+import { Declarations } from '../types';
 
 const CLASS_NAMES_NAME = 'ClassNames';
 
@@ -27,7 +27,7 @@ export default function classNamesTransformer(
         return sourceFile;
       }
 
-      const collectedDeclarations: VariableDeclarations = {};
+      const collectedDeclarations: Declarations = {};
 
       const visitor = (node: ts.Node): ts.Node => {
         collectDeclarationsFromNode(node, program, collectedDeclarations);

@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import * as logger from '../utils/log';
 import { name as packageName } from '../../../package.json';
-import { VariableDeclarations } from '../types';
+import { Declarations } from '../types';
 import {
   isJsxElementWithCssProp,
   visitJsxElementWithCssProp,
@@ -33,7 +33,7 @@ export default function cssPropTransformer(
         return sourceFile;
       }
 
-      const collectedDeclarations: VariableDeclarations = {};
+      const collectedDeclarations: Declarations = {};
       logger.log('found file with jsx pragma');
       let transformedSourceFile = visitSourceFileEnsureDefaultReactImport(sourceFile, context);
 

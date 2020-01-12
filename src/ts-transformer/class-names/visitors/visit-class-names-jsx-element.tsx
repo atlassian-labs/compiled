@@ -4,14 +4,14 @@ import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import { nextClassName } from '../../utils/identifiers';
 import { createStyleFragment } from '../../utils/create-jsx-element';
-import { CssVariableExpressions, VariableDeclarations, ToCssReturnType } from '../../types';
+import { CssVariableExpressions, Declarations, ToCssReturnType } from '../../types';
 
 const STYLE_IDENTIFIER = 'style';
 
 const visitCssCallExpression = (
   node: ts.CallExpression,
   context: ts.TransformationContext,
-  collectedDeclarations: VariableDeclarations
+  collectedDeclarations: Declarations
 ): ToCssReturnType => {
   if (!ts.isObjectLiteralExpression(node.arguments[0])) {
     throw new Error('only support object literal atm');
@@ -25,7 +25,7 @@ const visitCssCallExpression = (
 const visitCssTaggedTemplateExpression = (
   node: ts.TaggedTemplateExpression,
   context: ts.TransformationContext,
-  collectedDeclarations: VariableDeclarations
+  collectedDeclarations: Declarations
 ): ToCssReturnType => {
   return templateLiteralToCss(node.template, collectedDeclarations, context);
 };
@@ -49,7 +49,7 @@ const isStyleIdentifier = (node: ts.Node): node is ts.Identifier => {
 export const visitClassNamesJsxElement = (
   classNamesNode: ts.JsxElement,
   context: ts.TransformationContext,
-  collectedDeclarations: VariableDeclarations
+  collectedDeclarations: Declarations
 ): ts.Node => {
   let css = '';
   let cssVariables: CssVariableExpressions[] = [];

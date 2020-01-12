@@ -1,11 +1,12 @@
 import * as ts from 'typescript';
 import kebabCase from './kebab-case';
-import { VariableDeclarations, CssVariableExpressions, ToCssReturnType } from '../types';
+import { Declarations, CssVariableExpressions, ToCssReturnType } from '../types';
 import { nextCssVariableName } from './identifiers';
 import {
   getIdentifierText,
   getAssignmentIdentifierText,
   getAssignmentIdentifier,
+  createNodeError,
 } from './ast-node';
 import * as logger from './log';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
@@ -14,7 +15,7 @@ import { addUnitIfNeeded } from './css-property';
 
 export const objectLiteralToCssString = (
   objectLiteral: ts.ObjectLiteralExpression,
-  collectedDeclarations: VariableDeclarations,
+  collectedDeclarations: Declarations,
   context: ts.TransformationContext
 ): ToCssReturnType => {
   const properties = objectLiteral.properties;
@@ -29,30 +30,39 @@ export const objectLiteralToCssString = (
 
       if (ts.isCallExpression(prop.expression)) {
         // we are spreading the result of a function call e.g: css={{ ...mixin() }}
-        const functionDeclaration =
-          collectedDeclarations[getIdentifierText(prop.expression.expression)];
-        const functionNode = functionDeclaration.initializer;
+        const declaration = collectedDeclarations[getIdentifierText(prop.expression.expression)];
+        const functionNode = ts.isVariableDeclaration(declaration)
+          ? declaration.initializer
+          : declaration;
 
         if (!functionNode || !ts.isArrowFunction(functionNode)) {
-          throw new Error('how is this not a function');
+          throw createNodeError('how is this not a function', prop);
         }
 
         if (!ts.isParenthesizedExpression(functionNode.body)) {
-          throw new Error('only function like () => ({}) supported');
+          throw createNodeError('only function like () => ({}) supported', functionNode);
         }
 
         nodeToExtractCssFrom = functionNode.body.expression;
       } else {
         // we are spreading a variable e.g: css={{ ...mixin }}
-        const variableDeclaration = collectedDeclarations[getIdentifierText(prop.expression)];
-        if (!variableDeclaration || !variableDeclaration.initializer) {
-          throw new Error('variable not in scope');
+        const declaration = collectedDeclarations[getIdentifierText(prop.expression)];
+        if (!declaration) {
+          throw createNodeError('variable not in scope', prop);
         }
-        nodeToExtractCssFrom = variableDeclaration.initializer;
+
+        if (ts.isVariableDeclaration(declaration)) {
+          if (!declaration.initializer) {
+            throw createNodeError('variable declaration was not initialized', declaration);
+          }
+          nodeToExtractCssFrom = declaration.initializer;
+        } else {
+          nodeToExtractCssFrom = declaration;
+        }
       }
 
       if (!ts.isObjectLiteralExpression(nodeToExtractCssFrom)) {
-        throw new Error('variable not an object');
+        throw createNodeError('variable not an object', nodeToExtractCssFrom);
       }
       // Spread can either be from an object, or a function. Not an array yet not supported (:
       const result = objectLiteralToCssString(nodeToExtractCssFrom, collectedDeclarations, context);
@@ -68,17 +78,17 @@ export const objectLiteralToCssString = (
       key = kebabCase(getIdentifierText(prop.name));
       const identifierName = getAssignmentIdentifierText(prop);
 
-      const variableDeclaration = collectedDeclarations[identifierName];
-      if (!variableDeclaration || !variableDeclaration.initializer) {
-        logger.log(`could not find variable "${identifierName}", ignoring`);
+      const declaration = collectedDeclarations[identifierName];
+      if (!declaration) {
+        logger.log(`could not find declaration "${identifierName}", ignoring`);
       } else if (
-        variableDeclaration &&
-        variableDeclaration.initializer &&
-        ts.isObjectLiteralExpression(variableDeclaration.initializer)
+        ts.isVariableDeclaration(declaration) &&
+        declaration.initializer &&
+        ts.isObjectLiteralExpression(declaration.initializer)
       ) {
         // we are referencing an object. so we want to just parse it  and use it.
         const result = objectLiteralToCssString(
-          variableDeclaration.initializer,
+          declaration.initializer,
           collectedDeclarations,
           context
         );

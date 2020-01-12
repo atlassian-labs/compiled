@@ -1,9 +1,12 @@
 import * as ts from 'typescript';
-import { VariableDeclarations, ToCssReturnType } from '../types';
+import { Declarations, ToCssReturnType } from '../types';
 import { objectLiteralToCssString } from './object-literal-to-css';
 import { templateLiteralToCss } from './template-literal-to-css';
+import { createNodeError } from './ast-node';
 
-export const isReturnCssLike = (node: ts.Expression): node is ts.ArrowFunction => {
+export const isReturnCssLike = (
+  node: ts.Expression | ts.FunctionDeclaration
+): node is ts.ArrowFunction => {
   if (!ts.isArrowFunction(node)) {
     return false;
   }
@@ -27,12 +30,12 @@ export const isReturnCssLike = (node: ts.Expression): node is ts.ArrowFunction =
  * () => ''
  */
 export const evaluateFunction = (
-  node: ts.Expression,
-  collectedDeclarations: VariableDeclarations,
+  node: ts.ArrowFunction | ts.FunctionDeclaration,
+  collectedDeclarations: Declarations,
   context: ts.TransformationContext
 ): ToCssReturnType => {
   if (!ts.isArrowFunction(node)) {
-    throw new Error('only can eval arrow funcs atm');
+    throw createNodeError('only can eval arrow funcs atm', node);
   }
 
   const functionBody = ts.isParenthesizedExpression(node.body) ? node.body.expression : node.body;
@@ -48,5 +51,5 @@ export const evaluateFunction = (
     return templateLiteralToCss(functionBody, collectedDeclarations, context);
   }
 
-  throw 'function body not supported';
+  throw createNodeError('function body not supported', functionBody);
 };

@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import stylis from 'stylis';
-import { VariableDeclarations, CssVariableExpressions } from '../../types';
+import { Declarations, CssVariableExpressions } from '../../types';
 import { nextClassName } from '../../utils/identifiers';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
@@ -18,7 +18,7 @@ const STYLE_PROP = 'style';
 
 export const visitJsxElementWithCssProp = (
   node: ts.JsxElement | ts.JsxSelfClosingElement,
-  variableDeclarations: VariableDeclarations,
+  variableDeclarations: Declarations,
   context: ts.TransformationContext
 ) => {
   logger.log('visiting a jsx element with a css prop');

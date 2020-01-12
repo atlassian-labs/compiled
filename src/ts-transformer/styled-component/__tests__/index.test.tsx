@@ -370,7 +370,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:red;}</style>');
     });
 
-    xit('should transform template string with no argument function variable', () => {
+    it('should transform template string with no argument function variable', () => {
       const actual = transformer.transform(`
         import { styled } from '${pkg.name}';
 

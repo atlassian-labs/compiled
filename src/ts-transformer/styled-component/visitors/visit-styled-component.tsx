@@ -3,7 +3,7 @@ import isPropValid from '@emotion/is-prop-valid';
 import { createJsxElement } from '../../utils/create-jsx-element';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
-import { VariableDeclarations } from '../../types';
+import { Declarations } from '../../types';
 import { joinToJsxExpression } from '../../utils/expression-operators';
 import { getIdentifierText } from '../../utils/ast-node';
 
@@ -45,7 +45,7 @@ const getObjectLiteralOrTemplateLiteral = (
 export const visitStyledComponent = (
   node: ts.CallExpression | ts.TaggedTemplateExpression,
   context: ts.TransformationContext,
-  collectedDeclarations: VariableDeclarations
+  collectedDeclarations: Declarations
 ): ts.Node => {
   const tagName = getTagName(node);
   const dataToTransform = getObjectLiteralOrTemplateLiteral(node);
