@@ -745,7 +745,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:red;}</style>');
     });
 
-    xit('should transform object with no argument function variable', () => {
+    it('should transform object with no argument function variable', () => {
       const actual = transformer.transform(`
         import { styled } from '${pkg.name}';
 
@@ -761,7 +761,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:red;}</style>');
     });
 
-    xit('should transform object with no argument function import', () => {
+    it('should transform object with no argument function import', () => {
       const actual = transformer.addSource({
         path: '/mixin.ts',
         contents: `

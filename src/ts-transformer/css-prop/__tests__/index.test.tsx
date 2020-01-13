@@ -591,6 +591,36 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:blue;color:red;}</style>');
     });
 
+    it('should transform object spread with no argument function variable', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        function mixin() {
+          return { color: 'red' };
+        }
+
+        <div css={{ color: 'blue', ...mixin() }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(`<style>.test-class{color:blue;color:red;}</style>`);
+    });
+
+    it.only('should transform object with no argument arrow function', () => {
+      const actual = transformer.transform(`
+        /** @jsx jsx */
+        import { jsx } from '${pkg.name}';
+
+        const mixin = () => ({ color: 'red' });
+
+        <div css={{ color: 'blue', ':hover': mixin() }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        `<style>.test-class{color:blue;}.test-class:hover{color:red;}</style>`
+      );
+    });
+
     xit('should transform object with no argument function variable', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */
@@ -600,7 +630,7 @@ describe('css prop transformer', () => {
           return { color: 'red' };
         }
 
-        <div css={{ color: 'blue', ':hover': mixin() }}>hello world</div>
+        <div css={{ color: 'blue', mixin() }}>hello world</div>
       `);
 
       expect(actual).toInclude(

@@ -35,15 +35,29 @@ export const objectLiteralToCssString = (
           ? declaration.initializer
           : declaration;
 
-        if (!functionNode || !ts.isArrowFunction(functionNode)) {
-          throw createNodeError('how is this not a function', prop);
+        if (!functionNode) {
+          throw createNodeError('variable was not initialized', prop);
         }
 
-        if (!ts.isParenthesizedExpression(functionNode.body)) {
-          throw createNodeError('only function like () => ({}) supported', functionNode);
-        }
+        if (ts.isArrowFunction(functionNode)) {
+          if (!ts.isParenthesizedExpression(functionNode.body)) {
+            throw createNodeError('only function like () => ({}) supported', functionNode);
+          }
 
-        nodeToExtractCssFrom = functionNode.body.expression;
+          nodeToExtractCssFrom = functionNode.body.expression;
+        } else if (ts.isFunctionDeclaration(functionNode) && functionNode.body) {
+          const firstStatement = functionNode.body.statements[0];
+          if (ts.isReturnStatement(firstStatement) && firstStatement.expression) {
+            nodeToExtractCssFrom = firstStatement.expression;
+          } else {
+            throw createNodeError(
+              'function declaration must immediately return css like stuff',
+              functionNode
+            );
+          }
+        } else {
+          throw createNodeError('node not supported', functionNode);
+        }
       } else {
         // we are spreading a variable e.g: css={{ ...mixin }}
         const declaration = collectedDeclarations[getIdentifierText(prop.expression)];
