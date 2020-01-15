@@ -606,7 +606,7 @@ describe('css prop transformer', () => {
       expect(actual).toInclude(`<style>.test-class{color:blue;color:red;}</style>`);
     });
 
-    it.only('should transform object with no argument arrow function', () => {
+    it('should transform object with no argument arrow function', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
@@ -621,7 +621,7 @@ describe('css prop transformer', () => {
       );
     });
 
-    xit('should transform object with no argument function variable', () => {
+    it('should transform object with no argument function variable', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
@@ -630,7 +630,7 @@ describe('css prop transformer', () => {
           return { color: 'red' };
         }
 
-        <div css={{ color: 'blue', mixin() }}>hello world</div>
+        <div css={{ color: 'blue', ':hover': mixin() }}>hello world</div>
       `);
 
       expect(actual).toInclude(
@@ -638,7 +638,7 @@ describe('css prop transformer', () => {
       );
     });
 
-    xit('should transform object with no argument function import', () => {
+    it('should transform object with no argument function import', () => {
       const actual = transformer.addSource({
         path: '/mixins.ts',
         contents: `
@@ -659,7 +659,7 @@ describe('css prop transformer', () => {
       );
     });
 
-    xit('should transform object spread with no argument function variable', () => {
+    it('should transform object spread with no argument function variable', () => {
       const actual = transformer.transform(`
         /** @jsx jsx */
         import { jsx } from '${pkg.name}';
@@ -674,7 +674,7 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('<style>.test-class{color:blue;color:red;}</style>');
     });
 
-    xit('should transform object spread with no argument function import', () => {
+    it('should transform object spread with no argument function import', () => {
       const actual = transformer.addSource({
         path: '/mixins.ts',
         contents: `

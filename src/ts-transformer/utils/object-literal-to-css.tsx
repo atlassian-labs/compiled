@@ -10,6 +10,7 @@ import {
 } from './ast-node';
 import * as logger from './log';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
+import { evaluateFunction, isReturnCssLike } from './evalulate-function';
 import { templateLiteralToCss } from './template-literal-to-css';
 import { addUnitIfNeeded } from './css-property';
 
@@ -109,9 +110,9 @@ export const objectLiteralToCssString = (
 
         cssVariables = cssVariables.concat(result.cssVariables);
         return `${acc}
-        ${key} {
-          ${result.css}
-        }
+          ${key} {
+            ${result.css}
+          }
         `;
       }
 
@@ -131,9 +132,9 @@ export const objectLiteralToCssString = (
       cssVariables = cssVariables.concat(result.cssVariables);
 
       return `${acc}
-      ${key} {
-        ${result.css}
-      }
+        ${key} {
+          ${result.css}
+        }
       `;
     } else if (
       ts.isPropertyAssignment(prop) &&
@@ -171,14 +172,31 @@ export const objectLiteralToCssString = (
       `;
     } else if (ts.isPropertyAssignment(prop) && ts.isCallExpression(prop.initializer)) {
       // We've found a call expression prop, e.g. color: lighten('ok')
-      // Interrogate if it is going to return css if it doesn't just move the call expression to a css variable.
+      // Interrogate if it is going to return css
+      const identifierName = getIdentifierText(prop.initializer.expression);
       key = kebabCase(getIdentifierText(prop.name));
-      const cssVarName = `--${key}-${nextCssVariableName()}`;
-      value = `var(${cssVarName})`;
-      cssVariables.push({
-        expression: prop.initializer,
-        name: cssVarName,
-      });
+      const declaration = collectedDeclarations[identifierName];
+      const actualDeclaration = ts.isVariableDeclaration(declaration)
+        ? declaration.initializer
+        : declaration;
+
+      if (actualDeclaration && isReturnCssLike(actualDeclaration)) {
+        const result = evaluateFunction(actualDeclaration, collectedDeclarations, context);
+        cssVariables = cssVariables.concat(result.cssVariables);
+        return `${acc}
+          ${key} {
+            ${result.css}
+          }
+        `;
+      } else {
+        // It doesn't - move the call expression to a css variable.
+        const cssVarName = `--${key}-${nextCssVariableName()}`;
+        value = `var(${cssVarName})`;
+        cssVariables.push({
+          expression: prop.initializer,
+          name: cssVarName,
+        });
+      }
     } else {
       logger.log('unsupported value found in css object');
       key = prop.name ? kebabCase(getIdentifierText(prop.name)) : 'UNSUPPORTED_PROPERTY_FOUND';
