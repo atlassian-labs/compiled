@@ -1,7 +1,12 @@
-const toHaveCompiledCss: jest.CustomMatcher = (element: HTMLElement, ...args: [string, string]) => {
-  const [property, value] = args;
+const toHaveCompiledCss: jest.CustomMatcher = (
+  element: HTMLElement,
+  ...args: [{ [key: string]: string }]
+) => {
+  const [properties] = args;
   const styleElement = element.parentElement && element.parentElement.querySelector('style');
-  const styleToFind = `${property}:${value};`;
+  const stylesToFind = Object.keys(properties).map(
+    property => `${property}:${properties[property]}`
+  );
 
   if (!styleElement) {
     return {
@@ -22,8 +27,9 @@ const toHaveCompiledCss: jest.CustomMatcher = (element: HTMLElement, ...args: [s
       css = css.replace(`var(${key})`, value);
     });
   }
+  const notFoundStyles = stylesToFind.filter(styleToFind => !css.includes(styleToFind));
 
-  if (css.includes(`.${element.className}`) && css.includes(styleToFind)) {
+  if (css.includes(`.${element.className}`) && notFoundStyles.length === 0) {
     return {
       pass: true,
       message: () => '',
@@ -32,7 +38,9 @@ const toHaveCompiledCss: jest.CustomMatcher = (element: HTMLElement, ...args: [s
 
   return {
     pass: false,
-    message: () => `Could not find "${styleToFind}" on <${element.nodeName.toLowerCase()}> element.
+    message: () => `Could not find "${notFoundStyles.join(
+      ', '
+    )}" on <${element.nodeName.toLowerCase()}> element.
 
 Found styles:
 ${css}`,

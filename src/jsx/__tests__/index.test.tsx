@@ -7,6 +7,6 @@ describe('css prop', () => {
   it('should render a simple styled div', () => {
     const { getByText } = render(<div css={{ fontSize: '15px' }}>hello world</div>);
 
-    expect(getByText('hello world')).toHaveCompiledCss('font-size', '15px');
+    expect(getByText('hello world')).toHaveCompiledCss({ 'font-size': '15px' });
   });
 });
