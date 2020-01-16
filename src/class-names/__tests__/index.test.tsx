@@ -10,6 +10,6 @@ describe('class names component', () => {
       </ClassNames>
     );
 
-    expect(getByText('hello world')).toHaveCompiledCss({ 'font-size': '13px' });
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '13px');
   });
 });

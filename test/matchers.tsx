@@ -1,8 +1,9 @@
 const toHaveCompiledCss: jest.CustomMatcher = (
   element: HTMLElement,
-  ...args: [{ [key: string]: string }]
+  ...args: [{ [key: string]: string } | string, string]
 ) => {
-  const [properties] = args;
+  const [property, value] = args;
+  const properties = typeof property === 'string' ? { [property]: value } : property;
   const styleElement = element.parentElement && element.parentElement.querySelector('style');
   const stylesToFind = Object.keys(properties).map(
     property => `${property}:${properties[property]}`

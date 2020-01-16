@@ -11,7 +11,7 @@ describe('styled component', () => {
 
     const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
 
-    expect(getByText('hello world')).toHaveCompiledCss({ 'font-size': '12px' });
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
   });
 
   it('should render a simple styled div using a template literal', () => {
@@ -21,7 +21,7 @@ describe('styled component', () => {
 
     const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
 
-    expect(getByText('hello world')).toHaveCompiledCss({ 'font-size': '30px' });
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '30px');
   });
 
   it('should interpolate a simple number value', () => {
@@ -32,7 +32,7 @@ describe('styled component', () => {
 
     const { getByText } = render(<StyledDiv fontSize={size}>hello world</StyledDiv>);
 
-    expect(getByText('hello world')).toHaveCompiledCss({ 'font-size': '12px' });
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
   });
 
   it('should at runtime use a call expression inline', () => {
@@ -43,7 +43,7 @@ describe('styled component', () => {
 
     const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
 
-    expect(getByText('hello world')).toHaveCompiledCss({ 'font-size': '0.75em' });
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '0.75em');
   });
 
   it('should at runtime use a identifier referencing a call expression', () => {
@@ -54,7 +54,7 @@ describe('styled component', () => {
 
     const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
 
-    expect(getByText('hello world')).toHaveCompiledCss({ 'font-size': '0.75em' });
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '0.75em');
   });
 
   it('should not pass down invalid html attributes to the node', () => {
