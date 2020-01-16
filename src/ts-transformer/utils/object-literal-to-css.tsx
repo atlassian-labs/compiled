@@ -176,9 +176,10 @@ export const objectLiteralToCssString = (
       const identifierName = getIdentifierText(prop.initializer.expression);
       key = kebabCase(getIdentifierText(prop.name));
       const declaration = collectedDeclarations[identifierName];
-      const actualDeclaration = ts.isVariableDeclaration(declaration)
-        ? declaration.initializer
-        : declaration;
+      const actualDeclaration =
+        declaration && ts.isVariableDeclaration(declaration)
+          ? declaration.initializer
+          : declaration;
 
       if (actualDeclaration && isReturnCssLike(actualDeclaration)) {
         const result = evaluateFunction(actualDeclaration, collectedDeclarations, context);
