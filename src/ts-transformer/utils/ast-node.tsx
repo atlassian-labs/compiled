@@ -5,7 +5,7 @@ const LOCAL_DEVELOPMENT_MODULE = '../src';
 
 export const getExpressionText = (node: ts.Expression) => {
   if (!ts.isStringLiteral(node)) {
-    throw new Error('expression isnt a string literal');
+    throw createNodeError('expression isnt a string literal', node);
   }
 
   return (node as ts.StringLiteral).text;

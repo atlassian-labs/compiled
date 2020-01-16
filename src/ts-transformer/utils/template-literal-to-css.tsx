@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
-import { ToCssReturnType, CssVariableExpressions, VariableDeclarations } from '../types';
-import { getIdentifierText } from './ast-node';
+import { ToCssReturnType, CssVariableExpressions, Declarations } from '../types';
+import { getIdentifierText, createNodeError } from './ast-node';
 import { nextCssVariableName } from './identifiers';
 import { objectLiteralToCssString } from './object-literal-to-css';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
@@ -41,7 +41,7 @@ const extractSuffix = (tail: string) => {
 
 export const templateLiteralToCss = (
   node: ts.TemplateExpression | ts.NoSubstitutionTemplateLiteral | ts.StringLiteral,
-  collectedDeclarations: VariableDeclarations,
+  collectedDeclarations: Declarations,
   context: ts.TransformationContext
 ): ToCssReturnType => {
   if (ts.isNoSubstitutionTemplateLiteral(node) || ts.isStringLiteral(node)) {
@@ -60,8 +60,16 @@ export const templateLiteralToCss = (
       const key = getIdentifierText(span.expression);
       const value = collectedDeclarations[key];
       const variableName = `--${key}-${nextCssVariableName()}`;
-      if (!value || !value.initializer) {
-        throw new Error('variable doesnt exist in scope');
+      if (!value) {
+        throw createNodeError('declaration does not exist', span);
+      }
+
+      if (!ts.isVariableDeclaration(value)) {
+        throw createNodeError('only variable declarations supported atm', value);
+      }
+
+      if (!value.initializer) {
+        throw createNodeError('variable was not initialized', value);
       }
 
       if (ts.isObjectLiteralExpression(value.initializer)) {
@@ -117,13 +125,18 @@ export const templateLiteralToCss = (
       // We found a call expression - e.g. const funcVar = () => ({}); css`${funcVar()}`
       const key = getIdentifierText(span.expression.expression);
       const value = collectedDeclarations[key];
-      if (!value || !value.initializer) {
-        throw new Error('could not find');
+      if (!value) {
+        throw createNodeError('could not find declaration from call expression', span.expression);
       }
 
-      if (isReturnCssLike(value.initializer)) {
+      const declarationNode = ts.isVariableDeclaration(value) ? value.initializer : value;
+      if (!declarationNode) {
+        throw createNodeError('variable was not initialized', value);
+      }
+
+      if (isReturnCssLike(declarationNode)) {
         // We want to "evaluate" it and then add the result to the css.
-        const result = evaluateFunction(value.initializer, collectedDeclarations, context);
+        const result = evaluateFunction(declarationNode, collectedDeclarations, context);
         css += result.css;
         cssVariables = cssVariables.concat(result.cssVariables);
       } else {
@@ -136,7 +149,7 @@ export const templateLiteralToCss = (
         });
       }
     } else {
-      throw new Error('unsupported');
+      throw createNodeError('unsupported node', span);
     }
   });
 

@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import { visitStyledComponent } from './visitors/visit-styled-component';
 import { getIdentifierText, isPackageModuleImport } from '../utils/ast-node';
-import { VariableDeclarations } from '../types';
+import { Declarations } from '../types';
 import { collectDeclarationsFromNode } from '../utils/collect-declarations';
 import { visitSourceFileEnsureDefaultReactImport } from '../utils/visit-source-file-ensure-default-react-import';
 
@@ -43,7 +43,7 @@ export default function styledComponentTransformer(
       }
 
       const transformedSourceFile = visitSourceFileEnsureDefaultReactImport(sourceFile, context);
-      const collectedDeclarations: VariableDeclarations = {};
+      const collectedDeclarations: Declarations = {};
 
       const visitor = (node: ts.Node): ts.Node => {
         collectDeclarationsFromNode(node, program, collectedDeclarations);

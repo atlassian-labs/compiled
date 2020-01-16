@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { VariableDeclarations } from '../types';
+import { Declarations } from '../types';
 import { getIdentifierText, getExpressionText } from './ast-node';
 import * as logger from './log';
 
@@ -12,10 +12,15 @@ import * as logger from './log';
 export const collectDeclarationsFromNode = (
   node: ts.Node,
   program: ts.Program,
-  outDeclarationsMap: VariableDeclarations
+  outDeclarationsMap: Declarations
 ): boolean => {
   if (ts.isVariableDeclaration(node)) {
     // we may need this later, let's store it in a POJO for quick access.
+    outDeclarationsMap[getIdentifierText(node.name)] = node;
+    return true;
+  }
+
+  if (ts.isFunctionDeclaration(node) && node.name) {
     outDeclarationsMap[getIdentifierText(node.name)] = node;
     return true;
   }
@@ -31,16 +36,22 @@ export const collectDeclarationsFromNode = (
 
     const exportSymbols = typeChecker.getExportsOfModule(importSymbol);
     exportSymbols.forEach(exportSymbol => {
-      if (
-        // valueDeclaration can be undefined believe it or not.
-        exportSymbol.valueDeclaration &&
-        !ts.isVariableDeclaration(exportSymbol.valueDeclaration)
-      ) {
-        logger.log('only variable exports supported atm - skipping');
+      if (!exportSymbol.valueDeclaration) {
+        logger.log('declaration is undefined - skipping');
         return;
       }
 
-      outDeclarationsMap[exportSymbol.getName()] = exportSymbol.valueDeclaration;
+      if (ts.isVariableDeclaration(exportSymbol.valueDeclaration)) {
+        outDeclarationsMap[exportSymbol.getName()] = exportSymbol.valueDeclaration;
+        return;
+      }
+
+      if (ts.isFunctionDeclaration(exportSymbol.valueDeclaration)) {
+        outDeclarationsMap[exportSymbol.getName()] = exportSymbol.valueDeclaration;
+        return;
+      }
+
+      logger.log('only variable exports supported atm - skipping');
     });
 
     return true;

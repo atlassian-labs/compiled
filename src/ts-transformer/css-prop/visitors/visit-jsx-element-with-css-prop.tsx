@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import stylis from 'stylis';
-import { VariableDeclarations, CssVariableExpressions } from '../../types';
+import { Declarations, CssVariableExpressions } from '../../types';
 import { nextClassName } from '../../utils/identifiers';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
@@ -10,6 +10,7 @@ import {
   getIdentifierText,
   getJsxNodeAttributes,
   getJsxNodeAttributesValue,
+  createNodeError,
 } from '../../utils/ast-node';
 
 const CSS_PROP = 'css';
@@ -18,7 +19,7 @@ const STYLE_PROP = 'style';
 
 export const visitJsxElementWithCssProp = (
   node: ts.JsxElement | ts.JsxSelfClosingElement,
-  variableDeclarations: VariableDeclarations,
+  variableDeclarations: Declarations,
   context: ts.TransformationContext
 ) => {
   logger.log('visiting a jsx element with a css prop');
@@ -29,7 +30,10 @@ export const visitJsxElementWithCssProp = (
   ) as ts.JsxAttribute;
 
   if (!cssJsxAttribute || !cssJsxAttribute.initializer) {
-    throw new Error('Css prop should have been defined. Check a level higher in the code.');
+    throw createNodeError(
+      'Css prop should have been defined. Check a level higher in the code.',
+      node
+    );
   }
 
   let cssToPassThroughCompiler: string = '';

@@ -12,8 +12,8 @@ export interface CssVariableExpressions {
   expression: ts.Identifier | ts.BinaryExpression | ts.Expression;
 }
 
-export interface VariableDeclarations {
-  [moduleName: string]: ts.VariableDeclaration;
+export interface Declarations {
+  [moduleName: string]: ts.VariableDeclaration | ts.FunctionDeclaration;
 }
 
 export interface ToCssReturnType {
