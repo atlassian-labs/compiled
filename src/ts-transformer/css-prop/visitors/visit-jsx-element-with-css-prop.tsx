@@ -10,6 +10,7 @@ import {
   getIdentifierText,
   getJsxNodeAttributes,
   getJsxNodeAttributesValue,
+  createNodeError,
 } from '../../utils/ast-node';
 
 const CSS_PROP = 'css';
@@ -29,7 +30,10 @@ export const visitJsxElementWithCssProp = (
   ) as ts.JsxAttribute;
 
   if (!cssJsxAttribute || !cssJsxAttribute.initializer) {
-    throw new Error('Css prop should have been defined. Check a level higher in the code.');
+    throw createNodeError(
+      'Css prop should have been defined. Check a level higher in the code.',
+      node
+    );
   }
 
   let cssToPassThroughCompiler: string = '';

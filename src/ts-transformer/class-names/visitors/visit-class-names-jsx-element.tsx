@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { getIdentifierText } from '../../utils/ast-node';
+import { getIdentifierText, createNodeError } from '../../utils/ast-node';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import { nextClassName } from '../../utils/identifiers';
@@ -14,7 +14,7 @@ const visitCssCallExpression = (
   collectedDeclarations: Declarations
 ): ToCssReturnType => {
   if (!ts.isObjectLiteralExpression(node.arguments[0])) {
-    throw new Error('only support object literal atm');
+    throw createNodeError('only support object literal atm', node.arguments[0]);
   }
 
   const cssArgument: ts.ObjectLiteralExpression = node.arguments[0] as ts.ObjectLiteralExpression;
@@ -100,7 +100,10 @@ export const visitClassNamesJsxElement = (
     !returnNode.expression ||
     !ts.isArrowFunction(returnNode.expression)
   ) {
-    throw new Error('children were invalid should be child as function');
+    throw createNodeError(
+      'children were invalid should be child as function',
+      returnNode || withStyleParsedNode
+    );
   }
 
   const children = ts.isParenthesizedExpression(returnNode.expression.body)

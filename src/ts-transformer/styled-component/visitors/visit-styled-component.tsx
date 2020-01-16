@@ -5,7 +5,7 @@ import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import { Declarations } from '../../types';
 import { joinToJsxExpression } from '../../utils/expression-operators';
-import { getIdentifierText } from '../../utils/ast-node';
+import { getIdentifierText, createNodeError } from '../../utils/ast-node';
 
 const getTagName = (node: ts.CallExpression | ts.TaggedTemplateExpression): string => {
   if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
@@ -16,7 +16,7 @@ const getTagName = (node: ts.CallExpression | ts.TaggedTemplateExpression): stri
     return node.tag.name.text;
   }
 
-  throw new Error('tag should have been here');
+  throw createNodeError('tag should have been here', node);
 };
 
 const getPropertyAccessName = (propertyAccess?: string): string => {
@@ -36,7 +36,7 @@ const getObjectLiteralOrTemplateLiteral = (
       return firstArgument;
     }
 
-    throw new Error('only object allowed as first argument');
+    throw createNodeError('only object allowed as first argument', firstArgument);
   }
 
   return node.template;
