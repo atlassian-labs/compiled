@@ -77,8 +77,10 @@ describe('styled component', () => {
 
     const { getByText } = render(<StyledDiv size={size}>hello world</StyledDiv>);
 
-    expect(getByText('hello world')).toHaveCompiledCss('height', '12px');
-    expect(getByText('hello world')).toHaveCompiledCss('width', '12px');
+    expect(getByText('hello world')).toHaveCompiledCss({
+      height: '12px',
+      width: '12px',
+    });
   });
 
   it('should automatically add suffix on css object', () => {
@@ -90,7 +92,9 @@ describe('styled component', () => {
 
     const { getByText } = render(<StyledDiv size={size}>hello world</StyledDiv>);
 
-    expect(getByText('hello world')).toHaveCompiledCss('height', '12px');
-    expect(getByText('hello world')).toHaveCompiledCss('width', '12px');
+    expect(getByText('hello world')).toHaveCompiledCss({
+      height: '12px',
+      width: '12px',
+    });
   });
 });
