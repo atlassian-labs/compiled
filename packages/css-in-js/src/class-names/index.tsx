@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 import { ObjectLiteralCSS } from '../types';
-import { name as packageName } from '../../../../package.json';
 
 export const IS_CSS_FREEDOM_COMPILED = false;
 
@@ -10,12 +9,12 @@ interface ClassNamesProps {
   children: (opts: { css: CSSFunction; style: { [key: string]: string } }) => ReactNode;
 }
 
-export function ClassNames(props: ClassNamesProps) {
+export function ClassNames(_: ClassNamesProps) {
   if (process.env.NODE_ENV !== 'production' && !IS_CSS_FREEDOM_COMPILED) {
-    throw new Error(`${packageName}
+    throw new Error(`@compiled/css-in-js
 
 You need to apply the typescript transformer to use this!
-You can apply it from \`${packageName}/transformer\`.`);
+You can apply it from \`@compiled/css-in-js/ts-transformer\`.`);
   }
 
   return undefined as any;

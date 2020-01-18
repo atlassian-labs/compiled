@@ -1,5 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@compiled/css-in-js';
+// @ts-ignore
 import React from 'react';
 import { render } from '@testing-library/react';
 

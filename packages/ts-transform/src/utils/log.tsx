@@ -1,5 +1,3 @@
-import { name as packageName } from '../../../../package.json';
-
 let enabled = false;
 
 export const setEnabled = (on: boolean) => {
@@ -7,7 +5,7 @@ export const setEnabled = (on: boolean) => {
 };
 
 const defaultSuffix = `
-  ${packageName} ==> `;
+  @compiled/ts-transform-css-in-js ==> `;
 
 export const log = (msg: any, suffix: string = defaultSuffix) => {
   if (enabled) {

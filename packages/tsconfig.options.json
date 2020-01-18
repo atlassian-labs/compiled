@@ -20,6 +20,6 @@
     "pretty": true,
     "sourceMap": true,
     "declaration": true,
-    "types": ["react", "jest", "node"]
+    "typeRoots": ["../node_modules/@types", "./types"]
   }
 }

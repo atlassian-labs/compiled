@@ -9,7 +9,7 @@ import { createNodeError } from './ast-node';
  */
 export const extractCssVarFromArrowFunction = (
   node: ts.ArrowFunction,
-  context: ts.TransformationContext
+  _: ts.TransformationContext
 ): CssVariableExpressions => {
   let expression: ts.Expression = ts.createIdentifier('');
   let name: string = '';

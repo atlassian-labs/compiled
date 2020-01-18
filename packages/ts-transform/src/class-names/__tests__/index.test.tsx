@@ -1,18 +1,17 @@
 import { Transformer } from 'ts-transformer-testing-library';
-import pkg from '../../../../../package.json';
 import classNamesTransformer from '../index';
 
 jest.mock('../../utils/identifiers');
 
 const transformer = new Transformer()
   .addTransformer(classNamesTransformer)
-  .addMock({ name: pkg.name, content: `export const ClassNames: any = () => null` })
+  .addMock({ name: '@compiled/css-in-js', content: `export const ClassNames: any = () => null` })
   .setFilePath('/index.tsx');
 
 describe('class names transformer', () => {
   it('should replace class names component style element', () => {
     const actual = transformer.transform(`
-      import { ClassNames } from '${pkg.name}';
+      import { ClassNames } from '@compiled/css-in-js';
 
       const ListItem = () => (
         <ClassNames>
@@ -28,7 +27,7 @@ describe('class names transformer', () => {
 
   it('should remove class names import', () => {
     const actual = transformer.transform(`
-      import { ClassNames } from '${pkg.name}';
+      import { ClassNames } from '@compiled/css-in-js';
 
       const ListItem = () => (
         <ClassNames>
@@ -37,13 +36,13 @@ describe('class names transformer', () => {
       );
     `);
 
-    expect(actual).not.toInclude(`import { ClassNames } from "${pkg.name}";`);
+    expect(actual).not.toInclude(`import { ClassNames } from "@compiled/css-in-js";`);
   });
 
   describe('using a string literal', () => {
     it('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         const fontSize = 20;
 
@@ -62,7 +61,7 @@ describe('class names transformer', () => {
 
     it('should transform no template string literal', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         const ListItem = () => (
           <ClassNames>
@@ -76,7 +75,7 @@ describe('class names transformer', () => {
 
     it('should transform template string literal with string variable', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         const fontSize = '12px';
 
@@ -94,7 +93,7 @@ describe('class names transformer', () => {
 
     it('should transform template string literal with numeric variable', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         const fontSize = 12;
 
@@ -115,7 +114,7 @@ describe('class names transformer', () => {
         path: '/constants.ts',
         contents: "export const fontSize = '12px';",
       }).transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
         import { fontSize } from './constants';
 
         const ListItem = () => (
@@ -132,7 +131,7 @@ describe('class names transformer', () => {
 
     it('should transform template string literal with obj variable', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         const color = { color: 'blue' };
 
@@ -151,7 +150,7 @@ describe('class names transformer', () => {
         path: '/mix.ts',
         contents: `export const color = { color: 'blue' };`,
       }).transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
         import { color } from './mix';
 
         const ListItem = () => (
@@ -170,7 +169,7 @@ describe('class names transformer', () => {
 
     it('should transform template string with no argument arrow function variable', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         const color = () => ({ color: 'blue' });
 
@@ -189,7 +188,7 @@ describe('class names transformer', () => {
         path: '/mixin.ts',
         contents: `export const color = () => ({ color: 'blue' });`,
       }).transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
         import { color } from './mixin';
 
         const ListItem = () => (
@@ -204,7 +203,7 @@ describe('class names transformer', () => {
 
     it('should transform template string with no argument function variable', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         function color() { return { color: 'blue' }; }
 
@@ -225,7 +224,7 @@ describe('class names transformer', () => {
           export function color() { return { color: 'blue' }; }
         `,
       }).transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
         import { color } from './mixin';
 
         const ListItem = () => (
@@ -250,7 +249,7 @@ describe('class names transformer', () => {
   describe('using an object literal', () => {
     it('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         const fontSize = 20;
 
@@ -269,7 +268,7 @@ describe('class names transformer', () => {
 
     it('should transform object with simple values', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         const ListItem = () => (
           <ClassNames>
@@ -283,7 +282,7 @@ describe('class names transformer', () => {
 
     it('should transform object with nested object into a selector', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         const ListItem = () => (
           <ClassNames>
@@ -297,7 +296,7 @@ describe('class names transformer', () => {
 
     it('should transform object that has a variable reference', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         const color = 'red';
 
@@ -315,7 +314,7 @@ describe('class names transformer', () => {
 
     it('should transform object spread from variable', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         const mixin = {
           color: 'red',
@@ -336,7 +335,7 @@ describe('class names transformer', () => {
         path: '/mixy.ts',
         contents: "export const mixin = { color: 'red' };",
       }).transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
         import { mixin } from './mixy';
 
         const ListItem = () => (
@@ -351,7 +350,7 @@ describe('class names transformer', () => {
 
     it('should transform object with string variable', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         const color = 'blue';
 
@@ -373,7 +372,7 @@ describe('class names transformer', () => {
         path: '/mixy.ts',
         contents: "export const color = 'red';",
       }).transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
         import { color } from './mixy';
 
         const ListItem = () => (
@@ -388,7 +387,7 @@ describe('class names transformer', () => {
 
     it('should transform object with obj variable', () => {
       const actual = transformer.transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
 
         const hover = { color: 'red' };
 
@@ -409,7 +408,7 @@ describe('class names transformer', () => {
         contents: `export const hover = { color: 'red' };`,
         path: './mixins.tsx',
       }).transform(`
-        import { ClassNames } from '${pkg.name}';
+        import { ClassNames } from '@compiled/css-in-js';
         import { hover } from './mixins';
 
         const ListItem = () => (

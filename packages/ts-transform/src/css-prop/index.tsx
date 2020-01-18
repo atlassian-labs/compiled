@@ -1,6 +1,5 @@
 import * as ts from 'typescript';
 import * as logger from '../utils/log';
-import { name as packageName } from '../../../../package.json';
 import { Declarations } from '../types';
 import {
   isJsxElementWithCssProp,

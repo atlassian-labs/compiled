@@ -1,1 +1,1 @@
-export { default } from '../../ts-transformer/src/index';
+export { default } from '@compiled/ts-transform-css-in-js';

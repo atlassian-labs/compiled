@@ -85,6 +85,8 @@ export const visitStyledComponent = (
 
         return propName;
       }
+
+      return undefined;
     })
     .filter(Boolean) as string[];
 

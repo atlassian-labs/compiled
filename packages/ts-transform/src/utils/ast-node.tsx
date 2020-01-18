@@ -1,7 +1,4 @@
 import * as ts from 'typescript';
-import { name as packageName } from '../../../../package.json';
-
-const LOCAL_DEVELOPMENT_MODULE = '../src';
 
 export const getExpressionText = (node: ts.Expression) => {
   if (!ts.isStringLiteral(node)) {
@@ -60,10 +57,7 @@ export const isPackageModuleImport = (statement: ts.Node, namedImport: string): 
     return false;
   }
 
-  const isLibraryImport =
-    statement.moduleSpecifier.text === packageName ||
-    statement.moduleSpecifier.text === LOCAL_DEVELOPMENT_MODULE;
-
+  const isLibraryImport = statement.moduleSpecifier.text === '@compiled/css-in-js';
   if (!isLibraryImport) {
     return false;
   }
@@ -78,7 +72,7 @@ export const isPackageModuleImport = (statement: ts.Node, namedImport: string): 
 
 export const createNodeError = (message: string, node: ts.Node) => {
   // Throws a string so we don't get a stack trace.
-  throw `${packageName} => ${message}
+  throw `@compiled/css-in-js => ${message}
 
 ${node.getText()}
 `;

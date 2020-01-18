@@ -1,7 +1,6 @@
 import * as ts from 'typescript';
 import { Transformer } from 'ts-transformer-testing-library';
 import rootTransformer from '../index';
-import pkg from '../../../../package.json';
 
 const stubProgam: ts.Program = ({
   getTypeChecker: () => ({
@@ -17,7 +16,7 @@ describe('root transformer', () => {
       ts.transpileModule(
         `
           /** @jsx jsx */
-          import { jsx } from '${pkg.name}';
+          import { jsx } from '@compiled/css-in-js';
           const MyComponent = () => <div css={{ fontSize: '20px' }}>hello world</div>
         `,
         {
@@ -35,7 +34,7 @@ describe('root transformer', () => {
       ts.transpileModule(
         `
           /** @jsx jsx */
-          import { jsx } from '${pkg.name}';
+          import { jsx } from '@compiled/css-in-js';
           var MyComponent = () => <div css={{ fontSize: '20px' }}>hello world</div>
         `,
         {
@@ -50,7 +49,7 @@ describe('root transformer', () => {
     const transformer = new Transformer()
       .addTransformer(rootTransformer)
       .setFilePath('/index.tsx')
-      .addMock({ name: pkg.name, content: `export const jsx: any = () => null` })
+      .addMock({ name: '@compiled/css-in-js', content: `export const jsx: any = () => null` })
       .addSource({
         path: '/mixins.ts',
         contents: "export const mixin = { color: 'blue' };",
@@ -59,7 +58,7 @@ describe('root transformer', () => {
     expect(() => {
       transformer.transform(`
         /** @jsx jsx */
-        import { jsx } from '${pkg.name}';
+        import { jsx } from '@compiled/css-in-js';
         import { mixin } from './mixins';
 
         <div css={{ ':hover': mixin }}>hello</div>

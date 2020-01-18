@@ -1,9 +1,8 @@
 import * as ts from 'typescript';
 import * as logger from '../utils/log';
-import { IS_CSS_FREEDOM_COMPILED } from '../../../css-in-js/src/jsx/index';
 import { getIdentifierText } from '../utils/ast-node';
 
-const UNCOMPILED_GUARD_VARIABLE_NAME = Object.keys({ IS_CSS_FREEDOM_COMPILED })[0];
+const UNCOMPILED_GUARD_VARIABLE_NAME = 'IS_CSS_FREEDOM_COMPILED';
 
 const isCssFreedomCompiledNode = (node: ts.Node): node is ts.VariableDeclaration => {
   return (

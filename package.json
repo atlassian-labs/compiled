@@ -7,7 +7,7 @@
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch src/ts-transformer/ -e tsx",
     "test": "jest",
     "test:cover": "jest --collectCoverage",
-    "build": "rm -rf dist && tsc && mv dist/src/* dist && rm dist/package.json",
+    "build": "tsc --build packages",
     "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js",
     "build-storybook": "build-storybook",
     "preversion": "yarn test && yarn build",
