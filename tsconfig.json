@@ -1,3 +1,6 @@
 {
-  "extends": "./packages/tsconfig.options.json"
+  "extends": "./packages/tsconfig.options.json",
+  "compilerOptions": {
+    "allowJs": true
+  }
 }

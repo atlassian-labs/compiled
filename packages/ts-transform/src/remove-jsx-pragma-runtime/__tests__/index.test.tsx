@@ -7,7 +7,9 @@ const printer = ts.createPrinter();
 describe('removing jsx pragma runtime', () => {
   it('should set the compiled variable to true', () => {
     const transformer = removePragmaRuntime({} as ts.Program);
-    const source = fs.readFileSync(`${__dirname}/../../../jsx/index.tsx`).toString();
+    const source = fs
+      .readFileSync(`${__dirname}/../../../../css-in-js/src/jsx/index.tsx`)
+      .toString();
     const sourceFile = ts.createSourceFile('index.tsx', source, ts.ScriptTarget.Latest);
 
     const actual = ts.transform(sourceFile, [transformer]).transformed[0];
