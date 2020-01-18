@@ -1,7 +1,23 @@
 {
-  "private": true,
+  "name": "@compiled/css-in-js",
+  "version": "0.0.2",
+  "description": "Typescript first CSS in JS library that compiles away to nothing. 🔧🚧",
+  "keywords": [
+    "compiled",
+    "css-in-js",
+    "styled-components",
+    "emotion-js",
+    "typescript",
+    "ts-transformer"
+  ],
   "author": "Michael Dougall",
   "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "start": "npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch src/ts-transformer/ -e tsx",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch src/ts-transformer/ -e tsx",
@@ -13,11 +29,16 @@
     "preversion": "yarn test && yarn build",
     "postversion": "echo 'make sure to push \"git push && git push --tags\"'"
   },
+  "dependencies": {
+    "@emotion/is-prop-valid": "^0.8.6",
+    "stylis": "^3.5.4",
+    "typescript": "^3.7.3"
+  },
+  "peerDependencies": {
+    "react": "^16.12.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.7.5",
-    "@compiled/css-in-js": "^0.0.2",
-    "@compiled/jest-css-in-js": "^0.0.2",
-    "@compiled/ts-transform-css-in-js": "^0.0.2",
     "@storybook/addon-actions": "^5.2.8",
     "@storybook/addon-links": "^5.2.8",
     "@storybook/addons": "^5.2.8",
@@ -39,15 +60,6 @@
     "ts-node": "8.5.2",
     "ts-node-dev": "1.0.0-pre.44",
     "ts-transformer-testing-library": "^1.0.0-alpha.7",
-    "ttypescript": "^1.5.10",
-    "typescript": "^3.7.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
-  },
-  "workspaces": [
-    "packages/*"
-  ]
+    "ttypescript": "^1.5.10"
+  }
 }

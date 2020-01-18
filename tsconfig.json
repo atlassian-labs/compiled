@@ -6,18 +6,18 @@
     "lib": ["es5", "es6", "es7", "es2017", "dom"],
     "module": "commonjs",
     "jsx": "react",
-    "declaration": true,
-    "outDir": "./dist",
     "strict": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "plugins": [{ "transform": "./src/ts-transformer.tsx", "debug": false }],
-    "baseUrl": ".",
+    "plugins": [{ "transform": "@compiled/ts-transform-css-in-js" }],
+    "baseUrl": "packages",
     "paths": {
-      "@compiled/css-in-js": ["src/index.tsx"]
+      "@compiled/css-in-js": ["css-in-js/src/index.tsx"],
+      "@compiled/jest-css-in-js": ["jest/src/index.tsx"],
+      "@compiled/ts-transform-css-in-js": ["ts-transform/src/index.tsx"]
     }
   },
-  "include": ["src/*", "src/**/*"],
+  "include": ["packages/*", "packages/**/*", "types"],
   "exclude": ["node_modules", "examples", "dist"]
 }
