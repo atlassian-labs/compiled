@@ -1,7 +1,5 @@
 import { CSSProperties, ReactNode } from 'react';
 
-export const IS_CSS_FREEDOM_COMPILED = false;
-
 type CssObject<TProps> =
   | CSSProperties
   | Record<string, CSSProperties | ((props: TProps) => string | number) | string | number>;
@@ -12,7 +10,7 @@ function styledFunction<TProps extends {}>(
   _: CssObject<TProps> | TemplateStringsArray,
   ...__: Interpoltation<TProps>[]
 ): React.ComponentType<TProps & { children?: ReactNode }> {
-  if (process.env.NODE_ENV !== 'production' && !IS_CSS_FREEDOM_COMPILED) {
+  if (process.env.NODE_ENV !== 'production') {
     throw new Error(`@compiled/css-in-js
 
 You need to apply the typescript transformer to use this!
