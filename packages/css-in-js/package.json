@@ -18,48 +18,16 @@
     "dist",
     "src"
   ],
-  "scripts": {
-    "start": "npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch src/ts-transformer/ -e tsx",
-    "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch src/ts-transformer/ -e tsx",
-    "test": "jest",
-    "test:cover": "jest --collectCoverage",
-    "build": "rm -rf dist && tsc && mv dist/src/* dist && rm dist/package.json",
-    "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js",
-    "build-storybook": "build-storybook",
-    "preversion": "yarn test && yarn build",
-    "postversion": "echo 'make sure to push \"git push && git push --tags\"'"
-  },
   "dependencies": {
-    "@emotion/is-prop-valid": "^0.8.6",
-    "stylis": "^3.5.4",
-    "typescript": "^3.7.3"
+    "@compiled/ts-transform-css-in-js": "^0.0.2"
   },
   "peerDependencies": {
     "react": "^16.12.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.5",
-    "@storybook/addon-actions": "^5.2.8",
-    "@storybook/addon-links": "^5.2.8",
-    "@storybook/addons": "^5.2.8",
-    "@storybook/react": "^5.2.8",
     "@testing-library/react": "^9.4.0",
-    "@types/jest": "24.0.19",
-    "@types/node": "^12.12.17",
-    "babel-loader": "^8.0.6",
-    "husky": "^3.1.0",
-    "jest": "24.9.0",
-    "jest-extended": "^0.11.2",
     "polished": "^3.4.2",
-    "prettier": "^1.19.1",
-    "pretty-quick": "^2.0.1",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "ts-jest": "24.2.0",
-    "ts-loader": "^6.2.1",
-    "ts-node": "8.5.2",
-    "ts-node-dev": "1.0.0-pre.44",
-    "ts-transformer-testing-library": "^1.0.0-alpha.7",
-    "ttypescript": "^1.5.10"
+    "react-dom": "^16.12.0"
   }
 }
