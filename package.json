@@ -11,10 +11,7 @@
     "build": "tsc --build packages",
     "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js --build packages",
     "build-storybook": "build-storybook",
-    "pre-version": "yarn clean && yarn build && yarn test",
-    "version-major": "pre-version && workspaces-run -- npm version major",
-    "version-minor": "pre-version && workspaces-run -- npm version minor",
-    "version-patch": "pre-version && workspaces-run -- npm version patch"
+    "pre-version": "yarn clean && yarn build && yarn test"
   },
   "devDependencies": {
     "@babel/core": "^7.7.5",
