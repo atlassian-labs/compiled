@@ -3,15 +3,18 @@
   "author": "Michael Dougall",
   "license": "Apache-2.0",
   "scripts": {
-    "start": "npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch src/ts-transformer/ -e tsx",
-    "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch src/ts-transformer/ -e tsx",
+    "clean": "workspaces-run -- rm -rf dist -- rm -f tsconfig.tsbuildinfo",
+    "start": "npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch packages/ts-transform/ -e tsx",
+    "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/ts-transform/ -e tsx",
     "test": "jest",
     "test:cover": "jest --collectCoverage",
     "build": "tsc --build packages",
-    "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js",
+    "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js --build packages",
     "build-storybook": "build-storybook",
-    "preversion": "yarn test && yarn build",
-    "postversion": "echo 'make sure to push \"git push && git push --tags\"'"
+    "pre-version": "yarn clean && yarn build && yarn test",
+    "version-major": "pre-version && workspaces-run -- npm version major",
+    "version-minor": "pre-version && workspaces-run -- npm version minor",
+    "version-patch": "pre-version && workspaces-run -- npm version patch"
   },
   "devDependencies": {
     "@babel/core": "^7.7.5",
@@ -37,7 +40,8 @@
     "ts-node": "8.5.2",
     "ts-node-dev": "1.0.0-pre.44",
     "ttypescript": "^1.5.10",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.3",
+    "workspaces-run": "^1.0.1"
   },
   "husky": {
     "hooks": {
