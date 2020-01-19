@@ -13,7 +13,7 @@
     "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js --build packages",
     "build-storybook": "build-storybook",
     "preversion": "yarn clean && yarn build && yarn test",
-    "version": "workspaces-run -- npm version && git add -A dist"
+    "version": "bash scripts/version.sh && git add ."
   },
   "devDependencies": {
     "@babel/core": "^7.7.5",
