@@ -1,4 +1,4 @@
-import { createElement, ElementType, ReactNode } from 'react';
+import { ElementType, ReactNode } from 'react';
 import { CSSProp } from './types';
 
 declare module 'react' {
@@ -15,15 +15,11 @@ declare global {
   }
 }
 
-export const IS_CSS_FREEDOM_COMPILED = false;
-
-export function jsx<P extends {}>(type: ElementType<P>, props: P, ...children: ReactNode[]) {
-  if (process.env.NODE_ENV !== 'production' && !IS_CSS_FREEDOM_COMPILED) {
+export function jsx<P extends {}>(_: ElementType<P>, __: P, ...___: ReactNode[]) {
+  if (process.env.NODE_ENV !== 'production') {
     throw new Error(`@compiled/css-in-js
 
 You need to apply the typescript transformer to use this!
 You can apply it from \`@compiled/css-in-js/ts-transformer\`.`);
   }
-
-  return createElement(type, props, ...children);
 }

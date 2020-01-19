@@ -22,8 +22,9 @@ const isJsxPragmaFoundWithOurJsxFunction = (sourceFile: ts.SourceFile) => {
   );
 };
 
-const resetJsxPragmaBackToReact = (sourceFile: ts.SourceFile) => {
-  (sourceFile as any).pragmas.delete(JSX_PRAGMA);
+const resetJsxPragma = (sourceFile: ts.SourceFile) => {
+  ((sourceFile as any).pragmas as Map<any, any>).clear();
+  delete (sourceFile as any).localJsxFactory;
 };
 
 export default function cssPropTransformer(
@@ -36,7 +37,7 @@ export default function cssPropTransformer(
         return sourceFile;
       }
 
-      resetJsxPragmaBackToReact(sourceFile);
+      resetJsxPragma(sourceFile);
 
       const collectedDeclarations: Declarations = {};
       logger.log('found file with jsx pragma');

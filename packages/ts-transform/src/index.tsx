@@ -1,6 +1,5 @@
 import * as ts from 'typescript';
 import * as logger from './utils/log';
-import removeJsxPragmaRuntimeTransformer from './remove-jsx-pragma-runtime';
 import cssPropTransformer from './css-prop';
 import styledComponentTransformer from './styled-component';
 import classNamesTransformer from './class-names';
@@ -9,12 +8,7 @@ interface TransformerOptions {
   debug?: boolean;
 }
 
-const transformers = [
-  removeJsxPragmaRuntimeTransformer,
-  cssPropTransformer,
-  styledComponentTransformer,
-  classNamesTransformer,
-];
+const transformers = [cssPropTransformer, styledComponentTransformer, classNamesTransformer];
 
 export default function transformer(
   program: ts.Program,
