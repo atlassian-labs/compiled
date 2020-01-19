@@ -4,8 +4,8 @@
   "description": "Typescript transformer for compiled css in js.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
-  "main": "./dist/cjs/index.js",
-  "types": "./dist/cjs/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "src"
