@@ -26,7 +26,7 @@ npm i @compiled/css-in-js --save
 npm i ttypescript --save-dev
 ```
 
-Add the transformer to plugins:
+Add the transformer to your `tsconfig.json` plugins:
 
 ```diff
 {
