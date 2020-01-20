@@ -1,5 +1,6 @@
 import { ElementType, ReactNode } from 'react';
 import { CSSProp } from './types';
+import { createSetupError } from '../utils/error';
 
 declare module 'react' {
   interface DOMAttributes<T> {
@@ -16,10 +17,5 @@ declare global {
 }
 
 export function jsx<P extends {}>(_: ElementType<P>, __: P, ...___: ReactNode[]) {
-  if (process.env.NODE_ENV !== 'production') {
-    throw new Error(`@compiled/css-in-js
-
-You need to apply the typescript transformer to use this!
-You can apply it from \`@compiled/css-in-js/ts-transformer\`.`);
-  }
+  throw createSetupError();
 }
