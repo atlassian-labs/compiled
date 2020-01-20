@@ -1,0 +1,21 @@
+{
+  "name": "@compiled/ts-transform-css-in-js",
+  "version": "0.0.2",
+  "description": "Typescript first CSS in JS library that compiles away to nothing. 🔧🚧",
+  "author": "Michael Dougall",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "dependencies": {
+    "@emotion/is-prop-valid": "^0.8.6",
+    "stylis": "^3.5.4",
+    "typescript": "^3.7.3"
+  },
+  "devDependencies": {
+    "ts-transformer-testing-library": "^1.0.0-alpha.7"
+  }
+}

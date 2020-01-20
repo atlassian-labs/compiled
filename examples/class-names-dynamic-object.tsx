@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ClassNames } from '../src';
+import { ClassNames } from '@compiled/css-in-js';
 
 export default {
   title: 'class names dynamic object',

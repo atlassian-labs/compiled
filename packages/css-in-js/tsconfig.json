@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.options.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "baseUrl": "src",
+    "paths": {
+      "@compiled/css-in-js": ["index.tsx"]
+    }
+  },
+  "references": [{ "path": "../ts-transform" }]
+}

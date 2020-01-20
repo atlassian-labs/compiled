@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx } from '../src';
+import { jsx } from '@compiled/css-in-js';
 import { hover } from './mixins/mixins';
 
 const inlineMixinFunc = () => ({

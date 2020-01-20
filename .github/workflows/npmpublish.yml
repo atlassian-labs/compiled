@@ -43,6 +43,6 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: Publish to npm registry
-        run: npm publish
+        run: npx workspaces-run -- npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.COMPILED_CSS_IN_JS_NPM_TOKEN}}

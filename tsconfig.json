@@ -1,23 +1,6 @@
 {
-  /* See https://www.typescriptlang.org/docs/handbook/compiler-options.html */
+  "extends": "./packages/tsconfig.options.json",
   "compilerOptions": {
-    "target": "es5",
-    "moduleResolution": "node",
-    "lib": ["es5", "es6", "es7", "es2017", "dom"],
-    "module": "commonjs",
-    "jsx": "react",
-    "declaration": true,
-    "outDir": "./dist",
-    "strict": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "sourceMap": true,
-    "plugins": [{ "transform": "./src/ts-transformer.tsx", "debug": false }],
-    "baseUrl": ".",
-    "paths": {
-      "@compiled/css-in-js": ["src/index.tsx"]
-    }
-  },
-  "include": ["src/*", "src/**/*"],
-  "exclude": ["node_modules", "examples", "dist"]
+    "plugins": [{ "transform": "@compiled/ts-transform-css-in-js", "debug": false }]
+  }
 }

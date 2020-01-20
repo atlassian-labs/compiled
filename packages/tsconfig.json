@@ -1,0 +1,4 @@
+{
+  "files": [],
+  "references": [{ "path": "css-in-js" }, { "path": "jest" }, { "path": "ts-transform" }]
+}

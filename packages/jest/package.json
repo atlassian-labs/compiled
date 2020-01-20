@@ -1,0 +1,13 @@
+{
+  "name": "@compiled/jest-css-in-js",
+  "version": "0.0.2",
+  "description": "Jest utils for compiled css in js.",
+  "author": "Michael Dougall",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ]
+}
