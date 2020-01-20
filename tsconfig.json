@@ -1,6 +1,6 @@
 {
   "extends": "./packages/tsconfig.options.json",
   "compilerOptions": {
-    "plugins": [{ "transform": "@compiled/ts-transform-css-in-js", "debug": false }]
+    "plugins": [{ "transform": "@compiled/css-in-js/dist/ts-transformer", "debug": false }]
   }
 }

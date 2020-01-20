@@ -1,1 +1,1 @@
-export { default } from '@compiled/ts-transform-css-in-js';
+exports.default = require('@compiled/ts-transform-css-in-js').default;

@@ -17,7 +17,7 @@ Quick setup:
   <code>
     {
       "compilerOptions": {
-        "plugins": [{ "transform": "@compiled/css-in-js/ts-transformer" }]
+        "plugins": [{ "transform": "@compiled/css-in-js/dist/ts-transformer" }]
       }
     }
   </code>

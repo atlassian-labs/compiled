@@ -14,6 +14,52 @@ and the `styled` api from [Styled Components](https://www.styled-components.com)
 Currently in initial development.
 Reach out to me [@itsmadou](https://twitter.com/itsmadou) if this sounds interesting to you.
 
+## Installation
+
+We use Typescript transformers to control the transformation -
+strong suggestion to [read the handbook](https://github.com/madou/typescript-transformer-handbook) for getting started with them.
+
+Install `compiled` and `ttypescript`:
+
+```sh
+npm i @compiled/css-in-js --save
+npm i ttypescript --save-dev
+```
+
+Add the transformer to plugins:
+
+```diff
+{
+  "compilerOptions": {
++    "plugins": [{ "transform": "@compiled/css-in-js/dist/ts-transformer" }]
+  }
+}
+```
+
+### Typescript Compiler CLI
+
+```diff
+-tsc
++ttsc
+```
+
+### Webpack
+
+```diff
+{
+  loader: require.resolve('ts-loader'),
+  options: {
++    compiler: 'ttypescript',
+  },
+},
+```
+
+### Parcel
+
+```sh
+npm i parcel-plugin-ttypescript --save-dev
+```
+
 ## Usage
 
 ### `css` prop
