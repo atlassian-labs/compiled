@@ -1,6 +1,6 @@
 {
   "name": "@compiled/css-in-js",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Typescript first CSS in JS library that compiles away to nothing. 🔧🚧",
   "keywords": [
     "compiled",
