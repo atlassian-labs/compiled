@@ -19,7 +19,7 @@
     "src"
   ],
   "dependencies": {
-    "@compiled/ts-transform-css-in-js": "^0.0.2"
+    "@compiled/ts-transform-css-in-js": "^0.0.3"
   },
   "peerDependencies": {
     "react": "^16.12.0"
