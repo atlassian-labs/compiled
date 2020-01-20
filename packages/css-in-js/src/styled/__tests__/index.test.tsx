@@ -97,4 +97,12 @@ describe('styled component', () => {
       width: '12px',
     });
   });
+
+  it('should allow passing down native attributes', () => {
+    const Link = styled.a``;
+
+    const { getByText } = render(<Link href="#">hello world</Link>);
+
+    expect(getByText('hello world').getAttribute('href')).toEqual('#');
+  });
 });

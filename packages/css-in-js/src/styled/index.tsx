@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode } from 'react';
+import { CSSProperties } from 'react';
 import { createSetupError } from '../utils/error';
 
 type CssObject<TProps> =
@@ -7,18 +7,24 @@ type CssObject<TProps> =
 
 type Interpoltation<TProps> = string | number | ((props: TProps) => string | number);
 
-function styledFunction<TProps extends {}>(
-  _: CssObject<TProps> | TemplateStringsArray,
-  ...__: Interpoltation<TProps>[]
-): React.ComponentType<TProps & { children?: ReactNode }> {
-  throw createSetupError();
+interface StyledFunction<TTag extends keyof JSX.IntrinsicElements> {
+  <TProps extends {}>(
+    css: CssObject<TProps> | TemplateStringsArray,
+    ...interpoltations: Interpoltation<TProps>[]
+  ): React.ComponentType<TProps & JSX.IntrinsicElements[TTag]>;
 }
 
-export const styled: Record<keyof JSX.IntrinsicElements, typeof styledFunction> = new Proxy(
+type StyledComponentMap = {
+  [Tag in keyof JSX.IntrinsicElements]: StyledFunction<Tag>;
+};
+
+export const styled: StyledComponentMap = new Proxy(
   {},
   {
     get() {
-      return styledFunction;
+      return () => {
+        throw createSetupError();
+      };
     },
   }
 ) as any;
