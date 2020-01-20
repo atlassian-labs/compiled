@@ -1,6 +1,6 @@
 {
   "name": "@compiled/ts-transform-css-in-js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Typescript first CSS in JS library that compiles away to nothing. 🔧🚧",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
