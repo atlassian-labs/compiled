@@ -26,7 +26,15 @@ npm i @compiled/css-in-js --save
 npm i ttypescript --save-dev
 ```
 
-Add the transformer to your `tsconfig.json` plugins:
+> **Why do I need `ttypescript`?**
+>
+> Good question!
+> Unfortunately Typescript doesn't come with support out-of-the-box to add transformers.
+> `ttypescript` enables you to do just that -
+> it has a peer dependency on Typescript so you can use whatever version you want.
+> Read about [consuming transformers here](https://github.com/madou/typescript-transformer-handbook/blob/master/translations/en/transformer-handbook.md#consuming-transformers).
+
+Next add the transformer to your `tsconfig.json` plugins:
 
 ```diff
 {
@@ -36,7 +44,13 @@ Add the transformer to your `tsconfig.json` plugins:
 }
 ```
 
-### Typescript Compiler CLI
+Then it's just a matter of modifying what you're using to compile your code.
+
+### Typescript CLI
+
+Using `tsc` directly?
+Just switch it out for `ttsc` -
+the `ttypescript` equivalent.
 
 ```diff
 -tsc
@@ -44,6 +58,9 @@ Add the transformer to your `tsconfig.json` plugins:
 ```
 
 ### Webpack
+
+Using Webpack?
+Add `ttypescript` as the compiler.
 
 ```diff
 {
@@ -55,6 +72,9 @@ Add the transformer to your `tsconfig.json` plugins:
 ```
 
 ### Parcel
+
+Using Parcel?
+Just install the `ttypescript` plugin and you're done!
 
 ```sh
 npm i parcel-plugin-ttypescript --save-dev
