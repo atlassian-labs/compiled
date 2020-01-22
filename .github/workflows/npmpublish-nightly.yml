@@ -60,9 +60,9 @@ jobs:
         run: yarn build
 
       - name: Set package versions
-        run: workspaces-run -- npm version prerelease --no-git-tag-version --preid=$(git rev-parse HEAD)
+        run: yarn nightly-version
 
       - name: Publish packages to npm registry
-        run: workspaces-run -- npm publish --tag nightly
+        run: yarn nightly-publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.COMPILED_CSS_IN_JS_NPM_TOKEN}}
