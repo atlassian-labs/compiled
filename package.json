@@ -13,7 +13,7 @@
     "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js --build packages",
     "build-storybook": "build-storybook",
     "nightly-version": "workspaces-run -- npm version prerelease --no-git-tag-version --preid=$(git rev-parse HEAD)",
-    "nightly-publish": "workspaces-run -- npm publish --tag nightly",
+    "nightly-publish": "workspaces-run -- npm publish --tag nightly --access public",
     "preversion": "yarn clean && yarn build && yarn test",
     "version": "bash scripts/version.sh && git add .",
     "postversion": "git push && git push --tags"
