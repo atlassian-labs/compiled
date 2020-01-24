@@ -1,7 +1,5 @@
 # @compiled/css-in-js
 
-> Typescript first CSS in JS library that compiles away to nothing 🔧🚧
-
 Inspired by the `css` prop and zero config SSR of [Emotion](https://emotion.sh),
 the zero runtime of [Linaria](https://linaria.now.sh),
 and the `styled` api from [Styled Components](https://www.styled-components.com) to create _the_ css-in-js solution for component libraries.
