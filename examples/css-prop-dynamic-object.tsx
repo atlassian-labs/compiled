@@ -7,7 +7,6 @@ export default {
 };
 
 export const dynamicCssProp = () => {
-  // works with const, but not let or const ????
   const [color, setColor] = useState('red');
 
   return (

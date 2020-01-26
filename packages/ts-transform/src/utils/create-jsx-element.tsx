@@ -8,12 +8,12 @@ interface JsxElementOpts {
   css: string;
   cssVariables: CssVariableExpressions[];
   originalNode: ts.Node;
+  skipClassName?: boolean;
   styleFactory?: (
     props: ts.PropertyAssignment[]
   ) => (ts.PropertyAssignment | ts.SpreadAssignment)[];
   classNameFactory?: (node: ts.StringLiteral) => ts.StringLiteral | ts.JsxExpression;
   jsxAttributes?: (ts.JsxAttribute | ts.JsxSpreadAttribute)[];
-  selector?: string;
   children?: ts.JsxChild;
 }
 
@@ -24,12 +24,9 @@ interface JsxElementOpts {
  *  {opts.children}
  * </>
  */
-export const createStyleFragment = ({
-  selector = `.${nextClassName()}`,
-  originalNode,
-  ...opts
-}: JsxElementOpts) => {
-  const compiledCss = stylis(selector, opts.css);
+export const createStyleFragment = ({ originalNode, ...opts }: JsxElementOpts) => {
+  const className = nextClassName(opts.css);
+  const compiledCss = stylis(opts.skipClassName ? `.${className}` : '', opts.css);
 
   // Create the style element that will precede the node that had the css prop.
   const styleNode = ts.createJsxElement(
@@ -66,7 +63,7 @@ export const createStyleFragment = ({
 };
 
 export const createJsxElement = (tagNode: string, opts: JsxElementOpts, originalNode: ts.Node) => {
-  const className = nextClassName();
+  const className = nextClassName(opts.css);
   const compiledCss = stylis(`.${className}`, opts.css);
 
   // Create the style element that will precede the node that had the css prop.
