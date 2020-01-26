@@ -74,7 +74,7 @@ export const visitJsxElementWithCssProp = (
     // - function expressions e.g. css={functionCall}
   }
 
-  const className = nextClassName();
+  const className = nextClassName(cssToPassThroughCompiler);
   const suppliedClassNameAttribute = getJsxNodeAttributesValue(node, CLASSNAME_PROP);
 
   let classNameInitializer: ts.JsxExpression | ts.StringLiteral = ts.createStringLiteral(className);

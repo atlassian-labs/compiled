@@ -1,10 +1,9 @@
-import SequentialCharacterGenerator from './sequential-chars';
+import SequentialCharacterGenerator, { hash } from './sequential-chars';
 
-const classNameIds = new SequentialCharacterGenerator();
 const cssVariableIds = new SequentialCharacterGenerator();
 
-export const nextClassName = (): string => {
-  return classNameIds.next();
+export const nextClassName = (css: string): string => {
+  return `css-${hash(css)}`;
 };
 
 export const nextCssVariableName = (): string => {

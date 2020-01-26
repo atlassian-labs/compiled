@@ -57,10 +57,10 @@ export const visitClassNamesJsxElement = (
 
   const visitor = (node: ts.Node): ts.Node => {
     if (isCssCallExpression(node) || isCssTaggedTemplateExpression(node)) {
-      const className = nextClassName();
       let result = ts.isCallExpression(node)
         ? visitCssCallExpression(node, context, collectedDeclarations)
         : visitCssTaggedTemplateExpression(node, context, collectedDeclarations);
+      const className = nextClassName(result.css);
 
       css += `.${className} { ${result.css} }`;
       cssVariables = cssVariables.concat(result.cssVariables);
@@ -111,7 +111,6 @@ export const visitClassNamesJsxElement = (
     : returnNode.expression.body;
 
   return createStyleFragment({
-    selector: '',
     css,
     cssVariables,
     originalNode: classNamesNode,
