@@ -1,6 +1,6 @@
 {
   "name": "@compiled/css-in-js",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Typescript first CSS in JS library that compiles away to nothing. 🔧🚧",
   "keywords": [
     "compiled",
@@ -19,7 +19,7 @@
     "src"
   ],
   "dependencies": {
-    "@compiled/ts-transform-css-in-js": "^0.0.3"
+    "@compiled/ts-transform-css-in-js": "0.0.9"
   },
   "peerDependencies": {
     "react": "^16.12.0"
