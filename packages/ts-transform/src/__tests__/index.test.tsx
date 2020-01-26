@@ -65,4 +65,28 @@ describe('root transformer', () => {
       `);
     }).not.toThrow();
   });
+
+  xit('should match react import when transforming to common js', () => {
+    const transformer = rootTransformer(stubProgam, {});
+
+    const actual = ts.transpileModule(
+      `
+        /** @jsx jsx */
+        import { jsx } from '@compiled/css-in-js';
+        <div css={{ fontSize: '20px' }}>hello world</div>
+      `,
+      {
+        transformers: { before: [transformer] },
+        compilerOptions: {
+          module: ts.ModuleKind.CommonJS,
+          esModuleInterop: true,
+          jsx: ts.JsxEmit.React,
+        },
+      }
+    );
+
+    expect(actual.outputText).toInclude('var react_1 = __importDefault(require("react"));');
+    expect(actual.outputText).toInclude('react_1.createElement');
+    expect(actual.outputText).not.toInclude('React.createElement');
+  });
 });
