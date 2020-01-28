@@ -60,9 +60,9 @@ jobs:
         run: yarn build
 
       - name: Set package versions
-        run: yarn nightly-version
+        run: yarn version-nightly
 
       - name: Publish packages to npm registry
-        run: yarn nightly-publish
+        run: npx workspaces-run -- npm publish --tag nightly --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.COMPILED_CSS_IN_JS_NPM_TOKEN}}
