@@ -757,14 +757,6 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@compiled/ts-transform-css-in-js@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@compiled/ts-transform-css-in-js/-/ts-transform-css-in-js-0.0.3.tgz#4966baa126c269a7db0707b8ac8977aca8ed0928"
-  dependencies:
-    "@emotion/is-prop-valid" "^0.8.6"
-    stylis "^3.5.4"
-    typescript "^3.7.3"
-
 "@dsherret/to-absolute-glob@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@dsherret/to-absolute-glob/-/to-absolute-glob-2.0.2.tgz#1f6475dc8bd974cea07a2daf3864b317b1dd332c"
