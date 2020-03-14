@@ -15,11 +15,19 @@ interface JsxElementOpts {
   classNameFactory?: (node: ts.StringLiteral) => ts.StringLiteral | ts.JsxExpression;
   jsxAttributes?: (ts.JsxAttribute | ts.JsxSpreadAttribute)[];
   children?: ts.JsxChild;
+  context: ts.TransformationContext;
 }
 
-const STYLE_ELEMENT = 'Style';
 const HASH_ATTRIBUTE_NAME = 'hash';
 const STYLE_ATTRIBUTE_NAME = 'style';
+
+const getStyleElementName = (isCommonJs: boolean) =>
+  isCommonJs
+    ? (ts.createPropertyAccess(
+        ts.createIdentifier('css_in_js_1'),
+        ts.createIdentifier('Style')
+      ) as ts.JsxTagNamePropertyAccess)
+    : ts.createIdentifier('Style');
 
 /**
  * Will return something like this:
@@ -31,6 +39,9 @@ const STYLE_ATTRIBUTE_NAME = 'style';
 export const createStyleFragment = ({ originalNode, ...opts }: JsxElementOpts) => {
   const className = nextClassName(opts.css);
   const compiledCss = stylis(opts.skipClassName ? `.${className}` : '', opts.css);
+  const STYLE_ELEMENT_NAME = getStyleElementName(
+    opts.context.getCompilerOptions().module === ts.ModuleKind.CommonJS
+  );
 
   // Create the style element that will precede the node that had the css prop.
   const styleNode = ts.createJsxElement(
@@ -38,7 +49,7 @@ export const createStyleFragment = ({ originalNode, ...opts }: JsxElementOpts) =
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(
       ts.createJsxOpeningElement(
-        ts.createIdentifier(STYLE_ELEMENT),
+        STYLE_ELEMENT_NAME,
         [],
         ts.createJsxAttributes([
           ts.createJsxAttribute(
@@ -53,7 +64,7 @@ export const createStyleFragment = ({ originalNode, ...opts }: JsxElementOpts) =
     [ts.createJsxText(compiledCss)],
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxClosingElement(ts.createIdentifier(STYLE_ELEMENT)), originalNode)
+    ts.setOriginalNode(ts.createJsxClosingElement(STYLE_ELEMENT_NAME), originalNode)
   );
 
   const children: ts.JsxChild[] = [
@@ -78,6 +89,9 @@ export const createStyleFragment = ({ originalNode, ...opts }: JsxElementOpts) =
 export const createJsxElement = (tagNode: string, opts: JsxElementOpts, originalNode: ts.Node) => {
   const className = nextClassName(opts.css);
   const compiledCss = stylis(`.${className}`, opts.css);
+  const STYLE_ELEMENT_NAME = getStyleElementName(
+    opts.context.getCompilerOptions().module === ts.ModuleKind.CommonJS
+  );
 
   // Create the style element that will precede the node that had the css prop.
   const styleNode = ts.createJsxElement(
@@ -85,7 +99,7 @@ export const createJsxElement = (tagNode: string, opts: JsxElementOpts, original
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(
       ts.createJsxOpeningElement(
-        ts.createIdentifier(STYLE_ELEMENT),
+        STYLE_ELEMENT_NAME,
         [],
         ts.createJsxAttributes([
           ts.createJsxAttribute(
@@ -100,7 +114,7 @@ export const createJsxElement = (tagNode: string, opts: JsxElementOpts, original
     [ts.createJsxText(compiledCss)],
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxClosingElement(ts.createIdentifier(STYLE_ELEMENT)), originalNode)
+    ts.setOriginalNode(ts.createJsxClosingElement(STYLE_ELEMENT_NAME), originalNode)
   );
 
   const elementNode = ts.createJsxElement(

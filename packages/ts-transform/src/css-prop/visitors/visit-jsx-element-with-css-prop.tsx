@@ -16,8 +16,15 @@ import {
 const CSS_PROP = 'css';
 const CLASSNAME_PROP = 'className';
 const STYLE_ATTRIBUTE_NAME = 'style';
-const STYLE_ELEMENT = 'Style';
 const HASH_ATTRIBUTE_NAME = 'hash';
+
+const getStyleElementName = (isCommonJs: boolean) =>
+  isCommonJs
+    ? (ts.createPropertyAccess(
+        ts.createIdentifier('css_in_js_1'),
+        ts.createIdentifier('Style')
+      ) as ts.JsxTagNamePropertyAccess)
+    : ts.createIdentifier('Style');
 
 export const visitJsxElementWithCssProp = (
   node: ts.JsxElement | ts.JsxSelfClosingElement,
@@ -147,6 +154,9 @@ export const visitJsxElementWithCssProp = (
   );
 
   const compiledCss = stylis(`.${className}`, cssToPassThroughCompiler);
+  const STYLE_ELEMENT_NAME = getStyleElementName(
+    context.getCompilerOptions().module === ts.ModuleKind.CommonJS
+  );
 
   // Create the style element that will precede the node that had the css prop.
   const styleNode = ts.createJsxElement(
@@ -154,7 +164,7 @@ export const visitJsxElementWithCssProp = (
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(
       ts.createJsxOpeningElement(
-        ts.createIdentifier(STYLE_ELEMENT),
+        STYLE_ELEMENT_NAME,
         [],
         ts.createJsxAttributes([
           ts.createJsxAttribute(
@@ -168,7 +178,7 @@ export const visitJsxElementWithCssProp = (
     [ts.createJsxText(compiledCss)],
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxClosingElement(ts.createIdentifier(STYLE_ELEMENT)), node)
+    ts.setOriginalNode(ts.createJsxClosingElement(STYLE_ELEMENT_NAME), node)
   );
 
   // Create a new fragment that will wrap both the style and the node we found initially.
