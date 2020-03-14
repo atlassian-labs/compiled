@@ -17,6 +17,7 @@ const CSS_PROP = 'css';
 const CLASSNAME_PROP = 'className';
 const STYLE_ATTRIBUTE_NAME = 'style';
 const STYLE_ELEMENT = 'Style';
+const HASH_ATTRIBUTE_NAME = 'hash';
 
 export const visitJsxElementWithCssProp = (
   node: ts.JsxElement | ts.JsxSelfClosingElement,
@@ -155,7 +156,12 @@ export const visitJsxElementWithCssProp = (
       ts.createJsxOpeningElement(
         ts.createIdentifier(STYLE_ELEMENT),
         [],
-        ts.createJsxAttributes([])
+        ts.createJsxAttributes([
+          ts.createJsxAttribute(
+            ts.createIdentifier(HASH_ATTRIBUTE_NAME),
+            ts.createStringLiteral(className)
+          ),
+        ])
       ),
       node
     ),

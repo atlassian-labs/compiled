@@ -18,6 +18,7 @@ interface JsxElementOpts {
 }
 
 const STYLE_ELEMENT = 'Style';
+const HASH_ATTRIBUTE_NAME = 'hash';
 const STYLE_ATTRIBUTE_NAME = 'style';
 
 /**
@@ -39,7 +40,12 @@ export const createStyleFragment = ({ originalNode, ...opts }: JsxElementOpts) =
       ts.createJsxOpeningElement(
         ts.createIdentifier(STYLE_ELEMENT),
         [],
-        ts.createJsxAttributes([])
+        ts.createJsxAttributes([
+          ts.createJsxAttribute(
+            ts.createIdentifier(HASH_ATTRIBUTE_NAME),
+            ts.createStringLiteral(className)
+          ),
+        ])
       ),
       originalNode
     ),
@@ -81,7 +87,12 @@ export const createJsxElement = (tagNode: string, opts: JsxElementOpts, original
       ts.createJsxOpeningElement(
         ts.createIdentifier(STYLE_ELEMENT),
         [],
-        ts.createJsxAttributes([])
+        ts.createJsxAttributes([
+          ts.createJsxAttribute(
+            ts.createIdentifier(HASH_ATTRIBUTE_NAME),
+            ts.createStringLiteral(className)
+          ),
+        ])
       ),
       originalNode
     ),
