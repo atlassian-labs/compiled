@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import stylis from 'stylis';
+import { stylis } from './stylis';
 import { nextClassName } from './identifiers';
 import { getJsxNodeAttributes } from './ast-node';
 import { CssVariableExpressions } from '../types';
@@ -38,7 +38,7 @@ const getStyleElementName = (isCommonJs: boolean) =>
  */
 export const createStyleFragment = ({ originalNode, ...opts }: JsxElementOpts) => {
   const className = nextClassName(opts.css);
-  const compiledCss = stylis(opts.skipClassName ? `.${className}` : '', opts.css);
+  const compiledCss: string[] = stylis(opts.skipClassName ? `.${className}` : '', opts.css);
   const STYLE_ELEMENT_NAME = getStyleElementName(
     opts.context.getCompilerOptions().module === ts.ModuleKind.CommonJS
   );
@@ -60,8 +60,7 @@ export const createStyleFragment = ({ originalNode, ...opts }: JsxElementOpts) =
       ),
       originalNode
     ),
-    // should this be text or an jsx expression?
-    [ts.createJsxText(compiledCss)],
+    compiledCss.map(rule => ts.createJsxText(rule)),
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(ts.createJsxClosingElement(STYLE_ELEMENT_NAME), originalNode)
@@ -88,7 +87,7 @@ export const createStyleFragment = ({ originalNode, ...opts }: JsxElementOpts) =
 
 export const createJsxElement = (tagNode: string, opts: JsxElementOpts, originalNode: ts.Node) => {
   const className = nextClassName(opts.css);
-  const compiledCss = stylis(`.${className}`, opts.css);
+  const compiledCss: string[] = stylis(`.${className}`, opts.css);
   const STYLE_ELEMENT_NAME = getStyleElementName(
     opts.context.getCompilerOptions().module === ts.ModuleKind.CommonJS
   );
@@ -110,8 +109,7 @@ export const createJsxElement = (tagNode: string, opts: JsxElementOpts, original
       ),
       originalNode
     ),
-    // should this be text or an jsx expression?
-    [ts.createJsxText(compiledCss)],
+    compiledCss.map(rule => ts.createJsxText(rule)),
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(ts.createJsxClosingElement(STYLE_ELEMENT_NAME), originalNode)

@@ -9,7 +9,9 @@ import Style from '../style';
 describe('<Style />', () => {
   it('should render style as children on the server', () => {
     const result = renderToStaticMarkup(
-      <Style hash="a" testId="style">{`.a { display: block; }`}</Style>
+      <Style hash="a" testId="style">
+        {[`.a { display: block; }`]}
+      </Style>
     );
 
     expect(result).toInclude(

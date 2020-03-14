@@ -3,9 +3,23 @@ import { useLayoutEffect } from './use-layout-effect';
 import { createStyleSheet } from './sheet';
 
 interface StyleProps {
-  children: string;
+  /**
+   * CSS Rules.
+   * Ensure each rule is a separate element in the array.
+   */
+  children: string[] | string;
+
+  /**
+   * Hash of the entire all css rules combined.
+   * This is used to bypass the need of adding rules if it has already been done.
+   */
   hash: string;
+
+  /**
+   *
+   */
   key?: string;
+
   testId?: string;
 }
 
@@ -18,11 +32,11 @@ const Style = ({ children, testId, hash, key = 'compiled' }: StyleProps) => {
       stylesheet = createStyleSheet({ key });
     }
 
-    if (inserted[hash]) {
+    if (inserted[hash] || !children) {
       return;
     }
 
-    stylesheet.insert(children);
+    (Array.isArray(children) ? children : [children]).forEach(rule => stylesheet.insert(rule));
     inserted[hash] = true;
   }, []);
 

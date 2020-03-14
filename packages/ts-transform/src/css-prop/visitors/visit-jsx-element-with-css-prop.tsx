@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import stylis from 'stylis';
+import { stylis } from '../../utils/stylis';
 import { Declarations, CssVariableExpressions } from '../../types';
 import { nextClassName } from '../../utils/identifiers';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
@@ -153,7 +153,7 @@ export const visitJsxElementWithCssProp = (
     (item): item is ts.JsxAttribute => typeof item !== 'undefined' && ts.isJsxAttribute(item)
   );
 
-  const compiledCss = stylis(`.${className}`, cssToPassThroughCompiler);
+  const compiledCss: string[] = stylis(`.${className}`, cssToPassThroughCompiler);
   const STYLE_ELEMENT_NAME = getStyleElementName(
     context.getCompilerOptions().module === ts.ModuleKind.CommonJS
   );
@@ -175,7 +175,7 @@ export const visitJsxElementWithCssProp = (
       ),
       node
     ),
-    [ts.createJsxText(compiledCss)],
+    compiledCss.map(rule => ts.createJsxText(rule)),
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(ts.createJsxClosingElement(STYLE_ELEMENT_NAME), node)
