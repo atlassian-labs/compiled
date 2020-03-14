@@ -17,6 +17,9 @@ interface JsxElementOpts {
   children?: ts.JsxChild;
 }
 
+const STYLE_ELEMENT = 'Style';
+const STYLE_ATTRIBUTE_NAME = 'style';
+
 /**
  * Will return something like this:
  * <>
@@ -33,14 +36,18 @@ export const createStyleFragment = ({ originalNode, ...opts }: JsxElementOpts) =
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(
-      ts.createJsxOpeningElement(ts.createIdentifier('style'), [], ts.createJsxAttributes([])),
+      ts.createJsxOpeningElement(
+        ts.createIdentifier(STYLE_ELEMENT),
+        [],
+        ts.createJsxAttributes([])
+      ),
       originalNode
     ),
     // should this be text or an jsx expression?
     [ts.createJsxText(compiledCss)],
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxClosingElement(ts.createIdentifier('style')), originalNode)
+    ts.setOriginalNode(ts.createJsxClosingElement(ts.createIdentifier(STYLE_ELEMENT)), originalNode)
   );
 
   const children: ts.JsxChild[] = [
@@ -71,14 +78,18 @@ export const createJsxElement = (tagNode: string, opts: JsxElementOpts, original
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(
-      ts.createJsxOpeningElement(ts.createIdentifier('style'), [], ts.createJsxAttributes([])),
+      ts.createJsxOpeningElement(
+        ts.createIdentifier(STYLE_ELEMENT),
+        [],
+        ts.createJsxAttributes([])
+      ),
       originalNode
     ),
     // should this be text or an jsx expression?
     [ts.createJsxText(compiledCss)],
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxClosingElement(ts.createIdentifier('style')), originalNode)
+    ts.setOriginalNode(ts.createJsxClosingElement(ts.createIdentifier(STYLE_ELEMENT)), originalNode)
   );
 
   const elementNode = ts.createJsxElement(
@@ -119,7 +130,7 @@ export const createJsxElement = (tagNode: string, opts: JsxElementOpts, original
     const elementNodeAttributes = getJsxNodeAttributes(elementNode);
     (elementNodeAttributes.properties as any).push(
       ts.createJsxAttribute(
-        ts.createIdentifier('style'),
+        ts.createIdentifier(STYLE_ATTRIBUTE_NAME),
         ts.createJsxExpression(
           undefined,
           ts.createObjectLiteral(

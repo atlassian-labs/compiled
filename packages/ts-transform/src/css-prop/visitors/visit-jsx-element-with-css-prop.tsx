@@ -15,7 +15,8 @@ import {
 
 const CSS_PROP = 'css';
 const CLASSNAME_PROP = 'className';
-const STYLE_PROP = 'style';
+const STYLE_ATTRIBUTE_NAME = 'style';
+const STYLE_ELEMENT = 'Style';
 
 export const visitJsxElementWithCssProp = (
   node: ts.JsxElement | ts.JsxSelfClosingElement,
@@ -94,7 +95,7 @@ export const visitJsxElementWithCssProp = (
   const attributedNode = ts.isJsxSelfClosingElement(node) ? node : node.openingElement;
 
   const previousStyleAttribute = attributedNode.attributes.properties.filter(
-    prop => prop.name && getIdentifierText(prop.name) === STYLE_PROP
+    prop => prop.name && getIdentifierText(prop.name) === STYLE_ATTRIBUTE_NAME
   )[0];
   let previousStyleProps: ts.ObjectLiteralElementLike[] = [];
 
@@ -116,7 +117,7 @@ export const visitJsxElementWithCssProp = (
         prop.name &&
         getIdentifierText(prop.name) !== CSS_PROP &&
         getIdentifierText(prop.name) !== CLASSNAME_PROP &&
-        getIdentifierText(prop.name) !== STYLE_PROP
+        getIdentifierText(prop.name) !== STYLE_ATTRIBUTE_NAME
     ),
     // Reference style via className
     ts.createJsxAttribute(ts.createIdentifier('className'), classNameInitializer),
@@ -124,7 +125,7 @@ export const visitJsxElementWithCssProp = (
     // Add a style prop if css variables are applied
     cssVariables.length
       ? ts.createJsxAttribute(
-          ts.createIdentifier('style'),
+          ts.createIdentifier(STYLE_ATTRIBUTE_NAME),
           ts.createJsxExpression(
             undefined,
             ts.createObjectLiteral(
@@ -151,13 +152,17 @@ export const visitJsxElementWithCssProp = (
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(
-      ts.createJsxOpeningElement(ts.createIdentifier('style'), [], ts.createJsxAttributes([])),
+      ts.createJsxOpeningElement(
+        ts.createIdentifier(STYLE_ELEMENT),
+        [],
+        ts.createJsxAttributes([])
+      ),
       node
     ),
     [ts.createJsxText(compiledCss)],
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxClosingElement(ts.createIdentifier('style')), node)
+    ts.setOriginalNode(ts.createJsxClosingElement(ts.createIdentifier(STYLE_ELEMENT)), node)
   );
 
   // Create a new fragment that will wrap both the style and the node we found initially.

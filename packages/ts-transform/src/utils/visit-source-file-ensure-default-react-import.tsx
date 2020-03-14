@@ -54,7 +54,7 @@ export const visitSourceFileEnsureDefaultReactImport = (
           ts.createIdentifier(REACT_DEFAULT_IMPORT_NAME),
           node.importClause && node.importClause.namedBindings
         ),
-        ts.createLiteral(REACT_PKG)
+        node.moduleSpecifier
       );
     }
 

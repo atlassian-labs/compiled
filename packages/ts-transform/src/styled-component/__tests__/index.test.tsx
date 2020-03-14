@@ -96,7 +96,7 @@ describe('styled component transformer', () => {
       \`;
     `);
 
-    expect(actual).toInclude('import React, { useState } from "react";');
+    expect(actual).toInclude(`import React, { useState } from 'react';`);
   });
 
   it('should spread down props to element', () => {
@@ -120,7 +120,7 @@ describe('styled component transformer', () => {
       \`;
     `);
 
-    expect(actual).toInclude('import React from "react";');
+    expect(actual).toInclude("import React from 'react';");
   });
 
   it('should concat class name prop if defined', () => {
