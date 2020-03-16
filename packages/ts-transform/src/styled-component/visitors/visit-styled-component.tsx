@@ -95,6 +95,7 @@ export const visitStyledComponent = (
     {
       ...result,
       originalNode: node,
+      context,
       styleFactory: props => [
         ts.createSpreadAssignment(ts.createIdentifier('props.style')),
         ...props.map(prop => {

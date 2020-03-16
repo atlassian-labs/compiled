@@ -6,6 +6,10 @@ module.exports = {
   moduleNameMapper: {
     '^@compiled/css-in-js$': '<rootDir>/packages/css-in-js/src/index.tsx',
   },
+  transform: {
+    '\\.m?jsx?$': 'ts-jest',
+  },
+  transformIgnorePatterns: ['node_modules/(?!@compiled)'],
   globals: {
     'ts-jest': {
       compiler: 'ttypescript',

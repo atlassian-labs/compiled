@@ -115,5 +115,6 @@ export const visitClassNamesJsxElement = (
     cssVariables,
     originalNode: classNamesNode,
     children: children as any,
+    context,
   });
 };

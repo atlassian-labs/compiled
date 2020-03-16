@@ -4,6 +4,7 @@ import { getIdentifierText, isPackageModuleImport } from '../utils/ast-node';
 import { Declarations } from '../types';
 import { collectDeclarationsFromNode } from '../utils/collect-declarations';
 import { visitSourceFileEnsureDefaultReactImport } from '../utils/visit-source-file-ensure-default-react-import';
+import { visitSourceFileEnsureStyleImport } from '../utils/visit-source-file-ensure-style-import';
 
 const STYLED_NAME = 'styled';
 
@@ -42,15 +43,19 @@ export default function styledComponentTransformer(
         return sourceFile;
       }
 
-      const transformedSourceFile = visitSourceFileEnsureDefaultReactImport(sourceFile, context);
+      const transformedSourceFile = visitSourceFileEnsureDefaultReactImport(
+        visitSourceFileEnsureStyleImport(sourceFile, context),
+        context
+      );
       const collectedDeclarations: Declarations = {};
 
       const visitor = (node: ts.Node): ts.Node => {
         collectDeclarationsFromNode(node, program, collectedDeclarations);
 
-        if (isPackageModuleImport(node, STYLED_NAME)) {
-          return ts.createEmptyStatement();
-        }
+        // TODO: Remove STYLED_NAME import instead of removing entire thing.
+        // if (isPackageModuleImport(node, STYLED_NAME)) {
+        //   return ts.createEmptyStatement();
+        // }
 
         if (isStyledComponent(node)) {
           return visitStyledComponent(node, context, collectedDeclarations);

@@ -3,6 +3,7 @@ import { isPackageModuleImport, getIdentifierText } from '../utils/ast-node';
 import { visitClassNamesJsxElement } from './visitors/visit-class-names-jsx-element';
 import { collectDeclarationsFromNode } from '../utils/collect-declarations';
 import { Declarations } from '../types';
+import { visitSourceFileEnsureStyleImport } from '../utils/visit-source-file-ensure-style-import';
 
 const CLASS_NAMES_NAME = 'ClassNames';
 
@@ -27,14 +28,16 @@ export default function classNamesTransformer(
         return sourceFile;
       }
 
+      const transformedSourceFile = visitSourceFileEnsureStyleImport(sourceFile, context);
       const collectedDeclarations: Declarations = {};
 
       const visitor = (node: ts.Node): ts.Node => {
         collectDeclarationsFromNode(node, program, collectedDeclarations);
 
-        if (isPackageModuleImport(node, CLASS_NAMES_NAME)) {
-          return ts.createEmptyStatement();
-        }
+        // TODO: Remove CLASS_NAMES_NAME import instead of entire statement.
+        // if (isPackageModuleImport(node, CLASS_NAMES_NAME)) {
+        //   return ts.createEmptyStatement();
+        // }
 
         if (isClassNameComponent(node)) {
           return visitClassNamesJsxElement(node, context, collectedDeclarations);
@@ -43,7 +46,7 @@ export default function classNamesTransformer(
         return ts.visitEachChild(node, visitor, context);
       };
 
-      return ts.visitNode(sourceFile, visitor);
+      return ts.visitNode(transformedSourceFile, visitor);
     };
   };
 

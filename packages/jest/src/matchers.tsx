@@ -4,7 +4,20 @@ export const toHaveCompiledCss: jest.CustomMatcher = (
 ) => {
   const [property, value] = args;
   const properties = typeof property === 'string' ? { [property]: value } : property;
-  const styleElement = element.parentElement && element.parentElement.querySelector('style');
+  let styleElement = element.parentElement && element.parentElement.querySelector('style');
+
+  if (!styleElement) {
+    // There wasn't a style element found within - let's check the head for it instead.
+    const styleElements = Array.from(document.head.querySelectorAll('style'));
+
+    for (const tag of styleElements) {
+      if (tag.innerHTML.includes(element.className)) {
+        styleElement = tag as HTMLStyleElement;
+        break;
+      }
+    }
+  }
+
   const stylesToFind = Object.keys(properties).map(
     property => `${property}:${properties[property]}`
   );

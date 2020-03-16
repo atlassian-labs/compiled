@@ -6,6 +6,7 @@ import {
   visitJsxElementWithCssProp,
 } from './visitors/visit-jsx-element-with-css-prop';
 import { visitSourceFileEnsureDefaultReactImport } from '../utils/visit-source-file-ensure-default-react-import';
+import { visitSourceFileEnsureStyleImport } from '../utils/visit-source-file-ensure-style-import';
 import { isPackageModuleImport } from '../utils/ast-node';
 import { collectDeclarationsFromNode } from '../utils/collect-declarations';
 
@@ -41,7 +42,10 @@ export default function cssPropTransformer(
 
       const collectedDeclarations: Declarations = {};
       logger.log('found file with jsx pragma');
-      let transformedSourceFile = visitSourceFileEnsureDefaultReactImport(sourceFile, context);
+      const transformedSourceFile = visitSourceFileEnsureDefaultReactImport(
+        visitSourceFileEnsureStyleImport(sourceFile, context),
+        context
+      );
 
       const visitor = (node: ts.Node): ts.Node => {
         collectDeclarationsFromNode(node, program, collectedDeclarations);

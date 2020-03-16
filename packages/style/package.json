@@ -1,0 +1,16 @@
+{
+  "name": "@compiled/style",
+  "version": "0.0.9",
+  "description": "A component that renders its string children in a style element in the head.",
+  "author": "Michael Dougall",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "peerDependencies": {
+    "react": "^16.12.0"
+  }
+}
