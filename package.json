@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "workspaces-run -- rm -rf dist -- rm -f tsconfig.tsbuildinfo",
     "start": "yarn build && npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch packages/ts-transform/ -e tsx",
-    "website": "parcel src/index.html",
+    "website": "workspaces-run --only @compiled/website -- yarn start",
     "start:prod": "NODE_ENV=production yarn start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/ts-transform/ -e tsx",
     "test": "yarn build && jest --no-cache",

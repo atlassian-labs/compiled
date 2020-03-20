@@ -6,3 +6,4 @@ storybook-static
 .tmp
 coverage
 tsconfig.tsbuildinfo
+.cache
