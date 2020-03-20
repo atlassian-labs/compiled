@@ -2,6 +2,7 @@
   "compilerOptions": {
     "jsx": "react",
     "esModuleInterop": true,
+    "extends": "../tsconfig.options.json",
     "plugins": [{ "transform": "@compiled/css-in-js/dist/ts-transformer" }]
   }
 }

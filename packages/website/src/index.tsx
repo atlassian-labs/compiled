@@ -1,5 +1,10 @@
+import { styled } from '@compiled/css-in-js';
 import { render } from 'react-dom';
 import React from 'react';
-import Home from './pages/home';
+// import Home from './pages/home';
 
-render(<Home />, document.getElementById('app'));
+const StyledHmm = styled.div`
+  color: red;
+`;
+
+render(<StyledHmm>hello?</StyledHmm>, document.getElementById('app'));
