@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 PACKAGE_VERSION=$(cat package.json \
   | grep version \
   | head -1 \
