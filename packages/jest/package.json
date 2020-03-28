@@ -1,6 +1,6 @@
 {
   "name": "@compiled/jest-css-in-js",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Jest utils for compiled css in js.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",

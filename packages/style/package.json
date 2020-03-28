@@ -1,6 +1,6 @@
 {
   "name": "@compiled/style",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A component that renders its string children in a style element in the head.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
