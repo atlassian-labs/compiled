@@ -14,8 +14,6 @@ describe('<Style />', () => {
       </Style>
     );
 
-    expect(result).toInclude(
-      '<style data-compiled="true" data-testid="style">.a { display: block; }</style>'
-    );
+    expect(result).toInclude('<style data-testid="style">.a { display: block; }</style>');
   });
 });

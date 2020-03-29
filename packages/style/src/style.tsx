@@ -7,7 +7,7 @@ interface StyleProps {
    * CSS Rules.
    * Ensure each rule is a separate element in the array.
    */
-  children: string[] | string;
+  children: string[];
 
   /**
    * Hash of the entire all css rules combined.
@@ -16,39 +16,33 @@ interface StyleProps {
   hash: string;
 
   /**
-   *
+   * A testId prop is provided for specified elements,
+   * which is a unique string that appears as a data attribute data-testid in the rendered code,
+   * serving as a hook for automated tests.
    */
-  key?: string;
-
   testId?: string;
 }
 
 let stylesheet: ReturnType<typeof createStyleSheet>;
 const inserted: Record<string, true> = {};
 
-const Style = ({ children, testId, hash, key = 'compiled' }: StyleProps) => {
+const Style = (props: StyleProps) => {
   useLayoutEffect(() => {
     if (!stylesheet) {
-      stylesheet = createStyleSheet({ key });
+      stylesheet = createStyleSheet({});
     }
 
-    if (inserted[hash] || !children) {
+    if (inserted[props.hash] || !props.children) {
       return;
     }
 
-    (Array.isArray(children) ? children : [children]).forEach(rule => stylesheet.insert(rule));
-    inserted[hash] = true;
+    props.children.forEach(stylesheet.insert);
+    inserted[props.hash] = true;
   }, []);
 
-  if (typeof window === 'undefined') {
-    return (
-      <style data-compiled data-testid={testId}>
-        {children}
-      </style>
-    );
-  }
-
-  return null;
+  return typeof window === 'undefined' ? (
+    <style data-testid={props.testId}>{props.children}</style>
+  ) : null;
 };
 
 export default Style;

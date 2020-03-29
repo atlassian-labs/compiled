@@ -1,9 +1,4 @@
-/*
-  Based off @emotion/sheet + sunils work with glamor.
-  Thanks both!
-*/
-
-// @ts-ignore
+// @ts-ignore - potentially returning undefined by ignorign to save kb.
 function sheetForTag(tag: HTMLStyleElement): CSSStyleSheet {
   if (tag.sheet) {
     return tag.sheet as CSSStyleSheet;
@@ -17,30 +12,13 @@ function sheetForTag(tag: HTMLStyleElement): CSSStyleSheet {
   }
 }
 
-function createStyleElement(options: StyleSheetOpts): HTMLStyleElement {
+function createStyleElement(): HTMLStyleElement {
   const tag = document.createElement('style');
-  tag.setAttribute('data-compiled', options.key);
-
-  if (options.nonce !== undefined) {
-    tag.setAttribute('nonce', options.nonce);
-  }
-
   tag.appendChild(document.createTextNode(''));
-
   return tag;
 }
 
 interface StyleSheetOpts {
-  /**
-   * Used to differentiate between different compiled stylesheets.
-   */
-  key: string;
-
-  /**
-   * Used to add a nonce to the style elements.
-   */
-  nonce?: string;
-
   /**
    * Enables faster behaviour at the cost of developer experience.
    */
@@ -58,14 +36,9 @@ export const createStyleSheet = (opts: StyleSheetOpts) => {
       // it's 1 in dev because we insert source maps that map a single rule to a location
       // and you can only have one source map per style tag
       if (tagCount % (speedy ? 65000 : 1) === 0) {
-        let tag = createStyleElement(opts);
-        let beforeElement: ChildNode | null;
-
-        if (tags.length === 0) {
-          beforeElement = null;
-        } else {
-          beforeElement = tags[tags.length - 1].nextSibling;
-        }
+        let tag = createStyleElement();
+        let beforeElement: ChildNode | null =
+          tags.length === 0 ? null : tags[tags.length - 1].nextSibling;
 
         document.head.insertBefore(tag, beforeElement);
         tags.push(tag);
