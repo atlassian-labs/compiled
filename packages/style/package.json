@@ -1,11 +1,12 @@
 {
   "name": "@compiled/style",
   "version": "0.0.11",
-  "description": "A component that renders its string children in a style element in the head.",
+  "description": "An experimental TypeScript first CSS in JS library 🔧🚧",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "files": [
     "dist",
     "src"

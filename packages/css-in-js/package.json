@@ -1,7 +1,12 @@
 {
   "name": "@compiled/css-in-js",
   "version": "0.0.11",
-  "description": "Typescript first CSS in JS library that compiles away to nothing. 🔧🚧",
+  "description": "An experimental TypeScript first CSS in JS library 🔧🚧",
+  "author": "Michael Dougall",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "keywords": [
     "compiled",
     "css-in-js",
@@ -10,10 +15,6 @@
     "typescript",
     "ts-transformer"
   ],
-  "author": "Michael Dougall",
-  "license": "Apache-2.0",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "src"
