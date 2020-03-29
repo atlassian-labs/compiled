@@ -22,7 +22,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = props => <><Style hash="test-class">.test-class{font-size:20px;}</Style><div {...props} className={"test-class" + (props.className ? " " + props.className : "")}></div></>'
+      'const ListItem = props => <><Style hash="test-class">{[".test-class{font-size:20px;}"]}</Style><div {...props} className={"test-class" + (props.className ? " " + props.className : "")}></div></>'
     );
   });
 
@@ -72,7 +72,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = props => <><Style hash="test-class">.test-class{font-size:20px;}</Style><div {...props} className={"test-class" + (props.className ? " " + props.className : "")}></div></>'
+      'const ListItem = props => <><Style hash="test-class">{[".test-class{font-size:20px;}"]}</Style><div {...props} className={"test-class" + (props.className ? " " + props.className : "")}></div></>'
     );
   });
 
@@ -413,7 +413,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class:after{content:"";}');
+      expect(actual).toInclude('.test-class:after{content:\\"\\";}');
     });
 
     it('should respect the definition of pseudo element content ala emotion with single quotes', () => {
@@ -439,7 +439,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class:after{content:"";}');
+      expect(actual).toInclude('.test-class:after{content:\\"\\";}');
     });
 
     it('should respect the definition of pseudo element content ala styled components with content', () => {
@@ -452,7 +452,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class:after{content:"😎";}');
+      expect(actual).toInclude('.test-class:after{content:\\"\\uD83D\\uDE0E\\";}');
     });
 
     it('should append "px" on numeric literals if missing', () => {
@@ -668,7 +668,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{font-size:20px;}.test-class:hover{color:red;}');
+      expect(actual).toInclude('.test-class{font-size:20px;}');
+      expect(actual).toInclude('.test-class:hover{color:red;}');
     });
 
     it('should transform object with obj import', () => {
@@ -685,7 +686,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{font-size:20px;}.test-class:hover{color:red;}');
+      expect(actual).toInclude('.test-class{font-size:20px;}');
+      expect(actual).toInclude('.test-class:hover{color:red;}');
     });
 
     it.todo('should transform object with array variable');

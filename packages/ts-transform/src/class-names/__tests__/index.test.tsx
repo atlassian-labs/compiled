@@ -21,7 +21,7 @@ describe('class names transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = () => (<><Style hash="test-class">.test-class{font-size:20px;}</Style><div className={"test-class"}>hello, world!</div></>);'
+      'const ListItem = () => (<><Style hash="test-class">{[".test-class{font-size:20px;}"]}</Style><div className={"test-class"}>hello, world!</div></>)'
     );
   });
 
@@ -385,8 +385,8 @@ describe('class names transformer', () => {
           </ClassNames>
         );
       `);
-
-      expect(actual).toInclude('.test-class{font-size:20px;}.test-class:hover{color:red;}');
+      expect(actual).toInclude('.test-class{font-size:20px;}');
+      expect(actual).toInclude('.test-class:hover{color:red;}');
     });
 
     it('should transform object with obj import', () => {
@@ -404,7 +404,8 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.test-class{font-size:20px;}.test-class:hover{color:red;}');
+      expect(actual).toInclude('.test-class{font-size:20px;}');
+      expect(actual).toInclude('.test-class:hover{color:red;}');
     });
 
     it.todo('should transform object with array variable');

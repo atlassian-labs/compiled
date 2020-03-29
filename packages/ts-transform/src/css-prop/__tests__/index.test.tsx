@@ -504,8 +504,9 @@ describe('css prop transformer', () => {
     `);
 
       expect(actual).toInclude(
-        '.test-class{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;font-size:50px;color:blue;}.test-class:hover{color:blue;}'
+        '.test-class{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;font-size:50px;color:blue;}'
       );
+      expect(actual).toInclude('.test-class:hover{color:blue;}');
     });
 
     it('should transform object with obj import', () => {
@@ -529,8 +530,9 @@ describe('css prop transformer', () => {
     `);
 
       expect(actual).toInclude(
-        '.test-class{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;font-size:50px;color:blue;}.test-class:hover{color:blue;}'
+        '.test-class{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;font-size:50px;color:blue;}'
       );
+      expect(actual).toInclude('.test-class:hover{color:blue;}');
     });
 
     it.todo('should transform object with array variable');
@@ -618,7 +620,8 @@ describe('css prop transformer', () => {
         <div css={{ color: 'blue', ':hover': mixin() }}>hello world</div>
       `);
 
-      expect(actual).toInclude(`.test-class{color:blue;}.test-class:hover{color:red;}`);
+      expect(actual).toInclude(`.test-class{color:blue;}`);
+      expect(actual).toInclude('.test-class:hover{color:red;}');
     });
 
     it('should transform object with no argument function variable', () => {
@@ -633,7 +636,8 @@ describe('css prop transformer', () => {
         <div css={{ color: 'blue', ':hover': mixin() }}>hello world</div>
       `);
 
-      expect(actual).toInclude(`.test-class{color:blue;}.test-class:hover{color:red;}`);
+      expect(actual).toInclude(`.test-class{color:blue;}`);
+      expect(actual).toInclude('.test-class:hover{color:red;}');
     });
 
     it('should transform object with no argument function import', () => {
@@ -652,7 +656,8 @@ describe('css prop transformer', () => {
         <div css={{ color: 'blue', ':hover': mixin() }}>hello world</div>
       `);
 
-      expect(actual).toInclude(`.test-class{color:blue;}.test-class:hover{color:red;}`);
+      expect(actual).toInclude(`.test-class{color:blue;}`);
+      expect(actual).toInclude('.test-class:hover{color:red;}');
     });
 
     it('should transform object spread with no argument function variable', () => {

@@ -175,7 +175,17 @@ export const visitJsxElementWithCssProp = (
       ),
       node
     ),
-    compiledCss.map(rule => ts.createJsxText(rule)),
+
+    [
+      ts.createJsxExpression(
+        undefined,
+        ts.createArrayLiteral(
+          compiledCss.map(rule => ts.createStringLiteral(rule)),
+          false
+        )
+      ),
+    ],
+
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(ts.createJsxClosingElement(STYLE_ELEMENT_NAME), node)
