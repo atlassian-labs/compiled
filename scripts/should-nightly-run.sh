@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 DIST_NIGHTLY_VERSION=$(npm dist-tag ls @compiled/css-in-js@nightly | grep nightly | cut -b 10-)
-LOCAL_GIT_HASH=$(git rev-parse HEAD)
+LOCAL_GIT_HASH=$GITHUB_SHA
 
 echo "Nighyly version: $DIST_NIGHTLY_VERSION"
 echo "Local git hash: $LOCAL_GIT_HASH"
