@@ -1,39 +1,4 @@
-export default class SequentialCharacterGenerator {
-  _chars: string;
-  _nextId: [number];
-
-  constructor(chars = 'abcdefghijklmnopqrstuvwxyz') {
-    this._chars = chars;
-    this._nextId = [0];
-  }
-
-  next() {
-    const r = [];
-    for (const char of this._nextId) {
-      r.unshift(this._chars[char]);
-    }
-    this._increment();
-    return r.join('');
-  }
-
-  _increment() {
-    for (let i = 0; i < this._nextId.length; i++) {
-      const val = ++this._nextId[i];
-      if (val >= this._chars.length) {
-        this._nextId[i] = 0;
-      } else {
-        return;
-      }
-    }
-    this._nextId.push(0);
-  }
-
-  *[Symbol.iterator]() {
-    while (true) {
-      yield this.next();
-    }
-  }
-}
+import * as ts from 'typescript';
 
 /**
  * Taken from https://github.com/garycourt/murmurhash-js/blob/master/murmurhash2_gc.js
@@ -78,3 +43,11 @@ export function hash(str: string, seed: number = 0): string {
 
   return (h >>> 0).toString(36);
 }
+
+export const classNameHash = (css: string): string => {
+  return `css-${hash(css)}`;
+};
+
+export const cssVariableHash = (expression: ts.Node): string => {
+  return `--var-${hash(expression.getText())}`;
+};

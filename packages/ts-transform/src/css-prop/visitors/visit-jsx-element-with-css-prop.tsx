@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import { stylis } from '../../utils/stylis';
 import { Declarations, CssVariableExpressions } from '../../types';
-import { nextClassName } from '../../utils/identifiers';
+import { classNameHash } from '../../utils/hash';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import { joinToJsxExpression } from '../../utils/expression-operators';
@@ -83,7 +83,7 @@ export const visitJsxElementWithCssProp = (
     // - function expressions e.g. css={functionCall}
   }
 
-  const className = nextClassName(cssToPassThroughCompiler);
+  const className = classNameHash(cssToPassThroughCompiler);
   const suppliedClassNameAttribute = getJsxNodeAttributesValue(node, CLASSNAME_PROP);
 
   let classNameInitializer: ts.JsxExpression | ts.StringLiteral = ts.createStringLiteral(className);

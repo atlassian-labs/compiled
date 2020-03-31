@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { stylis } from './stylis';
-import { nextClassName } from './identifiers';
+import { classNameHash } from './hash';
 import { getJsxNodeAttributes } from './ast-node';
 import { CssVariableExpressions } from '../types';
 
@@ -37,7 +37,7 @@ const getStyleElementName = (isCommonJs: boolean) =>
  * </>
  */
 export const createStyleFragment = ({ originalNode, ...opts }: JsxElementOpts) => {
-  const className = nextClassName(opts.css);
+  const className = classNameHash(opts.css);
   const compiledCss: string[] = stylis(opts.skipClassName ? `.${className}` : '', opts.css);
   const STYLE_ELEMENT_NAME = getStyleElementName(
     opts.context.getCompilerOptions().module === ts.ModuleKind.CommonJS
@@ -96,7 +96,7 @@ export const createStyleFragment = ({ originalNode, ...opts }: JsxElementOpts) =
 };
 
 export const createJsxElement = (tagNode: string, opts: JsxElementOpts, originalNode: ts.Node) => {
-  const className = nextClassName(opts.css);
+  const className = classNameHash(opts.css);
   const compiledCss: string[] = stylis(`.${className}`, opts.css);
   const STYLE_ELEMENT_NAME = getStyleElementName(
     opts.context.getCompilerOptions().module === ts.ModuleKind.CommonJS

@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import kebabCase from './kebab-case';
 import { Declarations, CssVariableExpressions, ToCssReturnType } from '../types';
-import { nextCssVariableName } from './identifiers';
+import { cssVariableHash } from './hash';
 import {
   getIdentifierText,
   getAssignmentIdentifierText,
@@ -118,11 +118,12 @@ export const objectLiteralToCssString = (
 
       // We have a prop assignment using a SIMPLE variable, e.g. "fontSize: props.fontSize" or "fontSize".
       // Time to turn it into a css variable.
-      const cssVariable = `--${key}-${nextCssVariableName()}`;
+      const expression = getAssignmentIdentifier(prop);
+      const cssVariable = cssVariableHash(expression);
       value = `var(${cssVariable})`;
       cssVariables.push({
         name: cssVariable,
-        expression: getAssignmentIdentifier(prop),
+        expression,
       });
     } else if (ts.isPropertyAssignment(prop) && ts.isObjectLiteralExpression(prop.initializer)) {
       key = kebabCase((prop.name as ts.Identifier).text);
@@ -191,7 +192,7 @@ export const objectLiteralToCssString = (
         `;
       } else {
         // It doesn't - move the call expression to a css variable.
-        const cssVarName = `--${key}-${nextCssVariableName()}`;
+        const cssVarName = cssVariableHash(prop.initializer);
         value = `var(${cssVarName})`;
         cssVariables.push({
           expression: prop.initializer,

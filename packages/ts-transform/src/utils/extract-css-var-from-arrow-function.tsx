@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { CssVariableExpressions } from '../types';
-import { hash } from './sequential-chars';
+import { cssVariableHash } from './hash';
 
 function wrapInIIFE(body: ts.Block): ts.CallExpression {
   return ts.createCall(
@@ -24,7 +24,7 @@ export const extractCssVarFromArrowFunction = (
   _: ts.TransformationContext
 ): CssVariableExpressions => {
   const bodyExpression: ts.Expression = ts.isBlock(node.body) ? wrapInIIFE(node.body) : node.body;
-  const cssVariableName = hash(node.body.getText());
+  const cssVariableName = cssVariableHash(node.body);
 
-  return { expression: bodyExpression, name: `--var-${cssVariableName}` };
+  return { expression: bodyExpression, name: cssVariableName };
 };

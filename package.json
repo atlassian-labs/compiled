@@ -4,7 +4,7 @@
   "author": "Michael Dougall",
   "license": "Apache-2.0",
   "scripts": {
-    "clean": "workspaces-run -- rm -rf dist -- rm -f tsconfig.tsbuildinfo",
+    "clean": "rm -rf node_modules/.cache && workspaces-run -- rm -rf dist -- rm -f tsconfig.tsbuildinfo",
     "start": "yarn build && npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch packages/ts-transform/ -e tsx",
     "start:prod": "NODE_ENV=production yarn start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/ts-transform/ -e tsx",

@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 import { getIdentifierText, createNodeError } from '../../utils/ast-node';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
-import { nextClassName } from '../../utils/identifiers';
+import { classNameHash } from '../../utils/hash';
 import { createStyleFragment } from '../../utils/create-jsx-element';
 import { CssVariableExpressions, Declarations, ToCssReturnType } from '../../types';
 
@@ -60,7 +60,7 @@ export const visitClassNamesJsxElement = (
       let result = ts.isCallExpression(node)
         ? visitCssCallExpression(node, context, collectedDeclarations)
         : visitCssTaggedTemplateExpression(node, context, collectedDeclarations);
-      const className = nextClassName(result.css);
+      const className = classNameHash(result.css);
 
       css += `.${className} { ${result.css} }`;
       cssVariables = cssVariables.concat(result.cssVariables);

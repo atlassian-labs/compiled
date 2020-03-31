@@ -1,7 +1,7 @@
 import { Transformer } from 'ts-transformer-testing-library';
 import styledComponentTransformer from '../index';
 
-jest.mock('../../utils/identifiers');
+jest.mock('../../utils/hash');
 
 const transformer = new Transformer()
   .addTransformer(styledComponentTransformer)
@@ -22,7 +22,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = props => <><Style hash="test-class">{[".test-class{font-size:20px;}"]}</Style><div {...props} className={"test-class" + (props.className ? " " + props.className : "")}></div></>'
+      'const ListItem = props => <><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div {...props} className={"css-test" + (props.className ? " " + props.className : "")}></div></>'
     );
   });
 
@@ -35,7 +35,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude('({ textSize, ...props }) =>');
-    expect(actual).toInclude('"--var-1mnmsc": textSize');
+    expect(actual).toInclude('"--var-test": textSize');
   });
 
   xit('should compose using a previously created component', () => {
@@ -72,7 +72,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = props => <><Style hash="test-class">{[".test-class{font-size:20px;}"]}</Style><div {...props} className={"test-class" + (props.className ? " " + props.className : "")}></div></>'
+      'const ListItem = props => <><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div {...props} className={"css-test" + (props.className ? " " + props.className : "")}></div></>'
     );
   });
 
@@ -132,7 +132,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      `className={\"test-class\" + (props.className ? \" \" + props.className : \"\")}`
+      `className={\"css-test\" + (props.className ? \" \" + props.className : \"\")}`
     );
   });
 
@@ -145,7 +145,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{font-size:12;}');
+      expect(actual).toInclude('.css-test{font-size:12;}');
     });
 
     it('should not pass down invalid html attributes to the node when property has a suffix', () => {
@@ -156,9 +156,9 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{font-size:var(--var-1mnmsc);}');
+      expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
       expect(actual).toInclude('({ textSize, ...props }) =>');
-      expect(actual).toInclude('"--var-1mnmsc": textSize + "px"');
+      expect(actual).toInclude('"--var-test": textSize + "px"');
     });
 
     it('should persist suffix of dynamic property value into inline styles', () => {
@@ -172,10 +172,8 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude(
-        'style={{ ...props.style, "--fontSize-test-css-variable": fontSize + "px" }}'
-      );
-      expect(actual).toInclude('.test-class{font-size:var(--fontSize-test-css-variable);}');
+      expect(actual).toInclude('style={{ ...props.style, "--var-test": fontSize + "px" }}');
+      expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
     });
 
     it('should persist suffix of dynamic property value into inline styles when missing a semi colon', () => {
@@ -189,8 +187,8 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('"--fontSize-test-css-variable": fontSize + "px" }}');
-      expect(actual).toInclude('.test-class{font-size:var(--fontSize-test-css-variable);}');
+      expect(actual).toInclude('"--var-test": fontSize + "px" }}');
+      expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
     });
 
     it('should transform no template string literal', () => {
@@ -202,7 +200,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{font-size:20px;}');
+      expect(actual).toInclude('.css-test{font-size:20px;}');
     });
 
     it('should transform template string literal with string variable', () => {
@@ -216,7 +214,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{font-size:var(--fontSize-test-css-variable);}');
+      expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
     });
 
     it('should transform template string literal with numeric variable', () => {
@@ -230,7 +228,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{margin:var(--margin-test-css-variable);}');
+      expect(actual).toInclude('.css-test{margin:var(--var-test);}');
     });
 
     it('should transform template string literal with prop reference', () => {
@@ -242,8 +240,8 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--var-kmurgp);}');
-      expect(actual).toInclude('"--var-kmurgp": props.color }}');
+      expect(actual).toInclude('.css-test{color:var(--var-test);}');
+      expect(actual).toInclude('"--var-test": props.color }}');
     });
 
     it('should transform a arrow function with a body into an IIFE', () => {
@@ -255,8 +253,8 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--var-1bhsyr9);}');
-      expect(actual).toInclude('"--var-1bhsyr9": (() => { return props.color; })() }}');
+      expect(actual).toInclude('.css-test{color:var(--var-test);}');
+      expect(actual).toInclude('"--var-test": (() => { return props.color; })() }}');
     });
 
     it('should transform template string literal with string import', () => {
@@ -272,7 +270,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{font-size:var(--fontSize-test-css-variable);}');
+      expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
     });
 
     it('should transform template string literal with obj variable', () => {
@@ -286,7 +284,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{font-size: font-size:12px;}');
+      expect(actual).toInclude('.css-test{font-size: font-size:12px;}');
     });
 
     it('should transform template string literal with obj import', () => {
@@ -302,7 +300,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{font-size: font-size:12px;}');
+      expect(actual).toInclude('.css-test{font-size: font-size:12px;}');
     });
 
     it('should reference identifier pointing to a call expression if it returns simple value', () => {
@@ -317,8 +315,8 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--color-test-css-variable);}');
-      expect(actual).toInclude('"--color-test-css-variable": color }}>');
+      expect(actual).toInclude('.css-test{color:var(--var-test);}');
+      expect(actual).toInclude('"--var-test": color }}>');
     });
 
     it('should inline call if it returns simple value', () => {
@@ -332,8 +330,8 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--em-test-css-variable);}');
-      expect(actual).toInclude('"--em-test-css-variable": em(\'blue\') }}>');
+      expect(actual).toInclude('.css-test{color:var(--var-test);}');
+      expect(actual).toInclude('"--var-test": em(\'blue\') }}>');
     });
 
     it.todo('should transform template string literal with array variable');
@@ -351,7 +349,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{color:red;}');
+      expect(actual).toInclude('.css-test{color:red;}');
     });
 
     it('should transform template string with no argument arrow function import', () => {
@@ -367,7 +365,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{color:red;}');
+      expect(actual).toInclude('.css-test{color:red;}');
     });
 
     it('should transform template string with no argument function variable', () => {
@@ -383,7 +381,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{color:red;}');
+      expect(actual).toInclude('.css-test{color:red;}');
     });
 
     it('should transform template string with no argument function import', () => {
@@ -403,7 +401,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{color:red;}');
+      expect(actual).toInclude('.css-test{color:red;}');
     });
 
     it.todo('should transform template string with argument function variable');
@@ -426,7 +424,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class:after{content:\\"\\";}');
+      expect(actual).toInclude('.css-test:after{content:\\"\\";}');
     });
 
     it('should respect the definition of pseudo element content ala emotion with single quotes', () => {
@@ -439,7 +437,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude(".test-class:after{content:'';}");
+      expect(actual).toInclude(".css-test:after{content:'';}");
     });
 
     it('should respect the definition of pseudo element content ala styled components with no content', () => {
@@ -452,7 +450,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class:after{content:\\"\\";}');
+      expect(actual).toInclude('.css-test:after{content:\\"\\";}');
     });
 
     it('should respect the definition of pseudo element content ala styled components with content', () => {
@@ -465,7 +463,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class:after{content:\\"\\uD83D\\uDE0E\\";}');
+      expect(actual).toInclude('.css-test:after{content:\\"\\uD83D\\uDE0E\\";}');
     });
 
     it('should append "px" on numeric literals if missing', () => {
@@ -476,7 +474,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{font-size:12px;}');
+      expect(actual).toInclude('.css-test{font-size:12px;}');
     });
 
     it('should not pass down invalid html attributes to the node when property has a suffix', () => {
@@ -487,9 +485,9 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{font-size:var(--var-r807ho);}');
+      expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
       expect(actual).toInclude('({ textSize, ...props }) =>');
-      expect(actual).toInclude('"--var-r807ho": `${textSize}px`');
+      expect(actual).toInclude('"--var-test": `${textSize}px`');
     });
 
     it('should not pass down invalid html attributes to the node when property has a suffix when func in template literal', () => {
@@ -500,9 +498,9 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{font-size:var(--var-1mnmsc);}');
+      expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
       expect(actual).toInclude('({ textSize, ...props }) =>');
-      expect(actual).toInclude('"--var-1mnmsc": textSize + "px"');
+      expect(actual).toInclude('"--var-test": textSize + "px"');
     });
 
     it('should persist suffix of dynamic property value into inline styles', () => {
@@ -516,8 +514,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('"--var-1dr62z0": props.fontSize + "px" }}');
-      expect(actual).toInclude('.test-class{font-size:var(--var-1dr62z0);}');
+      expect(actual).toInclude('"--var-test": props.fontSize + "px" }}');
+      expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
     });
 
     it('should transform object with simple values', () => {
@@ -530,7 +528,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{color:blue;margin:0;}');
+      expect(actual).toInclude('.css-test{color:blue;margin:0;}');
     });
 
     it('should transform object with nested object into a selector', () => {
@@ -545,7 +543,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class:hover{color:blue;margin:0;}');
+      expect(actual).toInclude('.css-test:hover{color:blue;margin:0;}');
     });
 
     it('should reference identifier pointing to a call expression if it returns simple value', () => {
@@ -560,8 +558,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--color-test-css-variable);}');
-      expect(actual).toInclude('"--color-test-css-variable": color }}>');
+      expect(actual).toInclude('.css-test{color:var(--var-test);}');
+      expect(actual).toInclude('"--var-test": color }}>');
     });
 
     it('should inline call if it returns simple value', () => {
@@ -575,8 +573,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--color-test-css-variable);}');
-      expect(actual).toInclude('"--color-test-css-variable": em(\'blue\') }}>');
+      expect(actual).toInclude('.css-test{color:var(--var-test);}');
+      expect(actual).toInclude('"--var-test": em(\'blue\') }}>');
     });
 
     it('should transform template object with string variable', () => {
@@ -590,8 +588,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--color-test-css-variable);}');
-      expect(actual).toInclude('"--color-test-css-variable": color }}>');
+      expect(actual).toInclude('.css-test{color:var(--var-test);}');
+      expect(actual).toInclude('"--var-test": color }}>');
     });
 
     it('should transform template object with prop reference', () => {
@@ -603,8 +601,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--var-kmurgp);}');
-      expect(actual).toInclude('"--var-kmurgp": props.color }}');
+      expect(actual).toInclude('.css-test{color:var(--var-test);}');
+      expect(actual).toInclude('"--var-test": props.color }}');
     });
 
     it('should transform object spread from variable', () => {
@@ -618,7 +616,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{font-size:12px;}');
+      expect(actual).toInclude('.css-test{font-size:12px;}');
     });
 
     it('should transform object spread from import', () => {
@@ -634,7 +632,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{font-size:12px;}');
+      expect(actual).toInclude('.css-test{font-size:12px;}');
     });
 
     it('should transform object with string variable', () => {
@@ -648,8 +646,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--color-test-css-variable);}');
-      expect(actual).toInclude('"--color-test-css-variable": color }}');
+      expect(actual).toInclude('.css-test{color:var(--var-test);}');
+      expect(actual).toInclude('"--var-test": color }}');
     });
 
     it('should transform object with string import', () => {
@@ -665,8 +663,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--color-test-css-variable);}');
-      expect(actual).toInclude('"--color-test-css-variable": color }}');
+      expect(actual).toInclude('.css-test{color:var(--var-test);}');
+      expect(actual).toInclude('"--var-test": color }}');
     });
 
     it('should transform object with obj variable', () => {
@@ -681,8 +679,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{font-size:20px;}');
-      expect(actual).toInclude('.test-class:hover{color:red;}');
+      expect(actual).toInclude('.css-test{font-size:20px;}');
+      expect(actual).toInclude('.css-test:hover{color:red;}');
     });
 
     it('should transform object with obj import', () => {
@@ -699,8 +697,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{font-size:20px;}');
-      expect(actual).toInclude('.test-class:hover{color:red;}');
+      expect(actual).toInclude('.css-test{font-size:20px;}');
+      expect(actual).toInclude('.css-test:hover{color:red;}');
     });
 
     it.todo('should transform object with array variable');
@@ -718,7 +716,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{color:red;}');
+      expect(actual).toInclude('.css-test{color:red;}');
     });
 
     it('should transform object with no argument arrow function import', () => {
@@ -734,7 +732,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{color:red;}');
+      expect(actual).toInclude('.css-test{color:red;}');
     });
 
     it('should transform object with no argument function variable', () => {
@@ -750,7 +748,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{color:red;}');
+      expect(actual).toInclude('.css-test{color:red;}');
     });
 
     it('should transform object with no argument function import', () => {
@@ -770,7 +768,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{color:red;}');
+      expect(actual).toInclude('.css-test{color:red;}');
     });
 
     it.todo('should transform object with argument function variable');

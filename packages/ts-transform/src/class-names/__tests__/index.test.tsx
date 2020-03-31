@@ -1,7 +1,7 @@
 import { Transformer } from 'ts-transformer-testing-library';
 import classNamesTransformer from '../index';
 
-jest.mock('../../utils/identifiers');
+jest.mock('../../utils/hash');
 
 const transformer = new Transformer()
   .addTransformer(classNamesTransformer)
@@ -21,7 +21,7 @@ describe('class names transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = () => (<><Style hash="test-class">{[".test-class{font-size:20px;}"]}</Style><div className={"test-class"}>hello, world!</div></>)'
+      'const ListItem = () => (<><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div className={"css-test"}>hello, world!</div></>)'
     );
   });
 
@@ -53,8 +53,8 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('style={{ "--fontSize-test-css-variable": fontSize + "px" }}');
-      expect(actual).toInclude('.test-class{font-size:var(--fontSize-test-css-variable);}');
+      expect(actual).toInclude('style={{ "--var-test": fontSize + "px" }}');
+      expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
     });
 
     it('should transform no template string literal', () => {
@@ -68,7 +68,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.test-class{font-size:20px;}');
+      expect(actual).toInclude('.css-test{font-size:20px;}');
     });
 
     it('should transform template string literal with string variable', () => {
@@ -84,7 +84,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.test-class{font-size:var(--fontSize-test-css-variable);}`);
+      expect(actual).toInclude(`.css-test{font-size:var(--var-test);}`);
     });
 
     it('should transform template string literal with numeric variable', () => {
@@ -100,7 +100,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.test-class{font-size:var(--fontSize-test-css-variable);}`);
+      expect(actual).toInclude(`.css-test{font-size:var(--var-test);}`);
     });
 
     it('should transform template string literal with string import', () => {
@@ -118,7 +118,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.test-class{font-size:var(--fontSize-test-css-variable);}`);
+      expect(actual).toInclude(`.css-test{font-size:var(--var-test);}`);
     });
 
     it('should transform template string literal with obj variable', () => {
@@ -134,7 +134,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.test-class{color:blue;}`);
+      expect(actual).toInclude(`.css-test{color:blue;}`);
     });
 
     it('should transform template string literal with obj import', () => {
@@ -152,7 +152,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.test-class{color:blue;}`);
+      expect(actual).toInclude(`.css-test{color:blue;}`);
     });
 
     it.todo('should transform template string literal with array variable');
@@ -172,7 +172,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.test-class{color:blue;}`);
+      expect(actual).toInclude(`.css-test{color:blue;}`);
     });
 
     it('should transform template string with no argument arrow function import', () => {
@@ -190,7 +190,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.test-class{color:blue;}`);
+      expect(actual).toInclude(`.css-test{color:blue;}`);
     });
 
     it('should transform template string with no argument function variable', () => {
@@ -206,7 +206,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.test-class{color:blue;}`);
+      expect(actual).toInclude(`.css-test{color:blue;}`);
     });
 
     it('should transform template string with no argument function import', () => {
@@ -226,7 +226,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.test-class{color:blue;}`);
+      expect(actual).toInclude(`.css-test{color:blue;}`);
     });
 
     it.todo('should transform template string with argument function variable');
@@ -252,8 +252,8 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('style={{ "--fontSize-test-css-variable": fontSize + "px" }}');
-      expect(actual).toInclude('.test-class{font-size:var(--fontSize-test-css-variable);}');
+      expect(actual).toInclude('style={{ "--var-test": fontSize + "px" }}');
+      expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
     });
 
     it('should transform object with simple values', () => {
@@ -267,7 +267,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.test-class{color:red;margin:0;}');
+      expect(actual).toInclude('.css-test{color:red;margin:0;}');
     });
 
     it('should transform object with nested object into a selector', () => {
@@ -281,7 +281,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.test-class:hover{color:red;margin:0;}');
+      expect(actual).toInclude('.css-test:hover{color:red;margin:0;}');
     });
 
     it('should transform object that has a variable reference', () => {
@@ -297,7 +297,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--color-test-css-variable);margin:0;}');
+      expect(actual).toInclude('.css-test{color:var(--var-test);margin:0;}');
     });
 
     it('should transform object spread from variable', () => {
@@ -315,7 +315,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.test-class{color:blue;color:red;}');
+      expect(actual).toInclude('.css-test{color:blue;color:red;}');
     });
 
     it('should transform object spread from import', () => {
@@ -333,7 +333,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.test-class{color:blue;color:red;}');
+      expect(actual).toInclude('.css-test{color:blue;color:red;}');
     });
 
     it('should transform object with string variable', () => {
@@ -349,9 +349,9 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--color-test-css-variable);}');
+      expect(actual).toInclude('.css-test{color:var(--var-test);}');
       expect(actual).toInclude(
-        '<div style={{ "--color-test-css-variable": color }} className={"test-class"}>hello, world!</div>'
+        '<div style={{ "--var-test": color }} className={"css-test"}>hello, world!</div>'
       );
     });
 
@@ -370,7 +370,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--color-test-css-variable);}');
+      expect(actual).toInclude('.css-test{color:var(--var-test);}');
     });
 
     it('should transform object with obj variable', () => {
@@ -385,8 +385,8 @@ describe('class names transformer', () => {
           </ClassNames>
         );
       `);
-      expect(actual).toInclude('.test-class{font-size:20px;}');
-      expect(actual).toInclude('.test-class:hover{color:red;}');
+      expect(actual).toInclude('.css-test{font-size:20px;}');
+      expect(actual).toInclude('.css-test:hover{color:red;}');
     });
 
     it('should transform object with obj import', () => {
@@ -404,8 +404,8 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.test-class{font-size:20px;}');
-      expect(actual).toInclude('.test-class:hover{color:red;}');
+      expect(actual).toInclude('.css-test{font-size:20px;}');
+      expect(actual).toInclude('.css-test:hover{color:red;}');
     });
 
     it.todo('should transform object with array variable');

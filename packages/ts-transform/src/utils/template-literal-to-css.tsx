@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import { ToCssReturnType, CssVariableExpressions, Declarations } from '../types';
 import { getIdentifierText, createNodeError } from './ast-node';
-import { nextCssVariableName } from './identifiers';
+import { cssVariableHash } from './hash';
 import { objectLiteralToCssString } from './object-literal-to-css';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
 import { evaluateFunction, isReturnCssLike } from './evalulate-function';
@@ -59,7 +59,6 @@ export const templateLiteralToCss = (
       // We are referencing a variable e.g. css`${var}`;
       const key = getIdentifierText(span.expression);
       const value = collectedDeclarations[key];
-      const variableName = `--${key}-${nextCssVariableName()}`;
       if (!value) {
         throw createNodeError('declaration does not exist', span);
       }
@@ -71,6 +70,8 @@ export const templateLiteralToCss = (
       if (!value.initializer) {
         throw createNodeError('variable was not initialized', value);
       }
+
+      const variableName = cssVariableHash(value);
 
       if (ts.isObjectLiteralExpression(value.initializer)) {
         // We found an object expression e.g. const objVar = {}; css`${objVar}`
@@ -98,7 +99,7 @@ export const templateLiteralToCss = (
       } else if (ts.isCallExpression(value.initializer)) {
         // We found something like this: const val = fun(); css`${val}`;
         // Inline the expression as a css variable - we will need to check if it returns something css like.. but later.
-        const variableName = `--${key}-${nextCssVariableName()}`;
+        const variableName = cssVariableHash(span.expression);
         css += `var(${variableName})`;
         cssVariables.push({
           expression: span.expression,
@@ -141,7 +142,7 @@ export const templateLiteralToCss = (
         cssVariables = cssVariables.concat(result.cssVariables);
       } else {
         // Ok it doesnt return css just inline the expression as a css variable
-        const variableName = `--${key}-${nextCssVariableName()}`;
+        const variableName = cssVariableHash(span.expression);
         css += `var(${variableName})`;
         cssVariables.push({
           expression: span.expression,
