@@ -66,6 +66,30 @@ describe('root transformer', () => {
     }).not.toThrow();
   });
 
+  it('should only import Style once', () => {
+    const transformer = rootTransformer(stubProgam, {});
+
+    const actual = ts.transpileModule(
+      `
+        /** @jsx jsx */
+        import { jsx, styled } from '@compiled/css-in-js';
+
+        const StyledDiv = styled.div({});
+        <div css={{ fontSize: '20px' }}>hello world</div>
+      `,
+      {
+        transformers: { before: [transformer] },
+        compilerOptions: {
+          module: ts.ModuleKind.ES2015,
+          esModuleInterop: true,
+          jsx: ts.JsxEmit.React,
+        },
+      }
+    );
+
+    expect(actual.outputText).toInclude("import { Style, jsx, styled } from '@compiled/css-in-js'");
+  });
+
   xit('should match react import when transforming to common js', () => {
     const transformer = rootTransformer(stubProgam, {});
 

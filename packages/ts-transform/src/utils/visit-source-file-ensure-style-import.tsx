@@ -27,6 +27,11 @@ export const visitSourceFileEnsureStyleImport = (
         namedImports = Array.from(node.importClause.namedBindings.elements);
       }
 
+      if (namedImports.some(val => val.name.text === STYLE_IMPORT)) {
+        // Import already exists - return early
+        return node;
+      }
+
       return ts.updateImportDeclaration(
         node,
         /* decorators */ undefined,
