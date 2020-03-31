@@ -1,6 +1,6 @@
 {
   "name": "@compiled/jest-css-in-js",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "An experimental TypeScript first CSS in JS library 🔧🚧",
   "author": "Michael Dougall",
   "license": "Apache-2.0",

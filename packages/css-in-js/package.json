@@ -1,6 +1,6 @@
 {
   "name": "@compiled/css-in-js",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "An experimental TypeScript first CSS in JS library 🔧🚧",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
@@ -20,8 +20,8 @@
     "src"
   ],
   "dependencies": {
-    "@compiled/ts-transform-css-in-js": "0.0.12",
-    "@compiled/style": "0.0.12"
+    "@compiled/ts-transform-css-in-js": "0.0.13",
+    "@compiled/style": "0.0.13"
   },
   "peerDependencies": {
     "react": "^16.12.0"
