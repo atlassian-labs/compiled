@@ -1,0 +1,22 @@
+{
+  "name": "@compiled/babel-plugin",
+  "version": "0.0.14",
+  "description": "Typescript first CSS in JS library that compiles away to nothing. 🔧🚧",
+  "author": "Michael Dougall",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "dependencies": {
+    "@babel/core": "^7.9.0",
+    "@compiled/ts-transform-css-in-js": "0.0.14",
+    "typescript": "^3.7.3"
+  },
+  "devDependencies": {
+    "@babel/plugin-syntax-jsx": "^7.8.3",
+    "@types/babel__core": "^7.1.6"
+  }
+}

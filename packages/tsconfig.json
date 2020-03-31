@@ -1,9 +1,10 @@
 {
   "files": [],
   "references": [
+    { "path": "babel-plugin" },
     { "path": "css-in-js" },
     { "path": "jest" },
-    { "path": "ts-transform" },
-    { "path": "style" }
+    { "path": "style" },
+    { "path": "ts-transform" }
   ]
 }
