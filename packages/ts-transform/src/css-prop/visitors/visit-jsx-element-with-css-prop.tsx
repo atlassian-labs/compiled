@@ -200,10 +200,13 @@ export const visitJsxElementWithCssProp = (
       // important that the style goes before the node
       styleNode,
       ts.isJsxSelfClosingElement(node)
-        ? ts.createJsxSelfClosingElement(
-            node.tagName,
-            node.typeArguments,
-            ts.createJsxAttributes(attributes)
+        ? ts.setOriginalNode(
+            ts.createJsxSelfClosingElement(
+              node.tagName,
+              node.typeArguments,
+              ts.createJsxAttributes(attributes)
+            ),
+            node
           )
         : ts.createJsxElement(
             ts.setOriginalNode(
