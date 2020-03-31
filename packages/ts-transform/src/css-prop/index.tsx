@@ -52,6 +52,12 @@ export default function cssPropTransformer(
 
         if (isJsxElementWithCssProp(node)) {
           const newNode = visitJsxElementWithCssProp(node, collectedDeclarations, context);
+
+          if (ts.isJsxSelfClosingElement(node)) {
+            // It was self closing - it can't have children!
+            return newNode;
+          }
+
           return ts.visitEachChild(newNode, visitor, context);
         }
 

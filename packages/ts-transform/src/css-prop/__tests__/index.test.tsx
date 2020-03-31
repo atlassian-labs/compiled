@@ -14,6 +14,17 @@ const transformer = new Transformer()
   .setFilePath('/index.tsx');
 
 describe('css prop transformer', () => {
+  it('should transform a self closing element', () => {
+    const actual = transformer.transform(`
+      /** @jsx jsx */
+      import { jsx } from '@compiled/css-in-js';
+
+      <div css={{}} />
+    `);
+
+    expect(actual).toInclude('<div className="css-test"/>');
+  });
+
   it('should replace css prop with class name', () => {
     const actual = transformer.transform(`
       /** @jsx jsx */
