@@ -8,5 +8,5 @@
       "@compiled/css-in-js": ["index.tsx"]
     }
   },
-  "references": [{ "path": "../ts-transform" }, { "path": "../style" }]
+  "references": [{ "path": "../style" }]
 }

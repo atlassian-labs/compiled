@@ -1,5 +1,5 @@
 {
-  "name": "@compiled/babel-plugin",
+  "name": "@compiled/babel-plugin-css-in-js",
   "version": "0.0.14",
   "description": "The CSS in JS authoring experience you love without the runtime cost",
   "author": "Michael Dougall",

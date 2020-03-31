@@ -1,30 +1,35 @@
 # @compiled/css-in-js
 
-Inspired by the `css` prop and zero config SSR of [Emotion](https://emotion.sh),
-the zero runtime of [Linaria](https://linaria.now.sh),
-and the `styled` api from [Styled Components](https://www.styled-components.com) to create _the_ css-in-js solution for component libraries.
-
-Currently in initial development.
-Reach out to me [@itsmadou](https://twitter.com/itsmadou) if this sounds interesting to you.
+The CSS in JS authoring experience you love without the runtime cost.
 
 ## Installation
 
-We use Typescript transformers to control the transformation -
+### TypeScript compiler
+
+Using either `tsc` directly,
+`ts-loader` with webpack,
+or the default Parcel configuration with TypeScript.
+
+<details>
+  <summary>Click to expand...</summary>
+
+We use TypeScript transformers to control the transformation -
 strong suggestion to [read the handbook](https://github.com/madou/typescript-transformer-handbook) for getting started with them.
 
 Install `compiled` and `ttypescript`:
 
 ```sh
-npm i @compiled/css-in-js --save
-npm i ttypescript --save-dev
+npm i @compiled/css-in-js
+npm i @compiled/ts-transform-css-in-js
+npm i ttypescript
 ```
 
 > **Why do I need `ttypescript`?**
 >
 > Good question!
-> Unfortunately Typescript doesn't come with support out-of-the-box to add transformers.
+> Unfortunately TypeScript doesn't come with support out-of-the-box to add transformers.
 > `ttypescript` enables you to do just that -
-> it has a peer dependency on Typescript so you can use whatever version you want.
+> it has a peer dependency on TypeScript so you can use whatever version you want.
 > Read about [consuming transformers here](https://github.com/madou/typescript-transformer-handbook/blob/master/translations/en/transformer-handbook.md#consuming-transformers).
 
 Next add the transformer to your `tsconfig.json` plugins:
@@ -32,14 +37,14 @@ Next add the transformer to your `tsconfig.json` plugins:
 ```diff
 {
   "compilerOptions": {
-+    "plugins": [{ "transform": "@compiled/css-in-js/dist/ts-transformer" }]
++    "plugins": [{ "transform": "@compiled/ts-transform-css-in-js" }]
   }
 }
 ```
 
 Then it's just a matter of modifying what you're using to compile your code.
 
-### Typescript CLI
+#### TypeScript CLI
 
 Using `tsc` directly?
 Just switch it out for `ttsc` -
@@ -50,7 +55,7 @@ the `ttypescript` equivalent.
 +ttsc
 ```
 
-### Webpack
+#### Webpack
 
 Using Webpack?
 Add `ttypescript` as the compiler.
@@ -64,7 +69,7 @@ Add `ttypescript` as the compiler.
 },
 ```
 
-### Parcel
+#### Parcel
 
 Using Parcel?
 Just install the `ttypescript` plugin and you're done!
@@ -73,103 +78,88 @@ Just install the `ttypescript` plugin and you're done!
 npm i parcel-plugin-ttypescript --save-dev
 ```
 
+</details>
+
+### Babel
+
+<details>
+  <summary>Click to expand...</summary>
+
+```
+npm i @compiled/css-in-js
+npm i @compiled/babel-plugin-css-in-js
+```
+
+Then add the plugin to your [Babel config](https://babeljs.io/docs/en/config-files):
+
+```
+{
+  "plugins": ["@compiled/babel-plugin-css-in-js"]
+}
+```
+
+</details>
+
 ## Usage
 
 ### `css` prop
 
-Transforms:
-
 ```jsx
+/** @jsx jsx */
 import { jsx } from '@compiled/css-in-js';
 
-() => <div css={{ color: 'blue' }}>hello, world!</div>;
+<div css={{ fontSize: 12 }} />;
 ```
 
-Into:
-
 ```jsx
-() => (
-  <>
-    <style>{'.a { color: blue; }'}</style>
-    <div className="a">hello, world!</div>
-  </>
-);
+import React from 'react';
+import { Style, jsx } from '@compiled/css-in-js';
+
+<>
+  <Style hash="css-1iqe21w">{['.css-1iqe21w{font-size:12px;}']}</Style>
+  <div className="css-1iqe21w" />
+</>;
 ```
 
 ### `styled` component
-
-Transforms:
 
 ```jsx
 import { styled } from '@compiled/css-in-js';
 
 styled.div`
-  color: blue;
+  font-size: 12px;
 `;
 ```
 
-Into:
-
 ```jsx
+import React from 'react';
+import { Style, styled } from '@compiled/css-in-js';
+
 props => (
   <>
-    <style>{'.a { color: blue; }'}</style>
-    <div className="a">{props.children}</div>
+    <Style hash="css-1x3e11p">{['.css-1x3e11p{font-size:12px;}']}</Style>
+    <div
+      {...props}
+      className={'css-1x3e11p' + (props.className ? ' ' + props.className : '')}></div>
   </>
 );
 ```
 
 ### `ClassNames` component
 
-Transforms:
-
 ```jsx
+import React from 'react';
 import { ClassNames } from '@compiled/css-in-js';
 
-() => (
-  <ClassNames>
-    {({ css }) => <div className={css({ color: 'blue' })}>hello, world!</div>}
-  </ClassNames>
-);
+<ClassNames>{({ css }) => <div className={css({ fontSize: 12 })} />}</ClassNames>;
 ```
 
-To:
-
 ```jsx
-() => (
-  <>
-    <style>{'.a { color: blue; }'}</style>
-    <div className="a">hello, world!</div>
-  </>
-);
-```
+import React from 'react';
+import { Style, ClassNames } from '@compiled/css-in-js';
 
-## Dynamic behaviour
-
-Dynamic behaviour is powered by CSS variables,
-which can be applied to every api described so far.
-
-If we take the `css` prop example it would look like...
-
-Transforms:
-
-```jsx
-const [color] = useState('blue');
-
-() => <div css={{ color }}>hello, world!</div>;
-```
-
-Into:
-
-```jsx
-const [color] = useState('blue');
-
-() => (
-  <>
-    <style>{'.a { color: var(--color-a); }'}</style>
-    <div className="a" style={{ '--color-a': color }}>
-      hello, world!
-    </div>
-  </>
-);
+<>
+  <Style hash="css-2lhdif">{['.css-1iqe21w{font-size:12px;}']}</Style>
+  <div className={'css-1iqe21w'} />
+</>;
 ```
