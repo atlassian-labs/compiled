@@ -246,6 +246,19 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('"--var-kmurgp": props.color }}');
     });
 
+    it('should transform a arrow function with a body into an IIFE', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+
+        const ListItem = styled.div\`
+          color: \${props => { return props.color; }};
+        \`;
+      `);
+
+      expect(actual).toInclude('.test-class{color:var(--var-1bhsyr9);}');
+      expect(actual).toInclude('"--var-1bhsyr9": (() => { return props.color; })() }}');
+    });
+
     it('should transform template string literal with string import', () => {
       const actual = transformer.addSource({
         path: '/fonts.ts',
