@@ -9,7 +9,6 @@ export const toHaveCompiledCss: jest.CustomMatcher = (
   if (!styleElement) {
     // There wasn't a style element found within - let's check the head for it instead.
     const styleElements = Array.from(document.head.querySelectorAll('style'));
-
     for (const tag of styleElements) {
       if (tag.innerHTML.includes(element.className)) {
         styleElement = tag as HTMLStyleElement;
@@ -38,7 +37,9 @@ export const toHaveCompiledCss: jest.CustomMatcher = (
 
   if (styles && Object.keys(styles).length > 0) {
     Object.entries(styles).forEach(([key, value]: any) => {
-      css = css.replace(`var(${key})`, value);
+      // Replace all instances of var with the value.
+      // We split and join to replace all instances without needing to jump into a dynamic regex.
+      css = css.split(`var(${key})`).join(value);
     });
   }
   const notFoundStyles = stylesToFind.filter(styleToFind => !css.includes(styleToFind));
@@ -54,9 +55,14 @@ export const toHaveCompiledCss: jest.CustomMatcher = (
     pass: false,
     message: () => `Could not find "${notFoundStyles.join(
       ', '
-    )}" on <${element.nodeName.toLowerCase()}> element.
+    )}" on <${element.nodeName.toLowerCase()} ${styles &&
+      `style={${JSON.stringify(styles)}}`}> element.
 
-Found styles:
-${css}`,
+Reconciled css (css variables were replaced with actual values):
+${css}
+
+Original css:
+${(styleElement && styleElement.textContent) || ''}
+`,
   };
 };

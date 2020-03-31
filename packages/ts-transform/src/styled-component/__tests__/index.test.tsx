@@ -35,7 +35,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude('({ textSize, ...props }) =>');
-    expect(actual).toInclude('"--textSize-test-css-variable": textSize');
+    expect(actual).toInclude('"--var-1mnmsc": textSize');
   });
 
   xit('should compose using a previously created component', () => {
@@ -156,9 +156,9 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{font-size:var(--textSize-test-css-variable);}');
+      expect(actual).toInclude('.test-class{font-size:var(--var-1mnmsc);}');
       expect(actual).toInclude('({ textSize, ...props }) =>');
-      expect(actual).toInclude('"--textSize-test-css-variable": textSize + "px"');
+      expect(actual).toInclude('"--var-1mnmsc": textSize + "px"');
     });
 
     it('should persist suffix of dynamic property value into inline styles', () => {
@@ -242,8 +242,21 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--color-test-css-variable);}');
-      expect(actual).toInclude('"--color-test-css-variable": props.color }}');
+      expect(actual).toInclude('.test-class{color:var(--var-kmurgp);}');
+      expect(actual).toInclude('"--var-kmurgp": props.color }}');
+    });
+
+    it('should transform a arrow function with a body into an IIFE', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+
+        const ListItem = styled.div\`
+          color: \${props => { return props.color; }};
+        \`;
+      `);
+
+      expect(actual).toInclude('.test-class{color:var(--var-1bhsyr9);}');
+      expect(actual).toInclude('"--var-1bhsyr9": (() => { return props.color; })() }}');
     });
 
     it('should transform template string literal with string import', () => {
@@ -474,9 +487,9 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{font-size:var(--textSize-test-css-variable);}');
+      expect(actual).toInclude('.test-class{font-size:var(--var-r807ho);}');
       expect(actual).toInclude('({ textSize, ...props }) =>');
-      expect(actual).toInclude('"--textSize-test-css-variable": `${textSize}px`');
+      expect(actual).toInclude('"--var-r807ho": `${textSize}px`');
     });
 
     it('should not pass down invalid html attributes to the node when property has a suffix when func in template literal', () => {
@@ -487,9 +500,9 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{font-size:var(--textSize-test-css-variable);}');
+      expect(actual).toInclude('.test-class{font-size:var(--var-1mnmsc);}');
       expect(actual).toInclude('({ textSize, ...props }) =>');
-      expect(actual).toInclude('"--textSize-test-css-variable": textSize + "px"');
+      expect(actual).toInclude('"--var-1mnmsc": textSize + "px"');
     });
 
     it('should persist suffix of dynamic property value into inline styles', () => {
@@ -503,8 +516,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('"--fontSize-test-css-variable": props.fontSize + "px" }}');
-      expect(actual).toInclude('.test-class{font-size:var(--fontSize-test-css-variable);}');
+      expect(actual).toInclude('"--var-1dr62z0": props.fontSize + "px" }}');
+      expect(actual).toInclude('.test-class{font-size:var(--var-1dr62z0);}');
     });
 
     it('should transform object with simple values', () => {
@@ -590,8 +603,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.test-class{color:var(--color-test-css-variable);}');
-      expect(actual).toInclude('"--color-test-css-variable": props.color }}');
+      expect(actual).toInclude('.test-class{color:var(--var-kmurgp);}');
+      expect(actual).toInclude('"--var-kmurgp": props.color }}');
     });
 
     it('should transform object spread from variable', () => {

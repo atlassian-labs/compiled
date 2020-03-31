@@ -54,46 +54,40 @@ export const visitStyledComponent = (
     ? objectLiteralToCssString(dataToTransform, collectedDeclarations, context)
     : templateLiteralToCss(dataToTransform, collectedDeclarations, context);
 
-  const propsToDestructure = result.cssVariables
-    .map(({ expression }) => {
-      if (ts.isIdentifier(expression)) {
-        // referencing an identifier straight e.g. props.fontSize
-        const propName = getPropertyAccessName(expression.text);
-        if (!isPropValid(propName)) {
-          return propName;
-        }
-      } else if (ts.isBinaryExpression(expression)) {
-        // is an expression e.g. props.fontSize + 'px'
-        const propName = getPropertyAccessName(getIdentifierText(expression.left));
-        if (!isPropValid(propName)) {
-          // ok its not valid. we want to do two things:
-          // 1. rename identifier from props.fontSize to fontSize
-          expression.left = ts.createIdentifier(propName);
-          // 2. destructure fontSize from the props object
-          return propName;
-        }
-      } else if (ts.isTemplateExpression(expression)) {
-        // TODO: Handle multiple spans.
-        let propName = '';
+  const propsToDestructure: string[] = [];
+  const visitedCssVariables = result.cssVariables.map(cssVarObj => {
+    // Expression can be simple (props.color), complex (props.color ? 'blah': 'yeah', or be an IIFE)
+    // We need to traverse it to find uses of props.blah and then mark them.
+    // We make the assumption that everything accessing props will be "props.blah" because we are lazy.
+    // Will add proper behaviour in later! PRs welcome ;).
 
-        expression.templateSpans.forEach(span => {
-          if (ts.isPropertyAccessExpression(span.expression)) {
-            propName = span.expression.name.escapedText.toString();
-            span.expression = ts.createIdentifier(propName);
-          }
-        });
-
-        return propName;
+    const visitor = (node: ts.Node): ts.Node => {
+      if (
+        ts.isPropertyAccessExpression(node) &&
+        ts.isIdentifier(node.expression) &&
+        node.expression.text === 'props' &&
+        !isPropValid(node.name.text)
+      ) {
+        // We found a "props.foo" access with an invalid prop name.
+        // Let's re-write this node to remove the "props".
+        propsToDestructure.push(node.name.text);
+        return node.name;
       }
 
-      return undefined;
-    })
-    .filter(Boolean) as string[];
+      return ts.visitEachChild(node, visitor, context);
+    };
+
+    return {
+      expression: ts.visitNode(cssVarObj.expression, visitor),
+      name: cssVarObj.name,
+    };
+  });
 
   const newElement = createJsxElement(
     tagName,
     {
-      ...result,
+      css: result.css,
+      cssVariables: visitedCssVariables,
       originalNode: node,
       context,
       styleFactory: props => [
