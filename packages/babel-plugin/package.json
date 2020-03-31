@@ -1,7 +1,7 @@
 {
   "name": "@compiled/babel-plugin",
   "version": "0.0.14",
-  "description": "Typescript first CSS in JS library that compiles away to nothing. 🔧🚧",
+  "description": "The CSS in JS authoring experience you love without the runtime cost",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
   "main": "./dist/index.js",

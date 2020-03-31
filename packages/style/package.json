@@ -1,7 +1,7 @@
 {
   "name": "@compiled/style",
   "version": "0.0.14",
-  "description": "An experimental TypeScript first CSS in JS library 🔧🚧",
+  "description": "The CSS in JS authoring experience you love without the runtime cost",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
   "main": "./dist/index.js",
