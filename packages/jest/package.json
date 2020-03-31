@@ -1,6 +1,6 @@
 {
   "name": "@compiled/jest-css-in-js",
-  "version": "0.0.14",
+  "version": "0.1.0",
   "description": "The CSS in JS authoring experience you love without the runtime cost",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
