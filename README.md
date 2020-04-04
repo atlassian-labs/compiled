@@ -106,7 +106,7 @@ npm i parcel-plugin-ttypescript --save-dev
 ### `css` prop
 
 ```jsx
-import '@compiled/css-in-js/jsx';
+import '@compiled/css-in-js';
 
 <div css={{ fontSize: 12 }} />;
 ```

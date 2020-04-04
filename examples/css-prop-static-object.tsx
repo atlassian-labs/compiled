@@ -1,5 +1,5 @@
 import React from 'react';
-import '@compiled/css-in-js/jsx';
+import '@compiled/css-in-js';
 import { hover } from './mixins/mixins';
 
 const inlineMixinFunc = () => ({

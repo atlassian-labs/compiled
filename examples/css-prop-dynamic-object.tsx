@@ -1,5 +1,5 @@
 import React from 'react';
-import '@compiled/css-in-js/jsx';
+import '@compiled/css-in-js';
 import { useState } from 'react';
 
 export default {

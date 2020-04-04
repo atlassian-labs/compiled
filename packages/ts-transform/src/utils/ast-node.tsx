@@ -47,18 +47,24 @@ export const getJsxNodeAttributesValue = (
   return attribute?.initializer ? attribute.initializer : undefined;
 };
 
-export const isPackageModuleImport = (statement: ts.Node, namedImport: string): boolean => {
-  if (
-    !ts.isImportDeclaration(statement) ||
-    !ts.isStringLiteral(statement.moduleSpecifier) ||
-    !statement.importClause?.namedBindings ||
-    !ts.isNamedImports(statement.importClause?.namedBindings)
-  ) {
+export const isPackageModuleImport = (statement: ts.Node, namedImport?: string): boolean => {
+  if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) {
     return false;
   }
 
-  const isLibraryImport = statement.moduleSpecifier.text === '@compiled/css-in-js';
+  const isLibraryImport = statement.moduleSpecifier.text.startsWith('@compiled/css-in-js');
   if (!isLibraryImport) {
+    return false;
+  }
+
+  if (namedImport === undefined) {
+    return true;
+  }
+
+  if (
+    !statement.importClause?.namedBindings ||
+    !ts.isNamedImports(statement.importClause?.namedBindings)
+  ) {
     return false;
   }
 

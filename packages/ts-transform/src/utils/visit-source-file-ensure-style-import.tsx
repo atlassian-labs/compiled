@@ -6,7 +6,10 @@ const STYLE_IMPORT = 'Style';
 
 export const visitSourceFileEnsureStyleImport = (
   sourceFile: ts.SourceFile,
-  context: ts.TransformationContext
+  context: ts.TransformationContext,
+  opts: {
+    removeNamedImport?: string;
+  } = {}
 ): ts.SourceFile => {
   const visitor = (node: ts.Node): ts.Node => {
     if (
@@ -24,26 +27,27 @@ export const visitSourceFileEnsureStyleImport = (
         node.importClause.namedBindings &&
         ts.isNamedImports(node.importClause.namedBindings)
       ) {
-        namedImports = Array.from(node.importClause.namedBindings.elements);
+        namedImports = Array.from(node.importClause.namedBindings.elements).filter(imp => {
+          if (opts.removeNamedImport) {
+            return imp.name.text !== opts.removeNamedImport;
+          }
+
+          return true;
+        });
       }
 
-      if (namedImports.some(val => val.name.text === STYLE_IMPORT)) {
-        // Import already exists - return early
-        return node;
+      if (!namedImports.some(val => val.name.text === STYLE_IMPORT)) {
+        // Import already exists
+        namedImports = [
+          ts.createImportSpecifier(undefined, ts.createIdentifier(STYLE_IMPORT)),
+        ].concat(namedImports);
       }
 
       return ts.updateImportDeclaration(
         node,
         /* decorators */ undefined,
         /* modifiers */ undefined,
-        ts.createImportClause(
-          defaultImport,
-          ts.createNamedImports(
-            [ts.createImportSpecifier(undefined, ts.createIdentifier(STYLE_IMPORT))].concat(
-              namedImports
-            )
-          )
-        ),
+        ts.createImportClause(defaultImport, ts.createNamedImports(namedImports)),
         node.moduleSpecifier
       );
     }

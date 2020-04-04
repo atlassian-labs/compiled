@@ -1,4 +1,4 @@
-import '@compiled/css-in-js/jsx';
+import '@compiled/css-in-js';
 import React from 'react';
 import { render } from '@testing-library/react';
 
