@@ -1,8 +1,32 @@
-# @compiled/css-in-js
+# [👷‍♀ ‍Compiled](https://compiledcssinjs.com/)
 
 The CSS in JS authoring experience you love without the runtime cost.
+[Get started now ➡️](https://compiledcssinjs.com/docs)
 
 ## Installation
+
+```bash
+npm i @compiled/css-in-js
+```
+
+### Babel
+
+<details>
+  <summary>Click to expand...</summary>
+
+```
+npm i @compiled/babel-plugin-css-in-js
+```
+
+Then add the plugin to your [Babel config](https://babeljs.io/docs/en/config-files):
+
+```
+{
+  "plugins": ["@compiled/babel-plugin-css-in-js"]
+}
+```
+
+</details>
 
 ### TypeScript compiler
 
@@ -16,10 +40,7 @@ or the default Parcel configuration with TypeScript.
 We use TypeScript transformers to control the transformation -
 strong suggestion to [read the handbook](https://github.com/madou/typescript-transformer-handbook) for getting started with them.
 
-Install `compiled` and `ttypescript`:
-
 ```sh
-npm i @compiled/css-in-js
 npm i @compiled/ts-transform-css-in-js
 npm i ttypescript
 ```
@@ -80,26 +101,6 @@ npm i parcel-plugin-ttypescript --save-dev
 
 </details>
 
-### Babel
-
-<details>
-  <summary>Click to expand...</summary>
-
-```
-npm i @compiled/css-in-js
-npm i @compiled/babel-plugin-css-in-js
-```
-
-Then add the plugin to your [Babel config](https://babeljs.io/docs/en/config-files):
-
-```
-{
-  "plugins": ["@compiled/babel-plugin-css-in-js"]
-}
-```
-
-</details>
-
 ## Usage
 
 ### `css` prop
@@ -109,16 +110,6 @@ Then add the plugin to your [Babel config](https://babeljs.io/docs/en/config-fil
 import { jsx } from '@compiled/css-in-js';
 
 <div css={{ fontSize: 12 }} />;
-```
-
-```jsx
-import React from 'react';
-import { Style, jsx } from '@compiled/css-in-js';
-
-<>
-  <Style hash="css-1iqe21w">{['.css-1iqe21w{font-size:12px;}']}</Style>
-  <div className="css-1iqe21w" />
-</>;
 ```
 
 ### `styled` component
@@ -131,20 +122,6 @@ styled.div`
 `;
 ```
 
-```jsx
-import React from 'react';
-import { Style, styled } from '@compiled/css-in-js';
-
-props => (
-  <>
-    <Style hash="css-1x3e11p">{['.css-1x3e11p{font-size:12px;}']}</Style>
-    <div
-      {...props}
-      className={'css-1x3e11p' + (props.className ? ' ' + props.className : '')}></div>
-  </>
-);
-```
-
 ### `ClassNames` component
 
 ```jsx
@@ -152,14 +129,4 @@ import React from 'react';
 import { ClassNames } from '@compiled/css-in-js';
 
 <ClassNames>{({ css }) => <div className={css({ fontSize: 12 })} />}</ClassNames>;
-```
-
-```jsx
-import React from 'react';
-import { Style, ClassNames } from '@compiled/css-in-js';
-
-<>
-  <Style hash="css-2lhdif">{['.css-1iqe21w{font-size:12px;}']}</Style>
-  <div className={'css-1iqe21w'} />
-</>;
 ```
