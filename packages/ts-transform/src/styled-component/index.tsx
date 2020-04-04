@@ -44,18 +44,13 @@ export default function styledComponentTransformer(
       }
 
       const transformedSourceFile = visitSourceFileEnsureDefaultReactImport(
-        visitSourceFileEnsureStyleImport(sourceFile, context),
+        visitSourceFileEnsureStyleImport(sourceFile, context, { removeNamedImport: STYLED_NAME }),
         context
       );
       const collectedDeclarations: Declarations = {};
 
       const visitor = (node: ts.Node): ts.Node => {
         collectDeclarationsFromNode(node, program, collectedDeclarations);
-
-        // TODO: Remove STYLED_NAME import instead of removing entire thing.
-        // if (isPackageModuleImport(node, STYLED_NAME)) {
-        //   return ts.createEmptyStatement();
-        // }
 
         if (isStyledComponent(node)) {
           return visitStyledComponent(node, context, collectedDeclarations);

@@ -10,22 +10,13 @@ import { visitSourceFileEnsureStyleImport } from '../utils/visit-source-file-ens
 import { isPackageModuleImport } from '../utils/ast-node';
 import { collectDeclarationsFromNode } from '../utils/collect-declarations';
 
-const JSX_PRAGMA = 'jsx';
-
 const isJsxPragmaFoundWithOurJsxFunction = (sourceFile: ts.SourceFile) => {
   return (
-    // __HACK_ALERT__!! This isn't in the TS types. Is this bad?
-    (sourceFile as any).pragmas.get(JSX_PRAGMA) &&
     // Only continue if we've found an import for this pkg.
     sourceFile.statements.find(statement => {
-      return isPackageModuleImport(statement, JSX_PRAGMA);
+      return isPackageModuleImport(statement);
     })
   );
-};
-
-const resetJsxPragma = (sourceFile: ts.SourceFile) => {
-  ((sourceFile as any).pragmas as Map<any, any>).clear();
-  delete (sourceFile as any).localJsxFactory;
 };
 
 export default function cssPropTransformer(
@@ -37,8 +28,6 @@ export default function cssPropTransformer(
         // nothing to do - return source file and nothing will be transformed.
         return sourceFile;
       }
-
-      resetJsxPragma(sourceFile);
 
       const collectedDeclarations: Declarations = {};
       logger.log('found file with jsx pragma');

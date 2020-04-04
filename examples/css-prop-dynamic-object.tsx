@@ -1,5 +1,5 @@
-/** @jsx jsx */
-import { jsx } from '@compiled/css-in-js';
+import React from 'react';
+import '@compiled/css-in-js';
 import { useState } from 'react';
 
 export default {

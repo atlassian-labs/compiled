@@ -8,6 +8,19 @@ const stubProgam: ts.Program = ({
   }),
 } as never) as ts.Program;
 
+const createTsConfig = (
+  transformer: ts.TransformerFactory<ts.SourceFile>,
+  overrides: ts.CompilerOptions = {}
+): ts.TranspileOptions => ({
+  transformers: { before: [transformer] },
+  compilerOptions: {
+    module: ts.ModuleKind.ES2015,
+    jsx: ts.JsxEmit.Preserve,
+    target: ts.ScriptTarget.ESNext,
+    ...overrides,
+  },
+});
+
 describe('root transformer', () => {
   it('should not blow up when transforming with const', () => {
     const transformer = rootTransformer(stubProgam, {});
@@ -15,14 +28,11 @@ describe('root transformer', () => {
     expect(() => {
       ts.transpileModule(
         `
-          /** @jsx jsx */
-          import { jsx } from '@compiled/css-in-js';
+          import '@compiled/css-in-js';
+          import React from 'react';
           const MyComponent = () => <div css={{ fontSize: '20px' }}>hello world</div>
         `,
-        {
-          transformers: { before: [transformer] },
-          compilerOptions: { module: ts.ModuleKind.ESNext, jsx: ts.JsxEmit.React },
-        }
+        createTsConfig(transformer)
       );
     }).not.toThrow();
   });
@@ -33,14 +43,11 @@ describe('root transformer', () => {
     expect(() => {
       ts.transpileModule(
         `
-          /** @jsx jsx */
-          import { jsx } from '@compiled/css-in-js';
+          import '@compiled/css-in-js';
+          import React from 'react';
           var MyComponent = () => <div css={{ fontSize: '20px' }}>hello world</div>
         `,
-        {
-          transformers: { before: [transformer] },
-          compilerOptions: { module: ts.ModuleKind.ESNext, jsx: ts.JsxEmit.React },
-        }
+        createTsConfig(transformer)
       );
     }).not.toThrow();
   });
@@ -49,7 +56,7 @@ describe('root transformer', () => {
     const transformer = new Transformer()
       .addTransformer(rootTransformer)
       .setFilePath('/index.tsx')
-      .addMock({ name: '@compiled/css-in-js', content: `export const jsx: any = () => null` })
+      .addMock({ name: 'react', content: `export default null;` })
       .addSource({
         path: '/mixins.ts',
         contents: "export const mixin = { color: 'blue' };",
@@ -57,8 +64,8 @@ describe('root transformer', () => {
 
     expect(() => {
       transformer.transform(`
-        /** @jsx jsx */
-        import { jsx } from '@compiled/css-in-js';
+        import '@compiled/css-in-js';
+        import React from 'react';
         import { mixin } from './mixins';
 
         <div css={{ ':hover': mixin }}>hello</div>
@@ -71,23 +78,15 @@ describe('root transformer', () => {
 
     const actual = ts.transpileModule(
       `
-        /** @jsx jsx */
-        import { jsx, styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/css-in-js';
 
         const StyledDiv = styled.div({});
         <div css={{ fontSize: '20px' }}>hello world</div>
       `,
-      {
-        transformers: { before: [transformer] },
-        compilerOptions: {
-          module: ts.ModuleKind.ES2015,
-          esModuleInterop: true,
-          jsx: ts.JsxEmit.React,
-        },
-      }
+      createTsConfig(transformer)
     );
 
-    expect(actual.outputText).toInclude("import { Style, jsx, styled } from '@compiled/css-in-js'");
+    expect(actual.outputText).toInclude("import { Style } from '@compiled/css-in-js'");
   });
 
   xit('should match react import when transforming to common js', () => {
@@ -95,22 +94,95 @@ describe('root transformer', () => {
 
     const actual = ts.transpileModule(
       `
-        /** @jsx jsx */
-        import { jsx } from '@compiled/css-in-js';
+        import '@compiled/css-in-js';
+        import React from 'react';
         <div css={{ fontSize: '20px' }}>hello world</div>
       `,
-      {
-        transformers: { before: [transformer] },
-        compilerOptions: {
-          module: ts.ModuleKind.CommonJS,
-          esModuleInterop: true,
-          jsx: ts.JsxEmit.React,
-        },
-      }
+      createTsConfig(transformer, { module: ts.ModuleKind.CommonJS })
     );
 
     expect(actual.outputText).toInclude('var react_1 = __importDefault(require("react"));');
     expect(actual.outputText).toInclude('react_1.createElement');
     expect(actual.outputText).not.toInclude('React.createElement');
+  });
+
+  it('should not change code where there is no compiled components', () => {
+    const transformer = rootTransformer(stubProgam, {});
+
+    const actual = ts.transpileModule(
+      `
+      const one = 1;
+    `,
+      createTsConfig(transformer)
+    );
+
+    expect(actual.outputText).toMatchInlineSnapshot(`
+      "const one = 1;
+      "
+    `);
+  });
+
+  it('should transform a styled component', () => {
+    const transformer = rootTransformer(stubProgam, {});
+
+    const actual = ts.transpileModule(
+      `
+      import { styled } from '@compiled/css-in-js';
+
+      styled.div\`
+        font-size: 12px;
+      \`;
+    `,
+      createTsConfig(transformer)
+    );
+
+    expect(actual.outputText).toMatchInlineSnapshot(`
+      "import React from \\"react\\";
+      import { Style } from '@compiled/css-in-js';
+      props => <><Style hash=\\"css-1x3e11p\\">{[\\".css-1x3e11p{font-size:12px;}\\"]}</Style><div {...props} className={\\"css-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}></div></>;
+      "
+    `);
+  });
+
+  it('should transform css prop', () => {
+    const transformer = rootTransformer(stubProgam, {});
+
+    const actual = ts.transpileModule(
+      `
+      import '@compiled/css-in-js';
+
+      <div css={{ fontSize: 12 }} />
+    `,
+      createTsConfig(transformer)
+    );
+
+    expect(actual.outputText).toMatchInlineSnapshot(`
+      "import React from \\"react\\";
+      import { Style } from '@compiled/css-in-js';
+      <><Style hash=\\"css-1iqe21w\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"css-1iqe21w\\"/></>;
+      "
+    `);
+  });
+
+  it('should transform classnames component', () => {
+    const transformer = rootTransformer(stubProgam, {});
+
+    const actual = ts.transpileModule(
+      `
+      import { ClassNames } from '@compiled/css-in-js';
+
+      <ClassNames>
+        {({ css }) => <div className={css({ fontSize: 12 })} />}
+      </ClassNames>
+    `,
+      createTsConfig(transformer)
+    );
+
+    expect(actual.outputText).toMatchInlineSnapshot(`
+      "import React from \\"react\\";
+      import { Style } from '@compiled/css-in-js';
+      <><Style hash=\\"css-2lhdif\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className={\\"css-1iqe21w\\"}/></>;
+      "
+    `);
   });
 });

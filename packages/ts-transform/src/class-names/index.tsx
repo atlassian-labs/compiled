@@ -28,16 +28,13 @@ export default function classNamesTransformer(
         return sourceFile;
       }
 
-      const transformedSourceFile = visitSourceFileEnsureStyleImport(sourceFile, context);
+      const transformedSourceFile = visitSourceFileEnsureStyleImport(sourceFile, context, {
+        removeNamedImport: CLASS_NAMES_NAME,
+      });
       const collectedDeclarations: Declarations = {};
 
       const visitor = (node: ts.Node): ts.Node => {
         collectDeclarationsFromNode(node, program, collectedDeclarations);
-
-        // TODO: Remove CLASS_NAMES_NAME import instead of entire statement.
-        // if (isPackageModuleImport(node, CLASS_NAMES_NAME)) {
-        //   return ts.createEmptyStatement();
-        // }
 
         if (isClassNameComponent(node)) {
           return visitClassNamesJsxElement(node, context, collectedDeclarations);

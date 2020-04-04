@@ -33,7 +33,7 @@ describe('babel plugin', () => {
 
     expect(output?.code).toMatchInlineSnapshot(`
       "import React from \\"react\\";
-      import { Style, styled } from '@compiled/css-in-js';
+      import { Style } from '@compiled/css-in-js';
 
       props => <><Style hash=\\"css-1x3e11p\\">{[\\".css-1x3e11p{font-size:12px;}\\"]}</Style><div {...props} className={\\"css-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}></div></>;"
     `);
@@ -42,8 +42,8 @@ describe('babel plugin', () => {
   it('should transform css prop', () => {
     const output = transformSync(
       `
-      /** @jsx jsx */
-      import { jsx } from '@compiled/css-in-js';
+      import React from 'react';
+      import '@compiled/css-in-js';
 
       <div css={{ fontSize: 12 }} />
     `,
@@ -51,10 +51,8 @@ describe('babel plugin', () => {
     );
 
     expect(output?.code).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
-      /** @jsx jsx */
-
-      import { Style, jsx } from '@compiled/css-in-js';
+      "import React from 'react';
+      import { Style } from '@compiled/css-in-js';
       <><Style hash=\\"css-1iqe21w\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"css-1iqe21w\\" /></>;"
     `);
   });
@@ -72,7 +70,8 @@ describe('babel plugin', () => {
     );
 
     expect(output?.code).toMatchInlineSnapshot(`
-      "import { Style, ClassNames } from '@compiled/css-in-js';
+      "import React from \\"react\\";
+      import { Style } from '@compiled/css-in-js';
       <><Style hash=\\"css-2lhdif\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className={\\"css-1iqe21w\\"} /></>;"
     `);
   });
