@@ -42,8 +42,8 @@ describe('babel plugin', () => {
   it('should transform css prop', () => {
     const output = transformSync(
       `
-      /** @jsx jsx */
-      import { jsx } from '@compiled/css-in-js';
+      import '@compiled/css-in-js/jsx';
+      import React from 'react';
 
       <div css={{ fontSize: 12 }} />
     `,
@@ -52,9 +52,9 @@ describe('babel plugin', () => {
 
     expect(output?.code).toMatchInlineSnapshot(`
       "import React from \\"react\\";
-      /** @jsx jsx */
+      import '@compiled/css-in-js/jsx';
 
-      import { Style, jsx } from '@compiled/css-in-js';
+      import { Style } from '@compiled/css-in-js';
       <><Style hash=\\"css-1iqe21w\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"css-1iqe21w\\" /></>;"
     `);
   });

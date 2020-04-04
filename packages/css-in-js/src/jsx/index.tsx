@@ -1,21 +1,20 @@
-import { ElementType, ReactNode } from 'react';
-import { CSSProp } from './types';
+import { CSSProperties } from 'react';
 import { createSetupError } from '../utils/error';
+
+export type CSS = CSSProperties;
 
 declare module 'react' {
   interface DOMAttributes<T> {
-    css?: CSSProp | { [key: string]: CSSProp } | string;
+    css?: CSS | { [key: string]: CSS } | string;
   }
 }
 
 declare global {
   namespace JSX {
     interface IntrinsicAttributes {
-      css?: CSSProp;
+      css?: CSSProperties;
     }
   }
 }
 
-export function jsx<P extends {}>(_: ElementType<P>, __: P, ...___: ReactNode[]) {
-  throw createSetupError();
-}
+throw createSetupError();

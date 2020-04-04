@@ -1,36 +1,19 @@
 export const createSetupError = () => {
-  return `
-@compiled/css-in-js
+  return new Error(`
+ ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
+██╔════╝██╔═══██╗████╗ ████║██╔══██╗██║██║     ██╔════╝██╔══██╗
+██║     ██║   ██║██╔████╔██║██████╔╝██║██║     █████╗  ██║  ██║
+██║     ██║   ██║██║╚██╔╝██║██╔═══╝ ██║██║     ██╔══╝  ██║  ██║
+╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║███████╗███████╗██████╔╝
+  ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═════╝
 
-You need to apply the compiled css in js Typescript transformer to use this!
-Unsure what a Typescript transformer is? Read the handbook!
-https://github.com/madou/typescript-transformer-handbook
+  @compiled/css-in-js
 
-Quick setup:
+  Runtime code was executed when it shouldn't have. This could have happened because:
 
-1. Install ttypescript:
+  1. You haven't configured a transformer yet. Visit https://compiledcssinjs.com/docs and follow the instructions.
+  2. You have duplicate versions of React and hooks are blowing up. You need to de-duplicate your dependencies.
 
-  <code>npm i ttypescript</code>
-
-2. Add the transformer to your tsconfig.json:
-
-  <code>
-    {
-      "compilerOptions": {
-        "plugins": [{ "transform": "@compiled/css-in-js/dist/ts-transformer" }]
-      }
-    }
-  </code>
-
-3. Build your code with ttypescript:
-
-  - Using tsc CLI? Run ttsc instead of tsc
-  - Using Webpack? Update ts-loader options to point to ttypescript:
-    <code>
-      options: {
-        compiler: 'ttypescript',
-      }
-    </code>
-  - Using Parcel? Just install the plugin <code>npm i parcel-plugin-ttypescript</code>
-`;
+  Good luck!
+`);
 };

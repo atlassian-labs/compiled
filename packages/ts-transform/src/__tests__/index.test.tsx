@@ -15,8 +15,8 @@ describe('root transformer', () => {
     expect(() => {
       ts.transpileModule(
         `
-          /** @jsx jsx */
-          import { jsx } from '@compiled/css-in-js';
+          import '@compiled/css-in-js/jsx';
+          import React from 'react';
           const MyComponent = () => <div css={{ fontSize: '20px' }}>hello world</div>
         `,
         {
@@ -33,8 +33,8 @@ describe('root transformer', () => {
     expect(() => {
       ts.transpileModule(
         `
-          /** @jsx jsx */
-          import { jsx } from '@compiled/css-in-js';
+          import '@compiled/css-in-js/jsx';
+          import React from 'react';
           var MyComponent = () => <div css={{ fontSize: '20px' }}>hello world</div>
         `,
         {
@@ -57,8 +57,8 @@ describe('root transformer', () => {
 
     expect(() => {
       transformer.transform(`
-        /** @jsx jsx */
-        import { jsx } from '@compiled/css-in-js';
+        import '@compiled/css-in-js/jsx';
+        import React from 'react';
         import { mixin } from './mixins';
 
         <div css={{ ':hover': mixin }}>hello</div>
@@ -71,7 +71,7 @@ describe('root transformer', () => {
 
     const actual = ts.transpileModule(
       `
-        /** @jsx jsx */
+        import '@compiled/css-in-js/jsx';
         import { jsx, styled } from '@compiled/css-in-js';
 
         const StyledDiv = styled.div({});
@@ -95,8 +95,8 @@ describe('root transformer', () => {
 
     const actual = ts.transpileModule(
       `
-        /** @jsx jsx */
-        import { jsx } from '@compiled/css-in-js';
+        import '@compiled/css-in-js/jsx';
+        import React from 'react';
         <div css={{ fontSize: '20px' }}>hello world</div>
       `,
       {
