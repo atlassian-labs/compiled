@@ -129,3 +129,43 @@ import { ClassNames } from '@compiled/css-in-js';
 
 <ClassNames>{({ css }) => <div className={css({ fontSize: 12 })} />}</ClassNames>;
 ```
+
+## Local development
+
+Compiled is a monorepo - where we deliver multiple small packages instead of one big package.
+You'll find them in the `packages` folder.
+Want to make changes to the website?
+[You'll find it here](https://github.com/compiled/website).
+
+### Packages of note
+
+- `css-in-js` - entrypoint for consumers of Compiled - has a small amount of runtime code that blows up without the transformer enabled
+- `ts-transform` - main bulk of Compiled's code - it transforms consumer code into Compiled components
+- `babel-plugin` - thin wrapper around `ts-transform` to enable Babel environments to consume Compiled
+- `jest` - jest matcher to make testing Compiled css easier
+- `style` - small component to reconcile moving styles to the head of the document at runtime
+
+### Tests
+
+We use Jest for tests.
+Find the folder you want to make changes to,
+and run that subset of tests.
+For example:
+
+```bash
+yarn test packages/ts-transform/src/css-prop --watch
+```
+
+### Storybook
+
+```bash
+yarn start
+```
+
+# Contributing
+
+Thank you for considering a contribution to Compiled!
+Before doing so,
+please make sure to read our [contribution guidelines](/CONTRIBUTING.md).
+
+![Atlassian](https://raw.githubusercontent.com/atlassian-internal/oss-assets/master/banner-cheers-light.png)
