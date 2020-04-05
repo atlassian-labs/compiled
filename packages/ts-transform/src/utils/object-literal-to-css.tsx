@@ -199,6 +199,19 @@ export const objectLiteralToCssString = (
           name: cssVarName,
         });
       }
+    } else if (
+      ts.isPropertyAssignment(prop) &&
+      (ts.isExpressionStatement(prop.initializer) ||
+        ts.isConditionalExpression(prop.initializer) ||
+        ts.isBinaryExpression(prop.initializer))
+    ) {
+      const cssVarName = cssVariableHash(prop.initializer);
+      key = kebabCase(getIdentifierText(prop.name));
+      value = `var(${cssVarName})`;
+      cssVariables.push({
+        expression: prop.initializer,
+        name: cssVarName,
+      });
     } else {
       logger.log('unsupported value found in css object');
       key = prop.name ? kebabCase(getIdentifierText(prop.name)) : 'UNSUPPORTED_PROPERTY_FOUND';

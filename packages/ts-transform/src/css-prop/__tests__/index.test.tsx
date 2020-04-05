@@ -107,6 +107,45 @@ describe('css prop transformer', () => {
     expect(actual).toInclude('className={"css-test" + " " + getFoo()}');
   });
 
+  it('should allow inlined expressions as property values', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+
+      const hello = true;
+
+      <div css={{ color: hello ? 'red' : 'blue' }}>hello world</div>
+    `);
+
+    expect(actual).toInclude('color:var(--var-test)');
+    expect(actual).toInclude(`style={{ "--var-test": hello ? 'red' : 'blue' }}`);
+  });
+
+  it('should allow expressions stored in a variable as shorthand property values', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+
+      const hello = true;
+      const color = hello ? 'red' : 'blue' ;
+      <div css={{ color }}>hello world</div>
+    `);
+
+    expect(actual).toInclude('color:var(--var-test)');
+    expect(actual).toInclude(`style={{ "--var-test": color }}`);
+  });
+
+  it('should allow expressions stored in a variable as property values', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+
+      const hello = true;
+      const colorsz = hello ? 'red' : 'blue' ;
+      <div css={{ color: colorsz }}>hello world</div>
+    `);
+
+    expect(actual).toInclude('color:var(--var-test)');
+    expect(actual).toInclude(`style={{ "--var-test": colorsz }}`);
+  });
+
   it('should concat use of inline styles when there is use of dynamic css', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
