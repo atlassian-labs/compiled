@@ -39,6 +39,45 @@ describe('class names transformer', () => {
     expect(actual).not.toInclude(`import { ClassNames } from "@compiled/css-in-js";`);
   });
 
+  it('should set children as function into a jsx expression', () => {
+    const actual = transformer.transform(`
+    import { ClassNames } from '@compiled/css-in-js';
+
+    const ZoomOnHover = ({ children }) => (
+      <ClassNames>
+        {({ css }) =>
+          children({
+            className: css({
+              transition: 'transform 2000ms',
+              ':hover': {
+                transform: 'scale(2)',
+              },
+            }),
+          })
+        }
+      </ClassNames>
+    );
+  `);
+
+    expect(actual).toInclude(`{children({
+    className: "css-test",
+})}`);
+  });
+
+  it('should place self closing jsx element as a child', () => {
+    const actual = transformer.transform(`
+    import { ClassNames } from '@compiled/css-in-js';
+
+    const ZoomOnHover = ({ children }) => (
+      <ClassNames>
+        {({ css }) => <div className={css({ fontSize: 12 })} />}
+      </ClassNames>
+    );
+  `);
+
+    expect(actual).toInclude(`</Style><div className={\"css-test\"}/></>`);
+  });
+
   describe('using a string literal', () => {
     it('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transformer.transform(`

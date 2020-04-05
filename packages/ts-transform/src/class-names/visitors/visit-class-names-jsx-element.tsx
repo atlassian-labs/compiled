@@ -114,7 +114,10 @@ export const visitClassNamesJsxElement = (
     css,
     cssVariables,
     originalNode: classNamesNode,
-    children: children as any,
+    children:
+      ts.isJsxElement(children) || ts.isJsxSelfClosingElement(children)
+        ? children
+        : ts.createJsxExpression(undefined, children as any),
     context,
   });
 };
