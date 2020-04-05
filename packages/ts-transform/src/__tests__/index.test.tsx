@@ -95,10 +95,9 @@ describe('root transformer', () => {
     const actual = ts.transpileModule(
       `
         import '@compiled/css-in-js';
-        import React from 'react';
         <div css={{ fontSize: '20px' }}>hello world</div>
       `,
-      createTsConfig(transformer, { module: ts.ModuleKind.CommonJS })
+      createTsConfig(transformer, { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.React })
     );
 
     expect(actual.outputText).toInclude('var react_1 = __importDefault(require("react"));');
