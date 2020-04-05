@@ -89,7 +89,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toInclude("import { Style } from '@compiled/css-in-js'");
   });
 
-  xit('should match react import when transforming to common js', () => {
+  it('should match react import when transforming to common js css prop', () => {
     const transformer = rootTransformer(stubProgam, {});
 
     const actual = ts.transpileModule(
@@ -100,9 +100,66 @@ describe('root transformer', () => {
       createTsConfig(transformer, { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.React })
     );
 
-    expect(actual.outputText).toInclude('var react_1 = __importDefault(require("react"));');
-    expect(actual.outputText).toInclude('react_1.createElement');
-    expect(actual.outputText).not.toInclude('React.createElement');
+    expect(actual.outputText).toMatchInlineSnapshot(`
+      "\\"use strict\\";
+      Object.defineProperty(exports, \\"__esModule\\", { value: true });
+      const react_1 = require(\\"react\\");
+      const css_in_js_1 = require(\\"@compiled/css-in-js\\");
+      react_1.createElement(react_1.Fragment, null,
+          react_1.createElement(css_in_js_1.Style, { hash: 'css-1b1wq3m' }, [\\".css-1b1wq3m{font-size:20px;}\\"]),
+          react_1.createElement(\\"div\\", { className: 'css-1b1wq3m' }, \\"hello world\\"));
+      "
+    `);
+  });
+
+  it('should match react import when transforming to common js styled', () => {
+    const transformer = rootTransformer(stubProgam, {});
+
+    const actual = ts.transpileModule(
+      `
+        import { styled } from '@compiled/css-in-js';
+        styled.div\`
+          font-size: 10px;
+        \`;
+      `,
+      createTsConfig(transformer, { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.React })
+    );
+
+    expect(actual.outputText).toMatchInlineSnapshot(`
+      "\\"use strict\\";
+      Object.defineProperty(exports, \\"__esModule\\", { value: true });
+      const react_1 = require(\\"react\\");
+      const css_in_js_1 = require(\\"@compiled/css-in-js\\");
+      props => react_1.createElement(react_1.Fragment, null,
+          react_1.createElement(css_in_js_1.Style, { hash: 'css-hftghj' }, [\\".css-hftghj{font-size:10px;}\\"]),
+          react_1.createElement(\\"div\\", Object.assign({}, props, { className: \\"css-hftghj\\" + (props.className ? \\" \\" + props.className : \\"\\") })));
+      "
+    `);
+  });
+
+  it('should match react import when transforming to common js classnames', () => {
+    const transformer = rootTransformer(stubProgam, {});
+
+    const actual = ts.transpileModule(
+      `
+        import { ClassNames } from '@compiled/css-in-js';
+        <ClassNames>{({ css }) => <div css={{ fontSize: 12 }} />}</ClassNames>
+      `,
+      createTsConfig(transformer, { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.React })
+    );
+
+    expect(actual.outputText).toMatchInlineSnapshot(`
+      "\\"use strict\\";
+      Object.defineProperty(exports, \\"__esModule\\", { value: true });
+      const react_1 = require(\\"react\\");
+      const css_in_js_1 = require(\\"@compiled/css-in-js\\");
+      react_1.createElement(react_1.Fragment, null,
+          react_1.createElement(css_in_js_1.Style, { hash: 'css-0' }, []),
+          react_1.createElement(react_1.Fragment, null,
+              react_1.createElement(css_in_js_1.Style, { hash: 'css-1iqe21w' }, [\\".css-1iqe21w{font-size:12px;}\\"]),
+              react_1.createElement(\\"div\\", { className: 'css-1iqe21w' })));
+      "
+    `);
   });
 
   it('should not change code where there is no compiled components', () => {
@@ -138,7 +195,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
-      props => <><Style hash=\\"css-1x3e11p\\">{[\\".css-1x3e11p{font-size:12px;}\\"]}</Style><div {...props} className={\\"css-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}></div></>;
+      props => <React.Fragment><Style hash=\\"css-1x3e11p\\">{[\\".css-1x3e11p{font-size:12px;}\\"]}</Style><div {...props} className={\\"css-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}></div></React.Fragment>;
       "
     `);
   });
@@ -158,7 +215,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
-      <><Style hash=\\"css-1iqe21w\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"css-1iqe21w\\"/></>;
+      <React.Fragment><Style hash=\\"css-1iqe21w\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"css-1iqe21w\\"/></React.Fragment>;
       "
     `);
   });
@@ -180,7 +237,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
-      <><Style hash=\\"css-2lhdif\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className={\\"css-1iqe21w\\"}/></>;
+      <React.Fragment><Style hash=\\"css-2lhdif\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className={\\"css-1iqe21w\\"}/></React.Fragment>;
       "
     `);
   });

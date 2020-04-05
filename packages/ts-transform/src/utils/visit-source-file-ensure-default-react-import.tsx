@@ -13,6 +13,25 @@ const isReactImportFound = (sourceFile: ts.SourceFile) => {
   );
 };
 
+/**
+ * This is kind of a hack. We use it to set the pragma to what the output would have been if React
+ * was defined as the CommonJS import (in this case react_1). This is TypeScript doesn't link the JSX
+ * elements we create to the React import we define.
+ *
+ * We will need to update this when the new version of JSX comes through.
+ */
+const setPragmaBasedOnModule = (sourceFile: ts.SourceFile, context: ts.TransformationContext) => {
+  const isCommonJs = context.getCompilerOptions().module === ts.ModuleKind.CommonJS;
+  if (!isCommonJs) {
+    return;
+  }
+
+  // @ts-ignore
+  sourceFile.pragmas.set('jsx', {
+    arguments: { factory: 'react_1.createElement' },
+  });
+};
+
 export const visitSourceFileEnsureDefaultReactImport = (
   sourceFile: ts.SourceFile,
   context: ts.TransformationContext
@@ -29,6 +48,8 @@ export const visitSourceFileEnsureDefaultReactImport = (
       ),
       ...sourceFile.statements,
     ]);
+
+    setPragmaBasedOnModule(sourceFile, context);
 
     return newSourceFile;
   }

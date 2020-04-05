@@ -21,7 +21,7 @@ describe('class names transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = () => (<><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div className={"css-test"}>hello, world!</div></>)'
+      'const ListItem = () => (<React.Fragment><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div className={"css-test"}>hello, world!</div></React.Fragment>)'
     );
   });
 

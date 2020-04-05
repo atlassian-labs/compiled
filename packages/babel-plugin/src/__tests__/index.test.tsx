@@ -35,7 +35,7 @@ describe('babel plugin', () => {
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
 
-      props => <><Style hash=\\"css-1x3e11p\\">{[\\".css-1x3e11p{font-size:12px;}\\"]}</Style><div {...props} className={\\"css-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}></div></>;"
+      props => <React.Fragment><Style hash=\\"css-1x3e11p\\">{[\\".css-1x3e11p{font-size:12px;}\\"]}</Style><div {...props} className={\\"css-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}></div></React.Fragment>;"
     `);
   });
 
@@ -53,7 +53,7 @@ describe('babel plugin', () => {
     expect(output?.code).toMatchInlineSnapshot(`
       "import React from 'react';
       import { Style } from '@compiled/css-in-js';
-      <><Style hash=\\"css-1iqe21w\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"css-1iqe21w\\" /></>;"
+      <React.Fragment><Style hash=\\"css-1iqe21w\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"css-1iqe21w\\" /></React.Fragment>;"
     `);
   });
 
@@ -72,7 +72,7 @@ describe('babel plugin', () => {
     expect(output?.code).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
-      <><Style hash=\\"css-2lhdif\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className={\\"css-1iqe21w\\"} /></>;"
+      <React.Fragment><Style hash=\\"css-2lhdif\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className={\\"css-1iqe21w\\"} /></React.Fragment>;"
     `);
   });
 });

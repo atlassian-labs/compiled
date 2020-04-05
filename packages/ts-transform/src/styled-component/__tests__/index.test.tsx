@@ -22,7 +22,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = props => <><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div {...props} className={"css-test" + (props.className ? " " + props.className : "")}></div></>'
+      'const ListItem = props => <React.Fragment><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div {...props} className={"css-test" + (props.className ? " " + props.className : "")}></div></React.Fragment>'
     );
   });
 
@@ -72,7 +72,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = props => <><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div {...props} className={"css-test" + (props.className ? " " + props.className : "")}></div></>'
+      'const ListItem = props => <React.Fragment><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div {...props} className={"css-test" + (props.className ? " " + props.className : "")}></div></React.Fragment>'
     );
   });
 
