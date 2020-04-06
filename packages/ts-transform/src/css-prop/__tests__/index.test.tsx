@@ -233,6 +233,30 @@ describe('css prop transformer', () => {
       );
     });
 
+    it('should transform an expression', () => {
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+        import React from 'react';
+
+        const sidenav = true;
+        <div
+          css={\`
+            display: grid;
+            grid-template-areas: $\{
+              sidenav ? "'header header' 'sidebar content'" : "'header header' 'content content'"
+            };
+          \`}
+        >
+          hello world
+        </div>
+      `);
+
+      expect(actual).toInclude('grid-template-areas:var(--var-test);');
+      expect(actual).toInclude(
+        `\"--var-test\": sidenav ? \"'header header' 'sidebar content'\" : \"'header header' 'content content'\"`
+      );
+    });
+
     it('should transform template string literal with obj variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
