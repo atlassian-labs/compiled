@@ -477,6 +477,19 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('.css-test{font-size:12px;}');
     });
 
+    it('should reference property access expression', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+        const color = { blue: 'red' };
+
+        styled.div({
+          background: color.blue,
+        });
+      `);
+
+      expect(actual).toInclude('"--var-test": color.blue');
+    });
+
     it('should not pass down invalid html attributes to the node when property has a suffix', () => {
       const actual = transformer.transform(`
         import { styled } from '@compiled/css-in-js';

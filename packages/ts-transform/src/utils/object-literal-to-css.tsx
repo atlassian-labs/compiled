@@ -205,6 +205,7 @@ export const objectLiteralToCssString = (
       ts.isPropertyAssignment(prop) &&
       (ts.isExpressionStatement(prop.initializer) ||
         ts.isConditionalExpression(prop.initializer) ||
+        ts.isPropertyAccessExpression(prop.initializer) ||
         ts.isBinaryExpression(prop.initializer))
     ) {
       const cssVarName = cssVariableHash(prop.initializer);
