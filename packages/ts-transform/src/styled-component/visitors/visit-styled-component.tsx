@@ -66,7 +66,8 @@ export const visitStyledComponent = (
         ts.isPropertyAccessExpression(node) &&
         ts.isIdentifier(node.expression) &&
         node.expression.text === 'props' &&
-        !isPropValid(node.name.text)
+        !isPropValid(node.name.text) &&
+        !propsToDestructure.includes(node.name.text)
       ) {
         // We found a "props.foo" access with an invalid prop name.
         // Let's re-write this node to remove the "props".

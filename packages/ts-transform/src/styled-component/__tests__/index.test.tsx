@@ -384,6 +384,24 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('.css-test{color:red;}');
     });
 
+    it('should only destructure a prop if hasnt been already', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+
+        const ListItem = styled.div\`
+          > :first-child {
+            display: $\{(props) => (props.isShown ? 'none' : 'block')};
+          }
+
+          > :last-child {
+            opacity: $\{(props) => (props.isShown ? 1 : 0)};
+          }
+        \`;
+      `);
+
+      expect(actual).toInclude('({ isShown, ...props })');
+    });
+
     it('should transform template string with no argument function import', () => {
       const actual = transformer.addSource({
         path: '/func-mixin.ts',
