@@ -26,7 +26,31 @@ export const objectLiteralToCssString = (
     let key: string;
     let value: string;
 
-    if (ts.isSpreadAssignment(prop)) {
+    if (
+      ts.isPropertyAssignment(prop) &&
+      (ts.isStringLiteral(prop.initializer) ||
+        ts.isNumericLiteral(prop.initializer) ||
+        ts.isNoSubstitutionTemplateLiteral(prop.initializer))
+    ) {
+      // We have a regular static assignment, e.g. "fontSize: '20px'"
+      const propertyName = getIdentifierText(prop.name);
+      const parsedValue = ts.isNumericLiteral(prop.initializer)
+        ? Number(prop.initializer.text)
+        : prop.initializer.text;
+      key = kebabCase(propertyName);
+
+      if (propertyName === 'content' && typeof parsedValue === 'string') {
+        if (parsedValue[0] === '"' || parsedValue[0] === "'") {
+          // Its already escaped, probably. Skip.
+          value = parsedValue;
+        } else {
+          // Ensure that it has quotes around it
+          value = `"${parsedValue}"`;
+        }
+      } else {
+        value = addUnitIfNeeded(propertyName, parsedValue);
+      }
+    } else if (ts.isSpreadAssignment(prop)) {
       let nodeToExtractCssFrom: ts.Node;
 
       if (ts.isCallExpression(prop.expression)) {
@@ -137,28 +161,6 @@ export const objectLiteralToCssString = (
           ${result.css}
         }
       `;
-    } else if (
-      ts.isPropertyAssignment(prop) &&
-      (ts.isStringLiteral(prop.initializer) || ts.isNumericLiteral(prop.initializer))
-    ) {
-      // We have a regular static assignment, e.g. "fontSize: '20px'"
-      const propertyName = getIdentifierText(prop.name);
-      const parsedValue = ts.isNumericLiteral(prop.initializer)
-        ? Number(prop.initializer.text)
-        : prop.initializer.text;
-      key = kebabCase(propertyName);
-
-      if (propertyName === 'content' && typeof parsedValue === 'string') {
-        if (parsedValue[0] === '"' || parsedValue[0] === "'") {
-          // Its already escaped, probably. Skip.
-          value = parsedValue;
-        } else {
-          // Ensure that it has quotes around it
-          value = `"${parsedValue}"`;
-        }
-      } else {
-        value = addUnitIfNeeded(propertyName, parsedValue);
-      }
     } else if (ts.isPropertyAssignment(prop) && ts.isArrowFunction(prop.initializer)) {
       key = kebabCase(getIdentifierText(prop.name));
       const cssResult = extractCssVarFromArrowFunction(prop.initializer, context);

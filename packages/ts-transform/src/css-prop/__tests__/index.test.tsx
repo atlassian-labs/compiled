@@ -614,6 +614,17 @@ describe('css prop transformer', () => {
       expect(actual).toInclude(`.css-test{color:blue;color:red;}`);
     });
 
+    it('should transform template literal value', () => {
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+        import React from 'react';
+
+        <div css={{ color: \`blue\` }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(`.css-test{color:blue;}`);
+    });
+
     it('should transform object with no argument arrow function import', () => {
       const actual = transformer.addSource({
         path: '/mixins.ts',
