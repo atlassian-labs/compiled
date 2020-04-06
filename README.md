@@ -168,4 +168,4 @@ Thank you for considering a contribution to Compiled!
 Before doing so,
 please make sure to read our [contribution guidelines](/CONTRIBUTING.md).
 
-![Atlassian](https://raw.githubusercontent.com/atlassian-internal/oss-assets/master/banner-cheers-light.png)
+[![Atlassian](https://raw.githubusercontent.com/atlassian-internal/oss-assets/master/banner-cheers-light.png)](https://atlassian.com)
