@@ -187,6 +187,26 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('.css-test{font-size:20px;}');
     });
 
+    it('should transform binary expression', () => {
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+
+        export const EmphasisText = (props) => (
+          <span
+            css={\`
+              color: $\{props.color};
+              text-transform: uppercase;
+              font-weight: 600;
+            \`}>{props.children}</span>
+        );
+      `);
+
+      expect(actual).toInclude('.css-test{color:var(--var-test);}');
+      expect(actual).toInclude(
+        '<span className="css-test" style={{ "--var-test": props.color }}>{props.children}</span>'
+      );
+    });
+
     it('should transform no template string literal', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';

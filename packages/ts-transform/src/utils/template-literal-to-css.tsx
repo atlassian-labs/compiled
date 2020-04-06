@@ -149,6 +149,19 @@ export const templateLiteralToCss = (
           name: variableName,
         });
       }
+    } else if (
+      ts.isPropertyAccessExpression(span.expression) ||
+      ts.isExpressionStatement(span.expression) ||
+      ts.isConditionalExpression(span.expression) ||
+      ts.isBinaryExpression(span.expression)
+    ) {
+      // We found something that we'll just inline reference.
+      const cssVarName = cssVariableHash(span.expression);
+      css += `var(${cssVarName})`;
+      cssVariables.push({
+        expression: span.expression,
+        name: cssVarName,
+      });
     } else {
       throw createNodeError('unsupported node', span);
     }
