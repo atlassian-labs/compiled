@@ -803,5 +803,17 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('.css-test{color:blue;color:var(--var-test);}');
       expect(actual).toInclude('style={{ "--var-test": color }}>');
     });
+
+    xit('should add quotations to dynamically set content', () => {
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+
+        const yeah = true;
+        <div css={{ content: yeah ? 'nah' : 'yeah' }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(`"--var-test": '"' + (yeah ? 'nah' : 'yeah') + '"'`);
+      expect(actual).toInclude('.css-test:after{content:var(--var-test);}');
+    });
   });
 });

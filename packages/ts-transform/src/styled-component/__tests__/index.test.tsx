@@ -427,6 +427,20 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('.css-test:after{content:\\"\\";}');
     });
 
+    xit('should add quotations to dynamically set content', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+        const ListItem = styled.div({
+          ':after': {
+            content: props => props.content,
+          },
+        });
+      `);
+
+      expect(actual).toInclude(`"--var-test": '"' + props.content + '"'`);
+      expect(actual).toInclude('.css-test:after{content:var(--var-test);}');
+    });
+
     it('should respect the definition of pseudo element content ala emotion with single quotes', () => {
       const actual = transformer.transform(`
         import { styled } from '@compiled/css-in-js';
