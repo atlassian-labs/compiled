@@ -1,4 +1,4 @@
-# [👷‍♀ ‍Compiled](https://compiledcssinjs.com/)
+# 👷‍♀ ‍[Compiled](https://compiledcssinjs.com/)
 
 The CSS in JS authoring experience you love without the runtime cost.
 [Get started now ➡️](https://compiledcssinjs.com/docs)
