@@ -5,7 +5,7 @@ import { cssVariableHash } from './hash';
 import { objectLiteralToCssString } from './object-literal-to-css';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
 import { evaluateFunction, isReturnCssLike } from './evalulate-function';
-import { joinToBinaryExpression } from './expression-operators';
+import { joinToBinaryExpression, joinThreeExpressions } from './expression-operators';
 
 /**
  * Extracts a suffix from a css property e.g:
@@ -36,6 +36,20 @@ const extractSuffix = (tail: string) => {
   return {
     suffix,
     rest,
+  };
+};
+
+const extractPrefix = (css: string): { css: string; prefix?: string } => {
+  let prefix = css.match(/:(.+$)/)?.[1];
+  if (prefix) {
+    prefix = prefix.trim();
+    const lastIndex = css.lastIndexOf(prefix);
+    css = css.slice(0, lastIndex);
+  }
+
+  return {
+    css,
+    prefix,
   };
 };
 
@@ -79,15 +93,35 @@ export const templateLiteralToCss = (
         css += result.css;
         cssVariables = cssVariables.concat(result.cssVariables);
       } else if (ts.isStringLiteral(value.initializer) || ts.isNumericLiteral(value.initializer)) {
-        // We found a literal expression e.g. const stringVar = ''; css`${stringVar}`
+        const extractedPrefix = extractPrefix(css);
+        // We an an inline arrow function - e.g. css`${props => props.color}`
+        const extractedSuffix = extractSuffix(span.literal.text);
         const result = extractSuffix(span.literal.text);
+
+        css = extractedPrefix.css;
+        let cssVariableExpression: ts.Expression = span.expression;
+
+        if (extractedSuffix.suffix && extractedPrefix.prefix) {
+          cssVariableExpression = joinThreeExpressions(
+            ts.createStringLiteral(extractedPrefix.prefix),
+            span.expression,
+            ts.createStringLiteral(extractedSuffix.suffix)
+          );
+        } else if (extractedSuffix.suffix) {
+          cssVariableExpression = joinToBinaryExpression(
+            span.expression,
+            ts.createStringLiteral(extractedSuffix.suffix)
+          );
+        } else if (extractedPrefix.prefix) {
+          cssVariableExpression = joinToBinaryExpression(
+            ts.createStringLiteral(extractedPrefix.prefix),
+            span.expression
+          );
+        }
+
         cssVariables.push({
           name: variableName,
-          expression: result.suffix
-            ? // Join left + right if suffix is defined
-              joinToBinaryExpression(span.expression, ts.createStringLiteral(result.suffix))
-            : // Else just return the expression we found
-              span.expression,
+          expression: cssVariableExpression,
         });
         css += `var(${variableName})${result.rest}`;
       } else if (ts.isArrowFunction(value.initializer)) {
@@ -107,19 +141,35 @@ export const templateLiteralToCss = (
         });
       }
     } else if (ts.isArrowFunction(span.expression)) {
+      const extractedPrefix = extractPrefix(css);
       // We an an inline arrow function - e.g. css`${props => props.color}`
       const extractedSuffix = extractSuffix(span.literal.text);
       const result = extractCssVarFromArrowFunction(span.expression, context);
+
+      css = extractedPrefix.css;
+      let cssVariableExpression: ts.Expression = result.expression;
+
+      if (extractedSuffix.suffix && extractedPrefix.prefix) {
+        cssVariableExpression = joinThreeExpressions(
+          ts.createStringLiteral(extractedPrefix.prefix),
+          result.expression,
+          ts.createStringLiteral(extractedSuffix.suffix)
+        );
+      } else if (extractedSuffix.suffix) {
+        cssVariableExpression = joinToBinaryExpression(
+          result.expression,
+          ts.createStringLiteral(extractedSuffix.suffix)
+        );
+      } else if (extractedPrefix.prefix) {
+        cssVariableExpression = joinToBinaryExpression(
+          ts.createStringLiteral(extractedPrefix.prefix),
+          result.expression
+        );
+      }
+
       cssVariables.push({
         name: result.name,
-        expression: extractedSuffix.suffix
-          ? // Join left + right if suffix is defined
-            joinToBinaryExpression(
-              result.expression,
-              ts.createStringLiteral(extractedSuffix.suffix)
-            )
-          : // Else just return the expression we found
-            result.expression,
+        expression: cssVariableExpression,
       });
       css += `var(${result.name})${extractedSuffix.rest}`;
     } else if (ts.isCallExpression(span.expression)) {

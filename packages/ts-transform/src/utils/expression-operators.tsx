@@ -2,10 +2,6 @@ import * as ts from 'typescript';
 
 interface JoinStringLiteralExpressionOpts {
   operator?: ts.BinaryOperator | ts.BinaryOperatorToken;
-  /**
-   * Will join them conditionally:
-   * left + right ? ' ' + right : ''
-   */
   conditional?: boolean;
 }
 
@@ -18,30 +14,48 @@ const createConditionalExpression = (right: ts.Expression) => {
 };
 
 /**
- * Joins two expressions to a jsx expression, separated by an operator and a space
- * Example: 'myString' + ' ' + myFunction()
+ * conditional = false {left + ' ' + right}
+ * conditional = true {right ? left + ' ' + right : left}
  */
 export function joinToJsxExpression(
   left: ts.Expression,
   right: ts.Expression,
-  { operator = ts.SyntaxKind.PlusToken, conditional = false }: JoinStringLiteralExpressionOpts = {}
+  { conditional = false }: JoinStringLiteralExpressionOpts = {}
 ): ts.JsxExpression {
   if (conditional) {
     return ts.createJsxExpression(
       undefined,
-      ts.createBinary(left, operator, createConditionalExpression(right))
+      ts.createBinary(left, ts.SyntaxKind.PlusToken, createConditionalExpression(right))
     );
   }
 
   return ts.createJsxExpression(
     undefined,
-    ts.createBinary(ts.createBinary(left, operator, ts.createStringLiteral(' ')), operator, right)
+    ts.createBinary(
+      ts.createBinary(left, ts.SyntaxKind.PlusToken, ts.createStringLiteral(' ')),
+      ts.SyntaxKind.PlusToken,
+      right
+    )
   );
 }
 
+/**
+ * left + right
+ */
 export const joinToBinaryExpression = (
   left: ts.Expression,
   right: ts.Expression
 ): ts.BinaryExpression => {
   return ts.createBinary(left, ts.createToken(ts.SyntaxKind.PlusToken), right);
+};
+
+/**
+ * left + middle + right
+ */
+export const joinThreeExpressions = (
+  left: ts.Expression,
+  middle: ts.Expression,
+  right: ts.Expression
+): ts.BinaryExpression => {
+  return joinToBinaryExpression(joinToBinaryExpression(left, middle), right);
 };

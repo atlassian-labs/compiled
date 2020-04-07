@@ -368,6 +368,56 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('.css-test{color:red;}');
     });
 
+    it('should move suffix and prefix of a dynamic arrow func property into the style property', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+
+        const ListItem = styled.div\`
+          font-size: super$\{props => props.color}big;
+        \`;
+      `);
+
+      expect(actual).toInclude('"--var-test": "super" + props.color + "big"');
+    });
+
+    it('should move any prefix of a dynamic arrow func property into the style property', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+
+        const ListItem = styled.div\`
+          font-size: super$\{props => props.color};
+        \`;
+      `);
+
+      expect(actual).toInclude('"--var-test": "super" + props.color');
+    });
+
+    it('should move suffix and prefix of a dynamic property into the style property', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+
+        const color = 'red';
+        const ListItem = styled.div\`
+          font-size: super$\{color}big;
+        \`;
+      `);
+
+      expect(actual).toInclude('"--var-test": "super" + color + "big"');
+    });
+
+    it('should move any prefix of a dynamic property into the style property', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+
+        const color = 'red';
+        const ListItem = styled.div\`
+          font-size: super$\{color};
+        \`;
+      `);
+
+      expect(actual).toInclude('"--var-test": "super" + color');
+    });
+
     it('should transform template string with no argument function variable', () => {
       const actual = transformer.transform(`
         import { styled } from '@compiled/css-in-js';
