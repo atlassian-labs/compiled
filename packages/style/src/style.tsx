@@ -1,5 +1,4 @@
 import React from 'react';
-import { useLayoutEffect } from './use-layout-effect';
 import { createStyleSheet } from './sheet';
 
 interface StyleProps {
@@ -27,22 +26,19 @@ let stylesheet: ReturnType<typeof createStyleSheet>;
 const inserted: Record<string, true> = {};
 
 const Style = (props: StyleProps) => {
-  useLayoutEffect(() => {
-    if (!stylesheet) {
-      stylesheet = createStyleSheet({});
-    }
+  if (typeof window === 'undefined') {
+    return <style data-testid={props.testId}>{props.children}</style>;
+  }
 
-    if (inserted[props.hash] || !props.children) {
-      return;
-    }
-
+  if (!stylesheet) {
+    stylesheet = createStyleSheet({});
+  }
+  if (!inserted[props.hash] && props.children) {
     props.children.forEach(stylesheet.insert);
     inserted[props.hash] = true;
-  }, []);
+  }
 
-  return typeof window === 'undefined' ? (
-    <style data-testid={props.testId}>{props.children}</style>
-  ) : null;
+  return null;
 };
 
 export default Style;
