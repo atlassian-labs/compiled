@@ -30,23 +30,11 @@ const getStyleElementName = (isCommonJs: boolean) =>
       ) as ts.JsxTagNamePropertyAccess)
     : ts.createIdentifier('Style');
 
-/**
- * Will return something like this:
-
- * <React.Fragment>
- *  <Style>{[..]}</Style>
- *  {`opts.children`}
- * </React.Fragment>
- */
-export const createStyleFragment = (node: ts.JsxElement, opts: JsxElementOpts) => {
-  const className = classNameHash(opts.css);
-  const compiledCss: string[] = stylis(opts.skipClassName ? `.${className}` : '', opts.css);
+const createStyleNode = (node: ts.Node, className: string, css: string[], opts: JsxElementOpts) => {
   const STYLE_ELEMENT_NAME = getStyleElementName(
     opts.context.getCompilerOptions().module === ts.ModuleKind.CommonJS
   );
-
-  // Create the style element that will precede the node that had the css prop.
-  const styleNode = ts.createJsxElement(
+  return ts.createJsxElement(
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(
@@ -67,7 +55,7 @@ export const createStyleFragment = (node: ts.JsxElement, opts: JsxElementOpts) =
       ts.createJsxExpression(
         undefined,
         ts.createArrayLiteral(
-          compiledCss.map(rule => ts.createStringLiteral(rule)),
+          css.map(rule => ts.createStringLiteral(rule)),
           false
         )
       ),
@@ -77,24 +65,38 @@ export const createStyleFragment = (node: ts.JsxElement, opts: JsxElementOpts) =
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(ts.createJsxClosingElement(STYLE_ELEMENT_NAME), node)
   );
+};
 
-  const children: ts.JsxChild[] = [
-    // important that the style goes before the node
-    styleNode,
-  ];
-
-  // Create a new fragment that will wrap both the style and the node we found initially.
-  const newFragmentParent = ts.createJsxFragment(
+const createFragmentNode = (node: ts.Node, styleNode: ts.JsxChild, childNode?: ts.JsxChild) => {
+  return ts.createJsxFragment(
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(ts.createJsxOpeningFragment(), node),
-    children.concat(opts.children ? opts.children : []),
+    [
+      // important that the style goes before the node
+      styleNode,
+      childNode,
+    ].filter(Boolean) as ts.JsxChild[],
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
     ts.setOriginalNode(ts.createJsxJsxClosingFragment(), node)
   );
+};
 
-  return newFragmentParent;
+/**
+ * Will create a jsx element that passes through `children`.
+
+ * <React.Fragment>
+ *  <Style>{[..]}</Style>
+ *  {`opts.children`}
+ * </React.Fragment>
+ */
+export const createStyleFragment = (node: ts.JsxElement, opts: JsxElementOpts) => {
+  const className = classNameHash(opts.css);
+  const compiledCss: string[] = stylis(opts.skipClassName ? `.${className}` : '', opts.css);
+  const styleNode = createStyleNode(node, className, compiledCss, opts);
+
+  return createFragmentNode(node, styleNode, opts.children);
 };
 
 /**
@@ -110,42 +112,9 @@ export const createStyleFragment = (node: ts.JsxElement, opts: JsxElementOpts) =
 export const createJsxElement = (tagName: string, opts: JsxElementOpts & { node: ts.Node }) => {
   const className = classNameHash(opts.css);
   const compiledCss: string[] = stylis(`.${className}`, opts.css);
-  const STYLE_ELEMENT_NAME = getStyleElementName(
-    opts.context.getCompilerOptions().module === ts.ModuleKind.CommonJS
-  );
 
   // Create the style element that will precede the node that had the css prop.
-  const styleNode = ts.createJsxElement(
-    // We use setOriginalNode() here to work around createJsx not working without the original node.
-    // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(
-      ts.createJsxOpeningElement(
-        STYLE_ELEMENT_NAME,
-        [],
-        ts.createJsxAttributes([
-          ts.createJsxAttribute(
-            ts.createIdentifier(HASH_ATTRIBUTE_NAME),
-            ts.createStringLiteral(className)
-          ),
-        ])
-      ),
-      opts.node
-    ),
-
-    [
-      ts.createJsxExpression(
-        undefined,
-        ts.createArrayLiteral(
-          compiledCss.map(rule => ts.createStringLiteral(rule)),
-          false
-        )
-      ),
-    ],
-
-    // We use setOriginalNode() here to work around createJsx not working without the original node.
-    // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxClosingElement(STYLE_ELEMENT_NAME), opts.node)
-  );
+  const styleNode = createStyleNode(opts.node, className, compiledCss, opts);
 
   const elementNode = ts.createJsxElement(
     // We use setOriginalNode() here to work around createJsx not working without the original node.
@@ -196,22 +165,7 @@ export const createJsxElement = (tagName: string, opts: JsxElementOpts & { node:
     );
   }
 
-  // Create a new fragment that will wrap both the style and the node we found initially.
-  const newFragmentParent = ts.createJsxFragment(
-    // We use setOriginalNode() here to work around createJsx not working without the original node.
-    // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxOpeningFragment(), opts.node),
-    [
-      // important that the style goes before the node
-      styleNode,
-      elementNode,
-    ],
-    // We use setOriginalNode() here to work around createJsx not working without the original node.
-    // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxJsxClosingFragment(), opts.node)
-  );
-
-  return newFragmentParent;
+  return createFragmentNode(opts.node, styleNode, elementNode);
 };
 
 /**
@@ -230,6 +184,8 @@ export const createJsxElementFromNode = (
 ) => {
   const className = classNameHash(opts.css);
   const suppliedClassNameAttribute = getJsxNodeAttributesValue(node, CLASSNAME_PROP);
+  const compiledCss: string[] = stylis(`.${className}`, opts.css);
+  const openingElement = ts.isJsxSelfClosingElement(node) ? node : node.openingElement;
 
   let classNameInitializer: ts.JsxExpression | ts.StringLiteral = ts.createStringLiteral(className);
 
@@ -245,9 +201,7 @@ export const createJsxElementFromNode = (
     );
   }
 
-  const attributedNode = ts.isJsxSelfClosingElement(node) ? node : node.openingElement;
-
-  const previousStyleAttribute = attributedNode.attributes.properties.filter(
+  const previousStyleAttribute = openingElement.attributes.properties.filter(
     prop => prop.name && getIdentifierText(prop.name) === STYLE_ATTRIBUTE_NAME
   )[0];
   let previousStyleProps: ts.ObjectLiteralElementLike[] = [];
@@ -265,7 +219,7 @@ export const createJsxElementFromNode = (
 
   const attributes = [
     // Filter out css prop, carry over others
-    ...attributedNode.attributes.properties.filter(
+    ...openingElement.attributes.properties.filter(
       prop =>
         prop.name &&
         !(opts.propsToRemove || []).includes(getIdentifierText(prop.name)) &&
@@ -298,78 +252,32 @@ export const createJsxElementFromNode = (
     (item): item is ts.JsxAttribute => typeof item !== 'undefined' && ts.isJsxAttribute(item)
   );
 
-  const compiledCss: string[] = stylis(`.${className}`, opts.css);
-  const STYLE_ELEMENT_NAME = getStyleElementName(
-    opts.context.getCompilerOptions().module === ts.ModuleKind.CommonJS
-  );
-
   // Create the style element that will precede the node that had the css prop.
-  const styleNode = ts.createJsxElement(
-    // We use setOriginalNode() here to work around createJsx not working without the original node.
-    // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(
-      ts.createJsxOpeningElement(
-        STYLE_ELEMENT_NAME,
-        [],
-        ts.createJsxAttributes([
-          ts.createJsxAttribute(
-            ts.createIdentifier(HASH_ATTRIBUTE_NAME),
-            ts.createStringLiteral(className)
+  const styleNode = createStyleNode(node, className, compiledCss, opts);
+
+  return createFragmentNode(
+    node,
+    styleNode,
+    ts.isJsxSelfClosingElement(node)
+      ? ts.setOriginalNode(
+          ts.createJsxSelfClosingElement(
+            node.tagName,
+            node.typeArguments,
+            ts.createJsxAttributes(attributes)
           ),
-        ])
-      ),
-      node
-    ),
-
-    [
-      ts.createJsxExpression(
-        undefined,
-        ts.createArrayLiteral(
-          compiledCss.map(rule => ts.createStringLiteral(rule)),
-          false
+          node
         )
-      ),
-    ],
-
-    // We use setOriginalNode() here to work around createJsx not working without the original node.
-    // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxClosingElement(STYLE_ELEMENT_NAME), node)
-  );
-
-  // Create a new fragment that will wrap both the style and the node we found initially.
-  const newFragmentParent = ts.createJsxFragment(
-    // We use setOriginalNode() here to work around createJsx not working without the original node.
-    // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxOpeningFragment(), node),
-    [
-      // important that the style goes before the node
-      styleNode,
-      ts.isJsxSelfClosingElement(node)
-        ? ts.setOriginalNode(
-            ts.createJsxSelfClosingElement(
-              node.tagName,
-              node.typeArguments,
+      : ts.createJsxElement(
+          ts.setOriginalNode(
+            ts.createJsxOpeningElement(
+              node.openingElement.tagName,
+              node.openingElement.typeArguments,
               ts.createJsxAttributes(attributes)
             ),
             node
-          )
-        : ts.createJsxElement(
-            ts.setOriginalNode(
-              ts.createJsxOpeningElement(
-                node.openingElement.tagName,
-                node.openingElement.typeArguments,
-                ts.createJsxAttributes(attributes)
-              ),
-              node
-            ),
-            node.children,
-            ts.setOriginalNode(ts.createJsxClosingElement(node.closingElement.tagName), node)
           ),
-    ],
-    // We use setOriginalNode() here to work around createJsx not working without the original node.
-    // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxJsxClosingFragment(), node)
+          node.children,
+          ts.setOriginalNode(ts.createJsxClosingElement(node.closingElement.tagName), node)
+        )
   );
-
-  return newFragmentParent;
 };
