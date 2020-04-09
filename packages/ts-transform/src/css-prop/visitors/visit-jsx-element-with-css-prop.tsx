@@ -75,12 +75,37 @@ export const visitJsxElementWithCssProp = (
     );
     cssVariables = processed.cssVariables;
     cssToPassThroughCompiler = processed.css;
+  } else if (ts.isIdentifier(cssJsxAttribute.initializer.expression)) {
+    // We are referencing something directly, like `css={base}`
+    const reference = variableDeclarations[cssJsxAttribute.initializer.expression.text];
+    if (ts.isVariableDeclaration(reference) && reference.initializer) {
+      if (ts.isObjectLiteralExpression(reference.initializer)) {
+        const processed = objectLiteralToCssString(
+          reference.initializer,
+          variableDeclarations,
+          context
+        );
+
+        cssVariables = processed.cssVariables;
+        cssToPassThroughCompiler = processed.css;
+      }
+
+      if (ts.isStringLiteralLike(reference.initializer)) {
+        const processed = templateLiteralToCss(
+          reference.initializer,
+          variableDeclarations,
+          context
+        );
+
+        cssVariables = processed.cssVariables;
+        cssToPassThroughCompiler = processed.css;
+      }
+    }
   } else {
-    logger.log('unsupported value in css prop');
-    // how do we handle mixins/function expressions?
-    // can we execute functions somehow?
-    // css prop TODO:
-    // - function expressions e.g. css={functionCall}
+    throw createNodeError(
+      "This node can't be transformed. Raise an issue here https://github.com/atlassian-labs/compiled-css-in-js/issues and let's talk about it!",
+      cssJsxAttribute.initializer.expression
+    );
   }
 
   const className = classNameHash(cssToPassThroughCompiler);

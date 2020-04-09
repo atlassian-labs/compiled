@@ -721,6 +721,34 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('.css-test:hover{color:red;}');
     });
 
+    it('should transform identifier referencing an object', () => {
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+        import React from 'react';
+
+        const base = { color: 'red' };
+
+        <div css={base}>hello world</div>
+      `);
+
+      expect(actual).toInclude(`.css-test{color:red;}`);
+    });
+
+    it('should transform identifier referencing an template literal', () => {
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+        import React from 'react';
+
+        const base = \`
+          color: red;
+        \`;
+
+        <div css={base}>hello world</div>
+      `);
+
+      expect(actual).toInclude(`.css-test{color:red;}`);
+    });
+
     it('should transform object with no argument function variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
