@@ -1,6 +1,6 @@
 {
   "name": "@compiled/babel-plugin-css-in-js",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "The CSS in JS authoring experience you love without the runtime cost",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
@@ -13,7 +13,7 @@
   ],
   "dependencies": {
     "@babel/core": "^7.9.0",
-    "@compiled/ts-transform-css-in-js": "0.2.6",
+    "@compiled/ts-transform-css-in-js": "0.2.7",
     "typescript": "^3.7.3"
   },
   "devDependencies": {
