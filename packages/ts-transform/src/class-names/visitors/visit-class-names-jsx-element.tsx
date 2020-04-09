@@ -110,10 +110,9 @@ export const visitClassNamesJsxElement = (
     ? returnNode.expression.body.expression
     : returnNode.expression.body;
 
-  return createStyleFragment({
+  return createStyleFragment(classNamesNode, {
     css,
     cssVariables,
-    originalNode: classNamesNode,
     children:
       ts.isJsxElement(children) || ts.isJsxSelfClosingElement(children)
         ? children

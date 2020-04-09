@@ -159,6 +159,32 @@ describe('css prop transformer', () => {
     expect(actual).toInclude('style={{ display: "block", "--var-test": color }}');
   });
 
+  it('should remove css prop', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      const color = 'blue';
+
+      <div css={{ color: color }} style={{ display: "block" }}>hello world</div>
+    `);
+
+    expect(actual).not.toInclude('css={');
+  });
+
+  it('should keep other props around', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      const color = 'blue';
+
+      <div data-testid="yo" css={{ color: color }} style={{ display: "block" }}>hello world</div>
+    `);
+
+    expect(actual).toInclude('data-testid="yo"');
+  });
+
   it.todo('should concat implicit use of style prop where props are spread into an element');
 
   describe('using strings', () => {

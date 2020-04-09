@@ -84,31 +84,27 @@ export const visitStyledComponent = (
     };
   });
 
-  const newElement = createJsxElement(
-    tagName,
-    {
-      css: result.css,
-      cssVariables: visitedCssVariables,
-      originalNode: node,
-      context,
-      styleFactory: props => [
-        ts.createSpreadAssignment(ts.createIdentifier('props.style')),
-        ...props.map(prop => {
-          const propName = getPropertyAccessName(getIdentifierText(prop.initializer));
-          if (propsToDestructure.includes(propName)) {
-            prop.initializer = ts.createIdentifier(propName);
-          }
-          return prop;
-        }),
-      ],
-      classNameFactory: className =>
-        joinToJsxExpression(className, ts.createIdentifier('props.className'), {
-          conditional: true,
-        }),
-      jsxAttributes: [ts.createJsxSpreadAttribute(ts.createIdentifier('props'))],
-    },
-    node
-  );
+  const newElement = createJsxElement(tagName, {
+    css: result.css,
+    cssVariables: visitedCssVariables,
+    node,
+    context,
+    styleFactory: props => [
+      ts.createSpreadAssignment(ts.createIdentifier('props.style')),
+      ...props.map(prop => {
+        const propName = getPropertyAccessName(getIdentifierText(prop.initializer));
+        if (propsToDestructure.includes(propName)) {
+          prop.initializer = ts.createIdentifier(propName);
+        }
+        return prop;
+      }),
+    ],
+    classNameFactory: className =>
+      joinToJsxExpression(className, ts.createIdentifier('props.className'), {
+        conditional: true,
+      }),
+    jsxAttributes: [ts.createJsxSpreadAttribute(ts.createIdentifier('props'))],
+  });
 
   return ts.createArrowFunction(
     undefined,
