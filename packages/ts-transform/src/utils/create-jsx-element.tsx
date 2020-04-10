@@ -128,11 +128,12 @@ const cloneJsxElement = (
         getIdentifierText(prop.name) !== constants.CLASSNAME_PROP_NAME &&
         getIdentifierText(prop.name) !== constants.STYLE_PROP_NAME
     ),
-    // Reference style via className
+
+    // className={}
     ts.createJsxAttribute(ts.createIdentifier(constants.CLASSNAME_PROP_NAME), newClassNameProp),
 
-    // Add a style prop if css variables are applied
-    opts.cssVariables.length
+    // style={}
+    opts.cssVariables.length || styleProperties.length
       ? ts.createJsxAttribute(
           ts.createIdentifier(constants.STYLE_PROP_NAME),
           ts.createJsxExpression(

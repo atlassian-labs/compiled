@@ -92,7 +92,40 @@ describe('css prop transformer', () => {
     expect(actual).toInclude('className={"css-test" + " " + "foobar"}');
   });
 
-  it.todo('should concat implicit use of class name prop where props are spread into an element');
+  it('should concat explicit use of class name prop from an identifier on an element', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      const className = "foobar";
+      <div className={className} css={{}}>hello world</div>
+    `);
+
+    expect(actual).toInclude('className={"css-test" + " " + className}');
+  });
+
+  it('should concat explicit use of style prop on an element', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      const color = 'blue';
+      <div style={{ display: 'block' }} css={{ color: color }}>hello world</div>
+    `);
+
+    expect(actual).toInclude(`style={{ display: 'block', \"--var-test\": color }}`);
+  });
+
+  it('should pass through style prop when not using dynamic css', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      <div style={{ display: 'block' }} css={{}}>hello world</div>
+    `);
+
+    expect(actual).toInclude(`style={{ display: 'block' }}`);
+  });
 
   it('should concat implicit use of class name prop where class name is a jsx expression', () => {
     const actual = transformer.transform(`
@@ -144,19 +177,6 @@ describe('css prop transformer', () => {
 
     expect(actual).toInclude('color:var(--var-test)');
     expect(actual).toInclude(`style={{ "--var-test": colorsz }}`);
-  });
-
-  it('should concat use of inline styles when there is use of dynamic css', () => {
-    const actual = transformer.transform(`
-      import '@compiled/css-in-js';
-      import React from 'react';
-
-      const color = 'blue';
-
-      <div css={{ color: color }} style={{ display: "block" }}>hello world</div>
-    `);
-
-    expect(actual).toInclude('style={{ display: "block", "--var-test": color }}');
   });
 
   it('should remove css prop', () => {
