@@ -170,11 +170,10 @@ const cloneJsxElement = (
 };
 
 const createJsxElement = (
-  tagName: string,
+  tagName: ts.JsxTagNameExpression,
   className: string,
   opts: JsxElementOpts & { node: ts.Node }
 ) => {
-  const tagNameIdentifier = ts.createIdentifier(tagName);
   const props = ts.createJsxAttributes([
     ...(opts.jsxAttributes || []),
 
@@ -192,19 +191,16 @@ const createJsxElement = (
     elementNode = ts.createJsxElement(
       // We use setOriginalNode() here to work around createJsx not working without the original node.
       // See: https://github.com/microsoft/TypeScript/issues/35686
-      ts.setOriginalNode(ts.createJsxOpeningElement(tagNameIdentifier, [], props), opts.node),
+      ts.setOriginalNode(ts.createJsxOpeningElement(tagName, [], props), opts.node),
       [opts.children],
       // We use setOriginalNode() here to work around createJsx not working without the original node.
       // See: https://github.com/microsoft/TypeScript/issues/35686
-      ts.setOriginalNode(ts.createJsxClosingElement(tagNameIdentifier), opts.node)
+      ts.setOriginalNode(ts.createJsxClosingElement(tagName), opts.node)
     );
   } else {
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
-    elementNode = ts.setOriginalNode(
-      ts.createJsxSelfClosingElement(tagNameIdentifier, [], props),
-      opts.node
-    );
+    elementNode = ts.setOriginalNode(ts.createJsxSelfClosingElement(tagName, [], props), opts.node);
   }
 
   if (opts.cssVariables.length) {
@@ -263,7 +259,7 @@ export const createCompiledFragment = (node: ts.JsxElement, opts: JsxElementOpts
  * </React.Fragment>
  */
 export const createCompiledComponent = (
-  tagName: string,
+  tagName: ts.JsxTagNameExpression,
   opts: JsxElementOpts & { node: ts.Node }
 ) => {
   const className = classNameHash(opts.css);

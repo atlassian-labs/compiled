@@ -8,13 +8,13 @@ import { joinToJsxExpression } from '../../utils/expression-operators';
 import { getIdentifierText, createNodeError } from '../../utils/ast-node';
 import * as constants from '../../constants';
 
-const getTagName = (node: ts.CallExpression | ts.TaggedTemplateExpression): string => {
+const getTagName = (node: ts.CallExpression | ts.TaggedTemplateExpression): ts.Identifier => {
   if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
-    return node.expression.name.text;
+    return node.expression.name;
   }
 
   if (ts.isTaggedTemplateExpression(node) && ts.isPropertyAccessExpression(node.tag)) {
-    return node.tag.name.text;
+    return node.tag.name;
   }
 
   throw createNodeError('tag should have been here', node);
@@ -48,14 +48,15 @@ export const visitStyledComponent = (
   context: ts.TransformationContext,
   collectedDeclarations: Declarations
 ): ts.Node => {
-  const tagName = getTagName(node);
+  const originalTagName = getTagName(node);
   const dataToTransform = getObjectLiteralOrTemplateLiteral(node);
 
   const result = ts.isObjectLiteralExpression(dataToTransform)
     ? objectLiteralToCssString(dataToTransform, collectedDeclarations, context)
     : templateLiteralToCss(dataToTransform, collectedDeclarations, context);
 
-  const propsToDestructure: string[] = [];
+  const propsToDestructure: string[] = [constants.STYLED_AS_PROP_NAME];
+
   const visitedCssVariables = result.cssVariables.map(cssVarObj => {
     // Expression can be simple (props.color), complex (props.color ? 'blah': 'yeah', or be an IIFE)
     // We need to traverse it to find uses of props.blah and then mark them.
@@ -85,36 +86,45 @@ export const visitStyledComponent = (
     };
   });
 
-  const newElement = createCompiledComponent(tagName, {
-    css: result.css,
-    cssVariables: visitedCssVariables,
-    node,
-    context,
-    styleFactory: props => [
-      ts.createSpreadAssignment(ts.createIdentifier('props.style')),
-      ...props.map(prop => {
-        const propName = getPropertyAccessName(getIdentifierText(prop.initializer));
-        if (propsToDestructure.includes(propName)) {
-          prop.initializer = ts.createIdentifier(propName);
-        }
-        return prop;
-      }),
-    ],
-    classNameFactory: className =>
-      joinToJsxExpression(className, ts.createIdentifier('props.className'), {
-        conditional: true,
-      }),
-    jsxAttributes: [
-      // {...props}
-      ts.createJsxSpreadAttribute(ts.createIdentifier('props')),
+  const newElement = createCompiledComponent(
+    ts.createParen(
+      ts.createBinary(
+        ts.createIdentifier('as'),
+        ts.SyntaxKind.BarBarToken,
+        ts.createStringLiteral(originalTagName.text)
+      )
+    ) as any,
+    {
+      css: result.css,
+      cssVariables: visitedCssVariables,
+      node,
+      context,
+      styleFactory: props => [
+        ts.createSpreadAssignment(ts.createIdentifier('props.style')),
+        ...props.map(prop => {
+          const propName = getPropertyAccessName(getIdentifierText(prop.initializer));
+          if (propsToDestructure.includes(propName)) {
+            prop.initializer = ts.createIdentifier(propName);
+          }
+          return prop;
+        }),
+      ],
+      classNameFactory: className =>
+        joinToJsxExpression(className, ts.createIdentifier('props.className'), {
+          conditional: true,
+        }),
+      jsxAttributes: [
+        // {...props}
+        ts.createJsxSpreadAttribute(ts.createIdentifier('props')),
 
-      // ref={ref}
-      ts.createJsxAttribute(
-        ts.createIdentifier(constants.REF_PROP_NAME),
-        ts.createJsxExpression(undefined, ts.createIdentifier(constants.REF_PROP_NAME))
-      ),
-    ],
-  });
+        // ref={ref}
+        ts.createJsxAttribute(
+          ts.createIdentifier(constants.REF_PROP_NAME),
+          ts.createJsxExpression(undefined, ts.createIdentifier(constants.REF_PROP_NAME))
+        ),
+      ],
+    }
+  );
 
   return ts.createCall(
     ts.createPropertyAccess(

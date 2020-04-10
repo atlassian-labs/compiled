@@ -24,7 +24,7 @@ describe('styled component transformer', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
-      const ListItem = React.forwardRef((props, ref) => <><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><div {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
+      const ListItem = React.forwardRef(({ as, ...props }, ref) => <><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><(as || \\"div\\") {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
       "
     `);
   });
@@ -37,7 +37,7 @@ describe('styled component transformer', () => {
       });
     `);
 
-    expect(actual).toInclude('({ textSize, ...props }');
+    expect(actual).toInclude('textSize, ...props }');
     expect(actual).toInclude('"--var-test": textSize');
   });
 
@@ -77,7 +77,7 @@ describe('styled component transformer', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
-      const ListItem = React.forwardRef((props, ref) => <><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><div {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
+      const ListItem = React.forwardRef(({ as, ...props }, ref) => <><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><(as || \\"div\\") {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
       "
     `);
   });
@@ -114,7 +114,7 @@ describe('styled component transformer', () => {
       \`;
     `);
 
-    expect(actual).toInclude('<div {...props}');
+    expect(actual).toInclude('<(as || "div") {...props}');
   });
 
   it('should do nothing if react default import is already defined', () => {
@@ -163,7 +163,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
-      expect(actual).toInclude('({ textSize, ...props }');
+      expect(actual).toInclude('textSize, ...props }');
       expect(actual).toInclude('"--var-test": textSize + "px"');
     });
 
@@ -455,7 +455,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('({ isShown, ...props }');
+      expect(actual).toInclude('isShown, ...props }');
     });
 
     it('should transform template string with no argument function import', () => {
@@ -587,7 +587,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
-      expect(actual).toInclude('({ textSize, ...props }');
+      expect(actual).toInclude('textSize, ...props }');
       expect(actual).toInclude('"--var-test": `${textSize}px`');
     });
 
@@ -600,7 +600,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
-      expect(actual).toInclude('{ textSize, ...props }');
+      expect(actual).toInclude('textSize, ...props }');
       expect(actual).toInclude('"--var-test": textSize + "px"');
     });
 
