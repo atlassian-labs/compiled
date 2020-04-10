@@ -19,18 +19,9 @@ interface JsxElementOpts {
   context: ts.TransformationContext;
 }
 
-const getRuntimeStyleComponentName = (isCommonJs: boolean) =>
-  isCommonJs
-    ? (ts.createPropertyAccess(
-        ts.createIdentifier(constants.COMMON_JS_COMPILED_IMPORT),
-        ts.createIdentifier(constants.COMPILED_STYLE_COMPONENT_NAME)
-      ) as ts.JsxTagNamePropertyAccess)
-    : ts.createIdentifier(constants.COMPILED_STYLE_COMPONENT_NAME);
-
 const createStyleNode = (node: ts.Node, className: string, css: string[], opts: JsxElementOpts) => {
-  const STYLE_ELEMENT_NAME = getRuntimeStyleComponentName(
-    opts.context.getCompilerOptions().module === ts.ModuleKind.CommonJS
-  );
+  const STYLE_ELEMENT_NAME = constants.getStyleComponentImport(opts.context);
+
   return ts.createJsxElement(
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
@@ -186,7 +177,8 @@ const createJsxElement = (
   const tagNameIdentifier = ts.createIdentifier(tagName);
   const props = ts.createJsxAttributes([
     ...(opts.jsxAttributes || []),
-    // className should always be last
+
+    // className={}
     ts.createJsxAttribute(
       ts.createIdentifier(constants.CLASSNAME_PROP_NAME),
       opts.classNameFactory

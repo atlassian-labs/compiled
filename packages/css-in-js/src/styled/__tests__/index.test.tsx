@@ -105,4 +105,17 @@ describe('styled component', () => {
 
     expect(getByText('hello world').getAttribute('href')).toEqual('#');
   });
+
+  it('should forward ref', () => {
+    let ref: HTMLAnchorElement | null = null;
+    const Link = styled.a``;
+
+    render(
+      <Link ref={r => (ref = r)} href="#">
+        hello world
+      </Link>
+    );
+
+    expect(ref).toHaveProperty('tagName', 'A');
+  });
 });

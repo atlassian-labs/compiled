@@ -1,15 +1,13 @@
 import * as ts from 'typescript';
 import * as log from './log';
-
-const REACT_PKG = 'react';
-const REACT_DEFAULT_IMPORT_NAME = 'React';
+import * as constants from '../constants';
 
 const isReactImportFound = (sourceFile: ts.SourceFile) => {
   return sourceFile.statements.find(
     statement =>
       ts.isImportDeclaration(statement) &&
       ts.isStringLiteral(statement.moduleSpecifier) &&
-      statement.moduleSpecifier.text === REACT_PKG
+      statement.moduleSpecifier.text === constants.REACT_PACKAGE_NAME
   );
 };
 
@@ -24,8 +22,8 @@ export const visitSourceFileEnsureDefaultReactImport = (
       ts.createImportDeclaration(
         /* decorators */ undefined,
         /* modifiers */ undefined,
-        ts.createImportClause(ts.createIdentifier(REACT_DEFAULT_IMPORT_NAME), undefined),
-        ts.createLiteral(REACT_PKG)
+        ts.createImportClause(ts.createIdentifier(constants.REACT_DEFAULT_IMPORT), undefined),
+        ts.createLiteral(constants.REACT_PACKAGE_NAME)
       ),
       ...sourceFile.statements,
     ]);
@@ -42,7 +40,7 @@ export const visitSourceFileEnsureDefaultReactImport = (
     if (
       ts.isImportDeclaration(node) &&
       ts.isStringLiteral(node.moduleSpecifier) &&
-      node.moduleSpecifier.text === REACT_PKG
+      node.moduleSpecifier.text === constants.REACT_PACKAGE_NAME
     ) {
       log.log('ensuring react default export is defined');
 
@@ -51,7 +49,7 @@ export const visitSourceFileEnsureDefaultReactImport = (
         /* decorators */ undefined,
         /* modifiers */ undefined,
         ts.createImportClause(
-          ts.createIdentifier(REACT_DEFAULT_IMPORT_NAME),
+          ts.createIdentifier(constants.REACT_DEFAULT_IMPORT),
           node.importClause && node.importClause.namedBindings
         ),
         node.moduleSpecifier

@@ -6,6 +6,7 @@ import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import { Declarations } from '../../types';
 import { joinToJsxExpression } from '../../utils/expression-operators';
 import { getIdentifierText, createNodeError } from '../../utils/ast-node';
+import * as constants from '../../constants';
 
 const getTagName = (node: ts.CallExpression | ts.TaggedTemplateExpression): string => {
   if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
@@ -103,39 +104,71 @@ export const visitStyledComponent = (
       joinToJsxExpression(className, ts.createIdentifier('props.className'), {
         conditional: true,
       }),
-    jsxAttributes: [ts.createJsxSpreadAttribute(ts.createIdentifier('props'))],
-  });
+    jsxAttributes: [
+      // {...props}
+      ts.createJsxSpreadAttribute(ts.createIdentifier('props')),
 
-  return ts.createArrowFunction(
-    undefined,
-    undefined,
-    [
-      ts.createParameter(
-        undefined,
-        undefined,
-        undefined,
-        propsToDestructure.length
-          ? // We want to destructure props so it doesn't contain any invalid html attributes.
-            ts.createObjectBindingPattern([
-              ...propsToDestructure.map(prop =>
-                ts.createBindingElement(undefined, undefined, ts.createIdentifier(prop), undefined)
-              ),
-              ts.createBindingElement(
-                ts.createToken(ts.SyntaxKind.DotDotDotToken),
-                undefined,
-                ts.createIdentifier('props'),
-                undefined
-              ),
-            ])
-          : // They're all valid so we don't need to destructure.
-            ts.createIdentifier('props'),
-        undefined,
-        undefined,
-        undefined
+      // ref={ref}
+      ts.createJsxAttribute(
+        ts.createIdentifier(constants.REF_PROP_NAME),
+        ts.createJsxExpression(undefined, ts.createIdentifier(constants.REF_PROP_NAME))
       ),
     ],
+  });
+
+  return ts.createCall(
+    ts.createPropertyAccess(
+      constants.getReactDefaultImportName(context),
+      ts.createIdentifier(constants.FORWARD_REF_IMPORT)
+    ),
     undefined,
-    ts.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-    newElement
+    [
+      ts.createArrowFunction(
+        undefined,
+        undefined,
+        [
+          ts.createParameter(
+            undefined,
+            undefined,
+            undefined,
+            propsToDestructure.length
+              ? // We want to destructure props so it doesn't contain any invalid html attributes.
+                ts.createObjectBindingPattern([
+                  ...propsToDestructure.map(prop =>
+                    ts.createBindingElement(
+                      undefined,
+                      undefined,
+                      ts.createIdentifier(prop),
+                      undefined
+                    )
+                  ),
+                  ts.createBindingElement(
+                    ts.createToken(ts.SyntaxKind.DotDotDotToken),
+                    undefined,
+                    ts.createIdentifier('props'),
+                    undefined
+                  ),
+                ])
+              : // They're all valid so we don't need to destructure.
+                ts.createIdentifier('props'),
+            undefined,
+            undefined,
+            undefined
+          ),
+          ts.createParameter(
+            undefined,
+            undefined,
+            undefined,
+            ts.createIdentifier(constants.REF_PROP_NAME),
+            undefined,
+            undefined,
+            undefined
+          ),
+        ],
+        undefined,
+        ts.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+        newElement
+      ),
+    ]
   );
 };
