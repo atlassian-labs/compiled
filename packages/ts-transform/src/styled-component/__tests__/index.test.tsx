@@ -22,7 +22,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = props => <><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div {...props} className={"css-test" + (props.className ? " " + props.className : "")}></div></>'
+      'const ListItem = props => <><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div {...props} className={"css-test" + (props.className ? " " + props.className : "")}/></>'
     );
   });
 
@@ -72,7 +72,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = props => <><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div {...props} className={"css-test" + (props.className ? " " + props.className : "")}></div></>'
+      'const ListItem = props => <><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div {...props} className={"css-test" + (props.className ? " " + props.className : "")}/></>'
     );
   });
 
@@ -316,7 +316,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('.css-test{color:var(--var-test);}');
-      expect(actual).toInclude('"--var-test": color }}>');
+      expect(actual).toInclude('"--var-test": color }}');
     });
 
     it('should inline call if it returns simple value', () => {
@@ -331,7 +331,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('.css-test{color:var(--var-test);}');
-      expect(actual).toInclude('"--var-test": em(\'blue\') }}>');
+      expect(actual).toInclude('"--var-test": em(\'blue\') }}');
     });
 
     it.todo('should transform template string literal with array variable');
@@ -654,7 +654,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('.css-test{color:var(--var-test);}');
-      expect(actual).toInclude('"--var-test": color }}>');
+      expect(actual).toInclude('"--var-test": color }}');
     });
 
     it('should inline call if it returns simple value', () => {
@@ -669,7 +669,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('.css-test{color:var(--var-test);}');
-      expect(actual).toInclude('"--var-test": em(\'blue\') }}>');
+      expect(actual).toInclude('"--var-test": em(\'blue\') }}');
     });
 
     it('should transform template object with string variable', () => {
@@ -684,7 +684,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude('.css-test{color:var(--var-test);}');
-      expect(actual).toInclude('"--var-test": color }}>');
+      expect(actual).toInclude('"--var-test": color }}');
     });
 
     it('should transform template object with prop reference', () => {

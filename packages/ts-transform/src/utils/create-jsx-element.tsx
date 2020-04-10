@@ -183,31 +183,37 @@ const createJsxElement = (
   className: string,
   opts: JsxElementOpts & { node: ts.Node }
 ) => {
-  const elementNode = ts.createJsxElement(
-    // We use setOriginalNode() here to work around createJsx not working without the original node.
-    // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(
-      ts.createJsxOpeningElement(
-        ts.createIdentifier(tagName),
-        [],
-        ts.createJsxAttributes([
-          ...(opts.jsxAttributes || []),
-          // className should always be last
-          ts.createJsxAttribute(
-            ts.createIdentifier(constants.CLASSNAME_PROP_NAME),
-            opts.classNameFactory
-              ? opts.classNameFactory(ts.createStringLiteral(className))
-              : ts.createStringLiteral(className)
-          ),
-        ])
-      ),
-      opts.node
+  const tagNameIdentifier = ts.createIdentifier(tagName);
+  const props = ts.createJsxAttributes([
+    ...(opts.jsxAttributes || []),
+    // className should always be last
+    ts.createJsxAttribute(
+      ts.createIdentifier(constants.CLASSNAME_PROP_NAME),
+      opts.classNameFactory
+        ? opts.classNameFactory(ts.createStringLiteral(className))
+        : ts.createStringLiteral(className)
     ),
-    opts.children ? [opts.children] : [],
+  ]);
+
+  let elementNode: ts.JsxElement | ts.JsxSelfClosingElement;
+  if (opts.children) {
+    elementNode = ts.createJsxElement(
+      // We use setOriginalNode() here to work around createJsx not working without the original node.
+      // See: https://github.com/microsoft/TypeScript/issues/35686
+      ts.setOriginalNode(ts.createJsxOpeningElement(tagNameIdentifier, [], props), opts.node),
+      [opts.children],
+      // We use setOriginalNode() here to work around createJsx not working without the original node.
+      // See: https://github.com/microsoft/TypeScript/issues/35686
+      ts.setOriginalNode(ts.createJsxClosingElement(tagNameIdentifier), opts.node)
+    );
+  } else {
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxClosingElement(ts.createIdentifier(tagName)), opts.node)
-  );
+    elementNode = ts.setOriginalNode(
+      ts.createJsxSelfClosingElement(tagNameIdentifier, [], props),
+      opts.node
+    );
+  }
 
   if (opts.cssVariables.length) {
     const styleProps = opts.cssVariables.map(variable => {
