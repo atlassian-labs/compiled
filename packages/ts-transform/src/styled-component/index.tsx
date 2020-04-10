@@ -5,11 +5,12 @@ import { Declarations } from '../types';
 import { collectDeclarationsFromNode } from '../utils/collect-declarations';
 import { visitSourceFileEnsureDefaultReactImport } from '../utils/visit-source-file-ensure-default-react-import';
 import { visitSourceFileEnsureStyleImport } from '../utils/visit-source-file-ensure-style-import';
-
-const STYLED_NAME = 'styled';
+import { STYLED_COMPONENT_IMPORT } from '../constants';
 
 const isStyledImportFound = (sourceFile: ts.SourceFile): boolean => {
-  return !!sourceFile.statements.find(statement => isPackageModuleImport(statement, STYLED_NAME));
+  return !!sourceFile.statements.find(statement =>
+    isPackageModuleImport(statement, STYLED_COMPONENT_IMPORT)
+  );
 };
 
 const isStyledComponent = (
@@ -18,7 +19,7 @@ const isStyledComponent = (
   if (
     ts.isCallExpression(node) &&
     ts.isPropertyAccessExpression(node.expression) &&
-    getIdentifierText(node.expression.expression) === STYLED_NAME
+    getIdentifierText(node.expression.expression) === STYLED_COMPONENT_IMPORT
   ) {
     return true;
   }
@@ -26,7 +27,7 @@ const isStyledComponent = (
   if (
     ts.isTaggedTemplateExpression(node) &&
     ts.isPropertyAccessExpression(node.tag) &&
-    getIdentifierText(node.tag.expression) === STYLED_NAME
+    getIdentifierText(node.tag.expression) === STYLED_COMPONENT_IMPORT
   ) {
     return true;
   }
@@ -44,7 +45,9 @@ export default function styledComponentTransformer(
       }
 
       const transformedSourceFile = visitSourceFileEnsureDefaultReactImport(
-        visitSourceFileEnsureStyleImport(sourceFile, context, { removeNamedImport: STYLED_NAME }),
+        visitSourceFileEnsureStyleImport(sourceFile, context, {
+          removeNamedImport: STYLED_COMPONENT_IMPORT,
+        }),
         context
       );
       const collectedDeclarations: Declarations = {};

@@ -4,9 +4,8 @@ import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import * as logger from '../../utils/log';
 import { getJsxNodeAttributes, createNodeError } from '../../utils/ast-node';
-import { createJsxElementFromNode } from '../../utils/create-jsx-element';
-
-const CSS_PROP = 'css';
+import { createCompiledComponentFromNode } from '../../utils/create-jsx-element';
+import { CSS_PROP_NAME } from '../../constants';
 
 export const isJsxElementWithCssProp = (
   node: ts.Node
@@ -14,7 +13,7 @@ export const isJsxElementWithCssProp = (
   return !!(
     (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) &&
     getJsxNodeAttributes(node).properties.find(
-      prop => ts.isJsxAttribute(prop) && prop.name.text === CSS_PROP
+      prop => ts.isJsxAttribute(prop) && prop.name.text === CSS_PROP_NAME
     )
   );
 };
@@ -28,7 +27,7 @@ export const visitJsxElementWithCssProp = (
 
   // Grab the css prop node
   const cssJsxAttribute = getJsxNodeAttributes(node).properties.find(
-    prop => ts.isJsxAttribute(prop) && prop.name.escapedText === CSS_PROP
+    prop => ts.isJsxAttribute(prop) && prop.name.escapedText === CSS_PROP_NAME
   ) as ts.JsxAttribute;
 
   if (!cssJsxAttribute || !cssJsxAttribute.initializer) {
@@ -101,10 +100,10 @@ export const visitJsxElementWithCssProp = (
     );
   }
 
-  return createJsxElementFromNode(node, {
+  return createCompiledComponentFromNode(node, {
     context,
     cssVariables,
     css: cssToPassThroughCompiler,
-    propsToRemove: [CSS_PROP],
+    propsToRemove: [CSS_PROP_NAME],
   });
 };

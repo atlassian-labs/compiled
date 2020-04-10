@@ -1,6 +1,6 @@
 import ts from 'typescript';
 import isPropValid from '@emotion/is-prop-valid';
-import { createJsxElement } from '../../utils/create-jsx-element';
+import { createCompiledComponent } from '../../utils/create-jsx-element';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import { Declarations } from '../../types';
@@ -84,7 +84,7 @@ export const visitStyledComponent = (
     };
   });
 
-  const newElement = createJsxElement(tagName, {
+  const newElement = createCompiledComponent(tagName, {
     css: result.css,
     cssVariables: visitedCssVariables,
     node,

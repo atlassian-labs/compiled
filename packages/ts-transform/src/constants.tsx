@@ -1,0 +1,10 @@
+export const HASH_PROP_NAME = 'hash';
+export const STYLE_PROP_NAME = 'style';
+export const CLASSNAME_PROP_NAME = 'className';
+export const COMPILED_STYLE_COMPONENT_NAME = 'Style';
+export const COMMON_JS_COMPILED_IMPORT = 'css_in_js_1';
+export const CLASS_NAME_PREFIX = 'css';
+export const CSS_VARIABLE_PREFIX = 'var';
+export const STYLED_COMPONENT_IMPORT = 'styled';
+export const CSS_PROP_NAME = 'css';
+export const CLASS_NAMES_IMPORT = 'ClassNames';

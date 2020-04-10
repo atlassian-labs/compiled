@@ -4,18 +4,17 @@ import { visitClassNamesJsxElement } from './visitors/visit-class-names-jsx-elem
 import { collectDeclarationsFromNode } from '../utils/collect-declarations';
 import { Declarations } from '../types';
 import { visitSourceFileEnsureStyleImport } from '../utils/visit-source-file-ensure-style-import';
-
-const CLASS_NAMES_NAME = 'ClassNames';
+import { CLASS_NAMES_IMPORT } from '../constants';
 
 const isClassNamesFound = (sourceFile: ts.SourceFile): boolean => {
   return !!sourceFile.statements.find(statement =>
-    isPackageModuleImport(statement, CLASS_NAMES_NAME)
+    isPackageModuleImport(statement, CLASS_NAMES_IMPORT)
   );
 };
 
 const isClassNameComponent = (node: ts.Node): node is ts.JsxElement => {
   return (
-    ts.isJsxElement(node) && getIdentifierText(node.openingElement.tagName) === CLASS_NAMES_NAME
+    ts.isJsxElement(node) && getIdentifierText(node.openingElement.tagName) === CLASS_NAMES_IMPORT
   );
 };
 
@@ -29,7 +28,7 @@ export default function classNamesTransformer(
       }
 
       const transformedSourceFile = visitSourceFileEnsureStyleImport(sourceFile, context, {
-        removeNamedImport: CLASS_NAMES_NAME,
+        removeNamedImport: CLASS_NAMES_IMPORT,
       });
       const collectedDeclarations: Declarations = {};
 

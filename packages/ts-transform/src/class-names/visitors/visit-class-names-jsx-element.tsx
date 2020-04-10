@@ -3,10 +3,9 @@ import { getIdentifierText, createNodeError } from '../../utils/ast-node';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import { classNameHash } from '../../utils/hash';
-import { createStyleFragment } from '../../utils/create-jsx-element';
+import { createCompiledFragment } from '../../utils/create-jsx-element';
 import { CssVariableExpressions, Declarations, ToCssReturnType } from '../../types';
-
-const STYLE_IDENTIFIER = 'style';
+import { STYLE_PROP_NAME } from '../../constants';
 
 const visitCssCallExpression = (
   node: ts.CallExpression,
@@ -40,9 +39,7 @@ const isCssTaggedTemplateExpression = (node: ts.Node): node is ts.TaggedTemplate
 
 const isStyleIdentifier = (node: ts.Node): node is ts.Identifier => {
   return (
-    ts.isIdentifier(node) &&
-    node.escapedText === STYLE_IDENTIFIER &&
-    !ts.isJsxAttribute(node.parent)
+    ts.isIdentifier(node) && node.escapedText === STYLE_PROP_NAME && !ts.isJsxAttribute(node.parent)
   );
 };
 
@@ -110,7 +107,7 @@ export const visitClassNamesJsxElement = (
     ? returnNode.expression.body.expression
     : returnNode.expression.body;
 
-  return createStyleFragment(classNamesNode, {
+  return createCompiledFragment(classNamesNode, {
     css,
     cssVariables,
     children:
