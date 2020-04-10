@@ -1,6 +1,6 @@
 import ts from 'typescript';
 import isPropValid from '@emotion/is-prop-valid';
-import { createJsxElement } from '../../utils/create-jsx-element';
+import { createCompiledComponent } from '../../utils/create-jsx-element';
 import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
 import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import { Declarations } from '../../types';
@@ -84,31 +84,27 @@ export const visitStyledComponent = (
     };
   });
 
-  const newElement = createJsxElement(
-    tagName,
-    {
-      css: result.css,
-      cssVariables: visitedCssVariables,
-      originalNode: node,
-      context,
-      styleFactory: props => [
-        ts.createSpreadAssignment(ts.createIdentifier('props.style')),
-        ...props.map(prop => {
-          const propName = getPropertyAccessName(getIdentifierText(prop.initializer));
-          if (propsToDestructure.includes(propName)) {
-            prop.initializer = ts.createIdentifier(propName);
-          }
-          return prop;
-        }),
-      ],
-      classNameFactory: className =>
-        joinToJsxExpression(className, ts.createIdentifier('props.className'), {
-          conditional: true,
-        }),
-      jsxAttributes: [ts.createJsxSpreadAttribute(ts.createIdentifier('props'))],
-    },
-    node
-  );
+  const newElement = createCompiledComponent(tagName, {
+    css: result.css,
+    cssVariables: visitedCssVariables,
+    node,
+    context,
+    styleFactory: props => [
+      ts.createSpreadAssignment(ts.createIdentifier('props.style')),
+      ...props.map(prop => {
+        const propName = getPropertyAccessName(getIdentifierText(prop.initializer));
+        if (propsToDestructure.includes(propName)) {
+          prop.initializer = ts.createIdentifier(propName);
+        }
+        return prop;
+      }),
+    ],
+    classNameFactory: className =>
+      joinToJsxExpression(className, ts.createIdentifier('props.className'), {
+        conditional: true,
+      }),
+    jsxAttributes: [ts.createJsxSpreadAttribute(ts.createIdentifier('props'))],
+  });
 
   return ts.createArrowFunction(
     undefined,
