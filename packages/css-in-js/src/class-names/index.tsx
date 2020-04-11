@@ -2,9 +2,9 @@ import { ReactNode } from 'react';
 import { ObjectLiteralCSS } from '../types';
 import { createSetupError } from '../utils/error';
 
-type CSSFunction = (css: ObjectLiteralCSS) => string;
+export type CSSFunction = (css: ObjectLiteralCSS) => string;
 
-interface ClassNamesProps {
+export interface ClassNamesProps {
   children: (opts: { css: CSSFunction; style: { [key: string]: string } }) => ReactNode;
 }
 
