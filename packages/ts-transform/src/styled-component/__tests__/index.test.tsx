@@ -129,6 +129,38 @@ describe('styled component transformer', () => {
     expect(actual).toInclude("import React from 'react';");
   });
 
+  it('should compose a component using template literal', () => {
+    const actual = transformer.transform(`
+      import React from 'react';
+      import { styled } from '@compiled/css-in-js';
+
+      const Component = () => null;
+
+      const ListItem = styled(Component)\`
+        font-size: 20px;
+      \`;
+    `);
+
+    expect(actual).toInclude('as: C = Component');
+  });
+
+  it('should compose a component using object literal', () => {
+    const actual = transformer.transform(`
+      import React from 'react';
+      import { styled } from '@compiled/css-in-js';
+
+      const Component = () => null;
+
+      const ListItem = styled(Component)({
+        fontSize: 20
+      });
+    `);
+
+    console.log(actual);
+
+    expect(actual).toInclude('as: C = Component');
+  });
+
   it('should concat class name prop if defined', () => {
     const actual = transformer.transform(`
       import { styled } from '@compiled/css-in-js';

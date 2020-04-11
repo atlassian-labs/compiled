@@ -128,4 +128,37 @@ describe('styled component', () => {
 
     expect(getByText('Hello world').tagName).toEqual('SPAN');
   });
+
+  it('should compose a component using template literal', () => {
+    const Div = (props: {}) => <div {...props} />;
+    const StyledDiv = styled(Div)`
+      font-size: 12px;
+    `;
+
+    const { getByText } = render(<StyledDiv>Hello world</StyledDiv>);
+
+    expect(getByText('Hello world').tagName).toEqual('DIV');
+  });
+
+  it('should compose a component using object literal', () => {
+    const Div = (props: {}) => <div {...props} />;
+    const StyledDiv = styled(Div)({
+      fontSize: 12,
+    });
+
+    const { getByText } = render(<StyledDiv>Hello world</StyledDiv>);
+
+    expect(getByText('Hello world').tagName).toEqual('DIV');
+  });
+
+  it('should inherit types from composed component', () => {
+    const Link = (props: { href: string }) => <a {...props} />;
+    const StyledLink = styled(Link)({
+      fontSize: 12,
+    });
+
+    const { getByText } = render(<StyledLink href="/world">Hello world</StyledLink>);
+
+    expect(getByText('Hello world').getAttribute('href')).toEqual('/world');
+  });
 });
