@@ -156,8 +156,6 @@ describe('styled component transformer', () => {
       });
     `);
 
-    console.log(actual);
-
     expect(actual).toInclude('as: C = Component');
   });
 

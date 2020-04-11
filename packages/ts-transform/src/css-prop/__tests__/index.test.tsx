@@ -104,6 +104,20 @@ describe('css prop transformer', () => {
     expect(actual).toInclude('className={"css-test" + " " + className}');
   });
 
+  it('should pick up array composition', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      const base = { color: 'black' };
+      const top = \` color: red; \`;
+
+      <div css={[base, top]}>hello world</div>
+    `);
+
+    expect(actual).toInclude('.css-test{color:black;color:red;}');
+  });
+
   it('should concat explicit use of style prop on an element', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';

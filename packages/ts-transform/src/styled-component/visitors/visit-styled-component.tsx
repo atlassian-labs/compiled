@@ -1,12 +1,11 @@
 import ts from 'typescript';
 import isPropValid from '@emotion/is-prop-valid';
 import { createCompiledComponent } from '../../utils/create-jsx-element';
-import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
-import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import { Declarations } from '../../types';
 import { joinToJsxExpression } from '../../utils/expression-operators';
 import { getIdentifierText, createNodeError } from '../../utils/ast-node';
 import * as constants from '../../constants';
+import { buildCss } from '../../utils/css-builder';
 
 const getTagName = (
   node: ts.CallExpression | ts.TaggedTemplateExpression
@@ -44,16 +43,11 @@ const getPropertyAccessName = (propertyAccess?: string): string => {
   return propertyAccess.indexOf('.') > 0 ? propertyAccess.split('.')[1] : propertyAccess;
 };
 
-const getObjectLiteralOrTemplateLiteral = (
+const getCssNode = (
   node: ts.CallExpression | ts.TaggedTemplateExpression
-): ts.ObjectLiteralExpression | ts.TemplateExpression | ts.NoSubstitutionTemplateLiteral => {
+): ts.Expression | ts.NoSubstitutionTemplateLiteral => {
   if (ts.isCallExpression(node)) {
-    const firstArgument = node.arguments[0];
-    if (ts.isObjectLiteralExpression(firstArgument)) {
-      return firstArgument;
-    }
-
-    throw createNodeError('only object allowed as first argument', firstArgument);
+    return node.arguments[0];
   }
 
   return node.template;
@@ -65,12 +59,7 @@ export const visitStyledComponent = (
   collectedDeclarations: Declarations
 ): ts.Node => {
   const originalTagName = getTagName(node);
-  const dataToTransform = getObjectLiteralOrTemplateLiteral(node);
-
-  const result = ts.isObjectLiteralExpression(dataToTransform)
-    ? objectLiteralToCssString(dataToTransform, collectedDeclarations, context)
-    : templateLiteralToCss(dataToTransform, collectedDeclarations, context);
-
+  const result = buildCss(getCssNode(node), collectedDeclarations, context);
   const propsToDestructure: string[] = [];
 
   const visitedCssVariables = result.cssVariables.map(cssVarObj => {

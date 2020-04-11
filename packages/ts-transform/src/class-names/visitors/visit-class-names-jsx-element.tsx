@@ -1,32 +1,17 @@
 import * as ts from 'typescript';
 import { getIdentifierText, createNodeError } from '../../utils/ast-node';
-import { objectLiteralToCssString } from '../../utils/object-literal-to-css';
-import { templateLiteralToCss } from '../../utils/template-literal-to-css';
 import { classNameHash } from '../../utils/hash';
 import { createCompiledFragment } from '../../utils/create-jsx-element';
-import { CssVariableExpressions, Declarations, ToCssReturnType } from '../../types';
+import { CssVariableExpressions, Declarations } from '../../types';
 import { STYLE_PROP_NAME } from '../../constants';
+import { buildCss } from '../../utils/css-builder';
 
-const visitCssCallExpression = (
-  node: ts.CallExpression,
-  context: ts.TransformationContext,
-  collectedDeclarations: Declarations
-): ToCssReturnType => {
-  if (!ts.isObjectLiteralExpression(node.arguments[0])) {
-    throw createNodeError('only support object literal atm', node.arguments[0]);
+const getCssNode = (node: ts.TaggedTemplateExpression | ts.CallExpression): ts.Expression => {
+  if (ts.isCallExpression(node)) {
+    return node.arguments[0];
   }
 
-  const cssArgument: ts.ObjectLiteralExpression = node.arguments[0] as ts.ObjectLiteralExpression;
-  const extracted = objectLiteralToCssString(cssArgument, collectedDeclarations, context);
-  return extracted;
-};
-
-const visitCssTaggedTemplateExpression = (
-  node: ts.TaggedTemplateExpression,
-  context: ts.TransformationContext,
-  collectedDeclarations: Declarations
-): ToCssReturnType => {
-  return templateLiteralToCss(node.template, collectedDeclarations, context);
+  return node.template;
 };
 
 const isCssCallExpression = (node: ts.Node): node is ts.CallExpression => {
@@ -54,9 +39,7 @@ export const visitClassNamesJsxElement = (
 
   const visitor = (node: ts.Node): ts.Node => {
     if (isCssCallExpression(node) || isCssTaggedTemplateExpression(node)) {
-      let result = ts.isCallExpression(node)
-        ? visitCssCallExpression(node, context, collectedDeclarations)
-        : visitCssTaggedTemplateExpression(node, context, collectedDeclarations);
+      const result = buildCss(getCssNode(node), collectedDeclarations, context);
       const className = classNameHash(result.css);
 
       css += `.${className} { ${result.css} }`;

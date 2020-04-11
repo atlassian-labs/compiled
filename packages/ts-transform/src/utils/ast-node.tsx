@@ -77,7 +77,6 @@ export const isPackageModuleImport = (statement: ts.Node, namedImport?: string):
 };
 
 export const createNodeError = (message: string, node: ts.Node) => {
-  // Throws a string so we don't get a stack trace.
   throw new Error(`@compiled/css-in-js => ${message}
 
 ${node.getText()}
