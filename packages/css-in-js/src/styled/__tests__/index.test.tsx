@@ -161,4 +161,30 @@ describe('styled component', () => {
 
     expect(getByText('Hello world').getAttribute('href')).toEqual('/world');
   });
+
+  it('should create css from string', () => {
+    const StyledDiv = styled.div('font-size: 15px;');
+
+    const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
+
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '15px');
+  });
+
+  it('should create css from template literal', () => {
+    const StyledDiv = styled.div(`font-size: 15px;`);
+
+    const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
+
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '15px');
+  });
+
+  it('should create css from array', () => {
+    const base = { fontSize: 12 };
+    const next = ` font-size: 15px; `;
+    const StyledDiv = styled.div([base, next]);
+
+    const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
+
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '15px');
+  });
 });

@@ -8,7 +8,7 @@ export type CSSProps = CSSProperties;
 
 declare module 'react' {
   interface DOMAttributes<T> {
-    css?: CSSProps | { [key: string]: CSSProps } | string;
+    css?: CSSProps | { [key: string]: CSSProps } | string | (string | CSSProps)[];
   }
 }
 

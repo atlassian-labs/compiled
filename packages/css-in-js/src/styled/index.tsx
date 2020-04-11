@@ -6,6 +6,7 @@ import { createSetupError } from '../utils/error';
  */
 export type CssObject<TProps> =
   | CSSProperties
+  | string
   | Record<string, CSSProperties | ((props: TProps) => string | number) | string | number>;
 
 /**
@@ -28,7 +29,7 @@ export interface StyledProps {
 export interface StyledFunctionFromTag<TTag extends keyof JSX.IntrinsicElements> {
   <TProps extends {}>(
     // Allows either string or object (`` or ({}))
-    css: CssObject<TProps> | TemplateStringsArray,
+    css: CssObject<TProps> | CssObject<TProps>[] | TemplateStringsArray,
     ...interpoltations: Interpolations<TProps>[]
   ): React.ComponentType<TProps & JSX.IntrinsicElements[TTag] & StyledProps>;
 }

@@ -1,8 +1,14 @@
-import { ReactNode } from 'react';
-import { ObjectLiteralCSS } from '../types';
+import { ReactNode, CSSProperties } from 'react';
 import { createSetupError } from '../utils/error';
 
 export type CSSFunction = (css: ObjectLiteralCSS) => string;
+
+export type ObjectLiteralCSS<TExtraProps = CSSProperties> =
+  | TemplateStringsArray
+  | CSSProperties
+  | string
+  | (CSSProperties | TemplateStringsArray | string)[]
+  | { [key: string]: TExtraProps | CSSProperties };
 
 export interface ClassNamesProps {
   children: (opts: { css: CSSFunction; style: { [key: string]: string } }) => ReactNode;
