@@ -48,7 +48,7 @@ export const visitStyledComponent = (
   context: ts.TransformationContext,
   collectedDeclarations: Declarations
 ): ts.Node => {
-  const tagName = getTagName(node);
+  const originalTagName = getTagName(node);
   const dataToTransform = getObjectLiteralOrTemplateLiteral(node);
 
   const result = ts.isObjectLiteralExpression(dataToTransform)
@@ -56,6 +56,7 @@ export const visitStyledComponent = (
     : templateLiteralToCss(dataToTransform, collectedDeclarations, context);
 
   const propsToDestructure: string[] = [];
+
   const visitedCssVariables = result.cssVariables.map(cssVarObj => {
     // Expression can be simple (props.color), complex (props.color ? 'blah': 'yeah', or be an IIFE)
     // We need to traverse it to find uses of props.blah and then mark them.
@@ -85,7 +86,7 @@ export const visitStyledComponent = (
     };
   });
 
-  const newElement = createCompiledComponent(tagName, {
+  const newElement = createCompiledComponent(ts.createIdentifier(constants.STYLED_AS_USAGE_NAME), {
     css: result.css,
     cssVariables: visitedCssVariables,
     node,
@@ -131,26 +132,27 @@ export const visitStyledComponent = (
             undefined,
             undefined,
             undefined,
-            propsToDestructure.length
-              ? // We want to destructure props so it doesn't contain any invalid html attributes.
-                ts.createObjectBindingPattern([
-                  ...propsToDestructure.map(prop =>
-                    ts.createBindingElement(
-                      undefined,
-                      undefined,
-                      ts.createIdentifier(prop),
-                      undefined
-                    )
-                  ),
-                  ts.createBindingElement(
-                    ts.createToken(ts.SyntaxKind.DotDotDotToken),
-                    undefined,
-                    ts.createIdentifier('props'),
-                    undefined
-                  ),
-                ])
-              : // They're all valid so we don't need to destructure.
+            ts.createObjectBindingPattern([
+              // a: C = 'div'
+              ts.createBindingElement(
+                undefined,
+                ts.createIdentifier(constants.STYLED_AS_PROP_NAME),
+                ts.createIdentifier(constants.STYLED_AS_USAGE_NAME),
+                ts.createStringLiteral(originalTagName)
+              ),
+
+              ...propsToDestructure.map(prop =>
+                ts.createBindingElement(undefined, undefined, ts.createIdentifier(prop), undefined)
+              ),
+
+              // ...props
+              ts.createBindingElement(
+                ts.createToken(ts.SyntaxKind.DotDotDotToken),
+                undefined,
                 ts.createIdentifier('props'),
+                undefined
+              ),
+            ]),
             undefined,
             undefined,
             undefined

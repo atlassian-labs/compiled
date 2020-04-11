@@ -34,7 +34,10 @@ describe('babel plugin', () => {
     expect(output?.code).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
-      React.forwardRef((props, ref) => <><Style hash=\\"css-1x3e11p\\">{[\\".css-1x3e11p{font-size:12px;}\\"]}</Style><div {...props} ref={ref} className={\\"css-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} /></>);"
+      React.forwardRef(({
+        as: C = \\"div\\",
+        ...props
+      }, ref) => <><Style hash=\\"css-1x3e11p\\">{[\\".css-1x3e11p{font-size:12px;}\\"]}</Style><C {...props} ref={ref} className={\\"css-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} /></>);"
     `);
   });
 
