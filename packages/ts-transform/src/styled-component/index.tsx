@@ -18,17 +18,19 @@ const isStyledComponent = (
 ): node is ts.CallExpression | ts.TaggedTemplateExpression => {
   if (
     ts.isCallExpression(node) &&
-    ts.isPropertyAccessExpression(node.expression) &&
+    (ts.isPropertyAccessExpression(node.expression) || ts.isCallExpression(node.expression)) &&
     getIdentifierText(node.expression.expression) === STYLED_COMPONENT_IMPORT
   ) {
+    // styled.div() or styled(Component)()
     return true;
   }
 
   if (
     ts.isTaggedTemplateExpression(node) &&
-    ts.isPropertyAccessExpression(node.tag) &&
+    (ts.isPropertyAccessExpression(node.tag) || ts.isCallExpression(node.tag)) &&
     getIdentifierText(node.tag.expression) === STYLED_COMPONENT_IMPORT
   ) {
+    // styled.div`` or styled(Component)``
     return true;
   }
 

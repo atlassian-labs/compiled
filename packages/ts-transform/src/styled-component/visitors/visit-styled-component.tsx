@@ -8,13 +8,29 @@ import { joinToJsxExpression } from '../../utils/expression-operators';
 import { getIdentifierText, createNodeError } from '../../utils/ast-node';
 import * as constants from '../../constants';
 
-const getTagName = (node: ts.CallExpression | ts.TaggedTemplateExpression): string => {
-  if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
-    return node.expression.name.text;
+const getTagName = (
+  node: ts.CallExpression | ts.TaggedTemplateExpression
+): ts.StringLiteral | ts.Identifier => {
+  if (ts.isCallExpression(node)) {
+    if (ts.isPropertyAccessExpression(node.expression)) {
+      return ts.createStringLiteral(node.expression.name.text);
+    }
+
+    if (ts.isCallExpression(node.expression)) {
+      const firstArg = node.expression.arguments[0] as ts.Identifier;
+      return firstArg;
+    }
   }
 
-  if (ts.isTaggedTemplateExpression(node) && ts.isPropertyAccessExpression(node.tag)) {
-    return node.tag.name.text;
+  if (ts.isTaggedTemplateExpression(node)) {
+    if (ts.isPropertyAccessExpression(node.tag)) {
+      return ts.createStringLiteral(node.tag.name.text);
+    }
+
+    if (ts.isCallExpression(node.tag)) {
+      const firstArg = node.tag.arguments[0] as ts.Identifier;
+      return firstArg;
+    }
   }
 
   throw createNodeError('tag should have been here', node);
@@ -138,7 +154,7 @@ export const visitStyledComponent = (
                 undefined,
                 ts.createIdentifier(constants.STYLED_AS_PROP_NAME),
                 ts.createIdentifier(constants.STYLED_AS_USAGE_NAME),
-                ts.createStringLiteral(originalTagName)
+                originalTagName
               ),
 
               ...propsToDestructure.map(prop =>
