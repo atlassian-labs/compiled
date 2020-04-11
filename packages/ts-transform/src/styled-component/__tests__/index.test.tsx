@@ -24,7 +24,7 @@ describe('styled component transformer', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
-      const ListItem = React.forwardRef(({ as, ...props }, ref) => <><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><(as || \\"div\\") {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
+      const ListItem = React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><C {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
       "
     `);
   });
@@ -77,7 +77,7 @@ describe('styled component transformer', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
-      const ListItem = React.forwardRef(({ as, ...props }, ref) => <><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><(as || \\"div\\") {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
+      const ListItem = React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><C {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
       "
     `);
   });
@@ -114,7 +114,7 @@ describe('styled component transformer', () => {
       \`;
     `);
 
-    expect(actual).toInclude('<(as || "div") {...props}');
+    expect(actual).toInclude('<C {...props}');
   });
 
   it('should do nothing if react default import is already defined', () => {

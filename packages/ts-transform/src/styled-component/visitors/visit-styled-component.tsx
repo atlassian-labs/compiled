@@ -8,13 +8,13 @@ import { joinToJsxExpression } from '../../utils/expression-operators';
 import { getIdentifierText, createNodeError } from '../../utils/ast-node';
 import * as constants from '../../constants';
 
-const getTagName = (node: ts.CallExpression | ts.TaggedTemplateExpression): ts.Identifier => {
+const getTagName = (node: ts.CallExpression | ts.TaggedTemplateExpression): string => {
   if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
-    return node.expression.name;
+    return node.expression.name.text;
   }
 
   if (ts.isTaggedTemplateExpression(node) && ts.isPropertyAccessExpression(node.tag)) {
-    return node.tag.name;
+    return node.tag.name.text;
   }
 
   throw createNodeError('tag should have been here', node);
@@ -55,7 +55,7 @@ export const visitStyledComponent = (
     ? objectLiteralToCssString(dataToTransform, collectedDeclarations, context)
     : templateLiteralToCss(dataToTransform, collectedDeclarations, context);
 
-  const propsToDestructure: string[] = [constants.STYLED_AS_PROP_NAME];
+  const propsToDestructure: string[] = [];
 
   const visitedCssVariables = result.cssVariables.map(cssVarObj => {
     // Expression can be simple (props.color), complex (props.color ? 'blah': 'yeah', or be an IIFE)
@@ -86,45 +86,36 @@ export const visitStyledComponent = (
     };
   });
 
-  const newElement = createCompiledComponent(
-    ts.createParen(
-      ts.createBinary(
-        ts.createIdentifier('as'),
-        ts.SyntaxKind.BarBarToken,
-        ts.createStringLiteral(originalTagName.text)
-      )
-    ) as any,
-    {
-      css: result.css,
-      cssVariables: visitedCssVariables,
-      node,
-      context,
-      styleFactory: props => [
-        ts.createSpreadAssignment(ts.createIdentifier('props.style')),
-        ...props.map(prop => {
-          const propName = getPropertyAccessName(getIdentifierText(prop.initializer));
-          if (propsToDestructure.includes(propName)) {
-            prop.initializer = ts.createIdentifier(propName);
-          }
-          return prop;
-        }),
-      ],
-      classNameFactory: className =>
-        joinToJsxExpression(className, ts.createIdentifier('props.className'), {
-          conditional: true,
-        }),
-      jsxAttributes: [
-        // {...props}
-        ts.createJsxSpreadAttribute(ts.createIdentifier('props')),
+  const newElement = createCompiledComponent(ts.createIdentifier(constants.STYLED_AS_USAGE_NAME), {
+    css: result.css,
+    cssVariables: visitedCssVariables,
+    node,
+    context,
+    styleFactory: props => [
+      ts.createSpreadAssignment(ts.createIdentifier('props.style')),
+      ...props.map(prop => {
+        const propName = getPropertyAccessName(getIdentifierText(prop.initializer));
+        if (propsToDestructure.includes(propName)) {
+          prop.initializer = ts.createIdentifier(propName);
+        }
+        return prop;
+      }),
+    ],
+    classNameFactory: className =>
+      joinToJsxExpression(className, ts.createIdentifier('props.className'), {
+        conditional: true,
+      }),
+    jsxAttributes: [
+      // {...props}
+      ts.createJsxSpreadAttribute(ts.createIdentifier('props')),
 
-        // ref={ref}
-        ts.createJsxAttribute(
-          ts.createIdentifier(constants.REF_PROP_NAME),
-          ts.createJsxExpression(undefined, ts.createIdentifier(constants.REF_PROP_NAME))
-        ),
-      ],
-    }
-  );
+      // ref={ref}
+      ts.createJsxAttribute(
+        ts.createIdentifier(constants.REF_PROP_NAME),
+        ts.createJsxExpression(undefined, ts.createIdentifier(constants.REF_PROP_NAME))
+      ),
+    ],
+  });
 
   return ts.createCall(
     ts.createPropertyAccess(
@@ -141,26 +132,27 @@ export const visitStyledComponent = (
             undefined,
             undefined,
             undefined,
-            propsToDestructure.length
-              ? // We want to destructure props so it doesn't contain any invalid html attributes.
-                ts.createObjectBindingPattern([
-                  ...propsToDestructure.map(prop =>
-                    ts.createBindingElement(
-                      undefined,
-                      undefined,
-                      ts.createIdentifier(prop),
-                      undefined
-                    )
-                  ),
-                  ts.createBindingElement(
-                    ts.createToken(ts.SyntaxKind.DotDotDotToken),
-                    undefined,
-                    ts.createIdentifier('props'),
-                    undefined
-                  ),
-                ])
-              : // They're all valid so we don't need to destructure.
+            ts.createObjectBindingPattern([
+              // a: C = 'div'
+              ts.createBindingElement(
+                undefined,
+                ts.createIdentifier(constants.STYLED_AS_PROP_NAME),
+                ts.createIdentifier(constants.STYLED_AS_USAGE_NAME),
+                ts.createStringLiteral(originalTagName)
+              ),
+
+              ...propsToDestructure.map(prop =>
+                ts.createBindingElement(undefined, undefined, ts.createIdentifier(prop), undefined)
+              ),
+
+              // ...props
+              ts.createBindingElement(
+                ts.createToken(ts.SyntaxKind.DotDotDotToken),
+                undefined,
                 ts.createIdentifier('props'),
+                undefined
+              ),
+            ]),
             undefined,
             undefined,
             undefined

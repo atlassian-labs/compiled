@@ -17,6 +17,7 @@ export const COMMON_JS_COMPILED_IMPORT = 'css_in_js_1';
 export const REACT_DEFAULT_IMPORT = 'React';
 export const REACT_COMMON_JS_IMPORT = 'react_2';
 export const STYLED_AS_PROP_NAME = 'as';
+export const STYLED_AS_USAGE_NAME = 'C';
 
 // Named imports
 export const FORWARD_REF_IMPORT = 'forwardRef';
