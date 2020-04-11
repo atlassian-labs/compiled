@@ -118,4 +118,14 @@ describe('styled component', () => {
 
     expect(ref).toHaveProperty('tagName', 'A');
   });
+
+  it('should overide the underlying markup with a span', () => {
+    const Heading = styled.h1`
+      color: red;
+    `;
+
+    const { getByText } = render(<Heading as="span">Hello world</Heading>);
+
+    expect(getByText('Hello world').tagName).toEqual('SPAN');
+  });
 });
