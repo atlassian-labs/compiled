@@ -5,6 +5,7 @@ import { getJsxNodeAttributes, getJsxNodeAttributesValue, getIdentifierText } fr
 import { joinToJsxExpression } from './expression-operators';
 import { CssVariableExpressions } from '../types';
 import * as constants from '../constants';
+import { concatArrays } from './functional-programming';
 
 interface JsxElementOpts {
   css: string;
@@ -97,8 +98,16 @@ const cloneJsxElement = (
   const previousStyleProp = openingJsxElement.attributes.properties.find(
     prop => prop.name && getIdentifierText(prop.name) === constants.STYLE_PROP_NAME
   );
+
+  /**
+   * Set when style={{ ... }}
+   */
   let styleProperties: ts.ObjectLiteralElementLike[] = [];
-  let styleExpression: ts.Identifier | undefined;
+
+  /**
+   * Set when style={style}
+   */
+  let stylePropIdentifier: ts.Identifier | undefined;
 
   if (
     previousStyleProp &&
@@ -110,7 +119,7 @@ const cloneJsxElement = (
     if (ts.isObjectLiteralExpression(previousStyleProp.initializer.expression)) {
       styleProperties = previousStyleProp.initializer.expression.properties.map(x => x);
     } else if (ts.isIdentifier(previousStyleProp.initializer.expression)) {
-      styleExpression = previousStyleProp.initializer.expression;
+      stylePropIdentifier = previousStyleProp.initializer.expression;
     }
   }
 
@@ -136,7 +145,9 @@ const cloneJsxElement = (
           ts.createJsxExpression(
             undefined,
             ts.createObjectLiteral(
-              styleProperties.concat(
+              concatArrays(
+                styleProperties,
+                stylePropIdentifier ? [ts.createSpreadAssignment(stylePropIdentifier)] : [],
                 opts.cssVariables.map(cssVariable =>
                   ts.createPropertyAssignment(
                     ts.createStringLiteral(cssVariable.name),
@@ -151,10 +162,10 @@ const cloneJsxElement = (
 
     // style={identifier}
     !hasStaticStyles &&
-      !!styleExpression &&
+      !!stylePropIdentifier &&
       ts.createJsxAttribute(
         ts.createIdentifier(constants.STYLE_PROP_NAME),
-        ts.createJsxExpression(undefined, styleExpression)
+        ts.createJsxExpression(undefined, stylePropIdentifier)
       ),
   ].filter((item): item is ts.JsxAttribute => !!item);
 

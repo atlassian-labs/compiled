@@ -74,10 +74,11 @@ describe('css prop transformer', () => {
       import '@compiled/css-in-js';
       import React from 'react';
 
-      const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize: 12 }}>hello world</div>;
+      const red = 'red';
+      const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize: 12, color: red }}>hello world</div>;
     `);
 
-    expect(actual).toInclude('style={style}');
+    expect(actual).toInclude('style={{ ...style, "--var-test": red }}');
   });
 
   it('should pass spread style when there is styles already set', () => {
