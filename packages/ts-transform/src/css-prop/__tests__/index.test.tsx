@@ -58,7 +58,52 @@ describe('css prop transformer', () => {
     expect(actual).toIncludeRepeated(`import { Style } from '@compiled/css-in-js';`, 1);
   });
 
-  it('should do nothing if react default import is already defined', () => {
+  it('should pass through style when there is no dynamic styles in the css', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize: 12 }}>hello world</div>;
+    `);
+
+    expect(actual).toInclude('style={style}');
+  });
+
+  it('should pass through style when there is dynamic styles in the css', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize: 12 }}>hello world</div>;
+    `);
+
+    expect(actual).toInclude('style={style}');
+  });
+
+  it('should pass spread style when there is styles already set', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12 }}>hello world</div>;
+    `);
+
+    expect(actual).toInclude(`style={{ ...style, display: 'block' }}`);
+  });
+
+  it('should pass spread style when there is styles already set and using dynamic css', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      const red = 'red';
+      const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12, color: red }}>hello world</div>;
+    `);
+
+    expect(actual).toInclude(`style={{ ...style, display: 'block', \"--var-test\": red }}`);
+  });
+
+  it('should compose class name from parent and pass down css variables in style', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
       import React from 'react';

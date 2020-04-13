@@ -98,17 +98,23 @@ const cloneJsxElement = (
     prop => prop.name && getIdentifierText(prop.name) === constants.STYLE_PROP_NAME
   );
   let styleProperties: ts.ObjectLiteralElementLike[] = [];
+  let styleExpression: ts.Identifier | undefined;
 
   if (
     previousStyleProp &&
     ts.isJsxAttribute(previousStyleProp) &&
     previousStyleProp.initializer &&
     ts.isJsxExpression(previousStyleProp.initializer) &&
-    previousStyleProp.initializer.expression &&
-    ts.isObjectLiteralExpression(previousStyleProp.initializer.expression)
+    previousStyleProp.initializer.expression
   ) {
-    styleProperties = previousStyleProp.initializer.expression.properties.map(x => x);
+    if (ts.isObjectLiteralExpression(previousStyleProp.initializer.expression)) {
+      styleProperties = previousStyleProp.initializer.expression.properties.map(x => x);
+    } else if (ts.isIdentifier(previousStyleProp.initializer.expression)) {
+      styleExpression = previousStyleProp.initializer.expression;
+    }
   }
+
+  const hasStaticStyles = !!(opts.cssVariables.length || styleProperties.length);
 
   const props = [
     // Filter out css prop, carry over others
@@ -123,8 +129,8 @@ const cloneJsxElement = (
     // className={}
     ts.createJsxAttribute(ts.createIdentifier(constants.CLASSNAME_PROP_NAME), newClassNameProp),
 
-    // style={}
-    opts.cssVariables.length || styleProperties.length
+    // style={{ ... }}
+    hasStaticStyles
       ? ts.createJsxAttribute(
           ts.createIdentifier(constants.STYLE_PROP_NAME),
           ts.createJsxExpression(
@@ -142,9 +148,15 @@ const cloneJsxElement = (
           )
         )
       : undefined,
-  ].filter(
-    (item): item is ts.JsxAttribute => typeof item !== 'undefined' && ts.isJsxAttribute(item)
-  );
+
+    // style={identifier}
+    !hasStaticStyles &&
+      !!styleExpression &&
+      ts.createJsxAttribute(
+        ts.createIdentifier(constants.STYLE_PROP_NAME),
+        ts.createJsxExpression(undefined, styleExpression)
+      ),
+  ].filter((item): item is ts.JsxAttribute => !!item);
 
   return ts.isJsxSelfClosingElement(node)
     ? ts.setOriginalNode(
