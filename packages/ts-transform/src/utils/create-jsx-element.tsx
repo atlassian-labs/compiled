@@ -107,7 +107,7 @@ const cloneJsxElement = (
   /**
    * Set when style={style}
    */
-  let stylePropIdentifier: ts.Identifier | undefined;
+  let stylePropIdentifier: ts.Expression | undefined;
 
   if (
     previousStyleProp &&
@@ -118,7 +118,7 @@ const cloneJsxElement = (
   ) {
     if (ts.isObjectLiteralExpression(previousStyleProp.initializer.expression)) {
       styleProperties = previousStyleProp.initializer.expression.properties.map(x => x);
-    } else if (ts.isIdentifier(previousStyleProp.initializer.expression)) {
+    } else {
       stylePropIdentifier = previousStyleProp.initializer.expression;
     }
   }

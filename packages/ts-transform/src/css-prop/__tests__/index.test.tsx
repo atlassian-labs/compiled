@@ -58,7 +58,7 @@ describe('css prop transformer', () => {
     expect(actual).toIncludeRepeated(`import { Style } from '@compiled/css-in-js';`, 1);
   });
 
-  it('should pass through style when there is no dynamic styles in the css', () => {
+  it('should pass through style identifier when there is no dynamic styles in the css', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -69,7 +69,18 @@ describe('css prop transformer', () => {
     expect(actual).toInclude('style={style}');
   });
 
-  it('should pass through style when there is dynamic styles in the css', () => {
+  it('should pass through style property access when there is no dynamic styles in the css', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      const Component = ({ className, ...props }) => <div className={className} style={props.style} css={{ fontSize: 12 }}>hello world</div>;
+    `);
+
+    expect(actual).toInclude('style={props.style}');
+  });
+
+  it('should spread style identifier when there is dynamic styles in the css', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -81,7 +92,19 @@ describe('css prop transformer', () => {
     expect(actual).toInclude('style={{ ...style, "--var-test": red }}');
   });
 
-  it('should pass spread style when there is styles already set', () => {
+  it('should spread style property access when there is dynamic styles in the css', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      const red = 'red';
+      const Component = ({ className, ...props }) => <div className={className} style={props.style} css={{ fontSize: 12, color: red }}>hello world</div>;
+    `);
+
+    expect(actual).toInclude('style={{ ...props.style, "--var-test": red }}');
+  });
+
+  it('should spread style identifier when there is styles already set', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -92,7 +115,7 @@ describe('css prop transformer', () => {
     expect(actual).toInclude(`style={{ ...style, display: 'block' }}`);
   });
 
-  it('should pass spread style when there is styles already set and using dynamic css', () => {
+  it('should spread style identifier when there is styles already set and using dynamic css', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
       import React from 'react';
