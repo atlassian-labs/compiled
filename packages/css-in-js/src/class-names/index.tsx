@@ -1,10 +1,13 @@
 import { ReactNode } from 'react';
 import { createSetupError } from '../utils/error';
-import { CssFunction, TemplateInterpolations } from '../types';
+import { CssFunction, BasicTemplateInterpolations } from '../types';
 
 export interface ClassNamesProps {
   children: (opts: {
-    css: (css: CssFunction | CssFunction[], ...interpoltations: TemplateInterpolations[]) => string;
+    css: (
+      css: CssFunction | CssFunction[],
+      ...interpoltations: BasicTemplateInterpolations[]
+    ) => string;
     style: { [key: string]: string };
   }) => ReactNode;
 }
