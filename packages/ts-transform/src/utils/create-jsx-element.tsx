@@ -323,3 +323,29 @@ export const createCompiledComponentFromNode = (
     cloneJsxElement(node, className, opts)
   );
 };
+
+export const createDevDisplayName = (identifier: ts.Identifier) => {
+  return ts.createIf(
+    ts.createBinary(
+      ts.createPropertyAccess(
+        ts.createPropertyAccess(ts.createIdentifier('process'), ts.createIdentifier('env')),
+        ts.createIdentifier('NODE_ENV')
+      ),
+      ts.createToken(ts.SyntaxKind.EqualsEqualsEqualsToken),
+      ts.createStringLiteral('development')
+    ),
+    ts.createBlock(
+      [
+        ts.createExpressionStatement(
+          ts.createBinary(
+            ts.createPropertyAccess(identifier, ts.createIdentifier('displayName')),
+            ts.createToken(ts.SyntaxKind.EqualsToken),
+            ts.createStringLiteral(identifier.text)
+          )
+        ),
+      ],
+      true
+    ),
+    undefined
+  );
+};
