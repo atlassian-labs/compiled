@@ -15,4 +15,5 @@ module.exports = {
       compiler: 'ttypescript',
     },
   },
+  watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
 };
