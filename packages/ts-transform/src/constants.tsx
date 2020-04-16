@@ -1,7 +1,6 @@
 import * as ts from 'typescript';
 
 // Strings
-export const CLASS_NAME_PREFIX = 'css';
 export const CSS_VARIABLE_PREFIX = 'var';
 
 // Props

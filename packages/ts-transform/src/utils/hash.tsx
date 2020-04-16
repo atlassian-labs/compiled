@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { CLASS_NAME_PREFIX, CSS_VARIABLE_PREFIX } from '../constants';
+import { CSS_VARIABLE_PREFIX } from '../constants';
 
 /**
  * Taken from https://github.com/garycourt/murmurhash-js/blob/master/murmurhash2_gc.js
@@ -46,7 +46,7 @@ export function hash(str: string, seed: number = 0): string {
 }
 
 export const classNameHash = (css: string): string => {
-  return `${CLASS_NAME_PREFIX}-${hash(css)}`;
+  return `${hash(css)}`;
 };
 
 export const cssVariableHash = (expression: ts.Node): string => {
