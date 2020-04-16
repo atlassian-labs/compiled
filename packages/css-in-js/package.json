@@ -28,7 +28,8 @@
     "src"
   ],
   "dependencies": {
-    "@compiled/style": "0.2.14"
+    "@compiled/style": "0.2.14",
+    "csstype": "^2.0.0"
   },
   "peerDependencies": {
     "react": "^16.12.0"

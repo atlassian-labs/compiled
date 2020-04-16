@@ -1,18 +1,15 @@
-import { CSSProperties, ComponentType } from 'react';
+import { ComponentType } from 'react';
 import { createSetupError } from '../utils/error';
+import { CssFunction, TemplateInterpolations } from '../types';
+
+export interface FunctionIterpolation<TProps> {
+  (props: TProps): string | number;
+}
 
 /**
  * Typing for the CSS object.
  */
-export type CssObject<TProps> =
-  | CSSProperties
-  | string
-  | Record<string, CSSProperties | ((props: TProps) => string | number) | string | number>;
-
-/**
- * Typing for the interpolations.
- */
-export type Interpolations<TProps> = string | number | ((props: TProps) => string | number);
+export type CssObject<TProps> = CssFunction<FunctionIterpolation<TProps>>;
 
 /**
  * Extra props added to the output Styled Component.
@@ -29,8 +26,8 @@ export interface StyledProps {
 export interface StyledFunctionFromTag<TTag extends keyof JSX.IntrinsicElements> {
   <TProps extends {}>(
     // Allows either string or object (`` or ({}))
-    css: CssObject<TProps> | CssObject<TProps>[] | TemplateStringsArray,
-    ...interpoltations: Interpolations<TProps>[]
+    css: CssObject<TProps> | CssObject<TProps>[],
+    ...interpoltations: (TemplateInterpolations | FunctionIterpolation<TProps>)[]
   ): React.ComponentType<TProps & JSX.IntrinsicElements[TTag] & StyledProps>;
 }
 
@@ -38,7 +35,7 @@ export interface StyledFunctionFromComponent<TInheritedProps extends {}> {
   <TProps extends {}>(
     // Allows either string or object (`` or ({}))
     css: CssObject<TProps> | TemplateStringsArray,
-    ...interpoltations: Interpolations<TProps>[]
+    ...interpoltations: (TemplateInterpolations | FunctionIterpolation<TProps>)[]
   ): React.ComponentType<TProps & StyledProps & TInheritedProps>;
 }
 
