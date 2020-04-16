@@ -126,6 +126,26 @@ describe('styled component', () => {
     });
   });
 
+  it('should not have a display name', () => {
+    process.env.NODE_ENV = 'production';
+
+    const StyledDiv = styled.div`
+      font-size: 12px;
+    `;
+
+    expect(StyledDiv.displayName).toEqual(undefined);
+  });
+
+  it('should have a display name', () => {
+    process.env.NODE_ENV = 'development';
+
+    const StyledDiv = styled.div`
+      font-size: 12px;
+    `;
+
+    expect(StyledDiv.displayName).toEqual('StyledDiv');
+  });
+
   it('should not type error with nested arrow funcs', () => {
     styled.div<{ fontSize: string }>({
       color: 'currentColor',
