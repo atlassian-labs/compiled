@@ -27,7 +27,7 @@ export const analyzeCssInDev = (css: string[], hash: string) => {
     if (shouldWarnAboutSelectors) {
       warn(
         `Selectors "${selectorsToWarn.join(', ')}" are dangerous to use when server side rendering.
-  Alternatively try and use "nth-of-type", or placing data attributes and targetting those instead.
+  Alternatively try and use ":nth-of-type", or placing data attributes and targetting those instead.
   Read https://compiledcssinjs.com/docs/server-side-rendering for more advice.`
       );
     }
