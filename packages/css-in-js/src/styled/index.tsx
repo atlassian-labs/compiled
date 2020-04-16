@@ -1,6 +1,6 @@
 import { ComponentType } from 'react';
 import { createSetupError } from '../utils/error';
-import { CssFunction, TemplateInterpolations } from '../types';
+import { CssFunction, BasicTemplateInterpolations } from '../types';
 
 export interface FunctionIterpolation<TProps> {
   (props: TProps): string | number;
@@ -27,7 +27,7 @@ export interface StyledFunctionFromTag<TTag extends keyof JSX.IntrinsicElements>
   <TProps extends {}>(
     // Allows either string or object (`` or ({}))
     css: CssObject<TProps> | CssObject<TProps>[],
-    ...interpoltations: (TemplateInterpolations | FunctionIterpolation<TProps>)[]
+    ...interpoltations: (BasicTemplateInterpolations | FunctionIterpolation<TProps>)[]
   ): React.ComponentType<TProps & JSX.IntrinsicElements[TTag] & StyledProps>;
 }
 
@@ -35,7 +35,7 @@ export interface StyledFunctionFromComponent<TInheritedProps extends {}> {
   <TProps extends {}>(
     // Allows either string or object (`` or ({}))
     css: CssObject<TProps> | TemplateStringsArray,
-    ...interpoltations: (TemplateInterpolations | FunctionIterpolation<TProps>)[]
+    ...interpoltations: (BasicTemplateInterpolations | FunctionIterpolation<TProps>)[]
   ): React.ComponentType<TProps & StyledProps & TInheritedProps>;
 }
 

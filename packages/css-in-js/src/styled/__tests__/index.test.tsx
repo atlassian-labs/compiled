@@ -224,6 +224,17 @@ describe('styled component', () => {
     });
   });
 
+  it('should not type error', () => {
+    styled.div<{ primary: string }>({
+      fontSize: '20px',
+      color: props => props.primary,
+      margin: '20px',
+      ':hover': {
+        color: 'red',
+      },
+    });
+  });
+
   it('should create css from string', () => {
     const StyledDiv = styled.div('font-size: 15px;');
 
