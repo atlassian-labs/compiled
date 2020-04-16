@@ -1,7 +1,14 @@
-export const toHaveCompiledCss: jest.CustomMatcher = (
+const kebabCase = (str: string) =>
+  str
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/\s+/g, '-')
+    .toLowerCase();
+
+export function toHaveCompiledCss(
+  this: jest.MatcherUtils,
   element: HTMLElement,
   ...args: [{ [key: string]: string } | string, string]
-) => {
+): jest.CustomMatcherResult {
   const [property, value] = args;
   const properties = typeof property === 'string' ? { [property]: value } : property;
   let styleElement = element.parentElement && element.parentElement.querySelector('style');
@@ -16,10 +23,6 @@ export const toHaveCompiledCss: jest.CustomMatcher = (
       }
     }
   }
-
-  const stylesToFind = Object.keys(properties).map(
-    property => `${property}:${properties[property]}`
-  );
 
   if (!styleElement) {
     return {
@@ -36,18 +39,34 @@ export const toHaveCompiledCss: jest.CustomMatcher = (
   let css = styleElement.textContent || '';
 
   if (styles && Object.keys(styles).length > 0) {
-    Object.entries(styles).forEach(([key, value]: any) => {
+    Object.entries(styles).forEach(([key, value]: [string, any]) => {
       // Replace all instances of var with the value.
       // We split and join to replace all instances without needing to jump into a dynamic regex.
       css = css.split(`var(${key})`).join(value);
     });
   }
-  const notFoundStyles = stylesToFind.filter(styleToFind => !css.includes(styleToFind));
 
-  if (css.includes(`.${element.className}`) && notFoundStyles.length === 0) {
+  const stylesToFind = Object.keys(properties).map(
+    property => `${kebabCase(property)}:${properties[property]}`
+  );
+  const foundStyles = stylesToFind.filter(styleToFind => css.includes(styleToFind));
+  const notFoundStyles = stylesToFind.filter(styleToFind => !css.includes(styleToFind));
+  const includedSelector = css.includes(`.${element.className}`);
+
+  if (includedSelector && foundStyles.length > 0 && notFoundStyles.length === 0) {
     return {
       pass: true,
-      message: () => '',
+      message: !this.isNot
+        ? () => ''
+        : () => `Found "${foundStyles.join(', ')}" on <${element.nodeName.toLowerCase()} ${styles &&
+            `style={${JSON.stringify(styles)}}`}> element.
+
+  Reconciled css (css variables replaced with actual values):
+  ${css}
+
+  Original css:
+  ${(styleElement && styleElement.textContent) || ''}
+  `,
     };
   }
 
@@ -58,11 +77,11 @@ export const toHaveCompiledCss: jest.CustomMatcher = (
     )}" on <${element.nodeName.toLowerCase()} ${styles &&
       `style={${JSON.stringify(styles)}}`}> element.
 
-Reconciled css (css variables were replaced with actual values):
+Reconciled css (css variables replaced with actual values):
 ${css}
 
 Original css:
 ${(styleElement && styleElement.textContent) || ''}
 `,
   };
-};
+}
