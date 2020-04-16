@@ -37,7 +37,7 @@ describe('babel plugin', () => {
       React.forwardRef(({
         as: C = \\"div\\",
         ...props
-      }, ref) => <><Style hash=\\"css-1x3e11p\\">{[\\".css-1x3e11p{font-size:12px;}\\"]}</Style><C {...props} ref={ref} className={\\"css-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} /></>);"
+      }, ref) => <><Style hash=\\"cc-1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px;}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} /></>);"
     `);
   });
 
@@ -55,7 +55,7 @@ describe('babel plugin', () => {
     expect(output?.code).toMatchInlineSnapshot(`
       "import React from 'react';
       import { Style } from '@compiled/css-in-js';
-      <><Style hash=\\"css-1iqe21w\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"css-1iqe21w\\" /></>;"
+      <><Style hash=\\"cc-1iqe21w\\">{[\\".cc-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"cc-1iqe21w\\" /></>;"
     `);
   });
 
@@ -74,7 +74,7 @@ describe('babel plugin', () => {
     expect(output?.code).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
-      <><Style hash=\\"css-2lhdif\\">{[\\".css-1iqe21w{font-size:12px;}\\"]}</Style><div className={\\"css-1iqe21w\\"} /></>;"
+      <><Style hash=\\"cc-31m7m\\">{[\\".cc-1iqe21w{font-size:12px;}\\"]}</Style><div className={\\"cc-1iqe21w\\"} /></>;"
     `);
   });
 });
