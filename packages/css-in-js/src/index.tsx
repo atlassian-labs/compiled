@@ -6,9 +6,11 @@ export { ClassNames } from './class-names';
 
 export type CSSProps = CSSProperties;
 
+export type AnyKeyCssProps = { [key: string]: AnyKeyCssProps | CSSProperties };
+
 declare module 'react' {
   interface DOMAttributes<T> {
-    css?: CSSProps | { [key: string]: CSSProps } | string | (string | CSSProps)[];
+    css?: CSSProps | AnyKeyCssProps | string | (string | CSSProps)[];
   }
 }
 

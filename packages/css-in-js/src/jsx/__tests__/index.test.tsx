@@ -22,6 +22,29 @@ describe('css prop', () => {
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
   });
 
+  it('should not have type errors when using pseduo selectors', () => {
+    <div
+      css={{
+        color: 'currentColor',
+        textDecoration: 'none',
+        position: 'relative',
+        ':before': {
+          opacity: 0,
+          content: '⚓',
+          position: 'absolute',
+          left: '-5rem',
+          fontSize: '3rem',
+        },
+        ':hover': {
+          ':before': {
+            opacity: 1,
+          },
+        },
+      }}>
+      hello world
+    </div>;
+  });
+
   it('should create css from string', () => {
     const { getByText } = render(<div css="font-size: 12px">hello world</div>);
 
