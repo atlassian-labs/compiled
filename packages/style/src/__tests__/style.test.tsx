@@ -26,11 +26,7 @@ describe('<Style />', () => {
     jest.spyOn(console, 'error');
     process.env.NODE_ENV = 'production';
 
-    render(
-      <Style hash="c" testId="style">
-        {[`.c:first-child { display: block; }`]}
-      </Style>
-    );
+    render(<Style hash="c">{[`.c:first-child { display: block; }`]}</Style>);
 
     expect(console.error).not.toHaveBeenCalled();
   });
@@ -39,11 +35,7 @@ describe('<Style />', () => {
     jest.spyOn(console, 'error');
     process.env.NODE_ENV = 'development';
 
-    render(
-      <Style hash="c" testId="style">
-        {[`.c:first-child { display: block; }`]}
-      </Style>
-    );
+    render(<Style hash="c">{[`.c:first-child { display: block; }`]}</Style>);
 
     expect(console.error).toHaveBeenCalled();
   });
@@ -52,16 +44,8 @@ describe('<Style />', () => {
     jest.spyOn(console, 'error');
     process.env.NODE_ENV = 'development';
 
-    render(
-      <Style hash="c" testId="style">
-        {[`.c:first-child { display: block; }`]}
-      </Style>
-    );
-    render(
-      <Style hash="c" testId="style">
-        {[`.c:first-child { display: block; }`]}
-      </Style>
-    );
+    render(<Style hash="c">{[`.c:first-child { display: block; }`]}</Style>);
+    render(<Style hash="c">{[`.c:first-child { display: block; }`]}</Style>);
 
     expect(console.error).toHaveBeenCalledTimes(1);
   });
