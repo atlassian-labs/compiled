@@ -26,6 +26,9 @@ jobs:
       - name: Build sources
         run: yarn build
 
+      - name: Validate
+        run: yarn lint
+
       - name: Run tests
         run: yarn test:cover --ci
 
