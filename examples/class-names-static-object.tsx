@@ -5,7 +5,7 @@ export default {
   title: 'class names static object',
 };
 
-export const objectLiteral = () => (
+export const ObjectLiteral = () => (
   <ClassNames>
     {({ css }) => <div className={css({ fontSize: '30px' })}>hello world</div>}
   </ClassNames>

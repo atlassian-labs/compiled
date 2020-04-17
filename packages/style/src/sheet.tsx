@@ -23,7 +23,7 @@ function createStyleElement(opts: StyleSheetOpts): HTMLStyleElement {
 
 export const createStyleSheet = (opts: StyleSheetOpts) => {
   const speedy = opts.speedy || process.env.NODE_ENV === 'production';
-  let tags: HTMLStyleElement[] = [];
+  const tags: HTMLStyleElement[] = [];
   let tagCount = 0;
 
   return {
@@ -32,8 +32,8 @@ export const createStyleSheet = (opts: StyleSheetOpts) => {
       // it's 1 in dev because we insert source maps that map a single rule to a location
       // and you can only have one source map per style tag
       if (tagCount % (speedy ? 65000 : 1) === 0) {
-        let tag = createStyleElement(opts);
-        let beforeElement: ChildNode | null =
+        const tag = createStyleElement(opts);
+        const beforeElement: ChildNode | null =
           tags.length === 0 ? null : tags[tags.length - 1].nextSibling;
 
         document.head.insertBefore(tag, beforeElement);
@@ -50,7 +50,7 @@ export const createStyleSheet = (opts: StyleSheetOpts) => {
           // we check the second character first because having "i"
           // as the second character will happen less often than
           // having "@" as the first character
-          let isImportRule = css.charCodeAt(1) === 105 && css.charCodeAt(0) === 64;
+          const isImportRule = css.charCodeAt(1) === 105 && css.charCodeAt(0) === 64;
           // this is the ultrafast version, works across browsers
           // the big drawback is that the css won't be editable in devtools
           sheet.insertRule(

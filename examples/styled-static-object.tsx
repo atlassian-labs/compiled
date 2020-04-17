@@ -10,4 +10,4 @@ const Thing = styled.div({
   color: 'red',
 });
 
-export const objectLiteral = () => <Thing>hello world</Thing>;
+export const ObjectLiteral = () => <Thing>hello world</Thing>;

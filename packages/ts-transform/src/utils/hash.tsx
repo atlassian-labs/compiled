@@ -6,7 +6,7 @@ import { CLASS_NAME_PREFIX, CSS_VARIABLE_PREFIX } from '../constants';
  * @param str
  * @param seed
  */
-export function hash(str: string, seed: number = 0): string {
+export function hash(str: string, seed = 0): string {
   let l = str.length;
   let h = seed ^ l;
   let i = 0;
