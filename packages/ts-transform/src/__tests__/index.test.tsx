@@ -138,7 +138,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
-      React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <><Style hash=\\"cc-1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px;}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
+      React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <><Style hash=\\"1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px;}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
       "
     `);
   });
@@ -158,7 +158,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
-      <><Style hash=\\"cc-1iqe21w\\">{[\\".cc-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"cc-1iqe21w\\"/></>;
+      <><Style hash=\\"1iqe21w\\">{[\\".cc-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"cc-1iqe21w\\"/></>;
       "
     `);
   });
@@ -180,7 +180,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
-      <><Style hash=\\"cc-31m7m\\">{[\\".cc-1iqe21w{font-size:12px;}\\"]}</Style><div className={\\"cc-1iqe21w\\"}/></>;
+      <><Style hash=\\"31m7m\\">{[\\".cc-1iqe21w{font-size:12px;}\\"]}</Style><div className={\\"cc-1iqe21w\\"}/></>;
       "
     `);
   });

@@ -1,5 +1,6 @@
 import React from 'react';
 import { createStyleSheet } from './sheet';
+import { analyzeCssInDev } from './dev-warnings';
 
 interface StyleProps {
   /**
@@ -26,6 +27,10 @@ let stylesheet: ReturnType<typeof createStyleSheet>;
 const inserted: Record<string, true> = {};
 
 const Style = (props: StyleProps) => {
+  if (process.env.NODE_ENV === 'development') {
+    analyzeCssInDev(props.children, props.hash);
+  }
+
   if (typeof window === 'undefined') {
     return <style data-testid={props.testId}>{props.children}</style>;
   }
@@ -33,6 +38,7 @@ const Style = (props: StyleProps) => {
   if (!stylesheet) {
     stylesheet = createStyleSheet({});
   }
+
   if (!inserted[props.hash] && props.children) {
     props.children.forEach(stylesheet.insert);
     inserted[props.hash] = true;

@@ -1,6 +1,6 @@
 # 👷‍♀ ‍[Compiled](https://compiledcssinjs.com/)
 
-The CSS in JS authoring experience you love without the runtime cost.
+The CSS in JS authoring experience we love without the runtime cost.
 [Get started now ➡️](https://compiledcssinjs.com/docs)
 
 ## Installation
@@ -93,7 +93,7 @@ Add `ttypescript` as the compiler.
 #### Parcel
 
 Using Parcel?
-Just install the `ttypescript` plugin and you're done!
+Just install the `ttypescript` plugin and we're done!
 
 ```sh
 npm i parcel-plugin-ttypescript --save-dev
