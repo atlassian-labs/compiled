@@ -1,8 +1,9 @@
 const selectorsToWarn = [':first-child', ':nth-child'];
 const hasWarned: Record<string, true> = {};
 
-const warn = (str: string) =>
-  console.error(`
+export const warn = (str: string, ...args: any[]) =>
+  console.error(
+    `
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
 ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██║██║     ██╔════╝██╔══██╗
 ██║     ██║   ██║██╔████╔██║██████╔╝██║██║     █████╗  ██║  ██║
@@ -13,7 +14,9 @@ const warn = (str: string) =>
   @compiled/css-in-js - DEV WARNING
 
   ${str}
-`);
+`,
+    ...args
+  );
 
 export const analyzeCssInDev = (css: string[], hash: string) => {
   if (hasWarned[hash]) {
