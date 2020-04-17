@@ -5,7 +5,7 @@
       {
         "transform": "./packages/ts-transform/src/index.tsx",
         "options": {
-          "nonce": "__style_nonce__"
+          "nonce": "\"k0Mp1lEd\""
         }
       }
     ]
