@@ -13,7 +13,7 @@ export const buildCss = (
   variableDeclarations: Declarations,
   context: ts.TransformationContext
 ): ToCssReturnType => {
-  let cssToPassThroughCompiler: string = '';
+  let cssToPassThroughCompiler = '';
   let cssVariables: CssVariableExpressions[] = [];
 
   if (ts.isStringLiteral(node)) {

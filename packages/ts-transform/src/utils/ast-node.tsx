@@ -1,5 +1,12 @@
 import * as ts from 'typescript';
 
+export const createNodeError = (message: string, node: ts.Node) => {
+  throw new Error(`@compiled/css-in-js => ${message}
+
+${node.getText()}
+`);
+};
+
 export const getExpressionText = (node: ts.Expression) => {
   if (!ts.isStringLiteral(node)) {
     throw createNodeError('expression isnt a string literal', node);
@@ -74,11 +81,4 @@ export const isPackageModuleImport = (statement: ts.Node, namedImport?: string):
     ).length > 0;
 
   return isStyledImported;
-};
-
-export const createNodeError = (message: string, node: ts.Node) => {
-  throw new Error(`@compiled/css-in-js => ${message}
-
-${node.getText()}
-`);
 };

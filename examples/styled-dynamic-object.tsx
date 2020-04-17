@@ -14,7 +14,7 @@ const Highlight = styled.div<{ primary: string }>({
   },
 });
 
-export const objectLiteral = () => {
+export const ObjectLiteral = () => {
   const [color, setColor] = useState('blue');
 
   return (

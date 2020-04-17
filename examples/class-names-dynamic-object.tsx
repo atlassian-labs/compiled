@@ -5,7 +5,7 @@ export default {
   title: 'class names dynamic object',
 };
 
-export const objectLiteral = () => {
+export const ObjectLiteral = () => {
   const [color, setColor] = useState('blue');
 
   return (
