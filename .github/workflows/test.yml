@@ -33,4 +33,9 @@ jobs:
         run: yarn test:cover --ci
 
       - name: Bundle size
-        run: yarn bundlesize
+        run: |
+          GITHUB_RUN_NUMBER_TMP=GITHUB_RUN_NUMBER && export GITHUB_RUN_NUMBER=1;
+          echo "$GITHUB_RUN_NUMBER"
+          yarn bundlesize
+          export GITHUB_RUN_NUMBER=GITHUB_RUN_NUMBER_TMP
+          echo "$GITHUB_RUN_NUMBER"
