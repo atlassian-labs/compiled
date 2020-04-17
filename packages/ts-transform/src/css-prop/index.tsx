@@ -8,6 +8,7 @@ import { visitSourceFileEnsureDefaultReactImport } from '../utils/visit-source-f
 import { visitSourceFileEnsureStyleImport } from '../utils/visit-source-file-ensure-style-import';
 import { isPackageModuleImport } from '../utils/ast-node';
 import { collectDeclarationsFromNode } from '../utils/collect-declarations';
+import { TransformerOptions } from '../types';
 
 const isJsxPragmaFoundWithOurJsxFunction = (sourceFile: ts.SourceFile) => {
   return (
@@ -19,7 +20,8 @@ const isJsxPragmaFoundWithOurJsxFunction = (sourceFile: ts.SourceFile) => {
 };
 
 export default function cssPropTransformer(
-  program: ts.Program
+  program: ts.Program,
+  options: TransformerOptions = {}
 ): ts.TransformerFactory<ts.SourceFile> {
   const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
     return sourceFile => {
@@ -38,7 +40,7 @@ export default function cssPropTransformer(
         collectDeclarationsFromNode(node, program, collectedDeclarations);
 
         if (isJsxElementWithCssProp(node)) {
-          const newNode = visitJsxElementWithCssProp(node, collectedDeclarations, context);
+          const newNode = visitJsxElementWithCssProp(node, collectedDeclarations, context, options);
 
           if (ts.isJsxSelfClosingElement(node)) {
             // It was self closing - it can't have children!

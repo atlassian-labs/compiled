@@ -5,6 +5,7 @@ import { getJsxNodeAttributes, createNodeError } from '../../utils/ast-node';
 import { createCompiledComponentFromNode } from '../../utils/create-jsx-element';
 import { CSS_PROP_NAME } from '../../constants';
 import { buildCss } from '../../utils/css-builder';
+import { TransformerOptions } from '../../types';
 
 export const isJsxElementWithCssProp = (
   node: ts.Node
@@ -39,7 +40,8 @@ const getNodeToExtract = (cssProp: ts.JsxAttribute): ts.Expression => {
 export const visitJsxElementWithCssProp = (
   node: ts.JsxElement | ts.JsxSelfClosingElement,
   variableDeclarations: Declarations,
-  context: ts.TransformationContext
+  context: ts.TransformationContext,
+  options: TransformerOptions
 ) => {
   logger.log('visiting a jsx element with a css prop');
 
@@ -53,6 +55,7 @@ export const visitJsxElementWithCssProp = (
   return createCompiledComponentFromNode(node, {
     context,
     propsToRemove: [CSS_PROP_NAME],
+    nonce: options.nonce,
     ...result,
   });
 };

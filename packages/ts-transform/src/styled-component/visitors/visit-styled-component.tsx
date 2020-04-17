@@ -6,6 +6,7 @@ import { joinToJsxExpression } from '../../utils/expression-operators';
 import { getIdentifierText, createNodeError } from '../../utils/ast-node';
 import * as constants from '../../constants';
 import { buildCss } from '../../utils/css-builder';
+import { TransformerOptions } from '../../types';
 
 const getTagName = (
   node: ts.CallExpression | ts.TaggedTemplateExpression
@@ -56,7 +57,8 @@ const getCssNode = (
 export const visitStyledComponent = (
   node: ts.CallExpression | ts.TaggedTemplateExpression,
   context: ts.TransformationContext,
-  collectedDeclarations: Declarations
+  collectedDeclarations: Declarations,
+  options: TransformerOptions
 ): ts.Node => {
   const originalTagName = getTagName(node);
   const result = buildCss(getCssNode(node), collectedDeclarations, context);
@@ -96,6 +98,7 @@ export const visitStyledComponent = (
     cssVariables: visitedCssVariables,
     node,
     context,
+    nonce: options.nonce,
     styleFactory: props => [
       ts.createSpreadAssignment(ts.createIdentifier('props.style')),
       ...props.map(prop => {

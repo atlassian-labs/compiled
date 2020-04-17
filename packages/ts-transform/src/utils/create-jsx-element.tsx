@@ -19,6 +19,7 @@ interface JsxElementOpts {
   jsxAttributes?: (ts.JsxAttribute | ts.JsxSpreadAttribute)[];
   children?: ts.JsxChild;
   context: ts.TransformationContext;
+  nonce?: string;
 }
 
 function stripPrefix(className: string) {
@@ -27,6 +28,14 @@ function stripPrefix(className: string) {
 
 const createStyleNode = (node: ts.Node, className: string, css: string[], opts: JsxElementOpts) => {
   const STYLE_ELEMENT_NAME = constants.getStyleComponentImport(opts.context);
+  const nonceProp = opts.nonce
+    ? [
+        ts.createJsxAttribute(
+          ts.createIdentifier(constants.NONCE_PROP_NAME),
+          ts.createJsxExpression(undefined, ts.createIdentifier(opts.nonce))
+        ),
+      ]
+    : [];
 
   return ts.createJsxElement(
     // We use setOriginalNode() here to work around createJsx not working without the original node.
@@ -35,12 +44,14 @@ const createStyleNode = (node: ts.Node, className: string, css: string[], opts: 
       ts.createJsxOpeningElement(
         STYLE_ELEMENT_NAME,
         [],
-        ts.createJsxAttributes([
-          ts.createJsxAttribute(
-            ts.createIdentifier(constants.HASH_PROP_NAME),
-            ts.createStringLiteral(stripPrefix(className))
-          ),
-        ])
+        ts.createJsxAttributes(
+          [
+            ts.createJsxAttribute(
+              ts.createIdentifier(constants.HASH_PROP_NAME),
+              ts.createStringLiteral(stripPrefix(className))
+            ),
+          ].concat(nonceProp)
+        )
       ),
       node
     ),

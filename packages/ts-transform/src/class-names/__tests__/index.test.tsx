@@ -1,3 +1,4 @@
+import * as ts from 'typescript';
 import { Transformer } from 'ts-transformer-testing-library';
 import classNamesTransformer from '../index';
 
@@ -37,6 +38,46 @@ describe('class names transformer', () => {
     `);
 
     expect(actual).not.toInclude(`import { ClassNames } from "@compiled/css-in-js";`);
+  });
+
+  it('should add an identifier nonce to the style element', () => {
+    const stubProgam: ts.Program = ({
+      getTypeChecker: () => ({
+        getSymbolAtLocation: () => undefined,
+      }),
+    } as never) as ts.Program;
+    const transformer = classNamesTransformer(stubProgam, { nonce: '__webpack_nonce__' });
+
+    const actual = ts.transpileModule(
+      `
+        import { ClassNames } from '@compiled/css-in-js';
+
+        const ZoomOnHover = ({ children }) => (
+          <ClassNames>
+            {({ css }) =>
+              children({
+                className: css({
+                  transition: 'transform 2000ms',
+                  ':hover': {
+                    transform: 'scale(2)',
+                  },
+                }),
+              })
+            }
+          </ClassNames>
+        );
+      `,
+      {
+        transformers: { before: [transformer] },
+        compilerOptions: {
+          module: ts.ModuleKind.ESNext,
+          jsx: ts.JsxEmit.Preserve,
+          target: ts.ScriptTarget.ESNext,
+        },
+      }
+    );
+
+    expect(actual.outputText).toInclude('<Style hash="css-test" nonce={__webpack_nonce__}>');
   });
 
   it('should set children as function into a jsx expression', () => {
