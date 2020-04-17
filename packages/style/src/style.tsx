@@ -34,10 +34,9 @@ export default function Style(props: StyleProps) {
     return <style nonce={props.nonce}>{children}</style>;
   }
 
-  // Keep re-assigning over ternary because it's smaller
-  stylesheet = stylesheet || createStyleSheet(props);
-
   if (!inserted[props.hash] && children) {
+    // Keep re-assigning over ternary because it's smaller
+    stylesheet = stylesheet || createStyleSheet(props);
     children.forEach(stylesheet);
     inserted[props.hash] = true;
   }
