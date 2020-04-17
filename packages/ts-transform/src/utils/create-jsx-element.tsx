@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import { CLASS_NAME_PREFIX } from '../constants';
 import { stylis } from './stylis';
 import { classNameHash } from './hash';
 import { getJsxNodeAttributes, getJsxNodeAttributesValue, getIdentifierText } from './ast-node';
@@ -20,6 +21,10 @@ interface JsxElementOpts {
   context: ts.TransformationContext;
 }
 
+function stripPrefix(className: string) {
+  return className.replace(`${CLASS_NAME_PREFIX}-`, '');
+}
+
 const createStyleNode = (node: ts.Node, className: string, css: string[], opts: JsxElementOpts) => {
   const STYLE_ELEMENT_NAME = constants.getStyleComponentImport(opts.context);
 
@@ -33,7 +38,7 @@ const createStyleNode = (node: ts.Node, className: string, css: string[], opts: 
         ts.createJsxAttributes([
           ts.createJsxAttribute(
             ts.createIdentifier(constants.HASH_PROP_NAME),
-            ts.createStringLiteral(className)
+            ts.createStringLiteral(stripPrefix(className))
           ),
         ])
       ),
@@ -316,5 +321,31 @@ export const createCompiledComponentFromNode = (
     node,
     createStyleNode(node, className, compiledCss, opts),
     cloneJsxElement(node, className, opts)
+  );
+};
+
+export const createDevDisplayName = (identifier: ts.Identifier) => {
+  return ts.createIf(
+    ts.createBinary(
+      ts.createPropertyAccess(
+        ts.createPropertyAccess(ts.createIdentifier('process'), ts.createIdentifier('env')),
+        ts.createIdentifier('NODE_ENV')
+      ),
+      ts.createToken(ts.SyntaxKind.EqualsEqualsEqualsToken),
+      ts.createStringLiteral('development')
+    ),
+    ts.createBlock(
+      [
+        ts.createExpressionStatement(
+          ts.createBinary(
+            ts.createPropertyAccess(identifier, ts.createIdentifier('displayName')),
+            ts.createToken(ts.SyntaxKind.EqualsToken),
+            ts.createStringLiteral(identifier.text)
+          )
+        ),
+      ],
+      true
+    ),
+    undefined
   );
 };

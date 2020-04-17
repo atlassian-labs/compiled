@@ -1,17 +1,15 @@
-import { ReactNode, CSSProperties } from 'react';
+import { ReactNode } from 'react';
 import { createSetupError } from '../utils/error';
-
-export type CSSFunction = (css: ObjectLiteralCSS) => string;
-
-export type ObjectLiteralCSS<TExtraProps = CSSProperties> =
-  | TemplateStringsArray
-  | CSSProperties
-  | string
-  | (CSSProperties | TemplateStringsArray | string)[]
-  | { [key: string]: TExtraProps | CSSProperties };
+import { CssFunction, BasicTemplateInterpolations } from '../types';
 
 export interface ClassNamesProps {
-  children: (opts: { css: CSSFunction; style: { [key: string]: string } }) => ReactNode;
+  children: (opts: {
+    css: (
+      css: CssFunction | CssFunction[],
+      ...interpoltations: BasicTemplateInterpolations[]
+    ) => string;
+    style: { [key: string]: string };
+  }) => ReactNode;
 }
 
 export function ClassNames(_: ClassNamesProps): JSX.Element {

@@ -30,6 +30,52 @@ describe('class names component', () => {
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '13px');
   });
 
+  it('should create css from template literal', () => {
+    const fontSize = 12;
+    const { getByText } = render(
+      <ClassNames>
+        {({ css, style }) => (
+          <div
+            style={style}
+            className={css`
+              font-size: ${fontSize}px;
+            `}>
+            hello world
+          </div>
+        )}
+      </ClassNames>
+    );
+
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
+  });
+
+  it('should not type error with nested selectors', () => {
+    <ClassNames>
+      {({ css }) => (
+        <div
+          className={css({
+            color: 'currentColor',
+            textDecoration: 'none',
+            position: 'relative',
+            ':before': {
+              opacity: 0,
+              content: '⚓',
+              position: 'absolute',
+              left: '-5rem',
+              fontSize: '3rem',
+            },
+            ':hover': {
+              ':before': {
+                opacity: 1,
+              },
+            },
+          })}>
+          hello world
+        </div>
+      )}
+    </ClassNames>;
+  });
+
   it('should create css from string literal', () => {
     const { getByText } = render(
       <ClassNames>

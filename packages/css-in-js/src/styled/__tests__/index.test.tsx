@@ -106,6 +106,69 @@ describe('styled component', () => {
     expect(getByText('hello world').getAttribute('href')).toEqual('#');
   });
 
+  it('should not type error with nested selectors', () => {
+    styled.div({
+      color: 'currentColor',
+      textDecoration: 'none',
+      position: 'relative',
+      ':before': {
+        opacity: 0,
+        content: '⚓',
+        position: 'absolute',
+        left: '-5rem',
+        fontSize: '3rem',
+      },
+      ':hover': {
+        ':before': {
+          opacity: 1,
+        },
+      },
+    });
+  });
+
+  it('should not have a display name', () => {
+    process.env.NODE_ENV = 'production';
+
+    const StyledDiv = styled.div`
+      font-size: 12px;
+    `;
+
+    expect(StyledDiv.displayName).toEqual(undefined);
+  });
+
+  it('should have a display name', () => {
+    process.env.NODE_ENV = 'development';
+
+    const StyledDiv = styled.div`
+      font-size: 12px;
+    `;
+
+    expect(StyledDiv.displayName).toEqual('StyledDiv');
+  });
+
+  it('should not type error with nested arrow funcs', () => {
+    styled.div<{ fontSize: string }>({
+      color: 'currentColor',
+      textDecoration: 'none',
+      position: 'relative',
+      fontSize: props => props.fontSize,
+      ':before': {
+        fontSize: props => props.fontSize,
+        opacity: 0,
+        content: '⚓',
+        position: 'absolute',
+        left: '-5rem',
+      },
+      ':hover': {
+        fontSize: props => props.fontSize,
+        ':before': {
+          fontSize: props => props.fontSize,
+          opacity: 1,
+        },
+      },
+    });
+  });
+
   it('should forward ref', () => {
     let ref: HTMLAnchorElement | null = null;
     const Link = styled.a``;
@@ -160,6 +223,36 @@ describe('styled component', () => {
     const { getByText } = render(<StyledLink href="/world">Hello world</StyledLink>);
 
     expect(getByText('Hello world').getAttribute('href')).toEqual('/world');
+  });
+
+  it('should compose from array', () => {
+    const extra = {
+      color: 'blue',
+    };
+    const StyledLink = styled.div([
+      {
+        fontSize: 12,
+      },
+      extra,
+    ]);
+
+    const { getByText } = render(<StyledLink>Hello world</StyledLink>);
+
+    expect(getByText('Hello world')).toHaveCompiledCss({
+      color: 'blue',
+      'font-size': '12px',
+    });
+  });
+
+  it('should not type error', () => {
+    styled.div<{ primary: string }>({
+      fontSize: '20px',
+      color: props => props.primary,
+      margin: '20px',
+      ':hover': {
+        color: 'red',
+      },
+    });
   });
 
   it('should create css from string', () => {
