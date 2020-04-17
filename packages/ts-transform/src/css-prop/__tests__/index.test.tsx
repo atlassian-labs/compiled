@@ -361,7 +361,9 @@ describe('css prop transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test);}');
+      expect(actual).toInclude(
+        '.css-test{color:var(--var-test);text-transform:uppercase;font-weight:600;}'
+      );
       expect(actual).toInclude(
         '<span className="css-test" style={{ "--var-test": props.color }}>{props.children}</span>'
       );
@@ -593,6 +595,52 @@ describe('css prop transformer', () => {
 
       expect(actual).toInclude('style={{ "--var-test": fontSize + "px" }}');
       expect(actual).toInclude('.css-test{font-size:var(--var-test);}');
+    });
+
+    it('should persist suffix of dynamic property value from objects into inline styles', () => {
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+        import React from 'react';
+
+        const heading = {
+          depth: 20
+        };
+
+        <div css={{ marginLeft: \`\${heading.depth}rem\` }}>hello world</div>
+      `);
+
+      expect(actual).toInclude('style={{ "--var-test": heading.depth + "rem" }}');
+      expect(actual).toInclude('.css-test{margin-left:var(--var-test);}');
+    });
+
+    it('should persist prefix of dynamic property value into inline styles', () => {
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+        import React from 'react';
+
+        const fontSize = 20;
+
+        <div css={{ fontSize: \`calc(100% - \${fontSize}px)\` }}>hello world</div>
+      `);
+
+      expect(actual).toInclude('style={{ "--var-test": fontSize + "px" }}');
+      expect(actual).toInclude('.css-test{font-size:calc(100% - var(--var-test));}');
+    });
+
+    it('should persist prefix of dynamic property value from objects into inline styles', () => {
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+        import React from 'react';
+
+        const heading = {
+          depth: 20
+        };
+
+        <div css={{ marginLeft: \`calc(100% - \${heading.depth}rem)\` }}>hello world</div>
+      `);
+
+      expect(actual).toInclude('style={{ "--var-test": heading.depth + "rem" }}');
+      expect(actual).toInclude('.css-test{margin-left:calc(100% - var(--var-test));}');
     });
 
     it('should transform object with simple values', () => {

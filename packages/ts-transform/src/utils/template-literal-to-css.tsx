@@ -18,9 +18,20 @@ const extractSuffix = (tail: string) => {
   if (tail[0] === '\n' || tail[0] === ';') {
     rest = tail;
   } else {
-    // Sometimes people forget to put a comma at the end.
-    // This handles that case.
-    let tailIndex = tail.indexOf(';') === -1 ? tail.indexOf('\n') : tail.indexOf(';');
+    // Sometimes people forget to put a semi-colon at the end.
+    let tailIndex;
+    // when calc property used, we get ')' along with unit in the 'literal' object
+    // Eg. `marginLeft: calc(100% - ${obj.key}rem)` will give ')rem' in the span literal
+    if (tail.indexOf(')') !== -1) {
+      tailIndex = tail.indexOf(')');
+    } else if (tail.indexOf(';') !== -1) {
+      tailIndex = tail.indexOf(';');
+    } else if (tail.indexOf('\n') !== -1) {
+      tailIndex = tail.indexOf('\n');
+    } else {
+      tailIndex = tail.length;
+    }
+
     if (tailIndex === -1) {
       // Ok still nothing. This means everything is a suffix!
       tailIndex = tail.length;
@@ -199,8 +210,37 @@ export const templateLiteralToCss = (
           name: variableName,
         });
       }
+    } else if (ts.isPropertyAccessExpression(span.expression)) {
+      const extractedPrefix = extractPrefix(css);
+      const extractedSuffix = extractSuffix(span.literal.text);
+      const result = extractSuffix(span.literal.text);
+      css = extractedPrefix.css;
+      let cssVariableExpression: ts.Expression = span.expression;
+
+      if (extractedSuffix.suffix && extractedPrefix.prefix) {
+        cssVariableExpression = joinThreeExpressions(
+          ts.createStringLiteral(extractedPrefix.prefix),
+          span.expression,
+          ts.createStringLiteral(extractedSuffix.suffix)
+        );
+      } else if (extractedSuffix.suffix) {
+        cssVariableExpression = joinToBinaryExpression(
+          span.expression,
+          ts.createStringLiteral(extractedSuffix.suffix)
+        );
+      } else if (extractedPrefix.prefix) {
+        cssVariableExpression = joinToBinaryExpression(
+          ts.createStringLiteral(extractedPrefix.prefix),
+          span.expression
+        );
+      }
+      const variableName = cssVariableHash(cssVariableExpression);
+      cssVariables.push({
+        name: variableName,
+        expression: cssVariableExpression,
+      });
+      css += `var(${variableName})${result.rest}`;
     } else if (
-      ts.isPropertyAccessExpression(span.expression) ||
       ts.isExpressionStatement(span.expression) ||
       ts.isConditionalExpression(span.expression) ||
       ts.isBinaryExpression(span.expression)
