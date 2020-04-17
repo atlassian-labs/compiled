@@ -19,5 +19,6 @@
     "sourceMap": true,
     "declaration": true,
     "allowJs": true
-  }
+  },
+  "exclude": ["**/**.test.tsx", "**/dist"]
 }
