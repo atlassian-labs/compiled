@@ -26,5 +26,5 @@ jobs:
       - name: Build sources
         run: yarn build
 
-      - name: Bundle size
-        run: yarn bundlesize
+      - name: Build storybook
+        run: yarn build-storybook

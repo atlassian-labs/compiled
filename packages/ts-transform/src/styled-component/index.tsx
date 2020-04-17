@@ -7,6 +7,7 @@ import { visitSourceFileEnsureDefaultReactImport } from '../utils/visit-source-f
 import { visitSourceFileEnsureStyleImport } from '../utils/visit-source-file-ensure-style-import';
 import { STYLED_COMPONENT_IMPORT } from '../constants';
 import { createDevDisplayName } from '../utils/create-jsx-element';
+import { TransformerOptions } from '../types';
 
 const isStyledImportFound = (sourceFile: ts.SourceFile): boolean => {
   return !!sourceFile.statements.find(statement =>
@@ -39,7 +40,8 @@ const isStyledComponent = (
 };
 
 export default function styledComponentTransformer(
-  program: ts.Program
+  program: ts.Program,
+  options: TransformerOptions = {}
 ): ts.TransformerFactory<ts.SourceFile> {
   const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
     return sourceFile => {
@@ -75,7 +77,7 @@ export default function styledComponentTransformer(
         }
 
         if (isStyledComponent(node)) {
-          return visitStyledComponent(node, context, collectedDeclarations);
+          return visitStyledComponent(node, context, collectedDeclarations, options);
         }
 
         return ts.visitEachChild(node, visitor, context);

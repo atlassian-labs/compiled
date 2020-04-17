@@ -3,21 +3,20 @@ import * as logger from './utils/log';
 import cssPropTransformer from './css-prop';
 import styledComponentTransformer from './styled-component';
 import classNamesTransformer from './class-names';
-
-interface TransformerOptions {
-  debug?: boolean;
-}
+import { TransformerOptions } from './types';
 
 const transformers = [cssPropTransformer, styledComponentTransformer, classNamesTransformer];
 
 export default function transformer(
   program: ts.Program,
-  opts: TransformerOptions = {}
+  args: { options?: TransformerOptions } = {}
 ): ts.TransformerFactory<ts.SourceFile> {
-  logger.setEnabled(!!opts.debug);
+  args.options && logger.setEnabled(!!args.options.debug);
 
   return context => {
-    const initializedTransformers = transformers.map(transformer => transformer(program)(context));
+    const initializedTransformers = transformers.map(transformer =>
+      transformer(program, args.options || {})(context)
+    );
 
     return sourceFile => {
       return initializedTransformers.reduce((source, transformer) => {

@@ -16,11 +16,11 @@ interface StyleProps {
   hash: string;
 
   /**
-   * A testId prop is provided for specified elements,
-   * which is a unique string that appears as a data attribute data-testid in the rendered code,
-   * serving as a hook for automated tests.
+   * Used to set a nonce on the style element.
+   * This is needed when using a strict CSP and should be a random hash generated every server load.
+   * Check out https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src for more information.
    */
-  testId?: string;
+  nonce?: string;
 }
 
 let stylesheet: ReturnType<typeof createStyleSheet>;
@@ -32,11 +32,11 @@ const Style = (props: StyleProps) => {
   }
 
   if (typeof window === 'undefined') {
-    return <style data-testid={props.testId}>{props.children}</style>;
+    return <style nonce={props.nonce}>{props.children}</style>;
   }
 
   if (!stylesheet) {
-    stylesheet = createStyleSheet({});
+    stylesheet = createStyleSheet(props);
   }
 
   if (!inserted[props.hash] && props.children) {

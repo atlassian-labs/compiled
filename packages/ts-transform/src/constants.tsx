@@ -9,6 +9,7 @@ export const CSS_PROP_NAME = 'css';
 export const REF_PROP_NAME = 'ref';
 export const HASH_PROP_NAME = 'hash';
 export const STYLE_PROP_NAME = 'style';
+export const NONCE_PROP_NAME = 'nonce';
 export const CLASSNAME_PROP_NAME = 'className';
 
 // Identifiers
