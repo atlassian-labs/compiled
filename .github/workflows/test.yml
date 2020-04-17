@@ -28,3 +28,6 @@ jobs:
 
       - name: Run tests
         run: yarn test:cover --ci
+
+      - name: Bundle size
+        run: yarn bundlesize

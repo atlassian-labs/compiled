@@ -1,3 +1,4 @@
+import * as ts from 'typescript';
 import { Transformer } from 'ts-transformer-testing-library';
 import styledComponentTransformer from '../index';
 
@@ -56,6 +57,34 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude('<MyButton {...props} className');
+  });
+
+  it('should add an identifier nonce to the style element', () => {
+    const stubProgam: ts.Program = ({
+      getTypeChecker: () => ({
+        getSymbolAtLocation: () => undefined,
+      }),
+    } as never) as ts.Program;
+    const transformer = styledComponentTransformer(stubProgam, { nonce: '__webpack_nonce__' });
+
+    const actual = ts.transpileModule(
+      `
+        import { styled } from '@compiled/css-in-js';
+        const ListItem = styled.div({
+          fontSize: '20px',
+        });
+      `,
+      {
+        transformers: { before: [transformer] },
+        compilerOptions: {
+          module: ts.ModuleKind.ESNext,
+          jsx: ts.JsxEmit.Preserve,
+          target: ts.ScriptTarget.ESNext,
+        },
+      }
+    );
+
+    expect(actual.outputText).toInclude('<Style hash="css-test" nonce={__webpack_nonce__}>');
   });
 
   it('should remove styled import', () => {

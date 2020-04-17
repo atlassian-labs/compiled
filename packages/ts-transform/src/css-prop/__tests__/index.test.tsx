@@ -1,3 +1,4 @@
+import * as ts from 'typescript';
 import { Transformer } from 'ts-transformer-testing-library';
 import 'jest-extended';
 import cssPropTransformer from '../index';
@@ -286,6 +287,36 @@ describe('css prop transformer', () => {
     `);
 
     expect(actual).toInclude('data-testid="yo"');
+  });
+
+  it('should add an identifier nonce to the style element', () => {
+    const stubProgam: ts.Program = ({
+      getTypeChecker: () => ({
+        getSymbolAtLocation: () => undefined,
+      }),
+    } as never) as ts.Program;
+    const transformer = cssPropTransformer(stubProgam, { nonce: '__webpack_nonce__' });
+
+    const actual = ts.transpileModule(
+      `
+        import '@compiled/css-in-js';
+        import React from 'react';
+
+        const color = 'blue';
+
+        <div data-testid="yo" css={{ color: color }} style={{ display: "block" }}>hello world</div>
+      `,
+      {
+        transformers: { before: [transformer] },
+        compilerOptions: {
+          module: ts.ModuleKind.ESNext,
+          jsx: ts.JsxEmit.Preserve,
+          target: ts.ScriptTarget.ESNext,
+        },
+      }
+    );
+
+    expect(actual.outputText).toInclude('<Style hash="css-test" nonce={__webpack_nonce__}>');
   });
 
   it.todo('should concat implicit use of style prop where props are spread into an element');

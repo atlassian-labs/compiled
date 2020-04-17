@@ -5,6 +5,7 @@ import { createCompiledFragment } from '../../utils/create-jsx-element';
 import { CssVariableExpressions, Declarations } from '../../types';
 import { STYLE_PROP_NAME } from '../../constants';
 import { buildCss } from '../../utils/css-builder';
+import { TransformerOptions } from '../../types';
 
 const getCssNode = (node: ts.TaggedTemplateExpression | ts.CallExpression): ts.Expression => {
   if (ts.isCallExpression(node)) {
@@ -31,7 +32,8 @@ const isStyleIdentifier = (node: ts.Node): node is ts.Identifier => {
 export const visitClassNamesJsxElement = (
   classNamesNode: ts.JsxElement,
   context: ts.TransformationContext,
-  collectedDeclarations: Declarations
+  collectedDeclarations: Declarations,
+  options: TransformerOptions
 ): ts.Node => {
   let css = '';
   let cssVariables: CssVariableExpressions[] = [];
@@ -98,5 +100,6 @@ export const visitClassNamesJsxElement = (
         ? children
         : ts.createJsxExpression(undefined, children as any),
     context,
+    nonce: options.nonce,
   });
 };

@@ -20,3 +20,8 @@ export interface ToCssReturnType {
   css: string;
   cssVariables: CssVariableExpressions[];
 }
+
+export interface TransformerOptions {
+  nonce?: string;
+  debug?: boolean;
+}

@@ -5,6 +5,7 @@ import { collectDeclarationsFromNode } from '../utils/collect-declarations';
 import { Declarations } from '../types';
 import { visitSourceFileEnsureStyleImport } from '../utils/visit-source-file-ensure-style-import';
 import { CLASS_NAMES_IMPORT } from '../constants';
+import { TransformerOptions } from '../types';
 
 const isClassNamesFound = (sourceFile: ts.SourceFile): boolean => {
   return !!sourceFile.statements.find(statement =>
@@ -19,7 +20,8 @@ const isClassNameComponent = (node: ts.Node): node is ts.JsxElement => {
 };
 
 export default function classNamesTransformer(
-  program: ts.Program
+  program: ts.Program,
+  options: TransformerOptions = {}
 ): ts.TransformerFactory<ts.SourceFile> {
   const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
     return sourceFile => {
@@ -36,7 +38,7 @@ export default function classNamesTransformer(
         collectDeclarationsFromNode(node, program, collectedDeclarations);
 
         if (isClassNameComponent(node)) {
-          return visitClassNamesJsxElement(node, context, collectedDeclarations);
+          return visitClassNamesJsxElement(node, context, collectedDeclarations, options);
         }
 
         return ts.visitEachChild(node, visitor, context);

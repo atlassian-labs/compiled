@@ -1,3 +1,5 @@
+import { StyleSheetOpts } from './types';
+
 // @ts-ignore - potentially returning undefined by ignorign to save kb.
 function sheetForTag(tag: HTMLStyleElement): CSSStyleSheet {
   if (tag.sheet) {
@@ -12,17 +14,11 @@ function sheetForTag(tag: HTMLStyleElement): CSSStyleSheet {
   }
 }
 
-function createStyleElement(): HTMLStyleElement {
+function createStyleElement(opts: StyleSheetOpts): HTMLStyleElement {
   const tag = document.createElement('style');
+  opts.nonce && tag.setAttribute('nonce', opts.nonce);
   tag.appendChild(document.createTextNode(''));
   return tag;
-}
-
-interface StyleSheetOpts {
-  /**
-   * Enables faster behaviour at the cost of developer experience.
-   */
-  speedy?: boolean;
 }
 
 export const createStyleSheet = (opts: StyleSheetOpts) => {
@@ -36,7 +32,7 @@ export const createStyleSheet = (opts: StyleSheetOpts) => {
       // it's 1 in dev because we insert source maps that map a single rule to a location
       // and you can only have one source map per style tag
       if (tagCount % (speedy ? 65000 : 1) === 0) {
-        let tag = createStyleElement();
+        let tag = createStyleElement(opts);
         let beforeElement: ChildNode | null =
           tags.length === 0 ? null : tags[tags.length - 1].nextSibling;
 
