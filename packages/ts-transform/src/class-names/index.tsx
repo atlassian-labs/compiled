@@ -38,7 +38,13 @@ export default function classNamesTransformer(
         collectDeclarationsFromNode(node, program, collectedDeclarations);
 
         if (isClassNameComponent(node)) {
-          return visitClassNamesJsxElement(node, context, collectedDeclarations, options);
+          return visitClassNamesJsxElement(
+            node,
+            context,
+            collectedDeclarations,
+            options,
+            sourceFile
+          );
         }
 
         return ts.visitEachChild(node, visitor, context);

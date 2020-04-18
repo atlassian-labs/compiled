@@ -33,7 +33,8 @@ export const visitClassNamesJsxElement = (
   classNamesNode: ts.JsxElement,
   context: ts.TransformationContext,
   collectedDeclarations: Declarations,
-  options: TransformerOptions
+  options: TransformerOptions,
+  sourceFile: ts.SourceFile
 ): ts.Node => {
   let css = '';
   let cssVariables: CssVariableExpressions[] = [];
@@ -101,5 +102,6 @@ export const visitClassNamesJsxElement = (
         : ts.createJsxExpression(undefined, children as any),
     context,
     nonce: options.nonce,
+    sourceFile,
   });
 };

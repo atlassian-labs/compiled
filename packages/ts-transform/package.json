@@ -20,11 +20,14 @@
   ],
   "dependencies": {
     "@emotion/is-prop-valid": "^0.8.6",
+    "convert-source-map": "^1.7.0",
+    "source-map": "^0.7.3",
     "stylis": "^3.5.4",
     "stylis-rule-sheet": "^0.0.10",
     "typescript": "^3.7.3"
   },
   "devDependencies": {
+    "@types/convert-source-map": "^1.5.1",
     "ts-transformer-testing-library": "^1.0.0-alpha.7"
   }
 }
