@@ -21,7 +21,7 @@ export function getSourceMap(
     sourceRoot: context.getCompilerOptions().sourceRoot,
   });
 
-  generator.setSourceContent(fileName, sourceFile.getText());
+  generator.setSourceContent(fileName, sourceFile.getFullText());
   generator.addMapping({
     generated: {
       line: 1,
