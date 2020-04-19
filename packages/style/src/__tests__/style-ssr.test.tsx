@@ -4,9 +4,13 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import 'jest-extended';
-import Style from '../style';
+import Style, { flush } from '../style';
 
 describe('<Style />', () => {
+  beforeEach(() => {
+    flush();
+  });
+
   it('should render style as children on the server', () => {
     const result = renderToStaticMarkup(<Style hash="a">{[`.a { display: block; }`]}</Style>);
 

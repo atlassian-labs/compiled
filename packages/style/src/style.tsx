@@ -31,7 +31,12 @@ export default function Style(props: StyleProps) {
 
   // Reference self instead of window because it's smaller
   if (typeof self === 'undefined') {
-    return <style nonce={props.nonce}>{children}</style>;
+    if (!inserted[props.hash]) {
+      inserted[props.hash] = true;
+      return <style nonce={props.nonce}>{children}</style>;
+    }
+
+    return null;
   }
 
   if (!inserted[props.hash] && children) {
@@ -43,3 +48,5 @@ export default function Style(props: StyleProps) {
 
   return null;
 }
+
+export const flush = () => (inserted = {});
