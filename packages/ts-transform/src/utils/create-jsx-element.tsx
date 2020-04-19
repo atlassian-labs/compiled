@@ -41,8 +41,9 @@ const createStyleNode = (node: ts.Node, className: string, css: string[], opts: 
     : [];
 
   const sourceMap = getSourceMap(
-    { column: 0, line: opts.sourceFile.getLineAndCharacterOfPosition(node.getStart()).line },
-    opts.sourceFile
+    opts.sourceFile.getLineAndCharacterOfPosition(node.getStart()),
+    opts.sourceFile,
+    opts.context
   );
 
   return ts.createJsxElement(
@@ -68,7 +69,7 @@ const createStyleNode = (node: ts.Node, className: string, css: string[], opts: 
       ts.createJsxExpression(
         undefined,
         ts.createArrayLiteral(
-          css.map(rule => ts.createStringLiteral(rule + sourceMap)),
+          css.map(rule => ts.createStringLiteral(rule + '\n' + sourceMap)),
           false
         )
       ),

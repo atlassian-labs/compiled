@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ClassNames } from '@compiled/css-in-js';
 
 export default {
-  title: 'class names dynamics object',
+  title: 'class names dynamic object',
 };
 
 export const ObjectLiteral = () => {
