@@ -70,7 +70,7 @@ const createStyleNode = (node: ts.Node, className: string, css: string[], opts: 
         undefined,
         ts.createArrayLiteral(
           css.map(rule => ts.createStringLiteral(rule + '\n' + sourceMap)),
-          false
+          true
         )
       ),
     ],

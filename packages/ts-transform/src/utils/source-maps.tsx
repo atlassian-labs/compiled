@@ -7,6 +7,14 @@ const getFileName = (sourceFile: ts.SourceFile): string => {
   return path.basename(sourceFile.fileName);
 };
 
+/**
+ * Used to generate a inline source map for CSS.
+ * It's input is the TypeScript source file,
+ * an offset (where we should place the cursor when jumping to the source map)
+ * and TypeScript context.
+ *
+ * Will return something like `/*# sourceMappingURL=...`
+ */
 export function getSourceMap(
   offset: {
     line: number;
