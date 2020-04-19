@@ -1,8 +1,8 @@
 import * as ts from 'typescript';
 import * as log from './log';
+import * as constants from '../constants';
 
 const COMPILED_PKG = '@compiled/css-in-js';
-const STYLE_IMPORT = 'Style';
 
 export const visitSourceFileEnsureStyleImport = (
   sourceFile: ts.SourceFile,
@@ -36,10 +36,23 @@ export const visitSourceFileEnsureStyleImport = (
         });
       }
 
-      if (!namedImports.some(val => val.name.text === STYLE_IMPORT)) {
-        // Import already exists
+      if (!namedImports.some(val => val.name.text === constants.COMPILED_STYLE_COMPONENT_NAME)) {
+        // "Style" isn't being imported yet. Add it!
         namedImports = [
-          ts.createImportSpecifier(undefined, ts.createIdentifier(STYLE_IMPORT)),
+          ts.createImportSpecifier(
+            undefined,
+            ts.createIdentifier(constants.COMPILED_STYLE_COMPONENT_NAME)
+          ),
+        ].concat(namedImports);
+      }
+
+      if (!namedImports.some(val => val.name.text === constants.COMPILED_COMPONENT_NAME)) {
+        // "CompiledComponent" isn't being imported yet. Add it!
+        namedImports = [
+          ts.createImportSpecifier(
+            undefined,
+            ts.createIdentifier(constants.COMPILED_COMPONENT_NAME)
+          ),
         ].concat(namedImports);
       }
 

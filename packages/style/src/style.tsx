@@ -2,6 +2,7 @@ import React from 'react';
 import { createStyleSheet } from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts } from './types';
+import { useCache } from './provider';
 
 interface StyleProps extends StyleSheetOpts {
   /**
@@ -18,19 +19,18 @@ interface StyleProps extends StyleSheetOpts {
 }
 
 // Variable declaration list because it's smaller.
-let stylesheet: ReturnType<typeof createStyleSheet>,
-  // eslint-disable-next-line prefer-const
-  inserted: Record<string, true> = {};
+let stylesheet: ReturnType<typeof createStyleSheet>;
 
 export default function Style(props: StyleProps) {
   const children = props.children;
+  const inserted = useCache();
 
   if (process.env.NODE_ENV === 'development') {
     analyzeCssInDev(children, props.hash);
   }
 
-  // Reference self instead of window because it's smaller
-  if (typeof self === 'undefined') {
+  // Will remove code on the client bundle.
+  if (typeof window === 'undefined') {
     if (!inserted[props.hash]) {
       inserted[props.hash] = true;
       return <style nonce={props.nonce}>{children}</style>;
@@ -48,5 +48,3 @@ export default function Style(props: StyleProps) {
 
   return null;
 }
-
-export const flush = () => (inserted = {});

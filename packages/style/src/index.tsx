@@ -1,1 +1,2 @@
-export { default, flush } from './style';
+export { default } from './style';
+export { default as CompiledComponent } from './provider';

@@ -90,10 +90,17 @@ const createStyleNode = (node: ts.Node, className: string, css: string[], opts: 
 };
 
 const createFragmentNode = (node: ts.Node, styleNode: ts.JsxChild, childNode?: ts.JsxChild) => {
-  return ts.createJsxFragment(
+  return ts.createJsxElement(
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxOpeningFragment(), node),
+    ts.setOriginalNode(
+      ts.createJsxOpeningElement(
+        ts.createIdentifier(constants.COMPILED_COMPONENT_NAME),
+        [],
+        ts.createJsxAttributes([])
+      ),
+      node
+    ),
 
     [
       // important that the style goes before the node
@@ -103,7 +110,10 @@ const createFragmentNode = (node: ts.Node, styleNode: ts.JsxChild, childNode?: t
 
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxJsxClosingFragment(), node)
+    ts.setOriginalNode(
+      ts.createJsxClosingElement(ts.createIdentifier(constants.COMPILED_COMPONENT_NAME)),
+      node
+    )
   );
 };
 

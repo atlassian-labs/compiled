@@ -4,13 +4,9 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import 'jest-extended';
-import { styled, flush } from '@compiled/css-in-js';
+import { styled } from '@compiled/css-in-js';
 
 describe('<Style />', () => {
-  beforeEach(() => {
-    flush();
-  });
-
   it('should render styles on the server', () => {
     const StyledDiv = styled.div`
       font-size: 12px;

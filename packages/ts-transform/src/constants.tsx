@@ -25,6 +25,7 @@ export const FORWARD_REF_IMPORT = 'forwardRef';
 export const CLASS_NAMES_IMPORT = 'ClassNames';
 export const STYLED_COMPONENT_IMPORT = 'styled';
 export const COMPILED_STYLE_COMPONENT_NAME = 'Style';
+export const COMPILED_COMPONENT_NAME = 'CompiledComponent';
 export const COMMON_JS_DEFAULT_IMPORT = 'default';
 
 export const getReactDefaultImportName = (context: ts.TransformationContext) => {
