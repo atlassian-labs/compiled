@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import { styled } from '@compiled/css-in-js';
+import '../index';
 
 describe('toHaveCompliedCss', () => {
   afterEach(() => {
@@ -57,6 +58,7 @@ describe('toHaveCompliedCss', () => {
     const next = ` font-size: 15px; `;
 
     const { getByText } = render(<div css={[base, next]}>hello world</div>);
+
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '15px');
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
   });
@@ -73,6 +75,12 @@ describe('toHaveCompliedCss', () => {
   });
 
   it('should find multiple styles composed from multiple sources', () => {
+    console.log(
+      (() => styled.div`
+        color: yellow;
+        background-color: red;
+      `).toString()
+    );
     const StyledDiv = styled.div`
       color: yellow;
       background-color: red;

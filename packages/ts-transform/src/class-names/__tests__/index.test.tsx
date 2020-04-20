@@ -23,7 +23,7 @@ describe('class names transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = () => (<><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div className={"css-test"}>hello, world!</div></>)'
+      'const ListItem = () => (<CC><Style hash="css-test">{[".css-test{font-size:20px;}"]}</Style><div className={"css-test"}>hello, world!</div></CC>)'
     );
   });
 
@@ -117,7 +117,7 @@ describe('class names transformer', () => {
     );
   `);
 
-    expect(actual).toInclude(`</Style><div className={\"css-test\"}/></>`);
+    expect(actual).toInclude(`</Style><div className={\"css-test\"}/></CC>`);
   });
 
   describe('using a string literal', () => {

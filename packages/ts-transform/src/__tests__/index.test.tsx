@@ -146,7 +146,7 @@ describe('root transformer', () => {
       createTsConfig(transformer)
     );
 
-    expect(actual.outputText).toInclude("import { Style } from '@compiled/css-in-js'");
+    expect(actual.outputText).toInclude("import { CC, Style } from '@compiled/css-in-js'");
   });
 
   xit('should match react import when transforming to common js', () => {

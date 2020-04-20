@@ -16,7 +16,8 @@ export const CLASSNAME_PROP_NAME = 'className';
 export const REACT_PACKAGE_NAME = 'react';
 export const COMMON_JS_COMPILED_IMPORT = 'css_in_js_1';
 export const REACT_DEFAULT_IMPORT = 'React';
-export const REACT_COMMON_JS_IMPORT = 'react_1';
+export const REACT_COMMON_JS_IMPORT_1 = 'react_1';
+export const REACT_COMMON_JS_IMPORT_2 = 'react_2';
 export const STYLED_AS_PROP_NAME = 'as';
 export const STYLED_AS_USAGE_NAME = 'C';
 
@@ -28,10 +29,23 @@ export const COMPILED_STYLE_COMPONENT_NAME = 'Style';
 export const COMPILED_COMPONENT_NAME = 'CC';
 export const COMMON_JS_DEFAULT_IMPORT = 'default';
 
+/**
+ * This is a disgusting dirty hack to get around TypeScript not binding to automatically imported modules.
+ * Basically it's fine when we target ES modules, but it's fucked when we target CommonJS because they end up renaming the imports.
+ *
+ * ES: import React from 'react';
+ * CJS: (react_1 || react_2).default.blah
+ */
 export const getReactDefaultImportName = (context: ts.TransformationContext) => {
   return context.getCompilerOptions().module === ts.ModuleKind.CommonJS
     ? (ts.createPropertyAccess(
-        ts.createIdentifier(REACT_COMMON_JS_IMPORT),
+        ts.createParen(
+          ts.createBinary(
+            ts.createIdentifier(REACT_COMMON_JS_IMPORT_1),
+            ts.createToken(ts.SyntaxKind.BarBarToken),
+            ts.createIdentifier(REACT_COMMON_JS_IMPORT_2)
+          )
+        ),
         ts.createIdentifier(COMMON_JS_DEFAULT_IMPORT)
       ) as ts.JsxTagNamePropertyAccess)
     : ts.createIdentifier(REACT_DEFAULT_IMPORT);
