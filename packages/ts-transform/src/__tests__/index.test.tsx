@@ -30,7 +30,7 @@ describe('root transformer', () => {
       ts.transpileModule(
         `
           import '@compiled/css-in-js';
-          import React from 'react';
+          import * as React from 'react';
           const MyComponent = () => <div css={{ fontSize: '20px' }}>hello world</div>
         `,
         createTsConfig(transformer)
@@ -45,7 +45,7 @@ describe('root transformer', () => {
       ts.transpileModule(
         `
           import '@compiled/css-in-js';
-          import React from 'react';
+          import * as React from 'react';
           var MyComponent = () => <div css={{ fontSize: '20px' }}>hello world</div>
         `,
         createTsConfig(transformer)
@@ -66,7 +66,7 @@ describe('root transformer', () => {
     expect(() => {
       transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { mixin } from './mixins';
 
         <div css={{ ':hover': mixin }}>hello</div>
@@ -86,7 +86,7 @@ describe('root transformer', () => {
     );
 
     expect(actual.outputText).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
+      "import * as React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
       <><Style hash=\\"1b1wq3m\\">{[\\".cc-1b1wq3m{font-size:20px;}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBRVEiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgJ0Bjb21waWxlZC9jc3MtaW4tanMnO1xuICAgICAgICA8ZGl2IGNzcz17eyBmb250U2l6ZTogJzIwcHgnIH19PmhlbGxvIHdvcmxkPC9kaXY+XG4gICAgICAiXX0= */\\"]}</Style><div className=\\"cc-1b1wq3m\\">hello world</div></>;
       "
@@ -106,7 +106,7 @@ describe('root transformer', () => {
     );
 
     expect(actual.outputText).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
+      "import * as React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
       React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <><Style hash=\\"1b1wq3m\\">{[\\".cc-1b1wq3m{font-size:20px;}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR1EiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgeyBzdHlsZWQgfSBmcm9tICdAY29tcGlsZWQvY3NzLWluLWpzJztcblxuICAgICAgICBzdHlsZWQuZGl2KHsgZm9udFNpemU6IDIwIH0pO1xuICAgICAgIl19 */\\"]}</Style><C {...props} ref={ref} className={\\"cc-1b1wq3m\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
       "
@@ -126,7 +126,7 @@ describe('root transformer', () => {
     );
 
     expect(actual.outputText).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
+      "import * as React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
       <><Style hash=\\"gpurwr\\">{[\\".cc-1b1wq3m{font-size:20px;}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR1EiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgeyBDbGFzc05hbWVzIH0gZnJvbSAnQGNvbXBpbGVkL2Nzcy1pbi1qcyc7XG5cbiAgICAgICAgPENsYXNzTmFtZXM+eyh7IGNzcyB9KSA9PiA8ZGl2IGNsYXNzTmFtZT17Y3NzKHsgZm9udFNpemU6IDIwIH0pfSAvPn08L0NsYXNzTmFtZXM+XG4gICAgICAiXX0= */\\"]}</Style><div className={\\"cc-1b1wq3m\\"}/></>;
       "
@@ -196,7 +196,7 @@ describe('root transformer', () => {
     );
 
     expect(actual.outputText).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
+      "import * as React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
       React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <><Style hash=\\"1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px;}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
       "
@@ -216,7 +216,7 @@ describe('root transformer', () => {
     );
 
     expect(actual.outputText).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
+      "import * as React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
       <><Style hash=\\"1iqe21w\\">{[\\".cc-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"cc-1iqe21w\\"/></>;
       "
@@ -238,7 +238,7 @@ describe('root transformer', () => {
     );
 
     expect(actual.outputText).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
+      "import * as React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
       <><Style hash=\\"31m7m\\">{[\\".cc-1iqe21w{font-size:12px;}\\"]}</Style><div className={\\"cc-1iqe21w\\"}/></>;
       "

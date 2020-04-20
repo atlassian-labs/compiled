@@ -124,7 +124,7 @@ styled.div`
 ### `ClassNames` component
 
 ```jsx
-import React from 'react';
+import * as React from 'react';
 import { ClassNames } from '@compiled/css-in-js';
 
 <ClassNames>{({ css }) => <div className={css({ fontSize: 12 })} />}</ClassNames>;

@@ -24,7 +24,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
+      "import * as React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
       const ListItem = React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><C {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
       if (process.env.NODE_ENV === \\"development\\") {
@@ -108,7 +108,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
+      "import * as React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
       const ListItem = React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><C {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
       if (process.env.NODE_ENV === \\"development\\") {
@@ -165,21 +165,22 @@ describe('styled component transformer', () => {
     expect(actual).toInclude('ListItem.displayName = "ListItem";');
   });
 
-  it('should do nothing if react default import is already defined', () => {
+  it.only('should do nothing if react namespace import is already defined', () => {
     const actual = transformer.transform(`
-      import React from 'react';
+      import * as React from 'react';
       import { styled } from '@compiled/css-in-js';
+
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
     `);
 
-    expect(actual).toInclude("import React from 'react';");
+    expect(actual).toInclude("import * as React from 'react';");
   });
 
   it('should compose a component using template literal', () => {
     const actual = transformer.transform(`
-      import React from 'react';
+      import * as React from 'react';
       import { styled } from '@compiled/css-in-js';
 
       const Component = () => null;
@@ -194,7 +195,7 @@ describe('styled component transformer', () => {
 
   it('should compose a component using object literal', () => {
     const actual = transformer.transform(`
-      import React from 'react';
+      import * as React from 'react';
       import { styled } from '@compiled/css-in-js';
 
       const Component = () => null;

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { createStyleSheet } from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts } from './types';

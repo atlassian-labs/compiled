@@ -10,7 +10,7 @@ const transformer = new Transformer()
   .addMock({ name: '@compiled/css-in-js', content: `export const jsx: any = () => null` })
   .addMock({
     name: 'react',
-    content: `export default {} as any; export const useState = {} as any;`,
+    content: `export default {} as any; export const useState = (...args: any[]) => { return '' as any } as any;`,
   })
   .setFilePath('/index.tsx');
 
@@ -18,7 +18,7 @@ describe('css prop transformer', () => {
   it('should transform a self closing element', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       <div css={{}} />
     `);
@@ -29,7 +29,7 @@ describe('css prop transformer', () => {
   it('should replace css prop with class name', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       <div css={{}}>hello world</div>
     `);
@@ -37,7 +37,7 @@ describe('css prop transformer', () => {
     expect(actual).toInclude('<div className="css-test">hello world</div>');
   });
 
-  it('should add react default import if missing', () => {
+  it('should replace default react import with namespace import', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -45,13 +45,24 @@ describe('css prop transformer', () => {
       <div css={{}}>hello world</div>
     `);
 
-    expect(actual).toInclude(`import React from \'react\';`);
+    expect(actual).toInclude('import * as React from "react";');
+    expect(actual).not.toInclude(`import React from 'react';`);
+  });
+
+  it('should add react namespace import if missing', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+
+      <div css={{}}>hello world</div>
+    `);
+
+    expect(actual).toInclude('import * as React from "react";');
   });
 
   it('should ensure Style has been imported', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       <div css={{}}>hello world</div>
     `);
@@ -62,7 +73,7 @@ describe('css prop transformer', () => {
   it('should pass through style identifier when there is no dynamic styles in the css', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize: 12 }}>hello world</div>;
     `);
@@ -73,7 +84,7 @@ describe('css prop transformer', () => {
   it('should pass through style property access when there is no dynamic styles in the css', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       const Component = ({ className, ...props }) => <div className={className} style={props.style} css={{ fontSize: 12 }}>hello world</div>;
     `);
@@ -84,7 +95,7 @@ describe('css prop transformer', () => {
   it('should spread style identifier when there is dynamic styles in the css', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       const red = 'red';
       const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize: 12, color: red }}>hello world</div>;
@@ -96,7 +107,7 @@ describe('css prop transformer', () => {
   it('should spread style property access when there is dynamic styles in the css', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       const red = 'red';
       const Component = ({ className, ...props }) => <div className={className} style={props.style} css={{ fontSize: 12, color: red }}>hello world</div>;
@@ -108,7 +119,7 @@ describe('css prop transformer', () => {
   it('should spread style identifier when there is styles already set', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12 }}>hello world</div>;
     `);
@@ -119,7 +130,7 @@ describe('css prop transformer', () => {
   it('should spread style identifier when there is styles already set and using dynamic css', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       const red = 'red';
       const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12, color: red }}>hello world</div>;
@@ -128,33 +139,36 @@ describe('css prop transformer', () => {
     expect(actual).toInclude(`style={{ ...style, display: 'block', \"--var-test\": red }}`);
   });
 
-  it('should compose class name from parent and pass down css variables in style', () => {
+  it('should not touch namespace react import if it already exists', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       <div css={{}}>hello world</div>
     `);
 
-    expect(actual).toIncludeRepeated(`import React from 'react';`, 1);
+    expect(actual).toInclude(`import * as React from 'react';`);
   });
 
-  it('should add react default import if it only has named imports', () => {
+  it('should not touch named imports from react', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
       import { useState } from 'react';
-      import React from 'react';
+      import * as React from 'react';
 
-      <div css={{}}>hello world</div>
+      () => {
+        useState()
+        return <div css={{}}>hello world</div>
+      }
     `);
 
-    expect(actual).toIncludeRepeated("import React, { useState } from 'react'", 1);
+    expect(actual).toIncludeRepeated("import { useState } from 'react'", 1);
   });
 
   it('should concat explicit use of class name prop on an element', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       <div className="foobar" css={{}}>hello world</div>
     `);
@@ -165,7 +179,7 @@ describe('css prop transformer', () => {
   it('should concat explicit use of class name prop from an identifier on an element', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       const className = "foobar";
       <div className={className} css={{}}>hello world</div>
@@ -177,7 +191,7 @@ describe('css prop transformer', () => {
   it('should pick up array composition', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       const base = { color: 'black' };
       const top = \` color: red; \`;
@@ -191,7 +205,7 @@ describe('css prop transformer', () => {
   it('should concat explicit use of style prop on an element', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       const color = 'blue';
       <div style={{ display: 'block' }} css={{ color: color }}>hello world</div>
@@ -203,7 +217,7 @@ describe('css prop transformer', () => {
   it('should pass through style prop when not using dynamic css', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       <div style={{ display: 'block' }} css={{}}>hello world</div>
     `);
@@ -214,7 +228,7 @@ describe('css prop transformer', () => {
   it('should concat implicit use of class name prop where class name is a jsx expression', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       const getFoo = () => 'foobar';
 
@@ -266,7 +280,7 @@ describe('css prop transformer', () => {
   it('should remove css prop', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       const color = 'blue';
 
@@ -279,7 +293,7 @@ describe('css prop transformer', () => {
   it('should keep other props around', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
-      import React from 'react';
+      import * as React from 'react';
 
       const color = 'blue';
 
@@ -300,7 +314,7 @@ describe('css prop transformer', () => {
     const actual = ts.transpileModule(
       `
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const color = 'blue';
 
@@ -325,7 +339,7 @@ describe('css prop transformer', () => {
     it('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const fontSize = 20;
 
@@ -339,7 +353,7 @@ describe('css prop transformer', () => {
     it('should transform string literal', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         <div css="font-size: 20px;">hello world</div>
     `);
@@ -372,7 +386,7 @@ describe('css prop transformer', () => {
     it('should transform no template string literal', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         <div css={\`font-size: 20px;\`}>hello world</div>
     `);
@@ -383,7 +397,7 @@ describe('css prop transformer', () => {
     it('should transform template string literal with string variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const color = 'blue';
         <div css={\`color: \${color};\`}>hello world</div>
@@ -398,7 +412,7 @@ describe('css prop transformer', () => {
     it('should transform an expression', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const sidenav = true;
         <div
@@ -422,7 +436,7 @@ describe('css prop transformer', () => {
     it('should transform template string literal with obj variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const style = { color: 'blue', fontSize: '30px' };
         <div css={\`\${style}\`}>hello world</div>
@@ -437,7 +451,7 @@ describe('css prop transformer', () => {
         contents: `export const style = { color: 'blue', fontSize: '30px' };`,
       }).transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { style } from './mixins';
 
         <div
@@ -460,7 +474,7 @@ describe('css prop transformer', () => {
         contents: `export const style = { ':hover': { color: 'blue', fontSize: '30px' } };`,
       }).transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { style } from './mixins';
 
         <div css={\`\${style}\`}>hello world</div>
@@ -476,7 +490,7 @@ describe('css prop transformer', () => {
     it('should transform template string with no argument arrow function variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const style = () => ({ color: 'blue', fontSize: '30px' });
         <div css={\`\${style}\`}>hello world</div>
@@ -488,7 +502,7 @@ describe('css prop transformer', () => {
     it('should transform template string with no argument arrow function call variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const style = () => ({ color: 'blue', fontSize: '30px' });
         <div css={\`\${style()}\`}>hello world</div>
@@ -503,7 +517,7 @@ describe('css prop transformer', () => {
         contents: `export const style = () => ({ color: 'blue', fontSize: '30px' });`,
       }).transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { style } from './stylez';
 
         <div css={\`\${style()}\`}>hello world</div>
@@ -515,7 +529,7 @@ describe('css prop transformer', () => {
     it('should transform template string with no argument function variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         function mixin() {
           return { color: 'red' };
@@ -537,7 +551,7 @@ describe('css prop transformer', () => {
         `,
       }).transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { mixin } from './func-mixin';
 
         <div css={\`\${mixin()}\`}>hello world</div>
@@ -553,7 +567,7 @@ describe('css prop transformer', () => {
     xit('should transform template string with argument arrow function variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const style = (color: string) => ({ color, fontSize: '30px' });
         const primary = 'red';
@@ -570,7 +584,7 @@ describe('css prop transformer', () => {
         contents: `export const style = (color: string) => ({ color, fontSize: '30px' });`,
       }).transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { style } from './mixy-in';
 
         const primary = 'red';
@@ -586,7 +600,7 @@ describe('css prop transformer', () => {
     it('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const fontSize = 20;
 
@@ -600,7 +614,7 @@ describe('css prop transformer', () => {
     it('should persist suffix of dynamic property value from objects into inline styles', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const heading = {
           depth: 20
@@ -616,7 +630,7 @@ describe('css prop transformer', () => {
     it('should persist prefix of dynamic property value into inline styles', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const fontSize = 20;
 
@@ -630,7 +644,7 @@ describe('css prop transformer', () => {
     it('should persist prefix of dynamic property value from objects into inline styles', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const heading = {
           depth: 20
@@ -646,7 +660,7 @@ describe('css prop transformer', () => {
     it('should transform object with simple values', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         <div css={{ lineHeight: 20, color: 'blue' }}>hello world</div>
       `);
@@ -657,7 +671,7 @@ describe('css prop transformer', () => {
     it('should move right hand value (px, em, etc) after variable into style attribute', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const fontSize = 12;
 
@@ -671,7 +685,7 @@ describe('css prop transformer', () => {
     it('should transform object with nested object into a selector', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         <div css={{ ':hover': { color: 'blue' } }}>hello world</div>
       `);
@@ -682,7 +696,7 @@ describe('css prop transformer', () => {
     it('should transform object that has a variable reference', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const blue: string = 'blue';
         <div css={{ color: blue }}>hello world</div>
@@ -696,7 +710,7 @@ describe('css prop transformer', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
         import { useState } from 'react';
-        import React from 'react';
+        import * as React from 'react';
 
         const [color, setColor] = useState('blue');
         <div css={{ color }}>hello world</div>
@@ -711,7 +725,7 @@ describe('css prop transformer', () => {
     it('should transform object spread from variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const mixin = { color: 'red' };
         <div css={{ color: 'blue', ...mixin }}>hello world</div>
@@ -726,7 +740,7 @@ describe('css prop transformer', () => {
         contents: `export const mixin = { color: 'red' };`,
       }).transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { mixin } from './mixins';
 
         <div css={{ color: 'blue', ...mixin }}>hello world</div>
@@ -738,7 +752,7 @@ describe('css prop transformer', () => {
     it('should transform object with string variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const text = 'red';
 
@@ -752,7 +766,7 @@ describe('css prop transformer', () => {
     it('should transform object with string variable using shorthand notation', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const color = 'red';
 
@@ -769,7 +783,7 @@ describe('css prop transformer', () => {
         contents: `export const color = 'red';`,
       }).transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { color } from './colors';
 
         <div css={{ color }}>hello world</div>
@@ -782,7 +796,7 @@ describe('css prop transformer', () => {
     it('should transform object with obj variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const mixin = { color: 'blue' };
 
@@ -809,7 +823,7 @@ describe('css prop transformer', () => {
         contents: "export const mixin = { color: 'blue' };",
       }).transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { mixin } from './mixins';
 
         <div
@@ -836,7 +850,7 @@ describe('css prop transformer', () => {
     it('should transform object with no argument arrow function variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const mixin = () => ({ color: 'red' });
 
@@ -849,7 +863,7 @@ describe('css prop transformer', () => {
     it('should transform template literal value', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         <div css={{ color: \`blue\` }}>hello world</div>
       `);
@@ -863,7 +877,7 @@ describe('css prop transformer', () => {
         contents: `export const mixin = () => ({ color: 'red' });`,
       }).transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { mixin } from './mixins';
 
         <div css={{ color: 'blue', ...mixin() }}>hello world</div>
@@ -875,7 +889,7 @@ describe('css prop transformer', () => {
     it('should transform object spread with no argument arrow function variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const mixin = () => ({ color: 'red' });
 
@@ -891,7 +905,7 @@ describe('css prop transformer', () => {
         contents: `export const mixin = () => ({ color: 'red' });`,
       }).transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { mixin } from './mixins';
 
         <div css={{ color: 'blue', ...mixin() }}>hello world</div>
@@ -903,7 +917,7 @@ describe('css prop transformer', () => {
     it('should transform object spread with no argument function variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         function mixin() {
           return { color: 'red' };
@@ -918,7 +932,7 @@ describe('css prop transformer', () => {
     it('should transform object with no argument arrow function', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const mixin = () => ({ color: 'red' });
 
@@ -932,7 +946,7 @@ describe('css prop transformer', () => {
     it('should transform identifier referencing an object', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const base = { color: 'red' };
 
@@ -945,7 +959,7 @@ describe('css prop transformer', () => {
     it('should transform identifier referencing an template literal', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const base = \`
           color: red;
@@ -960,7 +974,7 @@ describe('css prop transformer', () => {
     it('should transform object with no argument function variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         function mixin() {
           return { color: 'red' };
@@ -983,7 +997,7 @@ describe('css prop transformer', () => {
         `,
       }).transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { mixin } from './mixins';
 
         <div css={{ color: 'blue', ':hover': mixin() }}>hello world</div>
@@ -996,7 +1010,7 @@ describe('css prop transformer', () => {
     it('should transform object spread with no argument function variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         function mixin() {
           return { color: 'red' };
@@ -1018,7 +1032,7 @@ describe('css prop transformer', () => {
         `,
       }).transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { mixin } from './mixins';
 
         <div css={{ color: 'blue', ...mixin() }}>hello world</div>
@@ -1034,7 +1048,7 @@ describe('css prop transformer', () => {
     it('should transform object with argument arrow function variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
 
         const mixin = (color: string) => ({ color });
         const color = 'red';
@@ -1052,7 +1066,7 @@ describe('css prop transformer', () => {
         contents: 'export const mixin = (color: string) => ({ color });',
       }).transform(`
         import '@compiled/css-in-js';
-        import React from 'react';
+        import * as React from 'react';
         import { mixin } from './styles';
 
         const color = 'red';

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import * as CompiledStyled from './libs/compiled-styled';
 import * as EmotionStyled from './libs/emotion-styled';
 import * as StyledComponents from './libs/styled-components';

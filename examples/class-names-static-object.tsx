@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { ClassNames } from '@compiled/css-in-js';
 
 export default {

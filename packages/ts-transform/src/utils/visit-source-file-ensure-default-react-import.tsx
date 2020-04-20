@@ -1,63 +1,79 @@
 import * as ts from 'typescript';
-import * as log from './log';
 import * as constants from '../constants';
 
-const isReactImportFound = (sourceFile: ts.SourceFile) => {
-  return sourceFile.statements.find(
-    statement =>
-      ts.isImportDeclaration(statement) &&
-      ts.isStringLiteral(statement.moduleSpecifier) &&
-      statement.moduleSpecifier.text === constants.REACT_PACKAGE_NAME
+const isReactDefaultImport = (node: ts.Node): node is ts.ImportDeclaration => {
+  return (
+    ts.isImportDeclaration(node) &&
+    ts.isStringLiteral(node.moduleSpecifier) &&
+    node.moduleSpecifier.text === constants.REACT_PACKAGE_NAME &&
+    !!node.importClause &&
+    !!node.importClause.name &&
+    node.importClause.name.text === constants.REACT_DEFAULT_IMPORT
   );
 };
 
+const isReactNamespaceImport = (node: ts.Node): node is ts.ImportDeclaration => {
+  return (
+    ts.isImportDeclaration(node) &&
+    !!node.importClause &&
+    !!node.importClause.namedBindings &&
+    ts.isNamespaceImport(node.importClause.namedBindings) &&
+    node.importClause.namedBindings.name.text === constants.REACT_DEFAULT_IMPORT
+  );
+};
+
+const NAMESPACE_REACT_IMPORT = ts.createImportDeclaration(
+  /* decorators */ undefined,
+  /* modifiers */ undefined,
+  ts.createImportClause(
+    undefined,
+    ts.createNamespaceImport(ts.createIdentifier(constants.REACT_DEFAULT_IMPORT))
+  ),
+  ts.createLiteral(constants.REACT_PACKAGE_NAME)
+);
+
 export const visitSourceFileEnsureDefaultReactImport = (
   sourceFile: ts.SourceFile,
-  context: ts.TransformationContext
+  _: ts.TransformationContext
 ): ts.SourceFile => {
-  if (!isReactImportFound(sourceFile)) {
-    log.log('react import not found, adding one with default export');
+  let newSourceFile = sourceFile;
+  const reactDefaultImport = sourceFile.statements.find(isReactDefaultImport);
+  const reactNamespaceImport = sourceFile.statements.find(isReactNamespaceImport);
 
-    const newSourceFile = ts.updateSourceFileNode(sourceFile, [
-      ts.createImportDeclaration(
-        /* decorators */ undefined,
-        /* modifiers */ undefined,
-        ts.createImportClause(ts.createIdentifier(constants.REACT_DEFAULT_IMPORT), undefined),
-        ts.createLiteral(constants.REACT_PACKAGE_NAME)
-      ),
-      ...sourceFile.statements,
+  if (!reactNamespaceImport) {
+    // Namespace import wasn't found - add it!
+    newSourceFile = ts.updateSourceFileNode(sourceFile, [
+      NAMESPACE_REACT_IMPORT,
+      ...newSourceFile.statements,
     ]);
-
-    return newSourceFile;
   }
 
-  log.log('react import found');
-
-  // There is a react import declaration somewhere.
-  // Let's find it and ensure the default export "React" exists.
-
-  const visitor = (node: ts.Node): ts.Node => {
+  if (reactDefaultImport) {
     if (
-      ts.isImportDeclaration(node) &&
-      ts.isStringLiteral(node.moduleSpecifier) &&
-      node.moduleSpecifier.text === constants.REACT_PACKAGE_NAME
+      reactDefaultImport.importClause &&
+      reactDefaultImport.importClause.namedBindings &&
+      ts.isNamedImports(reactDefaultImport.importClause.namedBindings) &&
+      reactDefaultImport.importClause.namedBindings.elements.length
     ) {
-      log.log('ensuring react default export is defined');
-
-      return ts.updateImportDeclaration(
-        node,
-        /* decorators */ undefined,
-        /* modifiers */ undefined,
-        ts.createImportClause(
-          ts.createIdentifier(constants.REACT_DEFAULT_IMPORT),
-          node.importClause && node.importClause.namedBindings
+      // Has named bindingings, keep them around but remove the default import.
+      newSourceFile = ts.updateSourceFileNode(sourceFile, [
+        ts.updateImportDeclaration(
+          reactDefaultImport,
+          /* decorators */ undefined,
+          /* modifiers */ undefined,
+          ts.createImportClause(undefined, reactDefaultImport.importClause.namedBindings),
+          reactDefaultImport.moduleSpecifier
         ),
-        node.moduleSpecifier
+        ...newSourceFile.statements.filter(statement => !isReactDefaultImport(statement)),
+      ]);
+    } else {
+      // Remove the import it's not needed anymore.
+      newSourceFile = ts.updateSourceFileNode(
+        sourceFile,
+        newSourceFile.statements.filter(statement => !isReactDefaultImport(statement))
       );
     }
+  }
 
-    return ts.visitEachChild(node, visitor, context);
-  };
-
-  return ts.visitNode(sourceFile, visitor);
+  return newSourceFile;
 };

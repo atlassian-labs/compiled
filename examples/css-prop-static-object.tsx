@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import '@compiled/css-in-js';
 import { hover } from './mixins/mixins';
 

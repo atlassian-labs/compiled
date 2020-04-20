@@ -36,7 +36,7 @@ describe('babel plugin', () => {
     );
 
     expect(output?.code).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
+      "import * as React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
       React.forwardRef(({
         as: C = \\"div\\",
@@ -58,7 +58,7 @@ describe('babel plugin', () => {
     );
 
     expect(output?.code).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
+      "import * as React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
       React.forwardRef(({
         as: C = \\"div\\",
@@ -70,7 +70,7 @@ describe('babel plugin', () => {
   it('should transform css prop', () => {
     const output = transformSync(
       `
-      import React from 'react';
+      import * as React from 'react';
       import '@compiled/css-in-js';
 
       <div css={{ fontSize: 12 }} />
@@ -79,7 +79,7 @@ describe('babel plugin', () => {
     );
 
     expect(output?.code).toMatchInlineSnapshot(`
-      "import React from 'react';
+      "import * as React from 'react';
       import { Style } from '@compiled/css-in-js';
       <><Style hash=\\"1iqe21w\\">{[\\".cc-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"cc-1iqe21w\\" /></>;"
     `);
@@ -98,7 +98,7 @@ describe('babel plugin', () => {
     );
 
     expect(output?.code).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
+      "import * as React from \\"react\\";
       import { Style } from '@compiled/css-in-js';
       <><Style hash=\\"31m7m\\">{[\\".cc-1iqe21w{font-size:12px;}\\"]}</Style><div className={\\"cc-1iqe21w\\"} /></>;"
     `);
