@@ -77,7 +77,7 @@ export default function styledComponentTransformer(
         }
 
         if (isStyledComponent(node)) {
-          return visitStyledComponent(node, context, collectedDeclarations, options);
+          return visitStyledComponent(node, context, collectedDeclarations, options, sourceFile);
         }
 
         return ts.visitEachChild(node, visitor, context);

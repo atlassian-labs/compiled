@@ -24,4 +24,5 @@ export interface ToCssReturnType {
 export interface TransformerOptions {
   nonce?: string;
   debug?: boolean;
+  sourceMap?: boolean;
 }

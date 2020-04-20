@@ -58,7 +58,8 @@ export const visitStyledComponent = (
   node: ts.CallExpression | ts.TaggedTemplateExpression,
   context: ts.TransformationContext,
   collectedDeclarations: Declarations,
-  options: TransformerOptions
+  options: TransformerOptions,
+  sourceFile: ts.SourceFile
 ): ts.Node => {
   const originalTagName = getTagName(node);
   const result = buildCss(getCssNode(node), collectedDeclarations, context);
@@ -94,11 +95,12 @@ export const visitStyledComponent = (
   });
 
   const newElement = createCompiledComponent(ts.createIdentifier(constants.STYLED_AS_USAGE_NAME), {
+    ...options,
     css: result.css,
     cssVariables: visitedCssVariables,
     node,
     context,
-    nonce: options.nonce,
+    sourceFile,
     styleFactory: props => [
       ts.createSpreadAssignment(ts.createIdentifier('props.style')),
       ...props.map(prop => {

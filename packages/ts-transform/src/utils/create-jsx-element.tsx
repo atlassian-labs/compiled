@@ -7,6 +7,7 @@ import { joinToJsxExpression } from './expression-operators';
 import { CssVariableExpressions } from '../types';
 import * as constants from '../constants';
 import { concatArrays } from './functional-programming';
+import { getSourceMap } from './source-maps';
 
 interface JsxElementOpts {
   css: string;
@@ -20,6 +21,8 @@ interface JsxElementOpts {
   children?: ts.JsxChild;
   context: ts.TransformationContext;
   nonce?: string;
+  sourceMap?: boolean;
+  sourceFile: ts.SourceFile;
 }
 
 function stripPrefix(className: string) {
@@ -36,6 +39,15 @@ const createStyleNode = (node: ts.Node, className: string, css: string[], opts: 
         ),
       ]
     : [];
+
+  const sourceMap = opts.sourceMap
+    ? '\n' +
+      getSourceMap(
+        opts.sourceFile.getLineAndCharacterOfPosition(node.getStart()),
+        opts.sourceFile,
+        opts.context
+      )
+    : '';
 
   return ts.createJsxElement(
     // We use setOriginalNode() here to work around createJsx not working without the original node.
@@ -60,7 +72,12 @@ const createStyleNode = (node: ts.Node, className: string, css: string[], opts: 
       ts.createJsxExpression(
         undefined,
         ts.createArrayLiteral(
-          css.map(rule => ts.createStringLiteral(rule)),
+          /**
+           * Each source map is tied to a specific CSS block (each CSS block/declaration is one element of the array).
+           * Ends up looking like: `.cc-1b1wq3m{font-size:20px;}\n/*# sourceMappingURL=...`
+           * When source maps are turn on.
+           */
+          css.map(rule => ts.createStringLiteral(rule + sourceMap)),
           false
         )
       ),

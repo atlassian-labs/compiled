@@ -41,7 +41,8 @@ export const visitJsxElementWithCssProp = (
   node: ts.JsxElement | ts.JsxSelfClosingElement,
   variableDeclarations: Declarations,
   context: ts.TransformationContext,
-  options: TransformerOptions
+  options: TransformerOptions,
+  sourceFile: ts.SourceFile
 ) => {
   logger.log('visiting a jsx element with a css prop');
 
@@ -53,9 +54,10 @@ export const visitJsxElementWithCssProp = (
   const result = buildCss(getNodeToExtract(cssProp), variableDeclarations, context);
 
   return createCompiledComponentFromNode(node, {
+    ...options,
+    ...result,
+    sourceFile,
     context,
     propsToRemove: [CSS_PROP_NAME],
-    nonce: options.nonce,
-    ...result,
   });
 };

@@ -12,7 +12,7 @@ export const ObjectLiteral = () => {
     <div>
       <ClassNames>
         {({ css, style }) => (
-          <div style={style} className={css({ color, fontSize: '30px' })}>
+          <div style={style} className={css({ color, fontSize: '40px' })}>
             hello world
           </div>
         )}

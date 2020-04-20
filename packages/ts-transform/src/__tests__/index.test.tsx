@@ -74,6 +74,65 @@ describe('root transformer', () => {
     }).not.toThrow();
   });
 
+  it('should generate source maps for a css prop', () => {
+    const transformer = rootTransformer(stubProgam, { options: { sourceMap: true } });
+
+    const actual = ts.transpileModule(
+      `
+        import '@compiled/css-in-js';
+        <div css={{ fontSize: '20px' }}>hello world</div>
+      `,
+      createTsConfig(transformer)
+    );
+
+    expect(actual.outputText).toMatchInlineSnapshot(`
+      "import React from \\"react\\";
+      import { Style } from '@compiled/css-in-js';
+      <><Style hash=\\"1b1wq3m\\">{[\\".cc-1b1wq3m{font-size:20px;}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBRVEiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgJ0Bjb21waWxlZC9jc3MtaW4tanMnO1xuICAgICAgICA8ZGl2IGNzcz17eyBmb250U2l6ZTogJzIwcHgnIH19PmhlbGxvIHdvcmxkPC9kaXY+XG4gICAgICAiXX0= */\\"]}</Style><div className=\\"cc-1b1wq3m\\">hello world</div></>;
+      "
+    `);
+  });
+
+  it('should generate source maps for a styled component', () => {
+    const transformer = rootTransformer(stubProgam, { options: { sourceMap: true } });
+
+    const actual = ts.transpileModule(
+      `
+        import { styled } from '@compiled/css-in-js';
+
+        styled.div({ fontSize: 20 });
+      `,
+      createTsConfig(transformer)
+    );
+
+    expect(actual.outputText).toMatchInlineSnapshot(`
+      "import React from \\"react\\";
+      import { Style } from '@compiled/css-in-js';
+      React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <><Style hash=\\"1b1wq3m\\">{[\\".cc-1b1wq3m{font-size:20px;}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR1EiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgeyBzdHlsZWQgfSBmcm9tICdAY29tcGlsZWQvY3NzLWluLWpzJztcblxuICAgICAgICBzdHlsZWQuZGl2KHsgZm9udFNpemU6IDIwIH0pO1xuICAgICAgIl19 */\\"]}</Style><C {...props} ref={ref} className={\\"cc-1b1wq3m\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
+      "
+    `);
+  });
+
+  it('should generate source maps for a class names component', () => {
+    const transformer = rootTransformer(stubProgam, { options: { sourceMap: true } });
+
+    const actual = ts.transpileModule(
+      `
+        import { ClassNames } from '@compiled/css-in-js';
+
+        <ClassNames>{({ css }) => <div className={css({ fontSize: 20 })} />}</ClassNames>
+      `,
+      createTsConfig(transformer)
+    );
+
+    expect(actual.outputText).toMatchInlineSnapshot(`
+      "import React from \\"react\\";
+      import { Style } from '@compiled/css-in-js';
+      <><Style hash=\\"gpurwr\\">{[\\".cc-1b1wq3m{font-size:20px;}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR1EiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgeyBDbGFzc05hbWVzIH0gZnJvbSAnQGNvbXBpbGVkL2Nzcy1pbi1qcyc7XG5cbiAgICAgICAgPENsYXNzTmFtZXM+eyh7IGNzcyB9KSA9PiA8ZGl2IGNsYXNzTmFtZT17Y3NzKHsgZm9udFNpemU6IDIwIH0pfSAvPn08L0NsYXNzTmFtZXM+XG4gICAgICAiXX0= */\\"]}</Style><div className={\\"cc-1b1wq3m\\"}/></>;
+      "
+    `);
+  });
+
   it('should only import Style once', () => {
     const transformer = rootTransformer(stubProgam, {});
 
