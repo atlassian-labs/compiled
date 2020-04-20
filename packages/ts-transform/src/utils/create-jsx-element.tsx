@@ -72,6 +72,11 @@ const createStyleNode = (node: ts.Node, className: string, css: string[], opts: 
       ts.createJsxExpression(
         undefined,
         ts.createArrayLiteral(
+          /**
+           * Each source map is tied to a specific CSS block (each CSS block/declaration is one element of the array).
+           * Ends up looking like: `.cc-1b1wq3m{font-size:20px;}\n/*# sourceMappingURL=...`
+           * When source maps are turn on.
+           */
           css.map(rule => ts.createStringLiteral(rule + sourceMap)),
           false
         )
