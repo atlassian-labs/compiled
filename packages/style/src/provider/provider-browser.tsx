@@ -1,6 +1,6 @@
 import { ProviderComponent, UseCacheHook } from './types';
 
-if (typeof window === 'undefined') {
+if (process.env.NODE_ENV === 'development' && typeof window === 'undefined') {
   throw new Error(
     `
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
@@ -12,7 +12,7 @@ if (typeof window === 'undefined') {
 
   @compiled/css-in-js - ERROR
 
-  This piece of code should only run on the client.
+  This code should only run on the client. You might need to configure your bunder to respect the "browser" field in package json.
 `
   );
 }
@@ -32,6 +32,6 @@ export const useCache: UseCacheHook = () => inserted;
  * Noops on the client
  */
 const Provider: ProviderComponent = (props: { children: JSX.Element[] | JSX.Element }) =>
-  props.children;
+  props.children as JSX.Element;
 
 export default Provider;

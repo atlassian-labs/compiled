@@ -47,7 +47,7 @@ export const visitSourceFileEnsureStyleImport = (
       }
 
       if (!namedImports.some(val => val.name.text === constants.COMPILED_COMPONENT_NAME)) {
-        // "CompiledComponent" isn't being imported yet. Add it!
+        // "CC" isn't being imported yet. Add it!
         namedImports = [
           ts.createImportSpecifier(
             undefined,

@@ -1,12 +1,8 @@
-/**
- * This module will only exist in your bundle when server side rendering.
- * Make sure your bundler respected the "browser" pkg json field!
- */
 import React from 'react';
 import { useRef, useContext, createContext } from 'react';
 import { ProviderComponent, UseCacheHook } from './types';
 
-if (typeof window !== 'undefined') {
+if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
   throw new Error(
     `
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
@@ -18,15 +14,15 @@ if (typeof window !== 'undefined') {
 
   @compiled/css-in-js - ERROR
 
-  This piece of code should only run on the server.
+  This code should only run on the server. You might need to configure your bunder to respect the "browser" field in package json.
 `
   );
 }
 
-const Cache = createContext<Record<string, true>>({});
+const Cache = createContext<Record<string, true> | null>(null);
 
 export const useCache: UseCacheHook = () => {
-  return useContext(Cache);
+  return useContext(Cache) || {};
 };
 
 const Provider: ProviderComponent = (props: { children: JSX.Element[] | JSX.Element }) => {
