@@ -94,6 +94,7 @@ export const visitClassNamesJsxElement = (
     : returnNode.expression.body;
 
   return createCompiledFragment(classNamesNode, {
+    ...options,
     css,
     cssVariables,
     children:
@@ -101,7 +102,6 @@ export const visitClassNamesJsxElement = (
         ? children
         : ts.createJsxExpression(undefined, children as any),
     context,
-    nonce: options.nonce,
     sourceFile,
   });
 };

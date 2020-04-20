@@ -177,7 +177,7 @@ describe('styled component transformer', () => {
     expect(actual).toInclude("import React from 'react';");
   });
 
-  it.only('should compose a component using template literal', () => {
+  it('should compose a component using template literal', () => {
     const actual = transformer.transform(`
       import React from 'react';
       import { styled } from '@compiled/css-in-js';

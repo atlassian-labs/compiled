@@ -95,12 +95,12 @@ export const visitStyledComponent = (
   });
 
   const newElement = createCompiledComponent(ts.createIdentifier(constants.STYLED_AS_USAGE_NAME), {
+    ...options,
     css: result.css,
     cssVariables: visitedCssVariables,
     node,
     context,
     sourceFile,
-    nonce: options.nonce,
     styleFactory: props => [
       ts.createSpreadAssignment(ts.createIdentifier('props.style')),
       ...props.map(prop => {

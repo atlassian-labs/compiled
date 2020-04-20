@@ -54,10 +54,10 @@ export const visitJsxElementWithCssProp = (
   const result = buildCss(getNodeToExtract(cssProp), variableDeclarations, context);
 
   return createCompiledComponentFromNode(node, {
+    ...options,
+    ...result,
     sourceFile,
     context,
     propsToRemove: [CSS_PROP_NAME],
-    nonce: options.nonce,
-    ...result,
   });
 };

@@ -21,7 +21,7 @@ interface JsxElementOpts {
   children?: ts.JsxChild;
   context: ts.TransformationContext;
   nonce?: string;
-  sourceMap?: string;
+  sourceMap?: boolean;
   sourceFile: ts.SourceFile;
 }
 
@@ -40,11 +40,14 @@ const createStyleNode = (node: ts.Node, className: string, css: string[], opts: 
       ]
     : [];
 
-  const sourceMap = getSourceMap(
-    opts.sourceFile.getLineAndCharacterOfPosition(node.getStart()),
-    opts.sourceFile,
-    opts.context
-  );
+  const sourceMap = opts.sourceMap
+    ? '\n' +
+      getSourceMap(
+        opts.sourceFile.getLineAndCharacterOfPosition(node.getStart()),
+        opts.sourceFile,
+        opts.context
+      )
+    : '';
 
   return ts.createJsxElement(
     // We use setOriginalNode() here to work around createJsx not working without the original node.
@@ -69,8 +72,8 @@ const createStyleNode = (node: ts.Node, className: string, css: string[], opts: 
       ts.createJsxExpression(
         undefined,
         ts.createArrayLiteral(
-          css.map(rule => ts.createStringLiteral(rule + '\n' + sourceMap)),
-          true
+          css.map(rule => ts.createStringLiteral(rule + sourceMap)),
+          false
         )
       ),
     ],
