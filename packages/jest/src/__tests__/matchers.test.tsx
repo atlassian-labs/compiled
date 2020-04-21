@@ -1,5 +1,5 @@
-import { render } from '@testing-library/react';
 import React from 'react';
+import { render } from '@testing-library/react';
 import { styled } from '@compiled/css-in-js';
 import '../index';
 
@@ -75,12 +75,6 @@ describe('toHaveCompliedCss', () => {
   });
 
   it('should find multiple styles composed from multiple sources', () => {
-    console.log(
-      (() => styled.div`
-        color: yellow;
-        background-color: red;
-      `).toString()
-    );
     const StyledDiv = styled.div`
       color: yellow;
       background-color: red;
