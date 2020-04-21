@@ -1,5 +1,4 @@
-import React from 'react';
-import { useRef, useContext, createContext } from 'react';
+import React, { useRef, useContext, createContext } from 'react';
 import { ProviderComponent, UseCacheHook } from './types';
 
 if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
@@ -19,6 +18,7 @@ if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
   );
 }
 
+// We don't set this to an empty object else it will act like a singleton.
 const Cache = createContext<Record<string, true> | null>(null);
 
 export const useCache: UseCacheHook = () => {
