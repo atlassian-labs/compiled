@@ -10336,6 +10336,13 @@ ts-pnp@^1.1.2, ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
+ts-transform-define@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/ts-transform-define/-/ts-transform-define-0.1.3.tgz#5d876ab90a2c110aeb6495dc92ff2a43768e7d38"
+  integrity sha512-hReOZ9RJfGAkRKr9WgSB/A9icV8Ug2tjXJLits1HGdsmihxouh/1IqgqKXP3kv2yc4ze7ugzWtHNisjTBPdvig==
+  dependencies:
+    typescript "^3.7.0"
+
 ts-transformer-testing-library@^1.0.0-alpha.7:
   version "1.0.0-alpha.7"
   resolved "https://registry.yarnpkg.com/ts-transformer-testing-library/-/ts-transformer-testing-library-1.0.0-alpha.7.tgz#bcb445f8811dbf7741796c159c5e0e57c4250c53"
@@ -10412,9 +10419,10 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@^3.7.3, typescript@~3.7.2:
-  version "3.7.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.5.tgz#0692e21f65fd4108b9330238aac11dd2e177a1ae"
+typescript@^3.7.0, typescript@^3.7.3, typescript@~3.7.2:
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
+  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
 
 ua-parser-js@^0.7.18:
   version "0.7.21"
