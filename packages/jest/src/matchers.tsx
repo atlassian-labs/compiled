@@ -15,9 +15,6 @@ const getMountedProperties = () =>
     )
     .join(' ');
 
-const containsClassNames = (classNames: string[], css: string) =>
-  classNames.reduce((accum, className) => (css.includes(`.${className}`) ? true : accum), false);
-
 export function toHaveCompiledCss(
   this: jest.MatcherUtils,
   element: HTMLElement,
@@ -56,9 +53,12 @@ export function toHaveCompiledCss(
       });
     }
 
-    if (containsClassNames(classNames, css)) {
-      foundStyles.push(...stylesToFind.filter(styleToFind => css.includes(styleToFind)));
-    }
+    classNames.forEach(c => {
+      if (css.includes(c)) {
+        const found = stylesToFind.filter(s => css.includes(s));
+        foundStyles.push(...found);
+      }
+    });
   }
 
   const notFoundStyles = stylesToFind.filter(style => !foundStyles.includes(style));
