@@ -1,9 +1,15 @@
 declare global {
   namespace jest {
-    type MatchConf = Partial<Record<'state' | 'media', string>>;
     interface Matchers<R> {
-      toHaveCompiledCss(properties: { [key: string]: string }, matchFilter?: MatchConf): R;
-      toHaveCompiledCss(property: string, value: string, matchFilter?: MatchConf): R;
+      toHaveCompiledCss(
+        properties: { [key: string]: string },
+        matchFilter?: Partial<Record<'state' | 'media', string>>
+      ): R;
+      toHaveCompiledCss(
+        property: string,
+        value: string,
+        matchFilter?: Partial<Record<'state' | 'media', string>>
+      ): R;
     }
   }
 }
