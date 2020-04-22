@@ -15,12 +15,15 @@ const getMountedProperties = () =>
     )
     .join(' ');
 
+// sorry but using ? was throwing TS off
+type Arg = [{ [key: string]: string }, MatchFilter?];
 export function toHaveCompiledCss(
   this: jest.MatcherUtils,
   element: HTMLElement,
-  ...args: [{ [key: string]: string } | string, string]
+  ...args: [Arg | string, string, MatchFilter?]
 ): jest.CustomMatcherResult {
-  const [property, value] = args;
+  const [property, value, matchFilter] = args;
+  const { media, state } = matchFilter || { media: undefined, state: undefined };
   const properties = typeof property === 'string' ? { [property]: value } : property;
   const inlineStyleTag = element.parentElement && element.parentElement.querySelector('style');
   const styleElements: HTMLStyleElement[] =
@@ -54,9 +57,11 @@ export function toHaveCompiledCss(
     }
 
     classNames.forEach(c => {
-      if (css.includes(c)) {
-        const found = stylesToFind.filter(s => css.includes(s));
-        foundStyles.push(...found);
+      let matcher = c;
+      if (state) matcher += `:${state}`;
+      if (media) matcher = `${media}{.*${matcher}`;
+      if (css.match(matcher)) {
+        foundStyles.push(...stylesToFind.filter(s => css.includes(s)));
       }
     });
   }
