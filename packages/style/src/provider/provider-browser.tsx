@@ -31,7 +31,7 @@ export const useCache: UseCacheHook = () => inserted;
 /**
  * Noops on the client
  */
-const Provider: ProviderComponent = (props: { children: JSX.Element[] | JSX.Element }) =>
+const Fragment: ProviderComponent = (props: { children: JSX.Element[] | JSX.Element }) =>
   props.children as JSX.Element;
 
-export default Provider;
+export default Fragment;
