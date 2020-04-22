@@ -13,7 +13,6 @@
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
-  "browser": "./dist/browser/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
   "keywords": [
