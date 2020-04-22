@@ -7,7 +7,7 @@ import 'jest-extended';
 import { styled, CC } from '@compiled/css-in-js';
 
 describe('SSR', () => {
-  it('should render styles on the server', () => {
+  it('should render styles inline', () => {
     const StyledDiv = styled.div`
       font-size: 12px;
     `;
@@ -60,7 +60,7 @@ describe('SSR', () => {
     );
   });
 
-  it('sould only render one style element when having a parent compiled component', () => {
+  it('should only render one style element when having a parent compiled component', () => {
     const StyledParent = styled.div`
       display: flex;
     `;
