@@ -6,17 +6,17 @@
   "license": "Apache-2.0",
   "scripts": {
     "clean": "rm -rf node_modules/.cache && workspaces-run -- rm -rf dist -- rm -f tsconfig.tsbuildinfo",
-    "start": "yarn build && npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch packages/ts-transform/ -e tsx",
+    "start": "yarn build:main && npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch packages/ts-transform/ -e tsx",
     "start:prod": "NODE_ENV=production yarn start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/ts-transform/ -e tsx",
-    "test": "yarn build && jest --no-cache",
-    "test:watch": "yarn build && jest --no-cache --watch",
+    "test": "yarn build:main && jest --no-cache",
+    "test:watch": "yarn build:main && jest --no-cache --watch",
     "test:cover": "yarn test --collectCoverage",
     "lint": "eslint --config .eslintrc.js --ext tsx,ts ./packages/**/src ./examples",
     "lint:fix": "yarn lint -- --fix",
-    "build": "TYPEOF_WINDOW='typeof window' ttsc --build packages",
-    "build:browser": "TYPEOF_WINDOW='\"object\"' ttsc --build packages",
-    "build:server": "TYPEOF_WINDOW='\"undefined\"' ttsc --build packages",
+    "build": "yarn build:main && yarn build:browser",
+    "build:main": "TYPEOF_WINDOW='typeof window' ttsc --build packages/tsconfig.json",
+    "build:browser": "TYPEOF_WINDOW='\"object\"' ttsc --build packages/tsconfig.browser.json",
     "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js --build packages",
     "build-storybook": "build-storybook",
     "preversion": "yarn clean && yarn build && yarn test",
@@ -79,7 +79,7 @@
   },
   "size-limit": [
     {
-      "path": "./packages/style/dist/index.js",
+      "path": "./packages/style/dist/browser/index.js",
       "limit": "415B",
       "ignore": [
         "react"

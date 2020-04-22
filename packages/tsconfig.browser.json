@@ -1,0 +1,7 @@
+{
+  "files": [],
+  "references": [
+    { "path": "css-in-js/tsconfig.browser.json" },
+    { "path": "style/tsconfig.browser.json" }
+  ]
+}
