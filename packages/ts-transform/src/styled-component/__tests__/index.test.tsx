@@ -25,8 +25,8 @@ describe('styled component transformer', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import React from \\"react\\";
-      import { Style } from '@compiled/css-in-js';
-      const ListItem = React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><C {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
+      import { CC, Style } from '@compiled/css-in-js';
+      const ListItem = React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><C {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
       if (process.env.NODE_ENV === \\"development\\") {
           ListItem.displayName = \\"ListItem\\";
       }
@@ -109,8 +109,8 @@ describe('styled component transformer', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import React from \\"react\\";
-      import { Style } from '@compiled/css-in-js';
-      const ListItem = React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><C {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></>);
+      import { CC, Style } from '@compiled/css-in-js';
+      const ListItem = React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><Style hash=\\"css-test\\">{[\\".css-test{font-size:20px;}\\"]}</Style><C {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
       if (process.env.NODE_ENV === \\"development\\") {
           ListItem.displayName = \\"ListItem\\";
       }

@@ -5,4 +5,4 @@ dist
 storybook-static
 .tmp
 coverage
-tsconfig.tsbuildinfo
+*.tsbuildinfo

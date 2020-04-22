@@ -89,11 +89,21 @@ const createStyleNode = (node: ts.Node, className: string, css: string[], opts: 
   );
 };
 
-const createFragmentNode = (node: ts.Node, styleNode: ts.JsxChild, childNode?: ts.JsxChild) => {
-  return ts.createJsxFragment(
+const createFragmentNode = (
+  node: ts.Node,
+  styleNode: ts.JsxChild,
+  opts: JsxElementOpts,
+  childNode?: ts.JsxChild
+) => {
+  const COMPILED_COMPONENT_NAME = constants.getCompiledComponentImport(opts.context);
+
+  return ts.createJsxElement(
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxOpeningFragment(), node),
+    ts.setOriginalNode(
+      ts.createJsxOpeningElement(COMPILED_COMPONENT_NAME, [], ts.createJsxAttributes([])),
+      node
+    ),
 
     [
       // important that the style goes before the node
@@ -103,7 +113,7 @@ const createFragmentNode = (node: ts.Node, styleNode: ts.JsxChild, childNode?: t
 
     // We use setOriginalNode() here to work around createJsx not working without the original node.
     // See: https://github.com/microsoft/TypeScript/issues/35686
-    ts.setOriginalNode(ts.createJsxJsxClosingFragment(), node)
+    ts.setOriginalNode(ts.createJsxClosingElement(COMPILED_COMPONENT_NAME), node)
   );
 };
 
@@ -300,6 +310,7 @@ export const createCompiledFragment = (node: ts.JsxElement, opts: JsxElementOpts
   return createFragmentNode(
     node,
     createStyleNode(node, className, compiledCss, opts),
+    opts,
     opts.children
   );
 };
@@ -324,6 +335,7 @@ export const createCompiledComponent = (
   return createFragmentNode(
     opts.node,
     createStyleNode(opts.node, className, compiledCss, opts),
+    opts,
     createJsxElement(tagName, className, opts)
   );
 };
@@ -348,6 +360,7 @@ export const createCompiledComponentFromNode = (
   return createFragmentNode(
     node,
     createStyleNode(node, className, compiledCss, opts),
+    opts,
     cloneJsxElement(node, className, opts)
   );
 };
