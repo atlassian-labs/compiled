@@ -1,7 +1,7 @@
 {
   "name": "compiled",
   "private": true,
-  "version": "0.2.16",
+  "version": "0.3.0",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
   "scripts": {
