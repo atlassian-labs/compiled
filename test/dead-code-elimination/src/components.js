@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { styled, ClassNames } from '@compiled/css-in-js';
 
 export const StyledDiv = styled.div`
@@ -11,8 +11,10 @@ export const AnotherStyledDiv = styled.div`
   color: red;
 `;
 
-export const MyCssProp = () => <div css={{ fontSize: 12 }}>hello world</div>;
+export const MyCssProp = /*#__PURE__*/ forwardRef(() => (
+  <div css={{ fontSize: 12 }}>hello world</div>
+));
 
-export const ClassNamesWoo = () => (
+export const ClassNamesWoo = /*#__PURE__*/ forwardRef(() => (
   <ClassNames>{({ css }) => <div style={css({ fontSize: 12 })}>hello world</div>}</ClassNames>
-);
+));
