@@ -80,7 +80,7 @@
   "size-limit": [
     {
       "path": "./packages/style/dist/browser/index.js",
-      "limit": "415B",
+      "limit": "330B",
       "ignore": [
         "react"
       ]
