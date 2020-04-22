@@ -295,6 +295,15 @@ const createJsxElement = (
   return elementNode;
 };
 
+export const annotateWithPureComment = <TNode extends ts.Node>(node: TNode) => {
+  return ts.addSyntheticLeadingComment(
+    node,
+    ts.SyntaxKind.MultiLineCommentTrivia,
+    '#__PURE__',
+    false
+  );
+};
+
 /**
  * Will create a jsx element that passes through `children`.
 

@@ -1,0 +1,1 @@
+export { StyledDiv } from './components';

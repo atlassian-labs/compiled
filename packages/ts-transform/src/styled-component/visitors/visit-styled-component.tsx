@@ -1,6 +1,6 @@
 import ts from 'typescript';
 import isPropValid from '@emotion/is-prop-valid';
-import { createCompiledComponent } from '../../utils/create-jsx-element';
+import { createCompiledComponent, annotateWithPureComment } from '../../utils/create-jsx-element';
 import { Declarations } from '../../types';
 import { joinToJsxExpression } from '../../utils/expression-operators';
 import { getIdentifierText, createNodeError } from '../../utils/ast-node';
@@ -127,60 +127,67 @@ export const visitStyledComponent = (
     ],
   });
 
-  return ts.createCall(
-    ts.createPropertyAccess(
-      constants.getReactDefaultImportName(context),
-      ts.createIdentifier(constants.FORWARD_REF_IMPORT)
-    ),
-    undefined,
-    [
-      ts.createArrowFunction(
-        undefined,
-        undefined,
-        [
-          ts.createParameter(
-            undefined,
-            undefined,
-            undefined,
-            ts.createObjectBindingPattern([
-              // a: C = 'div'
-              ts.createBindingElement(
-                undefined,
-                ts.createIdentifier(constants.STYLED_AS_PROP_NAME),
-                ts.createIdentifier(constants.STYLED_AS_USAGE_NAME),
-                originalTagName
-              ),
-
-              ...propsToDestructure.map(prop =>
-                ts.createBindingElement(undefined, undefined, ts.createIdentifier(prop), undefined)
-              ),
-
-              // ...props
-              ts.createBindingElement(
-                ts.createToken(ts.SyntaxKind.DotDotDotToken),
-                undefined,
-                ts.createIdentifier('props'),
-                undefined
-              ),
-            ]),
-            undefined,
-            undefined,
-            undefined
-          ),
-          ts.createParameter(
-            undefined,
-            undefined,
-            undefined,
-            ts.createIdentifier(constants.REF_PROP_NAME),
-            undefined,
-            undefined,
-            undefined
-          ),
-        ],
-        undefined,
-        ts.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-        newElement
+  return annotateWithPureComment(
+    ts.createCall(
+      ts.createPropertyAccess(
+        constants.getReactDefaultImportName(context),
+        ts.createIdentifier(constants.FORWARD_REF_IMPORT)
       ),
-    ]
+      undefined,
+      [
+        ts.createArrowFunction(
+          undefined,
+          undefined,
+          [
+            ts.createParameter(
+              undefined,
+              undefined,
+              undefined,
+              ts.createObjectBindingPattern([
+                // a: C = 'div'
+                ts.createBindingElement(
+                  undefined,
+                  ts.createIdentifier(constants.STYLED_AS_PROP_NAME),
+                  ts.createIdentifier(constants.STYLED_AS_USAGE_NAME),
+                  originalTagName
+                ),
+
+                ...propsToDestructure.map(prop =>
+                  ts.createBindingElement(
+                    undefined,
+                    undefined,
+                    ts.createIdentifier(prop),
+                    undefined
+                  )
+                ),
+
+                // ...props
+                ts.createBindingElement(
+                  ts.createToken(ts.SyntaxKind.DotDotDotToken),
+                  undefined,
+                  ts.createIdentifier('props'),
+                  undefined
+                ),
+              ]),
+              undefined,
+              undefined,
+              undefined
+            ),
+            ts.createParameter(
+              undefined,
+              undefined,
+              undefined,
+              ts.createIdentifier(constants.REF_PROP_NAME),
+              undefined,
+              undefined,
+              undefined
+            ),
+          ],
+          undefined,
+          ts.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+          newElement
+        ),
+      ]
+    )
   );
 };
