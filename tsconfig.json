@@ -5,8 +5,7 @@
       {
         "transform": "./packages/ts-transform/src/index.tsx",
         "options": {
-          "nonce": "\"k0Mp1lEd\"",
-          "sourceMap": true
+          "nonce": "\"k0Mp1lEd\""
         }
       }
     ]
