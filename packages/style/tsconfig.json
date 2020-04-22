@@ -6,7 +6,15 @@
     "baseUrl": "src",
     "paths": {
       "@compiled/style": ["index.tsx"]
-    }
+    },
+    "plugins": [
+      {
+        "transform": "ts-transform-define",
+        "replace": {
+          "typeof window": "process.env.TYPEOF_WINDOW"
+        }
+      }
+    ]
   },
   "references": []
 }
