@@ -16,6 +16,7 @@ const getMountedProperties = () =>
     .join(' ');
 
 // sorry but using ? was throwing TS off
+type MatchFilter = Partial<Record<'state' | 'media', string>>;
 type Arg = [{ [key: string]: string }, MatchFilter?];
 export function toHaveCompiledCss(
   this: jest.MatcherUtils,
