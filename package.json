@@ -75,7 +75,7 @@
   ],
   "resolutions": {
     "@types/styled-components": "4.1.8",
-    "typescript": "^3.7.0"
+    "typescript": "3.7.x"
   },
   "size-limit": [
     {
