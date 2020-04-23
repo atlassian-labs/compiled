@@ -5,73 +5,108 @@ describe('template literal to css', () => {
     it('should extract the prefix of a simple template literal', () => {
       const simpleParts = ['content: "', '";font-color:blue;'];
 
-      const head = cssBeforeInterpolation(simpleParts[0]);
+      const extract = cssBeforeInterpolation(simpleParts[0]);
 
-      expect(head.variablePrefix).toEqual('"');
-      expect(head.css).toEqual('content: ');
+      expect(extract.variablePrefix).toEqual('"');
+      expect(extract.css).toEqual('content: ');
     });
 
     it('should extract the suffix of a simple template literal', () => {
       const simpleParts = ['content: "', '";font-color:blue;'];
 
-      const head = cssAfterInterpolation(simpleParts[1]);
+      const extract = cssAfterInterpolation(simpleParts[1]);
 
-      expect(head.variableSuffix).toEqual('"');
-      expect(head.css).toEqual(';font-color:blue;');
+      expect(extract.variableSuffix).toEqual('"');
+      expect(extract.css).toEqual(';font-color:blue;');
     });
 
     it('should extract the prefix of a complex template literal', () => {
       const complexParts = ['transform: translateX(', ');color:blue;'];
 
-      const head = cssBeforeInterpolation(complexParts[0]);
+      const extract = cssBeforeInterpolation(complexParts[0]);
 
-      expect(head.variablePrefix).toEqual(undefined);
-      expect(head.css).toEqual('transform: translateX(');
+      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.css).toEqual('transform: translateX(');
     });
 
     it('should extract the suffix of a complex template literal', () => {
       const complexParts = ['transform: translateX(', ');color:blue;'];
 
-      const head = cssAfterInterpolation(complexParts[1]);
+      const extract = cssAfterInterpolation(complexParts[1]);
 
-      expect(head.variableSuffix).toEqual('');
-      expect(head.css).toEqual(');color:blue;');
+      expect(extract.variableSuffix).toEqual('');
+      expect(extract.css).toEqual(');color:blue;');
     });
 
     it('should extract first part of a three part value', () => {
       const complexPartsNoPropertyName = ['transform: transform3d(', ', ', ')'];
 
-      const head = cssBeforeInterpolation(complexPartsNoPropertyName[0]);
+      const extract = cssBeforeInterpolation(complexPartsNoPropertyName[0]);
 
-      expect(head.variablePrefix).toEqual(undefined);
-      expect(head.css).toEqual('transform: transform3d(');
+      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.css).toEqual('transform: transform3d(');
     });
 
     it('should extract before second part of a three part value', () => {
       const complexPartsNoPropertyName = ['transform: transform3d(', ', ', ')'];
 
-      const head = cssBeforeInterpolation(complexPartsNoPropertyName[1]);
+      const extract = cssBeforeInterpolation(complexPartsNoPropertyName[1]);
 
-      expect(head.variablePrefix).toEqual(undefined);
-      expect(head.css).toEqual(', ');
+      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.css).toEqual(', ');
     });
 
     it('should extract after second part of a three part value', () => {
       const complexPartsNoPropertyName = ['transform: transform3d(', ', ', ')'];
 
-      const head = cssAfterInterpolation(complexPartsNoPropertyName[1]);
+      const extract = cssAfterInterpolation(complexPartsNoPropertyName[1]);
 
-      expect(head.variableSuffix).toEqual('');
-      expect(head.css).toEqual(', ');
+      expect(extract.variableSuffix).toEqual('');
+      expect(extract.css).toEqual(', ');
     });
 
     it('should extract second part of a three part value', () => {
       const complexPartsNoPropertyName = ['transform: transform3d(', ', ', ')'];
 
-      const head = cssAfterInterpolation(complexPartsNoPropertyName[2]);
+      const extract = cssAfterInterpolation(complexPartsNoPropertyName[2]);
 
-      expect(head.variableSuffix).toEqual('');
-      expect(head.css).toEqual(')');
+      expect(extract.variableSuffix).toEqual('');
+      expect(extract.css).toEqual(')');
+    });
+
+    it('should get the before and after for the first part of a transform interpolation', () => {
+      const css = [
+        `
+        transform: translate3d(
+      `,
+        `px, `,
+        `, 0);`,
+      ];
+
+      const before = cssBeforeInterpolation(css[0]);
+      const after = cssAfterInterpolation(css[1]);
+
+      expect(before.variablePrefix).toEqual(undefined);
+      expect(before.css).toEqual(css[0]);
+      expect(after.variableSuffix).toEqual('px');
+      expect(after.css).toEqual(', ');
+    });
+
+    it.only('should get the before and after for the second part of a transform interpolation', () => {
+      const css = [
+        `
+        transform: translate3d(var(--var-test),
+      `,
+        `, 0);`,
+      ];
+
+      const before = cssBeforeInterpolation(css[0]);
+      const after = cssAfterInterpolation(css[1]);
+
+      expect(before.variablePrefix).toEqual(undefined);
+      expect(before.css).toEqual(css[0]);
+      expect(after.variableSuffix).toEqual('');
+      expect(after.css).toEqual(', 0);');
     });
   });
 
@@ -79,82 +114,82 @@ describe('template literal to css', () => {
     it('should extract the suffix with not prefix', () => {
       const simpleParts = ['px'];
 
-      const head = cssAfterInterpolation(simpleParts[0]);
+      const extract = cssAfterInterpolation(simpleParts[0]);
 
-      expect(head.variableSuffix).toEqual('px');
-      expect(head.css).toEqual('');
+      expect(extract.variableSuffix).toEqual('px');
+      expect(extract.css).toEqual('');
     });
 
     it('should extract the prefix of a simple template literal', () => {
       const simpleParts = ['"', '"'];
 
-      const head = cssBeforeInterpolation(simpleParts[0]);
+      const extract = cssBeforeInterpolation(simpleParts[0]);
 
-      expect(head.variablePrefix).toEqual('"');
-      expect(head.css).toEqual('');
+      expect(extract.variablePrefix).toEqual('"');
+      expect(extract.css).toEqual('');
     });
 
     it('should extract the suffix of a simple template literal', () => {
       const simpleParts = ['"', '"'];
 
-      const head = cssAfterInterpolation(simpleParts[1]);
+      const extract = cssAfterInterpolation(simpleParts[1]);
 
-      expect(head.variableSuffix).toEqual('"');
-      expect(head.css).toEqual('');
+      expect(extract.variableSuffix).toEqual('"');
+      expect(extract.css).toEqual('');
     });
 
     it('should extract prefix from css calac function', () => {
       const complexPartsNoPropertyName = ['calc(100% - ', 'px)'];
 
-      const head = cssBeforeInterpolation(complexPartsNoPropertyName[0]);
+      const extract = cssBeforeInterpolation(complexPartsNoPropertyName[0]);
 
-      expect(head.variablePrefix).toEqual(undefined);
-      expect(head.css).toEqual('calc(100% - ');
+      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.css).toEqual('calc(100% - ');
     });
 
     it('should extract suffix from css calc function', () => {
       const complexPartsNoPropertyName = ['calc(100% - ', 'px)'];
 
-      const head = cssAfterInterpolation(complexPartsNoPropertyName[1]);
+      const extract = cssAfterInterpolation(complexPartsNoPropertyName[1]);
 
-      expect(head.variableSuffix).toEqual('px');
-      expect(head.css).toEqual(')');
+      expect(extract.variableSuffix).toEqual('px');
+      expect(extract.css).toEqual(')');
     });
 
     it('should extract first part of a three part value', () => {
       const complexPartsNoPropertyName = ['transform3d(', ', ', ')'];
 
-      const head = cssBeforeInterpolation(complexPartsNoPropertyName[0]);
+      const extract = cssBeforeInterpolation(complexPartsNoPropertyName[0]);
 
-      expect(head.variablePrefix).toEqual(undefined);
-      expect(head.css).toEqual('transform3d(');
+      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.css).toEqual('transform3d(');
     });
 
     it('should extract before second part of a three part value', () => {
       const complexPartsNoPropertyName = ['transform3d(', ', ', ')'];
 
-      const head = cssBeforeInterpolation(complexPartsNoPropertyName[1]);
+      const extract = cssBeforeInterpolation(complexPartsNoPropertyName[1]);
 
-      expect(head.variablePrefix).toEqual(undefined);
-      expect(head.css).toEqual(', ');
+      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.css).toEqual(', ');
     });
 
     it('should extract after second part of a three part value', () => {
       const complexPartsNoPropertyName = ['transform3d(', ', ', ')'];
 
-      const head = cssAfterInterpolation(complexPartsNoPropertyName[1]);
+      const extract = cssAfterInterpolation(complexPartsNoPropertyName[1]);
 
-      expect(head.variableSuffix).toEqual('');
-      expect(head.css).toEqual(', ');
+      expect(extract.variableSuffix).toEqual('');
+      expect(extract.css).toEqual(', ');
     });
 
     it('should extract second part of a three part value', () => {
       const complexPartsNoPropertyName = ['transform3d(', ', ', ')'];
 
-      const head = cssAfterInterpolation(complexPartsNoPropertyName[2]);
+      const extract = cssAfterInterpolation(complexPartsNoPropertyName[2]);
 
-      expect(head.variableSuffix).toEqual('');
-      expect(head.css).toEqual(')');
+      expect(extract.variableSuffix).toEqual('');
+      expect(extract.css).toEqual(')');
     });
   });
 });

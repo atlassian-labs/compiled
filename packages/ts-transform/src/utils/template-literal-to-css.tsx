@@ -26,14 +26,11 @@ export const cssAfterInterpolation = (tail: string): { css: string; variableSuff
       tailIndex = tail.indexOf(')');
     } else if (tail.indexOf(';') !== -1) {
       tailIndex = tail.indexOf(';');
+    } else if (tail.indexOf(',') !== -1) {
+      tailIndex = tail.indexOf(',');
     } else if (tail.indexOf('\n') !== -1) {
       tailIndex = tail.indexOf('\n');
     } else {
-      tailIndex = tail.length;
-    }
-
-    if (tailIndex === -1) {
-      // Ok still nothing. This means everything is a suffix!
       tailIndex = tail.length;
     }
 

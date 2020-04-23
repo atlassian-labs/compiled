@@ -564,7 +564,7 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('style={{ "--var-test": primary }}');
     });
 
-    it('should allow multiple interpolations inside a single css property', () => {
+    it.only('should allow multiple interpolations inside a single css property', () => {
       const actual = transformer.transform(`
         import React from 'react';
         import '@compiled/css-in-js';
