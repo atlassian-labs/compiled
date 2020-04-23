@@ -564,6 +564,27 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('style={{ "--var-test": primary }}');
     });
 
+    it('should allow multiple interpolations inside a single css property', () => {
+      const actual = transformer.transform(`
+        import React from 'react';
+        import '@compiled/css-in-js';
+
+        const x = 1;
+        const y = '2px';
+
+        <div
+          css={\`
+            transform: translate3d(\${x}px, $\{y}, 0);
+          \`}
+        >
+          hello world
+        </div>
+      `);
+
+      expect(actual).toInclude('transform:translate3d(var(--var-test), var(--var-test))');
+      expect(actual).toInclude('style={{ "--var-test": x + "px", "--var-test": y }}');
+    });
+
     xit('should transform template string with argument arrow function import', () => {
       const actual = transformer.addSource({
         path: '/mixy-in.ts',
