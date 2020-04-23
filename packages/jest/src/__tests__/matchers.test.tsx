@@ -126,39 +126,39 @@ describe('toHaveCompliedCss', () => {
     expect(el).toHaveCompiledCss('color', 'blue', { state: 'active' });
   });
 
-  it('should match styles with media', () => {
-    const { getByText } = render(
-      <div
-        css={{
-          color: 'green',
-          '@media screen': {
-            color: 'yellow',
-          },
-        }}>
-        hello world
-      </div>
-    );
-    const el = getByText('hello world');
-    expect(el).toHaveCompiledCss('color', 'green');
-    expect(el).toHaveCompiledCss('color', 'yellow', { media: '@media screen' });
-  });
+  // it('should match styles with media', () => {
+  //   const { getByText } = render(
+  //     <div
+  //       css={{
+  //         color: 'green',
+  //         '@media screen': {
+  //           color: 'yellow',
+  //         },
+  //       }}>
+  //       hello world
+  //     </div>
+  //   );
+  //   const el = getByText('hello world');
+  //   expect(el).toHaveCompiledCss('color', 'green');
+  //   expect(el).toHaveCompiledCss('color', 'yellow', { media: '@media screen' });
+  // });
 
-  it('should match styles with media and state', () => {
-    const { getByText } = render(
-      <div
-        css={{
-          color: 'green',
-          '@media screen': {
-            color: 'yellow',
-            ':hover': {
-              background: 'red',
-            },
-          },
-        }}>
-        hello world
-      </div>
-    );
-    const el = getByText('hello world');
-    expect(el).toHaveCompiledCss('background', 'red', { media: '@media screen', state: 'hover' });
-  });
+  // it('should match styles with media and state', () => {
+  //   const { getByText } = render(
+  //     <div
+  //       css={{
+  //         color: 'green',
+  //         '@media screen': {
+  //           color: 'yellow',
+  //           ':hover': {
+  //             background: 'red',
+  //           },
+  //         },
+  //       }}>
+  //       hello world
+  //     </div>
+  //   );
+  //   const el = getByText('hello world');
+  //   expect(el).toHaveCompiledCss('background', 'red', { media: '@media screen', state: 'hover' });
+  // });
 });

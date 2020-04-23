@@ -1,4 +1,9 @@
-// import css from 'css';
+import CSS from 'css';
+
+type MatchFilter = Partial<Record<'state' | 'media', string>>;
+type Arg = [{ [key: string]: string }, MatchFilter?];
+
+const DEFAULT_MATCH_FILTER: MatchFilter = { media: undefined, state: undefined };
 
 const kebabCase = (str: string) =>
   str
@@ -17,16 +22,66 @@ const getMountedProperties = () =>
     )
     .join(' ');
 
-// sorry but using ? was throwing TS off
-type MatchFilter = Partial<Record<'state' | 'media', string>>;
-type Arg = [{ [key: string]: string }, MatchFilter?];
+const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) => {
+  const { media, state } = filter;
+
+  // rules are present directly inside ast.stylesheet.rules
+  // but if a media query is present it is nested inside ast.stylesheet.media.rules
+  // this inner function returns the relevant rules
+  const getAllRules = () => {
+    if (media) {
+      const mediaRules = ast.stylesheet?.rules.filter(r => {
+        if ('media' in r) {
+          return r.media === media;
+        }
+        return;
+      });
+
+      return mediaRules?.reduce<CSS.Rule[]>((acc, m) => {
+        if ('rules' in m && m.rules) {
+          acc = [...acc, ...m.rules];
+        }
+        return acc;
+      }, []);
+    }
+    return ast.stylesheet?.rules.filter(r => (r.type = 'rule')); // omit media objects
+  };
+
+  const allRules = getAllRules();
+  const klass = state ? `.${className}:${state}` : `.${className}`;
+  return allRules?.filter(r => {
+    if ('selectors' in r) {
+      return r.selectors?.find(s => s === klass);
+    }
+    return;
+  });
+};
+
+const findStylesInRules = (styles: string[], rules: CSS.Rule[] | undefined) => {
+  const found: string[] = [];
+
+  if (!rules) return found;
+
+  styles.forEach(s => {
+    rules?.forEach(r => {
+      if ('declarations' in r) {
+        r.declarations?.forEach(d => {
+          if ('property' in d) {
+            if (s === `${d.property}:${d.value}`) found.push(s);
+          }
+        });
+      }
+    });
+  });
+  return found;
+};
+
 export function toHaveCompiledCss(
   this: jest.MatcherUtils,
   element: HTMLElement,
   ...args: [Arg | string, string, MatchFilter?]
 ): jest.CustomMatcherResult {
-  const [property, value, matchFilter] = args;
-  const { media, state } = matchFilter || { media: undefined, state: undefined };
+  const [property, value, matchFilter = DEFAULT_MATCH_FILTER] = args;
   const properties = typeof property === 'string' ? { [property]: value } : property;
   const inlineStyleTag = element.parentElement && element.parentElement.querySelector('style');
   const styleElements: HTMLStyleElement[] =
@@ -41,10 +96,10 @@ export function toHaveCompiledCss(
 
   const stylesToFind = mapProperties(properties);
   const foundStyles: string[] = [];
-  // const classNames = element.className.split(' ');
-  let css = '';
+  const classNames = element.className.split(' ');
+
   for (const styleElement of styleElements) {
-    css += styleElement.textContent || '';
+    let css = styleElement.textContent || '';
     // This is a hack to get ahold of the styles.
     // Unfortunately JSDOM doesn't handle css variables properly
     // See: https://github.com/jsdom/jsdom/issues/1895
@@ -58,9 +113,13 @@ export function toHaveCompiledCss(
         css = css.split(`var(${key})`).join(value);
       });
     }
-  }
 
-  console.log(css);
+    const ast = CSS.parse(css);
+    classNames.forEach(c => {
+      const rules = getRules(ast, matchFilter, c);
+      foundStyles.push(...findStylesInRules(stylesToFind, rules));
+    });
+  }
 
   const notFoundStyles = stylesToFind.filter(style => !foundStyles.includes(style));
   const foundFormatted = stylesToFind.join(', ');
