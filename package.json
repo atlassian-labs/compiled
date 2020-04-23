@@ -72,8 +72,7 @@
     }
   },
   "workspaces": [
-    "packages/*",
-    "test/dead-code/elimination"
+    "packages/*"
   ],
   "resolutions": {
     "@types/styled-components": "4.1.8",
