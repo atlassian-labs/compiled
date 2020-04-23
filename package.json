@@ -5,7 +5,7 @@
   "author": "Michael Dougall",
   "license": "Apache-2.0",
   "scripts": {
-    "clean": "rm -rf node_modules/.cache && workspaces-run -- rm -rf dist -- rm -f tsconfig.tsbuildinfo",
+    "clean": "rm -rf node_modules/.cache && rm -rf test/dead-code-elimination/dist && rm -f test/dead-code-elimination/tsconfig.tsbuildinfo && workspaces-run -- rm -rf dist -- rm -f tsconfig.tsbuildinfo -- rm -f tsconfig.browser.tsbuildinfo",
     "start": "yarn build:main && npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch packages/ts-transform/ -e tsx",
     "start:prod": "NODE_ENV=production yarn start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/ts-transform/ -e tsx",
@@ -16,6 +16,7 @@
     "lint:fix": "yarn lint -- --fix",
     "build": "yarn build:main && yarn build:browser",
     "build:main": "TYPEOF_WINDOW='typeof window' ttsc --build packages/tsconfig.json",
+    "build:dead-code-elimination": "cd test/dead-code-elimination && ttsc",
     "build:browser": "TYPEOF_WINDOW='\"object\"' ttsc --build packages/tsconfig.browser.json",
     "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js --build packages",
     "build-storybook": "build-storybook",
@@ -23,7 +24,7 @@
     "version": "bash scripts/version.sh && git add .",
     "version-nightly": "bash scripts/should-nightly-run.sh && npm version prerelease --no-git-tag-version --preid=$(git rev-parse HEAD)",
     "postversion": "bash scripts/push-if-git.sh",
-    "bundlesize": "size-limit"
+    "bundlesize": "yarn build && yarn build:dead-code-elimination && size-limit"
   },
   "devDependencies": {
     "@babel/core": "^7.7.5",
@@ -81,6 +82,13 @@
     {
       "path": "./packages/style/dist/browser/index.js",
       "limit": "330B",
+      "ignore": [
+        "react"
+      ]
+    },
+    {
+      "path": "./test/dead-code-elimination/dist/index.js",
+      "limit": "680 B",
       "ignore": [
         "react"
       ]

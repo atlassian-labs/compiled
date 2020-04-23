@@ -1,0 +1,17 @@
+{
+  "extends": "../../packages/tsconfig.options.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "baseUrl": "src",
+    "plugins": [
+      {
+        "transform": "../../packages/ts-transform/src/index.tsx",
+        "options": {
+          "nonce": "\"k0Mp1lEd\""
+        }
+      }
+    ]
+  },
+  "exclude": ["dist"]
+}

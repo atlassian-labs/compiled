@@ -24,7 +24,7 @@ describe('babel plugin', () => {
       `
       import { styled } from '@compiled/css-in-js';
 
-      styled.div\`
+      const StyledDiv = styled.div\`
         font-size: 12px;
       \`;
     `,
@@ -38,10 +38,14 @@ describe('babel plugin', () => {
     expect(output?.code).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { CC, Style } from '@compiled/css-in-js';
-      React.forwardRef(({
+      const StyledDiv = /*#__PURE__*/React.forwardRef(({
         as: C = \\"div\\",
         ...props
-      }, ref) => <CC><Style hash=\\"1x3e11p\\" nonce={__webpack_nonce__}>{[\\".cc-1x3e11p{font-size:12px;}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} /></CC>);"
+      }, ref) => <CC><Style hash=\\"1x3e11p\\" nonce={__webpack_nonce__}>{[\\".cc-1x3e11p{font-size:12px;}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} /></CC>);
+
+      if (process.env.NODE_ENV === \\"development\\") {
+        StyledDiv.displayName = \\"StyledDiv\\";
+      }"
     `);
   });
 
@@ -50,7 +54,7 @@ describe('babel plugin', () => {
       `
       import { styled } from '@compiled/css-in-js';
 
-      styled.div\`
+      const StyledDiv = styled.div\`
         font-size: 12px;
       \`;
     `,
@@ -60,10 +64,14 @@ describe('babel plugin', () => {
     expect(output?.code).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { CC, Style } from '@compiled/css-in-js';
-      React.forwardRef(({
+      const StyledDiv = /*#__PURE__*/React.forwardRef(({
         as: C = \\"div\\",
         ...props
-      }, ref) => <CC><Style hash=\\"1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px;}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} /></CC>);"
+      }, ref) => <CC><Style hash=\\"1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px;}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} /></CC>);
+
+      if (process.env.NODE_ENV === \\"development\\") {
+        StyledDiv.displayName = \\"StyledDiv\\";
+      }"
     `);
   });
 

@@ -108,7 +108,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { CC, Style } from '@compiled/css-in-js';
-      React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><Style hash=\\"1b1wq3m\\">{[\\".cc-1b1wq3m{font-size:20px;}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR1EiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgeyBzdHlsZWQgfSBmcm9tICdAY29tcGlsZWQvY3NzLWluLWpzJztcblxuICAgICAgICBzdHlsZWQuZGl2KHsgZm9udFNpemU6IDIwIH0pO1xuICAgICAgIl19 */\\"]}</Style><C {...props} ref={ref} className={\\"cc-1b1wq3m\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
+      /*#__PURE__*/ React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><Style hash=\\"1b1wq3m\\">{[\\".cc-1b1wq3m{font-size:20px;}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR1EiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgeyBzdHlsZWQgfSBmcm9tICdAY29tcGlsZWQvY3NzLWluLWpzJztcblxuICAgICAgICBzdHlsZWQuZGl2KHsgZm9udFNpemU6IDIwIH0pO1xuICAgICAgIl19 */\\"]}</Style><C {...props} ref={ref} className={\\"cc-1b1wq3m\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
       "
     `);
   });
@@ -198,7 +198,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { CC, Style } from '@compiled/css-in-js';
-      React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><Style hash=\\"1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px;}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
+      /*#__PURE__*/ React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><Style hash=\\"1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px;}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
       "
     `);
   });
