@@ -102,7 +102,7 @@ describe('toHaveCompliedCss', () => {
     );
     const el = getByText('hello world');
     expect(el).toHaveCompiledCss('transform', 'scale(2)', { state: 'hover' });
-    expect(el).not.toHaveCompiledCss('transform', 'scale(2)', { state: 'active' });
+    expect(el).not.toHaveCompiledCss('transform', 'scale(2)');
   });
 
   it('should match styles with state', () => {
@@ -124,6 +124,7 @@ describe('toHaveCompliedCss', () => {
     expect(el).not.toHaveCompiledCss('color', 'blue', { state: 'hover' });
     expect(el).not.toHaveCompiledCss('transform', 'scale(2)');
     expect(el).not.toHaveCompiledCss('transform', 'scale(2)', { state: 'active' });
+    expect(el).toHaveCompiledCss('transform', 'scale(2)', { state: 'hover' });
     expect(el).toHaveCompiledCss('color', 'blue', { state: 'active' });
   });
 
