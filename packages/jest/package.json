@@ -20,7 +20,9 @@
     "src"
   ],
   "dependencies": {
-    "@types/css": "^0.0.31",
     "css": "^2.2.4"
+  },
+  "devDependencies": {
+    "@types/css": "^0.0.31"
   }
 }
