@@ -39,9 +39,6 @@ export const cssAfterInterpolation = (tail: string): { css: string; variableSuff
 
     variableSuffix = tail.slice(0, tailIndex);
     css = tail.slice(tailIndex);
-    if (!css) {
-      css = ';';
-    }
   }
 
   return {
@@ -51,6 +48,22 @@ export const cssAfterInterpolation = (tail: string): { css: string; variableSuff
 };
 
 export const cssBeforeInterpolation = (css: string): { css: string; variablePrefix?: string } => {
+  if (css[css.length - 1] === '(') {
+    // We are inside a css like "translateX(".
+    // There is no prefix we need to extract here.
+    return {
+      css,
+      variablePrefix: undefined,
+    };
+  }
+
+  if (!css.match(/:|;/) && !css.includes('(')) {
+    return {
+      variablePrefix: css,
+      css: '',
+    };
+  }
+
   let variablePrefix = css.match(/:(.+$)/)?.[1];
   if (variablePrefix) {
     variablePrefix = variablePrefix.trim();
