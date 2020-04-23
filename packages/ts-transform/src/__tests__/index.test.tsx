@@ -149,20 +149,28 @@ describe('root transformer', () => {
     expect(actual.outputText).toInclude("import { CC, Style } from '@compiled/css-in-js'");
   });
 
-  xit('should match react import when transforming to common js', () => {
+  it('should match react import when transforming to common js', () => {
     const transformer = rootTransformer(stubProgam, {});
 
     const actual = ts.transpileModule(
       `
+        import React from 'react';
         import '@compiled/css-in-js';
         <div css={{ fontSize: '20px' }}>hello world</div>
       `,
       createTsConfig(transformer, { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.React })
     );
 
-    expect(actual.outputText).toInclude('var react_1 = __importDefault(require("react"));');
-    expect(actual.outputText).toInclude('react_1.createElement');
-    expect(actual.outputText).not.toInclude('React.createElement');
+    expect(actual.outputText).toMatchInlineSnapshot(`
+      "\\"use strict\\";
+      Object.defineProperty(exports, \\"__esModule\\", { value: true });
+      const react_1 = require(\\"react\\");
+      const css_in_js_1 = require(\\"@compiled/css-in-js\\");
+      react_1.default.createElement(css_in_js_1.CC, null,
+          react_1.default.createElement(css_in_js_1.Style, { hash: '1b1wq3m' }, [\\".cc-1b1wq3m{font-size:20px;}\\"]),
+          react_1.default.createElement(\\"div\\", { className: 'cc-1b1wq3m' }, \\"hello world\\"));
+      "
+    `);
   });
 
   it('should not change code where there is no compiled components', () => {

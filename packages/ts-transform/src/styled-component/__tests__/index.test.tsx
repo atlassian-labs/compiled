@@ -46,20 +46,6 @@ describe('styled component transformer', () => {
     expect(actual).toInclude('"--var-test": textSize');
   });
 
-  xit('should compose using a previously created component', () => {
-    const actual = transformer.transform(`
-      import { styled } from '@compiled/css-in-js';
-
-      const MyButton = ({ children, ...props }: any) => <button {...props}>{children}</button>
-
-      const ListItem = styled(MyButton)({
-        fontSize: '20px',
-      });
-    `);
-
-    expect(actual).toInclude('<MyButton {...props} className');
-  });
-
   it('should add an identifier nonce to the style element', () => {
     const stubProgam: ts.Program = ({
       getTypeChecker: () => ({
