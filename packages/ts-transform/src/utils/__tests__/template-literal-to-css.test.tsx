@@ -37,6 +37,42 @@ describe('template literal to css', () => {
       expect(head.variableSuffix).toEqual('');
       expect(head.css).toEqual(');color:blue;');
     });
+
+    it('should extract first part of a three part value', () => {
+      const complexPartsNoPropertyName = ['transform: transform3d(', ', ', ')'];
+
+      const head = cssBeforeInterpolation(complexPartsNoPropertyName[0]);
+
+      expect(head.variablePrefix).toEqual(undefined);
+      expect(head.css).toEqual('transform: transform3d(');
+    });
+
+    it('should extract before second part of a three part value', () => {
+      const complexPartsNoPropertyName = ['transform: transform3d(', ', ', ')'];
+
+      const head = cssBeforeInterpolation(complexPartsNoPropertyName[1]);
+
+      expect(head.variablePrefix).toEqual(undefined);
+      expect(head.css).toEqual(', ');
+    });
+
+    it('should extract after second part of a three part value', () => {
+      const complexPartsNoPropertyName = ['transform: transform3d(', ', ', ')'];
+
+      const head = cssAfterInterpolation(complexPartsNoPropertyName[1]);
+
+      expect(head.variableSuffix).toEqual('');
+      expect(head.css).toEqual(', ');
+    });
+
+    it('should extract second part of a three part value', () => {
+      const complexPartsNoPropertyName = ['transform: transform3d(', ', ', ')'];
+
+      const head = cssAfterInterpolation(complexPartsNoPropertyName[2]);
+
+      expect(head.variableSuffix).toEqual('');
+      expect(head.css).toEqual(')');
+    });
   });
 
   describe('interpolations without surrounding css', () => {
@@ -82,6 +118,42 @@ describe('template literal to css', () => {
       const head = cssAfterInterpolation(complexPartsNoPropertyName[1]);
 
       expect(head.variableSuffix).toEqual('px');
+      expect(head.css).toEqual(')');
+    });
+
+    it('should extract first part of a three part value', () => {
+      const complexPartsNoPropertyName = ['transform3d(', ', ', ')'];
+
+      const head = cssBeforeInterpolation(complexPartsNoPropertyName[0]);
+
+      expect(head.variablePrefix).toEqual(undefined);
+      expect(head.css).toEqual('transform3d(');
+    });
+
+    it('should extract before second part of a three part value', () => {
+      const complexPartsNoPropertyName = ['transform3d(', ', ', ')'];
+
+      const head = cssBeforeInterpolation(complexPartsNoPropertyName[1]);
+
+      expect(head.variablePrefix).toEqual(undefined);
+      expect(head.css).toEqual(', ');
+    });
+
+    it('should extract after second part of a three part value', () => {
+      const complexPartsNoPropertyName = ['transform3d(', ', ', ')'];
+
+      const head = cssAfterInterpolation(complexPartsNoPropertyName[1]);
+
+      expect(head.variableSuffix).toEqual('');
+      expect(head.css).toEqual(', ');
+    });
+
+    it('should extract second part of a three part value', () => {
+      const complexPartsNoPropertyName = ['transform3d(', ', ', ')'];
+
+      const head = cssAfterInterpolation(complexPartsNoPropertyName[2]);
+
+      expect(head.variableSuffix).toEqual('');
       expect(head.css).toEqual(')');
     });
   });

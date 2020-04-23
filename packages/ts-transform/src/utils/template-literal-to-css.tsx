@@ -15,7 +15,7 @@ export const cssAfterInterpolation = (tail: string): { css: string; variableSuff
   let variableSuffix = '';
   let css = '';
 
-  if (tail[0] === '\n' || tail[0] === ';') {
+  if (tail[0] === '\n' || tail[0] === ';' || tail[0] === ',') {
     css = tail;
   } else {
     // Sometimes people forget to put a semi-colon at the end.
@@ -48,7 +48,7 @@ export const cssAfterInterpolation = (tail: string): { css: string; variableSuff
 };
 
 export const cssBeforeInterpolation = (css: string): { css: string; variablePrefix?: string } => {
-  if (css[css.length - 1] === '(') {
+  if (css[css.length - 1] === '(' || css[0] === ',') {
     // We are inside a css like "translateX(".
     // There is no prefix we need to extract here.
     return {
