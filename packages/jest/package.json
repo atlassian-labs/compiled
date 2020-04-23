@@ -18,5 +18,8 @@
   "files": [
     "dist",
     "src"
-  ]
+  ],
+  "dependencies": {
+    "css": "^2.2.4"
+  }
 }

@@ -1,3 +1,5 @@
+// import css from 'css';
+
 const kebabCase = (str: string) =>
   str
     .replace(/([a-z])([A-Z])/g, '$1-$2')
@@ -39,10 +41,10 @@ export function toHaveCompiledCss(
 
   const stylesToFind = mapProperties(properties);
   const foundStyles: string[] = [];
-  const classNames = element.className.split(' ');
-
+  // const classNames = element.className.split(' ');
+  let css = '';
   for (const styleElement of styleElements) {
-    let css = styleElement.textContent || '';
+    css += styleElement.textContent || '';
     // This is a hack to get ahold of the styles.
     // Unfortunately JSDOM doesn't handle css variables properly
     // See: https://github.com/jsdom/jsdom/issues/1895
@@ -56,16 +58,9 @@ export function toHaveCompiledCss(
         css = css.split(`var(${key})`).join(value);
       });
     }
-
-    classNames.forEach(c => {
-      let matcher = c;
-      if (state) matcher += `:${state}`;
-      if (media) matcher = `${media}{.*${matcher}`;
-      if (css.match(matcher)) {
-        foundStyles.push(...stylesToFind.filter(s => css.includes(s)));
-      }
-    });
   }
+
+  console.log(css);
 
   const notFoundStyles = stylesToFind.filter(style => !foundStyles.includes(style));
   const foundFormatted = stylesToFind.join(', ');
