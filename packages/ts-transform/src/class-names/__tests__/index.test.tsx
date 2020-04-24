@@ -121,7 +121,7 @@ describe('class names transformer', () => {
   });
 
   describe('using a string literal', () => {
-    it('should persist suffix of dynamic property value into inline styles', () => {
+    it('should move suffix of interpolation into inline styles', () => {
       const actual = transformer.transform(`
         import { ClassNames } from '@compiled/css-in-js';
 

@@ -6,78 +6,7 @@ import { objectLiteralToCssString } from './object-literal-to-css';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
 import { evaluateFunction, isReturnCssLike } from './evalulate-function';
 import { joinToBinaryExpression, joinThreeExpressions } from './expression-operators';
-
-/**
- * Extracts a suffix from a css property e.g:
- * 'px;font-size: 20px; would return "px" as the suffix and ";font-size: 20px;" as rest.
- */
-export const cssAfterInterpolation = (tail: string): { css: string; variableSuffix?: string } => {
-  let variableSuffix = '';
-  let css = '';
-
-  if (tail[0] === '\n' || tail[0] === ';' || tail[0] === ',') {
-    css = tail;
-  } else {
-    // Sometimes people forget to put a semi-colon at the end.
-    let tailIndex;
-    // when calc property used, we get ')' along with unit in the 'literal' object
-    // Eg. `marginLeft: calc(100% - ${obj.key}rem)` will give ')rem' in the span literal
-    if (tail.indexOf(')') !== -1) {
-      tailIndex = tail.indexOf(')');
-    } else if (tail.indexOf(';') !== -1) {
-      tailIndex = tail.indexOf(';');
-    } else if (tail.indexOf(',') !== -1) {
-      tailIndex = tail.indexOf(',');
-    } else if (tail.indexOf('\n') !== -1) {
-      tailIndex = tail.indexOf('\n');
-    } else {
-      tailIndex = tail.length;
-    }
-
-    variableSuffix = tail.slice(0, tailIndex);
-    css = tail.slice(tailIndex);
-  }
-
-  return {
-    variableSuffix,
-    css,
-  };
-};
-
-export const cssBeforeInterpolation = (css: string): { css: string; variablePrefix?: string } => {
-  const trimCss = css.trim();
-  if (
-    trimCss[trimCss.length - 1] === '(' ||
-    trimCss[0] === ',' ||
-    trimCss[trimCss.length - 1] === ','
-  ) {
-    // We are inside a css like "translateX(".
-    // There is no prefix we need to extract here.
-    return {
-      css: css,
-      variablePrefix: undefined,
-    };
-  }
-
-  if (!css.match(/:|;/) && !css.includes('(')) {
-    return {
-      variablePrefix: css,
-      css: '',
-    };
-  }
-
-  let variablePrefix = css.match(/:(.+$)/)?.[1];
-  if (variablePrefix) {
-    variablePrefix = variablePrefix.trim();
-    const lastIndex = css.lastIndexOf(variablePrefix);
-    css = css.slice(0, lastIndex);
-  }
-
-  return {
-    css,
-    variablePrefix,
-  };
-};
+import { cssAfterInterpolation, cssBeforeInterpolation } from './string-interpolations';
 
 export const templateLiteralToCss = (
   node: ts.TemplateExpression | ts.NoSubstitutionTemplateLiteral | ts.StringLiteral,

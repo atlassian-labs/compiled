@@ -650,7 +650,7 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('.css-test{font-size:calc(100% - var(--var-test));}');
     });
 
-    it('should persist prefix of dynamic property value from objects into inline styles', () => {
+    it('should move prefix of grouped interpolation into inline styles', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -664,6 +664,30 @@ describe('css prop transformer', () => {
 
       expect(actual).toInclude('style={{ "--var-test": heading.depth + "rem" }}');
       expect(actual).toInclude('.css-test{margin-left:calc(100% - var(--var-test));}');
+    });
+
+    it('should move multiple groups of interpolations into inline styles', () => {
+      // See: https://codesandbox.io/s/dank-star-443ps?file=/src/index.js
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+
+        const N30 = 'gray';
+
+        <div css={\`
+          background-image: linear-gradient(45deg, \${N30} 25%, transparent 25%),
+            linear-gradient(-45deg, \${N30} 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, \${N30} 75%),
+            linear-gradient(-45deg, transparent 75%, \${N30} 75%);
+        \`}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        `background-image:linear-gradient(45deg,var(--var-test) 25%,transparent 25%), linear-gradient(-45deg,var(--var-test) 25%,transparent 25%), linear-gradient(45deg,transparent 75%,var(--var-test) 75%), linear-gradient(-45deg,transparent 75%,var(--var-test) 75%);`
+      );
+      // TODO: Fix duplicates
+      expect(actual).toInclude(
+        'style={{ "--var-test": N30, "--var-test": N30, "--var-test": N30, "--var-test": N30 }}'
+      );
     });
 
     it('should transform object with simple values', () => {

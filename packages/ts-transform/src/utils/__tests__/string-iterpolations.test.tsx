@@ -1,4 +1,4 @@
-import { cssBeforeInterpolation, cssAfterInterpolation } from '../template-literal-to-css';
+import { cssBeforeInterpolation, cssAfterInterpolation } from '../string-interpolations';
 
 describe('template literal to css', () => {
   describe('interpolations with surrounding css', () => {
@@ -96,6 +96,83 @@ describe('template literal to css', () => {
       expect(before.css).toEqual('\n            transform: translate3d(var(--var-test), ');
       expect(after.variableSuffix).toEqual('');
       expect(after.css).toEqual(', 0);');
+    });
+  });
+
+  describe('interpolations with multiple groups', () => {
+    it('should extract the first part of the first group', () => {
+      const parts = [
+        'background-image: linear-gradient(45deg, ',
+        ' 25%, transparent 25%),',
+        'linear-gradient(-45deg, ',
+        ' 25%, transparent 25%),',
+        'linear-gradient(45deg, transparent 75%, ',
+        ' 75%),',
+        'linear-gradient(-45deg, transparent 75%, ',
+        ' 75%);',
+      ];
+
+      const before = cssBeforeInterpolation(parts[0]);
+      const after = cssAfterInterpolation(parts[1]);
+
+      expect(before.css).toEqual(parts[0]);
+      expect(before.variablePrefix).toEqual(undefined);
+      expect(after.variableSuffix).toEqual('');
+      expect(after.css).toEqual(parts[1]);
+    });
+
+    it('should extract the first part of the second group', () => {
+      const parts = [
+        'background-image: linear-gradient(45deg, var(--var-test) 25%, transparent 25%),',
+        'linear-gradient(-45deg, ',
+        ' 25%, transparent 25%),',
+        'linear-gradient(45deg, transparent 75%, ',
+        ' 75%),',
+        'linear-gradient(-45deg, transparent 75%, ',
+        ' 75%);',
+      ];
+
+      const before = cssBeforeInterpolation(parts[0]);
+      const after = cssAfterInterpolation(parts[1]);
+
+      expect(before.css).toEqual(parts[0]);
+      expect(before.variablePrefix).toEqual(undefined);
+      expect(after.css).toEqual(parts[1]);
+      expect(after.variableSuffix).toEqual('');
+    });
+
+    it('should extract the first part of the third group', () => {
+      const parts = [
+        'background-image: linear-gradient(45deg, var(--var-test) 25%, transparent 25%), linear-gradient(-45deg, var(--var-test) 25%, transparent 25%),',
+        'linear-gradient(45deg, transparent 75%, ',
+        ' 75%),',
+        'linear-gradient(-45deg, transparent 75%, ',
+        ' 75%);',
+      ];
+
+      const before = cssBeforeInterpolation(parts[0]);
+      const after = cssAfterInterpolation(parts[1]);
+
+      expect(before.css).toEqual(parts[0]);
+      expect(before.variablePrefix).toEqual(undefined);
+      expect(after.css).toEqual(parts[1]);
+      expect(after.variableSuffix).toEqual('');
+    });
+
+    it('should extract the first part of the fourth group', () => {
+      const parts = [
+        'background-image: linear-gradient(45deg, var(--var-test) 25%, transparent 25%), linear-gradient(-45deg, var(--var-test) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--var-test) 75%),',
+        'linear-gradient(-45deg, transparent 75%, ',
+        ' 75%);',
+      ];
+
+      const before = cssBeforeInterpolation(parts[0]);
+      const after = cssAfterInterpolation(parts[1]);
+
+      expect(before.css).toEqual(parts[0]);
+      expect(before.variablePrefix).toEqual(undefined);
+      expect(after.css).toEqual(parts[1]);
+      expect(after.variableSuffix).toEqual('');
     });
   });
 
