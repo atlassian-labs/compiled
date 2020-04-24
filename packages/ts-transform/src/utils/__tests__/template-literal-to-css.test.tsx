@@ -75,13 +75,7 @@ describe('template literal to css', () => {
     });
 
     it('should get the before and after for the first part of a transform interpolation', () => {
-      const css = [
-        `
-        transform: translate3d(
-      `,
-        `px, `,
-        `, 0);`,
-      ];
+      const css = [`transform: translate3d(`, `px, `, `, 0);`];
 
       const before = cssBeforeInterpolation(css[0]);
       const after = cssAfterInterpolation(css[1]);
@@ -92,19 +86,14 @@ describe('template literal to css', () => {
       expect(after.css).toEqual(', ');
     });
 
-    it.only('should get the before and after for the second part of a transform interpolation', () => {
-      const css = [
-        `
-        transform: translate3d(var(--var-test),
-      `,
-        `, 0);`,
-      ];
+    it('should get the before and after for the second part of a transform interpolation', () => {
+      const css = [`\n            transform: translate3d(var(--var-test), `, `, 0);`];
 
       const before = cssBeforeInterpolation(css[0]);
       const after = cssAfterInterpolation(css[1]);
 
       expect(before.variablePrefix).toEqual(undefined);
-      expect(before.css).toEqual(css[0]);
+      expect(before.css).toEqual('\n            transform: translate3d(var(--var-test), ');
       expect(after.variableSuffix).toEqual('');
       expect(after.css).toEqual(', 0);');
     });

@@ -45,11 +45,16 @@ export const cssAfterInterpolation = (tail: string): { css: string; variableSuff
 };
 
 export const cssBeforeInterpolation = (css: string): { css: string; variablePrefix?: string } => {
-  if (css[css.length - 1] === '(' || css[0] === ',') {
+  const trimCss = css.trim();
+  if (
+    trimCss[trimCss.length - 1] === '(' ||
+    trimCss[0] === ',' ||
+    trimCss[trimCss.length - 1] === ','
+  ) {
     // We are inside a css like "translateX(".
     // There is no prefix we need to extract here.
     return {
-      css,
+      css: css,
       variablePrefix: undefined,
     };
   }

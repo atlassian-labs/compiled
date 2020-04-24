@@ -129,7 +129,7 @@ describe('class names transformer', () => {
 
         const ListItem = () => (
           <ClassNames>
-            {({ css, style }) => <div style={style} className={css\`font-size \${fontSize}px;\`}>hello, world!</div>}
+            {({ css, style }) => <div style={style} className={css\`font-size: \${fontSize}px;\`}>hello, world!</div>}
           </ClassNames>
         );
       `);

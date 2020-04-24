@@ -564,7 +564,7 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('style={{ "--var-test": primary }}');
     });
 
-    it.only('should allow multiple interpolations inside a single css property', () => {
+    it('should allow multiple interpolations inside a single css property', () => {
       const actual = transformer.transform(`
         import React from 'react';
         import '@compiled/css-in-js';
@@ -581,8 +581,10 @@ describe('css prop transformer', () => {
         </div>
       `);
 
-      expect(actual).toInclude('transform:translate3d(var(--var-test), var(--var-test))');
       expect(actual).toInclude('style={{ "--var-test": x + "px", "--var-test": y }}');
+      expect(actual).toInclude(
+        '.css-test{-webkit-transform:translate3d(var(--var-test),var(--var-test),0);-ms-transform:translate3d(var(--var-test),var(--var-test),0);transform:translate3d(var(--var-test),var(--var-test),0);}'
+      );
     });
 
     xit('should transform template string with argument arrow function import', () => {
