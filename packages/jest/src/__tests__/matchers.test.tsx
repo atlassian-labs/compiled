@@ -88,7 +88,7 @@ describe('toHaveCompliedCss', () => {
     });
   });
 
-  it('should match styles with state', () => {
+  it('should match styles with target:hover', () => {
     const { getByText } = render(
       <div
         css={{
@@ -101,11 +101,11 @@ describe('toHaveCompliedCss', () => {
       </div>
     );
     const el = getByText('hello world');
-    expect(el).toHaveCompiledCss('transform', 'scale(2)', { state: 'hover' });
+    expect(el).toHaveCompiledCss('transform', 'scale(2)', { target: ':hover' });
     expect(el).not.toHaveCompiledCss('transform', 'scale(2)');
   });
 
-  it('should match styles with state', () => {
+  it('should match styles with target', () => {
     const { getByText } = render(
       <div
         css={{
@@ -121,11 +121,11 @@ describe('toHaveCompliedCss', () => {
       </div>
     );
     const el = getByText('hello world');
-    expect(el).not.toHaveCompiledCss('color', 'blue', { state: 'hover' });
+    expect(el).not.toHaveCompiledCss('color', 'blue', { target: ':hover' });
     expect(el).not.toHaveCompiledCss('transform', 'scale(2)');
-    expect(el).not.toHaveCompiledCss('transform', 'scale(2)', { state: 'active' });
-    expect(el).toHaveCompiledCss('transform', 'scale(2)', { state: 'hover' });
-    expect(el).toHaveCompiledCss('color', 'blue', { state: 'active' });
+    expect(el).not.toHaveCompiledCss('transform', 'scale(2)', { target: ':active' });
+    expect(el).toHaveCompiledCss('transform', 'scale(2)', { target: ':hover' });
+    expect(el).toHaveCompiledCss('color', 'blue', { target: ':active' });
   });
 
   it('should match styles with media', () => {
@@ -147,7 +147,7 @@ describe('toHaveCompliedCss', () => {
     expect(el).not.toHaveCompiledCss('color', 'yellow');
   });
 
-  it('should match styles with media and state', () => {
+  it('should match styles with media and target', () => {
     const { getByText } = render(
       <div
         css={{
@@ -163,6 +163,6 @@ describe('toHaveCompliedCss', () => {
       </div>
     );
     const el = getByText('hello world');
-    expect(el).toHaveCompiledCss('background', 'red', { media: 'screen', state: 'hover' });
+    expect(el).toHaveCompiledCss('background', 'red', { media: 'screen', target: ':hover' });
   });
 });

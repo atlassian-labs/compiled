@@ -1,9 +1,9 @@
 import CSS from 'css';
+import { MatchFilter } from './types';
 
-type MatchFilter = Partial<Record<'state' | 'media', string>>;
 type Arg = [{ [key: string]: string }, MatchFilter?];
 
-const DEFAULT_MATCH_FILTER: MatchFilter = { media: undefined, state: undefined };
+const DEFAULT_MATCH_FILTER: MatchFilter = { media: undefined, target: undefined };
 
 const kebabCase = (str: string) =>
   str
@@ -23,7 +23,7 @@ const getMountedProperties = () =>
     .join(' ');
 
 const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) => {
-  const { media, state } = filter;
+  const { media, target } = filter;
 
   // rules are present directly inside ast.stylesheet.rules
   // but if a media query is present it is nested inside ast.stylesheet.media.rules
@@ -48,7 +48,7 @@ const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) =
   };
 
   const allRules = getAllRules();
-  const klass = state ? `.${className}:${state}` : `.${className}`;
+  const klass = target ? `.${className}${target}` : `.${className}`;
   return allRules?.filter(r => {
     if ('selectors' in r) {
       return r.selectors?.find(s => s === klass);
