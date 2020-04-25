@@ -6,63 +6,7 @@ import { objectLiteralToCssString } from './object-literal-to-css';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
 import { evaluateFunction, isReturnCssLike } from './evalulate-function';
 import { joinToBinaryExpression, joinThreeExpressions } from './expression-operators';
-
-/**
- * Extracts a suffix from a css property e.g:
- * 'px;font-size: 20px; would return "px" as the suffix and ";font-size: 20px;" as rest.
- */
-const extractSuffix = (tail: string) => {
-  let suffix = '';
-  let rest = '';
-
-  if (tail[0] === '\n' || tail[0] === ';') {
-    rest = tail;
-  } else {
-    // Sometimes people forget to put a semi-colon at the end.
-    let tailIndex;
-    // when calc property used, we get ')' along with unit in the 'literal' object
-    // Eg. `marginLeft: calc(100% - ${obj.key}rem)` will give ')rem' in the span literal
-    if (tail.indexOf(')') !== -1) {
-      tailIndex = tail.indexOf(')');
-    } else if (tail.indexOf(';') !== -1) {
-      tailIndex = tail.indexOf(';');
-    } else if (tail.indexOf('\n') !== -1) {
-      tailIndex = tail.indexOf('\n');
-    } else {
-      tailIndex = tail.length;
-    }
-
-    if (tailIndex === -1) {
-      // Ok still nothing. This means everything is a suffix!
-      tailIndex = tail.length;
-    }
-
-    suffix = tail.slice(0, tailIndex);
-    rest = tail.slice(tailIndex);
-    if (!rest) {
-      rest = ';';
-    }
-  }
-
-  return {
-    suffix,
-    rest,
-  };
-};
-
-const extractPrefix = (css: string): { css: string; prefix?: string } => {
-  let prefix = css.match(/:(.+$)/)?.[1];
-  if (prefix) {
-    prefix = prefix.trim();
-    const lastIndex = css.lastIndexOf(prefix);
-    css = css.slice(0, lastIndex);
-  }
-
-  return {
-    css,
-    prefix,
-  };
-};
+import { cssAfterInterpolation, cssBeforeInterpolation } from './string-interpolations';
 
 export const templateLiteralToCss = (
   node: ts.TemplateExpression | ts.NoSubstitutionTemplateLiteral | ts.StringLiteral,
@@ -104,28 +48,27 @@ export const templateLiteralToCss = (
         css += result.css;
         cssVariables = cssVariables.concat(result.cssVariables);
       } else if (ts.isStringLiteral(value.initializer) || ts.isNumericLiteral(value.initializer)) {
-        const extractedPrefix = extractPrefix(css);
+        const before = cssBeforeInterpolation(css);
         // We an an inline arrow function - e.g. css`${props => props.color}`
-        const extractedSuffix = extractSuffix(span.literal.text);
-        const result = extractSuffix(span.literal.text);
+        const after = cssAfterInterpolation(span.literal.text);
 
-        css = extractedPrefix.css;
+        css = before.css;
         let cssVariableExpression: ts.Expression = span.expression;
 
-        if (extractedSuffix.suffix && extractedPrefix.prefix) {
+        if (after.variableSuffix && before.variablePrefix) {
           cssVariableExpression = joinThreeExpressions(
-            ts.createStringLiteral(extractedPrefix.prefix),
+            ts.createStringLiteral(before.variablePrefix),
             span.expression,
-            ts.createStringLiteral(extractedSuffix.suffix)
+            ts.createStringLiteral(after.variableSuffix)
           );
-        } else if (extractedSuffix.suffix) {
+        } else if (after.variableSuffix) {
           cssVariableExpression = joinToBinaryExpression(
             span.expression,
-            ts.createStringLiteral(extractedSuffix.suffix)
+            ts.createStringLiteral(after.variableSuffix)
           );
-        } else if (extractedPrefix.prefix) {
+        } else if (before.variablePrefix) {
           cssVariableExpression = joinToBinaryExpression(
-            ts.createStringLiteral(extractedPrefix.prefix),
+            ts.createStringLiteral(before.variablePrefix),
             span.expression
           );
         }
@@ -134,7 +77,7 @@ export const templateLiteralToCss = (
           name: variableName,
           expression: cssVariableExpression,
         });
-        css += `var(${variableName})${result.rest}`;
+        css += `var(${variableName})${after.css}`;
       } else if (ts.isArrowFunction(value.initializer)) {
         // We found a arrow func expression e.g. const funcVar = () => ({}); css`${funcVar}`
         // We want to "execute" it and then add the result to the css.
@@ -152,28 +95,28 @@ export const templateLiteralToCss = (
         });
       }
     } else if (ts.isArrowFunction(span.expression)) {
-      const extractedPrefix = extractPrefix(css);
+      const before = cssBeforeInterpolation(css);
       // We an an inline arrow function - e.g. css`${props => props.color}`
-      const extractedSuffix = extractSuffix(span.literal.text);
+      const after = cssAfterInterpolation(span.literal.text);
       const result = extractCssVarFromArrowFunction(span.expression, context);
 
-      css = extractedPrefix.css;
+      css = before.css;
       let cssVariableExpression: ts.Expression = result.expression;
 
-      if (extractedSuffix.suffix && extractedPrefix.prefix) {
+      if (after.variableSuffix && before.variablePrefix) {
         cssVariableExpression = joinThreeExpressions(
-          ts.createStringLiteral(extractedPrefix.prefix),
+          ts.createStringLiteral(before.variablePrefix),
           result.expression,
-          ts.createStringLiteral(extractedSuffix.suffix)
+          ts.createStringLiteral(after.variableSuffix)
         );
-      } else if (extractedSuffix.suffix) {
+      } else if (after.variableSuffix) {
         cssVariableExpression = joinToBinaryExpression(
           result.expression,
-          ts.createStringLiteral(extractedSuffix.suffix)
+          ts.createStringLiteral(after.variableSuffix)
         );
-      } else if (extractedPrefix.prefix) {
+      } else if (before.variablePrefix) {
         cssVariableExpression = joinToBinaryExpression(
-          ts.createStringLiteral(extractedPrefix.prefix),
+          ts.createStringLiteral(before.variablePrefix),
           result.expression
         );
       }
@@ -182,7 +125,7 @@ export const templateLiteralToCss = (
         name: result.name,
         expression: cssVariableExpression,
       });
-      css += `var(${result.name})${extractedSuffix.rest}`;
+      css += `var(${result.name})${after.css}`;
     } else if (ts.isCallExpression(span.expression)) {
       // We found a call expression - e.g. const funcVar = () => ({}); css`${funcVar()}`
       const key = getIdentifierText(span.expression.expression);
@@ -211,26 +154,25 @@ export const templateLiteralToCss = (
         });
       }
     } else if (ts.isPropertyAccessExpression(span.expression)) {
-      const extractedPrefix = extractPrefix(css);
-      const extractedSuffix = extractSuffix(span.literal.text);
-      const result = extractSuffix(span.literal.text);
-      css = extractedPrefix.css;
+      const before = cssBeforeInterpolation(css);
+      const after = cssAfterInterpolation(span.literal.text);
+      css = before.css;
       let cssVariableExpression: ts.Expression = span.expression;
 
-      if (extractedSuffix.suffix && extractedPrefix.prefix) {
+      if (after.variableSuffix && before.variablePrefix) {
         cssVariableExpression = joinThreeExpressions(
-          ts.createStringLiteral(extractedPrefix.prefix),
+          ts.createStringLiteral(before.variablePrefix),
           span.expression,
-          ts.createStringLiteral(extractedSuffix.suffix)
+          ts.createStringLiteral(after.variableSuffix)
         );
-      } else if (extractedSuffix.suffix) {
+      } else if (after.variableSuffix) {
         cssVariableExpression = joinToBinaryExpression(
           span.expression,
-          ts.createStringLiteral(extractedSuffix.suffix)
+          ts.createStringLiteral(after.variableSuffix)
         );
-      } else if (extractedPrefix.prefix) {
+      } else if (before.variablePrefix) {
         cssVariableExpression = joinToBinaryExpression(
-          ts.createStringLiteral(extractedPrefix.prefix),
+          ts.createStringLiteral(before.variablePrefix),
           span.expression
         );
       }
@@ -239,7 +181,7 @@ export const templateLiteralToCss = (
         name: variableName,
         expression: cssVariableExpression,
       });
-      css += `var(${variableName})${result.rest}`;
+      css += `var(${variableName})${after.css}`;
     } else if (
       ts.isExpressionStatement(span.expression) ||
       ts.isConditionalExpression(span.expression) ||
