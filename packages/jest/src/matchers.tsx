@@ -11,6 +11,8 @@ const kebabCase = (str: string) =>
     .replace(/\s+/g, '-')
     .toLowerCase();
 
+const removeSpaces = (str?: string) => str && str.replace(/\s/g, '');
+
 const mapProperties = (properties: Record<string, any>) =>
   Object.keys(properties).map(property => `${kebabCase(property)}:${properties[property]}`);
 
@@ -31,7 +33,7 @@ const findMediaRules = (
   for (const rule of allRules) {
     if (!rule) return;
     if ('media' in rule) {
-      if (rule.media === media.replace(/\s/g, '') && 'rules' in rule) return rule.rules;
+      if (removeSpaces(rule.media) === removeSpaces(media) && 'rules' in rule) return rule.rules;
       if ('rules' in rule) return findMediaRules(rule.rules, media);
     }
   }
@@ -55,7 +57,7 @@ const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) =
   const klass = target ? `.${className}${target}` : `.${className}`;
   return allRules?.filter(r => {
     if ('selectors' in r) {
-      return r.selectors?.find(s => s === klass);
+      return r.selectors?.find(s => removeSpaces(s) === removeSpaces(klass));
     }
     return;
   });

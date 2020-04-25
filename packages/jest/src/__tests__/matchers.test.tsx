@@ -184,4 +184,19 @@ describe('toHaveCompliedCss', () => {
     expect(el).toHaveCompiledCss('color', 'blue', { media: '(min-width: 2px)' });
     expect(el).toHaveCompiledCss('color', 'red', { media: '(min-width: 1px)' });
   });
+
+  it('should match complicated direct ancestors', () => {
+    const { getByText } = render(
+      <div
+        css={`
+          > :first-child {
+            color: red;
+          }
+        `}>
+        hello world
+      </div>
+    );
+    const el = getByText('hello world');
+    expect(el).toHaveCompiledCss('color', 'red', { target: '> :first-child' });
+  });
 });
