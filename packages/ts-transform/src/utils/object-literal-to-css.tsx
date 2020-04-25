@@ -13,6 +13,7 @@ import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-fun
 import { evaluateFunction, isReturnCssLike } from './evalulate-function';
 import { templateLiteralToCss } from './template-literal-to-css';
 import { addUnitIfNeeded } from './css-property';
+import { unique } from './array';
 
 export const objectLiteralToCssString = (
   objectLiteral: ts.ObjectLiteralExpression,
@@ -226,7 +227,7 @@ export const objectLiteralToCssString = (
   }, '');
 
   return {
-    cssVariables,
     css,
+    cssVariables: unique(cssVariables, item => item.name),
   };
 };
