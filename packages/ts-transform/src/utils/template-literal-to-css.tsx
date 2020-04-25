@@ -7,6 +7,7 @@ import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-fun
 import { evaluateFunction, isReturnCssLike } from './evalulate-function';
 import { joinToBinaryExpression, joinThreeExpressions } from './expression-operators';
 import { cssAfterInterpolation, cssBeforeInterpolation } from './string-interpolations';
+import { unique } from './array';
 
 export const templateLiteralToCss = (
   node: ts.TemplateExpression | ts.NoSubstitutionTemplateLiteral | ts.StringLiteral,
@@ -201,6 +202,6 @@ export const templateLiteralToCss = (
 
   return {
     css,
-    cssVariables,
+    cssVariables: unique(cssVariables, item => item.name),
   };
 };
