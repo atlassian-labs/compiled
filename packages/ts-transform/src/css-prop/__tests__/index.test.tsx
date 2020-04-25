@@ -171,7 +171,7 @@ describe('css prop transformer', () => {
       <div className={className} css={{}}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={"css-test" + " " + className}');
+    expect(actual).toInclude('className={"css-test" + (className ? " " + className : "")}');
   });
 
   it('should pick up array composition', () => {
@@ -221,7 +221,7 @@ describe('css prop transformer', () => {
       <div css={{}} className={getFoo()}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={"css-test" + " " + getFoo()}');
+    expect(actual).toInclude('className={"css-test" + (getFoo() ? " " + getFoo() : "")}');
   });
 
   it('should allow inlined expressions as property values', () => {
@@ -235,6 +235,27 @@ describe('css prop transformer', () => {
 
     expect(actual).toInclude('color:var(--var-test-hello)');
     expect(actual).toInclude(`style={{ "--var-test-hello": hello ? 'red' : 'blue' }}`);
+  });
+
+  it('should move multiple groups of interpolations into inline styles', () => {
+    // See: https://codesandbox.io/s/dank-star-443ps?file=/src/index.js
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+
+      const N30 = 'gray';
+
+      <div css={{
+        backgroundImage: \`linear-gradient(45deg, \${N30} 25%, transparent 25%),
+        linear-gradient(-45deg, \${N30} 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, \${N30} 75%),
+        linear-gradient(-45deg, transparent 75%, \${N30} 75%)\`
+      }}>hello world</div>
+    `);
+
+    expect(actual).toInclude(
+      `background-image:linear-gradient(45deg,var(--var-test-n30gray) 25%,transparent 25%), linear-gradient(-45deg,var(--var-test-n30gray) 25%,transparent 25%), linear-gradient(45deg,transparent 75%,var(--var-test-n30gray) 75%), linear-gradient(-45deg,transparent 75%,var(--var-test-n30gray) 75%);`
+    );
+    expect(actual).toInclude('style={{ "--var-test-n30gray": N30 }}');
   });
 
   it('should allow expressions stored in a variable as shorthand property values', () => {

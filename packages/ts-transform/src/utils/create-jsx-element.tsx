@@ -129,7 +129,8 @@ const cloneJsxElement = (
   if (previousClassNameProp && ts.isJsxExpression(previousClassNameProp)) {
     newClassNameProp = joinToJsxExpression(
       ts.createStringLiteral(className),
-      previousClassNameProp.expression!
+      previousClassNameProp.expression!,
+      { conditional: true }
     );
   } else if (previousClassNameProp && ts.isStringLiteral(previousClassNameProp)) {
     newClassNameProp = joinToJsxExpression(
