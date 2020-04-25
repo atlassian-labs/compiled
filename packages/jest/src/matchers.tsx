@@ -1,4 +1,4 @@
-import CSS from 'css';
+import CSS, { StyleRules, Media } from 'css';
 import { MatchFilter } from './types';
 
 type Arg = [{ [key: string]: string }, MatchFilter?];
@@ -22,6 +22,22 @@ const getMountedProperties = () =>
     )
     .join(' ');
 
+const onlyRules = (rules?: StyleRules['rules']) => rules?.filter(r => r.type === 'rule');
+
+const findMediaRules = (
+  allRules: StyleRules['rules'] = [],
+  media: string
+): Media['rules'] | undefined => {
+  for (const rule of allRules) {
+    if (!rule) return;
+    if ('media' in rule) {
+      if (rule.media === media.replace(/\s/g, '') && 'rules' in rule) return rule.rules;
+      if ('rules' in rule) return findMediaRules(rule.rules, media);
+    }
+  }
+  return;
+};
+
 const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) => {
   const { media, target } = filter;
 
@@ -30,19 +46,7 @@ const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) =
   // this inner function returns the relevant rules
   const getAllRules = () => {
     if (media) {
-      const mediaRules = ast.stylesheet?.rules.filter(r => {
-        if ('media' in r) {
-          return r.media === media;
-        }
-        return;
-      });
-
-      return mediaRules?.reduce<CSS.Rule[]>((acc, m) => {
-        if ('rules' in m && m.rules) {
-          acc = [...acc, ...m.rules];
-        }
-        return acc;
-      }, []);
+      return onlyRules(findMediaRules(ast.stylesheet?.rules, media));
     }
     return ast.stylesheet?.rules.filter(r => (r.type = 'rule')); // omit media objects
   };

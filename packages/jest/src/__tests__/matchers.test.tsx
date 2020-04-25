@@ -165,4 +165,23 @@ describe('toHaveCompliedCss', () => {
     const el = getByText('hello world');
     expect(el).toHaveCompiledCss('background', 'red', { media: 'screen', target: ':hover' });
   });
+
+  it('should match styles with media nested inside class', () => {
+    const { getByText } = render(
+      <div
+        css={{
+          '@media (min-width: 2px)': {
+            color: 'blue',
+            '@media (min-width: 1px)': {
+              color: 'red',
+            },
+          },
+        }}>
+        hello world
+      </div>
+    );
+    const el = getByText('hello world');
+    expect(el).toHaveCompiledCss('color', 'blue', { media: '(min-width: 2px)' });
+    expect(el).toHaveCompiledCss('color', 'red', { media: '(min-width: 1px)' });
+  });
 });
