@@ -13,14 +13,8 @@ export const cssVariableHash = (node: ts.Node): string => {
       .toLowerCase()
       .split('?')[0]
       .trim()
-      .replace(/`/g, '')
-      .replace('.', '')
-      .replace('{', '')
-      .replace('$', '')
-      .replace(';', '')
-      .replace('}', '')
       .replace('return', '')
-      .replace(/ |=|'|"||\{|\}|\$|\./g, '')}`;
+      .replace(/ |`|=|'|"|;|\{|\}|\$|\./g, '')}`;
   } catch (e) {
     return '--var-test';
   }
