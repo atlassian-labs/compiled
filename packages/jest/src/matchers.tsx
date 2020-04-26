@@ -1,8 +1,17 @@
+import CSS, { StyleRules, Media } from 'css';
+import { MatchFilter } from './types';
+
+type Arg = [{ [key: string]: string }, MatchFilter?];
+
+const DEFAULT_MATCH_FILTER: MatchFilter = { media: undefined, target: undefined };
+
 const kebabCase = (str: string) =>
   str
     .replace(/([a-z])([A-Z])/g, '$1-$2')
     .replace(/\s+/g, '-')
     .toLowerCase();
+
+const removeSpaces = (str?: string) => str && str.replace(/\s/g, '');
 
 const mapProperties = (properties: Record<string, any>) =>
   Object.keys(properties).map(property => `${kebabCase(property)}:${properties[property]}`);
@@ -15,15 +24,70 @@ const getMountedProperties = () =>
     )
     .join(' ');
 
-const containsClassNames = (classNames: string[], css: string) =>
-  classNames.reduce((accum, className) => (css.includes(`.${className}`) ? true : accum), false);
+const onlyRules = (rules?: StyleRules['rules']) => rules?.filter(r => r.type === 'rule');
+
+const findMediaRules = (
+  allRules: StyleRules['rules'] = [],
+  media: string
+): Media['rules'] | undefined => {
+  for (const rule of allRules) {
+    if (!rule) return;
+    if ('media' in rule) {
+      if (removeSpaces(rule.media) === removeSpaces(media) && 'rules' in rule) return rule.rules;
+      if ('rules' in rule) return findMediaRules(rule.rules, media);
+    }
+  }
+  return;
+};
+
+const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) => {
+  const { media, target } = filter;
+
+  // rules are present directly inside ast.stylesheet.rules
+  // but if a media query is present it is nested inside ast.stylesheet.media.rules
+  // this inner function returns the relevant rules
+  const getAllRules = () => {
+    if (media) {
+      return onlyRules(findMediaRules(ast.stylesheet?.rules, media));
+    }
+    return ast.stylesheet?.rules.filter(r => (r.type = 'rule')); // omit media objects
+  };
+
+  const allRules = getAllRules();
+  const klass = target ? `.${className}${target}` : `.${className}`;
+  return allRules?.filter(r => {
+    if ('selectors' in r) {
+      return r.selectors?.find(s => removeSpaces(s) === removeSpaces(klass));
+    }
+    return;
+  });
+};
+
+const findStylesInRules = (styles: string[], rules: CSS.Rule[] | undefined) => {
+  const found: string[] = [];
+
+  if (!rules) return found;
+
+  styles.forEach(s => {
+    rules?.forEach(r => {
+      if ('declarations' in r) {
+        r.declarations?.forEach(d => {
+          if ('property' in d) {
+            if (s === `${d.property}:${d.value}`) found.push(s);
+          }
+        });
+      }
+    });
+  });
+  return found;
+};
 
 export function toHaveCompiledCss(
   this: jest.MatcherUtils,
   element: HTMLElement,
-  ...args: [{ [key: string]: string } | string, string]
+  ...args: [Arg | string, string, MatchFilter?]
 ): jest.CustomMatcherResult {
-  const [property, value] = args;
+  const [property, value, matchFilter = DEFAULT_MATCH_FILTER] = args;
   const properties = typeof property === 'string' ? { [property]: value } : property;
   const inlineStyleTag = element.parentElement && element.parentElement.querySelector('style');
   const styleElements: HTMLStyleElement[] =
@@ -56,9 +120,11 @@ export function toHaveCompiledCss(
       });
     }
 
-    if (containsClassNames(classNames, css)) {
-      foundStyles.push(...stylesToFind.filter(styleToFind => css.includes(styleToFind)));
-    }
+    const ast = CSS.parse(css);
+    classNames.forEach(c => {
+      const rules = getRules(ast, matchFilter, c);
+      foundStyles.push(...findStylesInRules(stylesToFind, rules));
+    });
   }
 
   const notFoundStyles = stylesToFind.filter(style => !foundStyles.includes(style));

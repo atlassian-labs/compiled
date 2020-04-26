@@ -18,5 +18,12 @@
   "files": [
     "dist",
     "src"
-  ]
+  ],
+  "dependencies": {
+    "css": "^2.2.4"
+  },
+  "devDependencies": {
+    "@types/css": "^0.0.31",
+    "csstype": "^2.6.10"
+  }
 }
