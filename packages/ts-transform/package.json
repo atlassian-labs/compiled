@@ -25,7 +25,6 @@
     "cssnano-preset-default": "^4.0.7",
     "postcss": "^7.0.27",
     "postcss-nested": "^4.2.1",
-    "postcss-nesting": "^7.0.1",
     "postcss-normalize-whitespace": "^4.0.2",
     "source-map": "^0.7.3",
     "typescript": "^3.7.3"
