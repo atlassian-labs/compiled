@@ -340,6 +340,44 @@ describe('css prop transformer', () => {
     expect(actual.outputText).toInclude('<Style hash="css-test" nonce={__webpack_nonce__}>');
   });
 
+  it('should bubble up top level pseduo inside a media atrule', () => {
+    const actual = transformer.transform(`
+    import '@compiled/css-in-js';
+    import React from 'react';
+
+    const fontSize = 20;
+
+    <div css={\`
+      @media screen {
+        :hover {
+          color: red;
+        }
+      }
+    \`}>hello world</div>
+  `);
+
+    expect(actual).toInclude('.css-test:hover{color:red}}');
+  });
+
+  it('should bubble up top level pseduo inside a support atrule', () => {
+    const actual = transformer.transform(`
+    import '@compiled/css-in-js';
+    import React from 'react';
+
+    const fontSize = 20;
+
+    <div css={\`
+      @supports (display: grid) {
+        :hover {
+          color: red;
+        }
+      }
+    \`}>hello world</div>
+  `);
+
+    expect(actual).toInclude('.css-test:hover{color:red}}');
+  });
+
   it.todo('should concat implicit use of style prop where props are spread into an element');
 
   describe('using strings', () => {

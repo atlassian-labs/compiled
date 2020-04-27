@@ -27,6 +27,14 @@ const topLevelPseudos = plugin('top-level-pseudos', () => {
             if (rule.type === 'rule' && rule.selector.startsWith(':')) {
               rule.selector = `&${rule.selector}`;
             }
+
+            if (rule.type === 'atrule' && (rule.name === 'media' || rule.name === 'supports')) {
+              rule.nodes?.forEach(ruleInMedia => {
+                if (ruleInMedia.type === 'rule' && ruleInMedia.selector.startsWith(':')) {
+                  ruleInMedia.selector = `&${ruleInMedia.selector}`;
+                }
+              });
+            }
           });
       }
     });
