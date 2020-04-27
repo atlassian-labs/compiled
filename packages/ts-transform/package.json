@@ -20,14 +20,20 @@
   ],
   "dependencies": {
     "@emotion/is-prop-valid": "^0.8.6",
+    "autoprefixer": "^9.7.6",
     "convert-source-map": "^1.7.0",
+    "cssnano-preset-default": "^4.0.7",
+    "postcss": "^7.0.27",
+    "postcss-nested": "^4.2.1",
+    "postcss-nesting": "^7.0.1",
+    "postcss-normalize-whitespace": "^4.0.2",
     "source-map": "^0.7.3",
-    "stylis": "^3.5.4",
-    "stylis-rule-sheet": "^0.0.10",
     "typescript": "^3.7.3"
   },
   "devDependencies": {
+    "@types/autoprefixer": "^9.7.2",
     "@types/convert-source-map": "^1.5.1",
+    "@types/cssnano": "^4.0.0",
     "ts-transformer-testing-library": "^1.0.0-alpha.7"
   }
 }

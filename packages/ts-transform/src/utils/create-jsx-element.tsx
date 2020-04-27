@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { CLASS_NAME_PREFIX } from '../constants';
-import { stylis } from './stylis';
+import { transformCss } from './css-transform';
 import { classNameHash } from './hash';
 import { getJsxNodeAttributes, getJsxNodeAttributesValue, getIdentifierText } from './ast-node';
 import { joinToJsxExpression } from './expression-operators';
@@ -22,6 +22,7 @@ interface JsxElementOpts {
   context: ts.TransformationContext;
   nonce?: string;
   sourceMap?: boolean;
+  minify?: boolean;
   sourceFile: ts.SourceFile;
 }
 
@@ -315,7 +316,11 @@ export const annotateWithPureComment = <TNode extends ts.Node>(node: TNode) => {
  */
 export const createCompiledFragment = (node: ts.JsxElement, opts: JsxElementOpts) => {
   const className = classNameHash(opts.css);
-  const compiledCss: string[] = stylis(opts.skipClassName ? `.${className}` : '', opts.css);
+  const compiledCss: string[] = transformCss(
+    opts.skipClassName ? `.${className}` : '',
+    opts.css,
+    opts
+  );
 
   return createFragmentNode(
     node,
@@ -340,7 +345,7 @@ export const createCompiledComponent = (
   opts: JsxElementOpts & { node: ts.Node }
 ) => {
   const className = classNameHash(opts.css);
-  const compiledCss: string[] = stylis(`.${className}`, opts.css);
+  const compiledCss: string[] = transformCss(`.${className}`, opts.css, opts);
 
   return createFragmentNode(
     opts.node,
@@ -365,7 +370,7 @@ export const createCompiledComponentFromNode = (
   opts: JsxElementOpts & { propsToRemove?: string[] }
 ) => {
   const className = classNameHash(opts.css);
-  const compiledCss: string[] = stylis(`.${className}`, opts.css);
+  const compiledCss: string[] = transformCss(`.${className}`, opts.css, opts);
 
   return createFragmentNode(
     node,
