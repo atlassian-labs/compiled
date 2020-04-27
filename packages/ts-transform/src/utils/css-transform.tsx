@@ -6,6 +6,7 @@ import whitespace from 'postcss-normalize-whitespace';
 
 const minify = () => {
   const preset = cssnano();
+  // We exclude async because we need this to run synchronously as ts transformers aren't async!
   const asyncPluginsToExclude = ['postcss-svgo'];
 
   return preset.plugins
@@ -18,24 +19,29 @@ const minify = () => {
     });
 };
 
-const topLevelPseudos = plugin('top-level-pseudos', () => {
+const parentOrphenedPseudos = plugin('parent-orphened-pseudos', () => {
   return root => {
-    root.each(node => {
-      if (node.type === 'rule') {
-        node.nodes &&
-          node.nodes.forEach(rule => {
-            if (rule.type === 'rule' && rule.selector.startsWith(':')) {
-              rule.selector = `&${rule.selector}`;
+    root.walkRules(rule => {
+      if (rule.selector.includes(':')) {
+        const newSelector = rule.selector
+          .split(',')
+          .map(part => {
+            if (part.match(/^. /)) {
+              // If the selector has one characters with a space after it, e.g. "> :first-child" then return early.
+              return part;
             }
 
-            if (rule.type === 'atrule' && (rule.name === 'media' || rule.name === 'supports')) {
-              rule.nodes?.forEach(ruleInMedia => {
-                if (ruleInMedia.type === 'rule' && ruleInMedia.selector.startsWith(':')) {
-                  ruleInMedia.selector = `&${ruleInMedia.selector}`;
-                }
-              });
+            if (part.includes(':')) {
+              // If the selector starts with a colon or has a space and then a colon prepend an "&"!
+              return part.replace(/^:| :/g, '&:');
             }
-          });
+
+            // Nothing to do - cya!
+            return part;
+          })
+          .join(',');
+
+        rule.selector = newSelector;
       }
     });
   };
@@ -65,7 +71,7 @@ export const transformCss = (
   const cssWithSelector = selector ? `${selector} { ${css} }` : css;
 
   const result = postcss([
-    topLevelPseudos(),
+    parentOrphenedPseudos(),
     nested(),
     autoprefixer({
       overrideBrowserslist: ['IE 11', '> 0.5%', 'last 2 versions', 'Firefox ESR', 'not dead'],

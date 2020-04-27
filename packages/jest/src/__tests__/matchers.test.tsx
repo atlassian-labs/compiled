@@ -196,6 +196,7 @@ describe('toHaveCompliedCss', () => {
         hello world
       </div>
     );
+
     const el = getByText('hello world');
     expect(el).toHaveCompiledCss('color', 'red', { target: '> :first-child' });
   });
