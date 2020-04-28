@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { ToCssReturnType, CssVariableExpressions, Declarations } from '../types';
-import { getIdentifierText, createNodeError } from './ast-node';
+import { getIdentifierText, createNodeError, isConst } from './ast-node';
 import { cssVariableHash } from './hash';
 import { objectLiteralToCssString } from './object-literal-to-css';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
@@ -46,58 +46,72 @@ export const templateLiteralToCss = (
       if (!value.initializer) {
         throw createNodeError('variable was not initialized', value);
       }
-      const variableName = cssVariableHash(value);
-      if (ts.isObjectLiteralExpression(value.initializer)) {
-        // We found an object expression e.g. const objVar = {}; css`${objVar}`
-        const result = objectLiteralToCssString(value.initializer, collectedDeclarations, context);
-        css += `${result.css}${span.literal.text.replace(/^;/, '')}`;
-        cssVariables = cssVariables.concat(result.cssVariables);
-      } else if (ts.isStringLiteral(value.initializer) || ts.isNumericLiteral(value.initializer)) {
-        const before = cssBeforeInterpolation(css);
-        // We an an inline arrow function - e.g. css`${props => props.color}`
-        const after = cssAfterInterpolation(span.literal.text);
 
-        css = before.css;
-        let cssVariableExpression: ts.Expression = span.expression;
+      if (isConst(value)) {
+        const declarationValue = value.initializer.getText();
+        css += declarationValue.slice(1).slice(0, -1);
+      } else {
+        const variableName = cssVariableHash(value);
 
-        if (after.variableSuffix && before.variablePrefix) {
-          cssVariableExpression = joinThreeExpressions(
-            ts.createStringLiteral(before.variablePrefix),
-            span.expression,
-            ts.createStringLiteral(after.variableSuffix)
+        if (ts.isObjectLiteralExpression(value.initializer)) {
+          // We found an object expression e.g. const objVar = {}; css`${objVar}`
+          const result = objectLiteralToCssString(
+            value.initializer,
+            collectedDeclarations,
+            context
           );
-        } else if (after.variableSuffix) {
-          cssVariableExpression = joinToBinaryExpression(
-            span.expression,
-            ts.createStringLiteral(after.variableSuffix)
-          );
-        } else if (before.variablePrefix) {
-          cssVariableExpression = joinToBinaryExpression(
-            ts.createStringLiteral(before.variablePrefix),
-            span.expression
-          );
+          css += result.css;
+          cssVariables = cssVariables.concat(result.cssVariables);
+        } else if (
+          ts.isStringLiteral(value.initializer) ||
+          ts.isNumericLiteral(value.initializer)
+        ) {
+          const before = cssBeforeInterpolation(css);
+          // We an an inline arrow function - e.g. css`${props => props.color}`
+          const after = cssAfterInterpolation(span.literal.text);
+
+          css = before.css;
+          let cssVariableExpression: ts.Expression = span.expression;
+
+          if (after.variableSuffix && before.variablePrefix) {
+            cssVariableExpression = joinThreeExpressions(
+              ts.createStringLiteral(before.variablePrefix),
+              span.expression,
+              ts.createStringLiteral(after.variableSuffix)
+            );
+          } else if (after.variableSuffix) {
+            cssVariableExpression = joinToBinaryExpression(
+              span.expression,
+              ts.createStringLiteral(after.variableSuffix)
+            );
+          } else if (before.variablePrefix) {
+            cssVariableExpression = joinToBinaryExpression(
+              ts.createStringLiteral(before.variablePrefix),
+              span.expression
+            );
+          }
+
+          cssVariables.push({
+            name: variableName,
+            expression: cssVariableExpression,
+          });
+          css += `var(${variableName})${after.css}`;
+        } else if (ts.isArrowFunction(value.initializer)) {
+          // We found a arrow func expression e.g. const funcVar = () => ({}); css`${funcVar}`
+          // We want to "execute" it and then add the result to the css.
+          const result = evaluateFunction(value.initializer, collectedDeclarations, context);
+          css += result.css;
+          cssVariables = cssVariables.concat(result.cssVariables);
+        } else if (ts.isCallExpression(value.initializer)) {
+          // We found something like this: const val = fun(); css`${val}`;
+          // Inline the expression as a css variable - we will need to check if it returns something css like.. but later.
+          const variableName = cssVariableHash(span.expression);
+          css += `var(${variableName})`;
+          cssVariables.push({
+            expression: span.expression,
+            name: variableName,
+          });
         }
-
-        cssVariables.push({
-          name: variableName,
-          expression: cssVariableExpression,
-        });
-        css += `var(${variableName})${after.css}`;
-      } else if (ts.isArrowFunction(value.initializer)) {
-        // We found a arrow func expression e.g. const funcVar = () => ({}); css`${funcVar}`
-        // We want to "execute" it and then add the result to the css.
-        const result = evaluateFunction(value.initializer, collectedDeclarations, context);
-        css += result.css;
-        cssVariables = cssVariables.concat(result.cssVariables);
-      } else if (ts.isCallExpression(value.initializer)) {
-        // We found something like this: const val = fun(); css`${val}`;
-        // Inline the expression as a css variable - we will need to check if it returns something css like.. but later.
-        const variableName = cssVariableHash(span.expression);
-        css += `var(${variableName})`;
-        cssVariables.push({
-          expression: span.expression,
-          name: variableName,
-        });
       }
     } else if (ts.isArrowFunction(span.expression)) {
       const before = cssBeforeInterpolation(css);

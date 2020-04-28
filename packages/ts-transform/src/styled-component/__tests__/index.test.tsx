@@ -945,4 +945,19 @@ describe('styled component transformer', () => {
 
     it.todo('should transform object with argument arrow function import');
   });
+
+  it('should transform template string literal with string variable', () => {
+    debugger;
+    const actual = transformer.transform(`
+      import { styled } from '@compiled/css-in-js';
+
+      const fontSize = '20px';
+
+      const ListItem = styled.div\`
+        font-size: \${fontSize};
+      \`;
+    `);
+
+    expect(actual).toInclude('.css-test{font-size: 20px;}');
+  });
 });
