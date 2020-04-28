@@ -1184,4 +1184,16 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('.css-test:after{content:var(--var-test)}');
     });
   });
+
+  it("should inline the variable if it's a constant", () => {
+    debugger;
+    const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+
+        const bg = 'blue';
+        let cl = 'red';
+        <div css={{ background: bg, color: cl }}>hello world</div>
+      `);
+    expect(actual).toInclude('.css-test{background: blue;}');
+  });
 });
