@@ -88,7 +88,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { CC, Style } from '@compiled/css-in-js';
-      <CC><Style hash=\\"1b1wq3m\\">{[\\".cc-1b1wq3m{font-size:20px;}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBRVEiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgJ0Bjb21waWxlZC9jc3MtaW4tanMnO1xuICAgICAgICA8ZGl2IGNzcz17eyBmb250U2l6ZTogJzIwcHgnIH19PmhlbGxvIHdvcmxkPC9kaXY+XG4gICAgICAiXX0= */\\"]}</Style><div className=\\"cc-1b1wq3m\\">hello world</div></CC>;
+      <CC><Style hash=\\"1b1wq3m\\">{[\\".cc-1b1wq3m{font-size:20px}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBRVEiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgJ0Bjb21waWxlZC9jc3MtaW4tanMnO1xuICAgICAgICA8ZGl2IGNzcz17eyBmb250U2l6ZTogJzIwcHgnIH19PmhlbGxvIHdvcmxkPC9kaXY+XG4gICAgICAiXX0= */\\"]}</Style><div className=\\"cc-1b1wq3m\\">hello world</div></CC>;
       "
     `);
   });
@@ -108,7 +108,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { CC, Style } from '@compiled/css-in-js';
-      /*#__PURE__*/ React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><Style hash=\\"1b1wq3m\\">{[\\".cc-1b1wq3m{font-size:20px;}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR1EiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgeyBzdHlsZWQgfSBmcm9tICdAY29tcGlsZWQvY3NzLWluLWpzJztcblxuICAgICAgICBzdHlsZWQuZGl2KHsgZm9udFNpemU6IDIwIH0pO1xuICAgICAgIl19 */\\"]}</Style><C {...props} ref={ref} className={\\"cc-1b1wq3m\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
+      /*#__PURE__*/ React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><Style hash=\\"1b1wq3m\\">{[\\".cc-1b1wq3m{font-size:20px}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR1EiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgeyBzdHlsZWQgfSBmcm9tICdAY29tcGlsZWQvY3NzLWluLWpzJztcblxuICAgICAgICBzdHlsZWQuZGl2KHsgZm9udFNpemU6IDIwIH0pO1xuICAgICAgIl19 */\\"]}</Style><C {...props} ref={ref} className={\\"cc-1b1wq3m\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
       "
     `);
   });
@@ -128,7 +128,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { CC, Style } from '@compiled/css-in-js';
-      <CC><Style hash=\\"gpurwr\\">{[\\".cc-1b1wq3m{font-size:20px;}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR1EiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgeyBDbGFzc05hbWVzIH0gZnJvbSAnQGNvbXBpbGVkL2Nzcy1pbi1qcyc7XG5cbiAgICAgICAgPENsYXNzTmFtZXM+eyh7IGNzcyB9KSA9PiA8ZGl2IGNsYXNzTmFtZT17Y3NzKHsgZm9udFNpemU6IDIwIH0pfSAvPn08L0NsYXNzTmFtZXM+XG4gICAgICAiXX0= */\\"]}</Style><div className={\\"cc-1b1wq3m\\"}/></CC>;
+      <CC><Style hash=\\"gpurwr\\">{[\\".cc-1b1wq3m{font-size:20px}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR1EiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgeyBDbGFzc05hbWVzIH0gZnJvbSAnQGNvbXBpbGVkL2Nzcy1pbi1qcyc7XG5cbiAgICAgICAgPENsYXNzTmFtZXM+eyh7IGNzcyB9KSA9PiA8ZGl2IGNsYXNzTmFtZT17Y3NzKHsgZm9udFNpemU6IDIwIH0pfSAvPn08L0NsYXNzTmFtZXM+XG4gICAgICAiXX0= */\\"]}</Style><div className={\\"cc-1b1wq3m\\"}/></CC>;
       "
     `);
   });
@@ -167,10 +167,28 @@ describe('root transformer', () => {
       const react_1 = require(\\"react\\");
       const css_in_js_1 = require(\\"@compiled/css-in-js\\");
       react_1.default.createElement(css_in_js_1.CC, null,
-          react_1.default.createElement(css_in_js_1.Style, { hash: '1b1wq3m' }, [\\".cc-1b1wq3m{font-size:20px;}\\"]),
+          react_1.default.createElement(css_in_js_1.Style, { hash: '1b1wq3m' }, [\\".cc-1b1wq3m{font-size:20px}\\"]),
           react_1.default.createElement(\\"div\\", { className: 'cc-1b1wq3m' }, \\"hello world\\"));
       "
     `);
+  });
+
+  it('should minify the css', () => {
+    const transformer = rootTransformer(stubProgam, { options: { minify: true } });
+
+    const actual = ts.transpileModule(
+      `
+      import { styled } from '@compiled/css-in-js';
+
+      styled.div\`
+        font-size: 12px;
+        color: blue;
+      \`;
+    `,
+      createTsConfig(transformer)
+    );
+
+    expect(actual.outputText).toInclude('.cc-1rl8k7o{color:#00f;font-size:9pt}');
   });
 
   it('should not change code where there is no compiled components', () => {
@@ -206,7 +224,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { CC, Style } from '@compiled/css-in-js';
-      /*#__PURE__*/ React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><Style hash=\\"1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px;}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
+      /*#__PURE__*/ React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><Style hash=\\"1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
       "
     `);
   });
@@ -226,7 +244,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { CC, Style } from '@compiled/css-in-js';
-      <CC><Style hash=\\"1iqe21w\\">{[\\".cc-1iqe21w{font-size:12px;}\\"]}</Style><div className=\\"cc-1iqe21w\\"/></CC>;
+      <CC><Style hash=\\"1iqe21w\\">{[\\".cc-1iqe21w{font-size:12px}\\"]}</Style><div className=\\"cc-1iqe21w\\"/></CC>;
       "
     `);
   });
@@ -248,7 +266,7 @@ describe('root transformer', () => {
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
       import { CC, Style } from '@compiled/css-in-js';
-      <CC><Style hash=\\"31m7m\\">{[\\".cc-1iqe21w{font-size:12px;}\\"]}</Style><div className={\\"cc-1iqe21w\\"}/></CC>;
+      <CC><Style hash=\\"31m7m\\">{[\\".cc-1iqe21w{font-size:12px}\\"]}</Style><div className={\\"cc-1iqe21w\\"}/></CC>;
       "
     `);
   });

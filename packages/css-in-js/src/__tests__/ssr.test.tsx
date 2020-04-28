@@ -15,7 +15,7 @@ describe('SSR', () => {
     const result = renderToStaticMarkup(<StyledDiv>hello world</StyledDiv>);
 
     expect(result).toMatchInlineSnapshot(
-      `"<style nonce=\\"k0Mp1lEd\\">.cc-1610nsm{font-size:12px;}</style><div class=\\"cc-1610nsm\\">hello world</div>"`
+      `"<style nonce=\\"k0Mp1lEd\\">.cc-1610nsm{font-size:12px}</style><div class=\\"cc-1610nsm\\">hello world</div>"`
     );
   });
 
@@ -32,7 +32,7 @@ describe('SSR', () => {
     );
 
     expect(result).toMatchInlineSnapshot(
-      `"<style nonce=\\"k0Mp1lEd\\">.cc-1610nsm{font-size:12px;}</style><div class=\\"cc-1610nsm\\">hello world</div><div class=\\"cc-1610nsm\\">hello world</div>"`
+      `"<style nonce=\\"k0Mp1lEd\\">.cc-1610nsm{font-size:12px}</style><div class=\\"cc-1610nsm\\">hello world</div><div class=\\"cc-1610nsm\\">hello world</div>"`
     );
   });
 
@@ -56,7 +56,7 @@ describe('SSR', () => {
     );
 
     expect(result).toMatchInlineSnapshot(
-      `"<div><div><div><style nonce=\\"k0Mp1lEd\\">.cc-1610nsm{font-size:12px;}</style><div class=\\"cc-1610nsm\\">hello world</div></div></div><div class=\\"cc-1610nsm\\">hello world</div></div>"`
+      `"<div><div><div><style nonce=\\"k0Mp1lEd\\">.cc-1610nsm{font-size:12px}</style><div class=\\"cc-1610nsm\\">hello world</div></div></div><div class=\\"cc-1610nsm\\">hello world</div></div>"`
     );
   });
 
@@ -76,7 +76,7 @@ describe('SSR', () => {
     );
 
     expect(result).toMatchInlineSnapshot(
-      `"<style nonce=\\"k0Mp1lEd\\">.cc-10mivee{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;}</style><div class=\\"cc-10mivee\\"><style nonce=\\"k0Mp1lEd\\">.cc-1610nsm{font-size:12px;}</style><div class=\\"cc-1610nsm\\">hello world</div><div class=\\"cc-1610nsm\\">hello world</div></div>"`
+      `"<style nonce=\\"k0Mp1lEd\\">.cc-10mivee{display:flex}</style><div class=\\"cc-10mivee\\"><style nonce=\\"k0Mp1lEd\\">.cc-1610nsm{font-size:12px}</style><div class=\\"cc-1610nsm\\">hello world</div><div class=\\"cc-1610nsm\\">hello world</div></div>"`
     );
   });
 });

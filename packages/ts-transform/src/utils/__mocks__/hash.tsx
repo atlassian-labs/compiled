@@ -14,7 +14,7 @@ export const cssVariableHash = (node: ts.Node): string => {
       .split('?')[0]
       .trim()
       .replace('return', '')
-      .replace(/ |`|=|'|"|;|\{|\}|\$|\./g, '')}`;
+      .replace(/ |`|=|'|"|\(|\)|;|\{|\}|\$|\./g, '')}`;
   } catch (e) {
     return '--var-test';
   }

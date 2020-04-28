@@ -25,4 +25,5 @@ export interface TransformerOptions {
   nonce?: string;
   debug?: boolean;
   sourceMap?: boolean;
+  minify?: boolean;
 }

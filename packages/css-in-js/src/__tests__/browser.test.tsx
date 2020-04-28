@@ -29,7 +29,7 @@ describe('browser', () => {
     );
 
     expect(document.head.innerHTML).toMatchInlineSnapshot(
-      `"<style nonce=\\"k0Mp1lEd\\">.cc-1610nsm{font-size:12px;}</style>"`
+      `"<style nonce=\\"k0Mp1lEd\\">.cc-1610nsm{font-size:12px}</style>"`
     );
   });
 });
