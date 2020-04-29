@@ -51,7 +51,7 @@ npm i ttypescript
 > Unfortunately TypeScript doesn't come with support out-of-the-box to add transformers.
 > `ttypescript` enables you to do just that -
 > it has a peer dependency on TypeScript so you can use whatever version you want.
-> Read about [consuming transformers here](https://github.com/madou/typescript-transformer-handbook/blob/master/translations/en/transformer-handbook.md#consuming-transformers).
+> Read about [consuming transformers here](https://github.com/madou/typescript-transformer-handbook/#consuming-transformers).
 
 Next add the transformer to your `tsconfig.json` plugins:
 
