@@ -133,8 +133,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('style={{ "--var-test-fontsize20": fontSize + "px" }}');
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize20)}');
+      expect(actual).toInclude('.css-test{font-size:20px}');
     });
 
     it('should transform no template string literal', () => {
@@ -164,7 +163,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.css-test{font-size:var(--var-test-fontsize12px)}`);
+      expect(actual).toInclude(`.css-test{font-size:12px}`);
     });
 
     it('should transform template string literal with numeric variable', () => {
@@ -180,7 +179,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.css-test{font-size:var(--var-test-fontsize12)}`);
+      expect(actual).toInclude(`.css-test{font-size:12}`);
     });
 
     it('should transform template string literal with string import', () => {
@@ -198,7 +197,8 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.css-test{font-size:var(--var-test-fontsize12px)}`);
+      expect(actual).toInclude(`.css-test{font-size:12px)}`);
+      expect(actual).toInclude(`<div className={\"css-test\"}>hello, world!</div>`);
     });
 
     it('should transform template string literal with obj variable', () => {
@@ -332,8 +332,8 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('style={{ "--var-test-fontsize20": fontSize + "px" }}');
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize20)}');
+      expect(actual).toInclude('<div style={{}} className={"css-test"}>hello, world!</div>');
+      expect(actual).toInclude('.css-test{font-size:20px}');
     });
 
     it('should transform object with simple values', () => {
