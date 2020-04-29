@@ -143,7 +143,7 @@ export const objectLiteralToCssString = (
       }
 
       // check if the variable decalaration is a const, if yes then inline
-      if (ts.isVariableDeclaration(declaration) && isConst(declaration)) {
+      if (declaration && ts.isVariableDeclaration(declaration) && isConst(declaration)) {
         const { initializer } = declaration;
         if (initializer && ts.isLiteralExpression(initializer)) {
           return `${acc}

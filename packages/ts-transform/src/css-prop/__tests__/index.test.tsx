@@ -656,9 +656,7 @@ describe('css prop transformer', () => {
           hello world
         </div>
       `);
-      // TODO suffix?
       expect(actual).toInclude('.css-test{transform:translate3d(1px,2px,0)}');
-      expect(actual).toInclude('<div className="css-test">hello world');
     });
 
     xit('should transform template string with argument arrow function import', () => {

@@ -197,7 +197,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.css-test{font-size:12px)}`);
+      expect(actual).toInclude(`.css-test{font-size:12px}`);
       expect(actual).toInclude(`<div className={\"css-test\"}>hello, world!</div>`);
     });
 
