@@ -1,5 +1,4 @@
 import { transformSync, TransformOptions } from '@babel/core';
-import 'jest-extended';
 import compiledPlugin from '../index';
 
 const babelOpts: TransformOptions = {

@@ -3,7 +3,6 @@
  */
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import 'jest-extended';
 import { styled, CC } from '@compiled/css-in-js';
 
 describe('SSR', () => {

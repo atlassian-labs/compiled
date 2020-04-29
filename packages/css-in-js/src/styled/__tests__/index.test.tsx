@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { styled } from '@compiled/css-in-js';
 import { em } from 'polished';
-import '@compiled/jest-css-in-js';
 
 describe('styled component', () => {
   it('should render a simple styled div using an object', () => {
