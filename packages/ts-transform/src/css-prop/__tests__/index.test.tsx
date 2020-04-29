@@ -89,7 +89,10 @@ describe('css prop transformer', () => {
       const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize: 12, color: red }}>hello world</div>;
     `);
 
-    expect(actual).toInclude('style={{ ...style, "--var-test-red": red }}');
+    expect(actual).toInclude(
+      '<div className={"css-test" + (className ? " " + className : "")} style={style}>hello world</div>'
+    );
+    expect(actual).toInclude('.css-test{font-size:12px;color:red}');
   });
 
   it('should spread style property access when there is dynamic styles in the css', () => {
@@ -101,7 +104,8 @@ describe('css prop transformer', () => {
       const Component = ({ className, ...props }) => <div className={className} style={props.style} css={{ fontSize: 12, color: red }}>hello world</div>;
     `);
 
-    expect(actual).toInclude('style={{ ...props.style, "--var-test-red": red }}');
+    expect(actual).toInclude('style={props.style}');
+    expect(actual).toInclude('.css-test{font-size:12px;color:red}');
   });
 
   it('should spread style identifier when there is styles already set', () => {
@@ -124,7 +128,8 @@ describe('css prop transformer', () => {
       const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12, color: red }}>hello world</div>;
     `);
 
-    expect(actual).toInclude(`style={{ ...style, display: 'block', \"--var-test-red\": red }}`);
+    expect(actual).toInclude(`style={{ ...style, display: 'block' }}`);
+    expect(actual).toInclude(`.css-test{font-size:12px;color:red}`);
   });
 
   it('should compose class name from parent and pass down css variables in style', () => {
@@ -196,7 +201,10 @@ describe('css prop transformer', () => {
       <div style={{ display: 'block' }} css={{ color: color }}>hello world</div>
     `);
 
-    expect(actual).toInclude(`style={{ display: 'block', \"--var-test-color\": color }}`);
+    expect(actual).toInclude(`.css-test{color:blue}`);
+    expect(actual).toInclude(
+      '<div className="css-test" style={{ display: \'block\' }}>hello world</div>'
+    );
   });
 
   it('should concat explicit use of style prop on an element when destructured template', () => {
@@ -264,9 +272,9 @@ describe('css prop transformer', () => {
     `);
 
     expect(actual).toInclude(
-      `background-image:linear-gradient(45deg,var(--var-test-n30gray) 25%,transparent 25%),linear-gradient(-45deg,var(--var-test-n30gray) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--var-test-n30gray) 75%),linear-gradient(-45deg,transparent 75%,var(--var-test-n30gray) 75%)`
+      `background-image:linear-gradient(45deg,gray 25%,transparent 25%),linear-gradient(-45deg,gray 25%,transparent 25%),linear-gradient(45deg,transparent 75%,gray 75%),linear-gradient(-45deg,transparent 75%,gray 75%)`
     );
-    expect(actual).toInclude('style={{ "--var-test-n30gray": N30 }}');
+    expect(actual).toInclude('<div className="css-test">hello world</div>');
   });
 
   it('should allow expressions stored in a variable as shorthand property values', () => {
@@ -402,8 +410,8 @@ describe('css prop transformer', () => {
         <div css={\`font-size: \${fontSize}px;\`}>hello world</div>
       `);
 
-      expect(actual).toInclude('style={{ "--var-test-fontsize20": fontSize + "px" }}');
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize20)}');
+      expect(actual).toInclude('.css-test{font-size:20px}');
+      expect(actual).toInclude('<div className="css-test">hello world</div>');
     });
 
     it('should transform string literal', () => {
@@ -459,10 +467,8 @@ describe('css prop transformer', () => {
         <div css={\`color: \${color};\`}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-colorblue)}');
-      expect(actual).toInclude(
-        '<div className="css-test" style={{ "--var-test-colorblue": color }}>hello world</div>'
-      );
+      expect(actual).toInclude('.css-test{color:blue}');
+      expect(actual).toInclude('<div className="css-test">hello world</div>');
     });
 
     it('should transform an expression', () => {
@@ -650,9 +656,9 @@ describe('css prop transformer', () => {
           hello world
         </div>
       `);
-
-      expect(actual).toInclude('style={{ "--var-test-x1": x + "px", "--var-test-y2px": y }}');
-      expect(actual).toInclude('transform:translate3d(var(--var-test-x1),var(--var-test-y2px),0)');
+      // TODO suffix?
+      expect(actual).toInclude('.css-test{transform:translate3d(1,2px,0)}');
+      expect(actual).toInclude('<div className="css-test">hello world</div>');
     });
 
     xit('should transform template string with argument arrow function import', () => {
@@ -684,8 +690,8 @@ describe('css prop transformer', () => {
         <div css={{ fontSize: \`\${fontSize}px\` }}>hello world</div>
       `);
 
-      expect(actual).toInclude('style={{ "--var-test-fontsize20": fontSize + "px" }}');
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize20)}');
+      expect(actual).toInclude('.css-test{font-size:20px}');
+      expect(actual).toInclude('<div className="css-test">hello world</div>');
     });
 
     it('should persist suffix of dynamic property value from objects into inline styles', () => {
@@ -714,8 +720,8 @@ describe('css prop transformer', () => {
         <div css={{ fontSize: \`calc(100% - \${fontSize}px)\` }}>hello world</div>
       `);
 
-      expect(actual).toInclude('style={{ "--var-test-fontsize20": fontSize + "px" }}');
-      expect(actual).toInclude('.css-test{font-size:calc(100% - var(--var-test-fontsize20))}');
+      expect(actual).toInclude('.css-test{font-size:calc(100% - 20px)}');
+      expect(actual).toInclude('<div className="css-test">hello world</div>');
     });
 
     it('should move prefix of grouped interpolation into inline styles', () => {
@@ -749,9 +755,9 @@ describe('css prop transformer', () => {
         \`}>hello world</div>
       `);
 
-      expect(actual).toInclude('style={{ "--var-test-n30gray": N30 }}');
+      expect(actual).toInclude('<div className="css-test">hello world</div>');
       expect(actual).toInclude(
-        'background-image:linear-gradient(45deg,var(--var-test-n30gray) 25%,transparent 25%),linear-gradient(-45deg,var(--var-test-n30gray) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--var-test-n30gray) 75%),linear-gradient(-45deg,transparent 75%,var(--var-test-n30gray) 75%)'
+        'background-image:linear-gradient(45deg,gray 25%,transparent 25%),linear-gradient(-45deg,gray 25%,transparent 25%),linear-gradient(45deg,transparent 75%,gray 75%),linear-gradient(-45deg,transparent 75%,gray 75%)'
       );
     });
 
@@ -776,8 +782,9 @@ describe('css prop transformer', () => {
         <div css={{ fontSize: \`\${fontSize}px\` }}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize12)}');
-      expect(actual).toInclude('style={{ "--var-test-fontsize12": fontSize + "px" }}');
+      // TODO need to handle `px` suffix
+      expect(actual).toInclude('.css-test{font-size:12px}');
+      expect(actual).toInclude('<div className="css-test">hello world</div>');
     });
 
     it('should transform object with nested object into a selector', () => {
@@ -800,8 +807,8 @@ describe('css prop transformer', () => {
         <div css={{ color: blue }}>hello world</div>
       `);
 
-      expect(actual).toInclude('style={{ "--var-test-blue": blue }}');
-      expect(actual).toInclude('.css-test{color:var(--var-test-blue)}');
+      expect(actual).toInclude('<div className="css-test"></div>');
+      expect(actual).toInclude('.css-test{color:blue}');
     });
 
     it('should transform object that has a destructured variable reference', () => {
@@ -857,8 +864,8 @@ describe('css prop transformer', () => {
         <div css={{ color: text }}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-text)}');
-      expect(actual).toInclude('<div className="css-test" style={{ "--var-test-text": text }}>');
+      expect(actual).toInclude('.css-test{color:red}');
+      expect(actual).toInclude('<div className="css-test">hello world</div>');
     });
 
     it('should transform object with string variable using shorthand notation', () => {
@@ -871,8 +878,8 @@ describe('css prop transformer', () => {
         <div css={{ color }}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-color)}');
-      expect(actual).toInclude('<div className="css-test" style={{ "--var-test-color": color }}>');
+      expect(actual).toInclude('.css-test{color:red}');
+      expect(actual).toInclude('<div className="css-test">');
     });
 
     it('should transform object with string import', () => {
@@ -887,8 +894,8 @@ describe('css prop transformer', () => {
         <div css={{ color }}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-color)}');
-      expect(actual).toInclude('<div className="css-test" style={{ "--var-test-color": color }}>');
+      expect(actual).toInclude('.css-test{color:red}');
+      expect(actual).toInclude('<div className="css-test">');
     });
 
     it('should transform object with obj variable', () => {
@@ -1150,8 +1157,7 @@ describe('css prop transformer', () => {
         <div css={{ color: 'blue', ...mixin(color) }}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{color:blue;color:var(--var-test-color)}');
-      expect(actual).toInclude('style={{ "--var-test-color": color }}>');
+      expect(actual).toInclude('.css-test{color:blue;color:red}');
     });
 
     it('should transform object with argument arrow function import', () => {
@@ -1168,7 +1174,7 @@ describe('css prop transformer', () => {
         <div css={{ color: 'blue', ...mixin(color) }}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{color:blue;color:red;');
+      expect(actual).toInclude('.css-test{color:blue;color:red');
     });
 
     xit('should add quotations to dynamically set content', () => {

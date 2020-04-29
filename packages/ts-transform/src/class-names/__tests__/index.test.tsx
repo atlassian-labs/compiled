@@ -377,7 +377,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-color);margin:0}');
+      expect(actual).toInclude('.css-test{color:red;margin:0}');
     });
 
     it('should transform object spread from variable', () => {
@@ -429,10 +429,8 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-color)}');
-      expect(actual).toInclude(
-        '<div style={{ "--var-test-color": color }} className={"css-test"}>hello, world!</div>'
-      );
+      expect(actual).toInclude('.css-test{color:blue}');
+      expect(actual).toInclude('<div style={{}} className={"css-test"}>hello, world!</div>');
     });
 
     it('should transform object with string import', () => {
@@ -450,7 +448,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-color)}');
+      expect(actual).toInclude('.css-test{color:red}');
     });
 
     it('should transform object with obj variable', () => {

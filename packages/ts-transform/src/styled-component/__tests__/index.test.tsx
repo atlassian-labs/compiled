@@ -241,10 +241,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude(
-        'style={{ ...props.style, "--var-test-fontsize20": fontSize + "px" }}'
-      );
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize20)}');
+      expect(actual).toInclude('.css-test{font-size:20px}');
     });
 
     it('should persist suffix of dynamic property value into inline styles when missing a semi colon', () => {
@@ -258,8 +255,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('"--var-test-fontsize20": fontSize + "px" }}');
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize20)}');
+      expect(actual).toInclude('.css-test{font-size:20px}');
     });
 
     it('should transform no template string literal', () => {
@@ -285,7 +281,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize20px)}');
+      expect(actual).toInclude('.css-test{font-size:20px}');
     });
 
     it('should transform template string literal with numeric variable', () => {
@@ -299,7 +295,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{margin:var(--var-test-margin0)}');
+      expect(actual).toInclude('.css-test{margin:0}');
     });
 
     it('should transform template string literal with prop reference', () => {
@@ -341,7 +337,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize20px)}');
+      expect(actual).toInclude('.css-test{font-size:20px}');
     });
 
     it('should transform template string literal with obj variable', () => {
@@ -473,7 +469,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('"--var-test-colorred": "super" + color + "big"');
+      expect(actual).toInclude('.css-test{font-size:superredbig}');
     });
 
     it('should move any prefix of a dynamic property into the style property', () => {
@@ -486,7 +482,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('"--var-test-colorred": "super" + color');
+      expect(actual).toInclude('.css-test{font-size:superred}');
     });
 
     it('should transform template string with no argument function variable', () => {
@@ -754,8 +750,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-color)}');
-      expect(actual).toInclude('"--var-test-color": color }}');
+      expect(actual).toInclude('.css-test{color:blue}');
     });
 
     it('should transform template object with prop reference', () => {
@@ -812,8 +807,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-color)}');
-      expect(actual).toInclude('"--var-test-color": color }}');
+      expect(actual).toInclude('.css-test{color:blue}');
     });
 
     it('should transform object with string import', () => {
