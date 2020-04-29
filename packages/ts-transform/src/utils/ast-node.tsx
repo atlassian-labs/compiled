@@ -21,8 +21,6 @@ export const getIdentifierText = (
   return ((node as ts.Identifier).escapedText as string) || (node as ts.Identifier).text;
 };
 
-export const getDeclarationValue = (node: ts.VariableDeclaration) => node.initializer?.getText();
-
 export const getAssignmentIdentifier = (
   node: ts.ShorthandPropertyAssignment | ts.PropertyAssignment
 ): ts.Identifier => {
@@ -56,8 +54,7 @@ export const getJsxNodeAttributesValue = (
   return attribute?.initializer ? attribute.initializer : undefined;
 };
 
-export const isConst = (node: ts.Node) =>
-  ts.isVariableDeclaration(node) && node.parent && node.parent.flags & ts.NodeFlags.Const;
+export const isConst = (node: ts.Node) => node.parent && node.parent.flags & ts.NodeFlags.Const;
 
 export const isPackageModuleImport = (statement: ts.Node, namedImport?: string): boolean => {
   if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) {

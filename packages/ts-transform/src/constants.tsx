@@ -69,5 +69,3 @@ export const getCompiledComponentImport = (context: ts.TransformationContext) =>
         ts.createIdentifier(COMPILED_COMPONENT_NAME)
       ) as ts.JsxTagNamePropertyAccess)
     : ts.createIdentifier(COMPILED_COMPONENT_NAME);
-
-export const removeQuotes = (str: string) => str.slice(1).slice(0, -1);

@@ -829,8 +829,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-color)}');
-      expect(actual).toInclude('"--var-test-color": color }}');
+      expect(actual).toInclude('.css-test{color:blue}');
     });
 
     it('should transform object with obj variable', () => {

@@ -1168,8 +1168,7 @@ describe('css prop transformer', () => {
         <div css={{ color: 'blue', ...mixin(color) }}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{color:blue;color:var(--var-test-color)}');
-      expect(actual).toInclude('style={{ "--var-test-color": color }}>');
+      expect(actual).toInclude('.css-test{color:blue;color:red;');
     });
 
     xit('should add quotations to dynamically set content', () => {
@@ -1193,6 +1192,6 @@ describe('css prop transformer', () => {
         let cl = 'red';
         <div css={{ background: bg, color: cl }}>hello world</div>
       `);
-    expect(actual).toInclude('.css-test{background: blue;}');
+    expect(actual).toInclude('.css-test{background:blue;color:var(--var-test-cl)}');
   });
 });

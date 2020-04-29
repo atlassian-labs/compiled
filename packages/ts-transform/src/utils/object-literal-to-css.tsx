@@ -8,7 +8,6 @@ import {
   getAssignmentIdentifier,
   createNodeError,
   isConst,
-  getDeclarationValue,
 } from './ast-node';
 import * as logger from './log';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
@@ -16,7 +15,6 @@ import { evaluateFunction, isReturnCssLike } from './evalulate-function';
 import { templateLiteralToCss } from './template-literal-to-css';
 import { addUnitIfNeeded } from './css-property';
 import { unique } from './array';
-import { removeQuotes } from '../constants';
 
 export const objectLiteralToCssString = (
   objectLiteral: ts.ObjectLiteralExpression,
@@ -146,10 +144,10 @@ export const objectLiteralToCssString = (
 
       // check if the variable decalaration is a const, if yes then inline
       if (ts.isVariableDeclaration(declaration) && isConst(declaration)) {
-        const declarationValue = getDeclarationValue(declaration);
-        if (declarationValue) {
+        const { initializer } = declaration;
+        if (initializer && ts.isLiteralExpression(initializer)) {
           return `${acc}
-            ${key}: ${removeQuotes(declarationValue)};
+            ${key}: ${initializer.text};
           `;
         }
       }
