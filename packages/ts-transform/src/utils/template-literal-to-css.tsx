@@ -6,7 +6,7 @@ import { objectLiteralToCssString } from './object-literal-to-css';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
 import { evaluateFunction, isReturnCssLike } from './evalulate-function';
 import { joinToBinaryExpression, joinThreeExpressions } from './expression-operators';
-import { cssAfterInterpolation, cssBeforeInterpolation } from './string-interpolations';
+import { cssAfterInterpolation, cssBeforeInterpolation, inline } from './string-interpolations';
 import { unique } from './array';
 
 export const templateLiteralToCss = (
@@ -59,30 +59,35 @@ export const templateLiteralToCss = (
         // We an an inline arrow function - e.g. css`${props => props.color}`
         const after = cssAfterInterpolation(span.literal.text);
 
+        const { variablePrefix } = before;
+        const { variableSuffix } = after;
+
         css = before.css;
         let cssVariableExpression: ts.Expression = span.expression;
 
-        if (after.variableSuffix && before.variablePrefix) {
-          cssVariableExpression = joinThreeExpressions(
-            ts.createStringLiteral(before.variablePrefix),
-            span.expression,
-            ts.createStringLiteral(after.variableSuffix)
-          );
-        } else if (after.variableSuffix) {
-          cssVariableExpression = joinToBinaryExpression(
-            span.expression,
-            ts.createStringLiteral(after.variableSuffix)
-          );
-        } else if (before.variablePrefix) {
-          cssVariableExpression = joinToBinaryExpression(
-            ts.createStringLiteral(before.variablePrefix),
-            span.expression
-          );
-        }
-
         if (isConst(value)) {
-          css += `${value.initializer.text}${after.css}`;
+          css += `${inline(variablePrefix)}${value.initializer.text}${inline(variableSuffix)}${
+            after.css
+          }`;
         } else {
+          if (variableSuffix && variablePrefix) {
+            cssVariableExpression = joinThreeExpressions(
+              ts.createStringLiteral(variablePrefix),
+              span.expression,
+              ts.createStringLiteral(variableSuffix)
+            );
+          } else if (variableSuffix) {
+            cssVariableExpression = joinToBinaryExpression(
+              span.expression,
+              ts.createStringLiteral(variableSuffix)
+            );
+          } else if (variablePrefix) {
+            cssVariableExpression = joinToBinaryExpression(
+              ts.createStringLiteral(variablePrefix),
+              span.expression
+            );
+          }
+
           cssVariables.push({
             name: variableName,
             expression: cssVariableExpression,

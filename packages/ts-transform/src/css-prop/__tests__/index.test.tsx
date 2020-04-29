@@ -807,7 +807,7 @@ describe('css prop transformer', () => {
         <div css={{ color: blue }}>hello world</div>
       `);
 
-      expect(actual).toInclude('<div className="css-test"></div>');
+      expect(actual).toInclude('<div className="css-test">hello world</div>');
       expect(actual).toInclude('.css-test{color:blue}');
     });
 
