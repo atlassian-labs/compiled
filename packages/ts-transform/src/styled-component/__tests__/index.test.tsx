@@ -950,7 +950,6 @@ describe('styled component transformer', () => {
       \`;
     `);
 
-    // TODO @madou does the space matter and semi-colon matter? => .css-test{font-size: 20px;}
     expect(actual).toInclude('.css-test{font-size:20px}');
   });
 });

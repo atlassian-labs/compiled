@@ -780,7 +780,6 @@ describe('css prop transformer', () => {
         <div css={{ fontSize: \`\${fontSize}px\` }}>hello world</div>
       `);
 
-      // TODO need to handle `px` suffix
       expect(actual).toInclude('.css-test{font-size:12px}');
       expect(actual).toInclude('<div className="css-test">hello world</div>');
     });
