@@ -8,6 +8,7 @@ import { evaluateFunction, isReturnCssLike } from './evalulate-function';
 import { joinToBinaryExpression, joinThreeExpressions } from './expression-operators';
 import { cssAfterInterpolation, cssBeforeInterpolation } from './string-interpolations';
 import { unique } from './array';
+import { removeQuotes } from '../constants';
 
 export const templateLiteralToCss = (
   node: ts.TemplateExpression | ts.NoSubstitutionTemplateLiteral | ts.StringLiteral,
@@ -49,7 +50,7 @@ export const templateLiteralToCss = (
 
       if (isConst(value)) {
         const declarationValue = value.initializer.getText();
-        css += declarationValue.slice(1).slice(0, -1);
+        css += removeQuotes(declarationValue);
       } else {
         const variableName = cssVariableHash(value);
 

@@ -1186,7 +1186,6 @@ describe('css prop transformer', () => {
   });
 
   it("should inline the variable if it's a constant", () => {
-    debugger;
     const actual = transformer.transform(`
         import '@compiled/css-in-js';
 

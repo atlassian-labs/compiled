@@ -947,7 +947,6 @@ describe('styled component transformer', () => {
   });
 
   it('should transform template string literal with string variable', () => {
-    debugger;
     const actual = transformer.transform(`
       import { styled } from '@compiled/css-in-js';
 

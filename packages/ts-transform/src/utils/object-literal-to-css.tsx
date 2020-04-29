@@ -16,6 +16,7 @@ import { evaluateFunction, isReturnCssLike } from './evalulate-function';
 import { templateLiteralToCss } from './template-literal-to-css';
 import { addUnitIfNeeded } from './css-property';
 import { unique } from './array';
+import { removeQuotes } from '../constants';
 
 export const objectLiteralToCssString = (
   objectLiteral: ts.ObjectLiteralExpression,
@@ -148,7 +149,7 @@ export const objectLiteralToCssString = (
         const declarationValue = getDeclarationValue(declaration);
         if (declarationValue) {
           return `${acc}
-            ${key}: ${declarationValue.slice(1).slice(0, -1)};
+            ${key}: ${removeQuotes(declarationValue)};
           `;
         }
       }
