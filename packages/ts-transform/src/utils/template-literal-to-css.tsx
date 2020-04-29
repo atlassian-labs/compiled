@@ -52,7 +52,7 @@ export const templateLiteralToCss = (
       if (ts.isObjectLiteralExpression(value.initializer)) {
         // We found an object expression e.g. const objVar = {}; css`${objVar}`
         const result = objectLiteralToCssString(value.initializer, collectedDeclarations, context);
-        css += result.css;
+        css += `${result.css}${span.literal.text.replace(/^;/, '')}`;
         cssVariables = cssVariables.concat(result.cssVariables);
       } else if (ts.isStringLiteral(value.initializer) || ts.isNumericLiteral(value.initializer)) {
         const before = cssBeforeInterpolation(css);
