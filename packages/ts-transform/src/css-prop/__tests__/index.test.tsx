@@ -1,6 +1,5 @@
 import * as ts from 'typescript';
 import { Transformer } from 'ts-transformer-testing-library';
-import 'jest-extended';
 import cssPropTransformer from '../index';
 
 jest.mock('../../utils/hash');

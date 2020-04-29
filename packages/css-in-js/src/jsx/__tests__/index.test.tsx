@@ -1,7 +1,6 @@
 import '@compiled/css-in-js';
 import React from 'react';
 import { render } from '@testing-library/react';
-import '@compiled/jest-css-in-js';
 
 describe('css prop', () => {
   it('should create css from object literal', () => {

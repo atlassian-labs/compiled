@@ -1,7 +1,6 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import { ClassNames } from '@compiled/css-in-js';
-import '@compiled/jest-css-in-js';
 
 describe('class names component', () => {
   it('should create css from object literal', () => {
