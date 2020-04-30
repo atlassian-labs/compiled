@@ -84,28 +84,31 @@ describe('css prop transformer', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
       import React from 'react';
-
+      const [fontSize] = React.useState('10px');
       const red = 'red';
-      const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize: 12, color: red }}>hello world</div>;
+
+      const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize, color: red }}>hello world</div>;
     `);
 
     expect(actual).toInclude(
-      '<div className={"css-test" + (className ? " " + className : "")} style={style}>hello world</div>'
+      '<div className={"css-test" + (className ? " " + className : "")} style={{ ...style, "--var-test-fontsize": fontSize }}>hello world</div>'
     );
-    expect(actual).toInclude('.css-test{font-size:12px;color:red}');
+    expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize);color:red}');
   });
 
   it('should spread style property access when there is dynamic styles in the css', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
       import React from 'react';
-
+      const [background] = React.useState("violet");
       const red = 'red';
-      const Component = ({ className, ...props }) => <div className={className} style={props.style} css={{ fontSize: 12, color: red }}>hello world</div>;
+      const Component = ({ className, ...props }) => <div className={className} style={props.style} css={{ fontSize: 12, color: red, background }}>hello world</div>;
     `);
 
-    expect(actual).toInclude('style={props.style}');
-    expect(actual).toInclude('.css-test{font-size:12px;color:red}');
+    expect(actual).toInclude('style={{ ...props.style, "--var-test-background": background }}');
+    expect(actual).toInclude(
+      '.css-test{font-size:12px;color:red;background:var(--var-test-background)}'
+    );
   });
 
   it('should spread style identifier when there is styles already set', () => {
@@ -124,12 +127,17 @@ describe('css prop transformer', () => {
       import '@compiled/css-in-js';
       import React from 'react';
 
+      const [background] = React.useState('yellow');
       const red = 'red';
-      const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12, color: red }}>hello world</div>;
+      const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12, color: red, background }}>hello world</div>;
     `);
 
-    expect(actual).toInclude(`style={{ ...style, display: 'block' }}`);
-    expect(actual).toInclude(`.css-test{font-size:12px;color:red}`);
+    expect(actual).toInclude(
+      `style={{ ...style, display: 'block', "--var-test-background": background }}`
+    );
+    expect(actual).toInclude(
+      `.css-test{font-size:12px;color:red;background:var(--var-test-background)}`
+    );
   });
 
   it('should compose class name from parent and pass down css variables in style', () => {
@@ -262,6 +270,28 @@ describe('css prop transformer', () => {
       import '@compiled/css-in-js';
 
       const N30 = 'gray';
+
+      <div css={{
+        backgroundImage: \`linear-gradient(45deg, \${N30} 25%, transparent 25%),
+        linear-gradient(-45deg, \${N30} 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, \${N30} 75%),
+        linear-gradient(-45deg, transparent 75%, \${N30} 75%)\`
+      }}>hello world</div>
+    `);
+
+    expect(actual).toInclude(
+      `background-image:linear-gradient(45deg,gray 25%,transparent 25%),linear-gradient(-45deg,gray 25%,transparent 25%),linear-gradient(45deg,transparent 75%,gray 75%),linear-gradient(-45deg,transparent 75%,gray 75%)`
+    );
+    expect(actual).toInclude('<div className="css-test">hello world</div>');
+  });
+
+  it('should move multiple groups of interpolations into inline styles with css variable', () => {
+    // See: https://codesandbox.io/s/dank-star-443ps?file=/src/index.js
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import {useState} from 'react';
+
+      const [N30] = 'gray';
 
       <div css={{
         backgroundImage: \`linear-gradient(45deg, \${N30} 25%, transparent 25%),
@@ -744,6 +774,28 @@ describe('css prop transformer', () => {
         import '@compiled/css-in-js';
 
         const N30 = 'gray';
+
+        <div css={\`
+          background-image: linear-gradient(45deg, \${N30} 25%, transparent 25%),
+            linear-gradient(-45deg, \${N30} 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, \${N30} 75%),
+            linear-gradient(-45deg, transparent 75%, \${N30} 75%);
+        \`}>hello world</div>
+      `);
+
+      expect(actual).toInclude('<div className="css-test">hello world</div>');
+      expect(actual).toInclude(
+        'background-image:linear-gradient(45deg,gray 25%,transparent 25%),linear-gradient(-45deg,gray 25%,transparent 25%),linear-gradient(45deg,transparent 75%,gray 75%),linear-gradient(-45deg,transparent 75%,gray 75%)'
+      );
+    });
+
+    it('should move multiple groups of interpolations into inline styles with css variable for dynamic value', () => {
+      // See: https://codesandbox.io/s/dank-star-443ps?file=/src/index.js
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+        import {useState} from 'react';
+
+        const [N30] = useState('gray');
 
         <div css={\`
           background-image: linear-gradient(45deg, \${N30} 25%, transparent 25%),
