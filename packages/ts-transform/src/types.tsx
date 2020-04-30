@@ -21,21 +21,28 @@ export interface ToCssReturnType {
   cssVariables: CssVariableExpressions[];
 }
 
+export interface AnyTokens {
+  [key: string]: any;
+}
+
+export interface Tokens {
+  // This is the "base" tokens that shouldn't be directly referenced outside of the tokens object itself.
+  // Need to confirm name!!
+  base: AnyTokens;
+
+  // These is the default "theme".
+  default: AnyTokens;
+
+  // Other "themes".
+  [key: string]: AnyTokens;
+}
+
 export interface TransformerOptions {
   nonce?: string;
   debug?: boolean;
   sourceMap?: boolean;
   minify?: boolean;
+  strict?: boolean;
   tokenPrefix?: string;
-  tokens?: {
-    // This is the "base" tokens that shouldn't be directly referenced outside of the tokens object itself.
-    // Need to confirm name!!
-    base: { [key: string]: any };
-
-    // These is the default "theme".
-    default: { [key: string]: any };
-
-    // Other "themes".
-    [key: string]: { [key: string]: any };
-  };
+  tokens?: Tokens;
 }

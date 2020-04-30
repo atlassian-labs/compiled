@@ -63,4 +63,55 @@ describe('tokens', () => {
 
     expect(actual).toInclude('color:var(--atl-1tivpv1);');
   });
+
+  it('should block hardcoded color use if in strict mode', () => {
+    expect(() =>
+      transpileModule(
+        `
+        import '@compiled/css-in-js';
+
+        <div css={{ color: '#ccc' }}>hello world</div>
+      `,
+        {
+          tokenPrefix: 'atl',
+          strict: true,
+          tokens: {
+            base: {
+              b400: '#0052CC',
+            },
+            default: {
+              primary: 'b400',
+            },
+          },
+        }
+      )
+    ).toThrow();
+  });
+
+  it('should suggest token if its close to it', () => {
+    expect(() =>
+      transpileModule(
+        `
+        import '@compiled/css-in-js';
+
+        <div css={{ color: '#0052CC' }}>hello world</div>
+      `,
+        {
+          tokenPrefix: 'atl',
+          strict: true,
+          tokens: {
+            base: {
+              b400: '#0052CC',
+            },
+            default: {
+              primary: 'b400',
+            },
+          },
+        }
+      )
+    ).toThrowError(
+      new Error(`You've defined hard-coded colors which is not allowed in strict mode.
+\"color: #0052CC;\" - replace #0052CC with theme(primary).`)
+    );
+  });
 });
