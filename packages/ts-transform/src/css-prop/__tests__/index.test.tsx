@@ -287,11 +287,12 @@ describe('css prop transformer', () => {
 
   it('should move multiple groups of interpolations into inline styles with css variable', () => {
     // See: https://codesandbox.io/s/dank-star-443ps?file=/src/index.js
+
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
       import {useState} from 'react';
 
-      const [N30] = 'gray';
+      const [N30] = useState('gray');
 
       <div css={{
         backgroundImage: \`linear-gradient(45deg, \${N30} 25%, transparent 25%),
@@ -302,9 +303,11 @@ describe('css prop transformer', () => {
     `);
 
     expect(actual).toInclude(
-      `background-image:linear-gradient(45deg,gray 25%,transparent 25%),linear-gradient(-45deg,gray 25%,transparent 25%),linear-gradient(45deg,transparent 75%,gray 75%),linear-gradient(-45deg,transparent 75%,gray 75%)`
+      `background-image:linear-gradient(45deg,var(--var-test-n30) 25%,transparent 25%),linear-gradient(-45deg,var(--var-test-n30) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--var-test-n30) 75%),linear-gradient(-45deg,transparent 75%,var(--var-test-n30) 75%)`
     );
-    expect(actual).toInclude('<div className="css-test">hello world</div>');
+    expect(actual).toInclude(
+      '<div style={{ "--var-test-n30": N30 }} className="css-test">hello world</div>'
+    );
   });
 
   it('should allow expressions stored in a variable as shorthand property values', () => {
