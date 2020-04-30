@@ -16,7 +16,7 @@ export const getExpressionText = (node: ts.Expression) => {
 };
 
 export const getIdentifierText = (
-  node: ts.PropertyName | ts.BindingName | ts.Expression
+  node: ts.PropertyName | ts.BindingName | ts.Expression | ts.Identifier
 ): string => {
   return ((node as ts.Identifier).escapedText as string) || (node as ts.Identifier).text;
 };

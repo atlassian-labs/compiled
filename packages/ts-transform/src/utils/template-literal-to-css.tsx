@@ -25,10 +25,16 @@ export const templateLiteralToCss = (
   let css = node.head.text;
 
   node.templateSpans.forEach(span => {
-    if (ts.isIdentifier(span.expression)) {
+    const key = getIdentifierText(span.expression);
+    const value = collectedDeclarations[key];
+
+    if (value && ts.isBindingElement(value)) {
+      if (ts.isIdentifier(value.name)) {
+        cssVariables.push({ name: cssVariableHash(value.name), expression: value.name });
+      }
+    } else if (ts.isIdentifier(span.expression)) {
       // We are referencing a variable e.g. css`${var}`;
-      const key = getIdentifierText(span.expression);
-      const value = collectedDeclarations[key];
+
       if (!value) {
         throw createNodeError('declaration does not exist', span);
       }
@@ -40,9 +46,7 @@ export const templateLiteralToCss = (
       if (!value.initializer) {
         throw createNodeError('variable was not initialized', value);
       }
-
       const variableName = cssVariableHash(value);
-
       if (ts.isObjectLiteralExpression(value.initializer)) {
         // We found an object expression e.g. const objVar = {}; css`${objVar}`
         const result = objectLiteralToCssString(value.initializer, collectedDeclarations, context);
