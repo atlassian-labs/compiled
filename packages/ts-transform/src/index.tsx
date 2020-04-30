@@ -36,7 +36,7 @@ const getTokens = (tokens: RootTransformerOptions['tokens']) => {
 
 export default function transformer(
   program: ts.Program,
-  { options: rootOptions = {} }: { options?: RootTransformerOptions }
+  { options: rootOptions = {} }: { options?: RootTransformerOptions } = {}
 ): ts.TransformerFactory<ts.SourceFile> {
   const { tokens, ...opts } = rootOptions;
   const options: TransformerOptions = {
