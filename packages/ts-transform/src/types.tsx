@@ -30,14 +30,24 @@ export interface Tokens {
   // Need to confirm name!!
   base: AnyTokens;
 
-  // These is the default "theme".
+  // These is the default "theme" (usually will be light mode).
   default: AnyTokens;
 
   // Other "themes".
   [key: string]: AnyTokens;
 }
 
-export interface TransformerOptions {
+export interface RootTransformerOptions {
+  nonce?: string;
+  debug?: boolean;
+  sourceMap?: boolean;
+  minify?: boolean;
+  strict?: boolean;
+  tokenPrefix?: string;
+  tokens?: Tokens | string;
+}
+
+export interface TransformerOptions extends Omit<RootTransformerOptions, 'tokens'> {
   nonce?: string;
   debug?: boolean;
   sourceMap?: boolean;

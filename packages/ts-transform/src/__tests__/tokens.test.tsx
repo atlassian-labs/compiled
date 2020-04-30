@@ -114,4 +114,34 @@ describe('tokens', () => {
 \"color: #0052CC;\" - replace #0052CC with theme(primary).`)
     );
   });
+
+  it('should pick up tokens from a supplied relative path', () => {
+    const actual = transpileModule(
+      `
+        import '@compiled/css-in-js';
+
+        <div css={{ color: 'theme(primary)' }}>hello world</div>
+      `,
+      {
+        tokens: './test/tokens.json',
+      }
+    );
+
+    expect(actual).toInclude('color:#0052CC');
+  });
+
+  it('should pick up tokens from a supplied package', () => {
+    const actual = transpileModule(
+      `
+        import '@compiled/css-in-js';
+
+        <div css={{ color: 'theme(primary)' }}>hello world</div>
+      `,
+      {
+        tokens: './test/tokens.json',
+      }
+    );
+
+    expect(actual).toInclude('color:#0052CC');
+  });
 });

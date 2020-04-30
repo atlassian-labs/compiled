@@ -1,23 +1,44 @@
 import * as ts from 'typescript';
-import * as logger from './utils/log';
+import path from 'path';
 import cssPropTransformer from './css-prop';
 import styledComponentTransformer from './styled-component';
 import classNamesTransformer from './class-names';
-import { TransformerOptions } from './types';
+import { RootTransformerOptions, TransformerOptions } from './types';
 
 const transformers = [cssPropTransformer, styledComponentTransformer, classNamesTransformer];
 
-export { TransformerOptions } from './types';
+export { RootTransformerOptions as TransformerOptions } from './types';
+
+const getTokens = (tokens: RootTransformerOptions['tokens']) => {
+  if (!tokens) {
+    return undefined;
+  }
+
+  if (typeof tokens === 'string') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const foundTokens = require(path.join(process.cwd(), tokens));
+    return foundTokens;
+  }
+
+  return tokens;
+};
 
 export default function transformer(
   program: ts.Program,
-  args: { options?: TransformerOptions } = {}
+  args: { options: RootTransformerOptions } = { options: {} }
 ): ts.TransformerFactory<ts.SourceFile> {
-  args.options && logger.setEnabled(!!args.options.debug);
+  const {
+    options: { tokens, ...opts },
+  } = args;
+
+  const options: TransformerOptions = {
+    ...opts,
+    tokens: getTokens(tokens),
+  };
 
   return (context) => {
     const initializedTransformers = transformers.map((transformer) =>
-      transformer(program, args.options || {})(context)
+      transformer(program, options)(context)
     );
 
     return (sourceFile) => {
