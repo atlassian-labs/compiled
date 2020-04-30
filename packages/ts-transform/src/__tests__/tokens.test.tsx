@@ -27,7 +27,6 @@ describe('tokens', () => {
         <div css={{ color: 'theme(primary)' }}>hello world</div>
       `,
       {
-        tokenPrefix: 'ak',
         tokens: {
           base: {
             b400: '#0052CC',
@@ -39,6 +38,29 @@ describe('tokens', () => {
       }
     );
 
-    expect(actual).toInclude('color:#0052CC');
+    expect(actual).toInclude('color:var(--cc-1tivpv1);color:#0052CC');
+  });
+
+  it('should use a defined token prefix', () => {
+    const actual = transpileModule(
+      `
+        import '@compiled/css-in-js';
+
+        <div css={{ color: 'theme(primary)' }}>hello world</div>
+      `,
+      {
+        tokenPrefix: 'atl',
+        tokens: {
+          base: {
+            b400: '#0052CC',
+          },
+          default: {
+            primary: 'b400',
+          },
+        },
+      }
+    );
+
+    expect(actual).toInclude('color:var(--atl-1tivpv1);');
   });
 });
