@@ -7,6 +7,8 @@ import { TransformerOptions } from './types';
 
 const transformers = [cssPropTransformer, styledComponentTransformer, classNamesTransformer];
 
+export { TransformerOptions } from './types';
+
 export default function transformer(
   program: ts.Program,
   args: { options?: TransformerOptions } = {}

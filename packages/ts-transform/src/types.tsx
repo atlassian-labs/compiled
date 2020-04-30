@@ -26,4 +26,16 @@ export interface TransformerOptions {
   debug?: boolean;
   sourceMap?: boolean;
   minify?: boolean;
+  tokenPrefix?: string;
+  tokens?: {
+    // This is the "base" tokens that shouldn't be directly referenced outside of the tokens object itself.
+    // Need to confirm name!!
+    base: { [key: string]: any };
+
+    // These is the default "theme".
+    default: { [key: string]: any };
+
+    // Other "themes".
+    [key: string]: { [key: string]: any };
+  };
 }
