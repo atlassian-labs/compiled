@@ -88,7 +88,7 @@ describe('tokens', () => {
     ).toThrow();
   });
 
-  it('should suggest token if its close to it', () => {
+  it('should suggest token if exact match was found', () => {
     expect(() =>
       transpileModule(
         `

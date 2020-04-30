@@ -3,11 +3,15 @@ import path from 'path';
 import cssPropTransformer from './css-prop';
 import styledComponentTransformer from './styled-component';
 import classNamesTransformer from './class-names';
-import { RootTransformerOptions, TransformerOptions } from './types';
+import { RootTransformerOptions, Tokens, TransformerOptions } from './types';
 
 const transformers = [cssPropTransformer, styledComponentTransformer, classNamesTransformer];
 
 export { RootTransformerOptions as TransformerOptions } from './types';
+
+const validateTokens = (_: Tokens) => {
+  return _;
+};
 
 const getTokens = (tokens: RootTransformerOptions['tokens']) => {
   if (!tokens) {
@@ -40,7 +44,7 @@ export default function transformer(
 
   const options: TransformerOptions = {
     ...opts,
-    tokens: getTokens(tokens),
+    tokens: validateTokens(getTokens(tokens)),
   };
 
   return (context) => {
