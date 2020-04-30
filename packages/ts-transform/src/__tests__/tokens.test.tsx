@@ -145,7 +145,7 @@ describe('tokens', () => {
     expect(actual).toInclude('color:#0052CC');
   });
 
-  it('should resolve tokens from package', () => {
+  it('should resolve tokens from package entry', () => {
     const actual = transpileModule(
       `
         import '@compiled/css-in-js';
@@ -154,6 +154,21 @@ describe('tokens', () => {
       `,
       {
         tokens: 'tokens-pkg',
+      }
+    );
+
+    expect(actual).toInclude('color:#0052CC');
+  });
+
+  it('should resolve tokens from package file', () => {
+    const actual = transpileModule(
+      `
+        import '@compiled/css-in-js';
+
+        <div css={{ color: 'theme(primary)' }}>hello world</div>
+      `,
+      {
+        tokens: 'tokens-pkg/tokens.json',
       }
     );
 

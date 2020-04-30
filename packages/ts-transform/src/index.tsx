@@ -36,12 +36,9 @@ const getTokens = (tokens: RootTransformerOptions['tokens']) => {
 
 export default function transformer(
   program: ts.Program,
-  args: { options: RootTransformerOptions } = { options: {} }
+  { options: rootOptions = {} }: { options?: RootTransformerOptions }
 ): ts.TransformerFactory<ts.SourceFile> {
-  const {
-    options: { tokens, ...opts },
-  } = args;
-
+  const { tokens, ...opts } = rootOptions;
   const options: TransformerOptions = {
     ...opts,
     tokens: validateTokens(getTokens(tokens)),
