@@ -199,6 +199,18 @@ describe('css prop transformer', () => {
     expect(actual).toInclude(`style={{ display: 'block', \"--var-test-color\": color }}`);
   });
 
+  it('should concat explicit use of style prop on an element when destructured template', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      const [color] = ['blue'];
+      <div style={{ display: 'block' }} css={{ color: \`\${color}\` }}>hello world</div>
+    `);
+
+    expect(actual).toInclude(`style={{ display: 'block', \"--var-test-color\": color }}`);
+  });
+
   it('should pass through style prop when not using dynamic css', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
