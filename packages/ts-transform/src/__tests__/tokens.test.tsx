@@ -38,7 +38,7 @@ describe('tokens', () => {
       }
     );
 
-    expect(actual).toInclude('color:var(--cc-1tivpv1);color:#0052CC');
+    expect(actual).toInclude('color:#0052CC;color:var(--cc-1tivpv1)');
   });
 
   it('should use a defined token prefix', () => {
@@ -61,7 +61,7 @@ describe('tokens', () => {
       }
     );
 
-    expect(actual).toInclude('color:var(--atl-1tivpv1);');
+    expect(actual).toInclude('color:var(--atl-1tivpv1)');
   });
 
   it('should block hardcoded color use if in strict mode', () => {
@@ -139,6 +139,21 @@ describe('tokens', () => {
       `,
       {
         tokens: './test/tokens.json',
+      }
+    );
+
+    expect(actual).toInclude('color:#0052CC');
+  });
+
+  it('should resolve tokens from package', () => {
+    const actual = transpileModule(
+      `
+        import '@compiled/css-in-js';
+
+        <div css={{ color: 'theme(primary)' }}>hello world</div>
+      `,
+      {
+        tokens: 'tokens-pkg',
       }
     );
 

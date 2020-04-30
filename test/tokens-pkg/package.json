@@ -1,0 +1,5 @@
+{
+  "name": "tokens-pkg",
+  "version": "0.1.0",
+  "main": "./tokens.json"
+}

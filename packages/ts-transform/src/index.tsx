@@ -15,8 +15,15 @@ const getTokens = (tokens: RootTransformerOptions['tokens']) => {
   }
 
   if (typeof tokens === 'string') {
+    if (tokens.startsWith('./')) {
+      // relative import
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const foundTokens = require(path.join(process.cwd(), tokens));
+      return foundTokens;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const foundTokens = require(path.join(process.cwd(), tokens));
+    const foundTokens = require(require.resolve(tokens));
     return foundTokens;
   }
 

@@ -109,7 +109,7 @@ const replaceThemedProperties = plugin<TransformerOptions>('replace-themed-prope
           const tokenName = match[1];
           const rawName = tokens.default[tokenName];
           decl.value = tokens.base[rawName];
-          decl.cloneBefore({ value: `var(--${tokenPrefix}-${hash(tokenName)})` });
+          decl.cloneAfter({ value: `var(--${tokenPrefix}-${hash(tokenName)})` });
         }
       } else if (opts.strict) {
         let errorMessage = `"${decl.toString()};"`;
