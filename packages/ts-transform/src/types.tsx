@@ -13,7 +13,7 @@ export interface CssVariableExpressions {
 }
 
 export interface Declarations {
-  [moduleName: string]: ts.VariableDeclaration | ts.FunctionDeclaration;
+  [moduleName: string]: ts.VariableDeclaration | ts.FunctionDeclaration | ts.BindingElement;
 }
 
 export interface ToCssReturnType {

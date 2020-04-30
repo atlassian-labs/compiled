@@ -14,10 +14,12 @@ export const collectDeclarationsFromNode = (
   program: ts.Program,
   outDeclarationsMap: Declarations
 ): boolean => {
-  if (ts.isVariableDeclaration(node)) {
+  if (ts.isVariableDeclaration(node) || ts.isBindingElement(node)) {
     // we may need this later, let's store it in a POJO for quick access.
-    outDeclarationsMap[getIdentifierText(node.name)] = node;
-    return true;
+    if (ts.isIdentifier(node.name)) {
+      outDeclarationsMap[getIdentifierText(node.name)] = node;
+      return true;
+    }
   }
 
   if (ts.isFunctionDeclaration(node) && node.name) {

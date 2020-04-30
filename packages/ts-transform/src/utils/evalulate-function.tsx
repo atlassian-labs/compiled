@@ -5,7 +5,7 @@ import { templateLiteralToCss } from './template-literal-to-css';
 import { createNodeError } from './ast-node';
 
 export const isReturnCssLike = (
-  node: ts.Expression | ts.FunctionDeclaration
+  node: ts.Expression | ts.FunctionDeclaration | ts.BindingElement
 ): node is ts.ArrowFunction => {
   if (ts.isArrowFunction(node)) {
     const functionBody = ts.isParenthesizedExpression(node.body) ? node.body.expression : node.body;
