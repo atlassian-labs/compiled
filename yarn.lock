@@ -8017,7 +8017,7 @@ pnp-webpack-plugin@^1.6.4:
   dependencies:
     ts-pnp "^1.1.6"
 
-polished@^3.3.1, polished@^3.4.2:
+polished@^3.3.1:
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/polished/-/polished-3.4.2.tgz#b4780dad81d64df55615fbfc77acb52fd17d88cd"
   dependencies:

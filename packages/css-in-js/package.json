@@ -37,7 +37,6 @@
   "devDependencies": {
     "@compiled/ts-transform-css-in-js": "0.0.14",
     "@testing-library/react": "^10.0.4",
-    "polished": "^3.4.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   }

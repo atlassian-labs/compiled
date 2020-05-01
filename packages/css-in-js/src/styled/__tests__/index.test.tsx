@@ -1,7 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { styled } from '@compiled/css-in-js';
-import { em } from 'polished';
+
+const em = (str: string | number) => str;
 
 describe('styled component', () => {
   it('should render a simple styled div using an object', () => {
