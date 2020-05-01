@@ -73,3 +73,5 @@ export const cssBeforeInterpolation = (css: string): { css: string; variablePref
     variablePrefix,
   };
 };
+
+export const inline = (str?: string) => (str ? str : '');

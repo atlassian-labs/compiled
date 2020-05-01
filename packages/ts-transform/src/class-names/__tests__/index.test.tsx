@@ -7,6 +7,10 @@ jest.mock('../../utils/hash');
 const transformer = new Transformer()
   .addTransformer(classNamesTransformer)
   .addMock({ name: '@compiled/css-in-js', content: `export const ClassNames: any = () => null` })
+  .addMock({
+    name: 'react',
+    content: `export default {} as any; export const useState = {} as any;`,
+  })
   .setFilePath('/index.tsx');
 
 describe('class names transformer', () => {
@@ -133,8 +137,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('style={{ "--var-test-fontsize20": fontSize + "px" }}');
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize20)}');
+      expect(actual).toInclude('.css-test{font-size:20px}');
     });
 
     it('should transform no template string literal', () => {
@@ -164,7 +167,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.css-test{font-size:var(--var-test-fontsize12px)}`);
+      expect(actual).toInclude(`.css-test{font-size:12px}`);
     });
 
     it('should transform template string literal with numeric variable', () => {
@@ -180,7 +183,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.css-test{font-size:var(--var-test-fontsize12)}`);
+      expect(actual).toInclude(`.css-test{font-size:12}`);
     });
 
     it('should transform template string literal with string import', () => {
@@ -198,7 +201,8 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude(`.css-test{font-size:var(--var-test-fontsize12px)}`);
+      expect(actual).toInclude(`.css-test{font-size:12px}`);
+      expect(actual).toInclude(`<div className={\"css-test\"}>hello, world!</div>`);
     });
 
     it('should transform template string literal with obj variable', () => {
@@ -322,8 +326,9 @@ describe('class names transformer', () => {
     it('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transformer.transform(`
         import { ClassNames } from '@compiled/css-in-js';
+        import {useState} from 'react';
 
-        const fontSize = 20;
+        const fontSize = useState(20);
 
         const ListItem = () => (
           <ClassNames>
@@ -332,8 +337,10 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('style={{ "--var-test-fontsize20": fontSize + "px" }}');
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize20)}');
+      expect(actual).toInclude(
+        '<div style={{ "--var-test-fontsize": fontSize }} className={"css-test"}>hello, world!</div>'
+      );
+      expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize)}');
     });
 
     it('should transform object with simple values', () => {
@@ -377,7 +384,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-color);margin:0}');
+      expect(actual).toInclude('.css-test{color:red;margin:0}');
     });
 
     it('should transform object spread from variable', () => {
@@ -419,19 +426,20 @@ describe('class names transformer', () => {
     it('should transform object with string variable', () => {
       const actual = transformer.transform(`
         import { ClassNames } from '@compiled/css-in-js';
-
+        import {useState} from 'react';
         const color = 'blue';
+        const [fontSize] = useState('10px');
 
         const ListItem = () => (
           <ClassNames>
-            {({ css, style }) => <div style={style} className={css({ color })}>hello, world!</div>}
+            {({ css, style }) => <div style={style} className={css({ color, fontSize })}>hello, world!</div>}
           </ClassNames>
         );
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-color)}');
+      expect(actual).toInclude('.css-test{color:blue;font-size:var(--var-test-fontsize)}');
       expect(actual).toInclude(
-        '<div style={{ "--var-test-color": color }} className={"css-test"}>hello, world!</div>'
+        '<div style={{ "--var-test-fontsize": fontSize }} className={"css-test"}>hello, world!</div>'
       );
     });
 
@@ -450,7 +458,7 @@ describe('class names transformer', () => {
         );
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-color)}');
+      expect(actual).toInclude('.css-test{color:red}');
     });
 
     it('should transform object with obj variable', () => {

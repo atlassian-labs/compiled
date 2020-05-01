@@ -54,6 +54,8 @@ export const getJsxNodeAttributesValue = (
   return attribute?.initializer ? attribute.initializer : undefined;
 };
 
+export const isConst = (node: ts.Node) => node.parent && node.parent.flags & ts.NodeFlags.Const;
+
 export const isPackageModuleImport = (statement: ts.Node, namedImport?: string): boolean => {
   if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) {
     return false;

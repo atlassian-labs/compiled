@@ -7,6 +7,7 @@ import {
   getAssignmentIdentifierText,
   getAssignmentIdentifier,
   createNodeError,
+  isConst,
 } from './ast-node';
 import * as logger from './log';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
@@ -139,6 +140,16 @@ export const objectLiteralToCssString = (
             ${result.css}
           }
         `;
+      }
+
+      // check if the variable decalaration is a const, if yes then inline
+      if (declaration && ts.isVariableDeclaration(declaration) && isConst(declaration)) {
+        const { initializer } = declaration;
+        if (initializer && ts.isLiteralExpression(initializer)) {
+          return `${acc}
+            ${key}: ${initializer.text};
+          `;
+        }
       }
 
       // We have a prop assignment using a SIMPLE variable, e.g. "fontSize: props.fontSize" or "fontSize".
