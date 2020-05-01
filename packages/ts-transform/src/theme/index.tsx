@@ -1,6 +1,14 @@
 import * as ts from 'typescript';
-import { isPackageModuleImport } from '../utils/ast-node';
-import { visitCreateThemeProvider } from './visitors/visit-create-theme-provider';
+import {
+  visitCreateThemeProvider,
+  isCreateThemeProviderCall,
+  isCreateThemeProviderFound,
+} from './visitors/visit-create-theme-provider';
+import {
+  isCreateVariantsCall,
+  isCreateVariantsFound,
+  visitCreateVariants,
+} from './visitors/visit-create-variants';
 import { visitSourceFileEnsureDefaultReactImport } from '../utils/visit-source-file-ensure-default-react-import';
 import { visitSourceFileEnsureStyleImport } from '../utils/visit-source-file-ensure-style-import';
 import {
@@ -11,20 +19,6 @@ import {
 } from '../constants';
 import { TransformerOptions, Tokens } from '../types';
 import { getTokenCssVariable } from '../utils/theme';
-
-const isStyledImportFound = (sourceFile: ts.SourceFile): boolean => {
-  return !!sourceFile.statements.find((statement) =>
-    isPackageModuleImport(statement, CREATE_THEME_PROVIDER_IMPORT)
-  );
-};
-
-const isCreateThemeProviderCall = (node: ts.Node): node is ts.CallExpression => {
-  return (
-    ts.isCallExpression(node) &&
-    ts.isIdentifier(node.expression) &&
-    node.expression.text === CREATE_THEME_PROVIDER_IMPORT
-  );
-};
 
 const buildTokensObject = (tokens: Tokens, tokenPrefix?: string) => {
   const themes = Object.keys(tokens).filter((themeName) => themeName !== BASE_TOKENS);
@@ -59,7 +53,8 @@ export default function styledComponentTransformer(
 ): ts.TransformerFactory<ts.SourceFile> {
   const transformerFactory: ts.TransformerFactory<ts.SourceFile> = (context) => {
     return (sourceFile) => {
-      if (!isStyledImportFound(sourceFile)) {
+      const isThemeProviderFound = isCreateThemeProviderFound(sourceFile);
+      if (!isThemeProviderFound && !isCreateVariantsFound(sourceFile)) {
         return sourceFile;
       }
 
@@ -79,7 +74,10 @@ export default function styledComponentTransformer(
       );
 
       const visitor = (node: ts.Node): ts.Node | ts.Node[] => {
-        if ((tokensAdded && ts.isVariableStatement(node)) || ts.isExpressionStatement(node)) {
+        if (
+          (isThemeProviderFound && tokensAdded && ts.isVariableStatement(node)) ||
+          ts.isExpressionStatement(node)
+        ) {
           tokensAdded = true;
           return [
             ts.createVariableDeclarationList(
@@ -94,6 +92,10 @@ export default function styledComponentTransformer(
             ),
             ts.visitEachChild(node, visitor, context),
           ];
+        }
+
+        if (isCreateVariantsCall(node)) {
+          return visitCreateVariants(node, context, options);
         }
 
         if (isCreateThemeProviderCall(node)) {

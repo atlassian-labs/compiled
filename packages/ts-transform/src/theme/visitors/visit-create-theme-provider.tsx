@@ -1,7 +1,25 @@
 import ts from 'typescript';
 import { TransformerOptions } from '../../types';
 import * as constants from '../../constants';
-import { createJsxClosingElement, createJsxOpeningElement } from '../../utils/ast-node';
+import {
+  createJsxClosingElement,
+  isPackageModuleImport,
+  createJsxOpeningElement,
+} from '../../utils/ast-node';
+
+export const isCreateThemeProviderFound = (sourceFile: ts.SourceFile): boolean => {
+  return !!sourceFile.statements.find((statement) =>
+    isPackageModuleImport(statement, constants.CREATE_THEME_PROVIDER_IMPORT)
+  );
+};
+
+export const isCreateThemeProviderCall = (node: ts.Node): node is ts.CallExpression => {
+  return (
+    ts.isCallExpression(node) &&
+    ts.isIdentifier(node.expression) &&
+    node.expression.text === constants.CREATE_THEME_PROVIDER_IMPORT
+  );
+};
 
 export const visitCreateThemeProvider = (
   node: ts.CallExpression,
