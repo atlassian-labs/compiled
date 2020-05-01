@@ -81,6 +81,6 @@ describe('create theme provider', () => {
       { tokens }
     );
 
-    expect(actual).toInclude('const tokens = { default: { --cc-1tivpv1: "#0052CC" } }');
+    expect(actual).toInclude('const tokens = { "default": { "--cc-1tivpv1": "#0052CC" } }');
   });
 });

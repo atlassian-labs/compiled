@@ -5,8 +5,7 @@
     "outDir": "dist",
     "baseUrl": "src",
     "paths": {
-      "@compiled/css-in-js": ["index.tsx"],
-      "@compiled/css-in-js/jsx": ["jsx.tsx"]
+      "@compiled/css-in-js": ["index.tsx"]
     }
   },
   "references": [{ "path": "../style" }]

@@ -74,3 +74,11 @@ export const getCompiledComponentImport = (context: ts.TransformationContext) =>
         ts.createIdentifier(COMPILED_COMPONENT_NAME)
       ) as ts.JsxTagNamePropertyAccess)
     : ts.createIdentifier(COMPILED_COMPONENT_NAME);
+
+export const getThemeComponentImport = (context: ts.TransformationContext) =>
+  context.getCompilerOptions().module === ts.ModuleKind.CommonJS
+    ? (ts.createPropertyAccess(
+        ts.createIdentifier(COMMON_JS_COMPILED_IMPORT),
+        ts.createIdentifier(COMPILED_THEME_NAME)
+      ) as ts.JsxTagNamePropertyAccess)
+    : ts.createIdentifier(COMPILED_THEME_NAME);

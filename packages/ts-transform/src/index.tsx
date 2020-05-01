@@ -3,9 +3,15 @@ import path from 'path';
 import cssPropTransformer from './css-prop';
 import styledComponentTransformer from './styled-component';
 import classNamesTransformer from './class-names';
+import themeTransformer from './theme';
 import { RootTransformerOptions, Tokens, TransformerOptions } from './types';
 
-const transformers = [cssPropTransformer, styledComponentTransformer, classNamesTransformer];
+const transformers = [
+  cssPropTransformer,
+  styledComponentTransformer,
+  classNamesTransformer,
+  themeTransformer,
+];
 
 export { RootTransformerOptions as TransformerOptions } from './types';
 

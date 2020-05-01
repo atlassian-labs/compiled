@@ -5,7 +5,8 @@
       {
         "transform": "./packages/ts-transform/src/index.tsx",
         "options": {
-          "nonce": "\"k0Mp1lEd\""
+          "nonce": "\"k0Mp1lEd\"",
+          "tokens": "tokens-pkg"
         }
       }
     ]

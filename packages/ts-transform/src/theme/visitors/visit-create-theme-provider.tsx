@@ -5,7 +5,7 @@ import { createJsxClosingElement, createJsxOpeningElement } from '../../utils/as
 
 export const visitCreateThemeProvider = (
   node: ts.CallExpression,
-  __: ts.TransformationContext,
+  context: ts.TransformationContext,
   ___: TransformerOptions
 ): ts.Node => {
   return ts.createArrowFunction(
@@ -28,7 +28,7 @@ export const visitCreateThemeProvider = (
       ts.createJsxElement(
         createJsxOpeningElement(
           node,
-          ts.createIdentifier(constants.COMPILED_THEME_NAME),
+          constants.getThemeComponentImport(context),
           undefined,
           ts.createJsxAttributes([ts.createJsxSpreadAttribute(ts.createIdentifier('props'))])
         ),
@@ -53,7 +53,7 @@ export const visitCreateThemeProvider = (
             )
           ),
         ],
-        createJsxClosingElement(node, ts.createIdentifier(constants.COMPILED_THEME_NAME))
+        createJsxClosingElement(node, constants.getThemeComponentImport(context))
       )
     )
   );

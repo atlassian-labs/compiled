@@ -37,11 +37,11 @@ const buildTokensObject = (tokens: Tokens, tokenPrefix?: string) => {
       }));
 
       return ts.createPropertyAssignment(
-        ts.createIdentifier(name),
+        ts.createStringLiteral(name),
         ts.createObjectLiteral(
           themeTokens.map(themeToken =>
             ts.createPropertyAssignment(
-              ts.createIdentifier(themeToken.key),
+              ts.createStringLiteral(themeToken.key),
               ts.createStringLiteral(themeToken.value)
             )
           ),
