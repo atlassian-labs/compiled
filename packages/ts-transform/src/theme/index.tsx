@@ -7,8 +7,10 @@ import {
   TOKENS_OBJECT_NAME,
   CREATE_THEME_PROVIDER_IMPORT,
   COMPILED_THEME_NAME,
+  BASE_TOKENS,
 } from '../constants';
-import { TransformerOptions } from '../types';
+import { TransformerOptions, Tokens } from '../types';
+import { getTokenCssVariable } from '../utils/theme';
 
 const isStyledImportFound = (sourceFile: ts.SourceFile): boolean => {
   return !!sourceFile.statements.find(statement =>
@@ -21,6 +23,33 @@ const isCreateThemeProviderCall = (node: ts.Node): node is ts.CallExpression => 
     ts.isCallExpression(node) &&
     ts.isIdentifier(node.expression) &&
     node.expression.text === CREATE_THEME_PROVIDER_IMPORT
+  );
+};
+
+const buildTokensObject = (tokens: Tokens, tokenPrefix?: string) => {
+  const themes = Object.keys(tokens).filter(themeName => themeName !== BASE_TOKENS);
+
+  return ts.createObjectLiteral(
+    themes.map(name => {
+      const themeTokens = Object.entries(tokens[name]).map(([key, value]) => ({
+        key: getTokenCssVariable(key, tokenPrefix),
+        value: tokens.base[value],
+      }));
+
+      return ts.createPropertyAssignment(
+        ts.createIdentifier(name),
+        ts.createObjectLiteral(
+          themeTokens.map(themeToken =>
+            ts.createPropertyAssignment(
+              ts.createIdentifier(themeToken.key),
+              ts.createStringLiteral(themeToken.value)
+            )
+          ),
+          false
+        )
+      );
+    }),
+    false
   );
 };
 
@@ -38,6 +67,7 @@ export default function styledComponentTransformer(
         throw new Error('define your tokens');
       }
 
+      const tokens = options.tokens;
       let tokensAdded = false;
 
       const transformedSourceFile = visitSourceFileEnsureDefaultReactImport(
@@ -57,7 +87,7 @@ export default function styledComponentTransformer(
                 ts.createVariableDeclaration(
                   ts.createIdentifier(TOKENS_OBJECT_NAME),
                   undefined,
-                  ts.createObjectLiteral([], false)
+                  buildTokensObject(tokens, options.tokenPrefix)
                 ),
               ],
               ts.NodeFlags.Const

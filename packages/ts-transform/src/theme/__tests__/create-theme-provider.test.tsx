@@ -21,8 +21,12 @@ const transpileModule = (source: string, opts: TransformerOptions = {}) => {
 
 describe('create theme provider', () => {
   const tokens: Tokens = {
-    base: {},
-    default: {},
+    base: {
+      b400: '#0052CC',
+    },
+    default: {
+      primary: 'b400',
+    },
   };
 
   it('should remove theme import', () => {
@@ -65,5 +69,18 @@ describe('create theme provider', () => {
     expect(actual).toInclude(
       `props => (<CT {...props}>{props.children(tokens[props.mode])}</CT>);`
     );
+  });
+
+  it('should build up token themes using base', () => {
+    const actual = transpileModule(
+      `
+      import { createThemeProvider } from '@compiled/css-in-js';
+
+      createThemeProvider();
+      `,
+      { tokens }
+    );
+
+    expect(actual).toInclude('const tokens = { default: { --cc-1tivpv1: "#0052CC" } }');
   });
 });

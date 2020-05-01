@@ -21,6 +21,7 @@ export const STYLED_AS_PROP_NAME = 'as';
 export const STYLED_AS_USAGE_NAME = 'C';
 export const TOKENS_OBJECT_NAME = 'tokens';
 export const THEME_MODE_NAME = 'mode';
+export const BASE_TOKENS = 'base';
 
 // Named imports
 export const FORWARD_REF_IMPORT = 'forwardRef';
