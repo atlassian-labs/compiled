@@ -19,6 +19,7 @@ export const REACT_DEFAULT_IMPORT = 'React';
 export const REACT_COMMON_JS_IMPORT_1 = 'react_1';
 export const STYLED_AS_PROP_NAME = 'as';
 export const STYLED_AS_USAGE_NAME = 'C';
+export const TOKENS_OBJECT_NAME = 'tokens';
 
 // Named imports
 export const FORWARD_REF_IMPORT = 'forwardRef';

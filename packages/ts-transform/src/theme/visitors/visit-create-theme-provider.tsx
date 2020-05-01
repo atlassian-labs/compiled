@@ -2,7 +2,7 @@ import ts from 'typescript';
 import { TransformerOptions } from '../../types';
 
 export const visitCreateThemeProvider = (
-  node: ts.CallExpression | ts.TaggedTemplateExpression,
+  node: ts.CallExpression,
   context: ts.TransformationContext,
   _: TransformerOptions
 ): ts.Node => {
