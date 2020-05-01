@@ -2,12 +2,12 @@ import * as ts from 'typescript';
 import { isPackageModuleImport } from '../utils/ast-node';
 import { visitSourceFileEnsureDefaultReactImport } from '../utils/visit-source-file-ensure-default-react-import';
 import { visitSourceFileEnsureStyleImport } from '../utils/visit-source-file-ensure-style-import';
-import { STYLED_COMPONENT_IMPORT } from '../constants';
+import { CREATE_THEME_PROVIDER_IMPORT, COMPILED_THEME_NAME } from '../constants';
 import { TransformerOptions } from '../types';
 
 const isStyledImportFound = (sourceFile: ts.SourceFile): boolean => {
   return !!sourceFile.statements.find(statement =>
-    isPackageModuleImport(statement, STYLED_COMPONENT_IMPORT)
+    isPackageModuleImport(statement, CREATE_THEME_PROVIDER_IMPORT)
   );
 };
 
@@ -23,7 +23,8 @@ export default function styledComponentTransformer(
 
       const transformedSourceFile = visitSourceFileEnsureDefaultReactImport(
         visitSourceFileEnsureStyleImport(sourceFile, context, {
-          removeNamedImport: STYLED_COMPONENT_IMPORT,
+          removeNamedImport: CREATE_THEME_PROVIDER_IMPORT,
+          imports: [COMPILED_THEME_NAME],
         }),
         context
       );

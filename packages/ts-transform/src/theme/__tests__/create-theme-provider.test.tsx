@@ -20,11 +20,23 @@ const transpileModule = (source: string, opts: TransformerOptions = {}) => {
 };
 
 describe('create theme provider', () => {
-  it('should do something', () => {
+  it('should remove theme import', () => {
     const actual = transpileModule(`
-      import {} from '@compiled/css-in-js';
+      import { createThemeProvider } from '@compiled/css-in-js';
+
+      createThemeProvider();
     `);
 
-    expect(actual).toBe(false);
+    expect(actual).not.toInclude(`import { createThemeProvider } from '@compiled/css-in-js';`);
+  });
+
+  it('should ensure compiled theme is imported', () => {
+    const actual = transpileModule(`
+      import { createThemeProvider } from '@compiled/css-in-js';
+
+      createThemeProvider();
+    `);
+
+    expect(actual).toInclude(`import { CT } from '@compiled/css-in-js';`);
   });
 });
