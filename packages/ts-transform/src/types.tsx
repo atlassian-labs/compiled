@@ -48,11 +48,5 @@ export interface RootTransformerOptions {
 }
 
 export interface TransformerOptions extends Omit<RootTransformerOptions, 'tokens'> {
-  nonce?: string;
-  debug?: boolean;
-  sourceMap?: boolean;
-  minify?: boolean;
-  strict?: boolean;
-  tokenPrefix?: string;
   tokens?: Tokens;
 }
