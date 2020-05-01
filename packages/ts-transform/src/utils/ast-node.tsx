@@ -84,3 +84,16 @@ export const isPackageModuleImport = (statement: ts.Node, namedImport?: string):
 
   return isStyledImported;
 };
+
+export const createJsxOpeningElement = (
+  node: ts.Node,
+  tagName: ts.JsxTagNameExpression,
+  typeArguments: readonly ts.TypeNode[] | undefined,
+  attributes: ts.JsxAttributes
+) => {
+  return ts.setOriginalNode(ts.createJsxOpeningElement(tagName, typeArguments, attributes), node);
+};
+
+export const createJsxClosingElement = (node: ts.Node, tagName: ts.JsxTagNameExpression) => {
+  return ts.setOriginalNode(ts.createJsxClosingElement(tagName), node);
+};

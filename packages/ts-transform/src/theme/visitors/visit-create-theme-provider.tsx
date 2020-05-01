@@ -1,9 +1,10 @@
 import ts from 'typescript';
 import { TransformerOptions } from '../../types';
 import * as constants from '../../constants';
+import { createJsxClosingElement, createJsxOpeningElement } from '../../utils/ast-node';
 
 export const visitCreateThemeProvider = (
-  _: ts.CallExpression,
+  node: ts.CallExpression,
   __: ts.TransformationContext,
   ___: TransformerOptions
 ): ts.Node => {
@@ -25,7 +26,8 @@ export const visitCreateThemeProvider = (
     ts.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
     ts.createParen(
       ts.createJsxElement(
-        ts.createJsxOpeningElement(
+        createJsxOpeningElement(
+          node,
           ts.createIdentifier(constants.COMPILED_THEME_NAME),
           undefined,
           ts.createJsxAttributes([ts.createJsxSpreadAttribute(ts.createIdentifier('props'))])
@@ -51,7 +53,7 @@ export const visitCreateThemeProvider = (
             )
           ),
         ],
-        ts.createJsxClosingElement(ts.createIdentifier(constants.COMPILED_THEME_NAME))
+        createJsxClosingElement(node, ts.createIdentifier(constants.COMPILED_THEME_NAME))
       )
     )
   );
