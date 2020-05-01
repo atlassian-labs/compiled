@@ -62,7 +62,7 @@ export default function styledComponentTransformer(
               ],
               ts.NodeFlags.Const
             ),
-            node,
+            ts.visitEachChild(node, visitor, context),
           ];
         }
 

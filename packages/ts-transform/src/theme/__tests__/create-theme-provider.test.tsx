@@ -51,7 +51,7 @@ describe('create theme provider', () => {
     expect(actual).toInclude(`import { CT } from '@compiled/css-in-js';`);
   });
 
-  it.only('should replace function call with compiled provider', () => {
+  it('should replace function call with compiled provider', () => {
     const actual = transpileModule(
       `
       import { createThemeProvider } from '@compiled/css-in-js';
@@ -61,6 +61,9 @@ describe('create theme provider', () => {
       { tokens }
     );
 
-    expect(actual).toInclude(`asdasd`);
+    expect(actual).not.toInclude('createThemeProvider()');
+    expect(actual).toInclude(
+      `props => (<CT {...props}>{props.children(tokens[props.mode])}</CT>);`
+    );
   });
 });
