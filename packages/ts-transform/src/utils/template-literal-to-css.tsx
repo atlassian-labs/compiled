@@ -30,7 +30,37 @@ export const templateLiteralToCss = (
 
     if (value && ts.isBindingElement(value)) {
       if (ts.isIdentifier(value.name)) {
-        cssVariables.push({ name: cssVariableHash(value.name), expression: value.name });
+        const variableName = cssVariableHash(value.name);
+        const before = cssBeforeInterpolation(css);
+        const after = cssAfterInterpolation(span.literal.text);
+        const { variablePrefix } = before;
+        const { variableSuffix } = after;
+
+        css = before.css;
+        let cssVariableExpression: ts.Expression = span.expression;
+        if (variableSuffix && variablePrefix) {
+          cssVariableExpression = joinThreeExpressions(
+            ts.createStringLiteral(variablePrefix),
+            span.expression,
+            ts.createStringLiteral(variableSuffix)
+          );
+        } else if (variableSuffix) {
+          cssVariableExpression = joinToBinaryExpression(
+            span.expression,
+            ts.createStringLiteral(variableSuffix)
+          );
+        } else if (variablePrefix) {
+          cssVariableExpression = joinToBinaryExpression(
+            ts.createStringLiteral(variablePrefix),
+            span.expression
+          );
+        }
+
+        cssVariables.push({
+          name: variableName,
+          expression: cssVariableExpression,
+        });
+        css += `var(${variableName})${after.css}`;
       }
     } else if (ts.isIdentifier(span.expression)) {
       // We are referencing a variable e.g. css`${var}`;

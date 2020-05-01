@@ -287,7 +287,7 @@ describe('css prop transformer', () => {
 
   it('should move multiple groups of interpolations into inline styles with css variable', () => {
     // See: https://codesandbox.io/s/dank-star-443ps?file=/src/index.js
-
+    debugger;
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
       import {useState} from 'react';
@@ -306,7 +306,7 @@ describe('css prop transformer', () => {
       `background-image:linear-gradient(45deg,var(--var-test-n30) 25%,transparent 25%),linear-gradient(-45deg,var(--var-test-n30) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--var-test-n30) 75%),linear-gradient(-45deg,transparent 75%,var(--var-test-n30) 75%)`
     );
     expect(actual).toInclude(
-      '<div style={{ "--var-test-n30": N30 }} className="css-test">hello world</div>'
+      '<div className="css-test" style={{ "--var-test-n30": N30 }}>hello world</div>'
     );
   });
 
@@ -808,9 +808,11 @@ describe('css prop transformer', () => {
         \`}>hello world</div>
       `);
 
-      expect(actual).toInclude('<div className="css-test">hello world</div>');
       expect(actual).toInclude(
-        'background-image:linear-gradient(45deg,gray 25%,transparent 25%),linear-gradient(-45deg,gray 25%,transparent 25%),linear-gradient(45deg,transparent 75%,gray 75%),linear-gradient(-45deg,transparent 75%,gray 75%)'
+        '<div className="css-test" style={{ "--var-test-n30": N30 }}>hello world</div>'
+      );
+      expect(actual).toInclude(
+        'background-image:linear-gradient(45deg,var(--var-test-n30) 25%,transparent 25%),linear-gradient(-45deg,var(--var-test-n30) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--var-test-n30) 75%),linear-gradient(-45deg,transparent 75%,var(--var-test-n30) 75%)'
       );
     });
 
