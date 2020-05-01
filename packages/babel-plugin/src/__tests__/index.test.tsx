@@ -37,11 +37,11 @@ describe('babel plugin', () => {
 
     expect(output?.code).toMatchInlineSnapshot(`
       "import React from \\"react\\";
-      import { CC, Style } from '@compiled/css-in-js';
+      import { CC, CS } from '@compiled/css-in-js';
       const StyledDiv = /*#__PURE__*/React.forwardRef(({
         as: C = \\"div\\",
         ...props
-      }, ref) => <CC><Style hash=\\"1x3e11p\\" nonce={__webpack_nonce__}>{[\\".cc-1x3e11p{font-size:12px}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} /></CC>);
+      }, ref) => <CC><CS hash=\\"1x3e11p\\" nonce={__webpack_nonce__}>{[\\".cc-1x3e11p{font-size:12px}\\"]}</CS><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} /></CC>);
 
       if (process.env.NODE_ENV === \\"development\\") {
         StyledDiv.displayName = \\"StyledDiv\\";
@@ -63,11 +63,11 @@ describe('babel plugin', () => {
 
     expect(output?.code).toMatchInlineSnapshot(`
       "import React from \\"react\\";
-      import { CC, Style } from '@compiled/css-in-js';
+      import { CC, CS } from '@compiled/css-in-js';
       const StyledDiv = /*#__PURE__*/React.forwardRef(({
         as: C = \\"div\\",
         ...props
-      }, ref) => <CC><Style hash=\\"1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px}\\"]}</Style><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} /></CC>);
+      }, ref) => <CC><CS hash=\\"1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px}\\"]}</CS><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} /></CC>);
 
       if (process.env.NODE_ENV === \\"development\\") {
         StyledDiv.displayName = \\"StyledDiv\\";
@@ -88,8 +88,8 @@ describe('babel plugin', () => {
 
     expect(output?.code).toMatchInlineSnapshot(`
       "import React from 'react';
-      import { CC, Style } from '@compiled/css-in-js';
-      <CC><Style hash=\\"1iqe21w\\">{[\\".cc-1iqe21w{font-size:12px}\\"]}</Style><div className=\\"cc-1iqe21w\\" /></CC>;"
+      import { CC, CS } from '@compiled/css-in-js';
+      <CC><CS hash=\\"1iqe21w\\">{[\\".cc-1iqe21w{font-size:12px}\\"]}</CS><div className=\\"cc-1iqe21w\\" /></CC>;"
     `);
   });
 
@@ -107,8 +107,8 @@ describe('babel plugin', () => {
 
     expect(output?.code).toMatchInlineSnapshot(`
       "import React from \\"react\\";
-      import { CC, Style } from '@compiled/css-in-js';
-      <CC><Style hash=\\"31m7m\\">{[\\".cc-1iqe21w{font-size:12px}\\"]}</Style><div className={\\"cc-1iqe21w\\"} /></CC>;"
+      import { CC, CS } from '@compiled/css-in-js';
+      <CC><CS hash=\\"31m7m\\">{[\\".cc-1iqe21w{font-size:12px}\\"]}</CS><div className={\\"cc-1iqe21w\\"} /></CC>;"
     `);
   });
 

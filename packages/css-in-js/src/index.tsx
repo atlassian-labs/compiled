@@ -1,4 +1,4 @@
-export { default as Style, CC } from '@compiled/style';
+export { CS, CC } from '@compiled/style';
 export { styled } from './styled';
 export { ClassNames } from './class-names';
 import { CssFunction } from './types';
