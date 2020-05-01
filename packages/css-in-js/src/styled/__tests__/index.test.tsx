@@ -1,7 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { styled } from '@compiled/css-in-js';
-import { em } from 'polished';
+
+const em = (str: string | number) => str;
 
 describe('styled component', () => {
   it('should render a simple styled div using an object', () => {
@@ -43,7 +44,7 @@ describe('styled component', () => {
 
     const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
 
-    expect(getByText('hello world')).toHaveCompiledCss('font-size', '0.75em');
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '12');
   });
 
   it('should at runtime use a identifier referencing a call expression', () => {
@@ -54,7 +55,7 @@ describe('styled component', () => {
 
     const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
 
-    expect(getByText('hello world')).toHaveCompiledCss('font-size', '0.75em');
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '12');
   });
 
   it('should not pass down invalid html attributes to the node', () => {
