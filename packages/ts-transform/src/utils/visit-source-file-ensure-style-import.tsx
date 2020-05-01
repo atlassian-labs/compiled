@@ -4,12 +4,18 @@ import * as constants from '../constants';
 
 const COMPILED_PKG = '@compiled/css-in-js';
 
+interface Opts {
+  imports?: string[];
+  removeNamedImport?: string;
+}
+
 export const visitSourceFileEnsureStyleImport = (
   sourceFile: ts.SourceFile,
   context: ts.TransformationContext,
-  opts: {
-    removeNamedImport?: string;
-  } = {}
+  {
+    imports = [constants.COMPILED_STYLE_COMPONENT_NAME, constants.COMPILED_COMPONENT_NAME],
+    removeNamedImport,
+  }: Opts = {}
 ): ts.SourceFile => {
   const visitor = (node: ts.Node): ts.Node => {
     if (
@@ -28,33 +34,22 @@ export const visitSourceFileEnsureStyleImport = (
         ts.isNamedImports(node.importClause.namedBindings)
       ) {
         namedImports = Array.from(node.importClause.namedBindings.elements).filter(imp => {
-          if (opts.removeNamedImport) {
-            return imp.name.text !== opts.removeNamedImport;
+          if (removeNamedImport) {
+            return imp.name.text !== removeNamedImport;
           }
 
           return true;
         });
       }
 
-      if (!namedImports.some(val => val.name.text === constants.COMPILED_STYLE_COMPONENT_NAME)) {
-        // "Style" isn't being imported yet. Add it!
-        namedImports = [
-          ts.createImportSpecifier(
-            undefined,
-            ts.createIdentifier(constants.COMPILED_STYLE_COMPONENT_NAME)
-          ),
-        ].concat(namedImports);
-      }
-
-      if (!namedImports.some(val => val.name.text === constants.COMPILED_COMPONENT_NAME)) {
-        // "CC" isn't being imported yet. Add it!
-        namedImports = [
-          ts.createImportSpecifier(
-            undefined,
-            ts.createIdentifier(constants.COMPILED_COMPONENT_NAME)
-          ),
-        ].concat(namedImports);
-      }
+      imports.forEach(name => {
+        if (!namedImports.some(val => val.name.text === name)) {
+          // "CC" isn't being imported yet. Add it!
+          namedImports = [ts.createImportSpecifier(undefined, ts.createIdentifier(name))].concat(
+            namedImports
+          );
+        }
+      });
 
       return ts.updateImportDeclaration(
         node,

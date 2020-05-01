@@ -24,7 +24,8 @@ export const STYLED_AS_USAGE_NAME = 'C';
 export const FORWARD_REF_IMPORT = 'forwardRef';
 export const CLASS_NAMES_IMPORT = 'ClassNames';
 export const STYLED_COMPONENT_IMPORT = 'styled';
-export const COMPILED_STYLE_COMPONENT_NAME = 'Style';
+export const CREATE_THEME_PROVIDER = 'createThemeProvider';
+export const COMPILED_STYLE_COMPONENT_NAME = 'CS';
 export const COMPILED_COMPONENT_NAME = 'CC';
 export const COMMON_JS_DEFAULT_IMPORT = 'default';
 

@@ -55,7 +55,7 @@ describe('css prop transformer', () => {
       <div css={{}}>hello world</div>
     `);
 
-    expect(actual).toIncludeRepeated(`import { CC, Style } from '@compiled/css-in-js';`, 1);
+    expect(actual).toIncludeRepeated(`import { CC, CS } from '@compiled/css-in-js';`, 1);
   });
 
   it('should pass through style identifier when there is no dynamic styles in the css', () => {
@@ -348,7 +348,7 @@ describe('css prop transformer', () => {
       }
     );
 
-    expect(actual.outputText).toInclude('<Style hash="css-test" nonce={__webpack_nonce__}>');
+    expect(actual.outputText).toInclude('<CS hash="css-test" nonce={__webpack_nonce__}>');
   });
 
   it('should bubble up top level pseduo inside a media atrule', () => {

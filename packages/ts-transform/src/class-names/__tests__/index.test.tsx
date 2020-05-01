@@ -22,7 +22,7 @@ describe('class names transformer', () => {
     `);
 
     expect(actual).toInclude(
-      'const ListItem = () => (<CC><Style hash="css-test">{[".css-test{font-size:20px}"]}</Style><div className={"css-test"}>hello, world!</div></CC>)'
+      'const ListItem = () => (<CC><CS hash="css-test">{[".css-test{font-size:20px}"]}</CS><div className={"css-test"}>hello, world!</div></CC>)'
     );
   });
 
@@ -77,7 +77,7 @@ describe('class names transformer', () => {
       }
     );
 
-    expect(actual.outputText).toInclude('<Style hash="css-test" nonce={__webpack_nonce__}>');
+    expect(actual.outputText).toInclude('<CS hash="css-test" nonce={__webpack_nonce__}>');
   });
 
   it('should set children as function into a jsx expression', () => {
@@ -116,7 +116,7 @@ describe('class names transformer', () => {
     );
   `);
 
-    expect(actual).toInclude(`</Style><div className={\"css-test\"}/></CC>`);
+    expect(actual).toInclude(`</CS><div className={\"css-test\"}/></CC>`);
   });
 
   describe('using a string literal', () => {
