@@ -5,8 +5,8 @@ import nested from 'postcss-nested';
 import whitespace from 'postcss-normalize-whitespace';
 import selectorParser from 'postcss-selector-parser';
 import { TransformerOptions, Tokens } from '../types';
-import { hash } from './hash';
 import { CLASS_NAME_PREFIX } from '../constants';
+import { getTokenCssVariable } from './theme';
 
 const minify = () => {
   const preset = cssnano();
@@ -108,8 +108,11 @@ const replaceThemedProperties = plugin<TransformerOptions>('replace-themed-prope
         if (match) {
           const tokenName = match[1];
           const rawName = tokens.default[tokenName];
-          decl.value = tokens.base[rawName];
-          decl.cloneAfter({ value: `var(--${tokenPrefix}-${hash(tokenName)})` });
+          decl.value = getTokenCssVariable(tokenName, {
+            tokenPrefix,
+            defaultValue: tokens.base[rawName],
+            useVariable: true,
+          });
         }
       } else if (opts.strict) {
         let errorMessage = `"${decl.toString()};"`;

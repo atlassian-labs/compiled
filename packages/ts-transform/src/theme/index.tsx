@@ -13,7 +13,7 @@ import { TransformerOptions, Tokens } from '../types';
 import { getTokenCssVariable } from '../utils/theme';
 
 const isStyledImportFound = (sourceFile: ts.SourceFile): boolean => {
-  return !!sourceFile.statements.find(statement =>
+  return !!sourceFile.statements.find((statement) =>
     isPackageModuleImport(statement, CREATE_THEME_PROVIDER_IMPORT)
   );
 };
@@ -27,19 +27,19 @@ const isCreateThemeProviderCall = (node: ts.Node): node is ts.CallExpression => 
 };
 
 const buildTokensObject = (tokens: Tokens, tokenPrefix?: string) => {
-  const themes = Object.keys(tokens).filter(themeName => themeName !== BASE_TOKENS);
+  const themes = Object.keys(tokens).filter((themeName) => themeName !== BASE_TOKENS);
 
   return ts.createObjectLiteral(
-    themes.map(name => {
+    themes.map((name) => {
       const themeTokens = Object.entries(tokens[name]).map(([key, value]) => ({
-        key: getTokenCssVariable(key, tokenPrefix),
+        key: getTokenCssVariable(key, { tokenPrefix }),
         value: tokens.base[value],
       }));
 
       return ts.createPropertyAssignment(
         ts.createStringLiteral(name),
         ts.createObjectLiteral(
-          themeTokens.map(themeToken =>
+          themeTokens.map((themeToken) =>
             ts.createPropertyAssignment(
               ts.createStringLiteral(themeToken.key),
               ts.createStringLiteral(themeToken.value)
@@ -57,8 +57,8 @@ export default function styledComponentTransformer(
   _: ts.Program,
   options: TransformerOptions = {}
 ): ts.TransformerFactory<ts.SourceFile> {
-  const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
-    return sourceFile => {
+  const transformerFactory: ts.TransformerFactory<ts.SourceFile> = (context) => {
+    return (sourceFile) => {
       if (!isStyledImportFound(sourceFile)) {
         return sourceFile;
       }
