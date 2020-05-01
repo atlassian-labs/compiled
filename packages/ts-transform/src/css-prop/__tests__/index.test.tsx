@@ -287,7 +287,6 @@ describe('css prop transformer', () => {
 
   it('should move multiple groups of interpolations into inline styles with css variable', () => {
     // See: https://codesandbox.io/s/dank-star-443ps?file=/src/index.js
-    debugger;
     const actual = transformer.transform(`
       import '@compiled/css-in-js';
       import {useState} from 'react';
