@@ -164,9 +164,9 @@ describe('root transformer', () => {
       "\\"use strict\\";
       Object.defineProperty(exports, \\"__esModule\\", { value: true });
       const react_1 = require(\\"react\\");
-      const css_in_js_1 = require(\\"@compiled/css-in-js\\");
-      react_1.default.createElement(css_in_js_1.CC, null,
-          react_1.default.createElement(css_in_js_1.CS, { hash: '1b1wq3m' }, [\\".cc-1b1wq3m{font-size:20px}\\"]),
+      const style_1 = require(\\"@compiled/css-in-js\\");
+      react_1.default.createElement(style_1.CC, null,
+          react_1.default.createElement(style_1.CS, { hash: '1b1wq3m' }, [\\".cc-1b1wq3m{font-size:20px}\\"]),
           react_1.default.createElement(\\"div\\", { className: 'cc-1b1wq3m' }, \\"hello world\\"));
       "
     `);
