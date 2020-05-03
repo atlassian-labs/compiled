@@ -3,61 +3,92 @@ import * as log from './log';
 import * as constants from '../constants';
 
 const COMPILED_PKG = '@compiled/css-in-js';
+const COMPILED_STYLE_PKG = '@compiled/style';
 
 interface Opts {
   imports?: string[];
   removeNamedImport?: string;
 }
 
+const isStylePkgFound = (sourceFile: ts.SourceFile | ts.ModuleBlock): boolean => {
+  return !!sourceFile.statements.find(
+    (statement: ts.Node) =>
+      ts.isImportDeclaration(statement) &&
+      ts.isStringLiteral(statement.moduleSpecifier) &&
+      statement.moduleSpecifier.text.startsWith(COMPILED_STYLE_PKG)
+  );
+};
+
 export const visitSourceFileEnsureStyleImport = (
   sourceFile: ts.SourceFile,
   context: ts.TransformationContext,
   {
-    imports = [constants.COMPILED_STYLE_COMPONENT_NAME, constants.COMPILED_COMPONENT_NAME],
+    imports = [constants.COMPILED_COMPONENT_NAME, constants.COMPILED_STYLE_COMPONENT_NAME],
     removeNamedImport,
   }: Opts = {}
 ): ts.SourceFile => {
-  const visitor = (node: ts.Node): ts.Node => {
+  const visitor = (node: ts.Node): ts.Node | Array<ts.Node> => {
     if (
       ts.isImportDeclaration(node) &&
       ts.isStringLiteral(node.moduleSpecifier) &&
       node.moduleSpecifier.text === COMPILED_PKG
     ) {
       log.log('ensuring style export is defined');
+      // if a style import doesn't exist, add it as a sibling to this node
+      // idealy this should occur in a separate transform, possibly as an independent transform
+      // before any of the three processes start.
+
+      // if it exists already, then just remove the removedImports from the importstatement.
 
       const defaultImport = node.importClause && node.importClause.name;
       let namedImports: ts.ImportSpecifier[] = [];
 
+      // remove namedImports that have been flagged for removal.
       if (
         node.importClause &&
         node.importClause.namedBindings &&
         ts.isNamedImports(node.importClause.namedBindings)
       ) {
         namedImports = Array.from(node.importClause.namedBindings.elements).filter(imp => {
+          const filteredImports = [...imports];
           if (removeNamedImport) {
-            return imp.name.text !== removeNamedImport;
+            filteredImports.push(removeNamedImport);
           }
 
-          return true;
+          return !filteredImports.includes(imp.name.text);
         });
       }
 
-      imports.forEach(name => {
-        if (!namedImports.some(val => val.name.text === name)) {
-          // "CC" isn't being imported yet. Add it!
-          namedImports = [ts.createImportSpecifier(undefined, ts.createIdentifier(name))].concat(
-            namedImports
-          );
-        }
-      });
-
-      return ts.updateImportDeclaration(
+      const updatedNode = ts.updateImportDeclaration(
         node,
         /* decorators */ undefined,
         /* modifiers */ undefined,
         ts.createImportClause(defaultImport, ts.createNamedImports(namedImports)),
         node.moduleSpecifier
       );
+      // if we hit an import we should check if any sibling nodes are
+      // @compiled/style
+      if (!isStylePkgFound(sourceFile)) {
+        // Add the package
+        // update the importSpecifier appropriately.
+
+        const styleImports = imports.map(name => {
+          return ts.createImportSpecifier(undefined, ts.createIdentifier(name));
+        });
+
+        const styleImportDeclaration = ts.createImportDeclaration(
+          /* decorators */ undefined,
+          /* modifiers */ undefined,
+          ts.createImportClause(undefined, ts.createNamedImports(styleImports)),
+          ts.createLiteral(COMPILED_STYLE_PKG)
+        );
+
+        return namedImports.length ? [updatedNode, styleImportDeclaration] : styleImportDeclaration;
+      } else {
+        // if it is found, check the length of the namedImports array
+        // if its 0, remove the namedImports node.
+        return namedImports.length ? updatedNode : ts.createEmptyStatement();
+      }
     }
 
     return ts.visitEachChild(node, visitor, context);

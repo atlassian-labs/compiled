@@ -86,7 +86,7 @@ describe('root transformer', () => {
 
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
-      import { CC, CS } from '@compiled/css-in-js';
+      import { CC, CS } from \\"@compiled/style\\";
       <CC><CS hash=\\"1b1wq3m\\">{[\\".cc-1b1wq3m{font-size:20px}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBRVEiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgJ0Bjb21waWxlZC9jc3MtaW4tanMnO1xuICAgICAgICA8ZGl2IGNzcz17eyBmb250U2l6ZTogJzIwcHgnIH19PmhlbGxvIHdvcmxkPC9kaXY+XG4gICAgICAiXX0= */\\"]}</CS><div className=\\"cc-1b1wq3m\\">hello world</div></CC>;
       "
     `);
@@ -106,7 +106,7 @@ describe('root transformer', () => {
 
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
-      import { CC, CS } from '@compiled/css-in-js';
+      import { CC, CS } from \\"@compiled/style\\";
       /*#__PURE__*/ React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><CS hash=\\"1b1wq3m\\">{[\\".cc-1b1wq3m{font-size:20px}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR1EiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgeyBzdHlsZWQgfSBmcm9tICdAY29tcGlsZWQvY3NzLWluLWpzJztcblxuICAgICAgICBzdHlsZWQuZGl2KHsgZm9udFNpemU6IDIwIH0pO1xuICAgICAgIl19 */\\"]}</CS><C {...props} ref={ref} className={\\"cc-1b1wq3m\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
       "
     `);
@@ -126,7 +126,7 @@ describe('root transformer', () => {
 
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
-      import { CC, CS } from '@compiled/css-in-js';
+      import { CC, CS } from \\"@compiled/style\\";
       <CC><CS hash=\\"gpurwr\\">{[\\".cc-1b1wq3m{font-size:20px}\\\\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1vZHVsZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR1EiLCJmaWxlIjoibW9kdWxlLnRzeCIsInNvdXJjZXNDb250ZW50IjpbIlxuICAgICAgICBpbXBvcnQgeyBDbGFzc05hbWVzIH0gZnJvbSAnQGNvbXBpbGVkL2Nzcy1pbi1qcyc7XG5cbiAgICAgICAgPENsYXNzTmFtZXM+eyh7IGNzcyB9KSA9PiA8ZGl2IGNsYXNzTmFtZT17Y3NzKHsgZm9udFNpemU6IDIwIH0pfSAvPn08L0NsYXNzTmFtZXM+XG4gICAgICAiXX0= */\\"]}</CS><div className={\\"cc-1b1wq3m\\"}/></CC>;
       "
     `);
@@ -145,7 +145,7 @@ describe('root transformer', () => {
       createTsConfig(transformer)
     );
 
-    expect(actual.outputText).toInclude("import { CC, CS } from '@compiled/css-in-js'");
+    expect(actual.outputText).toInclude('import { CC, CS } from "@compiled/style"');
   });
 
   it('should match react import when transforming to common js', () => {
@@ -222,7 +222,7 @@ describe('root transformer', () => {
 
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
-      import { CC, CS } from '@compiled/css-in-js';
+      import { CC, CS } from \\"@compiled/style\\";
       /*#__PURE__*/ React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><CS hash=\\"1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px}\\"]}</CS><C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
       "
     `);
@@ -242,7 +242,7 @@ describe('root transformer', () => {
 
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
-      import { CC, CS } from '@compiled/css-in-js';
+      import { CC, CS } from \\"@compiled/style\\";
       <CC><CS hash=\\"1iqe21w\\">{[\\".cc-1iqe21w{font-size:12px}\\"]}</CS><div className=\\"cc-1iqe21w\\"/></CC>;
       "
     `);
@@ -264,7 +264,7 @@ describe('root transformer', () => {
 
     expect(actual.outputText).toMatchInlineSnapshot(`
       "import React from \\"react\\";
-      import { CC, CS } from '@compiled/css-in-js';
+      import { CC, CS } from \\"@compiled/style\\";
       <CC><CS hash=\\"31m7m\\">{[\\".cc-1iqe21w{font-size:12px}\\"]}</CS><div className={\\"cc-1iqe21w\\"}/></CC>;
       "
     `);
