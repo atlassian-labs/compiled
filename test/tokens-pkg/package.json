@@ -1,5 +1,5 @@
 {
-  "name": "tokens-pkg",
+  "name": "@compiled/tokens-test-pkg",
   "version": "0.1.0",
   "main": "./tokens.json"
 }

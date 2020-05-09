@@ -29,6 +29,7 @@
   "devDependencies": {
     "@compiled/css-in-js": "*",
     "@compiled/jest-css-in-js": "*",
+    "@compiled/tokens-test-pkg": "*",
     "@size-limit/preset-small-lib": "^4.4.5",
     "@storybook/addons": "^5.2.8",
     "@storybook/react": "^5.3.18",
@@ -51,7 +52,6 @@
     "react-dom": "^16.13.1",
     "size-limit": "^4.4.5",
     "storybook-addon-performance": "^0.10.0",
-    "tokens-pkg": "^0.1.0",
     "ts-jest": "25.4.0",
     "ts-loader": "^7.0.2",
     "ts-node": "8.9.1",

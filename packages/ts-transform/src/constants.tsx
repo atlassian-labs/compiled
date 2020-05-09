@@ -22,14 +22,12 @@ export const STYLED_AS_USAGE_NAME = 'C';
 export const TOKENS_OBJECT_NAME = 'tokens';
 export const THEME_MODE_NAME = 'mode';
 export const BASE_TOKENS = 'base';
-export const LOCAL_VARIANTS_NAME = 'variants';
 
 // Named imports
 export const FORWARD_REF_IMPORT = 'forwardRef';
 export const CLASS_NAMES_IMPORT = 'ClassNames';
 export const STYLED_COMPONENT_IMPORT = 'styled';
 export const CREATE_THEME_PROVIDER_IMPORT = 'createThemeProvider';
-export const CREATE_VARIANTS_IMPORT = 'createVariants';
 export const COMPILED_STYLE_COMPONENT_NAME = 'CS';
 export const COMPILED_COMPONENT_NAME = 'CC';
 export const COMPILED_THEME_NAME = 'CT';

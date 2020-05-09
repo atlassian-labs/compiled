@@ -130,7 +130,7 @@ describe('tokens', () => {
         <div css={{ color: 'theme(primary)' }}>hello world</div>
       `,
       {
-        tokens: 'tokens-pkg',
+        tokens: '@compiled/tokens-test-pkg',
       }
     );
 
@@ -145,7 +145,7 @@ describe('tokens', () => {
         <div css={{ color: 'theme(primary)' }}>hello world</div>
       `,
       {
-        tokens: 'tokens-pkg/tokens.json',
+        tokens: '@compiled/tokens-test-pkg/tokens.json',
       }
     );
 
