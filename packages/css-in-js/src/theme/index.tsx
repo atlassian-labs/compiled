@@ -8,8 +8,11 @@ interface ProviderProps<TTokens extends BaseTokens> {
   mode: keyof Omit<TTokens, 'base'>;
 }
 
-export const createThemeProvider = <TTokens extends BaseTokens>(): ComponentType<
-  ProviderProps<TTokens>
-> => {
+interface ThemeProviderReturn<TTokens extends BaseTokens> {
+  ThemeProvider: ComponentType<ProviderProps<TTokens>>;
+  theme: TTokens['default'];
+}
+
+export const createThemeProvider = <TTokens extends BaseTokens>(): ThemeProviderReturn<TTokens> => {
   throw createSetupError();
 };

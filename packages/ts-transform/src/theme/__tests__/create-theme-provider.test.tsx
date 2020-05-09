@@ -84,14 +84,14 @@ describe('create theme provider', () => {
       `
       import { createThemeProvider } from '@compiled/css-in-js';
 
-      const ThemeProvider = createThemeProvider();
+      const { ThemeProvider } = createThemeProvider();
       `,
       { tokens }
     );
 
     expect(actual).not.toInclude('createThemeProvider()');
     expect(actual).toInclude(
-      `props => (<CT {...props}>{props.children(tokens[props.mode])}</CT>);`
+      `const { ThemeProvider } = { theme: { primary: \"var(--cc-1tivpv1,#0052CC)\" }, ThemeProvider: props => (<CT {...props}>{props.children(tokens[props.mode])}</CT>) };`
     );
   });
 
@@ -106,5 +106,18 @@ describe('create theme provider', () => {
     );
 
     expect(actual).toInclude('const tokens = { "default": { "--cc-1tivpv1": "#0052CC" } }');
+  });
+
+  it('should build a theme object from the tokens json', () => {
+    const actual = transpileModule(
+      `
+      import { createThemeProvider } from '@compiled/css-in-js';
+
+      const ThemeProvider = createThemeProvider();
+      `,
+      { tokens }
+    );
+
+    expect(actual).toInclude('theme: { primary: "var(--cc-1tivpv1,#0052CC)" }');
   });
 });

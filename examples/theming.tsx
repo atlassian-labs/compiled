@@ -5,18 +5,18 @@ export default {
   title: 'theming',
 };
 
-const ThemeProvider = createThemeProvider<typeof import('@compiled/tokens-test-pkg')>();
+const { ThemeProvider, theme } = createThemeProvider<typeof import('@compiled/tokens-test-pkg')>();
 
 const Thing = styled.div({
   fontSize: '20px',
-  color: 'theme(primary)',
+  color: theme.primary,
 });
 
 const ThingCssProp = (props: { children: React.ReactNode }) => (
   <div
     css={{
       fontSize: 20,
-      color: 'theme(primary)',
+      color: theme.primary,
     }}>
     {props.children}
   </div>
@@ -24,11 +24,12 @@ const ThingCssProp = (props: { children: React.ReactNode }) => (
 
 const ThingClassNames = (props: { children: React.ReactNode }) => (
   <ClassNames>
-    {({ css }) => (
+    {({ css, style }) => (
       <div
+        style={style}
         className={css({
           fontSize: 20,
-          color: 'theme(primary)',
+          color: theme.primary,
         })}
         {...props}
       />
