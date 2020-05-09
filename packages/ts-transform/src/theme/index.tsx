@@ -57,7 +57,7 @@ export default function themeTransformer(
   const transformerFactory: ts.TransformerFactory<ts.SourceFile> = (context) => {
     return (sourceFile) => {
       if (!options.tokens) {
-        throw new Error('define your tokens');
+        return sourceFile;
       }
 
       const tokens = options.tokens;
