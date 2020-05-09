@@ -5,7 +5,7 @@ export default {
   title: 'theming',
 };
 
-const ThemeProvider = createThemeProvider();
+const ThemeProvider = createThemeProvider<typeof import('@compiled/tokens-test-pkg')>();
 
 const Thing = styled.div({
   fontSize: '20px',
