@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { styled, createThemeProvider } from '@compiled/css-in-js';
+import { styled, ClassNames, createThemeProvider } from '@compiled/css-in-js';
 
 export default {
   title: 'theming',
@@ -12,6 +12,30 @@ const Thing = styled.div({
   color: 'theme(primary)',
 });
 
+const ThingCssProp = (props: { children: React.ReactNode }) => (
+  <div
+    css={{
+      fontSize: 20,
+      color: 'theme(primary)',
+    }}>
+    {props.children}
+  </div>
+);
+
+const ThingClassNames = (props: { children: React.ReactNode }) => (
+  <ClassNames>
+    {({ css }) => (
+      <div
+        className={css({
+          fontSize: 20,
+          color: 'theme(primary)',
+        })}
+        {...props}
+      />
+    )}
+  </ClassNames>
+);
+
 export const WithThemeProvider = () => {
   const [mode, setMode] = useState(false);
 
@@ -19,7 +43,9 @@ export const WithThemeProvider = () => {
     <ThemeProvider mode={mode ? 'dark' : 'default'}>
       {(style) => (
         <div style={style}>
-          <Thing>Hello world</Thing>
+          <Thing>Hello styled</Thing>
+          <ThingCssProp>Hello css prop</ThingCssProp>
+          <ThingClassNames>Hello class names</ThingClassNames>
           <button onClick={() => setMode((prev) => !prev)}>Toggle mode</button>
         </div>
       )}
@@ -27,4 +53,10 @@ export const WithThemeProvider = () => {
   );
 };
 
-export const WithoutThemeProvider = () => <Thing>Hello world</Thing>;
+export const WithoutThemeProvider = () => (
+  <>
+    <Thing>Hello styled</Thing>
+    <ThingCssProp>Hello css prop</ThingCssProp>
+    <ThingClassNames>Hello class names</ThingClassNames>
+  </>
+);
