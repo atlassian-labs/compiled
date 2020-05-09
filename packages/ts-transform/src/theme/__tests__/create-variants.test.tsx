@@ -39,19 +39,39 @@ describe('create theme provider', () => {
     },
   };
 
+  const variantsCode = `
+  import { createVariants } from '@compiled/css-in-js';
+
+  const useVariants = createVariants({
+    default: { default: { color: 'n500', backgroundColor: 'n100a' }, dark: { color: 'n40', backgroundColor: 'n400' } },
+    primary: { default: { color: 'n0', backgroundColor: 'primary' }, dark: { color: 'n600 } },
+  });
+`;
+
   it('should remove theme import', () => {
-    const actual = transpileModule(
-      `
-      import { createVariants } from '@compiled/css-in-js';
+    const actual = transpileModule(variantsCode, { tokens });
 
-      const useVariants = createVariants({
-        default: { default: { color: 'n500', backgroundColor: 'n100a' }, dark: { color: 'n40', backgroundColor: 'n400' } },
-        primary: { default: { color: 'n0', backgroundColor: 'primary' }, dark: { color: 'n600 } },
-      });
-    `,
-      { tokens }
-    );
+    expect(actual).not.toInclude(`createVariants }`);
+  });
 
-    expect(actual).toInclude(`asdasdsda`);
+  it('should transform create variants into variant hook', () => {
+    const actual = transpileModule(variantsCode, { tokens });
+
+    expect(actual).toInclude(`
+const useVariants = variant => {
+    const mode = useMode();
+    const defaultVariant = variants.default;
+    return {
+        ...defaultVariant.default,
+        ...defaultVariant[mode],
+        ...variants[variant][mode]
+    };
+};`);
+  });
+
+  it('should build variants object', () => {
+    const actual = transpileModule(variantsCode, { tokens });
+
+    expect(actual).toInclude('bleh');
   });
 });

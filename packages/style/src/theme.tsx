@@ -1,4 +1,4 @@
-import React, { createContext } from 'react';
+import React, { createContext, useContext } from 'react';
 
 const Theme = createContext<string>('default');
 
@@ -6,6 +6,10 @@ interface CompiledThemeProps<TTheme> {
   theme: Extract<keyof TTheme, 'string'>;
   children: React.ReactNode;
 }
+
+export const useMode = (): string => {
+  return useContext(Theme);
+};
 
 /**
  * Only used to tell children what the current them is that we're on.

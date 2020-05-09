@@ -18,9 +18,87 @@ export const isCreateVariantsCall = (node: ts.Node): node is ts.CallExpression =
 };
 
 export const visitCreateVariants = (
-  node: ts.CallExpression,
+  _: ts.CallExpression,
   __: ts.TransformationContext,
   ___: TransformerOptions
 ): ts.Node => {
-  return node;
+  return ts.createArrowFunction(
+    undefined,
+    undefined,
+    [
+      ts.createParameter(
+        undefined,
+        undefined,
+        undefined,
+        ts.createIdentifier('variant'),
+        undefined,
+        ts.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+        undefined
+      ),
+    ],
+    undefined,
+    ts.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+    ts.createBlock(
+      [
+        ts.createVariableStatement(
+          undefined,
+          ts.createVariableDeclarationList(
+            [
+              ts.createVariableDeclaration(
+                ts.createIdentifier(constants.THEME_MODE_NAME),
+                undefined,
+                ts.createCall(ts.createIdentifier(constants.USE_MODE_NAME), undefined, [])
+              ),
+            ],
+            ts.NodeFlags.Const
+          )
+        ),
+        ts.createVariableStatement(
+          undefined,
+          ts.createVariableDeclarationList(
+            [
+              ts.createVariableDeclaration(
+                ts.createIdentifier('defaultVariant'),
+                undefined,
+                ts.createPropertyAccess(
+                  ts.createIdentifier(constants.LOCAL_VARIANTS_NAME),
+                  ts.createIdentifier('default')
+                )
+              ),
+            ],
+            ts.NodeFlags.Const
+          )
+        ),
+        ts.createReturn(
+          ts.createObjectLiteral(
+            [
+              ts.createSpreadAssignment(
+                ts.createPropertyAccess(
+                  ts.createIdentifier('defaultVariant'),
+                  ts.createIdentifier('default')
+                )
+              ),
+              ts.createSpreadAssignment(
+                ts.createElementAccess(
+                  ts.createIdentifier('defaultVariant'),
+                  ts.createIdentifier(constants.THEME_MODE_NAME)
+                )
+              ),
+              ts.createSpreadAssignment(
+                ts.createElementAccess(
+                  ts.createElementAccess(
+                    ts.createIdentifier(constants.LOCAL_VARIANTS_NAME),
+                    ts.createIdentifier('variant')
+                  ),
+                  ts.createIdentifier(constants.THEME_MODE_NAME)
+                )
+              ),
+            ],
+            true
+          )
+        ),
+      ],
+      true
+    )
+  );
 };
