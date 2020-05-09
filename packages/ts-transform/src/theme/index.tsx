@@ -48,8 +48,7 @@ export default function styledComponentTransformer(
 ): ts.TransformerFactory<ts.SourceFile> {
   const transformerFactory: ts.TransformerFactory<ts.SourceFile> = (context) => {
     return (sourceFile) => {
-      const isThemeProviderFound = isCreateThemeProviderFound(sourceFile);
-      if (!isThemeProviderFound) {
+      if (!isCreateThemeProviderFound(sourceFile)) {
         return sourceFile;
       }
 
@@ -58,7 +57,6 @@ export default function styledComponentTransformer(
       }
 
       const tokens = options.tokens;
-      let tokensAdded = false;
 
       const transformedSourceFile = visitSourceFileEnsureDefaultReactImport(
         visitSourceFileEnsureStyleImport(sourceFile, context, {
@@ -70,10 +68,10 @@ export default function styledComponentTransformer(
 
       const visitor = (node: ts.Node): ts.Node | ts.Node[] => {
         if (
-          (isThemeProviderFound && tokensAdded && ts.isVariableStatement(node)) ||
-          ts.isExpressionStatement(node)
+          ts.isVariableStatement(node) &&
+          node.declarationList.declarations[0].initializer &&
+          isCreateThemeProviderCall(node.declarationList.declarations[0].initializer)
         ) {
-          tokensAdded = true;
           return [
             ts.createVariableDeclarationList(
               [
@@ -89,7 +87,7 @@ export default function styledComponentTransformer(
           ];
         }
 
-        if (isThemeProviderFound && isCreateThemeProviderCall(node)) {
+        if (isCreateThemeProviderCall(node)) {
           return visitCreateThemeProvider(node, context, options);
         }
 

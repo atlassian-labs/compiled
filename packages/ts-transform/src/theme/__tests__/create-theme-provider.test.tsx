@@ -34,7 +34,7 @@ describe('create theme provider', () => {
       `
       import { createThemeProvider } from '@compiled/css-in-js';
 
-      createThemeProvider();
+      const ThemeProvider = createThemeProvider();
     `,
       { tokens }
     );
@@ -42,12 +42,36 @@ describe('create theme provider', () => {
     expect(actual).not.toInclude(`import { createThemeProvider } from '@compiled/css-in-js';`);
   });
 
+  it('should not duplicate tokens object', () => {
+    const actual = transpileModule(
+      `
+      import { createThemeProvider } from '@compiled/css-in-js';
+
+      const Thing = {};
+
+      if (true) {
+        Thing.ok = true;
+      }
+
+      const hello = 'true';
+
+      const ThemeProvider = createThemeProvider();
+    `,
+      { tokens }
+    );
+
+    expect(actual).toIncludeRepeated(
+      'const tokens = { "default": { "--cc-1tivpv1": "#0052CC" } }',
+      1
+    );
+  });
+
   it('should ensure compiled theme is imported', () => {
     const actual = transpileModule(
       `
       import { createThemeProvider } from '@compiled/css-in-js';
 
-      createThemeProvider();
+      const ThemeProvider = createThemeProvider();
       `,
       { tokens }
     );
@@ -60,7 +84,7 @@ describe('create theme provider', () => {
       `
       import { createThemeProvider } from '@compiled/css-in-js';
 
-      createThemeProvider();
+      const ThemeProvider = createThemeProvider();
       `,
       { tokens }
     );
@@ -76,7 +100,7 @@ describe('create theme provider', () => {
       `
       import { createThemeProvider } from '@compiled/css-in-js';
 
-      createThemeProvider();
+      const ThemeProvider = createThemeProvider();
       `,
       { tokens }
     );
