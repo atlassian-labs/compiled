@@ -2,7 +2,7 @@ import React from 'react';
 import { createThemeProvider } from '@compiled/css-in-js';
 import { render } from '@testing-library/react';
 
-const Provider = createThemeProvider();
+const Provider = createThemeProvider<typeof import('@compiled/tokens-test-pkg')>();
 
 describe('create theme provider', () => {
   it('should create a provider component', () => {

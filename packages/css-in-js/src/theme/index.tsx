@@ -1,11 +1,15 @@
 import { ReactNode, ComponentType } from 'react';
 import { createSetupError } from '../utils/error';
 
-interface ProviderProps {
+type BaseTokens = Record<'base' | 'default', { [key: string]: string | number }>;
+
+interface ProviderProps<TTokens extends BaseTokens> {
   children: (style: {}) => ReactNode;
-  mode: 'default' | (string & {});
+  mode: keyof Omit<TTokens, 'base'>;
 }
 
-export const createThemeProvider = (): ComponentType<ProviderProps> => {
+export const createThemeProvider = <TTokens extends BaseTokens>(): ComponentType<
+  ProviderProps<TTokens>
+> => {
   throw createSetupError();
 };
