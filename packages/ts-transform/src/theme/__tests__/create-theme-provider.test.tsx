@@ -120,4 +120,19 @@ describe('create theme provider', () => {
 
     expect(actual).toInclude('theme: { primary: "var(--cc-1tivpv1,#0052CC)" }');
   });
+
+  it('should inline theme usage', () => {
+    const actual = transpileModule(
+      `
+      import { createThemeProvider } from '@compiled/css-in-js';
+
+      const { theme } = createThemeProvider();
+
+      const primary = theme.primary;
+      `,
+      { tokens }
+    );
+
+    expect(actual).toInclude('const primary = "var(--cc-1tivpv1,#0052CC)"');
+  });
 });

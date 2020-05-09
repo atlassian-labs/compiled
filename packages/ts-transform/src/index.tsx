@@ -7,10 +7,10 @@ import themeTransformer from './theme';
 import { RootTransformerOptions, Tokens, TransformerOptions } from './types';
 
 const transformers = [
+  themeTransformer,
   cssPropTransformer,
   styledComponentTransformer,
   classNamesTransformer,
-  themeTransformer,
 ];
 
 export { RootTransformerOptions as TransformerOptions } from './types';

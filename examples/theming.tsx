@@ -24,9 +24,8 @@ const ThingCssProp = (props: { children: React.ReactNode }) => (
 
 const ThingClassNames = (props: { children: React.ReactNode }) => (
   <ClassNames>
-    {({ css, style }) => (
+    {({ css }) => (
       <div
-        style={style}
         className={css({
           fontSize: 20,
           color: theme.primary,

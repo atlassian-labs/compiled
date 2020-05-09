@@ -53,9 +53,12 @@ export const visitCreateThemeProvider = (
 ): ts.Node => {
   return ts.createObjectLiteral(
     [
-      ts.createPropertyAssignment(ts.createIdentifier('theme'), buildThemeObject(opts)),
       ts.createPropertyAssignment(
-        ts.createIdentifier('ThemeProvider'),
+        ts.createIdentifier(constants.TOKENS_GETTER_NAME),
+        buildThemeObject(opts)
+      ),
+      ts.createPropertyAssignment(
+        ts.createIdentifier(constants.THEME_PROVIDER_NAME),
         ts.createArrowFunction(
           undefined,
           undefined,

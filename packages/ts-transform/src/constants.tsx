@@ -22,6 +22,8 @@ export const STYLED_AS_USAGE_NAME = 'C';
 export const TOKENS_OBJECT_NAME = 'tokens';
 export const THEME_MODE_NAME = 'mode';
 export const BASE_TOKENS = 'base';
+export const TOKENS_GETTER_NAME = 'theme';
+export const THEME_PROVIDER_NAME = 'ThemeProvider';
 
 // Named imports
 export const FORWARD_REF_IMPORT = 'forwardRef';
