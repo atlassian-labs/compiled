@@ -135,4 +135,19 @@ describe('create theme provider', () => {
 
     expect(actual).toInclude('const primary = "var(--cc-1tivpv1,#0052CC)"');
   });
+
+  it('should bail out if its referencing something that doesnt exist', () => {
+    const actual = transpileModule(
+      `
+      import { createThemeProvider } from '@compiled/css-in-js';
+
+      const { theme } = createThemeProvider();
+
+      const primary = theme.dontexist;
+      `,
+      { tokens }
+    );
+
+    expect(actual).toInclude('const primary = theme.dontexist;');
+  });
 });

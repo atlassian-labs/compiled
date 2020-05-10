@@ -98,6 +98,11 @@ export default function themeTransformer(
         if (isTokensGetterAccess(node)) {
           const key = node.name.text;
           const value = tokens.default[key];
+
+          if (!value) {
+            return node;
+          }
+
           const actualValue = tokens.base[value];
           const varValue = getTokenCssVariable(key, {
             tokenPrefix: options.tokenPrefix,
