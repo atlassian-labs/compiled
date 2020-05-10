@@ -1,6 +1,6 @@
 import { CssFunction } from './types';
 
-export { CS, CC, CT } from '@compiled/style';
+export { CS, CC, CT, useMode } from '@compiled/style';
 export { styled } from './styled';
 export { ClassNames } from './class-names';
 export { createThemeProvider } from './theme';
