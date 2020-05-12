@@ -4,9 +4,7 @@ import cssnano from 'cssnano-preset-default';
 import nested from 'postcss-nested';
 import whitespace from 'postcss-normalize-whitespace';
 import selectorParser from 'postcss-selector-parser';
-import { TransformerOptions, Tokens } from '../types';
-import { CLASS_NAME_PREFIX } from '../constants';
-import { getTokenCssVariable } from './theme';
+import { TransformerOptions } from '../types';
 
 const minify = () => {
   const preset = cssnano();
@@ -74,66 +72,6 @@ const extractStyleSheets = plugin<{ callback: (sheet: string) => void }>(
   }
 );
 
-const getPossibleTokenNameFromBaseValue = (value: string, tokens: Tokens) => {
-  const baseValues = Object.values(tokens.base);
-  const baseIndex = baseValues.indexOf(value);
-  if (baseIndex >= 0) {
-    const baseKeyName = Object.keys(tokens.base)[baseIndex];
-    const defaultValues = Object.values(tokens.default);
-    const defaultIndex = defaultValues.indexOf(baseKeyName);
-    const defaultKeyName = Object.keys(tokens.default)[defaultIndex];
-
-    return {
-      name: defaultKeyName,
-      confidence: 100,
-    };
-  }
-
-  return undefined;
-};
-
-const replaceThemedProperties = plugin<TransformerOptions>('replace-themed-properties', (opts) => {
-  return (root) => {
-    if (!opts || !opts.tokens) {
-      return;
-    }
-
-    const tokenPrefix = opts.tokenPrefix || CLASS_NAME_PREFIX;
-    const tokens = opts.tokens;
-    const errors: string[] = [];
-
-    root.walkDecls(/color/, (decl) => {
-      if (decl.value.includes('theme(')) {
-        const match = decl.value.match(/theme\((.+)\)/);
-        if (match) {
-          const tokenName = match[1];
-          const rawName = tokens.default[tokenName];
-          decl.value = getTokenCssVariable(tokenName, {
-            tokenPrefix,
-            defaultValue: tokens.base[rawName],
-            useVariable: true,
-          });
-        }
-      } else if (opts.strict) {
-        let errorMessage = `"${decl.toString()};"`;
-        const possibleTokenName = getPossibleTokenNameFromBaseValue(decl.value, tokens);
-        if (possibleTokenName) {
-          errorMessage += ` - replace ${decl.value} with theme(${possibleTokenName.name}).`;
-        }
-
-        errors.push(errorMessage);
-      }
-    });
-
-    if (errors.length) {
-      throw new Error(
-        `You've defined hard-coded colors which is not allowed in strict mode.
-${errors.join('\n')}`
-      );
-    }
-  };
-});
-
 export const transformCss = (
   selector: string,
   css: string,
@@ -143,7 +81,6 @@ export const transformCss = (
   const cssWithSelector = selector ? `${selector} { ${css} }` : css;
 
   const result = postcss([
-    replaceThemedProperties(opts),
     parentOrphenedPseudos(),
     nested(),
     autoprefixer(),
