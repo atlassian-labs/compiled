@@ -12,30 +12,47 @@ import {
   BASE_TOKENS,
   TOKENS_GETTER_NAME,
 } from '../constants';
-import { TransformerOptions, Tokens } from '../types';
+import { TransformerOptions, Tokens, AnyTokens } from '../types';
 import { getTokenCssVariable } from '../utils/theme';
 
 const buildTokensObject = (tokens: Tokens, tokenPrefix?: string) => {
-  const themes = Object.keys(tokens).filter((themeName) => themeName !== BASE_TOKENS);
+  const { [BASE_TOKENS]: baseTokens, ...themes } = tokens;
+
+  const flattenObject = (
+    tokenObject: AnyTokens,
+    parentKey = ''
+  ): { [key: string]: number | string } => {
+    return Object.entries(tokenObject).reduce((acc, [key, value]) => {
+      if (typeof value === 'object') {
+        return Object.assign(acc, flattenObject(value, parentKey + key));
+      }
+
+      return Object.assign(acc, { [parentKey + key]: value });
+    }, {});
+  };
+
+  const objectToLiteral = (obj: { [key: string]: number | string }): ts.ObjectLiteralExpression => {
+    return ts.createObjectLiteral(
+      Object.entries(obj).map(([key, value]) => {
+        const actualValue = baseTokens[value] || value;
+        const valueNode =
+          typeof actualValue === 'string'
+            ? ts.createStringLiteral(actualValue)
+            : ts.createNumericLiteral(`${actualValue}`);
+
+        return ts.createPropertyAssignment(
+          ts.createStringLiteral(getTokenCssVariable(key, { tokenPrefix })),
+          valueNode
+        );
+      })
+    );
+  };
 
   return ts.createObjectLiteral(
-    themes.map((name) => {
-      const themeTokens = Object.entries(tokens[name]).map(([key, value]) => ({
-        key: getTokenCssVariable(key, { tokenPrefix }),
-        value: tokens.base[value],
-      }));
-
+    Object.entries(themes).map(([themeName, themeValue]) => {
       return ts.createPropertyAssignment(
-        ts.createStringLiteral(name),
-        ts.createObjectLiteral(
-          themeTokens.map((themeToken) =>
-            ts.createPropertyAssignment(
-              ts.createStringLiteral(themeToken.key),
-              ts.createStringLiteral(themeToken.value)
-            )
-          ),
-          false
-        )
+        ts.createStringLiteral(themeName),
+        objectToLiteral(flattenObject(themeValue))
       );
     }),
     false
@@ -103,7 +120,7 @@ export default function themeTransformer(
             return node;
           }
 
-          const actualValue = tokens.base[value];
+          const actualValue = tokens.base[value as any];
           const varValue = getTokenCssVariable(key, {
             tokenPrefix: options.tokenPrefix,
             useVariable: true,

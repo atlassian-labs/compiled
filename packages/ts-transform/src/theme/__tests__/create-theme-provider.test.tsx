@@ -150,4 +150,95 @@ describe('create theme provider', () => {
 
     expect(actual).toInclude('const primary = theme.dontexist;');
   });
+
+  it('should flatten nested themes', () => {
+    const actual = transpileModule(
+      `
+      import { createThemeProvider } from '@compiled/css-in-js';
+
+      const { theme } = createThemeProvider();
+      `,
+      {
+        tokens: {
+          base: {
+            b400: '#0052CC',
+            n0: '#fff',
+          },
+          default: {
+            borderRadius: '3px',
+            colors: {
+              primary: 'b400',
+              card: {
+                background: 'n0',
+              },
+            },
+          },
+        },
+      }
+    );
+
+    expect(actual).toInclude(
+      '"default": { "--cc-1lnby5": "3px", "--cc-1bya7p6": "#0052CC", "--cc-1rqna7t": "#fff" }'
+    );
+  });
+
+  xit('should build up nested themes object for consumer use', () => {
+    const actual = transpileModule(
+      `
+      import { createThemeProvider } from '@compiled/css-in-js';
+
+      const { theme } = createThemeProvider();
+      `,
+      {
+        tokens: {
+          base: {
+            b400: '#0052CC',
+            n0: '#fff',
+          },
+          default: {
+            borderRadius: '3px',
+            colors: {
+              primary: 'b400',
+              card: {
+                background: 'n0',
+              },
+            },
+          },
+        },
+      }
+    );
+
+    expect(actual).toInclude('theme: { borderRadius: "var(--cc-1lnby5)", colors: }');
+  });
+
+  xit('should inline nested theme reference', () => {
+    const actual = transpileModule(
+      `
+      import { createThemeProvider } from '@compiled/css-in-js';
+
+      const { theme } = createThemeProvider();
+
+      const background = theme.colors.card.background;
+      `,
+      {
+        tokens: {
+          base: {
+            b400: '#0052CC',
+            n0: '#fff',
+          },
+          default: {
+            borderRadius: '3px',
+            colors: {
+              primary: 'b400',
+              card: {
+                background: 'n0',
+              },
+            },
+          },
+        },
+      }
+    );
+
+    expect(actual).toInclude('const background = "var(--cc-1lnby5,3px)";');
+  });
 });

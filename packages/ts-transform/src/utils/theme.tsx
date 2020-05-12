@@ -1,7 +1,7 @@
 import { hash } from '../utils/hash';
 
 interface Opts {
-  defaultValue?: string;
+  defaultValue?: string | number;
   tokenPrefix?: string;
   useVariable?: boolean;
 }

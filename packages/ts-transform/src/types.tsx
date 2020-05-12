@@ -22,13 +22,15 @@ export interface ToCssReturnType {
 }
 
 export interface AnyTokens {
-  [key: string]: any;
+  [key: string]: string | number | AnyTokens;
 }
 
 export interface Tokens {
   // This is the "base" tokens that shouldn't be directly referenced outside of the tokens object itself.
   // Need to confirm name!!
-  base: AnyTokens;
+  base: {
+    [key: string]: string | number;
+  };
 
   // These is the default "theme" (usually will be light mode).
   default: AnyTokens;
