@@ -14,6 +14,7 @@ import {
 } from '../constants';
 import { TransformerOptions, Tokens, AnyTokens } from '../types';
 import { getTokenCssVariable } from '../utils/theme';
+import { getPropertyAccessExpressionIdentifiers } from '../utils/ast-node';
 
 const buildTokensObject = (tokens: Tokens, tokenPrefix?: string) => {
   const { [BASE_TOKENS]: baseTokens, ...themes } = tokens;
@@ -60,10 +61,19 @@ const buildTokensObject = (tokens: Tokens, tokenPrefix?: string) => {
 };
 
 const isTokensGetterAccess = (node: ts.Node): node is ts.PropertyAccessExpression => {
+  if (!ts.isPropertyAccessExpression(node)) {
+    return false;
+  }
+
+  let nextPropertyAccess: ts.PropertyAccessExpression = node;
+
+  while (ts.isPropertyAccessExpression(nextPropertyAccess.expression)) {
+    nextPropertyAccess = nextPropertyAccess.expression;
+  }
+
   return (
-    ts.isPropertyAccessExpression(node) &&
-    ts.isIdentifier(node.expression) &&
-    node.expression.text === TOKENS_GETTER_NAME
+    ts.isIdentifier(nextPropertyAccess.expression) &&
+    nextPropertyAccess.expression.text === TOKENS_GETTER_NAME
   );
 };
 
@@ -113,14 +123,24 @@ export default function themeTransformer(
         }
 
         if (isTokensGetterAccess(node)) {
-          const key = node.name.text;
-          const value = tokens.default[key];
+          const identifiers = getPropertyAccessExpressionIdentifiers(node);
+          const key = identifiers.join('');
 
-          if (!value) {
+          let value = tokens.default[identifiers.shift()!];
+
+          while (identifiers.length && typeof value === 'object') {
+            value = value[identifiers.shift()!];
+          }
+
+          if (!value || typeof value === 'object') {
             return node;
           }
 
-          const actualValue = tokens.base[value as any];
+          const actualValue = tokens.base[value];
+          if (!actualValue) {
+            return node;
+          }
+
           const varValue = getTokenCssVariable(key, {
             tokenPrefix: options.tokenPrefix,
             useVariable: true,

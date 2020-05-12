@@ -182,7 +182,7 @@ describe('create theme provider', () => {
     );
   });
 
-  xit('should build up nested themes object for consumer use', () => {
+  it('should build up nested themes object for consumer use', () => {
     const actual = transpileModule(
       `
       import { createThemeProvider } from '@compiled/css-in-js';
@@ -208,10 +208,12 @@ describe('create theme provider', () => {
       }
     );
 
-    expect(actual).toInclude('theme: { borderRadius: "var(--cc-1lnby5)", colors: }');
+    expect(actual).toInclude(
+      'theme: { borderRadius: "var(--cc-1lnby5)", colors: { primary: "var(--cc-1bya7p6,#0052CC)", card: { background: "var(--cc-1rqna7t,#fff)" } }'
+    );
   });
 
-  xit('should inline nested theme reference', () => {
+  it('should inline nested theme reference', () => {
     const actual = transpileModule(
       `
       import { createThemeProvider } from '@compiled/css-in-js';
@@ -239,6 +241,6 @@ describe('create theme provider', () => {
       }
     );
 
-    expect(actual).toInclude('const background = "var(--cc-1lnby5,3px)";');
+    expect(actual).toInclude('const background = "var(--cc-1rqna7t,#fff)";');
   });
 });

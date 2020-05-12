@@ -15,6 +15,20 @@ export const getExpressionText = (node: ts.Expression) => {
   return (node as ts.StringLiteral).text;
 };
 
+export const getPropertyAccessExpressionIdentifiers = (
+  node: ts.PropertyAccessExpression
+): string[] => {
+  const identifiers = [node.name.text];
+  let nextExpression: ts.Node = node.expression;
+
+  while (ts.isPropertyAccessExpression(nextExpression)) {
+    identifiers.push(nextExpression.name.text);
+    nextExpression = nextExpression.expression;
+  }
+
+  return identifiers.reverse();
+};
+
 export const getIdentifierText = (
   node: ts.PropertyName | ts.BindingName | ts.Expression | ts.Identifier
 ): string => {

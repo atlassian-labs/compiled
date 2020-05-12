@@ -44,7 +44,6 @@ export interface RootTransformerOptions {
   debug?: boolean;
   sourceMap?: boolean;
   minify?: boolean;
-  strict?: boolean;
   tokenPrefix?: string;
   tokens?: Tokens | string;
 }

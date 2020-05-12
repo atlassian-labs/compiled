@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import { TransformerOptions } from '../../types';
+import { TransformerOptions, AnyTokens } from '../../types';
 import * as constants from '../../constants';
 import {
   createJsxClosingElement,
@@ -28,22 +28,27 @@ const buildThemeObject = (opts: TransformerOptions) => {
     throw new Error('wheres the tokens');
   }
 
-  return ts.createObjectLiteral(
-    Object.entries(tokens.default).map(([key, value]) => {
-      const actualValue = tokens.base[value];
-      const varValue = getTokenCssVariable(key, {
-        tokenPrefix: opts.tokenPrefix,
-        useVariable: true,
-        defaultValue: actualValue,
-      });
+  const tokensToNestedLiteral = (obj: AnyTokens, parentKey = ''): ts.ObjectLiteralExpression => {
+    return ts.createObjectLiteral(
+      Object.entries(obj).map(([key, value]) => {
+        const actualValue =
+          typeof value === 'object'
+            ? tokensToNestedLiteral(value, parentKey + key)
+            : ts.createStringLiteral(
+                getTokenCssVariable(parentKey + key, {
+                  tokenPrefix: opts.tokenPrefix,
+                  useVariable: true,
+                  defaultValue: tokens.base[value],
+                })
+              );
 
-      return ts.createPropertyAssignment(
-        ts.createIdentifier(key),
-        ts.createStringLiteral(varValue)
-      );
-    }),
-    false
-  );
+        return ts.createPropertyAssignment(ts.createIdentifier(key), actualValue);
+      }),
+      false
+    );
+  };
+
+  return tokensToNestedLiteral(tokens.default);
 };
 
 export const visitCreateThemeProvider = (
