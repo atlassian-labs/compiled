@@ -27,7 +27,7 @@ export const visitSourceFileEnsureStyleImport = (
     removeNamedImport,
   }: Opts = {}
 ): ts.SourceFile => {
-  const visitor = (node: ts.Node): ts.Node | Array<ts.Node> => {
+  const visitor = (node: ts.Node): ts.Node | Array<ts.Node> | undefined => {
     if (
       ts.isImportDeclaration(node) &&
       ts.isStringLiteral(node.moduleSpecifier) &&
@@ -87,7 +87,7 @@ export const visitSourceFileEnsureStyleImport = (
       } else {
         // if it is found, check the length of the namedImports array
         // if its 0, remove the namedImports node.
-        return namedImports.length ? updatedNode : ts.createEmptyStatement();
+        return namedImports.length ? updatedNode : undefined;
       }
     }
 
