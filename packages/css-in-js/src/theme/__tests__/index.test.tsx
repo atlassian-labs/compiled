@@ -12,7 +12,7 @@ describe('create theme provider', () => {
       </ThemeProvider>
     );
 
-    expect(getByText('hello world').getAttribute('style')).toEqual('--cc-1tivpv1: #0052CC;');
+    expect(getByText('hello world').getAttribute('style')).toInclude('--cc-1bya7p6: #0052cc;');
   });
 
   it('should render dark mode', () => {
@@ -20,6 +20,6 @@ describe('create theme provider', () => {
       <ThemeProvider mode="dark">{(style) => <div style={style}>hello world</div>}</ThemeProvider>
     );
 
-    expect(getByText('hello world').getAttribute('style')).toEqual('--cc-1tivpv1: #FF5630;');
+    expect(getByText('hello world').getAttribute('style')).toInclude('--cc-1bya7p6: #4c9aff;');
   });
 });

@@ -20,6 +20,7 @@ const Card = (props: { children: React.ReactNode }) => (
   <div
     css={{
       margin: 16,
+      maxWidth: 400,
       fontSize: theme.fontSize,
       backgroundColor: theme.colors.card.background,
       boxShadow: theme.elevation.e400,
