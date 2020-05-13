@@ -79,7 +79,7 @@ describe('create theme provider', () => {
     expect(actual).toInclude(`import { CT } from '@compiled/css-in-js';`);
   });
 
-  it('should replace function call with compiled provider', () => {
+  it('should replace function call with compiled provider that merges modes', () => {
     const actual = transpileModule(
       `
       import { createThemeProvider } from '@compiled/css-in-js';
@@ -91,7 +91,7 @@ describe('create theme provider', () => {
 
     expect(actual).not.toInclude('createThemeProvider()');
     expect(actual).toInclude(
-      `const { ThemeProvider } = { theme: { primary: \"var(--cc-1tivpv1,#0052CC)\" }, ThemeProvider: props => (<CT {...props}>{props.children(tokens[props.mode])}</CT>) };`
+      `const { ThemeProvider } = { theme: { primary: \"var(--cc-1tivpv1,#0052CC)\" }, ThemeProvider: props => (<CT {...props}>{props.children({ ...tokens.default, ...tokens[props.mode] })}</CT>) };`
     );
   });
 

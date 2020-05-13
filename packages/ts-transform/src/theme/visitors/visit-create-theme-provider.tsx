@@ -1,6 +1,13 @@
 import ts from 'typescript';
 import { TransformerOptions, AnyTokens } from '../../types';
-import * as constants from '../../constants';
+import {
+  getThemeComponentImport,
+  CREATE_THEME_PROVIDER_IMPORT,
+  TOKENS_GETTER_NAME,
+  THEME_PROVIDER_NAME,
+  TOKENS_OBJECT_NAME,
+  THEME_MODE_NAME,
+} from '../../constants';
 import {
   createJsxClosingElement,
   isPackageModuleImport,
@@ -10,7 +17,7 @@ import { getTokenCssVariable } from '../../utils/theme';
 
 export const isCreateThemeProviderFound = (sourceFile: ts.SourceFile): boolean => {
   return !!sourceFile.statements.find((statement) =>
-    isPackageModuleImport(statement, constants.CREATE_THEME_PROVIDER_IMPORT)
+    isPackageModuleImport(statement, CREATE_THEME_PROVIDER_IMPORT)
   );
 };
 
@@ -18,7 +25,7 @@ export const isCreateThemeProviderCall = (node: ts.Node): node is ts.CallExpress
   return (
     ts.isCallExpression(node) &&
     ts.isIdentifier(node.expression) &&
-    node.expression.text === constants.CREATE_THEME_PROVIDER_IMPORT
+    node.expression.text === CREATE_THEME_PROVIDER_IMPORT
   );
 };
 
@@ -58,12 +65,9 @@ export const visitCreateThemeProvider = (
 ): ts.Node => {
   return ts.createObjectLiteral(
     [
+      ts.createPropertyAssignment(ts.createIdentifier(TOKENS_GETTER_NAME), buildThemeObject(opts)),
       ts.createPropertyAssignment(
-        ts.createIdentifier(constants.TOKENS_GETTER_NAME),
-        buildThemeObject(opts)
-      ),
-      ts.createPropertyAssignment(
-        ts.createIdentifier(constants.THEME_PROVIDER_NAME),
+        ts.createIdentifier(THEME_PROVIDER_NAME),
         ts.createArrowFunction(
           undefined,
           undefined,
@@ -84,7 +88,7 @@ export const visitCreateThemeProvider = (
             ts.createJsxElement(
               createJsxOpeningElement(
                 node,
-                constants.getThemeComponentImport(context),
+                getThemeComponentImport(context),
                 undefined,
                 ts.createJsxAttributes([ts.createJsxSpreadAttribute(ts.createIdentifier('props'))])
               ),
@@ -98,18 +102,31 @@ export const visitCreateThemeProvider = (
                     ),
                     undefined,
                     [
-                      ts.createElementAccess(
-                        ts.createIdentifier(constants.TOKENS_OBJECT_NAME),
-                        ts.createPropertyAccess(
-                          ts.createIdentifier('props'),
-                          ts.createIdentifier(constants.THEME_MODE_NAME)
-                        )
+                      ts.createObjectLiteral(
+                        [
+                          ts.createSpreadAssignment(
+                            ts.createPropertyAccess(
+                              ts.createIdentifier(TOKENS_OBJECT_NAME),
+                              ts.createIdentifier('default')
+                            )
+                          ),
+                          ts.createSpreadAssignment(
+                            ts.createElementAccess(
+                              ts.createIdentifier(TOKENS_OBJECT_NAME),
+                              ts.createPropertyAccess(
+                                ts.createIdentifier('props'),
+                                ts.createIdentifier(THEME_MODE_NAME)
+                              )
+                            )
+                          ),
+                        ],
+                        false
                       ),
                     ]
                   )
                 ),
               ],
-              createJsxClosingElement(node, constants.getThemeComponentImport(context))
+              createJsxClosingElement(node, getThemeComponentImport(context))
             )
           )
         )

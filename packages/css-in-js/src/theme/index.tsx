@@ -1,7 +1,8 @@
 import { ReactNode, ComponentType } from 'react';
 import { createSetupError } from '../utils/error';
 
-type BaseTokens = Record<'base' | 'default', { [key: string]: string | number }>;
+type Tokens = { [key: string]: string | number | Tokens };
+type BaseTokens = Record<'base' | 'default', Tokens>;
 
 interface ProviderProps<TTokens extends BaseTokens> {
   children: (style: {}) => ReactNode;

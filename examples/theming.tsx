@@ -7,34 +7,46 @@ export default {
 
 const { ThemeProvider, theme } = createThemeProvider<typeof import('@compiled/tokens-test-pkg')>();
 
-const Thing = styled.div({
-  fontSize: '20px',
-  color: theme.primary,
+const PrimaryButton = styled.button({
+  fontSize: theme.fontSize,
+  backgroundColor: theme.colors.primary,
+  color: theme.colors.color,
+  borderRadius: theme.borderRadius,
+  border: 0,
+  padding: '4px 8px',
 });
 
-const ThingCssProp = (props: { children: React.ReactNode }) => (
+const Card = (props: { children: React.ReactNode }) => (
   <div
     css={{
-      fontSize: 20,
-      color: theme.primary,
+      margin: 16,
+      fontSize: theme.fontSize,
+      backgroundColor: theme.colors.card.background,
+      boxShadow: theme.elevation.e400,
+      borderRadius: theme.borderRadius,
     }}>
     {props.children}
   </div>
 );
 
-const ThingClassNames = (props: { children: React.ReactNode }) => (
+const Hr = () => (
   <ClassNames>
     {({ css }) => (
-      <div
+      <hr
         className={css({
-          fontSize: 20,
-          color: theme.primary,
+          height: 2,
+          margin: 0,
+          border: 0,
+          backgroundColor: theme.colors.divider,
         })}
-        {...props}
       />
     )}
   </ClassNames>
 );
+
+const Container = styled.div`
+  padding: 16px;
+`;
 
 export const WithThemeProvider = () => {
   const [mode, setMode] = useState(false);
@@ -43,10 +55,17 @@ export const WithThemeProvider = () => {
     <ThemeProvider mode={mode ? 'dark' : 'default'}>
       {(style) => (
         <div style={style}>
-          <Thing>Hello styled</Thing>
-          <ThingCssProp>Hello css prop</ThingCssProp>
-          <ThingClassNames>Hello class names</ThingClassNames>
-          <button onClick={() => setMode((prev) => !prev)}>Toggle mode</button>
+          <Card>
+            <Container>
+              <p>Hello world</p>
+            </Container>
+            <Hr />
+            <Container>
+              <PrimaryButton onClick={() => setMode((prev) => !prev)}>
+                Switch to {mode ? 'default' : 'dark'}
+              </PrimaryButton>
+            </Container>
+          </Card>
         </div>
       )}
     </ThemeProvider>
@@ -55,8 +74,10 @@ export const WithThemeProvider = () => {
 
 export const WithoutThemeProvider = () => (
   <>
-    <Thing>Hello styled</Thing>
-    <ThingCssProp>Hello css prop</ThingCssProp>
-    <ThingClassNames>Hello class names</ThingClassNames>
+    <Card>
+      <p>Hello world</p>
+      <Hr />
+      <PrimaryButton>Default</PrimaryButton>
+    </Card>
   </>
 );
