@@ -34,11 +34,6 @@ export const visitSourceFileEnsureStyleImport = (
       node.moduleSpecifier.text === COMPILED_PKG
     ) {
       log.log('ensuring style export is defined');
-      // if a style import doesn't exist, add it as a sibling to this node
-      // idealy this should occur in a separate transform, possibly as an independent transform
-      // before any of the three processes start.
-
-      // if it exists already, then just remove the removedImports from the importstatement.
 
       let namedImports: ts.ImportSpecifier[] = [];
 
