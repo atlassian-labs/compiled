@@ -72,7 +72,8 @@
   "size-limit": [
     {
       "path": "./packages/style/dist/browser/index.js",
-      "limit": "330B",
+      "limit": "299B",
+      "import": "{ CC, CS }",
       "ignore": [
         "react"
       ]
