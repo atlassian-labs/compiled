@@ -40,7 +40,6 @@ export const visitSourceFileEnsureStyleImport = (
 
       // if it exists already, then just remove the removedImports from the importstatement.
 
-      const defaultImport = node.importClause && node.importClause.name;
       let namedImports: ts.ImportSpecifier[] = [];
 
       // remove namedImports that have been flagged for removal.
@@ -63,7 +62,7 @@ export const visitSourceFileEnsureStyleImport = (
         node,
         /* decorators */ undefined,
         /* modifiers */ undefined,
-        ts.createImportClause(defaultImport, ts.createNamedImports(namedImports)),
+        ts.createImportClause(undefined, ts.createNamedImports(namedImports)),
         node.moduleSpecifier
       );
       // if we hit an import we should check if any sibling nodes are
