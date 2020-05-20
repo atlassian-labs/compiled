@@ -55,7 +55,7 @@ describe('css prop transformer', () => {
       <div css={{}}>hello world</div>
     `);
 
-    expect(actual).toIncludeRepeated(`import { CC, CS } from '@compiled/css-in-js';`, 1);
+    expect(actual).toIncludeRepeated(`import { CC, CS } from \"@compiled/style\";`, 1);
   });
 
   it('should pass through style identifier when there is no dynamic styles in the css', () => {

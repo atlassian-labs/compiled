@@ -3,7 +3,8 @@
  */
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { styled, CC } from '@compiled/css-in-js';
+import { styled } from '@compiled/css-in-js';
+import { CC } from '@compiled/style';
 
 describe('SSR', () => {
   it('should render styles inline', () => {

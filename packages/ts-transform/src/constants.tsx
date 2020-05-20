@@ -14,7 +14,7 @@ export const CLASSNAME_PROP_NAME = 'className';
 
 // Identifiers
 export const REACT_PACKAGE_NAME = 'react';
-export const COMMON_JS_COMPILED_IMPORT = 'css_in_js_1';
+export const COMMON_JS_COMPILED_IMPORT = 'style_1';
 export const REACT_DEFAULT_IMPORT = 'React';
 export const REACT_COMMON_JS_IMPORT_1 = 'react_1';
 export const STYLED_AS_PROP_NAME = 'as';
