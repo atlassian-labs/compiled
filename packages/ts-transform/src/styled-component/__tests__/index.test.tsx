@@ -554,18 +554,38 @@ describe('styled component transformer', () => {
       );
     });
 
-    // it('should transform identifier referencing an expression', () => {
-    //   const actual = transformer.transform(`
-    //     import { styled } from '@compiled/css-in-js';
+    it('should transform identifier referencing an expression with suffix', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
 
-    //     const br = 2 + 2;
-    //     const Div = styled.div\`
-    //       border-radius: \${br}px;
-    //     \`;
-    //   `);
+        const br = 2 + 2;
+        const Div = styled.div\`
+          border-radius: \${br}px;
+          color: red;
+        \`;
+      `);
 
-    //   expect(actual).toInclude('<CS hash="css-test">{[".css-test{border-radius:asd}"]}</CS>');
-    // });
+      expect(actual).toInclude(
+        '<CS hash="css-test">{[".css-test{border-radius:var(--var-test-br);color:red}"]}</CS>'
+      );
+      expect(actual).toInclude('style={{ ...props.style, "--var-test-br": br + "px" }}');
+    });
+
+    it('should transform inline arrow function with suffix', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+
+        const getBr = () => 4;
+        const Div = styled.div\`
+          border-radius: \${getBr}px;
+          color: red;
+        \`;
+      `);
+
+      expect(actual).toInclude(
+        '<CS hash="css-test">{[".css-test{border-radius:4px;color:red}"]}</CS>'
+      );
+    });
 
     it.todo('should transform template string with argument function variable');
 

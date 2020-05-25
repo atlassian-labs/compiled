@@ -13,7 +13,8 @@ export const isReturnCssLike = (
       ts.isObjectLiteralExpression(functionBody) ||
       ts.isTemplateLiteral(functionBody) ||
       ts.isNoSubstitutionTemplateLiteral(functionBody) ||
-      ts.isStringLiteral(functionBody)
+      ts.isStringLiteral(functionBody) ||
+      ts.isNumericLiteral(functionBody)
     );
   }
 
@@ -56,7 +57,8 @@ export const evaluateFunction = (
     if (
       ts.isTemplateLiteral(functionBody) ||
       ts.isNoSubstitutionTemplateLiteral(functionBody) ||
-      ts.isStringLiteral(functionBody)
+      ts.isStringLiteral(functionBody) ||
+      ts.isNumericLiteral(functionBody)
     ) {
       return templateLiteralToCss(functionBody, collectedDeclarations, context);
     }
