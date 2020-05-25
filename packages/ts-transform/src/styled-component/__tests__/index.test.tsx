@@ -539,6 +539,34 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('.css-test{color:red}');
     });
 
+    it('should transform an inline expression', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+
+        const Div = styled.div\`
+          border-radius: \${2 + 2}px;
+          color: blue;
+        \`;
+      `);
+
+      expect(actual).toInclude(
+        '<CS hash="css-test">{[".css-test{border-radius:var(--var-test);color:blue}"]}</CS>'
+      );
+    });
+
+    // it('should transform identifier referencing an expression', () => {
+    //   const actual = transformer.transform(`
+    //     import { styled } from '@compiled/css-in-js';
+
+    //     const br = 2 + 2;
+    //     const Div = styled.div\`
+    //       border-radius: \${br}px;
+    //     \`;
+    //   `);
+
+    //   expect(actual).toInclude('<CS hash="css-test">{[".css-test{border-radius:asd}"]}</CS>');
+    // });
+
     it.todo('should transform template string with argument function variable');
 
     it.todo('should transform template string with argument function import');
