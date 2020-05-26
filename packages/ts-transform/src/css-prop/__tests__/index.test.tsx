@@ -174,6 +174,40 @@ describe('css prop transformer', () => {
     expect(actual).toInclude('className={"css-test" + " " + "foobar"}');
   });
 
+  it('should pass through spread props', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      const props = {};
+
+      <div
+        css={{
+          fontSize: 20,
+        }}
+        {...props}
+      />
+    `);
+
+    expect(actual).toInclude('<div {...props} className="css-test"/>');
+  });
+
+  it('should pass through static props', () => {
+    const actual = transformer.transform(`
+      import '@compiled/css-in-js';
+      import React from 'react';
+
+      <div
+        css={{
+          fontSize: 20,
+        }}
+        role="menu"
+      />
+    `);
+
+    expect(actual).toInclude('<div role="menu" className="css-test"/>');
+  });
+
   it('should concat explicit use of class name prop from an identifier on an element', () => {
     const actual = transformer.transform(`
       import '@compiled/css-in-js';

@@ -78,7 +78,7 @@ const createStyleNode = (node: ts.Node, className: string, css: string[], opts: 
            * Ends up looking like: `.cc-1b1wq3m{font-size:20px;}\n/*# sourceMappingURL=...`
            * When source maps are turn on.
            */
-          css.map(rule => ts.createStringLiteral(rule + sourceMap)),
+          css.map((rule) => ts.createStringLiteral(rule + sourceMap)),
           false
         )
       ),
@@ -141,7 +141,7 @@ const cloneJsxElement = (
   }
 
   const previousStyleProp = openingJsxElement.attributes.properties.find(
-    prop => prop.name && getIdentifierText(prop.name) === constants.STYLE_PROP_NAME
+    (prop) => prop.name && getIdentifierText(prop.name) === constants.STYLE_PROP_NAME
   );
 
   /**
@@ -162,7 +162,7 @@ const cloneJsxElement = (
     previousStyleProp.initializer.expression
   ) {
     if (ts.isObjectLiteralExpression(previousStyleProp.initializer.expression)) {
-      styleProperties = previousStyleProp.initializer.expression.properties.map(x => x);
+      styleProperties = previousStyleProp.initializer.expression.properties.map((x) => x);
     } else {
       stylePropIdentifier = previousStyleProp.initializer.expression;
     }
@@ -172,13 +172,17 @@ const cloneJsxElement = (
 
   const props = [
     // Filter out css prop, carry over others
-    ...openingJsxElement.attributes.properties.filter(
-      prop =>
-        prop.name &&
-        !(opts.propsToRemove || []).includes(getIdentifierText(prop.name)) &&
-        getIdentifierText(prop.name) !== constants.CLASSNAME_PROP_NAME &&
-        getIdentifierText(prop.name) !== constants.STYLE_PROP_NAME
-    ),
+    ...openingJsxElement.attributes.properties.filter((prop) => {
+      if (prop.name) {
+        return (
+          !(opts.propsToRemove || []).includes(getIdentifierText(prop.name)) &&
+          getIdentifierText(prop.name) !== constants.CLASSNAME_PROP_NAME &&
+          getIdentifierText(prop.name) !== constants.STYLE_PROP_NAME
+        );
+      }
+
+      return true;
+    }),
 
     // className={}
     ts.createJsxAttribute(ts.createIdentifier(constants.CLASSNAME_PROP_NAME), newClassNameProp),
@@ -193,7 +197,7 @@ const cloneJsxElement = (
               concatArrays(
                 styleProperties,
                 stylePropIdentifier ? [ts.createSpreadAssignment(stylePropIdentifier)] : [],
-                opts.cssVariables.map(cssVariable =>
+                opts.cssVariables.map((cssVariable) =>
                   ts.createPropertyAssignment(
                     ts.createStringLiteral(cssVariable.name),
                     cssVariable.expression
@@ -272,7 +276,7 @@ const createJsxElement = (
   }
 
   if (opts.cssVariables.length) {
-    const styleProps = opts.cssVariables.map(variable => {
+    const styleProps = opts.cssVariables.map((variable) => {
       return ts.createPropertyAssignment(
         ts.createStringLiteral(variable.name),
         variable.expression
