@@ -7,7 +7,7 @@ import whitespace from 'postcss-normalize-whitespace';
 const minify = () => {
   const preset = cssnano();
   // We exclude async because we need this to run synchronously as ts transformers aren't async!
-  const asyncPluginsToExclude = ['postcss-svgo'];
+  const asyncPluginsToExclude = ['postcss-svgo', 'postcss-normalize-charset'];
 
   return preset.plugins
     .map(([creator]: any) => {
