@@ -587,6 +587,57 @@ describe('styled component transformer', () => {
       );
     });
 
+    it('should transform arrow function call that returns css like object', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+
+        const getBr = () => ({ fontSize: 12 });
+        const Div = styled.div\`
+          \${getBr()};
+          color: red;
+        \`;
+      `);
+
+      expect(actual).toInclude(
+        '<CS hash="css-test">{[".css-test{font-size:12px;color:red}"]}</CS>'
+      );
+    });
+
+    it('should transform arrow function call that returns number', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+
+        const getBr = () => 12;
+        const Div = styled.div\`
+          font-size: \${getBr()}px;
+          color: red;
+        \`;
+      `);
+
+      expect(actual).toInclude(
+        '<CS hash="css-test">{[".css-test{font-size:12px;color:red}"]}</CS>'
+      );
+    });
+
+    it('should transform arrow function call that has a complex body', () => {
+      const actual = transformer.transform(`
+        import { styled } from '@compiled/css-in-js';
+
+        const getBr = () => {
+          return true ? 'red' : 'blue';
+        };
+        const Div = styled.div\`
+          font-size: \${getBr()}px;
+          color: red;
+        \`;
+      `);
+
+      expect(actual).toInclude(
+        '<CS hash="css-test">{[".css-test{font-size:var(--var-test-getbr);color:red}"]}</CS>'
+      );
+      expect(actual).toInclude('style={{ ...props.style, "--var-test-getbr": getBr() + "px" }}');
+    });
+
     it.todo('should transform template string with argument function variable');
 
     it.todo('should transform template string with argument function import');

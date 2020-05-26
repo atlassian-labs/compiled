@@ -180,19 +180,22 @@ export const templateLiteralToCss = (
 
       if (isReturnCssLike(declarationNode)) {
         // We want to "evaluate" it and then add the result to the css.
+        const after = cssAfterInterpolation(span.literal.text);
         const result = evaluateFunction(declarationNode, collectedDeclarations, context);
-        css += result.css;
+        css += result.css + after.variableSuffix + after.css;
         cssVariables = cssVariables.concat(result.cssVariables);
-        // TODO: DOUBLE CHECK THIS NEEDS PREFIX EXTRACTION ^
       } else {
         // Ok it doesnt return css just inline the expression as a css variable
         const variableName = cssVariableHash(span.expression);
-        css += `var(${variableName})`;
+        const before = cssBeforeInterpolation(css);
+        const after = cssAfterInterpolation(span.literal.text);
+        const cssVariableExpression = buildCssVariableExpression(span.expression, before, after);
+
+        css = before.css + `var(${variableName})` + after.css;
         cssVariables.push({
-          expression: span.expression,
+          expression: cssVariableExpression,
           name: variableName,
         });
-        // TODO: DOUBLE CHECK THIS NEEDS PREFIX EXTRACTION ^
       }
     } else if (ts.isPropertyAccessExpression(span.expression)) {
       const before = cssBeforeInterpolation(css);
