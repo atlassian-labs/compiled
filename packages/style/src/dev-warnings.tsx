@@ -23,9 +23,9 @@ export const analyzeCssInDev = (css: string[], hash: string) => {
     return;
   }
 
-  css.forEach(block => {
+  css.forEach((block) => {
     const shouldWarnAboutSelectors =
-      selectorsToWarn.map(selector => block.includes(selector)).filter(Boolean).length > 0;
+      selectorsToWarn.map((selector) => block.includes(selector)).filter(Boolean).length > 0;
 
     if (shouldWarnAboutSelectors) {
       warn(

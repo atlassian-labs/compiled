@@ -13,12 +13,12 @@ export default function transformer(
 ): ts.TransformerFactory<ts.SourceFile> {
   args.options && logger.setEnabled(!!args.options.debug);
 
-  return context => {
-    const initializedTransformers = transformers.map(transformer =>
+  return (context) => {
+    const initializedTransformers = transformers.map((transformer) =>
       transformer(program, args.options || {})(context)
     );
 
-    return sourceFile => {
+    return (sourceFile) => {
       return initializedTransformers.reduce((source, transformer) => {
         return transformer(source);
       }, sourceFile);

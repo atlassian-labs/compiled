@@ -13,7 +13,7 @@ export const isJsxElementWithCssProp = (
   return !!(
     (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) &&
     getJsxNodeAttributes(node).properties.find(
-      prop => ts.isJsxAttribute(prop) && prop.name.text === CSS_PROP_NAME
+      (prop) => ts.isJsxAttribute(prop) && prop.name.text === CSS_PROP_NAME
     )
   );
 };
@@ -48,7 +48,7 @@ export const visitJsxElementWithCssProp = (
 
   // Grab the css prop node
   const cssProp = getJsxNodeAttributes(node).properties.find(
-    prop => ts.isJsxAttribute(prop) && prop.name.escapedText === CSS_PROP_NAME
+    (prop) => ts.isJsxAttribute(prop) && prop.name.escapedText === CSS_PROP_NAME
   ) as ts.JsxAttribute;
 
   const result = buildCss(getNodeToExtract(cssProp), variableDeclarations, context);

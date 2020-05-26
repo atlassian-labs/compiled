@@ -7,7 +7,7 @@ export default {
 
 const Highlight = styled.div<{ primary: string }>({
   fontSize: '20px',
-  color: props => props.primary,
+  color: (props) => props.primary,
   margin: '20px',
   ':hover': {
     color: 'red',

@@ -10,7 +10,7 @@ import { createDevDisplayName } from '../utils/create-jsx-element';
 import { TransformerOptions } from '../types';
 
 const isStyledImportFound = (sourceFile: ts.SourceFile): boolean => {
-  return !!sourceFile.statements.find(statement =>
+  return !!sourceFile.statements.find((statement) =>
     isPackageModuleImport(statement, STYLED_COMPONENT_IMPORT)
   );
 };
@@ -43,8 +43,8 @@ export default function styledComponentTransformer(
   program: ts.Program,
   options: TransformerOptions = {}
 ): ts.TransformerFactory<ts.SourceFile> {
-  const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
-    return sourceFile => {
+  const transformerFactory: ts.TransformerFactory<ts.SourceFile> = (context) => {
+    return (sourceFile) => {
       if (!isStyledImportFound(sourceFile)) {
         return sourceFile;
       }

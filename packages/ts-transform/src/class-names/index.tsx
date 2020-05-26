@@ -8,7 +8,7 @@ import { CLASS_NAMES_IMPORT } from '../constants';
 import { TransformerOptions } from '../types';
 
 const isClassNamesFound = (sourceFile: ts.SourceFile): boolean => {
-  return !!sourceFile.statements.find(statement =>
+  return !!sourceFile.statements.find((statement) =>
     isPackageModuleImport(statement, CLASS_NAMES_IMPORT)
   );
 };
@@ -23,8 +23,8 @@ export default function classNamesTransformer(
   program: ts.Program,
   options: TransformerOptions = {}
 ): ts.TransformerFactory<ts.SourceFile> {
-  const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
-    return sourceFile => {
+  const transformerFactory: ts.TransformerFactory<ts.SourceFile> = (context) => {
+    return (sourceFile) => {
       if (!isClassNamesFound(sourceFile)) {
         return sourceFile;
       }

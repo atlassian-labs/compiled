@@ -33,7 +33,7 @@ export const visitSourceFileEnsureStyleImport = (
         node.importClause.namedBindings &&
         ts.isNamedImports(node.importClause.namedBindings)
       ) {
-        namedImports = Array.from(node.importClause.namedBindings.elements).filter(imp => {
+        namedImports = Array.from(node.importClause.namedBindings.elements).filter((imp) => {
           if (removeNamedImport) {
             return imp.name.text !== removeNamedImport;
           }
@@ -42,8 +42,8 @@ export const visitSourceFileEnsureStyleImport = (
         });
       }
 
-      imports.forEach(name => {
-        if (!namedImports.some(val => val.name.text === name)) {
+      imports.forEach((name) => {
+        if (!namedImports.some((val) => val.name.text === name)) {
           // "CC" isn't being imported yet. Add it!
           namedImports = [ts.createImportSpecifier(undefined, ts.createIdentifier(name))].concat(
             namedImports
