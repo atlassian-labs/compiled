@@ -4,11 +4,16 @@
  * There must be a better way than what we're doing, just needs some thought first.
  */
 
+export interface AfterInterpolation {
+  css: string;
+  variableSuffix?: string;
+}
+
 /**
  * Extracts a suffix from a css property e.g:
  * 'px;font-size: 20px; would return "px" as the suffix and ";font-size: 20px;" as rest.
  */
-export const cssAfterInterpolation = (css: string): { css: string; variableSuffix?: string } => {
+export const cssAfterInterpolation = (css: string): AfterInterpolation => {
   let variableSuffix = '';
 
   if (css.includes('(') || css[0] === ' ' || css[0] === '\n' || css[0] === ';' || css[0] === ',') {
@@ -39,7 +44,12 @@ export const cssAfterInterpolation = (css: string): { css: string; variableSuffi
   };
 };
 
-export const cssBeforeInterpolation = (css: string): { css: string; variablePrefix?: string } => {
+export interface BeforeInterpolation {
+  css: string;
+  variablePrefix?: string;
+}
+
+export const cssBeforeInterpolation = (css: string): BeforeInterpolation => {
   const trimCss = css.trim();
   if (
     trimCss[trimCss.length - 1] === '(' ||

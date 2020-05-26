@@ -338,7 +338,7 @@ describe('class names transformer', () => {
       `);
 
       expect(actual).toInclude(
-        '<div style={{ "--var-test-fontsize": fontSize }} className={"css-test"}>hello, world!</div>'
+        '<div style={{ "--var-test-fontsize": fontSize + "px" }} className={"css-test"}>hello, world!</div>'
       );
       expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize)}');
     });
