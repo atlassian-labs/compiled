@@ -170,4 +170,26 @@ describe('leading pseduos in css', () => {
 
     expect(actual.join('\n')).toMatchInlineSnapshot(`".cls [data-foo=\\",\\"]{color:hotpink}"`);
   });
+
+  it('should not build charset rules when minifying', () => {
+    const actual = transformCss(
+      '.cls',
+      `
+      position: relative;
+      text-transform: capitalize;
+
+      :after {
+        content: "›";
+        position: absolute;
+        right: -2rem;
+      }
+    `,
+      { minify: true }
+    );
+
+    expect(actual.join('\n')).toMatchInlineSnapshot(`
+      ".cls{position:relative;text-transform:capitalize}
+      .cls:after{content:\\"›\\";position:absolute;right:-2rem}"
+    `);
+  });
 });
