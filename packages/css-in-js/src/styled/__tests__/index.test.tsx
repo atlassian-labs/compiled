@@ -28,7 +28,7 @@ describe('styled component', () => {
   it('should interpolate a simple number value', () => {
     const size = '12px';
     const StyledDiv = styled.div<{ fontSize: string }>`
-      font-size: ${props => props.fontSize};
+      font-size: ${(props) => props.fontSize};
     `;
 
     const { getByText } = render(<StyledDiv fontSize={size}>hello world</StyledDiv>);
@@ -61,7 +61,7 @@ describe('styled component', () => {
   it('should not pass down invalid html attributes to the node', () => {
     const size = '12px';
     const StyledDiv = styled.div<{ fonty: string }>`
-      font-size: ${props => props.fonty};
+      font-size: ${(props) => props.fonty};
     `;
 
     const { getByText } = render(<StyledDiv fonty={size}>hello world</StyledDiv>);
@@ -72,8 +72,8 @@ describe('styled component', () => {
   it('should automatically add suffix on template literal', () => {
     const size = 12;
     const StyledDiv = styled.div<{ size: number }>`
-      height: ${props => props.size}px;
-      width: ${props => props.size}px;
+      height: ${(props) => props.size}px;
+      width: ${(props) => props.size}px;
     `;
 
     const { getByText } = render(<StyledDiv size={size}>hello world</StyledDiv>);
@@ -87,8 +87,8 @@ describe('styled component', () => {
   it('should automatically add suffix on css object', () => {
     const size = 12;
     const StyledDiv = styled.div<{ size: number }>({
-      height: props => `${props.size}px`,
-      width: props => `${props.size}px`,
+      height: (props) => `${props.size}px`,
+      width: (props) => `${props.size}px`,
     });
 
     const { getByText } = render(<StyledDiv size={size}>hello world</StyledDiv>);
@@ -152,18 +152,18 @@ describe('styled component', () => {
       color: 'currentColor',
       textDecoration: 'none',
       position: 'relative',
-      fontSize: props => props.fontSize,
+      fontSize: (props) => props.fontSize,
       ':before': {
-        fontSize: props => props.fontSize,
+        fontSize: (props) => props.fontSize,
         opacity: 0,
         content: '⚓',
         position: 'absolute',
         left: '-5rem',
       },
       ':hover': {
-        fontSize: props => props.fontSize,
+        fontSize: (props) => props.fontSize,
         ':before': {
-          fontSize: props => props.fontSize,
+          fontSize: (props) => props.fontSize,
           opacity: 1,
         },
       },
@@ -175,7 +175,7 @@ describe('styled component', () => {
     const Link = styled.a``;
 
     render(
-      <Link ref={r => (ref = r)} href="#">
+      <Link ref={(r) => (ref = r)} href="#">
         hello world
       </Link>
     );
@@ -248,7 +248,7 @@ describe('styled component', () => {
   it('should not type error', () => {
     styled.div<{ primary: string }>({
       fontSize: '20px',
-      color: props => props.primary,
+      color: (props) => props.primary,
       margin: '20px',
       ':hover': {
         color: 'red',

@@ -13,7 +13,7 @@ import { TransformerOptions } from '../types';
 const isJsxPragmaFoundWithOurJsxFunction = (sourceFile: ts.SourceFile) => {
   return (
     // Only continue if we've found an import for this pkg.
-    sourceFile.statements.find(statement => {
+    sourceFile.statements.find((statement) => {
       return isPackageModuleImport(statement);
     })
   );
@@ -23,8 +23,8 @@ export default function cssPropTransformer(
   program: ts.Program,
   options: TransformerOptions = {}
 ): ts.TransformerFactory<ts.SourceFile> {
-  const transformerFactory: ts.TransformerFactory<ts.SourceFile> = context => {
-    return sourceFile => {
+  const transformerFactory: ts.TransformerFactory<ts.SourceFile> = (context) => {
+    return (sourceFile) => {
       if (!isJsxPragmaFoundWithOurJsxFunction(sourceFile)) {
         // nothing to do - return source file and nothing will be transformed.
         return sourceFile;

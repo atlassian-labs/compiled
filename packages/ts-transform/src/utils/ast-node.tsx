@@ -48,7 +48,7 @@ export const getJsxNodeAttributesValue = (
   propertyName: string
 ) => {
   const attribute = getJsxNodeAttributes(node).properties.find(
-    prop => ts.isJsxAttribute(prop) && prop.name.escapedText === propertyName
+    (prop) => ts.isJsxAttribute(prop) && prop.name.escapedText === propertyName
   ) as ts.JsxAttribute | undefined;
 
   return attribute?.initializer ? attribute.initializer : undefined;
@@ -79,7 +79,7 @@ export const isPackageModuleImport = (statement: ts.Node, namedImport?: string):
 
   const isStyledImported =
     statement.importClause.namedBindings.elements.filter(
-      specifier => specifier.name.escapedText === namedImport
+      (specifier) => specifier.name.escapedText === namedImport
     ).length > 0;
 
   return isStyledImported;

@@ -239,6 +239,6 @@ export const objectLiteralToCssString = (
 
   return {
     css,
-    cssVariables: unique(cssVariables, item => item.name),
+    cssVariables: unique(cssVariables, (item) => item.name),
   };
 };

@@ -37,7 +37,7 @@ export const collectDeclarationsFromNode = (
     }
 
     const exportSymbols = typeChecker.getExportsOfModule(importSymbol);
-    exportSymbols.forEach(exportSymbol => {
+    exportSymbols.forEach((exportSymbol) => {
       if (!exportSymbol.valueDeclaration) {
         logger.log('declaration is undefined - skipping');
         return;

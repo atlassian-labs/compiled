@@ -50,7 +50,7 @@ export const visitClassNamesJsxElement = (
       styleObjectLiteral = ts.createObjectLiteral(
         // create new object literal using original object literal properties
         styleObjectLiteral.properties.concat(
-          cssVariables.map(cssVar =>
+          cssVariables.map((cssVar) =>
             ts.createPropertyAssignment(ts.createStringLiteral(cssVar.name), cssVar.expression)
           )
         )
@@ -76,7 +76,7 @@ export const visitClassNamesJsxElement = (
   // Do another pass that will replace style identifier with the style object literal
   const withStyleParsedNode = ts.visitEachChild(newClassNamesNode, styleVisitor, context);
 
-  const returnNode = withStyleParsedNode.children.find(child => ts.isJsxExpression(child));
+  const returnNode = withStyleParsedNode.children.find((child) => ts.isJsxExpression(child));
   if (
     !returnNode ||
     !ts.isJsxExpression(returnNode) ||

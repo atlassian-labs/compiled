@@ -4,7 +4,7 @@ import * as constants from '../constants';
 
 const isReactImportFound = (sourceFile: ts.SourceFile) => {
   return sourceFile.statements.find(
-    statement =>
+    (statement) =>
       ts.isImportDeclaration(statement) &&
       ts.isStringLiteral(statement.moduleSpecifier) &&
       statement.moduleSpecifier.text === constants.REACT_PACKAGE_NAME

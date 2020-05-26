@@ -60,7 +60,7 @@ export const buildCss = (
     }
   } else if (ts.isArrayLiteralExpression(node)) {
     const arrayLiteral = node;
-    arrayLiteral.elements.forEach(element => {
+    arrayLiteral.elements.forEach((element) => {
       let actual: ts.Expression = element;
 
       if (ts.isIdentifier(element)) {

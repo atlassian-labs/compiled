@@ -14,17 +14,17 @@ const kebabCase = (str: string) =>
 const removeSpaces = (str?: string) => str && str.replace(/\s/g, '');
 
 const mapProperties = (properties: Record<string, any>) =>
-  Object.keys(properties).map(property => `${kebabCase(property)}:${properties[property]}`);
+  Object.keys(properties).map((property) => `${kebabCase(property)}:${properties[property]}`);
 
 const getMountedProperties = () =>
   Array.from(document.styleSheets)
-    .map(sheet =>
+    .map((sheet) =>
       // @ts-ignore
       sheet.cssRules.map((rule: CSSRule) => rule.style.cssText)
     )
     .join(' ');
 
-const onlyRules = (rules?: StyleRules['rules']) => rules?.filter(r => r.type === 'rule');
+const onlyRules = (rules?: StyleRules['rules']) => rules?.filter((r) => r.type === 'rule');
 
 const findMediaRules = (
   allRules: StyleRules['rules'] = [],
@@ -50,14 +50,14 @@ const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) =
     if (media) {
       return onlyRules(findMediaRules(ast.stylesheet?.rules, media));
     }
-    return ast.stylesheet?.rules.filter(r => (r.type = 'rule')); // omit media objects
+    return ast.stylesheet?.rules.filter((r) => (r.type = 'rule')); // omit media objects
   };
 
   const allRules = getAllRules();
   const klass = target ? `.${className}${target}` : `.${className}`;
-  return allRules?.filter(r => {
+  return allRules?.filter((r) => {
     if ('selectors' in r) {
-      return r.selectors?.find(s => removeSpaces(s) === removeSpaces(klass));
+      return r.selectors?.find((s) => removeSpaces(s) === removeSpaces(klass));
     }
     return;
   });
@@ -68,10 +68,10 @@ const findStylesInRules = (styles: string[], rules: CSS.Rule[] | undefined) => {
 
   if (!rules) return found;
 
-  styles.forEach(s => {
-    rules?.forEach(r => {
+  styles.forEach((s) => {
+    rules?.forEach((r) => {
       if ('declarations' in r) {
-        r.declarations?.forEach(d => {
+        r.declarations?.forEach((d) => {
           if ('property' in d) {
             if (s === `${d.property}:${d.value}`) found.push(s);
           }
@@ -121,13 +121,13 @@ export function toHaveCompiledCss(
     }
 
     const ast = CSS.parse(css);
-    classNames.forEach(c => {
+    classNames.forEach((c) => {
       const rules = getRules(ast, matchFilter, c);
       foundStyles.push(...findStylesInRules(stylesToFind, rules));
     });
   }
 
-  const notFoundStyles = stylesToFind.filter(style => !foundStyles.includes(style));
+  const notFoundStyles = stylesToFind.filter((style) => !foundStyles.includes(style));
   const foundFormatted = stylesToFind.join(', ');
   const notFoundFormatted = notFoundStyles.join(', ');
 

@@ -65,7 +65,7 @@ export const visitStyledComponent = (
   const result = buildCss(getCssNode(node), collectedDeclarations, context);
   const propsToDestructure: string[] = [];
 
-  const visitedCssVariables = result.cssVariables.map(cssVarObj => {
+  const visitedCssVariables = result.cssVariables.map((cssVarObj) => {
     // Expression can be simple (props.color), complex (props.color ? 'blah': 'yeah', or be an IIFE)
     // We need to traverse it to find uses of props.blah and then mark them.
     // We make the assumption that everything accessing props will be "props.blah" because we are lazy.
@@ -101,9 +101,9 @@ export const visitStyledComponent = (
     node,
     context,
     sourceFile,
-    styleFactory: props => [
+    styleFactory: (props) => [
       ts.createSpreadAssignment(ts.createIdentifier('props.style')),
-      ...props.map(prop => {
+      ...props.map((prop) => {
         const propName = getPropertyAccessName(getIdentifierText(prop.initializer));
         if (propsToDestructure.includes(propName)) {
           prop.initializer = ts.createIdentifier(propName);
@@ -111,7 +111,7 @@ export const visitStyledComponent = (
         return prop;
       }),
     ],
-    classNameFactory: className =>
+    classNameFactory: (className) =>
       joinToJsxExpression(className, ts.createIdentifier('props.className'), {
         conditional: true,
       }),
@@ -152,7 +152,7 @@ export const visitStyledComponent = (
                   originalTagName
                 ),
 
-                ...propsToDestructure.map(prop =>
+                ...propsToDestructure.map((prop) =>
                   ts.createBindingElement(
                     undefined,
                     undefined,
