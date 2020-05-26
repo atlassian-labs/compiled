@@ -19,27 +19,30 @@ const minify = () => {
     });
 };
 
+const COMMA_CHAR_CODE = 58;
+
 const parentOrphenedPseudos = plugin('parent-orphened-pseudos', () => {
   return (root) => {
     root.walkRules((rule) => {
       if (rule.selector.includes(':')) {
         const newSelector = rule.selector
-          .split(',')
+          .replace(/\s+/g, ' ')
+          .split(', ')
           .map((part) => {
             if (part.match(/^. /)) {
               // If the selector has one characters with a space after it, e.g. "> :first-child" then return early.
               return part;
             }
 
-            if (part.includes(':')) {
-              // If the selector starts with a colon or has a space and then a colon prepend an "&"!
+            if (part.charCodeAt(0) === COMMA_CHAR_CODE) {
+              // If the selector starts with a colon prepend an "&"!
               return part.replace(/^:| :/g, '&:');
             }
 
             // Nothing to do - cya!
             return part;
           })
-          .join(',');
+          .join(',\n');
 
         rule.selector = newSelector;
       }

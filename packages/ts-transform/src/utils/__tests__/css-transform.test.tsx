@@ -27,7 +27,7 @@ describe('leading pseduos in css', () => {
 
     expect(actual.join('\n')).toMatchInlineSnapshot(`
       ".cls:hover div,
-           .cls:focus{color:hotpink}"
+      .cls:focus{color:hotpink}"
     `);
   });
 
@@ -50,17 +50,17 @@ describe('leading pseduos in css', () => {
 
     expect(actual.join('\n')).toMatchInlineSnapshot(`
       ".cls .foo:first-child,
-              .cls .foo div,
-              .cls .foo span,
-              .cls .foo:last-child,
-              .cls .bar div:first-child,
-              .cls .bar div div,
-              .cls .bar div span,
-              .cls .bar div:last-child,
-              .cls .qwe:first-child,
-              .cls .qwe div,
-              .cls .qwe span,
-              .cls .qwe:last-child{color:hotpink}"
+      .cls .foo div,
+      .cls .foo span,
+      .cls .foo:last-child,
+      .cls .bar div:first-child,
+      .cls .bar div div,
+      .cls .bar div span,
+      .cls .bar div:last-child,
+      .cls .qwe:first-child,
+      .cls .qwe div,
+      .cls .qwe span,
+      .cls .qwe:last-child{color:hotpink}"
     `);
   });
 
@@ -128,7 +128,7 @@ describe('leading pseduos in css', () => {
 
     expect(actual.join('\n')).toMatchInlineSnapshot(`
       "@media (max-width: 400px){@supports (display: grid){.cls div,
-               .cls:first-child{color:hotpink}}}"
+      .cls:first-child{color:hotpink}}}"
     `);
   });
 
@@ -143,5 +143,31 @@ describe('leading pseduos in css', () => {
     );
 
     expect(actual.join('\n')).toMatchInlineSnapshot(`".cls > :first-child{color:hotpink}"`);
+  });
+
+  it('should not affect the output css if theres nothing to do', () => {
+    const actual = transformCss(
+      '.cls',
+      `
+      div {
+        color: hotpink;
+      }
+    `
+    );
+
+    expect(actual.join('\n')).toMatchInlineSnapshot(`".cls div{color:hotpink}"`);
+  });
+
+  it('should ignore parsing a data attribute selector with a comma in it', () => {
+    const actual = transformCss(
+      '.cls',
+      `
+      [data-foo=","] {
+        color: hotpink;
+      }
+    `
+    );
+
+    expect(actual.join('\n')).toMatchInlineSnapshot(`".cls [data-foo=\\",\\"]{color:hotpink}"`);
   });
 });
