@@ -183,7 +183,7 @@ export const objectLiteralToCssString = (
       const key = kebabCase(getIdentifierText(prop.name));
       cssVariables = cssVariables.concat(result.cssVariables);
       return `${acc}
-        ${key}:${result.css}
+        ${key}:${result.css};
       `;
     } else if (ts.isPropertyAssignment(prop) && ts.isCallExpression(prop.initializer)) {
       // We've found a call expression prop, e.g. color: lighten('ok')
