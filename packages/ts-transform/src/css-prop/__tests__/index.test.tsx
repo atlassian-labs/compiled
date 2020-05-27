@@ -770,7 +770,7 @@ describe('css prop transformer', () => {
         <div css={{ marginLeft: \`\${heading.depth}rem\` }}>hello world</div>
       `);
 
-      expect(actual).toInclude('style={{ "--var-test": heading.depth + "rem" }}');
+      expect(actual).toInclude('style={{ "--var-test": (heading.depth || "") + "rem" }}');
       expect(actual).toInclude('.css-test{margin-left:var(--var-test)}');
     });
 
@@ -800,7 +800,7 @@ describe('css prop transformer', () => {
         <div css={{ marginLeft: \`calc(100% - \${heading.depth}rem)\` }}>hello world</div>
       `);
 
-      expect(actual).toInclude('style={{ "--var-test": heading.depth + "rem" }}');
+      expect(actual).toInclude('style={{ "--var-test": (heading.depth || "") + "rem" }}');
       expect(actual).toInclude('.css-test{margin-left:calc(100% - var(--var-test))}');
     });
 

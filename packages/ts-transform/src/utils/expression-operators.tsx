@@ -39,6 +39,14 @@ export function joinToJsxExpression(
   );
 }
 
+export const shortCircuitToEmptyString = (left: ts.Expression): ts.BinaryExpression => {
+  return ts.createBinary(
+    left,
+    ts.createToken(ts.SyntaxKind.BarBarToken),
+    ts.createStringLiteral('')
+  );
+};
+
 /**
  * left + right
  */

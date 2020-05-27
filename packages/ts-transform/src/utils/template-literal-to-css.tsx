@@ -5,7 +5,11 @@ import { cssVariableHash } from './hash';
 import { objectLiteralToCssString } from './object-literal-to-css';
 import { extractCssVarFromArrowFunction } from './extract-css-var-from-arrow-function';
 import { evaluateFunction, isReturnCssLike } from './evalulate-function';
-import { joinToBinaryExpression, joinThreeExpressions } from './expression-operators';
+import {
+  joinToBinaryExpression,
+  joinThreeExpressions,
+  shortCircuitToEmptyString,
+} from './expression-operators';
 import {
   cssAfterInterpolation,
   cssBeforeInterpolation,
@@ -25,18 +29,18 @@ const buildCssVariableExpression = (
   if (after.variableSuffix && before.variablePrefix) {
     cssVariableExpression = joinThreeExpressions(
       ts.createStringLiteral(before.variablePrefix),
-      initialExpression,
+      shortCircuitToEmptyString(initialExpression),
       ts.createStringLiteral(after.variableSuffix)
     );
   } else if (after.variableSuffix) {
     cssVariableExpression = joinToBinaryExpression(
-      initialExpression,
+      shortCircuitToEmptyString(initialExpression),
       ts.createStringLiteral(after.variableSuffix)
     );
   } else if (before.variablePrefix) {
     cssVariableExpression = joinToBinaryExpression(
       ts.createStringLiteral(before.variablePrefix),
-      initialExpression
+      shortCircuitToEmptyString(initialExpression)
     );
   }
 

@@ -103,6 +103,18 @@ describe('styled component transformer', () => {
     `);
   });
 
+  it('should shortcircuit props with suffix to a empty string to avoid undefined in css', () => {
+    const actual = transformer.transform(`
+      import { styled } from '@compiled/css-in-js';
+
+      const ListItem = styled.div\`
+        font-size: \${props => props.color}px;
+      \`;
+    `);
+
+    expect(actual).toInclude('"--var-test-propscolor": (props.color || "") + "px"');
+  });
+
   it('should add react default import if missing', () => {
     const actual = transformer.transform(`
       import { styled } from '@compiled/css-in-js';
@@ -227,7 +239,7 @@ describe('styled component transformer', () => {
 
       expect(actual).toInclude('.css-test{font-size:var(--var-test-propstextsize)}');
       expect(actual).toInclude('textSize, ...props }');
-      expect(actual).toInclude('"--var-test-propstextsize": textSize + "px"');
+      expect(actual).toInclude('"--var-test-propstextsize": (textSize || "") + "px"');
     });
 
     it('should persist suffix of dynamic property value into inline styles', () => {
@@ -444,7 +456,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('"--var-test-propscolor": "super" + props.color + "big"');
+      expect(actual).toInclude('"--var-test-propscolor": "super" + (props.color || "") + "big"');
     });
 
     it('should move any prefix of a dynamic arrow func property into the style property', () => {
@@ -456,7 +468,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('"--var-test-propscolor": "super" + props.color');
+      expect(actual).toInclude('"--var-test-propscolor": "super" + (props.color || "")');
     });
 
     it('should move suffix and prefix of a dynamic property into the style property', () => {
@@ -568,7 +580,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude(
         '<CS hash="css-test">{[".css-test{border-radius:var(--var-test-br);color:red}"]}</CS>'
       );
-      expect(actual).toInclude('style={{ ...props.style, "--var-test-br": br + "px" }}');
+      expect(actual).toInclude('style={{ ...props.style, "--var-test-br": (br || "") + "px" }}');
     });
 
     it('should transform inline arrow function with suffix', () => {
@@ -635,7 +647,9 @@ describe('styled component transformer', () => {
       expect(actual).toInclude(
         '<CS hash="css-test">{[".css-test{font-size:var(--var-test-getbr);color:red}"]}</CS>'
       );
-      expect(actual).toInclude('style={{ ...props.style, "--var-test-getbr": getBr() + "px" }}');
+      expect(actual).toInclude(
+        'style={{ ...props.style, "--var-test-getbr": (getBr() || "") + "px" }}'
+      );
     });
 
     it.todo('should transform template string with argument function variable');
@@ -761,7 +775,7 @@ describe('styled component transformer', () => {
 
       expect(actual).toInclude('textSize, ...props }');
       expect(actual).toInclude('.css-test{font-size:var(--var-test-propstextsize)}');
-      expect(actual).toInclude('"--var-test-propstextsize": textSize + "px"');
+      expect(actual).toInclude('"--var-test-propstextsize": (textSize || "") + "px"');
     });
 
     it('should persist suffix of dynamic property value into inline styles', () => {
@@ -775,7 +789,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('"--var-test-propsfontsize": props.fontSize + "px" }}');
+      expect(actual).toInclude('"--var-test-propsfontsize": (props.fontSize || "") + "px" }}');
       expect(actual).toInclude('.css-test{font-size:var(--var-test-propsfontsize)}');
     });
 
