@@ -20,6 +20,10 @@ describe('template literal to css', () => {
       expect(extract.css).toEqual(';font-color:blue;');
     });
 
+    xit('should ignore a space as prefix', () => {});
+
+    xit('should ignore a space as suffix', () => {});
+
     it('should extract the prefix of a complex template literal', () => {
       const complexParts = ['transform: translateX(', ');color:blue;'];
 

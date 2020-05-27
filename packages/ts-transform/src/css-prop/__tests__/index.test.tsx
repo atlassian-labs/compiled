@@ -1262,6 +1262,23 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('.css-test{color:blue;color:red}');
     });
 
+    xit('should parse an inline string interpolation delimited by spaces', () => {
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+        import React from 'react';
+
+        const gridSize = () => 8;
+        const HORIZONTAL_SPACING = \`\${gridSize() / 2}px\`;
+
+        <div css={{
+          padding: \`0 \${HORIZONTAL_SPACING}\`,
+          color: 'red',
+         }}>hello world</div>
+      `);
+
+      expect(actual).toInclude('"--var-test-horizontal_spacing": HORIZONTAL_SPACING');
+    });
+
     it('should transform object with argument arrow function import', () => {
       const actual = transformer.addSource({
         path: '/styles.ts',
