@@ -1,6 +1,6 @@
 {
   "name": "@compiled/css-in-js",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "The CSS in JS authoring experience you love without the runtime cost",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
@@ -28,7 +28,7 @@
     "src"
   ],
   "dependencies": {
-    "@compiled/style": "0.4.2",
+    "@compiled/style": "0.4.3",
     "csstype": "^2.0.0"
   },
   "peerDependencies": {
