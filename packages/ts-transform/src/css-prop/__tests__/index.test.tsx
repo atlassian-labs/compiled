@@ -1102,6 +1102,20 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('.css-test{color:blue;color:red}');
     });
 
+    it.only('should transform inline template literal with suffix', () => {
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+        import React from 'react';
+
+        const gridSize = 4;
+        const Div = () => <div css={{
+          padding: \`0 \${gridSize}px\`,
+        }} />;
+      `);
+
+      expect(actual).toInclude('<CS hash="css-test">{[".css-test{padding:0 4px}"]}</CS>');
+    });
+
     it('should transform object spread with no argument function variable', () => {
       const actual = transformer.transform(`
         import '@compiled/css-in-js';
