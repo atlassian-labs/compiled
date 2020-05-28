@@ -20,9 +20,32 @@ describe('template literal to css', () => {
       expect(extract.css).toEqual(';font-color:blue;');
     });
 
-    xit('should ignore a space as prefix', () => {});
+    it('should ignore a space as prefix', () => {
+      const simpleParts = ['padding: 0 ', ' 0'];
 
-    xit('should ignore a space as suffix', () => {});
+      const extract = cssBeforeInterpolation(simpleParts[0]);
+
+      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.css).toEqual('padding: 0 ');
+    });
+
+    it('should ignore a space as suffix', () => {
+      const simpleParts = ['padding: 0 ', ' 0'];
+
+      const extract = cssAfterInterpolation(simpleParts[1]);
+
+      expect(extract.variableSuffix).toEqual('');
+      expect(extract.css).toEqual(' 0');
+    });
+
+    it('should extract an interpolation that has a suffix', () => {
+      const simpleParts = ['padding: 0 ', 'px 0'];
+
+      const extract = cssAfterInterpolation(simpleParts[1]);
+
+      expect(extract.variableSuffix).toEqual('px');
+      expect(extract.css).toEqual(' 0');
+    });
 
     it('should extract the prefix of a complex template literal', () => {
       const complexParts = ['transform: translateX(', ');color:blue;'];
