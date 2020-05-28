@@ -1318,6 +1318,28 @@ describe('css prop transformer', () => {
       expect(actual).toInclude('padding:0 var(--var-test-horizontal_spacing) 0 0;');
     });
 
+    it('should parse an inline string interpolation delimited by multiple spaces and multiple suffix', () => {
+      const actual = transformer.transform(`
+        import '@compiled/css-in-js';
+        import React from 'react';
+
+        const gridSize = () => 8;
+        const HORIZONTAL_SPACING = gridSize();
+
+        <div css={{
+          padding: \`\${HORIZONTAL_SPACING}px \${HORIZONTAL_SPACING}px \${HORIZONTAL_SPACING}px \${HORIZONTAL_SPACING}px\`,
+          color: 'red',
+         }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        '"--var-test-horizontal_spacing": (HORIZONTAL_SPACING || "") + "px"'
+      );
+      expect(actual).toInclude(
+        'padding:var(--var-test-horizontal_spacing) var(--var-test-horizontal_spacing) var(--var-test-horizontal_spacing) var(--var-test-horizontal_spacing);'
+      );
+    });
+
     it('should transform object with argument arrow function import', () => {
       const actual = transformer.addSource({
         path: '/styles.ts',
