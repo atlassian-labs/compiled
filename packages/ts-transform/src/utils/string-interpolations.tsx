@@ -6,7 +6,7 @@
 
 export interface AfterInterpolation {
   css: string;
-  variableSuffix?: string;
+  variableSuffix: string;
 }
 
 /**
@@ -48,7 +48,7 @@ export const cssAfterInterpolation = (css: string): AfterInterpolation => {
 
 export interface BeforeInterpolation {
   css: string;
-  variablePrefix?: string;
+  variablePrefix: string;
 }
 
 export const cssBeforeInterpolation = (css: string): BeforeInterpolation => {
@@ -63,7 +63,7 @@ export const cssBeforeInterpolation = (css: string): BeforeInterpolation => {
     // There is no prefix we need to extract here.
     return {
       css: css,
-      variablePrefix: undefined,
+      variablePrefix: '',
     };
   }
 
@@ -74,7 +74,7 @@ export const cssBeforeInterpolation = (css: string): BeforeInterpolation => {
     };
   }
 
-  let variablePrefix = css.match(/:(.+$)/)?.[1];
+  let variablePrefix = css.match(/:(.+$)/)?.[1] || '';
   if (variablePrefix) {
     variablePrefix = variablePrefix.trim();
     const lastIndex = css.lastIndexOf(variablePrefix);

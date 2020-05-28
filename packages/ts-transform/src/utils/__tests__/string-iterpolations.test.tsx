@@ -25,7 +25,7 @@ describe('template literal to css', () => {
 
       const extract = cssBeforeInterpolation(simpleParts[0]);
 
-      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.variablePrefix).toEqual('');
       expect(extract.css).toEqual('padding: 0 ');
     });
 
@@ -52,7 +52,7 @@ describe('template literal to css', () => {
 
       const extract = cssBeforeInterpolation(complexParts[0]);
 
-      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.variablePrefix).toEqual('');
       expect(extract.css).toEqual('transform: translateX(');
     });
 
@@ -70,7 +70,7 @@ describe('template literal to css', () => {
 
       const extract = cssBeforeInterpolation(complexPartsNoPropertyName[0]);
 
-      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.variablePrefix).toEqual('');
       expect(extract.css).toEqual('transform: transform3d(');
     });
 
@@ -79,7 +79,7 @@ describe('template literal to css', () => {
 
       const extract = cssBeforeInterpolation(complexPartsNoPropertyName[1]);
 
-      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.variablePrefix).toEqual('');
       expect(extract.css).toEqual(', ');
     });
 
@@ -107,7 +107,7 @@ describe('template literal to css', () => {
       const before = cssBeforeInterpolation(css[0]);
       const after = cssAfterInterpolation(css[1]);
 
-      expect(before.variablePrefix).toEqual(undefined);
+      expect(before.variablePrefix).toEqual('');
       expect(before.css).toEqual(css[0]);
       expect(after.variableSuffix).toEqual('px');
       expect(after.css).toEqual(', ');
@@ -119,7 +119,7 @@ describe('template literal to css', () => {
       const before = cssBeforeInterpolation(css[0]);
       const after = cssAfterInterpolation(css[1]);
 
-      expect(before.variablePrefix).toEqual(undefined);
+      expect(before.variablePrefix).toEqual('');
       expect(before.css).toEqual('\n            transform: translate3d(var(--var-test), ');
       expect(after.variableSuffix).toEqual('');
       expect(after.css).toEqual(', 0);');
@@ -143,7 +143,7 @@ describe('template literal to css', () => {
       const after = cssAfterInterpolation(parts[1]);
 
       expect(before.css).toEqual(parts[0]);
-      expect(before.variablePrefix).toEqual(undefined);
+      expect(before.variablePrefix).toEqual('');
       expect(after.variableSuffix).toEqual('');
       expect(after.css).toEqual(parts[1]);
     });
@@ -163,7 +163,7 @@ describe('template literal to css', () => {
       const after = cssAfterInterpolation(parts[1]);
 
       expect(before.css).toEqual(parts[0]);
-      expect(before.variablePrefix).toEqual(undefined);
+      expect(before.variablePrefix).toEqual('');
       expect(after.css).toEqual(parts[1]);
       expect(after.variableSuffix).toEqual('');
     });
@@ -181,7 +181,7 @@ describe('template literal to css', () => {
       const after = cssAfterInterpolation(parts[1]);
 
       expect(before.css).toEqual(parts[0]);
-      expect(before.variablePrefix).toEqual(undefined);
+      expect(before.variablePrefix).toEqual('');
       expect(after.css).toEqual(parts[1]);
       expect(after.variableSuffix).toEqual('');
     });
@@ -197,7 +197,7 @@ describe('template literal to css', () => {
       const after = cssAfterInterpolation(parts[1]);
 
       expect(before.css).toEqual(parts[0]);
-      expect(before.variablePrefix).toEqual(undefined);
+      expect(before.variablePrefix).toEqual('');
       expect(after.css).toEqual(parts[1]);
       expect(after.variableSuffix).toEqual('');
     });
@@ -236,7 +236,7 @@ describe('template literal to css', () => {
 
       const extract = cssBeforeInterpolation(complexPartsNoPropertyName[0]);
 
-      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.variablePrefix).toEqual('');
       expect(extract.css).toEqual('calc(100% - ');
     });
 
@@ -254,7 +254,7 @@ describe('template literal to css', () => {
 
       const extract = cssBeforeInterpolation(complexPartsNoPropertyName[0]);
 
-      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.variablePrefix).toEqual('');
       expect(extract.css).toEqual('transform3d(');
     });
 
@@ -263,7 +263,7 @@ describe('template literal to css', () => {
 
       const extract = cssBeforeInterpolation(complexPartsNoPropertyName[1]);
 
-      expect(extract.variablePrefix).toEqual(undefined);
+      expect(extract.variablePrefix).toEqual('');
       expect(extract.css).toEqual(', ');
     });
 
