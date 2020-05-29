@@ -6,7 +6,7 @@
 
 export interface AfterInterpolation {
   css: string;
-  variableSuffix?: string;
+  variableSuffix: string;
 }
 
 /**
@@ -30,6 +30,8 @@ export const cssAfterInterpolation = (css: string): AfterInterpolation => {
       cssIndex = css.indexOf(',');
     } else if (css.indexOf('\n') !== -1) {
       cssIndex = css.indexOf('\n');
+    } else if (css.indexOf(' ') !== -1) {
+      cssIndex = css.indexOf(' ');
     } else {
       cssIndex = css.length;
     }
@@ -46,7 +48,7 @@ export const cssAfterInterpolation = (css: string): AfterInterpolation => {
 
 export interface BeforeInterpolation {
   css: string;
-  variablePrefix?: string;
+  variablePrefix: string;
 }
 
 export const cssBeforeInterpolation = (css: string): BeforeInterpolation => {
@@ -54,13 +56,14 @@ export const cssBeforeInterpolation = (css: string): BeforeInterpolation => {
   if (
     trimCss[trimCss.length - 1] === '(' ||
     trimCss[0] === ',' ||
-    trimCss[trimCss.length - 1] === ','
+    trimCss[trimCss.length - 1] === ',' ||
+    css[css.length - 1] === ' '
   ) {
     // We are inside a css like "translateX(".
     // There is no prefix we need to extract here.
     return {
       css: css,
-      variablePrefix: undefined,
+      variablePrefix: '',
     };
   }
 
@@ -71,7 +74,7 @@ export const cssBeforeInterpolation = (css: string): BeforeInterpolation => {
     };
   }
 
-  let variablePrefix = css.match(/:(.+$)/)?.[1];
+  let variablePrefix = css.match(/:(.+$)/)?.[1] || '';
   if (variablePrefix) {
     variablePrefix = variablePrefix.trim();
     const lastIndex = css.lastIndexOf(variablePrefix);
