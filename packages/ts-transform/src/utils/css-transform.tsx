@@ -3,6 +3,7 @@ import autoprefixer from 'autoprefixer';
 import cssnano from 'cssnano-preset-default';
 import nested from 'postcss-nested';
 import whitespace from 'postcss-normalize-whitespace';
+import parser from 'postcss-selector-parser';
 
 const minify = () => {
   const preset = cssnano();
@@ -19,33 +20,42 @@ const minify = () => {
     });
 };
 
-const COMMA_CHAR_CODE = 58;
+const removeSpacesBeforeSelector = (selector: parser.Node) => (selector.spaces.before = '');
+const doesCombinatorTypePrecedesSelector = (selector: parser.Node) => {
+  const previousSelector = selector.prev();
 
+  return previousSelector && previousSelector.type === 'combinator';
+};
+const prependNestingTypeToSelector = (selector: parser.Node) => {
+  const { parent } = selector;
+
+  if (parent) {
+    const nesting = parser.nesting({});
+
+    parent.insertBefore(selector, nesting);
+  }
+};
 const parentOrphenedPseudos = plugin('parent-orphened-pseudos', () => {
   return (root) => {
     root.walkRules((rule) => {
-      if (rule.selector.includes(':')) {
-        const newSelector = rule.selector
-          .replace(/\s+/g, ' ')
-          .split(', ')
-          .map((part) => {
-            if (part.match(/^. /)) {
-              // If the selector has one characters with a space after it, e.g. "> :first-child" then return early.
-              return part;
+      const parserRoot = parser((selectors) => {
+        selectors.walk((selector) => {
+          removeSpacesBeforeSelector(selector);
+
+          if (selector.type === 'pseudo') {
+            if (doesCombinatorTypePrecedesSelector(selector)) {
+              return;
             }
 
-            if (part.charCodeAt(0) === COMMA_CHAR_CODE) {
-              // If the selector starts with a colon prepend an "&"!
-              return part.replace(/^:| :/g, '&:');
-            }
+            prependNestingTypeToSelector(selector);
+          }
+        });
+      }).astSync(rule.selector);
 
-            // Nothing to do - cya!
-            return part;
-          })
-          .join(',\n');
-
-        rule.selector = newSelector;
-      }
+      // TODO: Remove any typecasting once https://github.com/postcss/postcss-selector-parser/pull/224 gets merged
+      rule.selector = (parserRoot as any)
+        .reduce((memo: parser.Node[], selector: parser.Node) => [...memo, String(selector)], [])
+        .join(',\n');
     });
   };
 });
