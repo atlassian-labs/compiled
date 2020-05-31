@@ -76,9 +76,7 @@ export const transformCss = (
   const result = postcss([
     parentOrphenedPseudos(),
     nested(),
-    autoprefixer({
-      overrideBrowserslist: ['IE 11', '> 0.5%', 'last 2 versions', 'Firefox ESR', 'not dead'],
-    }),
+    autoprefixer(),
     ...(opts.minify ? minify() : [whitespace]),
     extractStyleSheets({ callback: (sheet: string) => sheets.push(sheet) }),
   ]).process(cssWithSelector, {
