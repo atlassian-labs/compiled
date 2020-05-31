@@ -192,4 +192,64 @@ describe('leading pseduos in css', () => {
       .cls:after{content:\\"›\\";position:absolute;right:-2rem}"
     `);
   });
+
+  describe('browserslist options', () => {
+    afterEach(() => {
+      delete process.env.BROWSERSLIST;
+      delete process.env.AUTOPREFIXER_GRID;
+    });
+
+    it('should generate prefixes for default', () => {
+      const actual = transformCss(
+        '.cls',
+        `
+        div {
+          user-select: none;
+        }
+        `
+      );
+      expect(actual).toContain(
+        '.cls div{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}'
+      );
+    });
+
+    it('should generate prefixes for ms', () => {
+      process.env.BROWSERSLIST = 'Edge 16';
+      const actual = transformCss(
+        '.cls',
+        `
+        div {
+          user-select: none;
+        }
+        `
+      );
+      expect(actual).toContain('.cls div{-ms-user-select:none;user-select:none}');
+    });
+
+    it('should not generate any prefixes', () => {
+      process.env.BROWSERSLIST = 'Chrome 78';
+      const actual = transformCss(
+        '.cls',
+        `
+        div {
+          user-select: none;
+        }
+        `
+      );
+      expect(actual).toContain('.cls div{user-select:none}');
+    });
+
+    it('should generate ms prefixes for grid', () => {
+      process.env.AUTOPREFIXER_GRID = 'autoplace';
+      const actual = transformCss(
+        '.cls',
+        `
+        div {
+          display: grid;
+        }
+        `
+      );
+      expect(actual).toContain('.cls div{display:-ms-grid;display:grid}');
+    });
+  });
 });
