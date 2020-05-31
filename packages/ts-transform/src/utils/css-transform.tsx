@@ -22,13 +22,13 @@ const minify = () => {
 const COMMA_CHAR_CODE = 58;
 
 const parentOrphenedPseudos = plugin('parent-orphened-pseudos', () => {
-  return root => {
-    root.walkRules(rule => {
+  return (root) => {
+    root.walkRules((rule) => {
       if (rule.selector.includes(':')) {
         const newSelector = rule.selector
           .replace(/\s+/g, ' ')
           .split(', ')
-          .map(part => {
+          .map((part) => {
             if (part.match(/^. /)) {
               // If the selector has one characters with a space after it, e.g. "> :first-child" then return early.
               return part;
@@ -52,9 +52,9 @@ const parentOrphenedPseudos = plugin('parent-orphened-pseudos', () => {
 
 const extractStyleSheets = plugin<{ callback: (sheet: string) => void }>(
   'extract-style-sheets',
-  opts => {
-    return root => {
-      root.each(node => {
+  (opts) => {
+    return (root) => {
+      root.each((node) => {
         opts?.callback(node.toString());
       });
     };
