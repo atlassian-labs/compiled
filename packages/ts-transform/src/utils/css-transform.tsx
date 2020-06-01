@@ -3,7 +3,7 @@ import autoprefixer from 'autoprefixer';
 import cssnano from 'cssnano-preset-default';
 import nested from 'postcss-nested';
 import whitespace from 'postcss-normalize-whitespace';
-import parser from 'postcss-selector-parser';
+import selectorParser from 'postcss-selector-parser';
 
 const minify = () => {
   const preset = cssnano();
@@ -20,42 +20,42 @@ const minify = () => {
     });
 };
 
-const removeSpacesBeforeSelector = (selector: parser.Node) => (selector.spaces.before = '');
-const doesCombinatorTypePrecedesSelector = (selector: parser.Node) => {
+const isPreviousSelectorCombinatorType = (selector: selectorParser.Node) => {
   const previousSelector = selector.prev();
 
   return previousSelector && previousSelector.type === 'combinator';
 };
-const prependNestingTypeToSelector = (selector: parser.Node) => {
+const prependNestingTypeToSelector = (selector: selectorParser.Node) => {
   const { parent } = selector;
 
   if (parent) {
-    const nesting = parser.nesting({});
+    const nesting = selectorParser.nesting();
 
     parent.insertBefore(selector, nesting);
   }
 };
+const stringifySelectorParserRoot = (parserRoot: selectorParser.Root) =>
+  parserRoot.reduce<string[]>((memo, selector) => [...memo, String(selector)], []).join(',\n');
 const parentOrphenedPseudos = plugin('parent-orphened-pseudos', () => {
   return (root) => {
     root.walkRules((rule) => {
-      const parserRoot = parser((selectors) => {
-        selectors.walk((selector) => {
-          removeSpacesBeforeSelector(selector);
+      const { selector: ruleSelector } = rule;
 
-          if (selector.type === 'pseudo') {
-            if (doesCombinatorTypePrecedesSelector(selector)) {
-              return;
-            }
+      if (!ruleSelector.includes(':')) {
+        return;
+      }
 
-            prependNestingTypeToSelector(selector);
+      const selectorParserRoot = selectorParser((selectors) => {
+        selectors.walkPseudos((selector) => {
+          if (isPreviousSelectorCombinatorType(selector)) {
+            return;
           }
-        });
-      }).astSync(rule.selector);
 
-      // TODO: Remove any typecasting once https://github.com/postcss/postcss-selector-parser/pull/224 gets merged
-      rule.selector = (parserRoot as any)
-        .reduce((memo: parser.Node[], selector: parser.Node) => [...memo, String(selector)], [])
-        .join(',\n');
+          prependNestingTypeToSelector(selector);
+        });
+      }).astSync(ruleSelector, { lossless: false });
+
+      rule.selector = stringifySelectorParserRoot(selectorParserRoot);
     });
   };
 });

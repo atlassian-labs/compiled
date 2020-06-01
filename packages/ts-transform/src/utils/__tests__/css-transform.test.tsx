@@ -142,7 +142,7 @@ describe('leading pseduos in css', () => {
     `
     );
 
-    expect(actual.join('\n')).toMatchInlineSnapshot(`".cls > :first-child{color:hotpink}"`);
+    expect(actual.join('\n')).toMatchInlineSnapshot(`".cls >:first-child{color:hotpink}"`);
   });
 
   it('should not affect the output css if theres nothing to do', () => {
