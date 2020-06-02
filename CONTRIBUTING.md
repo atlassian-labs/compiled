@@ -22,5 +22,5 @@ to the project and is willing to have it used in distributions and derivative wo
 Prior to accepting your contributions we ask that you please follow the appropriate link below to digitally sign the CLA.
 The Corporate CLA is for those who are contributing as a member of an organization and the individual CLA is for those contributing as an individual.
 
-- [CLA for corporate contributors](https://na2.docusign.net/Member/PowerFormSigning.aspx?PowerFormId=e1c17c66-ca4d-4aab-a953-2c231af4a20b)
-- [CLA for individuals](https://na2.docusign.net/Member/PowerFormSigning.aspx?PowerFormId=3f94fbdc-2fbe-46ac-b14c-5d152700ae5d)
+- [CLA for corporate contributors](https://opensource.atlassian.com/individual)
+- [CLA for individuals](https://opensource.atlassian.com/corporate)
