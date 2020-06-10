@@ -1,6 +1,6 @@
 {
   "name": "@compiled/babel-plugin-css-in-js",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "The CSS in JS authoring experience you love without the runtime cost",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
@@ -21,7 +21,7 @@
   "dependencies": {
     "@babel/core": "^7.9.0",
     "@babel/plugin-transform-flow-strip-types": "^7.8.3",
-    "@compiled/ts-transform-css-in-js": "0.4.4",
+    "@compiled/ts-transform-css-in-js": "0.4.5",
     "typescript": "^3.7.3"
   },
   "devDependencies": {
