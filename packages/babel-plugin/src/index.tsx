@@ -33,6 +33,7 @@ export default function compiledBabelPlugin(_: any, opts: TransformerOptions = {
         // See: https://github.com/atlassian-labs/compiled-css-in-js/issues/196
         parsedCode =
           transformSync(parsedCode, {
+            babelrc: false,
             plugins: ['@babel/plugin-transform-flow-strip-types'],
           })?.code || parsedCode;
       }
