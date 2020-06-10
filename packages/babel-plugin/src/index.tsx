@@ -15,6 +15,11 @@ const stubProgam: ts.Program = ({
 export default function compiledBabelPlugin(_: any, opts: TransformerOptions = {}) {
   return {
     parserOverride(code: string, parserOpts: ParserOptions, parse: typeof babelParse) {
+      if (code.indexOf('@compiled/css-in-js') === -1) {
+        // Bail early if there is no work to do.
+        return parse(code, parserOpts);
+      }
+
       const userLandFlowPlugin = (parserOpts.plugins || []).find((plugin) => {
         return plugin === 'flow' || plugin[0] === 'flow';
       });
