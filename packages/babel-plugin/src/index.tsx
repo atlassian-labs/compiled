@@ -34,7 +34,8 @@ export default function compiledBabelPlugin(_: any, opts: TransformerOptions = {
         parsedCode =
           transformSync(parsedCode, {
             babelrc: false,
-            plugins: ['@babel/plugin-transform-flow-strip-types'],
+            configFile: false,
+            plugins: ['@babel/plugin-syntax-jsx', '@babel/plugin-transform-flow-strip-types'],
           })?.code || parsedCode;
       }
 
