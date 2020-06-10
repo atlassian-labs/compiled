@@ -131,4 +131,31 @@ describe('babel plugin', () => {
 
     expect(output?.code).toInclude('.cc-1rl8k7o{color:#00f;font-size:9pt}');
   });
+
+  it('should parse flow code', () => {
+    expect(() => {
+      transformSync(
+        `
+        import { styled } from '@compiled/css-in-js';
+
+        styled.div\`
+          font-size: 12px;
+          color: blue;
+        \`;
+
+        const hello = (1: any);
+      `,
+        {
+          configFile: false,
+          babelrc: false,
+          plugins: [
+            '@babel/plugin-syntax-jsx',
+            '@babel/plugin-syntax-flow',
+            '@babel/plugin-transform-flow-strip-types',
+            compiledPlugin,
+          ],
+        }
+      );
+    }).not.toThrow();
+  });
 });
