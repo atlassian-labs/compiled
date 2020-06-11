@@ -1,5 +1,5 @@
 import { transformSync, TransformOptions } from '@babel/core';
-import babelNext from '../styled';
+import babelNext from '../next';
 
 const babelOpts: TransformOptions = {
   configFile: false,
