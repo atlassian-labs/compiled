@@ -13,7 +13,7 @@ export const visitStyledPath = (path: NodePath<t.TaggedTemplateExpression>) => {
 
     path.replaceWith(
       buildStyledComponent({
-        css,
+        cssOutput: { css, variables: [] },
         tagName,
       })
     );
