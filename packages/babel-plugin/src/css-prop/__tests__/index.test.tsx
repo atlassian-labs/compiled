@@ -127,7 +127,7 @@ describe('css prop', () => {
     expect(actual).toInclude('className={"cc-hash-test" + (" " + "foobar")}');
   });
 
-  xit('should pass through spread props', () => {
+  it('should pass through spread props', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -142,10 +142,10 @@ describe('css prop', () => {
       />
     `);
 
-    expect(actual).toInclude('<div {...props} className="css-test"/>');
+    expect(actual).toInclude('<div {...props} className="cc-hash-test" />');
   });
 
-  xit('should pass through static props', () => {
+  it('should pass through static props', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -158,10 +158,10 @@ describe('css prop', () => {
       />
     `);
 
-    expect(actual).toInclude('<div role="menu" className="css-test"/>');
+    expect(actual).toInclude('<div role="menu" className="cc-hash-test" />');
   });
 
-  xit('should concat explicit use of class name prop from an identifier on an element', () => {
+  it('should concat explicit use of class name prop from an identifier on an element', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -170,7 +170,7 @@ describe('css prop', () => {
       <div className={className} css={{}}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={"css-test" + (className ? " " + className : "")}');
+    expect(actual).toInclude('className={"cc-hash-test" + (className ? " " + className : "")}');
   });
 
   xit('should pick up array composition', () => {

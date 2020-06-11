@@ -48,6 +48,18 @@ export const joinExpressions = (left: any, right: any): t.BinaryExpression => {
   return t.binaryExpression('+', left, t.binaryExpression('+', t.stringLiteral(' '), right));
 };
 
+export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExpression => {
+  return t.binaryExpression(
+    '+',
+    left,
+    t.conditionalExpression(
+      right,
+      t.binaryExpression('+', t.stringLiteral(' '), right),
+      t.stringLiteral('')
+    )
+  );
+};
+
 export const buildStyledComponent = (opts: StyledOpts) => {
   const cssHash = hash(opts.css);
   const className = `cc-${cssHash}`;
@@ -79,9 +91,11 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
       ? classNameProp.value.expression
       : classNameProp.value;
 
-    classNameProp.value = t.jsxExpressionContainer(
-      joinExpressions(t.stringLiteral(className), classNameExpression)
-    );
+    const newClassNameValue = t.isStringLiteral(classNameExpression)
+      ? joinExpressions(t.stringLiteral(className), classNameExpression)
+      : conditionallyJoinExpressions(t.stringLiteral(className), classNameExpression);
+
+    classNameProp.value = t.jsxExpressionContainer(newClassNameValue);
   } else {
     opts.node.openingElement.attributes.push(
       t.jsxAttribute(t.jsxIdentifier('className'), t.stringLiteral(className))
