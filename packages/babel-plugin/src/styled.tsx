@@ -1,10 +1,24 @@
 import { declare } from '@babel/helper-plugin-utils';
 import * as t from '@babel/types';
-import { buildStyledComponent, importSpecifier } from './utils/ast-builders';
+import {
+  buildStyledComponent,
+  buildCompiledComponent,
+  importSpecifier,
+} from './utils/ast-builders';
 
 interface State {
   compiledImportFound: boolean;
 }
+
+const extractFromCssProp = (
+  cssProp: t.StringLiteral | t.JSXElement | t.JSXFragment | t.JSXExpressionContainer
+) => {
+  if (t.isStringLiteral(cssProp)) {
+    return cssProp.value;
+  }
+
+  return undefined;
+};
 
 export default declare<State>((api) => {
   api.assertVersion(7);
@@ -16,7 +30,10 @@ export default declare<State>((api) => {
         if (path.node.source.value === '@compiled/css-in-js') {
           state.compiledImportFound = true;
           path.node.specifiers = path.node.specifiers
-            .filter((specifier) => specifier.local.name !== 'styled')
+            .filter(
+              (specifier) =>
+                specifier.local.name !== 'styled' && specifier.local.name !== 'ClassNames'
+            )
             .concat([importSpecifier('CC'), importSpecifier('CS')]);
         }
       },
@@ -40,6 +57,30 @@ export default declare<State>((api) => {
             })
           );
         }
+      },
+      JSXOpeningElement(path, state) {
+        if (!state.compiledImportFound) {
+          return;
+        }
+
+        const cssProp = path.node.attributes.find((attr): attr is t.JSXAttribute => {
+          return t.isJSXAttribute(attr) && attr.name.name === 'css';
+        });
+
+        if (!cssProp || !cssProp.value) {
+          return;
+        }
+
+        const extractedCss = extractFromCssProp(cssProp.value);
+        if (!extractedCss) {
+          throw path.buildCodeFrameError('Css prop value not allowed.');
+        }
+
+        path.parentPath.replaceWith(
+          buildCompiledComponent({
+            css: extractedCss,
+          })
+        );
       },
     },
   };

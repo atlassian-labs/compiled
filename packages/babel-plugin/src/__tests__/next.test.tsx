@@ -42,4 +42,28 @@ describe('babel plugin', () => {
           </CC>);"
     `);
   });
+
+  it('should transform basic css prop', () => {
+    const output = transformSync(
+      `
+      import '@compiled/css-in-js';
+
+      const MyDiv = () => {
+        return <div css="font-size:12px;">hello</div>
+      };
+    `,
+      babelOpts
+    );
+
+    expect(output?.code).toMatchInlineSnapshot(`
+      "import { CC, CS } from '@compiled/css-in-js';
+
+      const MyDiv = () => {
+        return <CC>
+        <CS hash={\\"1rr6d23\\"}>{[\\".cc-1rr6d23{font-size:12px}\\"]}</CS>
+        <C {...props} ref={ref} className={cc-1rr6d23 + (props.className ? \\" \\" + props.className : \\"\\")} />
+        </CC>;
+      };"
+    `);
+  });
 });
