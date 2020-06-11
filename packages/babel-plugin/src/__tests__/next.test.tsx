@@ -31,6 +31,15 @@ describe('babel plugin', () => {
       babelOpts
     );
 
-    expect(output?.code).toInclude('styled.div({});');
+    expect(output?.code).toMatchInlineSnapshot(`
+      "import { CC, CS } from '@compiled/css-in-js';
+      const MyDiv = React.forwardRef(({
+        as: C = \\"div\\",
+        ...props
+      }, ref) => <CC>
+            <CS hash={\\"1x3e11p\\"}>{[\\".cc-1x3e11p{font-size:12px}\\"]}</CS>
+            <C {...props} ref={ref} className={cc-1x3e11p + (props.className ? \\" \\" + props.className : \\"\\")} />
+          </CC>);"
+    `);
   });
 });

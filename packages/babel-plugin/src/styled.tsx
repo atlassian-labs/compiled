@@ -1,31 +1,30 @@
 import { declare } from '@babel/helper-plugin-utils';
 import * as t from '@babel/types';
-import template from '@babel/template';
+import { buildStyledComponent, importSpecifier } from './utils/ast-builders';
 
-const buildStyledComponent = template(
-  `
-  React.forwardRef(({
-    as: C = %%tag%%,
-    ...props
-  }, ref) => (
-    <CC>
-      <CS hash={%%hash%%}>{%%css%%}</CS>
-      <C {...props} ref={ref} className={%%className%% + (props.className ? " " + props.className : "")} />
-    </CC>
-  ));
-`,
-  {
-    plugins: ['jsx'],
-  }
-);
+interface State {
+  compiledImportFound: boolean;
+}
 
-export default declare((api) => {
+export default declare<State>((api) => {
   api.assertVersion(7);
 
   return {
     inherits: require('babel-plugin-syntax-jsx'),
     visitor: {
-      TaggedTemplateExpression(path) {
+      ImportDeclaration(path, state) {
+        if (path.node.source.value === '@compiled/css-in-js') {
+          state.compiledImportFound = true;
+          path.node.specifiers = path.node.specifiers
+            .filter((specifier) => specifier.local.name !== 'styled')
+            .concat([importSpecifier('CC'), importSpecifier('CS')]);
+        }
+      },
+      TaggedTemplateExpression(path, state) {
+        if (!state.compiledImportFound) {
+          return;
+        }
+
         if (
           t.isMemberExpression(path.node.tag) &&
           t.isIdentifier(path.node.tag.object) &&
@@ -36,11 +35,9 @@ export default declare((api) => {
 
           path.replaceWith(
             buildStyledComponent({
-              className: t.stringLiteral('hello'),
-              hash: t.stringLiteral('hash'),
-              tag: t.stringLiteral(tagName),
-              css: t.arrayExpression([t.stringLiteral(css)]),
-            }) as t.Node
+              css,
+              tagName,
+            })
           );
         }
       },
