@@ -44,6 +44,10 @@ const compiledTemplate = template(
   }
 );
 
+export const joinExpressions = (left: any, right: any): t.BinaryExpression => {
+  return t.binaryExpression('+', left, t.binaryExpression('+', t.stringLiteral(' '), right));
+};
+
 export const buildStyledComponent = (opts: StyledOpts) => {
   const cssHash = hash(opts.css);
   const className = `cc-${cssHash}`;
@@ -66,9 +70,23 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
   const className = `cc-${cssHash}`;
   const cssRules = transformCss(`.${className}`, opts.css);
 
-  opts.node.openingElement.attributes.push(
-    t.jsxAttribute(t.jsxIdentifier('className'), t.stringLiteral(className))
-  );
+  const classNameProp = opts.node.openingElement.attributes.find((prop): prop is t.JSXAttribute => {
+    return t.isJSXAttribute(prop) && prop.name.name === 'className';
+  });
+
+  if (classNameProp && classNameProp.value) {
+    const classNameExpression = t.isJSXExpressionContainer(classNameProp.value)
+      ? classNameProp.value.expression
+      : classNameProp.value;
+
+    classNameProp.value = t.jsxExpressionContainer(
+      joinExpressions(t.stringLiteral(className), classNameExpression)
+    );
+  } else {
+    opts.node.openingElement.attributes.push(
+      t.jsxAttribute(t.jsxIdentifier('className'), t.stringLiteral(className))
+    );
+  }
 
   return compiledTemplate({
     jsxNode: opts.node,

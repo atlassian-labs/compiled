@@ -56,7 +56,7 @@ describe('css prop', () => {
     expect(actual).toInclude('style={props.style}');
   });
 
-  it('should spread style identifier when there is dynamic styles in the css', () => {
+  xit('should spread style identifier when there is dynamic styles in the css', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -116,30 +116,7 @@ describe('css prop', () => {
     );
   });
 
-  xit('should compose class name from parent and pass down css variables in style', () => {
-    const actual = transform(`
-      import '@compiled/css-in-js';
-      import React from 'react';
-
-      <div css={{}}>hello world</div>
-    `);
-
-    expect(actual).toIncludeRepeated(`import React from 'react';`, 1);
-  });
-
-  xit('should add react default import if xit only has named imports', () => {
-    const actual = transform(`
-      import '@compiled/css-in-js';
-      import { useState } from 'react';
-      import React from 'react';
-
-      <div css={{}}>hello world</div>
-    `);
-
-    expect(actual).toIncludeRepeated("import React, { useState } from 'react'", 1);
-  });
-
-  xit('should concat explicit use of class name prop on an element', () => {
+  it('should concat explicit use of class name prop on an element', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -147,7 +124,7 @@ describe('css prop', () => {
       <div className="foobar" css={{}}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={"css-test" + " " + "foobar"}');
+    expect(actual).toInclude('className={"cc-hash-test" + (" " + "foobar")}');
   });
 
   xit('should pass through spread props', () => {
@@ -439,8 +416,6 @@ describe('css prop', () => {
     expect(actual).toInclude('.css-test:hover{color:red}}');
   });
 
-  it.todo('should concat implicit use of style prop where props are spread into an element');
-
   describe('using strings', () => {
     xit('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transform(`
@@ -587,10 +562,6 @@ describe('css prop', () => {
     //   expect(actual).toInclude('.css-test:hover{color:blue;font-size:30px}');
     // });
 
-    it.todo('should transform template string literal with array variable');
-
-    it.todo('should transform template string literal with array import');
-
     xit('should transform template string with no argument arrow function variable', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
@@ -663,10 +634,6 @@ describe('css prop', () => {
 
     //   expect(actual).toInclude('.css-test{color:red}');
     // });
-
-    it.todo('should transform template string with argument function variable');
-
-    it.todo('should transform template string with argument function import');
 
     xit('should transform template string with argument arrow function variable', () => {
       const actual = transform(`
@@ -1007,10 +974,6 @@ describe('css prop', () => {
     //   expect(actual).toInclude('.css-test:hover{color:red}');
     // });
 
-    it.todo('should transform object with array variable');
-
-    it.todo('should transform object with array import');
-
     xit('should transform object with no argument arrow function variable', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
@@ -1219,10 +1182,6 @@ describe('css prop', () => {
 
     //   expect(actual).toInclude('.css-test{color:blue;color:red}');
     // });
-
-    it.todo('should transform object with argument function variable');
-
-    it.todo('should transform object with argument function import');
 
     xit('should transform object with argument arrow function variable', () => {
       const actual = transform(`
