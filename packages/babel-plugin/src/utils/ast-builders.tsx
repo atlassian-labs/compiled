@@ -3,6 +3,14 @@ import * as t from '@babel/types';
 import { hash } from '@compiled/ts-transform-css-in-js/dist/utils/hash';
 import { transformCss } from '@compiled/ts-transform-css-in-js/dist/utils/css-transform';
 
+interface BaseOpts {
+  css: string;
+}
+
+interface StyledOpts extends BaseOpts {
+  tagName: string;
+}
+
 const styledTemplate = template(
   `
   React.forwardRef(({
@@ -31,14 +39,6 @@ const compiledTemplate = template(
     plugins: ['jsx'],
   }
 );
-
-interface BaseOpts {
-  css: string;
-}
-
-interface StyledOpts extends BaseOpts {
-  tagName: string;
-}
 
 export const buildStyledComponent = (opts: StyledOpts) => {
   const cssHash = hash(opts.css);

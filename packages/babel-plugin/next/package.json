@@ -1,0 +1,9 @@
+{
+  "name": "@compiled/babel-plugin",
+  "description": "The CSS in JS authoring experience you love without the runtime cost",
+  "author": "Michael Dougall",
+  "license": "Apache-2.0",
+  "main": "./dist/next.js",
+  "module": "./dist/next.js",
+  "types": "./dist/next.d.ts"
+}
