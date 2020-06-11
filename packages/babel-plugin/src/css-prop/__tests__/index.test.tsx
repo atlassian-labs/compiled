@@ -187,22 +187,23 @@ describe('css prop', () => {
     expect(actual).toInclude('.css-test{color:black;color:red}');
   });
 
-  xit('should concat explicit use of style prop on an element', () => {
+  it('should persist static style prop', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
 
-      const color = 'blue';
-      <div style={{ display: 'block' }} css={{ color: color }}>hello world</div>
+      <div style={{ display: 'block' }} css={{ color: 'blue' }}>hello world</div>
     `);
 
-    expect(actual).toInclude(`.css-test{color:blue}`);
+    expect(actual).toInclude(`.cc-hash-test{color:blue}`);
     expect(actual).toInclude(
-      '<div className="css-test" style={{ display: \'block\' }}>hello world</div>'
+      `<div style={{
+    display: 'block'
+  }} className=\"cc-hash-test\">hello world</div>`
     );
   });
 
-  xit('should concat explicit use of style prop on an element when destructured template', () => {
+  it.only('should concat explicit use of style prop on an element when destructured template', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
