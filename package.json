@@ -68,7 +68,8 @@
     "packages/*"
   ],
   "resolutions": {
-    "typescript": "3.7.x"
+    "typescript": "3.7.x",
+    "@types/node": "13.11.1"
   },
   "size-limit": [
     {

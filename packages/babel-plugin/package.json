@@ -20,8 +20,12 @@
   ],
   "dependencies": {
     "@babel/core": "^7.9.0",
+    "@babel/helper-plugin-utils": "^7.10.1",
     "@babel/plugin-syntax-jsx": "^7.8.3",
     "@babel/plugin-transform-flow-strip-types": "^7.8.3",
+    "@babel/template": "^7.10.1",
+    "@babel/traverse": "^7.10.1",
+    "@babel/types": "^7.10.2",
     "@compiled/ts-transform-css-in-js": "0.4.7",
     "typescript": "^3.7.3"
   },
