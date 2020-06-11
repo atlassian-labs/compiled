@@ -1,1 +1,3 @@
-describe('styled', () => {});
+describe('styled', () => {
+  it('should pass', () => {});
+});

@@ -35,14 +35,14 @@ export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>) => {
   // Remove css prop
   path.node.attributes.splice(cssPropIndex, 1);
 
-  const extractedCss = extractFromCssProp(cssProp.value);
-  if (extractedCss === undefined) {
+  const cssOutput = extractFromCssProp(cssProp.value);
+  if (cssOutput === undefined) {
     throw path.buildCodeFrameError('Css prop value not allowed.');
   }
 
   path.parentPath.replaceWith(
     buildCompiledComponent({
-      css: extractedCss,
+      cssOutput,
       node: path.parentPath.node as t.JSXElement,
     })
   );

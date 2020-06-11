@@ -7,6 +7,7 @@ const transform = (code: string) => {
   return transformSync(code, {
     configFile: false,
     babelrc: false,
+    compact: true,
     plugins: [babelNext],
   })?.code;
 };
@@ -20,7 +21,7 @@ describe('css prop', () => {
       <div css={{}} />
     `);
 
-    expect(actual).toInclude('<div className="cc-hash-test" />');
+    expect(actual).toInclude('<div className="cc-hash-test"/>');
   });
 
   it('should replace css prop with class name', () => {
@@ -124,7 +125,7 @@ describe('css prop', () => {
       <div className="foobar" css={{}}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={"cc-hash-test" + (" " + "foobar")}');
+    expect(actual).toInclude('className={"cc-hash-test"+(" "+"foobar")}');
   });
 
   it('should pass through spread props', () => {
@@ -142,7 +143,7 @@ describe('css prop', () => {
       />
     `);
 
-    expect(actual).toInclude('<div {...props} className="cc-hash-test" />');
+    expect(actual).toInclude('<div{...props}className="cc-hash-test"/>');
   });
 
   it('should pass through static props', () => {
@@ -158,7 +159,7 @@ describe('css prop', () => {
       />
     `);
 
-    expect(actual).toInclude('<div role="menu" className="cc-hash-test" />');
+    expect(actual).toInclude('<div role="menu"className="cc-hash-test"/>');
   });
 
   it('should concat explicit use of class name prop from an identifier on an element', () => {
@@ -170,7 +171,7 @@ describe('css prop', () => {
       <div className={className} css={{}}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={"cc-hash-test" + (className ? " " + className : "")}');
+    expect(actual).toInclude('className={"cc-hash-test"+(className?" "+className:"")}');
   });
 
   xit('should pick up array composition', () => {
@@ -197,13 +198,11 @@ describe('css prop', () => {
 
     expect(actual).toInclude(`.cc-hash-test{color:blue}`);
     expect(actual).toInclude(
-      `<div style={{
-    display: 'block'
-  }} className=\"cc-hash-test\">hello world</div>`
+      `<div style={{display:'block'}}className=\"cc-hash-test\">hello world</div>`
     );
   });
 
-  it.only('should concat explicit use of style prop on an element when destructured template', () => {
+  xit('should concat explicit use of style prop on an element when destructured template', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -215,18 +214,7 @@ describe('css prop', () => {
     expect(actual).toInclude(`style={{ display: 'block', \"--var-test-color\": color }}`);
   });
 
-  xit('should pass through style prop when not using dynamic css', () => {
-    const actual = transform(`
-      import '@compiled/css-in-js';
-      import React from 'react';
-
-      <div style={{ display: 'block' }} css={{}}>hello world</div>
-    `);
-
-    expect(actual).toInclude(`style={{ display: 'block' }}`);
-  });
-
-  xit('should concat implicit use of class name prop where class name is a jsx expression', () => {
+  it('should concat implicit use of class name prop where class name is a jsx expression', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -236,20 +224,20 @@ describe('css prop', () => {
       <div css={{}} className={getFoo()}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={"css-test" + (getFoo() ? " " + getFoo() : "")}');
+    expect(actual).toInclude('className={"cc-hash-test"+(getFoo()?" "+getFoo():"")}');
   });
 
-  xit('should allow inlined expressions as property values', () => {
+  it('should allow inlined expressions as property values', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
 
       const hello = true;
 
-      <div css={{ color: hello ? 'red' : 'blue' }}>hello world</div>
+      <div css={{ color: hello ? 'red' : 'blue', fontSize: 10 }}>hello world</div>
     `);
 
-    expect(actual).toInclude('color:var(--var-test-hello)');
-    expect(actual).toInclude(`style={{ "--var-test-hello": hello ? 'red' : 'blue' }}`);
+    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test);font-size:10px}');
+    expect(actual).toInclude(`style={{\"--var-hash-test\":hello?'red':'blue'}}`);
   });
 
   xit('should move multiple groups of interpolations into inline styles', () => {

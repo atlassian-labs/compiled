@@ -2,9 +2,10 @@ import template from '@babel/template';
 import * as t from '@babel/types';
 import { hash } from '@compiled/ts-transform-css-in-js/dist/utils/hash';
 import { transformCss } from '@compiled/ts-transform-css-in-js/dist/utils/css-transform';
+import { CSSOutput } from './css-builders';
 
 interface BaseOpts {
-  css: string;
+  cssOutput: CSSOutput;
 }
 
 interface StyledOpts extends BaseOpts {
@@ -61,9 +62,9 @@ export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExp
 };
 
 export const buildStyledComponent = (opts: StyledOpts) => {
-  const cssHash = hash(opts.css);
+  const cssHash = hash(opts.cssOutput.css);
   const className = `cc-${cssHash}`;
-  const cssRules = transformCss(`.${className}`, opts.css);
+  const cssRules = transformCss(`.${className}`, opts.cssOutput.css);
 
   return styledTemplate({
     className: t.stringLiteral(className),
@@ -78,10 +79,9 @@ export const importSpecifier = (name: string, localName?: string) => {
 };
 
 export const buildCompiledComponent = (opts: CompiledOpts) => {
-  const cssHash = hash(opts.css);
+  const cssHash = hash(opts.cssOutput.css);
   const className = `cc-${cssHash}`;
-  const cssRules = transformCss(`.${className}`, opts.css);
-
+  const cssRules = transformCss(`.${className}`, opts.cssOutput.css);
   const classNameProp = opts.node.openingElement.attributes.find((prop): prop is t.JSXAttribute => {
     return t.isJSXAttribute(prop) && prop.name.name === 'className';
   });
@@ -99,6 +99,21 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
   } else {
     opts.node.openingElement.attributes.push(
       t.jsxAttribute(t.jsxIdentifier('className'), t.stringLiteral(className))
+    );
+  }
+
+  if (opts.cssOutput.variables.length) {
+    opts.node.openingElement.attributes.push(
+      t.jsxAttribute(
+        t.jsxIdentifier('style'),
+        t.jsxExpressionContainer(
+          t.objectExpression(
+            opts.cssOutput.variables.map((variable) => {
+              return t.objectProperty(t.stringLiteral(variable.name), variable.expression);
+            })
+          )
+        )
+      )
     );
   }
 
