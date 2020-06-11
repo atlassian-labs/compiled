@@ -38,7 +38,7 @@ describe('babel plugin', () => {
         ...props
       }, ref) => <CC>
             <CS hash={\\"1x3e11p\\"}>{[\\".cc-1x3e11p{font-size:12px}\\"]}</CS>
-            <C {...props} ref={ref} className={cc-1x3e11p + (props.className ? \\" \\" + props.className : \\"\\")} />
+            <C {...props} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} />
           </CC>);"
     `);
   });
@@ -61,7 +61,7 @@ describe('babel plugin', () => {
       const MyDiv = () => {
         return <CC>
         <CS hash={\\"1rr6d23\\"}>{[\\".cc-1rr6d23{font-size:12px}\\"]}</CS>
-        <C {...props} ref={ref} className={cc-1rr6d23 + (props.className ? \\" \\" + props.className : \\"\\")} />
+        {<div className=\\"cc-1rr6d23\\">hello</div>}
         </CC>;
       };"
     `);

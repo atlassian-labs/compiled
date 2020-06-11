@@ -27,6 +27,7 @@
     "bundlesize": "yarn build && yarn build:dead-code-elimination && size-limit"
   },
   "devDependencies": {
+    "@babel/preset-react": "^7.10.1",
     "@compiled/css-in-js": "*",
     "@compiled/jest-css-in-js": "*",
     "@size-limit/preset-small-lib": "^4.4.5",

@@ -11,6 +11,10 @@ interface StyledOpts extends BaseOpts {
   tagName: string;
 }
 
+interface CompiledOpts extends BaseOpts {
+  node: t.JSXElement;
+}
+
 const styledTemplate = template(
   `
   React.forwardRef(({
@@ -32,7 +36,7 @@ const compiledTemplate = template(
   `
 <CC>
   <CS hash={%%hash%%}>{%%css%%}</CS>
-  <C {...props} ref={ref} className={%%className%% + (props.className ? " " + props.className : "")} />
+  {%%jsxNode%%}
 </CC>
 `,
   {
@@ -46,7 +50,7 @@ export const buildStyledComponent = (opts: StyledOpts) => {
   const cssRules = transformCss(`.${className}`, opts.css);
 
   return styledTemplate({
-    className,
+    className: t.stringLiteral(className),
     hash: t.stringLiteral(cssHash),
     tag: t.stringLiteral(opts.tagName),
     css: t.arrayExpression(cssRules.map((rule) => t.stringLiteral(rule))),
@@ -57,13 +61,17 @@ export const importSpecifier = (name: string, localName?: string) => {
   return t.importSpecifier(t.identifier(name), t.identifier(localName || name));
 };
 
-export const buildCompiledComponent = (opts: BaseOpts) => {
+export const buildCompiledComponent = (opts: CompiledOpts) => {
   const cssHash = hash(opts.css);
   const className = `cc-${cssHash}`;
   const cssRules = transformCss(`.${className}`, opts.css);
 
+  opts.node.openingElement.attributes.push(
+    t.jsxAttribute(t.jsxIdentifier('className'), t.stringLiteral(className))
+  );
+
   return compiledTemplate({
-    className,
+    jsxNode: opts.node,
     hash: t.stringLiteral(cssHash),
     css: t.arrayExpression(cssRules.map((rule) => t.stringLiteral(rule))),
   }) as t.Node;
