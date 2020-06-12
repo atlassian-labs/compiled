@@ -158,4 +158,38 @@ describe('babel plugin', () => {
       );
     }).not.toThrow();
   });
+
+  it('should transform inline expression', () => {
+    const actual = transformSync(
+      `
+      import { styled } from '@compiled/css-in-js';
+
+      const gridSize = (() => 8)();
+
+      export const EmptyWrapper = styled.div\`
+          margin-top: \${gridSize * 10}px;
+          width: 100%;
+      \`;
+    `,
+      babelOpts
+    );
+
+    expect(actual?.code).toMatchInlineSnapshot(`
+      "import React from \\"react\\";
+      import { CC, CS } from '@compiled/css-in-js';
+
+      const gridSize = (() => 8)();
+
+      export const EmptyWrapper = /*#__PURE__*/React.forwardRef(({
+        as: C = \\"div\\",
+        ...props
+      }, ref) => <CC><CS hash=\\"1n72cnx\\">{[\\".cc-1n72cnx{margin-top:var(--var-1af23ve);width:100%}\\"]}</CS><C {...props} ref={ref} className={\\"cc-1n72cnx\\" + (props.className ? \\" \\" + props.className : \\"\\")} style={{ ...props.style,
+          \\"--var-1af23ve\\": (gridSize * 10 || \\"\\") + \\"px\\"
+        }} /></CC>);
+
+      if (process.env.NODE_ENV === \\"development\\") {
+        EmptyWrapper.displayName = \\"EmptyWrapper\\";
+      }"
+    `);
+  });
 });

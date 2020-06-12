@@ -205,7 +205,7 @@ export const templateLiteralToCss = (
       const before = cssBeforeInterpolation(css);
       const after = cssAfterInterpolation(span.literal.text);
       const cssVariableExpression = buildCssVariableExpression(span.expression, before, after);
-      const variableName = cssVariableHash(cssVariableExpression);
+      const variableName = cssVariableHash(span.expression);
 
       cssVariables.push({
         name: variableName,
@@ -223,7 +223,7 @@ export const templateLiteralToCss = (
       const before = cssBeforeInterpolation(css);
       const after = cssAfterInterpolation(span.literal.text);
       const cssVariableExpression = buildCssVariableExpression(span.expression, before, after);
-      const cssVarName = cssVariableHash(cssVariableExpression);
+      const cssVarName = cssVariableHash(span.expression);
 
       css += `var(${cssVarName})${after.css}`;
       cssVariables.push({
