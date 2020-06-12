@@ -562,7 +562,7 @@ describe('styled component transformer', () => {
       `);
 
       expect(actual).toInclude(
-        '<CS hash="css-test">{[".css-test{border-radius:var(--var-test);color:blue}"]}</CS>'
+        '<CS hash="css-test">{[".css-test{border-radius:var(--var-test-2+2);color:blue}"]}</CS>'
       );
     });
 
