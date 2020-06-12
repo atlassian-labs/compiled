@@ -7,15 +7,11 @@ export const classNameHash = (): string => {
 };
 
 export const cssVariableHash = (node: ts.Node): string => {
-  try {
-    return `--var-test-${node
-      .getText()
-      .toLowerCase()
-      .split('?')[0]
-      .trim()
-      .replace('return', '')
-      .replace(/ |`|=|'|"|\(|\)|;|\{|\}|\$|\./g, '')}`;
-  } catch (e) {
-    return '--var-test';
-  }
+  return `--var-test-${node
+    .getText()
+    .toLowerCase()
+    .split('?')[0]
+    .trim()
+    .replace('return', '')
+    .replace(/ |`|=|'|"|\(|\)|;|\{|\}|\$|\./g, '')}`;
 };
