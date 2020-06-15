@@ -92,12 +92,7 @@ export const templateLiteralToCss = (
         css = before.css;
         css += `var(${variableName})${after.css}`;
       }
-    } else if (ts.isIdentifier(span.expression)) {
-      // We are referencing a variable e.g. css`${var}`;
-      if (!value) {
-        throw createNodeError('declaration does not exist', span);
-      }
-
+    } else if (ts.isIdentifier(span.expression) && value) {
       if (!ts.isVariableDeclaration(value)) {
         throw createNodeError('only variable declarations supported atm', value);
       }
@@ -217,7 +212,8 @@ export const templateLiteralToCss = (
     } else if (
       ts.isExpressionStatement(span.expression) ||
       ts.isConditionalExpression(span.expression) ||
-      ts.isBinaryExpression(span.expression)
+      ts.isBinaryExpression(span.expression) ||
+      ts.isIdentifier(span.expression)
     ) {
       // We found something that we'll just inline reference.
       const before = cssBeforeInterpolation(css);
