@@ -103,16 +103,40 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
   }
 
   if (opts.cssOutput.variables.length) {
+    let stylePropIndex = -1;
+    const styleProp = opts.node.openingElement.attributes.find(
+      (prop, index): prop is t.JSXAttribute => {
+        if (t.isJSXAttribute(prop) && prop.name.name === 'style') {
+          stylePropIndex = index;
+          return true;
+        }
+
+        return false;
+      }
+    );
+
+    const dynamicStyleProperties: (
+      | t.SpreadElement
+      | t.ObjectProperty
+    )[] = opts.cssOutput.variables.map((variable) => {
+      return t.objectProperty(t.stringLiteral(variable.name), variable.expression);
+    });
+
+    if (styleProp) {
+      opts.node.openingElement.attributes.splice(stylePropIndex, 1);
+      if (
+        styleProp.value &&
+        t.isJSXExpressionContainer(styleProp.value) &&
+        !t.isJSXEmptyExpression(styleProp.value.expression)
+      ) {
+        dynamicStyleProperties.splice(0, 0, t.spreadElement(styleProp.value.expression));
+      }
+    }
+
     opts.node.openingElement.attributes.push(
       t.jsxAttribute(
         t.jsxIdentifier('style'),
-        t.jsxExpressionContainer(
-          t.objectExpression(
-            opts.cssOutput.variables.map((variable) => {
-              return t.objectProperty(t.stringLiteral(variable.name), variable.expression);
-            })
-          )
-        )
+        t.jsxExpressionContainer(t.objectExpression(dynamicStyleProperties))
       )
     );
   }

@@ -57,7 +57,7 @@ describe('css prop', () => {
     expect(actual).toInclude('style={props.style}');
   });
 
-  xit('should spread style identifier when there is dynamic styles in the css', () => {
+  it('should spread style identifier when there is dynamic styles in the css', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -67,10 +67,11 @@ describe('css prop', () => {
       const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize, color: red }}>hello world</div>;
     `);
 
+    expect(actual).toInclude('style={{...style,"--var-hash-test":fontSize,"--var-hash-test":red}}');
+    expect(actual).toInclude('className={"cc-hash-test"+(className?" "+className:"")}');
     expect(actual).toInclude(
-      '<div className={"css-test" + (className ? " " + className : "")} style={{ ...style, "--var-test-fontsize": fontSize }}>hello world</div>'
+      '.cc-hash-test{font-size:var(--var-hash-test);color:var(--var-hash-test)}'
     );
-    expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize);color:red}');
   });
 
   xit('should spread style property access when there is dynamic styles in the css', () => {
