@@ -551,6 +551,81 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('.css-test{color:red}');
     });
 
+    it('should not blow up when using a unknown variable import string literal', () => {
+      const actual = ts.transpileModule(
+        `
+        import { styled } from '@compiled/css-in-js';
+        import { gridSize } from '@styles/styles';
+
+        const Div = styled.div\`
+          border-radius: \${gridSize}px;
+          color: blue;
+        \`;
+      `,
+        {
+          compilerOptions: {
+            module: ts.ModuleKind.ES2015,
+            jsx: ts.JsxEmit.Preserve,
+            target: ts.ScriptTarget.ESNext,
+          },
+          transformers: {
+            before: [
+              styledComponentTransformer({
+                getTypeChecker: () => ({
+                  getSymbolAtLocation: () => undefined,
+                }),
+              } as any),
+            ],
+          },
+        }
+      );
+
+      expect(actual.outputText).toInclude(
+        '.css-test{border-radius:var(--var-test-gridsize);color:blue}'
+      );
+      expect(actual.outputText).toInclude('"--var-test-gridsize": (gridSize || "") + "px"');
+    });
+
+    it('should not blow up when using a unknown variable import object literal', () => {
+      const actual = ts.transpileModule(
+        `
+        import { styled } from '@compiled/css-in-js';
+        import { gridSize } from '@styles/styles';
+
+        const Div = styled.div({
+          borderRadius: \`\${gridSize}px\`,
+          color: 'blue',
+        });
+        const Divver = styled.div({
+          borderRadius: gridSize,
+          color: 'blue',
+        });
+        \`;
+      `,
+        {
+          compilerOptions: {
+            module: ts.ModuleKind.ES2015,
+            jsx: ts.JsxEmit.Preserve,
+            target: ts.ScriptTarget.ESNext,
+          },
+          transformers: {
+            before: [
+              styledComponentTransformer({
+                getTypeChecker: () => ({
+                  getSymbolAtLocation: () => undefined,
+                }),
+              } as any),
+            ],
+          },
+        }
+      );
+
+      expect(actual.outputText).toInclude(
+        '.css-test{border-radius:var(--var-test-gridsize);color:blue}'
+      );
+      expect(actual.outputText).toInclude('"--var-test-gridsize": (gridSize || "") + "px"');
+    });
+
     it('should transform an inline expression', () => {
       const actual = transformer.transform(`
         import { styled } from '@compiled/css-in-js';
