@@ -798,7 +798,7 @@ describe('css prop', () => {
       expect(actual).toInclude('<div className="css-test">hello world</div>');
     });
 
-    xit('should transform object with nested object into a selector', () => {
+    it('should transform object with nested object into a selector', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -806,7 +806,7 @@ describe('css prop', () => {
         <div css={{ ':hover': { color: 'blue' } }}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test:hover{color:blue}');
+      expect(actual).toInclude('.cc-hash-test:hover{color:blue}');
     });
 
     xit('should transform object that has a variable reference', () => {
@@ -822,7 +822,7 @@ describe('css prop', () => {
       expect(actual).toInclude('.css-test{color:blue}');
     });
 
-    xit('should transform object that has a destructured variable reference', () => {
+    it('should transform object that has a destructured variable reference', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import { useState } from 'react';
@@ -832,13 +832,11 @@ describe('css prop', () => {
         <div css={{ color }}>hello world</div>
       `);
 
-      expect(actual).toInclude(
-        '<div className="css-test" style={{ "--var-test-color": color }}>hello world</div>'
-      );
-      expect(actual).toInclude('.css-test{color:var(--var-test-color)}');
+      expect(actual).toInclude('style={{"--var-hash-test":color}}');
+      expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
     });
 
-    xit('should transform object spread from variable', () => {
+    it('should transform object spread from variable', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -847,7 +845,7 @@ describe('css prop', () => {
         <div css={{ color: 'blue', ...mixin }}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{color:blue;color:red}');
+      expect(actual).toInclude('.cc-hash-test{color:blue;color:red}');
     });
 
     // xit('should transform object spread from import', () => {
@@ -865,7 +863,7 @@ describe('css prop', () => {
     //   expect(actual).toInclude('.css-test{color:blue;color:red}');
     // });
 
-    xit('should transform object with string variable', () => {
+    it('should transform object with string variable', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -875,11 +873,10 @@ describe('css prop', () => {
         <div css={{ color: text }}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{color:red}');
-      expect(actual).toInclude('<div className="css-test">hello world</div>');
+      expect(actual).toInclude('.cc-hash-test{color:red}');
     });
 
-    xit('should transform object with string variable using shorthand notation', () => {
+    it('should transform object with string variable using shorthand notation', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -889,8 +886,7 @@ describe('css prop', () => {
         <div css={{ color }}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{color:red}');
-      expect(actual).toInclude('<div className="css-test">');
+      expect(actual).toInclude('.cc-hash-test{color:red}');
     });
 
     // xit('should transform object with string import', () => {
