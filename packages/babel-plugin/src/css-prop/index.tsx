@@ -16,6 +16,10 @@ const extractFromCssProp = (
     return buildCss(node.expression, state);
   }
 
+  if (t.isJSXExpressionContainer(node) && t.isTemplateLiteral(node.expression)) {
+    return buildCss(node.expression, state);
+  }
+
   return undefined;
 };
 

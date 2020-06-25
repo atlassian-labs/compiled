@@ -17,10 +17,15 @@ const getPropValue = (prop: t.ObjectProperty, state: State) => {
   if (state.declarations && t.isIdentifier(prop.value) && state.declarations[prop.value.name]) {
     const declaration = state.declarations[prop.value.name];
     if (!t.isVariableDeclaration(declaration) || declaration.kind !== 'const') {
+      // We only want to pick out constants
       return prop.value;
     }
 
-    return declaration.declarations[0].init;
+    const potentialValue = declaration.declarations[0].init;
+    if (t.isLiteral(potentialValue)) {
+      // We only want to pick out constant literals
+      return potentialValue;
+    }
   }
 
   return prop.value;
@@ -56,9 +61,20 @@ const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOut
   return { css, variables };
 };
 
-export const buildCss = (node: t.StringLiteral | t.ObjectExpression, state: State): CSSOutput => {
+const extractTemplateLiteral = (node: t.TemplateLiteral, _: State): CSSOutput => {
+  return { css: node.quasis.map((q) => q.value.raw).join(''), variables: [] };
+};
+
+export const buildCss = (
+  node: t.StringLiteral | t.TemplateLiteral | t.ObjectExpression,
+  state: State
+): CSSOutput => {
   if (t.isStringLiteral(node)) {
     return { css: node.value, variables: [] };
+  }
+
+  if (t.isTemplateLiteral(node)) {
+    return extractTemplateLiteral(node, state);
   }
 
   if (t.isObjectExpression(node)) {

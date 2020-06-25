@@ -277,7 +277,7 @@ describe('css prop', () => {
     );
   });
 
-  xit('should allow expressions stored in a variable as shorthand property values', () => {
+  it('should allow expressions stored in a variable as shorthand property values', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
 
@@ -286,11 +286,11 @@ describe('css prop', () => {
       <div css={{ color }}>hello world</div>
     `);
 
-    expect(actual).toInclude('color:var(--var-test-color)');
-    expect(actual).toInclude(`style={{ "--var-test-color": color }}`);
+    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
+    expect(actual).toInclude(`style={{\"--var-hash-test\":color}}`);
   });
 
-  xit('should allow expressions stored in a variable as property values', () => {
+  it('should allow expressions stored in a variable as property values', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
 
@@ -299,11 +299,11 @@ describe('css prop', () => {
       <div css={{ color: colorsz }}>hello world</div>
     `);
 
-    expect(actual).toInclude('color:var(--var-test-colorsz)');
-    expect(actual).toInclude(`style={{ "--var-test-colorsz": colorsz }}`);
+    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
+    expect(actual).toInclude(`style={{\"--var-hash-test\":colorsz}}`);
   });
 
-  xit('should remove css prop', () => {
+  it('should remove css prop', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -316,7 +316,7 @@ describe('css prop', () => {
     expect(actual).not.toInclude('css={');
   });
 
-  xit('should keep other props around', () => {
+  it('should keep other props around', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -359,7 +359,7 @@ describe('css prop', () => {
   //   expect(actual.outputText).toInclude('<CS hash="css-test" nonce={__webpack_nonce__}>');
   // });
 
-  xit('should bubble up top level pseduo inside a media atrule', () => {
+  it('should bubble up top level pseudo inside a media atrule', () => {
     const actual = transform(`
     import '@compiled/css-in-js';
     import React from 'react';
@@ -375,10 +375,10 @@ describe('css prop', () => {
     \`}>hello world</div>
   `);
 
-    expect(actual).toInclude('.css-test:hover{color:red}}');
+    expect(actual).toInclude('.cc-hash-test:hover{color:red}');
   });
 
-  xit('should bubble up top level pseduo inside a support atrule', () => {
+  it('should bubble up top level pseduo inside a support atrule', () => {
     const actual = transform(`
     import '@compiled/css-in-js';
     import React from 'react';
@@ -394,7 +394,7 @@ describe('css prop', () => {
     \`}>hello world</div>
   `);
 
-    expect(actual).toInclude('.css-test:hover{color:red}}');
+    expect(actual).toInclude('.cc-hash-test:hover{color:red}');
   });
 
   describe('using strings', () => {
