@@ -1295,15 +1295,33 @@ describe('css prop', () => {
     });
   });
 
-  xit("should inline the variable if xit's a constant", () => {
+  it('should inline the variable when it is a constant in string css', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
 
       const bg = 'blue';
       let cl = 'red';
-      <div css={{ background: bg, color: cl }}>hello world</div>
+
+      <div css={{ background: bg, color: cl, textDecoration: 'none', }}>hello world</div>
     `);
 
-    expect(actual).toInclude('.css-test{background:blue;color:var(--var-test-cl)}');
+    expect(actual).toInclude('.css-test{background:blue;color:var(--var-hash-test)}');
+  });
+
+  xit('should inline the variable when it is a constant in object css', () => {
+    const actual = transform(`
+      import '@compiled/css-in-js';
+
+      const bg = 'blue';
+      let cl = 'red';
+
+      <div css={\`
+        background-color: \${bg};
+        color: \${red};
+        text-decoration: none;
+      \`}>hello world</div>
+    `);
+
+    expect(actual).toInclude('.css-test{background:blue;color:var(--var-hash-test)}');
   });
 });
