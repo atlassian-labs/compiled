@@ -123,13 +123,28 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
     });
 
     if (styleProp) {
+      // Remove the pre-existing style prop - we're going to redefine it soon.
       opts.node.openingElement.attributes.splice(stylePropIndex, 1);
+
       if (
         styleProp.value &&
         t.isJSXExpressionContainer(styleProp.value) &&
         !t.isJSXEmptyExpression(styleProp.value.expression)
       ) {
-        dynamicStyleProperties.splice(0, 0, t.spreadElement(styleProp.value.expression));
+        // If it's not an object we just spread the expression into the object
+        if (!t.isObjectExpression(styleProp.value.expression)) {
+          dynamicStyleProperties.splice(0, 0, t.spreadElement(styleProp.value.expression));
+        } else {
+          // Else it's an object! So we want to place each property into the object
+          styleProp.value.expression.properties.forEach((prop, index) => {
+            if (t.isObjectMethod(prop)) {
+              return;
+            }
+
+            // ... in the order they were defined! (So we're using index here to do just that).
+            dynamicStyleProperties.splice(index, 0, prop);
+          });
+        }
       }
     }
 

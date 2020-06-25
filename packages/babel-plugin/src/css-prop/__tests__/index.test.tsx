@@ -82,7 +82,7 @@ describe('css prop', () => {
     expect(actual).toInclude('style={{...props.style,"--var-hash-test":background}}');
   });
 
-  xit('should spread style identifier when there is styles already set', () => {
+  it('should spread style identifier when there is styles already set', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -90,10 +90,10 @@ describe('css prop', () => {
       const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12 }}>hello world</div>;
     `);
 
-    expect(actual).toInclude(`style={{ ...style, display: 'block' }}`);
+    expect(actual).toInclude(`style={{...style,display:'block'}}`);
   });
 
-  xit('should spread style identifier when there is styles already set and using dynamic css', () => {
+  it('should spread style identifier when there is styles already set and using dynamic css', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -103,11 +103,9 @@ describe('css prop', () => {
       const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12, color: red, background }}>hello world</div>;
     `);
 
+    expect(actual).toInclude(`style={{...style,display:'block',\"--var-hash-test\":background}}`);
     expect(actual).toInclude(
-      `style={{ ...style, display: 'block', "--var-test-background": background }}`
-    );
-    expect(actual).toInclude(
-      `.css-test{font-size:12px;color:red;background:var(--var-test-background)}`
+      `.cc-hash-test{font-size:12px;color:red;background:var(--var-hash-test)}`
     );
   });
 
