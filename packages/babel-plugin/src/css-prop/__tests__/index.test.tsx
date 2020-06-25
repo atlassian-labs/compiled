@@ -67,14 +67,10 @@ describe('css prop', () => {
       const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize, color: red }}>hello world</div>;
     `);
 
-    expect(actual).toInclude('style={{...style,"--var-hash-test":fontSize,"--var-hash-test":red}}');
-    expect(actual).toInclude('className={"cc-hash-test"+(className?" "+className:"")}');
-    expect(actual).toInclude(
-      '.cc-hash-test{font-size:var(--var-hash-test);color:var(--var-hash-test)}'
-    );
+    expect(actual).toInclude('style={{...style,"--var-hash-test":fontSize}}');
   });
 
-  xit('should spread style property access when there is dynamic styles in the css', () => {
+  it('should spread style property access when there is dynamic styles in the css', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -83,10 +79,7 @@ describe('css prop', () => {
       const Component = ({ className, ...props }) => <div className={className} style={props.style} css={{ fontSize: 12, color: red, background }}>hello world</div>;
     `);
 
-    expect(actual).toInclude('style={{ ...props.style, "--var-test-background": background }}');
-    expect(actual).toInclude(
-      '.css-test{font-size:12px;color:red;background:var(--var-test-background)}'
-    );
+    expect(actual).toInclude('style={{...props.style,"--var-hash-test":background}}');
   });
 
   xit('should spread style identifier when there is styles already set', () => {
@@ -1305,7 +1298,10 @@ describe('css prop', () => {
       <div css={{ background: bg, color: cl, textDecoration: 'none', }}>hello world</div>
     `);
 
-    expect(actual).toInclude('.css-test{background:blue;color:var(--var-hash-test)}');
+    expect(actual).toInclude(
+      '.cc-hash-test{background:blue;color:var(--var-hash-test);text-decoration:none'
+    );
+    expect(actual).toInclude('style={{"--var-hash-test":cl}}');
   });
 
   xit('should inline the variable when it is a constant in object css', () => {
