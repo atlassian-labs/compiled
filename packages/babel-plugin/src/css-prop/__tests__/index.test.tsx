@@ -440,9 +440,7 @@ describe('css prop', () => {
       expect(actual).toInclude(
         '.cc-hash-test{color:var(--var-hash-test);text-transform:uppercase;font-weight:600}'
       );
-      // expect(actual).toInclude(
-      //   '<span className="css-test" style={{ "--var-test-propscolor": props.color }}>{props.children}</span>'
-      // );
+      expect(actual).toInclude('style={{"--var-hash-test":props.color}}');
     });
 
     it('should transform no template string literal', () => {
@@ -456,7 +454,7 @@ describe('css prop', () => {
       expect(actual).toInclude('.cc-hash-test{font-size:20px}');
     });
 
-    xit('should transform template string literal with string variable', () => {
+    it('should inline constant expression', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -465,8 +463,7 @@ describe('css prop', () => {
         <div css={\`color: \${color};\`}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{color:blue}');
-      expect(actual).toInclude('<div className="css-test">hello world</div>');
+      expect(actual).toInclude('.cc-hash-test{color:blue}');
     });
 
     xit('should transform an expression', () => {

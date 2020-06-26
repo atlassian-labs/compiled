@@ -16,15 +16,13 @@ export interface CSSOutput {
 const getPropValue = (prop: t.ObjectProperty, state: State) => {
   if (state.declarations && t.isIdentifier(prop.value) && state.declarations[prop.value.name]) {
     const declaration = state.declarations[prop.value.name];
-    if (!t.isVariableDeclaration(declaration) || declaration.kind !== 'const') {
+    if (t.isVariableDeclaration(declaration) && declaration.kind === 'const') {
       // We only want to pick out constants
-      return prop.value;
-    }
-
-    const potentialValue = declaration.declarations[0].init;
-    if (t.isLiteral(potentialValue)) {
-      // We only want to pick out constant literals
-      return potentialValue;
+      const potentialValue = declaration.declarations[0].init;
+      if (t.isNumericLiteral(potentialValue) || t.isStringLiteral(potentialValue)) {
+        // We only want to pick out constant literals
+        return potentialValue;
+      }
     }
   }
 
@@ -81,8 +79,42 @@ const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOut
   return { css, variables };
 };
 
-const extractTemplateLiteral = (node: t.TemplateLiteral, _: State): CSSOutput => {
-  return { css: node.quasis.map((q) => q.value.raw).join(''), variables: [] };
+const getInterpolation = (expression: t.Expression, state: State) => {
+  if (t.isIdentifier(expression) && state.declarations) {
+    const declaration = state.declarations[expression.name];
+    if (t.isVariableDeclaration(declaration) && declaration.kind === 'const') {
+      // We only want to pick out variable declarations that are constants
+      const potentialValue = declaration.declarations[0].init;
+      if (t.isLiteral(potentialValue)) {
+        return potentialValue;
+      }
+    }
+  }
+
+  return expression;
+};
+
+const extractTemplateLiteral = (node: t.TemplateLiteral, state: State): CSSOutput => {
+  const variables: CSSOutput['variables'] = [];
+  const css = node.quasis
+    .map((q, index) => {
+      const interpolation = getInterpolation(node.expressions[index], state);
+
+      if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
+        return q.value.raw + interpolation.value;
+      }
+
+      if (interpolation) {
+        const variableName = `--var-${hash(generate(interpolation).code)}`;
+        variables.push({ name: variableName, expression: interpolation });
+        return q.value.raw + `var(${variableName})`;
+      }
+
+      return q.value.raw;
+    })
+    .join('');
+
+  return { css, variables };
 };
 
 export const buildCss = (
