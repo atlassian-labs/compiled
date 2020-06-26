@@ -1,8 +1,13 @@
 import * as t from '@babel/types';
 import kebabCase from '@compiled/ts-transform-css-in-js/dist/utils/kebab-case';
 import { addUnitIfNeeded } from '@compiled/ts-transform-css-in-js/dist/utils/css-property';
+import {
+  cssAfterInterpolation,
+  cssBeforeInterpolation,
+} from '@compiled/ts-transform-css-in-js/dist/utils/string-interpolations';
 import { hash } from '@compiled/ts-transform-css-in-js/dist/utils/hash';
 import generate from '@babel/generator';
+import { toStringJoinExpressions } from './ast-builders';
 import { State } from '../types';
 
 export interface CSSOutput {
@@ -95,8 +100,19 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, state: State): CSSOutpu
 
     if (interpolation) {
       const variableName = `--var-${hash(generate(interpolation).code)}`;
-      variables.push({ name: variableName, expression: interpolation });
-      return css + q.value.raw + `var(${variableName})`;
+      const nextQuasis = node.quasis[index + 1];
+      const before = cssBeforeInterpolation(css);
+      const after = cssAfterInterpolation(nextQuasis.value.raw);
+      let expression = interpolation;
+
+      if (after.variableSuffix) {
+        expression = toStringJoinExpressions(expression, t.stringLiteral(after.variableSuffix));
+      }
+
+      nextQuasis.value.raw = after.css; // Removes any suffixes from the next quasis.
+      variables.push({ name: variableName, expression });
+
+      return before.css + q.value.raw + `var(${variableName})`;
     }
 
     return css + q.value.raw;

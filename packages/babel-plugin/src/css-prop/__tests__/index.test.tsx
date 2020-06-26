@@ -398,7 +398,7 @@ describe('css prop', () => {
   });
 
   describe('using strings', () => {
-    xit('should persist suffix of dynamic value into inline styles', () => {
+    it('should persist suffix of dynamic value into inline styles', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -642,7 +642,7 @@ describe('css prop', () => {
       expect(actual).toInclude('style={{ "--var-test": primary }}');
     });
 
-    xit('should allow multiple interpolations inside a single css property', () => {
+    it('should inline multiple constant interpolations', () => {
       const actual = transform(`
         import React from 'react';
         import '@compiled/css-in-js';
@@ -653,12 +653,33 @@ describe('css prop', () => {
         <div
           css={\`
             transform: translate3d(\${x}px, $\{y}, 0);
+            color: red;
           \`}
         >
           hello world
         </div>
       `);
-      expect(actual).toInclude('.css-test{transform:translate3d(1px,2px,0)}');
+      expect(actual).toInclude('.cc-hash-test{transform:translate3d(1px,2px,0);color:red');
+    });
+
+    xit('should reference multiple interpolations', () => {
+      const actual = transform(`
+        import React from 'react';
+        import '@compiled/css-in-js';
+
+        let x = 1;
+        let y = '2px';
+
+        <div
+          css={\`
+            transform: translate3d(\${x}px, $\{y}, 0);
+            color: red;
+          \`}
+        >
+          hello world
+        </div>
+      `);
+      expect(actual).toInclude('.cc-hash-test{transform:translate3d(1px,2px,0);color:red');
     });
 
     // xit('should transform template string with argument arrow function import', () => {
