@@ -398,7 +398,21 @@ describe('css prop', () => {
   });
 
   describe('using strings', () => {
-    xit('should persist suffix of dynamic property value into inline styles', () => {
+    xit('should persist suffix of dynamic value into inline styles', () => {
+      const actual = transform(`
+        import '@compiled/css-in-js';
+        import React from 'react';
+
+        let fontSize = 20;
+
+        <div css={\`font-size: \${fontSize}px;color:red;\`}>hello world</div>
+      `);
+
+      expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test);color:red}');
+      expect(actual).toInclude('style={{"--var-hash-test":(fontSize||"")+"px"}}');
+    });
+
+    it('should persist suffix of constant value', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -408,11 +422,10 @@ describe('css prop', () => {
         <div css={\`font-size: \${fontSize}px;\`}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{font-size:20px}');
-      expect(actual).toInclude('<div className="css-test">hello world</div>');
+      expect(actual).toInclude('.cc-hash-test{font-size:20px}');
     });
 
-    xit('should transform string literal', () => {
+    it('should transform string literal', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -420,7 +433,7 @@ describe('css prop', () => {
         <div css="font-size: 20px;">hello world</div>
     `);
 
-      expect(actual).toInclude('.css-test{font-size:20px}');
+      expect(actual).toInclude('.cc-hash-test{font-size:20px}');
     });
 
     it('should transform binary expression', () => {

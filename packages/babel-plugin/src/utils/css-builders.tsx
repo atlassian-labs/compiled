@@ -80,29 +80,27 @@ const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOut
 
 const extractTemplateLiteral = (node: t.TemplateLiteral, state: State): CSSOutput => {
   let variables: CSSOutput['variables'] = [];
-  const css = node.quasis
-    .map((q, index) => {
-      const interpolation = getInterpolation(node.expressions[index], state);
+  const css = node.quasis.reduce((css, q, index) => {
+    const interpolation = getInterpolation(node.expressions[index], state);
 
-      if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
-        return q.value.raw + interpolation.value;
-      }
+    if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
+      return css + q.value.raw + interpolation.value;
+    }
 
-      if (t.isObjectExpression(interpolation)) {
-        const result = extractObjectExpression(interpolation, state);
-        variables = variables.concat(result.variables);
-        return result.css;
-      }
+    if (t.isObjectExpression(interpolation)) {
+      const result = extractObjectExpression(interpolation, state);
+      variables = variables.concat(result.variables);
+      return css + result.css;
+    }
 
-      if (interpolation) {
-        const variableName = `--var-${hash(generate(interpolation).code)}`;
-        variables.push({ name: variableName, expression: interpolation });
-        return q.value.raw + `var(${variableName})`;
-      }
+    if (interpolation) {
+      const variableName = `--var-${hash(generate(interpolation).code)}`;
+      variables.push({ name: variableName, expression: interpolation });
+      return css + q.value.raw + `var(${variableName})`;
+    }
 
-      return q.value.raw;
-    })
-    .join('');
+    return css + q.value.raw;
+  }, '');
 
   return { css, variables };
 };
