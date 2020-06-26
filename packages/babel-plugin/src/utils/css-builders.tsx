@@ -13,20 +13,19 @@ export interface CSSOutput {
   }[];
 }
 
-const getPropValue = (prop: t.ObjectProperty, state: State) => {
-  if (state.declarations && t.isIdentifier(prop.value) && state.declarations[prop.value.name]) {
-    const declaration = state.declarations[prop.value.name];
+const getInterpolation = <TNode extends {}>(expression: TNode | undefined, state: State) => {
+  if (t.isIdentifier(expression) && state.declarations) {
+    const declaration = state.declarations[expression.name];
     if (t.isVariableDeclaration(declaration) && declaration.kind === 'const') {
-      // We only want to pick out constants
+      // We only want to pick out variable declarations that are constants
       const potentialValue = declaration.declarations[0].init;
-      if (t.isNumericLiteral(potentialValue) || t.isStringLiteral(potentialValue)) {
-        // We only want to pick out constant literals
+      if (t.isLiteral(potentialValue) || t.isObjectExpression(potentialValue)) {
         return potentialValue;
       }
     }
   }
 
-  return prop.value;
+  return expression;
 };
 
 const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOutput => {
@@ -36,7 +35,7 @@ const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOut
   node.properties.forEach((prop) => {
     if (t.isObjectProperty(prop)) {
       // Don't use prop.value directly as it extracts constants from identifiers if needed.
-      const propValue = getPropValue(prop, state);
+      const propValue = getInterpolation(prop.value, state);
       const key = prop.key.name || prop.key.value;
       let value = '';
 
@@ -79,29 +78,20 @@ const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOut
   return { css, variables };
 };
 
-const getInterpolation = (expression: t.Expression, state: State) => {
-  if (t.isIdentifier(expression) && state.declarations) {
-    const declaration = state.declarations[expression.name];
-    if (t.isVariableDeclaration(declaration) && declaration.kind === 'const') {
-      // We only want to pick out variable declarations that are constants
-      const potentialValue = declaration.declarations[0].init;
-      if (t.isLiteral(potentialValue)) {
-        return potentialValue;
-      }
-    }
-  }
-
-  return expression;
-};
-
 const extractTemplateLiteral = (node: t.TemplateLiteral, state: State): CSSOutput => {
-  const variables: CSSOutput['variables'] = [];
+  let variables: CSSOutput['variables'] = [];
   const css = node.quasis
     .map((q, index) => {
       const interpolation = getInterpolation(node.expressions[index], state);
 
       if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
         return q.value.raw + interpolation.value;
+      }
+
+      if (t.isObjectExpression(interpolation)) {
+        const result = extractObjectExpression(interpolation, state);
+        variables = variables.concat(result.variables);
+        return result.css;
       }
 
       if (interpolation) {

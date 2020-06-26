@@ -466,7 +466,7 @@ describe('css prop', () => {
       expect(actual).toInclude('.cc-hash-test{color:blue}');
     });
 
-    xit('should transform an expression', () => {
+    it('should transform an expression', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -484,22 +484,24 @@ describe('css prop', () => {
         </div>
       `);
 
-      expect(actual).toInclude('grid-template-areas:var(--var-test-sidenav)');
       expect(actual).toInclude(
-        `\"--var-test-sidenav\": sidenav ? \"'header header' 'sidebar content'\" : \"'header header' 'content content'\"`
+        '.cc-hash-test{display:grid;grid-template-areas:var(--var-hash-test)}'
+      );
+      expect(actual).toInclude(
+        `\"--var-hash-test\":sidenav?\"'header header' 'sidebar content'\":\"'header header' 'content content'\"`
       );
     });
 
-    xit('should transform template string literal with obj variable', () => {
+    it('should transform template string literal with obj variable', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
 
         const style = { color: 'blue', fontSize: '30px' };
-        <div css={\`\${style}\`}>hello world</div>
+        <div css={\`\${style};color: red;\`}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{color:blue;font-size:30px}');
+      expect(actual).toInclude('.cc-hash-test{color:blue;font-size:30px;color:red}');
     });
 
     // xit('should transform template string literal with obj import', () => {
