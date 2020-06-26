@@ -423,7 +423,7 @@ describe('css prop', () => {
       expect(actual).toInclude('.css-test{font-size:20px}');
     });
 
-    xit('should transform binary expression', () => {
+    it('should transform binary expression', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
 
@@ -438,14 +438,14 @@ describe('css prop', () => {
       `);
 
       expect(actual).toInclude(
-        '.css-test{color:var(--var-test-propscolor);text-transform:uppercase;font-weight:600}'
+        '.cc-hash-test{color:var(--var-hash-test);text-transform:uppercase;font-weight:600}'
       );
-      expect(actual).toInclude(
-        '<span className="css-test" style={{ "--var-test-propscolor": props.color }}>{props.children}</span>'
-      );
+      // expect(actual).toInclude(
+      //   '<span className="css-test" style={{ "--var-test-propscolor": props.color }}>{props.children}</span>'
+      // );
     });
 
-    xit('should transform no template string literal', () => {
+    it('should transform no template string literal', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -453,7 +453,7 @@ describe('css prop', () => {
         <div css={\`font-size: 20px;\`}>hello world</div>
     `);
 
-      expect(actual).toInclude('.css-test{font-size:20px}');
+      expect(actual).toInclude('.cc-hash-test{font-size:20px}');
     });
 
     xit('should transform template string literal with string variable', () => {
