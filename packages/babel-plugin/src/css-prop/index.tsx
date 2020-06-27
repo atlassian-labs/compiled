@@ -4,27 +4,32 @@ import { buildCompiledComponent } from '../utils/ast-builders';
 import { buildCss, CSSOutput } from '../utils/css-builders';
 import { State } from '../types';
 
-const extractCssFromExpression = (node: t.Expression, state: State): undefined | CSSOutput => {
-  if (t.isStringLiteral(node)) {
-    return buildCss(node, state);
-  }
-
-  if (t.isObjectExpression(node)) {
-    return buildCss(node, state);
-  }
-
-  if (t.isTemplateLiteral(node)) {
-    return buildCss(node, state);
-  }
-
+const extractCssFromExpression = (node: t.Expression, state: State): CSSOutput => {
   if (t.isIdentifier(node) && state.declarations) {
     const actualValue = state.declarations[node.name];
     if (actualValue && t.isVariableDeclaration(actualValue) && actualValue.declarations[0].init) {
-      return extractCssFromExpression(actualValue.declarations[0].init, state);
+      return buildCss(actualValue.declarations[0].init, state);
     }
   }
 
-  return undefined;
+  if (t.isArrayExpression(node)) {
+    let css = '';
+    let variables: CSSOutput['variables'] = [];
+
+    node.elements.forEach((element) => {
+      if (!element) {
+        return;
+      }
+
+      const result = extractCssFromExpression(element as t.Expression, state);
+      css += result.css;
+      variables = variables.concat(result.variables);
+    });
+
+    return { css, variables };
+  }
+
+  return buildCss(node, state);
 };
 
 const getJsxAttributeExpression = (node: t.JSXAttribute) => {
@@ -56,11 +61,7 @@ export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, state: Sta
 
   // Remove css prop
   path.node.attributes.splice(cssPropIndex, 1);
-
   const cssOutput = extractCssFromExpression(getJsxAttributeExpression(cssProp), state);
-  if (cssOutput === undefined) {
-    throw path.buildCodeFrameError('Css prop value not allowed.');
-  }
 
   path.parentPath.replaceWith(
     buildCompiledComponent({

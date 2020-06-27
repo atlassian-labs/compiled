@@ -166,7 +166,7 @@ describe('css prop', () => {
     expect(actual).toInclude('className={"cc-hash-test"+(className?" "+className:"")}');
   });
 
-  xit('should pick up array composition', () => {
+  it('should pick up array composition', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -177,7 +177,7 @@ describe('css prop', () => {
       <div css={[base, top]}>hello world</div>
     `);
 
-    expect(actual).toInclude('.css-test{color:black;color:red}');
+    expect(actual).toInclude('.cc-hash-test{color:black;color:red}');
   });
 
   it('should persist static style prop', () => {

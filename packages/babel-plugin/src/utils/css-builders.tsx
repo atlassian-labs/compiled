@@ -147,10 +147,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, state: State): CSSOutpu
   return { css, variables };
 };
 
-export const buildCss = (
-  node: t.StringLiteral | t.TemplateLiteral | t.ObjectExpression,
-  state: State
-): CSSOutput => {
+export const buildCss = (node: t.Expression, state: State): CSSOutput => {
   if (t.isStringLiteral(node)) {
     return { css: node.value, variables: [] };
   }
