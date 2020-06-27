@@ -48,13 +48,9 @@ const compiledTemplate = template(
 export const joinExpressions = (
   left: any,
   right: any,
-  spacer = t.stringLiteral(' ')
+  spacer: any = t.stringLiteral(' ')
 ): t.BinaryExpression => {
-  return t.binaryExpression('+', left, t.binaryExpression('+', spacer, right));
-};
-
-export const toStringJoinExpressions = (left: t.Expression, right: t.Expression) => {
-  return t.binaryExpression('+', t.logicalExpression('||', left, t.stringLiteral('')), right);
+  return t.binaryExpression('+', left, spacer ? t.binaryExpression('+', spacer, right) : right);
 };
 
 export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExpression => {

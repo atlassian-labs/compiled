@@ -7,7 +7,7 @@ import {
 } from '@compiled/ts-transform-css-in-js/dist/utils/string-interpolations';
 import { hash } from '@compiled/ts-transform-css-in-js/dist/utils/hash';
 import generate from '@babel/generator';
-import { toStringJoinExpressions } from './ast-builders';
+import { joinExpressions } from './ast-builders';
 import { State } from '../types';
 
 export interface CSSOutput {
@@ -101,18 +101,27 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, state: State): CSSOutpu
     if (interpolation) {
       const variableName = `--var-${hash(generate(interpolation).code)}`;
       const nextQuasis = node.quasis[index + 1];
-      const before = cssBeforeInterpolation(css);
+      const before = cssBeforeInterpolation(css + q.value.raw);
       const after = cssAfterInterpolation(nextQuasis.value.raw);
-      let expression = interpolation;
+      let expression: t.Expression =
+        before.variablePrefix || after.variableSuffix
+          ? // When there is a prefix/suffix we want to ensure the interpolation at least
+            // resolves to an empty string - so we short circuit it to one.
+            t.logicalExpression('||', interpolation, t.stringLiteral(''))
+          : interpolation;
+
+      if (before.variablePrefix) {
+        expression = joinExpressions(t.stringLiteral(before.variablePrefix), expression, null);
+      }
 
       if (after.variableSuffix) {
-        expression = toStringJoinExpressions(expression, t.stringLiteral(after.variableSuffix));
+        expression = joinExpressions(expression, t.stringLiteral(after.variableSuffix), null);
       }
 
       nextQuasis.value.raw = after.css; // Removes any suffixes from the next quasis.
       variables.push({ name: variableName, expression });
 
-      return before.css + q.value.raw + `var(${variableName})`;
+      return before.css + `var(${variableName})`;
     }
 
     return css + q.value.raw;

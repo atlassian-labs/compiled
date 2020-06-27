@@ -662,7 +662,7 @@ describe('css prop', () => {
       expect(actual).toInclude('.cc-hash-test{transform:translate3d(1px,2px,0);color:red');
     });
 
-    xit('should reference multiple interpolations', () => {
+    it('should reference multiple interpolations in a group', () => {
       const actual = transform(`
         import React from 'react';
         import '@compiled/css-in-js';
@@ -679,7 +679,11 @@ describe('css prop', () => {
           hello world
         </div>
       `);
-      expect(actual).toInclude('.cc-hash-test{transform:translate3d(1px,2px,0);color:red');
+
+      expect(actual).toInclude('style={{"--var-hash-test":(x||"")+"px","--var-hash-test":y}}');
+      expect(actual).toInclude(
+        '.cc-hash-test{transform:translate3d(var(--var-hash-test),var(--var-hash-test),0);color:red}'
+      );
     });
 
     // xit('should transform template string with argument arrow function import', () => {
