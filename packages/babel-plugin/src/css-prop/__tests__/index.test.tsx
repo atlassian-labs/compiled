@@ -606,23 +606,6 @@ describe('css prop', () => {
         '.cc-hash-test{transform:translate3d(var(--var-hash-test),var(--var-hash-test),0);color:red}'
       );
     });
-
-    // xit('should transform template string with argument arrow function import', () => {
-    //   const actual = transformer.addSource({
-    //     path: '/mixy-in.ts',
-    //     contents: `export const style = (color: string) => ({ color, fontSize: '30px' });`,
-    //   }).transform(`
-    //     import '@compiled/css-in-js';
-    //     import React from 'react';
-    //     import { style } from './mixy-in';
-
-    //     const primary = 'red';
-    //     <div css={\`\${style(primary)}\`}>hello world</div>
-    //   `);
-
-    //   expect(actual).toInclude('.css-test{color:var(--var-test);font-size:30px}');
-    //   expect(actual).toInclude('style={{ "--var-test": primary }}');
-    // });
   });
 
   describe('using an object literal', () => {
@@ -804,21 +787,6 @@ describe('css prop', () => {
       expect(actual).toInclude('.cc-hash-test{color:blue;color:red}');
     });
 
-    // xit('should transform object spread from import', () => {
-    //   const actual = transformer.addSource({
-    //     path: '/mixins.ts',
-    //     contents: `export const mixin = { color: 'red' };`,
-    //   }).transform(`
-    //     import '@compiled/css-in-js';
-    //     import React from 'react';
-    //     import { mixin } from './mixins';
-
-    //     <div css={{ color: 'blue', ...mixin }}>hello world</div>
-    //   `);
-
-    //   expect(actual).toInclude('.css-test{color:blue;color:red}');
-    // });
-
     it('should transform object with string variable', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
@@ -845,22 +813,6 @@ describe('css prop', () => {
       expect(actual).toInclude('.cc-hash-test{color:red}');
     });
 
-    // xit('should transform object with string import', () => {
-    //   const actual = transformer.addSource({
-    //     path: '/colors.tsx',
-    //     contents: `export const color = 'red';`,
-    //   }).transform(`
-    //     import '@compiled/css-in-js';
-    //     import React from 'react';
-    //     import { color } from './colors';
-
-    //     <div css={{ color }}>hello world</div>
-    //   `);
-
-    //   expect(actual).toInclude('.css-test{color:red}');
-    //   expect(actual).toInclude('<div className="css-test">');
-    // });
-
     it('should transform object with obj variable', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
@@ -882,30 +834,6 @@ describe('css prop', () => {
       expect(actual).toInclude('.cc-hash-test{display:flex;font-size:50px;color:blue}');
       expect(actual).toInclude('.cc-hash-test:hover{color:red}');
     });
-
-    // xit('should transform object with obj import', () => {
-    //   const actual = transformer.addSource({
-    //     path: '/mixins.ts',
-    //     contents: "export const mixin = { color: 'red' };",
-    //   }).transform(`
-    //     import '@compiled/css-in-js';
-    //     import React from 'react';
-    //     import { mixin } from './mixins';
-
-    //     <div
-    //       css={{
-    //         display: 'flex',
-    //         fontSize: '50px',
-    //         color: 'blue',
-    //         ':hover': mixin,
-    //       }}>
-    //       Hello, world!
-    //     </div>
-    // `);
-
-    //   expect(actual).toInclude('.css-test{display:flex;font-size:50px;color:blue}');
-    //   expect(actual).toInclude('.css-test:hover{color:red}');
-    // });
 
     xit('should transform object with no argument arrow function variable', () => {
       const actual = transform(`
@@ -931,21 +859,6 @@ describe('css prop', () => {
       expect(actual).toInclude(`.cc-hash-test{color:blue}`);
     });
 
-    // xit('should transform object with no argument arrow function import', () => {
-    //   const actual = transformer.addSource({
-    //     path: '/mixins.ts',
-    //     contents: `export const mixin = () => ({ color: 'red' });`,
-    //   }).transform(`
-    //     import '@compiled/css-in-js';
-    //     import React from 'react';
-    //     import { mixin } from './mixins';
-
-    //     <div css={{ color: 'blue', ...mixin() }}>hello world</div>
-    //   `);
-
-    //   expect(actual).toInclude(`.css-test{color:blue;color:red}`);
-    // });
-
     xit('should transform object spread with no argument arrow function variable', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
@@ -958,21 +871,6 @@ describe('css prop', () => {
 
       expect(actual).toInclude('.css-test{color:blue;color:red}');
     });
-
-    // xit('should transform object spread with no argument arrow function import', () => {
-    //   const actual = transformer.addSource({
-    //     path: '/mixins.ts',
-    //     contents: `export const mixin = () => ({ color: 'red' });`,
-    //   }).transform(`
-    //     import '@compiled/css-in-js';
-    //     import React from 'react';
-    //     import { mixin } from './mixins';
-
-    //     <div css={{ color: 'blue', ...mixin() }}>hello world</div>
-    //   `);
-
-    //   expect(actual).toInclude('.css-test{color:blue;color:red}');
-    // });
 
     it('should transform inline template literal with suffix', () => {
       const actual = transform(`
@@ -1062,26 +960,6 @@ describe('css prop', () => {
       expect(actual).toInclude('.css-test:hover{color:red}');
     });
 
-    // xit('should transform object with no argument function import', () => {
-    //   const actual = transformer.addSource({
-    //     path: '/mixins.ts',
-    //     contents: `
-    //       export function mixin() {
-    //         return { color: 'red' };
-    //       }
-    //     `,
-    //   }).transform(`
-    //     import '@compiled/css-in-js';
-    //     import React from 'react';
-    //     import { mixin } from './mixins';
-
-    //     <div css={{ color: 'blue', ':hover': mixin() }}>hello world</div>
-    //   `);
-
-    //   expect(actual).toInclude(`.css-test{color:blue}`);
-    //   expect(actual).toInclude('.css-test:hover{color:red}');
-    // });
-
     xit('should transform object spread with no argument function variable', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
@@ -1096,25 +974,6 @@ describe('css prop', () => {
 
       expect(actual).toInclude('.css-test{color:blue;color:red}');
     });
-
-    // xit('should transform object spread with no argument function import', () => {
-    //   const actual = transformer.addSource({
-    //     path: '/mixins.ts',
-    //     contents: `
-    //       export function mixin() {
-    //         return { color: 'red' };
-    //       }
-    //     `,
-    //   }).transform(`
-    //     import '@compiled/css-in-js';
-    //     import React from 'react';
-    //     import { mixin } from './mixins';
-
-    //     <div css={{ color: 'blue', ...mixin() }}>hello world</div>
-    //   `);
-
-    //   expect(actual).toInclude('.css-test{color:blue;color:red}');
-    // });
 
     xit('should transform object with argument arrow function variable', () => {
       const actual = transform(`
@@ -1203,23 +1062,6 @@ describe('css prop', () => {
         '.cc-hash-test{padding:var(--var-hash-test) var(--var-hash-test) var(--var-hash-test) var(--var-hash-test);color:red}'
       );
     });
-
-    // xit('should transform object with argument arrow function import', () => {
-    //   const actual = transformer.addSource({
-    //     path: '/styles.ts',
-    //     contents: 'export const mixin = (color: string) => ({ color });',
-    //   }).transform(`
-    //     import '@compiled/css-in-js';
-    //     import React from 'react';
-    //     import { mixin } from './styles';
-
-    //     const color = 'red';
-
-    //     <div css={{ color: 'blue', ...mixin(color) }}>hello world</div>
-    //   `);
-
-    //   expect(actual).toInclude('.css-test{color:blue;color:red');
-    // });
 
     it('should do nothing when content already has single quotes', () => {
       const actual = transform(`
