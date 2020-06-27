@@ -810,7 +810,7 @@ describe('css prop', () => {
       );
     });
 
-    xit('should transform object with simple values', () => {
+    it('should transform object with simple values', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -818,10 +818,10 @@ describe('css prop', () => {
         <div css={{ lineHeight: 20, color: 'blue' }}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{line-height:20;color:blue}');
+      expect(actual).toInclude('.cc-hash-test{line-height:20;color:blue}');
     });
 
-    xit('should move right hand value (px, em, etc) after variable into style attribute', () => {
+    it('should inline constant', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -831,8 +831,7 @@ describe('css prop', () => {
         <div css={{ fontSize: \`\${fontSize}px\` }}>hello world</div>
       `);
 
-      expect(actual).toInclude('.css-test{font-size:12px}');
-      expect(actual).toInclude('<div className="css-test">hello world</div>');
+      expect(actual).toInclude('.cc-hash-test{font-size:12px}');
     });
 
     it('should transform object with nested object into a selector', () => {
@@ -846,17 +845,18 @@ describe('css prop', () => {
       expect(actual).toInclude('.cc-hash-test:hover{color:blue}');
     });
 
-    xit('should transform object that has a variable reference', () => {
+    it('should transform object that has a variable reference', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
 
-        const blue: string = 'blue';
+        let blue = 'blue';
+
         <div css={{ color: blue }}>hello world</div>
       `);
 
-      expect(actual).toInclude('<div className="css-test">hello world</div>');
-      expect(actual).toInclude('.css-test{color:blue}');
+      expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
+      expect(actual).toInclude('style={{"--var-hash-test":blue}}');
     });
 
     it('should transform object that has a destructured variable reference', () => {
@@ -942,7 +942,7 @@ describe('css prop', () => {
     //   expect(actual).toInclude('<div className="css-test">');
     // });
 
-    xit('should transform object with obj variable', () => {
+    it('should transform object with obj variable', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -960,8 +960,8 @@ describe('css prop', () => {
         </div>
     `);
 
-      expect(actual).toInclude('.css-test{display:flex;font-size:50px;color:blue}');
-      expect(actual).toInclude('.css-test:hover{color:red}');
+      expect(actual).toInclude('.cc-hash-test{display:flex;font-size:50px;color:blue}');
+      expect(actual).toInclude('.cc-hash-test:hover{color:red}');
     });
 
     // xit('should transform object with obj import', () => {
@@ -1001,7 +1001,7 @@ describe('css prop', () => {
       expect(actual).toInclude(`.css-test{color:blue;color:red}`);
     });
 
-    xit('should transform template literal value', () => {
+    it('should transform template literal value', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -1009,7 +1009,7 @@ describe('css prop', () => {
         <div css={{ color: \`blue\` }}>hello world</div>
       `);
 
-      expect(actual).toInclude(`.css-test{color:blue}`);
+      expect(actual).toInclude(`.cc-hash-test{color:blue}`);
     });
 
     // xit('should transform object with no argument arrow function import', () => {
@@ -1055,7 +1055,7 @@ describe('css prop', () => {
     //   expect(actual).toInclude('.css-test{color:blue;color:red}');
     // });
 
-    xit('should transform inline template literal with suffix', () => {
+    it('should transform inline template literal with suffix', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -1067,7 +1067,7 @@ describe('css prop', () => {
         }} />;
       `);
 
-      expect(actual).toInclude('<CS hash="css-test">{[".css-test{padding:0 4px;color:red}"]}</CS>');
+      expect(actual).toInclude('.cc-hash-test{padding:0 4px;color:red}');
     });
 
     xit('should transform object spread with no argument function variable', () => {
@@ -1099,7 +1099,7 @@ describe('css prop', () => {
       expect(actual).toInclude('.css-test:hover{color:red}');
     });
 
-    xit('should transform identifier referencing an object', () => {
+    it('should extract mixin from identifier', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -1109,10 +1109,10 @@ describe('css prop', () => {
         <div css={base}>hello world</div>
       `);
 
-      expect(actual).toInclude(`.css-test{color:red}`);
+      expect(actual).toInclude(`.cc-hash-test{color:red}`);
     });
 
-    xit('should transform identifier referencing an template literal', () => {
+    it('should transform identifier referencing an template literal', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -1124,7 +1124,7 @@ describe('css prop', () => {
         <div css={base}>hello world</div>
       `);
 
-      expect(actual).toInclude(`.css-test{color:red}`);
+      expect(actual).toInclude(`.cc-hash-test{color:red}`);
     });
 
     xit('should transform object with no argument function variable', () => {
@@ -1211,7 +1211,7 @@ describe('css prop', () => {
       expect(actual).toInclude('.css-test{color:blue;color:red}');
     });
 
-    xit('should parse an inline string interpolation delimited by spaces', () => {
+    it('should parse an inline string interpolation delimited by spaces', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -1225,11 +1225,11 @@ describe('css prop', () => {
          }}>hello world</div>
       `);
 
-      expect(actual).toInclude('"--var-test-horizontal_spacing": HORIZONTAL_SPACING');
-      expect(actual).toInclude('padding:0 var(--var-test-horizontal_spacing);');
+      expect(actual).toInclude('style={{"--var-hash-test":HORIZONTAL_SPACING}}');
+      expect(actual).toInclude('.cc-hash-test{padding:0 var(--var-hash-test);color:red}');
     });
 
-    xit('should parse an inline string interpolation delimited by multiple spaces', () => {
+    it('should parse an inline string interpolation delimited by multiple spaces', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -1243,11 +1243,11 @@ describe('css prop', () => {
          }}>hello world</div>
       `);
 
-      expect(actual).toInclude('"--var-test-horizontal_spacing": HORIZONTAL_SPACING');
-      expect(actual).toInclude('padding:0 var(--var-test-horizontal_spacing) 0 0;');
+      expect(actual).toInclude('.cc-hash-test{padding:0 var(--var-hash-test) 0 0;color:red}');
+      expect(actual).toInclude('style={{"--var-hash-test":HORIZONTAL_SPACING}}');
     });
 
-    xit('should parse an inline string interpolation delimited by multiple spaces and suffix', () => {
+    it('should parse an inline string interpolation delimited by multiple spaces and suffix', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -1261,13 +1261,11 @@ describe('css prop', () => {
          }}>hello world</div>
       `);
 
-      expect(actual).toInclude(
-        '"--var-test-horizontal_spacing": (HORIZONTAL_SPACING || "") + "px"'
-      );
-      expect(actual).toInclude('padding:0 var(--var-test-horizontal_spacing) 0 0;');
+      expect(actual).toInclude('style={{"--var-hash-test":(HORIZONTAL_SPACING||"")+"px"}}');
+      expect(actual).toInclude('.cc-hash-test{padding:0 var(--var-hash-test) 0 0;color:red}');
     });
 
-    xit('should parse an inline string interpolation delimited by multiple spaces and multiple suffix', () => {
+    it('should parse an inline string interpolation delimited by multiple spaces and multiple suffix', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
         import React from 'react';
@@ -1281,11 +1279,9 @@ describe('css prop', () => {
          }}>hello world</div>
       `);
 
+      expect(actual).toInclude('style={{"--var-hash-test":(HORIZONTAL_SPACING||"")+"px"}}');
       expect(actual).toInclude(
-        '"--var-test-horizontal_spacing": (HORIZONTAL_SPACING || "") + "px"'
-      );
-      expect(actual).toInclude(
-        'padding:var(--var-test-horizontal_spacing) var(--var-test-horizontal_spacing) var(--var-test-horizontal_spacing) var(--var-test-horizontal_spacing);'
+        '.cc-hash-test{padding:var(--var-hash-test) var(--var-hash-test) var(--var-hash-test) var(--var-hash-test);color:red}'
       );
     });
 
@@ -1335,7 +1331,7 @@ describe('css prop', () => {
     expect(actual).toInclude('style={{"--var-hash-test":cl}}');
   });
 
-  xit('should inline the variable when it is a constant in object css', () => {
+  it('should inline the variable when it is a constant in object css', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
 
@@ -1349,6 +1345,9 @@ describe('css prop', () => {
       \`}>hello world</div>
     `);
 
-    expect(actual).toInclude('.css-test{background:blue;color:var(--var-hash-test)}');
+    expect(actual).toInclude(
+      '.cc-hash-test{background-color:blue;color:var(--var-hash-test);text-decoration:none}'
+    );
+    expect(actual).toInclude('style={{"--var-hash-test":red}}');
   });
 });

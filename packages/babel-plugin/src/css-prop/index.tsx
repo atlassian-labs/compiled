@@ -1,26 +1,42 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/core';
 import { buildCompiledComponent } from '../utils/ast-builders';
-import { buildCss } from '../utils/css-builders';
+import { buildCss, CSSOutput } from '../utils/css-builders';
 import { State } from '../types';
 
-const extractFromCssProp = (
-  node: t.StringLiteral | t.JSXElement | t.JSXFragment | t.JSXExpressionContainer,
-  state: State
-) => {
+const extractFromCssProp = (node: t.Expression, state: State): undefined | CSSOutput => {
   if (t.isStringLiteral(node)) {
     return buildCss(node, state);
   }
 
-  if (t.isJSXExpressionContainer(node) && t.isObjectExpression(node.expression)) {
-    return buildCss(node.expression, state);
+  if (t.isObjectExpression(node)) {
+    return buildCss(node, state);
   }
 
-  if (t.isJSXExpressionContainer(node) && t.isTemplateLiteral(node.expression)) {
-    return buildCss(node.expression, state);
+  if (t.isTemplateLiteral(node)) {
+    return buildCss(node, state);
+  }
+
+  if (t.isIdentifier(node) && state.declarations) {
+    const actualValue = state.declarations[node.name];
+    if (actualValue && t.isVariableDeclaration(actualValue) && actualValue.declarations[0].init) {
+      return extractFromCssProp(actualValue.declarations[0].init, state);
+    }
   }
 
   return undefined;
+};
+
+const getJsxAttributeValue = (node: t.JSXAttribute) => {
+  if (t.isStringLiteral(node.value)) {
+    return node.value;
+  }
+
+  if (t.isJSXExpressionContainer(node.value)) {
+    return node.value.expression as t.Expression;
+  }
+
+  throw new Error();
 };
 
 export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, state: State) => {
@@ -41,7 +57,7 @@ export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, state: Sta
   // Remove css prop
   path.node.attributes.splice(cssPropIndex, 1);
 
-  const cssOutput = extractFromCssProp(cssProp.value, state);
+  const cssOutput = extractFromCssProp(getJsxAttributeValue(cssProp), state);
   if (cssOutput === undefined) {
     throw path.buildCodeFrameError('Css prop value not allowed.');
   }

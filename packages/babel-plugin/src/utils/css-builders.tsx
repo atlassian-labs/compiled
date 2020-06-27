@@ -24,7 +24,11 @@ const getInterpolation = <TNode extends {}>(expression: TNode | undefined, state
     if (t.isVariableDeclaration(declaration) && declaration.kind === 'const') {
       // We only want to pick out variable declarations that are constants
       const potentialValue = declaration.declarations[0].init;
-      if (t.isLiteral(potentialValue) || t.isObjectExpression(potentialValue)) {
+      if (
+        t.isStringLiteral(potentialValue) ||
+        t.isNumericLiteral(potentialValue) ||
+        t.isObjectExpression(potentialValue)
+      ) {
         return potentialValue;
       }
     }
