@@ -1302,16 +1302,37 @@ describe('css prop', () => {
     //   expect(actual).toInclude('.css-test{color:blue;color:red');
     // });
 
-    xit('should add quotations to dynamically set content', () => {
+    it('should do nothing when content already has single quotes', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
 
         const yeah = true;
-        <div css={{ content: yeah ? 'nah' : 'yeah' }}>hello world</div>
+        <div css={{ content: "'hello'" }}>hello world</div>
       `);
 
-      expect(actual).toInclude(`"--var-test": '"' + (yeah ? 'nah' : 'yeah') + '"'`);
-      expect(actual).toInclude('.css-test:after{content:var(--var-test)}');
+      expect(actual).toInclude(`.cc-hash-test{content:'hello'}`);
+    });
+
+    it('should do nothing when content already has double quotes', () => {
+      const actual = transform(`
+        import '@compiled/css-in-js';
+
+        const yeah = true;
+        <div css={{ content: '"hello"' }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(`.cc-hash-test{content:\\\"hello\\\"}`);
+    });
+
+    it('should add quotations to static content if missing', () => {
+      const actual = transform(`
+        import '@compiled/css-in-js';
+
+        const yeah = true;
+        <div css={{ content: 'hello' }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(`.cc-hash-test{content:\\\"hello\\\"}`);
     });
   });
 

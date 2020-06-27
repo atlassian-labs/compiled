@@ -37,6 +37,14 @@ const getInterpolation = <TNode extends {}>(expression: TNode | undefined, state
   return expression;
 };
 
+const normalizeContentValue = (value: string) => {
+  if (value.charAt(0) !== '"' && value.charAt(0) !== "'") {
+    return `"${value}"`;
+  }
+
+  return value;
+};
+
 const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOutput => {
   let variables: CSSOutput['variables'] = [];
   let css = '';
@@ -49,7 +57,7 @@ const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOut
       let value = '';
 
       if (t.isStringLiteral(propValue)) {
-        value = propValue.value;
+        value = key === 'content' ? normalizeContentValue(propValue.value) : propValue.value;
       } else if (t.isNumericLiteral(propValue)) {
         value = addUnitIfNeeded(key, propValue.value);
       } else if (t.isObjectExpression(propValue)) {
