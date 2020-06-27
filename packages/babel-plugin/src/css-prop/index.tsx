@@ -64,6 +64,7 @@ export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, state: Sta
 
   path.parentPath.replaceWith(
     buildCompiledComponent({
+      ...state.opts,
       cssOutput,
       node: path.parentPath.node as t.JSXElement,
     })

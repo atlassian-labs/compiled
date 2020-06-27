@@ -329,35 +329,26 @@ describe('css prop', () => {
     expect(actual).toInclude('data-testid="yo"');
   });
 
-  // xit('should add an identifier nonce to the style element', () => {
-  //   const stubProgam: ts.Program = ({
-  //     getTypeChecker: () => ({
-  //       getSymbolAtLocation: () => undefined,
-  //     }),
-  //   } as never) as ts.Program;
-  //   const transformer = cssPropTransformer(stubProgam, { nonce: '__webpack_nonce__' });
+  it('should add an identifier nonce to the style element', () => {
+    const actual = transformSync(
+      `
+    import '@compiled/css-in-js';
+    import React from 'react';
 
-  //   const actual = ts.transpileModule(
-  //     `
-  //       import '@compiled/css-in-js';
-  //       import React from 'react';
+    const color = 'blue';
 
-  //       const color = 'blue';
+    <div data-testid="yo" css={{ color: color }} style={{ display: "block" }}>hello world</div>
+  `,
+      {
+        configFile: false,
+        babelrc: false,
+        compact: true,
+        plugins: [[babelNext, { nonce: '__webpack_nonce__' }]],
+      }
+    )?.code;
 
-  //       <div data-testid="yo" css={{ color: color }} style={{ display: "block" }}>hello world</div>
-  //     `,
-  //     {
-  //       transformers: { before: [transformer] },
-  //       compilerOptions: {
-  //         module: ts.ModuleKind.ESNext,
-  //         jsx: ts.JsxEmit.Preserve,
-  //         target: ts.ScriptTarget.ESNext,
-  //       },
-  //     }
-  //   );
-
-  //   expect(actual.outputText).toInclude('<CS hash="css-test" nonce={__webpack_nonce__}>');
-  // });
+    expect(actual).toInclude('<CS nonce={__webpack_nonce__}hash={"hash-test"}>');
+  });
 
   it('should bubble up top level pseudo inside a media atrule', () => {
     const actual = transform(`
@@ -517,44 +508,6 @@ describe('css prop', () => {
       expect(actual).toInclude('.cc-hash-test{color:blue;font-size:30px;color:red}');
     });
 
-    // xit('should transform template string literal with obj import', () => {
-    //   const actual = transformer.addSource({
-    //     path: '/mixins.ts',
-    //     contents: `export const style = { color: 'blue', fontSize: '30px' };`,
-    //   }).transform(`
-    //     import '@compiled/css-in-js';
-    //     import React from 'react';
-    //     import { style } from './mixins';
-
-    //     <div
-    //       css={\`
-    //         :last-child {
-    //           \${style};
-    //         }
-    //       \`}
-    //       >
-    //       hello world
-    //     </div>
-    //   `);
-
-    //   expect(actual).toInclude('.css-test:last-child{color:blue;font-size:30px}');
-    // });
-
-    // xit('should transform template string literal with obj import being used as a selector', () => {
-    //   const actual = transformer.addSource({
-    //     path: '/mixins.ts',
-    //     contents: `export const style = { ':hover': { color: 'blue', fontSize: '30px' } };`,
-    //   }).transform(`
-    //     import '@compiled/css-in-js';
-    //     import React from 'react';
-    //     import { style } from './mixins';
-
-    //     <div css={\`\${style}\`}>hello world</div>
-    //   `);
-
-    //   expect(actual).toInclude('.css-test:hover{color:blue;font-size:30px}');
-    // });
-
     xit('should transform template string with no argument arrow function variable', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
@@ -579,21 +532,6 @@ describe('css prop', () => {
       expect(actual).toInclude('.css-test{color:blue;font-size:30px}');
     });
 
-    // xit('should transform template string with no argument arrow function call import', () => {
-    //   const actual = transformer.addSource({
-    //     path: '/stylez.ts',
-    //     contents: `export const style = () => ({ color: 'blue', fontSize: '30px' });`,
-    //   }).transform(`
-    //     import '@compiled/css-in-js';
-    //     import React from 'react';
-    //     import { style } from './stylez';
-
-    //     <div css={\`\${style()}\`}>hello world</div>
-    //   `);
-
-    //   expect(actual).toInclude('.css-test{color:blue;font-size:30px}');
-    // });
-
     xit('should transform template string with no argument function variable', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
@@ -608,25 +546,6 @@ describe('css prop', () => {
 
       expect(actual).toInclude('.css-test{color:red}');
     });
-
-    // xit('should transform template string with no argument function import', () => {
-    //   const actual = transformer.addSource({
-    //     path: '/func-mixin.ts',
-    //     contents: `
-    //       export function mixin() {
-    //         return { color: 'red' };
-    //       }
-    //     `,
-    //   }).transform(`
-    //     import '@compiled/css-in-js';
-    //     import React from 'react';
-    //     import { mixin } from './func-mixin';
-
-    //     <div css={\`\${mixin()}\`}>hello world</div>
-    //   `);
-
-    //   expect(actual).toInclude('.css-test{color:red}');
-    // });
 
     xit('should transform template string with argument arrow function variable', () => {
       const actual = transform(`

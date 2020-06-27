@@ -4,8 +4,9 @@ import { hash } from '@compiled/ts-transform-css-in-js/dist/utils/hash';
 import { transformCss } from '@compiled/ts-transform-css-in-js/dist/utils/css-transform';
 import { unique } from '@compiled/ts-transform-css-in-js/dist/utils/array';
 import { CSSOutput } from './css-builders';
+import { PluginOptions } from '../types';
 
-interface BaseOpts {
+interface BaseOpts extends PluginOptions {
   cssOutput: CSSOutput;
 }
 
@@ -38,6 +39,18 @@ const compiledTemplate = template(
   `
 <CC>
   <CS hash={%%hash%%}>{%%css%%}</CS>
+  {%%jsxNode%%}
+</CC>
+`,
+  {
+    plugins: ['jsx'],
+  }
+);
+
+const compiledNonceTemplate = template(
+  `
+<CC>
+  <CS nonce={%%nonce%%} hash={%%hash%%}>{%%css%%}</CS>
   {%%jsxNode%%}
 </CC>
 `,
@@ -161,9 +174,13 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
     );
   }
 
-  return compiledTemplate({
+  const templateVars = {
     jsxNode: opts.node,
     hash: t.stringLiteral(cssHash),
     css: t.arrayExpression(cssRules.map((rule) => t.stringLiteral(rule))),
-  }) as t.Node;
+  };
+
+  return (opts.nonce
+    ? compiledNonceTemplate({ ...templateVars, nonce: opts.nonce })
+    : compiledTemplate(templateVars)) as t.Node;
 };
