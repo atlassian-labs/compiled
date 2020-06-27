@@ -2,6 +2,7 @@ import template from '@babel/template';
 import * as t from '@babel/types';
 import { hash } from '@compiled/ts-transform-css-in-js/dist/utils/hash';
 import { transformCss } from '@compiled/ts-transform-css-in-js/dist/utils/css-transform';
+import { unique } from '@compiled/ts-transform-css-in-js/dist/utils/array';
 import { CSSOutput } from './css-builders';
 
 interface BaseOpts {
@@ -119,10 +120,10 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
       }
     );
 
-    const dynamicStyleProperties: (
-      | t.SpreadElement
-      | t.ObjectProperty
-    )[] = opts.cssOutput.variables.map((variable) => {
+    const dynamicStyleProperties: (t.SpreadElement | t.ObjectProperty)[] = unique(
+      opts.cssOutput.variables,
+      (item) => item.name
+    ).map((variable) => {
       return t.objectProperty(t.stringLiteral(variable.name), variable.expression);
     });
 

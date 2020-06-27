@@ -53,6 +53,11 @@ const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOut
         css += `${key} { ${result.css} }`;
         variables = variables.concat(result.variables);
         return;
+      } else if (t.isTemplateLiteral(propValue)) {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        const result = extractTemplateLiteral(propValue, state);
+        value = result.css;
+        variables = variables.concat(result.variables);
       } else if (t.isExpression(propValue)) {
         const variableName = `--var-${hash(generate(propValue).code)}`;
         variables.push({ name: variableName, expression: propValue });
