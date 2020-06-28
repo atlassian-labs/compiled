@@ -608,6 +608,22 @@ describe('css prop', () => {
   });
 
   describe('using an object literal', () => {
+    it('should inline the variable when it is a constant in string css', () => {
+      const actual = transform(`
+        import '@compiled/css-in-js';
+
+        const bg = 'blue';
+        let cl = 'red';
+
+        <div css={{ background: bg, color: cl, textDecoration: 'none', }}>hello world</div>
+      `);
+
+      expect(actual).toInclude(
+        '.cc-hash-test{background:blue;color:var(--var-hash-test);text-decoration:none'
+      );
+      expect(actual).toInclude('style={{"--var-hash-test":cl}}');
+    });
+
     it('should inline constant variable', () => {
       const actual = transform(`
         import '@compiled/css-in-js';
@@ -1094,41 +1110,5 @@ describe('css prop', () => {
 
       expect(actual).toInclude(`.cc-hash-test{content:\\\"hello\\\"}`);
     });
-  });
-
-  it('should inline the variable when it is a constant in string css', () => {
-    const actual = transform(`
-      import '@compiled/css-in-js';
-
-      const bg = 'blue';
-      let cl = 'red';
-
-      <div css={{ background: bg, color: cl, textDecoration: 'none', }}>hello world</div>
-    `);
-
-    expect(actual).toInclude(
-      '.cc-hash-test{background:blue;color:var(--var-hash-test);text-decoration:none'
-    );
-    expect(actual).toInclude('style={{"--var-hash-test":cl}}');
-  });
-
-  it('should inline the variable when it is a constant in object css', () => {
-    const actual = transform(`
-      import '@compiled/css-in-js';
-
-      const bg = 'blue';
-      let cl = 'red';
-
-      <div css={\`
-        background-color: \${bg};
-        color: \${red};
-        text-decoration: none;
-      \`}>hello world</div>
-    `);
-
-    expect(actual).toInclude(
-      '.cc-hash-test{background-color:blue;color:var(--var-hash-test);text-decoration:none}'
-    );
-    expect(actual).toInclude('style={{"--var-hash-test":red}}');
   });
 });
