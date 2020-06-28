@@ -13,22 +13,37 @@ const transform = (code: string) => {
 };
 
 describe('styled component transformer', () => {
-  xit('should replace object literal styled component with component', () => {
+  it('should generate styled object component code', () => {
     const actual = transform(`
       import { styled } from '@compiled/css-in-js';
+
       const ListItem = styled.div({
         fontSize: '20px',
       });
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
-      import { CC, CS } from '@compiled/css-in-js';
-      const ListItem = /*#__PURE__*/ React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><CS hash=\\"css-test\\">{[\\".css-test{font-size:20px}\\"]}</CS><C {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
-      if (process.env.NODE_ENV === \\"development\\") {
-          ListItem.displayName = \\"ListItem\\";
-      }
-      "
+      "import{CC,CS}from'@compiled/css-in-js';const ListItem=React.forwardRef(({as:C=\\"div\\",...props},ref)=><CC>
+            <CS hash={\\"hash-test\\"}>{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
+            <C{...props}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
+          </CC>);"
+    `);
+  });
+
+  it('should generate styled template literal component code', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/css-in-js';
+
+      const ListItem = styled.div\`
+        font-size: 20px;
+      \`;
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "import{CC,CS}from'@compiled/css-in-js';const ListItem=React.forwardRef(({as:C=\\"div\\",...props},ref)=><CC>
+            <CS hash={\\"hash-test\\"}>{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
+            <C{...props}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
+          </CC>);"
     `);
   });
 

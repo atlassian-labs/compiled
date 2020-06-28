@@ -39,7 +39,14 @@ export default declare<State>((api) => {
           return;
         }
 
-        visitStyledPath(path);
+        visitStyledPath(path, state);
+      },
+      CallExpression(path, state) {
+        if (!state.compiledImportFound) {
+          return;
+        }
+
+        visitStyledPath(path, state);
       },
       JSXOpeningElement(path, state) {
         if (!state.compiledImportFound) {
