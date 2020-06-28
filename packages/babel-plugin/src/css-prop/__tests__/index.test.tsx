@@ -194,7 +194,7 @@ describe('css prop', () => {
     );
   });
 
-  xit('should concat explicit use of style prop on an element when destructured template', () => {
+  it('should concat explicit use of style prop on an element when destructured template', () => {
     const actual = transform(`
       import '@compiled/css-in-js';
       import React from 'react';
@@ -203,7 +203,8 @@ describe('css prop', () => {
       <div style={{ display: 'block' }} css={{ color: \`\${color}\` }}>hello world</div>
     `);
 
-    expect(actual).toInclude(`style={{ display: 'block', \"--var-test-color\": color }}`);
+    expect(actual).toInclude(`.cc-hash-test{color:var(--var-hash-test)}`);
+    expect(actual).toInclude(`style={{display:'block',\"--var-hash-test\":color}}`);
   });
 
   it('should concat implicit use of class name prop where class name is a jsx expression', () => {
@@ -232,7 +233,7 @@ describe('css prop', () => {
     expect(actual).toInclude(`style={{\"--var-hash-test\":hello?'red':'blue'}}`);
   });
 
-  xit('should move multiple groups of interpolations into inline styles', () => {
+  it('should inline multi interpolation constant variable', () => {
     // See: https://codesandbox.io/s/dank-star-443ps?file=/src/index.js
     const actual = transform(`
       import '@compiled/css-in-js';
@@ -248,18 +249,17 @@ describe('css prop', () => {
     `);
 
     expect(actual).toInclude(
-      `background-image:linear-gradient(45deg,gray 25%,transparent 25%),linear-gradient(-45deg,gray 25%,transparent 25%),linear-gradient(45deg,transparent 75%,gray 75%),linear-gradient(-45deg,transparent 75%,gray 75%)`
+      `.cc-hash-test{background-image:linear-gradient(45deg,gray 25%,transparent 25%),linear-gradient(-45deg,gray 25%,transparent 25%),linear-gradient(45deg,transparent 75%,gray 75%),linear-gradient(-45deg,transparent 75%,gray 75%)}`
     );
-    expect(actual).toInclude('<div className="css-test">hello world</div>');
   });
 
-  xit('should move multiple groups of interpolations into inline styles with css variable', () => {
+  it('should move dynamic multi interpolation variable into css variable', () => {
     // See: https://codesandbox.io/s/dank-star-443ps?file=/src/index.js
     const actual = transform(`
       import '@compiled/css-in-js';
       import {useState} from 'react';
 
-      const [N30] = useState('gray');
+      let N30 = 'gray';
 
       <div css={{
         backgroundImage: \`linear-gradient(45deg, \${N30} 25%, transparent 25%),
@@ -270,11 +270,9 @@ describe('css prop', () => {
     `);
 
     expect(actual).toInclude(
-      `background-image:linear-gradient(45deg,var(--var-test-n30) 25%,transparent 25%),linear-gradient(-45deg,var(--var-test-n30) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--var-test-n30) 75%),linear-gradient(-45deg,transparent 75%,var(--var-test-n30) 75%)`
+      `.cc-hash-test{background-image:linear-gradient(45deg,var(--var-hash-test) 25%,transparent 25%),linear-gradient(-45deg,var(--var-hash-test) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--var-hash-test) 75%),linear-gradient(-45deg,transparent 75%,var(--var-hash-test) 75%)}`
     );
-    expect(actual).toInclude(
-      '<div className="css-test" style={{ "--var-test-n30": N30 }}>hello world</div>'
-    );
+    expect(actual).toInclude('style={{"--var-hash-test":N30}}');
   });
 
   it('should allow expressions stored in a variable as shorthand property values', () => {
@@ -513,8 +511,8 @@ describe('css prop', () => {
         import '@compiled/css-in-js';
         import React from 'react';
 
-        const style = () => ({ color: 'blue', fontSize: '30px' });
-        <div css={\`\${style}\`}>hello world</div>
+        const mixin = () => ({ color: 'blue', fontSize: '30px' });
+        <div css={\`\${mixin}\`}>hello world</div>
       `);
 
       expect(actual).toInclude('.css-test{color:blue;font-size:30px}');
@@ -525,8 +523,8 @@ describe('css prop', () => {
         import '@compiled/css-in-js';
         import React from 'react';
 
-        const style = () => ({ color: 'blue', fontSize: '30px' });
-        <div css={\`\${style()}\`}>hello world</div>
+        const mixin = () => ({ color: 'blue', fontSize: '30px' });
+        <div css={\`\${mixin()}\`}>hello world</div>
       `);
 
       expect(actual).toInclude('.css-test{color:blue;font-size:30px}');
@@ -552,9 +550,10 @@ describe('css prop', () => {
         import '@compiled/css-in-js';
         import React from 'react';
 
-        const style = (color: string) => ({ color, fontSize: '30px' });
+        const mixin = (color: string) => ({ color, fontSize: '30px' });
         const primary = 'red';
-        <div css={\`\${style(primary)}\`}>hello world</div>
+
+        <div css={\`\${mixin(primary)}\`}>hello world</div>
       `);
 
       expect(actual).toInclude('.css-test{color:var(--var-test);font-size:30px}');
