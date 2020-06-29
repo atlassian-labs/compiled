@@ -345,7 +345,7 @@ describe('css prop', () => {
       }
     )?.code;
 
-    expect(actual).toInclude('<CS nonce={__webpack_nonce__}hash={"hash-test"}>');
+    expect(actual).toInclude('<CS nonce={__webpack_nonce__}hash="hash-test">');
   });
 
   it('should bubble up top level pseudo inside a media atrule', () => {

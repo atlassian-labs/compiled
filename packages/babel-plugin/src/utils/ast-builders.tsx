@@ -18,46 +18,58 @@ interface CompiledOpts extends BaseOpts {
   node: t.JSXElement;
 }
 
-const styledTemplate = template(
-  `
+const styledTemplate = (opts: {
+  nonce?: string;
+  className: string;
+  hash: string;
+  tag: string;
+  css: string[];
+}) => {
+  const nonceAttribute = opts.nonce ? `nonce={${opts.nonce}}` : '';
+
+  return template(
+    `
   React.forwardRef(({
-    as: C = %%tag%%,
+    as: C = "${opts.tag}",
     ...props
   }, ref) => (
     <CC>
-      <CS hash={%%hash%%}>{%%css%%}</CS>
-      <C {...props} ref={ref} className={%%className%% + (props.className ? " " + props.className : "")} />
+      <CS ${nonceAttribute} hash="${opts.hash}">{%%cssNode%%}</CS>
+      <C {...props} ref={ref} className={"${opts.className}" + (props.className ? " " + props.className : "")} />
     </CC>
   ));
 `,
-  {
-    plugins: ['jsx'],
-  }
-);
+    {
+      plugins: ['jsx'],
+    }
+  )({
+    cssNode: t.arrayExpression(opts.css.map((style) => t.stringLiteral(style))),
+  });
+};
 
-const compiledTemplate = template(
-  `
-<CC>
-  <CS hash={%%hash%%}>{%%css%%}</CS>
-  {%%jsxNode%%}
-</CC>
-`,
-  {
-    plugins: ['jsx'],
-  }
-);
+const compiledTemplate = (opts: {
+  nonce?: string;
+  hash: string;
+  css: string[];
+  jsxNode: t.JSXElement;
+}) => {
+  const nonceAttribute = opts.nonce ? `nonce={${opts.nonce}}` : '';
 
-const compiledNonceTemplate = template(
-  `
-<CC>
-  <CS nonce={%%nonce%%} hash={%%hash%%}>{%%css%%}</CS>
-  {%%jsxNode%%}
-</CC>
-`,
-  {
-    plugins: ['jsx'],
-  }
-);
+  return template(
+    `
+  <CC>
+    <CS ${nonceAttribute} hash="${opts.hash}">{%%cssNode%%}</CS>
+    {%%jsxNode%%}
+  </CC>
+  `,
+    {
+      plugins: ['jsx'],
+    }
+  )({
+    jsxNode: opts.jsxNode,
+    cssNode: t.arrayExpression(opts.css.map((style) => t.stringLiteral(style))),
+  });
+};
 
 export const joinExpressions = (
   left: any,
@@ -85,10 +97,10 @@ export const buildStyledComponent = (opts: StyledOpts) => {
   const cssRules = transformCss(`.${className}`, opts.cssOutput.css);
 
   return styledTemplate({
-    className: t.stringLiteral(className),
-    hash: t.stringLiteral(cssHash),
-    tag: t.stringLiteral(opts.tagName),
-    css: t.arrayExpression(cssRules.map((rule) => t.stringLiteral(rule))),
+    className,
+    hash: cssHash,
+    tag: opts.tagName,
+    css: cssRules,
   }) as t.Node;
 };
 
@@ -174,13 +186,10 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
     );
   }
 
-  const templateVars = {
+  return compiledTemplate({
     jsxNode: opts.node,
-    hash: t.stringLiteral(cssHash),
-    css: t.arrayExpression(cssRules.map((rule) => t.stringLiteral(rule))),
-  };
-
-  return (opts.nonce
-    ? compiledNonceTemplate({ ...templateVars, nonce: opts.nonce })
-    : compiledTemplate(templateVars)) as t.Node;
+    hash: cssHash,
+    css: cssRules,
+    nonce: opts.nonce,
+  }) as t.Node;
 };

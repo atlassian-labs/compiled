@@ -1,7 +1,7 @@
 import * as t from '@babel/types';
 
 export interface PluginOptions {
-  nonce?: boolean;
+  nonce?: string;
 }
 
 export interface State {

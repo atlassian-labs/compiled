@@ -24,7 +24,7 @@ describe('styled component transformer', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import{CC,CS}from'@compiled/css-in-js';const ListItem=React.forwardRef(({as:C=\\"div\\",...props},ref)=><CC>
-            <CS hash={\\"hash-test\\"}>{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
+            <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
             <C{...props}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
           </CC>);"
     `);
@@ -41,7 +41,7 @@ describe('styled component transformer', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import{CC,CS}from'@compiled/css-in-js';const ListItem=React.forwardRef(({as:C=\\"div\\",...props},ref)=><CC>
-            <CS hash={\\"hash-test\\"}>{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
+            <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
             <C{...props}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
           </CC>);"
     `);
