@@ -2,10 +2,27 @@
 
 > Codemod for easy migration from styled components.
 
+## Usage
+
+### Using `jscodeshift`
+
 ```bash
 # https://github.com/facebook/jscodeshift#usage-cli
 npx jscodeshift --parser=tsx --extensions=tsx --transform node_modules/@compiled/css-in-js/dist/codemods/styled-components-to-compiled src
 ```
+
+### Using `@compiled/cli`
+
+```bash
+npx @compiled/cli --preset codemods
+# and follow the instructions
+```
+
+How instructions looks like (when run without `--preset codemods`. Please run it with `--preset codemods` for fast access):
+
+![styled-components-to-compiled cli](./assets/styled-components-to-compiled-cli.gif)
+
+_NOTE: Use `npx @compiled/cli` instead of `npx compiled-css-in-js` (which is shown in image)_
 
 **Will modify files in place, so make sure you can recover if it goes wrong!**
 
