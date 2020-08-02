@@ -19,5 +19,5 @@
     "declaration": true,
     "allowJs": true
   },
-  "exclude": ["**/**.test.tsx", "**/dist"]
+  "exclude": ["**/**.test.ts", "**/**.test.tsx", "**/dist"]
 }
