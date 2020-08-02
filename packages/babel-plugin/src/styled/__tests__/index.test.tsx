@@ -86,7 +86,7 @@ describe('styled component transformer', () => {
     `);
   });
 
-  it('should shortcircuit props with suffix to a empty string to avoid undefined in css', () => {
+  xit('should shortcircuit props with suffix to a empty string to avoid undefined in css', () => {
     const actual = transform(`
       import { styled } from '@compiled/css-in-js';
 
