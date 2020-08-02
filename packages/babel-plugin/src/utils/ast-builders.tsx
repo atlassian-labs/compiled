@@ -18,24 +18,52 @@ interface CompiledOpts extends BaseOpts {
   node: t.JSXElement;
 }
 
+const buildCssVariablesProp = (
+  variables: CSSOutput['variables'],
+  transform = (expression: t.Expression) => expression
+): (t.ObjectProperty | t.SpreadElement)[] => {
+  return unique(variables, (item) => item.name).map((variable) => {
+    return t.objectProperty(t.stringLiteral(variable.name), transform(variable.expression));
+  });
+};
+
+const styledStyleProp = (
+  variables: CSSOutput['variables'],
+  transform?: (expression: t.Expression) => t.Expression
+) => {
+  const props: (t.ObjectProperty | t.SpreadElement)[] = [t.spreadElement(t.identifier('style'))];
+  return t.objectExpression(props.concat(buildCssVariablesProp(variables, transform)));
+};
+
 const styledTemplate = (opts: {
   nonce?: string;
   className: string;
   hash: string;
   tag: string;
   css: string[];
+  variables: CSSOutput['variables'];
 }) => {
   const nonceAttribute = opts.nonce ? `nonce={${opts.nonce}}` : '';
+  const styleProp = opts.variables.length
+    ? styledStyleProp(opts.variables, (node) => {
+        // 1. visit each expression
+        // 2. if its an arrow function, return the body
+        // 3. replace any props.variableName calls with variableName
+        // 4. build up a list of variableNames that aren't valid HTML attributes
+        return node;
+      })
+    : t.identifier('style');
 
   return template(
     `
   React.forwardRef(({
     as: C = "${opts.tag}",
+    style,
     ...props
   }, ref) => (
     <CC>
       <CS ${nonceAttribute} hash="${opts.hash}">{%%cssNode%%}</CS>
-      <C {...props} ref={ref} className={"${opts.className}" + (props.className ? " " + props.className : "")} />
+      <C {...props} style={%%styleProp%%} ref={ref} className={"${opts.className}" + (props.className ? " " + props.className : "")} />
     </CC>
   ));
 `,
@@ -43,6 +71,7 @@ const styledTemplate = (opts: {
       plugins: ['jsx'],
     }
   )({
+    styleProp,
     cssNode: t.arrayExpression(opts.css.map((style) => t.stringLiteral(style))),
   });
 };
@@ -101,6 +130,7 @@ export const buildStyledComponent = (opts: StyledOpts) => {
     hash: cssHash,
     tag: opts.tagName,
     css: cssRules,
+    variables: opts.cssOutput.variables,
   }) as t.Node;
 };
 

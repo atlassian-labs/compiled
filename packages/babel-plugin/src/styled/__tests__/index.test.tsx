@@ -23,9 +23,9 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import{CC,CS}from'@compiled/css-in-js';const ListItem=React.forwardRef(({as:C=\\"div\\",...props},ref)=><CC>
+      "import{CC,CS}from'@compiled/css-in-js';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
-            <C{...props}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
+            <C{...props}style={style}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
           </CC>);"
     `);
   });
@@ -40,9 +40,9 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import{CC,CS}from'@compiled/css-in-js';const ListItem=React.forwardRef(({as:C=\\"div\\",...props},ref)=><CC>
+      "import{CC,CS}from'@compiled/css-in-js';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
-            <C{...props}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
+            <C{...props}style={style}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
           </CC>);"
     `);
   });
@@ -59,7 +59,7 @@ describe('styled component transformer', () => {
     expect(actual).toInclude('"--var-test-propstextsize": textSize');
   });
 
-  xit('should remove styled import', () => {
+  it('should remove styled import', () => {
     const actual = transform(`
       import { styled } from '@compiled/css-in-js';
       const ListItem = styled.div({
@@ -70,7 +70,7 @@ describe('styled component transformer', () => {
     expect(actual).not.toInclude(`import { styled } from '@compiled/css-in-js';`);
   });
 
-  xit('should replace string literal styled component with component', () => {
+  it('should replace string literal styled component with component', () => {
     const actual = transform(`
       import { styled } from '@compiled/css-in-js';
       const ListItem = styled.div\`
@@ -79,17 +79,14 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import React from \\"react\\";
-      import { CC, CS } from '@compiled/css-in-js';
-      const ListItem = /*#__PURE__*/ React.forwardRef(({ as: C = \\"div\\", ...props }, ref) => <CC><CS hash=\\"css-test\\">{[\\".css-test{font-size:20px}\\"]}</CS><C {...props} ref={ref} className={\\"css-test\\" + (props.className ? \\" \\" + props.className : \\"\\")}/></CC>);
-      if (process.env.NODE_ENV === \\"development\\") {
-          ListItem.displayName = \\"ListItem\\";
-      }
-      "
+      "import{CC,CS}from'@compiled/css-in-js';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+            <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
+            <C{...props}style={style}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
+          </CC>);"
     `);
   });
 
-  xit('should shortcircuit props with suffix to a empty string to avoid undefined in css', () => {
+  it('should shortcircuit props with suffix to a empty string to avoid undefined in css', () => {
     const actual = transform(`
       import { styled } from '@compiled/css-in-js';
 
