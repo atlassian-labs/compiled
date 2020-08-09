@@ -3,6 +3,8 @@ import * as t from '@babel/types';
 import { hash } from '@compiled/ts-transform-css-in-js/dist/utils/hash';
 import { transformCss } from '@compiled/ts-transform-css-in-js/dist/utils/css-transform';
 import { unique } from '@compiled/ts-transform-css-in-js/dist/utils/array';
+import traverse, { Scope, NodePath } from '@babel/traverse';
+import isPropValid from '@emotion/is-prop-valid';
 import { CSSOutput } from './css-builders';
 import { PluginOptions } from '../types';
 
@@ -12,6 +14,8 @@ interface BaseOpts extends PluginOptions {
 
 interface StyledOpts extends BaseOpts {
   tagName: string;
+  parentPath: NodePath;
+  scope: Scope;
 }
 
 interface CompiledOpts extends BaseOpts {
@@ -29,7 +33,7 @@ const buildCssVariablesProp = (
 
 const styledStyleProp = (
   variables: CSSOutput['variables'],
-  transform?: (expression: t.Expression) => t.Expression
+  transform?: (expression: t.Expression) => any
 ) => {
   const props: (t.ObjectProperty | t.SpreadElement)[] = [t.spreadElement(t.identifier('style'))];
   return t.objectExpression(props.concat(buildCssVariablesProp(variables, transform)));
@@ -42,14 +46,39 @@ const styledTemplate = (opts: {
   tag: string;
   css: string[];
   variables: CSSOutput['variables'];
+  parentPath: NodePath;
+  scope: Scope;
 }) => {
   const nonceAttribute = opts.nonce ? `nonce={${opts.nonce}}` : '';
+  const propsToDestructure: string[] = [];
   const styleProp = opts.variables.length
     ? styledStyleProp(opts.variables, (node) => {
-        // 1. visit each expression
-        // 2. if its an arrow function, return the body
-        // 3. replace any props.variableName calls with variableName
-        // 4. build up a list of variableNames that aren't valid HTML attributes
+        if (t.isArrowFunctionExpression(node)) {
+          traverse(
+            node,
+            {
+              MemberExpression(path) {
+                if (t.isIdentifier(path.node.object) && path.node.object.name === 'props') {
+                  const propertyAccessName = path.node.property as t.Identifier;
+                  if (isPropValid(propertyAccessName.name)) {
+                    return;
+                  }
+
+                  if (!propsToDestructure.includes(propertyAccessName.name)) {
+                    propsToDestructure.push(propertyAccessName.name);
+                  }
+                  path.replaceWith(propertyAccessName);
+                }
+              },
+            },
+            opts.scope,
+            undefined,
+            opts.parentPath
+          );
+
+          return node.body;
+        }
+
         return node;
       })
     : t.identifier('style');
@@ -59,11 +88,14 @@ const styledTemplate = (opts: {
   React.forwardRef(({
     as: C = "${opts.tag}",
     style,
+    ${propsToDestructure.map((prop) => prop + ',').join('')}
     ...props
   }, ref) => (
     <CC>
       <CS ${nonceAttribute} hash="${opts.hash}">{%%cssNode%%}</CS>
-      <C {...props} style={%%styleProp%%} ref={ref} className={"${opts.className}" + (props.className ? " " + props.className : "")} />
+      <C {...props} style={%%styleProp%%} ref={ref} className={"${
+        opts.className
+      }" + (props.className ? " " + props.className : "")} />
     </CC>
   ));
 `,
@@ -131,6 +163,8 @@ export const buildStyledComponent = (opts: StyledOpts) => {
     tag: opts.tagName,
     css: cssRules,
     variables: opts.cssOutput.variables,
+    parentPath: opts.parentPath,
+    scope: opts.scope,
   }) as t.Node;
 };
 

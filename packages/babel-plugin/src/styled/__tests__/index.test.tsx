@@ -47,7 +47,7 @@ describe('styled component transformer', () => {
     `);
   });
 
-  xit('should not pass down invalid html attributes to the node', () => {
+  it('should not pass down invalid html attributes to the node', () => {
     const actual = transform(`
       import { styled } from '@compiled/css-in-js';
       const ListItem = styled.div({
@@ -55,8 +55,8 @@ describe('styled component transformer', () => {
       });
     `);
 
-    expect(actual).toInclude('textSize, ...props }');
-    expect(actual).toInclude('"--var-test-propstextsize": textSize');
+    expect(actual).toInclude('textSize,...props');
+    expect(actual).toInclude('"--var-hash-test":textSize');
   });
 
   it('should remove styled import', () => {

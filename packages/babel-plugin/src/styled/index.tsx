@@ -56,6 +56,8 @@ export const visitStyledPath = (
     buildStyledComponent({
       cssOutput,
       tagName: styledData.tagName,
+      parentPath: path as NodePath,
+      scope: path.scope,
     })
   );
 };
