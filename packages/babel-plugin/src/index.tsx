@@ -1,54 +1,60 @@
-import * as ts from 'typescript';
-import { parse as babelParse, transformSync, ParserOptions } from '@babel/core';
-import transformer from '@compiled/ts-transform-css-in-js';
-import { TransformerOptions } from '@compiled/ts-transform-css-in-js/dist/types';
+import * as t from '@babel/types';
+import { declare } from '@babel/helper-plugin-utils';
+import { importSpecifier } from './utils/ast-builders';
+import { visitCssPropPath } from './css-prop';
+import { visitStyledPath } from './styled';
+import { State } from './types';
 
-/**
- * Using a stub program means type checking won't work - of course.
- */
-const stubProgam: ts.Program = ({
-  getTypeChecker: () => ({
-    getSymbolAtLocation: () => undefined,
-  }),
-} as never) as ts.Program;
+export default declare<State>((api) => {
+  api.assertVersion(7);
 
-export default function compiledBabelPlugin(_: any, opts: TransformerOptions = {}) {
   return {
-    parserOverride(code: string, parserOpts: ParserOptions, parse: typeof babelParse) {
-      if (code.indexOf('@compiled/css-in-js') === -1) {
-        // Bail early if there is no work to do.
-        return parse(code, parserOpts);
-      }
+    inherits: require('babel-plugin-syntax-jsx'),
+    visitor: {
+      ImportDeclaration(path, state) {
+        if (path.node.source.value === '@compiled/css-in-js') {
+          state.compiledImportFound = true;
+          path.node.specifiers = path.node.specifiers
+            .filter(
+              (specifier) =>
+                specifier.local.name !== 'styled' && specifier.local.name !== 'ClassNames'
+            )
+            .concat([importSpecifier('CC'), importSpecifier('CS')]);
+        }
+      },
+      VariableDeclaration(path, state) {
+        if (!state.declarations) {
+          state.declarations = {};
+        }
 
-      const userLandFlowPlugin = (parserOpts.plugins || []).find((plugin) => {
-        return plugin === 'flow' || plugin[0] === 'flow';
-      });
+        if (!t.isIdentifier(path.node.declarations[0].id)) {
+          return;
+        }
 
-      let parsedCode: string = code;
+        const declarationName = path.node.declarations[0].id.name;
+        state.declarations[declarationName] = path.node;
+      },
+      TaggedTemplateExpression(path, state) {
+        if (!state.compiledImportFound) {
+          return;
+        }
 
-      if (userLandFlowPlugin) {
-        // If the userland Babel config is Flow we need to strip it before passing it to the TypeScript
-        // transformer else it'll blow up because TypeScript doesn't support Flow syntax.
-        // We're going down a slippery slope - later we might want to investigate a re-write to Babel.
-        // See: https://github.com/atlassian-labs/compiled-css-in-js/issues/196
-        parsedCode =
-          transformSync(parsedCode, {
-            babelrc: false,
-            configFile: false,
-            plugins: ['@babel/plugin-syntax-jsx', '@babel/plugin-transform-flow-strip-types'],
-          })?.code || parsedCode;
-      }
+        visitStyledPath(path, state);
+      },
+      CallExpression(path, state) {
+        if (!state.compiledImportFound) {
+          return;
+        }
 
-      const transformedCode = ts.transpileModule(parsedCode, {
-        transformers: { before: [transformer(stubProgam, { options: opts })] },
-        compilerOptions: {
-          module: ts.ModuleKind.ESNext,
-          target: ts.ScriptTarget.ESNext,
-          jsx: ts.JsxEmit.Preserve,
-        },
-      });
+        visitStyledPath(path, state);
+      },
+      JSXOpeningElement(path, state) {
+        if (!state.compiledImportFound) {
+          return;
+        }
 
-      return parse(transformedCode.outputText, parserOpts);
+        visitCssPropPath(path, state);
+      },
     },
   };
-}
+});

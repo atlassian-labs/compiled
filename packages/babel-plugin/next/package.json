@@ -1,6 +1,0 @@
-{
-  "name": "@compiled/babel-plugin-css-in-js/next",
-  "main": "../dist/next.js",
-  "module": "../dist/next.js",
-  "types": "../dist/next.d.ts"
-}

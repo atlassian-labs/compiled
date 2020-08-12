@@ -1,5 +1,5 @@
 import { transformSync } from '@babel/core';
-import babelNext from '../../next';
+import babelPlugin from '../../index';
 
 jest.mock('@compiled/ts-transform-css-in-js/dist/utils/hash');
 
@@ -8,7 +8,7 @@ const transform = (code: string) => {
     configFile: false,
     babelrc: false,
     compact: true,
-    plugins: [babelNext],
+    plugins: [babelPlugin],
   })?.code;
 };
 
