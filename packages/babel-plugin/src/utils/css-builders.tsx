@@ -1,12 +1,7 @@
 import * as t from '@babel/types';
-import kebabCase from '@compiled/ts-transform-css-in-js/dist/utils/kebab-case';
-import { addUnitIfNeeded } from '@compiled/ts-transform-css-in-js/dist/utils/css-property';
-import {
-  cssAfterInterpolation,
-  cssBeforeInterpolation,
-} from '@compiled/ts-transform-css-in-js/dist/utils/string-interpolations';
-import { hash } from '@compiled/ts-transform-css-in-js/dist/utils/hash';
 import generate from '@babel/generator';
+import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '@compiled/css';
+import { kebabCase, hash } from '@compiled/utils';
 import { joinExpressions } from './ast-builders';
 import { State } from '../types';
 
