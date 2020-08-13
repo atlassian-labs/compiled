@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@babel/preset-react": "^7.10.1",
+    "@babel/preset-typescript": "^7.10.4",
     "@compiled/core": "*",
     "@compiled/jest": "*",
     "@size-limit/preset-small-lib": "^4.4.5",
