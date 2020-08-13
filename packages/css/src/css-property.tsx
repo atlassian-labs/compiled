@@ -45,10 +45,17 @@ const unitless = {
   strokeWidth: true,
 };
 
-export const isUnitlessProperty = (propertyName: string): boolean => {
+const isUnitlessProperty = (propertyName: string): boolean => {
   return propertyName in unitless;
 };
 
+/**
+ * Will append `'px'` to a property value if the property is not unitless.
+ * This is to replicate how Emotion handles this.
+ *
+ * @param name CSS property name
+ * @param value CSS property value
+ */
 export function addUnitIfNeeded(name: string, value: any): any {
   if (value == null || typeof value === 'boolean' || value === '') {
     return '';

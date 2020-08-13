@@ -4,17 +4,31 @@ import traverse, { Scope, NodePath } from '@babel/traverse';
 import { hash, unique } from '@compiled/utils';
 import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
-
 import { CSSOutput } from './css-builders';
 import { PluginOptions } from '../types';
 
 interface BaseOpts extends PluginOptions {
+  /**
+   * CSS data that will be integrated into the output AST.
+   */
   cssOutput: CSSOutput;
 }
 
 interface StyledOpts extends BaseOpts {
+  /**
+   * Tag of the Styled Component,
+   * for example `"div"`.
+   */
   tagName: string;
+
+  /**
+   * Babel path used for traversing inner nodes.
+   */
   parentPath: NodePath;
+
+  /**
+   * Babel scope used for traversing inner nodes.
+   */
   scope: Scope;
 }
 
@@ -22,15 +36,38 @@ interface CompiledOpts extends BaseOpts {
   node: t.JSXElement;
 }
 
+/**
+ * Will build up the CSS variables prop to be placed as inline styles.
+ *
+ * @param variables CSS variables that will be placed in the AST
+ * @param transform Transform function that can be used to change the CSS variable expression
+ */
 const buildCssVariablesProp = (
   variables: CSSOutput['variables'],
   transform = (expression: t.Expression) => expression
 ): (t.ObjectProperty | t.SpreadElement)[] => {
-  return unique(variables, (item) => item.name).map((variable) => {
-    return t.objectProperty(t.stringLiteral(variable.name), transform(variable.expression));
+  return unique(
+    // Make sure all defined CSS variables are unique
+    variables,
+    // We consider their uniqueness based on their name
+    (item) => item.name
+  ).map((variable) => {
+    // Map them into object properties.
+    return t.objectProperty(
+      t.stringLiteral(variable.name),
+      // Allow callers to transform the expression if needed,
+      // for example the styled API strips away the arrow function.
+      transform(variable.expression)
+    );
   });
 };
 
+/**
+ * Builds up the inline style prop value for a Styled Component.
+ *
+ * @param variables CSS variables that will be placed in the AST
+ * @param transform Transform function that can be used to change the CSS variable expression
+ */
 const styledStyleProp = (
   variables: CSSOutput['variables'],
   transform?: (expression: t.Expression) => any
@@ -39,14 +76,51 @@ const styledStyleProp = (
   return t.objectExpression(props.concat(buildCssVariablesProp(variables, transform)));
 };
 
+/**
+ * Will return a generated AST for a Styled Component.
+ *
+ * @param opts Template options.
+ */
 const styledTemplate = (opts: {
+  /**
+   * Adds a nonce onto the `CS` component.
+   */
   nonce?: string;
+
+  /**
+   * Class to be used for the CSS selector.
+   */
   className: string;
+
+  /**
+   * Hash that will be passed to the `CS` component.
+   * This determines if the styles have been moved to the head on the client.
+   */
   hash: string;
+
+  /**
+   * Tag for the Styled Component, for example "div".
+   */
   tag: string;
+
+  /**
+   * CSS blocks to be passed to the `CS` component.
+   */
   css: string[];
+
+  /**
+   * CSS variables to be passed to the `style` prop.
+   */
   variables: CSSOutput['variables'];
+
+  /**
+   * Babel path used for traversing inner nodes.
+   */
   parentPath: NodePath;
+
+  /**
+   * Babel scope used for traversing inner nodes.
+   */
   scope: Scope;
 }) => {
   const nonceAttribute = opts.nonce ? `nonce={${opts.nonce}}` : '';
@@ -54,6 +128,8 @@ const styledTemplate = (opts: {
   const styleProp = opts.variables.length
     ? styledStyleProp(opts.variables, (node) => {
         if (t.isArrowFunctionExpression(node)) {
+          // We want to strip away the body of arrow functions inside of Styled Components.
+          // E.g. `props => props.color` would end up as `props.color`.
           traverse(
             node,
             {
@@ -108,6 +184,12 @@ const styledTemplate = (opts: {
   });
 };
 
+/**
+ * Will return a generated AST for a Compiled Component.
+ * This is primarily used for CSS prop and ClassNames apis.
+ *
+ * @param opts Template options.
+ */
 const compiledTemplate = (opts: {
   nonce?: string;
   hash: string;
@@ -132,6 +214,14 @@ const compiledTemplate = (opts: {
   });
 };
 
+/**
+ * Will join two expressions together,
+ * Looks like `left + ' ' + right`.
+ *
+ * @param left Any node on the left
+ * @param right Any node on the right
+ * @param spacer Optional spacer node to place between the left and right node. Defaults to a space string.
+ */
 export const joinExpressions = (
   left: any,
   right: any,
@@ -140,6 +230,10 @@ export const joinExpressions = (
   return t.binaryExpression('+', left, spacer ? t.binaryExpression('+', spacer, right) : right);
 };
 
+/**
+ * Will conditionally join two expressions together depending on the right expression.
+ * Looks like: `left + right ? ' ' + right : ''`
+ */
 export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExpression => {
   return t.binaryExpression(
     '+',
@@ -152,6 +246,11 @@ export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExp
   );
 };
 
+/**
+ * Returns a Styled Component AST.
+ *
+ * @param opts Template options.
+ */
 export const buildStyledComponent = (opts: StyledOpts) => {
   const cssHash = hash(opts.cssOutput.css);
   const className = `cc-${cssHash}`;
@@ -167,10 +266,23 @@ export const buildStyledComponent = (opts: StyledOpts) => {
   }) as t.Node;
 };
 
+/**
+ * Wrapper to make defining import specifiers easier.
+ * If `localName` is defined it will rename the import to it,
+ * e.g: `name as localName`.
+ *
+ * @param name import name
+ * @param localName local name
+ */
 export const importSpecifier = (name: string, localName?: string) => {
   return t.importSpecifier(t.identifier(name), t.identifier(localName || name));
 };
 
+/**
+ * Returns a Compiled Component AST.
+ *
+ * @param opts Template options.
+ */
 export const buildCompiledComponent = (opts: CompiledOpts) => {
   const cssHash = hash(opts.cssOutput.css);
   const className = `cc-${cssHash}`;
@@ -180,6 +292,8 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
   });
 
   if (classNameProp && classNameProp.value) {
+    // If there is a class name prop statically defined we want to concatenate it with
+    // the class name we're going to put on it.
     const classNameExpression = t.isJSXExpressionContainer(classNameProp.value)
       ? classNameProp.value.expression
       : classNameProp.value;
@@ -190,13 +304,16 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
 
     classNameProp.value = t.jsxExpressionContainer(newClassNameValue);
   } else {
+    // No class name - just push our own one.
     opts.node.openingElement.attributes.push(
       t.jsxAttribute(t.jsxIdentifier('className'), t.stringLiteral(className))
     );
   }
 
   if (opts.cssOutput.variables.length) {
+    // If there is dynamic CSS in use we have work to do.
     let stylePropIndex = -1;
+    // Find the style prop on the opening JSX element.
     const styleProp = opts.node.openingElement.attributes.find(
       (prop, index): prop is t.JSXAttribute => {
         if (t.isJSXAttribute(prop) && prop.name.name === 'style') {
@@ -208,12 +325,7 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
       }
     );
 
-    const dynamicStyleProperties: (t.SpreadElement | t.ObjectProperty)[] = unique(
-      opts.cssOutput.variables,
-      (item) => item.name
-    ).map((variable) => {
-      return t.objectProperty(t.stringLiteral(variable.name), variable.expression);
-    });
+    const dynamicStyleProperties = buildCssVariablesProp(opts.cssOutput.variables);
 
     if (styleProp) {
       // Remove the pre-existing style prop - we're going to redefine it soon.
@@ -234,13 +346,15 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
               return;
             }
 
-            // ... in the order they were defined! (So we're using index here to do just that).
+            // We want to keep the order that they were defined in.
+            // So we're using index here to do just that.
             dynamicStyleProperties.splice(index, 0, prop);
           });
         }
       }
     }
 
+    // Finally add the new style prop back to the opening JSX element.
     opts.node.openingElement.attributes.push(
       t.jsxAttribute(
         t.jsxIdentifier('style'),

@@ -1,4 +1,4 @@
-export { addUnitIfNeeded, isUnitlessProperty } from './css-property';
+export { addUnitIfNeeded } from './css-property';
 export { transformCss } from './css-transform';
 export {
   cssAfterInterpolation,
