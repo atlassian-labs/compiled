@@ -1,3 +1,10 @@
+/**
+ * Returns an array with unique elements.
+ * Use `getId` to customize what uniquely identifies each array element.
+ *
+ * @param arr
+ * @param getId
+ */
 export const unique = <TArrItem extends {}>(
   arr: TArrItem[],
   getId: (item: TArrItem) => any = (item) => item
@@ -12,6 +19,12 @@ export const unique = <TArrItem extends {}>(
   }, [] as TArrItem[]);
 };
 
-export const flatten = <TArr extends {}>(...assignments: TArr[][]): TArr[] => {
-  return assignments.reduce((acc, arr) => acc.concat(arr), []);
+/**
+ * Flattens nested arrays into a single array.
+ * `[1, [2, 3]]` becomes `[1, 2, 3]`.
+ *
+ * @param arrays
+ */
+export const flatten = <TArr extends {}>(...arrays: TArr[][]): TArr[] => {
+  return arrays.reduce((acc, arr) => acc.concat(arr), []);
 };
