@@ -86,19 +86,20 @@ xdescribe('css prop', () => {
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
   });
 
-  it('should create css from arrow func in templatel literal', () => {
-    const base = () => ({ fontSize: 12 });
-    const { getByText } = render(
-      <div
-        css={`
-          ${base()}
-        `}>
-        hello world
-      </div>
-    );
+  // NOT SUPPORTED YET.
+  // it('should create css from arrow func in templatel literal', () => {
+  //   const base = () => ({ fontSize: 12 });
+  //   const { getByText } = render(
+  //     <div
+  //       css={`
+  //         ${base()}
+  //       `}>
+  //       hello world
+  //     </div>
+  //   );
 
-    expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
-  });
+  //   expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
+  // });
 
   it('should create css from arrow function', () => {
     const base = () => ({ fontSize: 12 });

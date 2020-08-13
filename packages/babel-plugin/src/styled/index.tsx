@@ -11,7 +11,8 @@ const extractStyledDataFromNode = (
     t.isTaggedTemplateExpression(node) &&
     t.isMemberExpression(node.tag) &&
     t.isIdentifier(node.tag.object) &&
-    node.tag.object.name === 'styled'
+    node.tag.object.name === 'styled' &&
+    t.isIdentifier(node.tag.property)
   ) {
     const tagName = node.tag.property.name;
     const cssNode = node.quasi;
@@ -27,7 +28,8 @@ const extractStyledDataFromNode = (
     t.isMemberExpression(node.callee) &&
     t.isIdentifier(node.callee.object) &&
     node.callee.object.name === 'styled' &&
-    t.isObjectExpression(node.arguments[0])
+    t.isObjectExpression(node.arguments[0]) &&
+    t.isIdentifier(node.callee.property)
   ) {
     const tagName = node.callee.property.name;
     const cssNode = node.arguments[0];

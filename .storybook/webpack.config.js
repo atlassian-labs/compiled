@@ -3,10 +3,7 @@ module.exports = ({ config }) => {
     test: /\.tsx$/,
     use: [
       {
-        loader: require.resolve('ts-loader'),
-        options: {
-          compiler: 'ttypescript',
-        },
+        loader: require.resolve('babel-loader'),
       },
     ],
   });

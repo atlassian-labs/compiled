@@ -40,6 +40,18 @@ const normalizeContentValue = (value: string) => {
   return value;
 };
 
+const extractKey = (node: t.Expression) => {
+  if (t.isIdentifier(node)) {
+    return node.name;
+  }
+
+  if (t.isStringLiteral(node)) {
+    return node.value;
+  }
+
+  throw new Error('not supported');
+};
+
 const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOutput => {
   let variables: CSSOutput['variables'] = [];
   let css = '';
@@ -48,7 +60,7 @@ const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOut
     if (t.isObjectProperty(prop)) {
       // Don't use prop.value directly as it extracts constants from identifiers if needed.
       const propValue = getInterpolation(prop.value, state);
-      const key = prop.key.name || prop.key.value;
+      const key = extractKey(prop.key);
       let value = '';
 
       if (t.isStringLiteral(propValue)) {
