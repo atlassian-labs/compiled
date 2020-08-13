@@ -1,4 +1,4 @@
-import { toHaveCompiledCss } from '@compiled/jest-css-in-js';
+import { toHaveCompiledCss } from '@compiled/jest';
 
 expect.extend({
   toHaveCompiledCss,

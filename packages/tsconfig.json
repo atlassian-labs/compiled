@@ -3,9 +3,9 @@
   "references": [
     { "path": "babel-plugin/tsconfig.json" },
     { "path": "css/tsconfig.json" },
-    { "path": "css-in-js/tsconfig.json" },
+    { "path": "core/tsconfig.json" },
     { "path": "jest/tsconfig.json" },
-    { "path": "style/tsconfig.json" },
+    { "path": "runtime/tsconfig.json" },
     { "path": "utils/tsconfig.json" }
   ]
 }

@@ -1,2 +1,2 @@
-import '@compiled/jest-css-in-js';
+import '@compiled/jest';
 import 'jest-extended';

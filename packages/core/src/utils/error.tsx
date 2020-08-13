@@ -1,9 +1,5 @@
-const selectorsToWarn = [':first-child', ':nth-child'];
-const hasWarned: Record<string, true> = {};
-
-export const warn = (str: string, ...args: any[]) =>
-  console.error(
-    `
+export const createSetupError = () => {
+  return new Error(`
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
 ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██║██║     ██╔════╝██╔══██╗
 ██║     ██║   ██║██╔████╔██║██████╔╝██║██║     █████╗  ██║  ██║
@@ -11,30 +7,13 @@ export const warn = (str: string, ...args: any[]) =>
 ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║███████╗███████╗██████╔╝
   ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═════╝
 
-  @compiled/css-in-js - DEV WARNING
+  @compiled/core
 
-  ${str}
-`,
-    ...args
-  );
+  Code was executed when it shouldn't have. This could have happened because:
 
-export const analyzeCssInDev = (css: string[], hash: string) => {
-  if (hasWarned[hash]) {
-    return;
-  }
+  1. You haven't configured a transformer yet. Visit https://compiledcssinjs.com/docs and follow the instructions.
+  2. You have duplicate versions of React and hooks are blowing up. You need to de-duplicate your dependencies.
 
-  css.forEach((block) => {
-    const shouldWarnAboutSelectors =
-      selectorsToWarn.map((selector) => block.includes(selector)).filter(Boolean).length > 0;
-
-    if (shouldWarnAboutSelectors) {
-      warn(
-        `Selectors "${selectorsToWarn.join(', ')}" are dangerous to use when server side rendering.
-  Alternatively try and use ":nth-of-type", or placing data attributes and targetting those instead.
-  Read https://compiledcssinjs.com/docs/server-side-rendering for more advice.`
-      );
-    }
-  });
-
-  hasWarned[hash] = true;
+  Good luck!
+`);
 };

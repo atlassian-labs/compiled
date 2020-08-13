@@ -17,7 +17,7 @@ const transform = (code: string) => {
 describe('class names transformer', () => {
   xit('should replace class names component style element', () => {
     const actual = transform(`
-      import { ClassNames } from '@compiled/css-in-js';
+      import { ClassNames } from '@compiled/core';
 
       const ListItem = () => (
         <ClassNames>
@@ -33,7 +33,7 @@ describe('class names transformer', () => {
 
   xit('should remove class names import', () => {
     const actual = transform(`
-      import { ClassNames } from '@compiled/css-in-js';
+      import { ClassNames } from '@compiled/core';
 
       const ListItem = () => (
         <ClassNames>
@@ -42,13 +42,13 @@ describe('class names transformer', () => {
       );
     `);
 
-    expect(actual).not.toInclude(`import { ClassNames } from "@compiled/css-in-js";`);
+    expect(actual).not.toInclude(`import { ClassNames } from "@compiled/core";`);
   });
 
   xit('should add an identifier nonce to the style element', () => {
     const actual = transform(
       `
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
 
         const ZoomOnHover = ({ children }) => (
           <ClassNames>
@@ -72,7 +72,7 @@ describe('class names transformer', () => {
 
   xit('should set children as function into a jsx expression', () => {
     const actual = transform(`
-    import { ClassNames } from '@compiled/css-in-js';
+    import { ClassNames } from '@compiled/core';
 
     const ZoomOnHover = ({ children }) => (
       <ClassNames>
@@ -97,7 +97,7 @@ describe('class names transformer', () => {
 
   xit('should place self closing jsx element as a child', () => {
     const actual = transform(`
-    import { ClassNames } from '@compiled/css-in-js';
+    import { ClassNames } from '@compiled/core';
 
     const ZoomOnHover = ({ children }) => (
       <ClassNames>
@@ -112,7 +112,7 @@ describe('class names transformer', () => {
   describe('using a string literal', () => {
     xit('should move suffix of interpolation into inline styles', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
 
         const fontSize = 20;
 
@@ -128,7 +128,7 @@ describe('class names transformer', () => {
 
     xit('should transform no template string literal', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
 
         const ListItem = () => (
           <ClassNames>
@@ -142,7 +142,7 @@ describe('class names transformer', () => {
 
     xit('should transform template string literal with string variable', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
 
         const fontSize = '12px';
 
@@ -158,7 +158,7 @@ describe('class names transformer', () => {
 
     xit('should transform template string literal with numeric variable', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
 
         const fontSize = 12;
 
@@ -174,7 +174,7 @@ describe('class names transformer', () => {
 
     xit('should transform template string literal with obj variable', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
 
         const color = { color: 'blue' };
 
@@ -194,7 +194,7 @@ describe('class names transformer', () => {
 
     xit('should transform template string with no argument arrow function variable', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
 
         const color = () => ({ color: 'blue' });
 
@@ -210,7 +210,7 @@ describe('class names transformer', () => {
 
     xit('should transform template string with no argument function variable', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
 
         function color() { return { color: 'blue' }; }
 
@@ -232,7 +232,7 @@ describe('class names transformer', () => {
   describe('using an object literal', () => {
     xit('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
         import {useState} from 'react';
 
         const fontSize = useState(20);
@@ -252,7 +252,7 @@ describe('class names transformer', () => {
 
     xit('should transform object with simple values', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
 
         const ListItem = () => (
           <ClassNames>
@@ -266,7 +266,7 @@ describe('class names transformer', () => {
 
     xit('should transform object with nested object into a selector', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
 
         const ListItem = () => (
           <ClassNames>
@@ -280,7 +280,7 @@ describe('class names transformer', () => {
 
     xit('should transform object that has a variable reference', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
 
         const color = 'red';
 
@@ -296,7 +296,7 @@ describe('class names transformer', () => {
 
     xit('should transform object spread from variable', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
 
         const mixin = {
           color: 'red',
@@ -314,7 +314,7 @@ describe('class names transformer', () => {
 
     xit('should transform object with string variable', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
         import {useState} from 'react';
         const color = 'blue';
         const [fontSize] = useState('10px');
@@ -334,7 +334,7 @@ describe('class names transformer', () => {
 
     xit('should transform object with obj variable', () => {
       const actual = transform(`
-        import { ClassNames } from '@compiled/css-in-js';
+        import { ClassNames } from '@compiled/core';
 
         const hover = { color: 'red' };
 

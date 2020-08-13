@@ -1,5 +1,9 @@
-export const createSetupError = () => {
-  return new Error(`
+import React, { useRef, useContext, createContext } from 'react';
+import { ProviderComponent, UseCacheHook } from './types';
+
+if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+  throw new Error(
+    `
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
 ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██║██║     ██╔════╝██╔══██╗
 ██║     ██║   ██║██╔████╔██║██████╔╝██║██║     █████╗  ██║  ██║
@@ -7,13 +11,23 @@ export const createSetupError = () => {
 ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║███████╗███████╗██████╔╝
   ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═════╝
 
-  @compiled/css-in-js
+  @compiled/runtime - ERROR
 
-  Runtime code was executed when it shouldn't have. This could have happened because:
+  This code should only run on the server. You might need to configure your bunder to respect the "browser" field in package json.
+`
+  );
+}
 
-  1. You haven't configured a transformer yet. Visit https://compiledcssinjs.com/docs and follow the instructions.
-  2. You have duplicate versions of React and hooks are blowing up. You need to de-duplicate your dependencies.
+// We don't set this to an empty object else it will act like a singleton.
+const Cache = createContext<Record<string, true> | null>(null);
 
-  Good luck!
-`);
+export const useCache: UseCacheHook = () => {
+  return useContext(Cache) || {};
 };
+
+const CompiledComponent: ProviderComponent = (props: { children: JSX.Element[] | JSX.Element }) => {
+  const inserted = useRef<Record<string, true>>(useCache());
+  return <Cache.Provider value={inserted.current}>{props.children}</Cache.Provider>;
+};
+
+export default CompiledComponent;

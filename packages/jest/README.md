@@ -1,1 +1,1 @@
-# @compiled/jest-css-in-js
+# @compiled/jest

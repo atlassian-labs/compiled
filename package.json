@@ -28,9 +28,8 @@
   },
   "devDependencies": {
     "@babel/preset-react": "^7.10.1",
-    "@compiled/css-in-js": "*",
-    "@compiled/jest-css-in-js": "*",
-    "@compiled/ts-transform-css-in-js": "^0.4.7",
+    "@compiled/core": "*",
+    "@compiled/jest": "*",
     "@size-limit/preset-small-lib": "^4.4.5",
     "@storybook/addons": "^5.2.8",
     "@storybook/react": "^5.3.18",
@@ -75,7 +74,7 @@
   },
   "size-limit": [
     {
-      "path": "./packages/style/dist/browser/index.js",
+      "path": "./packages/runtime/dist/browser/index.js",
       "limit": "299B",
       "import": "{ CC, CS }",
       "ignore": [

@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { styled, ClassNames } from '@compiled/css-in-js';
+import { styled, ClassNames } from '@compiled/core';
 
 export const StyledDiv = styled.div`
   display: flex;

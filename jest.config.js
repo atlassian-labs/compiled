@@ -4,7 +4,7 @@ module.exports = {
   testMatch: ['**/src/**/*.test.ts*'],
   setupFilesAfterEnv: ['jest-extended', './test/setup.tsx'],
   moduleNameMapper: {
-    '^@compiled/css-in-js$': '<rootDir>/packages/css-in-js/src/index.tsx',
+    '^@compiled/core$': '<rootDir>/packages/core/src/index.tsx',
   },
   transform: {
     '\\.m?jsx?$': 'ts-jest',

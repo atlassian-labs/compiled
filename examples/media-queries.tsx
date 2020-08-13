@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled } from '@compiled/css-in-js';
+import { styled } from '@compiled/core';
 
 export default {
   title: 'media queries',

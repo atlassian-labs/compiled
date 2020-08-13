@@ -3,14 +3,14 @@
 ## Installation
 
 ```bash
-npm install @compiled/css-in-js @compiled/babel-plugin-css-in-js
+npm install @compiled/core @compiled/babel-plugin
 ```
 
 Then add the plugin to your [Babel config](https://babeljs.io/docs/en/config-files):
 
 ```
 {
-  "plugins": ["@compiled/babel-plugin-css-in-js"]
+  "plugins": ["@compiled/babel-plugin"]
 }
 ```
 
