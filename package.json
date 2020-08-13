@@ -24,13 +24,12 @@
     "version": "bash scripts/version.sh && git add .",
     "version-nightly": "bash scripts/should-nightly-run.sh && npm version prerelease --no-git-tag-version --preid=$(git rev-parse HEAD)",
     "postversion": "bash scripts/push-if-git.sh",
-    "bundlesize": "yarn build && yarn build:dead-code-elimination && size-limit"
+    "bundlesize": "yarn build && size-limit"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.10.1",
     "@compiled/core": "*",
     "@compiled/jest": "*",
-    "@compiled/ts-transform-css-in-js": "^0.4.7",
     "@size-limit/preset-small-lib": "^4.4.5",
     "@storybook/addons": "^5.2.8",
     "@storybook/react": "^5.3.18",
