@@ -27,7 +27,8 @@
     "bundlesize": "yarn build && yarn build:dead-code-elimination && size-limit"
   },
   "devDependencies": {
-    "@babel/preset-react": "^7.10.1",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-react": "^7.10.4",
     "@babel/preset-typescript": "^7.10.4",
     "@compiled/core": "*",
     "@compiled/jest": "*",
@@ -53,7 +54,6 @@
     "react-dom": "^16.13.1",
     "size-limit": "^4.4.5",
     "storybook-addon-performance": "^0.10.0",
-    "ts-jest": "25.4.0",
     "ts-loader": "^7.0.2",
     "ts-node": "8.9.1",
     "ts-transform-define": "^0.1.3",
