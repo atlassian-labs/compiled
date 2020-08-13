@@ -1,5 +1,5 @@
 {
-  "name": "@compiled/babel-plugin-css-in-js",
+  "name": "@compiled/utils",
   "version": "0.4.7",
   "description": "The CSS in JS authoring experience you love without the runtime cost",
   "author": "Michael Dougall",
@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/atlassian-labs/compiled-css-in-js.git",
-    "directory": "packages/babel-plugin"
+    "directory": "packages/utils"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -19,17 +19,10 @@
     "src"
   ],
   "dependencies": {
-    "@babel/core": "^7.10.2",
-    "@babel/generator": "^7.10.2",
-    "@babel/helper-plugin-utils": "^7.10.2",
-    "@babel/plugin-syntax-jsx": "^7.10.2",
-    "@babel/plugin-transform-flow-strip-types": "^7.10.2",
-    "@babel/template": "^7.10.2",
-    "@babel/traverse": "^7.10.2",
-    "@babel/types": "^7.10.2",
-    "@emotion/is-prop-valid": "^0.8.6"
+    "convert-source-map": "^1.7.0",
+    "source-map": "^0.7.3"
   },
   "devDependencies": {
-    "@types/babel__core": "^7.1.7"
+    "@types/convert-source-map": "^1.5.1"
   }
 }

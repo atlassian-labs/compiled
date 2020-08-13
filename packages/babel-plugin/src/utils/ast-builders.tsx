@@ -1,10 +1,10 @@
 import template from '@babel/template';
 import * as t from '@babel/types';
-import { hash } from '@compiled/ts-transform-css-in-js/dist/utils/hash';
-import { transformCss } from '@compiled/ts-transform-css-in-js/dist/utils/css-transform';
-import { unique } from '@compiled/ts-transform-css-in-js/dist/utils/array';
 import traverse, { Scope, NodePath } from '@babel/traverse';
+import { hash, unique } from '@compiled/utils';
+import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
+
 import { CSSOutput } from './css-builders';
 import { PluginOptions } from '../types';
 

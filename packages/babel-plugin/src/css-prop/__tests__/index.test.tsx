@@ -1,14 +1,16 @@
 import { transformSync } from '@babel/core';
-import babelNext from '../../next';
+import babelPlugin from '../../index';
 
-jest.mock('@compiled/ts-transform-css-in-js/dist/utils/hash');
+jest.mock('@compiled/utils', () => {
+  return { ...jest.requireActual('@compiled/utils'), hash: () => 'hash-test' };
+});
 
 const transform = (code: string) => {
   return transformSync(code, {
     configFile: false,
     babelrc: false,
     compact: true,
-    plugins: [babelNext],
+    plugins: [babelPlugin],
   })?.code;
 };
 
@@ -341,7 +343,7 @@ describe('css prop', () => {
         configFile: false,
         babelrc: false,
         compact: true,
-        plugins: [[babelNext, { nonce: '__webpack_nonce__' }]],
+        plugins: [[babelPlugin, { nonce: '__webpack_nonce__' }]],
       }
     )?.code;
 
