@@ -5,7 +5,7 @@
     "outDir": "dist",
     "baseUrl": "src",
     "paths": {
-      "@compiled/style": ["index.tsx"]
+      "@compiled/runtime": ["index.tsx"]
     },
     "plugins": [
       {

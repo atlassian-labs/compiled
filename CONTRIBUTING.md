@@ -1,6 +1,6 @@
 # Contributing to Compiled
 
-Thank you for considering a contribution to `@compiled/css-in-js`!
+Thank you for considering a contribution to Compiled!
 Pull requests, issues and comments are welcome.
 For pull requests,
 please:

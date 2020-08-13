@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '@compiled/css-in-js';
+import '@compiled/core';
 
 export default {
   title: 'css prop dynamic object',

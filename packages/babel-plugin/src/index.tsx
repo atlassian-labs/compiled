@@ -12,7 +12,7 @@ export default declare<State>((api) => {
     inherits: require('babel-plugin-syntax-jsx'),
     visitor: {
       ImportDeclaration(path, state) {
-        if (path.node.source.value === '@compiled/css-in-js') {
+        if (path.node.source.value === '@compiled/core') {
           state.compiledImportFound = true;
           path.node.specifiers = path.node.specifiers
             .filter(

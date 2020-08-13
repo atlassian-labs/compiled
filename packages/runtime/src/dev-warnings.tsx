@@ -1,8 +1,8 @@
-import React, { useRef, useContext, createContext } from 'react';
-import { ProviderComponent, UseCacheHook } from './types';
+const selectorsToWarn = [':first-child', ':nth-child'];
+const hasWarned: Record<string, true> = {};
 
-if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
-  throw new Error(
+export const warn = (str: string, ...args: any[]) =>
+  console.error(
     `
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
 ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██║██║     ██╔════╝██╔══██╗
@@ -11,23 +11,30 @@ if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
 ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║███████╗███████╗██████╔╝
   ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═════╝
 
-  @compiled/css-in-js - ERROR
+  @compiled/runtime - DEV WARNING
 
-  This code should only run on the server. You might need to configure your bunder to respect the "browser" field in package json.
-`
+  ${str}
+`,
+    ...args
   );
-}
 
-// We don't set this to an empty object else it will act like a singleton.
-const Cache = createContext<Record<string, true> | null>(null);
+export const analyzeCssInDev = (css: string[], hash: string) => {
+  if (hasWarned[hash]) {
+    return;
+  }
 
-export const useCache: UseCacheHook = () => {
-  return useContext(Cache) || {};
+  css.forEach((block) => {
+    const shouldWarnAboutSelectors =
+      selectorsToWarn.map((selector) => block.includes(selector)).filter(Boolean).length > 0;
+
+    if (shouldWarnAboutSelectors) {
+      warn(
+        `Selectors "${selectorsToWarn.join(', ')}" are dangerous to use when server side rendering.
+  Alternatively try and use ":nth-of-type", or placing data attributes and targetting those instead.
+  Read https://compiledcssinjs.com/docs/server-side-rendering for more advice.`
+      );
+    }
+  });
+
+  hasWarned[hash] = true;
 };
-
-const CompiledComponent: ProviderComponent = (props: { children: JSX.Element[] | JSX.Element }) => {
-  const inserted = useRef<Record<string, true>>(useCache());
-  return <Cache.Provider value={inserted.current}>{props.children}</Cache.Provider>;
-};
-
-export default CompiledComponent;

@@ -17,7 +17,7 @@ const transform = (code: string) => {
 describe('styled component transformer', () => {
   it('should generate styled object component code', () => {
     const actual = transform(`
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
 
       const ListItem = styled.div({
         fontSize: '20px',
@@ -25,7 +25,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import{CC,CS}from'@compiled/css-in-js';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import{CC,CS}from'@compiled/core';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
             <C{...props}style={style}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
           </CC>);"
@@ -34,7 +34,7 @@ describe('styled component transformer', () => {
 
   it('should generate styled template literal component code', () => {
     const actual = transform(`
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
 
       const ListItem = styled.div\`
         font-size: 20px;
@@ -42,7 +42,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import{CC,CS}from'@compiled/css-in-js';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import{CC,CS}from'@compiled/core';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
             <C{...props}style={style}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
           </CC>);"
@@ -51,7 +51,7 @@ describe('styled component transformer', () => {
 
   it('should not pass down invalid html attributes to the node', () => {
     const actual = transform(`
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
       const ListItem = styled.div({
         fontSize: props => props.textSize,
       });
@@ -63,25 +63,25 @@ describe('styled component transformer', () => {
 
   it('should remove styled import', () => {
     const actual = transform(`
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
       const ListItem = styled.div({
         fontSize: '20px',
       });
     `);
 
-    expect(actual).not.toInclude(`import { styled } from '@compiled/css-in-js';`);
+    expect(actual).not.toInclude(`import { styled } from '@compiled/core';`);
   });
 
   it('should replace string literal styled component with component', () => {
     const actual = transform(`
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import{CC,CS}from'@compiled/css-in-js';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import{CC,CS}from'@compiled/core';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
             <C{...props}style={style}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
           </CC>);"
@@ -90,7 +90,7 @@ describe('styled component transformer', () => {
 
   xit('should shortcircuit props with suffix to a empty string to avoid undefined in css', () => {
     const actual = transform(`
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
 
       const ListItem = styled.div\`
         font-size: \${props => props.color}px;
@@ -102,7 +102,7 @@ describe('styled component transformer', () => {
 
   xit('should add react default import if missing', () => {
     const actual = transform(`
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
@@ -114,7 +114,7 @@ describe('styled component transformer', () => {
   xit('should add react default import if it only has named imports', () => {
     const actual = transform(`
       import { useState } from 'react';
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
@@ -125,7 +125,7 @@ describe('styled component transformer', () => {
 
   xit('should spread down props to element', () => {
     const actual = transform(`
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
 
       const ListItem = styled.div\`
         font-size: 20px;
@@ -137,7 +137,7 @@ describe('styled component transformer', () => {
 
   xit('should set a display name behind a dev flag', () => {
     const actual = transform(`
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
 
       const ListItem = styled.div\`
         font-size: 20px;
@@ -150,7 +150,7 @@ describe('styled component transformer', () => {
   xit('should do nothing if react default import is already defined', () => {
     const actual = transform(`
       import React from 'react';
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
@@ -162,7 +162,7 @@ describe('styled component transformer', () => {
   xit('should compose a component using template literal', () => {
     const actual = transform(`
       import React from 'react';
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
 
       const Component = () => null;
 
@@ -177,7 +177,7 @@ describe('styled component transformer', () => {
   xit('should compose a component using object literal', () => {
     const actual = transform(`
       import React from 'react';
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
 
       const Component = () => null;
 
@@ -191,7 +191,7 @@ describe('styled component transformer', () => {
 
   xit('should concat class name prop if defined', () => {
     const actual = transform(`
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
@@ -205,7 +205,7 @@ describe('styled component transformer', () => {
   describe('using a string literal', () => {
     xit('should respect missing units', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
         const ListItem = styled.div\`
           font-size: 12;
         \`;
@@ -216,7 +216,7 @@ describe('styled component transformer', () => {
 
     xit('should not pass down invalid html attributes to the node when property has a suffix', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
         const ListItem = styled.div\`
           font-size: \${props => props.textSize}px;
         \`;
@@ -229,7 +229,7 @@ describe('styled component transformer', () => {
 
     xit('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const fontSize = 20;
 
@@ -243,7 +243,7 @@ describe('styled component transformer', () => {
 
     xit('should persist suffix of dynamic property value into inline styles when missing a semi colon', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const fontSize = 20;
 
@@ -257,7 +257,7 @@ describe('styled component transformer', () => {
 
     xit('should transform no template string literal', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const ListItem = styled.div\`
           font-size: 20px;
@@ -269,7 +269,7 @@ describe('styled component transformer', () => {
 
     xit('should transform template string literal with string variable', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const fontSize = '20px';
 
@@ -283,7 +283,7 @@ describe('styled component transformer', () => {
 
     xit('should transform template string literal with numeric variable', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const margin = 0;
 
@@ -297,7 +297,7 @@ describe('styled component transformer', () => {
 
     xit('should transform template string literal with prop reference', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const ListItem = styled.div\`
           color: \${props => props.color};
@@ -310,7 +310,7 @@ describe('styled component transformer', () => {
 
     xit('should transform a arrow function with a body into an IIFE', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const ListItem = styled.div\`
           color: \${props => { return props.color; }};
@@ -323,7 +323,7 @@ describe('styled component transformer', () => {
 
     xit('should transform template string literal with obj variable', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const h200 = { fontSize: '12px' };
 
@@ -337,7 +337,7 @@ describe('styled component transformer', () => {
 
     xit('should reference identifier pointing to a call expression if it returns simple value', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const em = (str: string) => str;
         const color = em('blue');
@@ -353,7 +353,7 @@ describe('styled component transformer', () => {
 
     xit('should inline call if it returns simple value', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const em = (str: string) => str;
 
@@ -370,7 +370,7 @@ describe('styled component transformer', () => {
 
     xit('should transform template string with no argument arrow function variable', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const mixin = () => ({ color: 'red' });
 
@@ -384,7 +384,7 @@ describe('styled component transformer', () => {
 
     xit('should move suffix and prefix of a dynamic arrow func property into the style property', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const ListItem = styled.div\`
           font-size: super$\{props => props.color}big;
@@ -396,7 +396,7 @@ describe('styled component transformer', () => {
 
     xit('should move any prefix of a dynamic arrow func property into the style property', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const ListItem = styled.div\`
           font-size: super$\{props => props.color};
@@ -408,7 +408,7 @@ describe('styled component transformer', () => {
 
     xit('should move suffix and prefix of a dynamic property into the style property', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const color = 'red';
         const ListItem = styled.div\`
@@ -421,7 +421,7 @@ describe('styled component transformer', () => {
 
     xit('should move any prefix of a dynamic property into the style property', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const color = 'red';
         const ListItem = styled.div\`
@@ -434,7 +434,7 @@ describe('styled component transformer', () => {
 
     xit('should transform template string with no argument function variable', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         function mixin() {
           return { color: 'red' };
@@ -450,7 +450,7 @@ describe('styled component transformer', () => {
 
     xit('should only destructure a prop if hasnt been already', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const ListItem = styled.div\`
           > :first-child {
@@ -472,7 +472,7 @@ describe('styled component transformer', () => {
 
     xit('should transform an inline expression', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const Div = styled.div\`
           border-radius: \${2 + 2}px;
@@ -487,7 +487,7 @@ describe('styled component transformer', () => {
 
     xit('should transform identifier referencing an expression with suffix', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const br = 2 + 2;
         const Div = styled.div\`
@@ -504,7 +504,7 @@ describe('styled component transformer', () => {
 
     xit('should transform inline arrow function with suffix', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const getBr = () => 4;
         const Div = styled.div\`
@@ -520,7 +520,7 @@ describe('styled component transformer', () => {
 
     xit('should transform arrow function call that returns css like object', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const getBr = () => ({ fontSize: 12 });
         const Div = styled.div\`
@@ -536,7 +536,7 @@ describe('styled component transformer', () => {
 
     xit('should transform arrow function call that returns number', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const getBr = () => 12;
         const Div = styled.div\`
@@ -552,7 +552,7 @@ describe('styled component transformer', () => {
 
     xit('should transform arrow function call that has a complex body', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const getBr = () => {
           return true ? 'red' : 'blue';
@@ -579,7 +579,7 @@ describe('styled component transformer', () => {
   describe('using an object literal', () => {
     xit('should respect the definition of pseudo element content ala emotion with double quotes', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
         const ListItem = styled.div({
           ':after': {
             content: '""',
@@ -592,7 +592,7 @@ describe('styled component transformer', () => {
 
     xit('should add quotations to dynamically set content', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
         const ListItem = styled.div({
           ':after': {
             content: props => props.content,
@@ -606,7 +606,7 @@ describe('styled component transformer', () => {
 
     xit('should respect the definition of pseudo element content ala emotion with single quotes', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
         const ListItem = styled.div({
           ':after': {
             content: "''",
@@ -619,7 +619,7 @@ describe('styled component transformer', () => {
 
     xit('should respect the definition of pseudo element content ala styled components with no content', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
         const ListItem = styled.div({
           ':after': {
             content: '',
@@ -632,7 +632,7 @@ describe('styled component transformer', () => {
 
     xit('should respect the definition of pseudo element content ala styled components with content', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
         const ListItem = styled.div({
           ':after': {
             content: '😎',
@@ -645,7 +645,7 @@ describe('styled component transformer', () => {
 
     xit('should append "px" on numeric literals if missing', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
         const ListItem = styled.div({
           fontSize: 12,
         });
@@ -656,7 +656,7 @@ describe('styled component transformer', () => {
 
     xit('should reference property access expression', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
         const color = { blue: 'red' };
 
         styled.div({
@@ -669,7 +669,7 @@ describe('styled component transformer', () => {
 
     xit('should not pass down invalid html attributes to the node when property has a suffix', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
         const ListItem = styled.div({
           fontSize: props => \`\${props.textSize}px\`,
         });
@@ -682,7 +682,7 @@ describe('styled component transformer', () => {
 
     xit('should not pass down invalid html attributes to the node when property has a suffix when func in template literal', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
         const ListItem = styled.div({
           fontSize: \`\${props => props.textSize}px\`,
         });
@@ -695,7 +695,7 @@ describe('styled component transformer', () => {
 
     xit('should persist suffix of dynamic property value into inline styles', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const fontSize = 20;
 
@@ -710,7 +710,7 @@ describe('styled component transformer', () => {
 
     xit('should transform object with simple values', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const ListItem = styled.div({
           color: 'blue',
@@ -723,7 +723,7 @@ describe('styled component transformer', () => {
 
     xit('should transform object with nested object into a selector', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const ListItem = styled.div({
           ':hover': {
@@ -738,7 +738,7 @@ describe('styled component transformer', () => {
 
     xit('should reference identifier pointing to a call expression if it returns simple value', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const em = (str: string) => str;
         const color = em('blue');
@@ -754,7 +754,7 @@ describe('styled component transformer', () => {
 
     xit('should inline call if it returns simple value', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const em = (str: string) => str;
 
@@ -769,7 +769,7 @@ describe('styled component transformer', () => {
 
     xit('should transform template object with string variable', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const color = 'blue';
 
@@ -783,7 +783,7 @@ describe('styled component transformer', () => {
 
     xit('should transform template object with prop reference', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const ListItem = styled.div({
           color: props => props.color,
@@ -796,7 +796,7 @@ describe('styled component transformer', () => {
 
     xit('should transform object spread from variable', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const h100 = { fontSize: '12px' };
 
@@ -810,7 +810,7 @@ describe('styled component transformer', () => {
 
     xit('should transform object with string variable', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const color = 'blue';
 
@@ -824,7 +824,7 @@ describe('styled component transformer', () => {
 
     xit('should transform object with obj variable', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const hover = { color: 'red' };
 
@@ -842,7 +842,7 @@ describe('styled component transformer', () => {
 
     xit('should transform object with no argument arrow function variable', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         const mixin = () => ({ color: 'red' });
 
@@ -856,7 +856,7 @@ describe('styled component transformer', () => {
 
     xit('should transform object with no argument function variable', () => {
       const actual = transform(`
-        import { styled } from '@compiled/css-in-js';
+        import { styled } from '@compiled/core';
 
         function mixin() {
           return { color: 'red' };
@@ -877,7 +877,7 @@ describe('styled component transformer', () => {
 
   xit('should transform template string literal with string variable', () => {
     const actual = transform(`
-      import { styled } from '@compiled/css-in-js';
+      import { styled } from '@compiled/core';
 
       const fontSize = '20px';
 

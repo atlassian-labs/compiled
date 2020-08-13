@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { styled } from '@compiled/css-in-js';
+import { styled } from '@compiled/core';
 
-describe('browser', () => {
+xdescribe('browser', () => {
   it('should not render styles inline', () => {
     const StyledDiv = styled.div`
       font-size: 12px;

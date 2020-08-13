@@ -1,9 +1,9 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { styled } from '@compiled/css-in-js';
+import { styled } from '@compiled/core';
 import '../index';
 
-describe('toHaveCompliedCss', () => {
+xdescribe('toHaveCompliedCss', () => {
   afterEach(() => {
     document.getElementsByTagName('html')[0].innerHTML = '';
   });

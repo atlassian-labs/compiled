@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === 'development' && typeof window === 'undefined') {
 ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║███████╗███████╗██████╔╝
   ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═════╝
 
-  @compiled/css-in-js - ERROR
+  @compiled/runtime - ERROR
 
   This code should only run on the client. You might need to configure your bunder to respect the "browser" field in package json.
 `
