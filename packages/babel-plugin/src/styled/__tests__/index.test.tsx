@@ -123,7 +123,7 @@ describe('styled component transformer', () => {
     expect(actual).toInclude(`import React, { useState } from 'react';`);
   });
 
-  xit('should spread down props to element', () => {
+  it('should spread down props to element', () => {
     const actual = transform(`
       import { styled } from '@compiled/core';
 
@@ -132,7 +132,7 @@ describe('styled component transformer', () => {
       \`;
     `);
 
-    expect(actual).toInclude('<C {...props}');
+    expect(actual).toInclude('<C{...props}');
   });
 
   xit('should set a display name behind a dev flag', () => {
@@ -189,7 +189,7 @@ describe('styled component transformer', () => {
     expect(actual).toInclude('as: C = Component');
   });
 
-  xit('should concat class name prop if defined', () => {
+  it('should concat class name prop if defined', () => {
     const actual = transform(`
       import { styled } from '@compiled/core';
       const ListItem = styled.div\`
@@ -198,12 +198,12 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(
-      `className={\"css-test\" + (props.className ? \" \" + props.className : \"\")}`
+      `className={\"cc-hash-test\"+(props.className?\" \"+props.className:\"\")}`
     );
   });
 
   describe('using a string literal', () => {
-    xit('should respect missing units', () => {
+    it('should respect missing units', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
         const ListItem = styled.div\`
@@ -211,7 +211,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{font-size:12}');
+      expect(actual).toInclude('.cc-hash-test{font-size:12}');
     });
 
     xit('should not pass down invalid html attributes to the node when property has a suffix', () => {
@@ -227,7 +227,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('"--var-test-propstextsize": (textSize || "") + "px"');
     });
 
-    xit('should persist suffix of dynamic property value into inline styles', () => {
+    it('should inline constant numeric literal', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -238,24 +238,40 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{font-size:20px}');
+      expect(actual).toInclude('.cc-hash-test{font-size:20px}');
     });
 
-    xit('should persist suffix of dynamic property value into inline styles when missing a semi colon', () => {
+    it('should move suffix to inline styles when referencing a mutable numeric literal', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
-        const fontSize = 20;
+        let fontSize = 20;
+
+        const ListItem = styled.div\`
+          font-size: \${fontSize}px;
+        \`;
+      `);
+
+      expect(actual).toInclude('"--var-hash-test":(fontSize||"")+"px"');
+      expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+    });
+
+    it('should move suffix to inline styles when referencing a mutable numeric literal when missing a semi colon', () => {
+      const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        let fontSize = 20;
 
         const ListItem = styled.div\`
           font-size: \${fontSize}px
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{font-size:20px}');
+      expect(actual).toInclude('"--var-hash-test":(fontSize||"")+"px"');
+      expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
     });
 
-    xit('should transform no template string literal', () => {
+    it('should transform a static template literal', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -264,10 +280,10 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{font-size:20px}');
+      expect(actual).toInclude('.cc-hash-test{font-size:20px}');
     });
 
-    xit('should transform template string literal with string variable', () => {
+    it('should inline constant string literal', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -278,24 +294,10 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{font-size:20px}');
+      expect(actual).toInclude('.cc-hash-test{font-size:20px}');
     });
 
-    xit('should transform template string literal with numeric variable', () => {
-      const actual = transform(`
-        import { styled } from '@compiled/core';
-
-        const margin = 0;
-
-        const ListItem = styled.div\`
-          margin: \${margin};
-        \`;
-      `);
-
-      expect(actual).toInclude('.css-test{margin:0}');
-    });
-
-    xit('should transform template string literal with prop reference', () => {
+    it('should transform template string literal with prop reference', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -304,8 +306,8 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-propscolor)}');
-      expect(actual).toInclude('"--var-test-propscolor": props.color }}');
+      expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)');
+      expect(actual).toInclude('"--var-hash-test":props.color');
     });
 
     xit('should transform a arrow function with a body into an IIFE', () => {
@@ -321,7 +323,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('"--var-test-propscolor": (() => { return props.color; })() }}');
     });
 
-    xit('should transform template string literal with obj variable', () => {
+    it('should transform template string literal with obj variable', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -329,17 +331,18 @@ describe('styled component transformer', () => {
 
         const ListItem = styled.div\`
           \${h200};
+          color: blue;
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{font-size:12px}');
+      expect(actual).toInclude('.cc-hash-test{font-size:12px;color:blue}');
     });
 
-    xit('should reference identifier pointing to a call expression if it returns simple value', () => {
+    it('should reference identifier pointing to a call expression if it returns simple value', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
-        const em = (str: string) => str;
+        const em = (str) => str;
         const color = em('blue');
 
         const ListItem = styled.div\`
@@ -347,23 +350,23 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-color)}');
-      expect(actual).toInclude('"--var-test-color": color }}');
+      expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)');
+      expect(actual).toInclude('"--var-hash-test":color');
     });
 
-    xit('should inline call if it returns simple value', () => {
+    it('should inline call if it returns simple value', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
-        const em = (str: string) => str;
+        const em = (str) => str;
 
         const ListItem = styled.div\`
           color: \${em('blue')};
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-emblue)}');
-      expect(actual).toInclude('"--var-test-emblue": em(\'blue\') }}');
+      expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
+      expect(actual).toInclude(`"--var-hash-test\":em('blue')`);
     });
 
     it.todo('should transform template string literal with array variable');
@@ -391,7 +394,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('"--var-test-propscolor": "super" + (props.color || "") + "big"');
+      expect(actual).toInclude('"--var-hash-test":"super"+(props.color||"")+"big"');
     });
 
     xit('should move any prefix of a dynamic arrow func property into the style property', () => {
@@ -403,33 +406,48 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('"--var-test-propscolor": "super" + (props.color || "")');
+      expect(actual).toInclude('"--var-hash-test":"super"+(props.color||"")');
     });
 
-    xit('should move suffix and prefix of a dynamic property into the style property', () => {
+    xit('should move any suffix of a dynamic arrow func property into the style property', () => {
+      const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        const ListItem = styled.div\`
+          font-size: $\{props => props.color}big;
+        \`;
+      `);
+
+      expect(actual).toInclude('"--var-hash-test":(props.color||"")+"big"');
+    });
+
+    it('should move suffix and prefix of a dynamic property into the style property', () => {
+      const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        let color = 'red';
+        const ListItem = styled.div\`
+          font-size: super$\{color}big;
+          color: red;
+        \`;
+      `);
+
+      expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test);color:red}');
+      expect(actual).toInclude('"--var-hash-test":"super"+(color||"")+"big"');
+    });
+
+    it('should do nothing with suffix/prefix when referencing constant literal', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
         const color = 'red';
         const ListItem = styled.div\`
           font-size: super$\{color}big;
+          color: red;
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{font-size:superredbig}');
-    });
-
-    xit('should move any prefix of a dynamic property into the style property', () => {
-      const actual = transform(`
-        import { styled } from '@compiled/core';
-
-        const color = 'red';
-        const ListItem = styled.div\`
-          font-size: super$\{color};
-        \`;
-      `);
-
-      expect(actual).toInclude('.css-test{font-size:superred}');
+      expect(actual).toInclude('.cc-hash-test{font-size:superredbig;color:red}');
     });
 
     xit('should transform template string with no argument function variable', () => {
@@ -448,7 +466,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('.css-test{color:red}');
     });
 
-    xit('should only destructure a prop if hasnt been already', () => {
+    it('should only destructure a prop if hasnt been already', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -463,12 +481,9 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('isShown, ...props }');
+      // `isShown` should be destructured only once.
+      expect(actual).toInclude('({as:C="div",style,isShown,...props},ref)');
     });
-
-    xit('should not blow up when using a unknown variable import string literal', () => {});
-
-    xit('should not blow up when using a unknown variable import object literal', () => {});
 
     xit('should transform an inline expression', () => {
       const actual = transform(`
@@ -480,26 +495,23 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude(
-        '<CS hash="css-test">{[".css-test{border-radius:var(--var-test-2+2);color:blue}"]}</CS>'
-      );
+      // 2+2 should be evaluated to 4
+      expect(actual).toInclude('.cc-hash-test{border-radius:4px;color:blue}');
     });
 
-    xit('should transform identifier referencing an expression with suffix', () => {
+    it('should transform identifier referencing an expression with suffix', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
-        const br = 2 + 2;
+        let br = 2 + 2;
         const Div = styled.div\`
           border-radius: \${br}px;
           color: red;
         \`;
       `);
 
-      expect(actual).toInclude(
-        '<CS hash="css-test">{[".css-test{border-radius:var(--var-test-br);color:red}"]}</CS>'
-      );
-      expect(actual).toInclude('style={{ ...props.style, "--var-test-br": (br || "") + "px" }}');
+      expect(actual).toInclude('.cc-hash-test{border-radius:var(--var-hash-test);color:red}');
+      expect(actual).toInclude('"--var-hash-test":(br||"")+"px"');
     });
 
     xit('should transform inline arrow function with suffix', () => {
@@ -513,9 +525,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude(
-        '<CS hash="css-test">{[".css-test{border-radius:4px;color:red}"]}</CS>'
-      );
+      expect(actual).toInclude('.cc-hash-test{border-radius:4px;color:red}');
     });
 
     xit('should transform arrow function call that returns css like object', () => {
@@ -529,9 +539,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude(
-        '<CS hash="css-test">{[".css-test{font-size:12px;color:red}"]}</CS>'
-      );
+      expect(actual).toInclude('.cc-hash-test{font-size:12px;color:red}');
     });
 
     xit('should transform arrow function call that returns number', () => {
@@ -545,9 +553,7 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude(
-        '<CS hash="css-test">{[".css-test{font-size:12px;color:red}"]}</CS>'
-      );
+      expect(actual).toInclude('.cc-hash-test{font-size:12px;color:red}');
     });
 
     xit('should transform arrow function call that has a complex body', () => {
@@ -555,7 +561,7 @@ describe('styled component transformer', () => {
         import { styled } from '@compiled/core';
 
         const getBr = () => {
-          return true ? 'red' : 'blue';
+          return true ? '1' : '2';
         };
         const Div = styled.div\`
           font-size: \${getBr()}px;
@@ -563,12 +569,8 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude(
-        '<CS hash="css-test">{[".css-test{font-size:var(--var-test-getbr);color:red}"]}</CS>'
-      );
-      expect(actual).toInclude(
-        'style={{ ...props.style, "--var-test-getbr": (getBr() || "") + "px" }}'
-      );
+      expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test);color:red}');
+      expect(actual).toInclude('"--var-hash-test":(getBr()||"")+"px"');
     });
 
     it.todo('should transform template string with argument function variable');
@@ -577,7 +579,7 @@ describe('styled component transformer', () => {
   });
 
   describe('using an object literal', () => {
-    xit('should respect the definition of pseudo element content ala emotion with double quotes', () => {
+    it('should respect the definition of pseudo element content ala emotion with double quotes', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
         const ListItem = styled.div({
@@ -587,7 +589,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test:after{content:\\"\\"}');
+      expect(actual).toInclude('.cc-hash-test:after{content:\\"\\"}');
     });
 
     xit('should add quotations to dynamically set content', () => {
@@ -600,11 +602,11 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude(`"--var-test": '"' + props.content + '"'`);
-      expect(actual).toInclude('.css-test:after{content:var(--var-test)}');
+      expect(actual).toInclude(`"--var-hash-test":'"'+props.content+'"'`);
+      expect(actual).toInclude('.cc-hash-test:after{content:var(--var-hash-test)}');
     });
 
-    xit('should respect the definition of pseudo element content ala emotion with single quotes', () => {
+    it('should respect the definition of pseudo element content ala emotion with single quotes', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
         const ListItem = styled.div({
@@ -614,10 +616,10 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude(".css-test:after{content:''}");
+      expect(actual).toInclude(".cc-hash-test:after{content:''}");
     });
 
-    xit('should respect the definition of pseudo element content ala styled components with no content', () => {
+    it('should respect the definition of pseudo element content ala styled components with no content', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
         const ListItem = styled.div({
@@ -627,10 +629,10 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test:after{content:\\"\\"}');
+      expect(actual).toInclude('.cc-hash-test:after{content:\\"\\"}');
     });
 
-    xit('should respect the definition of pseudo element content ala styled components with content', () => {
+    it('should respect the definition of pseudo element content ala styled components with content', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
         const ListItem = styled.div({
@@ -640,10 +642,10 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test:after{content:\\"\\uD83D\\uDE0E\\"}');
+      expect(actual).toInclude('.cc-hash-test:after{content:\\"\\uD83D\\uDE0E\\"}');
     });
 
-    xit('should append "px" on numeric literals if missing', () => {
+    it('should append "px" on numeric literals if missing', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
         const ListItem = styled.div({
@@ -651,10 +653,10 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test{font-size:12px}');
+      expect(actual).toInclude('.cc-hash-test{font-size:12px}');
     });
 
-    xit('should reference property access expression', () => {
+    it('should reference property access expression', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
         const color = { blue: 'red' };
@@ -664,10 +666,11 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('"--var-test-colorblue": color.blue');
+      expect(actual).toInclude('.cc-hash-test{background:var(--var-hash-test)}');
+      expect(actual).toInclude('"--var-hash-test":color.blue');
     });
 
-    xit('should not pass down invalid html attributes to the node when property has a suffix', () => {
+    it('should not pass down invalid html attributes to the node when property has a suffix', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
         const ListItem = styled.div({
@@ -675,9 +678,9 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-propstextsizepx)}');
-      expect(actual).toInclude('textSize, ...props }');
-      expect(actual).toInclude('"--var-test-propstextsizepx": `${textSize}px`');
+      expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+      expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
+      expect(actual).toInclude('"--var-hash-test":`${textSize}px`');
     });
 
     xit('should not pass down invalid html attributes to the node when property has a suffix when func in template literal', () => {
@@ -688,27 +691,12 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('textSize, ...props }');
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-propstextsize)}');
-      expect(actual).toInclude('"--var-test-propstextsize": (textSize || "") + "px"');
+      expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+      expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
+      expect(actual).toInclude('"--var-hash-test":`${textSize}px`');
     });
 
-    xit('should persist suffix of dynamic property value into inline styles', () => {
-      const actual = transform(`
-        import { styled } from '@compiled/core';
-
-        const fontSize = 20;
-
-        const ListItem = styled.div({
-          fontSize: \`\${props => props.fontSize}px\`,
-        });
-      `);
-
-      expect(actual).toInclude('"--var-test-propsfontsize": (props.fontSize || "") + "px" }}');
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-propsfontsize)}');
-    });
-
-    xit('should transform object with simple values', () => {
+    it('should transform object with simple values', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -718,10 +706,10 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test{color:blue;margin:0}');
+      expect(actual).toInclude('.cc-hash-test{color:blue;margin:0}');
     });
 
-    xit('should transform object with nested object into a selector', () => {
+    it('should transform object with nested object into a selector', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -733,14 +721,14 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test:hover{color:blue;margin:0}');
+      expect(actual).toInclude('.cc-hash-test:hover{color:blue;margin:0}');
     });
 
-    xit('should reference identifier pointing to a call expression if it returns simple value', () => {
+    it('should reference identifier pointing to a call expression if it returns simple value', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
-        const em = (str: string) => str;
+        const em = (str) => str;
         const color = em('blue');
 
         const ListItem = styled.div({
@@ -748,26 +736,26 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-color)}');
-      expect(actual).toInclude('"--var-test-color": color }}');
+      expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
+      expect(actual).toInclude('"--var-hash-test":color');
     });
 
-    xit('should inline call if it returns simple value', () => {
+    it('should inline call if it returns simple value', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
-        const em = (str: string) => str;
+        const em = (str) => str;
 
         const ListItem = styled.div({
           color: em('blue'),
         });
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-emblue)}');
-      expect(actual).toInclude('"--var-test-emblue": em(\'blue\') }}');
+      expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
+      expect(actual).toInclude('"--var-hash-test":em(\'blue\')');
     });
 
-    xit('should transform template object with string variable', () => {
+    it('should inline constant string literal', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -778,10 +766,10 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test{color:blue}');
+      expect(actual).toInclude('.cc-hash-test{color:blue}');
     });
 
-    xit('should transform template object with prop reference', () => {
+    it('should transform template object with prop reference', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -790,11 +778,11 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-propscolor)}');
-      expect(actual).toInclude('"--var-test-propscolor": props.color }}');
+      expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
+      expect(actual).toInclude('"--var-hash-test":props.color');
     });
 
-    xit('should transform object spread from variable', () => {
+    it('should transform object spread from variable', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -802,27 +790,29 @@ describe('styled component transformer', () => {
 
         const ListItem = styled.div({
           ...h100,
+          color: 'red',
         });
       `);
 
-      expect(actual).toInclude('.css-test{font-size:12px}');
+      expect(actual).toInclude('.cc-hash-test{font-size:12px;color:red}');
     });
 
-    xit('should transform object with string variable', () => {
+    it('should transform object with mutable identifier', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
-        const color = 'blue';
+        let color = 'blue';
 
         const ListItem = styled.div({
           color: color,
         });
       `);
 
-      expect(actual).toInclude('.css-test{color:blue}');
+      expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
+      expect(actual).toInclude('"--var-hash-test":color');
     });
 
-    xit('should transform object with obj variable', () => {
+    it('should transform object with obj variable', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -834,8 +824,8 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test{font-size:20px}');
-      expect(actual).toInclude('.css-test:hover{color:red}');
+      expect(actual).toInclude('.cc-hash-test{font-size:20px}');
+      expect(actual).toInclude('.cc-hash-test:hover{color:red}');
     });
 
     it.todo('should transform object with array variable');
@@ -851,7 +841,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test{color:red}');
+      expect(actual).toInclude('.cc-hash-test{color:red}');
     });
 
     xit('should transform object with no argument function variable', () => {
@@ -867,7 +857,7 @@ describe('styled component transformer', () => {
         });
       `);
 
-      expect(actual).toInclude('.css-test{color:red}');
+      expect(actual).toInclude('.cc-hash-test{color:red}');
     });
 
     it.todo('should transform object with argument function variable');
@@ -875,7 +865,7 @@ describe('styled component transformer', () => {
     it.todo('should transform object with argument arrow function variable');
   });
 
-  xit('should transform template string literal with string variable', () => {
+  it('should inline constant identifier string literal', () => {
     const actual = transform(`
       import { styled } from '@compiled/core';
 
@@ -886,6 +876,6 @@ describe('styled component transformer', () => {
       \`;
     `);
 
-    expect(actual).toInclude('.css-test{font-size:20px}');
+    expect(actual).toInclude('.cc-hash-test{font-size:20px}');
   });
 });
