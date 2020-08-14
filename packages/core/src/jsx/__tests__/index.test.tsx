@@ -2,7 +2,7 @@ import '@compiled/core';
 import React from 'react';
 import { render } from '@testing-library/react';
 
-xdescribe('css prop', () => {
+describe('css prop', () => {
   it('should create css from object literal', () => {
     const { getByText } = render(<div css={{ fontSize: '15px' }}>hello world</div>);
 
@@ -101,7 +101,7 @@ xdescribe('css prop', () => {
   //   expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
   // });
 
-  it('should create css from arrow function', () => {
+  xit('should create css from arrow function', () => {
     const base = () => ({ fontSize: 12 });
     const { getByText } = render(<div css={{ ...base() }}>hello world</div>);
 

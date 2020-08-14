@@ -4,7 +4,7 @@ import { styled } from '@compiled/core';
 
 const em = (str: string | number) => str;
 
-xdescribe('styled component', () => {
+describe('styled component', () => {
   it('should render a simple styled div using an object', () => {
     const StyledDiv = styled.div({
       fontSize: '12px',
@@ -69,7 +69,7 @@ xdescribe('styled component', () => {
     expect(getByText('hello world').getAttribute('fonty')).toBe(null);
   });
 
-  it('should automatically add suffix on template literal', () => {
+  xit('should automatically add suffix on template literal', () => {
     const size = 12;
     const StyledDiv = styled.div<{ size: number }>`
       height: ${(props) => props.size}px;
@@ -108,23 +108,25 @@ xdescribe('styled component', () => {
   });
 
   it('should not type error with nested selectors', () => {
-    styled.div({
-      color: 'currentColor',
-      textDecoration: 'none',
-      position: 'relative',
-      ':before': {
-        opacity: 0,
-        content: '⚓',
-        position: 'absolute',
-        left: '-5rem',
-        fontSize: '3rem',
-      },
-      ':hover': {
+    expect(() => {
+      styled.div({
+        color: 'currentColor',
+        textDecoration: 'none',
+        position: 'relative',
         ':before': {
-          opacity: 1,
+          opacity: 0,
+          content: '⚓',
+          position: 'absolute',
+          left: '-5rem',
+          fontSize: '3rem',
         },
-      },
-    });
+        ':hover': {
+          ':before': {
+            opacity: 1,
+          },
+        },
+      });
+    }).not.toThrow();
   });
 
   it('should not have a display name', () => {
@@ -137,7 +139,7 @@ xdescribe('styled component', () => {
     expect(StyledDiv.displayName).toEqual(undefined);
   });
 
-  it('should have a display name', () => {
+  xit('should have a display name', () => {
     process.env.NODE_ENV = 'development';
 
     const StyledDiv = styled.div`
@@ -148,26 +150,28 @@ xdescribe('styled component', () => {
   });
 
   it('should not type error with nested arrow funcs', () => {
-    styled.div<{ fontSize: string }>({
-      color: 'currentColor',
-      textDecoration: 'none',
-      position: 'relative',
-      fontSize: (props) => props.fontSize,
-      ':before': {
-        fontSize: (props) => props.fontSize,
-        opacity: 0,
-        content: '⚓',
-        position: 'absolute',
-        left: '-5rem',
-      },
-      ':hover': {
+    expect(() => {
+      styled.div<{ fontSize: string }>({
+        color: 'currentColor',
+        textDecoration: 'none',
+        position: 'relative',
         fontSize: (props) => props.fontSize,
         ':before': {
           fontSize: (props) => props.fontSize,
-          opacity: 1,
+          opacity: 0,
+          content: '⚓',
+          position: 'absolute',
+          left: '-5rem',
         },
-      },
-    });
+        ':hover': {
+          fontSize: (props) => props.fontSize,
+          ':before': {
+            fontSize: (props) => props.fontSize,
+            opacity: 1,
+          },
+        },
+      });
+    }).not.toThrow();
   });
 
   it('should forward ref', () => {
@@ -193,7 +197,7 @@ xdescribe('styled component', () => {
     expect(getByText('Hello world').tagName).toEqual('SPAN');
   });
 
-  it('should compose a component using template literal', () => {
+  xit('should compose a component using template literal', () => {
     const Div = (props: {}) => <div {...props} />;
     const StyledDiv = styled(Div)`
       font-size: 12px;
@@ -204,7 +208,7 @@ xdescribe('styled component', () => {
     expect(getByText('Hello world').tagName).toEqual('DIV');
   });
 
-  it('should compose a component using object literal', () => {
+  xit('should compose a component using object literal', () => {
     const Div = (props: {}) => <div {...props} />;
     const StyledDiv = styled(Div)({
       fontSize: 12,
@@ -215,7 +219,7 @@ xdescribe('styled component', () => {
     expect(getByText('Hello world').tagName).toEqual('DIV');
   });
 
-  it('should inherit types from composed component', () => {
+  xit('should inherit types from composed component', () => {
     const Link = (props: { href: string }) => <a {...props} />;
     const StyledLink = styled(Link)({
       fontSize: 12,
@@ -226,7 +230,7 @@ xdescribe('styled component', () => {
     expect(getByText('Hello world').getAttribute('href')).toEqual('/world');
   });
 
-  it('should compose from array', () => {
+  xit('should compose from array', () => {
     const extra = {
       color: 'blue',
     };
@@ -246,17 +250,19 @@ xdescribe('styled component', () => {
   });
 
   it('should not type error', () => {
-    styled.div<{ primary: string }>({
-      fontSize: '20px',
-      color: (props) => props.primary,
-      margin: '20px',
-      ':hover': {
-        color: 'red',
-      },
-    });
+    expect(() => {
+      styled.div<{ primary: string }>({
+        fontSize: '20px',
+        color: (props) => props.primary,
+        margin: '20px',
+        ':hover': {
+          color: 'red',
+        },
+      });
+    }).not.toThrow();
   });
 
-  it('should create css from string', () => {
+  xit('should create css from string', () => {
     const StyledDiv = styled.div('font-size: 15px;');
 
     const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
@@ -264,7 +270,7 @@ xdescribe('styled component', () => {
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '15px');
   });
 
-  it('should create css from template literal', () => {
+  xit('should create css from template literal', () => {
     const StyledDiv = styled.div(`font-size: 15px;`);
 
     const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
@@ -272,7 +278,7 @@ xdescribe('styled component', () => {
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '15px');
   });
 
-  it('should create css from array', () => {
+  xit('should create css from array', () => {
     const base = { fontSize: 12 };
     const next = ` font-size: 15px; `;
     const StyledDiv = styled.div([base, next]);
