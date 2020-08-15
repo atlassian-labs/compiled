@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { styled } from '@compiled/core';
 
-xdescribe('browser', () => {
+describe('browser', () => {
   it('should not render styles inline', () => {
     const StyledDiv = styled.div`
       font-size: 12px;
@@ -28,7 +28,7 @@ xdescribe('browser', () => {
     );
 
     expect(document.head.innerHTML).toMatchInlineSnapshot(
-      `"<style nonce=\\"k0Mp1lEd\\">.cc-1610nsm{font-size:12px}</style>"`
+      `"<style>.cc-1610nsm{font-size:12px}</style>"`
     );
   });
 });
