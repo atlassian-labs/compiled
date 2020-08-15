@@ -56,6 +56,7 @@ export const visitStyledPath = (
 
   path.replaceWith(
     buildStyledComponent({
+      ...state.opts,
       cssOutput,
       tagName: styledData.tagName,
       parentPath: path as NodePath,

@@ -158,13 +158,12 @@ export const buildStyledComponent = (opts: StyledOpts) => {
   const cssRules = transformCss(`.${className}`, opts.cssOutput.css);
 
   return styledTemplate({
+    ...opts,
     className,
     hash: cssHash,
     tag: opts.tagName,
     css: cssRules,
     variables: opts.cssOutput.variables,
-    parentPath: opts.parentPath,
-    scope: opts.scope,
   }) as t.Node;
 };
 

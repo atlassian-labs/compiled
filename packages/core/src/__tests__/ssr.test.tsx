@@ -5,7 +5,7 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { styled, CC } from '@compiled/core';
 
-xdescribe('SSR', () => {
+describe('SSR', () => {
   it('should render styles inline', () => {
     const StyledDiv = styled.div`
       font-size: 12px;

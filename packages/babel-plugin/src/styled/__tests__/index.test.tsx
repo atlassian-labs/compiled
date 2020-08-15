@@ -88,6 +88,26 @@ describe('styled component transformer', () => {
     `);
   });
 
+  it('should add an identifier nonce to the style element', () => {
+    const actual = transformSync(
+      `
+      import { styled } from '@compiled/core';
+
+      const ListItem = styled.div\`
+        font-size: \${props => props.color}px;
+      \`;
+      `,
+      {
+        configFile: false,
+        babelrc: false,
+        compact: true,
+        plugins: [[babelPlugin, { nonce: '__webpack_nonce__' }]],
+      }
+    )?.code;
+
+    expect(actual).toInclude('<CS nonce={__webpack_nonce__}hash="hash-test">');
+  });
+
   xit('should shortcircuit props with suffix to a empty string to avoid undefined in css', () => {
     const actual = transform(`
       import { styled } from '@compiled/core';

@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { styled } from '@compiled/core';
 import '../index';
 
-xdescribe('toHaveCompliedCss', () => {
+describe('toHaveCompliedCss', () => {
   afterEach(() => {
     document.getElementsByTagName('html')[0].innerHTML = '';
   });
