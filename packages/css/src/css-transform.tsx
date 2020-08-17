@@ -50,7 +50,7 @@ const stringifySelectorParserRoot = (parserRoot: selectorParser.Root) => {
  *
  * E.g: `.class { &:hover {} }` will become `.class:hover {}`
  */
-const parentOrphenedPseudos = plugin('parent-orphened-pseudos', () => {
+const parentOrphanedPseudos = plugin('parent-orphened-pseudos', () => {
   return (root) => {
     root.walkRules((rule) => {
       const { selector: ruleSelector } = rule;
@@ -111,7 +111,7 @@ export const transformCss = (
   const cssWithSelector = selector ? `${selector} { ${css} }` : css;
 
   const result = postcss([
-    parentOrphenedPseudos(),
+    parentOrphanedPseudos(),
     nested(),
     autoprefixer(),
     ...(opts.minify ? minify() : [whitespace]),
