@@ -16,6 +16,12 @@ function createStyleElement(opts: StyleSheetOpts): HTMLStyleElement {
   return tag;
 }
 
+/**
+ * Returns a style sheet object that is used to move styles to the head of the application
+ * during runtime.
+ *
+ * @param opts StyleSheetOpts
+ */
 export const createStyleSheet = (opts: StyleSheetOpts) => {
   const speedy = process.env.NODE_ENV === 'production',
     styleElements: HTMLStyleElement[] = [];

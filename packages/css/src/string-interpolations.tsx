@@ -1,17 +1,19 @@
-/**
- * This module is kind of a mess.
- * Let's get it working first and then fix it up later.
- * There must be a better way than what we're doing, just needs some thought first.
- */
-
 export interface AfterInterpolation {
   css: string;
   variableSuffix: string;
 }
 
+export interface BeforeInterpolation {
+  css: string;
+  variablePrefix: string;
+}
+
 /**
- * Extracts a suffix from a css property e.g:
- * 'px;font-size: 20px; would return "px" as the suffix and ";font-size: 20px;" as rest.
+ * Will return any suffix out of the CSS and return them both.
+ *
+ * E.g. `'px;font-size: 20px;'` would return `"px"` as the suffix and `";font-size: 20px;"` as the CSS.
+ *
+ * @param css all the CSS after the interpolation
  */
 export const cssAfterInterpolation = (css: string): AfterInterpolation => {
   let variableSuffix = '';
@@ -46,11 +48,11 @@ export const cssAfterInterpolation = (css: string): AfterInterpolation => {
   };
 };
 
-export interface BeforeInterpolation {
-  css: string;
-  variablePrefix: string;
-}
-
+/**
+ * Will extract any prefix out of the CSS and return them both.
+ *
+ * @param css all the CSS before the interpolation
+ */
 export const cssBeforeInterpolation = (css: string): BeforeInterpolation => {
   const trimCss = css.trim();
   if (

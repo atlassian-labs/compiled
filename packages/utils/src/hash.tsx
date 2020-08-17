@@ -1,4 +1,6 @@
 /**
+ * Quick hash the result of a string input.
+ *
  * Taken from https://github.com/garycourt/murmurhash-js/blob/master/murmurhash2_gc.js
  * @param str
  * @param seed

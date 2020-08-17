@@ -4,6 +4,10 @@ import { buildStyledComponent } from '../utils/ast-builders';
 import { buildCss } from '../utils/css-builders';
 import { State } from '../types';
 
+/**
+ * Interrogates `node` and returns styled data if any were found.
+ * @param node
+ */
 const extractStyledDataFromNode = (
   node: t.TaggedTemplateExpression | t.CallExpression
 ): { tagName: string; cssNode: t.Expression } | undefined => {
@@ -43,12 +47,21 @@ const extractStyledDataFromNode = (
   return undefined;
 };
 
+/**
+ * Takes a styled tagged template or call expression and then transforms it to a compiled component.
+ *
+ * `styled.div({})`
+ *
+ * @param path Babel path - expects to be a tagged template or call expression.
+ * @param state Babel state - should house options and meta data used during the transformation.
+ */
 export const visitStyledPath = (
   path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
   state: State
 ) => {
   const styledData = extractStyledDataFromNode(path.node);
   if (!styledData) {
+    // We didn't find a node we're interested in - bail out!
     return;
   }
 

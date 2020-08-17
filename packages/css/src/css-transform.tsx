@@ -5,6 +5,10 @@ import nested from 'postcss-nested';
 import whitespace from 'postcss-normalize-whitespace';
 import selectorParser from 'postcss-selector-parser';
 
+/**
+ * PostCSS `cssnano` plugin to minify CSS.
+ * It deliberately excludes some plugins so it is forced to be synchronous.
+ */
 const minify = () => {
   const preset = cssnano();
   // We exclude async because we need this to run synchronously as ts transformers aren't async!
@@ -22,21 +26,31 @@ const minify = () => {
 
 const isPreviousSelectorCombinatorType = (selector: selectorParser.Node) => {
   const previousSelector = selector.prev();
-
   return previousSelector && previousSelector.type === 'combinator';
 };
+
 const prependNestingTypeToSelector = (selector: selectorParser.Node) => {
   const { parent } = selector;
 
   if (parent) {
     const nesting = selectorParser.nesting();
-
     parent.insertBefore(selector, nesting);
   }
 };
-const stringifySelectorParserRoot = (parserRoot: selectorParser.Root) =>
-  parserRoot.reduce<string[]>((memo, selector) => [...memo, String(selector)], []).join(',\n');
-const parentOrphenedPseudos = plugin('parent-orphened-pseudos', () => {
+
+const stringifySelectorParserRoot = (parserRoot: selectorParser.Root) => {
+  return parserRoot
+    .reduce<string[]>((memo, selector) => [...memo, String(selector)], [])
+    .join(',\n');
+};
+
+/**
+ * Parent orphened pseudos PostCSS plugin.
+ * This plugin will move child nested orphened pseudos to the parent declaration.
+ *
+ * E.g: `.class { &:hover {} }` will become `.class:hover {}`
+ */
+const parentOrphanedPseudos = plugin('parent-orphened-pseudos', () => {
   return (root) => {
     root.walkRules((rule) => {
       const { selector: ruleSelector } = rule;
@@ -60,6 +74,9 @@ const parentOrphenedPseudos = plugin('parent-orphened-pseudos', () => {
   };
 });
 
+/**
+ * PostCSS plugin which will callback when traversing through each root declaration.
+ */
 const extractStyleSheets = plugin<{ callback: (sheet: string) => void }>(
   'extract-style-sheets',
   (opts) => {
@@ -72,9 +89,19 @@ const extractStyleSheets = plugin<{ callback: (sheet: string) => void }>(
 );
 
 interface Opts {
+  /**
+   * Enables minifying CSS through `cssnano`.
+   */
   minify?: boolean;
 }
 
+/**
+ * Will transform CSS into multiple CSS sheets.
+ *
+ * @param selector CSS selector such as `.class`
+ * @param css CSS string
+ * @param opts Transformation options
+ */
 export const transformCss = (
   selector: string,
   css: string,
@@ -84,7 +111,7 @@ export const transformCss = (
   const cssWithSelector = selector ? `${selector} { ${css} }` : css;
 
   const result = postcss([
-    parentOrphenedPseudos(),
+    parentOrphanedPseudos(),
     nested(),
     autoprefixer(),
     ...(opts.minify ? minify() : [whitespace]),

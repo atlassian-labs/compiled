@@ -44,6 +44,14 @@ const getJsxAttributeExpression = (node: t.JSXAttribute) => {
   throw new Error();
 };
 
+/**
+ * Takes a JSX opening element and then transforms any usage of `css` prop to a compiled component.
+ *
+ * `<div css={{}}>`
+ *
+ * @param path Babel path - expects to be a JSX opening element.
+ * @param state Babel state - should house options and meta data used during the transformation.
+ */
 export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, state: State) => {
   let cssPropIndex = -1;
   const cssProp = path.node.attributes.find((attr, index): attr is t.JSXAttribute => {
