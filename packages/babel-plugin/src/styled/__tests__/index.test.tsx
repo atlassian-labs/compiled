@@ -100,7 +100,7 @@ describe('styled component transformer', () => {
     expect(actual).toInclude('"--var-test-propscolor": (props.color || "") + "px"');
   });
 
-  it('should add react default import if missing', () => {
+  it('should add react namespaced import if missing', () => {
     const actual = transform(`
       import { styled } from '@compiled/core';
       const ListItem = styled.div\`
@@ -155,6 +155,18 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude(transform("import React from 'react';"));
+  });
+
+  it('should do nothing if react namespaced import is already defined', () => {
+    const actual = transform(`
+      import * as React from 'react'
+      import { styled } from '@compiled/core';
+      const ListItem = styled.div\`
+        font-size: 20px;
+      \`;
+    `);
+
+    expect(actual).toInclude(transform("import * as React from 'react'"));
   });
 
   xit('should compose a component using template literal', () => {

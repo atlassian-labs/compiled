@@ -13,24 +13,24 @@ export default declare<State>((api) => {
     inherits: require('babel-plugin-syntax-jsx'),
     visitor: {
       Program(path, state) {
-        const importDeclarations = path.node.body.filter((node) => t.isImportDeclaration(node));
+        const importDeclarations = path.node.body.filter((node): node is t.ImportDeclaration =>
+          t.isImportDeclaration(node)
+        );
         if (
           importDeclarations.some(
-            (declaration: any) => declaration.source.value === '@compiled/core'
+            (declaration: t.ImportDeclaration) => declaration.source.value === '@compiled/core'
           )
         ) {
           state.compiledImportFound = true;
 
           const isCompiledStyledImportFound = importDeclarations.some(
-            (declaration: any) =>
+            (declaration) =>
               declaration.source.value === '@compiled/core' &&
-              declaration.specifiers.find(
-                (specifier: t.ImportSpecifier) => specifier.local.name === 'styled'
-              )
+              declaration.specifiers.find((specifier) => specifier.local.name === 'styled')
           );
 
           const isReactImportFound = importDeclarations.some(
-            (declaration: any) => declaration.source.value === 'react'
+            (declaration) => declaration.source.value === 'react'
           );
 
           // If we have a Compiled 'styled' import and we don't have a React
