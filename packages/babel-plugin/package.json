@@ -19,6 +19,7 @@
     "src"
   ],
   "dependencies": {
+    "@compiled/css": "0.4.7",
     "@babel/core": "^7.10.2",
     "@babel/generator": "^7.10.2",
     "@babel/helper-plugin-utils": "^7.10.2",

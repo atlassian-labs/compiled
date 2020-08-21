@@ -4,6 +4,7 @@ import { importSpecifier } from './utils/ast-builders';
 import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
 import { State } from './types';
+import { visitClassNamesPath } from './class-names';
 
 export default declare<State>((api) => {
   api.assertVersion(7);
@@ -47,6 +48,13 @@ export default declare<State>((api) => {
         }
 
         visitStyledPath(path, state);
+      },
+      JSXElement(path, state) {
+        if (!state.compiledImportFound) {
+          return;
+        }
+
+        visitClassNamesPath(path, state);
       },
       JSXOpeningElement(path, state) {
         if (!state.compiledImportFound) {

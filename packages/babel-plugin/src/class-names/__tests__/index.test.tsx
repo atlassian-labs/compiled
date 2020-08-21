@@ -15,13 +15,29 @@ const transform = (code: string) => {
 };
 
 describe('class names transformer', () => {
-  xit('should replace class names component style element', () => {
+  it('should replace destructured call expressions', () => {
     const actual = transform(`
       import { ClassNames } from '@compiled/core';
 
       const ListItem = () => (
         <ClassNames>
           {({ css }) => (<div className={css({ fontSize: '20px' })}>hello, world!</div>)}
+        </ClassNames>
+      );
+    `);
+
+    expect(actual).toInclude(
+      'const ListItem = () => (<CC><CS hash="css-test">{[".css-test{font-size:20px}"]}</CS><div className={"css-test"}>hello, world!</div></CC>)'
+    );
+  });
+
+  xit('should replace class expressions', () => {
+    const actual = transform(`
+      import { ClassNames } from '@compiled/core';
+
+      const ListItem = () => (
+        <ClassNames>
+          {(props) => (<div className={props.css({ fontSize: '20px' })}>hello, world!</div>)}
         </ClassNames>
       );
     `);
