@@ -26,6 +26,17 @@ describe('css prop', () => {
     expect(actual).toInclude('<div className="cc-hash-test"/>');
   });
 
+  it.only('should', () => {
+    transform(`
+      import '@compiled/core';
+      import React from 'react';
+
+      const well = 5;
+
+      <div css={{ border: well + 2 }} />
+    `);
+  });
+
   it('should replace css prop with class name', () => {
     const actual = transform(`
       import '@compiled/core';

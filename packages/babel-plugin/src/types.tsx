@@ -1,4 +1,5 @@
 import * as t from '@babel/types';
+import { NodePath } from '@babel/traverse';
 
 export interface PluginOptions {
   /**
@@ -23,4 +24,9 @@ export interface State {
    * Userland options that can be set to change what happens when the Babel Plugin is ran.
    */
   opts: PluginOptions;
+}
+
+export interface Metadata {
+  state: State;
+  parentPath: NodePath<any>;
 }

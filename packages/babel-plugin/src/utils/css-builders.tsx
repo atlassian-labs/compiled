@@ -3,7 +3,8 @@ import generate from '@babel/generator';
 import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '@compiled/css';
 import { kebabCase, hash } from '@compiled/utils';
 import { joinExpressions } from './ast-builders';
-import { State } from '../types';
+import { Metadata } from '../types';
+import { getPathOfNode } from './ast';
 
 export interface CSSOutput {
   css: string;
@@ -27,9 +28,9 @@ export interface CSSOutput {
  * @param expression Expression we want to interrogate.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-const getInterpolation = <TNode extends {}>(expression: TNode | undefined, state: State) => {
-  if (t.isIdentifier(expression) && state.declarations) {
-    const declaration = state.declarations[expression.name];
+const getInterpolation = <TNode extends {}>(expression: TNode | undefined, meta: Metadata) => {
+  if (t.isIdentifier(expression) && meta.state.declarations) {
+    const declaration = meta.state.declarations[expression.name];
     if (t.isVariableDeclaration(declaration) && declaration.kind === 'const') {
       const potentialValue = declaration.declarations[0].init;
       if (
@@ -41,6 +42,9 @@ const getInterpolation = <TNode extends {}>(expression: TNode | undefined, state
       }
     }
   }
+
+  const path = getPathOfNode(expression, meta.parentPath);
+  console.log(path.evaluate());
 
   return expression;
 };
@@ -76,14 +80,14 @@ const extractKey = (node: t.Expression) => {
  * @param node Node we're interested in extracting CSS from.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOutput => {
+const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSOutput => {
   let variables: CSSOutput['variables'] = [];
   let css = '';
 
   node.properties.forEach((prop) => {
     if (t.isObjectProperty(prop)) {
       // Don't use prop.value directly as it extracts constants from identifiers if needed.
-      const propValue = getInterpolation(prop.value, state);
+      const propValue = getInterpolation(prop.value, meta);
       const key = extractKey(prop.key);
       let value = '';
 
@@ -95,7 +99,7 @@ const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOut
         value = addUnitIfNeeded(key, propValue.value);
       } else if (t.isObjectExpression(propValue)) {
         // We've found a nested object like: `':hover': { color: 'red' }`
-        const result = extractObjectExpression(propValue, state);
+        const result = extractObjectExpression(propValue, meta);
         css += `${key} { ${result.css} }`;
         variables = variables.concat(result.variables);
         return;
@@ -105,7 +109,7 @@ const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOut
         // Both functions (extractTemplateLiteral + extractObjectExpression) reference each other.
         // One needs to disable this warning.
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        const result = extractTemplateLiteral(propValue, state);
+        const result = extractTemplateLiteral(propValue, meta);
         value = result.css;
         variables = variables.concat(result.variables);
       } else if (t.isExpression(propValue)) {
@@ -122,13 +126,13 @@ const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOut
       css += `${kebabCase(key)}: ${value};`;
     } else if (t.isSpreadElement(prop) && t.isIdentifier(prop.argument)) {
       // We found a object spread such as: `...mixinIdentifier`.
-      const declaration = (state.declarations || {})[prop.argument.name];
+      const declaration = (meta.state.declarations || {})[prop.argument.name];
       if (
         t.isVariableDeclaration(declaration) &&
         t.isObjectExpression(declaration.declarations[0].init)
       ) {
         const declarationValue = declaration.declarations[0].init;
-        const result = extractObjectExpression(declarationValue, state);
+        const result = extractObjectExpression(declarationValue, meta);
         css += result.css;
         variables = variables.concat(result.variables);
         return;
@@ -147,11 +151,11 @@ const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOut
  * @param node Node we're interested in extracting CSS from.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-const extractTemplateLiteral = (node: t.TemplateLiteral, state: State): CSSOutput => {
+const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOutput => {
   let variables: CSSOutput['variables'] = [];
   // quasis are the string pieces of the template literal - the parts around the interpolations.
   const css = node.quasis.reduce((css, q, index) => {
-    const interpolation = getInterpolation(node.expressions[index], state);
+    const interpolation = getInterpolation(node.expressions[index], meta);
 
     if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
       // Simple case - we can immediately inline the value.
@@ -160,7 +164,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, state: State): CSSOutpu
 
     if (t.isObjectExpression(interpolation)) {
       // We found an object like: css`${{ red: 'blue' }}`.
-      const result = extractObjectExpression(interpolation, state);
+      const result = extractObjectExpression(interpolation, meta);
       variables = variables.concat(result.variables);
       return css + result.css;
     }
@@ -214,17 +218,17 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, state: State): CSSOutpu
  * @param node Node we're interested in extracting CSS from.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-export const buildCss = (node: t.Expression, state: State): CSSOutput => {
+export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
   if (t.isStringLiteral(node)) {
     return { css: node.value, variables: [] };
   }
 
   if (t.isTemplateLiteral(node)) {
-    return extractTemplateLiteral(node, state);
+    return extractTemplateLiteral(node, meta);
   }
 
   if (t.isObjectExpression(node)) {
-    return extractObjectExpression(node, state);
+    return extractObjectExpression(node, meta);
   }
 
   throw new Error('Unsupported node.');
