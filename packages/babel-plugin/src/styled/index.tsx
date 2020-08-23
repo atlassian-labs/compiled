@@ -65,7 +65,7 @@ export const visitStyledPath = (
     return;
   }
 
-  const cssOutput = buildCss(styledData.cssNode, state);
+  const cssOutput = buildCss(styledData.cssNode, { parentPath: path, state });
 
   path.replaceWith(
     buildStyledComponent({

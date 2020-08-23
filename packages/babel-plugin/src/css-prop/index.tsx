@@ -67,13 +67,13 @@ export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, state: Sta
     return;
   }
 
-  // Remove css prop
-  path.node.attributes.splice(cssPropIndex, 1);
   const cssOutput = extractCssFromExpression(getJsxAttributeExpression(cssProp), {
     state,
     parentPath: path,
   });
 
+  // Remove css prop
+  path.node.attributes.splice(cssPropIndex, 1);
   path.parentPath.replaceWith(
     buildCompiledComponent({
       ...state.opts,

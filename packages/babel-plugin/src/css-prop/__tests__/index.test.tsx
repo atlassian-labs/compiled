@@ -26,14 +26,14 @@ describe('css prop', () => {
     expect(actual).toInclude('<div className="cc-hash-test"/>');
   });
 
-  it.only('should', () => {
+  it('should', () => {
     transform(`
       import '@compiled/core';
       import React from 'react';
 
-      const well = 5;
+      const fontSize = 3;
 
-      <div css={{ border: well + 2 }} />
+      <div css={{ border: fontSize }} />
     `);
   });
 

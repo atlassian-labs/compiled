@@ -4,7 +4,7 @@ import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '
 import { kebabCase, hash } from '@compiled/utils';
 import { joinExpressions } from './ast-builders';
 import { Metadata } from '../types';
-import { getPathOfNode } from './ast';
+// import { getPathOfNode } from './ast';
 
 export interface CSSOutput {
   css: string;
@@ -29,10 +29,12 @@ export interface CSSOutput {
  * @param state Babel state - should house options and meta data used during the transformation.
  */
 const getInterpolation = <TNode extends {}>(expression: TNode | undefined, meta: Metadata) => {
-  if (t.isIdentifier(expression) && meta.state.declarations) {
-    const declaration = meta.state.declarations[expression.name];
-    if (t.isVariableDeclaration(declaration) && declaration.kind === 'const') {
-      const potentialValue = declaration.declarations[0].init;
+  if (t.isIdentifier(expression)) {
+    const binding = meta.parentPath.scope.getBinding(expression.name);
+
+    if (binding && binding.kind === 'const' && t.isVariableDeclarator(binding.path.node)) {
+      const potentialValue = binding.path.node.init;
+
       if (
         t.isStringLiteral(potentialValue) ||
         t.isNumericLiteral(potentialValue) ||
@@ -42,9 +44,6 @@ const getInterpolation = <TNode extends {}>(expression: TNode | undefined, meta:
       }
     }
   }
-
-  const path = getPathOfNode(expression, meta.parentPath);
-  console.log(path.evaluate());
 
   return expression;
 };

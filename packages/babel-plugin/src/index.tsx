@@ -22,18 +22,18 @@ export default declare<State>((api) => {
             .concat([importSpecifier('CC'), importSpecifier('CS')]);
         }
       },
-      VariableDeclaration(path, state) {
-        if (!state.declarations) {
-          state.declarations = {};
-        }
+      // VariableDeclaration(path, state) {
+      //   if (!state.declarations) {
+      //     state.declarations = {};
+      //   }
 
-        if (!t.isIdentifier(path.node.declarations[0].id)) {
-          return;
-        }
+      //   if (!t.isIdentifier(path.node.declarations[0].id)) {
+      //     return;
+      //   }
 
-        const declarationName = path.node.declarations[0].id.name;
-        state.declarations[declarationName] = path.node;
-      },
+      //   const declarationName = path.node.declarations[0].id.name;
+      //   state.declarations[declarationName] = path.node;
+      // },
       TaggedTemplateExpression(path, state) {
         if (!state.compiledImportFound) {
           return;
