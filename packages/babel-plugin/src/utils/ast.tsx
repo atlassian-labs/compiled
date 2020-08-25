@@ -1,5 +1,11 @@
 import * as t from '@babel/types';
 
+/**
+ * Returns the binding identifier for a member expression.
+ * For example the member expression `foo.bar.baz` will return the `foo` identifier.
+ *
+ * @param expression - Member expression node.
+ */
 export const getMemberExpressionIdentifier = (expression: t.MemberExpression): t.Identifier => {
   let next: t.Expression = expression.object;
 
@@ -16,6 +22,12 @@ export const getMemberExpressionIdentifier = (expression: t.MemberExpression): t
   throw new Error();
 };
 
+/**
+ * Will return the whole path of a member expression.
+ * For example the member expression `foo.bar.baz` will return `['foo', 'bar', 'baz']`.
+ *
+ * @param expression - Member expression node.
+ */
 export const getMemberExpressionPath = (expression: t.MemberExpression): string[] => {
   const path: string[] = [];
   let next: t.Expression = expression;
@@ -38,10 +50,29 @@ export const getMemberExpressionPath = (expression: t.MemberExpression): string[
   return path;
 };
 
+/**
+ * Will return the value of a path from an object expression.
+ *
+ * For example if  we take an object expression that looks like:
+ * ```
+ * { colors: { primary: 'red' } }
+ * ```
+ *
+ * And a path that looks like:
+ * ```
+ * ['colors', 'primary']
+ * ```
+ *
+ * Would result in returning the `red` string literal node.
+ * If the value is not found `undefined` will be returned.
+ *
+ * @param expression - Member expression node.
+ * @param path - Path string array.
+ */
 export const getValueFromObjectExpression = (
   expression: t.ObjectExpression,
   path: string[]
-): t.Node | null => {
+): t.Node | undefined => {
   path = path;
   let props = expression.properties;
 
@@ -71,5 +102,5 @@ export const getValueFromObjectExpression = (
     }
   }
 
-  return null;
+  return undefined;
 };

@@ -37,7 +37,7 @@ const getInterpolation = <TNode extends {}>(expression: TNode | undefined, state
     return expression;
   }
 
-  let value: t.Node | null = null;
+  let value: t.Node | undefined | null = undefined;
 
   if (t.isIdentifier(expression)) {
     const binding = state.declarations[expression.name];
