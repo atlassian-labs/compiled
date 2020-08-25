@@ -427,6 +427,48 @@ describe('css prop', () => {
       expect(actual).toInclude('.cc-hash-test{font-size:20px}');
     });
 
+    it('should inline constant object property value', () => {
+      const actual = transform(`
+        import '@compiled/core';
+        import React from 'react';
+
+        const colors = { error: 'red' };
+
+        <div
+          css={\`
+          color: \${colors.error};
+        \`}>
+          hello world
+        </div>
+      `);
+
+      expect(actual).toInclude('.cc-hash-test{color:red}');
+    });
+
+    it('should inline nested constant object property value', () => {
+      const actual = transform(`
+        import '@compiled/core';
+        import React from 'react';
+
+        const theme = {
+          colors: {
+            light: {
+              primary: '#fff',
+            }
+          }
+        };
+
+        <div
+          css={\`
+          color: \${theme.colors.light.primary};
+        \`}>
+          hello world
+        </div>
+      `);
+
+      expect(actual).toInclude('.cc-hash-test{color:#fff}');
+    });
+
     it('should transform binary expression', () => {
       const actual = transform(`
         import '@compiled/core';
@@ -639,12 +681,44 @@ describe('css prop', () => {
       expect(actual).toInclude('.cc-hash-test{font-size:20px}');
     });
 
+    it('should inline constant object property value', () => {
+      const actual = transform(`
+        import '@compiled/core';
+        import React from 'react';
+
+        const colors = { error: 'red' };
+
+        <div css={{ color: colors.error }}>hello world</div>
+      `);
+
+      expect(actual).toInclude('.cc-hash-test{color:red}');
+    });
+
+    it('should inline nested constant object property value', () => {
+      const actual = transform(`
+        import '@compiled/core';
+        import React from 'react';
+
+        const theme = {
+          colors: {
+            light: {
+              primary: '#fff',
+            }
+          }
+        };
+
+        <div css={{ color: theme.colors.light.primary }}>hello world</div>
+      `);
+
+      expect(actual).toInclude('.cc-hash-test{color:#fff}');
+    });
+
     it('should persist suffix of dynamic property value from objects into inline styles', () => {
       const actual = transform(`
         import '@compiled/core';
         import React from 'react';
 
-        const heading = {
+        let heading = {
           depth: 20
         };
 
@@ -676,7 +750,7 @@ describe('css prop', () => {
         import '@compiled/core';
         import React from 'react';
 
-        const heading = {
+        let heading = {
           depth: 20
         };
 

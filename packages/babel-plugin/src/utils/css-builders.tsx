@@ -4,6 +4,11 @@ import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '
 import { kebabCase, hash } from '@compiled/utils';
 import { joinExpressions } from './ast-builders';
 import { State } from '../types';
+import {
+  getMemberExpressionIdentifier,
+  getMemberExpressionPath,
+  getValueFromObjectExpression,
+} from './ast';
 
 export interface CSSOutput {
   css: string;
@@ -28,18 +33,36 @@ export interface CSSOutput {
  * @param state Babel state - should house options and meta data used during the transformation.
  */
 const getInterpolation = <TNode extends {}>(expression: TNode | undefined, state: State) => {
-  if (t.isIdentifier(expression) && state.declarations) {
-    const declaration = state.declarations[expression.name];
-    if (t.isVariableDeclaration(declaration) && declaration.kind === 'const') {
-      const potentialValue = declaration.declarations[0].init;
-      if (
-        t.isStringLiteral(potentialValue) ||
-        t.isNumericLiteral(potentialValue) ||
-        t.isObjectExpression(potentialValue)
-      ) {
-        return potentialValue;
-      }
+  if (!state.declarations) {
+    return expression;
+  }
+
+  let value: t.Node | null = null;
+
+  if (t.isIdentifier(expression)) {
+    const binding = state.declarations[expression.name];
+
+    if (t.isVariableDeclaration(binding) && binding.kind === 'const') {
+      value = binding.declarations[0].init;
     }
+  }
+
+  if (t.isMemberExpression(expression)) {
+    const bindingName = getMemberExpressionIdentifier(expression);
+    const binding = state.declarations[bindingName.name];
+    const bindingPath = getMemberExpressionPath(expression);
+
+    if (
+      t.isVariableDeclaration(binding) &&
+      binding.kind === 'const' &&
+      t.isObjectExpression(binding.declarations[0].init)
+    ) {
+      value = getValueFromObjectExpression(binding.declarations[0].init, bindingPath);
+    }
+  }
+
+  if (t.isStringLiteral(value) || t.isNumericLiteral(value) || t.isObjectExpression(value)) {
+    return value;
   }
 
   return expression;
