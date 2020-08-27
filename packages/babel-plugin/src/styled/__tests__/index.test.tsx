@@ -108,7 +108,7 @@ describe('styled component transformer', () => {
     expect(actual).toInclude('<CS nonce={__webpack_nonce__}hash="hash-test">');
   });
 
-  xit('should shortcircuit props with suffix to a empty string to avoid undefined in css', () => {
+  it('should shortcircuit props with suffix to a empty string to avoid undefined in css', () => {
     const actual = transform(`
       import { styled } from '@compiled/core';
 
@@ -117,7 +117,7 @@ describe('styled component transformer', () => {
       \`;
     `);
 
-    expect(actual).toInclude('"--var-test-propscolor": (props.color || "") + "px"');
+    expect(actual).toInclude('"--var-hash-test":(props.color||"")+"px"');
   });
 
   xit('should add react default import if missing', () => {
@@ -234,7 +234,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('.cc-hash-test{font-size:12}');
     });
 
-    xit('should not pass down invalid html attributes to the node when property has a suffix', () => {
+    it('should not pass down invalid html attributes to the node when property has a suffix', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
         const ListItem = styled.div\`
@@ -242,9 +242,9 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{font-size:var(--var-test-propstextsize)}');
-      expect(actual).toInclude('textSize, ...props }');
-      expect(actual).toInclude('"--var-test-propstextsize": (textSize || "") + "px"');
+      expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+      expect(actual).toInclude('textSize,...props}');
+      expect(actual).toInclude('"--var-hash-test":(textSize||"")+"px"');
     });
 
     it('should inline constant numeric literal', () => {
@@ -330,7 +330,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('"--var-hash-test":props.color');
     });
 
-    xit('should transform a arrow function with a body into an IIFE', () => {
+    it('should transform an arrow function with a body into an IIFE', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -339,8 +339,51 @@ describe('styled component transformer', () => {
         \`;
       `);
 
-      expect(actual).toInclude('.css-test{color:var(--var-test-propscolor)}');
-      expect(actual).toInclude('"--var-test-propscolor": (() => { return props.color; })() }}');
+      expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
+      expect(actual).toInclude('"--var-hash-test":(()=>{return props.color;})()}}');
+    });
+
+    it('should transform an arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
+      const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        const ListItem = styled.div\`
+          font-size: \${props => { return props.textSize; }};
+        \`;
+      `);
+
+      expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+      expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
+      expect(actual).toInclude('"--var-hash-test":(()=>{return textSize;})()}}');
+    });
+
+    it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE', () => {
+      const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        const ListItem = styled.div\`
+          color: very$\{props => { return props.color; }}dark;
+        \`;
+      `);
+
+      expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
+      expect(actual).toInclude(
+        '"--var-hash-test":"very"+((()=>{return props.color;})()||"")+"dark"'
+      );
+    });
+
+    it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
+      const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        const ListItem = styled.div\`
+          font-size: super$\{props => { return props.textSize; }}big;
+        \`;
+      `);
+
+      expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+      expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
+      expect(actual).toInclude('"--var-hash-test":"super"+((()=>{return textSize;})()||"")+"big"');
     });
 
     it('should transform template string literal with obj variable', () => {
@@ -405,7 +448,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('.css-test{color:red}');
     });
 
-    xit('should move suffix and prefix of a dynamic arrow func property into the style property', () => {
+    it('should move suffix and prefix of a dynamic arrow func property into the style property', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -417,7 +460,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('"--var-hash-test":"super"+(props.color||"")+"big"');
     });
 
-    xit('should move any prefix of a dynamic arrow func property into the style property', () => {
+    it('should move any prefix of a dynamic arrow func property into the style property', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -429,7 +472,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('"--var-hash-test":"super"+(props.color||"")');
     });
 
-    xit('should move any suffix of a dynamic arrow func property into the style property', () => {
+    it('should move any suffix of a dynamic arrow func property into the style property', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -703,7 +746,7 @@ describe('styled component transformer', () => {
       expect(actual).toInclude('"--var-hash-test":`${textSize}px`');
     });
 
-    xit('should not pass down invalid html attributes to the node when property has a suffix when func in template literal', () => {
+    it('should not pass down invalid html attributes to the node when property has a suffix when func in template literal', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
         const ListItem = styled.div({
@@ -713,7 +756,7 @@ describe('styled component transformer', () => {
 
       expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
       expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-      expect(actual).toInclude('"--var-hash-test":`${textSize}px`');
+      expect(actual).toInclude('"--var-hash-test":(textSize||"")+"px"');
     });
 
     it('should transform object with simple values', () => {
@@ -897,5 +940,59 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude('.cc-hash-test{font-size:20px}');
+  });
+
+  it('should transform an arrow function with a body into an IIFE', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/core';
+
+      const ListItem = styled.div({
+        color: props => { return props.color; },
+      });
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
+    expect(actual).toInclude('"--var-hash-test":(()=>{return props.color;})()}}');
+  });
+
+  it('should transform an arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/core';
+
+      const ListItem = styled.div({
+        fontSize: props => { return props.textSize; },
+      });
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+    expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
+    expect(actual).toInclude('"--var-hash-test":(()=>{return textSize;})()}}');
+  });
+
+  it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/core';
+
+      const ListItem = styled.div({
+        color: \`very$\{props => { return props.color; }}dark\`
+      });
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
+    expect(actual).toInclude('"--var-hash-test":"very"+((()=>{return props.color;})()||"")+"dark"');
+  });
+
+  it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/core';
+
+      const ListItem = styled.div({
+        fontSize: \`super$\{props => { return props.textSize; }}big\`
+      });
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+    expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
+    expect(actual).toInclude('"--var-hash-test":"super"+((()=>{return textSize;})()||"")+"big"');
   });
 });

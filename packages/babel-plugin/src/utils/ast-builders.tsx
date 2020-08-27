@@ -1,6 +1,6 @@
 import template from '@babel/template';
 import * as t from '@babel/types';
-import traverse, { Scope, NodePath } from '@babel/traverse';
+import traverse, { Scope, NodePath, Visitor } from '@babel/traverse';
 import { hash, unique } from '@compiled/utils';
 import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
@@ -77,6 +77,49 @@ const styledStyleProp = (
 };
 
 /**
+ * Will wrap BlockStatement or Expression in an IIFE,
+ * Looks like (() => { return 10; })().
+ *
+ * @param node Node of type either BlockStatement or Expression
+ */
+export const wrapNodeInIIFE = (node: t.BlockStatement | t.Expression) =>
+  t.callExpression(t.arrowFunctionExpression([], node), []);
+
+const tryWrappingBlockStatementInIIFE = (node: t.BlockStatement | t.Expression) =>
+  t.isBlockStatement(node) ? wrapNodeInIIFE(node) : node;
+
+const pickArrowFunctionExpressionBody = (node: t.ArrowFunctionExpression) => {
+  // We want to strip away the body of arrow functions inside of Styled Components.
+  // E.g. `props => props.color` would end up as `props.color`.
+  //      `props => { return props.color` } would end up as `(() => { return props.color })()`.
+  return tryWrappingBlockStatementInIIFE(node.body);
+};
+
+const traverseStyledArrowFunctionExpression = (
+  node: t.ArrowFunctionExpression,
+  nestedVisitor: Visitor
+) => {
+  traverse(node, nestedVisitor);
+
+  return pickArrowFunctionExpressionBody(node);
+};
+
+const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor: Visitor) => {
+  traverse(node, {
+    noScope: true,
+    ArrowFunctionExpression(path) {
+      path.traverse(nestedVisitor);
+
+      path.replaceWith(pickArrowFunctionExpressionBody(path.node));
+
+      path.stop();
+    },
+  });
+
+  return node;
+};
+
+/**
  * Will return a generated AST for a Styled Component.
  *
  * @param opts Template options.
@@ -127,32 +170,30 @@ const styledTemplate = (opts: {
   const propsToDestructure: string[] = [];
   const styleProp = opts.variables.length
     ? styledStyleProp(opts.variables, (node) => {
+        const nestedArrowFunctionExpressionVisitor = {
+          noScope: true,
+          MemberExpression(path: NodePath<t.MemberExpression>) {
+            if (t.isIdentifier(path.node.object) && path.node.object.name === 'props') {
+              const propertyAccessName = path.node.property as t.Identifier;
+              if (isPropValid(propertyAccessName.name)) {
+                return;
+              }
+
+              if (!propsToDestructure.includes(propertyAccessName.name)) {
+                propsToDestructure.push(propertyAccessName.name);
+              }
+
+              path.replaceWith(propertyAccessName);
+            }
+          },
+        };
+
         if (t.isArrowFunctionExpression(node)) {
-          // We want to strip away the body of arrow functions inside of Styled Components.
-          // E.g. `props => props.color` would end up as `props.color`.
-          traverse(
-            node,
-            {
-              MemberExpression(path) {
-                if (t.isIdentifier(path.node.object) && path.node.object.name === 'props') {
-                  const propertyAccessName = path.node.property as t.Identifier;
-                  if (isPropValid(propertyAccessName.name)) {
-                    return;
-                  }
+          return traverseStyledArrowFunctionExpression(node, nestedArrowFunctionExpressionVisitor);
+        }
 
-                  if (!propsToDestructure.includes(propertyAccessName.name)) {
-                    propsToDestructure.push(propertyAccessName.name);
-                  }
-                  path.replaceWith(propertyAccessName);
-                }
-              },
-            },
-            opts.scope,
-            undefined,
-            opts.parentPath
-          );
-
-          return node.body;
+        if (t.isBinaryExpression(node)) {
+          return traverseStyledBinaryExpression(node, nestedArrowFunctionExpressionVisitor);
         }
 
         return node;
