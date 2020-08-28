@@ -4,8 +4,11 @@ import traverse, { Scope, NodePath, Visitor } from '@babel/traverse';
 import { hash, unique } from '@compiled/utils';
 import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
-import { CSSOutput } from './css-builders';
+
 import { PluginOptions } from '../types';
+
+import { CSSOutput } from './css-builders';
+import { pickArrowFunctionExpressionBody } from './ast';
 
 interface BaseOpts extends PluginOptions {
   /**
@@ -74,25 +77,6 @@ const styledStyleProp = (
 ) => {
   const props: (t.ObjectProperty | t.SpreadElement)[] = [t.spreadElement(t.identifier('style'))];
   return t.objectExpression(props.concat(buildCssVariablesProp(variables, transform)));
-};
-
-/**
- * Will wrap BlockStatement or Expression in an IIFE,
- * Looks like (() => { return 10; })().
- *
- * @param node Node of type either BlockStatement or Expression
- */
-export const wrapNodeInIIFE = (node: t.BlockStatement | t.Expression) =>
-  t.callExpression(t.arrowFunctionExpression([], node), []);
-
-const tryWrappingBlockStatementInIIFE = (node: t.BlockStatement | t.Expression) =>
-  t.isBlockStatement(node) ? wrapNodeInIIFE(node) : node;
-
-const pickArrowFunctionExpressionBody = (node: t.ArrowFunctionExpression) => {
-  // We want to strip away the body of arrow functions inside of Styled Components.
-  // E.g. `props => props.color` would end up as `props.color`.
-  //      `props => { return props.color` } would end up as `(() => { return props.color })()`.
-  return tryWrappingBlockStatementInIIFE(node.body);
 };
 
 const traverseStyledArrowFunctionExpression = (
