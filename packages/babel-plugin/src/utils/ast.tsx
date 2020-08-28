@@ -1,4 +1,6 @@
 import * as t from '@babel/types';
+import traverse from '@babel/traverse';
+import { State } from '../types';
 
 /**
  * Returns the binding identifier for a member expression.
@@ -6,48 +8,31 @@ import * as t from '@babel/types';
  *
  * @param expression - Member expression node.
  */
-export const getMemberExpressionIdentifier = (expression: t.MemberExpression): t.Identifier => {
-  let next: t.Expression = expression.object;
+export const getMemberExpressionMeta = (expression: t.MemberExpression) => {
+  let bindingIdentifier: t.Identifier | null = null;
+  const accessPath: t.Identifier[] = [];
 
-  while (next) {
-    if (t.isIdentifier(next)) {
-      return next;
-    }
-
-    if (t.isMemberExpression(next)) {
-      next = next.object;
-    }
+  if (t.isIdentifier(expression.property)) {
+    accessPath.push(expression.property);
   }
 
-  throw new Error();
-};
+  traverse(t.expressionStatement(expression), {
+    noScope: true,
+    MemberExpression(path) {
+      if (t.isIdentifier(path.node.object)) {
+        bindingIdentifier = path.node.object;
+      }
 
-/**
- * Will return the whole path of a member expression.
- * For example the member expression `foo.bar.baz` will return `['foo', 'bar', 'baz']`.
- *
- * @param expression - Member expression node.
- */
-export const getMemberExpressionPath = (expression: t.MemberExpression): string[] => {
-  const path: string[] = [];
-  let next: t.Expression = expression;
+      if (t.isIdentifier(path.node.property)) {
+        accessPath.push(path.node.property);
+      }
+    },
+  });
 
-  while (next) {
-    if (t.isIdentifier(next.property)) {
-      path.splice(0, 0, next.property.name);
-    }
-
-    if (t.isMemberExpression(next.object)) {
-      next = next.object;
-    } else if (t.isIdentifier(next.object)) {
-      path.splice(0, 0, next.object.name);
-      return path;
-    } else {
-      return path;
-    }
-  }
-
-  return path;
+  return {
+    bindingIdentifier: bindingIdentifier!,
+    accessPath: accessPath.reverse(),
+  };
 };
 
 /**
@@ -58,49 +43,105 @@ export const getMemberExpressionPath = (expression: t.MemberExpression): string[
  * { colors: { primary: 'red' } }
  * ```
  *
- * And a path that looks like:
+ * And a path of identifiers that looks like:
  * ```
- * ['colors', 'primary']
+ * [colors, primary]
  * ```
  *
  * Would result in returning the `red` string literal node.
  * If the value is not found `undefined` will be returned.
  *
  * @param expression - Member expression node.
- * @param path - Path string array.
+ * @param accessPath - Access path identifiers.
  */
 export const getValueFromObjectExpression = (
   expression: t.ObjectExpression,
-  path: string[]
+  accessPath: t.Identifier[]
 ): t.Node | undefined => {
-  path = path;
-  let props = expression.properties;
+  let value: t.Node | undefined = undefined;
 
-  while (path.length > 1) {
-    const keyName = path.shift();
+  traverse(expression, {
+    noScope: true,
+    ObjectProperty(path) {
+      if (t.isIdentifier(path.node.key, { name: accessPath[0].name })) {
+        if (t.isObjectExpression(path.node.value)) {
+          value = getValueFromObjectExpression(path.node.value, accessPath.slice(1));
+        } else {
+          value = path.node.value;
+        }
 
-    for (let i = 0; i < props.length; i++) {
-      const prop = props[i];
-      if (
-        t.isObjectProperty(prop) &&
-        t.isIdentifier(prop.key) &&
-        prop.key.name === keyName &&
-        t.isObjectExpression(prop.value)
-      ) {
-        props = prop.value.properties;
-        break;
+        path.stop();
       }
+    },
+  });
+
+  return value;
+};
+
+/**
+ * Will return either the name of an identifier or the value of a string literal.
+ *
+ * E.g:
+ * - `foo` identifier node will return `"foo"`,
+ * - `"bar"` string literal node will return `"bar"`.
+ *
+ * @param node
+ */
+export const getKey = (node: t.Expression) => {
+  if (t.isIdentifier(node)) {
+    return node.name;
+  }
+
+  if (t.isStringLiteral(node)) {
+    return node.value;
+  }
+
+  throw new Error();
+};
+
+/**
+ * Will look in an expression and return the actual value.
+ * If the expression is an identifier node (a variable) and a constant,
+ * it will return the variable reference.
+ *
+ * E.g: If there was a identifier called `color` that is set somewhere as `const color = 'blue'`,
+ * passing the `color` identifier to this function would return `'blue'`.
+ *
+ * This behaviour is the same for const string & numeric literals,
+ * and object expressions.
+ *
+ * @param expression Expression we want to interrogate.
+ * @param state Babel state - should house options and meta data used during the transformation.
+ */
+export const getInterpolation = <TNode extends {}>(expression: TNode | undefined, state: State) => {
+  if (!state.declarations) {
+    return expression;
+  }
+
+  let value: t.Node | undefined | null = undefined;
+
+  if (t.isIdentifier(expression)) {
+    const binding = state.declarations[expression.name];
+
+    if (t.isVariableDeclaration(binding) && binding.kind === 'const') {
+      value = binding.declarations[0].init;
+    }
+  } else if (t.isMemberExpression(expression)) {
+    const { accessPath, bindingIdentifier } = getMemberExpressionMeta(expression);
+    const binding = state.declarations[bindingIdentifier.name];
+
+    if (
+      t.isVariableDeclaration(binding) &&
+      binding.kind === 'const' &&
+      t.isObjectExpression(binding.declarations[0].init)
+    ) {
+      value = getValueFromObjectExpression(binding.declarations[0].init, accessPath);
     }
   }
 
-  const keyName = path.shift();
-
-  for (let i = 0; i < props.length; i++) {
-    const prop = props[i];
-    if (t.isObjectProperty(prop) && t.isIdentifier(prop.key) && prop.key.name === keyName) {
-      return prop.value;
-    }
+  if (t.isStringLiteral(value) || t.isNumericLiteral(value) || t.isObjectExpression(value)) {
+    return value;
   }
 
-  return undefined;
+  return expression;
 };

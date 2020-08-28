@@ -454,9 +454,14 @@ describe('css prop', () => {
           colors: {
             light: {
               primary: '#fff',
-            }
+            },
+            dark: {
+              primary: 'black',
+            },
           }
         };
+
+        theme.colors.light.primary;
 
         <div
           css={\`
