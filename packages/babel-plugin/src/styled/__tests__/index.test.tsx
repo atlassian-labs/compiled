@@ -49,6 +49,22 @@ describe('styled component transformer', () => {
     `);
   });
 
+  it('should compose CSS from multiple sources', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/core';
+
+      const styles = { fontSize: 12 };
+
+      const ListItem = styled.div([
+        styles,
+        \`color: blue;\`,
+        { fontWeight: 500 }
+      ]);
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{font-size:12px;color:blue;font-weight:500}');
+  });
+
   it('should not pass down invalid html attributes to the node', () => {
     const actual = transform(`
       import { styled } from '@compiled/core';
