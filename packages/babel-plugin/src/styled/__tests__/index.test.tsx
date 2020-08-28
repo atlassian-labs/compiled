@@ -679,7 +679,7 @@ describe('styled component transformer', () => {
     it('should reference property access expression', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
-        const color = { blue: 'red' };
+        let color = { blue: 'red' };
 
         styled.div({
           background: color.blue,

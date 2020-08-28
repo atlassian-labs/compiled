@@ -4,6 +4,7 @@ import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '
 import { kebabCase, hash } from '@compiled/utils';
 import { joinExpressions } from './ast-builders';
 import { State } from '../types';
+import { getInterpolation, getKey } from './ast';
 
 export interface CSSOutput {
   css: string;
@@ -12,38 +13,6 @@ export interface CSSOutput {
     expression: t.Expression;
   }[];
 }
-
-/**
- * Will look in an expression and return the actual value.
- * If the expression is an identifier node (a variable) and a constant,
- * it will return the variable reference.
- *
- * E.g: If there was a identifier called `color` that is set somewhere as `const color = 'blue'`,
- * passing the `color` identifier to this function would return `'blue'`.
- *
- * This behaviour is the same for const string & numeric literals,
- * and object expressions.
- *
- * @param expression Expression we want to interrogate.
- * @param state Babel state - should house options and meta data used during the transformation.
- */
-const getInterpolation = <TNode extends {}>(expression: TNode | undefined, state: State) => {
-  if (t.isIdentifier(expression) && state.declarations) {
-    const declaration = state.declarations[expression.name];
-    if (t.isVariableDeclaration(declaration) && declaration.kind === 'const') {
-      const potentialValue = declaration.declarations[0].init;
-      if (
-        t.isStringLiteral(potentialValue) ||
-        t.isNumericLiteral(potentialValue) ||
-        t.isObjectExpression(potentialValue)
-      ) {
-        return potentialValue;
-      }
-    }
-  }
-
-  return expression;
-};
 
 /**
  * Will normalize the value of a `content` CSS property to ensure it has quotations around it.
@@ -56,18 +25,6 @@ const normalizeContentValue = (value: string) => {
   }
 
   return value;
-};
-
-const extractKey = (node: t.Expression) => {
-  if (t.isIdentifier(node)) {
-    return node.name;
-  }
-
-  if (t.isStringLiteral(node)) {
-    return node.value;
-  }
-
-  throw new Error('not supported');
 };
 
 /**
@@ -84,7 +41,7 @@ const extractObjectExpression = (node: t.ObjectExpression, state: State): CSSOut
     if (t.isObjectProperty(prop)) {
       // Don't use prop.value directly as it extracts constants from identifiers if needed.
       const propValue = getInterpolation(prop.value, state);
-      const key = extractKey(prop.key);
+      const key = getKey(prop.key);
       let value = '';
 
       if (t.isStringLiteral(propValue)) {
