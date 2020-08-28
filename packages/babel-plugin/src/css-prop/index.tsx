@@ -2,13 +2,18 @@ import * as t from '@babel/types';
 import { NodePath } from '@babel/core';
 import { buildCompiledComponent } from '../utils/ast-builders';
 import { buildCss, CSSOutput } from '../utils/css-builders';
-import { State } from '../types';
+import { Metadata } from '../types';
 
-const extractCssFromExpression = (node: t.Expression, state: State): CSSOutput => {
-  if (t.isIdentifier(node) && state.declarations) {
-    const actualValue = state.declarations[node.name];
-    if (actualValue && t.isVariableDeclaration(actualValue) && actualValue.declarations[0].init) {
-      return buildCss(actualValue.declarations[0].init, state);
+const extractCssFromExpression = (node: t.Expression, meta: Metadata): CSSOutput => {
+  if (t.isIdentifier(node)) {
+    const binding = meta.parentPath.scope.getBinding(node.name);
+
+    if (
+      binding &&
+      t.isVariableDeclarator(binding.path.node) &&
+      t.isExpression(binding.path.node.init)
+    ) {
+      return buildCss(binding.path.node.init, meta);
     }
   }
 
@@ -21,7 +26,7 @@ const extractCssFromExpression = (node: t.Expression, state: State): CSSOutput =
         return;
       }
 
-      const result = extractCssFromExpression(element as t.Expression, state);
+      const result = extractCssFromExpression(element as t.Expression, meta);
       css += result.css;
       variables = variables.concat(result.variables);
     });
@@ -29,7 +34,7 @@ const extractCssFromExpression = (node: t.Expression, state: State): CSSOutput =
     return { css, variables };
   }
 
-  return buildCss(node, state);
+  return buildCss(node, meta);
 };
 
 const getJsxAttributeExpression = (node: t.JSXAttribute) => {
@@ -52,7 +57,7 @@ const getJsxAttributeExpression = (node: t.JSXAttribute) => {
  * @param path Babel path - expects to be a JSX opening element.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, state: State) => {
+export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Metadata) => {
   let cssPropIndex = -1;
   const cssProp = path.node.attributes.find((attr, index): attr is t.JSXAttribute => {
     if (t.isJSXAttribute(attr) && attr.name.name === 'css') {
@@ -69,11 +74,11 @@ export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, state: Sta
 
   // Remove css prop
   path.node.attributes.splice(cssPropIndex, 1);
-  const cssOutput = extractCssFromExpression(getJsxAttributeExpression(cssProp), state);
+  const cssOutput = extractCssFromExpression(getJsxAttributeExpression(cssProp), meta);
 
   path.parentPath.replaceWith(
     buildCompiledComponent({
-      ...state.opts,
+      ...meta.state.opts,
       cssOutput,
       node: path.parentPath.node as t.JSXElement,
     })

@@ -1,4 +1,3 @@
-import * as t from '@babel/types';
 import { declare } from '@babel/helper-plugin-utils';
 import { importSpecifier } from './utils/ast-builders';
 import { visitCssPropPath } from './css-prop';
@@ -22,38 +21,26 @@ export default declare<State>((api) => {
             .concat([importSpecifier('CC'), importSpecifier('CS')]);
         }
       },
-      VariableDeclaration(path, state) {
-        if (!state.declarations) {
-          state.declarations = {};
-        }
-
-        if (!t.isIdentifier(path.node.declarations[0].id)) {
-          return;
-        }
-
-        const declarationName = path.node.declarations[0].id.name;
-        state.declarations[declarationName] = path.node;
-      },
       TaggedTemplateExpression(path, state) {
         if (!state.compiledImportFound) {
           return;
         }
 
-        visitStyledPath(path, state);
+        visitStyledPath(path, { state, parentPath: path });
       },
       CallExpression(path, state) {
         if (!state.compiledImportFound) {
           return;
         }
 
-        visitStyledPath(path, state);
+        visitStyledPath(path, { state, parentPath: path });
       },
       JSXOpeningElement(path, state) {
         if (!state.compiledImportFound) {
           return;
         }
 
-        visitCssPropPath(path, state);
+        visitCssPropPath(path, { state, parentPath: path });
       },
     },
   };
