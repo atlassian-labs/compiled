@@ -1,4 +1,5 @@
 import { declare } from '@babel/helper-plugin-utils';
+import template from '@babel/template';
 import { importSpecifier } from './utils/ast-builders';
 import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
@@ -10,6 +11,14 @@ export default declare<State>((api) => {
   return {
     inherits: require('babel-plugin-syntax-jsx'),
     visitor: {
+      Program: {
+        exit(path) {
+          if (!path.scope.getBinding('React')) {
+            // React is missing - add it in at the last moment!
+            path.unshiftContainer('body', template.ast(`import * as React from 'react'`));
+          }
+        },
+      },
       ImportDeclaration(path, state) {
         if (path.node.source.value === '@compiled/core') {
           state.compiledImportFound = true;
