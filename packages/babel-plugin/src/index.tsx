@@ -12,8 +12,8 @@ export default declare<State>((api) => {
     inherits: require('babel-plugin-syntax-jsx'),
     visitor: {
       Program: {
-        exit(path) {
-          if (!path.scope.getBinding('React')) {
+        exit(path, state) {
+          if (state.compiledImportFound && !path.scope.getBinding('React')) {
             // React is missing - add it in at the last moment!
             path.unshiftContainer('body', template.ast(`import * as React from 'react'`));
           }
