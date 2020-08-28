@@ -1,4 +1,4 @@
-import * as t from '@babel/types';
+import { NodePath } from '@babel/traverse';
 
 export interface PluginOptions {
   /**
@@ -14,13 +14,19 @@ export interface State {
   compiledImportFound: boolean;
 
   /**
-   * Declarations that are stored to be accessed later.
-   * Can be both variable and functions.
-   */
-  declarations?: { [name: string]: t.VariableDeclaration | t.FunctionDeclaration };
-
-  /**
    * Userland options that can be set to change what happens when the Babel Plugin is ran.
    */
   opts: PluginOptions;
+}
+
+export interface Metadata {
+  /**
+   * State of the current plugin run.
+   */
+  state: State;
+
+  /**
+   * Path of a parent node.
+   */
+  parentPath: NodePath<any>;
 }

@@ -2,7 +2,7 @@ import * as t from '@babel/types';
 import { NodePath } from '@babel/core';
 import { buildStyledComponent } from '../utils/ast-builders';
 import { buildCss } from '../utils/css-builders';
-import { State } from '../types';
+import { Metadata } from '../types';
 
 /**
  * Interrogates `node` and returns styled data if any were found.
@@ -57,7 +57,7 @@ const extractStyledDataFromNode = (
  */
 export const visitStyledPath = (
   path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
-  state: State
+  meta: Metadata
 ) => {
   const styledData = extractStyledDataFromNode(path.node);
   if (!styledData) {
@@ -65,11 +65,11 @@ export const visitStyledPath = (
     return;
   }
 
-  const cssOutput = buildCss(styledData.cssNode, state);
+  const cssOutput = buildCss(styledData.cssNode, meta);
 
   path.replaceWith(
     buildStyledComponent({
-      ...state.opts,
+      ...meta.state.opts,
       cssOutput,
       tagName: styledData.tagName,
       parentPath: path as NodePath,
