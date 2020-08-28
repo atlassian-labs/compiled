@@ -1,11 +1,14 @@
 import template from '@babel/template';
 import * as t from '@babel/types';
-import traverse, { Scope, NodePath } from '@babel/traverse';
+import traverse, { Scope, NodePath, Visitor } from '@babel/traverse';
 import { hash, unique } from '@compiled/utils';
 import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
-import { CSSOutput } from './css-builders';
+
 import { PluginOptions } from '../types';
+
+import { CSSOutput } from './css-builders';
+import { pickArrowFunctionExpressionBody } from './ast';
 
 interface BaseOpts extends PluginOptions {
   /**
@@ -76,6 +79,30 @@ const styledStyleProp = (
   return t.objectExpression(props.concat(buildCssVariablesProp(variables, transform)));
 };
 
+const traverseStyledArrowFunctionExpression = (
+  node: t.ArrowFunctionExpression,
+  nestedVisitor: Visitor
+) => {
+  traverse(node, nestedVisitor);
+
+  return pickArrowFunctionExpressionBody(node);
+};
+
+const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor: Visitor) => {
+  traverse(node, {
+    noScope: true,
+    ArrowFunctionExpression(path) {
+      path.traverse(nestedVisitor);
+
+      path.replaceWith(pickArrowFunctionExpressionBody(path.node));
+
+      path.stop();
+    },
+  });
+
+  return node;
+};
+
 /**
  * Will return a generated AST for a Styled Component.
  *
@@ -127,32 +154,30 @@ const styledTemplate = (opts: {
   const propsToDestructure: string[] = [];
   const styleProp = opts.variables.length
     ? styledStyleProp(opts.variables, (node) => {
+        const nestedArrowFunctionExpressionVisitor = {
+          noScope: true,
+          MemberExpression(path: NodePath<t.MemberExpression>) {
+            if (t.isIdentifier(path.node.object) && path.node.object.name === 'props') {
+              const propertyAccessName = path.node.property as t.Identifier;
+              if (isPropValid(propertyAccessName.name)) {
+                return;
+              }
+
+              if (!propsToDestructure.includes(propertyAccessName.name)) {
+                propsToDestructure.push(propertyAccessName.name);
+              }
+
+              path.replaceWith(propertyAccessName);
+            }
+          },
+        };
+
         if (t.isArrowFunctionExpression(node)) {
-          // We want to strip away the body of arrow functions inside of Styled Components.
-          // E.g. `props => props.color` would end up as `props.color`.
-          traverse(
-            node,
-            {
-              MemberExpression(path) {
-                if (t.isIdentifier(path.node.object) && path.node.object.name === 'props') {
-                  const propertyAccessName = path.node.property as t.Identifier;
-                  if (isPropValid(propertyAccessName.name)) {
-                    return;
-                  }
+          return traverseStyledArrowFunctionExpression(node, nestedArrowFunctionExpressionVisitor);
+        }
 
-                  if (!propsToDestructure.includes(propertyAccessName.name)) {
-                    propsToDestructure.push(propertyAccessName.name);
-                  }
-                  path.replaceWith(propertyAccessName);
-                }
-              },
-            },
-            opts.scope,
-            undefined,
-            opts.parentPath
-          );
-
-          return node.body;
+        if (t.isBinaryExpression(node)) {
+          return traverseStyledBinaryExpression(node, nestedArrowFunctionExpressionVisitor);
         }
 
         return node;

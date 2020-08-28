@@ -145,3 +145,27 @@ export const getInterpolation = <TNode extends {}>(expression: TNode | undefined
 
   return expression;
 };
+
+/**
+ * Will wrap BlockStatement or Expression in an IIFE,
+ * Looks like (() => { return 10; })().
+ *
+ * @param node Node of type either BlockStatement or Expression
+ */
+export const wrapNodeInIIFE = (node: t.BlockStatement | t.Expression) =>
+  t.callExpression(t.arrowFunctionExpression([], node), []);
+
+const tryWrappingBlockStatementInIIFE = (node: t.BlockStatement | t.Expression) =>
+  t.isBlockStatement(node) ? wrapNodeInIIFE(node) : node;
+
+/**
+ * Will pick `ArrowFunctionExpression` body and tries to wrap it in an IIFE if
+ * its a BlockStatement otherwise returns the picked body,
+ * E.g.
+ * `props => props.color` would end up as `props.color`.
+ * `props => { return props.color` } would end up as `(() => { return props.color })()`.
+ *
+ * @param node Node of type ArrowFunctionExpression
+ */
+export const pickArrowFunctionExpressionBody = (node: t.ArrowFunctionExpression) =>
+  tryWrappingBlockStatementInIIFE(node.body);
