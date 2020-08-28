@@ -1,6 +1,6 @@
 import * as t from '@babel/types';
 import traverse from '@babel/traverse';
-import { State } from '../types';
+import { Metadata } from '../types';
 
 /**
  * Returns the binding identifier for a member expression.
@@ -113,29 +113,28 @@ export const getKey = (node: t.Expression) => {
  * @param expression Expression we want to interrogate.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-export const getInterpolation = <TNode extends {}>(expression: TNode | undefined, state: State) => {
-  if (!state.declarations) {
-    return expression;
-  }
-
+export const getInterpolation = <TNode extends {}>(
+  expression: TNode | undefined,
+  meta: Metadata
+) => {
   let value: t.Node | undefined | null = undefined;
 
   if (t.isIdentifier(expression)) {
-    const binding = state.declarations[expression.name];
-
-    if (t.isVariableDeclaration(binding) && binding.kind === 'const') {
-      value = binding.declarations[0].init;
+    const binding = meta.parentPath.scope.getBinding(expression.name);
+    if (binding && binding.kind === 'const' && t.isVariableDeclarator(binding.path.node)) {
+      value = binding.path.node.init;
     }
   } else if (t.isMemberExpression(expression)) {
     const { accessPath, bindingIdentifier } = getMemberExpressionMeta(expression);
-    const binding = state.declarations[bindingIdentifier.name];
+    const binding = meta.parentPath.scope.getBinding(bindingIdentifier.name);
 
     if (
-      t.isVariableDeclaration(binding) &&
+      binding &&
       binding.kind === 'const' &&
-      t.isObjectExpression(binding.declarations[0].init)
+      t.isVariableDeclarator(binding.path.node) &&
+      t.isObjectExpression(binding.path.node.init)
     ) {
-      value = getValueFromObjectExpression(binding.declarations[0].init, accessPath);
+      value = getValueFromObjectExpression(binding.path.node.init, accessPath);
     }
   }
 
