@@ -146,6 +146,34 @@ describe('css prop', () => {
     expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
   });
 
+  it('should bail out evaluating expression referencing a mutable identifier', () => {
+    const actual = transform(`
+      import '@compiled/core';
+      import React from 'react';
+
+      let mutable = 2;
+      const dontchange = mutable;
+
+      <div css={{ fontSize: dontchange }}>hello world</div>
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+  });
+
+  it('should bail out evaluating expression that references multiple mutable expressions', () => {
+    const actual = transform(`
+      import '@compiled/core';
+      import React from 'react';
+
+      let mutable = false;
+      const dontchange = mutable ? 1 : 2;
+
+      <div css={{ fontSize: dontchange }}>hello world</div>
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+  });
+
   it('should bail out evaluating binary expression referencing a mutable identifier', () => {
     const actual = transform(`
       import '@compiled/core';

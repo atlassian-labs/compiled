@@ -130,13 +130,38 @@ export const getKey = (node: t.Expression) => {
   throw new Error();
 };
 
-export const identifierPathHasConstantBinding = (path: NodePath<t.Identifier>) => {
-  const binding = path.scope.getBinding(path.node.name);
-  if (!binding) {
-    return false;
+/**
+ * Will recursively traverse a path and its identifiers to find all bindings.
+ * If any of those bindings are mutable `true` will be returned.
+ * Else `false`.
+ *
+ * @param path
+ */
+export const doesPathReferenceAnyMutableIdentifiers = (path: NodePath<any>): boolean => {
+  if (path.isIdentifier()) {
+    const binding = path.scope.getBinding(path.node.name);
+    if (!binding || !t.isVariableDeclarator(binding.path.node) || binding.kind !== 'const') {
+      return true;
+    }
+
+    return doesPathReferenceAnyMutableIdentifiers(
+      getPathOfNode<any>(binding.path.node.init, binding.path)
+    );
   }
 
-  return binding.kind === 'const';
+  let mutable = false;
+  path.traverse({
+    Identifier(innerPath) {
+      const result = doesPathReferenceAnyMutableIdentifiers(innerPath);
+      if (result) {
+        mutable = true;
+        // No need to keep traversing - let's stop!
+        innerPath.stop();
+      }
+    },
+  });
+
+  return mutable;
 };
 
 /**
@@ -150,24 +175,7 @@ export const tryEvaluateNode = <TNode extends {}>(node: TNode | undefined, meta:
   }
 
   const path = getPathOfNode<t.Expression>(node, meta.parentPath);
-
-  if (path.isIdentifier() && !identifierPathHasConstantBinding(path)) {
-    // If the path is an identifier that has a mutable binding - bail out!
-    return node;
-  }
-
-  let bail = false;
-  path.traverse({
-    Identifier(innerPath) {
-      if (!identifierPathHasConstantBinding(innerPath)) {
-        bail = true;
-        // Bail out if we're referencing any mutable identifiers.
-        innerPath.stop();
-      }
-    },
-  });
-
-  if (bail) {
+  if (doesPathReferenceAnyMutableIdentifiers(path)) {
     return node;
   }
 
@@ -179,9 +187,6 @@ export const tryEvaluateNode = <TNode extends {}>(node: TNode | undefined, meta:
 
       case 'number':
         return t.numericLiteral(result.value);
-
-      default:
-        return node;
     }
   }
 
