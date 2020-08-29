@@ -1,6 +1,37 @@
 import * as t from '@babel/types';
-import traverse from '@babel/traverse';
+import traverse, { NodePath } from '@babel/traverse';
 import { Metadata } from '../types';
+
+/**
+ * Returns the nodes path including the scope of a parent.
+ * @param node
+ * @param parentPath
+ */
+export const getPathOfNode = <TNode extends {}>(
+  node: TNode,
+  parentPath: NodePath
+): NodePath<TNode> => {
+  let foundPath: NodePath | null = null;
+
+  traverse(
+    t.expressionStatement(node as any),
+    {
+      enter(path) {
+        foundPath = path;
+        path.stop();
+      },
+    },
+    parentPath.scope,
+    undefined,
+    parentPath
+  );
+
+  if (!foundPath) {
+    throw new Error('node has no path');
+  }
+
+  return foundPath;
+};
 
 /**
  * Returns the binding identifier for a member expression.
@@ -99,6 +130,64 @@ export const getKey = (node: t.Expression) => {
   throw new Error();
 };
 
+export const identifierPathHasConstantBinding = (path: NodePath<t.Identifier>) => {
+  const binding = path.scope.getBinding(path.node.name);
+  if (!binding) {
+    return false;
+  }
+
+  return binding.kind === 'const';
+};
+
+/**
+ * Will try to evaluate the expression.
+ * If successful it will return a literal node,
+ * else it will return the original expression.
+ */
+export const tryEvaluateNode = <TNode extends {}>(node: TNode | undefined, meta: Metadata) => {
+  if (!node || !t.isExpression(node)) {
+    return node;
+  }
+
+  const path = getPathOfNode<t.Expression>(node, meta.parentPath);
+
+  if (path.isIdentifier() && !identifierPathHasConstantBinding(path)) {
+    // If the path is an identifier that has a mutable binding - bail out!
+    return node;
+  }
+
+  let bail = false;
+  path.traverse({
+    Identifier(innerPath) {
+      if (!identifierPathHasConstantBinding(innerPath)) {
+        bail = true;
+        // Bail out if we're referencing any mutable identifiers.
+        innerPath.stop();
+      }
+    },
+  });
+
+  if (bail) {
+    return node;
+  }
+
+  const result = path.evaluate();
+  if (result.value) {
+    switch (typeof result.value) {
+      case 'string':
+        return t.stringLiteral(result.value);
+
+      case 'number':
+        return t.numericLiteral(result.value);
+
+      default:
+        return node;
+    }
+  }
+
+  return node;
+};
+
 /**
  * Will look in an expression and return the actual value.
  * If the expression is an identifier node (a variable) and a constant,
@@ -142,7 +231,7 @@ export const getInterpolation = <TNode extends {}>(
     return value;
   }
 
-  return expression;
+  return tryEvaluateNode(expression, meta);
 };
 
 /**

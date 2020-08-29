@@ -122,6 +122,43 @@ describe('css prop', () => {
     );
   });
 
+  it('should evaluate simple expressions', () => {
+    const actual = transform(`
+      import '@compiled/core';
+      import React from 'react';
+
+      <div css={{ fontSize: 8 * 2 }}>hello world</div>
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{font-size:16px}');
+  });
+
+  it('should bail out evaluating expression referencing a mutable identifier', () => {
+    const actual = transform(`
+      import '@compiled/core';
+      import React from 'react';
+
+      let mutable = 2;
+
+      <div css={{ fontSize: mutable }}>hello world</div>
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+  });
+
+  it('should bail out evaluating binary expression referencing a mutable identifier', () => {
+    const actual = transform(`
+      import '@compiled/core';
+      import React from 'react';
+
+      let mutable = 2;
+
+      <div css={{ fontSize: mutable * 2 }}>hello world</div>
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+  });
+
   it('should concat explicit use of class name prop on an element', () => {
     const actual = transform(`
       import '@compiled/core';
@@ -237,7 +274,7 @@ describe('css prop', () => {
     const actual = transform(`
       import '@compiled/core';
 
-      const hello = true;
+      let hello = true;
 
       <div css={{ color: hello ? 'red' : 'blue', fontSize: 10 }}>hello world</div>
     `);
@@ -292,8 +329,8 @@ describe('css prop', () => {
     const actual = transform(`
       import '@compiled/core';
 
-      const hello = true;
-      const color = hello ? 'red' : 'blue' ;
+      let hello = true;
+      let color = hello ? 'red' : 'blue' ;
       <div css={{ color }}>hello world</div>
     `);
 
@@ -305,8 +342,8 @@ describe('css prop', () => {
     const actual = transform(`
       import '@compiled/core';
 
-      const hello = true;
-      const colorsz = hello ? 'red' : 'blue' ;
+      let hello = true;
+      let colorsz = hello ? 'red' : 'blue' ;
       <div css={{ color: colorsz }}>hello world</div>
     `);
 
@@ -531,7 +568,7 @@ describe('css prop', () => {
         import '@compiled/core';
         import React from 'react';
 
-        const sidenav = true;
+        let sidenav = true;
         <div
           css={\`
             display: grid;
