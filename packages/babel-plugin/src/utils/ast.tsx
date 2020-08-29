@@ -27,7 +27,7 @@ export const getPathOfNode = <TNode extends {}>(
   );
 
   if (!foundPath) {
-    throw new Error('node has no path');
+    throw new Error();
   }
 
   return foundPath;
@@ -145,7 +145,7 @@ export const doesPathReferenceAnyMutableIdentifiers = (path: NodePath<any>): boo
     }
 
     return doesPathReferenceAnyMutableIdentifiers(
-      getPathOfNode<any>(binding.path.node.init, binding.path)
+      getPathOfNode(binding.path.node.init as t.Expression, binding.path)
     );
   }
 
@@ -169,12 +169,12 @@ export const doesPathReferenceAnyMutableIdentifiers = (path: NodePath<any>): boo
  * If successful it will return a literal node,
  * else it will return the original expression.
  */
-export const tryEvaluateNode = <TNode extends {}>(node: TNode | undefined, meta: Metadata) => {
+export const tryEvaluateExpression = (node: t.Expression, meta: Metadata) => {
   if (!node || !t.isExpression(node)) {
     return node;
   }
 
-  const path = getPathOfNode<t.Expression>(node, meta.parentPath);
+  const path = getPathOfNode(node, meta.parentPath);
   if (doesPathReferenceAnyMutableIdentifiers(path)) {
     return node;
   }
@@ -207,10 +207,7 @@ export const tryEvaluateNode = <TNode extends {}>(node: TNode | undefined, meta:
  * @param expression Expression we want to interrogate.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-export const getInterpolation = <TNode extends {}>(
-  expression: TNode | undefined,
-  meta: Metadata
-) => {
+export const getInterpolation = (expression: t.Expression, meta: Metadata) => {
   let value: t.Node | undefined | null = undefined;
 
   if (t.isIdentifier(expression)) {
@@ -236,7 +233,7 @@ export const getInterpolation = <TNode extends {}>(
     return value;
   }
 
-  return tryEvaluateNode(expression, meta);
+  return tryEvaluateExpression(expression, meta);
 };
 
 /**
