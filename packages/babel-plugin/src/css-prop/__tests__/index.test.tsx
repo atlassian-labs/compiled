@@ -146,7 +146,7 @@ describe('css prop', () => {
     expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
   });
 
-  it('should bail out evaluating expression referencing a mutable identifier', () => {
+  it('should bail out evaluating identifier expression referencing a mutable identifier', () => {
     const actual = transform(`
       import '@compiled/core';
       import React from 'react';
@@ -160,7 +160,7 @@ describe('css prop', () => {
     expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
   });
 
-  it('should bail out evaluating expression that references multiple mutable expressions', () => {
+  it('should bail out evaluating expression that references a constant expression referencing a mutable expression', () => {
     const actual = transform(`
       import '@compiled/core';
       import React from 'react';
@@ -174,7 +174,7 @@ describe('css prop', () => {
     expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
   });
 
-  it('should bail out evaluating binary expression referencing a mutable identifier', () => {
+  it('should bail out evaluating a binary expression referencing a mutable identifier', () => {
     const actual = transform(`
       import '@compiled/core';
       import React from 'react';
