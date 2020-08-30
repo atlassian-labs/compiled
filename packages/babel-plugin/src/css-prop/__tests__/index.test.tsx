@@ -521,6 +521,35 @@ describe('css prop', () => {
       expect(actual).toInclude('.cc-hash-test{color:red}');
     });
 
+    it('should evaluate deep member expression referencing an identifier', () => {
+      const actual = transform(`
+        import '@compiled/core';
+        import React from 'react';
+
+        const primaryColor = 'blue';
+
+        const theme = {
+          colors: {
+            light: {
+              primary: primaryColor,
+            },
+            dark: {
+              primary: 'black',
+            },
+          }
+        };
+
+        <div
+          css={\`
+          color: \${theme.colors.light.primary};
+        \`}>
+          hello world
+        </div>
+      `);
+
+      expect(actual).toInclude('.cc-hash-test{color:blue}');
+    });
+
     it('should inline nested constant object property value', () => {
       const actual = transform(`
         import '@compiled/core';

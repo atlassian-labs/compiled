@@ -165,18 +165,26 @@ export const doesPathReferenceAnyMutableIdentifiers = (path: NodePath<any>): boo
 };
 
 /**
- * Will try to evaluate the expression.
+ * Will try to statically evaluate the node.
  * If successful it will return a literal node,
- * else it will return the original expression.
+ * else it will return the fallback node.
+ *
+ * @param node Node to evaluate
+ * @param meta
+ * @param fallbackNode Optional node to return if evaluation is not successful. Defaults to `node`.
  */
-export const tryEvaluateExpression = (node: t.Expression, meta: Metadata) => {
-  if (!node || !t.isExpression(node)) {
+export const tryEvaluateExpression = (
+  node: t.Expression,
+  meta: Metadata,
+  fallbackNode: t.Expression = node
+): t.Expression => {
+  if (!node) {
     return node;
   }
 
   const path = getPathOfNode(node, meta.parentPath);
   if (doesPathReferenceAnyMutableIdentifiers(path)) {
-    return node;
+    return fallbackNode;
   }
 
   const result = path.evaluate();
@@ -190,7 +198,7 @@ export const tryEvaluateExpression = (node: t.Expression, meta: Metadata) => {
     }
   }
 
-  return node;
+  return fallbackNode;
 };
 
 /**
@@ -207,7 +215,7 @@ export const tryEvaluateExpression = (node: t.Expression, meta: Metadata) => {
  * @param expression Expression we want to interrogate.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-export const getInterpolation = (expression: t.Expression, meta: Metadata) => {
+export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Expression => {
   let value: t.Node | undefined | null = undefined;
 
   if (t.isIdentifier(expression)) {
@@ -231,6 +239,10 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata) => {
 
   if (t.isStringLiteral(value) || t.isNumericLiteral(value) || t.isObjectExpression(value)) {
     return value;
+  }
+
+  if (value) {
+    return tryEvaluateExpression(value as t.Expression, meta, expression);
   }
 
   return tryEvaluateExpression(expression, meta);
