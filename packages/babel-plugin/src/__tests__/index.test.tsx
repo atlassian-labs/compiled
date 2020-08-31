@@ -32,7 +32,8 @@ describe('babel plugin', () => {
     );
 
     expect(output?.code).toMatchInlineSnapshot(`
-      "import { CC, CS } from '@compiled/core';
+      "import * as React from 'react';
+      import { CC, CS } from '@compiled/core';
       const MyDiv = React.forwardRef(({
         as: C = \\"div\\",
         style,
@@ -57,7 +58,8 @@ describe('babel plugin', () => {
     );
 
     expect(output?.code).toMatchInlineSnapshot(`
-      "import { CC, CS } from '@compiled/core';
+      "import * as React from 'react';
+      import { CC, CS } from '@compiled/core';
 
       const MyDiv = () => {
         return <CC>

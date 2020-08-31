@@ -25,7 +25,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import{CC,CS}from'@compiled/core';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import*as React from'react';import{CC,CS}from'@compiled/core';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
             <C{...props}style={style}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
           </CC>);"
@@ -42,7 +42,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import{CC,CS}from'@compiled/core';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import*as React from'react';import{CC,CS}from'@compiled/core';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
             <C{...props}style={style}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
           </CC>);"
@@ -81,7 +81,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import{CC,CS}from'@compiled/core';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import*as React from'react';import{CC,CS}from'@compiled/core';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
             <C{...props}style={style}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
           </CC>);"
@@ -120,7 +120,7 @@ describe('styled component transformer', () => {
     expect(actual).toInclude('"--var-hash-test":(props.color||"")+"px"');
   });
 
-  xit('should add react default import if missing', () => {
+  it('should add react default import if missing', () => {
     const actual = transform(`
       import { styled } from '@compiled/core';
       const ListItem = styled.div\`
@@ -128,10 +128,10 @@ describe('styled component transformer', () => {
       \`;
     `);
 
-    expect(actual).toInclude('import React from "react";');
+    expect(actual).toInclude(`import*as React from'react'`);
   });
 
-  xit('should add react default import if it only has named imports', () => {
+  it('should add react default import if it only has named imports', () => {
     const actual = transform(`
       import { useState } from 'react';
       import { styled } from '@compiled/core';
@@ -140,7 +140,7 @@ describe('styled component transformer', () => {
       \`;
     `);
 
-    expect(actual).toInclude(`import React, { useState } from 'react';`);
+    expect(actual).toInclude(`import*as React from'react';import{useState}from'react';`);
   });
 
   it('should spread down props to element', () => {
@@ -167,7 +167,7 @@ describe('styled component transformer', () => {
     expect(actual).toInclude('ListItem.displayName = "ListItem";');
   });
 
-  xit('should do nothing if react default import is already defined', () => {
+  it('should do nothing if react default import is already defined', () => {
     const actual = transform(`
       import React from 'react';
       import { styled } from '@compiled/core';
@@ -176,7 +176,7 @@ describe('styled component transformer', () => {
       \`;
     `);
 
-    expect(actual).toInclude("import React from 'react';");
+    expect(actual).toInclude("import React from'react';");
   });
 
   xit('should compose a component using template literal', () => {
