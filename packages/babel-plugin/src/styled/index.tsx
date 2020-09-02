@@ -32,7 +32,7 @@ const extractStyledDataFromNode = (
     t.isMemberExpression(node.callee) &&
     t.isIdentifier(node.callee.object) &&
     node.callee.object.name === 'styled' &&
-    t.isObjectExpression(node.arguments[0]) &&
+    t.isExpression(node.arguments[0]) &&
     t.isIdentifier(node.callee.property)
   ) {
     const tagName = node.callee.property.name;

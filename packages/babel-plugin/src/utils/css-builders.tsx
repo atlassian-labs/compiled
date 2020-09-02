@@ -184,5 +184,37 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
     return extractObjectExpression(node, meta);
   }
 
+  if (t.isIdentifier(node)) {
+    const binding = meta.parentPath.scope.getBinding(node.name);
+    if (
+      !binding ||
+      !t.isVariableDeclarator(binding.path.node) ||
+      !t.isExpression(binding.path.node.init)
+    ) {
+      throw new Error();
+    }
+
+    return buildCss(binding.path.node.init, meta);
+  }
+
+  if (t.isArrayExpression(node)) {
+    let css = '';
+    let variables: CSSOutput['variables'] = [];
+
+    node.elements.forEach((element) => {
+      if (!t.isExpression(element)) {
+        throw new Error();
+      }
+      const result = buildCss(element, meta);
+      css += result.css;
+      variables = variables.concat(result.variables);
+    });
+
+    return {
+      css,
+      variables,
+    };
+  }
+
   throw new Error('Unsupported node.');
 };
