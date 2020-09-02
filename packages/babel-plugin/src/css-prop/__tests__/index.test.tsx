@@ -37,6 +37,17 @@ describe('css prop', () => {
     expect(actual).toInclude('<div className="cc-hash-test">hello world</div>');
   });
 
+  it('should retain default import', () => {
+    const actual = transform(`
+      import defaultImport from '@compiled/core';
+      import React from 'react';
+
+      <div css={{}} />
+    `);
+
+    expect(actual).toInclude('defaultImport');
+  });
+
   it('should pass through style identifier when there is no dynamic styles in the css', () => {
     const actual = transform(`
       import '@compiled/core';

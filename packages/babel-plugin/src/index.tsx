@@ -21,28 +21,31 @@ export default declare<State>((api) => {
         },
       },
       ImportDeclaration(path, state) {
-        if (path.node.source.value === '@compiled/core') {
-          // The presence of the module enables CSS prop
-          state.compiledImports = {};
-
-          path.node.specifiers = path.node.specifiers
-            .filter((specifier) => {
-              if (!state.compiledImports || !t.isImportSpecifier(specifier)) {
-                return false;
-              }
-
-              if (specifier.imported.name === 'styled') {
-                state.compiledImports.styled = specifier.local.name;
-                // Remove the import
-                return false;
-              }
-
-              // Keep the import
-              return true;
-            })
-            // Add on the util imports we're going to use later in the transform.
-            .concat([importSpecifier('CC'), importSpecifier('CS')]);
+        if (path.node.source.value !== '@compiled/core') {
+          return;
         }
+
+        // The presence of the module enables CSS prop
+        state.compiledImports = {};
+
+        path.node.specifiers = path.node.specifiers
+          .filter((specifier) => {
+            if (!state.compiledImports || !t.isImportSpecifier(specifier)) {
+              // Bail out early
+              return true;
+            }
+
+            if (specifier.imported.name === 'styled') {
+              state.compiledImports.styled = specifier.local.name;
+              // Remove the import
+              return false;
+            }
+
+            // Keep the import
+            return true;
+          })
+          // Add on the util imports we're going to use later in the transform.
+          .concat([importSpecifier('CC'), importSpecifier('CS')]);
       },
       TaggedTemplateExpression(path, state) {
         if (!state.compiledImports?.styled) {
