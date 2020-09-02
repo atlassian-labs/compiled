@@ -132,36 +132,36 @@ export const getKey = (node: t.Expression) => {
 
 /**
  * Will recursively traverse a path and its identifiers to find all bindings.
- * If any of those bindings are mutable `true` will be returned.
+ * If any of those bindings are mutated `true` will be returned.
  * Else `false`.
  *
  * @param path
  */
-export const doesPathReferenceAnyMutableIdentifiers = (path: NodePath<any>): boolean => {
+export const doesPathReferenceAnyMutatedIdentifiers = (path: NodePath<any>): boolean => {
   if (path.isIdentifier()) {
     const binding = path.scope.getBinding(path.node.name);
-    if (!binding || !t.isVariableDeclarator(binding.path.node) || binding.kind !== 'const') {
+    if (!binding || !t.isVariableDeclarator(binding.path.node) || !binding.constant) {
       return true;
     }
 
-    return doesPathReferenceAnyMutableIdentifiers(
+    return doesPathReferenceAnyMutatedIdentifiers(
       getPathOfNode(binding.path.node.init as t.Expression, binding.path)
     );
   }
 
-  let mutable = false;
+  let mutated = false;
   path.traverse({
     Identifier(innerPath) {
-      const result = doesPathReferenceAnyMutableIdentifiers(innerPath);
+      const result = doesPathReferenceAnyMutatedIdentifiers(innerPath);
       if (result) {
-        mutable = true;
+        mutated = true;
         // No need to keep traversing - let's stop!
         innerPath.stop();
       }
     },
   });
 
-  return mutable;
+  return mutated;
 };
 
 /**
@@ -183,7 +183,7 @@ export const tryEvaluateExpression = (
   }
 
   const path = getPathOfNode(node, meta.parentPath);
-  if (doesPathReferenceAnyMutableIdentifiers(path)) {
+  if (doesPathReferenceAnyMutatedIdentifiers(path)) {
     return fallbackNode;
   }
 
@@ -220,7 +220,7 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
 
   if (t.isIdentifier(expression)) {
     const binding = meta.parentPath.scope.getBinding(expression.name);
-    if (binding && binding.kind === 'const' && t.isVariableDeclarator(binding.path.node)) {
+    if (binding && binding.constant && t.isVariableDeclarator(binding.path.node)) {
       value = binding.path.node.init;
     }
   } else if (t.isMemberExpression(expression)) {
@@ -229,7 +229,7 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
 
     if (
       binding &&
-      binding.kind === 'const' &&
+      binding.constant &&
       t.isVariableDeclarator(binding.path.node) &&
       t.isObjectExpression(binding.path.node.init)
     ) {

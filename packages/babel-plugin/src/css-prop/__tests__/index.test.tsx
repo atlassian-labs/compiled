@@ -139,6 +139,7 @@ describe('css prop', () => {
       import React from 'react';
 
       let mutable = 2;
+      mutable = 1;
 
       <div css={{ fontSize: mutable }}>hello world</div>
     `);
@@ -146,13 +147,14 @@ describe('css prop', () => {
     expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
   });
 
-  it('should bail out evaluating identifier expression referencing a mutable identifier', () => {
+  it('should bail out evaluating identifier expression referencing a mutated identifier', () => {
     const actual = transform(`
       import '@compiled/core';
       import React from 'react';
 
       let mutable = 2;
       const dontchange = mutable;
+      mutable = 3;
 
       <div css={{ fontSize: dontchange }}>hello world</div>
     `);
@@ -160,13 +162,14 @@ describe('css prop', () => {
     expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
   });
 
-  it('should bail out evaluating expression that references a constant expression referencing a mutable expression', () => {
+  it('should bail out evaluating expression that references a constant expression referencing a mutated expression', () => {
     const actual = transform(`
       import '@compiled/core';
       import React from 'react';
 
       let mutable = false;
       const dontchange = mutable ? 1 : 2;
+      mutable = true;
 
       <div css={{ fontSize: dontchange }}>hello world</div>
     `);
@@ -174,12 +177,13 @@ describe('css prop', () => {
     expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
   });
 
-  it('should bail out evaluating a binary expression referencing a mutable identifier', () => {
+  it('should bail out evaluating a binary expression referencing a mutated identifier', () => {
     const actual = transform(`
       import '@compiled/core';
       import React from 'react';
 
       let mutable = 2;
+      mutable = 3;
 
       <div css={{ fontSize: mutable * 2 }}>hello world</div>
     `);
@@ -303,6 +307,7 @@ describe('css prop', () => {
       import '@compiled/core';
 
       let hello = true;
+      hello = false;
 
       <div css={{ color: hello ? 'red' : 'blue', fontSize: 10 }}>hello world</div>
     `);
@@ -338,6 +343,7 @@ describe('css prop', () => {
       import {useState} from 'react';
 
       let N30 = 'gray';
+      N30 = 'blue';
 
       <div css={{
         backgroundImage: \`linear-gradient(45deg, \${N30} 25%, transparent 25%),
@@ -358,7 +364,9 @@ describe('css prop', () => {
       import '@compiled/core';
 
       let hello = true;
+      hello = false;
       let color = hello ? 'red' : 'blue' ;
+
       <div css={{ color }}>hello world</div>
     `);
 
@@ -371,7 +379,9 @@ describe('css prop', () => {
       import '@compiled/core';
 
       let hello = true;
+      hello = false;
       let colorsz = hello ? 'red' : 'blue' ;
+
       <div css={{ color: colorsz }}>hello world</div>
     `);
 
@@ -471,6 +481,7 @@ describe('css prop', () => {
         import React from 'react';
 
         let fontSize = 20;
+        fontSize = 19;
 
         <div css={\`font-size: \${fontSize}px;color:red;\`}>hello world</div>
       `);
@@ -626,6 +637,8 @@ describe('css prop', () => {
         import React from 'react';
 
         let sidenav = true;
+        sidenav = false;
+
         <div
           css={\`
             display: grid;
@@ -738,7 +751,9 @@ describe('css prop', () => {
         import '@compiled/core';
 
         let x = 1;
+        x = 1;
         let y = '2px';
+        y = '2px';
 
         <div
           css={\`
@@ -766,6 +781,7 @@ describe('css prop', () => {
 
         const bg = 'blue';
         let cl = 'red';
+        cl = 'red';
 
         <div css={{ background: bg, color: cl, textDecoration: 'none', }}>hello world</div>
       `);
@@ -821,6 +837,19 @@ describe('css prop', () => {
       expect(actual).toInclude('.cc-hash-test{color:#fff}');
     });
 
+    it('should not exhaust the stack when an identifier references itself', () => {
+      expect(() => {
+        transform(`
+        import '@compiled/core';
+        import React from 'react';
+
+        let heading = heading || 20;
+
+        <div css={{ marginLeft: \`\${heading.depth}rem\`, color: 'red' }}>hello world</div>
+      `);
+      }).not.toThrow();
+    });
+
     it('should persist suffix of dynamic property value from objects into inline styles', () => {
       const actual = transform(`
         import '@compiled/core';
@@ -829,6 +858,7 @@ describe('css prop', () => {
         let heading = {
           depth: 20
         };
+        heading = {};
 
         <div css={{ marginLeft: \`\${heading.depth}rem\`, color: 'red' }}>hello world</div>
       `);
@@ -843,6 +873,7 @@ describe('css prop', () => {
         import React from 'react';
 
         let fontSize = 20;
+        fontSize = 20;
 
         <div css={{ fontSize: \`calc(100% - \${fontSize}px)\`, color: 'red' }}>hello world</div>
       `);
@@ -858,7 +889,7 @@ describe('css prop', () => {
         import '@compiled/core';
         import React from 'react';
 
-        let heading = {
+        let heading = header || {
           depth: 20
         };
 
@@ -896,6 +927,7 @@ describe('css prop', () => {
         import {useState} from 'react';
 
         let N30 = 'gray';
+        N30 = 'gray';
 
         <div css={\`
           background-image: linear-gradient(45deg, \${N30} 25%, transparent 25%),
@@ -952,6 +984,7 @@ describe('css prop', () => {
         import React from 'react';
 
         let blue = 'blue';
+        blue = 'blue';
 
         <div css={{ color: blue }}>hello world</div>
       `);
