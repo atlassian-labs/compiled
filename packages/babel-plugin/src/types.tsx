@@ -10,8 +10,22 @@ export interface PluginOptions {
 export interface State {
   /**
    * Boolean turned true if the compiled module import is found.
+   * If the module is found, the object will be defined.
+   * If a particular API is found, the name of the import will be the value.
+   *
+   * E.g:
+   *
+   * ```
+   * {
+   *   styled: 'styledFunction'
+   * }
+   * ```
+   *
+   * Means the `styled` api was found as `styledFunction` - as well as CSS prop is enabled in this module.
    */
-  compiledImportFound: boolean;
+  compiledImports?: {
+    styled?: string;
+  };
 
   /**
    * Userland options that can be set to change what happens when the Babel Plugin is ran.

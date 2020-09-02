@@ -15,9 +15,26 @@ const transform = (code: string) => {
 };
 
 describe('styled component transformer', () => {
+  it('should transform with a rebound named import', () => {
+    const actual = transform(`
+      import { styled as styledFunction, ThemeProvider } from '@compiled/core';
+
+      const ListItem = styledFunction.div({
+        fontSize: '20px',
+      });
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "import*as React from'react';import{ThemeProvider,CC,CS}from'@compiled/core';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+            <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
+            <C{...props}style={style}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
+          </CC>);"
+    `);
+  });
+
   it('should generate styled object component code', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled, ThemeProvider } from '@compiled/core';
 
       const ListItem = styled.div({
         fontSize: '20px',
@@ -25,7 +42,7 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import*as React from'react';import{CC,CS}from'@compiled/core';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import*as React from'react';import{ThemeProvider,CC,CS}from'@compiled/core';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
             <C{...props}style={style}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
           </CC>);"

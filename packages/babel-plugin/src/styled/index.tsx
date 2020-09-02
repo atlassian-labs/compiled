@@ -9,13 +9,14 @@ import { Metadata } from '../types';
  * @param node
  */
 const extractStyledDataFromNode = (
-  node: t.TaggedTemplateExpression | t.CallExpression
+  node: t.TaggedTemplateExpression | t.CallExpression,
+  meta: Metadata
 ): { tagName: string; cssNode: t.Expression } | undefined => {
   if (
     t.isTaggedTemplateExpression(node) &&
     t.isMemberExpression(node.tag) &&
     t.isIdentifier(node.tag.object) &&
-    node.tag.object.name === 'styled' &&
+    node.tag.object.name === meta.state.compiledImports?.styled &&
     t.isIdentifier(node.tag.property)
   ) {
     const tagName = node.tag.property.name;
@@ -31,7 +32,7 @@ const extractStyledDataFromNode = (
     t.isCallExpression(node) &&
     t.isMemberExpression(node.callee) &&
     t.isIdentifier(node.callee.object) &&
-    node.callee.object.name === 'styled' &&
+    node.callee.object.name === meta.state.compiledImports?.styled &&
     t.isExpression(node.arguments[0]) &&
     t.isIdentifier(node.callee.property)
   ) {
@@ -59,7 +60,7 @@ export const visitStyledPath = (
   path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
   meta: Metadata
 ) => {
-  const styledData = extractStyledDataFromNode(path.node);
+  const styledData = extractStyledDataFromNode(path.node, meta);
   if (!styledData) {
     // We didn't find a node we're interested in - bail out!
     return;
