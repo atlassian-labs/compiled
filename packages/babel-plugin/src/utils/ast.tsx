@@ -146,7 +146,7 @@ const isIdentifierReferencesMutated = (path: NodePath<t.Identifier>): boolean =>
 
   for (let i = 0; i < binding.referencePaths.length; i++) {
     const refPath = binding.referencePaths[i];
-    const innerBinding = refPath.scope.getOwnBinding(path.node.name);
+    const innerBinding = refPath.scope.getBinding(path.node.name);
     if (!innerBinding) {
       continue;
     }
