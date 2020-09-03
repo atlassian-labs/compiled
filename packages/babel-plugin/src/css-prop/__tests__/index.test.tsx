@@ -276,6 +276,19 @@ describe('css prop', () => {
     );
   });
 
+  it('should inline mutable identifier that is not mutated', () => {
+    const actual = transform(`
+      import '@compiled/core';
+      import React from 'react';
+
+      let notMutatedAgain = 20;
+
+      <div css={{ fontSize: notMutatedAgain }}>hello world</div>
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{font-size:20px}');
+  });
+
   it('should concat explicit use of style prop on an element when destructured template', () => {
     const actual = transform(`
       import '@compiled/core';
