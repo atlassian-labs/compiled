@@ -1,1 +1,3 @@
-export const primary = 'blue';
+export default {
+  primary: 'blue',
+};

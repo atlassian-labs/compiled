@@ -1,5 +1,6 @@
 import * as t from '@babel/types';
 import traverse, { NodePath } from '@babel/traverse';
+import { parse } from '@babel/parser';
 import { Metadata } from '../types';
 import fs from 'fs';
 
@@ -269,8 +270,20 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
     ) {
       const moduleImportName = binding.path.parentPath.node.source.value;
       const modulePath = require.resolve(meta.state.cwd + '/' + moduleImportName);
-      console.log(modulePath);
-      console.log(fs.readFileSync(meta.state.cwd + '/' + moduleImportName, 'utf-8'));
+      const moduleCode = fs.readFileSync(modulePath, 'utf-8');
+      const ast = parse(moduleCode, { sourceType: 'module' });
+
+      let result: t.Expression | undefined = undefined;
+      let parentPath: any = undefined;
+
+      traverse(ast, {
+        ExportDefaultDeclaration(path) {
+          parentPath = path;
+          result = path.node.declaration as t.Expression;
+        },
+      });
+
+      return result ? getInterpolation(result, { ...meta, parentPath }) : expression;
     }
 
     if (

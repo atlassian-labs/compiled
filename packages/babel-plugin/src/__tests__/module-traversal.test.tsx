@@ -10,7 +10,7 @@ const transform = (code: string) => {
     configFile: false,
     babelrc: false,
     compact: true,
-    cwd: process.cwd() + '/src/__tests__/',
+    cwd: process.cwd() + '/packages/babel-plugin/src/__tests__/',
     filename: 'index.js',
     plugins: [babelPlugin],
   })?.code;
@@ -27,5 +27,7 @@ describe('module traversal', () => {
       <div css={{ color: colors.primary }} />
     `
     );
+
+    expect(result).toInclude('.cc-hash-test{color:blue}');
   });
 });
