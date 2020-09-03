@@ -28,6 +28,21 @@ export interface State {
   };
 
   /**
+   * Current working directory.
+   */
+  cwd: string;
+
+  /**
+   * Data of the current file being transformed.
+   */
+  file: any;
+
+  /**
+   * Optional filename.
+   */
+  filename: string | undefined;
+
+  /**
    * Userland options that can be set to change what happens when the Babel Plugin is ran.
    */
   opts: PluginOptions;

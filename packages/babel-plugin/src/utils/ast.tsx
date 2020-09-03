@@ -1,6 +1,7 @@
 import * as t from '@babel/types';
 import traverse, { NodePath } from '@babel/traverse';
 import { Metadata } from '../types';
+import fs from 'fs';
 
 /**
  * Returns the nodes path including the scope of a parent.
@@ -260,6 +261,17 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
   } else if (t.isMemberExpression(expression)) {
     const { accessPath, bindingIdentifier } = getMemberExpressionMeta(expression);
     const binding = meta.parentPath.scope.getBinding(bindingIdentifier.name);
+
+    if (
+      binding &&
+      binding.path.isImportDefaultSpecifier() &&
+      binding.path.parentPath.isImportDeclaration()
+    ) {
+      const moduleImportName = binding.path.parentPath.node.source.value;
+      const modulePath = require.resolve(meta.state.cwd + '/' + moduleImportName);
+      console.log(modulePath);
+      console.log(fs.readFileSync(meta.state.cwd + '/' + moduleImportName, 'utf-8'));
+    }
 
     if (
       binding &&
