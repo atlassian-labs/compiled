@@ -131,28 +131,49 @@ export const getKey = (node: t.Expression) => {
 };
 
 /**
- * Will recursively traverse a path and its identifiers to find all bindings.
+ * Returns `true` if an identifier or any paths that reference the identifier are mutated.
+ * @param path
+ */
+const isIdentifierReferencesMutated = (path: NodePath<t.Identifier>): boolean => {
+  const binding = path.scope.getBinding(path.node.name);
+  if (!binding) {
+    return false;
+  }
+
+  if (!t.isVariableDeclarator(binding.path.node) || !binding.constant) {
+    return true;
+  }
+
+  for (let i = 0; i < binding.referencePaths.length; i++) {
+    const refPath = binding.referencePaths[i];
+    const innerBinding = refPath.scope.getOwnBinding(path.node.name);
+    if (!innerBinding) {
+      continue;
+    }
+
+    if (!t.isVariableDeclarator(innerBinding.path.node) || !innerBinding.constant) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Will traverse a path and its identifiers to find all bindings.
  * If any of those bindings are mutated `true` will be returned.
- * Else `false`.
  *
  * @param path
  */
-export const doesPathReferenceAnyMutatedIdentifiers = (path: NodePath<any>): boolean => {
+export const isPathReferenceAnyMutatedIdentifiers = (path: NodePath<any>): boolean => {
   if (path.isIdentifier()) {
-    const binding = path.scope.getBinding(path.node.name);
-    if (!binding || !t.isVariableDeclarator(binding.path.node) || !binding.constant) {
-      return true;
-    }
-
-    return doesPathReferenceAnyMutatedIdentifiers(
-      getPathOfNode(binding.path.node.init as t.Expression, binding.path)
-    );
+    return isIdentifierReferencesMutated(path);
   }
 
   let mutated = false;
   path.traverse({
     Identifier(innerPath) {
-      const result = doesPathReferenceAnyMutatedIdentifiers(innerPath);
+      const result = isIdentifierReferencesMutated(path);
       if (result) {
         mutated = true;
         // No need to keep traversing - let's stop!
@@ -183,7 +204,7 @@ export const tryEvaluateExpression = (
   }
 
   const path = getPathOfNode(node, meta.parentPath);
-  if (doesPathReferenceAnyMutatedIdentifiers(path)) {
+  if (isPathReferenceAnyMutatedIdentifiers(path)) {
     return fallbackNode;
   }
 
