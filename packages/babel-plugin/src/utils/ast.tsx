@@ -165,7 +165,7 @@ const isIdentifierReferencesMutated = (path: NodePath<t.Identifier>): boolean =>
  *
  * @param path
  */
-export const isPathReferenceAnyMutatedIdentifiers = (path: NodePath<any>): boolean => {
+export const isPathReferencingAnyMutatedIdentifiers = (path: NodePath<any>): boolean => {
   if (path.isIdentifier()) {
     return isIdentifierReferencesMutated(path);
   }
@@ -204,7 +204,7 @@ export const tryEvaluateExpression = (
   }
 
   const path = getPathOfNode(node, meta.parentPath);
-  if (isPathReferenceAnyMutatedIdentifiers(path)) {
+  if (isPathReferencingAnyMutatedIdentifiers(path)) {
     return fallbackNode;
   }
 
