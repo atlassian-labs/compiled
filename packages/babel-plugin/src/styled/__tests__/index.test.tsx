@@ -299,6 +299,7 @@ describe('styled component transformer', () => {
         import { styled } from '@compiled/core';
 
         let fontSize = 20;
+        fontSize = 19;
 
         const ListItem = styled.div\`
           font-size: \${fontSize}px;
@@ -314,6 +315,7 @@ describe('styled component transformer', () => {
         import { styled } from '@compiled/core';
 
         let fontSize = 20;
+        fontSize = 19;
 
         const ListItem = styled.div\`
           font-size: \${fontSize}px
@@ -522,6 +524,8 @@ describe('styled component transformer', () => {
         import { styled } from '@compiled/core';
 
         let color = 'red';
+        color = 'blue';
+
         const ListItem = styled.div\`
           font-size: super$\{color}big;
           color: red;
@@ -600,6 +604,8 @@ describe('styled component transformer', () => {
         import { styled } from '@compiled/core';
 
         let br = 2 + 2;
+        br += br;
+
         const Div = styled.div\`
           border-radius: \${br}px;
           color: red;
@@ -756,6 +762,7 @@ describe('styled component transformer', () => {
       const actual = transform(`
         import { styled } from '@compiled/core';
         let color = { blue: 'red' };
+        color = {};
 
         styled.div({
           background: color.blue,
@@ -898,6 +905,7 @@ describe('styled component transformer', () => {
         import { styled } from '@compiled/core';
 
         let color = 'blue';
+        color = 'red';
 
         const ListItem = styled.div({
           color: color,

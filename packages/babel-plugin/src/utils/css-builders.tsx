@@ -40,7 +40,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
   node.properties.forEach((prop) => {
     if (t.isObjectProperty(prop)) {
       // Don't use prop.value directly as it extracts constants from identifiers if needed.
-      const propValue = getInterpolation(prop.value, meta);
+      const propValue = getInterpolation(prop.value as t.Expression, meta);
       const key = getKey(prop.key);
       let value = '';
 
