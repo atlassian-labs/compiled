@@ -37,17 +37,6 @@ describe('css prop', () => {
     expect(actual).toInclude('<div className="cc-hash-test">hello world</div>');
   });
 
-  it('should retain default import', () => {
-    const actual = transform(`
-      import defaultImport from '@compiled/core';
-      import React from 'react';
-
-      <div css={{}} />
-    `);
-
-    expect(actual).toInclude('defaultImport');
-  });
-
   it('should pass through style identifier when there is no dynamic styles in the css', () => {
     const actual = transform(`
       import '@compiled/core';
@@ -120,75 +109,6 @@ describe('css prop', () => {
     expect(actual).toInclude(
       `.cc-hash-test{font-size:12px;color:red;background:var(--var-hash-test)}`
     );
-  });
-
-  it('should evaluate simple expressions', () => {
-    const actual = transform(`
-      import '@compiled/core';
-      import React from 'react';
-
-      <div css={{ fontSize: 8 * 2 }}>hello world</div>
-    `);
-
-    expect(actual).toInclude('.cc-hash-test{font-size:16px}');
-  });
-
-  it('should bail out evaluating expression referencing a mutable identifier', () => {
-    const actual = transform(`
-      import '@compiled/core';
-      import React from 'react';
-
-      let mutable = 2;
-      mutable = 1;
-
-      <div css={{ fontSize: mutable }}>hello world</div>
-    `);
-
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
-  });
-
-  it('should bail out evaluating identifier expression referencing a mutated identifier', () => {
-    const actual = transform(`
-      import '@compiled/core';
-      import React from 'react';
-
-      let mutable = 2;
-      const dontchange = mutable;
-      mutable = 3;
-
-      <div css={{ fontSize: dontchange }}>hello world</div>
-    `);
-
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
-  });
-
-  it('should bail out evaluating expression that references a constant expression referencing a mutated expression', () => {
-    const actual = transform(`
-      import '@compiled/core';
-      import React from 'react';
-
-      let mutable = false;
-      const dontchange = mutable ? 1 : 2;
-      mutable = true;
-
-      <div css={{ fontSize: dontchange }}>hello world</div>
-    `);
-
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
-  });
-
-  it('should bail out evaluating a binary expression referencing a mutated identifier', () => {
-    const actual = transform(`
-      import '@compiled/core';
-      import React from 'react';
-
-      let mutable = 2;
-      mutable = 3;
-
-      <div css={{ fontSize: mutable * 2 }}>hello world</div>
-    `);
-
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
   });
 
   it('should concat explicit use of class name prop on an element', () => {

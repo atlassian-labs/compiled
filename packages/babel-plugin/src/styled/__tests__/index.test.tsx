@@ -15,23 +15,6 @@ const transform = (code: string) => {
 };
 
 describe('styled component transformer', () => {
-  it('should transform with a rebound named import', () => {
-    const actual = transform(`
-      import { styled as styledFunction, ThemeProvider } from '@compiled/core';
-
-      const ListItem = styledFunction.div({
-        fontSize: '20px',
-      });
-    `);
-
-    expect(actual).toMatchInlineSnapshot(`
-      "import*as React from'react';import{ThemeProvider,CC,CS}from'@compiled/core';const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
-            <CS hash=\\"hash-test\\">{[\\".cc-hash-test{font-size:20px}\\"]}</CS>
-            <C{...props}style={style}ref={ref}className={\\"cc-hash-test\\"+(props.className?\\" \\"+props.className:\\"\\")}/>
-          </CC>);"
-    `);
-  });
-
   it('should generate styled object component code', () => {
     const actual = transform(`
       import { styled, ThemeProvider } from '@compiled/core';
@@ -153,29 +136,6 @@ describe('styled component transformer', () => {
     expect(actual).toInclude('"--var-hash-test":(props.color||"")+"px"');
   });
 
-  it('should add react default import if missing', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/core';
-      const ListItem = styled.div\`
-        font-size: 20px;
-      \`;
-    `);
-
-    expect(actual).toInclude(`import*as React from'react'`);
-  });
-
-  it('should add react default import if it only has named imports', () => {
-    const actual = transform(`
-      import { useState } from 'react';
-      import { styled } from '@compiled/core';
-      const ListItem = styled.div\`
-        font-size: 20px;
-      \`;
-    `);
-
-    expect(actual).toInclude(`import*as React from'react';import{useState}from'react';`);
-  });
-
   it('should spread down props to element', () => {
     const actual = transform(`
       import { styled } from '@compiled/core';
@@ -198,18 +158,6 @@ describe('styled component transformer', () => {
     `);
 
     expect(actual).toInclude('ListItem.displayName = "ListItem";');
-  });
-
-  it('should do nothing if react default import is already defined', () => {
-    const actual = transform(`
-      import React from 'react';
-      import { styled } from '@compiled/core';
-      const ListItem = styled.div\`
-        font-size: 20px;
-      \`;
-    `);
-
-    expect(actual).toInclude("import React from'react';");
   });
 
   it('should compose a component using template literal', () => {
