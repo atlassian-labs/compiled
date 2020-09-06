@@ -72,4 +72,18 @@ describe('module traversal', () => {
 
     expect(result).toInclude('.cc-hash-test{color:red}');
   });
+
+  it('should replace an identifier referencing a node modules named import specifier object', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import React from 'react';
+      import { colors } from 'module-a';
+
+      <div css={{ color: colors.primary }} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{color:purple}');
+  });
 });

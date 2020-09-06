@@ -1,8 +1,9 @@
 import * as t from '@babel/types';
 import traverse, { NodePath, Binding } from '@babel/traverse';
 import { parse } from '@babel/parser';
-import { Metadata } from '../types';
 import fs from 'fs';
+import path from 'path';
+import { Metadata } from '../types';
 
 /**
  * Returns the nodes path including the scope of a parent.
@@ -263,7 +264,10 @@ export const resolveBindingNode = (
 
   if (binding && binding.path.parentPath.isImportDeclaration()) {
     const moduleImportName = binding.path.parentPath.node.source.value;
-    const modulePath = require.resolve(meta.state.cwd + '/' + moduleImportName);
+    const isRelative = moduleImportName.startsWith('.');
+    const modulePath = require.resolve(
+      isRelative ? path.join(meta.state.cwd, moduleImportName) : moduleImportName
+    );
     const moduleCode = fs.readFileSync(modulePath, 'utf-8');
     const ast = parse(moduleCode, { sourceType: 'module' });
 
