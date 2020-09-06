@@ -11,6 +11,8 @@ const transform = (code: string) => {
     babelrc: false,
     compact: true,
     plugins: [babelPlugin],
+    // Turn off code highlighting so snapshots are human readable.
+    highlightCode: false,
   })?.code;
 };
 
