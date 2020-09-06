@@ -261,11 +261,7 @@ export const resolveBindingNode = (
     };
   }
 
-  if (
-    binding &&
-    binding.path.isImportDefaultSpecifier() &&
-    binding.path.parentPath.isImportDeclaration()
-  ) {
+  if (binding && binding.path.parentPath.isImportDeclaration()) {
     const moduleImportName = binding.path.parentPath.node.source.value;
     const modulePath = require.resolve(meta.state.cwd + '/' + moduleImportName);
     const moduleCode = fs.readFileSync(modulePath, 'utf-8');
@@ -274,12 +270,34 @@ export const resolveBindingNode = (
     let result: t.Node | undefined = undefined;
     let parentPath: NodePath | undefined = undefined;
 
-    traverse(ast, {
-      ExportDefaultDeclaration(path) {
-        parentPath = path as NodePath;
-        result = path.node.declaration as t.Node;
-      },
-    });
+    if (binding.path.isImportDefaultSpecifier()) {
+      traverse(ast, {
+        ExportDefaultDeclaration(path) {
+          parentPath = path as NodePath;
+          result = path.node.declaration as t.Node;
+        },
+      });
+    } else if (binding.path.isImportSpecifier()) {
+      const exportName = binding.path.node.local.name;
+
+      traverse(ast, {
+        ExportNamedDeclaration(path) {
+          if (!path.node.declaration || !t.isVariableDeclaration(path.node.declaration)) {
+            return;
+          }
+
+          for (let i = 0; i < path.node.declaration.declarations.length; i++) {
+            const named = path.node.declaration.declarations[i];
+            if (t.isIdentifier(named.id) && named.id.name === exportName) {
+              result = named.init as t.Node;
+              parentPath = path as NodePath;
+              path.stop();
+              break;
+            }
+          }
+        },
+      });
+    }
 
     if (!result || !parentPath) {
       return undefined;
