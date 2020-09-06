@@ -1,6 +1,6 @@
 module.exports = {
   testEnvironment: 'jsdom',
-  testMatch: ['**/src/**/*.test.ts*'],
+  testMatch: ['**/src/**/*.test.tsx'],
   setupFilesAfterEnv: ['jest-extended', './test/setup.tsx'],
   moduleNameMapper: {
     '^@compiled/core$': '<rootDir>/packages/core/src/index.tsx',
