@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`error handling should throw when composing invalid css 1`] = `
+"unknown: SpreadElement isn't a supported CSS type - try using an object or string (5:16).
+[0m [90m 3 | [39m      [36mimport[39m [33mReact[39m from [32m'react'[39m[33m;[39m[0m
+[0m [90m 4 | [39m[0m
+[0m[31m[1m>[22m[39m[90m 5 | [39m      [33m<[39m[33mdiv[39m css[33m=[39m{[[33m...[39mhello]} [33m/[39m[33m>[39m[0m
+[0m [90m   | [39m                [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 6 | [39m    [0m"
+`;
+
+exports[`error handling should throw when referencing an identifier that does not exist 1`] = `
+"unknown: Variable could not be found (5:16).
+[0m [90m 3 | [39m      [36mimport[39m [33mReact[39m from [32m'react'[39m[33m;[39m[0m
+[0m [90m 4 | [39m[0m
+[0m[31m[1m>[22m[39m[90m 5 | [39m      [33m<[39m[33mdiv[39m css[33m=[39m{dontexist} [33m/[39m[33m>[39m[0m
+[0m [90m   | [39m                [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 6 | [39m    [0m"
+`;
+
+exports[`error handling should throw when referencing an identifier that isnt supported 1`] = `
+"unknown: ClassDeclaration isn't a supported CSS type - try using an object or string (7:16).
+[0m [90m 5 | [39m      [36mclass[39m [33mHelloWorld[39m {}[0m
+[0m [90m 6 | [39m[0m
+[0m[31m[1m>[22m[39m[90m 7 | [39m      [33m<[39m[33mdiv[39m css[33m=[39m{[33mHelloWorld[39m} [33m/[39m[33m>[39m[0m
+[0m [90m   | [39m                [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 8 | [39m    [0m"
+`;
+
+exports[`error handling should throw when spreading an identifier that does not exist 1`] = `
+"unknown: Variable could not be found (5:21).
+[0m [90m 3 | [39m      [36mimport[39m [33mReact[39m from [32m'react'[39m[33m;[39m[0m
+[0m [90m 4 | [39m[0m
+[0m[31m[1m>[22m[39m[90m 5 | [39m      [33m<[39m[33mdiv[39m css[33m=[39m{{ [33m...[39mdontexist }} [33m/[39m[33m>[39m[0m
+[0m [90m   | [39m                     [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 6 | [39m    [0m"
+`;
+
+exports[`error handling should throw when using using an invalid css node 1`] = `
+"unknown: ArrowFunctionExpression isn't a supported CSS type - try using an object or string (5:16).
+[0m [90m 3 | [39m      [36mimport[39m [33mReact[39m from [32m'react'[39m[33m;[39m[0m
+[0m [90m 4 | [39m[0m
+[0m[31m[1m>[22m[39m[90m 5 | [39m      [33m<[39m[33mdiv[39m css[33m=[39m{() [33m=>[39m {}} [33m/[39m[33m>[39m[0m
+[0m [90m   | [39m                [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 6 | [39m    [0m"
+`;

@@ -4,7 +4,7 @@ import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '
 import { kebabCase, hash } from '@compiled/utils';
 import { joinExpressions } from './ast-builders';
 import { Metadata } from '../types';
-import { getInterpolation, getKey } from './ast';
+import { getInterpolation, getKey, buildCodeFrameError } from './ast';
 
 export interface CSSOutput {
   css: string;
@@ -65,14 +65,12 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         const result = extractTemplateLiteral(propValue, meta);
         value = result.css;
         variables = variables.concat(result.variables);
-      } else if (t.isExpression(propValue)) {
+      } else {
         // This is the catch all for any kind of expression.
         // We don't want to explicitly handle each expression node differently if we can avoid it!
         const variableName = `--var-${hash(generate(propValue).code)}`;
         variables.push({ name: variableName, expression: propValue });
         value = `var(${variableName})`;
-      } else {
-        throw new Error(`Not supported.`);
       }
 
       // Time to add this key+value to the CSS string we're building up.
@@ -90,7 +88,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         variables = variables.concat(result.variables);
         return;
       } else {
-        throw new Error(`Declaration for ${prop.argument.name} could not be found.`);
+        throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
       }
     }
   });
@@ -186,12 +184,16 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
 
   if (t.isIdentifier(node)) {
     const binding = meta.parentPath.scope.getBinding(node.name);
-    if (
-      !binding ||
-      !t.isVariableDeclarator(binding.path.node) ||
-      !t.isExpression(binding.path.node.init)
-    ) {
-      throw new Error();
+    if (!binding) {
+      throw buildCodeFrameError('Variable could not be found', node, meta.parentPath);
+    }
+
+    if (!t.isVariableDeclarator(binding.path.node) || !t.isExpression(binding.path.node.init)) {
+      throw buildCodeFrameError(
+        `${binding.path.node.type} isn't a supported CSS type - try using an object or string`,
+        node,
+        meta.parentPath
+      );
     }
 
     return buildCss(binding.path.node.init, meta);
@@ -203,8 +205,13 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
 
     node.elements.forEach((element) => {
       if (!t.isExpression(element)) {
-        throw new Error();
+        throw buildCodeFrameError(
+          `${element && element.type} isn't a supported CSS type - try using an object or string`,
+          node,
+          meta.parentPath
+        );
       }
+
       const result = buildCss(element, meta);
       css += result.css;
       variables = variables.concat(result.variables);
@@ -216,5 +223,9 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
     };
   }
 
-  throw new Error('Unsupported node.');
+  throw buildCodeFrameError(
+    `${node.type} isn't a supported CSS type - try using an object or string`,
+    node,
+    meta.parentPath
+  );
 };
