@@ -55,6 +55,19 @@ describe('import specifiers', () => {
     expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
   });
 
+  it('should not exhaust the stack when an identifier references itself', () => {
+    expect(() => {
+      transform(`
+      import '@compiled/core';
+      import React from 'react';
+
+      let heading = heading || 20;
+
+      <div css={{ marginLeft: \`\${heading.depth}rem\`, color: 'red' }}>hello world</div>
+    `);
+    }).not.toThrow();
+  });
+
   it('should bail out evaluating expression that references a constant expression referencing a mutated expression', () => {
     const actual = transform(`
       import '@compiled/core';

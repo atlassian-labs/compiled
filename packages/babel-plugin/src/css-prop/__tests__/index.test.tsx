@@ -770,19 +770,6 @@ describe('css prop', () => {
       expect(actual).toInclude('.cc-hash-test{color:#fff}');
     });
 
-    it('should not exhaust the stack when an identifier references itself', () => {
-      expect(() => {
-        transform(`
-        import '@compiled/core';
-        import React from 'react';
-
-        let heading = heading || 20;
-
-        <div css={{ marginLeft: \`\${heading.depth}rem\`, color: 'red' }}>hello world</div>
-      `);
-      }).not.toThrow();
-    });
-
     it('should persist suffix of dynamic property value from objects into inline styles', () => {
       const actual = transform(`
         import '@compiled/core';
