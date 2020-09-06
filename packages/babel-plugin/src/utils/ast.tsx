@@ -1,5 +1,5 @@
 import * as t from '@babel/types';
-import traverse, { NodePath } from '@babel/traverse';
+import traverse, { NodePath, Binding } from '@babel/traverse';
 import { parse } from '@babel/parser';
 import { Metadata } from '../types';
 import fs from 'fs';
@@ -237,6 +237,60 @@ export const tryEvaluateExpression = (
   return fallbackNode;
 };
 
+interface PartialBinding {
+  node: t.Node;
+  path: NodePath;
+  constant: boolean;
+}
+
+/**
+ * Will return the node of the a binding.
+ * This function will follow import specifiers to return the actual node.
+ *
+ * @param path
+ */
+export const resolveBindingNode = (
+  binding: Binding | undefined,
+  meta: Metadata
+): PartialBinding | undefined => {
+  if (binding && t.isVariableDeclarator(binding.path.node)) {
+    return {
+      node: binding.path.node.init as t.Node,
+      path: binding.path,
+      constant: binding.constant,
+    };
+  }
+
+  if (
+    binding &&
+    binding.path.isImportDefaultSpecifier() &&
+    binding.path.parentPath.isImportDeclaration()
+  ) {
+    const moduleImportName = binding.path.parentPath.node.source.value;
+    const modulePath = require.resolve(meta.state.cwd + '/' + moduleImportName);
+    const moduleCode = fs.readFileSync(modulePath, 'utf-8');
+    const ast = parse(moduleCode, { sourceType: 'module' });
+
+    let result: t.Node | undefined = undefined;
+    let parentPath: NodePath | undefined = undefined;
+
+    traverse(ast, {
+      ExportDefaultDeclaration(path) {
+        parentPath = path as NodePath;
+        result = path.node.declaration as t.Node;
+      },
+    });
+
+    if (!result || !parentPath) {
+      return undefined;
+    }
+
+    return { constant: binding.constant, node: result, path: parentPath };
+  }
+
+  return undefined;
+};
+
 /**
  * Will look in an expression and return the actual value.
  * If the expression is an identifier node (a variable) and a constant,
@@ -262,37 +316,10 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
   } else if (t.isMemberExpression(expression)) {
     const { accessPath, bindingIdentifier } = getMemberExpressionMeta(expression);
     const binding = meta.parentPath.scope.getBinding(bindingIdentifier.name);
+    const bindingNode = resolveBindingNode(binding, meta);
 
-    if (
-      binding &&
-      binding.path.isImportDefaultSpecifier() &&
-      binding.path.parentPath.isImportDeclaration()
-    ) {
-      const moduleImportName = binding.path.parentPath.node.source.value;
-      const modulePath = require.resolve(meta.state.cwd + '/' + moduleImportName);
-      const moduleCode = fs.readFileSync(modulePath, 'utf-8');
-      const ast = parse(moduleCode, { sourceType: 'module' });
-
-      let result: t.Expression | undefined = undefined;
-      let parentPath: any = undefined;
-
-      traverse(ast, {
-        ExportDefaultDeclaration(path) {
-          parentPath = path;
-          result = path.node.declaration as t.Expression;
-        },
-      });
-
-      return result ? getInterpolation(result, { ...meta, parentPath }) : expression;
-    }
-
-    if (
-      binding &&
-      binding.constant &&
-      t.isVariableDeclarator(binding.path.node) &&
-      t.isObjectExpression(binding.path.node.init)
-    ) {
-      value = getValueFromObjectExpression(binding.path.node.init, accessPath);
+    if (bindingNode && bindingNode.constant && t.isObjectExpression(bindingNode.node)) {
+      value = getValueFromObjectExpression(bindingNode.node, accessPath);
     }
   }
 
