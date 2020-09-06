@@ -10,8 +10,8 @@ const transform = (code: string) => {
     configFile: false,
     babelrc: false,
     compact: true,
-    cwd: process.cwd() + '/packages/babel-plugin/src/__tests__/',
-    filename: 'index.js',
+    cwd: process.cwd(),
+    filename: '/packages/babel-plugin/src/__tests__/module-traversal.test.js',
     plugins: [babelPlugin],
   })?.code;
 };
@@ -137,6 +137,20 @@ describe('module traversal', () => {
       import { styleInlining } from './stubs/objects';
 
       <div css={{ ...styleInlining }} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{font-size:14px;color:blue;background:red}');
+  });
+
+  it('should inline css from an object referencing an identifier from another module', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import React from 'react';
+      import { styleModuleInlining } from './stubs/objects';
+
+      <div css={{ ...styleModuleInlining }} />
     `
     );
 

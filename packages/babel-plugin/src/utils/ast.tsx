@@ -265,11 +265,18 @@ export const resolveBindingNode = (
   if (binding && binding.path.parentPath.isImportDeclaration()) {
     const moduleImportName = binding.path.parentPath.node.source.value;
     const isRelative = moduleImportName.startsWith('.');
+
+    if (!meta.state.filename) {
+      throw new Error('Filename is needed for module traversal.');
+    }
+
     const modulePath = require.resolve(
-      isRelative ? path.join(meta.state.cwd, moduleImportName) : moduleImportName
+      isRelative
+        ? path.join(meta.state.cwd, path.dirname(meta.state.filename), moduleImportName)
+        : moduleImportName
     );
     const moduleCode = fs.readFileSync(modulePath, 'utf-8');
-    const ast = parse(moduleCode, { sourceType: 'module' });
+    const ast = parse(moduleCode, { sourceType: 'module', sourceFilename: modulePath });
 
     let result: t.Node | undefined = undefined;
     let parentPath: NodePath | undefined = undefined;
