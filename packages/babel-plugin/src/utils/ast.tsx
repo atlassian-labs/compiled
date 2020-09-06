@@ -310,16 +310,18 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
 
   if (t.isIdentifier(expression)) {
     const binding = meta.parentPath.scope.getBinding(expression.name);
-    if (binding && binding.constant && t.isVariableDeclarator(binding.path.node)) {
-      value = binding.path.node.init;
+    const resolvedBinding = resolveBindingNode(binding, meta);
+
+    if (resolvedBinding && resolvedBinding.constant) {
+      value = resolvedBinding.node;
     }
   } else if (t.isMemberExpression(expression)) {
     const { accessPath, bindingIdentifier } = getMemberExpressionMeta(expression);
     const binding = meta.parentPath.scope.getBinding(bindingIdentifier.name);
-    const bindingNode = resolveBindingNode(binding, meta);
+    const resolvedBinding = resolveBindingNode(binding, meta);
 
-    if (bindingNode && bindingNode.constant && t.isObjectExpression(bindingNode.node)) {
-      value = getValueFromObjectExpression(bindingNode.node, accessPath);
+    if (resolvedBinding && resolvedBinding.constant && t.isObjectExpression(resolvedBinding.node)) {
+      value = getValueFromObjectExpression(resolvedBinding.node, accessPath);
     }
   }
 

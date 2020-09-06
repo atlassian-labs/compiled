@@ -17,17 +17,31 @@ const transform = (code: string) => {
 };
 
 describe('module traversal', () => {
-  it('should replace an identifier referencing an import specifier with the node', () => {
+  it('should replace an identifier referencing an import specifier object', () => {
     const result = transform(
       `
       import '@compiled/core';
       import React from 'react';
-      import colors from './stubs/colors';
+      import colors from './stubs/objects';
 
       <div css={{ color: colors.primary }} />
     `
     );
 
     expect(result).toInclude('.cc-hash-test{color:blue}');
+  });
+
+  it('should replace an identifier referencing an import specificer string literal', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import React from 'react';
+      import color from './stubs/simple';
+
+      <div css={{ color }} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{color:red}');
   });
 });
