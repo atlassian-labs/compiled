@@ -86,4 +86,60 @@ describe('module traversal', () => {
 
     expect(result).toInclude('.cc-hash-test{color:purple}');
   });
+
+  it('should use css from an identifier referencing a named import object', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import React from 'react';
+      import { style } from './stubs/objects';
+
+      <div css={style} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{font-size:12px}');
+  });
+
+  it('should inline css from a object spread referencing a named import object', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import React from 'react';
+      import { style } from './stubs/objects';
+
+      <div css={{ color: 'blue', ...style }} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{color:blue;font-size:12px}');
+  });
+
+  it('should inline css from a object with multiple identifiers referenced from a named import', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import React from 'react';
+      import { styleInlining } from './stubs/objects';
+
+      <div css={styleInlining} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{font-size:14px;color:blue;background:red}');
+  });
+
+  it('should inline css from a object with multiple identifiers referenced from a named import', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import React from 'react';
+      import { styleInlining } from './stubs/objects';
+
+      <div css={{ ...styleInlining }} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{font-size:14px;color:blue;background:red}');
+  });
 });

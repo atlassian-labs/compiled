@@ -4,7 +4,7 @@ import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '
 import { kebabCase, hash } from '@compiled/utils';
 import { joinExpressions } from './ast-builders';
 import { Metadata } from '../types';
-import { getInterpolation, getKey, buildCodeFrameError } from './ast';
+import { getInterpolation, getKey, resolveBindingNode, buildCodeFrameError } from './ast';
 
 export interface CSSOutput {
   css: string;
@@ -78,12 +78,13 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
     } else if (t.isSpreadElement(prop) && t.isIdentifier(prop.argument)) {
       // We found a object spread such as: `...mixinIdentifier`.
       const binding = meta.parentPath.scope.getBinding(prop.argument.name);
-      if (
-        binding &&
-        t.isVariableDeclarator(binding.path.node) &&
-        t.isObjectExpression(binding.path.node.init)
-      ) {
-        const result = extractObjectExpression(binding.path.node.init, meta);
+      const resolvedBinding = resolveBindingNode(binding, meta);
+
+      if (resolvedBinding && t.isObjectExpression(resolvedBinding.node)) {
+        const result = extractObjectExpression(resolvedBinding.node, {
+          ...meta,
+          parentPath: resolvedBinding.path,
+        });
         css += result.css;
         variables = variables.concat(result.variables);
         return;
@@ -184,19 +185,21 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
 
   if (t.isIdentifier(node)) {
     const binding = meta.parentPath.scope.getBinding(node.name);
-    if (!binding) {
+    const resolvedBinding = resolveBindingNode(binding, meta);
+
+    if (!resolvedBinding) {
       throw buildCodeFrameError('Variable could not be found', node, meta.parentPath);
     }
 
-    if (!t.isVariableDeclarator(binding.path.node) || !t.isExpression(binding.path.node.init)) {
+    if (!t.isExpression(resolvedBinding.node)) {
       throw buildCodeFrameError(
-        `${binding.path.node.type} isn't a supported CSS type - try using an object or string`,
+        `${resolvedBinding.node.type} isn't a supported CSS type - try using an object or string`,
         node,
         meta.parentPath
       );
     }
 
-    return buildCss(binding.path.node.init, meta);
+    return buildCss(resolvedBinding.node, { ...meta, parentPath: resolvedBinding.path });
   }
 
   if (t.isArrayExpression(node)) {
