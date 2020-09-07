@@ -67,7 +67,7 @@
   },
   "workspaces": [
     "packages/*",
-    "packages/babel-plugin/src/__tests__/stubs/packages/*"
+    "examples/packages/*"
   ],
   "resolutions": {
     "typescript": "3.7.x",

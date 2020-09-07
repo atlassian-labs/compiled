@@ -19,7 +19,6 @@
     "src"
   ],
   "dependencies": {
-    "@compiled/css": "0.4.7",
     "@babel/core": "^7.10.2",
     "@babel/generator": "^7.10.2",
     "@babel/helper-plugin-utils": "^7.10.2",
@@ -28,9 +27,12 @@
     "@babel/template": "^7.10.2",
     "@babel/traverse": "^7.10.2",
     "@babel/types": "^7.10.2",
-    "@emotion/is-prop-valid": "^0.8.6"
+    "@compiled/css": "0.4.7",
+    "@emotion/is-prop-valid": "^0.8.6",
+    "resolve": "^1.17.0"
   },
   "devDependencies": {
-    "@types/babel__core": "^7.1.7"
+    "@types/babel__core": "^7.1.7",
+    "@types/resolve": "^1.17.1"
   }
 }

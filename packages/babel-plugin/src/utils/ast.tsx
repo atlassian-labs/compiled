@@ -3,6 +3,7 @@ import traverse, { NodePath, Binding } from '@babel/traverse';
 import { parse } from '@babel/parser';
 import fs from 'fs';
 import path from 'path';
+import resolve from 'resolve';
 import { Metadata } from '../types';
 
 /**
@@ -278,7 +279,9 @@ export const resolveBindingNode = (
     const filename = isRelative
       ? path.join(path.dirname(meta.state.filename), moduleImportName)
       : moduleImportName;
-    const modulePath = require.resolve(isRelative ? path.join(meta.state.cwd, filename) : filename);
+    const modulePath = resolve.sync(filename, {
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    });
     const moduleCode = fs.readFileSync(modulePath, 'utf-8');
     const ast = parse(moduleCode, { sourceType: 'module', sourceFilename: modulePath });
 

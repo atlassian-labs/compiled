@@ -10,8 +10,7 @@ const transform = (code: string) => {
     configFile: false,
     babelrc: false,
     compact: true,
-    cwd: process.cwd(),
-    filename: '/packages/babel-plugin/src/__tests__/module-traversal.test.js',
+    filename: process.cwd() + '/packages/babel-plugin/src/__tests__/module-traversal.test.js',
     plugins: [babelPlugin],
   })?.code;
 };
@@ -194,6 +193,6 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{color:purple}');
+    expect(result).toInclude('.cc-hash-test{color:orange}');
   });
 });
