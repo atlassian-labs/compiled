@@ -212,7 +212,7 @@ describe('styled component transformer', () => {
     expect(actual).toInclude("import React from'react';");
   });
 
-  xit('should compose a component using template literal', () => {
+  it('should compose a component using template literal', () => {
     const actual = transform(`
       import React from 'react';
       import { styled } from '@compiled/core';
@@ -224,10 +224,10 @@ describe('styled component transformer', () => {
       \`;
     `);
 
-    expect(actual).toInclude('as: C = Component');
+    expect(actual).toInclude('as:C=Component');
   });
 
-  xit('should compose a component using object literal', () => {
+  it('should compose a component using object literal', () => {
     const actual = transform(`
       import React from 'react';
       import { styled } from '@compiled/core';
@@ -239,7 +239,7 @@ describe('styled component transformer', () => {
       });
     `);
 
-    expect(actual).toInclude('as: C = Component');
+    expect(actual).toInclude('as:C=Component');
   });
 
   it('should concat class name prop if defined', () => {

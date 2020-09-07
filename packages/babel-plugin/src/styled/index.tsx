@@ -2,18 +2,29 @@ import * as t from '@babel/types';
 import { NodePath } from '@babel/core';
 import { buildStyledComponent } from '../utils/ast-builders';
 import { buildCss } from '../utils/css-builders';
-import { Metadata } from '../types';
+import { Metadata, Tag } from '../types';
 
-/**
- * Interrogates `node` and returns styled data if any were found.
- * @param node
- */
-const extractStyledDataFromNode = (
-  node: t.TaggedTemplateExpression | t.CallExpression,
+const createStyledDataPair = ({
+  tagName,
+  tagType,
+  cssNode,
+}: {
+  tagName: string;
+  tagType: Tag['type'];
+  cssNode: t.Expression;
+}) => ({
+  tag: {
+    name: tagName,
+    type: tagType,
+  },
+  cssNode,
+});
+
+const extractStyledDataFromTemplateLiteral = (
+  node: t.TaggedTemplateExpression,
   meta: Metadata
-): { tagName: string; cssNode: t.Expression } | undefined => {
+): { tag: Tag; cssNode: t.Expression } | undefined => {
   if (
-    t.isTaggedTemplateExpression(node) &&
     t.isMemberExpression(node.tag) &&
     t.isIdentifier(node.tag.object) &&
     node.tag.object.name === meta.state.compiledImports?.styled &&
@@ -22,14 +33,29 @@ const extractStyledDataFromNode = (
     const tagName = node.tag.property.name;
     const cssNode = node.quasi;
 
-    return {
-      tagName,
-      cssNode,
-    };
+    return createStyledDataPair({ tagName, tagType: 'InBuiltComponent', cssNode });
   }
 
   if (
-    t.isCallExpression(node) &&
+    t.isCallExpression(node.tag) &&
+    t.isIdentifier(node.tag.callee) &&
+    node.tag.callee.name === meta.state.compiledImports?.styled &&
+    t.isIdentifier(node.tag.arguments[0])
+  ) {
+    const tagName = node.tag.arguments[0].name;
+    const cssNode = node.quasi;
+
+    return createStyledDataPair({ tagName, tagType: 'UserDefinedComponent', cssNode });
+  }
+
+  return undefined;
+};
+
+const extractStyledDataFromObjectLiteral = (
+  node: t.CallExpression,
+  meta: Metadata
+): { tag: Tag; cssNode: t.Expression } | undefined => {
+  if (
     t.isMemberExpression(node.callee) &&
     t.isIdentifier(node.callee.object) &&
     node.callee.object.name === meta.state.compiledImports?.styled &&
@@ -39,10 +65,39 @@ const extractStyledDataFromNode = (
     const tagName = node.callee.property.name;
     const cssNode = node.arguments[0];
 
-    return {
-      tagName,
-      cssNode,
-    };
+    return createStyledDataPair({ tagName, tagType: 'InBuiltComponent', cssNode });
+  }
+
+  if (
+    t.isCallExpression(node.callee) &&
+    t.isIdentifier(node.callee.callee) &&
+    node.callee.callee.name === meta.state.compiledImports?.styled &&
+    t.isExpression(node.arguments[0]) &&
+    t.isIdentifier(node.callee.arguments[0])
+  ) {
+    const tagName = node.callee.arguments[0].name;
+    const cssNode = node.arguments[0];
+
+    return createStyledDataPair({ tagName, tagType: 'UserDefinedComponent', cssNode });
+  }
+
+  return undefined;
+};
+
+/**
+ * Interrogates `node` and returns styled data if any were found.
+ * @param node
+ */
+const extractStyledDataFromNode = (
+  node: t.TaggedTemplateExpression | t.CallExpression,
+  meta: Metadata
+): { tag: Tag; cssNode: t.Expression } | undefined => {
+  if (t.isTaggedTemplateExpression(node)) {
+    return extractStyledDataFromTemplateLiteral(node, meta);
+  }
+
+  if (t.isCallExpression(node)) {
+    return extractStyledDataFromObjectLiteral(node, meta);
   }
 
   return undefined;
@@ -72,7 +127,7 @@ export const visitStyledPath = (
     buildStyledComponent({
       ...meta.state.opts,
       cssOutput,
-      tagName: styledData.tagName,
+      tag: styledData.tag,
       parentPath: path as NodePath,
       scope: path.scope,
     })
