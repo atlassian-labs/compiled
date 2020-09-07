@@ -269,13 +269,12 @@ export const resolveBindingNode = (
   }
 
   if (binding && binding.path.parentPath.isImportDeclaration()) {
-    const moduleImportName = binding.path.parentPath.node.source.value;
-    const isRelative = moduleImportName.startsWith('.');
-
     if (!meta.state.filename) {
       throw new Error('Filename is needed for module traversal.');
     }
 
+    const moduleImportName = binding.path.parentPath.node.source.value;
+    const isRelative = moduleImportName.charAt(0) === '.';
     const filename = isRelative
       ? path.join(path.dirname(meta.state.filename), moduleImportName)
       : moduleImportName;
@@ -383,6 +382,12 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
   if (t.isStringLiteral(value) || t.isNumericLiteral(value) || t.isObjectExpression(value)) {
     return value;
   }
+
+  // --------------
+  // NOTE: We are recursively calling getInterpolation() which is then going to try and evaluate it
+  // multiple times. This may or may not be a performance problem - when looking for quick wins perhaps
+  // there is something we could do better here.
+  // --------------
 
   if (value) {
     return tryEvaluateExpression(value as t.Expression, meta, expression);
