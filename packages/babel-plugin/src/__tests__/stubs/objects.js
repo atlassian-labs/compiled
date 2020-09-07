@@ -1,4 +1,4 @@
-import { primary } from './simple';
+import { secondary } from './simple';
 
 export const colors = {
   primary: 'red',
@@ -17,7 +17,7 @@ export const styleInlining = {
 };
 
 export const styleModuleInlining = {
-  color: primary,
+  color: secondary,
 };
 
 export default {

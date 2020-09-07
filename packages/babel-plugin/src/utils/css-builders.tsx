@@ -81,10 +81,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       const resolvedBinding = resolveBindingNode(binding, meta);
 
       if (resolvedBinding && t.isObjectExpression(resolvedBinding.node)) {
-        const result = extractObjectExpression(resolvedBinding.node, {
-          ...meta,
-          parentPath: resolvedBinding.path,
-        });
+        const result = extractObjectExpression(resolvedBinding.node, resolvedBinding.meta);
         css += result.css;
         variables = variables.concat(result.variables);
         return;
@@ -199,7 +196,7 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
       );
     }
 
-    return buildCss(resolvedBinding.node, { ...meta, parentPath: resolvedBinding.path });
+    return buildCss(resolvedBinding.node, resolvedBinding.meta);
   }
 
   if (t.isArrayExpression(node)) {

@@ -143,7 +143,7 @@ describe('module traversal', () => {
     expect(result).toInclude('.cc-hash-test{font-size:14px;color:blue;background:red}');
   });
 
-  it('should inline css from an object referencing an identifier from another module', () => {
+  it('should inline css from a spread referencing an identifier from another module', () => {
     const result = transform(
       `
       import '@compiled/core';
@@ -154,6 +154,34 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{font-size:14px;color:blue;background:red}');
+    expect(result).toInclude('.cc-hash-test{color:pink}');
+  });
+
+  it('should inline css from an identifier referencing an identifier from another module', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import React from 'react';
+      import { styleModuleInlining } from './stubs/objects';
+
+      <div css={styleModuleInlining} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{color:pink}');
+  });
+
+  xit('should inline css from an export rexporting an identifier from another module', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import React from 'react';
+      import { reexport } from './stubs/c';
+
+      <div css={{ color: reexport }} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{color:pink}');
   });
 });

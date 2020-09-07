@@ -242,6 +242,7 @@ interface PartialBinding {
   node: t.Node;
   path: NodePath;
   constant: boolean;
+  meta: Metadata;
 }
 
 /**
@@ -259,6 +260,7 @@ export const resolveBindingNode = (
       node: binding.path.node.init as t.Node,
       path: binding.path,
       constant: binding.constant,
+      meta,
     };
   }
 
@@ -270,11 +272,10 @@ export const resolveBindingNode = (
       throw new Error('Filename is needed for module traversal.');
     }
 
-    const modulePath = require.resolve(
-      isRelative
-        ? path.join(meta.state.cwd, path.dirname(meta.state.filename), moduleImportName)
-        : moduleImportName
-    );
+    const filename = isRelative
+      ? path.join(path.dirname(meta.state.filename), moduleImportName)
+      : moduleImportName;
+    const modulePath = require.resolve(isRelative ? path.join(meta.state.cwd, filename) : filename);
     const moduleCode = fs.readFileSync(modulePath, 'utf-8');
     const ast = parse(moduleCode, { sourceType: 'module', sourceFilename: modulePath });
 
@@ -314,7 +315,20 @@ export const resolveBindingNode = (
       return undefined;
     }
 
-    return { constant: binding.constant, node: result, path: parentPath };
+    return {
+      constant: binding.constant,
+      node: result,
+      path: parentPath,
+      meta: {
+        ...meta,
+        parentPath,
+        state: {
+          ...meta.state,
+          file: ast,
+          filename,
+        },
+      },
+    };
   }
 
   return undefined;
