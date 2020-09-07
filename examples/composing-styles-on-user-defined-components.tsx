@@ -12,7 +12,7 @@ interface Props {
   padding: number;
 }
 
-const Component = (props: Props) => <h1 {...props} />;
+const Component = (props: Props) => <h1 style={{ color: 'green' }} {...props} />;
 
 const StyledObjectLiteral = styled(Component)<Props>({
   color: (props) => props.color,
