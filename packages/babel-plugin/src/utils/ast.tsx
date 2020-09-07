@@ -238,7 +238,7 @@ export const tryEvaluateExpression = (
   return fallbackNode;
 };
 
-interface PartialBinding {
+interface PartialBindingWithMeta {
   node: t.Node;
   path: NodePath;
   constant: boolean;
@@ -246,15 +246,18 @@ interface PartialBinding {
 }
 
 /**
- * Will return the node of the a binding.
- * This function will follow import specifiers to return the actual node.
+ * Will return the `node` of the a binding.
+ * This function will follow import specifiers to return the actual `node`.
+ *
+ * When wanting to do futher traversal on the resulting `node` make sure to use the output `meta` as well.
+ * The `meta` will be for the resulting file it was found in.
  *
  * @param path
  */
 export const resolveBindingNode = (
   binding: Binding | undefined,
   meta: Metadata
-): PartialBinding | undefined => {
+): PartialBindingWithMeta | undefined => {
   if (binding && t.isVariableDeclarator(binding.path.node)) {
     return {
       node: binding.path.node.init as t.Node,
@@ -279,14 +282,14 @@ export const resolveBindingNode = (
     const moduleCode = fs.readFileSync(modulePath, 'utf-8');
     const ast = parse(moduleCode, { sourceType: 'module', sourceFilename: modulePath });
 
-    let result: t.Node | undefined = undefined;
-    let parentPath: NodePath | undefined = undefined;
+    let foundNode: t.Node | undefined = undefined;
+    let foundParentPath: NodePath | undefined = undefined;
 
     if (binding.path.isImportDefaultSpecifier()) {
       traverse(ast, {
         ExportDefaultDeclaration(path) {
-          parentPath = path as NodePath;
-          result = path.node.declaration as t.Node;
+          foundParentPath = path as NodePath;
+          foundNode = path.node.declaration as t.Node;
         },
       });
     } else if (binding.path.isImportSpecifier()) {
@@ -301,8 +304,8 @@ export const resolveBindingNode = (
           for (let i = 0; i < path.node.declaration.declarations.length; i++) {
             const named = path.node.declaration.declarations[i];
             if (t.isIdentifier(named.id) && named.id.name === exportName) {
-              result = named.init as t.Node;
-              parentPath = path as NodePath;
+              foundNode = named.init as t.Node;
+              foundParentPath = path as NodePath;
               path.stop();
               break;
             }
@@ -311,17 +314,17 @@ export const resolveBindingNode = (
       });
     }
 
-    if (!result || !parentPath) {
+    if (!foundNode || !foundParentPath) {
       return undefined;
     }
 
     return {
       constant: binding.constant,
-      node: result,
-      path: parentPath,
+      node: foundNode,
+      path: foundParentPath,
       meta: {
         ...meta,
-        parentPath,
+        parentPath: foundParentPath,
         state: {
           ...meta.state,
           file: ast,
@@ -356,7 +359,8 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
     const resolvedBinding = resolveBindingNode(binding, meta);
 
     if (resolvedBinding && resolvedBinding.constant) {
-      value = resolvedBinding.node;
+      // We recursively call get interpolation until it not longer returns an identifier or member expression
+      value = getInterpolation(resolvedBinding.node as t.Expression, resolvedBinding.meta);
     }
   } else if (t.isMemberExpression(expression)) {
     const { accessPath, bindingIdentifier } = getMemberExpressionMeta(expression);
@@ -364,7 +368,12 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
     const resolvedBinding = resolveBindingNode(binding, meta);
 
     if (resolvedBinding && resolvedBinding.constant && t.isObjectExpression(resolvedBinding.node)) {
-      value = getValueFromObjectExpression(resolvedBinding.node, accessPath);
+      const objectValue = getValueFromObjectExpression(
+        resolvedBinding.node,
+        accessPath
+      ) as t.Expression;
+      // We recursively call get interpolation until it not longer returns an identifier or member expression
+      value = getInterpolation(objectValue, resolvedBinding.meta);
     }
   }
 

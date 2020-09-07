@@ -171,17 +171,29 @@ describe('module traversal', () => {
     expect(result).toInclude('.cc-hash-test{color:pink}');
   });
 
-  xit('should inline css from an export rexporting an identifier from another module', () => {
+  it('should inline css from an export rexporting an identifier from another module', () => {
     const result = transform(
       `
       import '@compiled/core';
-      import React from 'react';
-      import { reexport } from './stubs/c';
+      import { reexport } from './stubs/reexport';
 
       <div css={{ color: reexport }} />
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{color:pink}');
+    expect(result).toInclude('.cc-hash-test{color:purple}');
+  });
+
+  it('should inline css from a member expression export rexporting an identifier from another module', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import { objectReexport } from './stubs/reexport';
+
+      <div css={{ color: objectReexport.foo }} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{color:purple}');
   });
 });
