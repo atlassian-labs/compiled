@@ -195,4 +195,43 @@ describe('module traversal', () => {
 
     expect(result).toInclude('.cc-hash-test{color:orange}');
   });
+
+  it('should inline a static string', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import { bold } from './stubs/strings';
+
+      <div css={bold} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{font-size:12px;font-weight:bold}');
+  });
+
+  it('should inline a string with module interpolations', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import { italics } from './stubs/strings';
+
+      <div css={[italics]} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{font-size:16px;font-weight:italic}');
+  });
+
+  it('should inline a string with import interpolations', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import { danger } from './stubs/strings';
+
+      <div css={[danger]} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{color:red;font-size:10px}');
+  });
 });
