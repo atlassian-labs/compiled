@@ -27,10 +27,23 @@ export const getPathOfNode = <TNode extends {}>(
   );
 
   if (!foundPath) {
-    throw new Error();
+    throw parentPath.buildCodeFrameError('No path for a child node was found.');
   }
 
   return foundPath;
+};
+
+/**
+ * Builds a code frame error from a passed in node.
+ *
+ * @param error
+ * @param node
+ * @param parentPath
+ */
+export const buildCodeFrameError = (error: string, node: t.Node, parentPath: NodePath) => {
+  const startLoc = node.loc ? ` (${node.loc.start.line}:${node.loc.start.column})` : '';
+
+  return getPathOfNode(node, parentPath).buildCodeFrameError(`${error}${startLoc}.`);
 };
 
 /**
@@ -127,7 +140,7 @@ export const getKey = (node: t.Expression) => {
     return node.value;
   }
 
-  throw new Error();
+  throw new Error(`${node.type} has no name.'`);
 };
 
 /**

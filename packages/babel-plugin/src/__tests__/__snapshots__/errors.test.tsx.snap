@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`error handling should throw when composing invalid css 1`] = `
+"unknown: SpreadElement isn't a supported CSS type - try using an object or string (5:16).
+  3 |       import React from 'react';
+  4 | 
+> 5 |       <div css={[...hello]} />
+    |                 ^^^^^^^^^^
+  6 |     "
+`;
+
+exports[`error handling should throw when referencing an identifier that does not exist 1`] = `
+"unknown: Variable could not be found (5:16).
+  3 |       import React from 'react';
+  4 | 
+> 5 |       <div css={dontexist} />
+    |                 ^^^^^^^^^
+  6 |     "
+`;
+
+exports[`error handling should throw when referencing an identifier that isnt supported 1`] = `
+"unknown: ClassDeclaration isn't a supported CSS type - try using an object or string (7:16).
+  5 |       class HelloWorld {}
+  6 | 
+> 7 |       <div css={HelloWorld} />
+    |                 ^^^^^^^^^^
+  8 |     "
+`;
+
+exports[`error handling should throw when spreading an identifier that does not exist 1`] = `
+"unknown: Variable could not be found (5:21).
+  3 |       import React from 'react';
+  4 | 
+> 5 |       <div css={{ ...dontexist }} />
+    |                      ^^^^^^^^^
+  6 |     "
+`;
+
+exports[`error handling should throw when using using an invalid css node 1`] = `
+"unknown: ArrowFunctionExpression isn't a supported CSS type - try using an object or string (5:16).
+  3 |       import React from 'react';
+  4 | 
+> 5 |       <div css={() => {}} />
+    |                 ^^^^^^^^
+  6 |     "
+`;

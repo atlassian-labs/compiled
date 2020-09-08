@@ -13,7 +13,7 @@ const getJsxAttributeExpression = (node: t.JSXAttribute) => {
     return node.value.expression as t.Expression;
   }
 
-  throw new Error();
+  throw new Error('Value of JSX attribute was unexpected.');
 };
 
 /**
