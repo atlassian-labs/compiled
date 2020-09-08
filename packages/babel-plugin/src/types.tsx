@@ -59,3 +59,8 @@ export interface Metadata {
    */
   parentPath: NodePath<any>;
 }
+
+export interface Tag {
+  name: string;
+  type: 'InBuiltComponent' | 'UserDefinedComponent';
+}

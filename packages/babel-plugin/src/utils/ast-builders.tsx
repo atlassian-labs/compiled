@@ -5,7 +5,7 @@ import { hash, unique } from '@compiled/utils';
 import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
 
-import { PluginOptions } from '../types';
+import { PluginOptions, Tag } from '../types';
 
 import { CSSOutput } from './css-builders';
 import { pickArrowFunctionExpressionBody } from './ast';
@@ -20,9 +20,9 @@ interface BaseOpts extends PluginOptions {
 interface StyledOpts extends BaseOpts {
   /**
    * Tag of the Styled Component,
-   * for example `"div"`.
+   * for example `"div"` or user defined component.
    */
-  tagName: string;
+  tag: Tag;
 
   /**
    * Babel path used for traversing inner nodes.
@@ -79,6 +79,9 @@ const styledStyleProp = (
   return t.objectExpression(props.concat(buildCssVariablesProp(variables, transform)));
 };
 
+const buildComponentTag = ({ name, type }: Tag) =>
+  type === 'InBuiltComponent' ? `"${name}"` : name;
+
 const traverseStyledArrowFunctionExpression = (
   node: t.ArrowFunctionExpression,
   nestedVisitor: Visitor
@@ -126,9 +129,9 @@ const styledTemplate = (opts: {
   hash: string;
 
   /**
-   * Tag for the Styled Component, for example "div".
+   * Tag for the Styled Component, for example "div" or user defined component.
    */
-  tag: string;
+  tag: Tag;
 
   /**
    * CSS blocks to be passed to the `CS` component.
@@ -187,7 +190,7 @@ const styledTemplate = (opts: {
   return template(
     `
   React.forwardRef(({
-    as: C = "${opts.tag}",
+    as: C = ${buildComponentTag(opts.tag)},
     style,
     ${propsToDestructure.map((prop) => prop + ',').join('')}
     ...props
@@ -285,7 +288,7 @@ export const buildStyledComponent = (opts: StyledOpts) => {
     ...opts,
     className,
     hash: cssHash,
-    tag: opts.tagName,
+    tag: opts.tag,
     css: cssRules,
     variables: opts.cssOutput.variables,
   }) as t.Node;
