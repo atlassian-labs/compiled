@@ -12,11 +12,25 @@ interface Props {
   padding: number;
 }
 
-const Component = (props: Props) => <h1 style={{ color: 'green' }} {...props} />;
+const ComponentWithCSSProp = (props: Props) => <h1 {...props} css={{ color: 'green' }} />;
 
-const StyledObjectLiteral = styled(Component)<Props>({
-  color: (props) => props.color,
-  backgroundColor: (props) => {
+const StyledComponent = styled.h1`
+  color: green;
+`;
+
+const StyledObjectLiteralWithCSSPropComponent = styled(ComponentWithCSSProp)<Props>({
+  color: (props: Props) => props.color,
+  backgroundColor: (props: Props) => {
+    return props.bgColor;
+  },
+  border: `5px ${(props: Props) => props.borderStyle} black`,
+  padding: `${(props: Props) => {
+    return props.padding;
+  }}px`,
+});
+const StyledObjectLiteralWithStyledComponent = styled(StyledComponent)<Props>({
+  color: (props: Props) => props.color,
+  backgroundColor: (props: Props) => {
     return props.bgColor;
   },
   border: `5px ${(props: Props) => props.borderStyle} black`,
@@ -25,25 +39,61 @@ const StyledObjectLiteral = styled(Component)<Props>({
   }}px`,
 });
 
-const StyledTemplateLiteral = styled(Component)<Props>`
-  color: ${(props) => props.color};
-  background-color: ${(props) => {
+const StyledTemplateLiteralWithCSSPropComponent = styled(ComponentWithCSSProp)<Props>`
+  color: ${(props: Props) => props.color};
+  background-color: ${(props: Props) => {
     return props.bgColor;
   }};
-  border: 5px ${(props) => props.borderStyle} black;
-  padding: ${(props) => {
+  border: 5px ${(props: Props) => props.borderStyle} black;
+  padding: ${(props: Props) => {
+    return props.padding;
+  }}px;
+`;
+const StyledTemplateLiteralWithStyledComponent = styled(StyledComponent)<Props>`
+  color: ${(props: Props) => props.color};
+  background-color: ${(props: Props) => {
+    return props.bgColor;
+  }};
+  border: 5px ${(props: Props) => props.borderStyle} black;
+  padding: ${(props: Props) => {
     return props.padding;
   }}px;
 `;
 
 export const ObjectLiteral = () => (
-  <StyledObjectLiteral color="blue" bgColor="red" borderStyle="dashed" padding={8}>
-    hello world
-  </StyledObjectLiteral>
+  <>
+    <StyledObjectLiteralWithCSSPropComponent
+      color="blue"
+      bgColor="red"
+      borderStyle="dashed"
+      padding={8}>
+      hello world component with css prop
+    </StyledObjectLiteralWithCSSPropComponent>
+    <StyledObjectLiteralWithStyledComponent
+      color="red"
+      bgColor="blue"
+      borderStyle="dotted"
+      padding={8}>
+      hello world styled component
+    </StyledObjectLiteralWithStyledComponent>
+  </>
 );
 
 export const TemplateLiteral = () => (
-  <StyledTemplateLiteral color="red" bgColor="blue" borderStyle="dotted" padding={10}>
-    hello world
-  </StyledTemplateLiteral>
+  <>
+    <StyledTemplateLiteralWithCSSPropComponent
+      color="red"
+      bgColor="blue"
+      borderStyle="dotted"
+      padding={10}>
+      hello world component with css prop
+    </StyledTemplateLiteralWithCSSPropComponent>
+    <StyledTemplateLiteralWithStyledComponent
+      color="blue"
+      bgColor="red"
+      borderStyle="dashed"
+      padding={10}>
+      hello world styled component
+    </StyledTemplateLiteralWithStyledComponent>
+  </>
 );
