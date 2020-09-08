@@ -5,95 +5,26 @@ export default {
   title: 'composing styles on user defined components',
 };
 
-interface Props {
-  color: string;
-  bgColor: string;
-  borderStyle: string;
-  padding: number;
-}
+const GreenFontCssProp = (props: { children: any; className?: string }) => (
+  <h1 {...props} className={props.className} css={{ color: 'green' }} />
+);
 
-const ComponentWithCSSProp = (props: Props) => <h1 {...props} css={{ color: 'green' }} />;
-
-const StyledComponent = styled.h1`
+const GreenFontStyled = styled.h1`
   color: green;
 `;
 
-const StyledObjectLiteralWithCSSPropComponent = styled(ComponentWithCSSProp)<Props>({
-  color: (props: Props) => props.color,
-  backgroundColor: (props: Props) => {
-    return props.bgColor;
-  },
-  border: `5px ${(props: Props) => props.borderStyle} black`,
-  padding: `${(props: Props) => {
-    return props.padding;
-  }}px`,
-});
-const StyledObjectLiteralWithStyledComponent = styled(StyledComponent)<Props>({
-  color: (props: Props) => props.color,
-  backgroundColor: (props: Props) => {
-    return props.bgColor;
-  },
-  border: `5px ${(props: Props) => props.borderStyle} black`,
-  padding: `${(props: Props) => {
-    return props.padding;
-  }}px`,
+const RedFontWrapped = styled(GreenFontCssProp)({
+  color: 'red',
 });
 
-const StyledTemplateLiteralWithCSSPropComponent = styled(ComponentWithCSSProp)<Props>`
-  color: ${(props: Props) => props.color};
-  background-color: ${(props: Props) => {
-    return props.bgColor;
-  }};
-  border: 5px ${(props: Props) => props.borderStyle} black;
-  padding: ${(props: Props) => {
-    return props.padding;
-  }}px;
-`;
-const StyledTemplateLiteralWithStyledComponent = styled(StyledComponent)<Props>`
-  color: ${(props: Props) => props.color};
-  background-color: ${(props: Props) => {
-    return props.bgColor;
-  }};
-  border: 5px ${(props: Props) => props.borderStyle} black;
-  padding: ${(props: Props) => {
-    return props.padding;
-  }}px;
+const BlueFontWrapped = styled(GreenFontStyled)`
+  color: blue;
 `;
 
-export const ObjectLiteral = () => (
-  <>
-    <StyledObjectLiteralWithCSSPropComponent
-      color="blue"
-      bgColor="red"
-      borderStyle="dashed"
-      padding={8}>
-      hello world component with css prop
-    </StyledObjectLiteralWithCSSPropComponent>
-    <StyledObjectLiteralWithStyledComponent
-      color="red"
-      bgColor="blue"
-      borderStyle="dotted"
-      padding={8}>
-      hello world styled component
-    </StyledObjectLiteralWithStyledComponent>
-  </>
-);
+export const GreenCssProp = () => <GreenFontCssProp>Green font</GreenFontCssProp>;
 
-export const TemplateLiteral = () => (
-  <>
-    <StyledTemplateLiteralWithCSSPropComponent
-      color="red"
-      bgColor="blue"
-      borderStyle="dotted"
-      padding={10}>
-      hello world component with css prop
-    </StyledTemplateLiteralWithCSSPropComponent>
-    <StyledTemplateLiteralWithStyledComponent
-      color="blue"
-      bgColor="red"
-      borderStyle="dashed"
-      padding={10}>
-      hello world styled component
-    </StyledTemplateLiteralWithStyledComponent>
-  </>
-);
+export const GreenStyled = () => <GreenFontStyled>Green font</GreenFontStyled>;
+
+export const RedWrapped = () => <RedFontWrapped>Red font</RedFontWrapped>;
+
+export const BlueWrapped = () => <BlueFontWrapped>Blue font</BlueFontWrapped>;
