@@ -172,7 +172,7 @@ describe('styled component behaviour', () => {
       \`;
     `);
 
-    expect(actual).toInclude('as: C = Component');
+    expect(actual).toInclude('as:C=Component');
   });
 
   it('should compose a component using object literal', () => {
@@ -187,7 +187,7 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('as: C = Component');
+    expect(actual).toInclude('as:C=Component');
   });
 
   it('should concat class name prop if defined', () => {
