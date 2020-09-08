@@ -1,5 +1,9 @@
 import * as t from '@babel/types';
-import traverse, { NodePath } from '@babel/traverse';
+import traverse, { NodePath, Binding } from '@babel/traverse';
+import { parse } from '@babel/parser';
+import fs from 'fs';
+import path from 'path';
+import resolve from 'resolve';
 import { Metadata } from '../types';
 
 /**
@@ -235,6 +239,119 @@ export const tryEvaluateExpression = (
   return fallbackNode;
 };
 
+interface PartialBindingWithMeta {
+  node: t.Node;
+  path: NodePath;
+  constant: boolean;
+  meta: Metadata;
+  source: 'import' | 'module';
+}
+
+/**
+ * Will return the `node` of the a binding.
+ * This function will follow import specifiers to return the actual `node`.
+ *
+ * When wanting to do futher traversal on the resulting `node` make sure to use the output `meta` as well.
+ * The `meta` will be for the resulting file it was found in.
+ *
+ * @param path
+ */
+export const resolveBindingNode = (
+  binding: Binding | undefined,
+  meta: Metadata
+): PartialBindingWithMeta | undefined => {
+  if (!binding) {
+    return undefined;
+  }
+
+  if (t.isVariableDeclarator(binding.path.node)) {
+    return {
+      node: binding.path.node.init as t.Node,
+      path: binding.path,
+      constant: binding.constant,
+      source: 'module',
+      meta,
+    };
+  }
+
+  if (binding.path.parentPath.isImportDeclaration()) {
+    if (!meta.state.filename) {
+      throw new Error('Filename is needed for module traversal.');
+    }
+
+    const moduleImportName = binding.path.parentPath.node.source.value;
+    const isRelative = moduleImportName.charAt(0) === '.';
+    const filename = isRelative
+      ? path.join(path.dirname(meta.state.filename), moduleImportName)
+      : moduleImportName;
+    const modulePath = resolve.sync(filename, {
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    });
+    const moduleCode = fs.readFileSync(modulePath, 'utf-8');
+    const ast = parse(moduleCode, { sourceType: 'module', sourceFilename: modulePath });
+
+    let foundNode: t.Node | undefined = undefined;
+    let foundParentPath: NodePath | undefined = undefined;
+
+    if (binding.path.isImportDefaultSpecifier()) {
+      traverse(ast, {
+        ExportDefaultDeclaration(path) {
+          foundParentPath = path as NodePath;
+          foundNode = path.node.declaration as t.Node;
+        },
+      });
+    } else if (binding.path.isImportSpecifier()) {
+      const exportName = binding.path.node.local.name;
+
+      traverse(ast, {
+        ExportNamedDeclaration(path) {
+          if (!path.node.declaration || !t.isVariableDeclaration(path.node.declaration)) {
+            return;
+          }
+
+          for (let i = 0; i < path.node.declaration.declarations.length; i++) {
+            const named = path.node.declaration.declarations[i];
+            if (t.isIdentifier(named.id) && named.id.name === exportName) {
+              foundNode = named.init as t.Node;
+              foundParentPath = path as NodePath;
+              path.stop();
+              break;
+            }
+          }
+        },
+      });
+    }
+
+    if (!foundNode || !foundParentPath) {
+      return undefined;
+    }
+
+    return {
+      constant: binding.constant,
+      node: foundNode,
+      path: foundParentPath,
+      source: 'import',
+      meta: {
+        ...meta,
+        parentPath: foundParentPath,
+        state: {
+          ...meta.state,
+          file: ast,
+          filename,
+        },
+      },
+    };
+  }
+
+  return {
+    node: binding.path.node as t.Node,
+    path: binding.path,
+    constant: binding.constant,
+    source: 'module',
+    meta,
+  };
+};
+
 /**
  * Will look in an expression and return the actual value.
  * If the expression is an identifier node (a variable) and a constant,
@@ -254,26 +371,36 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
 
   if (t.isIdentifier(expression)) {
     const binding = meta.parentPath.scope.getBinding(expression.name);
-    if (binding && binding.constant && t.isVariableDeclarator(binding.path.node)) {
-      value = binding.path.node.init;
+    const resolvedBinding = resolveBindingNode(binding, meta);
+
+    if (resolvedBinding && resolvedBinding.constant) {
+      // We recursively call get interpolation until it not longer returns an identifier or member expression
+      value = getInterpolation(resolvedBinding.node as t.Expression, resolvedBinding.meta);
     }
   } else if (t.isMemberExpression(expression)) {
     const { accessPath, bindingIdentifier } = getMemberExpressionMeta(expression);
     const binding = meta.parentPath.scope.getBinding(bindingIdentifier.name);
+    const resolvedBinding = resolveBindingNode(binding, meta);
 
-    if (
-      binding &&
-      binding.constant &&
-      t.isVariableDeclarator(binding.path.node) &&
-      t.isObjectExpression(binding.path.node.init)
-    ) {
-      value = getValueFromObjectExpression(binding.path.node.init, accessPath);
+    if (resolvedBinding && resolvedBinding.constant && t.isObjectExpression(resolvedBinding.node)) {
+      const objectValue = getValueFromObjectExpression(
+        resolvedBinding.node,
+        accessPath
+      ) as t.Expression;
+      // We recursively call get interpolation until it not longer returns an identifier or member expression
+      value = getInterpolation(objectValue, resolvedBinding.meta);
     }
   }
 
   if (t.isStringLiteral(value) || t.isNumericLiteral(value) || t.isObjectExpression(value)) {
     return value;
   }
+
+  // --------------
+  // NOTE: We are recursively calling getInterpolation() which is then going to try and evaluate it
+  // multiple times. This may or may not be a performance problem - when looking for quick wins perhaps
+  // there is something we could do better here.
+  // --------------
 
   if (value) {
     return tryEvaluateExpression(value as t.Expression, meta, expression);

@@ -4,7 +4,7 @@ import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '
 import { kebabCase, hash } from '@compiled/utils';
 import { joinExpressions } from './ast-builders';
 import { Metadata } from '../types';
-import { getInterpolation, getKey, buildCodeFrameError } from './ast';
+import { getInterpolation, getKey, resolveBindingNode, buildCodeFrameError } from './ast';
 
 export interface CSSOutput {
   css: string;
@@ -78,17 +78,30 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
     } else if (t.isSpreadElement(prop) && t.isIdentifier(prop.argument)) {
       // We found a object spread such as: `...mixinIdentifier`.
       const binding = meta.parentPath.scope.getBinding(prop.argument.name);
-      if (
-        binding &&
-        t.isVariableDeclarator(binding.path.node) &&
-        t.isObjectExpression(binding.path.node.init)
-      ) {
-        const result = extractObjectExpression(binding.path.node.init, meta);
+      const resolvedBinding = resolveBindingNode(binding, meta);
+
+      if (!resolvedBinding) {
+        throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
+      }
+
+      if (t.isObjectExpression(resolvedBinding.node)) {
+        const result = extractObjectExpression(resolvedBinding.node, resolvedBinding.meta);
+
+        if (resolvedBinding.source === 'import' && result.variables.length > 0) {
+          // NOTE: Currently we throw if the found CSS has any variables found from an
+          // import. This is because we'd need to ensure all identifiers are added to
+          // the owning file - if not done they would just error at runtime. Because
+          // this isn't a required feature at the moment we're deprioritizing support
+          // for this.
+          throw buildCodeFrameError(
+            "Identifier contains values that can't be statically evaluated",
+            prop.argument,
+            meta.parentPath
+          );
+        }
+
         css += result.css;
         variables = variables.concat(result.variables);
-        return;
-      } else {
-        throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
       }
     }
   });
@@ -184,19 +197,36 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
 
   if (t.isIdentifier(node)) {
     const binding = meta.parentPath.scope.getBinding(node.name);
-    if (!binding) {
+    const resolvedBinding = resolveBindingNode(binding, meta);
+
+    if (!resolvedBinding) {
       throw buildCodeFrameError('Variable could not be found', node, meta.parentPath);
     }
 
-    if (!t.isVariableDeclarator(binding.path.node) || !t.isExpression(binding.path.node.init)) {
+    if (!t.isExpression(resolvedBinding.node)) {
       throw buildCodeFrameError(
-        `${binding.path.node.type} isn't a supported CSS type - try using an object or string`,
+        `${resolvedBinding.node.type} isn't a supported CSS type - try using an object or string`,
         node,
         meta.parentPath
       );
     }
 
-    return buildCss(binding.path.node.init, meta);
+    const result = buildCss(resolvedBinding.node, resolvedBinding.meta);
+
+    if (resolvedBinding.source === 'import' && result.variables.length > 0) {
+      // NOTE: Currently we throw if the found CSS has any variables found from an
+      // import. This is because we'd need to ensure all identifiers are added to
+      // the owning file - if not done they would just error at runtime. Because
+      // this isn't a required feature at the moment we're deprioritizing support
+      // for this.
+      throw buildCodeFrameError(
+        "Identifier contains values that can't be statically evaluated",
+        node,
+        meta.parentPath
+      );
+    }
+
+    return result;
   }
 
   if (t.isArrayExpression(node)) {
