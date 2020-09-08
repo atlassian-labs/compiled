@@ -80,13 +80,28 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       const binding = meta.parentPath.scope.getBinding(prop.argument.name);
       const resolvedBinding = resolveBindingNode(binding, meta);
 
-      if (resolvedBinding && t.isObjectExpression(resolvedBinding.node)) {
+      if (!resolvedBinding) {
+        throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
+      }
+
+      if (t.isObjectExpression(resolvedBinding.node)) {
         const result = extractObjectExpression(resolvedBinding.node, resolvedBinding.meta);
+
+        if (resolvedBinding.source === 'import' && result.variables.length > 0) {
+          // NOTE: Currently we throw if the found CSS has any variables found from an
+          // import. This is because we'd need to ensure all identifiers are added to
+          // the owning file - if not done they would just error at runtime. Because
+          // this isn't a required feature at the moment we're deprioritizing support
+          // for this.
+          throw buildCodeFrameError(
+            "Identifier contains values that can't be statically evaluated",
+            prop.argument,
+            meta.parentPath
+          );
+        }
+
         css += result.css;
         variables = variables.concat(result.variables);
-        return;
-      } else {
-        throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
       }
     }
   });
@@ -196,7 +211,22 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
       );
     }
 
-    return buildCss(resolvedBinding.node, resolvedBinding.meta);
+    const result = buildCss(resolvedBinding.node, resolvedBinding.meta);
+
+    if (resolvedBinding.source === 'import' && result.variables.length > 0) {
+      // NOTE: Currently we throw if the found CSS has any variables found from an
+      // import. This is because we'd need to ensure all identifiers are added to
+      // the owning file - if not done they would just error at runtime. Because
+      // this isn't a required feature at the moment we're deprioritizing support
+      // for this.
+      throw buildCodeFrameError(
+        "Identifier contains values that can't be statically evaluated",
+        node,
+        meta.parentPath
+      );
+    }
+
+    return result;
   }
 
   if (t.isArrayExpression(node)) {

@@ -244,6 +244,7 @@ interface PartialBindingWithMeta {
   path: NodePath;
   constant: boolean;
   meta: Metadata;
+  source: 'import' | 'module';
 }
 
 /**
@@ -259,16 +260,21 @@ export const resolveBindingNode = (
   binding: Binding | undefined,
   meta: Metadata
 ): PartialBindingWithMeta | undefined => {
-  if (binding && t.isVariableDeclarator(binding.path.node)) {
+  if (!binding) {
+    return undefined;
+  }
+
+  if (t.isVariableDeclarator(binding.path.node)) {
     return {
       node: binding.path.node.init as t.Node,
       path: binding.path,
       constant: binding.constant,
+      source: 'module',
       meta,
     };
   }
 
-  if (binding && binding.path.parentPath.isImportDeclaration()) {
+  if (binding.path.parentPath.isImportDeclaration()) {
     if (!meta.state.filename) {
       throw new Error('Filename is needed for module traversal.');
     }
@@ -324,6 +330,7 @@ export const resolveBindingNode = (
       constant: binding.constant,
       node: foundNode,
       path: foundParentPath,
+      source: 'import',
       meta: {
         ...meta,
         parentPath: foundParentPath,
@@ -336,7 +343,13 @@ export const resolveBindingNode = (
     };
   }
 
-  return undefined;
+  return {
+    node: binding.path.node as t.Node,
+    path: binding.path,
+    constant: binding.constant,
+    source: 'module',
+    meta,
+  };
 };
 
 /**

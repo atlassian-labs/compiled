@@ -23,3 +23,9 @@ export const styleModuleInlining = {
 export default {
   primary: 'blue',
 };
+
+const cantEvaluate = (() => 12)();
+
+export const cantStaticallyEvaluate = {
+  fontSize: cantEvaluate,
+};

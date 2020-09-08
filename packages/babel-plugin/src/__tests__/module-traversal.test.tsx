@@ -10,6 +10,7 @@ const transform = (code: string) => {
     configFile: false,
     babelrc: false,
     compact: true,
+    highlightCode: false,
     filename: process.cwd() + '/packages/babel-plugin/src/__tests__/module-traversal.test.js',
     plugins: [babelPlugin],
   })?.code;
@@ -233,5 +234,31 @@ describe('module traversal', () => {
     );
 
     expect(result).toInclude('.cc-hash-test{color:red;font-size:10px}');
+  });
+
+  it('should throw when pulling in a CSS like object that could not be statically evaluated', () => {
+    expect(() => {
+      transform(
+        `
+      import '@compiled/core';
+      import { cantStaticallyEvaluate } from './stubs/objects';
+
+      <div css={[cantStaticallyEvaluate]} />
+    `
+      );
+    }).toThrowErrorMatchingSnapshot();
+  });
+
+  it('should throw when spreading a CSS like object that could not be statically evaluated', () => {
+    expect(() => {
+      transform(
+        `
+      import '@compiled/core';
+      import { cantStaticallyEvaluate } from './stubs/objects';
+
+      <div css={{ ...cantStaticallyEvaluate }} />
+    `
+      );
+    }).toThrowErrorMatchingSnapshot();
   });
 });
