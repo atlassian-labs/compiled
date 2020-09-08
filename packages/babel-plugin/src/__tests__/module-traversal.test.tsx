@@ -6,14 +6,20 @@ jest.mock('@compiled/utils', () => {
 });
 
 const transform = (code: string) => {
-  return transformSync(code, {
-    configFile: false,
-    babelrc: false,
-    compact: true,
-    highlightCode: false,
-    filename: process.cwd() + '/packages/babel-plugin/src/__tests__/module-traversal.test.js',
-    plugins: [babelPlugin],
-  })?.code;
+  try {
+    return transformSync(code, {
+      configFile: false,
+      babelrc: false,
+      compact: true,
+      highlightCode: false,
+      filename: process.cwd() + '/packages/babel-plugin/src/__tests__/module-traversal.test.js',
+      plugins: [babelPlugin],
+    })?.code;
+  } catch (e) {
+    // remove cwd from error message to it is consistent local and in CI
+    e.message = e.message.replace(process.cwd(), '');
+    throw e;
+  }
 };
 
 describe('module traversal', () => {
@@ -240,11 +246,11 @@ describe('module traversal', () => {
     expect(() => {
       transform(
         `
-      import '@compiled/core';
-      import { cantStaticallyEvaluate } from './stubs/objects';
+        import '@compiled/core';
+        import { cantStaticallyEvaluate } from './stubs/objects';
 
-      <div css={[cantStaticallyEvaluate]} />
-    `
+        <div css={[cantStaticallyEvaluate]} />
+      `
       );
     }).toThrowErrorMatchingSnapshot();
   });
