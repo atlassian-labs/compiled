@@ -17,17 +17,17 @@ interface Opts {
 /**
  * Will transform CSS into multiple CSS sheets.
  *
- * @param selector CSS selector such as `.class`
  * @param css CSS string
  * @param opts Transformation options
  */
-export const transformCss = (_: string, css: string, opts: Opts = { minify: false }): string[] => {
+export const transformCss = (css: string, opts: Opts = { minify: false }) => {
   const sheets: string[] = [];
+  const classNames: string[] = [];
 
   const result = postcss([
     parentOrphanedPseudos(),
     nested(),
-    atomicify(),
+    atomicify({ callback: (className) => classNames.push(className) }),
     autoprefixer(),
     // Why is whitespace not applying as expected?
     ...(opts.minify ? minify() : [whitespace]),
@@ -39,5 +39,5 @@ export const transformCss = (_: string, css: string, opts: Opts = { minify: fals
   // We need to access something to make the transformation happen.
   result.css;
 
-  return sheets;
+  return { sheets, classNames };
 };

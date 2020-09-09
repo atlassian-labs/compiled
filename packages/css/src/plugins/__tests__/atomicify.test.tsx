@@ -20,11 +20,11 @@ describe('atomicify plugin', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      ".cc-bodhpt {
+      ".cc-1pnx9r0-1fwxnve {
         font-size: 12px;
       }
 
-      .cc-1v3mvmw {
+      .cc-1e4pr9v-13q2bts {
         color: blue;
       }
           "
@@ -40,11 +40,11 @@ describe('atomicify plugin', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      ".cc-60ukzq {
+      ".cc-1pnx9r0-19bvopo {
         font-size: 10px;
       }
 
-      .cc-6r23c2:hover {
+      .cc-1jb3d95-1fwxnve:hover {
         font-size: 12px;
       }
           "
@@ -60,11 +60,11 @@ describe('atomicify plugin', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      ".cc-60ukzq {
+      ".cc-1pnx9r0-19bvopo {
         font-size: 10px;
       }
 
-      .cc-qp5jj0:hover div {
+      .cc-dmpyho-1fwxnve:hover div {
         font-size: 12px;
       }
           "
@@ -82,11 +82,11 @@ describe('atomicify plugin', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      ".cc-60ukzq {
+      ".cc-1pnx9r0-19bvopo {
         font-size: 10px;
       }
 
-      .cc-qp5jj0:hover div {
+      .cc-dmpyho-1fwxnve:hover div {
         font-size: 12px;
       }
           "
@@ -103,11 +103,11 @@ describe('atomicify plugin', () => {
 
     expect(result).toMatchInlineSnapshot(`
       "@media screen and (min-width: 800px) {
-        .cc-1col6tc {
+        .cc-f7q224-19bvopo {
           font-size: 10px;
         }
 
-        .cc-ptu1ql {
+        .cc-1bl9qd5-13q2bts {
           color: blue;
         }
       }
@@ -127,11 +127,11 @@ describe('atomicify plugin', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      ".cc-6r23c2:hover {
+      ".cc-1jb3d95-1fwxnve:hover {
         font-size: 12px;
       }
 
-      .cc-6r23c2:hover {
+      .cc-1jb3d95-1fwxnve:hover {
         font-size: 12px;
       }
           "

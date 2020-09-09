@@ -4,6 +4,7 @@ import { hash } from '@compiled/utils';
 interface Opts {
   parentSelector?: string;
   parentAtRule?: string;
+  callback?: (className: string) => void;
 }
 
 const join = (...str: (string | undefined)[]) => {
@@ -27,11 +28,17 @@ const normalizeSelector = (str?: string) => {
 
 const atomicifyDecl = (node: Declaration, opts: Opts = {}) => {
   const normalizedSelector = normalizeSelector(opts.parentSelector);
-  const group = hash(`${join(opts.parentAtRule, opts.parentSelector)}-${node.prop}-${node.value}`);
-  const selector = `.cc-${group}${normalizedSelector}`;
+  const group = hash(`${join(opts.parentAtRule, opts.parentSelector)}-${node.prop}`);
+  const className = `cc-${group}-${hash(node.value)}`;
+  const selector = `.${className}${normalizedSelector}`;
   const newDecl = decl({ prop: node.prop, value: node.value });
   const newRule = rule({ selector, nodes: [newDecl] });
   newDecl.parent = newRule;
+
+  if (opts.callback) {
+    opts.callback(className);
+  }
+
   return newRule;
 };
 
@@ -52,7 +59,7 @@ const atomicifyRule = (node: Rule, opts: Opts = {}) => {
   });
 };
 
-const atomicifyAtRule = (node: AtRule) => {
+const atomicifyAtRule = (node: AtRule, opts: Opts = {}) => {
   if (!node.nodes) {
     return [];
   }
@@ -61,11 +68,11 @@ const atomicifyAtRule = (node: AtRule) => {
 
   const childNodes = node.nodes.map((childNode) => {
     if (childNode.type === 'rule') {
-      return atomicifyRule(childNode, { parentAtRule: normalizedName });
+      return atomicifyRule(childNode, { ...opts, parentAtRule: normalizedName });
     }
 
     if (childNode.type === 'decl') {
-      return atomicifyDecl(childNode, { parentAtRule: normalizedName });
+      return atomicifyDecl(childNode, { ...opts, parentAtRule: normalizedName });
     }
 
     throw new Error();
@@ -78,25 +85,28 @@ const atomicifyAtRule = (node: AtRule) => {
   });
 };
 
-export const atomicify = plugin('parent-orphened-pseudos', () => {
-  return (root) => {
-    root.walk((node) => {
-      switch (node.type) {
-        case 'atrule':
-          node.replaceWith(atomicifyAtRule(node));
-          break;
+export const atomicify = plugin<{ callback?: (className: string) => void }>(
+  'parent-orphened-pseudos',
+  (opts) => {
+    return (root) => {
+      root.walk((node) => {
+        switch (node.type) {
+          case 'atrule':
+            node.replaceWith(atomicifyAtRule(node, { callback: opts?.callback }));
+            break;
 
-        case 'rule':
-          node.replaceWith(atomicifyRule(node));
-          break;
+          case 'rule':
+            node.replaceWith(atomicifyRule(node, { callback: opts?.callback }));
+            break;
 
-        case 'decl':
-          node.replaceWith(atomicifyDecl(node));
-          break;
+          case 'decl':
+            node.replaceWith(atomicifyDecl(node, { callback: opts?.callback }));
+            break;
 
-        default:
-          break;
-      }
-    });
-  };
-});
+          default:
+            break;
+        }
+      });
+    };
+  }
+);
