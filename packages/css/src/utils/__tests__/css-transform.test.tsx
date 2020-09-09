@@ -1,6 +1,6 @@
 import { transformCss } from '../css-transform';
 
-describe('leading pseduos in css', () => {
+describe('css transform', () => {
   it('should parent a single pseudo', () => {
     const actual = transformCss(
       '.cls',

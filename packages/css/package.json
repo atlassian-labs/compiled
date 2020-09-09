@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@types/autoprefixer": "^9.7.2",
-    "@types/cssnano": "^4.0.0"
+    "@types/cssnano": "^4.0.0",
+    "cssbeautify": "^0.3.1"
   }
 }
