@@ -197,9 +197,9 @@ const styledTemplate = (opts: {
   }, ref) => (
     <CC>
       <CS ${nonceAttribute} hash="${opts.hash}">{%%cssNode%%}</CS>
-      <C {...props} style={%%styleProp%%} ref={ref} className={"${
+      <C {...props} style={%%styleProp%%} ref={ref} className={ax("${
         opts.className
-      }" + (props.className ? " " + props.className : "")} />
+      }" + (props.className ? " " + props.className : ""))} />
     </CC>
   ));
 `,
@@ -281,15 +281,15 @@ export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExp
  */
 export const buildStyledComponent = (opts: StyledOpts) => {
   const cssHash = hash(opts.cssOutput.css);
-  const className = `cc-${cssHash}`;
-  const cssRules = transformCss(`.${className}`, opts.cssOutput.css);
+  const transformed = transformCss(opts.cssOutput.css);
+  const className = transformed.classNames.join(' ');
 
   return styledTemplate({
     ...opts,
     className,
     hash: cssHash,
     tag: opts.tag,
-    css: cssRules,
+    css: transformed.sheets,
     variables: opts.cssOutput.variables,
   }) as t.Node;
 };
@@ -313,8 +313,8 @@ export const importSpecifier = (name: string, localName?: string) => {
  */
 export const buildCompiledComponent = (opts: CompiledOpts) => {
   const cssHash = hash(opts.cssOutput.css);
-  const className = `cc-${cssHash}`;
-  const cssRules = transformCss(`.${className}`, opts.cssOutput.css);
+  const transformed = transformCss(opts.cssOutput.css);
+  const className = transformed.classNames.join(' ');
   const classNameProp = opts.node.openingElement.attributes.find((prop): prop is t.JSXAttribute => {
     return t.isJSXAttribute(prop) && prop.name.name === 'className';
   });
@@ -330,11 +330,16 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
       ? joinExpressions(t.stringLiteral(className), classNameExpression)
       : conditionallyJoinExpressions(t.stringLiteral(className), classNameExpression);
 
-    classNameProp.value = t.jsxExpressionContainer(newClassNameValue);
+    classNameProp.value = t.jsxExpressionContainer(
+      t.callExpression(t.identifier('ax'), [newClassNameValue])
+    );
   } else {
     // No class name - just push our own one.
     opts.node.openingElement.attributes.push(
-      t.jsxAttribute(t.jsxIdentifier('className'), t.stringLiteral(className))
+      t.jsxAttribute(
+        t.jsxIdentifier('className'),
+        t.jsxExpressionContainer(t.callExpression(t.identifier('ax'), [t.stringLiteral(className)]))
+      )
     );
   }
 
@@ -394,7 +399,7 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
   return compiledTemplate({
     jsxNode: opts.node,
     hash: cssHash,
-    css: cssRules,
+    css: transformed.sheets,
     nonce: opts.nonce,
   }) as t.Node;
 };

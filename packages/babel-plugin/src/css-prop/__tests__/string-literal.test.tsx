@@ -30,7 +30,7 @@ describe('css prop string literal', () => {
     expect(actual).toInclude('style={{"--var-hash-test":(fontSize||"")+"px"}}');
   });
 
-  it('should persist suffix of constant value', () => {
+  it.only('should persist suffix of constant value', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
