@@ -27,6 +27,7 @@
     "bundlesize": "yarn build && yarn build:dead-code-elimination && size-limit"
   },
   "devDependencies": {
+    "@babel/cli": "^7.11.6",
     "@babel/preset-env": "^7.11.0",
     "@babel/preset-react": "^7.10.4",
     "@babel/preset-typescript": "^7.10.4",
@@ -44,6 +45,8 @@
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^3.0.0",
     "git-branch-is": "^3.1.0",
+    "gzip-size": "^5.1.1",
+    "gzip-size-cli": "^3.0.0",
     "husky": "^4.2.5",
     "jest": "25.5.3",
     "jest-extended": "^0.11.5",
@@ -58,6 +61,7 @@
     "ts-transform-define": "^0.1.3",
     "ttypescript": "^1.5.10",
     "typescript": "^3.7.3",
+    "uglify-js": "^3.10.4",
     "workspaces-run": "^1.0.1"
   },
   "husky": {
