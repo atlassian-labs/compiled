@@ -20,11 +20,11 @@ describe('atomicify plugin', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      ".cc--font-size-12px {
+      ".cc-bodhpt {
         font-size: 12px;
       }
 
-      .cc--color-blue {
+      .cc-1v3mvmw {
         color: blue;
       }
           "
@@ -40,11 +40,11 @@ describe('atomicify plugin', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      ".cc--font-size-10px {
+      ".cc-60ukzq {
         font-size: 10px;
       }
 
-      .cc-:hover-font-size-12px:hover {
+      .cc-6r23c2:hover {
         font-size: 12px;
       }
           "
@@ -60,11 +60,11 @@ describe('atomicify plugin', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      ".cc--font-size-10px {
+      ".cc-60ukzq {
         font-size: 10px;
       }
 
-      .cc-:hover___div-font-size-12px:hover div {
+      .cc-qp5jj0:hover div {
         font-size: 12px;
       }
           "
@@ -82,11 +82,11 @@ describe('atomicify plugin', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      ".cc--font-size-10px {
+      ".cc-60ukzq {
         font-size: 10px;
       }
 
-      .cc-:hover___div-font-size-12px:hover div {
+      .cc-qp5jj0:hover div {
         font-size: 12px;
       }
           "
@@ -103,11 +103,11 @@ describe('atomicify plugin', () => {
 
     expect(result).toMatchInlineSnapshot(`
       "@media screen and (min-width: 800px) {
-        .cc-mediascreenand(min-width:800px)-font-size-10px {
+        .cc-1col6tc {
           font-size: 10px;
         }
 
-        .cc-mediascreenand(min-width:800px)-color-blue {
+        .cc-ptu1ql {
           color: blue;
         }
       }
@@ -127,11 +127,11 @@ describe('atomicify plugin', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      ".cc-:hover-font-size-12px:hover {
+      ".cc-6r23c2:hover {
         font-size: 12px;
       }
 
-      .cc-:hover-font-size-12px:hover {
+      .cc-6r23c2:hover {
         font-size: 12px;
       }
           "

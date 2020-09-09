@@ -4,6 +4,7 @@ import nested from 'postcss-nested';
 import whitespace from 'postcss-normalize-whitespace';
 import { parentOrphanedPseudos } from '../plugins/parent-orphaned-pseudos';
 import { minify } from '../plugins/minify';
+import { atomicify } from '../plugins/atomicify';
 import { extractStyleSheets } from '../plugins/extract-stylesheets';
 
 interface Opts {
@@ -20,21 +21,18 @@ interface Opts {
  * @param css CSS string
  * @param opts Transformation options
  */
-export const transformCss = (
-  selector: string,
-  css: string,
-  opts: Opts = { minify: false }
-): string[] => {
+export const transformCss = (_: string, css: string, opts: Opts = { minify: false }): string[] => {
   const sheets: string[] = [];
-  const cssWithSelector = selector ? `${selector} { ${css} }` : css;
 
   const result = postcss([
     parentOrphanedPseudos(),
     nested(),
+    atomicify(),
     autoprefixer(),
+    // Why is whitespace not applying as expected?
     ...(opts.minify ? minify() : [whitespace]),
-    extractStyleSheets({ callback: (sheet: string) => sheets.push(sheet) }),
-  ]).process(cssWithSelector, {
+    extractStyleSheets({ callback: (sheet) => sheets.push(sheet) }),
+  ]).process(css, {
     from: undefined,
   });
 

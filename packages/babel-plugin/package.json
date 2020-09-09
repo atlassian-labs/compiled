@@ -28,6 +28,7 @@
     "@babel/traverse": "^7.10.2",
     "@babel/types": "^7.10.2",
     "@compiled/css": "0.4.7",
+    "@compiled/utils": "0.4.7",
     "@emotion/is-prop-valid": "^0.8.6",
     "resolve": "^1.17.0"
   },

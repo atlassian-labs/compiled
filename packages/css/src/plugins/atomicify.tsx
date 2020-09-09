@@ -1,4 +1,5 @@
-import { plugin, rule, AtRule, Rule, atRule, Declaration } from 'postcss';
+import { plugin, rule, AtRule, Rule, decl, atRule, Declaration } from 'postcss';
+import { hash } from '@compiled/utils';
 
 interface Opts {
   parentSelector?: string;
@@ -26,12 +27,12 @@ const normalizeSelector = (str?: string) => {
 
 const atomicifyDecl = (node: Declaration, opts: Opts = {}) => {
   const normalizedSelector = normalizeSelector(opts.parentSelector);
-
-  const selector = `.cc-${join(opts.parentAtRule, opts.parentSelector)}-${node.prop}-${
-    node.value
-  }${normalizedSelector}`;
-
-  return rule({ selector, nodes: [node] });
+  const group = hash(`${join(opts.parentAtRule, opts.parentSelector)}-${node.prop}-${node.value}`);
+  const selector = `.cc-${group}${normalizedSelector}`;
+  const newDecl = decl({ prop: node.prop, value: node.value });
+  const newRule = rule({ selector, nodes: [newDecl] });
+  newDecl.parent = newRule;
+  return newRule;
 };
 
 const atomicifyRule = (node: Rule, opts: Opts = {}) => {
@@ -41,7 +42,7 @@ const atomicifyRule = (node: Rule, opts: Opts = {}) => {
 
   return node.nodes.map((childNode) => {
     if (childNode.type !== 'decl') {
-      throw new Error();
+      throw new Error('Only decls are allowed inside a rule.');
     }
 
     return atomicifyDecl(childNode, {
