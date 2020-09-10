@@ -14,6 +14,11 @@ import {
   tryEvaluateExpression,
 } from './ast';
 
+const createInterpolationPair = (value: t.Expression, meta: Metadata) => ({
+  value,
+  meta,
+});
+
 /**
  * Will look in an expression and return the actual value along with updated metadata.
  *
@@ -43,7 +48,7 @@ const getInterpolationForIdentifier = (expression: t.Identifier, meta: Metadata)
     ));
   }
 
-  return { value, meta: newMeta };
+  return createInterpolationPair(value as t.Expression, newMeta);
 };
 
 /**
@@ -73,7 +78,7 @@ const getInterpolationForMemberExpression = (expression: t.MemberExpression, met
     ({ value, meta: newMeta } = getInterpolation(objectValue, resolvedBinding.meta));
   }
 
-  return { value, meta: newMeta };
+  return createInterpolationPair(value as t.Expression, newMeta);
 };
 
 /**
@@ -120,7 +125,7 @@ const getInterpolationForIIFE = (expression: t.Function, meta: Metadata) => {
     ({ value, meta: newMeta } = getInterpolation(expression.body, meta));
   }
 
-  return { value, meta: newMeta };
+  return createInterpolationPair(value as t.Expression, newMeta);
 };
 
 /**
@@ -155,7 +160,7 @@ const getInterpolation = (
   }
 
   if (t.isStringLiteral(value) || t.isNumericLiteral(value) || t.isObjectExpression(value)) {
-    return { value, meta: newMeta };
+    return createInterpolationPair(value, newMeta);
   }
 
   // --------------
@@ -165,13 +170,13 @@ const getInterpolation = (
   // --------------
 
   if (value) {
-    return {
-      value: tryEvaluateExpression(value as t.Expression, newMeta, expression),
-      meta: newMeta,
-    };
+    return createInterpolationPair(
+      tryEvaluateExpression(value as t.Expression, newMeta, expression),
+      newMeta
+    );
   }
 
-  return { value: tryEvaluateExpression(expression, newMeta), meta: newMeta };
+  return createInterpolationPair(tryEvaluateExpression(expression, newMeta), newMeta);
 };
 
 export default getInterpolation;
