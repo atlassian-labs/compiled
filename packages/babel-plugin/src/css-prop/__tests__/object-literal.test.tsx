@@ -1,9 +1,9 @@
 import { transformSync } from '@babel/core';
 import babelPlugin from '../../index';
 
-jest.mock('@compiled/utils', () => {
-  return { ...jest.requireActual('@compiled/utils'), hash: () => 'hash-test' };
-});
+// jest.mock('@compiled/utils', () => {
+//   return { ...jest.requireActual('@compiled/utils'), hash: () => 'hash-test' };
+// });
 
 const transform = (code: string) => {
   return transformSync(code, {
@@ -32,17 +32,23 @@ describe('css prop object literal', () => {
     expect(actual).toInclude('style={{"--var-hash-test":cl}}');
   });
 
-  it('should inline constant variable', () => {
+  it.only('should inline constant variable', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
 
         const fontSize = 20;
 
-        <div css={{ fontSize: \`\${fontSize}px\` }}>hello world</div>
+        const Component = () => {
+          return <div css={{ fontSize: \`\${fontSize}px\`, color: 'blue' }}>hello world</div>
+        }
+
+        const AnotherComponent = () => {
+          return <div css={{ fontSize: \`\${fontSize}px\`, color: 'blue' }}>hello world</div>
+        }
       `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:20px}');
+    expect(actual).toIncludeRepeated('const ccidfent', 1);
   });
 
   it('should inline constant object property value', () => {

@@ -223,13 +223,38 @@ const compiledTemplate = (opts: {
   hash: string;
   css: string[];
   jsxNode: t.JSXElement;
+  parentPath: NodePath;
 }) => {
   const nonceAttribute = opts.nonce ? `nonce={${opts.nonce}}` : '';
+  const sheets = opts.css.map((sheet) => {
+    const hackSheetFix = sheet.trim().replace(/\n */g, '');
+    const name = 'cc' + hash(hackSheetFix);
+    if (!opts.parentPath.scope.hasBinding(name)) {
+      const result = (opts.parentPath
+        .findParent((path) => path.isProgram())
+        .get('body.0') as any).insertBefore(
+        t.variableDeclaration('const', [
+          t.variableDeclarator(t.identifier(name), t.stringLiteral(hackSheetFix)),
+        ])
+      );
+
+      result.forEach((insertPath: any) => {
+        (opts.parentPath
+          .findParent((path) => path.isProgram())
+          .get('body.0') as any).scope.registerBinding(
+          'const',
+          insertPath.get('declarations.0') as any
+        );
+      });
+    }
+
+    return t.identifier(name);
+  });
 
   return template(
     `
   <CC>
-    <CS ${nonceAttribute} hash="${opts.hash}">{%%cssNode%%}</CS>
+    <CS ${nonceAttribute}>{%%cssNode%%}</CS>
     {%%jsxNode%%}
   </CC>
   `,
@@ -238,7 +263,7 @@ const compiledTemplate = (opts: {
     }
   )({
     jsxNode: opts.jsxNode,
-    cssNode: t.arrayExpression(opts.css.map((style) => t.stringLiteral(style))),
+    cssNode: t.arrayExpression(sheets),
   });
 };
 
@@ -311,7 +336,7 @@ export const importSpecifier = (name: string, localName?: string) => {
  *
  * @param opts Template options.
  */
-export const buildCompiledComponent = (opts: CompiledOpts) => {
+export const buildCompiledComponent = (opts: CompiledOpts & { parentPath: NodePath }) => {
   const cssHash = hash(opts.cssOutput.css);
   const transformed = transformCss(opts.cssOutput.css);
   const className = transformed.classNames.join(' ');
@@ -397,6 +422,7 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
   }
 
   return compiledTemplate({
+    parentPath: opts.parentPath,
     jsxNode: opts.node,
     hash: cssHash,
     css: transformed.sheets,
