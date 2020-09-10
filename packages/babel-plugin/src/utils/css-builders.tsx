@@ -4,7 +4,8 @@ import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '
 import { kebabCase, hash } from '@compiled/utils';
 import { joinExpressions } from './ast-builders';
 import { Metadata } from '../types';
-import { getInterpolation, getKey, resolveBindingNode, buildCodeFrameError } from './ast';
+import { getKey, resolveBindingNode, buildCodeFrameError } from './ast';
+import getInterpolation from './getInterpolation';
 
 export interface CSSOutput {
   css: string;
