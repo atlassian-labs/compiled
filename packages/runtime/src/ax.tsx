@@ -2,7 +2,8 @@ export default function ax(className: string) {
   const found: any = {};
 
   className.split(' ').forEach((cls) => {
-    const part = cls.split('-')[1];
+    const index = cls.charAt(0) === '_' ? 5 : 4;
+    const part = cls.slice(0, index);
     found[part] = cls;
   });
 

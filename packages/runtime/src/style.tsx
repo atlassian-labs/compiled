@@ -29,9 +29,12 @@ export default function Style(props: StyleProps) {
     analyzeCssInDev(children, props.hash);
   }
 
+  // TODO: We need to come up with a method to not insert styles if they have
+  // been added before.
+
   // Will remove code on the client bundle.
   if (typeof window === 'undefined') {
-    if (!inserted[props.hash]) {
+    if (!props.hash || !inserted[props.hash]) {
       inserted[props.hash] = true;
       return <style nonce={props.nonce}>{children}</style>;
     }
@@ -39,7 +42,7 @@ export default function Style(props: StyleProps) {
     return null;
   }
 
-  if (!inserted[props.hash] && children) {
+  if (!props.hash || (!inserted[props.hash] && children)) {
     // Keep re-assigning over ternary because it's smaller
     stylesheet = stylesheet || createStyleSheet(props);
     children.forEach(stylesheet);

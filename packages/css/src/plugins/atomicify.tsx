@@ -26,10 +26,18 @@ const normalizeSelector = (str?: string) => {
   return str.charAt(0) === '&' ? str.replace(/^&+/, '') : ` ${str}`;
 };
 
+const fixClassName = (str: string) => {
+  if (Number.isFinite(+str.charAt(0))) {
+    return `_${str}`;
+  }
+
+  return str;
+};
+
 const atomicifyDecl = (node: Declaration, opts: Opts = {}) => {
   const normalizedSelector = normalizeSelector(opts.parentSelector);
   const group = hash(`${join(opts.parentAtRule, opts.parentSelector)}${node.prop}`).slice(0, 4);
-  const className = `${group}${hash(node.value).slice(0, 4)}`;
+  const className = fixClassName(`${group}${hash(node.value).slice(0, 4)}`);
   const selector = `.${className}${normalizedSelector}`;
   const newDecl = decl({ prop: node.prop, value: node.value });
   const newRule = rule({ selector, nodes: [newDecl] });
