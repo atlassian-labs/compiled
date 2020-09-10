@@ -28,8 +28,8 @@ const normalizeSelector = (str?: string) => {
 
 const atomicifyDecl = (node: Declaration, opts: Opts = {}) => {
   const normalizedSelector = normalizeSelector(opts.parentSelector);
-  const group = hash(`${join(opts.parentAtRule, opts.parentSelector)}-${node.prop}`);
-  const className = `cc-${group}-${hash(node.value)}`;
+  const group = hash(`${join(opts.parentAtRule, opts.parentSelector)}${node.prop}`).slice(0, 4);
+  const className = `${group}${hash(node.value).slice(0, 4)}`;
   const selector = `.${className}${normalizedSelector}`;
   const newDecl = decl({ prop: node.prop, value: node.value });
   const newRule = rule({ selector, nodes: [newDecl] });
