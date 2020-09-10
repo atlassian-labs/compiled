@@ -107,7 +107,11 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         css += result.css;
         variables = variables.concat(result.variables);
       } else {
-        throw buildCodeFrameError('Variable could not be found', identifier, meta.parentPath);
+        throw buildCodeFrameError(
+          'Variable could not be found or invalid attempt to spread an object',
+          identifier,
+          meta.parentPath
+        );
       }
     }
   });

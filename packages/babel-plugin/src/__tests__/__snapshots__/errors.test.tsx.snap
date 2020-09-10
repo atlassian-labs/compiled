@@ -28,7 +28,7 @@ exports[`error handling should throw when referencing an identifier that isnt su
 `;
 
 exports[`error handling should throw when spreading an identifier that does not exist 1`] = `
-"unknown: Variable could not be found (5:21).
+"unknown: Variable could not be found or invalid attempt to spread an object (5:21).
   3 |       import React from 'react';
   4 | 
 > 5 |       <div css={{ ...dontexist }} />
