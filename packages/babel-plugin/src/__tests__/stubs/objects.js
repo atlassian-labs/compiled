@@ -32,3 +32,5 @@ export const complexObject = {
   ...styleModuleInlining,
   backgroundColor: () => secondary,
 };
+
+export const colorMixin = () => ({ color: 'red' });

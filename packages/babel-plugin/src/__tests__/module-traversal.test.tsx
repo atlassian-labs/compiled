@@ -271,4 +271,33 @@ describe('module traversal', () => {
       '.cc-hash-test{font-size:14px;color:blue;background:red;font-size:12px;color:pink;background-color:pink}'
     );
   });
+
+  it('should inline object mixin', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import { colorMixin } from './stubs/objects';
+
+      <div css={{ ':hover': colorMixin() }} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test:hover{color:red}');
+  });
+
+  it('should inline string literal mixin', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import { colorMixin } from './stubs/objects';
+
+      const colors = colorMixin();
+
+      <div css={\`:hover { color: \${colors.color}; }\`} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test:hover{color:var(--var-hash-test)}');
+    expect(result).toInclude('style={{"--var-hash-test":colors.color}}');
+  });
 });

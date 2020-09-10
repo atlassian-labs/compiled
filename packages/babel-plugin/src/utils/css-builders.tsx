@@ -53,7 +53,10 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
     if (t.isObjectProperty(prop)) {
       const identifier = getIdentifierFromCallExpression(prop.value as t.Expression);
       // Don't use prop.value directly as it extracts constants from identifiers if needed.
-      const { value: propValue } = getInterpolation(identifier as t.Expression, meta);
+      const { value: propValue, meta: newMeta } = getInterpolation(
+        identifier as t.Expression,
+        meta
+      );
 
       const key = getKey(prop.key);
       let value = '';
@@ -66,7 +69,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         value = addUnitIfNeeded(key, propValue.value);
       } else if (t.isObjectExpression(propValue)) {
         // We've found a nested object like: `':hover': { color: 'red' }`
-        const result = extractObjectExpression(propValue, meta);
+        const result = extractObjectExpression(propValue, newMeta);
         css += `${key} { ${result.css} }`;
         variables = variables.concat(result.variables);
         return;
@@ -76,7 +79,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         // Both functions (extractTemplateLiteral + extractObjectExpression) reference each other.
         // One needs to disable this warning.
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        const result = extractTemplateLiteral(propValue, meta);
+        const result = extractTemplateLiteral(propValue, newMeta);
         value = result.css;
         variables = variables.concat(result.variables);
       } else {
@@ -124,7 +127,11 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     const nodeExpression = node.expressions[index];
 
     const identifier = getIdentifierFromCallExpression(nodeExpression);
-    const { value: interpolation } = getInterpolation(identifier as t.Expression, meta);
+
+    const { value: interpolation, meta: newMeta } = getInterpolation(
+      identifier as t.Expression,
+      meta
+    );
 
     if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
       // Simple case - we can immediately inline the value.
@@ -133,7 +140,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
     if (t.isObjectExpression(interpolation)) {
       // We found an object like: css`${{ red: 'blue' }}`.
-      const result = extractObjectExpression(interpolation, meta);
+      const result = extractObjectExpression(interpolation, newMeta);
       variables = variables.concat(result.variables);
       return css + result.css;
     }
