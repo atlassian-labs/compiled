@@ -294,7 +294,7 @@ describe('css prop object literal', () => {
     expect(actual).toInclude('.cc-hash-test:hover{color:red}');
   });
 
-  xit('should transform object with no argument arrow function variable', () => {
+  it('should transform object with no argument arrow function variable', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
@@ -304,7 +304,7 @@ describe('css prop object literal', () => {
         <div css={{ color: 'blue', ...mixin() }}>hello world</div>
       `);
 
-    expect(actual).toInclude(`.css-test{color:blue;color:red}`);
+    expect(actual).toInclude(`.cc-hash-test{color:blue;color:red}`);
   });
 
   it('should transform template literal value', () => {
@@ -318,7 +318,7 @@ describe('css prop object literal', () => {
     expect(actual).toInclude(`.cc-hash-test{color:blue}`);
   });
 
-  xit('should transform object spread with no argument arrow function variable', () => {
+  it('should transform object spread with no argument arrow function variable', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
@@ -328,7 +328,7 @@ describe('css prop object literal', () => {
         <div css={{ color: 'blue', ...mixin() }}>hello world</div>
       `);
 
-    expect(actual).toInclude('.css-test{color:blue;color:red}');
+    expect(actual).toInclude('.cc-hash-test{color:blue;color:red}');
   });
 
   it('should transform inline template literal with suffix', () => {
@@ -346,7 +346,7 @@ describe('css prop object literal', () => {
     expect(actual).toInclude('.cc-hash-test{padding:0 4px;color:red}');
   });
 
-  xit('should transform object spread with no argument function variable', () => {
+  it('should transform object spread with no argument function variable', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
@@ -358,10 +358,10 @@ describe('css prop object literal', () => {
         <div css={{ color: 'blue', ...mixin() }}>hello world</div>
       `);
 
-    expect(actual).toInclude(`.css-test{color:blue;color:red}`);
+    expect(actual).toInclude(`.cc-hash-test{color:blue;color:red}`);
   });
 
-  xit('should transform object with no argument arrow function', () => {
+  it('should transform object with no argument arrow function', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
@@ -371,8 +371,30 @@ describe('css prop object literal', () => {
         <div css={{ color: 'blue', ':hover': mixin() }}>hello world</div>
       `);
 
-    expect(actual).toInclude(`.css-test{color:blue}`);
-    expect(actual).toInclude('.css-test:hover{color:red}');
+    expect(actual).toInclude(`.cc-hash-test{color:blue}`);
+    expect(actual).toInclude('.cc-hash-test:hover{color:red}');
+  });
+
+  it('should transform object with no argument arrow function and complex body', () => {
+    const actual = transform(`
+        import '@compiled/core';
+        import React from 'react';
+
+        const bgColor = 'blue';
+        const fontSize = 12;
+
+        const mixin = () => ({ color: 'red', backgroundColor: bgColor });
+
+        const sizes = {
+          mixin1: () => \`1px solid \${bgColor}\`,
+          mixin2: () => ({ fontSize }),
+        };
+
+        <div css={{ color: 'blue', ':hover': mixin(), border: sizes.mixin1(), ...sizes.mixin2() }}>hello world</div>
+      `);
+
+    expect(actual).toInclude(`.cc-hash-test{color:blue;border:1px solid blue;font-size:12px}`);
+    expect(actual).toInclude('.cc-hash-test:hover{color:red;background-color:blue}');
   });
 
   it('should extract mixin from identifier', () => {
@@ -403,7 +425,7 @@ describe('css prop object literal', () => {
     expect(actual).toInclude(`.cc-hash-test{color:red}`);
   });
 
-  xit('should transform object with no argument function variable', () => {
+  it('should transform object with no argument function variable', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
@@ -415,11 +437,11 @@ describe('css prop object literal', () => {
         <div css={{ color: 'blue', ':hover': mixin() }}>hello world</div>
       `);
 
-    expect(actual).toInclude(`.css-test{color:blue}`);
-    expect(actual).toInclude('.css-test:hover{color:red}');
+    expect(actual).toInclude(`.cc-hash-test{color:blue}`);
+    expect(actual).toInclude('.cc-hash-test:hover{color:red}');
   });
 
-  xit('should transform object spread with no argument function variable', () => {
+  it('should transform object spread with no argument function variable', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
@@ -431,7 +453,7 @@ describe('css prop object literal', () => {
         <div css={{ color: 'blue', ...mixin() }}>hello world</div>
       `);
 
-    expect(actual).toInclude('.css-test{color:blue;color:red}');
+    expect(actual).toInclude('.cc-hash-test{color:blue;color:red}');
   });
 
   xit('should transform object with argument arrow function variable', () => {

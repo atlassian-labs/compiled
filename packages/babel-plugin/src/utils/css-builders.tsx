@@ -28,6 +28,18 @@ const normalizeContentValue = (value: string) => {
 };
 
 /**
+ * Picks identifier (`mixin`, `mixin1`, `mixin2`) from call expression as given in below example
+ * `css={{ ':hover': mixin(), border: sizes.mixin1(), ...mixin2(), ...mixin3 }}` or `css={\`\${mixin()}\`}`
+ * If it's not a call expression, it will pick the identifier (`mixin3` in above example)
+ *
+ * @param node Any Expression or Identifier
+ */
+const getIdentifierFromCallExpression = (node: t.Expression) =>
+  // TODO: Handle arguments when we pick mixin arguments story. Right now
+  // we are only picking function without any arguments.
+  t.isCallExpression(node) && node.arguments.length === 0 ? node.callee : node;
+
+/**
  * Extracts CSS data from an object expression node.
  *
  * @param node Node we're interested in extracting CSS from.
@@ -39,8 +51,10 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 
   node.properties.forEach((prop) => {
     if (t.isObjectProperty(prop)) {
+      const identifier = getIdentifierFromCallExpression(prop.value as t.Expression);
       // Don't use prop.value directly as it extracts constants from identifiers if needed.
-      const propValue = getInterpolation(prop.value as t.Expression, meta);
+      const { value: propValue } = getInterpolation(identifier as t.Expression, meta);
+
       const key = getKey(prop.key);
       let value = '';
 
@@ -75,33 +89,21 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 
       // Time to add this key+value to the CSS string we're building up.
       css += `${kebabCase(key)}: ${value};`;
-    } else if (t.isSpreadElement(prop) && t.isIdentifier(prop.argument)) {
+    } else if (t.isSpreadElement(prop)) {
       // We found a object spread such as: `...mixinIdentifier`.
-      const binding = meta.parentPath.scope.getBinding(prop.argument.name);
-      const resolvedBinding = resolveBindingNode(binding, meta);
+      const identifier = getIdentifierFromCallExpression(prop.argument);
+      const { value: propValue, meta: newMeta } = getInterpolation(
+        identifier as t.Expression,
+        meta
+      );
 
-      if (!resolvedBinding) {
-        throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
-      }
-
-      if (t.isObjectExpression(resolvedBinding.node)) {
-        const result = extractObjectExpression(resolvedBinding.node, resolvedBinding.meta);
-
-        if (resolvedBinding.source === 'import' && result.variables.length > 0) {
-          // NOTE: Currently we throw if the found CSS has any variables found from an
-          // import. This is because we'd need to ensure all identifiers are added to
-          // the owning file - if not done they would just error at runtime. Because
-          // this isn't a required feature at the moment we're deprioritizing support
-          // for this.
-          throw buildCodeFrameError(
-            "Identifier contains values that can't be statically evaluated",
-            prop.argument,
-            meta.parentPath
-          );
-        }
+      if (t.isObjectExpression(propValue)) {
+        const result = extractObjectExpression(propValue, newMeta);
 
         css += result.css;
         variables = variables.concat(result.variables);
+      } else {
+        throw buildCodeFrameError('Variable could not be found', identifier, meta.parentPath);
       }
     }
   });
@@ -119,7 +121,10 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   let variables: CSSOutput['variables'] = [];
   // quasis are the string pieces of the template literal - the parts around the interpolations.
   const css = node.quasis.reduce((css, q, index) => {
-    const interpolation = getInterpolation(node.expressions[index], meta);
+    const nodeExpression = node.expressions[index];
+
+    const identifier = getIdentifierFromCallExpression(nodeExpression);
+    const { value: interpolation } = getInterpolation(identifier as t.Expression, meta);
 
     if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
       // Simple case - we can immediately inline the value.

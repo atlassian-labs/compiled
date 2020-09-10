@@ -239,6 +239,30 @@ export const tryEvaluateExpression = (
   return fallbackNode;
 };
 
+/**
+ * Will wrap BlockStatement or Expression in an IIFE,
+ * Looks like (() => { return 10; })().
+ *
+ * @param node Node of type either BlockStatement or Expression
+ */
+export const wrapNodeInIIFE = (node: t.BlockStatement | t.Expression) =>
+  t.callExpression(t.arrowFunctionExpression([], node), []);
+
+const tryWrappingBlockStatementInIIFE = (node: t.BlockStatement | t.Expression) =>
+  t.isBlockStatement(node) ? wrapNodeInIIFE(node) : node;
+
+/**
+ * Will pick `Function` body and tries to wrap it in an IIFE if
+ * its a BlockStatement otherwise returns the picked body,
+ * E.g.
+ * `props => props.color` would end up as `props.color`.
+ * `props => { return props.color; }` would end up as `(() => { return props.color })()`
+ * `function () { return props.color; }` would end up as `(function () { return props.color })()`
+ *
+ * @param node Node of type ArrowFunctionExpression
+ */
+export const pickFunctionBody = (node: t.Function) => tryWrappingBlockStatementInIIFE(node.body);
+
 interface PartialBindingWithMeta {
   node: t.Node;
   path: NodePath;
@@ -355,7 +379,61 @@ export const resolveBindingNode = (
 };
 
 /**
- * Will look in an expression and return the actual value.
+ * Will look in an expression and return the actual value along with updated metadata.
+ * E.g: If there was a function called `size` that is set somewhere as
+ * `const size = () => 10` or `const size = function() { return 10; }` or `function size() { return 10; }`,
+ * passing the `size` identifier to this function would return `10` (it will recursively evaluate).
+ *
+ * @param expression Expression we want to interrogate.
+ * @param state Babel state - should house options and meta data used during the transformation.
+ */
+const getInterpolationForFunctionType = (expression: t.Function, meta: Metadata) =>
+  // Both functions (getInterpolationForFunctionType + getInterpolation) reference each other.
+  // One needs to disable this warning.
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  getInterpolation(pickFunctionBody(expression), meta);
+
+/**
+ * Will look in an expression and return the actual value along with updated metadata.
+ * E.g: If there was an IIFE called `size` that is set somewhere as
+ * `const size = (() => 10)()` or `const size = (function() { return 10; })()`,
+ * passing the `size` identifier to this function would return `10` (it will recursively evaluate).
+ *
+ * @param expression Expression we want to interrogate.
+ * @param state Babel state - should house options and meta data used during the transformation.
+ */
+const getInterpolationForIIFEType = (expression: t.Function, meta: Metadata) => {
+  let value: t.Node | undefined | null = undefined;
+  let newMeta: Metadata = meta;
+
+  if (t.isBlockStatement(expression.body)) {
+    traverse(expression.body, {
+      noScope: true,
+      ReturnStatement(path) {
+        const { argument } = path.node;
+
+        if (argument) {
+          // Both functions (getInterpolationForIIFEType + getInterpolation) reference each other.
+          // One needs to disable this warning.
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
+          ({ value, meta: newMeta } = getInterpolation(argument, meta));
+        }
+
+        path.stop();
+      },
+    });
+  } else {
+    // Both functions (getInterpolationForIIFEType + getInterpolation) reference each other.
+    // One needs to disable this warning.
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    ({ value, meta: newMeta } = getInterpolation(expression.body, meta));
+  }
+
+  return { value, meta: newMeta };
+};
+
+/**
+ * Will look in an expression and return the actual value along with updated metadata.
  * If the expression is an identifier node (a variable) and a constant,
  * it will return the variable reference.
  *
@@ -368,25 +446,32 @@ export const resolveBindingNode = (
  * @param expression Expression we want to interrogate.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Expression => {
+export const getInterpolation = (
+  expression: t.Expression,
+  meta: Metadata
+): { value: t.Expression; meta: Metadata } => {
   let value: t.Node | undefined | null = undefined;
+  let newMeta: Metadata = meta;
 
   if (t.isIdentifier(expression)) {
-    const binding = meta.parentPath.scope.getBinding(expression.name);
-    const resolvedBinding = resolveBindingNode(binding, meta);
+    const binding = newMeta.parentPath.scope.getBinding(expression.name);
+    const resolvedBinding = resolveBindingNode(binding, newMeta);
     if (binding?.path.node === expression) {
       // We resolved to the same node - bail out!
-      return expression;
+      return { value: expression, meta: newMeta };
     }
 
     if (resolvedBinding && resolvedBinding.constant) {
       // We recursively call get interpolation until it not longer returns an identifier or member expression
-      value = getInterpolation(resolvedBinding.node as t.Expression, resolvedBinding.meta);
+      ({ value, meta: newMeta } = getInterpolation(
+        resolvedBinding.node as t.Expression,
+        resolvedBinding.meta
+      ));
     }
   } else if (t.isMemberExpression(expression)) {
     const { accessPath, bindingIdentifier } = getMemberExpressionMeta(expression);
-    const binding = meta.parentPath.scope.getBinding(bindingIdentifier.name);
-    const resolvedBinding = resolveBindingNode(binding, meta);
+    const binding = newMeta.parentPath.scope.getBinding(bindingIdentifier.name);
+    const resolvedBinding = resolveBindingNode(binding, newMeta);
 
     if (resolvedBinding && resolvedBinding.constant && t.isObjectExpression(resolvedBinding.node)) {
       const objectValue = getValueFromObjectExpression(
@@ -394,12 +479,16 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
         accessPath
       ) as t.Expression;
       // We recursively call get interpolation until it not longer returns an identifier or member expression
-      value = getInterpolation(objectValue, resolvedBinding.meta);
+      ({ value, meta: newMeta } = getInterpolation(objectValue, resolvedBinding.meta));
     }
+  } else if (t.isFunction(expression)) {
+    ({ value, meta: newMeta } = getInterpolationForFunctionType(expression, newMeta));
+  } else if (t.isCallExpression(expression) && t.isFunction(expression.callee)) {
+    ({ value, meta: newMeta } = getInterpolationForIIFEType(expression.callee, newMeta));
   }
 
   if (t.isStringLiteral(value) || t.isNumericLiteral(value) || t.isObjectExpression(value)) {
-    return value;
+    return { value, meta: newMeta };
   }
 
   // --------------
@@ -409,32 +498,11 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
   // --------------
 
   if (value) {
-    return tryEvaluateExpression(value as t.Expression, meta, expression);
+    return {
+      value: tryEvaluateExpression(value as t.Expression, newMeta, expression),
+      meta: newMeta,
+    };
   }
 
-  return tryEvaluateExpression(expression, meta);
+  return { value: tryEvaluateExpression(expression, newMeta), meta: newMeta };
 };
-
-/**
- * Will wrap BlockStatement or Expression in an IIFE,
- * Looks like (() => { return 10; })().
- *
- * @param node Node of type either BlockStatement or Expression
- */
-export const wrapNodeInIIFE = (node: t.BlockStatement | t.Expression) =>
-  t.callExpression(t.arrowFunctionExpression([], node), []);
-
-const tryWrappingBlockStatementInIIFE = (node: t.BlockStatement | t.Expression) =>
-  t.isBlockStatement(node) ? wrapNodeInIIFE(node) : node;
-
-/**
- * Will pick `ArrowFunctionExpression` body and tries to wrap it in an IIFE if
- * its a BlockStatement otherwise returns the picked body,
- * E.g.
- * `props => props.color` would end up as `props.color`.
- * `props => { return props.color` } would end up as `(() => { return props.color })()`.
- *
- * @param node Node of type ArrowFunctionExpression
- */
-export const pickArrowFunctionExpressionBody = (node: t.ArrowFunctionExpression) =>
-  tryWrappingBlockStatementInIIFE(node.body);

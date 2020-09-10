@@ -242,29 +242,33 @@ describe('module traversal', () => {
     expect(result).toInclude('.cc-hash-test{color:red;font-size:10px}');
   });
 
-  it('should throw when pulling in a CSS like object that could not be statically evaluated', () => {
-    expect(() => {
-      transform(
-        `
-        import '@compiled/core';
-        import { cantStaticallyEvaluate } from './stubs/objects';
-
-        <div css={[cantStaticallyEvaluate]} />
+  it('should inline CSS like complex object', () => {
+    const result = transform(
       `
-      );
-    }).toThrowErrorMatchingSnapshot();
+      import '@compiled/core';
+      import { complexObject } from './stubs/objects';
+
+      <div css={[complexObject ]} />
+    `
+    );
+
+    expect(result).toInclude(
+      '.cc-hash-test{font-size:14px;color:blue;background:red;font-size:12px;color:pink;background-color:pink}'
+    );
   });
 
-  it('should throw when spreading a CSS like object that could not be statically evaluated', () => {
-    expect(() => {
-      transform(
-        `
+  it('should inline CSS like complex spread object', () => {
+    const result = transform(
+      `
       import '@compiled/core';
-      import { cantStaticallyEvaluate } from './stubs/objects';
+      import { complexObject } from './stubs/objects';
 
-      <div css={{ ...cantStaticallyEvaluate }} />
+      <div css={{ ...complexObject }} />
     `
-      );
-    }).toThrowErrorMatchingSnapshot();
+    );
+
+    expect(result).toInclude(
+      '.cc-hash-test{font-size:14px;color:blue;background:red;font-size:12px;color:pink;background-color:pink}'
+    );
   });
 });

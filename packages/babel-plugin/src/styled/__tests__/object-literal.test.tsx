@@ -268,7 +268,7 @@ describe('styled component object literal', () => {
 
   it.todo('should transform object with array variable');
 
-  xit('should transform object with no argument arrow function variable', () => {
+  it('should transform object with no argument arrow function variable', () => {
     const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -282,7 +282,7 @@ describe('styled component object literal', () => {
     expect(actual).toInclude('.cc-hash-test{color:red}');
   });
 
-  xit('should transform object with no argument function variable', () => {
+  it('should transform object with no argument function variable', () => {
     const actual = transform(`
         import { styled } from '@compiled/core';
 

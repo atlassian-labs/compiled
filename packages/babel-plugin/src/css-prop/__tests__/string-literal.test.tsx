@@ -211,7 +211,7 @@ describe('css prop string literal', () => {
     expect(actual).toInclude('.cc-hash-test{color:blue;font-size:30px;color:red}');
   });
 
-  xit('should transform template string with no argument arrow function variable', () => {
+  it('should transform template string with no argument arrow function variable', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
@@ -220,10 +220,10 @@ describe('css prop string literal', () => {
         <div css={\`\${mixin}\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.css-test{color:blue;font-size:30px}');
+    expect(actual).toInclude('.cc-hash-test{color:blue;font-size:30px}');
   });
 
-  xit('should transform template string with no argument arrow function call variable', () => {
+  it('should transform template string with no argument arrow function call variable', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
@@ -232,10 +232,10 @@ describe('css prop string literal', () => {
         <div css={\`\${mixin()}\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.css-test{color:blue;font-size:30px}');
+    expect(actual).toInclude('.cc-hash-test{color:blue;font-size:30px}');
   });
 
-  xit('should transform template string with no argument function variable', () => {
+  it('should transform template string with no argument function variable', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
@@ -247,7 +247,7 @@ describe('css prop string literal', () => {
         <div css={\`\${mixin()}\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.css-test{color:red}');
+    expect(actual).toInclude('.cc-hash-test{color:red}');
   });
 
   xit('should transform template string with argument arrow function variable', () => {

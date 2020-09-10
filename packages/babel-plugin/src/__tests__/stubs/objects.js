@@ -24,8 +24,11 @@ export default {
   primary: 'blue',
 };
 
-const cantEvaluate = (() => 12)();
+const fontSize = (() => 12)();
 
-export const cantStaticallyEvaluate = {
-  fontSize: cantEvaluate,
+export const complexObject = {
+  ...styleInlining,
+  fontSize,
+  ...styleModuleInlining,
+  backgroundColor: () => secondary,
 };
