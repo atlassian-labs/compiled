@@ -6,16 +6,14 @@ export default {
   title: 'simple function mixins',
 };
 
-const colors = colorMixin();
-
 const StyledObjectLiteral = styled.div({
   ...objectStyles,
   ...colorMixin(),
 });
 
 const StyledTemplateLiteral = styled.div`
-  color: ${colors.color};
-  background-color: ${colors.backgroundColor};
+  color: ${objectStyles.color};
+  background-color: ${objectStyles.backgroundColor()};
 `;
 
 export const ObjectLiteral = () => (
@@ -25,7 +23,7 @@ export const ObjectLiteral = () => (
       css={{
         margin: '4px 0',
         padding: 4,
-        border: `1px solid ${objectStyles.color}`,
+        border: `1px solid ${objectStyles.backgroundColor()}`,
         ':hover': colorMixin(),
       }}>
       Hello css prop component. Hover me Please.
@@ -40,10 +38,10 @@ export const TemplateLiteral = () => (
       css={`
         margin: 4px 0;
         padding: 4px;
-        border: 1px solid ${objectStyles.color};
+        border: 1px solid ${objectStyles.backgroundColor()};
         :hover {
-          color: ${colors.color};
-          background-color: ${colors.backgroundColor};
+          color: ${objectStyles.color};
+          background-color: ${objectStyles.backgroundColor()};
         }
       `}>
       Hello css prop component. Hover me Please.
