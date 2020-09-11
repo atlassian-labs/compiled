@@ -1,18 +1,16 @@
 # 👷‍♀ ‍Compiled
 
-<div align="right">
-  <a href="https://compiledcssinjs.com">Read the docs →</a>
-</div>
+[Read the docs →](https://compiledcssinjs.com)
 
 ## Get started
 
-Install
+**Install**
 
 ```bash
 npm install @compiled/core@nightly @compiled/babel-plugin@nightly
 ```
 
-Configure [Babel](https://babeljs.io/docs/en/config-files)
+**Configure [Babel](https://babeljs.io/docs/en/config-files)**
 
 ```json
 {
@@ -20,7 +18,7 @@ Configure [Babel](https://babeljs.io/docs/en/config-files)
 }
 ```
 
-Style
+**Style**
 
 ```jsx
 import { styled, ClassNames } from '@compiled/core';
