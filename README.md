@@ -1,23 +1,44 @@
-# 👷‍♀ ‍[Compiled](https://compiledcssinjs.com/)
+# 👷‍♀ ‍Compiled
 
-## Installation
+<div align="right">
+  <a href="https://compiledcssinjs.com">Read the docs →</a>
+</div>
+
+## Get started
+
+Install
 
 ```bash
-npm install @compiled/core @compiled/babel-plugin
+npm install @compiled/core@nightly @compiled/babel-plugin@nightly
 ```
 
-Then add the plugin to your [Babel config](https://babeljs.io/docs/en/config-files):
+Configure [Babel](https://babeljs.io/docs/en/config-files)
 
-```
+```json
 {
   "plugins": ["@compiled/babel-plugin"]
 }
 ```
 
-# Contributing
+Style
 
-Thank you for considering a contribution to Compiled!
-Before doing so,
-please make sure to read our [contribution guidelines](/CONTRIBUTING.md).
+```jsx
+import { styled, ClassNames } from '@compiled/core';
+import { background } from './tokens';
+
+const StyledButton = styled.button`
+  color: ${props => props.color};
+  background-color: ${background};
+`;
+
+<StyledButton css={{ fontSize: 16 }} />
+
+<ClassNames>{({ css }) => <div className={css`font-size: 24`} />}</ClassNames>
+```
+
+## Contributing
+
+Thank you for considering to contribute to Compiled!
+Before doing so please make sure to read our [contribution guidelines](/CONTRIBUTING.md).
 
 [![Atlassian](https://raw.githubusercontent.com/atlassian-internal/oss-assets/master/banner-cheers-light.png)](https://atlassian.com)
