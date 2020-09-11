@@ -30,7 +30,7 @@ export const complexObject = {
   ...styleInlining,
   fontSize,
   ...styleModuleInlining,
-  backgroundColor: () => secondary,
+  backgroundColor: secondary,
 };
 
 export const colorMixin = () => ({ color: 'red' });

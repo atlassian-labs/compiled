@@ -240,6 +240,20 @@ describe('styled component string literal', () => {
     expect(actual).toInclude('.cc-hash-test{color:red}');
   });
 
+  it('should transform template string with no argument arrow function variable when not called', () => {
+    const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        const mixin = () => ({ color: 'red' });
+
+        const ListItem = styled.div\`
+          \${mixin};
+        \`;
+      `);
+
+    expect(actual).toInclude('.cc-hash-test{color:red}');
+  });
+
   it('should transform complex template string with no argument functions', () => {
     const actual = transform(`
         import { styled } from '@compiled/core';

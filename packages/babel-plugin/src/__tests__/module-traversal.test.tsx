@@ -242,7 +242,7 @@ describe('module traversal', () => {
     expect(result).toInclude('.cc-hash-test{color:red;font-size:10px}');
   });
 
-  it('should inline CSS like complex object', () => {
+  it('should inline css from an object referencing a complex identifier from another module', () => {
     const result = transform(
       `
       import '@compiled/core';
@@ -257,7 +257,7 @@ describe('module traversal', () => {
     );
   });
 
-  it('should inline CSS like complex spread object', () => {
+  it('should inline css from a spread referencing a complex identifier from another module', () => {
     const result = transform(
       `
       import '@compiled/core';
@@ -272,7 +272,7 @@ describe('module traversal', () => {
     );
   });
 
-  it('should inline object mixin', () => {
+  it('should inline css from a call expression mixin referencing an identifier from another module', () => {
     const result = transform(
       `
       import '@compiled/core';
@@ -285,7 +285,7 @@ describe('module traversal', () => {
     expect(result).toInclude('.cc-hash-test:hover{color:red}');
   });
 
-  it('should inline string literal mixin', () => {
+  it('should inline css from a member expression mixin referencing an identifier from another module', () => {
     const result = transform(
       `
       import '@compiled/core';
