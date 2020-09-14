@@ -278,7 +278,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test:hover{color:red}');
+    expect(result).toInclude('.cc-hash-test:hover{color:red;background-color:pink}');
   });
 
   it('should inline css from a member expression mixin referencing an identifier from another module', () => {

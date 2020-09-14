@@ -1,4 +1,4 @@
-import { secondary } from './simple';
+import { secondary, primary } from './simple';
 
 export const colors = {
   primary: 'red',
@@ -30,4 +30,4 @@ export const cantStaticallyEvaluate = {
   fontSize: cantEvaluate,
 };
 
-export const colorMixin = () => ({ color: 'red' });
+export const colorMixin = () => ({ color: colors.primary, backgroundColor: secondary });
