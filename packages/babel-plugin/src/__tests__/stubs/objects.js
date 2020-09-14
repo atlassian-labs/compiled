@@ -1,4 +1,4 @@
-import { secondary, primary } from './simple';
+import { secondary } from './simple';
 
 export const colors = {
   primary: 'red',
