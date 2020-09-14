@@ -2,5 +2,6 @@
   "name": "module-a",
   "version": "0.0.1",
   "main": "./index.js",
-  "types": "./index.d.ts"
+  "types": "./index.d.ts",
+  "private": true
 }
