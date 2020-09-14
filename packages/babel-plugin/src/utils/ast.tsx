@@ -268,11 +268,11 @@ export const resolveBindingNode = (
 
   if (t.isVariableDeclarator(binding.path.node)) {
     return {
+      meta,
       node: binding.path.node.init as t.Node,
       path: binding.path,
       constant: binding.constant,
       source: 'module',
-      meta,
     };
   }
 
@@ -374,6 +374,10 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
   if (t.isIdentifier(expression)) {
     const binding = meta.parentPath.scope.getBinding(expression.name);
     const resolvedBinding = resolveBindingNode(binding, meta);
+    if (binding?.path.node === expression) {
+      // We resolved to the same node - bail out!
+      return expression;
+    }
 
     if (resolvedBinding && resolvedBinding.constant) {
       // We recursively call get interpolation until it not longer returns an identifier or member expression

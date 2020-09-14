@@ -116,11 +116,9 @@ describe('import specifiers', () => {
         `
         import '@compiled/core';
 
-        export const DestructuredComp = ({ foo, color }) => {
+        export const Component = ({ foo, color }) => {
           return (
-            <>
-              <span css={{ fontSize: foo, color, backgroundColor: 'blue' }} />
-            </>
+            <span css={{ fontSize: foo, color, backgroundColor: 'blue' }} />
           );
         };
     `
@@ -134,11 +132,9 @@ describe('import specifiers', () => {
         `
         import '@compiled/core';
 
-        export const DestructuredComp = (props) => {
+        export const Component = (props) => {
           return (
-            <>
-              <span css={{ fontSize: props.foo, color: props.color, backgroundColor: 'blue' }} />
-            </>
+            <span css={{ fontSize: props.foo, color: props.color, backgroundColor: 'blue' }} />
           );
         };
     `
@@ -152,11 +148,9 @@ describe('import specifiers', () => {
         `
         import '@compiled/core';
 
-        function DestructuredComp({ foo, color }) {
+        function Component({ foo, color }) {
           return (
-            <>
-              <span css={{ fontSize: foo, color, backgroundColor: 'blue' }} />
-            </>
+            <span css={{ fontSize: foo, color, backgroundColor: 'blue' }} />
           );
         };
     `
@@ -170,13 +164,29 @@ describe('import specifiers', () => {
         `
         import '@compiled/core';
 
-        function DestructuredComp(props) {
+        function Component(props) {
           return (
-            <>
-              <span css={{ fontSize: props.foo, color: props.color, backgroundColor: 'blue' }} />
-            </>
+            <span css={{ fontSize: props.foo, color: props.color, backgroundColor: 'blue' }} />
           );
         };
+    `
+      );
+    }).not.toThrow();
+  });
+
+  it('should not blow up when destructured local args in func', () => {
+    expect(() => {
+      transform(
+        `
+      import '@compiled/core';
+
+      function DestructuredComp(props) {
+        const { foo, color } = props;
+
+        return (
+          <span css={{ fontSize: foo, color: color, backgroundColor: 'blue' }} />
+        );
+      };
     `
       );
     }).not.toThrow();
