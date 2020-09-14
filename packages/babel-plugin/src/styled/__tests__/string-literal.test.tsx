@@ -254,20 +254,40 @@ describe('styled component string literal', () => {
     expect(actual).toInclude('.cc-hash-test{color:red}');
   });
 
-  it('should transform complex template string with no argument functions', () => {
+  it('should transform template string with no argument functions', () => {
     const actual = transform(`
         import { styled } from '@compiled/core';
 
         const color = () => 'blue';
-        const fontSize = 12;
         const fontStyling = {
-          weight: 500,
           style: 'italic',
           family: 'sans-serif',
         };
 
         const mixin1 = function() { return fontStyling.style; };
         function mixin2() { return fontStyling.family; };
+
+        const ListItem = styled.div\`
+          color: blue;
+          font-style: \${mixin1()};
+          font-family: \${mixin2()};
+          :hover { background-color: \${color()} };
+        \`;
+      `);
+
+    expect(actual).toInclude(`.cc-hash-test{color:blue;font-style:italic;font-family:sans-serif}`);
+    expect(actual).toInclude('.cc-hash-test:hover{background-color:blue}');
+  });
+
+  it('should transform template string with no argument function properties belonging to a variable', () => {
+    const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        const color = () => 'blue';
+        const fontSize = 12;
+        const fontStyling = {
+          weight: 500
+        };
 
         const sizes = {
           mixin1: () => '1px solid black',
@@ -280,14 +300,12 @@ describe('styled component string literal', () => {
           border: \${sizes.mixin1()};
           font-size: \${sizes.mixin2()}px;
           font-weight: \${sizes.mixin3()};
-          font-style: \${mixin1()};
-          font-family: \${mixin2()};
           :hover { background-color: \${color()} };
         \`;
       `);
 
     expect(actual).toInclude(
-      `.cc-hash-test{color:blue;border:1px solid black;font-size:12px;font-weight:500;font-style:italic;font-family:sans-serif}`
+      `.cc-hash-test{color:blue;border:1px solid black;font-size:12px;font-weight:500}`
     );
     expect(actual).toInclude('.cc-hash-test:hover{background-color:blue}');
   });

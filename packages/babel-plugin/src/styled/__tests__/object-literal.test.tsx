@@ -298,14 +298,12 @@ describe('styled component object literal', () => {
     expect(actual).toInclude('.cc-hash-test{color:red}');
   });
 
-  it('should transform complex object with no argument functions', () => {
+  it('should transform object with no argument functions', () => {
     const actual = transform(`
         import { styled } from '@compiled/core';
 
         const bgColor = 'blue';
-        const fontSize = 12;
         const fontStyling = {
-          weight: 500,
           style: 'italic',
           family: 'sans-serif',
         };
@@ -313,6 +311,28 @@ describe('styled component object literal', () => {
         const mixin1 = () => ({ color: 'red', backgroundColor: bgColor });
         const mixin2 = function() { return { fontStyle: fontStyling.style } };
         function mixin3() { return { fontFamily: fontStyling.family } };
+
+        const ListItem = styled.div({
+          color: 'blue',
+          ':hover': mixin1(),
+          ...mixin2(),
+          ...mixin3(),
+        });
+      `);
+
+    expect(actual).toInclude(`.cc-hash-test{color:blue;font-style:italic;font-family:sans-serif}`);
+    expect(actual).toInclude('.cc-hash-test:hover{color:red;background-color:blue}');
+  });
+
+  it('should transform object with no argument function properties belonging to a variable', () => {
+    const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        const bgColor = 'blue';
+        const fontSize = 12;
+        const fontStyling = {
+          weight: 500
+        };
 
         const sizes = {
           mixin1: () => \`1px solid \${bgColor}\`,
@@ -322,19 +342,15 @@ describe('styled component object literal', () => {
 
         const ListItem = styled.div({
           color: 'blue',
-          ':hover': mixin1(),
           border: sizes.mixin1(),
           ...sizes.mixin2(),
-          ...sizes.mixin3(),
-          ...mixin2(),
-          ...mixin3(),
+          ...sizes.mixin3()
         });
       `);
 
     expect(actual).toInclude(
-      `.cc-hash-test{color:blue;border:1px solid blue;font-size:12px;font-weight:500;font-style:italic;font-family:sans-serif}`
+      `.cc-hash-test{color:blue;border:1px solid blue;font-size:12px;font-weight:500}`
     );
-    expect(actual).toInclude('.cc-hash-test:hover{color:red;background-color:blue}');
   });
 
   it.todo('should transform object with argument function variable');
