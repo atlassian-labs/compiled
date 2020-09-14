@@ -24,13 +24,10 @@ export default {
   primary: 'blue',
 };
 
-const fontSize = (() => 12)();
+const cantEvaluate = (() => 12)();
 
-export const complexObject = {
-  ...styleInlining,
-  fontSize,
-  ...styleModuleInlining,
-  backgroundColor: secondary,
+export const cantStaticallyEvaluate = {
+  fontSize: cantEvaluate,
 };
 
 export const colorMixin = () => ({ color: 'red' });

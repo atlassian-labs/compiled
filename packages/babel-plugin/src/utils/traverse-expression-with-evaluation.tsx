@@ -7,14 +7,13 @@ import traverse from '@babel/traverse';
 import { Metadata } from '../types';
 
 import {
-  pickFunctionBody,
   resolveBindingNode,
   getMemberExpressionMeta,
   getValueFromObjectExpression,
   tryEvaluateExpression,
 } from './ast';
 
-const createInterpolationPair = (value: t.Expression, meta: Metadata) => ({
+const createResultPair = (value: t.Expression, meta: Metadata) => ({
   value,
   meta,
 });
@@ -28,12 +27,12 @@ const createInterpolationPair = (value: t.Expression, meta: Metadata) => ({
  * @param expression Expression we want to interrogate.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-const getInterpolationForIdentifier = (expression: t.Identifier, meta: Metadata) => {
+const traverseIdentifier = (expression: t.Identifier, meta: Metadata) => {
   let value: t.Node | undefined | null = undefined;
-  let newMeta: Metadata = meta;
+  let updatedMeta: Metadata = meta;
 
-  const binding = newMeta.parentPath.scope.getBinding(expression.name);
-  const resolvedBinding = resolveBindingNode(binding, newMeta);
+  const binding = updatedMeta.parentPath.scope.getBinding(expression.name);
+  const resolvedBinding = resolveBindingNode(binding, updatedMeta);
 
   if (binding?.path.node === expression) {
     // We resolved to the same node - bail out!
@@ -42,13 +41,13 @@ const getInterpolationForIdentifier = (expression: t.Identifier, meta: Metadata)
 
   if (resolvedBinding && resolvedBinding.constant) {
     // We recursively call get interpolation until it not longer returns an identifier or member expression
-    ({ value, meta: newMeta } = getInterpolation(
+    ({ value, meta: updatedMeta } = traverseExpressionWithEvaluation(
       resolvedBinding.node as t.Expression,
       resolvedBinding.meta
     ));
   }
 
-  return createInterpolationPair(value as t.Expression, newMeta);
+  return createResultPair(value as t.Expression, updatedMeta);
 };
 
 /**
@@ -61,13 +60,13 @@ const getInterpolationForIdentifier = (expression: t.Identifier, meta: Metadata)
  * @param expression Expression we want to interrogate.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-const getInterpolationForMemberExpression = (expression: t.MemberExpression, meta: Metadata) => {
+const traverseMemberExpression = (expression: t.MemberExpression, meta: Metadata) => {
   let value: t.Node | undefined | null = undefined;
-  let newMeta: Metadata = meta;
+  let updatedMeta: Metadata = meta;
 
   const { accessPath, bindingIdentifier } = getMemberExpressionMeta(expression);
-  const binding = newMeta.parentPath.scope.getBinding(bindingIdentifier.name);
-  const resolvedBinding = resolveBindingNode(binding, newMeta);
+  const binding = updatedMeta.parentPath.scope.getBinding(bindingIdentifier.name);
+  const resolvedBinding = resolveBindingNode(binding, updatedMeta);
 
   if (resolvedBinding && resolvedBinding.constant && t.isObjectExpression(resolvedBinding.node)) {
     const objectValue = getValueFromObjectExpression(
@@ -75,10 +74,13 @@ const getInterpolationForMemberExpression = (expression: t.MemberExpression, met
       accessPath
     ) as t.Expression;
     // We recursively call get interpolation until it not longer returns an identifier or member expression
-    ({ value, meta: newMeta } = getInterpolation(objectValue, resolvedBinding.meta));
+    ({ value, meta: updatedMeta } = traverseExpressionWithEvaluation(
+      objectValue,
+      resolvedBinding.meta
+    ));
   }
 
-  return createInterpolationPair(value as t.Expression, newMeta);
+  return createResultPair(value as t.Expression, updatedMeta);
 };
 
 /**
@@ -91,22 +93,9 @@ const getInterpolationForMemberExpression = (expression: t.MemberExpression, met
  * @param expression Expression we want to interrogate.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-const getInterpolationForFunction = (expression: t.Function, meta: Metadata) =>
-  getInterpolation(pickFunctionBody(expression), meta);
-
-/**
- * Will look in an expression and return the actual value along with updated metadata.
- *
- * E.g: If there was an IIFE called `size` that is set somewhere as
- * `const size = (() => 10)()` or `const size = (function() { return 10; })()`,
- * passing the `size` identifier to this function would return `10` (it will recursively evaluate).
- *
- * @param expression Expression we want to interrogate.
- * @param state Babel state - should house options and meta data used during the transformation.
- */
-const getInterpolationForIIFE = (expression: t.Function, meta: Metadata) => {
+const traverseFunction = (expression: t.Function, meta: Metadata) => {
   let value: t.Node | undefined | null = undefined;
-  let newMeta: Metadata = meta;
+  let updatedMeta: Metadata = meta;
 
   if (t.isBlockStatement(expression.body)) {
     traverse(expression.body, {
@@ -115,17 +104,17 @@ const getInterpolationForIIFE = (expression: t.Function, meta: Metadata) => {
         const { argument } = path.node;
 
         if (argument) {
-          ({ value, meta: newMeta } = getInterpolation(argument, meta));
+          ({ value, meta: updatedMeta } = traverseExpressionWithEvaluation(argument, meta));
         }
 
         path.stop();
       },
     });
   } else {
-    ({ value, meta: newMeta } = getInterpolation(expression.body, meta));
+    ({ value, meta: updatedMeta } = traverseExpressionWithEvaluation(expression.body, meta));
   }
 
-  return createInterpolationPair(value as t.Expression, newMeta);
+  return createResultPair(value as t.Expression, updatedMeta);
 };
 
 /**
@@ -142,41 +131,37 @@ const getInterpolationForIIFE = (expression: t.Function, meta: Metadata) => {
  * @param expression Expression we want to interrogate.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-const getInterpolation = (
+export const traverseExpressionWithEvaluation = (
   expression: t.Expression,
   meta: Metadata
 ): { value: t.Expression; meta: Metadata } => {
   let value: t.Node | undefined | null = undefined;
-  let newMeta: Metadata = meta;
+  let updatedMeta: Metadata = meta;
 
   if (t.isIdentifier(expression)) {
-    ({ value, meta: newMeta } = getInterpolationForIdentifier(expression, newMeta));
+    ({ value, meta: updatedMeta } = traverseIdentifier(expression, updatedMeta));
   } else if (t.isMemberExpression(expression)) {
-    ({ value, meta: newMeta } = getInterpolationForMemberExpression(expression, newMeta));
+    ({ value, meta: updatedMeta } = traverseMemberExpression(expression, updatedMeta));
   } else if (t.isFunction(expression)) {
-    ({ value, meta: newMeta } = getInterpolationForFunction(expression, newMeta));
-  } else if (t.isCallExpression(expression) && t.isFunction(expression.callee)) {
-    ({ value, meta: newMeta } = getInterpolationForIIFE(expression.callee, newMeta));
+    ({ value, meta: updatedMeta } = traverseFunction(expression, updatedMeta));
   }
 
   if (t.isStringLiteral(value) || t.isNumericLiteral(value) || t.isObjectExpression(value)) {
-    return createInterpolationPair(value, newMeta);
+    return createResultPair(value, updatedMeta);
   }
 
   // --------------
-  // NOTE: We are recursively calling getInterpolation() which is then going to try and evaluate it
+  // NOTE: We are recursively calling traverseExpressionWithEvaluation() which is then going to try and evaluate it
   // multiple times. This may or may not be a performance problem - when looking for quick wins perhaps
   // there is something we could do better here.
   // --------------
 
   if (value) {
-    return createInterpolationPair(
-      tryEvaluateExpression(value as t.Expression, newMeta, expression),
-      newMeta
+    return createResultPair(
+      tryEvaluateExpression(value as t.Expression, updatedMeta, expression),
+      updatedMeta
     );
   }
 
-  return createInterpolationPair(tryEvaluateExpression(expression, newMeta), newMeta);
+  return createResultPair(tryEvaluateExpression(expression, updatedMeta), updatedMeta);
 };
-
-export default getInterpolation;

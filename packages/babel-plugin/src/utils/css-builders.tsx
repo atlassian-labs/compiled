@@ -5,7 +5,7 @@ import { kebabCase, hash } from '@compiled/utils';
 import { joinExpressions } from './ast-builders';
 import { Metadata } from '../types';
 import { getKey, resolveBindingNode, buildCodeFrameError } from './ast';
-import getInterpolation from './getInterpolation';
+import { traverseExpressionWithEvaluation } from './traverse-expression-with-evaluation';
 
 export interface CSSOutput {
   css: string;
@@ -29,16 +29,16 @@ const normalizeContentValue = (value: string) => {
 };
 
 /**
- * Picks identifier (`mixin`, `mixin1`, `mixin2`) from call expression as given in below example
- * `css={{ ':hover': mixin(), border: sizes.mixin1(), ...mixin2(), ...mixin3 }}` or `css={\`\${mixin()}\`}`
- * If it's not a call expression, it will pick the identifier (`mixin3` in above example)
+ * Will try to pick callee from CallExpression.
+ * If successful it will return it,
+ * else it will return the passed node.
  *
- * @param node Any Expression or Identifier
+ * @param node Any Expression
  */
-const getIdentifierFromCallExpression = (node: t.Expression) =>
+const tryGettingCalleeFromCallExpression = (node: t.Expression): t.Expression =>
   // TODO: Handle arguments when we pick mixin arguments story. Right now
   // we are only picking function without any arguments.
-  t.isCallExpression(node) && node.arguments.length === 0 ? node.callee : node;
+  t.isCallExpression(node) && node.arguments.length === 0 ? (node.callee as t.Expression) : node;
 
 /**
  * Extracts CSS data from an object expression node.
@@ -52,10 +52,10 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 
   node.properties.forEach((prop) => {
     if (t.isObjectProperty(prop)) {
-      const identifier = getIdentifierFromCallExpression(prop.value as t.Expression);
+      const expression = tryGettingCalleeFromCallExpression(prop.value as t.Expression);
       // Don't use prop.value directly as it extracts constants from identifiers if needed.
-      const { value: propValue, meta: newMeta } = getInterpolation(
-        identifier as t.Expression,
+      const { value: propValue, meta: updatedMeta } = traverseExpressionWithEvaluation(
+        expression,
         meta
       );
 
@@ -70,7 +70,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         value = addUnitIfNeeded(key, propValue.value);
       } else if (t.isObjectExpression(propValue)) {
         // We've found a nested object like: `':hover': { color: 'red' }`
-        const result = extractObjectExpression(propValue, newMeta);
+        const result = extractObjectExpression(propValue, updatedMeta);
         css += `${key} { ${result.css} }`;
         variables = variables.concat(result.variables);
         return;
@@ -80,7 +80,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         // Both functions (extractTemplateLiteral + extractObjectExpression) reference each other.
         // One needs to disable this warning.
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        const result = extractTemplateLiteral(propValue, newMeta);
+        const result = extractTemplateLiteral(propValue, updatedMeta);
         value = result.css;
         variables = variables.concat(result.variables);
       } else {
@@ -95,23 +95,41 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       css += `${kebabCase(key)}: ${value};`;
     } else if (t.isSpreadElement(prop)) {
       // We found a object spread such as: `...mixinIdentifier`.
-      const identifier = getIdentifierFromCallExpression(prop.argument);
-      const { value: propValue, meta: newMeta } = getInterpolation(
-        identifier as t.Expression,
+      const expression = tryGettingCalleeFromCallExpression(prop.argument);
+      let resolvedBinding = undefined;
+
+      if (t.isIdentifier(expression)) {
+        const binding = meta.parentPath.scope.getBinding(expression.name);
+        resolvedBinding = resolveBindingNode(binding, meta);
+
+        if (!resolvedBinding) {
+          throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
+        }
+      }
+
+      const { value: propValue, meta: updatedMeta } = traverseExpressionWithEvaluation(
+        expression,
         meta
       );
 
       if (t.isObjectExpression(propValue)) {
-        const result = extractObjectExpression(propValue, newMeta);
+        const result = extractObjectExpression(propValue, updatedMeta);
+
+        if (resolvedBinding && resolvedBinding.source === 'import' && result.variables.length > 0) {
+          // NOTE: Currently we throw if the found CSS has any variables found from an
+          // import. This is because we'd need to ensure all identifiers are added to
+          // the owning file - if not done they would just error at runtime. Because
+          // this isn't a required feature at the moment we're deprioritizing support
+          // for this.
+          throw buildCodeFrameError(
+            "Identifier contains values that can't be statically evaluated",
+            prop.argument,
+            meta.parentPath
+          );
+        }
 
         css += result.css;
         variables = variables.concat(result.variables);
-      } else {
-        throw buildCodeFrameError(
-          'Variable could not be found or invalid attempt to spread an object',
-          identifier,
-          meta.parentPath
-        );
       }
     }
   });
@@ -131,10 +149,10 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   const css = node.quasis.reduce((css, q, index) => {
     const nodeExpression = node.expressions[index];
 
-    const identifier = getIdentifierFromCallExpression(nodeExpression);
+    const expression = tryGettingCalleeFromCallExpression(nodeExpression);
 
-    const { value: interpolation, meta: newMeta } = getInterpolation(
-      identifier as t.Expression,
+    const { value: interpolation, meta: updatedMeta } = traverseExpressionWithEvaluation(
+      expression,
       meta
     );
 
@@ -145,7 +163,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
     if (t.isObjectExpression(interpolation)) {
       // We found an object like: css`${{ red: 'blue' }}`.
-      const result = extractObjectExpression(interpolation, newMeta);
+      const result = extractObjectExpression(interpolation, updatedMeta);
       variables = variables.concat(result.variables);
       return css + result.css;
     }

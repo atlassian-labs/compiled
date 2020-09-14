@@ -3,10 +3,8 @@ export const colors = {
   danger: 'orange',
 };
 
-const fontSize = (() => 12)();
-
 export const objectStyles = {
-  fontSize,
+  fontSize: 12,
   color: colors.danger,
   backgroundColor: () => colors.primary,
 };
