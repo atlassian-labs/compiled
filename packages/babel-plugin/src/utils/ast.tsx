@@ -260,7 +260,9 @@ export const resolveBindingNode = (
   binding: Binding | undefined,
   meta: Metadata
 ): PartialBindingWithMeta | undefined => {
-  if (!binding) {
+  if (!binding || binding.path.isObjectPattern()) {
+    // Bail early if there is no binding or its a node that we don't want to resolve
+    // such as an destructured args from a function.
     return undefined;
   }
 
