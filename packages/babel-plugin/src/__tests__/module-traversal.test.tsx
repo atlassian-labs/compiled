@@ -248,6 +248,7 @@ describe('module traversal', () => {
         `
         import '@compiled/core';
         import { cantStaticallyEvaluate } from './stubs/objects';
+
         <div css={[cantStaticallyEvaluate]} />
       `
       );
@@ -260,6 +261,7 @@ describe('module traversal', () => {
         `
       import '@compiled/core';
       import { cantStaticallyEvaluate } from './stubs/objects';
+
       <div css={{ ...cantStaticallyEvaluate }} />
     `
       );
