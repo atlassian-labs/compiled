@@ -49,6 +49,6 @@ jobs:
         run: yarn build
 
       - name: Publish packages to npm registry
-        run: npx workspaces-run -- npm publish --access public
+        run: npx workspaces-run --only="@compiled/*" -- npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.COMPILED_CSS_IN_JS_NPM_TOKEN}}
