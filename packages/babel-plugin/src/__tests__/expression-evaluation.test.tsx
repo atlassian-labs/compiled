@@ -109,4 +109,86 @@ describe('import specifiers', () => {
 
     expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
   });
+
+  it('should not blow up when referencing local destructured args in arrow func', () => {
+    expect(() => {
+      transform(
+        `
+        import '@compiled/core';
+
+        export const Component = ({ foo, color }) => {
+          return (
+            <span css={{ fontSize: foo, color, backgroundColor: 'blue' }} />
+          );
+        };
+    `
+      );
+    }).not.toThrow();
+  });
+
+  it('should not blow up when referencing local args in arrow func', () => {
+    expect(() => {
+      transform(
+        `
+        import '@compiled/core';
+
+        export const Component = (props) => {
+          return (
+            <span css={{ fontSize: props.foo, color: props.color, backgroundColor: 'blue' }} />
+          );
+        };
+    `
+      );
+    }).not.toThrow();
+  });
+
+  it('should not blow up when referencing local destructured args in func', () => {
+    expect(() => {
+      transform(
+        `
+        import '@compiled/core';
+
+        function Component({ foo, color }) {
+          return (
+            <span css={{ fontSize: foo, color, backgroundColor: 'blue' }} />
+          );
+        };
+    `
+      );
+    }).not.toThrow();
+  });
+
+  it('should not blow up when referencing local args in func', () => {
+    expect(() => {
+      transform(
+        `
+        import '@compiled/core';
+
+        function Component(props) {
+          return (
+            <span css={{ fontSize: props.foo, color: props.color, backgroundColor: 'blue' }} />
+          );
+        };
+    `
+      );
+    }).not.toThrow();
+  });
+
+  it('should not blow up when destructured local args in func', () => {
+    expect(() => {
+      transform(
+        `
+      import '@compiled/core';
+
+      function DestructuredComp(props) {
+        const { foo, color } = props;
+
+        return (
+          <span css={{ fontSize: foo, color: color, backgroundColor: 'blue' }} />
+        );
+      };
+    `
+      );
+    }).not.toThrow();
+  });
 });

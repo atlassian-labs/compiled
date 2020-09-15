@@ -260,17 +260,19 @@ export const resolveBindingNode = (
   binding: Binding | undefined,
   meta: Metadata
 ): PartialBindingWithMeta | undefined => {
-  if (!binding) {
+  if (!binding || binding.path.isObjectPattern()) {
+    // Bail early if there is no binding or its a node that we don't want to resolve
+    // such as an destructured args from a function.
     return undefined;
   }
 
   if (t.isVariableDeclarator(binding.path.node)) {
     return {
+      meta,
       node: binding.path.node.init as t.Node,
       path: binding.path,
       constant: binding.constant,
       source: 'module',
-      meta,
     };
   }
 
@@ -372,6 +374,10 @@ export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Ex
   if (t.isIdentifier(expression)) {
     const binding = meta.parentPath.scope.getBinding(expression.name);
     const resolvedBinding = resolveBindingNode(binding, meta);
+    if (binding?.path.node === expression) {
+      // We resolved to the same node - bail out!
+      return expression;
+    }
 
     if (resolvedBinding && resolvedBinding.constant) {
       // We recursively call get interpolation until it not longer returns an identifier or member expression
