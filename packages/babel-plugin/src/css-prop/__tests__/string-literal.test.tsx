@@ -211,7 +211,7 @@ describe('css prop string literal', () => {
     expect(actual).toInclude('.cc-hash-test{color:blue;font-size:30px;color:red}');
   });
 
-  xit('should transform template string with no argument arrow function variable', () => {
+  it('should transform template string with no argument arrow function variable', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
@@ -220,10 +220,10 @@ describe('css prop string literal', () => {
         <div css={\`\${mixin}\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.css-test{color:blue;font-size:30px}');
+    expect(actual).toInclude('.cc-hash-test{color:blue;font-size:30px}');
   });
 
-  xit('should transform template string with no argument arrow function call variable', () => {
+  it('should transform template string with no argument arrow function call variable', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
@@ -232,10 +232,69 @@ describe('css prop string literal', () => {
         <div css={\`\${mixin()}\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.css-test{color:blue;font-size:30px}');
+    expect(actual).toInclude('.cc-hash-test{color:blue;font-size:30px}');
   });
 
-  xit('should transform template string with no argument function variable', () => {
+  it('should transform template string with no argument functions', () => {
+    const actual = transform(`
+        import '@compiled/core';
+        import React from 'react';
+
+        const color = () => 'blue';
+        const fontStyling = {
+          style: 'italic',
+          family: 'sans-serif',
+        };
+
+        const mixin1 = function() { return fontStyling.style; };
+        function mixin2() { return fontStyling.family; };
+
+        <div css={\`
+          color: blue;
+          font-style: \${mixin1()};
+          font-family: \${mixin2()};
+          :hover { background-color: \${color()} };
+        \`}>
+          hello world
+        </div>
+      `);
+
+    expect(actual).toInclude(`.cc-hash-test{color:blue;font-style:italic;font-family:sans-serif}`);
+    expect(actual).toInclude('.cc-hash-test:hover{background-color:blue}');
+  });
+
+  it('should transform template string with no argument function properties belonging to a variable', () => {
+    const actual = transform(`
+        import '@compiled/core';
+        import React from 'react';
+
+        const fontSize = 12;
+        const fontStyling = {
+          weight: 500
+        };
+
+        const sizes = {
+          mixin1: () => '1px solid black',
+          mixin2: () => fontSize,
+          mixin3: function() {return fontStyling.weight;}
+        };
+
+        <div css={\`
+          color: blue;
+          border: \${sizes.mixin1()};
+          font-size: \${sizes.mixin2()}px;
+          font-weight: \${sizes.mixin3()};
+        \`}>
+          hello world
+        </div>
+      `);
+
+    expect(actual).toInclude(
+      `.cc-hash-test{color:blue;border:1px solid black;font-size:12px;font-weight:500}`
+    );
+  });
+
+  it('should transform template string with no argument function variable', () => {
     const actual = transform(`
         import '@compiled/core';
         import React from 'react';
@@ -247,7 +306,7 @@ describe('css prop string literal', () => {
         <div css={\`\${mixin()}\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.css-test{color:red}');
+    expect(actual).toInclude('.cc-hash-test{color:red}');
   });
 
   xit('should transform template string with argument arrow function variable', () => {

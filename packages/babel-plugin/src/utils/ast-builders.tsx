@@ -8,7 +8,7 @@ import isPropValid from '@emotion/is-prop-valid';
 import { PluginOptions, Tag } from '../types';
 
 import { CSSOutput } from './css-builders';
-import { pickArrowFunctionExpressionBody } from './ast';
+import { pickFunctionBody } from './ast';
 
 interface BaseOpts extends PluginOptions {
   /**
@@ -88,7 +88,7 @@ const traverseStyledArrowFunctionExpression = (
 ) => {
   traverse(node, nestedVisitor);
 
-  return pickArrowFunctionExpressionBody(node);
+  return pickFunctionBody(node);
 };
 
 const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor: Visitor) => {
@@ -97,7 +97,7 @@ const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor:
     ArrowFunctionExpression(path) {
       path.traverse(nestedVisitor);
 
-      path.replaceWith(pickArrowFunctionExpressionBody(path.node));
+      path.replaceWith(pickFunctionBody(path.node));
 
       path.stop();
     },

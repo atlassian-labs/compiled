@@ -267,4 +267,33 @@ describe('module traversal', () => {
       );
     }).toThrowErrorMatchingSnapshot();
   });
+
+  it('should inline css from a function mixin referencing an identifier from another module', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import { colorMixin } from './stubs/objects';
+
+      <div css={{ ':hover': colorMixin() }} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test:hover{color:red;background-color:pink}');
+  });
+
+  it('should reference property access expression from another module', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import { colorMixin } from './stubs/objects';
+
+      const colors = colorMixin();
+
+      <div css={\`:hover { color: \${colors.color}; }\`} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test:hover{color:var(--var-hash-test)}');
+    expect(result).toInclude('style={{"--var-hash-test":colors.color}}');
+  });
 });

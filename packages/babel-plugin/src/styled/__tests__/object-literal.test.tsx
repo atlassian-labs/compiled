@@ -268,7 +268,7 @@ describe('styled component object literal', () => {
 
   it.todo('should transform object with array variable');
 
-  xit('should transform object with no argument arrow function variable', () => {
+  it('should transform object with no argument arrow function variable', () => {
     const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -282,7 +282,7 @@ describe('styled component object literal', () => {
     expect(actual).toInclude('.cc-hash-test{color:red}');
   });
 
-  xit('should transform object with no argument function variable', () => {
+  it('should transform object with no argument function variable', () => {
     const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -296,6 +296,61 @@ describe('styled component object literal', () => {
       `);
 
     expect(actual).toInclude('.cc-hash-test{color:red}');
+  });
+
+  it('should transform object with no argument functions', () => {
+    const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        const bgColor = 'blue';
+        const fontStyling = {
+          style: 'italic',
+          family: 'sans-serif',
+        };
+
+        const mixin1 = () => ({ color: 'red', backgroundColor: bgColor });
+        const mixin2 = function() { return { fontStyle: fontStyling.style } };
+        function mixin3() { return { fontFamily: fontStyling.family } };
+
+        const ListItem = styled.div({
+          color: 'blue',
+          ':hover': mixin1(),
+          ...mixin2(),
+          ...mixin3(),
+        });
+      `);
+
+    expect(actual).toInclude(`.cc-hash-test{color:blue;font-style:italic;font-family:sans-serif}`);
+    expect(actual).toInclude('.cc-hash-test:hover{color:red;background-color:blue}');
+  });
+
+  it('should transform object with no argument function properties belonging to a variable', () => {
+    const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        const bgColor = 'blue';
+        const fontSize = 12;
+        const fontStyling = {
+          weight: 500
+        };
+
+        const sizes = {
+          mixin1: () => \`1px solid \${bgColor}\`,
+          mixin2: () => ({ fontSize }),
+          mixin3: function() {return {fontWeight: fontStyling.weight};}
+        };
+
+        const ListItem = styled.div({
+          color: 'blue',
+          border: sizes.mixin1(),
+          ...sizes.mixin2(),
+          ...sizes.mixin3()
+        });
+      `);
+
+    expect(actual).toInclude(
+      `.cc-hash-test{color:blue;border:1px solid blue;font-size:12px;font-weight:500}`
+    );
   });
 
   it.todo('should transform object with argument function variable');

@@ -226,7 +226,7 @@ describe('styled component string literal', () => {
 
   it.todo('should transform template string literal with array variable');
 
-  xit('should transform template string with no argument arrow function variable', () => {
+  it('should transform template string with no argument arrow function variable', () => {
     const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -237,7 +237,77 @@ describe('styled component string literal', () => {
         \`;
       `);
 
-    expect(actual).toInclude('.css-test{color:red}');
+    expect(actual).toInclude('.cc-hash-test{color:red}');
+  });
+
+  it('should transform template string with no argument arrow function variable when not called', () => {
+    const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        const mixin = () => ({ color: 'red' });
+
+        const ListItem = styled.div\`
+          \${mixin};
+        \`;
+      `);
+
+    expect(actual).toInclude('.cc-hash-test{color:red}');
+  });
+
+  it('should transform template string with no argument functions', () => {
+    const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        const color = () => 'blue';
+        const fontStyling = {
+          style: 'italic',
+          family: 'sans-serif',
+        };
+
+        const mixin1 = function() { return fontStyling.style; };
+        function mixin2() { return fontStyling.family; };
+
+        const ListItem = styled.div\`
+          color: blue;
+          font-style: \${mixin1()};
+          font-family: \${mixin2()};
+          :hover { background-color: \${color()} };
+        \`;
+      `);
+
+    expect(actual).toInclude(`.cc-hash-test{color:blue;font-style:italic;font-family:sans-serif}`);
+    expect(actual).toInclude('.cc-hash-test:hover{background-color:blue}');
+  });
+
+  it('should transform template string with no argument function properties belonging to a variable', () => {
+    const actual = transform(`
+        import { styled } from '@compiled/core';
+
+        const color = () => 'blue';
+        const fontSize = 12;
+        const fontStyling = {
+          weight: 500
+        };
+
+        const sizes = {
+          mixin1: () => '1px solid black',
+          mixin2: () => fontSize,
+          mixin3: function() {return fontStyling.weight;}
+        };
+
+        const ListItem = styled.div\`
+          color: blue;
+          border: \${sizes.mixin1()};
+          font-size: \${sizes.mixin2()}px;
+          font-weight: \${sizes.mixin3()};
+          :hover { background-color: \${color()} };
+        \`;
+      `);
+
+    expect(actual).toInclude(
+      `.cc-hash-test{color:blue;border:1px solid black;font-size:12px;font-weight:500}`
+    );
+    expect(actual).toInclude('.cc-hash-test:hover{background-color:blue}');
   });
 
   it('should move suffix and prefix of a dynamic arrow func property into the style property', () => {
@@ -307,7 +377,7 @@ describe('styled component string literal', () => {
     expect(actual).toInclude('.cc-hash-test{font-size:superredbig;color:red}');
   });
 
-  xit('should transform template string with no argument function variable', () => {
+  it('should transform template string with no argument function variable', () => {
     const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -320,7 +390,7 @@ describe('styled component string literal', () => {
         \`;
       `);
 
-    expect(actual).toInclude('.css-test{color:red}');
+    expect(actual).toInclude('.cc-hash-test{color:red}');
   });
 
   it('should only destructure a prop if hasnt been already', () => {
@@ -373,7 +443,7 @@ describe('styled component string literal', () => {
     expect(actual).toInclude('"--var-hash-test":(br||"")+"px"');
   });
 
-  xit('should transform inline arrow function with suffix', () => {
+  it('should transform inline arrow function with suffix', () => {
     const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -387,7 +457,7 @@ describe('styled component string literal', () => {
     expect(actual).toInclude('.cc-hash-test{border-radius:4px;color:red}');
   });
 
-  xit('should transform arrow function call that returns css like object', () => {
+  it('should transform arrow function call that returns css like object', () => {
     const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -401,7 +471,7 @@ describe('styled component string literal', () => {
     expect(actual).toInclude('.cc-hash-test{font-size:12px;color:red}');
   });
 
-  xit('should transform arrow function call that returns number', () => {
+  it('should transform arrow function call that returns number', () => {
     const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -415,7 +485,7 @@ describe('styled component string literal', () => {
     expect(actual).toInclude('.cc-hash-test{font-size:12px;color:red}');
   });
 
-  xit('should transform arrow function call that has a complex body', () => {
+  it('should transform arrow function call that has a complex body', () => {
     const actual = transform(`
         import { styled } from '@compiled/core';
 
@@ -428,8 +498,7 @@ describe('styled component string literal', () => {
         \`;
       `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test);color:red}');
-    expect(actual).toInclude('"--var-hash-test":(getBr()||"")+"px"');
+    expect(actual).toInclude('.cc-hash-test{font-size:1px;color:red}');
   });
 
   it.todo('should transform template string with argument function variable');

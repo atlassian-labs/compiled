@@ -355,67 +355,6 @@ export const resolveBindingNode = (
 };
 
 /**
- * Will look in an expression and return the actual value.
- * If the expression is an identifier node (a variable) and a constant,
- * it will return the variable reference.
- *
- * E.g: If there was a identifier called `color` that is set somewhere as `const color = 'blue'`,
- * passing the `color` identifier to this function would return `'blue'`.
- *
- * This behaviour is the same for const string & numeric literals,
- * and object expressions.
- *
- * @param expression Expression we want to interrogate.
- * @param state Babel state - should house options and meta data used during the transformation.
- */
-export const getInterpolation = (expression: t.Expression, meta: Metadata): t.Expression => {
-  let value: t.Node | undefined | null = undefined;
-
-  if (t.isIdentifier(expression)) {
-    const binding = meta.parentPath.scope.getBinding(expression.name);
-    const resolvedBinding = resolveBindingNode(binding, meta);
-    if (binding?.path.node === expression) {
-      // We resolved to the same node - bail out!
-      return expression;
-    }
-
-    if (resolvedBinding && resolvedBinding.constant) {
-      // We recursively call get interpolation until it not longer returns an identifier or member expression
-      value = getInterpolation(resolvedBinding.node as t.Expression, resolvedBinding.meta);
-    }
-  } else if (t.isMemberExpression(expression)) {
-    const { accessPath, bindingIdentifier } = getMemberExpressionMeta(expression);
-    const binding = meta.parentPath.scope.getBinding(bindingIdentifier.name);
-    const resolvedBinding = resolveBindingNode(binding, meta);
-
-    if (resolvedBinding && resolvedBinding.constant && t.isObjectExpression(resolvedBinding.node)) {
-      const objectValue = getValueFromObjectExpression(
-        resolvedBinding.node,
-        accessPath
-      ) as t.Expression;
-      // We recursively call get interpolation until it not longer returns an identifier or member expression
-      value = getInterpolation(objectValue, resolvedBinding.meta);
-    }
-  }
-
-  if (t.isStringLiteral(value) || t.isNumericLiteral(value) || t.isObjectExpression(value)) {
-    return value;
-  }
-
-  // --------------
-  // NOTE: We are recursively calling getInterpolation() which is then going to try and evaluate it
-  // multiple times. This may or may not be a performance problem - when looking for quick wins perhaps
-  // there is something we could do better here.
-  // --------------
-
-  if (value) {
-    return tryEvaluateExpression(value as t.Expression, meta, expression);
-  }
-
-  return tryEvaluateExpression(expression, meta);
-};
-
-/**
  * Will wrap BlockStatement or Expression in an IIFE,
  * Looks like (() => { return 10; })().
  *
@@ -428,13 +367,13 @@ const tryWrappingBlockStatementInIIFE = (node: t.BlockStatement | t.Expression) 
   t.isBlockStatement(node) ? wrapNodeInIIFE(node) : node;
 
 /**
- * Will pick `ArrowFunctionExpression` body and tries to wrap it in an IIFE if
+ * Will pick `Function` body and tries to wrap it in an IIFE if
  * its a BlockStatement otherwise returns the picked body,
  * E.g.
  * `props => props.color` would end up as `props.color`.
- * `props => { return props.color` } would end up as `(() => { return props.color })()`.
+ * `props => { return props.color; }` would end up as `(() => { return props.color })()`
+ * `function () { return props.color; }` would end up as `(function () { return props.color })()`
  *
  * @param node Node of type ArrowFunctionExpression
  */
-export const pickArrowFunctionExpressionBody = (node: t.ArrowFunctionExpression) =>
-  tryWrappingBlockStatementInIIFE(node.body);
+export const pickFunctionBody = (node: t.Function) => tryWrappingBlockStatementInIIFE(node.body);

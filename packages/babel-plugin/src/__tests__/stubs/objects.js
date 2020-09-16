@@ -29,3 +29,5 @@ const cantEvaluate = (() => 12)();
 export const cantStaticallyEvaluate = {
   fontSize: cantEvaluate,
 };
+
+export const colorMixin = () => ({ color: colors.primary, backgroundColor: secondary });
