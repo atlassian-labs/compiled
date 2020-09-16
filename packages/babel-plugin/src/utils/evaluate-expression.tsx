@@ -36,7 +36,7 @@ const traverseIdentifier = (expression: t.Identifier, meta: Metadata) => {
 
   if (binding?.path.node === expression) {
     // We resolved to the same node - bail out!
-    return { value: expression, meta: newMeta };
+    return { value: expression, meta: updatedMeta };
   }
 
   if (resolvedBinding && resolvedBinding.constant) {
