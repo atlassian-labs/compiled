@@ -41,7 +41,7 @@ const traverseIdentifier = (expression: t.Identifier, meta: Metadata) => {
 
   if (resolvedBinding && resolvedBinding.constant) {
     // We recursively call get interpolation until it not longer returns an identifier or member expression
-    ({ value, meta: updatedMeta } = traverseExpressionWithEvaluation(
+    ({ value, meta: updatedMeta } = evaluateExpression(
       resolvedBinding.node as t.Expression,
       resolvedBinding.meta
     ));
@@ -74,10 +74,7 @@ const traverseMemberExpression = (expression: t.MemberExpression, meta: Metadata
       accessPath
     ) as t.Expression;
     // We recursively call get interpolation until it not longer returns an identifier or member expression
-    ({ value, meta: updatedMeta } = traverseExpressionWithEvaluation(
-      objectValue,
-      resolvedBinding.meta
-    ));
+    ({ value, meta: updatedMeta } = evaluateExpression(objectValue, resolvedBinding.meta));
   }
 
   return createResultPair(value as t.Expression, updatedMeta);
@@ -104,14 +101,14 @@ const traverseFunction = (expression: t.Function, meta: Metadata) => {
         const { argument } = path.node;
 
         if (argument) {
-          ({ value, meta: updatedMeta } = traverseExpressionWithEvaluation(argument, meta));
+          ({ value, meta: updatedMeta } = evaluateExpression(argument, meta));
         }
 
         path.stop();
       },
     });
   } else {
-    ({ value, meta: updatedMeta } = traverseExpressionWithEvaluation(expression.body, meta));
+    ({ value, meta: updatedMeta } = evaluateExpression(expression.body, meta));
   }
 
   return createResultPair(value as t.Expression, updatedMeta);
@@ -131,7 +128,7 @@ const traverseFunction = (expression: t.Function, meta: Metadata) => {
  * @param expression Expression we want to interrogate.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-export const traverseExpressionWithEvaluation = (
+export const evaluateExpression = (
   expression: t.Expression,
   meta: Metadata
 ): { value: t.Expression; meta: Metadata } => {
@@ -151,7 +148,7 @@ export const traverseExpressionWithEvaluation = (
   }
 
   // --------------
-  // NOTE: We are recursively calling traverseExpressionWithEvaluation() which is then going to try and evaluate it
+  // NOTE: We are recursively calling evaluateExpression() which is then going to try and evaluate it
   // multiple times. This may or may not be a performance problem - when looking for quick wins perhaps
   // there is something we could do better here.
   // --------------

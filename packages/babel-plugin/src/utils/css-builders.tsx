@@ -5,7 +5,7 @@ import { kebabCase, hash } from '@compiled/utils';
 import { joinExpressions } from './ast-builders';
 import { Metadata } from '../types';
 import { getKey, resolveBindingNode, buildCodeFrameError } from './ast';
-import { traverseExpressionWithEvaluation } from './traverse-expression-with-evaluation';
+import { evaluateExpression } from './evaluate-expression';
 
 export interface CSSOutput {
   css: string;
@@ -54,10 +54,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
     if (t.isObjectProperty(prop)) {
       const expression = tryGettingCalleeFromCallExpression(prop.value as t.Expression);
       // Don't use prop.value directly as it extracts constants from identifiers if needed.
-      const { value: propValue, meta: updatedMeta } = traverseExpressionWithEvaluation(
-        expression,
-        meta
-      );
+      const { value: propValue, meta: updatedMeta } = evaluateExpression(expression, meta);
 
       const key = getKey(prop.key);
       let value = '';
@@ -107,15 +104,12 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         }
       }
 
-      const { value: propValue, meta: updatedMeta } = traverseExpressionWithEvaluation(
-        expression,
-        meta
-      );
+      const { value: propValue, meta: updatedMeta } = evaluateExpression(expression, meta);
 
       if (t.isObjectExpression(propValue)) {
         const result = extractObjectExpression(propValue, updatedMeta);
 
-        if (resolvedBinding && resolvedBinding.source === 'import' && result.variables.length > 0) {
+        if (resolvedBinding?.source === 'import' && result.variables.length > 0) {
           // NOTE: Currently we throw if the found CSS has any variables found from an
           // import. This is because we'd need to ensure all identifiers are added to
           // the owning file - if not done they would just error at runtime. Because
@@ -151,10 +145,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
     const expression = tryGettingCalleeFromCallExpression(nodeExpression);
 
-    const { value: interpolation, meta: updatedMeta } = traverseExpressionWithEvaluation(
-      expression,
-      meta
-    );
+    const { value: interpolation, meta: updatedMeta } = evaluateExpression(expression, meta);
 
     if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
       // Simple case - we can immediately inline the value.

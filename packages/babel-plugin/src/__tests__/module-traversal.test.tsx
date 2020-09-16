@@ -268,7 +268,7 @@ describe('module traversal', () => {
     }).toThrowErrorMatchingSnapshot();
   });
 
-  it('should inline css from a call expression mixin referencing an identifier from another module', () => {
+  it('should inline css from a function mixin referencing an identifier from another module', () => {
     const result = transform(
       `
       import '@compiled/core';
@@ -281,7 +281,7 @@ describe('module traversal', () => {
     expect(result).toInclude('.cc-hash-test:hover{color:red;background-color:pink}');
   });
 
-  it('should inline css from a member expression mixin referencing an identifier from another module', () => {
+  it('should reference property access expression from another module', () => {
     const result = transform(
       `
       import '@compiled/core';
