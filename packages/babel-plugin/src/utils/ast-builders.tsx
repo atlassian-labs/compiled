@@ -123,12 +123,6 @@ const styledTemplate = (opts: {
   className: string;
 
   /**
-   * Hash that will be passed to the `CS` component.
-   * This determines if the styles have been moved to the head on the client.
-   */
-  hash: string;
-
-  /**
    * Tag for the Styled Component, for example "div" or user defined component.
    */
   tag: Tag;
@@ -196,7 +190,7 @@ const styledTemplate = (opts: {
     ...props
   }, ref) => (
     <CC>
-      <CS ${nonceAttribute} hash="${opts.hash}">{%%cssNode%%}</CS>
+      <CS ${nonceAttribute}>{%%cssNode%%}</CS>
       <C
         {...props}
         style={%%styleProp%%}
@@ -221,18 +215,13 @@ const styledTemplate = (opts: {
  *
  * @param opts Template options.
  */
-const compiledTemplate = (opts: {
-  nonce?: string;
-  hash: string;
-  css: string[];
-  jsxNode: t.JSXElement;
-}) => {
+const compiledTemplate = (opts: { nonce?: string; css: string[]; jsxNode: t.JSXElement }) => {
   const nonceAttribute = opts.nonce ? `nonce={${opts.nonce}}` : '';
 
   return template(
     `
   <CC>
-    <CS ${nonceAttribute} hash="${opts.hash}">{%%cssNode%%}</CS>
+    <CS ${nonceAttribute}>{%%cssNode%%}</CS>
     {%%jsxNode%%}
   </CC>
   `,
@@ -290,7 +279,6 @@ export const buildStyledComponent = (opts: StyledOpts) => {
   return styledTemplate({
     ...opts,
     className,
-    hash: cssHash,
     tag: opts.tag,
     css: cssRules,
     variables: opts.cssOutput.variables,
@@ -396,7 +384,6 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
 
   return compiledTemplate({
     jsxNode: opts.node,
-    hash: cssHash,
     css: cssRules,
     nonce: opts.nonce,
   }) as t.Node;
