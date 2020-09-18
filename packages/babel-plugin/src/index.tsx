@@ -45,7 +45,7 @@ export default declare<State>((api) => {
             return true;
           })
           // Add on the util imports we're going to use later in the transform.
-          .concat([importSpecifier('CC'), importSpecifier('CS')]);
+          .concat([importSpecifier('ax'), importSpecifier('CC'), importSpecifier('CS')]);
       },
       TaggedTemplateExpression(path, state) {
         if (!state.compiledImports?.styled) {
