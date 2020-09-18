@@ -197,9 +197,12 @@ const styledTemplate = (opts: {
   }, ref) => (
     <CC>
       <CS ${nonceAttribute} hash="${opts.hash}">{%%cssNode%%}</CS>
-      <C {...props} style={%%styleProp%%} ref={ref} className={"${
-        opts.className
-      }" + (props.className ? " " + props.className : "")} />
+      <C
+        {...props}
+        style={%%styleProp%%}
+        ref={ref}
+        className={ax(["${opts.className}", props.className])}
+      />
     </CC>
   ));
 `,

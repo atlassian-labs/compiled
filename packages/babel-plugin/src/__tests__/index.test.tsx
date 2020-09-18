@@ -33,14 +33,14 @@ describe('babel plugin', () => {
 
     expect(output?.code).toMatchInlineSnapshot(`
       "import * as React from 'react';
-      import { CC, CS } from '@compiled/core';
+      import { ax, CC, CS } from '@compiled/core';
       const MyDiv = React.forwardRef(({
         as: C = \\"div\\",
         style,
         ...props
       }, ref) => <CC>
             <CS hash=\\"1x3e11p\\">{[\\".cc-1x3e11p{font-size:12px}\\"]}</CS>
-            <C {...props} style={style} ref={ref} className={\\"cc-1x3e11p\\" + (props.className ? \\" \\" + props.className : \\"\\")} />
+            <C {...props} style={style} ref={ref} className={ax([\\"cc-1x3e11p\\", props.className])} />
           </CC>);"
     `);
   });
@@ -59,7 +59,7 @@ describe('babel plugin', () => {
 
     expect(output?.code).toMatchInlineSnapshot(`
       "import * as React from 'react';
-      import { CC, CS } from '@compiled/core';
+      import { ax, CC, CS } from '@compiled/core';
 
       const MyDiv = () => {
         return <CC>
