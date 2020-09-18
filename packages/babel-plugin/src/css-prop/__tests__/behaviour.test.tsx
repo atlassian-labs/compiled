@@ -119,7 +119,7 @@ describe('css prop behaviour', () => {
       <div className="foobar" css={{}}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={"cc-hash-test"+(" "+"foobar")}');
+    expect(actual).toInclude('className={ax(["cc-hash-test","foobar"])}');
   });
 
   it('should pass through spread props', () => {
@@ -165,7 +165,7 @@ describe('css prop behaviour', () => {
       <div className={className} css={{}}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={"cc-hash-test"+(className?" "+className:"")}');
+    expect(actual).toInclude('className={ax(["cc-hash-test",className])}');
   });
 
   it('should pick up array composition', () => {
@@ -219,7 +219,7 @@ describe('css prop behaviour', () => {
       <div css={{}} className={getFoo()}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={"cc-hash-test"+(getFoo()?" "+getFoo():"")}');
+    expect(actual).toInclude('className={ax(["cc-hash-test",getFoo()])}');
   });
 
   it('should allow inlined expressions as property values', () => {

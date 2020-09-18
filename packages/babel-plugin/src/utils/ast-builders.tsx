@@ -326,11 +326,11 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
       ? classNameProp.value.expression
       : classNameProp.value;
 
-    const newClassNameValue = t.isStringLiteral(classNameExpression)
-      ? joinExpressions(t.stringLiteral(className), classNameExpression)
-      : conditionallyJoinExpressions(t.stringLiteral(className), classNameExpression);
-
-    classNameProp.value = t.jsxExpressionContainer(newClassNameValue);
+    classNameProp.value = t.jsxExpressionContainer(
+      t.callExpression(t.identifier('ax'), [
+        t.arrayExpression([t.stringLiteral(className), classNameExpression as t.Expression]),
+      ])
+    );
   } else {
     // No class name - just push our own one.
     opts.node.openingElement.attributes.push(
