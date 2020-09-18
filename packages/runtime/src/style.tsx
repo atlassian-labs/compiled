@@ -1,5 +1,5 @@
 import React from 'react';
-import { createStyleSheet } from './sheet';
+import createStyleSheet from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts } from './types';
 import { useCache } from './provider';
@@ -16,14 +16,13 @@ interface StyleProps extends StyleSheetOpts {
 let stylesheet: ReturnType<typeof createStyleSheet>;
 
 export default function Style(props: StyleProps) {
-  const children = props.children;
   const inserted = useCache();
 
   if (process.env.NODE_ENV === 'development') {
-    children.forEach(analyzeCssInDev);
+    props.children.forEach(analyzeCssInDev);
   }
 
-  const sheetsToInsert = children.filter((sheet) => {
+  const rules = props.children.filter((sheet) => {
     if (inserted[sheet]) {
       return false;
     }
@@ -33,14 +32,13 @@ export default function Style(props: StyleProps) {
     return true;
   });
 
-  // Will remove code on the client bundle.
-  if (sheetsToInsert.length) {
+  if (rules.length) {
     if (typeof window === 'undefined') {
-      return <style nonce={props.nonce}>{sheetsToInsert}</style>;
+      return <style nonce={props.nonce}>{rules}</style>;
     } else {
       // Keep re-assigning over ternary because it's smaller
       stylesheet = stylesheet || createStyleSheet(props);
-      sheetsToInsert.forEach(stylesheet);
+      rules.forEach(stylesheet);
     }
   }
 
