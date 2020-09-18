@@ -1,9 +1,9 @@
 /**
  * Joins classes together and ensures atomic declarations of a single group exist.
- * This function is made to be fast and small - so it takes some liberties with its API.
- *
- * Atomic declarations take the form of `_{group}{value}`,
+ * Atomic declarations take the form of `_{group}{value}` (always prefixed with an underscore),
  * where both `group` and `value` are hashes **four characters long**.
+ * Class names can be of any length,
+ * this function can take both atomic declarations and class names.
  *
  * Input:
  *
