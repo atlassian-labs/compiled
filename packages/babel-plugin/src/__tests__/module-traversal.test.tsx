@@ -5,6 +5,15 @@ jest.mock('@compiled/utils', () => {
   return { ...jest.requireActual('@compiled/utils'), hash: () => 'hash-test' };
 });
 
+jest.mock('../utils/Cache', () => {
+  const { Cache } = jest.requireActual('../utils/Cache');
+
+  Cache.getUniqueKey = (key: string, namespace?: string) =>
+    namespace ? `${namespace}----${key}` : namespace;
+
+  return { Cache };
+});
+
 const transform = (code: string) => {
   try {
     return transformSync(code, {

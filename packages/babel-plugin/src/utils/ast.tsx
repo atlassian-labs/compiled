@@ -290,7 +290,12 @@ export const resolveBindingNode = (
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
     });
     const moduleCode = fs.readFileSync(modulePath, 'utf-8');
-    const ast = parse(moduleCode, { sourceType: 'module', sourceFilename: modulePath });
+
+    const ast = meta.state.cache.load({
+      namespace: 'module-traversal',
+      cacheKey: `${moduleCode}//# modulePath=${modulePath}`,
+      value: () => parse(moduleCode, { sourceType: 'module', sourceFilename: modulePath }),
+    });
 
     let foundNode: t.Node | undefined = undefined;
     let foundParentPath: NodePath | undefined = undefined;

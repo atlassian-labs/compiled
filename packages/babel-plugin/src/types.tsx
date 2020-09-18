@@ -1,11 +1,17 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 
+import { Cache } from './utils/Cache';
+
 export interface PluginOptions {
   /**
    * Security nonce that will be applied to inline style elements if defined.
    */
   nonce?: string;
+  /**
+   * Whether to use the cache or not. Will make subsequent builds faster.
+   */
+  cache?: boolean;
 }
 
 export interface State {
@@ -52,6 +58,11 @@ export interface State {
    * Holds a record of currently hoisted sheets in the module.
    */
   sheets: Record<string, t.Identifier>;
+
+  /**
+   * For storing cache of any type. For eg. caching deep traversed path value.
+   */
+  cache: InstanceType<typeof Cache>;
 }
 
 export interface Metadata {
