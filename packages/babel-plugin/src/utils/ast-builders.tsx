@@ -1,43 +1,13 @@
 import template from '@babel/template';
 import * as t from '@babel/types';
-import traverse, { Scope, NodePath, Visitor } from '@babel/traverse';
+import traverse, { NodePath, Visitor } from '@babel/traverse';
 import { hash, unique } from '@compiled/utils';
 import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
-
-import { PluginOptions, Tag } from '../types';
-
+import { Tag } from '../types';
 import { CSSOutput } from './css-builders';
 import { pickFunctionBody } from './ast';
-
-interface BaseOpts extends PluginOptions {
-  /**
-   * CSS data that will be integrated into the output AST.
-   */
-  cssOutput: CSSOutput;
-}
-
-interface StyledOpts extends BaseOpts {
-  /**
-   * Tag of the Styled Component,
-   * for example `"div"` or user defined component.
-   */
-  tag: Tag;
-
-  /**
-   * Babel path used for traversing inner nodes.
-   */
-  parentPath: NodePath;
-
-  /**
-   * Babel scope used for traversing inner nodes.
-   */
-  scope: Scope;
-}
-
-interface CompiledOpts extends BaseOpts {
-  node: t.JSXElement;
-}
+import { CompiledOpts, CompiledTemplateOpts, StyledOpts, StyledTemplateOpts } from './types';
 
 /**
  * Will build up the CSS variables prop to be placed as inline styles.
@@ -111,42 +81,7 @@ const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor:
  *
  * @param opts Template options.
  */
-const styledTemplate = (opts: {
-  /**
-   * Adds a nonce onto the `CS` component.
-   */
-  nonce?: string;
-
-  /**
-   * Class to be used for the CSS selector.
-   */
-  className: string;
-
-  /**
-   * Tag for the Styled Component, for example "div" or user defined component.
-   */
-  tag: Tag;
-
-  /**
-   * CSS blocks to be passed to the `CS` component.
-   */
-  css: string[];
-
-  /**
-   * CSS variables to be passed to the `style` prop.
-   */
-  variables: CSSOutput['variables'];
-
-  /**
-   * Babel path used for traversing inner nodes.
-   */
-  parentPath: NodePath;
-
-  /**
-   * Babel scope used for traversing inner nodes.
-   */
-  scope: Scope;
-}) => {
+const styledTemplate = (opts: StyledTemplateOpts) => {
   const nonceAttribute = opts.nonce ? `nonce={${opts.nonce}}` : '';
   const propsToDestructure: string[] = [];
   const styleProp = opts.variables.length
@@ -215,7 +150,7 @@ const styledTemplate = (opts: {
  *
  * @param opts Template options.
  */
-const compiledTemplate = (opts: { nonce?: string; css: string[]; jsxNode: t.JSXElement }) => {
+const compiledTemplate = (opts: CompiledTemplateOpts) => {
   const nonceAttribute = opts.nonce ? `nonce={${opts.nonce}}` : '';
 
   return template(
