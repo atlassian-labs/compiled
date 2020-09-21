@@ -71,8 +71,8 @@ describe('import specifiers', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import*as React from'react';import{ThemeProvider,ax,CC,CS}from'@compiled/core';const _a=\\".cc-hash-test{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
-            <CS>{[_a]}</CS>
+      "import*as React from'react';import{ThemeProvider,ax,CC,CS}from'@compiled/core';const _=\\".cc-hash-test{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+            <CS>{[_]}</CS>
             <C{...props}style={style}ref={ref}className={ax([\\"cc-hash-test\\",props.className])}/>
           </CC>);"
     `);

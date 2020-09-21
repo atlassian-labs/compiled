@@ -21,7 +21,7 @@ const hoistSheet = (sheet: string, meta: Metadata): t.Identifier => {
     return meta.state.sheets[sheet];
   }
 
-  const sheetIdentifier = meta.parentPath.scope.generateUidIdentifier('a');
+  const sheetIdentifier = meta.parentPath.scope.generateUidIdentifier('');
   const parent = meta.parentPath.findParent((path) => path.isProgram()).get('body') as NodePath[];
   const path = parent.filter((path) => !path.isImportDeclaration())[0];
 
