@@ -22,7 +22,7 @@ function createStyleElement(opts: StyleSheetOpts): HTMLStyleElement {
  *
  * @param opts StyleSheetOpts
  */
-export const createStyleSheet = (opts: StyleSheetOpts) => {
+export default function createStyleSheet(opts: StyleSheetOpts) {
   const speedy = process.env.NODE_ENV === 'production',
     styleElements: HTMLStyleElement[] = [];
   let tagCount = 0;
@@ -51,4 +51,4 @@ export const createStyleSheet = (opts: StyleSheetOpts) => {
 
     tagCount++;
   };
-};
+}

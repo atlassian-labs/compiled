@@ -18,23 +18,21 @@ export const warn = (str: string, ...args: any[]) =>
     ...args
   );
 
-export const analyzeCssInDev = (css: string[], hash: string) => {
-  if (hasWarned[hash]) {
+export const analyzeCssInDev = (sheet: string) => {
+  if (hasWarned[sheet]) {
     return;
   }
 
-  css.forEach((block) => {
-    const shouldWarnAboutSelectors =
-      selectorsToWarn.map((selector) => block.includes(selector)).filter(Boolean).length > 0;
+  const shouldWarnAboutSelectors =
+    selectorsToWarn.map((selector) => sheet.includes(selector)).filter(Boolean).length > 0;
 
-    if (shouldWarnAboutSelectors) {
-      warn(
-        `Selectors "${selectorsToWarn.join(', ')}" are dangerous to use when server side rendering.
+  if (shouldWarnAboutSelectors) {
+    warn(
+      `Selectors "${selectorsToWarn.join(', ')}" are dangerous to use when server side rendering.
   Alternatively try and use ":nth-of-type", or placing data attributes and targetting those instead.
   Read https://compiledcssinjs.com/docs/server-side-rendering for more advice.`
-      );
-    }
-  });
+    );
+  }
 
-  hasWarned[hash] = true;
+  hasWarned[sheet] = true;
 };

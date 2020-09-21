@@ -1,5 +1,5 @@
 import React from 'react';
-import { createStyleSheet } from './sheet';
+import createStyleSheet from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts } from './types';
 import { useCache } from './provider';
@@ -10,40 +10,36 @@ interface StyleProps extends StyleSheetOpts {
    * Ensure each rule is a separate element in the array.
    */
   children: string[];
-
-  /**
-   * Hash of the entire all css rules combined.
-   * This is used to bypass the need of adding rules if it has already been done.
-   */
-  hash: string;
 }
 
 // Variable declaration list because it's smaller.
 let stylesheet: ReturnType<typeof createStyleSheet>;
 
 export default function Style(props: StyleProps) {
-  const children = props.children;
   const inserted = useCache();
 
   if (process.env.NODE_ENV === 'development') {
-    analyzeCssInDev(children, props.hash);
+    props.children.forEach(analyzeCssInDev);
   }
 
-  // Will remove code on the client bundle.
-  if (typeof window === 'undefined') {
-    if (!inserted[props.hash]) {
-      inserted[props.hash] = true;
-      return <style nonce={props.nonce}>{children}</style>;
+  const rules = props.children.filter((sheet) => {
+    if (inserted[sheet]) {
+      return false;
     }
 
-    return null;
-  }
+    inserted[sheet] = true;
 
-  if (!inserted[props.hash] && children) {
-    // Keep re-assigning over ternary because it's smaller
-    stylesheet = stylesheet || createStyleSheet(props);
-    children.forEach(stylesheet);
-    inserted[props.hash] = true;
+    return true;
+  });
+
+  if (rules.length) {
+    if (typeof window === 'undefined') {
+      return <style nonce={props.nonce}>{rules}</style>;
+    } else {
+      // Keep re-assigning over ternary because it's smaller
+      stylesheet = stylesheet || createStyleSheet(props);
+      rules.forEach(stylesheet);
+    }
   }
 
   return null;
