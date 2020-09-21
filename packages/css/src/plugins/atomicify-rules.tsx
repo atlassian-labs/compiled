@@ -1,4 +1,4 @@
-import { plugin, Declaration, decl, rule } from 'postcss';
+import { plugin, Declaration, decl, rule, Rule } from 'postcss';
 import { hash } from '@compiled/utils';
 
 interface PluginOpts {
@@ -29,8 +29,22 @@ const atomicClassName = (propName: string, value: string, opts: AtomicifyOpts) =
   return `_${group}${valueHash}`;
 };
 
+const nestedSelector = (selector: string | undefined) => {
+  if (!selector) {
+    return '';
+  }
+
+  const trimmed = selector.trim();
+
+  if (trimmed.charAt(0) === ':') {
+    return selector;
+  }
+
+  return ` ${selector}`;
+};
+
 const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
-  const normalizedSelector = opts.selector || '';
+  const normalizedSelector = nestedSelector(opts.selector);
   const className = atomicClassName(node.prop, node.value, opts);
   const selector = `.${className}${normalizedSelector}`;
   const newDecl = decl({ prop: node.prop, value: node.value });
@@ -47,17 +61,41 @@ const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
   return newRule;
 };
 
+const atomicifyRule = (node: Rule, opts: AtomicifyOpts) => {
+  if (!node.nodes) {
+    return [];
+  }
+
+  return node.nodes.map((childNode) => {
+    if (childNode.type !== 'decl') {
+      throw new Error('Only decls are allowed inside a rule.');
+    }
+
+    return atomicifyDecl(childNode, {
+      ...opts,
+      selector: node.selector,
+    });
+  });
+};
+
 /**
  * Transforms a style sheet into atomic rules.
  * When passing a `callback` option it will callback with created class names.
+ *
+ * Preconditions:
+ *
+ * 1. No nested rules allowed - normalized them with the `parent-orphaned-pseudos` and `nested` plugins.
  */
-export const atomicifyRules = plugin<PluginOpts>('atomicify-rules', (opts) => {
+export const atomicifyRules = plugin<PluginOpts>('atomicify-rules', (opts = {}) => {
   return (root) => {
     root.walk((node) => {
       switch (node.type) {
         case 'decl':
-          node.replaceWith(atomicifyDecl(node, opts || {}));
+          node.replaceWith(atomicifyDecl(node, opts));
           break;
+
+        case 'rule':
+          node.replaceWith(atomicifyRule(node, opts));
 
         default:
           break;

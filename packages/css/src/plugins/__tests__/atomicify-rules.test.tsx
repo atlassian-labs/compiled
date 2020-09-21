@@ -64,4 +64,44 @@ describe('atomicify rules', () => {
       ]
     `);
   });
+
+  it('should atomicify a nested tag rule', () => {
+    const actual = transform`
+      div {
+        color: blue;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`"._1aij13q2 div{color:blue}"`);
+  });
+
+  it('should atomicify a nested tag rule', () => {
+    const actual = transform`
+      div {
+        color: blue;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`"._1aij13q2 div{color:blue}"`);
+  });
+
+  it('should atomicify a nested pseudo rule', () => {
+    const actual = transform`
+      :hover {
+        color: blue;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`"._1uhh13q2:hover{color:blue}"`);
+  });
+
+  it('should atomicify a nested tag pseudo rule', () => {
+    const actual = transform`
+      div:hover {
+        color: blue;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`"._15mr13q2 div:hover{color:blue}"`);
+  });
 });
