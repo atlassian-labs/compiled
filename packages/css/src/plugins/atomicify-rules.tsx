@@ -68,7 +68,7 @@ const atomicifyRule = (node: Rule, opts: AtomicifyOpts) => {
 
   return node.nodes.map((childNode) => {
     if (childNode.type !== 'decl') {
-      throw new Error('Only decls are allowed inside a rule.');
+      throw childNode.error(`Nested ${childNode.type}s are not allowed.`);
     }
 
     return atomicifyDecl(childNode, {

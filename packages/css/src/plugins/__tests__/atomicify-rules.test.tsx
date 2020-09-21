@@ -104,4 +104,16 @@ describe('atomicify rules', () => {
 
     expect(actual).toMatchInlineSnapshot(`"._15mr13q2 div:hover{color:blue}"`);
   });
+
+  it('should blow up if a doubly nested rule was found', () => {
+    expect(() => {
+      transform`
+        div {
+          div {
+            font-size: 12px;
+          }
+        }
+      `;
+    }).toThrow('atomicify-rules: <css input>:3:11: Nested rules are not allowed.');
+  });
 });
