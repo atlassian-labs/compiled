@@ -4,12 +4,9 @@ jest.mock('@compiled/utils', () => {
   return { ...jest.requireActual('@compiled/utils'), hash: () => 'hash-test' };
 });
 
-describe('#Cache', () => {
-  beforeAll(() => {
-    Cache.getUniqueKey = (key: string, namespace?: string) =>
-      namespace ? `${namespace}----${key}` : key;
-  });
+jest.mock('../Cache');
 
+describe('#Cache', () => {
   const setup = (options: CacheOptions = {}) => {
     const cache = new Cache(options);
 
