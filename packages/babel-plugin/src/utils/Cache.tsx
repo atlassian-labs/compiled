@@ -30,11 +30,6 @@ export class Cache {
 
     this._cache.set(uniqueKey, lazyValue);
 
-    // TODO: add logic for saving this._cache to file system here
-    // Probably we can create a mapping json file with `uniqueKey` as keys and
-    // module number as values. These modules will have their own json files
-    // with ast info in it.
-
     return lazyValue;
   }
 
@@ -56,11 +51,6 @@ export class Cache {
     const cacheValue = this._cache.get(uniqueKey);
 
     this._moveLastInQueue(uniqueKey, cacheValue);
-
-    // TODO: add logic for saving this._cache to file system here
-    // Probably we can create a mapping json file with `uniqueKey` as keys and
-    // module number as values. These modules will have their own json files
-    // with ast info in it.
 
     return cacheValue as T;
   }
