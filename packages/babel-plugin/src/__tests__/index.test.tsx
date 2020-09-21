@@ -34,12 +34,13 @@ describe('babel plugin', () => {
     expect(output?.code).toMatchInlineSnapshot(`
       "import * as React from 'react';
       import { ax, CC, CS } from '@compiled/core';
+      const _a = \\".cc-1x3e11p{font-size:12px}\\";
       const MyDiv = React.forwardRef(({
         as: C = \\"div\\",
         style,
         ...props
       }, ref) => <CC>
-            <CS>{[\\".cc-1x3e11p{font-size:12px}\\"]}</CS>
+            <CS>{[_a]}</CS>
             <C {...props} style={style} ref={ref} className={ax([\\"cc-1x3e11p\\", props.className])} />
           </CC>);"
     `);
@@ -60,10 +61,11 @@ describe('babel plugin', () => {
     expect(output?.code).toMatchInlineSnapshot(`
       "import * as React from 'react';
       import { ax, CC, CS } from '@compiled/core';
+      const _a = \\".cc-1rr6d23{font-size:12px}\\";
 
       const MyDiv = () => {
         return <CC>
-          <CS>{[\\".cc-1rr6d23{font-size:12px}\\"]}</CS>
+          <CS>{[_a]}</CS>
           {<div className=\\"cc-1rr6d23\\">hello</div>}
         </CC>;
       };"

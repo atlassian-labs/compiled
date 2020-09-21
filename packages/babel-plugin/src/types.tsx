@@ -1,3 +1,4 @@
+import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 
 export interface PluginOptions {
@@ -46,6 +47,11 @@ export interface State {
    * Userland options that can be set to change what happens when the Babel Plugin is ran.
    */
   opts: PluginOptions;
+
+  /**
+   * Holds a record of currently hoisted sheets in the module.
+   */
+  sheets: Record<string, t.Identifier>;
 }
 
 export interface Metadata {

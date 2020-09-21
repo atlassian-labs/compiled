@@ -11,6 +11,9 @@ export default declare<State>((api) => {
 
   return {
     inherits: require('babel-plugin-syntax-jsx'),
+    pre() {
+      this.sheets = {};
+    },
     visitor: {
       Program: {
         exit(path, state) {

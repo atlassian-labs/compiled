@@ -1,9 +1,8 @@
 import * as t from '@babel/types';
-import { Scope, NodePath } from '@babel/traverse';
-import { PluginOptions, Tag } from '../types';
+import { Tag } from '../types';
 import { CSSOutput } from './css-builders';
 
-export interface BaseOpts extends PluginOptions {
+export interface BaseOpts {
   /**
    * CSS data that will be integrated into the output AST.
    */
@@ -16,16 +15,6 @@ export interface StyledOpts extends BaseOpts {
    * for example `"div"` or user defined component.
    */
   tag: Tag;
-
-  /**
-   * Babel path used for traversing inner nodes.
-   */
-  parentPath: NodePath;
-
-  /**
-   * Babel scope used for traversing inner nodes.
-   */
-  scope: Scope;
 }
 
 export interface CompiledOpts extends BaseOpts {
@@ -62,21 +51,11 @@ export interface StyledTemplateOpts extends BaseTemplateOpts {
    * CSS variables to be passed to the `style` prop.
    */
   variables: CSSOutput['variables'];
-
-  /**
-   * Babel path used for traversing inner nodes.
-   */
-  parentPath: NodePath;
-
-  /**
-   * Babel scope used for traversing inner nodes.
-   */
-  scope: Scope;
 }
 
 export interface CompiledTemplateOpts extends BaseTemplateOpts {
   /**
    * Originating jsx node.
    */
-  jsxNode: t.JSXElement;
+  node: t.JSXElement;
 }

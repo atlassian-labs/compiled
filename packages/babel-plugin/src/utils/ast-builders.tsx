@@ -8,6 +8,31 @@ import { Tag } from '../types';
 import { CSSOutput } from './css-builders';
 import { pickFunctionBody } from './ast';
 import { CompiledOpts, CompiledTemplateOpts, StyledOpts, StyledTemplateOpts } from './types';
+import { Metadata } from '../types';
+
+/**
+ * Hoists a sheet to the top of the module if its not already there.
+ * Returns the referencing identifier.
+ *
+ * @param sheet
+ */
+const hoistSheet = (sheet: string, meta: Metadata): t.Identifier => {
+  if (meta.state.sheets[sheet]) {
+    return meta.state.sheets[sheet];
+  }
+
+  const sheetIdentifier = meta.parentPath.scope.generateUidIdentifier('a');
+  const parent = meta.parentPath.findParent((path) => path.isProgram()).get('body') as NodePath[];
+  const path = parent.filter((path) => !path.isImportDeclaration())[0];
+
+  path.insertBefore(
+    t.variableDeclaration('const', [t.variableDeclarator(sheetIdentifier, t.stringLiteral(sheet))])
+  );
+
+  meta.state.sheets[sheet] = sheetIdentifier;
+
+  return sheetIdentifier;
+};
 
 /**
  * Will build up the CSS variables prop to be placed as inline styles.
@@ -81,8 +106,8 @@ const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor:
  *
  * @param opts Template options.
  */
-const styledTemplate = (opts: StyledTemplateOpts) => {
-  const nonceAttribute = opts.nonce ? `nonce={${opts.nonce}}` : '';
+const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata) => {
+  const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
   const propsToDestructure: string[] = [];
   const styleProp = opts.variables.length
     ? styledStyleProp(opts.variables, (node) => {
@@ -140,7 +165,7 @@ const styledTemplate = (opts: StyledTemplateOpts) => {
     }
   )({
     styleProp,
-    cssNode: t.arrayExpression(opts.css.map((style) => t.stringLiteral(style))),
+    cssNode: t.arrayExpression(opts.css.map((sheet) => hoistSheet(sheet, meta))),
   });
 };
 
@@ -150,8 +175,8 @@ const styledTemplate = (opts: StyledTemplateOpts) => {
  *
  * @param opts Template options.
  */
-const compiledTemplate = (opts: CompiledTemplateOpts) => {
-  const nonceAttribute = opts.nonce ? `nonce={${opts.nonce}}` : '';
+const compiledTemplate = (opts: CompiledTemplateOpts, meta: Metadata) => {
+  const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
 
   return template(
     `
@@ -164,8 +189,8 @@ const compiledTemplate = (opts: CompiledTemplateOpts) => {
       plugins: ['jsx'],
     }
   )({
-    jsxNode: opts.jsxNode,
-    cssNode: t.arrayExpression(opts.css.map((style) => t.stringLiteral(style))),
+    jsxNode: opts.node,
+    cssNode: t.arrayExpression(opts.css.map((sheet) => hoistSheet(sheet, meta))),
   });
 };
 
@@ -206,18 +231,21 @@ export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExp
  *
  * @param opts Template options.
  */
-export const buildStyledComponent = (opts: StyledOpts) => {
+export const buildStyledComponent = (opts: StyledOpts, meta: Metadata) => {
   const cssHash = hash(opts.cssOutput.css);
   const className = `cc-${cssHash}`;
   const cssRules = transformCss(`.${className}`, opts.cssOutput.css);
 
-  return styledTemplate({
-    ...opts,
-    className,
-    tag: opts.tag,
-    css: cssRules,
-    variables: opts.cssOutput.variables,
-  }) as t.Node;
+  return styledTemplate(
+    {
+      ...opts,
+      className,
+      tag: opts.tag,
+      css: cssRules,
+      variables: opts.cssOutput.variables,
+    },
+    meta
+  ) as t.Node;
 };
 
 /**
@@ -237,7 +265,7 @@ export const importSpecifier = (name: string, localName?: string) => {
  *
  * @param opts Template options.
  */
-export const buildCompiledComponent = (opts: CompiledOpts) => {
+export const buildCompiledComponent = (opts: CompiledOpts, meta: Metadata) => {
   const cssHash = hash(opts.cssOutput.css);
   const className = `cc-${cssHash}`;
   const cssRules = transformCss(`.${className}`, opts.cssOutput.css);
@@ -317,9 +345,11 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
     );
   }
 
-  return compiledTemplate({
-    jsxNode: opts.node,
-    css: cssRules,
-    nonce: opts.nonce,
-  }) as t.Node;
+  return compiledTemplate(
+    {
+      node: opts.node,
+      css: cssRules,
+    },
+    meta
+  ) as t.Node;
 };
