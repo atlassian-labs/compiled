@@ -247,6 +247,62 @@ interface PartialBindingWithMeta {
   source: 'import' | 'module';
 }
 
+const findDefaultExportModuleNode = (
+  ast: t.File
+): {
+  foundNode: t.Node | undefined;
+  foundParentPath: NodePath | undefined;
+} => {
+  let foundNode: t.Node | undefined = undefined;
+  let foundParentPath: NodePath | undefined = undefined;
+
+  traverse(ast, {
+    ExportDefaultDeclaration(path) {
+      foundParentPath = path as NodePath;
+      foundNode = path.node.declaration as t.Node;
+    },
+  });
+
+  return {
+    foundNode,
+    foundParentPath,
+  };
+};
+
+const findNamedExportModuleNode = (
+  ast: t.File,
+  exportName: string
+): {
+  foundNode: t.Node | undefined;
+  foundParentPath: NodePath | undefined;
+} => {
+  let foundNode: t.Node | undefined = undefined;
+  let foundParentPath: NodePath | undefined = undefined;
+
+  traverse(ast, {
+    ExportNamedDeclaration(path) {
+      if (!path.node.declaration || !t.isVariableDeclaration(path.node.declaration)) {
+        return;
+      }
+
+      for (let i = 0; i < path.node.declaration.declarations.length; i++) {
+        const named = path.node.declaration.declarations[i];
+        if (t.isIdentifier(named.id) && named.id.name === exportName) {
+          foundNode = named.init as t.Node;
+          foundParentPath = path as NodePath;
+          path.stop();
+          break;
+        }
+      }
+    },
+  });
+
+  return {
+    foundNode,
+    foundParentPath,
+  };
+};
+
 /**
  * Will return the `node` of the a binding.
  * This function will follow import specifiers to return the actual `node`.
@@ -289,11 +345,15 @@ export const resolveBindingNode = (
     const modulePath = resolve.sync(filename, {
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
     });
-    const moduleCode = fs.readFileSync(modulePath, 'utf-8');
+    const moduleCode = meta.state.cache.load({
+      namespace: 'read-file',
+      cacheKey: modulePath,
+      value: () => fs.readFileSync(modulePath, 'utf-8'),
+    });
 
     const ast = meta.state.cache.load({
-      namespace: 'module-traversal',
-      cacheKey: `${moduleCode}//# modulePath=${modulePath}`,
+      namespace: 'parse-module',
+      cacheKey: modulePath,
       value: () => parse(moduleCode, { sourceType: 'module', sourceFilename: modulePath }),
     });
 
@@ -301,32 +361,19 @@ export const resolveBindingNode = (
     let foundParentPath: NodePath | undefined = undefined;
 
     if (binding.path.isImportDefaultSpecifier()) {
-      traverse(ast, {
-        ExportDefaultDeclaration(path) {
-          foundParentPath = path as NodePath;
-          foundNode = path.node.declaration as t.Node;
-        },
-      });
+      ({ foundNode, foundParentPath } = meta.state.cache.load({
+        namespace: 'find-default-export-module-node',
+        cacheKey: modulePath,
+        value: () => findDefaultExportModuleNode(ast),
+      }));
     } else if (binding.path.isImportSpecifier()) {
       const exportName = binding.path.node.local.name;
 
-      traverse(ast, {
-        ExportNamedDeclaration(path) {
-          if (!path.node.declaration || !t.isVariableDeclaration(path.node.declaration)) {
-            return;
-          }
-
-          for (let i = 0; i < path.node.declaration.declarations.length; i++) {
-            const named = path.node.declaration.declarations[i];
-            if (t.isIdentifier(named.id) && named.id.name === exportName) {
-              foundNode = named.init as t.Node;
-              foundParentPath = path as NodePath;
-              path.stop();
-              break;
-            }
-          }
-        },
-      });
+      ({ foundNode, foundParentPath } = meta.state.cache.load({
+        namespace: 'find-named-export-module-node',
+        cacheKey: `modulePath=${modulePath}&exportName=${exportName}`,
+        value: () => findNamedExportModuleNode(ast, exportName),
+      }));
     }
 
     if (!foundNode || !foundParentPath) {
