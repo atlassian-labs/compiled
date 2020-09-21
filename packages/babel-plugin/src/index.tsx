@@ -7,6 +7,8 @@ import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
 import { State } from './types';
 
+const cache = new Cache();
+
 export default declare<State>((api) => {
   api.assertVersion(7);
 
@@ -14,7 +16,9 @@ export default declare<State>((api) => {
     inherits: require('babel-plugin-syntax-jsx'),
     pre() {
       this.sheets = {};
-      this.cache = new Cache(this.opts);
+
+      cache.initialize(this.opts);
+      this.cache = cache;
     },
     visitor: {
       Program: {

@@ -13,14 +13,11 @@ const defaultOptions = {
 };
 
 export class Cache {
-  _options: CacheOptions & typeof defaultOptions;
+  _options: CacheOptions & typeof defaultOptions = defaultOptions;
   _cache: InstanceType<typeof Map>;
 
-  constructor(options?: CacheOptions) {
+  constructor() {
     // TODO: Replace `this._instanceKey` with `this.#instanceKey` once we upgrade to typescript >= 3.8
-    this._options = { ...defaultOptions, ...options };
-
-    // TODO: add logic for reading and writing saved cached file to this._cache here
     this._cache = new Map();
   }
 
@@ -66,6 +63,10 @@ export class Cache {
     // with ast info in it.
 
     return cacheValue as T;
+  }
+
+  initialize(options: CacheOptions) {
+    this._options = { ...defaultOptions, ...options };
   }
 
   load<T>({

@@ -8,13 +8,15 @@ jest.mock('../Cache');
 
 describe('#Cache', () => {
   const setup = (options: CacheOptions = {}) => {
-    const cache = new Cache(options);
+    const cache = new Cache();
 
-    return { cache };
+    cache.initialize(options);
+
+    return cache;
   };
 
   it('should cache the values with default "cache" option as true', () => {
-    const { cache } = setup();
+    const cache = setup();
 
     const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: () => 10 };
     const value = cache.load(data);
@@ -24,7 +26,7 @@ describe('#Cache', () => {
   });
 
   it('should cache the values when "cache" option is true', () => {
-    const { cache } = setup({ cache: true });
+    const cache = setup({ cache: true });
 
     const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: () => 10 };
     const value = cache.load(data);
@@ -34,7 +36,7 @@ describe('#Cache', () => {
   });
 
   it('should not cache the values when "cache" option is false', () => {
-    const { cache } = setup({ cache: false });
+    const cache = setup({ cache: false });
 
     const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: () => 10 };
     const value = cache.load(data);
@@ -44,7 +46,7 @@ describe('#Cache', () => {
   });
 
   it('should return original cached value when accessed with original key', () => {
-    const { cache } = setup();
+    const cache = setup();
 
     const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: () => 10 };
 
@@ -56,7 +58,7 @@ describe('#Cache', () => {
   });
 
   it('should move frequently used keys in last position of queue', () => {
-    const { cache } = setup();
+    const cache = setup();
 
     const data1 = { namespace: 'namespace1', cacheKey: 'cacheKey1', value: () => 10 };
     const data2 = { cacheKey: 'cacheKey2', value: () => 20 };
@@ -83,7 +85,7 @@ describe('#Cache', () => {
   });
 
   it('should should delete first key value pair from queue when exceeds max size', () => {
-    const { cache } = setup({ maxSize: 3 });
+    const cache = setup({ maxSize: 3 });
 
     const data1 = { namespace: 'namespace1', cacheKey: 'cacheKey1', value: () => 10 };
     const data2 = { namespace: 'namespace2', cacheKey: 'cacheKey2', value: () => 20 };
