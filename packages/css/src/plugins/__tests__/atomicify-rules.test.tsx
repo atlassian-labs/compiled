@@ -41,4 +41,27 @@ describe('atomicify rules', () => {
 
     expect(result.css).toMatchInlineSnapshot(`"._1c5tglyw{-ms-user-select:none;user-select:none}"`);
   });
+
+  it('should callback with created class names', () => {
+    const classes: string[] = [];
+    const callback = (className: string) => {
+      classes.push(className);
+    };
+
+    const result = postcss([atomicifyRules({ callback }), whitespace, autoprefixer]).process(
+      'display:block;text-align:center;',
+      {
+        from: undefined,
+      }
+    );
+
+    result.css;
+
+    expect(classes).toMatchInlineSnapshot(`
+      Array [
+        "_o72g1ule",
+        "_1glk1h6o",
+      ]
+    `);
+  });
 });

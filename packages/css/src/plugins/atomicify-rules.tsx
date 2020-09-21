@@ -1,8 +1,11 @@
-import { plugin, Declaration, decl, rule, Root } from 'postcss';
+import { plugin, Declaration, decl, rule } from 'postcss';
 import { hash } from '@compiled/utils';
 
-interface AtomicifyOpts {
-  root: Root;
+interface PluginOpts {
+  callback?: (className: string) => void;
+}
+
+interface AtomicifyOpts extends PluginOpts {
   selector?: string;
   atRule?: string;
 }
@@ -33,21 +36,27 @@ const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
   const newDecl = decl({ prop: node.prop, value: node.value });
   const newRule = rule({ selector, nodes: [newDecl] });
 
+  // We need to link the new node to a parent else things blow up.
   newDecl.parent = newRule;
   newDecl.raws.before = '';
+
+  if (opts.callback) {
+    opts.callback(className);
+  }
 
   return newRule;
 };
 
 /**
- * PostCSS plugin which will callback when traversing through each root declaration.
+ * Transforms a style sheet into atomic rules.
+ * When passing a `callback` option it will callback with created class names.
  */
-export const atomicifyRules = plugin('atomicify-rules', () => {
+export const atomicifyRules = plugin<PluginOpts>('atomicify-rules', (opts) => {
   return (root) => {
     root.walk((node) => {
       switch (node.type) {
         case 'decl':
-          node.replaceWith(atomicifyDecl(node, { root }));
+          node.replaceWith(atomicifyDecl(node, opts || {}));
           break;
 
         default:
