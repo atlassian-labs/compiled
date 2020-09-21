@@ -17,43 +17,51 @@ describe('#Cache', () => {
 
   it('should cache the values with default "cache" option as true', () => {
     const cache = setup();
+    const lazyValue = jest.fn().mockReturnValue(10);
 
-    const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: () => 10 };
+    const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: lazyValue };
     const value = cache.load(data);
 
     expect(cache.getSize()).toBe(1);
+    expect(lazyValue).toHaveBeenCalledTimes(1);
     expect(value).toBe(10);
   });
 
   it('should cache the values when "cache" option is true', () => {
     const cache = setup({ cache: true });
+    const lazyValue = jest.fn().mockReturnValue(10);
 
-    const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: () => 10 };
+    const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: lazyValue };
     const value = cache.load(data);
 
     expect(cache.getSize()).toBe(1);
+    expect(lazyValue).toHaveBeenCalledTimes(1);
     expect(value).toBe(10);
   });
 
   it('should not cache the values when "cache" option is false', () => {
     const cache = setup({ cache: false });
+    const lazyValue = jest.fn().mockReturnValue(10);
 
-    const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: () => 10 };
+    const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: lazyValue };
     const value = cache.load(data);
 
     expect(cache.getSize()).toBe(0);
+    expect(lazyValue).toHaveBeenCalledTimes(1);
     expect(value).toBe(10);
   });
 
   it('should return original cached value when accessed with original key', () => {
     const cache = setup();
+    const lazyValue = jest.fn().mockReturnValue(10);
 
-    const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: () => 10 };
+    const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: lazyValue };
 
     cache.load(data);
     cache.load(data);
     const value = cache.load(data);
 
+    expect(lazyValue).toHaveBeenCalledTimes(1);
     expect(value).toBe(10);
   });
 
