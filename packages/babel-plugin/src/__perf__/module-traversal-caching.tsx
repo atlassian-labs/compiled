@@ -23,8 +23,8 @@ suite
       import '@compiled/core';
       import React from 'react';
 
-      import { colorMixin } from '../__tests__/stubs/objects';
-      import { secondary } from '../__tests__/stubs/simple';
+      import { colorMixin } from '../__fixtures__/mixins/objects';
+      import { secondary } from '../__fixtures__/mixins/simple';
 
       <div css={{ fontSize: 15, ...colorMixin(), border: \`3px solid \${secondary}\` }} />
     `
@@ -36,8 +36,8 @@ suite
       import '@compiled/core';
       import React from 'react';
 
-      import { colorMixin } from '../__tests__/stubs/objects';
-      import { secondary } from '../__tests__/stubs/simple';
+      import { colorMixin } from '../__fixtures__/mixins/objects';
+      import { secondary } from '../__fixtures__/mixins/simple';
 
       <div css={{ fontSize: 12, ...colorMixin(), border: \`2px solid \${secondary}\` }} />
     `,
@@ -50,8 +50,8 @@ suite
       import '@compiled/core';
       import React from 'react';
 
-      import { colorMixin } from '../__tests__/stubs/objects';
-      import { secondary } from '../__tests__/stubs/simple';
+      import { colorMixin } from '../__fixtures__/mixins/objects';
+      import { secondary } from '../__fixtures__/mixins/simple';
 
       <div css={{ fontSize: 9, ...colorMixin(), border: \`1px solid \${secondary}\` }} />
     `

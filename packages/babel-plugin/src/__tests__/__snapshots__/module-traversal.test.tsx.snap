@@ -2,7 +2,7 @@
 
 exports[`module traversal should throw when pulling in a CSS like object that could not be statically evaluated 1`] = `
 "/packages/babel-plugin/src/__tests__/module-traversal.test.js: Identifier contains values that can't be statically evaluated (5:19).
-  3 |         import { cantStaticallyEvaluate } from './stubs/objects';
+  3 |         import { cantStaticallyEvaluate } from '../__fixtures__/mixins/objects';
   4 | 
 > 5 |         <div css={[cantStaticallyEvaluate]} />
     |                    ^^^^^^^^^^^^^^^^^^^^^^
@@ -11,7 +11,7 @@ exports[`module traversal should throw when pulling in a CSS like object that co
 
 exports[`module traversal should throw when spreading a CSS like object that could not be statically evaluated 1`] = `
 "/packages/babel-plugin/src/__tests__/module-traversal.test.js: Identifier contains values that can't be statically evaluated (5:21).
-  3 |       import { cantStaticallyEvaluate } from './stubs/objects';
+  3 |       import { cantStaticallyEvaluate } from '../__fixtures__/mixins/objects';
   4 | 
 > 5 |       <div css={{ ...cantStaticallyEvaluate }} />
     |                      ^^^^^^^^^^^^^^^^^^^^^^
