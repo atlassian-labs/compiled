@@ -1,10 +1,10 @@
-import { Cache, CacheOptions } from '../Cache';
+import { Cache, CacheOptions } from '../cache';
 
 jest.mock('@compiled/utils', () => {
   return { ...jest.requireActual('@compiled/utils'), hash: () => 'hash-test' };
 });
 
-jest.mock('../Cache');
+jest.mock('../cache');
 
 describe('#Cache', () => {
   const setup = (options: CacheOptions = {}) => {

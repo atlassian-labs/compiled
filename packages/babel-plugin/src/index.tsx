@@ -2,7 +2,7 @@ import { declare } from '@babel/helper-plugin-utils';
 import template from '@babel/template';
 import * as t from '@babel/types';
 import { importSpecifier } from './utils/ast-builders';
-import { Cache } from './utils/Cache';
+import { Cache } from './utils/cache';
 import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
 import { State } from './types';

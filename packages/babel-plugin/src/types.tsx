@@ -1,7 +1,7 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 
-import { Cache } from './utils/Cache';
+import { Cache } from './utils/cache';
 
 export interface PluginOptions {
   /**

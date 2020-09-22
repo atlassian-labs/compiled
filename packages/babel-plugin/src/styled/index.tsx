@@ -123,13 +123,5 @@ export const visitStyledPath = (
 
   const cssOutput = buildCss(styledData.cssNode, meta);
 
-  path.replaceWith(
-    buildStyledComponent(
-      {
-        cssOutput,
-        tag: styledData.tag,
-      },
-      meta
-    )
-  );
+  path.replaceWith(buildStyledComponent(styledData.tag, cssOutput, meta));
 };
