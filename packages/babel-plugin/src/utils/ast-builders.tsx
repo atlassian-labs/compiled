@@ -1,43 +1,38 @@
 import template from '@babel/template';
 import * as t from '@babel/types';
-import traverse, { Scope, NodePath, Visitor } from '@babel/traverse';
+import traverse, { NodePath, Visitor } from '@babel/traverse';
 import { hash, unique } from '@compiled/utils';
 import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
-
-import { PluginOptions, Tag } from '../types';
-
+import { Tag } from '../types';
 import { CSSOutput } from './css-builders';
 import { pickFunctionBody } from './ast';
+import { CompiledOpts, CompiledTemplateOpts, StyledOpts, StyledTemplateOpts } from './types';
+import { Metadata } from '../types';
 
-interface BaseOpts extends PluginOptions {
-  /**
-   * CSS data that will be integrated into the output AST.
-   */
-  cssOutput: CSSOutput;
-}
+/**
+ * Hoists a sheet to the top of the module if its not already there.
+ * Returns the referencing identifier.
+ *
+ * @param sheet
+ */
+const hoistSheet = (sheet: string, meta: Metadata): t.Identifier => {
+  if (meta.state.sheets[sheet]) {
+    return meta.state.sheets[sheet];
+  }
 
-interface StyledOpts extends BaseOpts {
-  /**
-   * Tag of the Styled Component,
-   * for example `"div"` or user defined component.
-   */
-  tag: Tag;
+  const sheetIdentifier = meta.parentPath.scope.generateUidIdentifier('');
+  const parent = meta.parentPath.findParent((path) => path.isProgram()).get('body') as NodePath[];
+  const path = parent.filter((path) => !path.isImportDeclaration())[0];
 
-  /**
-   * Babel path used for traversing inner nodes.
-   */
-  parentPath: NodePath;
+  path.insertBefore(
+    t.variableDeclaration('const', [t.variableDeclarator(sheetIdentifier, t.stringLiteral(sheet))])
+  );
 
-  /**
-   * Babel scope used for traversing inner nodes.
-   */
-  scope: Scope;
-}
+  meta.state.sheets[sheet] = sheetIdentifier;
 
-interface CompiledOpts extends BaseOpts {
-  node: t.JSXElement;
-}
+  return sheetIdentifier;
+};
 
 /**
  * Will build up the CSS variables prop to be placed as inline styles.
@@ -111,43 +106,8 @@ const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor:
  *
  * @param opts Template options.
  */
-const styledTemplate = (opts: {
-  /**
-   * Adds a nonce onto the `CS` component.
-   */
-  nonce?: string;
-
-  /**
-   * Class to be used for the CSS selector.
-   */
-  className: string;
-
-  /**
-   * Tag for the Styled Component, for example "div" or user defined component.
-   */
-  tag: Tag;
-
-  /**
-   * CSS blocks to be passed to the `CS` component.
-   */
-  css: string[];
-
-  /**
-   * CSS variables to be passed to the `style` prop.
-   */
-  variables: CSSOutput['variables'];
-
-  /**
-   * Babel path used for traversing inner nodes.
-   */
-  parentPath: NodePath;
-
-  /**
-   * Babel scope used for traversing inner nodes.
-   */
-  scope: Scope;
-}) => {
-  const nonceAttribute = opts.nonce ? `nonce={${opts.nonce}}` : '';
+const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata) => {
+  const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
   const propsToDestructure: string[] = [];
   const styleProp = opts.variables.length
     ? styledStyleProp(opts.variables, (node) => {
@@ -205,7 +165,7 @@ const styledTemplate = (opts: {
     }
   )({
     styleProp,
-    cssNode: t.arrayExpression(opts.css.map((style) => t.stringLiteral(style))),
+    cssNode: t.arrayExpression(opts.css.map((sheet) => hoistSheet(sheet, meta))),
   });
 };
 
@@ -215,8 +175,8 @@ const styledTemplate = (opts: {
  *
  * @param opts Template options.
  */
-const compiledTemplate = (opts: { nonce?: string; css: string[]; jsxNode: t.JSXElement }) => {
-  const nonceAttribute = opts.nonce ? `nonce={${opts.nonce}}` : '';
+const compiledTemplate = (opts: CompiledTemplateOpts, meta: Metadata) => {
+  const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
 
   return template(
     `
@@ -229,8 +189,8 @@ const compiledTemplate = (opts: { nonce?: string; css: string[]; jsxNode: t.JSXE
       plugins: ['jsx'],
     }
   )({
-    jsxNode: opts.jsxNode,
-    cssNode: t.arrayExpression(opts.css.map((style) => t.stringLiteral(style))),
+    jsxNode: opts.node,
+    cssNode: t.arrayExpression(opts.css.map((sheet) => hoistSheet(sheet, meta))),
   });
 };
 
@@ -271,18 +231,21 @@ export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExp
  *
  * @param opts Template options.
  */
-export const buildStyledComponent = (opts: StyledOpts) => {
+export const buildStyledComponent = (opts: StyledOpts, meta: Metadata) => {
   const cssHash = hash(opts.cssOutput.css);
   const className = `cc-${cssHash}`;
   const cssRules = transformCss(`.${className}`, opts.cssOutput.css);
 
-  return styledTemplate({
-    ...opts,
-    className,
-    tag: opts.tag,
-    css: cssRules,
-    variables: opts.cssOutput.variables,
-  }) as t.Node;
+  return styledTemplate(
+    {
+      ...opts,
+      className,
+      tag: opts.tag,
+      css: cssRules,
+      variables: opts.cssOutput.variables,
+    },
+    meta
+  ) as t.Node;
 };
 
 /**
@@ -302,7 +265,7 @@ export const importSpecifier = (name: string, localName?: string) => {
  *
  * @param opts Template options.
  */
-export const buildCompiledComponent = (opts: CompiledOpts) => {
+export const buildCompiledComponent = (opts: CompiledOpts, meta: Metadata) => {
   const cssHash = hash(opts.cssOutput.css);
   const className = `cc-${cssHash}`;
   const cssRules = transformCss(`.${className}`, opts.cssOutput.css);
@@ -382,9 +345,11 @@ export const buildCompiledComponent = (opts: CompiledOpts) => {
     );
   }
 
-  return compiledTemplate({
-    jsxNode: opts.node,
-    css: cssRules,
-    nonce: opts.nonce,
-  }) as t.Node;
+  return compiledTemplate(
+    {
+      node: opts.node,
+      css: cssRules,
+    },
+    meta
+  ) as t.Node;
 };
