@@ -7,8 +7,29 @@ import isPropValid from '@emotion/is-prop-valid';
 import { Tag } from '../types';
 import { CSSOutput } from './css-builders';
 import { pickFunctionBody } from './ast';
-import { CompiledOpts, CompiledTemplateOpts, StyledOpts, StyledTemplateOpts } from './types';
 import { Metadata } from '../types';
+
+export interface StyledTemplateOpts {
+  /**
+   * Class to be used for the CSS selector.
+   */
+  className: string;
+
+  /**
+   * Tag for the Styled Component, for example "div" or user defined component.
+   */
+  tag: Tag;
+
+  /**
+   * CSS variables to be passed to the `style` prop.
+   */
+  variables: CSSOutput['variables'];
+
+  /**
+   * CSS sheets to be passed to the `CS` component.
+   */
+  css: string[];
+}
 
 /**
  * Hoists a sheet to the top of the module if its not already there.
@@ -68,15 +89,30 @@ const buildCssVariablesProp = (
  */
 const styledStyleProp = (
   variables: CSSOutput['variables'],
-  transform?: (expression: t.Expression) => any
+  transform?: (expression: t.Expression) => t.Expression
 ) => {
   const props: (t.ObjectProperty | t.SpreadElement)[] = [t.spreadElement(t.identifier('style'))];
   return t.objectExpression(props.concat(buildCssVariablesProp(variables, transform)));
 };
 
-const buildComponentTag = ({ name, type }: Tag) =>
-  type === 'InBuiltComponent' ? `"${name}"` : name;
+/**
+ * Returns a tag string in the form of an identifier or string literal.
+ *
+ * A type of InBuiltComponent will return a string literal,
+ * otherwise an identifier string will be returned.
+ *
+ * @param param0
+ */
+const buildComponentTag = ({ name, type }: Tag) => {
+  return type === 'InBuiltComponent' ? `"${name}"` : name;
+};
 
+/**
+ * Traverses an arrow function and then finally return the arrow function body node.
+ *
+ * @param node
+ * @param nestedVisitor
+ */
 const traverseStyledArrowFunctionExpression = (
   node: t.ArrowFunctionExpression,
   nestedVisitor: Visitor
@@ -86,14 +122,20 @@ const traverseStyledArrowFunctionExpression = (
   return pickFunctionBody(node);
 };
 
+/**
+ * Traverses a binary expression looking for any arrow functions,
+ * calls back with each arrow function node into the passed in `nestedVisitor`,
+ * and then finally replaces each found arrow function node with its body.
+ *
+ * @param node
+ * @param nestedVisitor
+ */
 const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor: Visitor) => {
   traverse(node, {
     noScope: true,
     ArrowFunctionExpression(path) {
       path.traverse(nestedVisitor);
-
       path.replaceWith(pickFunctionBody(path.node));
-
       path.stop();
     },
   });
@@ -104,9 +146,10 @@ const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor:
 /**
  * Will return a generated AST for a Styled Component.
  *
- * @param opts Template options.
+ * @param opts
+ * @param meta
  */
-const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata) => {
+const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
   const propsToDestructure: string[] = [];
   const styleProp = opts.variables.length
@@ -166,16 +209,18 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata) => {
   )({
     styleProp,
     cssNode: t.arrayExpression(opts.css.map((sheet) => hoistSheet(sheet, meta))),
-  });
+  }) as t.Node;
 };
 
 /**
  * Will return a generated AST for a Compiled Component.
  * This is primarily used for CSS prop and ClassNames apis.
  *
- * @param opts Template options.
+ * @param node
+ * @param sheets
+ * @param meta
  */
-const compiledTemplate = (opts: CompiledTemplateOpts, meta: Metadata) => {
+const compiledTemplate = (node: t.JSXElement, sheets: string[], meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
 
   return template(
@@ -189,9 +234,9 @@ const compiledTemplate = (opts: CompiledTemplateOpts, meta: Metadata) => {
       plugins: ['jsx'],
     }
   )({
-    jsxNode: opts.node,
-    cssNode: t.arrayExpression(opts.css.map((sheet) => hoistSheet(sheet, meta))),
-  });
+    jsxNode: node,
+    cssNode: t.arrayExpression(sheets.map((sheet) => hoistSheet(sheet, meta))),
+  }) as t.Node;
 };
 
 /**
@@ -231,21 +276,20 @@ export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExp
  *
  * @param opts Template options.
  */
-export const buildStyledComponent = (opts: StyledOpts, meta: Metadata) => {
-  const cssHash = hash(opts.cssOutput.css);
+export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
+  const cssHash = hash(cssOutput.css);
   const className = `cc-${cssHash}`;
-  const cssRules = transformCss(`.${className}`, opts.cssOutput.css);
+  const cssRules = transformCss(`.${className}`, cssOutput.css);
 
   return styledTemplate(
     {
-      ...opts,
       className,
-      tag: opts.tag,
+      tag,
       css: cssRules,
-      variables: opts.cssOutput.variables,
+      variables: cssOutput.variables,
     },
     meta
-  ) as t.Node;
+  );
 };
 
 /**
@@ -265,11 +309,15 @@ export const importSpecifier = (name: string, localName?: string) => {
  *
  * @param opts Template options.
  */
-export const buildCompiledComponent = (opts: CompiledOpts, meta: Metadata) => {
-  const cssHash = hash(opts.cssOutput.css);
+export const buildCompiledComponent = (
+  node: t.JSXElement,
+  cssOutput: CSSOutput,
+  meta: Metadata
+): t.Node => {
+  const cssHash = hash(cssOutput.css);
   const className = `cc-${cssHash}`;
-  const cssRules = transformCss(`.${className}`, opts.cssOutput.css);
-  const classNameProp = opts.node.openingElement.attributes.find((prop): prop is t.JSXAttribute => {
+  const cssRules = transformCss(`.${className}`, cssOutput.css);
+  const classNameProp = node.openingElement.attributes.find((prop): prop is t.JSXAttribute => {
     return t.isJSXAttribute(prop) && prop.name.name === 'className';
   });
 
@@ -287,31 +335,29 @@ export const buildCompiledComponent = (opts: CompiledOpts, meta: Metadata) => {
     );
   } else {
     // No class name - just push our own one.
-    opts.node.openingElement.attributes.push(
+    node.openingElement.attributes.push(
       t.jsxAttribute(t.jsxIdentifier('className'), t.stringLiteral(className))
     );
   }
 
-  if (opts.cssOutput.variables.length) {
+  if (cssOutput.variables.length) {
     // If there is dynamic CSS in use we have work to do.
     let stylePropIndex = -1;
     // Find the style prop on the opening JSX element.
-    const styleProp = opts.node.openingElement.attributes.find(
-      (prop, index): prop is t.JSXAttribute => {
-        if (t.isJSXAttribute(prop) && prop.name.name === 'style') {
-          stylePropIndex = index;
-          return true;
-        }
-
-        return false;
+    const styleProp = node.openingElement.attributes.find((prop, index): prop is t.JSXAttribute => {
+      if (t.isJSXAttribute(prop) && prop.name.name === 'style') {
+        stylePropIndex = index;
+        return true;
       }
-    );
 
-    const dynamicStyleProperties = buildCssVariablesProp(opts.cssOutput.variables);
+      return false;
+    });
+
+    const dynamicStyleProperties = buildCssVariablesProp(cssOutput.variables);
 
     if (styleProp) {
       // Remove the pre-existing style prop - we're going to redefine it soon.
-      opts.node.openingElement.attributes.splice(stylePropIndex, 1);
+      node.openingElement.attributes.splice(stylePropIndex, 1);
 
       if (
         styleProp.value &&
@@ -337,7 +383,7 @@ export const buildCompiledComponent = (opts: CompiledOpts, meta: Metadata) => {
     }
 
     // Finally add the new style prop back to the opening JSX element.
-    opts.node.openingElement.attributes.push(
+    node.openingElement.attributes.push(
       t.jsxAttribute(
         t.jsxIdentifier('style'),
         t.jsxExpressionContainer(t.objectExpression(dynamicStyleProperties))
@@ -345,11 +391,5 @@ export const buildCompiledComponent = (opts: CompiledOpts, meta: Metadata) => {
     );
   }
 
-  return compiledTemplate(
-    {
-      node: opts.node,
-      css: cssRules,
-    },
-    meta
-  ) as t.Node;
+  return compiledTemplate(node, cssRules, meta);
 };
