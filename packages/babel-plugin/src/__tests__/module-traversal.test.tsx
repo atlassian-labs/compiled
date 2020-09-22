@@ -5,6 +5,8 @@ jest.mock('@compiled/utils', () => {
   return { ...jest.requireActual('@compiled/utils'), hash: () => 'hash-test' };
 });
 
+jest.mock('../utils/Cache');
+
 const transform = (code: string) => {
   try {
     return transformSync(code, {
@@ -28,7 +30,7 @@ describe('module traversal', () => {
       `
       import '@compiled/core';
       import React from 'react';
-      import colors from './stubs/objects';
+      import colors from '../__fixtures__/mixins/objects';
 
       <div css={{ color: colors.primary }} />
     `
@@ -42,7 +44,7 @@ describe('module traversal', () => {
       `
       import '@compiled/core';
       import React from 'react';
-      import color from './stubs/simple';
+      import color from '../__fixtures__/mixins/simple';
 
       <div css={{ color }} />
     `
@@ -56,7 +58,7 @@ describe('module traversal', () => {
       `
       import '@compiled/core';
       import React from 'react';
-      import { primary } from './stubs/simple';
+      import { primary } from '../__fixtures__/mixins/simple';
 
       <div css={{ color: primary }} />
     `
@@ -70,7 +72,7 @@ describe('module traversal', () => {
       `
       import '@compiled/core';
       import React from 'react';
-      import { colors } from './stubs/objects';
+      import { colors } from '../__fixtures__/mixins/objects';
 
       <div css={{ color: colors.primary }} />
     `
@@ -98,7 +100,7 @@ describe('module traversal', () => {
       `
       import '@compiled/core';
       import React from 'react';
-      import { style } from './stubs/objects';
+      import { style } from '../__fixtures__/mixins/objects';
 
       <div css={style} />
     `
@@ -112,7 +114,7 @@ describe('module traversal', () => {
       `
       import '@compiled/core';
       import React from 'react';
-      import { style } from './stubs/objects';
+      import { style } from '../__fixtures__/mixins/objects';
 
       <div css={{ color: 'blue', ...style }} />
     `
@@ -126,7 +128,7 @@ describe('module traversal', () => {
       `
       import '@compiled/core';
       import React from 'react';
-      import { styleInlining } from './stubs/objects';
+      import { styleInlining } from '../__fixtures__/mixins/objects';
 
       <div css={styleInlining} />
     `
@@ -140,7 +142,7 @@ describe('module traversal', () => {
       `
       import '@compiled/core';
       import React from 'react';
-      import { styleInlining } from './stubs/objects';
+      import { styleInlining } from '../__fixtures__/mixins/objects';
 
       <div css={{ ...styleInlining }} />
     `
@@ -154,7 +156,7 @@ describe('module traversal', () => {
       `
       import '@compiled/core';
       import React from 'react';
-      import { styleModuleInlining } from './stubs/objects';
+      import { styleModuleInlining } from '../__fixtures__/mixins/objects';
 
       <div css={{ ...styleModuleInlining }} />
     `
@@ -168,7 +170,7 @@ describe('module traversal', () => {
       `
       import '@compiled/core';
       import React from 'react';
-      import { styleModuleInlining } from './stubs/objects';
+      import { styleModuleInlining } from '../__fixtures__/mixins/objects';
 
       <div css={styleModuleInlining} />
     `
@@ -181,7 +183,7 @@ describe('module traversal', () => {
     const result = transform(
       `
       import '@compiled/core';
-      import { reexport } from './stubs/reexport';
+      import { reexport } from '../__fixtures__/mixins/reexport';
 
       <div css={{ color: reexport }} />
     `
@@ -194,7 +196,7 @@ describe('module traversal', () => {
     const result = transform(
       `
       import '@compiled/core';
-      import { objectReexport } from './stubs/reexport';
+      import { objectReexport } from '../__fixtures__/mixins/reexport';
 
       <div css={{ color: objectReexport.foo }} />
     `
@@ -207,7 +209,7 @@ describe('module traversal', () => {
     const result = transform(
       `
       import '@compiled/core';
-      import { bold } from './stubs/strings';
+      import { bold } from '../__fixtures__/mixins/strings';
 
       <div css={bold} />
     `
@@ -220,7 +222,7 @@ describe('module traversal', () => {
     const result = transform(
       `
       import '@compiled/core';
-      import { italics } from './stubs/strings';
+      import { italics } from '../__fixtures__/mixins/strings';
 
       <div css={[italics]} />
     `
@@ -233,7 +235,7 @@ describe('module traversal', () => {
     const result = transform(
       `
       import '@compiled/core';
-      import { danger } from './stubs/strings';
+      import { danger } from '../__fixtures__/mixins/strings';
 
       <div css={[danger]} />
     `
@@ -247,7 +249,7 @@ describe('module traversal', () => {
       transform(
         `
         import '@compiled/core';
-        import { cantStaticallyEvaluate } from './stubs/objects';
+        import { cantStaticallyEvaluate } from '../__fixtures__/mixins/objects';
 
         <div css={[cantStaticallyEvaluate]} />
       `
@@ -260,7 +262,7 @@ describe('module traversal', () => {
       transform(
         `
       import '@compiled/core';
-      import { cantStaticallyEvaluate } from './stubs/objects';
+      import { cantStaticallyEvaluate } from '../__fixtures__/mixins/objects';
 
       <div css={{ ...cantStaticallyEvaluate }} />
     `
@@ -272,7 +274,7 @@ describe('module traversal', () => {
     const result = transform(
       `
       import '@compiled/core';
-      import { colorMixin } from './stubs/objects';
+      import { colorMixin } from '../__fixtures__/mixins/objects';
 
       <div css={{ ':hover': colorMixin() }} />
     `
@@ -285,7 +287,7 @@ describe('module traversal', () => {
     const result = transform(
       `
       import '@compiled/core';
-      import { colorMixin } from './stubs/objects';
+      import { colorMixin } from '../__fixtures__/mixins/objects';
 
       const colors = colorMixin();
 

@@ -18,6 +18,9 @@
     "dist",
     "src"
   ],
+  "scripts": {
+    "perf": "ts-node --files ./src/__perf__/module-traversal-caching"
+  },
   "dependencies": {
     "@babel/core": "^7.10.2",
     "@babel/generator": "^7.10.2",
@@ -30,10 +33,12 @@
     "@compiled/css": "0.4.7",
     "@compiled/utils": "0.4.7",
     "@emotion/is-prop-valid": "^0.8.6",
+    "benchmark": "^2.1.4",
     "resolve": "^1.17.0"
   },
   "devDependencies": {
     "@types/babel__core": "^7.1.7",
+    "@types/benchmark": "^1.0.33",
     "@types/resolve": "^1.17.1"
   }
 }

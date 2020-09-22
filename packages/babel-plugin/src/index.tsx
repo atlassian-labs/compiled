@@ -2,9 +2,12 @@ import { declare } from '@babel/helper-plugin-utils';
 import template from '@babel/template';
 import * as t from '@babel/types';
 import { importSpecifier } from './utils/ast-builders';
+import { Cache } from './utils/Cache';
 import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
 import { State } from './types';
+
+const cache = new Cache();
 
 export default declare<State>((api) => {
   api.assertVersion(7);
@@ -13,6 +16,9 @@ export default declare<State>((api) => {
     inherits: require('babel-plugin-syntax-jsx'),
     pre() {
       this.sheets = {};
+
+      cache.initialize(this.opts);
+      this.cache = cache;
     },
     visitor: {
       Program: {
