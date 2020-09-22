@@ -5,7 +5,7 @@ jest.mock('@compiled/utils', () => {
   return { ...jest.requireActual('@compiled/utils'), hash: () => 'hash-test' };
 });
 
-jest.mock('../utils/Cache');
+jest.mock('../utils/cache');
 
 const transform = (code: string) => {
   try {
