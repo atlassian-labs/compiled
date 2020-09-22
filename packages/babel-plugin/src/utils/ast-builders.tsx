@@ -35,7 +35,8 @@ export interface StyledTemplateOpts {
  * Hoists a sheet to the top of the module if its not already there.
  * Returns the referencing identifier.
  *
- * @param sheet
+ * @param sheet Stylesheet
+ * @param meta Plugin metadata
  */
 const hoistSheet = (sheet: string, meta: Metadata): t.Identifier => {
   if (meta.state.sheets[sheet]) {
@@ -85,7 +86,7 @@ const buildCssVariablesProp = (
  * Builds up the inline style prop value for a Styled Component.
  *
  * @param variables CSS variables that will be placed in the AST
- * @param transform Transform function that can be used to change the CSS variable expression
+ * @param transform Transform callback function that can be used to change the CSS variable expression
  */
 const styledStyleProp = (
   variables: CSSOutput['variables'],
@@ -101,7 +102,7 @@ const styledStyleProp = (
  * A type of InBuiltComponent will return a string literal,
  * otherwise an identifier string will be returned.
  *
- * @param param0
+ * @param tag Made of name and type.
  */
 const buildComponentTag = ({ name, type }: Tag) => {
   return type === 'InBuiltComponent' ? `"${name}"` : name;
@@ -110,8 +111,8 @@ const buildComponentTag = ({ name, type }: Tag) => {
 /**
  * Traverses an arrow function and then finally return the arrow function body node.
  *
- * @param node
- * @param nestedVisitor
+ * @param node Array function node
+ * @param nestedVisitor Visitor callback function
  */
 const traverseStyledArrowFunctionExpression = (
   node: t.ArrowFunctionExpression,
@@ -127,8 +128,8 @@ const traverseStyledArrowFunctionExpression = (
  * calls back with each arrow function node into the passed in `nestedVisitor`,
  * and then finally replaces each found arrow function node with its body.
  *
- * @param node
- * @param nestedVisitor
+ * @param node Binary expression node
+ * @param nestedVisitor Visitor callback function
  */
 const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor: Visitor) => {
   traverse(node, {
@@ -146,8 +147,8 @@ const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor:
 /**
  * Will return a generated AST for a Styled Component.
  *
- * @param opts
- * @param meta
+ * @param opts Template options
+ * @param meta Plugin metadata
  */
 const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
@@ -216,9 +217,9 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
  * Will return a generated AST for a Compiled Component.
  * This is primarily used for CSS prop and ClassNames apis.
  *
- * @param node
- * @param sheets
- * @param meta
+ * @param node Originating node
+ * @param sheets Stylesheets
+ * @param meta Metadata
  */
 const compiledTemplate = (node: t.JSXElement, sheets: string[], meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
@@ -274,7 +275,9 @@ export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExp
 /**
  * Returns a Styled Component AST.
  *
- * @param opts Template options.
+ * @param tag Styled tag either an inbuilt or user define
+ * @param cssOutput CSS and variables to place onto the component
+ * @param meta Plugin metadata
  */
 export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
   const cssHash = hash(cssOutput.css);
@@ -307,7 +310,9 @@ export const importSpecifier = (name: string, localName?: string) => {
 /**
  * Returns a Compiled Component AST.
  *
- * @param opts Template options.
+ * @param node Originating node
+ * @param cssOutput CSS and variables to place onto the component
+ * @param meta Plugin metadata
  */
 export const buildCompiledComponent = (
   node: t.JSXElement,
