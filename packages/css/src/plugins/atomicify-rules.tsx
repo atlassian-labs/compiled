@@ -29,24 +29,31 @@ const atomicClassName = (propName: string, value: string, opts: AtomicifyOpts) =
   return `_${group}${valueHash}`;
 };
 
-const nestedSelector = (selector: string | undefined) => {
+const normalizeSelector = (selector: string | undefined) => {
   if (!selector) {
     return '';
   }
 
+  // We want to build a consistent selector that we will use to generate the group hash.
+  // Because of that we trim whitespace as well as removing any top level nesting "&".
   const trimmed = selector.trim();
 
-  if (trimmed.charAt(0) === ':') {
-    return selector;
-  }
+  switch (trimmed.charAt(0)) {
+    case ':':
+      return trimmed;
 
-  return ` ${selector}`;
+    default:
+      return ` ${trimmed}`;
+  }
 };
 
 const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
-  const normalizedSelector = nestedSelector(opts.selector);
-  const className = atomicClassName(node.prop, node.value, opts);
-  const selector = `.${className}${normalizedSelector}`;
+  const initialSelector = normalizeSelector(opts.selector);
+  const className = atomicClassName(node.prop, node.value, {
+    ...opts,
+    selector: initialSelector,
+  });
+  const selector = `.${className}${initialSelector}`;
   const newDecl = decl({ prop: node.prop, value: node.value });
   const newRule = rule({ selector, nodes: [newDecl] });
 
@@ -88,14 +95,15 @@ const atomicifyRule = (node: Rule, opts: AtomicifyOpts) => {
  */
 export const atomicifyRules = plugin<PluginOpts>('atomicify-rules', (opts = {}) => {
   return (root) => {
-    root.walk((node) => {
+    root.each((node) => {
       switch (node.type) {
+        case 'rule':
+          node.replaceWith(atomicifyRule(node, opts));
+          break;
+
         case 'decl':
           node.replaceWith(atomicifyDecl(node, opts));
           break;
-
-        case 'rule':
-          node.replaceWith(atomicifyRule(node, opts));
 
         default:
           break;
