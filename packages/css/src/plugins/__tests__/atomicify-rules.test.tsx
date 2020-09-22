@@ -163,4 +163,52 @@ describe('atomicify rules', () => {
       `;
     }).toThrow('atomicify-rules: <css input>:3:11: Nested rules are not allowed.');
   });
+
+  xit('should atomicify at rule styles', () => {
+    const actual = transform`
+      @media (min-width: 30rem) {
+        display: block;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`".not yet"`);
+  });
+
+  xit('should atomicify nested at rule styles', () => {
+    const actual = transform`
+      @media (min-width: 30rem) {
+        @media (min-width: 20rem) {
+          display: block;
+        }
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`".not yet"`);
+  });
+
+  xit('should atomicify at rule nested styles', () => {
+    const actual = transform`
+      @media (min-width: 30rem) {
+        div {
+          display: block;
+        }
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`".not yet"`);
+  });
+
+  xit('should atomicify double nested at rule nested styles', () => {
+    const actual = transform`
+      @media (min-width: 30rem) {
+        @media (min-width: 20rem) {
+          div {
+            display: block;
+          }
+        }
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`".not yet"`);
+  });
 });
