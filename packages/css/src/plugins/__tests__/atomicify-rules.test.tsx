@@ -85,34 +85,41 @@ describe('atomicify rules', () => {
     expect(actual).toMatchInlineSnapshot(`"._k2hc13q2 div{color:blue}"`);
   });
 
-  it('should atomicify a nested pseudo rule', () => {
-    const actual = transform`
-      :hover {
+  it('should generate the same class hash for semantically same but different rules', () => {
+    const firstActual = transform`
+      &:first-child {
+        color: blue;
+      }
+    `;
+    const secondActual = transform`
+      :first-child {
         color: blue;
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._1uhh13q2:hover{color:blue}"`);
+    const expected = '._roi113q2:first-child{color:blue}';
+    expect(firstActual).toEqual(expected);
+    expect(secondActual).toEqual(expected);
   });
 
-  xit('should reference the atomic class with the self selector', () => {
+  it('should behind reversed nesting', () => {
     const actual = transform`
-      &:hover {
-        color: blue;
+      :first-child & {
+        color: hotpink;
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._1uhh13q2:hover{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._1qab1q9v:first-child ._1qab1q9v{color:hotpink}"`);
   });
 
-  xit('should reference the atomic class with the self selector', () => {
+  it('should reference the atomic class with the nesting selector', () => {
     const actual = transform`
-      :hover & {
+      & :first-child {
         color: blue;
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._1uhh13q2 :hover{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._p9sj13q2 :first-child{color:blue}"`);
   });
 
   it('should atomicify a double tag rule', () => {

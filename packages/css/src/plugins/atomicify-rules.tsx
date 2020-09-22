@@ -42,9 +42,16 @@ const normalizeSelector = (selector: string | undefined) => {
     case ':':
       return trimmed;
 
+    case '&':
+      return trimmed.replace('&', '');
+
     default:
       return ` ${trimmed}`;
   }
+};
+
+const replaceNestingSelector = (selector: string, parentClassName: string) => {
+  return selector.replace(/ &/g, ` .${parentClassName}`);
 };
 
 const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
@@ -53,7 +60,7 @@ const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
     ...opts,
     selector: initialSelector,
   });
-  const selector = `.${className}${initialSelector}`;
+  const selector = `.${className}${replaceNestingSelector(initialSelector, className)}`;
   const newDecl = decl({ prop: node.prop, value: node.value });
   const newRule = rule({ selector, nodes: [newDecl] });
 
