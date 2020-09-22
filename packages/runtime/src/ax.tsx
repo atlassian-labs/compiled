@@ -28,8 +28,13 @@ export const ax = (classes: (string | undefined | false)[]): string => {
       continue;
     }
 
-    const group = cls.slice(0, cls.charCodeAt(0) === 95 ? 5 : undefined);
-    found[group] = cls;
+    const groups = cls.split(' ');
+
+    for (let x = 0; x < groups.length; x++) {
+      const className = groups[x];
+      const group = className.slice(0, className.charCodeAt(0) === 95 ? 5 : undefined);
+      found[group] = className;
+    }
   }
 
   return Object.values(found).join(' ');

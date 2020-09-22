@@ -76,7 +76,7 @@
   "size-limit": [
     {
       "path": "./packages/runtime/dist/browser/index.js",
-      "limit": "80B",
+      "limit": "105B",
       "import": "{ ax }",
       "ignore": [
         "react"

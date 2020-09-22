@@ -25,6 +25,12 @@ describe('ax', () => {
     expect(result).toEqual('_aaaacccc');
   });
 
+  it('should ensure the last atomic declaration of a multi group wins', () => {
+    const result = ax(['_aaaabbbb _aaaacccc', 'foo']);
+
+    expect(result).toEqual('_aaaacccc foo');
+  });
+
   it('should not remove any atomic declarations if there are no duplicate groups', () => {
     const result = ax(['_aaaabbbb', '_bbbbcccc']);
 
