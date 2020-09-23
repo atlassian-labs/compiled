@@ -29,6 +29,12 @@ const atomicClassName = (propName: string, value: string, opts: AtomicifyOpts) =
   return `_${group}${valueHash}`;
 };
 
+/**
+ * Returns a normalized selector.
+ * This will handle immediate dangling pseudos `:` as well as the nesting operator `&`.
+ *
+ * @param selector
+ */
 const normalizeSelector = (selector: string | undefined) => {
   if (!selector) {
     return '';
@@ -50,10 +56,22 @@ const normalizeSelector = (selector: string | undefined) => {
   }
 };
 
+/**
+ * Replaces all instances of a nesting operator `&` with the parent class name.
+ *
+ * @param selector
+ * @param parentClassName
+ */
 const replaceNestingSelector = (selector: string, parentClassName: string) => {
   return selector.replace(/ &/g, ` .${parentClassName}`);
 };
 
+/**
+ * Transforms a declaration into an atomic rule.
+ *
+ * @param node
+ * @param opts
+ */
 const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
   const initialSelector = normalizeSelector(opts.selector);
   const className = atomicClassName(node.prop, node.value, {
@@ -75,6 +93,12 @@ const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
   return newRule;
 };
 
+/**
+ * Transforms a rule into atomic rules.
+ *
+ * @param node
+ * @param opts
+ */
 const atomicifyRule = (node: Rule, opts: AtomicifyOpts) => {
   if (!node.nodes) {
     return [];
@@ -92,6 +116,12 @@ const atomicifyRule = (node: Rule, opts: AtomicifyOpts) => {
   });
 };
 
+/**
+ * Transforms an atrule into atomic rules.
+ *
+ * @param node
+ * @param opts
+ */
 const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
   let children: Node[] = [];
   const atRuleLabel = `${opts.atRule || ''}${node.name}${node.params}`;
@@ -128,7 +158,7 @@ const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
  *
  * Preconditions:
  *
- * 1. No nested rules allowed - normalized them with the `parent-orphaned-pseudos` and `nested` plugins.
+ * 1. No nested rules allowed - normalize them with the `parent-orphaned-pseudos` and `nested` plugins first.
  */
 export const atomicifyRules = plugin<PluginOpts>('atomicify-rules', (opts = {}) => {
   return (root) => {
