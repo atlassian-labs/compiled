@@ -61,7 +61,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"._1tclglyw:hover, ._16wpglyw:focus{-ms-user-select:none;user-select:none}"`
+      `"@media (min-width: 30rem){._3r8kglyw{-ms-user-select:none;user-select:none}}"`
     );
   });
 
@@ -77,7 +77,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"._1tclglyw:hover, ._16wpglyw:focus{-ms-user-select:none;user-select:none}"`
+      `"@media (min-width: 30rem){._1a7jglyw div{-ms-user-select:none;user-select:none}}"`
     );
   });
 
@@ -93,7 +93,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"._1tclglyw:hover, ._16wpglyw:focus{-ms-user-select:none;user-select:none}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._1cg4glyw{-ms-user-select:none;user-select:none}}}"`
     );
   });
 

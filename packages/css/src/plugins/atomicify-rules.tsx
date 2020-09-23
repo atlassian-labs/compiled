@@ -110,9 +110,10 @@ const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
   const newRule = rule({ selector, nodes: [newDecl] });
 
   // We need to link the new node to a parent else autoprefixer blows up.
-  newDecl.parent = opts.parentNode || newRule;
+  newDecl.parent = newRule;
   newDecl.raws.before = '';
-  // newRule.parent = opts.parentNode!;
+  newRule.parent = opts.parentNode!;
+  newRule.raws.before = '';
 
   return newRule;
 };
@@ -147,13 +148,16 @@ const atomicifyRule = (node: Rule, opts: AtomicifyOpts) => {
  * @param opts
  */
 const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
-  let children: Node[] = [];
+  const children: Node[] = [];
+  const newNode = node.clone({ nodes: children });
   const atRuleLabel = `${opts.atRule || ''}${node.name}${node.params}`;
   const atRuleOpts = {
     ...opts,
-    parentNode: node,
+    parentNode: newNode,
     atRule: atRuleLabel,
   };
+
+  newNode.parent = opts.parentNode!;
 
   node.each((childNode) => {
     switch (childNode.type) {
@@ -162,7 +166,9 @@ const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
         break;
 
       case 'rule':
-        children = children.concat(atomicifyRule(childNode, atRuleOpts));
+        atomicifyRule(childNode, atRuleOpts).forEach((rule) => {
+          children.push(rule);
+        });
         break;
 
       case 'decl':
@@ -174,7 +180,7 @@ const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
     }
   });
 
-  return node.clone({ nodes: children });
+  return newNode;
 };
 
 /**
