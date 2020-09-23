@@ -75,6 +75,38 @@ describe('atomicify rules', () => {
     expect(actual).toMatchInlineSnapshot(`"._k2hc13q2 div{color:blue}"`);
   });
 
+  it('should atomicify a nested tag with class rule', () => {
+    const actual = transform`
+      div.primary {
+        color: blue;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`"._yjs513q2 div.primary{color:blue}"`);
+  });
+
+  it('should atomicify a nested multi selector rule', () => {
+    const actual = transform`
+      div, span, li {
+        color: blue;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(
+      `"._k2hc13q2 div, ._ijgx13q2 span, ._1jah13q2 li{color:blue}"`
+    );
+  });
+
+  it('should atomicify a multi dangling pseudo rule', () => {
+    const actual = transform`
+      :hover, :focus {
+        color: blue;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`"._1uhh13q2:hover, ._t5gl13q2:focus{color:blue}"`);
+  });
+
   it('should atomicify a nested tag rule', () => {
     const actual = transform`
       div {

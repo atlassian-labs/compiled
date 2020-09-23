@@ -6,7 +6,7 @@ interface PluginOpts {
 }
 
 interface AtomicifyOpts extends PluginOpts {
-  selector?: string;
+  selectors?: string[];
   atRule?: string;
 }
 
@@ -23,7 +23,8 @@ interface AtomicifyOpts extends PluginOpts {
  * @param value
  */
 const atomicClassName = (propName: string, value: string, opts: AtomicifyOpts) => {
-  const group = hash(`${opts.atRule}${opts.selector}${propName}`).slice(0, 4);
+  const selectors = opts.selectors ? opts.selectors.join('') : '';
+  const group = hash(`${opts.atRule}${selectors}${propName}`).slice(0, 4);
   const valueHash = hash(value).slice(0, 4);
 
   return `_${group}${valueHash}`;
@@ -67,28 +68,44 @@ const replaceNestingSelector = (selector: string, parentClassName: string) => {
 };
 
 /**
+ * Builds an atomic rule selector.
+ *
+ * @param node
+ */
+const buildAtomicSelector = (node: Declaration, opts: AtomicifyOpts) => {
+  const selectors: string[] = [];
+
+  (opts.selectors || ['']).forEach((selector) => {
+    const initialSelector = normalizeSelector(selector);
+    const className = atomicClassName(node.prop, node.value, {
+      ...opts,
+      selectors: [initialSelector],
+    });
+
+    selectors.push(`.${className}${replaceNestingSelector(initialSelector, className)}`);
+
+    if (opts.callback) {
+      opts.callback(className);
+    }
+  });
+
+  return selectors.join(', ');
+};
+
+/**
  * Transforms a declaration into an atomic rule.
  *
  * @param node
  * @param opts
  */
 const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
-  const initialSelector = normalizeSelector(opts.selector);
-  const className = atomicClassName(node.prop, node.value, {
-    ...opts,
-    selector: initialSelector,
-  });
-  const selector = `.${className}${replaceNestingSelector(initialSelector, className)}`;
+  const selector = buildAtomicSelector(node, opts);
   const newDecl = decl({ prop: node.prop, value: node.value });
   const newRule = rule({ selector, nodes: [newDecl] });
 
   // We need to link the new node to a parent else things blow up.
   newDecl.parent = newRule;
   newDecl.raws.before = '';
-
-  if (opts.callback) {
-    opts.callback(className);
-  }
 
   return newRule;
 };
@@ -111,7 +128,7 @@ const atomicifyRule = (node: Rule, opts: AtomicifyOpts) => {
 
     return atomicifyDecl(childNode, {
       ...opts,
-      selector: node.selector,
+      selectors: node.selectors,
     });
   });
 };
