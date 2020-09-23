@@ -164,17 +164,20 @@ describe('atomicify rules', () => {
     }).toThrow('atomicify-rules: <css input>:3:11: Nested rules are not allowed.');
   });
 
-  xit('should atomicify at rule styles', () => {
+  it('should atomicify at rule styles', () => {
     const actual = transform`
       @media (min-width: 30rem) {
         display: block;
+        font-size: 20px;
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`".not yet"`);
+    expect(actual).toMatchInlineSnapshot(
+      `"@media (min-width: 30rem){._1ie31ule{display:block}._4ubngktf{font-size:20px}}"`
+    );
   });
 
-  xit('should atomicify nested at rule styles', () => {
+  it('should atomicify nested at rule styles', () => {
     const actual = transform`
       @media (min-width: 30rem) {
         @media (min-width: 20rem) {
@@ -183,10 +186,12 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`".not yet"`);
+    expect(actual).toMatchInlineSnapshot(
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._16pr1ule{display:block}}}"`
+    );
   });
 
-  xit('should atomicify at rule nested styles', () => {
+  it('should atomicify at rule nested styles', () => {
     const actual = transform`
       @media (min-width: 30rem) {
         div {
@@ -195,10 +200,12 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`".not yet"`);
+    expect(actual).toMatchInlineSnapshot(
+      `"@media (min-width: 30rem){._166e1ule div{display:block}}"`
+    );
   });
 
-  xit('should atomicify double nested at rule nested styles', () => {
+  it('should atomicify double nested at rule nested styles', () => {
     const actual = transform`
       @media (min-width: 30rem) {
         @media (min-width: 20rem) {
@@ -209,6 +216,8 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`".not yet"`);
+    expect(actual).toMatchInlineSnapshot(
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._15ac1ule div{display:block}}}"`
+    );
   });
 });

@@ -1,4 +1,4 @@
-import { plugin, Declaration, decl, rule, Rule } from 'postcss';
+import { plugin, Node, Declaration, decl, rule, Rule, AtRule } from 'postcss';
 import { hash } from '@compiled/utils';
 
 interface PluginOpts {
@@ -92,6 +92,36 @@ const atomicifyRule = (node: Rule, opts: AtomicifyOpts) => {
   });
 };
 
+const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
+  let children: Node[] = [];
+  const atRuleLabel = `${opts.atRule || ''}${node.name}${node.params}`;
+  const atRuleOpts = {
+    ...opts,
+    atRule: atRuleLabel,
+  };
+
+  node.each((childNode) => {
+    switch (childNode.type) {
+      case 'atrule':
+        children.push(atomicifyAtRule(childNode, atRuleOpts));
+        break;
+
+      case 'rule':
+        children = children.concat(atomicifyRule(childNode, atRuleOpts));
+        break;
+
+      case 'decl':
+        children.push(atomicifyDecl(childNode, atRuleOpts));
+        break;
+
+      default:
+        break;
+    }
+  });
+
+  return node.clone({ nodes: children });
+};
+
 /**
  * Transforms a style sheet into atomic rules.
  * When passing a `callback` option it will callback with created class names.
@@ -104,6 +134,10 @@ export const atomicifyRules = plugin<PluginOpts>('atomicify-rules', (opts = {}) 
   return (root) => {
     root.each((node) => {
       switch (node.type) {
+        case 'atrule':
+          node.replaceWith(atomicifyAtRule(node, opts));
+          break;
+
         case 'rule':
           node.replaceWith(atomicifyRule(node, opts));
           break;
