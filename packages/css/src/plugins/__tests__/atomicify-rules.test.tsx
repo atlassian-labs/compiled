@@ -103,19 +103,35 @@ describe('atomicify rules', () => {
       classes.push(className);
     };
 
-    const result = postcss([atomicifyRules({ callback }), whitespace, autoprefixer]).process(
-      'display:block;text-align:center;',
+    const result = postcss([atomicifyRules({ callback }), whitespace]).process(
+      `
+        display:block;
+        text-align:center;
+        @media (min-width: 30rem) {
+          @media (min-width: 20rem) {
+            user-select: none;
+          }
+        }
+        div, span, :hover {
+          user-select: none;
+        }
+      `,
       {
         from: undefined,
       }
     );
 
+    // Need to call this to fire the transformation.
     result.css;
 
     expect(classes).toMatchInlineSnapshot(`
       Array [
         "_dj7i1ule",
         "_o3nk1h6o",
+        "_1cg4glyw",
+        "_1qcvglyw",
+        "_1uoyglyw",
+        "_1tclglyw",
       ]
     `);
   });
