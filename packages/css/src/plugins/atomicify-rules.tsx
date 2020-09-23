@@ -1,4 +1,4 @@
-import { plugin, Node, Declaration, decl, rule, Rule, AtRule } from 'postcss';
+import { plugin, Node, Declaration, decl, Container, rule, Rule, AtRule } from 'postcss';
 import { hash } from '@compiled/utils';
 
 interface PluginOpts {
@@ -8,6 +8,7 @@ interface PluginOpts {
 interface AtomicifyOpts extends PluginOpts {
   selectors?: string[];
   atRule?: string;
+  parentNode?: Container;
 }
 
 /**
@@ -38,6 +39,7 @@ const atomicClassName = (propName: string, value: string, opts: AtomicifyOpts) =
  */
 const normalizeSelector = (selector: string | undefined) => {
   if (!selector) {
+    // Nothing to see here - return early with an empty string!
     return '';
   }
 
@@ -47,12 +49,15 @@ const normalizeSelector = (selector: string | undefined) => {
 
   switch (trimmed.charAt(0)) {
     case ':':
+      // Dangling pseudo - return immedately!
       return trimmed;
 
     case '&':
+      // Dangling nesting - replace it and return!
       return trimmed.replace('&', '');
 
     default:
+      // Must be a nested selector - add a space before it!
       return ` ${trimmed}`;
   }
 };
@@ -76,13 +81,14 @@ const buildAtomicSelector = (node: Declaration, opts: AtomicifyOpts) => {
   const selectors: string[] = [];
 
   (opts.selectors || ['']).forEach((selector) => {
-    const initialSelector = normalizeSelector(selector);
+    const normalizedSelector = normalizeSelector(selector);
     const className = atomicClassName(node.prop, node.value, {
       ...opts,
-      selectors: [initialSelector],
+      selectors: [normalizedSelector],
     });
+    const replacedSelector = replaceNestingSelector(normalizedSelector, className);
 
-    selectors.push(`.${className}${replaceNestingSelector(initialSelector, className)}`);
+    selectors.push(`.${className}${replacedSelector}`);
 
     if (opts.callback) {
       opts.callback(className);
@@ -103,9 +109,10 @@ const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
   const newDecl = decl({ prop: node.prop, value: node.value });
   const newRule = rule({ selector, nodes: [newDecl] });
 
-  // We need to link the new node to a parent else things blow up.
-  newDecl.parent = newRule;
+  // We need to link the new node to a parent else autoprefixer blows up.
+  newDecl.parent = opts.parentNode || newRule;
   newDecl.raws.before = '';
+  // newRule.parent = opts.parentNode!;
 
   return newRule;
 };
@@ -144,6 +151,7 @@ const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
   const atRuleLabel = `${opts.atRule || ''}${node.name}${node.params}`;
   const atRuleOpts = {
     ...opts,
+    parentNode: node,
     atRule: atRuleLabel,
   };
 
@@ -182,7 +190,7 @@ export const atomicifyRules = plugin<PluginOpts>('atomicify-rules', (opts = {}) 
     root.each((node) => {
       switch (node.type) {
         case 'atrule':
-          node.replaceWith(atomicifyAtRule(node, opts));
+          node.replaceWith(atomicifyAtRule(node, {}));
           break;
 
         case 'rule':

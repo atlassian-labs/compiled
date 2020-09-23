@@ -1,10 +1,10 @@
-import postcss, { Plugin } from 'postcss';
+import postcss from 'postcss';
 import whitespace from 'postcss-normalize-whitespace';
 import autoprefixer from 'autoprefixer';
 import { atomicifyRules } from '../atomicify-rules';
 
-const transform = (cssOrPlugins: TemplateStringsArray | Plugin<any>[]) => {
-  const result = postcss([atomicifyRules(), whitespace]).process(cssOrPlugins[0], {
+const transform = (css: TemplateStringsArray) => {
+  const result = postcss([atomicifyRules(), whitespace, autoprefixer]).process(css[0], {
     from: undefined,
   });
 
@@ -32,14 +32,69 @@ describe('atomicify rules', () => {
   it('should autoprefix atomic rules', () => {
     process.env.BROWSERSLIST = 'Edge 16';
 
-    const result = postcss([atomicifyRules(), whitespace, autoprefixer]).process(
-      'user-select: none;',
-      {
-        from: undefined,
-      }
-    );
+    const result = transform`user-select: none;`;
 
-    expect(result.css).toMatchInlineSnapshot(`"._q4hxglyw{-ms-user-select:none;user-select:none}"`);
+    expect(result).toMatchInlineSnapshot(`"._q4hxglyw{-ms-user-select:none;user-select:none}"`);
+  });
+
+  it('should autoprefix atomic rules with multiple selectors', () => {
+    process.env.BROWSERSLIST = 'Edge 16';
+
+    const result = transform`
+      :hover, :focus {
+        user-select: none;
+      }
+    `;
+
+    expect(result).toMatchInlineSnapshot(
+      `"._1tclglyw:hover, ._16wpglyw:focus{-ms-user-select:none;user-select:none}"`
+    );
+  });
+
+  it('should autoprefix atrule atomic rules', () => {
+    process.env.BROWSERSLIST = 'Edge 16';
+
+    const result = transform`
+      @media (min-width: 30rem) {
+        user-select: none;
+      }
+    `;
+
+    expect(result).toMatchInlineSnapshot(
+      `"._1tclglyw:hover, ._16wpglyw:focus{-ms-user-select:none;user-select:none}"`
+    );
+  });
+
+  it('should autoprefix atrule nested atomic rules', () => {
+    process.env.BROWSERSLIST = 'Edge 16';
+
+    const result = transform`
+      @media (min-width: 30rem) {
+        div {
+          user-select: none;
+        }
+      }
+    `;
+
+    expect(result).toMatchInlineSnapshot(
+      `"._1tclglyw:hover, ._16wpglyw:focus{-ms-user-select:none;user-select:none}"`
+    );
+  });
+
+  it('should autoprefix nested atrule atomic rules', () => {
+    process.env.BROWSERSLIST = 'Edge 16';
+
+    const result = transform`
+      @media (min-width: 30rem) {
+        @media (min-width: 20rem) {
+          user-select: none;
+        }
+      }
+    `;
+
+    expect(result).toMatchInlineSnapshot(
+      `"._1tclglyw:hover, ._16wpglyw:focus{-ms-user-select:none;user-select:none}"`
+    );
   });
 
   it('should callback with created class names', () => {
@@ -63,16 +118,6 @@ describe('atomicify rules', () => {
         "_o3nk1h6o",
       ]
     `);
-  });
-
-  it('should atomicify a nested tag rule', () => {
-    const actual = transform`
-      div {
-        color: blue;
-      }
-    `;
-
-    expect(actual).toMatchInlineSnapshot(`"._k2hc13q2 div{color:blue}"`);
   });
 
   it('should atomicify a nested tag with class rule', () => {
@@ -134,7 +179,7 @@ describe('atomicify rules', () => {
     expect(secondActual).toEqual(expected);
   });
 
-  it('should behind reversed nesting', () => {
+  it('should atomicify a rule when its selector has a nesting at the end', () => {
     const actual = transform`
       :first-child & {
         color: hotpink;
