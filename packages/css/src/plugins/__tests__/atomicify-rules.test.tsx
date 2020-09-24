@@ -12,6 +12,10 @@ const transform = (css: TemplateStringsArray) => {
 };
 
 describe('atomicify rules', () => {
+  beforeEach(() => {
+    process.env.BROWSERSLIST = 'last 1 version';
+  });
+
   it('should atomicify a single declaration', () => {
     const actual = transform`
       color: blue;
@@ -311,6 +315,23 @@ describe('atomicify rules', () => {
 
     expect(actual).toMatchInlineSnapshot(
       `"@media (min-width: 30rem){@media (min-width: 20rem){._15ac1ule div{display:block}}}"`
+    );
+  });
+
+  it('should ignore unhanded at rules', () => {
+    const actual = transform`
+      @charset 'utf-8';
+      @import 'custom.css';
+      @namespace 'XML-namespace-URL';
+
+      @keyframes hello-world { from: { opacity: 0 } to { opacity: 1 } }
+      @font-face {
+        font-family: "Open Sans";
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(
+      `"@charset 'utf-8';@import 'custom.css';@namespace 'XML-namespace-URL';@-webkit-keyframes hello-world{from:{opacity:0}to{opacity:1}}@keyframes hello-world{from:{opacity:0}to{opacity:1}}@font-face{font-family:\\"Open Sans\\"}"`
     );
   });
 });
