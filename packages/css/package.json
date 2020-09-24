@@ -26,7 +26,8 @@
     "postcss": "^7.0.27",
     "postcss-nested": "^4.2.1",
     "postcss-normalize-whitespace": "^4.0.2",
-    "postcss-selector-parser": "^6.0.2"
+    "postcss-selector-parser": "^6.0.2",
+    "postcss-values-parser": "^4.0.0"
   },
   "devDependencies": {
     "@types/autoprefixer": "^9.7.2",
