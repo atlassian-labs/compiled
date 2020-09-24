@@ -4,6 +4,9 @@ import { parse, Root as ValuesRoot } from 'postcss-values-parser';
 type ConversionFunction = (node: Declaration, value: ValuesRoot) => Declaration[];
 
 const shorthands: Record<string, ConversionFunction> = {
+  /**
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/margin
+   */
   margin: (node, value) => {
     const [top, right = top, bottom = top, left = right] = value.nodes;
 
@@ -14,6 +17,9 @@ const shorthands: Record<string, ConversionFunction> = {
       node.clone({ prop: 'margin-left', value: left }),
     ];
   },
+  /**
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/padding
+   */
   padding: (node, value) => {
     const [top, right = top, bottom = top, left = right] = value.nodes;
 
@@ -24,6 +30,9 @@ const shorthands: Record<string, ConversionFunction> = {
       node.clone({ prop: 'padding-left', value: left }),
     ];
   },
+  /**
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/place-content
+   */
   'place-content': (node, value) => {
     const [alignContent, justifyContent] = value.nodes;
     if (!justifyContent && alignContent.type === 'word') {
@@ -40,12 +49,26 @@ const shorthands: Record<string, ConversionFunction> = {
       node.clone({ prop: 'justify-content', value: justifyContent || alignContent }),
     ];
   },
+  /**
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/place-items
+   */
   'place-items': (node, value) => {
     const [alignItems, justifyItems = alignItems] = value.nodes;
 
     return [
       node.clone({ prop: 'align-items', value: alignItems }),
       node.clone({ prop: 'justify-items', value: justifyItems }),
+    ];
+  },
+  /**
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/place-self
+   */
+  'place-self': (node, value) => {
+    const [alignSelf, justifySelf = alignSelf] = value.nodes;
+
+    return [
+      node.clone({ prop: 'align-self', value: alignSelf }),
+      node.clone({ prop: 'justify-self', value: justifySelf }),
     ];
   },
 };
