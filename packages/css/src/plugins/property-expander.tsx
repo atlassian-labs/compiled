@@ -40,6 +40,14 @@ const shorthands: Record<string, ConversionFunction> = {
       node.clone({ prop: 'justify-content', value: justifyContent || alignContent }),
     ];
   },
+  'place-items': (node, value) => {
+    const [alignItems, justifyItems = alignItems] = value.nodes;
+
+    return [
+      node.clone({ prop: 'align-items', value: alignItems }),
+      node.clone({ prop: 'justify-items', value: justifyItems }),
+    ];
+  },
 };
 
 /**
