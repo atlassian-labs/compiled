@@ -82,6 +82,43 @@ const shorthands: Record<string, ConversionFunction> = {
       node.clone({ prop: 'overflow-y', value: overflowY }),
     ];
   },
+  /**
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/flex-flow
+   */
+  'flex-flow': (node, value) => {
+    const [left, right] = value.nodes;
+    const directionValues = ['row', 'row-reverse', 'column', 'column-reverse'];
+    const wrapValues = ['nowrap', 'wrap', 'reverse'];
+    let directionValue = 'row';
+    let wrapValue = 'nowrap';
+
+    if (left && left.type === 'word') {
+      if (directionValues.includes(left.value)) {
+        directionValue = left.value;
+      } else if (wrapValues.includes(left.value)) {
+        wrapValue = left.value;
+      } else {
+        // Invalid
+        return [];
+      }
+    }
+
+    if (right && right.type === 'word') {
+      if (directionValues.includes(right.value)) {
+        directionValue = right.value;
+      } else if (wrapValues.includes(right.value)) {
+        wrapValue = right.value;
+      } else {
+        // Invalid
+        return [];
+      }
+    }
+
+    return [
+      node.clone({ prop: 'flex-direction', value: directionValue }),
+      node.clone({ prop: 'flex-wrap', value: wrapValue }),
+    ];
+  },
 };
 
 /**
