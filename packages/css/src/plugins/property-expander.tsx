@@ -1,7 +1,25 @@
 import { plugin, Declaration } from 'postcss';
-import { parse, Root as ValuesRoot } from 'postcss-values-parser';
+import { parse, Node, Root as ValuesRoot } from 'postcss-values-parser';
 
 type ConversionFunction = (node: Declaration, value: ValuesRoot) => Declaration[];
+
+const globalValues = ['inherit', 'initial', 'unset'];
+const directionValues = [...globalValues, 'row', 'row-reverse', 'column', 'column-reverse'];
+const wrapValues = [...globalValues, 'nowrap', 'wrap', 'reverse'];
+const sizeValues = ['thin', 'medium', 'thick'];
+const styleValues = [
+  ...globalValues,
+  'auto',
+  'none',
+  'dotted',
+  'dashed',
+  'solid',
+  'double',
+  'groove',
+  'ridge',
+  'inset',
+  'outset',
+];
 
 const shorthands: Record<string, ConversionFunction> = {
   /**
@@ -87,10 +105,8 @@ const shorthands: Record<string, ConversionFunction> = {
    */
   'flex-flow': (node, value) => {
     const [left, right] = value.nodes;
-    const directionValues = ['row', 'row-reverse', 'column', 'column-reverse'];
-    const wrapValues = ['nowrap', 'wrap', 'reverse'];
-    let directionValue = 'row';
-    let wrapValue = 'nowrap';
+    let directionValue = 'initial';
+    let wrapValue = 'initial';
 
     if (left && left.type === 'word') {
       if (directionValues.includes(left.value)) {
@@ -119,6 +135,106 @@ const shorthands: Record<string, ConversionFunction> = {
       node.clone({ prop: 'flex-wrap', value: wrapValue }),
     ];
   },
+  /**
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/outline
+   */
+  outline: (node, value) => {
+    const [left, middle, right] = value.nodes;
+    let colorValue: Node | string = 'initial';
+    let styleValue: Node | string = 'initial';
+    let widthValue: Node | string = 'initial';
+
+    if (left.type === 'word') {
+      if (left.isColor) {
+        colorValue = left.value;
+      } else if (sizeValues.includes(left.value)) {
+        widthValue = left.value;
+      } else if (styleValues.includes(left.value)) {
+        styleValue = left.value;
+      } else {
+        // Invalid
+        return [];
+      }
+    } else if (left.type === 'numeric') {
+      widthValue = left;
+    }
+
+    if (middle && middle.type === 'word') {
+      if (middle.isColor) {
+        if (colorValue !== 'initial') {
+          // It has already been set - invalid!
+          return [];
+        }
+
+        colorValue = middle.value;
+      } else if (sizeValues.includes(middle.value)) {
+        if (widthValue !== 'initial') {
+          // It has already been set - invalid!
+          return [];
+        }
+
+        widthValue = middle.value;
+      } else if (styleValues.includes(middle.value)) {
+        if (styleValue !== 'initial') {
+          // It has already been set - invalid!
+          return [];
+        }
+
+        styleValue = middle.value;
+      } else {
+        // Invalid
+        return [];
+      }
+    } else if (middle && middle.type === 'numeric') {
+      if (widthValue !== 'initial') {
+        // It has already been set - invalid!
+        return [];
+      }
+
+      widthValue = middle;
+    }
+
+    if (right && right.type === 'word') {
+      if (right.isColor) {
+        if (colorValue !== 'initial') {
+          // It has already been set - invalid!
+          return [];
+        }
+
+        colorValue = right.value;
+      } else if (sizeValues.includes(right.value)) {
+        if (widthValue !== 'initial') {
+          // It has already been set - invalid!
+          return [];
+        }
+
+        widthValue = right.value;
+      } else if (styleValues.includes(right.value)) {
+        if (styleValue !== 'initial') {
+          // It has already been set - invalid!
+          return [];
+        }
+
+        styleValue = right.value;
+      } else {
+        // Invalid
+        return [];
+      }
+    } else if (right && right.type === 'numeric') {
+      if (widthValue !== 'initial') {
+        // It has already been set - invalid!
+        return [];
+      }
+
+      widthValue = right;
+    }
+
+    return [
+      node.clone({ prop: 'outline-color', value: colorValue }),
+      node.clone({ prop: 'outline-style', value: styleValue }),
+      node.clone({ prop: 'outline-width', value: widthValue }),
+    ];
+  },
 };
 
 /**
@@ -134,6 +250,10 @@ export const propertyExpander = plugin('property-expander', () => {
 
       if (convert) {
         const longforms = convert(decl, valueNode);
+        if (!longforms) {
+          throw new Error('Longform properties were not returned!');
+        }
+
         decl.parent.insertBefore(decl, longforms);
         decl.remove();
       }
