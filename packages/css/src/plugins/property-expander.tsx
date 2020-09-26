@@ -121,8 +121,18 @@ const shorthands: Record<string, ConversionFunction> = {
 
     if (right && right.type === 'word') {
       if (directionValues.includes(right.value)) {
+        if (directionValue !== 'initial') {
+          // Invalid - already set!
+          return [];
+        }
+
         directionValue = right.value;
       } else if (wrapValues.includes(right.value)) {
+        if (wrapValue !== 'initial') {
+          // Invalid - already set!
+          return [];
+        }
+
         wrapValue = right.value;
       } else {
         // Invalid

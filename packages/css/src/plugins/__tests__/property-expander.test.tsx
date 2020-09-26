@@ -319,6 +319,28 @@ describe('property expander', () => {
     `);
   });
 
+  it('should remove flex-flow invalid double', () => {
+    const result = transform`
+      flex-flow: flow flow;
+    `;
+
+    expect(result).toMatchInlineSnapshot(`
+      "
+          "
+    `);
+  });
+
+  it('should remove flex-flow invalid double', () => {
+    const result = transform`
+      flex-flow: wrap wrap;
+    `;
+
+    expect(result).toMatchInlineSnapshot(`
+      "
+          "
+    `);
+  });
+
   it('should expand outline single color', () => {
     const result = transform`
       outline: red;
