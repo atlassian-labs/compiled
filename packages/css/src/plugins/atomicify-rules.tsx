@@ -124,21 +124,29 @@ const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
  * @param node
  * @param opts
  */
-const atomicifyRule = (node: Rule, opts: AtomicifyOpts) => {
+const atomicifyRule = (node: Rule, opts: AtomicifyOpts): Rule[] => {
   if (!node.nodes) {
     return [];
   }
 
-  return node.nodes.map((childNode) => {
-    if (childNode.type !== 'decl') {
-      throw childNode.error(`Nested ${childNode.type}s are not allowed.`);
-    }
+  return node.nodes
+    .map((childNode) => {
+      if (childNode.type === 'rule') {
+        throw childNode.error(
+          'Nested rules need to be flattened first - run the "postcss-nested" plugin before this.'
+        );
+      }
 
-    return atomicifyDecl(childNode, {
-      ...opts,
-      selectors: node.selectors,
-    });
-  });
+      if (childNode.type !== 'decl') {
+        return undefined;
+      }
+
+      return atomicifyDecl(childNode, {
+        ...opts,
+        selectors: node.selectors,
+      });
+    })
+    .filter((child): child is Rule => !!child);
 };
 
 /**
@@ -209,6 +217,10 @@ export const atomicifyRules = plugin<PluginOpts>('atomicify-rules', (opts = {}) 
 
         case 'decl':
           node.replaceWith(atomicifyDecl(node, opts));
+          break;
+
+        case 'comment':
+          node.remove();
           break;
 
         default:

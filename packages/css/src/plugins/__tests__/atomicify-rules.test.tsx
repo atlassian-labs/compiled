@@ -1,6 +1,7 @@
 import postcss from 'postcss';
 import whitespace from 'postcss-normalize-whitespace';
 import autoprefixer from 'autoprefixer';
+import nested from 'postcss-nested';
 import { atomicifyRules } from '../atomicify-rules';
 
 const transform = (css: TemplateStringsArray) => {
@@ -249,6 +250,25 @@ describe('atomicify rules', () => {
     expect(actual).toMatchInlineSnapshot(`"._5tvz13q2 div:hover{color:blue}"`);
   });
 
+  it('should skip comments', () => {
+    const actual = transform`
+      /* hello world */
+      div:hover {
+        /* hello world */
+        color: blue;
+      }
+
+      @media screen {
+        /* hello world */
+        color: red;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(
+      `"._5tvz13q2 div:hover{color:blue}@media screen{._gli45scu{color:red}}"`
+    );
+  });
+
   it('should blow up if a doubly nested rule was found', () => {
     expect(() => {
       transform`
@@ -258,7 +278,26 @@ describe('atomicify rules', () => {
           }
         }
       `;
-    }).toThrow('atomicify-rules: <css input>:3:11: Nested rules are not allowed.');
+    }).toThrow(
+      'atomicify-rules: <css input>:3:11: Nested rules need to be flattened first - run the "postcss-nested" plugin before this.'
+    );
+  });
+
+  it('should not blow up if a doubly nested rule was found after nested plugin', () => {
+    const result = postcss([nested, atomicifyRules(), whitespace, autoprefixer]).process(
+      `
+      div {
+        div {
+          font-size: 12px;
+        }
+      }
+    `,
+      {
+        from: undefined,
+      }
+    );
+
+    expect(result.css).toMatchInlineSnapshot(`"._1qan1fwx div div{font-size:12px}"`);
   });
 
   it('should atomicify at rule styles', () => {
