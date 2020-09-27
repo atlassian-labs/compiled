@@ -21,6 +21,20 @@ const styleValues = [
   'outset',
 ];
 
+/**
+ * Returns `true` if the node is a color,
+ * else `false`.
+ *
+ * @param node
+ */
+const isColor = (node: Node) => {
+  if (node.type === 'word' && node.isColor) {
+    return true;
+  }
+
+  return false;
+};
+
 const shorthands: Record<string, ConversionFunction> = {
   /**
    * https://developer.mozilla.org/en-US/docs/Web/CSS/margin
@@ -165,7 +179,7 @@ const shorthands: Record<string, ConversionFunction> = {
      */
     const extractValues = (node: Node): boolean => {
       if (node && node.type === 'word') {
-        if (node.isColor) {
+        if (isColor(node)) {
           if (colorValue !== '') {
             // It has already been set - invalid!
             return true;
@@ -210,6 +224,57 @@ const shorthands: Record<string, ConversionFunction> = {
       node.clone({ prop: 'outline-color', value: colorValue || 'initial' }),
       node.clone({ prop: 'outline-style', value: styleValue || 'initial' }),
       node.clone({ prop: 'outline-width', value: widthValue || 'initial' }),
+    ];
+  },
+  /**
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration
+   */
+  'text-decoration': (node, value) => {
+    const [left, middle, right] = value.nodes;
+    const lineValues = [...globalValues, 'none', 'underline', 'overline', 'line-through', 'blink'];
+    const styleValues = [...globalValues, 'solid', 'double', 'dotted', 'dashed', 'wavy'];
+    const lineValue: string[] = [];
+    let colorValue = '';
+    let styleValue = '';
+
+    /**
+     * Extracts values from a node and mutates variables in scope.
+     * If it returns `true` we should bail out and return no nodes.
+     *
+     * @param node
+     */
+    const extractValues = (node: Node): boolean => {
+      if (node && node.type === 'word') {
+        if (lineValues.includes(node.value)) {
+          if (lineValue.length === 0) {
+            lineValue.push(node.value);
+          } else if (!lineValue.includes(node.value)) {
+            lineValue.push(node.value);
+          } else {
+            // Invalid, bail out!
+            return true;
+          }
+        } else if (isColor(node)) {
+          colorValue = node.value;
+        } else if (styleValues.includes(node.value)) {
+          styleValue = node.value;
+        }
+      }
+
+      return false;
+    };
+
+    if (extractValues(left) || extractValues(middle) || extractValues(right)) {
+      return [];
+    }
+
+    lineValue.sort(); // Ensure the sorting is always in the same order.
+    const resolvedLineValue = lineValue.length ? lineValue.join(' ') : 'initial';
+
+    return [
+      node.clone({ prop: 'text-decoration-color', value: colorValue || 'initial' }),
+      node.clone({ prop: 'text-decoration-line', value: resolvedLineValue }),
+      node.clone({ prop: 'text-decoration-style', value: styleValue || 'initial' }),
     ];
   },
 };
