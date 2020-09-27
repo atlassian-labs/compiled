@@ -299,10 +299,10 @@ export const propertyExpander = plugin('property-expander', () => {
   return (root) => {
     root.walkDecls(filter, (decl) => {
       const valueNode = parse(decl.value);
-      const convert = shorthands[decl.prop];
+      const expand = shorthands[decl.prop];
 
-      if (convert) {
-        const longforms = convert(decl, valueNode);
+      if (expand) {
+        const longforms = expand(decl, valueNode);
         if (!longforms) {
           throw new Error('Longform properties were not returned!');
         }
