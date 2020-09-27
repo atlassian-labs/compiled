@@ -7,19 +7,6 @@ const globalValues = ['inherit', 'initial', 'unset'];
 const directionValues = [...globalValues, 'row', 'row-reverse', 'column', 'column-reverse'];
 const wrapValues = [...globalValues, 'nowrap', 'wrap', 'reverse'];
 const sizeValues = ['thin', 'medium', 'thick'];
-const styleValues = [
-  ...globalValues,
-  'auto',
-  'none',
-  'dotted',
-  'dashed',
-  'solid',
-  'double',
-  'groove',
-  'ridge',
-  'inset',
-  'outset',
-];
 
 /**
  * Returns `true` if the node is a color,
@@ -167,6 +154,19 @@ const shorthands: Record<string, ConversionFunction> = {
    */
   outline: (node, value) => {
     const [left, middle, right] = value.nodes;
+    const styleValues = [
+      ...globalValues,
+      'auto',
+      'none',
+      'dotted',
+      'dashed',
+      'solid',
+      'double',
+      'groove',
+      'ridge',
+      'inset',
+      'outset',
+    ];
     let colorValue: Node | string = '';
     let styleValue: Node | string = '';
     let widthValue: Node | string = '';
@@ -276,6 +276,17 @@ const shorthands: Record<string, ConversionFunction> = {
       node.clone({ prop: 'text-decoration-line', value: resolvedLineValue }),
       node.clone({ prop: 'text-decoration-style', value: styleValue || 'initial' }),
     ];
+  },
+  /**
+   * Only background-color is expanded.
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/background
+   */
+  background: (node, value) => {
+    if (value.nodes.length === 1 && isColor(value.nodes[0])) {
+      return [node.clone({ prop: 'background-color', value: value.nodes[0] })];
+    }
+
+    return [node.clone()];
   },
 };
 
