@@ -105,44 +105,47 @@ const shorthands: Record<string, ConversionFunction> = {
    */
   'flex-flow': (node, value) => {
     const [left, right] = value.nodes;
-    let directionValue = 'initial';
-    let wrapValue = 'initial';
+    let directionValue = '';
+    let wrapValue = '';
 
-    if (left && left.type === 'word') {
-      if (directionValues.includes(left.value)) {
-        directionValue = left.value;
-      } else if (wrapValues.includes(left.value)) {
-        wrapValue = left.value;
-      } else {
-        // Invalid
-        return [];
-      }
-    }
+    /**
+     * Extracts values from a node and mutates variables in scope.
+     * If it returns `true` we should bail out and return no nodes.
+     *
+     * @param node
+     */
+    const extactValues = (node: Node): boolean => {
+      if (node && node.type === 'word') {
+        if (directionValues.includes(node.value)) {
+          if (directionValue !== '') {
+            // Invalid - already set!
+            return true;
+          }
 
-    if (right && right.type === 'word') {
-      if (directionValues.includes(right.value)) {
-        if (directionValue !== 'initial') {
-          // Invalid - already set!
-          return [];
+          directionValue = node.value;
+        } else if (wrapValues.includes(node.value)) {
+          if (wrapValue !== '') {
+            // Invalid - already set!
+            return true;
+          }
+
+          wrapValue = node.value;
+        } else {
+          // Invalid
+          return true;
         }
-
-        directionValue = right.value;
-      } else if (wrapValues.includes(right.value)) {
-        if (wrapValue !== 'initial') {
-          // Invalid - already set!
-          return [];
-        }
-
-        wrapValue = right.value;
-      } else {
-        // Invalid
-        return [];
       }
+
+      return false;
+    };
+
+    if (extactValues(left) || extactValues(right)) {
+      return [];
     }
 
     return [
-      node.clone({ prop: 'flex-direction', value: directionValue }),
-      node.clone({ prop: 'flex-wrap', value: wrapValue }),
+      node.clone({ prop: 'flex-direction', value: directionValue || 'initial' }),
+      node.clone({ prop: 'flex-wrap', value: wrapValue || 'initial' }),
     ];
   },
   /**
@@ -150,99 +153,63 @@ const shorthands: Record<string, ConversionFunction> = {
    */
   outline: (node, value) => {
     const [left, middle, right] = value.nodes;
-    let colorValue: Node | string = 'initial';
-    let styleValue: Node | string = 'initial';
-    let widthValue: Node | string = 'initial';
+    let colorValue: Node | string = '';
+    let styleValue: Node | string = '';
+    let widthValue: Node | string = '';
 
-    if (left.type === 'word') {
-      if (left.isColor) {
-        colorValue = left.value;
-      } else if (sizeValues.includes(left.value)) {
-        widthValue = left.value;
-      } else if (styleValues.includes(left.value)) {
-        styleValue = left.value;
-      } else {
-        // Invalid
-        return [];
-      }
-    } else if (left.type === 'numeric') {
-      widthValue = left;
-    }
+    /**
+     * Extracts values from a node and mutates variables in scope.
+     * If it returns `true` we should bail out and return no nodes.
+     *
+     * @param node
+     */
+    const extractValues = (node: Node): boolean => {
+      if (node && node.type === 'word') {
+        if (node.isColor) {
+          if (colorValue !== '') {
+            // It has already been set - invalid!
+            return true;
+          }
 
-    if (middle && middle.type === 'word') {
-      if (middle.isColor) {
-        if (colorValue !== 'initial') {
+          colorValue = node.value;
+        } else if (sizeValues.includes(node.value)) {
+          if (widthValue !== '') {
+            // It has already been set - invalid!
+            return true;
+          }
+
+          widthValue = node.value;
+        } else if (styleValues.includes(node.value)) {
+          if (styleValue !== '') {
+            // It has already been set - invalid!
+            return true;
+          }
+
+          styleValue = node.value;
+        } else {
+          // Invalid
+          return true;
+        }
+      } else if (node && node.type === 'numeric') {
+        if (widthValue !== '') {
           // It has already been set - invalid!
-          return [];
+          return true;
         }
 
-        colorValue = middle.value;
-      } else if (sizeValues.includes(middle.value)) {
-        if (widthValue !== 'initial') {
-          // It has already been set - invalid!
-          return [];
-        }
-
-        widthValue = middle.value;
-      } else if (styleValues.includes(middle.value)) {
-        if (styleValue !== 'initial') {
-          // It has already been set - invalid!
-          return [];
-        }
-
-        styleValue = middle.value;
-      } else {
-        // Invalid
-        return [];
-      }
-    } else if (middle && middle.type === 'numeric') {
-      if (widthValue !== 'initial') {
-        // It has already been set - invalid!
-        return [];
+        widthValue = node;
       }
 
-      widthValue = middle;
-    }
+      return false;
+    };
 
-    if (right && right.type === 'word') {
-      if (right.isColor) {
-        if (colorValue !== 'initial') {
-          // It has already been set - invalid!
-          return [];
-        }
-
-        colorValue = right.value;
-      } else if (sizeValues.includes(right.value)) {
-        if (widthValue !== 'initial') {
-          // It has already been set - invalid!
-          return [];
-        }
-
-        widthValue = right.value;
-      } else if (styleValues.includes(right.value)) {
-        if (styleValue !== 'initial') {
-          // It has already been set - invalid!
-          return [];
-        }
-
-        styleValue = right.value;
-      } else {
-        // Invalid
-        return [];
-      }
-    } else if (right && right.type === 'numeric') {
-      if (widthValue !== 'initial') {
-        // It has already been set - invalid!
-        return [];
-      }
-
-      widthValue = right;
+    if (extractValues(left) || extractValues(middle) || extractValues(right)) {
+      return [];
     }
 
     return [
-      node.clone({ prop: 'outline-color', value: colorValue }),
-      node.clone({ prop: 'outline-style', value: styleValue }),
-      node.clone({ prop: 'outline-width', value: widthValue }),
+      node.clone({ prop: 'outline-color', value: colorValue || 'initial' }),
+      node.clone({ prop: 'outline-style', value: styleValue || 'initial' }),
+      node.clone({ prop: 'outline-width', value: widthValue || 'initial' }),
     ];
   },
 };
