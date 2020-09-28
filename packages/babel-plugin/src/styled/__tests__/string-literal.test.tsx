@@ -501,6 +501,22 @@ describe('styled component string literal', () => {
     expect(actual).toInclude('.cc-hash-test{font-size:1px;color:red}');
   });
 
+  it('should transform function returning an object', () => {
+    const actual = transform(`
+        import { styled } from '@compiled/core';
+        import React from 'react';
+
+        const color = 'red';
+        const mixin = () => ({ color });
+
+        const ListItem = styled.div\`
+          color: \${mixin().color};
+        \`;
+      `);
+
+    expect(actual).toInclude('.cc-hash-test{color:red}');
+  });
+
   it.todo('should transform template string with argument function variable');
 
   it.todo('should transform template string with argument arrow function variable');

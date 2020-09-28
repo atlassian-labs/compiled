@@ -559,8 +559,7 @@ describe('css prop object literal', () => {
          }}>hello world</div>
       `);
 
-    expect(actual).toInclude('style={{"--var-hash-test":(HORIZONTAL_SPACING||"")+"px"}}');
-    expect(actual).toInclude('.cc-hash-test{padding:0 var(--var-hash-test) 0 0;color:red}');
+    expect(actual).toInclude('.cc-hash-test{padding:0 8px 0 0;color:red}');
   });
 
   it('should parse an inline string interpolation delimited by multiple spaces and multiple suffix', () => {
@@ -577,10 +576,7 @@ describe('css prop object literal', () => {
          }}>hello world</div>
       `);
 
-    expect(actual).toInclude('style={{"--var-hash-test":(HORIZONTAL_SPACING||"")+"px"}}');
-    expect(actual).toInclude(
-      '.cc-hash-test{padding:var(--var-hash-test) var(--var-hash-test) var(--var-hash-test) var(--var-hash-test);color:red}'
-    );
+    expect(actual).toInclude('.cc-hash-test{padding:8px 8px 8px 8px;color:red}');
   });
 
   it('should do nothing when content already has single quotes', () => {
@@ -614,5 +610,19 @@ describe('css prop object literal', () => {
       `);
 
     expect(actual).toInclude(`.cc-hash-test{content:\\\"hello\\\"}`);
+  });
+
+  it('should transform function returning an object', () => {
+    const actual = transform(`
+        import '@compiled/core';
+        import React from 'react';
+
+        const color = 'red';
+        const mixin = () => ({ color });
+
+        <div css={{ color: mixin().color }}>hello world</div>
+      `);
+
+    expect(actual).toInclude('.cc-hash-test{color:red}');
   });
 });

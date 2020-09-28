@@ -371,4 +371,18 @@ describe('css prop string literal', () => {
       '.cc-hash-test{transform:translate3d(var(--var-hash-test),var(--var-hash-test),0);color:red}'
     );
   });
+
+  it('should transform function returning an object', () => {
+    const actual = transform(`
+        import '@compiled/core';
+        import React from 'react';
+
+        const color = 'red';
+        const mixin = () => ({ color });
+
+        <div css={\`color: \${mixin().color};\`}>hello world</div>
+      `);
+
+    expect(actual).toInclude('.cc-hash-test{color:red}');
+  });
 });

@@ -29,18 +29,6 @@ const normalizeContentValue = (value: string) => {
 };
 
 /**
- * Will try to pick callee from CallExpression.
- * If successful it will return it,
- * else it will return the passed node.
- *
- * @param node Any Expression
- */
-const tryGettingCalleeFromCallExpression = (node: t.Expression): t.Expression =>
-  // TODO: Handle arguments when we pick mixin arguments story. Right now
-  // we are only picking function without any arguments.
-  t.isCallExpression(node) && node.arguments.length === 0 ? (node.callee as t.Expression) : node;
-
-/**
  * Extracts CSS data from an object expression node.
  *
  * @param node Node we're interested in extracting CSS from.
@@ -52,9 +40,11 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 
   node.properties.forEach((prop) => {
     if (t.isObjectProperty(prop)) {
-      const expression = tryGettingCalleeFromCallExpression(prop.value as t.Expression);
       // Don't use prop.value directly as it extracts constants from identifiers if needed.
-      const { value: propValue, meta: updatedMeta } = evaluateExpression(expression, meta);
+      const { value: propValue, meta: updatedMeta } = evaluateExpression(
+        prop.value as t.Expression,
+        meta
+      );
 
       const key = getKey(prop.key);
       let value = '';
@@ -91,12 +81,10 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       // Time to add this key+value to the CSS string we're building up.
       css += `${kebabCase(key)}: ${value};`;
     } else if (t.isSpreadElement(prop)) {
-      // We found a object spread such as: `...mixinIdentifier`.
-      const expression = tryGettingCalleeFromCallExpression(prop.argument);
       let resolvedBinding = undefined;
 
-      if (t.isIdentifier(expression)) {
-        const binding = meta.parentPath.scope.getBinding(expression.name);
+      if (t.isIdentifier(prop.argument)) {
+        const binding = meta.parentPath.scope.getBinding(prop.argument.name);
         resolvedBinding = resolveBindingNode(binding, meta);
 
         if (!resolvedBinding) {
@@ -104,7 +92,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         }
       }
 
-      const { value: propValue, meta: updatedMeta } = evaluateExpression(expression, meta);
+      const { value: propValue, meta: updatedMeta } = evaluateExpression(prop.argument, meta);
 
       if (t.isObjectExpression(propValue)) {
         const result = extractObjectExpression(propValue, updatedMeta);
@@ -142,10 +130,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   // quasis are the string pieces of the template literal - the parts around the interpolations.
   const css = node.quasis.reduce((css, q, index) => {
     const nodeExpression = node.expressions[index];
-
-    const expression = tryGettingCalleeFromCallExpression(nodeExpression);
-
-    const { value: interpolation, meta: updatedMeta } = evaluateExpression(expression, meta);
+    const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
 
     if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
       // Simple case - we can immediately inline the value.

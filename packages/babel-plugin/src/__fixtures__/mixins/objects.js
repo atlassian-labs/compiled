@@ -24,10 +24,16 @@ export default {
   primary: 'blue',
 };
 
-const cantEvaluate = (() => 12)();
+const fontSize = (() => 12)();
 
-export const cantStaticallyEvaluate = {
-  fontSize: cantEvaluate,
+export const fontMixin = {
+  fontSize,
 };
 
 export const colorMixin = () => ({ color: colors.primary, backgroundColor: secondary });
+
+export const spacingMixin = {
+  padding: {
+    top: () => (() => 10)(),
+  },
+};

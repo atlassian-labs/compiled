@@ -353,6 +353,22 @@ describe('styled component object literal', () => {
     );
   });
 
+  it('should transform function returning an object', () => {
+    const actual = transform(`
+        import { styled } from '@compiled/core';
+        import React from 'react';
+
+        const color = 'red';
+        const mixin = () => ({ color });
+
+        const ListItem = styled.div({
+          color: mixin().color,
+        });
+      `);
+
+    expect(actual).toInclude('.cc-hash-test{color:red}');
+  });
+
   it.todo('should transform object with argument function variable');
 
   it.todo('should transform object with argument arrow function variable');
