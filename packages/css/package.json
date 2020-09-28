@@ -19,6 +19,7 @@
     "src"
   ],
   "dependencies": {
+    "@compiled/utils": "0.4.7",
     "autoprefixer": "^9.7.6",
     "convert-source-map": "^1.7.0",
     "cssnano-preset-default": "^4.0.7",
