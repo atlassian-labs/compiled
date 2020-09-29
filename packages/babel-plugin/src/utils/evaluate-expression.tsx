@@ -131,8 +131,8 @@ const evaluateIdentifierBindingMemberExpression = (
 
   if (t.isObjectExpression(expression)) {
     ({ value, meta: updatedMeta } = evaluateObjectExpression(expression, accessPath, meta));
-  } else if (t.isCallExpression(expression)) {
-    ({ value, meta: updatedMeta } = evaluateExpression(expression.callee as t.Expression, meta));
+  } else if (t.isCallExpression(expression) && t.isExpression(expression.callee)) {
+    ({ value, meta: updatedMeta } = evaluateExpression(expression.callee, meta));
     ({ value, meta: updatedMeta } = evaluateObjectExpression(value, accessPath, updatedMeta));
   }
 
@@ -159,16 +159,16 @@ const traverseMemberExpression = (expression: t.MemberExpression, meta: Metadata
   const binding = updatedMeta.parentPath.scope.getBinding(bindingIdentifier.name);
   const resolvedBinding = resolveBindingNode(binding, updatedMeta);
 
-  if (resolvedBinding && resolvedBinding.constant) {
+  if (resolvedBinding && resolvedBinding.constant && t.isExpression(resolvedBinding.node)) {
     if (originalBindingType === 'Identifier') {
       ({ value, meta: updatedMeta } = evaluateIdentifierBindingMemberExpression(
-        resolvedBinding.node as t.Expression,
+        resolvedBinding.node,
         accessPath,
         resolvedBinding.meta
       ));
     } else if (originalBindingType === 'CallExpression') {
       ({ value, meta: updatedMeta } = evaluateCallExpressionBindingMemberExpression(
-        resolvedBinding.node as t.Expression,
+        resolvedBinding.node,
         accessPath,
         resolvedBinding.meta
       ));
@@ -239,11 +239,8 @@ export const evaluateExpression = (
     ({ value, meta: updatedMeta } = traverseMemberExpression(expression, updatedMeta));
   } else if (t.isFunction(expression)) {
     ({ value, meta: updatedMeta } = traverseFunction(expression, updatedMeta));
-  } else if (t.isCallExpression(expression)) {
-    ({ value, meta: updatedMeta } = evaluateExpression(
-      expression.callee as t.Expression,
-      updatedMeta
-    ));
+  } else if (t.isCallExpression(expression) && t.isExpression(expression.callee)) {
+    ({ value, meta: updatedMeta } = evaluateExpression(expression.callee, updatedMeta));
   }
 
   if (t.isStringLiteral(value) || t.isNumericLiteral(value) || t.isObjectExpression(value)) {
