@@ -625,4 +625,20 @@ describe('css prop object literal', () => {
 
     expect(actual).toInclude('.cc-hash-test{color:red}');
   });
+
+  it('should transform member expression referencing a function which returns an object', () => {
+    const actual = transform(`
+        import '@compiled/core';
+        import React from 'react';
+
+        const color = 'red';
+        const mixin = () => ({ color });
+
+        const colors = mixin();
+
+        <div css={{ color: colors.color }}>hello world</div>
+      `);
+
+    expect(actual).toInclude('.cc-hash-test{color:red}');
+  });
 });

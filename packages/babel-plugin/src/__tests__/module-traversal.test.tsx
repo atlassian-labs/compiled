@@ -283,7 +283,7 @@ describe('module traversal', () => {
     expect(result).toInclude('.cc-hash-test:hover{color:red;background-color:pink}');
   });
 
-  it('should inline css from a directly called & assigned function mixin referencing an identifier from another module', () => {
+  it('should inline css for object literal from a directly called & assigned function mixin referencing an identifier from another module', () => {
     const result = transform(
       `
       import '@compiled/core';
@@ -292,6 +292,21 @@ describe('module traversal', () => {
       const colors = colorMixin();
 
       <div css={{':hover': { color: colors.color }}} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test:hover{color:red}');
+  });
+
+  it('should inline css for string literal from a directly called & assigned function mixin referencing an identifier from another module', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import { colorMixin } from '../__fixtures__/mixins/objects';
+
+      const colors = colorMixin();
+
+      <div css={\`:hover { color: \${colors.color}; }\`} />
     `
     );
 
