@@ -244,30 +244,30 @@ describe('module traversal', () => {
     expect(result).toInclude('.cc-hash-test{color:red;font-size:10px}');
   });
 
-  it('should throw when pulling in a CSS like object that could not be statically evaluated', () => {
-    expect(() => {
-      transform(
-        `
-        import '@compiled/core';
-        import { cantStaticallyEvaluate } from '../__fixtures__/mixins/objects';
-
-        <div css={[cantStaticallyEvaluate]} />
+  it('should inline css from a spread referencing an identifier with an IIFE property from another module', () => {
+    const result = transform(
       `
-      );
-    }).toThrowErrorMatchingSnapshot();
+      import '@compiled/core';
+      import { fontMixin } from '../__fixtures__/mixins/objects';
+
+      <div css={{ ...fontMixin }} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test{font-size:12px}');
   });
 
-  it('should throw when spreading a CSS like object that could not be statically evaluated', () => {
-    expect(() => {
-      transform(
-        `
-      import '@compiled/core';
-      import { cantStaticallyEvaluate } from '../__fixtures__/mixins/objects';
+  it('should inline css from an array referencing an identifier with an IIFE property from another module', () => {
+    const result = transform(
+      `
+    import '@compiled/core';
+    import { fontMixin } from '../__fixtures__/mixins/objects';
 
-      <div css={{ ...cantStaticallyEvaluate }} />
-    `
-      );
-    }).toThrowErrorMatchingSnapshot();
+    <div css={[fontMixin]} />
+  `
+    );
+
+    expect(result).toInclude('.cc-hash-test{font-size:12px}');
   });
 
   it('should inline css from a function mixin referencing an identifier from another module', () => {
@@ -283,7 +283,22 @@ describe('module traversal', () => {
     expect(result).toInclude('.cc-hash-test:hover{color:red;background-color:pink}');
   });
 
-  it('should reference property access expression from another module', () => {
+  it('should inline css for object literal from a directly called & assigned function mixin referencing an identifier from another module', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import { colorMixin } from '../__fixtures__/mixins/objects';
+
+      const colors = colorMixin();
+
+      <div css={{':hover': { color: colors.color }}} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test:hover{color:red}');
+  });
+
+  it('should inline css for string literal from a directly called & assigned function mixin referencing an identifier from another module', () => {
     const result = transform(
       `
       import '@compiled/core';
@@ -295,7 +310,32 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test:hover{color:var(--var-hash-test)}');
-    expect(result).toInclude('style={{"--var-hash-test":colors.color}}');
+    expect(result).toInclude('.cc-hash-test:hover{color:red}');
+  });
+
+  it('should inline css from a directly called function mixin referencing an identifier from another module', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import { colorMixin } from '../__fixtures__/mixins/objects';
+
+      <div css={{':hover': { color: colorMixin().color }}} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test:hover{color:red}');
+  });
+
+  it('should inline css from a directly called function mixin referencing an identifier with an IIFE property from another module', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import { spacingMixin } from '../__fixtures__/mixins/objects';
+
+      <div css={{':hover': { paddingTop: spacingMixin.padding.top() }}} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test:hover{padding-top:10px}');
   });
 });

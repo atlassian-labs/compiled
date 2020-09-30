@@ -52,13 +52,19 @@ export const buildCodeFrameError = (error: string, node: t.Node, parentPath: Nod
 
 /**
  * Returns the binding identifier for a member expression.
- * For example the member expression `foo.bar.baz` will return the `foo` identifier.
+ *
+ * For example:
+ * 1. Member expression `foo.bar.baz` will return the `foo` identifier along
+ * with `originalBindingType` as 'Identifier'.
+ * 2. Member expression with function call `foo().bar.baz` will return the
+ * `foo` identifier along with `originalBindingType` as 'CallExpression'.
  *
  * @param expression - Member expression node.
  */
 export const getMemberExpressionMeta = (expression: t.MemberExpression) => {
-  let bindingIdentifier: t.Identifier | null = null;
   const accessPath: t.Identifier[] = [];
+  let bindingIdentifier: t.Identifier | null = null;
+  let originalBindingType: t.Expression['type'] = 'Identifier';
 
   if (t.isIdentifier(expression.property)) {
     accessPath.push(expression.property);
@@ -69,6 +75,12 @@ export const getMemberExpressionMeta = (expression: t.MemberExpression) => {
     MemberExpression(path) {
       if (t.isIdentifier(path.node.object)) {
         bindingIdentifier = path.node.object;
+        originalBindingType = bindingIdentifier.type;
+      } else if (t.isCallExpression(path.node.object)) {
+        if (t.isIdentifier(path.node.object.callee)) {
+          bindingIdentifier = path.node.object.callee;
+          originalBindingType = path.node.object.type;
+        }
       }
 
       if (t.isIdentifier(path.node.property)) {
@@ -78,8 +90,9 @@ export const getMemberExpressionMeta = (expression: t.MemberExpression) => {
   });
 
   return {
-    bindingIdentifier: bindingIdentifier!,
     accessPath: accessPath.reverse(),
+    bindingIdentifier: bindingIdentifier!,
+    originalBindingType,
   };
 };
 
@@ -333,8 +346,10 @@ export const resolveBindingNode = (
   }
 
   if (binding.path.parentPath.isImportDeclaration()) {
+    // NOTE: We're skipping traversal when file name is not resolved. Imported identifier
+    // will end up as a dynamic variable instead.
     if (!meta.state.filename) {
-      throw new Error('Filename is needed for module traversal.');
+      return;
     }
 
     const moduleImportName = binding.path.parentPath.node.source.value;
