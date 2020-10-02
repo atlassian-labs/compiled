@@ -2,7 +2,7 @@ import { transformCss } from '../css-transform';
 
 describe('leading pseduos in css', () => {
   it('should parent a single pseudo', () => {
-    const actual = transformCss(
+    const { sheets: actual } = transformCss(
       `
       :focus {
         color: hotpink;
@@ -14,7 +14,7 @@ describe('leading pseduos in css', () => {
   });
 
   it('should parent multiple pseduos in a group', () => {
-    const actual = transformCss(
+    const { sheets: actual } = transformCss(
       `
       :hover div,
       :focus {
@@ -29,7 +29,7 @@ describe('leading pseduos in css', () => {
   });
 
   it('should parent multiple pseudos in a group in a group of multiple', () => {
-    const actual = transformCss(
+    const { sheets: actual } = transformCss(
       `
       .foo,
       .bar div,
@@ -61,7 +61,7 @@ describe('leading pseduos in css', () => {
   });
 
   it('should parent a complex pseudo', () => {
-    const actual = transformCss(
+    const { sheets: actual } = transformCss(
       `
       :nth-child(3) {
         color: hotpink;
@@ -73,7 +73,7 @@ describe('leading pseduos in css', () => {
   });
 
   it('should parent overlapping psuedos', () => {
-    const actual = transformCss(
+    const { sheets: actual } = transformCss(
       `
       & :first-child {
         :first-child {
@@ -89,7 +89,7 @@ describe('leading pseduos in css', () => {
   });
 
   it('should parent overlapping pseudos that are reversed', () => {
-    const actual = transformCss(
+    const { sheets: actual } = transformCss(
       `
       & :first-child {
         :first-child & {
@@ -105,7 +105,7 @@ describe('leading pseduos in css', () => {
   });
 
   it('should parent pseudos in nested atrules', () => {
-    const actual = transformCss(
+    const { sheets: actual } = transformCss(
       `
       @media (max-width: 400px) {
         @supports (display: grid) {
@@ -124,7 +124,7 @@ describe('leading pseduos in css', () => {
   });
 
   it('should ignore pseduos with leading selectors', () => {
-    const actual = transformCss(
+    const { sheets: actual } = transformCss(
       `
       > :first-child {
         color: hotpink;
@@ -136,7 +136,7 @@ describe('leading pseduos in css', () => {
   });
 
   it('should not affect the output css if theres nothing to do', () => {
-    const actual = transformCss(
+    const { sheets: actual } = transformCss(
       `
       div {
         color: hotpink;
@@ -148,7 +148,7 @@ describe('leading pseduos in css', () => {
   });
 
   it('should ignore parsing a data attribute selector with a comma in it', () => {
-    const actual = transformCss(
+    const { sheets: actual } = transformCss(
       `
       [data-foo=","] {
         color: hotpink;
@@ -162,7 +162,7 @@ describe('leading pseduos in css', () => {
   });
 
   it('should not build charset rules when minifying', () => {
-    const actual = transformCss(
+    const { sheets: actual } = transformCss(
       `
       position: relative;
       text-transform: capitalize;
@@ -185,6 +185,31 @@ describe('leading pseduos in css', () => {
     `);
   });
 
+  it('should return all generated class names', () => {
+    const { classNames } = transformCss(
+      `
+      position: relative;
+      text-transform: capitalize;
+
+      :after {
+        content: "›";
+        position: absolute;
+        right: -2rem;
+      }
+    `
+    );
+
+    expect(classNames).toMatchInlineSnapshot(`
+      Array [
+        "_1rvbh2mm",
+        "_v8ua1dk0",
+        "_ehmw16l8",
+        "_1a4astnw",
+        "_og13lgv5",
+      ]
+    `);
+  });
+
   describe('browserslist options', () => {
     afterEach(() => {
       delete process.env.BROWSERSLIST;
@@ -192,7 +217,7 @@ describe('leading pseduos in css', () => {
     });
 
     it('should generate prefixes for default', () => {
-      const actual = transformCss(
+      const { sheets: actual } = transformCss(
         `
         div {
           user-select: none;
@@ -206,7 +231,7 @@ describe('leading pseduos in css', () => {
 
     it('should generate prefixes for ms', () => {
       process.env.BROWSERSLIST = 'Edge 16';
-      const actual = transformCss(
+      const { sheets: actual } = transformCss(
         `
         div {
           user-select: none;
@@ -220,7 +245,7 @@ describe('leading pseduos in css', () => {
 
     it('should not generate any prefixes', () => {
       process.env.BROWSERSLIST = 'Chrome 78';
-      const actual = transformCss(
+      const { sheets: actual } = transformCss(
         `
         div {
           user-select: none;
@@ -232,7 +257,7 @@ describe('leading pseduos in css', () => {
 
     it('should generate ms prefixes for grid', () => {
       process.env.AUTOPREFIXER_GRID = 'autoplace';
-      const actual = transformCss(
+      const { sheets: actual } = transformCss(
         `
         div {
           display: grid;

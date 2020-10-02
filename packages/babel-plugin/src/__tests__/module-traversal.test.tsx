@@ -1,10 +1,6 @@
 import { transformSync } from '@babel/core';
 import babelPlugin from '../index';
 
-jest.mock('@compiled/utils', () => {
-  return { ...jest.requireActual('@compiled/utils'), hash: () => 'hash-test' };
-});
-
 jest.mock('../utils/cache');
 
 const transform = (code: string) => {

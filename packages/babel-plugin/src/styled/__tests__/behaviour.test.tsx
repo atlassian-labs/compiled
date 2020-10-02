@@ -1,10 +1,6 @@
 import { transformSync } from '@babel/core';
 import babelPlugin from '../../index';
 
-jest.mock('@compiled/utils', () => {
-  return { ...jest.requireActual('@compiled/utils'), hash: () => 'hash-test' };
-});
-
 const transform = (code: string) => {
   return transformSync(code, {
     configFile: false,
@@ -25,9 +21,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import*as React from'react';import{ThemeProvider,ax,CC,CS}from'@compiled/core';const _=\\".cc-hash-test{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import*as React from'react';import{ThemeProvider,ax,CC,CS}from'@compiled/core';const _=\\"._36l6gktf{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS>{[_]}</CS>
-            <C{...props}style={style}ref={ref}className={ax([\\"cc-hash-test\\",props.className])}/>
+            <C{...props}style={style}ref={ref}className={ax([\\"_36l6gktf\\",props.className])}/>
           </CC>);"
     `);
   });
@@ -42,9 +38,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import*as React from'react';import{ax,CC,CS}from'@compiled/core';const _=\\".cc-hash-test{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import*as React from'react';import{ax,CC,CS}from'@compiled/core';const _=\\"._36l6gktf{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS>{[_]}</CS>
-            <C{...props}style={style}ref={ref}className={ax([\\"cc-hash-test\\",props.className])}/>
+            <C{...props}style={style}ref={ref}className={ax([\\"_36l6gktf\\",props.className])}/>
           </CC>);"
     `);
   });
@@ -97,9 +93,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import*as React from'react';import{ax,CC,CS}from'@compiled/core';const _=\\".cc-hash-test{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import*as React from'react';import{ax,CC,CS}from'@compiled/core';const _=\\"._36l6gktf{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS>{[_]}</CS>
-            <C{...props}style={style}ref={ref}className={ax([\\"cc-hash-test\\",props.className])}/>
+            <C{...props}style={style}ref={ref}className={ax([\\"_36l6gktf\\",props.className])}/>
           </CC>);"
     `);
   });

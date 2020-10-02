@@ -1,7 +1,7 @@
 import template from '@babel/template';
 import * as t from '@babel/types';
 import traverse, { NodePath, Visitor } from '@babel/traverse';
-import { hash, unique } from '@compiled/utils';
+import { unique } from '@compiled/utils';
 import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
 import { Tag } from '../types';
@@ -13,7 +13,7 @@ export interface StyledTemplateOpts {
   /**
    * Class to be used for the CSS selector.
    */
-  className: string;
+  classNames: string[];
 
   /**
    * Tag for the Styled Component, for example "div" or user defined component.
@@ -28,7 +28,7 @@ export interface StyledTemplateOpts {
   /**
    * CSS sheets to be passed to the `CS` component.
    */
-  css: string[];
+  sheets: string[];
 }
 
 /**
@@ -199,7 +199,9 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
         {...props}
         style={%%styleProp%%}
         ref={ref}
-        className={ax(["${opts.className}", props.className])}
+        className={ax([${opts.classNames
+          .map((className) => `"${className}"`)
+          .join(',')}, props.className])}
       />
     </CC>
   ));
@@ -209,7 +211,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     }
   )({
     styleProp,
-    cssNode: t.arrayExpression(opts.css.map((sheet) => hoistSheet(sheet, meta))),
+    cssNode: t.arrayExpression(opts.sheets.map((sheet) => hoistSheet(sheet, meta))),
   }) as t.Node;
 };
 
@@ -280,15 +282,13 @@ export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExp
  * @param meta Plugin metadata
  */
 export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
-  const cssHash = hash(cssOutput.css);
-  const className = `cc-${cssHash}`;
-  const cssRules = transformCss(`.${className}`, cssOutput.css);
+  const { classNames, sheets } = transformCss(cssOutput.css);
 
   return styledTemplate(
     {
-      className,
+      classNames,
       tag,
-      css: cssRules,
+      sheets,
       variables: cssOutput.variables,
     },
     meta
@@ -319,9 +319,7 @@ export const buildCompiledComponent = (
   cssOutput: CSSOutput,
   meta: Metadata
 ): t.Node => {
-  const cssHash = hash(cssOutput.css);
-  const className = `cc-${cssHash}`;
-  const cssRules = transformCss(`.${className}`, cssOutput.css);
+  const { sheets, classNames } = transformCss(cssOutput.css);
   const classNameProp = node.openingElement.attributes.find((prop): prop is t.JSXAttribute => {
     return t.isJSXAttribute(prop) && prop.name.name === 'className';
   });
@@ -335,13 +333,17 @@ export const buildCompiledComponent = (
 
     classNameProp.value = t.jsxExpressionContainer(
       t.callExpression(t.identifier('ax'), [
-        t.arrayExpression([t.stringLiteral(className), classNameExpression as t.Expression]),
+        t.arrayExpression(
+          [classNameExpression as t.Expression].concat(
+            classNames.map((className) => t.stringLiteral(className))
+          )
+        ),
       ])
     );
   } else {
     // No class name - just push our own one.
     node.openingElement.attributes.push(
-      t.jsxAttribute(t.jsxIdentifier('className'), t.stringLiteral(className))
+      t.jsxAttribute(t.jsxIdentifier('className'), t.stringLiteral(classNames.join(' ')))
     );
   }
 
@@ -396,5 +398,5 @@ export const buildCompiledComponent = (
     );
   }
 
-  return compiledTemplate(node, cssRules, meta);
+  return compiledTemplate(node, sheets, meta);
 };
