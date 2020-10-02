@@ -19,7 +19,7 @@ describe('css prop behaviour', () => {
       <div css={{}} />
     `);
 
-    expect(actual).toInclude('<div className="cc-hash-test"/>');
+    expect(actual).toInclude('<div className=""/>');
   });
 
   it('should replace css prop with class name', () => {
@@ -30,7 +30,7 @@ describe('css prop behaviour', () => {
       <div css={{}}>hello world</div>
     `);
 
-    expect(actual).toInclude('<div className="cc-hash-test">hello world</div>');
+    expect(actual).toInclude('<div className="">hello world</div>');
   });
 
   it('should pass through style identifier when there is no dynamic styles in the css', () => {
@@ -371,7 +371,7 @@ describe('css prop behaviour', () => {
     expect(actual).toInclude('.cc-hash-test:hover{color:red}');
   });
 
-  it('should bubble up top level pseduo inside a support atrule', () => {
+  it.only('should bubble up top level pseduo inside a support atrule', () => {
     const actual = transform(`
     import '@compiled/core';
     import React from 'react';

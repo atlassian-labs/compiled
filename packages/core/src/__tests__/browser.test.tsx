@@ -11,7 +11,7 @@ describe('browser', () => {
     const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
 
     expect(getByText('hello world').outerHTML).toMatchInlineSnapshot(
-      `"<div class=\\"cc-1610nsm\\">hello world</div>"`
+      `"<div class=\\"_36l61fwx\\">hello world</div>"`
     );
   });
 
@@ -28,7 +28,7 @@ describe('browser', () => {
     );
 
     expect(document.head.innerHTML).toMatchInlineSnapshot(
-      `"<style nonce=\\"k0Mp1lEd\\">.cc-1610nsm{font-size:12px}</style>"`
+      `"<style nonce=\\"k0Mp1lEd\\">._36l61fwx{font-size:12px}</style>"`
     );
   });
 });
