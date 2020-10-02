@@ -65,7 +65,7 @@ describe('css prop behaviour', () => {
       const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize, color: red }}>hello world</div>;
     `);
 
-    expect(actual).toInclude('style={{...style,"--var-hash-test":fontSize}}');
+    expect(actual).toInclude('style={{...style,"--var-1j2e0s2":fontSize}}');
   });
 
   it('should spread style property access when there is dynamic styles in the css', () => {
@@ -77,7 +77,7 @@ describe('css prop behaviour', () => {
       const Component = ({ className, ...props }) => <div className={className} style={props.style} css={{ fontSize: 12, color: red, background }}>hello world</div>;
     `);
 
-    expect(actual).toInclude('style={{...props.style,"--var-hash-test":background}}');
+    expect(actual).toInclude('style={{...props.style,"--var-1k9t07z":background}}');
   });
 
   it('should spread style identifier when there is styles already set', () => {
@@ -101,10 +101,7 @@ describe('css prop behaviour', () => {
       const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12, color: red, background }}>hello world</div>;
     `);
 
-    expect(actual).toInclude(`style={{...style,display:'block',\"--var-hash-test\":background}}`);
-    expect(actual).toInclude(
-      `.cc-hash-test{font-size:12px;color:red;background:var(--var-hash-test)}`
-    );
+    expect(actual).toInclude(`style={{...style,display:'block',\"--var-1k9t07z\":background}}`);
   });
 
   it('should concat explicit use of class name prop on an element', () => {
@@ -115,7 +112,7 @@ describe('css prop behaviour', () => {
       <div className="foobar" css={{}}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={ax(["cc-hash-test","foobar"])}');
+    expect(actual).toInclude('className={ax(["foobar"])}');
   });
 
   it('should pass through spread props', () => {
@@ -133,7 +130,7 @@ describe('css prop behaviour', () => {
       />
     `);
 
-    expect(actual).toInclude('<div{...props}className="cc-hash-test"/>');
+    expect(actual).toInclude('<div{...props}className="_36l6gktf"/>');
   });
 
   it('should pass through static props', () => {
@@ -149,7 +146,7 @@ describe('css prop behaviour', () => {
       />
     `);
 
-    expect(actual).toInclude('<div role="menu"className="cc-hash-test"/>');
+    expect(actual).toInclude('<div role="menu"className="_36l6gktf"/>');
   });
 
   it('should concat explicit use of class name prop from an identifier on an element', () => {
@@ -161,7 +158,7 @@ describe('css prop behaviour', () => {
       <div className={className} css={{}}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={ax(["cc-hash-test",className])}');
+    expect(actual).toInclude('className={ax([className])}');
   });
 
   it('should pick up array composition', () => {
@@ -175,7 +172,8 @@ describe('css prop behaviour', () => {
       <div css={[base, top]}>hello world</div>
     `);
 
-    expect(actual).toInclude('.cc-hash-test{color:black;color:red}');
+    expect(actual).toInclude('._1doq11x8{color:black}');
+    expect(actual).toInclude('._1doq5scu{color:red}');
   });
 
   it('should persist static style prop', () => {
@@ -186,9 +184,9 @@ describe('css prop behaviour', () => {
       <div style={{ display: 'block' }} css={{ color: 'blue' }}>hello world</div>
     `);
 
-    expect(actual).toInclude(`.cc-hash-test{color:blue}`);
+    expect(actual).toInclude(`{color:blue}`);
     expect(actual).toInclude(
-      `<div style={{display:'block'}}className=\"cc-hash-test\">hello world</div>`
+      `<div style={{display:'block'}}className=\"_1doq13q2\">hello world</div>`
     );
   });
 
@@ -201,8 +199,8 @@ describe('css prop behaviour', () => {
       <div style={{ display: 'block' }} css={{ color: \`\${color}\` }}>hello world</div>
     `);
 
-    expect(actual).toInclude(`.cc-hash-test{color:var(--var-hash-test)}`);
-    expect(actual).toInclude(`style={{display:'block',\"--var-hash-test\":color}}`);
+    expect(actual).toInclude(`color:var(--var-1ylxx6h)`);
+    expect(actual).toInclude(`style={{display:'block',\"--var-1ylxx6h\":color}}`);
   });
 
   it('should concat implicit use of class name prop where class name is a jsx expression', () => {
@@ -215,7 +213,7 @@ describe('css prop behaviour', () => {
       <div css={{}} className={getFoo()}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={ax(["cc-hash-test",getFoo()])}');
+    expect(actual).toInclude('className={ax([getFoo()])}');
   });
 
   it('should allow inlined expressions as property values', () => {
@@ -228,8 +226,9 @@ describe('css prop behaviour', () => {
       <div css={{ color: hello ? 'red' : 'blue', fontSize: 10 }}>hello world</div>
     `);
 
-    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test);font-size:10px}');
-    expect(actual).toInclude(`style={{\"--var-hash-test\":hello?'red':'blue'}}`);
+    expect(actual).toInclude('color:var(--var-15b8wfu)');
+    expect(actual).toInclude('font-size:10px');
+    expect(actual).toInclude(`style={{\"--var-15b8wfu\":hello?'red':'blue'}}`);
   });
 
   it('should inline multi interpolation constant variable', () => {
@@ -248,7 +247,7 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toInclude(
-      `.cc-hash-test{background-image:linear-gradient(45deg,gray 25%,transparent 25%),linear-gradient(-45deg,gray 25%,transparent 25%),linear-gradient(45deg,transparent 75%,gray 75%),linear-gradient(-45deg,transparent 75%,gray 75%)}`
+      `{background-image:linear-gradient(45deg,gray 25%,transparent 25%),linear-gradient(-45deg,gray 25%,transparent 25%),linear-gradient(45deg,transparent 75%,gray 75%),linear-gradient(-45deg,transparent 75%,gray 75%)}`
     );
   });
 
@@ -270,9 +269,9 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toInclude(
-      `.cc-hash-test{background-image:linear-gradient(45deg,var(--var-hash-test) 25%,transparent 25%),linear-gradient(-45deg,var(--var-hash-test) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--var-hash-test) 75%),linear-gradient(-45deg,transparent 75%,var(--var-hash-test) 75%)}`
+      `{background-image:linear-gradient(45deg,var(--var-1vrvste\) 25%,transparent 25%),linear-gradient(-45deg,var(--var-1vrvste\) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--var-1vrvste\) 75%),linear-gradient(-45deg,transparent 75%,var(--var-1vrvste\) 75%)}`
     );
-    expect(actual).toInclude('style={{"--var-hash-test":N30}}');
+    expect(actual).toInclude('style={{"--var-1vrvste":N30}}');
   });
 
   it('should allow expressions stored in a variable as shorthand property values', () => {
@@ -286,8 +285,8 @@ describe('css prop behaviour', () => {
       <div css={{ color }}>hello world</div>
     `);
 
-    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
-    expect(actual).toInclude(`style={{\"--var-hash-test\":color}}`);
+    expect(actual).toInclude('{color:var(--var-1ylxx6h)}');
+    expect(actual).toInclude(`style={{\"--var-1ylxx6h\":color}}`);
   });
 
   it('should allow expressions stored in a variable as property values', () => {
@@ -301,8 +300,8 @@ describe('css prop behaviour', () => {
       <div css={{ color: colorsz }}>hello world</div>
     `);
 
-    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
-    expect(actual).toInclude(`style={{\"--var-hash-test\":colorsz}}`);
+    expect(actual).toInclude('{color:var(--var-19p4bcs)}');
+    expect(actual).toInclude(`style={{\"--var-19p4bcs\":colorsz}}`);
   });
 
   it('should remove css prop', () => {
@@ -368,10 +367,10 @@ describe('css prop behaviour', () => {
     \`}>hello world</div>
   `);
 
-    expect(actual).toInclude('.cc-hash-test:hover{color:red}');
+    expect(actual).toInclude(':hover{color:red}');
   });
 
-  it.only('should bubble up top level pseduo inside a support atrule', () => {
+  it('should bubble up top level pseduo inside a support atrule', () => {
     const actual = transform(`
     import '@compiled/core';
     import React from 'react';
@@ -387,6 +386,6 @@ describe('css prop behaviour', () => {
     \`}>hello world</div>
   `);
 
-    expect(actual).toInclude('.cc-hash-test:hover{color:red}');
+    expect(actual).toInclude(':hover{color:red}');
   });
 });
