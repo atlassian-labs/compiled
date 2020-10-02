@@ -5,6 +5,7 @@ import whitespace from 'postcss-normalize-whitespace';
 import { parentOrphanedPseudos } from '../plugins/parent-orphaned-pseudos';
 import { minify } from '../plugins/minify';
 import { extractStyleSheets } from '../plugins/extract-stylesheets';
+import { atomicifyRules } from '../plugins/atomicify-rules';
 
 interface Opts {
   /**
@@ -20,21 +21,17 @@ interface Opts {
  * @param css CSS string
  * @param opts Transformation options
  */
-export const transformCss = (
-  selector: string,
-  css: string,
-  opts: Opts = { minify: false }
-): string[] => {
+export const transformCss = (css: string, opts: Opts = { minify: false }): string[] => {
   const sheets: string[] = [];
-  const cssWithSelector = selector ? `${selector} { ${css} }` : css;
 
   const result = postcss([
     parentOrphanedPseudos(),
     nested(),
+    atomicifyRules(),
     autoprefixer(),
     ...(opts.minify ? minify() : [whitespace]),
     extractStyleSheets({ callback: (sheet: string) => sheets.push(sheet) }),
-  ]).process(cssWithSelector, {
+  ]).process(css, {
     from: undefined,
   });
 
