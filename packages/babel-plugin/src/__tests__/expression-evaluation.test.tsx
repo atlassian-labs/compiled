@@ -19,7 +19,7 @@ describe('import specifiers', () => {
       <div css={{ fontSize: 8 * 2 }}>hello world</div>
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:16px}');
+    expect(actual).toInclude('{font-size:16px}');
   });
 
   it('should inline mutable identifier that is not mutated', () => {
@@ -32,7 +32,7 @@ describe('import specifiers', () => {
       <div css={{ fontSize: notMutatedAgain }}>hello world</div>
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:20px}');
+    expect(actual).toInclude('{font-size:20px}');
   });
 
   it('should bail out evaluating expression referencing a mutable identifier', () => {
@@ -46,7 +46,7 @@ describe('import specifiers', () => {
       <div css={{ fontSize: mutable }}>hello world</div>
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+    expect(actual).toInclude('{font-size:var(--var-i47brp)}');
   });
 
   it('should bail out evaluating identifier expression referencing a mutated identifier', () => {
@@ -61,7 +61,7 @@ describe('import specifiers', () => {
       <div css={{ fontSize: dontchange }}>hello world</div>
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+    expect(actual).toInclude('{font-size:var(--var-uta6jk)}');
   });
 
   it('should not exhaust the stack when an identifier references itself', () => {
@@ -89,7 +89,7 @@ describe('import specifiers', () => {
       <div css={{ fontSize: dontchange }}>hello world</div>
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+    expect(actual).toInclude('{font-size:var(--var-uta6jk)}');
   });
 
   it('should bail out evaluating a binary expression referencing a mutated identifier', () => {
@@ -103,7 +103,7 @@ describe('import specifiers', () => {
       <div css={{ fontSize: mutable * 2 }}>hello world</div>
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+    expect(actual).toInclude('{font-size:var(--var-1bs2x4k)}');
   });
 
   it('should not blow up when referencing local destructured args in arrow func', () => {

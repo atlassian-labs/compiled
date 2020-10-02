@@ -32,7 +32,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{color:blue}');
+    expect(result).toInclude('{color:blue}');
   });
 
   it('should replace an identifier referencing a default import specificer string literal', () => {
@@ -46,7 +46,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{color:red}');
+    expect(result).toInclude('{color:red}');
   });
 
   it('should replace an identifier referencing a default import specificer string literal', () => {
@@ -60,7 +60,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{color:red}');
+    expect(result).toInclude('{color:red}');
   });
 
   it('should replace an identifier referencing a named import specifier object', () => {
@@ -74,7 +74,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{color:red}');
+    expect(result).toInclude('{color:red}');
   });
 
   it('should replace an identifier referencing a node modules named import specifier object', () => {
@@ -88,7 +88,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{color:purple}');
+    expect(result).toInclude('{color:purple}');
   });
 
   it('should use css from an identifier referencing a named import object', () => {
@@ -102,7 +102,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{font-size:12px}');
+    expect(result).toInclude('{font-size:12px}');
   });
 
   it('should inline css from a object spread referencing a named import object', () => {
@@ -116,7 +116,8 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{color:blue;font-size:12px}');
+    expect(result).toInclude('{color:blue}');
+    expect(result).toInclude('{font-size:12px}');
   });
 
   it('should inline css from a object with multiple identifiers referenced from a named import', () => {
@@ -130,7 +131,9 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{font-size:14px;color:blue;background:red}');
+    expect(result).toInclude('{font-size:14px}');
+    expect(result).toInclude('{color:blue}');
+    expect(result).toInclude('{background:red}');
   });
 
   it('should inline css from a object with multiple identifiers referenced from a named import', () => {
@@ -144,7 +147,9 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{font-size:14px;color:blue;background:red}');
+    expect(result).toInclude('{font-size:14px}');
+    expect(result).toInclude('{color:blue}');
+    expect(result).toInclude('{background:red}');
   });
 
   it('should inline css from a spread referencing an identifier from another module', () => {
@@ -158,7 +163,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{color:pink}');
+    expect(result).toInclude('{color:pink}');
   });
 
   it('should inline css from an identifier referencing an identifier from another module', () => {
@@ -172,7 +177,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{color:pink}');
+    expect(result).toInclude('{color:pink}');
   });
 
   it('should inline css from an export rexporting an identifier from another module', () => {
@@ -185,7 +190,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{color:purple}');
+    expect(result).toInclude('{color:purple}');
   });
 
   it('should inline css from a member expression export rexporting an identifier from another module', () => {
@@ -198,7 +203,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{color:orange}');
+    expect(result).toInclude('{color:orange}');
   });
 
   it('should inline a static string', () => {
@@ -211,7 +216,8 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{font-size:12px;font-weight:bold}');
+    expect(result).toInclude('{font-size:12px}');
+    expect(result).toInclude('{font-weight:bold}');
   });
 
   it('should inline a string with module interpolations', () => {
@@ -224,7 +230,8 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{font-size:16px;font-weight:italic}');
+    expect(result).toInclude('{font-size:16px}');
+    expect(result).toInclude('{font-weight:italic}');
   });
 
   it('should inline a string with import interpolations', () => {
@@ -237,7 +244,8 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{color:red;font-size:10px}');
+    expect(result).toInclude('{color:red}');
+    expect(result).toInclude('{font-size:10px}');
   });
 
   it('should inline css from a spread referencing an identifier with an IIFE property from another module', () => {
@@ -250,7 +258,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test{font-size:12px}');
+    expect(result).toInclude('{font-size:12px}');
   });
 
   it('should inline css from an array referencing an identifier with an IIFE property from another module', () => {
@@ -263,7 +271,7 @@ describe('module traversal', () => {
   `
     );
 
-    expect(result).toInclude('.cc-hash-test{font-size:12px}');
+    expect(result).toInclude('{font-size:12px}');
   });
 
   it('should inline css from a function mixin referencing an identifier from another module', () => {
@@ -276,7 +284,8 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test:hover{color:red;background-color:pink}');
+    expect(result).toInclude(':hover{color:red}');
+    expect(result).toInclude(':hover{background-color:pink}');
   });
 
   it('should inline css for object literal from a directly called & assigned function mixin referencing an identifier from another module', () => {
@@ -291,7 +300,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test:hover{color:red}');
+    expect(result).toInclude(':hover{color:red}');
   });
 
   it('should inline css for string literal from a directly called & assigned function mixin referencing an identifier from another module', () => {
@@ -306,7 +315,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test:hover{color:red}');
+    expect(result).toInclude(':hover{color:red}');
   });
 
   it('should inline css from a directly called function mixin referencing an identifier from another module', () => {
@@ -319,7 +328,7 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test:hover{color:red}');
+    expect(result).toInclude(':hover{color:red}');
   });
 
   it('should inline css from a directly called function mixin referencing an identifier with an IIFE property from another module', () => {
@@ -332,6 +341,6 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test:hover{padding-top:10px}');
+    expect(result).toInclude(':hover{padding-top:10px}');
   });
 });
