@@ -21,21 +21,7 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test:after{content:\\"\\"}');
-  });
-
-  xit('should add quotations to dynamically set content', () => {
-    const actual = transform(`
-        import { styled } from '@compiled/core';
-        const ListItem = styled.div({
-          ':after': {
-            content: props => props.content,
-          },
-        });
-      `);
-
-    expect(actual).toInclude(`"--var-hash-test":'"'+props.content+'"'`);
-    expect(actual).toInclude('.cc-hash-test:after{content:var(--var-hash-test)}');
+    expect(actual).toInclude(':after{content:\\"\\"}');
   });
 
   it('should respect the definition of pseudo element content ala emotion with single quotes', () => {
@@ -48,7 +34,7 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude(".cc-hash-test:after{content:''}");
+    expect(actual).toInclude(":after{content:''}");
   });
 
   it('should respect the definition of pseudo element content ala styled components with no content', () => {
@@ -61,7 +47,7 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test:after{content:\\"\\"}');
+    expect(actual).toInclude(':after{content:\\"\\"}');
   });
 
   it('should respect the definition of pseudo element content ala styled components with content', () => {
@@ -74,7 +60,7 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test:after{content:\\"\\uD83D\\uDE0E\\"}');
+    expect(actual).toInclude(':after{content:\\"\\uD83D\\uDE0E\\"}');
   });
 
   it('should append "px" on numeric literals if missing', () => {
@@ -85,7 +71,7 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:12px}');
+    expect(actual).toInclude('{font-size:12px}');
   });
 
   it('should reference property access expression', () => {
@@ -99,8 +85,8 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{background:var(--var-hash-test)}');
-    expect(actual).toInclude('"--var-hash-test":color.blue');
+    expect(actual).toInclude('{background:var(--var-1mkyvve)}');
+    expect(actual).toInclude('"--var-1mkyvve":color.blue');
   });
 
   it('should not pass down invalid html attributes to the node when property has a suffix', () => {
@@ -111,9 +97,9 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+    expect(actual).toInclude('{font-size:var(--var-7wpnv5)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--var-hash-test":`${textSize}px`');
+    expect(actual).toInclude('"--var-7wpnv5":`${textSize}px`');
   });
 
   it('should not pass down invalid html attributes to the node when property has a suffix when func in template literal', () => {
@@ -124,9 +110,9 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+    expect(actual).toInclude('{font-size:var(--var-fb92co)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--var-hash-test":(textSize||"")+"px"');
+    expect(actual).toInclude('"--var-fb92co":(textSize||"")+"px"');
   });
 
   it('should transform object with simple values', () => {
@@ -139,7 +125,8 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:blue;margin:0}');
+    expect(actual).toInclude('{color:blue}');
+    expect(actual).toInclude('{margin:0}');
   });
 
   it('should transform object with nested object into a selector', () => {
@@ -154,7 +141,8 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test:hover{color:blue;margin:0}');
+    expect(actual).toInclude(':hover{color:blue}');
+    expect(actual).toInclude(':hover{margin:0}');
   });
 
   it('should reference identifier pointing to a call expression if it returns simple value', () => {
@@ -169,8 +157,8 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
-    expect(actual).toInclude('"--var-hash-test":color');
+    expect(actual).toInclude('{color:var(--var-1ylxx6h)}');
+    expect(actual).toInclude('"--var-1ylxx6h":color');
   });
 
   it('should inline call if it returns simple value', () => {
@@ -184,8 +172,8 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
-    expect(actual).toInclude('"--var-hash-test":em(\'blue\')');
+    expect(actual).toInclude('{color:var(--var-16ywsic)}');
+    expect(actual).toInclude('"--var-16ywsic":em(\'blue\')');
   });
 
   it('should inline constant string literal', () => {
@@ -199,7 +187,7 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:blue}');
+    expect(actual).toInclude('{color:blue}');
   });
 
   it('should transform template object with prop reference', () => {
@@ -211,8 +199,8 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
-    expect(actual).toInclude('"--var-hash-test":props.color');
+    expect(actual).toInclude('{color:var(--var-1p69eoh)}');
+    expect(actual).toInclude('"--var-1p69eoh":props.color');
   });
 
   it('should transform object spread from variable', () => {
@@ -227,7 +215,8 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:12px;color:red}');
+    expect(actual).toInclude('{font-size:12px}');
+    expect(actual).toInclude('{color:red}');
   });
 
   it('should transform object with mutable identifier', () => {
@@ -242,8 +231,8 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
-    expect(actual).toInclude('"--var-hash-test":color');
+    expect(actual).toInclude('{color:var(--var-1ylxx6h)}');
+    expect(actual).toInclude('"--var-1ylxx6h":color');
   });
 
   it('should transform object with obj variable', () => {
@@ -258,11 +247,9 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:20px}');
-    expect(actual).toInclude('.cc-hash-test:hover{color:red}');
+    expect(actual).toInclude('{font-size:20px}');
+    expect(actual).toInclude(':hover{color:red}');
   });
-
-  it.todo('should transform object with array variable');
 
   it('should transform object with no argument arrow function variable', () => {
     const actual = transform(`
@@ -275,7 +262,7 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:red}');
+    expect(actual).toInclude('{color:red}');
   });
 
   it('should transform object with no argument function variable', () => {
@@ -291,7 +278,7 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:red}');
+    expect(actual).toInclude('{color:red}');
   });
 
   it('should transform object with no argument functions', () => {
@@ -316,8 +303,11 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude(`.cc-hash-test{color:blue;font-style:italic;font-family:sans-serif}`);
-    expect(actual).toInclude('.cc-hash-test:hover{color:red;background-color:blue}');
+    expect(actual).toInclude(`{color:blue}`);
+    expect(actual).toInclude(`{font-style:italic}`);
+    expect(actual).toInclude(`{font-family:sans-serif}`);
+    expect(actual).toInclude(':hover{color:red}');
+    expect(actual).toInclude(':hover{background-color:blue}');
   });
 
   it('should transform object with no argument function properties belonging to a variable', () => {
@@ -344,9 +334,10 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude(
-      `.cc-hash-test{color:blue;border:1px solid blue;font-size:12px;font-weight:500}`
-    );
+    expect(actual).toInclude(`{color:blue}`);
+    expect(actual).toInclude(`{border:1px solid blue}`);
+    expect(actual).toInclude(`{font-size:12px}`);
+    expect(actual).toInclude(`{font-weight:500}`);
   });
 
   it('should transform function returning an object', () => {
@@ -362,7 +353,7 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:red}');
+    expect(actual).toInclude('{color:red}');
   });
 
   it('should transform member expression referencing a function which returns an object', () => {
@@ -380,10 +371,6 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:red}');
+    expect(actual).toInclude('{color:red}');
   });
-
-  it.todo('should transform object with argument function variable');
-
-  it.todo('should transform object with argument arrow function variable');
 });
