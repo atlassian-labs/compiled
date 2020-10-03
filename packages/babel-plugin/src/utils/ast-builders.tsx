@@ -331,14 +331,12 @@ export const buildCompiledComponent = (
       ? classNameProp.value.expression
       : classNameProp.value;
 
+    const values: t.Expression[] = classNames
+      .map((className) => t.stringLiteral(className) as t.Expression)
+      .concat(classNameExpression as t.Expression);
+
     classNameProp.value = t.jsxExpressionContainer(
-      t.callExpression(t.identifier('ax'), [
-        t.arrayExpression(
-          [classNameExpression as t.Expression].concat(
-            classNames.map((className) => t.stringLiteral(className))
-          )
-        ),
-      ])
+      t.callExpression(t.identifier('ax'), [t.arrayExpression(values)])
     );
   } else {
     // No class name - just push our own one.

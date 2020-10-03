@@ -69,7 +69,7 @@ describe('styled component', () => {
     expect(getByText('hello world').getAttribute('fonty')).toBe(null);
   });
 
-  xit('should automatically add suffix on template literal', () => {
+  it('should automatically add suffix on template literal', () => {
     const size = 12;
     const StyledDiv = styled.div<{ size: number }>`
       height: ${(props) => props.size}px;
@@ -197,7 +197,7 @@ describe('styled component', () => {
     expect(getByText('Hello world').tagName).toEqual('SPAN');
   });
 
-  xit('should compose a component using template literal', () => {
+  it('should compose a component using template literal', () => {
     const Div = (props: {}) => <div {...props} />;
     const StyledDiv = styled(Div)`
       font-size: 12px;
@@ -208,7 +208,22 @@ describe('styled component', () => {
     expect(getByText('Hello world').tagName).toEqual('DIV');
   });
 
-  xit('should compose a component using object literal', () => {
+  it('should override css prop styles', () => {
+    const Child = (props: { children: any; className?: string }) => (
+      <h1 {...props} className={props.className} css={{ fontSize: 10 }} />
+    );
+    const Override = styled(Child)`
+      font-size: 12px;
+    `;
+
+    const { getByText } = render(<Override>Hello world</Override>);
+
+    expect(getByText('Hello world')).toHaveCompiledCss({
+      fontSize: '12px',
+    });
+  });
+
+  it('should compose a component using object literal', () => {
     const Div = (props: {}) => <div {...props} />;
     const StyledDiv = styled(Div)({
       fontSize: 12,
@@ -219,7 +234,7 @@ describe('styled component', () => {
     expect(getByText('Hello world').tagName).toEqual('DIV');
   });
 
-  xit('should inherit types from composed component', () => {
+  it('should inherit types from composed component', () => {
     const Link = (props: { href: string }) => <a {...props} />;
     const StyledLink = styled(Link)({
       fontSize: 12,
@@ -230,7 +245,7 @@ describe('styled component', () => {
     expect(getByText('Hello world').getAttribute('href')).toEqual('/world');
   });
 
-  xit('should compose from array', () => {
+  it('should compose from array', () => {
     const extra = {
       color: 'blue',
     };
@@ -262,7 +277,7 @@ describe('styled component', () => {
     }).not.toThrow();
   });
 
-  xit('should create css from string', () => {
+  it('should create css from string', () => {
     const StyledDiv = styled.div('font-size: 15px;');
 
     const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
@@ -270,7 +285,7 @@ describe('styled component', () => {
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '15px');
   });
 
-  xit('should create css from template literal', () => {
+  it('should create css from template literal', () => {
     const StyledDiv = styled.div(`font-size: 15px;`);
 
     const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
@@ -278,7 +293,7 @@ describe('styled component', () => {
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '15px');
   });
 
-  xit('should create css from array', () => {
+  it('should create css from array', () => {
     const base = { fontSize: 12 };
     const next = ` font-size: 15px; `;
     const StyledDiv = styled.div([base, next]);
