@@ -58,7 +58,9 @@ describe('styled component behaviour', () => {
       ]);
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:12px;color:blue;font-weight:500}');
+    expect(actual).toInclude('{font-size:12px}');
+    expect(actual).toInclude('{color:blue}');
+    expect(actual).toInclude('{font-weight:500}');
   });
 
   it('should not pass down invalid html attributes to the node', () => {
@@ -70,7 +72,7 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toInclude('textSize,...props');
-    expect(actual).toInclude('"--var-hash-test":textSize');
+    expect(actual).toInclude('"--var-fb92co":textSize');
   });
 
   it('should remove styled import', () => {
@@ -129,7 +131,7 @@ describe('styled component behaviour', () => {
       \`;
     `);
 
-    expect(actual).toInclude('"--var-hash-test":(props.color||"")+"px"');
+    expect(actual).toInclude('"--var-1p69eoh":(props.color||"")+"px"');
   });
 
   it('should spread down props to element', () => {
@@ -142,18 +144,6 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toInclude('<C{...props}');
-  });
-
-  xit('should set a display name behind a dev flag', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/core';
-
-      const ListItem = styled.div\`
-        font-size: 20px;
-      \`;
-    `);
-
-    expect(actual).toInclude('ListItem.displayName = "ListItem";');
   });
 
   it('should compose a component using template literal', () => {
@@ -194,7 +184,7 @@ describe('styled component behaviour', () => {
       \`;
     `);
 
-    expect(actual).toInclude(`className={ax([\"cc-hash-test\",props.className])}`);
+    expect(actual).toInclude(`className={ax([\"_36l6gktf\",props.className])}`);
   });
 
   it('should inline constant identifier string literal', () => {
@@ -208,7 +198,7 @@ describe('styled component behaviour', () => {
       \`;
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:20px}');
+    expect(actual).toInclude('{font-size:20px}');
   });
 
   it('should transform an arrow function with a body into an IIFE', () => {
@@ -220,8 +210,8 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
-    expect(actual).toInclude('"--var-hash-test":(()=>{return props.color;})()}}');
+    expect(actual).toInclude('{color:var(--var-1poneq5)}');
+    expect(actual).toInclude('"--var-1poneq5":(()=>{return props.color;})()}}');
   });
 
   it('should transform an arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
@@ -233,9 +223,9 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+    expect(actual).toInclude('{font-size:var(--var-1j0t240)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--var-hash-test":(()=>{return textSize;})()}}');
+    expect(actual).toInclude('"--var-1j0t240":(()=>{return textSize;})()}}');
   });
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE', () => {
@@ -247,8 +237,8 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('.cc-hash-test{color:var(--var-hash-test)}');
-    expect(actual).toInclude('"--var-hash-test":"very"+((()=>{return props.color;})()||"")+"dark"');
+    expect(actual).toInclude('{color:var(--var-1poneq5)}');
+    expect(actual).toInclude('"--var-1poneq5":"very"+((()=>{return props.color;})()||"")+"dark"');
   });
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
@@ -260,8 +250,8 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test)}');
+    expect(actual).toInclude('{font-size:var(--var-1j0t240)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--var-hash-test":"super"+((()=>{return textSize;})()||"")+"big"');
+    expect(actual).toInclude('"--var-1j0t240":"super"+((()=>{return textSize;})()||"")+"big"');
   });
 });
