@@ -4,10 +4,6 @@ import { styled } from '@compiled/core';
 import '../index';
 
 describe('toHaveCompliedCss', () => {
-  afterEach(() => {
-    document.getElementsByTagName('html')[0].innerHTML = '';
-  });
-
   it('should detect styles', () => {
     const { getByText } = render(
       <div
@@ -70,7 +66,6 @@ describe('toHaveCompliedCss', () => {
 
     const { getByText } = render(<StyledDiv css={{ fontSize: 14 }}>Hello world</StyledDiv>);
 
-    expect(getByText('Hello world')).toHaveCompiledCss('font-size', '12px');
     expect(getByText('Hello world')).toHaveCompiledCss('font-size', '14px');
   });
 
