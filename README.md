@@ -6,6 +6,9 @@
 
 **Install**
 
+> ⚠️ Work is in progress re-writing/architecting a new Babel plugin.
+> Use the nightly at your own risk until it is officially released.
+
 ```bash
 npm install @compiled/core@nightly @compiled/babel-plugin@nightly
 ```
