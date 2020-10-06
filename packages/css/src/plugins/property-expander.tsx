@@ -22,6 +22,39 @@ const isColor = (node: Node) => {
   return false;
 };
 
+/**
+ * Returns `true` if the node is a width,
+ * else `false`.
+ *
+ * @param node
+ */
+const isWidth = (node: Node) => {
+  if (node.type === 'numeric') {
+    if (['px', 'rem', 'em', '%'].includes(node.unit)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Returns calculated width of a node.
+ *
+ * @param node
+ */
+const getWidth = (node: Node) => {
+  if (node.type === 'numeric') {
+    return `${node.value}${node.unit}`;
+  }
+
+  if (node.type === 'word') {
+    return node.value;
+  }
+
+  return undefined;
+};
+
 const shorthands: Record<string, ConversionFunction> = {
   /**
    * https://developer.mozilla.org/en-US/docs/Web/CSS/margin
@@ -99,6 +132,93 @@ const shorthands: Record<string, ConversionFunction> = {
     return [
       node.clone({ prop: 'overflow-x', value: overflowX }),
       node.clone({ prop: 'overflow-y', value: overflowY }),
+    ];
+  },
+  /**
+   * https://developer.mozilla.org/en-US/docs/Web/CSS/flex
+   */
+  flex: (node, value) => {
+    const [left, middle, right] = value.nodes;
+    let grow: number | string = 'auto';
+    let shrink: number | string = 'initial';
+    let basis: number | string = 'none';
+
+    switch (value.nodes.length) {
+      case 1: {
+        if (left.type === 'numeric' && !left.unit) {
+          grow = left.value;
+          shrink = 1;
+          basis = 0;
+        }
+        if (left.type === 'word' && left.value !== 'none') {
+          // Invalid
+          return [];
+        }
+
+        break;
+      }
+
+      case 2: {
+        if (left.type === 'numeric' && !left.unit) {
+          grow = left.value;
+        } else {
+          return [];
+        }
+
+        if (middle.type === 'numeric' && !middle.unit) {
+          shrink = middle.value;
+          basis = 0;
+        } else if (isWidth(middle)) {
+          shrink = 1;
+          const value = getWidth(middle);
+          if (value) {
+            basis = value;
+          } else {
+            // Invalid
+            return [];
+          }
+        } else {
+          // Invalid
+          return [];
+        }
+
+        break;
+      }
+
+      case 3: {
+        if (left.type === 'numeric' && !left.unit) {
+          grow = left.value;
+        } else {
+          return [];
+        }
+
+        if (middle.type === 'numeric' && !middle.unit) {
+          shrink = middle.value;
+          basis = 0;
+        }
+
+        if (isWidth(right)) {
+          const value = getWidth(right);
+          if (value) {
+            basis = value;
+          } else {
+            // Invalid
+            return [];
+          }
+        }
+
+        break;
+      }
+
+      default:
+        // Invalid
+        return [];
+    }
+
+    return [
+      node.clone({ prop: 'flex-grow', value: grow }),
+      node.clone({ prop: 'flex-shrink', value: shrink }),
+      node.clone({ prop: 'flex-basis', value: basis }),
     ];
   },
   /**
