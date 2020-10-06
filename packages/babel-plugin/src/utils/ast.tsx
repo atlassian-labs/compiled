@@ -1,5 +1,5 @@
 import * as t from '@babel/types';
-import traverse, { NodePath, Binding } from '@babel/traverse';
+import traverse, { NodePath } from '@babel/traverse';
 import { parse } from '@babel/parser';
 import fs from 'fs';
 import path from 'path';
@@ -316,6 +316,52 @@ const findNamedExportModuleNode = (
   };
 };
 
+const resolveObjectPatternValueNode = (
+  expression: t.Expression,
+  meta: Metadata,
+  referenceName: string
+): t.Node | undefined => {
+  let objectPatternValueNode: t.Node | undefined = undefined;
+
+  if (t.isObjectExpression(expression)) {
+    traverse(expression, {
+      noScope: true,
+      ObjectProperty: {
+        exit(path) {
+          if (t.isIdentifier(path.node.key, { name: referenceName })) {
+            objectPatternValueNode = path.node.value;
+
+            path.stop();
+          }
+        },
+      },
+    });
+  } else if (t.isIdentifier(expression)) {
+    // Both functions (resolveObjectPatternValueNode + resolveBindingNode) reference each other.
+    // One needs to disable this warning.
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    const resolvedBinding = resolveBindingNode(expression.name, meta);
+
+    if (resolvedBinding) {
+      const isResolvedToSameNode = resolvedBinding.path.node === expression;
+
+      if (
+        !isResolvedToSameNode &&
+        resolvedBinding.constant &&
+        t.isExpression(resolvedBinding.node)
+      ) {
+        objectPatternValueNode = resolveObjectPatternValueNode(
+          resolvedBinding.node,
+          meta,
+          referenceName
+        );
+      }
+    }
+  }
+
+  return objectPatternValueNode;
+};
+
 /**
  * Will return the `node` of the a binding.
  * This function will follow import specifiers to return the actual `node`.
@@ -323,26 +369,39 @@ const findNamedExportModuleNode = (
  * When wanting to do futher traversal on the resulting `node` make sure to use the output `meta` as well.
  * The `meta` will be for the resulting file it was found in.
  *
- * @param path
+ * @param referenceName Reference name for which `binding` to be resolved
+ * @param meta Plugin metadata
  */
 export const resolveBindingNode = (
-  binding: Binding | undefined,
+  referenceName: string,
   meta: Metadata
 ): PartialBindingWithMeta | undefined => {
-  if (!binding || binding.path.isObjectPattern()) {
-    // Bail early if there is no binding or its a node that we don't want to resolve
-    // such as an destructured args from a function.
+  const binding = meta.parentPath.scope.getBinding(referenceName);
+
+  if (!binding) {
+    // Bail early if there is no binding
     return undefined;
   }
 
   if (t.isVariableDeclarator(binding.path.node)) {
+    let node = binding.path.node.init as t.Node;
+
+    if (t.isObjectPattern(binding.path.node.id) && t.isExpression(node)) {
+      node = resolveObjectPatternValueNode(node, meta, referenceName) as t.Node;
+    }
+
     return {
       meta,
-      node: binding.path.node.init as t.Node,
+      node,
       path: binding.path,
       constant: binding.constant,
       source: 'module',
     };
+  }
+
+  if (binding.path.isObjectPattern()) {
+    // Bail if we don't want to resolve such as a destructured args from a function.
+    return undefined;
   }
 
   if (binding.path.parentPath.isImportDeclaration()) {

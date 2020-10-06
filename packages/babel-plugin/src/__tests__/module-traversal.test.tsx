@@ -343,4 +343,19 @@ describe('module traversal', () => {
 
     expect(result).toInclude(':hover{padding-top:10px}');
   });
+
+  it('should inline css when destructuring an identifier from another module', () => {
+    const result = transform(
+      `
+      import '@compiled/core';
+      import { spacingMixin } from '../__fixtures__/mixins/objects';
+
+      const { padding: { top } } = spacingMixin;
+
+      <div css={{':hover': { paddingTop: top() }}} />
+    `
+    );
+
+    expect(result).toInclude('.cc-hash-test:hover{padding-top:10px}');
+  });
 });

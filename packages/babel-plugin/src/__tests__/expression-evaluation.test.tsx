@@ -187,4 +187,77 @@ describe('import specifiers', () => {
       );
     }).not.toThrow();
   });
+
+  it('handles object destructuring', () => {
+    const actual = transform(`
+      import '@compiled/core';
+      import React from 'react';
+
+      const { foo, color } = { foo: 14, color: 'blue' };
+
+      function Component() {
+        return (
+          <span css={{ fontSize: foo, color: color, backgroundColor: 'blue' }} />
+        );
+      };
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{font-size:14px;color:blue;background-color:blue}');
+  });
+
+  it('handles the destructuring coming from an identifier', () => {
+    const actual = transform(`
+      import '@compiled/core';
+      import React from 'react';
+
+      const obj = { foo: 14, color: 'blue' };
+      const { foo, color } = obj;
+
+      function Component() {
+        return (
+          <span css={{ fontSize: foo, color: color, backgroundColor: 'blue' }} />
+        );
+      };
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{font-size:14px;color:blue;background-color:blue}');
+  });
+
+  it('handles the destructuring coming from a referenced identifier', () => {
+    const actual = transform(`
+      import '@compiled/core';
+      import React from 'react';
+
+      const obj = { foo: 14, color: 'blue' };
+      const bar = obj;
+      const { foo, color } = bar;
+
+      function Component() {
+        return (
+          <span css={{ fontSize: foo, color: color, backgroundColor: 'blue' }} />
+        );
+      };
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{font-size:14px;color:blue;background-color:blue}');
+  });
+
+  it('handles the function call destructuring coming from a referenced identifier', () => {
+    const actual = transform(`
+      import '@compiled/core';
+      import React from 'react';
+
+      const obj = { foo: () => ({ bar: 14 }), color: 'blue' };
+      const bar = obj;
+      const { foo, color } = bar;
+
+      function Component() {
+        return (
+          <span css={{ fontSize: foo().bar, color: color, backgroundColor: 'blue' }} />
+        );
+      };
+    `);
+
+    expect(actual).toInclude('.cc-hash-test{font-size:14px;color:blue;background-color:blue}');
+  });
 });
