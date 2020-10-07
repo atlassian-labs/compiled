@@ -351,8 +351,10 @@ describe('css prop string literal', () => {
         </div>
       `);
 
-    expect(actual).toInclude('style={{"--var-65u76s":(x||"")+"px","--var-1ohot4b":y}}');
-    expect(actual).toInclude('{transform:translate3d(var(--var-65u76s),var(--var-1ohot4b),0)}');
+    expect(actual).toIncludeMultiple([
+      'style={{"--var-65u76s":(x||"")+"px","--var-1ohot4b":y}}',
+      '{transform:translate3d(var(--var-65u76s),var(--var-1ohot4b),0)}',
+    ]);
   });
 
   it('should transform function returning an object', () => {

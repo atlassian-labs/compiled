@@ -101,7 +101,10 @@ describe('css prop behaviour', () => {
       const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12, color: red, background }}>hello world</div>;
     `);
 
-    expect(actual).toInclude(`style={{...style,display:'block',\"--var-1k9t07z\":background}}`);
+    expect(actual).toIncludeMultiple([
+      `style={{...style,display:'block',\"--var-1k9t07z\":background}}`,
+      'color:red',
+    ]);
   });
 
   it('should concat explicit use of class name prop on an element', () => {

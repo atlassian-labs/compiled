@@ -308,6 +308,23 @@ export const importSpecifier = (name: string, localName?: string) => {
 };
 
 /**
+ * Returns the actual value of a jsx value.
+ *
+ * @param node
+ */
+export const getPropValue = (
+  node: t.JSXElement | t.JSXFragment | t.StringLiteral | t.JSXExpressionContainer
+) => {
+  const value = t.isJSXExpressionContainer(node) ? node.expression : node;
+
+  if (t.isJSXEmptyExpression(value)) {
+    throw new Error('Empty expression not supported.');
+  }
+
+  return value;
+};
+
+/**
  * Returns a Compiled Component AST.
  *
  * @param node Originating node
@@ -327,13 +344,11 @@ export const buildCompiledComponent = (
   if (classNameProp && classNameProp.value) {
     // If there is a class name prop statically defined we want to concatenate it with
     // the class name we're going to put on it.
-    const classNameExpression = t.isJSXExpressionContainer(classNameProp.value)
-      ? classNameProp.value.expression
-      : classNameProp.value;
+    const classNameExpression = getPropValue(classNameProp.value);
 
     const values: t.Expression[] = classNames
       .map((className) => t.stringLiteral(className) as t.Expression)
-      .concat(classNameExpression as t.Expression);
+      .concat(classNameExpression);
 
     classNameProp.value = t.jsxExpressionContainer(
       t.callExpression(t.identifier('ax'), [t.arrayExpression(values)])
