@@ -114,4 +114,19 @@ describe('css prop', () => {
 
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '15px');
   });
+
+  it('should remove duplicate declarations', () => {
+    const { getByText } = render(
+      <div
+        css={`
+          font-size: 12px;
+          font-size: 20px;
+        `}>
+        hello world
+      </div>
+    );
+
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '20px');
+    expect(getByText('hello world')).not.toHaveCompiledCss('font-size', '12px');
+  });
 });

@@ -66,7 +66,7 @@ describe('babel plugin', () => {
       const MyDiv = () => {
         return <CC>
           <CS>{[_]}</CS>
-          {<div className=\\"_36l61fwx\\">hello</div>}
+          {<div className={ax([\\"_36l61fwx\\"])}>hello</div>}
         </CC>;
       };"
     `);

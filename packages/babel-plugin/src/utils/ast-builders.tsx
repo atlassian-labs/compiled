@@ -356,7 +356,14 @@ export const buildCompiledComponent = (
   } else {
     // No class name - just push our own one.
     node.openingElement.attributes.push(
-      t.jsxAttribute(t.jsxIdentifier('className'), t.stringLiteral(classNames.join(' ')))
+      t.jsxAttribute(
+        t.jsxIdentifier('className'),
+        t.jsxExpressionContainer(
+          t.callExpression(t.identifier('ax'), [
+            t.arrayExpression(classNames.map((name) => t.stringLiteral(name))),
+          ])
+        )
+      )
     );
   }
 

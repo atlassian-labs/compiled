@@ -28,11 +28,11 @@ describe('rule hoisting', () => {
       "import{ax,CC,CS}from'@compiled/core';import React from'react';const _2=\\"._36l61tcg{font-size:24px}\\";const _=\\"._36l61fwx{font-size:12px}\\";const Component=()=><>
                 <CC>
           <CS>{[_]}</CS>
-          {<div className=\\"_36l61fwx\\">hello world</div>}
+          {<div className={ax([\\"_36l61fwx\\"])}>hello world</div>}
         </CC>
                 <CC>
           <CS>{[_2]}</CS>
-          {<div className=\\"_36l61tcg\\">hello world</div>}
+          {<div className={ax([\\"_36l61tcg\\"])}>hello world</div>}
         </CC>
               </>;"
     `);
@@ -55,11 +55,11 @@ describe('rule hoisting', () => {
       "import{ax,CC,CS}from'@compiled/core';import React from'react';const _=\\"._36l61fwx{font-size:12px}\\";const Component=()=><>
               <CC>
           <CS>{[_]}</CS>
-          {<div className=\\"_36l61fwx\\">hello world</div>}
+          {<div className={ax([\\"_36l61fwx\\"])}>hello world</div>}
         </CC>
               <CC>
           <CS>{[_]}</CS>
-          {<div className=\\"_36l61fwx\\">hello world</div>}
+          {<div className={ax([\\"_36l61fwx\\"])}>hello world</div>}
         </CC>
             </>;"
     `);

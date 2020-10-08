@@ -19,7 +19,7 @@ describe('css prop behaviour', () => {
       <div css={{}} />
     `);
 
-    expect(actual).toInclude('<div className=""/>');
+    expect(actual).toInclude('<div className={ax([])}/>');
   });
 
   it('should replace css prop with class name', () => {
@@ -30,7 +30,7 @@ describe('css prop behaviour', () => {
       <div css={{}}>hello world</div>
     `);
 
-    expect(actual).toInclude('<div className="">hello world</div>');
+    expect(actual).toInclude('<div className={ax([])}>hello world</div>');
   });
 
   it('should pass through style identifier when there is no dynamic styles in the css', () => {
@@ -133,7 +133,7 @@ describe('css prop behaviour', () => {
       />
     `);
 
-    expect(actual).toInclude('<div{...props}className="_36l6gktf"/>');
+    expect(actual).toInclude('<div{...props}className={ax(["_36l6gktf"])}/>');
   });
 
   it('should pass through static props', () => {
@@ -149,7 +149,7 @@ describe('css prop behaviour', () => {
       />
     `);
 
-    expect(actual).toInclude('<div role="menu"className="_36l6gktf"/>');
+    expect(actual).toInclude('<div role="menu"className={ax(["_36l6gktf"])}/>');
   });
 
   it('should concat explicit use of class name prop from an identifier on an element', () => {
@@ -189,7 +189,7 @@ describe('css prop behaviour', () => {
 
     expect(actual).toInclude(`{color:blue}`);
     expect(actual).toInclude(
-      `<div style={{display:'block'}}className=\"_1doq13q2\">hello world</div>`
+      `<div style={{display:'block'}}className={ax([\"_1doq13q2\"])}>hello world</div>`
     );
   });
 

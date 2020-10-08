@@ -15,7 +15,7 @@ export default {
 };
 
 export const ObjectLiteral = () => {
-  return <div css={{ display: 'flex', fontSize: '50px', color: 'blue' }}>Hello, world!</div>;
+  return <div css={{ display: 'flex', fontSize: '50px', color: 'blue' }}>blue text</div>;
 };
 
 export const ObjectLiteralSpreadFromFunc = () => {
@@ -27,7 +27,7 @@ export const ObjectLiteralSpreadFromFunc = () => {
         color: 'blue',
         ...inlineMixinFunc(),
       }}>
-      Hello, world!
+      red text
     </div>
   );
 };
@@ -41,7 +41,7 @@ export const ObjectLiteralSpreadFromObj = () => {
         color: 'blue',
         ...inlineMixinObj,
       }}>
-      Hello, world!
+      green text
     </div>
   );
 };
@@ -55,7 +55,7 @@ export const ObjectLiteralLocalObj = () => {
         color: 'blue',
         ':hover': inlineMixinObj,
       }}>
-      Hello, world!
+      blue text
     </div>
   );
 };
@@ -66,10 +66,10 @@ export const ObjectLiteralImportedObj = () => {
       css={{
         display: 'flex',
         fontSize: '50px',
-        color: 'blue',
+        color: 'purple',
         ':hover': hover,
       }}>
-      Hello, world!
+      purple text
     </div>
   );
 };
