@@ -84,8 +84,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       let resolvedBinding = undefined;
 
       if (t.isIdentifier(prop.argument)) {
-        const binding = meta.parentPath.scope.getBinding(prop.argument.name);
-        resolvedBinding = resolveBindingNode(binding, meta);
+        resolvedBinding = resolveBindingNode(prop.argument.name, meta);
 
         if (!resolvedBinding) {
           throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
@@ -207,8 +206,7 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
   }
 
   if (t.isIdentifier(node)) {
-    const binding = meta.parentPath.scope.getBinding(node.name);
-    const resolvedBinding = resolveBindingNode(binding, meta);
+    const resolvedBinding = resolveBindingNode(node.name, meta);
 
     if (!resolvedBinding) {
       throw buildCodeFrameError('Variable could not be found', node, meta.parentPath);

@@ -31,13 +31,7 @@ const traverseIdentifier = (expression: t.Identifier, meta: Metadata) => {
   let value: t.Node | undefined | null = undefined;
   let updatedMeta: Metadata = meta;
 
-  const binding = updatedMeta.parentPath.scope.getBinding(expression.name);
-  const resolvedBinding = resolveBindingNode(binding, updatedMeta);
-
-  if (binding?.path.node === expression) {
-    // We resolved to the same node - bail out!
-    return { value: expression, meta: updatedMeta };
-  }
+  const resolvedBinding = resolveBindingNode(expression.name, updatedMeta);
 
   if (resolvedBinding && resolvedBinding.constant) {
     // We recursively call get interpolation until it not longer returns an identifier or member expression
@@ -156,8 +150,7 @@ const traverseMemberExpression = (expression: t.MemberExpression, meta: Metadata
   const { accessPath, bindingIdentifier, originalBindingType } = getMemberExpressionMeta(
     expression
   );
-  const binding = updatedMeta.parentPath.scope.getBinding(bindingIdentifier.name);
-  const resolvedBinding = resolveBindingNode(binding, updatedMeta);
+  const resolvedBinding = resolveBindingNode(bindingIdentifier.name, updatedMeta);
 
   if (resolvedBinding && resolvedBinding.constant && t.isExpression(resolvedBinding.node)) {
     if (originalBindingType === 'Identifier') {
