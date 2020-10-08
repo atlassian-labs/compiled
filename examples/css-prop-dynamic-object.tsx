@@ -16,7 +16,7 @@ export const DynamicCssProp = () => {
           backgroundColor: 'purple',
         },
       }}>
-      <div css={{ display: 'flex', fontSize: '20px', color }}>Hello, world!</div>
+      <div css={{ display: 'flex', fontSize: '20px', color }}>{color} text</div>
 
       <div
         css={{
@@ -34,7 +34,7 @@ export const DynamicCssProp = () => {
           display: block;
           font-size: 20px;
         `}>
-        strip yeah
+        black text
       </div>
     </div>
   );
