@@ -356,6 +356,6 @@ describe('module traversal', () => {
     `
     );
 
-    expect(result).toInclude('.cc-hash-test:hover{padding-top:10px}');
+    expect(result).toInclude(':hover{padding-top:10px}');
   });
 });

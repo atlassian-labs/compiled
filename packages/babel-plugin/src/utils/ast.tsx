@@ -316,6 +316,22 @@ const findNamedExportModuleNode = (
   };
 };
 
+/**
+ * Will resolve the value `node` for identifier present inside destructuring
+ * If value `node` resolves to an identifier, it will recursively search for its
+ * value `node`.
+ *
+ * For eg.
+ * 1. If there is an identifier `foo`, coming from destructuring `{ bar: foo }`
+ * having value node as `{ bar: 10 }`, it will resolve to `NumericalLiteral` node `10`.
+ * 2. If there is an identifier `foo`, coming from destructuring `{ baz: foo }`
+ * referencing an identifier `bar` which in turn having value node as `{ baz: 10 }`,
+ * it will search recursively and resolve to `NumericalLiteral` node `10`.
+ *
+ * @param expression Node inside which we have to resolve the value
+ * @param meta Plugin metadata
+ * @param referenceName Reference name for which `binding` to be resolved
+ */
 const resolveObjectPatternValueNode = (
   expression: t.Expression,
   meta: Metadata,
@@ -378,8 +394,9 @@ export const resolveBindingNode = (
 ): PartialBindingWithMeta | undefined => {
   const binding = meta.parentPath.scope.getBinding(referenceName);
 
-  if (!binding) {
-    // Bail early if there is no binding
+  if (!binding || binding.path.isObjectPattern()) {
+    // Bail early if there is no binding or its a node that we don't want to resolve
+    // such as an destructured args from a function.
     return undefined;
   }
 
@@ -397,11 +414,6 @@ export const resolveBindingNode = (
       constant: binding.constant,
       source: 'module',
     };
-  }
-
-  if (binding.path.isObjectPattern()) {
-    // Bail if we don't want to resolve such as a destructured args from a function.
-    return undefined;
   }
 
   if (binding.path.parentPath.isImportDeclaration()) {

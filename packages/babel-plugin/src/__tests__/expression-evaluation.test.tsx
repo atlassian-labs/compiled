@@ -202,7 +202,11 @@ describe('import specifiers', () => {
       };
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:14px;color:blue;background-color:blue}');
+    expect(actual).toIncludeMultiple([
+      '{font-size:14px}',
+      '{color:blue}',
+      '{background-color:blue}',
+    ]);
   });
 
   it('handles the destructuring coming from an identifier', () => {
@@ -220,7 +224,11 @@ describe('import specifiers', () => {
       };
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:14px;color:blue;background-color:blue}');
+    expect(actual).toIncludeMultiple([
+      '{font-size:14px}',
+      '{color:blue}',
+      '{background-color:blue}',
+    ]);
   });
 
   it('handles the destructuring coming from a referenced identifier', () => {
@@ -239,7 +247,11 @@ describe('import specifiers', () => {
       };
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:14px;color:blue;background-color:blue}');
+    expect(actual).toIncludeMultiple([
+      '{font-size:14px}',
+      '{color:blue}',
+      '{background-color:blue}',
+    ]);
   });
 
   it('handles the function call destructuring coming from a referenced identifier', () => {
@@ -258,6 +270,10 @@ describe('import specifiers', () => {
       };
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:14px;color:blue;background-color:blue}');
+    expect(actual).toIncludeMultiple([
+      '{font-size:14px}',
+      '{color:blue}',
+      '{background-color:blue}',
+    ]);
   });
 });
