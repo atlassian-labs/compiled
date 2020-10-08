@@ -50,13 +50,13 @@ describe('toHaveCompliedCss', () => {
   });
 
   it('should detect evaluated rule from array styles', () => {
-    const base = { fontSize: 12 };
+    const base = { color: 'blue' };
     const next = ` font-size: 15px; `;
 
     const { getByText } = render(<div css={[base, next]}>hello world</div>);
 
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '15px');
-    expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
+    expect(getByText('hello world')).toHaveCompiledCss('color', 'blue');
   });
 
   it('should find styles composed from multiple sources', () => {
