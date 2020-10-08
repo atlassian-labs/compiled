@@ -25,14 +25,14 @@ describe('rule hoisting', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import{ax,CC,CS}from'@compiled/core';import React from'react';const _2=\\".cc-brqpo0{font-size:24px}\\";const _=\\".cc-o15e2w{font-size:12px}\\";const Component=()=><>
+      "import{ax,CC,CS}from'@compiled/core';import React from'react';const _2=\\"._36l61tcg{font-size:24px}\\";const _=\\"._36l61fwx{font-size:12px}\\";const Component=()=><>
                 <CC>
           <CS>{[_]}</CS>
-          {<div className=\\"cc-o15e2w\\">hello world</div>}
+          {<div className=\\"_36l61fwx\\">hello world</div>}
         </CC>
                 <CC>
           <CS>{[_2]}</CS>
-          {<div className=\\"cc-brqpo0\\">hello world</div>}
+          {<div className=\\"_36l61tcg\\">hello world</div>}
         </CC>
               </>;"
     `);
@@ -52,14 +52,14 @@ describe('rule hoisting', () => {
   `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import{ax,CC,CS}from'@compiled/core';import React from'react';const _=\\".cc-o15e2w{font-size:12px}\\";const Component=()=><>
+      "import{ax,CC,CS}from'@compiled/core';import React from'react';const _=\\"._36l61fwx{font-size:12px}\\";const Component=()=><>
               <CC>
           <CS>{[_]}</CS>
-          {<div className=\\"cc-o15e2w\\">hello world</div>}
+          {<div className=\\"_36l61fwx\\">hello world</div>}
         </CC>
               <CC>
           <CS>{[_]}</CS>
-          {<div className=\\"cc-o15e2w\\">hello world</div>}
+          {<div className=\\"_36l61fwx\\">hello world</div>}
         </CC>
             </>;"
     `);

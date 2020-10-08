@@ -1,10 +1,6 @@
 import { transformSync } from '@babel/core';
 import babelPlugin from '../../index';
 
-jest.mock('@compiled/utils', () => {
-  return { ...jest.requireActual('@compiled/utils'), hash: () => 'hash-test' };
-});
-
 const transform = (code: string) => {
   return transformSync(code, {
     configFile: false,
@@ -26,8 +22,8 @@ describe('css prop string literal', () => {
         <div css={\`font-size: \${fontSize}px;color:red;\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:var(--var-hash-test);color:red}');
-    expect(actual).toInclude('style={{"--var-hash-test":(fontSize||"")+"px"}}');
+    expect(actual).toInclude('{font-size:var(--var-1j2e0s2)}');
+    expect(actual).toInclude('style={{"--var-1j2e0s2":(fontSize||"")+"px"}}');
   });
 
   it('should persist suffix of constant value', () => {
@@ -40,7 +36,7 @@ describe('css prop string literal', () => {
         <div css={\`font-size: \${fontSize}px;\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:20px}');
+    expect(actual).toInclude('{font-size:20px}');
   });
 
   it('should transform string literal', () => {
@@ -51,7 +47,7 @@ describe('css prop string literal', () => {
         <div css="font-size: 20px;">hello world</div>
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:20px}');
+    expect(actual).toInclude('{font-size:20px}');
   });
 
   it('should inline constant object property value', () => {
@@ -69,7 +65,7 @@ describe('css prop string literal', () => {
         </div>
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:red}');
+    expect(actual).toInclude('{color:red}');
   });
 
   it('should evaluate deep member expression referencing an identifier', () => {
@@ -98,7 +94,7 @@ describe('css prop string literal', () => {
         </div>
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:blue}');
+    expect(actual).toInclude('{color:blue}');
   });
 
   it('should inline nested constant object property value', () => {
@@ -125,7 +121,7 @@ describe('css prop string literal', () => {
         </div>
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:#fff}');
+    expect(actual).toInclude('{color:#fff}');
   });
 
   it('should transform binary expression', () => {
@@ -142,10 +138,10 @@ describe('css prop string literal', () => {
         );
       `);
 
-    expect(actual).toInclude(
-      '.cc-hash-test{color:var(--var-hash-test);text-transform:uppercase;font-weight:600}'
-    );
-    expect(actual).toInclude('style={{"--var-hash-test":props.color}}');
+    expect(actual).toInclude('{color:var(--var-kmurgp)');
+    expect(actual).toInclude('{text-transform:uppercase}');
+    expect(actual).toInclude('{font-weight:600}');
+    expect(actual).toInclude('style={{"--var-kmurgp":props.color}}');
   });
 
   it('should transform no template string literal', () => {
@@ -156,7 +152,7 @@ describe('css prop string literal', () => {
         <div css={\`font-size: 20px;\`}>hello world</div>
     `);
 
-    expect(actual).toInclude('.cc-hash-test{font-size:20px}');
+    expect(actual).toInclude('{font-size:20px}');
   });
 
   it('should inline constant expression', () => {
@@ -168,7 +164,7 @@ describe('css prop string literal', () => {
         <div css={\`color: \${color};\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:blue}');
+    expect(actual).toInclude('{color:blue}');
   });
 
   it('should transform an expression', () => {
@@ -191,11 +187,10 @@ describe('css prop string literal', () => {
         </div>
       `);
 
+    expect(actual).toInclude('{display:grid}');
+    expect(actual).toInclude('{grid-template-areas:var(--var-1o3snts)}');
     expect(actual).toInclude(
-      '.cc-hash-test{display:grid;grid-template-areas:var(--var-hash-test)}'
-    );
-    expect(actual).toInclude(
-      `\"--var-hash-test\":sidenav?\"'header header' 'sidebar content'\":\"'header header' 'content content'\"`
+      `style={{\"--var-1o3snts\":sidenav?\"'header header' 'sidebar content'\":\"'header header' 'content content'\"}}`
     );
   });
 
@@ -208,7 +203,9 @@ describe('css prop string literal', () => {
         <div css={\`\${style};color: red;\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:blue;font-size:30px;color:red}');
+    expect(actual).toInclude('{color:blue}');
+    expect(actual).toInclude('{color:red}');
+    expect(actual).toInclude('{font-size:30px}');
   });
 
   it('should transform template string with no argument arrow function variable', () => {
@@ -220,7 +217,8 @@ describe('css prop string literal', () => {
         <div css={\`\${mixin}\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:blue;font-size:30px}');
+    expect(actual).toInclude('{color:blue}');
+    expect(actual).toInclude('{font-size:30px}');
   });
 
   it('should transform template string with no argument arrow function call variable', () => {
@@ -232,7 +230,8 @@ describe('css prop string literal', () => {
         <div css={\`\${mixin()}\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:blue;font-size:30px}');
+    expect(actual).toInclude('{color:blue}');
+    expect(actual).toInclude('{font-size:30px}');
   });
 
   it('should transform template string with no argument functions', () => {
@@ -259,8 +258,10 @@ describe('css prop string literal', () => {
         </div>
       `);
 
-    expect(actual).toInclude(`.cc-hash-test{color:blue;font-style:italic;font-family:sans-serif}`);
-    expect(actual).toInclude('.cc-hash-test:hover{background-color:blue}');
+    expect(actual).toInclude(`{color:blue}`);
+    expect(actual).toInclude(`{font-style:italic}`);
+    expect(actual).toInclude(`{font-family:sans-serif}`);
+    expect(actual).toInclude(':hover{background-color:blue}');
   });
 
   it('should transform template string with no argument function properties belonging to a variable', () => {
@@ -289,9 +290,10 @@ describe('css prop string literal', () => {
         </div>
       `);
 
-    expect(actual).toInclude(
-      `.cc-hash-test{color:blue;border:1px solid black;font-size:12px;font-weight:500}`
-    );
+    expect(actual).toInclude(`{color:blue}`);
+    expect(actual).toInclude(`{border:1px solid black}`);
+    expect(actual).toInclude(`{font-size:12px}`);
+    expect(actual).toInclude(`{font-weight:500}`);
   });
 
   it('should transform template string with no argument function variable', () => {
@@ -306,22 +308,7 @@ describe('css prop string literal', () => {
         <div css={\`\${mixin()}\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:red}');
-  });
-
-  xit('should transform template string with argument arrow function variable', () => {
-    const actual = transform(`
-        import '@compiled/core';
-        import React from 'react';
-
-        const mixin = (color: string) => ({ color, fontSize: '30px' });
-        const primary = 'red';
-
-        <div css={\`\${mixin(primary)}\`}>hello world</div>
-      `);
-
-    expect(actual).toInclude('.css-test{color:var(--var-test);font-size:30px}');
-    expect(actual).toInclude('style={{ "--var-test": primary }}');
+    expect(actual).toInclude('{color:red}');
   });
 
   it('should inline multiple constant interpolations', () => {
@@ -341,7 +328,7 @@ describe('css prop string literal', () => {
           hello world
         </div>
       `);
-    expect(actual).toInclude('.cc-hash-test{transform:translate3d(1px,2px,0);color:red');
+    expect(actual).toInclude('{transform:translate3d(1px,2px,0)');
   });
 
   it('should reference multiple interpolations in a group', () => {
@@ -364,12 +351,10 @@ describe('css prop string literal', () => {
         </div>
       `);
 
-    // TODO: Correct the hash mock so variables have a unique name instead of hash-test.
-    // expect(actual).toInclude('style={{"--var-hash-test":(x||"")+"px","--var-hash-test":y}}');
-    expect(actual).toInclude('style={{"--var-hash-test":(x||"")+"px"}}');
-    expect(actual).toInclude(
-      '.cc-hash-test{transform:translate3d(var(--var-hash-test),var(--var-hash-test),0);color:red}'
-    );
+    expect(actual).toIncludeMultiple([
+      'style={{"--var-65u76s":(x||"")+"px","--var-1ohot4b":y}}',
+      '{transform:translate3d(var(--var-65u76s),var(--var-1ohot4b),0)}',
+    ]);
   });
 
   it('should transform function returning an object', () => {
@@ -383,7 +368,7 @@ describe('css prop string literal', () => {
         <div css={\`color: \${mixin().color};\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:red}');
+    expect(actual).toInclude('{color:red}');
   });
 
   it('should transform member expression referencing a function which returns an object', () => {
@@ -399,6 +384,6 @@ describe('css prop string literal', () => {
         <div css={\`color: \${colors.color};\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('.cc-hash-test{color:red}');
+    expect(actual).toInclude('{color:red}');
   });
 });
