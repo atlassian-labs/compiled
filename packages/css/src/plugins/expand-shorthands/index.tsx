@@ -30,7 +30,7 @@ const shorthands: Record<string, ConversionFunction> = {
 /**
  * PostCSS plugin that expands shortform properties to their longform equivalents.
  */
-export const propertyExpander = plugin('property-expander', () => {
+export const expandShorthands = plugin('expand-shorthands', () => {
   const filter = new RegExp(Object.keys(shorthands).join('|'));
 
   return (root) => {

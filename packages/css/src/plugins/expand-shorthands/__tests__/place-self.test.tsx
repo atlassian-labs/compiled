@@ -1,8 +1,8 @@
 import postcss from 'postcss';
-import { propertyExpander } from '../../property-expander';
+import { expandShorthands } from '../../expand-shorthands';
 
 const transform = (css: TemplateStringsArray) => {
-  const result = postcss([propertyExpander]).process(css[0], {
+  const result = postcss([expandShorthands]).process(css[0], {
     from: undefined,
   });
 

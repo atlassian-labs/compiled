@@ -72,6 +72,9 @@ export const flex: ConversionFunction = (node, value) => {
           // Invalid
           return [];
         }
+      } else {
+        // Invalid
+        return [];
       }
 
       break;
