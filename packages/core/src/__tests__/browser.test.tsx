@@ -2,16 +2,20 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { styled } from '@compiled/core';
 
+jest.mock('../../../runtime/dist/is-node', () => ({
+  isNodeEnvironment: () => false,
+}));
+
 describe('browser', () => {
   it('should not render styles inline', () => {
     const StyledDiv = styled.div`
       font-size: 12px;
     `;
 
-    const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
+    const { baseElement } = render(<StyledDiv>hello world</StyledDiv>);
 
-    expect(getByText('hello world').outerHTML).toMatchInlineSnapshot(
-      `"<div class=\\"_36l61fwx\\">hello world</div>"`
+    expect(baseElement.innerHTML).toMatchInlineSnapshot(
+      `"<div><div class=\\"_36l61fwx\\">hello world</div></div>"`
     );
   });
 

@@ -16,14 +16,6 @@ const removeSpaces = (str?: string) => str && str.replace(/\s/g, '');
 const mapProperties = (properties: Record<string, any>) =>
   Object.keys(properties).map((property) => `${kebabCase(property)}:${properties[property]}`);
 
-const getMountedProperties = () =>
-  Array.from(document.styleSheets)
-    .map((sheet) =>
-      // @ts-ignore
-      sheet.cssRules.map((rule: CSSRule) => rule.style.cssText)
-    )
-    .join(' ');
-
 const onlyRules = (rules?: StyleRules['rules']) => rules?.filter((r) => r.type === 'rule');
 
 const findMediaRules = (
@@ -89,9 +81,10 @@ export function toHaveCompiledCss(
 ): jest.CustomMatcherResult {
   const [property, value, matchFilter = DEFAULT_MATCH_FILTER] = args;
   const properties = typeof property === 'string' ? { [property]: value } : property;
-  const inlineStyleTag = element.parentElement && element.parentElement.querySelector('style');
-  const styleElements: HTMLStyleElement[] =
-    inlineStyleTag != null ? [inlineStyleTag] : Array.from(document.head.querySelectorAll('style'));
+  const styleElements: HTMLStyleElement[] = [
+    ...Array.from(document.body.querySelectorAll('style')),
+    ...Array.from(document.head.querySelectorAll('style')),
+  ];
 
   if (!styleElements) {
     return {
@@ -136,14 +129,12 @@ export function toHaveCompiledCss(
       pass: true,
       message: !this.isNot
         ? () => ''
-        : () =>
-            `Found "${foundFormatted}" on <${element.nodeName.toLowerCase()} css={\`${getMountedProperties()}\`}> element.`,
+        : () => `Found "${foundFormatted}" on ${element.outerHTML} element.`,
     };
   }
 
   return {
     pass: false,
-    message: () =>
-      `Could not find "${notFoundFormatted}" on <${element.nodeName.toLowerCase()} css={\`${getMountedProperties()}\`}> element.`,
+    message: () => `Could not find "${notFoundFormatted}" on ${element.outerHTML} element.`,
   };
 }
