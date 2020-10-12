@@ -4,9 +4,11 @@
  *
  * When using this it will remove any node code from the browser bundle - for example:
  *
+ * ```js
  * if (isNodeEnvironment()) {
  *   // This code will be removed from the browser bundle
  * }
+ * ```
  */
 export const isNodeEnvironment = () => {
   return (
