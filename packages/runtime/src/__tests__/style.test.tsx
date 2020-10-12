@@ -2,6 +2,10 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import Style from '../style';
 
+jest.mock('../is-node', () => ({
+  isNodeEnvironment: () => false,
+}));
+
 describe('<Style />', () => {
   it('should render nothing on the client', () => {
     const { baseElement } = render(<Style>{[`.a { display: block; }`]}</Style>);

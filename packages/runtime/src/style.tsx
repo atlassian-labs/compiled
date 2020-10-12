@@ -3,6 +3,7 @@ import createStyleSheet from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts } from './types';
 import { useCache } from './provider';
+import { isNodeEnvironment } from './is-node';
 
 interface StyleProps extends StyleSheetOpts {
   /**
@@ -33,7 +34,7 @@ export default function Style(props: StyleProps) {
   });
 
   if (rules.length) {
-    if (typeof window === 'undefined') {
+    if (isNodeEnvironment()) {
       return <style nonce={props.nonce}>{rules}</style>;
     } else {
       // Keep re-assigning over ternary because it's smaller

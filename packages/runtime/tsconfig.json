@@ -11,7 +11,7 @@
       {
         "transform": "ts-transform-define",
         "replace": {
-          "typeof window": "process.env.TYPEOF_WINDOW"
+          "isNodeEnvironment()": "process.env.IS_NODE_EXPRESSION"
         }
       }
     ]
