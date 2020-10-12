@@ -10,9 +10,6 @@
  * }
  * ```
  */
-export const isNodeEnvironment = () => {
-  return (
-    Object.prototype.toString.call(typeof process !== undefined ? process : null) ===
-    '[object process]'
-  );
+export const isNodeEnvironment = (): boolean => {
+  return typeof global !== 'undefined' && (globalThis as any) === global;
 };
