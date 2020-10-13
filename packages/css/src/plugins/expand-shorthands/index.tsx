@@ -12,8 +12,10 @@ import { flexFlow } from './flex-flow';
 import { outline } from './outline';
 import { textDecoration } from './text-decoration';
 import { background } from './background';
+import { order } from './order';
 
 const shorthands: Record<string, ConversionFunction> = {
+  // These properties are fully expanded
   margin,
   padding,
   'place-content': placeContent,
@@ -24,7 +26,14 @@ const shorthands: Record<string, ConversionFunction> = {
   'flex-flow': flexFlow,
   outline,
   'text-decoration': textDecoration,
+
+  // These properties are partially expanded
   background,
+
+  // These properties are ordered only
+  'column-rule': order,
+  'list-style': order,
+  columns: order,
 };
 
 /**

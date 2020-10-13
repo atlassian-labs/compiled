@@ -10,5 +10,14 @@ export const background: ConversionFunction = (node, value) => {
     return [node.clone({ prop: 'background-color', value: value.nodes[0] })];
   }
 
-  return [node.clone()];
+  const orderedValues = value.nodes
+    .map((val) => val.toString())
+    .sort()
+    .join(' ');
+
+  return [
+    node.clone({
+      value: orderedValues,
+    }),
+  ];
 };

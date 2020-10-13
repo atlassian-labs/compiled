@@ -9,7 +9,7 @@ const transform = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-describe('property expander', () => {
+describe('background property expander', () => {
   it('should expand background single', () => {
     const result = transform`
       background: red;
@@ -22,7 +22,7 @@ describe('property expander', () => {
     `);
   });
 
-  it('should do nothing when background is complex', () => {
+  it('should do nothing for non-color single', () => {
     const result = transform`
       background: radial-gradient(crimson, skyblue);
     `;
@@ -30,6 +30,18 @@ describe('property expander', () => {
     expect(result).toMatchInlineSnapshot(`
       "
             background: radial-gradient(crimson, skyblue);
+          "
+    `);
+  });
+
+  it('should order value nodes alphabetically greater than one', () => {
+    const result = transform`
+      background: red repeat scroll border-box;
+    `;
+
+    expect(result).toMatchInlineSnapshot(`
+      "
+            background: border-box red repeat scroll;
           "
     `);
   });
