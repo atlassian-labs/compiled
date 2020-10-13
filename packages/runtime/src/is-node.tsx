@@ -10,9 +10,7 @@
  * }
  * ```
  */
-export const isNodeEnvironment = () => {
-  return (
-    Object.prototype.toString.call(typeof process !== undefined ? process : null) ===
-    '[object process]'
-  );
+export const isNodeEnvironment = (): boolean => {
+  // https://nodejs.org/api/process.html#process_process_release
+  return process?.release?.name === 'node';
 };
