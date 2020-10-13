@@ -5,7 +5,7 @@ import { globalValues, isColor } from './utils';
 /**
  * https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration
  */
-export const textDecoration: ConversionFunction = (node, value) => {
+export const textDecoration: ConversionFunction = (value) => {
   const [left, middle, right] = value.nodes;
   const lineValues = [...globalValues, 'none', 'underline', 'overline', 'line-through', 'blink'];
   const styleValues = [...globalValues, 'solid', 'double', 'dotted', 'dashed', 'wavy'];
@@ -48,8 +48,8 @@ export const textDecoration: ConversionFunction = (node, value) => {
   const resolvedLineValue = lineValue.length ? lineValue.join(' ') : 'initial';
 
   return [
-    node.clone({ prop: 'text-decoration-color', value: colorValue || 'initial' }),
-    node.clone({ prop: 'text-decoration-line', value: resolvedLineValue }),
-    node.clone({ prop: 'text-decoration-style', value: styleValue || 'initial' }),
+    { prop: 'text-decoration-color', value: colorValue || 'initial' },
+    { prop: 'text-decoration-line', value: resolvedLineValue },
+    { prop: 'text-decoration-style', value: styleValue || 'initial' },
   ];
 };

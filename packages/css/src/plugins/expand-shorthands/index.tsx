@@ -48,13 +48,14 @@ export const expandShorthands = plugin('expand-shorthands', () => {
       const expand = shorthands[decl.prop];
 
       if (expand) {
-        const longforms = expand(decl, valueNode);
+        const longforms = expand(valueNode);
         if (!longforms) {
           throw new Error('Longform properties were not returned!');
         }
 
-        decl.parent.insertBefore(decl, longforms);
-        decl.remove();
+        const nodes = longforms.map((val) => decl.clone(val));
+
+        decl.replaceWith(nodes);
       }
     });
   };

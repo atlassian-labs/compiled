@@ -3,11 +3,11 @@ import { ConversionFunction } from './types';
 /**
  * https://developer.mozilla.org/en-US/docs/Web/CSS/place-self
  */
-export const placeSelf: ConversionFunction = (node, value) => {
+export const placeSelf: ConversionFunction = (value) => {
   const [alignSelf, justifySelf = alignSelf] = value.nodes;
 
   return [
-    node.clone({ prop: 'align-self', value: alignSelf }),
-    node.clone({ prop: 'justify-self', value: justifySelf }),
+    { prop: 'align-self', value: alignSelf.toString() },
+    { prop: 'justify-self', value: justifySelf.toString() },
   ];
 };

@@ -3,11 +3,11 @@ import { ConversionFunction } from './types';
 /**
  * https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
  */
-export const overflow: ConversionFunction = (node, value) => {
+export const overflow: ConversionFunction = (value) => {
   const [overflowX, overflowY = overflowX] = value.nodes;
 
   return [
-    node.clone({ prop: 'overflow-x', value: overflowX }),
-    node.clone({ prop: 'overflow-y', value: overflowY }),
+    { prop: 'overflow-x', value: overflowX.toString() },
+    { prop: 'overflow-y', value: overflowY.toString() },
   ];
 };

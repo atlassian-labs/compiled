@@ -3,7 +3,7 @@ import { ConversionFunction } from './types';
 /**
  * https://developer.mozilla.org/en-US/docs/Web/CSS/place-content
  */
-export const placeContent: ConversionFunction = (node, value) => {
+export const placeContent: ConversionFunction = (value) => {
   const [alignContent, justifyContent] = value.nodes;
   if (!justifyContent && alignContent.type === 'word') {
     if (['left', 'right', 'baseline'].includes(alignContent.value)) {
@@ -15,7 +15,7 @@ export const placeContent: ConversionFunction = (node, value) => {
   }
 
   return [
-    node.clone({ prop: 'align-content', value: alignContent }),
-    node.clone({ prop: 'justify-content', value: justifyContent || alignContent }),
+    { prop: 'align-content', value: alignContent.toString() },
+    { prop: 'justify-content', value: (justifyContent || alignContent).toString() },
   ];
 };

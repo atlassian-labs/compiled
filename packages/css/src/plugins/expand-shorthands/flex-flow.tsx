@@ -5,7 +5,7 @@ import { globalValues } from './utils';
 /**
  * https://developer.mozilla.org/en-US/docs/Web/CSS/flex-flow
  */
-export const flexFlow: ConversionFunction = (node, value) => {
+export const flexFlow: ConversionFunction = (value) => {
   const [left, right] = value.nodes;
   const directionValues = [...globalValues, 'row', 'row-reverse', 'column', 'column-reverse'];
   const wrapValues = [...globalValues, 'nowrap', 'wrap', 'reverse'];
@@ -48,7 +48,7 @@ export const flexFlow: ConversionFunction = (node, value) => {
   }
 
   return [
-    node.clone({ prop: 'flex-direction', value: directionValue || 'initial' }),
-    node.clone({ prop: 'flex-wrap', value: wrapValue || 'initial' }),
+    { prop: 'flex-direction', value: directionValue || 'initial' },
+    { prop: 'flex-wrap', value: wrapValue || 'initial' },
   ];
 };

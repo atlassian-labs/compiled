@@ -4,7 +4,7 @@ import { isWidth, getWidth } from './utils';
 /**
  * https://developer.mozilla.org/en-US/docs/Web/CSS/flex
  */
-export const flex: ConversionFunction = (node, value) => {
+export const flex: ConversionFunction = (value) => {
   const [left, middle, right] = value.nodes;
   let grow: number | string = 'auto';
   let shrink: number | string = 'initial';
@@ -86,8 +86,8 @@ export const flex: ConversionFunction = (node, value) => {
   }
 
   return [
-    node.clone({ prop: 'flex-grow', value: grow }),
-    node.clone({ prop: 'flex-shrink', value: shrink }),
-    node.clone({ prop: 'flex-basis', value: basis }),
+    { prop: 'flex-grow', value: grow },
+    { prop: 'flex-shrink', value: shrink },
+    { prop: 'flex-basis', value: basis },
   ];
 };

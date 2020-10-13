@@ -5,7 +5,7 @@ import { globalValues, isColor } from './utils';
 /**
  * https://developer.mozilla.org/en-US/docs/Web/CSS/outline
  */
-export const outline: ConversionFunction = (node, value) => {
+export const outline: ConversionFunction = (value) => {
   const [left, middle, right] = value.nodes;
   const styleValues = [
     ...globalValues,
@@ -75,8 +75,8 @@ export const outline: ConversionFunction = (node, value) => {
   }
 
   return [
-    node.clone({ prop: 'outline-color', value: colorValue || 'initial' }),
-    node.clone({ prop: 'outline-style', value: styleValue || 'initial' }),
-    node.clone({ prop: 'outline-width', value: widthValue || 'initial' }),
+    { prop: 'outline-color', value: colorValue || 'initial' },
+    { prop: 'outline-style', value: styleValue || 'initial' },
+    { prop: 'outline-width', value: widthValue || 'initial' },
   ];
 };
