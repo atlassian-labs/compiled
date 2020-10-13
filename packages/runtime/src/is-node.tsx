@@ -11,5 +11,6 @@
  * ```
  */
 export const isNodeEnvironment = (): boolean => {
+  // https://nodejs.org/api/process.html#process_process_release
   return process?.release?.name === 'node';
 };
