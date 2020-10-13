@@ -112,4 +112,15 @@ describe('property expander', () => {
           "
     `);
   });
+
+  it('should remove decls for invalid triple again', () => {
+    const result = transform`
+      flex: 1 asdasd auto;
+    `;
+
+    expect(result).toMatchInlineSnapshot(`
+      "
+          "
+    `);
+  });
 });
