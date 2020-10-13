@@ -11,18 +11,5 @@
  * ```
  */
 export const isNodeEnvironment = (): boolean => {
-  if (typeof global === 'undefined') {
-    return false;
-  }
-
-  if ((globalThis as any) !== global) {
-    return false;
-  }
-
-  // what if a user did this: `global = globalThis`
-  if (typeof window !== 'undefined' && (globalThis as any) === window) {
-    return false;
-  }
-
-  return true;
+  return process?.release?.name === 'node';
 };
