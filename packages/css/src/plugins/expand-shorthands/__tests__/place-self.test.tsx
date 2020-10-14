@@ -9,7 +9,7 @@ const transform = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-describe('property expander', () => {
+describe('place self property expander', () => {
   it('should expand place self single', () => {
     const result = transform`
       place-self: start;

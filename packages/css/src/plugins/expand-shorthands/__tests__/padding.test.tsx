@@ -9,7 +9,7 @@ const transform = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-describe('property expander', () => {
+describe('padding property expander', () => {
   it('should expand padding single', () => {
     const result = transform`
       padding: 0;

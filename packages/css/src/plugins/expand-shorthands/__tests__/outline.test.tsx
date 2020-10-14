@@ -9,7 +9,7 @@ const transform = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-describe('property expander', () => {
+describe('outline property expander', () => {
   it('should expand outline single color', () => {
     const result = transform`
       outline: red;

@@ -9,7 +9,7 @@ const transform = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-describe('property expander', () => {
+describe('overflow property expander', () => {
   it('should expand overflow single', () => {
     const result = transform`
       overflow: hidden;

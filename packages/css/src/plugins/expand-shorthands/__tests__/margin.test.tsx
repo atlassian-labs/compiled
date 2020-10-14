@@ -9,7 +9,7 @@ const transform = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-describe('property expander', () => {
+describe('margin property expander', () => {
   it('should expand margin single', () => {
     const result = transform`
       margin: 0;

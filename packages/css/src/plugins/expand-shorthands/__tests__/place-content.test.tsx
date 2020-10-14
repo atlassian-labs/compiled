@@ -9,7 +9,7 @@ const transform = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-describe('property expander', () => {
+describe('place content property expander', () => {
   it('should expand place content single', () => {
     const result = transform`
       place-content: center;

@@ -9,7 +9,7 @@ const transform = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-describe('property expander', () => {
+describe('flex property expander', () => {
   it('should expand flex none', () => {
     const result = transform`
       flex: none;

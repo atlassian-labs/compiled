@@ -9,7 +9,7 @@ const transform = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-describe('property expander', () => {
+describe('flex flow property expander', () => {
   it('should expand flex-flow direction single', () => {
     const result = transform`
       flex-flow: column;

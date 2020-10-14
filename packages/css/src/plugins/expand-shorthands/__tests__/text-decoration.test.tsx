@@ -9,7 +9,7 @@ const transform = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-describe('property expander', () => {
+describe('text decoration property expander', () => {
   it('should expand text decoration single', () => {
     const result = transform`
       text-decoration: underline;

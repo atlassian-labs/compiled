@@ -9,7 +9,7 @@ const transform = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-describe('value ordering', () => {
+describe('property value ordering', () => {
   it('should order value', () => {
     const result = transform`
       column-rule: thick inset blue;
