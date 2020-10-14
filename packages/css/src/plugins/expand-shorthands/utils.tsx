@@ -16,6 +16,10 @@ export const isColor = (node: Node) => {
     return true;
   }
 
+  if (node.type === 'func' && node.isColor) {
+    return true;
+  }
+
   return false;
 };
 
@@ -27,7 +31,28 @@ export const isColor = (node: Node) => {
  */
 export const isWidth = (node: Node) => {
   if (node.type === 'numeric') {
-    if (['px', 'rem', 'em', '%'].includes(node.unit)) {
+    if (
+      [
+        'px',
+        'rem',
+        'em',
+        '%',
+        'pt',
+        'cm',
+        'mm',
+        'Q',
+        'in',
+        'pc',
+        'ex',
+        'ch',
+        'lh',
+        'vw',
+        'vh',
+        'vmin',
+        'vmax',
+        'fr',
+      ].includes(node.unit)
+    ) {
       return true;
     }
   }
