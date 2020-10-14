@@ -269,18 +269,4 @@ describe('leading pseduos in css', () => {
       );
     });
   });
-
-  it('shouldnt blow up', () => {
-    const { sheets: actual } = transformCss(
-      `
-      div {
-        margin: 0;
-      }
-      `
-    );
-
-    expect(actual.join('')).toMatchInlineSnapshot(
-      `"._7m0midpf div{margin-top:0}._8lybidpf div{margin-right:0}._17rhidpf div{margin-bottom:0}._nbomidpf div{margin-left:0}"`
-    );
-  });
 });
