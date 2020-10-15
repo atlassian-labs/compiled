@@ -27,13 +27,35 @@ const shorthands: Record<string, ConversionFunction> = {
   outline,
   'text-decoration': textDecoration,
 
-  // These properties are partially expanded
+  // These properties are partially expanded (and ordered otherwise)
   background,
 
-  // These properties are ordered only
+  // These properties are ordered only but may be expanded later.
   'column-rule': order,
   'list-style': order,
   columns: order,
+  border: order,
+  borderTop: order,
+  borderRight: order,
+  borderLeft: order,
+  borderBottom: order,
+
+  // These properties are excluded for now
+  /**
+   * border-color
+   * border-radius
+   * border-style
+   * border-width
+   * animation
+   * transition
+   * font
+   * grid-column
+   * grid-row
+   * grid-template
+   * grid
+   * grid-area
+   * offset
+   */
 };
 
 /**
