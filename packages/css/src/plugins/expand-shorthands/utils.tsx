@@ -12,15 +12,7 @@ export const globalValues = ['inherit', 'initial', 'unset'];
  * @param node
  */
 export const isColor = (node: Node) => {
-  if (node.type === 'word' && node.isColor) {
-    return true;
-  }
-
-  if (node.type === 'func' && node.isColor) {
-    return true;
-  }
-
-  return false;
+  return (node.type === 'word' || node.type === 'func') && node.isColor;
 };
 
 /**
