@@ -22,9 +22,9 @@ describe('css prop object literal', () => {
         <div css={{ background: bg, color: cl, textDecoration: 'none', }}>hello world</div>
       `);
 
-    expect(actual).toInclude('{background:blue');
+    expect(actual).toInclude('{background-color:blue');
     expect(actual).toInclude('{color:var(--var-bo0rwa)');
-    expect(actual).toInclude('{text-decoration:none');
+    expect(actual).toInclude('text-decoration-line:none');
     expect(actual).toInclude('style={{"--var-bo0rwa":cl}}');
   });
 
@@ -345,7 +345,10 @@ describe('css prop object literal', () => {
         }} />;
       `);
 
-    expect(actual).toInclude('{padding:0 4px}');
+    expect(actual).toInclude('{padding-left:4px}');
+    expect(actual).toInclude('{padding-right:4px}');
+    expect(actual).toInclude('{padding-top:0}');
+    expect(actual).toInclude('{padding-bottom:0}');
     expect(actual).toInclude('{color:red}');
   });
 
@@ -439,7 +442,7 @@ describe('css prop object literal', () => {
       `);
 
     expect(actual).toInclude(`{color:blue}`);
-    expect(actual).toInclude(`{border:1px solid blue}`);
+    expect(actual).toInclude(`{border:1px blue solid}`);
     expect(actual).toInclude(`{font-size:12px}`);
     expect(actual).toInclude(`font-weight:500}`);
   });
@@ -519,7 +522,10 @@ describe('css prop object literal', () => {
       `);
 
     expect(actual).toInclude('style={{"--var-1xlms2h":HORIZONTAL_SPACING}}');
-    expect(actual).toInclude('{padding:0 var(--var-1xlms2h)}');
+    expect(actual).toInclude('._1cheidpf{padding-top:0}');
+    expect(actual).toInclude('._11vjrjbm{padding-right:var(--var-1xlms2h)}');
+    expect(actual).toInclude('._1ed7idpf{padding-bottom:0}');
+    expect(actual).toInclude('._nkoarjbm{padding-left:var(--var-1xlms2h)}');
   });
 
   it('should parse an inline string interpolation delimited by multiple spaces', () => {
@@ -536,7 +542,10 @@ describe('css prop object literal', () => {
          }}>hello world</div>
       `);
 
-    expect(actual).toInclude('{padding:0 var(--var-1xlms2h) 0 0}');
+    expect(actual).toInclude('._1cheidpf{padding-top:0}');
+    expect(actual).toInclude('._11vjrjbm{padding-right:var(--var-1xlms2h)}');
+    expect(actual).toInclude('._1ed7idpf{padding-bottom:0}');
+    expect(actual).toInclude('._nkoaidpf{padding-left:0}');
     expect(actual).toInclude('style={{"--var-1xlms2h":HORIZONTAL_SPACING}}');
   });
 
@@ -554,7 +563,10 @@ describe('css prop object literal', () => {
          }}>hello world</div>
       `);
 
-    expect(actual).toInclude('._9yybaa1a{padding:0 8px 0 0}');
+    expect(actual).toInclude('._1cheidpf{padding-top:0}');
+    expect(actual).toInclude('._11vjftgi{padding-right:8px}');
+    expect(actual).toInclude('._1ed7idpf{padding-bottom:0}');
+    expect(actual).toInclude('._nkoaidpf{padding-left:0}');
     expect(actual).toInclude('._1doq5scu{color:red}');
   });
 
@@ -572,7 +584,10 @@ describe('css prop object literal', () => {
          }}>hello world</div>
       `);
 
-    expect(actual).toInclude('._9yybtb9y{padding:8px 8px 8px 8px}');
+    expect(actual).toInclude('._1cheftgi{padding-top:8px}');
+    expect(actual).toInclude('._11vjftgi{padding-right:8px}');
+    expect(actual).toInclude('._1ed7ftgi{padding-bottom:8px}');
+    expect(actual).toInclude('._nkoaftgi{padding-left:8px}');
     expect(actual).toInclude('._1doq5scu{color:red}');
   });
 

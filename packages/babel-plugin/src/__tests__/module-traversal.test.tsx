@@ -133,7 +133,7 @@ describe('module traversal', () => {
 
     expect(result).toInclude('{font-size:14px}');
     expect(result).toInclude('{color:blue}');
-    expect(result).toInclude('{background:red}');
+    expect(result).toInclude('{background-color:red}');
   });
 
   it('should inline css from a object with multiple identifiers referenced from a named import', () => {
@@ -149,7 +149,7 @@ describe('module traversal', () => {
 
     expect(result).toInclude('{font-size:14px}');
     expect(result).toInclude('{color:blue}');
-    expect(result).toInclude('{background:red}');
+    expect(result).toInclude('{background-color:red}');
   });
 
   it('should inline css from a spread referencing an identifier from another module', () => {

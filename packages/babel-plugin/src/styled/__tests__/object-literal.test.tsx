@@ -121,12 +121,12 @@ describe('styled component object literal', () => {
 
         const ListItem = styled.div({
           color: 'blue',
-          margin: 0,
+          marginLeft: 0,
         });
       `);
 
     expect(actual).toInclude('{color:blue}');
-    expect(actual).toInclude('{margin:0}');
+    expect(actual).toInclude('{margin-left:0}');
   });
 
   it('should transform object with nested object into a selector', () => {
@@ -136,13 +136,13 @@ describe('styled component object literal', () => {
         const ListItem = styled.div({
           ':hover': {
             color: 'blue',
-            margin: 0,
+            marginLeft: 0,
           },
         });
       `);
 
     expect(actual).toInclude(':hover{color:blue}');
-    expect(actual).toInclude(':hover{margin:0}');
+    expect(actual).toInclude(':hover{margin-left:0}');
   });
 
   it('should reference identifier pointing to a call expression if it returns simple value', () => {
@@ -335,7 +335,7 @@ describe('styled component object literal', () => {
       `);
 
     expect(actual).toInclude(`{color:blue}`);
-    expect(actual).toInclude(`{border:1px solid blue}`);
+    expect(actual).toInclude(`{border:1px blue solid}`);
     expect(actual).toInclude(`{font-size:12px}`);
     expect(actual).toInclude(`{font-weight:500}`);
   });
