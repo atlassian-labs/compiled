@@ -17,7 +17,7 @@ describe('text decoration property expander', () => {
 
     expect(result).toMatchInlineSnapshot(`
       "
-            text-decoration-color: currentcolor;
+            text-decoration-color: currentColor;
             text-decoration-line: underline;
             text-decoration-style: solid;
           "
@@ -31,7 +31,7 @@ describe('text decoration property expander', () => {
 
     expect(result).toMatchInlineSnapshot(`
       "
-            text-decoration-color: currentcolor;
+            text-decoration-color: currentColor;
             text-decoration-line: overline underline;
             text-decoration-style: solid;
           "

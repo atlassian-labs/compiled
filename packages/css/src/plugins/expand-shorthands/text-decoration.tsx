@@ -46,7 +46,7 @@ export const textDecoration: ConversionFunction = (value) => {
   const resolvedLineValue = lineValue.length ? lineValue.join(' ') : 'none';
 
   return [
-    { prop: 'text-decoration-color', value: colorValue || 'currentcolor' },
+    { prop: 'text-decoration-color', value: colorValue || 'currentColor' },
     { prop: 'text-decoration-line', value: resolvedLineValue },
     { prop: 'text-decoration-style', value: styleValue || 'solid' },
   ];
