@@ -22,9 +22,7 @@ export const textDecoration: ConversionFunction = (value) => {
   const extractValues = (node: Node): boolean => {
     if (node && node.type === 'word') {
       if (lineValues.includes(node.value)) {
-        if (lineValue.length === 0) {
-          lineValue.push(node.value);
-        } else if (!lineValue.includes(node.value)) {
+        if (lineValue.length === 0 || !lineValue.includes(node.value)) {
           lineValue.push(node.value);
         } else {
           // Invalid, bail out!
@@ -45,11 +43,11 @@ export const textDecoration: ConversionFunction = (value) => {
   }
 
   lineValue.sort(); // Ensure the sorting is always in the same order.
-  const resolvedLineValue = lineValue.length ? lineValue.join(' ') : 'initial';
+  const resolvedLineValue = lineValue.length ? lineValue.join(' ') : 'none';
 
   return [
-    { prop: 'text-decoration-color', value: colorValue || 'initial' },
+    { prop: 'text-decoration-color', value: colorValue || 'currentcolor' },
     { prop: 'text-decoration-line', value: resolvedLineValue },
-    { prop: 'text-decoration-style', value: styleValue || 'initial' },
+    { prop: 'text-decoration-style', value: styleValue || 'solid' },
   ];
 };

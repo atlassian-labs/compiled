@@ -18,7 +18,7 @@ export const flexFlow: ConversionFunction = (value) => {
    *
    * @param node
    */
-  const extactValues = (node: Node): boolean => {
+  const extractValues = (node: Node): boolean => {
     if (node && node.type === 'word') {
       if (directionValues.includes(node.value)) {
         if (directionValue !== '') {
@@ -43,12 +43,12 @@ export const flexFlow: ConversionFunction = (value) => {
     return false;
   };
 
-  if (extactValues(left) || extactValues(right)) {
+  if (extractValues(left) || extractValues(right)) {
     return [];
   }
 
   return [
-    { prop: 'flex-direction', value: directionValue || 'initial' },
-    { prop: 'flex-wrap', value: wrapValue || 'initial' },
+    { prop: 'flex-direction', value: directionValue || 'row' },
+    { prop: 'flex-wrap', value: wrapValue || 'nowrap' },
   ];
 };

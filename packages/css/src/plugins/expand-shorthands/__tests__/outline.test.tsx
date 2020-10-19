@@ -18,8 +18,8 @@ describe('outline property expander', () => {
     expect(result).toMatchInlineSnapshot(`
       "
             outline-color: red;
-            outline-style: initial;
-            outline-width: initial;
+            outline-style: none;
+            outline-width: medium;
           "
     `);
   });
@@ -31,9 +31,9 @@ describe('outline property expander', () => {
 
     expect(result).toMatchInlineSnapshot(`
       "
-            outline-color: initial;
+            outline-color: currentColor;
             outline-style: solid;
-            outline-width: initial;
+            outline-width: medium;
           "
     `);
   });
@@ -45,8 +45,8 @@ describe('outline property expander', () => {
 
     expect(result).toMatchInlineSnapshot(`
       "
-            outline-color: initial;
-            outline-style: initial;
+            outline-color: currentColor;
+            outline-style: none;
             outline-width: 10px;
           "
     `);
@@ -59,8 +59,8 @@ describe('outline property expander', () => {
 
     expect(result).toMatchInlineSnapshot(`
       "
-            outline-color: initial;
-            outline-style: initial;
+            outline-color: currentColor;
+            outline-style: none;
             outline-width: thin;
           "
     `);
@@ -75,7 +75,7 @@ describe('outline property expander', () => {
       "
             outline-color: red;
             outline-style: solid;
-            outline-width: initial;
+            outline-width: medium;
           "
     `);
   });
@@ -89,7 +89,7 @@ describe('outline property expander', () => {
       "
             outline-color: red;
             outline-style: solid;
-            outline-width: initial;
+            outline-width: medium;
           "
     `);
   });

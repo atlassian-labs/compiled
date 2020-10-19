@@ -18,7 +18,7 @@ describe('flex flow property expander', () => {
     expect(result).toMatchInlineSnapshot(`
       "
             flex-direction: column;
-            flex-wrap: initial;
+            flex-wrap: nowrap;
           "
     `);
   });
@@ -30,7 +30,7 @@ describe('flex flow property expander', () => {
 
     expect(result).toMatchInlineSnapshot(`
       "
-            flex-direction: initial;
+            flex-direction: row;
             flex-wrap: wrap;
           "
     `);

@@ -17,9 +17,9 @@ describe('text decoration property expander', () => {
 
     expect(result).toMatchInlineSnapshot(`
       "
-            text-decoration-color: initial;
+            text-decoration-color: currentcolor;
             text-decoration-line: underline;
-            text-decoration-style: initial;
+            text-decoration-style: solid;
           "
     `);
   });
@@ -31,9 +31,9 @@ describe('text decoration property expander', () => {
 
     expect(result).toMatchInlineSnapshot(`
       "
-            text-decoration-color: initial;
+            text-decoration-color: currentcolor;
             text-decoration-line: overline underline;
-            text-decoration-style: initial;
+            text-decoration-style: solid;
           "
     `);
   });
@@ -58,7 +58,7 @@ describe('text decoration property expander', () => {
       "
             text-decoration-color: red;
             text-decoration-line: underline;
-            text-decoration-style: initial;
+            text-decoration-style: solid;
           "
     `);
   });

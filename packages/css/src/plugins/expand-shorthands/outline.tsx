@@ -75,8 +75,8 @@ export const outline: ConversionFunction = (value) => {
   }
 
   return [
-    { prop: 'outline-color', value: colorValue || 'initial' },
-    { prop: 'outline-style', value: styleValue || 'initial' },
-    { prop: 'outline-width', value: widthValue || 'initial' },
+    { prop: 'outline-color', value: colorValue || 'currentColor' },
+    { prop: 'outline-style', value: styleValue || 'none' },
+    { prop: 'outline-width', value: widthValue || 'medium' },
   ];
 };

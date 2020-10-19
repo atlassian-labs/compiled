@@ -123,4 +123,15 @@ describe('flex property expander', () => {
           "
     `);
   });
+
+  it('should remove invalid usage of triple', () => {
+    const result = transform`
+      flex: 1 1 1;
+    `;
+
+    expect(result).toMatchInlineSnapshot(`
+    "
+        "
+  `);
+  });
 });
