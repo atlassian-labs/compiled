@@ -8,6 +8,7 @@ import { minify } from '../plugins/minify';
 import { extractStyleSheets } from '../plugins/extract-stylesheets';
 import { atomicifyRules } from '../plugins/atomicify-rules';
 import { expandShorthands } from '../plugins/expand-shorthands';
+import { sortPseudoClasses } from '../plugins/sort-pseudo-classes';
 
 interface Opts {
   /**
@@ -32,6 +33,7 @@ export const transformCss = (css: string, opts: Opts = { minify: false }) => {
     nested(),
     expandShorthands(),
     atomicifyRules({ callback: (className) => classNames.push(className) }),
+    sortPseudoClasses(),
     autoprefixer(),
     ...(opts.minify ? minify() : [whitespace]),
     extractStyleSheets({ callback: (sheet: string) => sheets.push(sheet) }),
