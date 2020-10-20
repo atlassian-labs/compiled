@@ -3,52 +3,40 @@
  * Thanks everyone who contributed in some form or another.
  */
 import { StyleSheetOpts } from './types';
-
-function getStyleElementSheet(styleElement: HTMLStyleElement): CSSStyleSheet {
-  // @ts-ignore - We assume it will return a sheet so coerce it to CSSStyleSheet.
-  return styleElement.sheet && (styleElement.sheet as CSSStyleSheet);
-}
-
-function createStyleElement(opts: StyleSheetOpts): HTMLStyleElement {
-  const tag = document.createElement('style');
-  opts.nonce && tag.setAttribute('nonce', opts.nonce);
-  tag.appendChild(document.createTextNode(''));
-  return tag;
-}
+import { getBucket } from './buckets';
+import createBucketSheetsCache, { bucketsCache, addBucketToHead } from './cache';
+import { getStyleElementSheet, appendCSSTextNode } from './css-utils';
 
 /**
  * Returns a style sheet object that is used to move styles to the head of the application
  * during runtime.
  *
  * @param opts StyleSheetOpts
+ * @param inserted Singleton cache for tracking what styles have already been added to the head
  */
-export default function createStyleSheet(opts: StyleSheetOpts) {
-  const speedy = process.env.NODE_ENV === 'production',
-    styleElements: HTMLStyleElement[] = [];
-  let tagCount = 0;
+export default function createStyleSheet(opts: StyleSheetOpts, inserted: Record<string, true>) {
+  const speedy = process.env.NODE_ENV === 'production';
+
+  createBucketSheetsCache(opts, inserted);
 
   return (css: string) => {
-    // the max length is how many rules we have per style tag.
-    // 1. it's 65000 in speedy mode
-    // 2. it's 1 in dev because we insert source maps that map a single rule to a location
-    //    and you can only have one source map per style tag
-    if (tagCount % (speedy ? 65000 : 1) === 0) {
-      const newStyleElement = createStyleElement(opts);
-      const elementToInsertBefore =
-        styleElements.length === 0 ? null : styleElements[styleElements.length - 1].nextSibling;
-      document.head.insertBefore(newStyleElement, elementToInsertBefore);
-      styleElements.push(newStyleElement);
+    const bucket = getBucket(css);
+
+    addBucketToHead(bucket);
+
+    if (inserted[css]) {
+      return;
     }
 
     if (speedy) {
-      const sheet = getStyleElementSheet(styleElements[styleElements.length - 1]);
+      const sheet = getStyleElementSheet(bucketsCache[bucket]);
       // this is the ultrafast version, works across browsers
       // the big drawback is that the css won't be editable in devtools in most browsers.
       sheet.insertRule(css, sheet.cssRules.length);
     } else {
-      styleElements[styleElements.length - 1].appendChild(document.createTextNode(css));
+      appendCSSTextNode(bucketsCache[bucket], css);
     }
 
-    tagCount++;
+    inserted[css] = true;
   };
 }

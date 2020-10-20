@@ -4,6 +4,7 @@ import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts } from './types';
 import { useCache } from './provider';
 import { isNodeEnvironment } from './is-node';
+import { buckets, getCompiledAttr, groupByBucket } from './buckets';
 
 interface StyleProps extends StyleSheetOpts {
   /**
@@ -23,24 +24,38 @@ export default function Style(props: StyleProps) {
     props.children.forEach(analyzeCssInDev);
   }
 
-  const rules = props.children.filter((sheet) => {
-    if (inserted[sheet]) {
-      return false;
+  const sheets = props.children;
+
+  if (!sheets.length) {
+    return null;
+  }
+
+  if (isNodeEnvironment()) {
+    const filteredSheets = sheets.filter((sheet) => {
+      if (inserted[sheet]) {
+        return false;
+      }
+
+      inserted[sheet] = true;
+
+      return true;
+    });
+
+    if (filteredSheets.length) {
+      const rulesGroupedByBucket = groupByBucket(filteredSheets);
+
+      return buckets
+        .filter((bucket) => !!rulesGroupedByBucket[bucket])
+        .map((bucket) => (
+          <style key={bucket} {...{ [getCompiledAttr(bucket)]: '' }} nonce={props.nonce}>
+            {rulesGroupedByBucket[bucket]}
+          </style>
+        ));
     }
-
-    inserted[sheet] = true;
-
-    return true;
-  });
-
-  if (rules.length) {
-    if (isNodeEnvironment()) {
-      return <style nonce={props.nonce}>{rules}</style>;
-    } else {
-      // Keep re-assigning over ternary because it's smaller
-      stylesheet = stylesheet || createStyleSheet(props);
-      rules.forEach(stylesheet);
-    }
+  } else {
+    // Keep re-assigning over ternary because it's smaller
+    stylesheet = stylesheet || createStyleSheet(props, inserted);
+    sheets.forEach(stylesheet);
   }
 
   return null;
