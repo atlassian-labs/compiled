@@ -13,7 +13,7 @@ export default declare<State>((api) => {
   api.assertVersion(7);
 
   return {
-    inherits: require('babel-plugin-syntax-jsx'),
+    inherits: require('@babel/plugin-syntax-jsx'),
     pre() {
       this.sheets = {};
 
