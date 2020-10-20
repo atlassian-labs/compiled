@@ -1,7 +1,13 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { styled } from '@compiled/core';
+import { toHaveCompiledCss } from '../matchers';
 import '../index';
+
+// Extend here so we get proper live watching.
+expect.extend({
+  toHaveCompiledCss,
+});
 
 describe('toHaveCompliedCss', () => {
   it('should detect styles', () => {
@@ -158,7 +164,7 @@ describe('toHaveCompliedCss', () => {
       </div>
     );
     const el = getByText('hello world');
-    expect(el).toHaveCompiledCss('background', 'red', { media: 'screen', target: ':hover' });
+    expect(el).toHaveCompiledCss('background-color', 'red', { media: 'screen', target: ':hover' });
   });
 
   it('should match styles with media nested inside class', () => {

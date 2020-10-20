@@ -7,6 +7,7 @@ import { parentOrphanedPseudos } from '../plugins/parent-orphaned-pseudos';
 import { minify } from '../plugins/minify';
 import { extractStyleSheets } from '../plugins/extract-stylesheets';
 import { atomicifyRules } from '../plugins/atomicify-rules';
+import { expandShorthands } from '../plugins/expand-shorthands';
 
 interface Opts {
   /**
@@ -29,6 +30,7 @@ export const transformCss = (css: string, opts: Opts = { minify: false }) => {
   const result = postcss([
     parentOrphanedPseudos(),
     nested(),
+    expandShorthands(),
     atomicifyRules({ callback: (className) => classNames.push(className) }),
     autoprefixer(),
     ...(opts.minify ? minify() : [whitespace]),
