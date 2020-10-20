@@ -11,7 +11,7 @@ describe('ssr-to-style', () => {
     // We can't replicate ssr => client behaviour by setting `isNodeEnvironment`
     // to `true` and then `false`. So instead we are injecting styles and element
     // in body before client starts rendering.
-    document.body.innerHTML = `<style nonce=\\"k0Mp1lEd\\" data-compiled-style=\\"\\">._36l6dlk8{font-size:14px}</style><style nonce=\\"k0Mp1lEd\\" data-compiled-focus=\\"\\">._t5glbf54:focus{color:green}</style><a href=\\"https://atlassian.design\\" class=\\"_36l6dlk8 _t5glbf54\\">Atlassian Design System</a>`;
+    document.body.innerHTML = `<style nonce=\\"k0Mp1lEd\\" data-compiled-style=\\"\\">._36l6dlk8{font-size:14px}</style><style nonce=\\"k0Mp1lEd\\" data-compiled-focus=\\"\\">._t5glbf54:focus{color:green}</style><a href=\\"https://atlassian.design\\" class=\\"_36l6dlk8 _t5glbf54\\">Atlassian Design System</a><style nonce=\\"k0Mp1lEd\\" data-compiled-style=\\"\\">._36l6dlk8{font-size:14px}</style><div class=\\"_36l6dlk8\\">hello world</div>`;
   });
 
   it('should move styles rendered from server to head', () => {

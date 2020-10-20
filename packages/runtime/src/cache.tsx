@@ -38,7 +38,7 @@ function traverseStyleTextNode(
   while (styleNodeChild) {
     const css = styleNodeChild.textContent?.trim();
 
-    if (css) {
+    if (css && !inserted[css]) {
       inserted[css] = true;
 
       appendCSSTextNode(styleElement, css);
