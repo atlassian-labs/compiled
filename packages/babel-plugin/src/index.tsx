@@ -1,6 +1,7 @@
 import { declare } from '@babel/helper-plugin-utils';
 import template from '@babel/template';
 import * as t from '@babel/types';
+import jsxSyntax from '@babel/plugin-syntax-jsx';
 import { importSpecifier } from './utils/ast-builders';
 import { Cache } from './utils/cache';
 import { visitCssPropPath } from './css-prop';
@@ -13,7 +14,7 @@ export default declare<State>((api) => {
   api.assertVersion(7);
 
   return {
-    inherits: require('@babel/plugin-syntax-jsx'),
+    inherits: jsxSyntax,
     pre() {
       this.sheets = {};
 
