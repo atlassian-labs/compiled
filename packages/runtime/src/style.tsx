@@ -41,7 +41,10 @@ export default function Style(props: StyleProps) {
       return buckets
         .filter((bucket) => !!rulesGroupedByBucket[bucket])
         .map((bucket) => (
-          <style key={bucket} {...{ [getCompiledAttr(bucket)]: '' }} nonce={props.nonce}>
+          <style
+            key={bucket}
+            {...(bucket && { [getCompiledAttr(bucket)]: '' })}
+            nonce={props.nonce}>
             {rulesGroupedByBucket[bucket]}
           </style>
         ));

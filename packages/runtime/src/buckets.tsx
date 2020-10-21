@@ -1,63 +1,36 @@
-export type Bucket =
-  | 'style'
-  | 'link'
-  | 'visited'
-  | 'focus-within'
-  | 'focus'
-  | 'focus-visible'
-  | 'hover'
-  | 'active'
-  | 'media';
+export type Bucket = '' | 'l' | 'v' | 'fw' | 'f' | 'fv' | 'h' | 'a' | 'm';
 
-const bucketsMapping: { [key: string]: Bucket } = {
-  style: 'style',
-  link: 'link',
-  visited: 'visited',
-  'focus-within': 'focus-within',
-  focus: 'focus',
-  'focus-visible': 'focus-visible',
-  hover: 'hover',
-  active: 'active',
-  media: 'media',
+export const buckets: Bucket[] = ['', 'l', 'v', 'fw', 'f', 'fv', 'h', 'a', 'm'];
+
+// NOTE: If we are adding/removing anything from this list, Please also update the
+// the list in css package. Going forward we might move this common
+// variable in separate package.
+const pseudosMap: { [key: string]: Exclude<Bucket, '' | 'm'> } = {
+  link: 'l',
+  visited: 'v',
+  'focus-within': 'fw',
+  focus: 'f',
+  'focus-visible': 'fv',
+  hover: 'h',
+  active: 'a',
 };
-
-export const buckets = [
-  bucketsMapping.style,
-  bucketsMapping.link,
-  bucketsMapping.visited,
-  bucketsMapping['focus-within'],
-  bucketsMapping.focus,
-  bucketsMapping['focus-visible'],
-  bucketsMapping.hover,
-  bucketsMapping.active,
-  bucketsMapping.media,
-];
 
 export const getBucket = (sheet: string): Bucket => {
-  if (sheet.startsWith('@media')) {
-    return bucketsMapping.media;
+  if (sheet.charCodeAt(0) === 64) {
+    return 'm';
   }
 
-  const pseudoClassBucketResult = [
-    bucketsMapping.link,
-    bucketsMapping.visited,
-    bucketsMapping['focus-within'],
-    // Bringing 'focus-visible' before 'focus' to make sure it matches first otherwise
-    // substring 'focus' will match even if input is 'focus-visible'
-    bucketsMapping['focus-visible'],
-    bucketsMapping.focus,
-    bucketsMapping.hover,
-    bucketsMapping.active,
-  ].find((pseudoClassBucket) => sheet.includes(`:${pseudoClassBucket}`));
+  if (sheet.charCodeAt(10) === 58) {
+    const openBracketIndex = sheet.indexOf('{');
+    const name = sheet.slice(11, openBracketIndex);
 
-  if (pseudoClassBucketResult) {
-    return pseudoClassBucketResult;
+    return pseudosMap[name] || '';
   }
 
-  return bucketsMapping.style;
+  return '';
 };
 
-export const getCompiledAttr = (bucket: Bucket) => `data-compiled-${bucket}`;
+export const getCompiledAttr = (bucket: Bucket) => `data-c${bucket}`;
 
 export const groupByBucket = <T extends string, U extends T[]>(sheets: U) => {
   return sheets.reduce((accum, sheet) => {

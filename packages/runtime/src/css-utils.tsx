@@ -9,7 +9,7 @@ export function getStyleElementSheet(styleElement: HTMLStyleElement | undefined)
 export function createStyleElement(opts: StyleSheetOpts, bucket: Bucket): HTMLStyleElement {
   const tag = document.createElement('style');
   opts.nonce && tag.setAttribute('nonce', opts.nonce);
-  tag.setAttribute(getCompiledAttr(bucket), '');
+  bucket && tag.setAttribute(getCompiledAttr(bucket), '');
   tag.appendChild(document.createTextNode(''));
   return tag;
 }

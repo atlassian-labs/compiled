@@ -40,7 +40,7 @@ describe('browser', () => {
     );
 
     expect(document.head.innerHTML).toMatchInlineSnapshot(
-      `"<style nonce=\\"k0Mp1lEd\\" data-compiled-style=\\"\\">._1wybdlk8{font-size:14px}</style>"`
+      `"<style nonce=\\"k0Mp1lEd\\">._1wybdlk8{font-size:14px}</style>"`
     );
   });
 
@@ -57,6 +57,14 @@ describe('browser', () => {
       }
       :link {
         color: red;
+      }
+      @supports (display: grid) {
+        :active {
+          color: black;
+        }
+        :focus {
+          color: yellow;
+        }
       }
       :focus {
         color: green;
@@ -77,13 +85,13 @@ describe('browser', () => {
     render(<StyledLink href="https://atlassian.design">Atlassian Design System</StyledLink>);
 
     expect(document.head.innerHTML.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
-      "<style nonce=\\"k0Mp1lEd\\" data-compiled-style=\\"\\">._1e0c1txw{display:flex}._1wyb12am{font-size:50px}._syaz1cnh{color:purple}</style>
-      <style nonce=\\"k0Mp1lEd\\" data-compiled-link=\\"\\">._ysv75scu:link{color:red}</style>
-      <style nonce=\\"k0Mp1lEd\\" data-compiled-visited=\\"\\">._105332ev:visited{color:pink}</style>
-      <style nonce=\\"k0Mp1lEd\\" data-compiled-focus=\\"\\">._f8pjbf54:focus{color:green}</style>
-      <style nonce=\\"k0Mp1lEd\\" data-compiled-hover=\\"\\">._30l31gy6:hover{color:yellow}</style>
-      <style nonce=\\"k0Mp1lEd\\" data-compiled-active=\\"\\">._9h8h13q2:active{color:blue}</style>
-      <style nonce=\\"k0Mp1lEd\\" data-compiled-media=\\"\\">@media (max-width: 800px){._vyxz1gy6:focus{color:yellow}._ojvu11x8:active{color:black}}</style>
+      "<style nonce=\\"k0Mp1lEd\\">._1e0c1txw{display:flex}._1wyb12am{font-size:50px}._syaz1cnh{color:purple}</style>
+      <style nonce=\\"k0Mp1lEd\\" data-cl=\\"\\">._ysv75scu:link{color:red}</style>
+      <style nonce=\\"k0Mp1lEd\\" data-cv=\\"\\">._105332ev:visited{color:pink}</style>
+      <style nonce=\\"k0Mp1lEd\\" data-cf=\\"\\">._f8pjbf54:focus{color:green}</style>
+      <style nonce=\\"k0Mp1lEd\\" data-ch=\\"\\">._30l31gy6:hover{color:yellow}</style>
+      <style nonce=\\"k0Mp1lEd\\" data-ca=\\"\\">._9h8h13q2:active{color:blue}</style>
+      <style nonce=\\"k0Mp1lEd\\" data-cm=\\"\\">@supports (display: grid){._qxnw1gy6:focus{color:yellow}._p7tw11x8:active{color:black}}@media (max-width: 800px){._vyxz1gy6:focus{color:yellow}._ojvu11x8:active{color:black}}</style>
       "
     `);
   });
