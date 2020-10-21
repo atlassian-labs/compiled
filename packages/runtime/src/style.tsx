@@ -4,7 +4,7 @@ import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts } from './types';
 import { useCache } from './provider';
 import { isNodeEnvironment } from './is-node';
-import { buckets, getCompiledAttr, groupByBucket } from './buckets';
+import { buckets, getCompiledAttr, groupByBucket } from './buckets-utils';
 
 interface StyleProps extends StyleSheetOpts {
   /**

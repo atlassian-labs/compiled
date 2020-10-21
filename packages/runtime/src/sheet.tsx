@@ -3,7 +3,7 @@
  * Thanks everyone who contributed in some form or another.
  */
 import { StyleSheetOpts } from './types';
-import { getBucket } from './buckets';
+import { getBucket } from './buckets-utils';
 import createBucketSheetsCache, { bucketsCache, addBucketToHead } from './buckets-cache';
 import { getStyleElementSheet, appendCSSTextNode } from './css-utils';
 

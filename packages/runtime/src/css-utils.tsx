@@ -1,5 +1,5 @@
 import { StyleSheetOpts } from './types';
-import { Bucket, getCompiledAttr } from './buckets';
+import { Bucket, getCompiledAttr } from './buckets-utils';
 
 export function getStyleElementSheet(styleElement: HTMLStyleElement | undefined): CSSStyleSheet {
   // @ts-ignore - We assume it will return a sheet so coerce it to CSSStyleSheet.
