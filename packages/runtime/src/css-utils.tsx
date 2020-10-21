@@ -14,6 +14,6 @@ export function createStyleElement(opts: StyleSheetOpts, bucket: Bucket): HTMLSt
   return tag;
 }
 
-export function appendCSSTextNode(styleElement: HTMLStyleElement | undefined, css: string | null) {
-  styleElement && styleElement.appendChild(document.createTextNode(css || ''));
+export function appendCSSTextNode(styleElement: HTMLStyleElement | undefined, css: string) {
+  styleElement && styleElement.appendChild(document.createTextNode(css));
 }

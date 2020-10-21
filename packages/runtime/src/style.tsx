@@ -24,25 +24,19 @@ export default function Style(props: StyleProps) {
     props.children.forEach(analyzeCssInDev);
   }
 
-  const sheets = props.children;
+  const sheets = props.children.filter((sheet) => {
+    if (inserted[sheet]) {
+      return false;
+    }
 
-  if (!sheets.length) {
-    return null;
-  }
+    inserted[sheet] = true;
 
-  if (isNodeEnvironment()) {
-    const filteredSheets = sheets.filter((sheet) => {
-      if (inserted[sheet]) {
-        return false;
-      }
+    return true;
+  });
 
-      inserted[sheet] = true;
-
-      return true;
-    });
-
-    if (filteredSheets.length) {
-      const rulesGroupedByBucket = groupByBucket(filteredSheets);
+  if (sheets.length) {
+    if (isNodeEnvironment()) {
+      const rulesGroupedByBucket = groupByBucket(sheets);
 
       return buckets
         .filter((bucket) => !!rulesGroupedByBucket[bucket])
@@ -51,11 +45,11 @@ export default function Style(props: StyleProps) {
             {rulesGroupedByBucket[bucket]}
           </style>
         ));
+    } else {
+      // Keep re-assigning over ternary because it's smaller
+      stylesheet = stylesheet || createStyleSheet(props);
+      sheets.forEach(stylesheet);
     }
-  } else {
-    // Keep re-assigning over ternary because it's smaller
-    stylesheet = stylesheet || createStyleSheet(props, inserted);
-    sheets.forEach(stylesheet);
   }
 
   return null;

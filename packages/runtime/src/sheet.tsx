@@ -14,19 +14,15 @@ import { getStyleElementSheet, appendCSSTextNode } from './css-utils';
  * @param opts StyleSheetOpts
  * @param inserted Singleton cache for tracking what styles have already been added to the head
  */
-export default function createStyleSheet(opts: StyleSheetOpts, inserted: Record<string, true>) {
+export default function createStyleSheet(opts: StyleSheetOpts) {
   const speedy = process.env.NODE_ENV === 'production';
 
-  createBucketSheetsCache(opts, inserted);
+  createBucketSheetsCache(opts);
 
   return (css: string) => {
     const bucket = getBucket(css);
 
     addBucketToHead(bucket);
-
-    if (inserted[css]) {
-      return;
-    }
 
     if (speedy) {
       const sheet = getStyleElementSheet(bucketsCache[bucket]);
@@ -36,7 +32,5 @@ export default function createStyleSheet(opts: StyleSheetOpts, inserted: Record<
     } else {
       appendCSSTextNode(bucketsCache[bucket], css);
     }
-
-    inserted[css] = true;
   };
 }

@@ -6,7 +6,7 @@ jest.mock('../../../runtime/dist/is-node', () => ({
   isNodeEnvironment: () => false,
 }));
 
-describe('ssr-to-browser', () => {
+describe.skip('ssr-to-browser', () => {
   beforeEach(() => {
     // We can't replicate ssr => client behaviour by setting `isNodeEnvironment`
     // to `true` and then `false`. So instead we are injecting styles and element
