@@ -1,5 +1,8 @@
 import { plugin, Rule, AtRule } from 'postcss';
 
+// NOTE: If we are adding/removing anything from this list, Please also update the
+// the list in runtime package. Going forward we might move this common
+// variable in separate package.
 const pseudoClassesInOrder = [
   ':link',
   ':visited',
@@ -18,13 +21,13 @@ const getPseudoClassScore = (selector: string) => {
   return index + 1;
 };
 
-const sortPseudoClassesInsideAtRule = (atRule: AtRule) => {
+const sortPseudoClasses = (atRule: AtRule) => {
   const rules: Array<Rule> = [];
 
   atRule.each((childNode) => {
     switch (childNode.type) {
       case 'atrule':
-        sortPseudoClassesInsideAtRule(childNode);
+        sortPseudoClasses(childNode);
         break;
 
       case 'rule':
@@ -47,14 +50,14 @@ const sortPseudoClassesInsideAtRule = (atRule: AtRule) => {
 };
 
 /**
- * PostCSS plugin for sorting rules based on lvfha rule.
+ * PostCSS plugin for sorting rules inside AtRules based on lvfha ordering.
  */
-export const sortPseudoClasses = plugin('sort-pseudo-classes', () => {
+export const sortPseudosInAtRules = plugin('sort-pseudo-in-at-rules', () => {
   return (root) => {
     root.each((node) => {
       switch (node.type) {
         case 'atrule':
-          sortPseudoClassesInsideAtRule(node);
+          sortPseudoClasses(node);
           break;
 
         default:

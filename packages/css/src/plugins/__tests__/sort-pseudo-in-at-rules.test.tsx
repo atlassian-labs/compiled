@@ -2,10 +2,10 @@ import postcss from 'postcss';
 import whitespace from 'postcss-normalize-whitespace';
 import autoprefixer from 'autoprefixer';
 import { atomicifyRules } from '../atomicify-rules';
-import { sortPseudoClasses } from '../sort-pseudo-classes';
+import { sortPseudosInAtRules } from '../sort-pseudo-in-at-rules';
 
 const transform = (opts = { withAtomicClasses: true }) => (css: TemplateStringsArray) => {
-  const plugins = [sortPseudoClasses(), whitespace, autoprefixer];
+  const plugins = [sortPseudosInAtRules(), whitespace, autoprefixer];
 
   if (opts.withAtomicClasses) {
     plugins.unshift(atomicifyRules());
@@ -18,7 +18,7 @@ const transform = (opts = { withAtomicClasses: true }) => (css: TemplateStringsA
   return result.css;
 };
 
-describe('#sortPseudoClasses', () => {
+describe('#sortPseudosInAtRules', () => {
   beforeEach(() => {
     process.env.BROWSERSLIST = 'last 1 version';
   });
