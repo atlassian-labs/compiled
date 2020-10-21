@@ -15,13 +15,11 @@ export function addBucketToHead(bucket: Bucket) {
     for (let i = bucketIndex + 1; i < buckets.length; i++) {
       const nextBucket = buckets[i];
 
-      nextBucketFromCache = bucketsCache[nextBucket] as HTMLStyleElement;
-
       if (bucketsAddedToHead[nextBucket]) {
+        nextBucketFromCache = bucketsCache[nextBucket] as HTMLStyleElement;
+
         break;
       }
-
-      nextBucketFromCache = null;
     }
 
     document.head.insertBefore(bucketsCache[bucket] as HTMLStyleElement, nextBucketFromCache);

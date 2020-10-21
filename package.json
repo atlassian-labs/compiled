@@ -85,7 +85,7 @@
     },
     {
       "path": "./packages/runtime/dist/browser/index.js",
-      "limit": "535B",
+      "limit": "533B",
       "import": "{ CC, CS }",
       "ignore": [
         "react"
