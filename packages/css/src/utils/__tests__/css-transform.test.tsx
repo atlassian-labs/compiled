@@ -13,7 +13,7 @@ describe('leading pseduos in css', () => {
     expect(actual.join('\n')).toMatchInlineSnapshot(`"._t5gl1q9v:focus{color:hotpink}"`);
   });
 
-  it('should double up selectors when using parent selector', () => {
+  it('should not reparent when parent has a combinator', () => {
     const { sheets: actual } = transformCss(
       `
       && > * {
