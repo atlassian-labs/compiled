@@ -151,7 +151,7 @@ describe('leading pseduos in css', () => {
     `
     );
 
-    expect(actual.join('\n')).toMatchInlineSnapshot(`"._12t41q9v >:first-child{color:hotpink}"`);
+    expect(actual.join('\n')).toMatchInlineSnapshot(`"._gkte1q9v > :first-child{color:hotpink}"`);
   });
 
   it('should not affect the output css if theres nothing to do', () => {
