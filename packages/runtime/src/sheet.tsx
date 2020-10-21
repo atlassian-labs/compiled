@@ -4,7 +4,7 @@
  */
 import { StyleSheetOpts } from './types';
 import { getBucket } from './buckets';
-import createBucketSheetsCache, { bucketsCache, addBucketToHead } from './bucket-cache';
+import createBucketSheetsCache, { bucketsCache, addBucketToHead } from './buckets-cache';
 import { getStyleElementSheet, appendCSSTextNode } from './css-utils';
 
 /**
