@@ -200,6 +200,24 @@ describe('atomicify rules', () => {
     expect(secondActual).toEqual(expected);
   });
 
+  it('should double up selectors when using parent selector', () => {
+    const actual = transform`
+      && > * {
+        margin-bottom: 1rem;
+      }
+
+      && > *:last-child {
+        margin-bottom: 0;
+      }
+    `;
+
+    expect(actual.split('}').join('}\n')).toMatchInlineSnapshot(`
+      "._14rh1j6v._14rh1j6v > *{margin-bottom:1rem}
+      ._it8pidpf._it8pidpf > *:last-child{margin-bottom:0}
+      "
+    `);
+  });
+
   it('should atomicify a rule when its selector has a nesting at the end', () => {
     const actual = transform`
       :first-child & {

@@ -13,6 +13,25 @@ describe('leading pseduos in css', () => {
     expect(actual.join('\n')).toMatchInlineSnapshot(`"._t5gl1q9v:focus{color:hotpink}"`);
   });
 
+  it('should double up selectors when using parent selector', () => {
+    const { sheets: actual } = transformCss(
+      `
+      && > * {
+        margin-bottom: 1rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    `
+    );
+
+    expect(actual.join('\n')).toMatchInlineSnapshot(`
+      "._14rh1j6v._14rh1j6v > *{margin-bottom:1rem}
+      ._it8pidpf._it8pidpf > *:last-child{margin-bottom:0}"
+    `);
+  });
+
   it('should parent multiple pseduos in a group', () => {
     const { sheets: actual } = transformCss(
       `

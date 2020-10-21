@@ -36,6 +36,11 @@ export const parentOrphanedPseudos = plugin('parent-orphened-pseudos', () => {
         return;
       }
 
+      if (rule.parent.type === 'rule' && rule.parent.selector.includes('>')) {
+        // Skip reparenting if the direct parent is a combinator.
+        return;
+      }
+
       const selectorParserRoot = selectorParser((selectors) => {
         selectors.walkPseudos((selector) => {
           if (isPreviousSelectorCombinatorType(selector)) {
