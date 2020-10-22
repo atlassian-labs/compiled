@@ -69,7 +69,7 @@ const normalizeSelector = (selector: string | undefined) => {
  * @param parentClassName
  */
 const replaceNestingSelector = (selector: string, parentClassName: string) => {
-  return selector.replace(/ &/g, ` .${parentClassName}`);
+  return selector.replace(/&/g, `.${parentClassName}`);
 };
 
 /**

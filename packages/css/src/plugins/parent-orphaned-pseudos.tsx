@@ -32,7 +32,7 @@ export const parentOrphanedPseudos = plugin('parent-orphened-pseudos', () => {
     root.walkRules((rule) => {
       const { selector: ruleSelector } = rule;
 
-      if (!ruleSelector.includes(':')) {
+      if (!ruleSelector.startsWith(':')) {
         return;
       }
 

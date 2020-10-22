@@ -13,6 +13,25 @@ describe('leading pseduos in css', () => {
     expect(actual.join('\n')).toMatchInlineSnapshot(`"._t5gl1q9v:focus{color:hotpink}"`);
   });
 
+  it('should not reparent when parent has a combinator', () => {
+    const { sheets: actual } = transformCss(
+      `
+      && > * {
+        margin-bottom: 1rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    `
+    );
+
+    expect(actual.join('\n')).toMatchInlineSnapshot(`
+      "._14rh1j6v._14rh1j6v > *{margin-bottom:1rem}
+      ._it8pidpf._it8pidpf > *:last-child{margin-bottom:0}"
+    `);
+  });
+
   it('should parent multiple pseduos in a group', () => {
     const { sheets: actual } = transformCss(
       `
@@ -132,7 +151,7 @@ describe('leading pseduos in css', () => {
     `
     );
 
-    expect(actual.join('\n')).toMatchInlineSnapshot(`"._12t41q9v >:first-child{color:hotpink}"`);
+    expect(actual.join('\n')).toMatchInlineSnapshot(`"._gkte1q9v > :first-child{color:hotpink}"`);
   });
 
   it('should not affect the output css if theres nothing to do', () => {
