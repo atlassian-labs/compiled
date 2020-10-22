@@ -1,4 +1,4 @@
-export type Bucket = '' | 'l' | 'v' | 'fw' | 'f' | 'fv' | 'h' | 'a' | 'm';
+import { Bucket } from './types';
 
 export const buckets: Bucket[] = ['', 'l', 'v', 'fw', 'f', 'fv', 'h', 'a', 'm'];
 
@@ -23,21 +23,22 @@ export const getBucket = (sheet: string): Bucket => {
   if (sheet.charCodeAt(10) === 58) {
     const openBracketIndex = sheet.indexOf('{');
     const name = sheet.slice(11, openBracketIndex);
+    const pseudoBucket = pseudosMap[name];
 
-    return pseudosMap[name] || '';
+    if (pseudoBucket) {
+      return pseudoBucket;
+    }
   }
 
   return '';
 };
-
-export const getCompiledAttr = (bucket: Bucket) => `data-c${bucket}`;
 
 export const groupByBucket = <T extends string, U extends T[]>(sheets: U) => {
   return sheets.reduce((accum, sheet) => {
     const bucket = getBucket(sheet);
     const bucketValue = accum[bucket];
 
-    accum[bucket] = bucketValue ? [...bucketValue, sheet] : [sheet];
+    accum[bucket] = bucketValue ? bucketValue.concat(sheet) : [sheet];
 
     return accum;
   }, {} as { [bucket in Bucket]: T[] });

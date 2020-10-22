@@ -4,7 +4,7 @@ import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts } from './types';
 import { useCache } from './provider';
 import { isNodeEnvironment } from './is-node';
-import { buckets, getCompiledAttr, groupByBucket } from './buckets-utils';
+import { buckets, groupByBucket } from './buckets-utils';
 
 interface StyleProps extends StyleSheetOpts {
   /**
@@ -41,10 +41,7 @@ export default function Style(props: StyleProps) {
       return buckets
         .filter((bucket) => !!sheetsGroupedByBucket[bucket])
         .map((bucket) => (
-          <style
-            key={bucket}
-            {...(bucket && { [getCompiledAttr(bucket)]: '' })}
-            nonce={props.nonce}>
+          <style key={bucket} data-c={bucket || undefined} nonce={props.nonce}>
             {sheetsGroupedByBucket[bucket]}
           </style>
         ));

@@ -1,5 +1,4 @@
-import { StyleSheetOpts } from './types';
-import { Bucket, getCompiledAttr } from './buckets-utils';
+import { StyleSheetOpts, Bucket } from './types';
 
 export function getStyleElementSheet(styleElement: HTMLStyleElement | undefined): CSSStyleSheet {
   // @ts-ignore - We assume it will return a sheet so coerce it to CSSStyleSheet.
@@ -9,7 +8,7 @@ export function getStyleElementSheet(styleElement: HTMLStyleElement | undefined)
 export function createStyleElement(opts: StyleSheetOpts, bucket: Bucket): HTMLStyleElement {
   const tag = document.createElement('style');
   opts.nonce && tag.setAttribute('nonce', opts.nonce);
-  bucket && tag.setAttribute(getCompiledAttr(bucket), '');
+  bucket && tag.setAttribute('data-c', bucket);
   tag.appendChild(document.createTextNode(''));
   return tag;
 }

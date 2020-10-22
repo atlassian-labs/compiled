@@ -1,5 +1,5 @@
-import { StyleSheetOpts } from './types';
-import { Bucket, buckets } from './buckets-utils';
+import { StyleSheetOpts, Bucket } from './types';
+import { buckets } from './buckets-utils';
 import { createStyleElement } from './css-utils';
 
 export const bucketsCache: Partial<Record<Bucket, HTMLStyleElement>> = {};

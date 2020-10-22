@@ -6,3 +6,5 @@ export interface StyleSheetOpts {
    */
   nonce?: string;
 }
+
+export type Bucket = '' | 'l' | 'v' | 'fw' | 'f' | 'fv' | 'h' | 'a' | 'm';
