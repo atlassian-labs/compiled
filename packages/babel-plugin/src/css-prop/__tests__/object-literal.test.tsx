@@ -522,10 +522,10 @@ describe('css prop object literal', () => {
       `);
 
     expect(actual).toInclude('style={{"--var-1xlms2h":HORIZONTAL_SPACING}}');
-    expect(actual).toInclude('._1cheidpf{padding-top:0}');
-    expect(actual).toInclude('._11vjrjbm{padding-right:var(--var-1xlms2h)}');
-    expect(actual).toInclude('._1ed7idpf{padding-bottom:0}');
-    expect(actual).toInclude('._nkoarjbm{padding-left:var(--var-1xlms2h)}');
+    expect(actual).toInclude('{padding-top:0}');
+    expect(actual).toInclude('{padding-right:var(--var-1xlms2h)}');
+    expect(actual).toInclude('{padding-bottom:0}');
+    expect(actual).toInclude('{padding-left:var(--var-1xlms2h)}');
   });
 
   it('should parse an inline string interpolation delimited by multiple spaces', () => {
@@ -542,10 +542,10 @@ describe('css prop object literal', () => {
          }}>hello world</div>
       `);
 
-    expect(actual).toInclude('._1cheidpf{padding-top:0}');
-    expect(actual).toInclude('._11vjrjbm{padding-right:var(--var-1xlms2h)}');
-    expect(actual).toInclude('._1ed7idpf{padding-bottom:0}');
-    expect(actual).toInclude('._nkoaidpf{padding-left:0}');
+    expect(actual).toInclude('{padding-top:0}');
+    expect(actual).toInclude('{padding-right:var(--var-1xlms2h)}');
+    expect(actual).toInclude('{padding-bottom:0}');
+    expect(actual).toInclude('{padding-left:0}');
     expect(actual).toInclude('style={{"--var-1xlms2h":HORIZONTAL_SPACING}}');
   });
 
@@ -563,11 +563,11 @@ describe('css prop object literal', () => {
          }}>hello world</div>
       `);
 
-    expect(actual).toInclude('._1cheidpf{padding-top:0}');
-    expect(actual).toInclude('._11vjftgi{padding-right:8px}');
-    expect(actual).toInclude('._1ed7idpf{padding-bottom:0}');
-    expect(actual).toInclude('._nkoaidpf{padding-left:0}');
-    expect(actual).toInclude('._1doq5scu{color:red}');
+    expect(actual).toInclude('{padding-top:0}');
+    expect(actual).toInclude('{padding-right:8px}');
+    expect(actual).toInclude('{padding-bottom:0}');
+    expect(actual).toInclude('{padding-left:0}');
+    expect(actual).toInclude('{color:red}');
   });
 
   it('should parse an inline string interpolation delimited by multiple spaces and multiple suffix', () => {
@@ -584,11 +584,11 @@ describe('css prop object literal', () => {
          }}>hello world</div>
       `);
 
-    expect(actual).toInclude('._1cheftgi{padding-top:8px}');
-    expect(actual).toInclude('._11vjftgi{padding-right:8px}');
-    expect(actual).toInclude('._1ed7ftgi{padding-bottom:8px}');
-    expect(actual).toInclude('._nkoaftgi{padding-left:8px}');
-    expect(actual).toInclude('._1doq5scu{color:red}');
+    expect(actual).toInclude('{padding-top:8px}');
+    expect(actual).toInclude('{padding-right:8px}');
+    expect(actual).toInclude('{padding-bottom:8px}');
+    expect(actual).toInclude('{padding-left:8px}');
+    expect(actual).toInclude('{color:red}');
   });
 
   it('should do nothing when content already has single quotes', () => {

@@ -15,12 +15,6 @@ const prependNestingTypeToSelector = (selector: selectorParser.Node) => {
   }
 };
 
-const stringifySelectorParserRoot = (parserRoot: selectorParser.Root) => {
-  return parserRoot
-    .reduce<string[]>((memo, selector) => [...memo, String(selector)], [])
-    .join(',\n');
-};
-
 /**
  * Parent orphened pseudos PostCSS plugin.
  * This plugin will move child nested orphened pseudos to the parent declaration.
@@ -30,23 +24,25 @@ const stringifySelectorParserRoot = (parserRoot: selectorParser.Root) => {
 export const parentOrphanedPseudos = plugin('parent-orphened-pseudos', () => {
   return (root) => {
     root.walkRules((rule) => {
-      const { selector: ruleSelector } = rule;
+      const { selectors } = rule;
 
-      if (!ruleSelector.startsWith(':')) {
-        return;
-      }
+      rule.selectors = selectors.map((selector) => {
+        if (!selector.startsWith(':')) {
+          return selector;
+        }
 
-      const selectorParserRoot = selectorParser((selectors) => {
-        selectors.walkPseudos((selector) => {
-          if (isPreviousSelectorCombinatorType(selector)) {
-            return;
-          }
+        const parser = selectorParser((root) => {
+          root.walkPseudos((pseudoSelector) => {
+            if (isPreviousSelectorCombinatorType(pseudoSelector)) {
+              return;
+            }
 
-          prependNestingTypeToSelector(selector);
-        });
-      }).astSync(ruleSelector, { lossless: false });
+            prependNestingTypeToSelector(pseudoSelector);
+          });
+        }).astSync(selector, { lossless: false });
 
-      rule.selector = stringifySelectorParserRoot(selectorParserRoot);
+        return parser.toString();
+      });
     });
   };
 });

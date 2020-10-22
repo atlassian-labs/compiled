@@ -85,4 +85,68 @@ describe('parent orphaned pseudos', () => {
           "
     `);
   });
+
+  it('should add nesting selector to dangling pseudo that has a appended nesting selector', () => {
+    const actual = transform`
+      :first-child & {
+        color: hotpink;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+            &:first-child & {
+              color: hotpink;
+            }
+          "
+    `);
+  });
+
+  it('should do nothing when a nesting selector is appended to selector', () => {
+    const actual = transform`
+      [data-look='h100']& {
+        display: block;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+            [data-look='h100']& {
+              display: block;
+            }
+          "
+    `);
+  });
+
+  it('should prepend nesting selector to multiple selector groups', () => {
+    const actual = transform`
+      :hover, :active {
+        display: block;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+            &:hover, &:active {
+              display: block;
+            }
+          "
+    `);
+  });
+
+  it('should prepend nesting selector to multiple selector groups', () => {
+    const actual = transform`
+      div, :active {
+        display: block;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+            div, &:active {
+              display: block;
+            }
+          "
+    `);
+  });
 });

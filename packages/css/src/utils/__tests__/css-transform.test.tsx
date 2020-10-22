@@ -10,7 +10,7 @@ describe('leading pseduos in css', () => {
     `
     );
 
-    expect(actual.join('\n')).toMatchInlineSnapshot(`"._t5gl1q9v:focus{color:hotpink}"`);
+    expect(actual.join('\n')).toMatchInlineSnapshot(`"._f8pj1q9v:focus{color:hotpink}"`);
   });
 
   it('should not reparent when parent has a combinator', () => {
@@ -27,8 +27,8 @@ describe('leading pseduos in css', () => {
     );
 
     expect(actual.join('\n')).toMatchInlineSnapshot(`
-      "._14rh1j6v._14rh1j6v > *{margin-bottom:1rem}
-      ._it8pidpf._it8pidpf > *:last-child{margin-bottom:0}"
+      "._169r1j6v._169r1j6v > *{margin-bottom:1rem}
+      ._1wzbidpf._1wzbidpf > *:last-child{margin-bottom:0}"
     `);
   });
 
@@ -43,7 +43,7 @@ describe('leading pseduos in css', () => {
     );
 
     expect(actual.join('\n')).toMatchInlineSnapshot(
-      `"._g1wc1q9v:hover div, ._t5gl1q9v:focus{color:hotpink}"`
+      `"._1sfm1q9v:hover div, ._f8pj1q9v:focus{color:hotpink}"`
     );
   });
 
@@ -64,18 +64,18 @@ describe('leading pseduos in css', () => {
     );
 
     expect(actual.join('\n').split(',').join(',\n')).toMatchInlineSnapshot(`
-      "._774z1q9v .foo:first-child,
-       ._1uu81q9v .foo div,
-       ._1t8r1q9v .foo span,
-       ._bucf1q9v .foo:last-child,
-       ._1j3t1q9v .bar div:first-child,
-       ._1dnx1q9v .bar div div,
-       ._t68y1q9v .bar div span,
-       ._3gpd1q9v .bar div:last-child,
-       ._9hpv1q9v .qwe:first-child,
-       ._uu4h1q9v .qwe div,
-       ._1u2l1q9v .qwe span,
-       ._11e01q9v .qwe:last-child{color:hotpink}"
+      "._t7rc1q9v .foo:first-child,
+       ._ppxs1q9v .foo div,
+       ._1fa31q9v .foo span,
+       ._1pdx1q9v .foo:last-child,
+       ._1sbr1q9v .bar div:first-child,
+       ._kq2v1q9v .bar div div,
+       ._11eb1q9v .bar div span,
+       ._15h31q9v .bar div:last-child,
+       ._1g8a1q9v .qwe:first-child,
+       ._1z9o1q9v .qwe div,
+       ._1qid1q9v .qwe span,
+       ._1j9g1q9v .qwe:last-child{color:hotpink}"
     `);
   });
 
@@ -88,7 +88,7 @@ describe('leading pseduos in css', () => {
     `
     );
 
-    expect(actual.join('\n')).toMatchInlineSnapshot(`"._19mq1q9v:nth-child(3){color:hotpink}"`);
+    expect(actual.join('\n')).toMatchInlineSnapshot(`"._2pem1q9v:nth-child(3){color:hotpink}"`);
   });
 
   it('should parent overlapping psuedos', () => {
@@ -103,7 +103,7 @@ describe('leading pseduos in css', () => {
     );
 
     expect(actual.join('\n')).toMatchInlineSnapshot(
-      `"._v39b1q9v :first-child:first-child{color:hotpink}"`
+      `"._1kys1q9v :first-child:first-child{color:hotpink}"`
     );
   });
 
@@ -119,7 +119,7 @@ describe('leading pseduos in css', () => {
     );
 
     expect(actual.join('\n')).toMatchInlineSnapshot(
-      `"._1aks1q9v :first-child:first-child ._1aks1q9v :first-child{color:hotpink}"`
+      `"._99g41q9v :first-child:first-child ._99g41q9v :first-child{color:hotpink}"`
     );
   });
 
@@ -138,7 +138,7 @@ describe('leading pseduos in css', () => {
     );
 
     expect(actual.join('\n')).toMatchInlineSnapshot(
-      `"@media (max-width: 400px){@supports (display: grid){._1bnp1q9v div, ._zqtk1q9v:first-child{color:hotpink}}}"`
+      `"@media (max-width: 400px){@supports (display: grid){._1vye1q9v div, ._18e01q9v:first-child{color:hotpink}}}"`
     );
   });
 
@@ -151,7 +151,7 @@ describe('leading pseduos in css', () => {
     `
     );
 
-    expect(actual.join('\n')).toMatchInlineSnapshot(`"._gkte1q9v > :first-child{color:hotpink}"`);
+    expect(actual.join('\n')).toMatchInlineSnapshot(`"._19601q9v > :first-child{color:hotpink}"`);
   });
 
   it('should not affect the output css if theres nothing to do', () => {
@@ -163,7 +163,7 @@ describe('leading pseduos in css', () => {
     `
     );
 
-    expect(actual.join('\n')).toMatchInlineSnapshot(`"._k2hc1q9v div{color:hotpink}"`);
+    expect(actual.join('\n')).toMatchInlineSnapshot(`"._65g01q9v div{color:hotpink}"`);
   });
 
   it('should ignore parsing a data attribute selector with a comma in it', () => {
@@ -176,7 +176,7 @@ describe('leading pseduos in css', () => {
     );
 
     expect(actual.join('\n')).toMatchInlineSnapshot(
-      `"._1j3i1q9v [data-foo=\\",\\"]{color:hotpink}"`
+      `"._qofj1q9v [data-foo=\\",\\"]{color:hotpink}"`
     );
   });
 
@@ -196,11 +196,11 @@ describe('leading pseduos in css', () => {
     );
 
     expect(actual.join('\n')).toMatchInlineSnapshot(`
-      "._1rvbh2mm{position:relative}
-      ._v8ua1dk0{text-transform:capitalize}
-      ._ehmw16l8:after{content:\\"›\\"}
-      ._1a4astnw:after{position:absolute}
-      ._og13lgv5:after{right:-2rem}"
+      "._kqswh2mm{position:relative}
+      ._1p1d1dk0{text-transform:capitalize}
+      ._aetr16l8:after{content:\\"›\\"}
+      ._18postnw:after{position:absolute}
+      ._32rxlgv5:after{right:-2rem}"
     `);
   });
 
@@ -220,11 +220,11 @@ describe('leading pseduos in css', () => {
 
     expect(classNames).toMatchInlineSnapshot(`
       Array [
-        "_1rvbh2mm",
-        "_v8ua1dk0",
-        "_ehmw16l8",
-        "_1a4astnw",
-        "_og13lgv5",
+        "_kqswh2mm",
+        "_1p1d1dk0",
+        "_aetr16l8",
+        "_18postnw",
+        "_32rxlgv5",
       ]
     `);
   });
@@ -244,7 +244,7 @@ describe('leading pseduos in css', () => {
         `
       );
       expect(actual.join('')).toMatchInlineSnapshot(
-        `"._1qcvglyw div{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}"`
+        `"._2a8pglyw div{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}"`
       );
     });
 
@@ -258,7 +258,7 @@ describe('leading pseduos in css', () => {
         `
       );
       expect(actual.join('')).toMatchInlineSnapshot(
-        `"._1qcvglyw div{-ms-user-select:none;user-select:none}"`
+        `"._2a8pglyw div{-ms-user-select:none;user-select:none}"`
       );
     });
 
@@ -271,7 +271,7 @@ describe('leading pseduos in css', () => {
         }
         `
       );
-      expect(actual.join('')).toMatchInlineSnapshot(`"._1qcvglyw div{user-select:none}"`);
+      expect(actual.join('')).toMatchInlineSnapshot(`"._2a8pglyw div{user-select:none}"`);
     });
 
     it('should generate ms prefixes for grid', () => {
@@ -284,7 +284,7 @@ describe('leading pseduos in css', () => {
         `
       );
       expect(actual.join('')).toMatchInlineSnapshot(
-        `"._fz6y11p5 div{display:-ms-grid;display:grid}"`
+        `"._tkqh11p5 div{display:-ms-grid;display:grid}"`
       );
     });
   });

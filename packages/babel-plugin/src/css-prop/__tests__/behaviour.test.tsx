@@ -133,7 +133,7 @@ describe('css prop behaviour', () => {
       />
     `);
 
-    expect(actual).toInclude('<div{...props}className={ax(["_36l6gktf"])}/>');
+    expect(actual).toInclude('<div{...props}className={ax(["_1wybgktf"])}/>');
   });
 
   it('should pass through static props', () => {
@@ -149,7 +149,7 @@ describe('css prop behaviour', () => {
       />
     `);
 
-    expect(actual).toInclude('<div role="menu"className={ax(["_36l6gktf"])}/>');
+    expect(actual).toInclude('<div role="menu"className={ax(["_1wybgktf"])}/>');
   });
 
   it('should concat explicit use of class name prop from an identifier on an element', () => {
@@ -175,8 +175,8 @@ describe('css prop behaviour', () => {
       <div css={[base, top]}>hello world</div>
     `);
 
-    expect(actual).toInclude('._1doq11x8{color:black}');
-    expect(actual).toInclude('._1doq5scu{color:red}');
+    expect(actual).toInclude('{color:black}');
+    expect(actual).toInclude('{color:red}');
   });
 
   it('should persist static style prop', () => {
@@ -189,7 +189,7 @@ describe('css prop behaviour', () => {
 
     expect(actual).toInclude(`{color:blue}`);
     expect(actual).toInclude(
-      `<div style={{display:'block'}}className={ax([\"_1doq13q2\"])}>hello world</div>`
+      `<div style={{display:'block'}}className={ax([\"_syaz13q2\"])}>hello world</div>`
     );
   });
 
