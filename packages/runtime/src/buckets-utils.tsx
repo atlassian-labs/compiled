@@ -31,11 +31,13 @@ export const getBucket = (sheet: string): Bucket => {
   }
 
   // `58` corresponds to `:`. Here we are assuming that classname will always be
-  // 9 character long. After getting pseudo class between `:` and `{`, we are returning
-  // its corresponding bucket.
+  // 9 character long. After getting pseudo class between `:` and `,` or `{`
+  // (comma when we have multiple selectors like `sel1, sel2{}`), we are
+  // returning its corresponding bucket.
   if (sheet.charCodeAt(10) === 58) {
+    const commaIndex = sheet.indexOf(',');
     const openBracketIndex = sheet.indexOf('{');
-    const name = sheet.slice(11, openBracketIndex);
+    const name = sheet.slice(11, commaIndex !== -1 ? commaIndex : openBracketIndex);
     const pseudoBucket = pseudosMap[name];
 
     if (pseudoBucket) {
