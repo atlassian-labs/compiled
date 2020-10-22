@@ -61,5 +61,5 @@ export const groupByBucket = <T extends string, U extends T[]>(sheets: U) => {
     accum[bucket] = bucketValue ? bucketValue.concat(sheet) : [sheet];
 
     return accum;
-  }, {} as { [bucket in Bucket]: T[] });
+  }, {} as Record<Bucket, T[]>);
 };
