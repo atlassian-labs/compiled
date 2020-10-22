@@ -49,7 +49,7 @@ const normalizeSelector = (selector: string | undefined) => {
   }
 
   // We want to build a consistent selector that we will use to generate the group hash.
-  // Because of that we trim whitespace as well as removing any top level nesting "&".
+  // Because of that we trim whitespace.
   const trimmed = selector.trim();
   if (trimmed.indexOf('&') === -1) {
     return `& ${trimmed}`;
