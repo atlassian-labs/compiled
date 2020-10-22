@@ -33,33 +33,29 @@ const atomicClassName = (propName: string, value: string, opts: AtomicifyOpts) =
 
 /**
  * Returns a normalized selector.
- * This will handle immediate dangling pseudos `:` as well as the nesting operator `&`.
+ * The primary function is to get rid of white space and to place a nesting selector if one is missing.
+ * If the selector already has a nesting selector - we won't do anything to it.
+ *
+ * ---
+ * ASSUMPTION: Nesting and parent orphaned pseudos plugins should run before the atomicify plugin!
+ * ---
  *
  * @param selector
  */
 const normalizeSelector = (selector: string | undefined) => {
   if (!selector) {
-    // Nothing to see here - return early with an empty string!
-    return '';
+    // Nothing to see here - return early with a nesting selector!
+    return '&';
   }
 
   // We want to build a consistent selector that we will use to generate the group hash.
-  // Because of that we trim whitespace as well as removing any top level nesting "&".
+  // Because of that we trim whitespace.
   const trimmed = selector.trim();
-
-  switch (trimmed.charAt(0)) {
-    case ':':
-      // Dangling pseudo - return immedately!
-      return trimmed;
-
-    case '&':
-      // Dangling nesting - replace it and return!
-      return trimmed.replace('&', '');
-
-    default:
-      // Must be a nested selector - add a space before it!
-      return ` ${trimmed}`;
+  if (trimmed.indexOf('&') === -1) {
+    return `& ${trimmed}`;
   }
+
+  return trimmed;
 };
 
 /**
@@ -88,7 +84,7 @@ const buildAtomicSelector = (node: Declaration, opts: AtomicifyOpts) => {
     });
     const replacedSelector = replaceNestingSelector(normalizedSelector, className);
 
-    selectors.push(`.${className}${replacedSelector}`);
+    selectors.push(replacedSelector);
 
     if (opts.callback) {
       opts.callback(className);

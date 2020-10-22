@@ -67,9 +67,9 @@ describe('import specifiers', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import*as React from'react';import{ThemeProvider,ax,CC,CS}from'@compiled/core';const _=\\"._36l6gktf{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import*as React from'react';import{ThemeProvider,ax,CC,CS}from'@compiled/core';const _=\\"._1wybgktf{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS>{[_]}</CS>
-            <C{...props}style={style}ref={ref}className={ax([\\"_36l6gktf\\",props.className])}/>
+            <C{...props}style={style}ref={ref}className={ax([\\"_1wybgktf\\",props.className])}/>
           </CC>);"
     `);
   });
