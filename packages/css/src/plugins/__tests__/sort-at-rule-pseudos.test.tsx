@@ -2,10 +2,10 @@ import postcss from 'postcss';
 import whitespace from 'postcss-normalize-whitespace';
 import autoprefixer from 'autoprefixer';
 import { atomicifyRules } from '../atomicify-rules';
-import { sortPseudosInAtRules } from '../sort-pseudo-in-at-rules';
+import { sortAtRulePseudos } from '../sort-at-rule-pseudos';
 
 const transform = (opts = { withAtomicClasses: true }) => (css: TemplateStringsArray) => {
-  const plugins = [sortPseudosInAtRules(), whitespace, autoprefixer];
+  const plugins = [sortAtRulePseudos(), whitespace, autoprefixer];
 
   if (opts.withAtomicClasses) {
     plugins.unshift(atomicifyRules());
@@ -18,7 +18,7 @@ const transform = (opts = { withAtomicClasses: true }) => (css: TemplateStringsA
   return result.css;
 };
 
-describe('#sortPseudosInAtRules', () => {
+describe('#sortAtRulePseudos', () => {
   beforeEach(() => {
     process.env.BROWSERSLIST = 'last 1 version';
   });
@@ -72,6 +72,27 @@ describe('#sortPseudosInAtRules', () => {
 
   describe('without atomic classes', () => {
     const transformWithoutAtomicClasses = transform({ withAtomicClasses: false });
+
+    it('should leave unsorted rules in place', () => {
+      const actual = transformWithoutAtomicClasses`
+        @media (max-width: 400px) {
+          :active { color: red; }
+          :focus { color: pink; }
+          ::disabled { display: block; }
+          :hover { color: green; }
+          :focus-visible { color: white; }
+          :visited { color: black; }
+          :link { color: yellow; }
+          :focus-within { color: grey; }
+          display: block;
+          color: red;
+        }
+      `;
+
+      expect(actual).toMatchInlineSnapshot(
+        `"@media (max-width: 400px){display:block;color:red;::disabled{display:block}:link{color:yellow}:visited{color:black}:focus-within{color:grey}:focus{color:pink}:focus-visible{color:white}:hover{color:green}:active{color:red}}"`
+      );
+    });
 
     it('should sort rules inside AtRules based on lvfha ordering', () => {
       const actual = transformWithoutAtomicClasses`

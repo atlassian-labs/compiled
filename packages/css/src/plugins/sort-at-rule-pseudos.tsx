@@ -55,7 +55,7 @@ const sortPseudoClasses = (atRule: AtRule) => {
 /**
  * PostCSS plugin for sorting rules inside AtRules based on lvfha ordering.
  */
-export const sortPseudosInAtRules = plugin('sort-pseudo-in-at-rules', () => {
+export const sortAtRulePseudos = plugin('sort-at-rule-pseudos', () => {
   return (root) => {
     root.each((node) => {
       switch (node.type) {
