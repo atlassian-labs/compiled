@@ -17,11 +17,14 @@ import { getStyleElementSheet, appendCSSTextNode } from './css-utils';
 export default function createStyleSheet(opts: StyleSheetOpts) {
   const speedy = process.env.NODE_ENV === 'production';
 
+  // Creating in memory buckets. This will run only once.
   createBucketSheetsCache(opts);
 
   return (css: string) => {
+    // Get the bucket based on css sheet
     const bucket = getBucket(css);
 
+    // Add that bucket to head using bucket cache style element
     addBucketToHead(bucket);
 
     if (speedy) {

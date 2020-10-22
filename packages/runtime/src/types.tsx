@@ -7,4 +7,7 @@ export interface StyleSheetOpts {
   nonce?: string;
 }
 
+/**
+ * Buckets under which we will group our stylesheets
+ */
 export type Bucket = '' | 'l' | 'v' | 'fw' | 'f' | 'fv' | 'h' | 'a' | 'm';
