@@ -1,11 +1,6 @@
 import { plugin } from 'postcss';
 import selectorParser from 'postcss-selector-parser';
 
-const isPreviousSelectorCombinatorType = (selector: selectorParser.Node) => {
-  const previousSelector = selector.prev();
-  return previousSelector && previousSelector.type === 'combinator';
-};
-
 const prependNestingTypeToSelector = (selector: selectorParser.Node) => {
   const { parent } = selector;
 
@@ -33,10 +28,6 @@ export const parentOrphanedPseudos = plugin('parent-orphened-pseudos', () => {
 
         const parser = selectorParser((root) => {
           root.walkPseudos((pseudoSelector) => {
-            if (isPreviousSelectorCombinatorType(pseudoSelector)) {
-              return;
-            }
-
             prependNestingTypeToSelector(pseudoSelector);
           });
         }).astSync(selector, { lossless: false });
