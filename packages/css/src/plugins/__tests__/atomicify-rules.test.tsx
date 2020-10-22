@@ -42,6 +42,16 @@ describe('atomicify rules', () => {
     expect(result).toMatchInlineSnapshot(`"._q4hxglyw{-ms-user-select:none;user-select:none}"`);
   });
 
+  it('should double up class selector when two nesting selectors are found', () => {
+    const result = transform`
+      && {
+        display: block;
+      }
+    `;
+
+    expect(result).toMatchInlineSnapshot(`"._1e0c1ule._1e0c1ule{display:block}"`);
+  });
+
   it('should autoprefix atomic rules with multiple selectors', () => {
     process.env.BROWSERSLIST = 'Edge 16';
 
