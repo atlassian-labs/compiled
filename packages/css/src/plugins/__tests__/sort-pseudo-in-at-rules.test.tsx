@@ -29,7 +29,7 @@ describe('#sortPseudosInAtRules', () => {
     it('should sort rules inside AtRules based on lvfha ordering', () => {
       const actual = transformWithAtomicClasses`
         @media (max-width: 400px) {
-          :active { color: red; }
+          :active, :link { color: red; }
           :focus { color: pink; }
           :hover { color: green; }
           :focus-visible { color: white; }
@@ -40,7 +40,7 @@ describe('#sortPseudosInAtRules', () => {
       `;
 
       expect(actual).toMatchInlineSnapshot(
-        `"@media (max-width: 400px){._170d1gy6 :link{color:yellow}._19ov11x8 :visited{color:black}._17f1twqo :focus-within{color:grey}._nn1x32ev :focus{color:pink}._y65z1x77 :focus-visible{color:white}._gsnlbf54 :hover{color:green}._xs4x5scu :active{color:red}}"`
+        `"@media (max-width: 400px){._170d1gy6 :link{color:yellow}._19ov11x8 :visited{color:black}._17f1twqo :focus-within{color:grey}._nn1x32ev :focus{color:pink}._y65z1x77 :focus-visible{color:white}._gsnlbf54 :hover{color:green}._xs4x5scu :active, ._170d5scu :link{color:red}}"`
       );
     });
 

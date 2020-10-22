@@ -234,7 +234,7 @@ describe('#css-transform', () => {
   it('should sort pseudo class inside media query based on lvfha ordering', () => {
     const { sheets: actual } = transformCss(`
       @media (max-width: 400px) {
-        :active { color: red; }
+        :active, :link { color: red; }
         :focus { color: pink; }
         :hover { color: green; }
         :focus-visible { color: white; }
@@ -245,7 +245,7 @@ describe('#css-transform', () => {
     `);
 
     expect(actual.join('\n')).toMatchInlineSnapshot(
-      `"@media (max-width: 400px){._3pn21gy6:link{color:yellow}._kqa111x8:visited{color:black}._1vpvtwqo:focus-within{color:grey}._9yhd32ev:focus{color:pink}._nfm81x77:focus-visible{color:white}._1ragbf54:hover{color:green}._2ddc5scu:active{color:red}}"`
+      `"@media (max-width: 400px){._3pn21gy6:link{color:yellow}._kqa111x8:visited{color:black}._1vpvtwqo:focus-within{color:grey}._9yhd32ev:focus{color:pink}._nfm81x77:focus-visible{color:white}._1ragbf54:hover{color:green}._2ddc5scu:active, ._3pn25scu:link{color:red}}"`
     );
   });
 

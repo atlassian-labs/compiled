@@ -41,9 +41,12 @@ const sortPseudoClasses = (atRule: AtRule) => {
   });
 
   rules
-    .sort(
-      (rule1, rule2) => getPseudoClassScore(rule1.selector) - getPseudoClassScore(rule2.selector)
-    )
+    .sort((rule1, rule2) => {
+      const selector1 = rule1.selectors.length ? rule1.selectors[0] : rule1.selector;
+      const selector2 = rule2.selectors.length ? rule2.selectors[0] : rule2.selector;
+
+      return getPseudoClassScore(selector1) - getPseudoClassScore(selector2);
+    })
     .forEach((rule) => {
       atRule.append(rule);
     });
