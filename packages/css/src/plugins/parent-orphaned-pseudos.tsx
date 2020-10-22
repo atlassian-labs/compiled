@@ -1,11 +1,6 @@
 import { plugin } from 'postcss';
 import selectorParser from 'postcss-selector-parser';
 
-const isPreviousSelectorCombinatorType = (selector: selectorParser.Node) => {
-  const previousSelector = selector.prev();
-  return previousSelector && previousSelector.type === 'combinator';
-};
-
 const prependNestingTypeToSelector = (selector: selectorParser.Node) => {
   const { parent } = selector;
 
@@ -13,12 +8,6 @@ const prependNestingTypeToSelector = (selector: selectorParser.Node) => {
     const nesting = selectorParser.nesting();
     parent.insertBefore(selector, nesting);
   }
-};
-
-const stringifySelectorParserRoot = (parserRoot: selectorParser.Root) => {
-  return parserRoot
-    .reduce<string[]>((memo, selector) => [...memo, String(selector)], [])
-    .join(',\n');
 };
 
 /**
@@ -30,23 +19,21 @@ const stringifySelectorParserRoot = (parserRoot: selectorParser.Root) => {
 export const parentOrphanedPseudos = plugin('parent-orphened-pseudos', () => {
   return (root) => {
     root.walkRules((rule) => {
-      const { selector: ruleSelector } = rule;
+      const { selectors } = rule;
 
-      if (!ruleSelector.startsWith(':')) {
-        return;
-      }
+      rule.selectors = selectors.map((selector) => {
+        if (!selector.startsWith(':')) {
+          return selector;
+        }
 
-      const selectorParserRoot = selectorParser((selectors) => {
-        selectors.walkPseudos((selector) => {
-          if (isPreviousSelectorCombinatorType(selector)) {
-            return;
-          }
+        const parser = selectorParser((root) => {
+          root.walkPseudos((pseudoSelector) => {
+            prependNestingTypeToSelector(pseudoSelector);
+          });
+        }).astSync(selector, { lossless: false });
 
-          prependNestingTypeToSelector(selector);
-        });
-      }).astSync(ruleSelector, { lossless: false });
-
-      rule.selector = stringifySelectorParserRoot(selectorParserRoot);
+        return parser.toString();
+      });
     });
   };
 });

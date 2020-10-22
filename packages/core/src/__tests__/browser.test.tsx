@@ -15,7 +15,7 @@ describe('browser', () => {
     const { baseElement } = render(<StyledDiv>hello world</StyledDiv>);
 
     expect(baseElement.innerHTML).toMatchInlineSnapshot(
-      `"<div><div class=\\"_36l61fwx\\">hello world</div></div>"`
+      `"<div><div class=\\"_1wyb1fwx\\">hello world</div></div>"`
     );
   });
 
@@ -32,7 +32,7 @@ describe('browser', () => {
     );
 
     expect(document.head.innerHTML).toMatchInlineSnapshot(
-      `"<style nonce=\\"k0Mp1lEd\\">._36l61fwx{font-size:12px}</style>"`
+      `"<style nonce=\\"k0Mp1lEd\\">._1wyb1fwx{font-size:12px}</style>"`
     );
   });
 });

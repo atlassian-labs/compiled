@@ -22,7 +22,17 @@ describe('atomicify rules', () => {
       color: blue;
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._1doq13q2{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._syaz13q2{color:blue}"`);
+  });
+
+  it('should prepend atomic class when nesting selector is prepended', () => {
+    const actual = transform`
+      [data-look='h100']& {
+        display: block;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`"[data-look='h100']._mi0g1ule{display:block}"`);
   });
 
   it('should should atomicify multiple declarations', () => {
@@ -31,7 +41,7 @@ describe('atomicify rules', () => {
       font-size: 12px;
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._1doq13q2{color:blue}._36l61fwx{font-size:12px}"`);
+    expect(actual).toMatchInlineSnapshot(`"._syaz13q2{color:blue}._1wyb1fwx{font-size:12px}"`);
   });
 
   it('should autoprefix atomic rules', () => {
@@ -39,7 +49,7 @@ describe('atomicify rules', () => {
 
     const result = transform`user-select: none;`;
 
-    expect(result).toMatchInlineSnapshot(`"._q4hxglyw{-ms-user-select:none;user-select:none}"`);
+    expect(result).toMatchInlineSnapshot(`"._uiztglyw{-ms-user-select:none;user-select:none}"`);
   });
 
   it('should double up class selector when two nesting selectors are found', () => {
@@ -49,20 +59,20 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(result).toMatchInlineSnapshot(`"._1e0c1ule._1e0c1ule{display:block}"`);
+    expect(result).toMatchInlineSnapshot(`"._if291ule._if291ule{display:block}"`);
   });
 
   it('should autoprefix atomic rules with multiple selectors', () => {
     process.env.BROWSERSLIST = 'Edge 16';
 
     const result = transform`
-      :hover, :focus {
+      &:hover, &:focus {
         user-select: none;
       }
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"._1tclglyw:hover, ._16wpglyw:focus{-ms-user-select:none;user-select:none}"`
+      `"._180hglyw:hover, ._1j5pglyw:focus{-ms-user-select:none;user-select:none}"`
     );
   });
 
@@ -76,7 +86,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._3r8kglyw{-ms-user-select:none;user-select:none}}"`
+      `"@media (min-width: 30rem){._ufx4glyw{-ms-user-select:none;user-select:none}}"`
     );
   });
 
@@ -92,7 +102,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._1a7jglyw div{-ms-user-select:none;user-select:none}}"`
+      `"@media (min-width: 30rem){._195xglyw div{-ms-user-select:none;user-select:none}}"`
     );
   });
 
@@ -108,7 +118,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){._1cg4glyw{-ms-user-select:none;user-select:none}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._uf5eglyw{-ms-user-select:none;user-select:none}}}"`
     );
   });
 
@@ -141,12 +151,12 @@ describe('atomicify rules', () => {
 
     expect(classes).toMatchInlineSnapshot(`
       Array [
-        "_dj7i1ule",
-        "_o3nk1h6o",
-        "_1cg4glyw",
-        "_1qcvglyw",
-        "_1uoyglyw",
-        "_1tclglyw",
+        "_1e0c1ule",
+        "_y3gn1h6o",
+        "_uf5eglyw",
+        "_2a8pglyw",
+        "_18i0glyw",
+        "_9iqnglyw",
       ]
     `);
   });
@@ -158,7 +168,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._yjs513q2 div.primary{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._13ml13q2 div.primary{color:blue}"`);
   });
 
   it('should atomicify a nested multi selector rule', () => {
@@ -169,18 +179,19 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"._k2hc13q2 div, ._ijgx13q2 span, ._1jah13q2 li{color:blue}"`
+      `"._65g013q2 div, ._1tjq13q2 span, ._thoc13q2 li{color:blue}"`
     );
   });
 
-  it('should atomicify a multi dangling pseudo rule', () => {
+  it('should atomicify a multi nesting pseudo rule', () => {
+    // Its assumed the pseudos will get a nesting selector from the nested plugin.
     const actual = transform`
-      :hover, :focus {
+      &:hover, &:focus {
         color: blue;
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._1uhh13q2:hover, ._t5gl13q2:focus{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._30l313q2:hover, ._f8pj13q2:focus{color:blue}"`);
   });
 
   it('should atomicify a nested tag rule', () => {
@@ -190,7 +201,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._k2hc13q2 div{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._65g013q2 div{color:blue}"`);
   });
 
   it('should generate the same class hash for semantically same but different rules', () => {
@@ -200,14 +211,12 @@ describe('atomicify rules', () => {
       }
     `;
     const secondActual = transform`
-      :first-child {
+      &:first-child {
         color: blue;
       }
     `;
 
-    const expected = '._roi113q2:first-child{color:blue}';
-    expect(firstActual).toEqual(expected);
-    expect(secondActual).toEqual(expected);
+    expect(firstActual).toEqual(secondActual);
   });
 
   it('should double up selectors when using parent selector', () => {
@@ -222,20 +231,21 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual.split('}').join('}\n')).toMatchInlineSnapshot(`
-      "._14rh1j6v._14rh1j6v > *{margin-bottom:1rem}
-      ._it8pidpf._it8pidpf > *:last-child{margin-bottom:0}
+      "._169r1j6v._169r1j6v > *{margin-bottom:1rem}
+      ._1wzbidpf._1wzbidpf > *:last-child{margin-bottom:0}
       "
     `);
   });
 
   it('should atomicify a rule when its selector has a nesting at the end', () => {
+    // Its assumed the pseudos will get a nesting selector from the nested plugin.
     const actual = transform`
-      :first-child & {
+      &:first-child & {
         color: hotpink;
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._1qab1q9v:first-child ._1qab1q9v{color:hotpink}"`);
+    expect(actual).toMatchInlineSnapshot(`"._ngwg1q9v:first-child ._ngwg1q9v{color:hotpink}"`);
   });
 
   it('should reference the atomic class with the nesting selector', () => {
@@ -245,7 +255,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._p9sj13q2 :first-child{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._prp213q2 :first-child{color:blue}"`);
   });
 
   it('should atomicify a double tag rule', () => {
@@ -255,7 +265,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._m59i13q2 div span{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._8gsp13q2 div span{color:blue}"`);
   });
 
   it('should atomicify a double tag with pseudos rule', () => {
@@ -265,7 +275,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._107g13q2 div:hover span:active{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._f1kd13q2 div:hover span:active{color:blue}"`);
   });
 
   it('should atomicify a nested tag pseudo rule', () => {
@@ -275,7 +285,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._5tvz13q2 div:hover{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._1tui13q2 div:hover{color:blue}"`);
   });
 
   it('should skip comments', () => {
@@ -293,7 +303,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"._5tvz13q2 div:hover{color:blue}@media screen{._gli45scu{color:red}}"`
+      `"._1tui13q2 div:hover{color:blue}@media screen{._43475scu{color:red}}"`
     );
   });
 
@@ -325,7 +335,7 @@ describe('atomicify rules', () => {
       }
     );
 
-    expect(result.css).toMatchInlineSnapshot(`"._1qan1fwx div div{font-size:12px}"`);
+    expect(result.css).toMatchInlineSnapshot(`"._73mn1fwx div div{font-size:12px}"`);
   });
 
   it('should atomicify at rule styles', () => {
@@ -337,7 +347,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._1ie31ule{display:block}._4ubngktf{font-size:20px}}"`
+      `"@media (min-width: 30rem){._hi7c1ule{display:block}._1l5zgktf{font-size:20px}}"`
     );
   });
 
@@ -351,7 +361,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){._16pr1ule{display:block}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._1l9l1ule{display:block}}}"`
     );
   });
 
@@ -365,7 +375,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._166e1ule div{display:block}}"`
+      `"@media (min-width: 30rem){._1v9q1ule div{display:block}}"`
     );
   });
 
@@ -381,7 +391,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){._15ac1ule div{display:block}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._1acs1ule div{display:block}}}"`
     );
   });
 
