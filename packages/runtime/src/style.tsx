@@ -36,16 +36,16 @@ export default function Style(props: StyleProps) {
 
   if (sheets.length) {
     if (isNodeEnvironment()) {
-      const rulesGroupedByBucket = groupByBucket(sheets);
+      const sheetsGroupedByBucket = groupByBucket(sheets);
 
       return buckets
-        .filter((bucket) => !!rulesGroupedByBucket[bucket])
+        .filter((bucket) => !!sheetsGroupedByBucket[bucket])
         .map((bucket) => (
           <style
             key={bucket}
             {...(bucket && { [getCompiledAttr(bucket)]: '' })}
             nonce={props.nonce}>
-            {rulesGroupedByBucket[bucket]}
+            {sheetsGroupedByBucket[bucket]}
           </style>
         ));
     } else {
