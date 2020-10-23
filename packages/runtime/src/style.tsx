@@ -1,10 +1,9 @@
 import React from 'react';
-import createStyleSheet from './sheet';
+import createStyleSheet, { groupByBucket, buckets } from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts } from './types';
 import { useCache } from './provider';
 import { isNodeEnvironment } from './is-node';
-import { buckets, groupByBucket } from './buckets-utils';
 
 interface StyleProps extends StyleSheetOpts {
   /**
@@ -38,13 +37,13 @@ export default function Style(props: StyleProps) {
     if (isNodeEnvironment()) {
       const sheetsGroupedByBucket = groupByBucket(sheets);
 
-      return buckets
-        .filter((bucket) => !!sheetsGroupedByBucket[bucket])
-        .map((bucket) => (
-          <style key={bucket} data-c={bucket || undefined} nonce={props.nonce}>
-            {sheetsGroupedByBucket[bucket]}
-          </style>
-        ));
+      return (
+        <style nonce={props.nonce}>
+          {buckets
+            .filter((bucket) => !!sheetsGroupedByBucket[bucket])
+            .map((bucket) => sheetsGroupedByBucket[bucket])}
+        </style>
+      );
     } else {
       // Keep re-assigning over ternary because it's smaller
       stylesheet = stylesheet || createStyleSheet(props);

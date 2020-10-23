@@ -33,15 +33,7 @@ describe('<Style />', () => {
     );
 
     expect(result.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
-      "<style>._c1234567{ display: block; }</style>
-      <style data-c=\\"l\\">._d1234567:link{ color: green; }</style>
-      <style data-c=\\"v\\">._g1234567:visited{ color: grey; }</style>
-      <style data-c=\\"fw\\">._i1234567:focus-within{ color: black; }</style>
-      <style data-c=\\"f\\">._f1234567:focus{ color: pink; }</style>
-      <style data-c=\\"fv\\">._h1234567:focus-visible{ color: white; }</style>
-      <style data-c=\\"h\\">._a1234567:hover{ color: red; }</style>
-      <style data-c=\\"a\\">._b1234567:active{ color: blue; }</style>
-      <style data-c=\\"m\\">@media (max-width: 800px){ ._e1234567{ color: yellow; } }</style>
+      "<style>._c1234567{ display: block; }._d1234567:link{ color: green; }._g1234567:visited{ color: grey; }._i1234567:focus-within{ color: black; }._f1234567:focus{ color: pink; }._h1234567:focus-visible{ color: white; }._a1234567:hover{ color: red; }._b1234567:active{ color: blue; }@media (max-width: 800px){ ._e1234567{ color: yellow; } }</style>
       "
     `);
   });
