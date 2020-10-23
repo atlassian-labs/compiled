@@ -1,5 +1,5 @@
 import React from 'react';
-import createStyleSheet from './sheet';
+import createStyleSheet, { groupSheetsByBucket, styleBucketOrdering } from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts } from './types';
 import { useCache } from './provider';
@@ -23,23 +23,28 @@ export default function Style(props: StyleProps) {
     props.children.forEach(analyzeCssInDev);
   }
 
-  const rules = props.children.filter((sheet) => {
+  const sheets = props.children.filter((sheet) => {
     if (inserted[sheet]) {
       return false;
     }
 
-    inserted[sheet] = true;
-
-    return true;
+    return (inserted[sheet] = true);
   });
 
-  if (rules.length) {
+  if (sheets.length) {
     if (isNodeEnvironment()) {
-      return <style nonce={props.nonce}>{rules}</style>;
+      // The following code will not exist in the browser bundle.
+      const sheetsGroupedByBucket = groupSheetsByBucket(sheets);
+
+      return (
+        <style nonce={props.nonce}>
+          {styleBucketOrdering.map((bucket) => sheetsGroupedByBucket[bucket])}
+        </style>
+      );
     } else {
       // Keep re-assigning over ternary because it's smaller
       stylesheet = stylesheet || createStyleSheet(props);
-      rules.forEach(stylesheet);
+      sheets.forEach(stylesheet);
     }
   }
 

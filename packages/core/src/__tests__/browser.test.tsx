@@ -7,6 +7,14 @@ jest.mock('../../../runtime/dist/is-node', () => ({
 }));
 
 describe('browser', () => {
+  beforeEach(() => {
+    // Reset style tags in head before each test so that it will remove styles
+    // injected by test
+    document.head.querySelectorAll('style').forEach((styleElement) => {
+      styleElement.textContent = '';
+    });
+  });
+
   it('should not render styles inline', () => {
     const StyledDiv = styled.div`
       font-size: 12px;
@@ -21,7 +29,7 @@ describe('browser', () => {
 
   it('should only render one style block to the head if its already been moved', () => {
     const StyledDiv = styled.div`
-      font-size: 12px;
+      font-size: 14px;
     `;
 
     render(
@@ -32,7 +40,67 @@ describe('browser', () => {
     );
 
     expect(document.head.innerHTML).toMatchInlineSnapshot(
-      `"<style nonce=\\"k0Mp1lEd\\">._1wyb1fwx{font-size:12px}</style>"`
+      `"<style nonce=\\"k0Mp1lEd\\">._1wybdlk8{font-size:14px}</style>"`
     );
+  });
+
+  it('should render style tags in buckets', () => {
+    const StyledLink = styled.a`
+      display: flex;
+      font-size: 50px;
+      color: purple;
+      :hover {
+        color: yellow;
+      }
+      :active {
+        color: blue;
+      }
+      :link {
+        color: red;
+      }
+      @supports (display: grid) {
+        :active {
+          color: black;
+        }
+        :focus {
+          color: yellow;
+        }
+      }
+      :focus {
+        color: green;
+      }
+      :link,
+      :focus-visible {
+        color: white;
+      }
+      :visited {
+        color: pink;
+      }
+      @media (max-width: 800px) {
+        :active {
+          color: black;
+        }
+        :focus {
+          color: yellow;
+        }
+        :hover,
+        :focus-visible {
+          color: grey;
+        }
+      }
+    `;
+
+    render(<StyledLink href="https://atlassian.design">Atlassian Design System</StyledLink>);
+
+    expect(document.head.innerHTML.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
+      "<style nonce=\\"k0Mp1lEd\\">._1e0c1txw{display:flex}._1wyb12am{font-size:50px}._syaz1cnh{color:purple}._ysv71x77:link, ._v0vw1x77:focus-visible{color:white}</style>
+      <style nonce=\\"k0Mp1lEd\\">._ysv75scu:link{color:red}</style>
+      <style nonce=\\"k0Mp1lEd\\">._105332ev:visited{color:pink}</style>
+      <style nonce=\\"k0Mp1lEd\\">._f8pjbf54:focus{color:green}</style>
+      <style nonce=\\"k0Mp1lEd\\">._30l31gy6:hover{color:yellow}</style>
+      <style nonce=\\"k0Mp1lEd\\">._9h8h13q2:active{color:blue}</style>
+      <style nonce=\\"k0Mp1lEd\\">@supports (display: grid){._qxnw1gy6:focus{color:yellow}._p7tw11x8:active{color:black}}@media (max-width: 800px){._vyxz1gy6:focus{color:yellow}._7zyjtwqo:hover, ._ov6atwqo:focus-visible{color:grey}._ojvu11x8:active{color:black}}</style>
+      "
+    `);
   });
 });

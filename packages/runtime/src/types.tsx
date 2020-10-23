@@ -6,3 +6,26 @@ export interface StyleSheetOpts {
    */
   nonce?: string;
 }
+
+/**
+ * Buckets under which we will group our stylesheets
+ */
+export type Bucket =
+  // catch-all
+  | ''
+  // link
+  | 'l'
+  // visited
+  | 'v'
+  // focus-within
+  | 'w'
+  // focus
+  | 'f'
+  // focus-visible
+  | 'i'
+  // hover
+  | 'h'
+  // active
+  | 'a'
+  // at-rules
+  | 'm';

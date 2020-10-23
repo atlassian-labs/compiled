@@ -1,54 +1,160 @@
+import { StyleSheetOpts, Bucket } from './types';
+
 /**
- * Mostly ripped out of Emotion https://github.com/emotion-js/emotion and then heavily modified to be even smaller.
- * Thanks everyone who contributed in some form or another.
+ * Ordered style buckets using their short psuedo name.
+ * If changes are needed make sure that it aligns with the definition in `sort-at-rule-pseudos.tsx`.
  */
-import { StyleSheetOpts } from './types';
+export const styleBucketOrdering: Bucket[] = [
+  // catch-all
+  '',
+  // link
+  'l',
+  // visited
+  'v',
+  // focus-within
+  'w',
+  // focus
+  'f',
+  // focus-visible
+  'i',
+  // hover
+  'h',
+  // active
+  'a',
+  // at-rules
+  'm',
+];
 
-function getStyleElementSheet(styleElement: HTMLStyleElement): CSSStyleSheet {
-  // @ts-ignore - We assume it will return a sheet so coerce it to CSSStyleSheet.
-  return styleElement.sheet && (styleElement.sheet as CSSStyleSheet);
+/**
+ * Holds all style buckets in memory that have been added to the head.
+ */
+const styleBucketsInHead: Partial<Record<Bucket, HTMLStyleElement>> = {};
+
+/**
+ * Maps the long pseudo name to the short pseudo name.
+ * Pseudos that match here will be ordered,
+ * everythin else will make their way to the catch all style bucket.
+ * We reduce the pseduo name to save bundlesize.
+ * Thankfully there aren't any overlaps, see: https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes.
+ */
+const pseudosMap: Record<string, Bucket | undefined> = {
+  // link
+  k: 'l',
+  // visited
+  ited: 'v',
+  // focus-within
+  'us-within': 'w',
+  // focus
+  us: 'f',
+  // focus-visible
+  'us-visible': 'i',
+  // hover
+  er: 'h',
+  // active
+  ive: 'a',
+};
+
+/**
+ * Lazily adds a `<style>` bucket to the `<head>`.
+ * This will ensure that the style buckets are ordered.
+ *
+ * @param bucket Bucket to insert in the head.
+ */
+function lazyAddStyleBucketToHead(bucketName: Bucket, opts: StyleSheetOpts): HTMLStyleElement {
+  if (!styleBucketsInHead[bucketName]) {
+    let currentBucketIndex = styleBucketOrdering.indexOf(bucketName);
+    let nextBucketFromCache = null;
+
+    // Find the next bucket which we will add our new style bucket before.
+    while (++currentBucketIndex < styleBucketOrdering.length) {
+      const nextBucket = styleBucketsInHead[styleBucketOrdering[currentBucketIndex]];
+      if (nextBucket) {
+        nextBucketFromCache = nextBucket;
+        break;
+      }
+    }
+
+    const tag = document.createElement('style');
+    opts.nonce && tag.setAttribute('nonce', opts.nonce);
+    tag.appendChild(document.createTextNode(''));
+    styleBucketsInHead[bucketName] = tag;
+    document.head.insertBefore(tag, nextBucketFromCache);
+  }
+
+  return styleBucketsInHead[bucketName]!;
 }
 
-function createStyleElement(opts: StyleSheetOpts): HTMLStyleElement {
-  const tag = document.createElement('style');
-  opts.nonce && tag.setAttribute('nonce', opts.nonce);
-  tag.appendChild(document.createTextNode(''));
-  return tag;
-}
+/**
+ * Gets the bucket depending on the sheet.
+ * This function makes assumptions as to the form of the input class name.
+ *
+ * Input:
+ *
+ * ```
+ * "._a1234567:hover{ color: red; }"
+ * ```
+ *
+ * Output:
+ *
+ * ```
+ * "h"
+ * ```
+ *
+ * @param sheet styles for which we are getting the bucket
+ */
+const getStyleBucketName = (sheet: string): Bucket => {
+  // We are grouping all the at-rules like @media, @supports etc under `m` bucket.
+  if (sheet.charCodeAt(0) === 64 /* "@" */) {
+    return 'm';
+  }
+
+  /**
+   * We assume that classname will always be 9 character long,
+   * using this the 10th character could be a pseudo declaration.
+   */
+  if (sheet.charCodeAt(10) === 58 /* ":" */) {
+    // We send through a subset of the string instead of the full pseudo name.
+    // For example `"focus-visible"` name would instead of `"us-visible"`.
+    // Return a mapped pseudo else the default catch all bucket.
+    return pseudosMap[sheet.slice(14, sheet.indexOf('{'))] || '';
+  }
+
+  // Return default catch all bucket
+  return '';
+};
+
+/**
+ * Group sheets by bucket.
+ *
+ * @returns { 'h': ['._a1234567:hover{ color: red; }', '._a1234567:hover{ color: green; }'] }
+ * @param sheets styles which are grouping under bucket
+ */
+export const groupSheetsByBucket = (sheets: string[]) => {
+  return sheets.reduce<Record<Bucket, string[]>>((accum, sheet) => {
+    const bucketName = getStyleBucketName(sheet);
+    accum[bucketName] = accum[bucketName] || [];
+    accum[bucketName].push(sheet);
+    return accum;
+  }, {} as Record<Bucket, string[]>);
+};
 
 /**
  * Returns a style sheet object that is used to move styles to the head of the application
  * during runtime.
  *
  * @param opts StyleSheetOpts
+ * @param inserted Singleton cache for tracking what styles have already been added to the head
  */
 export default function createStyleSheet(opts: StyleSheetOpts) {
-  const speedy = process.env.NODE_ENV === 'production',
-    styleElements: HTMLStyleElement[] = [];
-  let tagCount = 0;
-
   return (css: string) => {
-    // the max length is how many rules we have per style tag.
-    // 1. it's 65000 in speedy mode
-    // 2. it's 1 in dev because we insert source maps that map a single rule to a location
-    //    and you can only have one source map per style tag
-    if (tagCount % (speedy ? 65000 : 1) === 0) {
-      const newStyleElement = createStyleElement(opts);
-      const elementToInsertBefore =
-        styleElements.length === 0 ? null : styleElements[styleElements.length - 1].nextSibling;
-      document.head.insertBefore(newStyleElement, elementToInsertBefore);
-      styleElements.push(newStyleElement);
-    }
+    const bucketName = getStyleBucketName(css);
+    const style = lazyAddStyleBucketToHead(bucketName, opts);
 
-    if (speedy) {
-      const sheet = getStyleElementSheet(styleElements[styleElements.length - 1]);
-      // this is the ultrafast version, works across browsers
-      // the big drawback is that the css won't be editable in devtools in most browsers.
+    if (process.env.NODE_ENV === 'production') {
+      const sheet = style.sheet as CSSStyleSheet;
       sheet.insertRule(css, sheet.cssRules.length);
     } else {
-      styleElements[styleElements.length - 1].appendChild(document.createTextNode(css));
+      style.appendChild(document.createTextNode(css));
     }
-
-    tagCount++;
   };
 }
