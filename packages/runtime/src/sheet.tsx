@@ -1,7 +1,7 @@
 import { StyleSheetOpts, Bucket } from './types';
 
 /**
- * Ordered style buckets using the short psuedo name.
+ * Ordered style buckets using their short psuedo name.
  * If changes are needed make sure that it aligns with the definition in `sort-at-rule-pseudos.tsx`.
  */
 export const buckets: Bucket[] = ['', 'l', 'v', 'fw', 'f', 'fv', 'h', 'a', 'm'];
@@ -9,12 +9,14 @@ export const buckets: Bucket[] = ['', 'l', 'v', 'fw', 'f', 'fv', 'h', 'a', 'm'];
 /**
  * Holds all style buckets in memory that have been added to the head.
  */
-const bucketsCache: Partial<Record<Bucket, HTMLStyleElement>> = {};
+const styleBucketsInHead: Partial<Record<Bucket, HTMLStyleElement>> = {};
 
 /**
  * Maps the long pseudo name to the short pseudo name.
+ * Pseudos that match here will be ordered,
+ * everythin else will make their way to the catch all style bucket.
  */
-const pseudosMap: Record<string, Bucket> = {
+const pseudosMap: Record<string, Bucket | undefined> = {
   link: 'l',
   visited: 'v',
   'focus-within': 'fw',
@@ -39,30 +41,30 @@ function createStyleElement(opts: StyleSheetOpts): HTMLStyleElement {
 
 /**
  * Lazily adds a `<style>` bucket to the `<head>`.
- * This will ensure that the style buckets are ordered correctly.
+ * This will ensure that the style buckets are ordered.
  *
  * @param bucket Bucket to insert in the head.
  */
-function lazyAddStyleBucketToHead(bucket: Bucket, opts: StyleSheetOpts): HTMLStyleElement {
-  if (!bucketsCache[bucket]) {
-    const bucketIndex = buckets.indexOf(bucket);
+function lazyAddStyleBucketToHead(bucketName: Bucket, opts: StyleSheetOpts): HTMLStyleElement {
+  if (!styleBucketsInHead[bucketName]) {
+    const nextBucketIndex = buckets.indexOf(bucketName) + 1;
     let nextBucketFromCache = null;
 
     // Find next bucket before which we will add our current bucket element
-    for (let i = bucketIndex + 1; i < buckets.length; i++) {
+    for (let i = nextBucketIndex; i < buckets.length; i++) {
       const nextBucketName = buckets[i];
 
-      if (bucketsCache[nextBucketName]) {
-        nextBucketFromCache = bucketsCache[nextBucketName]!;
+      if (styleBucketsInHead[nextBucketName]) {
+        nextBucketFromCache = styleBucketsInHead[nextBucketName]!;
         break;
       }
     }
 
-    bucketsCache[bucket] = createStyleElement(opts);
-    document.head.insertBefore(bucketsCache[bucket]!, nextBucketFromCache);
+    styleBucketsInHead[bucketName] = createStyleElement(opts);
+    document.head.insertBefore(styleBucketsInHead[bucketName]!, nextBucketFromCache);
   }
 
-  return bucketsCache[bucket]!;
+  return styleBucketsInHead[bucketName]!;
 }
 
 /**
@@ -84,18 +86,19 @@ function lazyAddStyleBucketToHead(bucket: Bucket, opts: StyleSheetOpts): HTMLSty
  * @param sheet styles for which we are getting the bucket
  */
 const getStyleBucketName = (sheet: string): Bucket => {
-  // `64` corresponds to `@` i.e. at-rules. We are grouping all the at-rules
-  // like @media, @supports etc under `m` bucket for now.
-  if (sheet.charCodeAt(0) === 64) {
+  // We are grouping all the at-rules like @media, @supports etc under `m` bucket.
+  if (sheet.charCodeAt(0) === 64 /* "@" */) {
     return 'm';
   }
 
-  // `58` corresponds to `:`. Here we are assuming that classname will always be
-  // 9 character long. After getting pseudo class between `:` and `,` or `{`
-  // we are returning its corresponding bucket
-  if (sheet.charCodeAt(10) === 58) {
+  /**
+   * We assume that classname will always be 9 character long,
+   * using this the 10th character could be a pseudo declaration.
+   */
+  if (sheet.charCodeAt(10) === 58 /* ":" */) {
     const openBracketIndex = sheet.indexOf('{');
     const name = sheet.slice(11, openBracketIndex);
+    // Return a mapped pseudo else the default catch all bucket.
     return pseudosMap[name] || '';
   }
 
@@ -111,11 +114,9 @@ const getStyleBucketName = (sheet: string): Bucket => {
  */
 export const groupSheetsByBucket = (sheets: string[]) => {
   return sheets.reduce<Record<Bucket, string[]>>((accum, sheet) => {
-    const bucket = getStyleBucketName(sheet);
-    const bucketValue = accum[bucket];
-
-    accum[bucket] = bucketValue ? bucketValue.concat(sheet) : [sheet];
-
+    const bucketName = getStyleBucketName(sheet);
+    accum[bucketName] = accum[bucketName] || [];
+    accum[bucketName].push(sheet);
     return accum;
   }, {} as Record<Bucket, string[]>);
 };
