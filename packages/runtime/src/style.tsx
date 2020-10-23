@@ -1,5 +1,5 @@
 import React from 'react';
-import createStyleSheet, { groupSheetsByBucket, buckets } from './sheet';
+import createStyleSheet, { groupSheetsByBucket, styleBucketOrdering } from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts } from './types';
 import { useCache } from './provider';
@@ -39,7 +39,9 @@ export default function Style(props: StyleProps) {
       const sheetsGroupedByBucket = groupSheetsByBucket(sheets);
 
       return (
-        <style nonce={props.nonce}>{buckets.map((bucket) => sheetsGroupedByBucket[bucket])}</style>
+        <style nonce={props.nonce}>
+          {styleBucketOrdering.map((bucket) => sheetsGroupedByBucket[bucket])}
+        </style>
       );
     } else {
       // Keep re-assigning over ternary because it's smaller

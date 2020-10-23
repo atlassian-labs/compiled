@@ -4,7 +4,26 @@ import { StyleSheetOpts, Bucket } from './types';
  * Ordered style buckets using their short psuedo name.
  * If changes are needed make sure that it aligns with the definition in `sort-at-rule-pseudos.tsx`.
  */
-export const buckets: Bucket[] = ['', 'l', 'v', 'fw', 'f', 'fv', 'h', 'a', 'm'];
+export const styleBucketOrdering: Bucket[] = [
+  // catch-all
+  '',
+  // link
+  'l',
+  // visited
+  'v',
+  // focus-within
+  'w',
+  // focus
+  'f',
+  // focus-visible
+  'i',
+  // hover
+  'h',
+  // active
+  'a',
+  // at-rules
+  'm',
+];
 
 /**
  * Holds all style buckets in memory that have been added to the head.
@@ -15,29 +34,25 @@ const styleBucketsInHead: Partial<Record<Bucket, HTMLStyleElement>> = {};
  * Maps the long pseudo name to the short pseudo name.
  * Pseudos that match here will be ordered,
  * everythin else will make their way to the catch all style bucket.
+ * We reduce the pseduo name to save bundlesize.
+ * Thankfully there aren't any overlaps, see: https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes.
  */
 const pseudosMap: Record<string, Bucket | undefined> = {
-  link: 'l',
-  visited: 'v',
-  'focus-within': 'fw',
-  focus: 'f',
-  'focus-visible': 'fv',
-  hover: 'h',
-  active: 'a',
+  // link
+  k: 'l',
+  // visited
+  ited: 'v',
+  // focus-within
+  'us-within': 'w',
+  // focus
+  us: 'f',
+  // focus-visible
+  'us-visible': 'i',
+  // hover
+  er: 'h',
+  // active
+  ive: 'a',
 };
-
-/**
- * Create style element and add attributes to it
- *
- * @param opts StyleSheetOpts
- * @param bucket Bucket
- */
-function createStyleElement(opts: StyleSheetOpts): HTMLStyleElement {
-  const tag = document.createElement('style');
-  opts.nonce && tag.setAttribute('nonce', opts.nonce);
-  tag.appendChild(document.createTextNode(''));
-  return tag;
-}
 
 /**
  * Lazily adds a `<style>` bucket to the `<head>`.
@@ -47,21 +62,23 @@ function createStyleElement(opts: StyleSheetOpts): HTMLStyleElement {
  */
 function lazyAddStyleBucketToHead(bucketName: Bucket, opts: StyleSheetOpts): HTMLStyleElement {
   if (!styleBucketsInHead[bucketName]) {
-    const nextBucketIndex = buckets.indexOf(bucketName) + 1;
+    const nextBucketIndex = styleBucketOrdering.indexOf(bucketName) + 1;
     let nextBucketFromCache = null;
 
-    // Find next bucket before which we will add our current bucket element
-    for (let i = nextBucketIndex; i < buckets.length; i++) {
-      const nextBucketName = buckets[i];
-
-      if (styleBucketsInHead[nextBucketName]) {
-        nextBucketFromCache = styleBucketsInHead[nextBucketName]!;
+    // Find the next bucket which we will add our new style bucket before.
+    for (let i = nextBucketIndex; i < styleBucketOrdering.length; i++) {
+      const nextBucket = styleBucketsInHead[styleBucketOrdering[i]];
+      if (nextBucket) {
+        nextBucketFromCache = nextBucket;
         break;
       }
     }
 
-    styleBucketsInHead[bucketName] = createStyleElement(opts);
-    document.head.insertBefore(styleBucketsInHead[bucketName]!, nextBucketFromCache);
+    const tag = document.createElement('style');
+    opts.nonce && tag.setAttribute('nonce', opts.nonce);
+    tag.appendChild(document.createTextNode(''));
+    styleBucketsInHead[bucketName] = tag;
+    document.head.insertBefore(tag, nextBucketFromCache);
   }
 
   return styleBucketsInHead[bucketName]!;
@@ -97,7 +114,9 @@ const getStyleBucketName = (sheet: string): Bucket => {
    */
   if (sheet.charCodeAt(10) === 58 /* ":" */) {
     const openBracketIndex = sheet.indexOf('{');
-    const name = sheet.slice(11, openBracketIndex);
+    // We send through a subset of the string instead of the full pseudo name.
+    // For example `"focus-visible"` name would instead of `"us-visible"`.
+    const name = sheet.slice(14, openBracketIndex);
     // Return a mapped pseudo else the default catch all bucket.
     return pseudosMap[name] || '';
   }
@@ -129,13 +148,11 @@ export const groupSheetsByBucket = (sheets: string[]) => {
  * @param inserted Singleton cache for tracking what styles have already been added to the head
  */
 export default function createStyleSheet(opts: StyleSheetOpts) {
-  const speedy = process.env.NODE_ENV === 'production';
-
   return (css: string) => {
     const bucketName = getStyleBucketName(css);
     const style = lazyAddStyleBucketToHead(bucketName, opts);
 
-    if (speedy) {
+    if (process.env.NODE_ENV === 'production') {
       const sheet = style.sheet as CSSStyleSheet;
       sheet.insertRule(css, sheet.cssRules.length);
     } else {
