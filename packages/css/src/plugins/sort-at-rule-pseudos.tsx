@@ -1,8 +1,9 @@
 import { plugin, Rule, AtRule } from 'postcss';
 
-// NOTE: If we are adding/removing anything from this list, Please also update the
-// the list in runtime package. Going forward we might move this common
-// variable in separate package.
+/**
+ * Ordered style buckets using the long psuedo selector.
+ * If changes make sure that it aligns with the definition in `sheet.tsx`.
+ */
 const pseudoClassesInOrder = [
   ':link',
   ':visited',

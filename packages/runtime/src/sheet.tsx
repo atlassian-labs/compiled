@@ -1,17 +1,20 @@
 import { StyleSheetOpts, Bucket } from './types';
 
 /**
- * Ordered buckets.
+ * Ordered style buckets using the short psuedo name.
+ * If changes are needed make sure that it aligns with the definition in `sort-at-rule-pseudos.tsx`.
  */
 export const buckets: Bucket[] = ['', 'l', 'v', 'fw', 'f', 'fv', 'h', 'a', 'm'];
 
+/**
+ * Holds all style buckets in memory that have been added to the head.
+ */
 const bucketsCache: Partial<Record<Bucket, HTMLStyleElement>> = {};
-const bucketsAddedToHead: Partial<Record<Bucket, boolean>> = {};
 
-// NOTE: If we are adding/removing anything from this list, Please also update the
-// the list in css package. Going forward we might move this common
-// variable in separate package.
-const pseudosMap: { [key: string]: Exclude<Bucket, '' | 'm'> } = {
+/**
+ * Maps the long pseudo name to the short pseudo name.
+ */
+const pseudosMap: Record<string, Bucket> = {
   link: 'l',
   visited: 'v',
   'focus-within': 'fw',
@@ -20,35 +23,6 @@ const pseudosMap: { [key: string]: Exclude<Bucket, '' | 'm'> } = {
   hover: 'h',
   active: 'a',
 };
-
-/**
- * Add buckets to `document.head`. Checks for next bucket which is already added
- * to head and insert current bucket before that. And finally mark added bucket
- * so it won't get added again.
- *
- * @param bucket Current Bucket which we want to insert in head
- */
-function addBucketToHead(bucket: Bucket) {
-  if (!bucketsAddedToHead[bucket]) {
-    const bucketIndex = buckets.indexOf(bucket);
-    let nextBucketFromCache = null;
-
-    // Find next bucket before which we will add our current bucket element
-    for (let i = bucketIndex + 1; i < buckets.length; i++) {
-      const nextBucket = buckets[i];
-
-      if (bucketsAddedToHead[nextBucket]) {
-        nextBucketFromCache = bucketsCache[nextBucket]!;
-
-        break;
-      }
-    }
-
-    document.head.insertBefore(bucketsCache[bucket]!, nextBucketFromCache);
-
-    bucketsAddedToHead[bucket] = true;
-  }
-}
 
 /**
  * Create style element and add attributes to it
@@ -64,35 +38,52 @@ function createStyleElement(opts: StyleSheetOpts): HTMLStyleElement {
 }
 
 /**
- * Used to prevent re-creating the bucket sheets cache during browser runtime.
- */
-let isBucketsCacheFilled = false;
-
-/**
- * Create in memory buckets cache on browser. We will add sheets to these
- * buckets and add that bucket to head.
+ * Lazily adds a `<style>` bucket to the `<head>`.
+ * This will ensure that the style buckets are ordered correctly.
  *
- * @param opts StyleSheetOpts
+ * @param bucket Bucket to insert in the head.
  */
-function createBucketSheetsCache(opts: StyleSheetOpts) {
-  if (!isBucketsCacheFilled) {
-    buckets.forEach((bucket) => {
-      bucketsCache[bucket] = createStyleElement(opts);
-    });
+function lazyAddStyleBucketToHead(bucket: Bucket, opts: StyleSheetOpts): HTMLStyleElement {
+  if (!bucketsCache[bucket]) {
+    const bucketIndex = buckets.indexOf(bucket);
+    let nextBucketFromCache = null;
 
-    isBucketsCacheFilled = true;
+    // Find next bucket before which we will add our current bucket element
+    for (let i = bucketIndex + 1; i < buckets.length; i++) {
+      const nextBucketName = buckets[i];
+
+      if (bucketsCache[nextBucketName]) {
+        nextBucketFromCache = bucketsCache[nextBucketName]!;
+        break;
+      }
+    }
+
+    bucketsCache[bucket] = createStyleElement(opts);
+    document.head.insertBefore(bucketsCache[bucket]!, nextBucketFromCache);
   }
+
+  return bucketsCache[bucket]!;
 }
 
 /**
  * Gets the bucket depending on the sheet.
+ * This function makes assumptions as to the form of the input class name.
  *
- * For eg.
- * `getBucket('._a1234567:hover{ color: red; }')` will return `h` - the hover bucket.
+ * Input:
+ *
+ * ```
+ * "._a1234567:hover{ color: red; }"
+ * ```
+ *
+ * Output:
+ *
+ * ```
+ * "h"
+ * ```
  *
  * @param sheet styles for which we are getting the bucket
  */
-const getBucket = (sheet: string): Bucket => {
+const getStyleBucketName = (sheet: string): Bucket => {
   // `64` corresponds to `@` i.e. at-rules. We are grouping all the at-rules
   // like @media, @supports etc under `m` bucket for now.
   if (sheet.charCodeAt(0) === 64) {
@@ -118,15 +109,15 @@ const getBucket = (sheet: string): Bucket => {
  * @returns { 'h': ['._a1234567:hover{ color: red; }', '._a1234567:hover{ color: green; }'] }
  * @param sheets styles which are grouping under bucket
  */
-export const groupSheetsByBucket = <T extends string, U extends T[]>(sheets: U) => {
-  return sheets.reduce<Record<Bucket, T[]>>((accum, sheet) => {
-    const bucket = getBucket(sheet);
+export const groupSheetsByBucket = (sheets: string[]) => {
+  return sheets.reduce<Record<Bucket, string[]>>((accum, sheet) => {
+    const bucket = getStyleBucketName(sheet);
     const bucketValue = accum[bucket];
 
     accum[bucket] = bucketValue ? bucketValue.concat(sheet) : [sheet];
 
     return accum;
-  }, {} as Record<Bucket, T[]>);
+  }, {} as Record<Bucket, string[]>);
 };
 
 /**
@@ -139,16 +130,9 @@ export const groupSheetsByBucket = <T extends string, U extends T[]>(sheets: U) 
 export default function createStyleSheet(opts: StyleSheetOpts) {
   const speedy = process.env.NODE_ENV === 'production';
 
-  // Creating in memory buckets. This will run only once.
-  createBucketSheetsCache(opts);
-
   return (css: string) => {
-    // Get the bucket based on css sheet
-    const bucket = getBucket(css);
-    const style = bucketsCache[bucket]!;
-
-    // Add that bucket to head using bucket cache style element
-    addBucketToHead(bucket);
+    const bucketName = getStyleBucketName(css);
+    const style = lazyAddStyleBucketToHead(bucketName, opts);
 
     if (speedy) {
       const sheet = style.sheet as CSSStyleSheet;
