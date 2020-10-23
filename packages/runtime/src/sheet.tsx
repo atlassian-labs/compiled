@@ -1,11 +1,12 @@
 import { StyleSheetOpts, Bucket } from './types';
 
+/**
+ * Ordered buckets.
+ */
 export const buckets: Bucket[] = ['', 'l', 'v', 'fw', 'f', 'fv', 'h', 'a', 'm'];
 
 const bucketsCache: Partial<Record<Bucket, HTMLStyleElement>> = {};
 const bucketsAddedToHead: Partial<Record<Bucket, boolean>> = {};
-
-let isBucketsCacheFilled = false;
 
 // NOTE: If we are adding/removing anything from this list, Please also update the
 // the list in css package. Going forward we might move this common
@@ -27,7 +28,7 @@ const pseudosMap: { [key: string]: Exclude<Bucket, '' | 'm'> } = {
  *
  * @param bucket Current Bucket which we want to insert in head
  */
-export function addBucketToHead(bucket: Bucket) {
+function addBucketToHead(bucket: Bucket) {
   if (!bucketsAddedToHead[bucket]) {
     const bucketIndex = buckets.indexOf(bucket);
     let nextBucketFromCache = null;
@@ -63,6 +64,11 @@ function createStyleElement(opts: StyleSheetOpts): HTMLStyleElement {
 }
 
 /**
+ * Used to prevent re-creating the bucket sheets cache during browser runtime.
+ */
+let isBucketsCacheFilled = false;
+
+/**
  * Create in memory buckets cache on browser. We will add sheets to these
  * buckets and add that bucket to head.
  *
@@ -82,7 +88,7 @@ function createBucketSheetsCache(opts: StyleSheetOpts) {
  * Gets the bucket depending on the sheet.
  *
  * For eg.
- * `getBucket('._a1234567:hover{ color: red; }')` will return `h` i.e. hover bucket
+ * `getBucket('._a1234567:hover{ color: red; }')` will return `h` - the hover bucket.
  *
  * @param sheet styles for which we are getting the bucket
  */
@@ -112,7 +118,7 @@ const getBucket = (sheet: string): Bucket => {
  * @returns { 'h': ['._a1234567:hover{ color: red; }', '._a1234567:hover{ color: green; }'] }
  * @param sheets styles which are grouping under bucket
  */
-export const groupByBucket = <T extends string, U extends T[]>(sheets: U) => {
+export const groupSheetsByBucket = <T extends string, U extends T[]>(sheets: U) => {
   return sheets.reduce<Record<Bucket, T[]>>((accum, sheet) => {
     const bucket = getBucket(sheet);
     const bucketValue = accum[bucket];
@@ -122,26 +128,6 @@ export const groupByBucket = <T extends string, U extends T[]>(sheets: U) => {
     return accum;
   }, {} as Record<Bucket, T[]>);
 };
-
-/**
- * Get style element sheet
- *
- * @param styleElement Style element like <style></style>
- */
-function getStyleElementSheet(styleElement: HTMLStyleElement | undefined): CSSStyleSheet {
-  // @ts-ignore - We assume it will return a sheet so coerce it to CSSStyleSheet.
-  return styleElement && (styleElement.sheet as CSSStyleSheet);
-}
-
-/**
- * Appends css to style element if its present by creating a text node
- *
- * @param styleElement Style element like <style></style>
- * @param css css in string form like ._a1234567{display: block;}
- */
-function appendCSSTextNode(styleElement: HTMLStyleElement | undefined, css: string) {
-  styleElement && styleElement.appendChild(document.createTextNode(css));
-}
 
 /**
  * Returns a style sheet object that is used to move styles to the head of the application
@@ -159,17 +145,16 @@ export default function createStyleSheet(opts: StyleSheetOpts) {
   return (css: string) => {
     // Get the bucket based on css sheet
     const bucket = getBucket(css);
+    const style = bucketsCache[bucket]!;
 
     // Add that bucket to head using bucket cache style element
     addBucketToHead(bucket);
 
     if (speedy) {
-      const sheet = getStyleElementSheet(bucketsCache[bucket]);
-      // this is the ultrafast version, works across browsers
-      // the big drawback is that the css won't be editable in devtools in most browsers.
+      const sheet = style.sheet as CSSStyleSheet;
       sheet.insertRule(css, sheet.cssRules.length);
     } else {
-      appendCSSTextNode(bucketsCache[bucket], css);
+      style.appendChild(document.createTextNode(css));
     }
   };
 }
