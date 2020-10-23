@@ -62,12 +62,12 @@ const pseudosMap: Record<string, Bucket | undefined> = {
  */
 function lazyAddStyleBucketToHead(bucketName: Bucket, opts: StyleSheetOpts): HTMLStyleElement {
   if (!styleBucketsInHead[bucketName]) {
-    const nextBucketIndex = styleBucketOrdering.indexOf(bucketName) + 1;
+    let currentBucketIndex = styleBucketOrdering.indexOf(bucketName);
     let nextBucketFromCache = null;
 
     // Find the next bucket which we will add our new style bucket before.
-    for (let i = nextBucketIndex; i < styleBucketOrdering.length; i++) {
-      const nextBucket = styleBucketsInHead[styleBucketOrdering[i]];
+    while (++currentBucketIndex < styleBucketOrdering.length) {
+      const nextBucket = styleBucketsInHead[styleBucketOrdering[currentBucketIndex]];
       if (nextBucket) {
         nextBucketFromCache = nextBucket;
         break;
@@ -113,12 +113,10 @@ const getStyleBucketName = (sheet: string): Bucket => {
    * using this the 10th character could be a pseudo declaration.
    */
   if (sheet.charCodeAt(10) === 58 /* ":" */) {
-    const openBracketIndex = sheet.indexOf('{');
     // We send through a subset of the string instead of the full pseudo name.
     // For example `"focus-visible"` name would instead of `"us-visible"`.
-    const name = sheet.slice(14, openBracketIndex);
     // Return a mapped pseudo else the default catch all bucket.
-    return pseudosMap[name] || '';
+    return pseudosMap[sheet.slice(14, sheet.indexOf('{'))] || '';
   }
 
   // Return default catch all bucket

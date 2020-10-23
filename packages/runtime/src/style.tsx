@@ -28,9 +28,7 @@ export default function Style(props: StyleProps) {
       return false;
     }
 
-    inserted[sheet] = true;
-
-    return true;
+    return (inserted[sheet] = true);
   });
 
   if (sheets.length) {
