@@ -1,4 +1,4 @@
-import { ax } from '../ax';
+import ax from '../ax';
 
 describe('ax', () => {
   it('should join single classes together', () => {
