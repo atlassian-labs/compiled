@@ -2,12 +2,29 @@
 
 > Codemod for easy migration from emotion.
 
+## Usage
+
+### Using `jscodeshift`
+
 ```bash
 # https://github.com/facebook/jscodeshift#usage-cli
 npx jscodeshift --parser=tsx --extensions=tsx --transform node_modules/@compiled/react/dist/codemods/emotion-to-compiled <path>
 
 # <path> is the source code folder eg. src
 ```
+
+### Using `@compiled/cli`
+
+```bash
+npx @compiled/cli --preset codemods
+# and follow the instructions
+```
+
+How instructions looks like (when run without `--preset codemods`. Please run it with `--preset codemods` for fast access):
+
+![emotion-to-compiled cli](./assets/emotion-to-compiled-cli.gif)
+
+_NOTE: Use `npx @compiled/cli` instead of `npx compiled-css-in-js` (which is shown in image)_
 
 **Will modify files in place, so make sure you can recover if it goes wrong!**
 
@@ -63,7 +80,7 @@ const Component = (props) => (
 
 If you are generating CSS at runtime, you'll have to do conversion manually. Check out [the docs](https://compiledcssinjs.com/docs/migrating#generating-css-at-runtime) which explains why this conversion is necessary.
 
-Please convert this code:
+Please convert such code:
 
 ```javascript
 import styled from '@emotion/styled';
