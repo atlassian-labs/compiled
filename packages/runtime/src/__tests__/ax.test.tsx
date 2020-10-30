@@ -43,4 +43,10 @@ describe('ax', () => {
 
     expect(result).toEqual('bar');
   });
+
+  it('should ignore non atomic declarations', () => {
+    const result = ax(['hello_there', 'hello_world']);
+
+    expect(result).toEqual('hello_there hello_world');
+  });
 });

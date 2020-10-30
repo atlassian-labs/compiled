@@ -32,7 +32,7 @@ export default function ax(classNames: (string | undefined | false)[]): string {
     let x = -1;
 
     while (++x < groups.length) {
-      atomicGroups[groups[x].slice(0, 5)] = groups[x];
+      atomicGroups[groups[x].slice(0, groups[x].charCodeAt(0) === 95 ? 5 : undefined)] = groups[x];
     }
   }
 
