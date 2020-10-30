@@ -44,6 +44,11 @@ export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Meta
   // Remove css prop
   path.node.attributes.splice(cssPropIndex, 1);
 
+  if (!cssOutput.css) {
+    // No css was generated - return early!
+    return;
+  }
+
   path.parentPath.replaceWith(
     buildCompiledComponent(path.parentPath.node as t.JSXElement, cssOutput, meta)
   );
