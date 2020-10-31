@@ -114,13 +114,13 @@ describe('template literal to css', () => {
     });
 
     it('should get the before and after for the second part of a transform interpolation', () => {
-      const css = [`\n            transform: translate3d(var(--var-test), `, `, 0);`];
+      const css = [`\n            transform: translate3d(var(--_test), `, `, 0);`];
 
       const before = cssBeforeInterpolation(css[0]);
       const after = cssAfterInterpolation(css[1]);
 
       expect(before.variablePrefix).toEqual('');
-      expect(before.css).toEqual('\n            transform: translate3d(var(--var-test), ');
+      expect(before.css).toEqual('\n            transform: translate3d(var(--_test), ');
       expect(after.variableSuffix).toEqual('');
       expect(after.css).toEqual(', 0);');
     });
@@ -150,7 +150,7 @@ describe('template literal to css', () => {
 
     it('should extract the first part of the second group', () => {
       const parts = [
-        'background-image: linear-gradient(45deg, var(--var-test) 25%, transparent 25%),',
+        'background-image: linear-gradient(45deg, var(--_test) 25%, transparent 25%),',
         'linear-gradient(-45deg, ',
         ' 25%, transparent 25%),',
         'linear-gradient(45deg, transparent 75%, ',
@@ -170,7 +170,7 @@ describe('template literal to css', () => {
 
     it('should extract the first part of the third group', () => {
       const parts = [
-        'background-image: linear-gradient(45deg, var(--var-test) 25%, transparent 25%), linear-gradient(-45deg, var(--var-test) 25%, transparent 25%),',
+        'background-image: linear-gradient(45deg, var(--_test) 25%, transparent 25%), linear-gradient(-45deg, var(--_test) 25%, transparent 25%),',
         'linear-gradient(45deg, transparent 75%, ',
         ' 75%),',
         'linear-gradient(-45deg, transparent 75%, ',
@@ -188,7 +188,7 @@ describe('template literal to css', () => {
 
     it('should extract the first part of the fourth group', () => {
       const parts = [
-        'background-image: linear-gradient(45deg, var(--var-test) 25%, transparent 25%), linear-gradient(-45deg, var(--var-test) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--var-test) 75%),',
+        'background-image: linear-gradient(45deg, var(--_test) 25%, transparent 25%), linear-gradient(-45deg, var(--_test) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--_test) 75%),',
         'linear-gradient(-45deg, transparent 75%, ',
         ' 75%);',
       ];

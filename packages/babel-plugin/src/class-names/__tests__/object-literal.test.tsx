@@ -26,9 +26,9 @@ describe('class names object literal', () => {
       `);
 
     expect(actual).toInclude(
-      '<div style={{ "--var-test-fontsize": (fontSize || "") + "px" }} className={"css-test"}>hello, world!</div>'
+      '<div style={{ "--_test-fontsize": (fontSize || "") + "px" }} className={"css-test"}>hello, world!</div>'
     );
-    expect(actual).toInclude('.css-test{font-size:var(--var-test-fontsize)}');
+    expect(actual).toInclude('.css-test{font-size:var(--_test-fontsize)}');
   });
 
   xit('should transform object with simple values', () => {
@@ -107,9 +107,9 @@ describe('class names object literal', () => {
         );
       `);
 
-    expect(actual).toInclude('.css-test{color:blue;font-size:var(--var-test-fontsize)}');
+    expect(actual).toInclude('.css-test{color:blue;font-size:var(--_test-fontsize)}');
     expect(actual).toInclude(
-      '<div style={{ "--var-test-fontsize": fontSize }} className={"css-test"}>hello, world!</div>'
+      '<div style={{ "--_test-fontsize": fontSize }} className={"css-test"}>hello, world!</div>'
     );
   });
 
