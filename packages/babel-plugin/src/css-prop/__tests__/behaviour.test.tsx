@@ -11,7 +11,7 @@ const transform = (code: string) => {
 };
 
 describe('css prop behaviour', () => {
-  it('should transform a self closing element', () => {
+  it('should not apply class name when no styles are present', () => {
     const actual = transform(`
       import '@compiled/core';
       import React from 'react';
@@ -19,7 +19,7 @@ describe('css prop behaviour', () => {
       <div css={{}} />
     `);
 
-    expect(actual).toInclude('<div className={ax([])}/>');
+    expect(actual).toInclude('<div/>');
   });
 
   it('should replace css prop with class name', () => {
@@ -30,7 +30,7 @@ describe('css prop behaviour', () => {
       <div css={{}}>hello world</div>
     `);
 
-    expect(actual).toInclude('<div className={ax([])}>hello world</div>');
+    expect(actual).toInclude('<div>hello world</div>');
   });
 
   it('should pass through style identifier when there is no dynamic styles in the css', () => {
@@ -112,10 +112,10 @@ describe('css prop behaviour', () => {
       import '@compiled/core';
       import React from 'react';
 
-      <div className="foobar" css={{}}>hello world</div>
+      <div className="foobar" css={{ display: 'block' }}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={ax(["foobar"])}');
+    expect(actual).toInclude('className={ax(["_1e0c1ule","foobar"])}');
   });
 
   it('should pass through spread props', () => {
@@ -158,10 +158,10 @@ describe('css prop behaviour', () => {
       import React from 'react';
 
       const className = "foobar";
-      <div className={className} css={{}}>hello world</div>
+      <div className={className} css={{ display: 'block' }}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={ax([className])}');
+    expect(actual).toInclude('className={ax(["_1e0c1ule",className])}');
   });
 
   it('should pick up array composition', () => {
@@ -213,10 +213,10 @@ describe('css prop behaviour', () => {
 
       const getFoo = () => 'foobar';
 
-      <div css={{}} className={getFoo()}>hello world</div>
+      <div css={{ display: 'block' }} className={getFoo()}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={ax([getFoo()])}');
+    expect(actual).toInclude('className={ax(["_1e0c1ule",getFoo()])}');
   });
 
   it('should allow inlined expressions as property values', () => {
