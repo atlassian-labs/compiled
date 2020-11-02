@@ -46,7 +46,7 @@ describe('import specifiers', () => {
       <div css={{ fontSize: mutable }}>hello world</div>
     `);
 
-    expect(actual).toInclude('{font-size:var(--var-i47brp)}');
+    expect(actual).toInclude('{font-size:var(--_i47brp)}');
   });
 
   it('should bail out evaluating identifier expression referencing a mutated identifier', () => {
@@ -61,7 +61,7 @@ describe('import specifiers', () => {
       <div css={{ fontSize: dontchange }}>hello world</div>
     `);
 
-    expect(actual).toInclude('{font-size:var(--var-uta6jk)}');
+    expect(actual).toInclude('{font-size:var(--_uta6jk)}');
   });
 
   it('should not exhaust the stack when an identifier references itself', () => {
@@ -89,7 +89,7 @@ describe('import specifiers', () => {
       <div css={{ fontSize: dontchange }}>hello world</div>
     `);
 
-    expect(actual).toInclude('{font-size:var(--var-uta6jk)}');
+    expect(actual).toInclude('{font-size:var(--_uta6jk)}');
   });
 
   it('should bail out evaluating a binary expression referencing a mutated identifier', () => {
@@ -103,7 +103,7 @@ describe('import specifiers', () => {
       <div css={{ fontSize: mutable * 2 }}>hello world</div>
     `);
 
-    expect(actual).toInclude('{font-size:var(--var-1bs2x4k)}');
+    expect(actual).toInclude('{font-size:var(--_1bs2x4k)}');
   });
 
   it('should not blow up when referencing local destructured args in arrow func', () => {

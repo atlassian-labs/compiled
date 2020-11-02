@@ -85,8 +85,8 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('{background:var(--var-1mkyvve)}');
-    expect(actual).toInclude('"--var-1mkyvve":color.blue');
+    expect(actual).toInclude('{background:var(--_1mkyvve)}');
+    expect(actual).toInclude('"--_1mkyvve":color.blue');
   });
 
   it('should not pass down invalid html attributes to the node when property has a suffix', () => {
@@ -97,9 +97,9 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('{font-size:var(--var-7wpnv5)}');
+    expect(actual).toInclude('{font-size:var(--_7wpnv5)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--var-7wpnv5":`${textSize}px`');
+    expect(actual).toInclude('"--_7wpnv5":`${textSize}px`');
   });
 
   it('should not pass down invalid html attributes to the node when property has a suffix when func in template literal', () => {
@@ -110,9 +110,9 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('{font-size:var(--var-fb92co)}');
+    expect(actual).toInclude('{font-size:var(--_fb92co)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--var-fb92co":(textSize||"")+"px"');
+    expect(actual).toInclude('"--_fb92co":(textSize||"")+"px"');
   });
 
   it('should transform object with simple values', () => {
@@ -157,8 +157,8 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('{color:var(--var-1ylxx6h)}');
-    expect(actual).toInclude('"--var-1ylxx6h":color');
+    expect(actual).toInclude('{color:var(--_1ylxx6h)}');
+    expect(actual).toInclude('"--_1ylxx6h":color');
   });
 
   it('should inline call if it returns simple value', () => {
@@ -172,8 +172,8 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('{color:var(--var-16ywsic)}');
-    expect(actual).toInclude('"--var-16ywsic":em(\'blue\')');
+    expect(actual).toInclude('{color:var(--_16ywsic)}');
+    expect(actual).toInclude('"--_16ywsic":em(\'blue\')');
   });
 
   it('should inline constant string literal', () => {
@@ -199,8 +199,8 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('{color:var(--var-1p69eoh)}');
-    expect(actual).toInclude('"--var-1p69eoh":props.color');
+    expect(actual).toInclude('{color:var(--_1p69eoh)}');
+    expect(actual).toInclude('"--_1p69eoh":props.color');
   });
 
   it('should transform object spread from variable', () => {
@@ -231,8 +231,8 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('{color:var(--var-1ylxx6h)}');
-    expect(actual).toInclude('"--var-1ylxx6h":color');
+    expect(actual).toInclude('{color:var(--_1ylxx6h)}');
+    expect(actual).toInclude('"--_1ylxx6h":color');
   });
 
   it('should transform object with obj variable', () => {

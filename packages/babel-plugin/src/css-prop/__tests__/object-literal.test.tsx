@@ -23,9 +23,9 @@ describe('css prop object literal', () => {
       `);
 
     expect(actual).toInclude('{background-color:blue');
-    expect(actual).toInclude('{color:var(--var-bo0rwa)');
+    expect(actual).toInclude('{color:var(--_bo0rwa)');
     expect(actual).toInclude('text-decoration-line:none');
-    expect(actual).toInclude('style={{"--var-bo0rwa":cl}}');
+    expect(actual).toInclude('style={{"--_bo0rwa":cl}}');
   });
 
   it('should inline constant variable', () => {
@@ -86,9 +86,9 @@ describe('css prop object literal', () => {
         <div css={{ marginLeft: \`\${heading.depth}rem\`, color: 'red' }}>hello world</div>
       `);
 
-    expect(actual).toInclude('{margin-left:var(--var-5un9uz)}');
+    expect(actual).toInclude('{margin-left:var(--_5un9uz)}');
     expect(actual).toInclude('{color:red}');
-    expect(actual).toInclude('style={{"--var-5un9uz":(heading.depth||"")+"rem"}}');
+    expect(actual).toInclude('style={{"--_5un9uz":(heading.depth||"")+"rem"}}');
   });
 
   it('should persist prefix of dynamic property value into inline styles', () => {
@@ -102,9 +102,9 @@ describe('css prop object literal', () => {
         <div css={{ fontSize: \`calc(100% - \${fontSize}px)\`, color: 'red' }}>hello world</div>
       `);
 
-    expect(actual).toInclude('{font-size:calc(100% - var(--var-1j2e0s2))}');
+    expect(actual).toInclude('{font-size:calc(100% - var(--_1j2e0s2))}');
     expect(actual).toInclude('{color:red}');
-    expect(actual).toInclude('style={{"--var-1j2e0s2":(fontSize||"")+"px"}}');
+    expect(actual).toInclude('style={{"--_1j2e0s2":(fontSize||"")+"px"}}');
   });
 
   it('should move prefix of grouped interpolation into inline styles', () => {
@@ -119,8 +119,8 @@ describe('css prop object literal', () => {
         <div css={{ marginLeft: \`calc(100% - \${heading.depth}rem)\` }}>hello world</div>
       `);
 
-    expect(actual).toInclude('{margin-left:calc(100% - var(--var-5un9uz))}');
-    expect(actual).toInclude('style={{"--var-5un9uz":(heading.depth||"")+"rem"}}');
+    expect(actual).toInclude('{margin-left:calc(100% - var(--_5un9uz))}');
+    expect(actual).toInclude('style={{"--_5un9uz":(heading.depth||"")+"rem"}}');
   });
 
   it('should move multiple groups of interpolations into inline styles', () => {
@@ -160,9 +160,9 @@ describe('css prop object literal', () => {
         \`}>hello world</div>
       `);
 
-    expect(actual).toInclude('style={{"--var-1vrvste":N30}}');
+    expect(actual).toInclude('style={{"--_1vrvste":N30}}');
     expect(actual).toInclude(
-      'background-image:linear-gradient(45deg,var(--var-1vrvste) 25%,transparent 25%),linear-gradient(-45deg,var(--var-1vrvste) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--var-1vrvste) 75%),linear-gradient(-45deg,transparent 75%,var(--var-1vrvste) 75%)'
+      'background-image:linear-gradient(45deg,var(--_1vrvste) 25%,transparent 25%),linear-gradient(-45deg,var(--_1vrvste) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--_1vrvste) 75%),linear-gradient(-45deg,transparent 75%,var(--_1vrvste) 75%)'
     );
   });
 
@@ -213,8 +213,8 @@ describe('css prop object literal', () => {
         <div css={{ color: blue }}>hello world</div>
       `);
 
-    expect(actual).toInclude('{color:var(--var-13q2bts)}');
-    expect(actual).toInclude('style={{"--var-13q2bts":blue}}');
+    expect(actual).toInclude('{color:var(--_13q2bts)}');
+    expect(actual).toInclude('style={{"--_13q2bts":blue}}');
   });
 
   it('should transform object that has a destructured variable reference', () => {
@@ -227,8 +227,8 @@ describe('css prop object literal', () => {
         <div css={{ color }}>hello world</div>
       `);
 
-    expect(actual).toInclude('style={{"--var-1ylxx6h":color}}');
-    expect(actual).toInclude('{color:var(--var-1ylxx6h)}');
+    expect(actual).toInclude('style={{"--_1ylxx6h":color}}');
+    expect(actual).toInclude('{color:var(--_1ylxx6h)}');
   });
 
   it('should transform object spread from variable', () => {
@@ -521,11 +521,11 @@ describe('css prop object literal', () => {
          }}>hello world</div>
       `);
 
-    expect(actual).toInclude('style={{"--var-1xlms2h":HORIZONTAL_SPACING}}');
+    expect(actual).toInclude('style={{"--_1xlms2h":HORIZONTAL_SPACING}}');
     expect(actual).toInclude('{padding-top:0}');
-    expect(actual).toInclude('{padding-right:var(--var-1xlms2h)}');
+    expect(actual).toInclude('{padding-right:var(--_1xlms2h)}');
     expect(actual).toInclude('{padding-bottom:0}');
-    expect(actual).toInclude('{padding-left:var(--var-1xlms2h)}');
+    expect(actual).toInclude('{padding-left:var(--_1xlms2h)}');
   });
 
   it('should parse an inline string interpolation delimited by multiple spaces', () => {
@@ -543,10 +543,10 @@ describe('css prop object literal', () => {
       `);
 
     expect(actual).toInclude('{padding-top:0}');
-    expect(actual).toInclude('{padding-right:var(--var-1xlms2h)}');
+    expect(actual).toInclude('{padding-right:var(--_1xlms2h)}');
     expect(actual).toInclude('{padding-bottom:0}');
     expect(actual).toInclude('{padding-left:0}');
-    expect(actual).toInclude('style={{"--var-1xlms2h":HORIZONTAL_SPACING}}');
+    expect(actual).toInclude('style={{"--_1xlms2h":HORIZONTAL_SPACING}}');
   });
 
   it('should parse an inline string interpolation delimited by multiple spaces and suffix', () => {

@@ -73,7 +73,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       } else {
         // This is the catch all for any kind of expression.
         // We don't want to explicitly handle each expression node differently if we can avoid it!
-        const variableName = `--var-${hash(generate(propValue).code)}`;
+        const variableName = `--_${hash(generate(propValue).code)}`;
         variables.push({ name: variableName, expression: propValue });
         value = `var(${variableName})`;
       }
@@ -148,9 +148,9 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       // The only difficulty here is what we do around prefixes and suffixes.
       // CSS variables can't have them! So we need to move them to the inline style.
       // E.g. `font-size: ${fontSize}px` will end up needing to look like:
-      // `font-size: var(--var-font-size)`, with the suffix moved to inline styles
-      // style={{ '--var-font-size': fontSize + 'px' }}
-      const variableName = `--var-${hash(generate(interpolation).code)}`;
+      // `font-size: var(--_font-size)`, with the suffix moved to inline styles
+      // style={{ '--_font-size': fontSize + 'px' }}
+      const variableName = `--_${hash(generate(interpolation).code)}`;
       const nextQuasis = node.quasis[index + 1];
       const before = cssBeforeInterpolation(css + q.value.raw);
       const after = cssAfterInterpolation(nextQuasis.value.raw);

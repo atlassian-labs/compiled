@@ -72,7 +72,7 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toInclude('textSize,...props');
-    expect(actual).toInclude('"--var-fb92co":textSize');
+    expect(actual).toInclude('"--_fb92co":textSize');
   });
 
   it('should remove styled import', () => {
@@ -131,7 +131,7 @@ describe('styled component behaviour', () => {
       \`;
     `);
 
-    expect(actual).toInclude('"--var-1p69eoh":(props.color||"")+"px"');
+    expect(actual).toInclude('"--_1p69eoh":(props.color||"")+"px"');
   });
 
   it('should spread down props to element', () => {
@@ -210,8 +210,8 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('{color:var(--var-1poneq5)}');
-    expect(actual).toInclude('"--var-1poneq5":(()=>{return props.color;})()}}');
+    expect(actual).toInclude('{color:var(--_1poneq5)}');
+    expect(actual).toInclude('"--_1poneq5":(()=>{return props.color;})()}}');
   });
 
   it('should transform an arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
@@ -223,9 +223,9 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('{font-size:var(--var-1j0t240)}');
+    expect(actual).toInclude('{font-size:var(--_1j0t240)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--var-1j0t240":(()=>{return textSize;})()}}');
+    expect(actual).toInclude('"--_1j0t240":(()=>{return textSize;})()}}');
   });
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE', () => {
@@ -237,8 +237,8 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('{color:var(--var-1poneq5)}');
-    expect(actual).toInclude('"--var-1poneq5":"very"+((()=>{return props.color;})()||"")+"dark"');
+    expect(actual).toInclude('{color:var(--_1poneq5)}');
+    expect(actual).toInclude('"--_1poneq5":"very"+((()=>{return props.color;})()||"")+"dark"');
   });
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
@@ -250,8 +250,8 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('{font-size:var(--var-1j0t240)}');
+    expect(actual).toInclude('{font-size:var(--_1j0t240)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--var-1j0t240":"super"+((()=>{return textSize;})()||"")+"big"');
+    expect(actual).toInclude('"--_1j0t240":"super"+((()=>{return textSize;})()||"")+"big"');
   });
 });
