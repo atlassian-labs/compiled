@@ -1,3 +1,11 @@
+const UNDERSCORE_UNICODE = 95;
+
+/**
+ * This length includes the underscore,
+ * e.g. `"_1s4A"` would be a valid atomic group hash.
+ */
+const ATOMIC_GROUP_LENGTH = 5;
+
 /**
  * Joins classes together and ensures atomic declarations of a single group exist.
  * Atomic declarations take the form of `_{group}{value}` (always prefixed with an underscore),
@@ -32,7 +40,12 @@ export default function ax(classNames: (string | undefined | false)[]): string {
     let x = -1;
 
     while (++x < groups.length) {
-      atomicGroups[groups[x].slice(0, groups[x].charCodeAt(0) === 95 ? 5 : undefined)] = groups[x];
+      atomicGroups[
+        groups[x].slice(
+          0,
+          groups[x].charCodeAt(0) === UNDERSCORE_UNICODE ? ATOMIC_GROUP_LENGTH : undefined
+        )
+      ] = groups[x];
     }
   }
 
