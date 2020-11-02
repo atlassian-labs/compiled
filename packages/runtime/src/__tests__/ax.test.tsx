@@ -1,4 +1,4 @@
-import { ax } from '../ax';
+import ax from '../ax';
 
 describe('ax', () => {
   it('should join single classes together', () => {
@@ -42,5 +42,11 @@ describe('ax', () => {
     const result = ax([isEnabled && 'foo', 'bar']);
 
     expect(result).toEqual('bar');
+  });
+
+  it('should ignore non atomic declarations', () => {
+    const result = ax(['hello_there', 'hello_world']);
+
+    expect(result).toEqual('hello_there hello_world');
   });
 });

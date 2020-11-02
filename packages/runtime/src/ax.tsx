@@ -1,3 +1,11 @@
+const UNDERSCORE_UNICODE = 95;
+
+/**
+ * This length includes the underscore,
+ * e.g. `"_1s4A"` would be a valid atomic group hash.
+ */
+const ATOMIC_GROUP_LENGTH = 5;
+
 /**
  * Joins classes together and ensures atomic declarations of a single group exist.
  * Atomic declarations take the form of `_{group}{value}` (always prefixed with an underscore),
@@ -19,23 +27,27 @@
  *
  * @param classes
  */
-export const ax = (classes: (string | undefined | false)[]): string => {
-  const found: Record<string, string> = {};
+export default function ax(classNames: (string | undefined | false)[]): string {
+  const atomicGroups: Record<string, string> = {};
+  let i = -1;
 
-  for (let i = 0; i < classes.length; i++) {
-    const cls = classes[i];
-    if (!cls) {
+  while (++i < classNames.length) {
+    if (!classNames[i]) {
       continue;
     }
 
-    const groups = cls.split(' ');
+    const groups = (classNames[i] as string).split(' ');
+    let x = -1;
 
-    for (let x = 0; x < groups.length; x++) {
-      const className = groups[x];
-      const group = className.slice(0, className.charCodeAt(0) === 95 ? 5 : undefined);
-      found[group] = className;
+    while (++x < groups.length) {
+      atomicGroups[
+        groups[x].slice(
+          0,
+          groups[x].charCodeAt(0) === UNDERSCORE_UNICODE ? ATOMIC_GROUP_LENGTH : undefined
+        )
+      ] = groups[x];
     }
   }
 
-  return Object.values(found).join(' ');
-};
+  return Object.values(atomicGroups).join(' ');
+}
