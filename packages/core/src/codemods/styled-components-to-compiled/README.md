@@ -4,7 +4,9 @@
 
 ```bash
 # https://github.com/facebook/jscodeshift#usage-cli
-npx jscodeshift --parser=tsx --extensions=tsx --transform node_modules/@compiled/core/dist/codemods/styled-components-to-compiled src
+npx jscodeshift --parser=tsx --extensions=tsx --transform node_modules/@compiled/core/dist/codemods/styled-components-to-compiled <path>
+
+# <path> is the source code folder eg. src
 ```
 
 **Will modify files in place, so make sure you can recover if it goes wrong!**
