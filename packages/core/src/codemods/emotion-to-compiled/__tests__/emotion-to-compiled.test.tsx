@@ -28,7 +28,11 @@ describe('emotion-to-compiled transformer', () => {
     /** @jsx jsx */
     import { css, jsx } from '@emotion/core';
     `,
-    "import '@compiled/core';",
+    `
+    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
+    Eg. import React from 'react'; */
+    import '@compiled/core';
+    `,
     'it transforms all named @emotion/core imports'
   );
 
@@ -39,7 +43,11 @@ describe('emotion-to-compiled transformer', () => {
     /** @jsx jsx */
     import { css as c, jsx } from '@emotion/core';
     `,
-    "import '@compiled/core';",
+    `
+    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
+    Eg. import React from 'react'; */
+    import '@compiled/core';
+    `,
     'it transforms all named @emotion/core imports with different imported name'
   );
 
@@ -51,7 +59,11 @@ describe('emotion-to-compiled transformer', () => {
     import { css, jsx } from '@emotion/core';
     import styled from '@emotion/styled';
     `,
-    "import { styled } from '@compiled/core';",
+    `
+    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
+    Eg. import React from 'react'; */
+    import { styled } from '@compiled/core';
+    `,
     'it transforms all named @emotion/core and default @emotion/styled imports'
   );
 
@@ -63,7 +75,11 @@ describe('emotion-to-compiled transformer', () => {
     import { css as c, jsx } from '@emotion/core';
     import sc from '@emotion/styled';
     `,
-    "import { styled as sc } from '@compiled/core';",
+    `
+    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
+    Eg. import React from 'react'; */
+    import { styled as sc } from '@compiled/core';
+    `,
     'it transforms all named @emotion/core with different imported name and default with different name than "styled" @emotion/styled imports'
   );
 
@@ -74,7 +90,6 @@ describe('emotion-to-compiled transformer', () => {
     /** @jsx jsx */
     import { css, jsx } from '@emotion/core';
     import styled from '@emotion/styled';
-    import react from 'react';
 
     const Component = (props) => (
       <>
@@ -89,8 +104,9 @@ describe('emotion-to-compiled transformer', () => {
     );
     `,
     `
+    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
+    Eg. import React from 'react'; */
     import { styled } from '@compiled/core';
-    import react from 'react';
 
     const Component = (props) => (
       <>
@@ -114,7 +130,6 @@ describe('emotion-to-compiled transformer', () => {
     /** @jsx jsx */
     import { css as c, jsx } from '@emotion/core';
     import styled from '@emotion/styled';
-    import react from 'react';
 
     const Component = (props) => (
       <>
@@ -129,8 +144,9 @@ describe('emotion-to-compiled transformer', () => {
     );
     `,
     `
+    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
+    Eg. import React from 'react'; */
     import { styled } from '@compiled/core';
-    import react from 'react';
 
     const Component = (props) => (
       <>
@@ -154,7 +170,6 @@ describe('emotion-to-compiled transformer', () => {
     /** @jsx jsx */
     import { jsx } from '@emotion/core';
     import styled from '@emotion/styled';
-    import react from 'react';
 
     const Component = (props) => (
       <div
@@ -166,8 +181,9 @@ describe('emotion-to-compiled transformer', () => {
     );
     `,
     `
+    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
+    Eg. import React from 'react'; */
     import { styled } from '@compiled/core';
-    import react from 'react';
 
     const Component = (props) => (
       <div
@@ -188,7 +204,6 @@ describe('emotion-to-compiled transformer', () => {
     /** @jsx jsx */
     import { jsx } from '@emotion/core';
     import styled from '@emotion/styled';
-    import react from 'react';
 
     const Component = (props) => (
       <div
@@ -200,8 +215,9 @@ describe('emotion-to-compiled transformer', () => {
     );
     `,
     `
+    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
+    Eg. import React from 'react'; */
     import { styled } from '@compiled/core';
-    import react from 'react';
 
     const Component = (props) => (
       <div
@@ -220,14 +236,14 @@ describe('emotion-to-compiled transformer', () => {
     {},
     `
     /** @jsx jsx */
-    import react from 'react';
-    import { css, jsx } from '@emotion/core';
     import _ from 'lodash';
+    import { css, jsx } from '@emotion/core';
     `,
     `
-    import react from 'react';
-    import '@compiled/core';
+    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
+    Eg. import React from 'react'; */
     import _ from 'lodash';
+    import '@compiled/core';
     `,
     'it removes jsx pragma when @emotion/core is defined far from it'
   );
@@ -237,12 +253,12 @@ describe('emotion-to-compiled transformer', () => {
     {},
     `
     /** @jsx jsx */
-    import react from 'react';
     import styled from '@emotion/styled';
     import { css, jsx } from '@emotion/core';
     `,
     `
-    import react from 'react';
+    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
+    Eg. import React from 'react'; */
     import { styled } from '@compiled/core';
     `,
     'it removes jsx pragma when @emotion/core is defined far from it and @emotion/styled is present'
@@ -255,12 +271,12 @@ describe('emotion-to-compiled transformer', () => {
     /** @jsx jsx */
     import { css, jsx } from '@emotion/core';
     import styled from '@emotion/styled';
-    import react from 'react';
     import _ from 'lodash';
     `,
     `
+    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
+    Eg. import React from 'react'; */
     import { styled } from '@compiled/core';
-    import react from 'react';
     import _ from 'lodash';
     `,
     'it ignores other imports'

@@ -15,7 +15,6 @@ npx jscodeshift --parser=tsx --extensions=tsx --transform node_modules/@compiled
 
 ```javascript
 /** @jsx jsx */
-import react from 'react';
 import styled from '@emotion/styled';
 import { css, jsx } from '@emotion/core';
 
@@ -39,7 +38,6 @@ const Component = (props) => (
 Is transformed to:
 
 ```javascript
-import react from 'react';
 import { styled } from '@compiled/core';
 
 const Component = (props) => (

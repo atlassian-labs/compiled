@@ -5,6 +5,7 @@ import {
   getImportDeclarationCollection,
   findImportSpecifierName,
   buildDefaultImportDeclaration,
+  addCommentToStartOfFile,
 } from '../codemods-helpers';
 
 const imports = {
@@ -14,6 +15,20 @@ const imports = {
   emotionCoreJSXPragma: '@jsx jsx',
   emotionCoreImportNames: { jsx: 'jsx', css: 'css' },
   emotionCorePackageName: '@emotion/core',
+};
+
+const addCommentToStartOfFileWhenJSXPragmaRemoved = (
+  j: core.JSCodeshift,
+  collection: Collection
+) => {
+  addCommentToStartOfFile({
+    j,
+    collection,
+    message: `
+        Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
+        Eg. import React from 'react';
+      `,
+  });
 };
 
 const removeEmotionCoreJSXPragma = (j: core.JSCodeshift, collection: Collection) => {
@@ -28,6 +43,8 @@ const removeEmotionCoreJSXPragma = (j: core.JSCodeshift, collection: Collection)
 
     commentBlockCollection.forEach((commentBlockPath) => {
       j(commentBlockPath).remove();
+
+      addCommentToStartOfFileWhenJSXPragmaRemoved(j, collection);
     });
   });
 };
@@ -97,19 +114,28 @@ const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Optio
   const { source } = fileInfo;
   const collection = j(source);
 
-  const hasEmotionStyledImportDeclaration = hasImportDeclaration({
-    j,
-    collection,
-    importPath: imports.emotionStyledPackageName,
-  });
   const hasEmotionCoreImportDeclaration = hasImportDeclaration({
     j,
     collection,
     importPath: imports.emotionCorePackageName,
   });
+  const hasEmotionStyledImportDeclaration = hasImportDeclaration({
+    j,
+    collection,
+    importPath: imports.emotionStyledPackageName,
+  });
 
-  if (!hasEmotionStyledImportDeclaration && !hasEmotionCoreImportDeclaration) {
+  if (!hasEmotionCoreImportDeclaration && !hasEmotionStyledImportDeclaration) {
     return source;
+  }
+
+  if (hasEmotionCoreImportDeclaration) {
+    removeEmotionCoreJSXPragma(j, collection);
+    replaceEmotionCoreCSSTaggedTemplateExpression(j, collection);
+
+    hasEmotionStyledImportDeclaration
+      ? removeEmotionCoreImportDeclaration(j, collection)
+      : buildCompiledImportDeclaration(j, collection);
   }
 
   if (hasEmotionStyledImportDeclaration) {
@@ -120,15 +146,6 @@ const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Optio
       importPathTo: imports.compiledPackageName,
       importPathToName: imports.compiledImportName,
     });
-  }
-
-  if (hasEmotionCoreImportDeclaration) {
-    removeEmotionCoreJSXPragma(j, collection);
-    replaceEmotionCoreCSSTaggedTemplateExpression(j, collection);
-
-    hasEmotionStyledImportDeclaration
-      ? removeEmotionCoreImportDeclaration(j, collection)
-      : buildCompiledImportDeclaration(j, collection);
   }
 
   return collection.toSource(options.printOptions || { quote: 'single' });
