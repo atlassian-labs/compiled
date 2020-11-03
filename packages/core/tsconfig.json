@@ -5,9 +5,8 @@
     "outDir": "dist",
     "baseUrl": "src",
     "paths": {
-      "@compiled/core": ["index.tsx"],
-      "@compiled/core/jsx": ["jsx.tsx"]
+      "@compiled/core": ["index.tsx"]
     }
   },
-  "references": [{ "path": "../runtime" }]
+  "references": [{ "path": "../babel-plugin" }, { "path": "../runtime" }]
 }

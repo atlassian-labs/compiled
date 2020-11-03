@@ -24,9 +24,11 @@
   ],
   "files": [
     "dist",
-    "src"
+    "src",
+    "README.md"
   ],
   "dependencies": {
+    "@compiled/babel-plugin": "0.4.7",
     "@compiled/runtime": "0.4.7",
     "csstype": "^2.0.0"
   },

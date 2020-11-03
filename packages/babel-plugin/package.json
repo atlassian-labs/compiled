@@ -16,7 +16,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "src"
+    "src",
+    "README.md"
   ],
   "scripts": {
     "perf": "ts-node --files ./src/__perf__/module-traversal-caching"
