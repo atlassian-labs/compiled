@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { styled } from '@compiled/core';
 
 describe('server side hydrate', () => {
-  it('it should not log unexpected warnings when hydrating SSRing', () => {
+  it('should not log unexpected warnings when hydrating HTML', () => {
     jest.spyOn(global.console, 'error').mockImplementation(() => {});
 
     const StyledDiv = styled.div`
