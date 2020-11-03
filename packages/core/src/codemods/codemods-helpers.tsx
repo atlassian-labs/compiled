@@ -4,6 +4,9 @@ import {
   ImportDefaultSpecifier,
   ImportSpecifier,
   Program,
+  Identifier,
+  JSXIdentifier,
+  TSTypeParameter,
 } from 'jscodeshift';
 import { Collection } from 'jscodeshift/src/Collection';
 
@@ -41,6 +44,26 @@ export const getImportDefaultSpecifierName = (
 
 export const getImportSpecifierName = (importSpecifierCollection: Collection<ImportSpecifier>) =>
   importSpecifierCollection.nodes()[0]!.local!.name;
+
+export const getAllImportSpecifiers = ({
+  j,
+  importDeclarationCollection,
+}: {
+  j: JSCodeshift;
+  importDeclarationCollection: Collection<ImportDeclaration>;
+}) => {
+  const importSpecifiers: (Identifier | JSXIdentifier | TSTypeParameter)[] = [];
+
+  importDeclarationCollection.find(j.ImportSpecifier).forEach((importSpecifierPath) => {
+    const node = importSpecifierPath.node.imported;
+
+    if (node) {
+      importSpecifiers.push(node);
+    }
+  });
+
+  return importSpecifiers;
+};
 
 export const findImportSpecifierName = ({
   j,

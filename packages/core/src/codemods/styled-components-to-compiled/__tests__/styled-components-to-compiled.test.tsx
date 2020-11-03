@@ -6,7 +6,7 @@ import transformer from '../styled-components-to-compiled';
 
 describe('styled-components-to-compiled transformer', () => {
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     "import styled from 'styled-components';",
     "import { styled } from '@compiled/core';",
@@ -14,7 +14,7 @@ describe('styled-components-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     "import sc from 'styled-components';",
     "import { styled as sc } from '@compiled/core';",
@@ -22,7 +22,7 @@ describe('styled-components-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     `
     import styled from 'styled-components';
@@ -36,7 +36,7 @@ describe('styled-components-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     "import react from 'react';",
     "import react from 'react';",

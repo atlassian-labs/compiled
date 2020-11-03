@@ -6,6 +6,7 @@ import {
   findImportSpecifierName,
   buildDefaultImportDeclaration,
   addCommentToStartOfFile,
+  getAllImportSpecifiers,
 } from '../codemods-helpers';
 
 const imports = {
@@ -84,6 +85,44 @@ const replaceEmotionCoreCSSTaggedTemplateExpression = (
     });
 };
 
+const addCommentBeforeUnresolvedIdentifiers = (j: core.JSCodeshift, collection: Collection) => {
+  const importDeclarationCollection = getImportDeclarationCollection({
+    j,
+    collection,
+    importPath: imports.emotionCorePackageName,
+  });
+  const importSpecifiers = getAllImportSpecifiers({
+    j,
+    importDeclarationCollection,
+  });
+
+  const emotionCoreImportValues = Object.values(imports.emotionCoreImportNames);
+
+  importSpecifiers
+    .filter((identifierPath) => !emotionCoreImportValues.includes(identifierPath.name))
+    .forEach((importSpecifierPath) => {
+      collection.find(j.Identifier).some((identifierPath) => {
+        const name = identifierPath.node.name;
+
+        const isValidIdentiferFound = name === importSpecifierPath.name;
+
+        if (isValidIdentiferFound) {
+          addCommentToStartOfFile({
+            j,
+            collection,
+            message: `
+              "${name}" is not exported from "${imports.compiledPackageName}" at the moment. Please find an alternative for it.
+            `,
+          });
+
+          return true;
+        }
+
+        return false;
+      });
+    });
+};
+
 const removeEmotionCoreImportDeclaration = (j: core.JSCodeshift, collection: Collection) => {
   const importDeclarationCollection = getImportDeclarationCollection({
     j,
@@ -131,6 +170,7 @@ const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Optio
 
   if (hasEmotionCoreImportDeclaration) {
     removeEmotionCoreJSXPragma(j, collection);
+    addCommentBeforeUnresolvedIdentifiers(j, collection);
     replaceEmotionCoreCSSTaggedTemplateExpression(j, collection);
 
     hasEmotionStyledImportDeclaration

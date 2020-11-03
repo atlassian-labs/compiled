@@ -6,7 +6,7 @@ import transformer from '../emotion-to-compiled';
 
 describe('emotion-to-compiled transformer', () => {
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     "import styled from '@emotion/styled';",
     "import { styled } from '@compiled/core';",
@@ -14,7 +14,7 @@ describe('emotion-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     "import sc from '@emotion/styled';",
     "import { styled as sc } from '@compiled/core';",
@@ -22,7 +22,7 @@ describe('emotion-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     `
     /** @jsx jsx */
@@ -37,7 +37,7 @@ describe('emotion-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     `
     /** @jsx jsx */
@@ -52,7 +52,7 @@ describe('emotion-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     `
     /** @jsx jsx */
@@ -68,7 +68,7 @@ describe('emotion-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     `
     /** @jsx jsx */
@@ -84,7 +84,7 @@ describe('emotion-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     `
     /** @jsx jsx */
@@ -124,7 +124,7 @@ describe('emotion-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     `
     /** @jsx jsx */
@@ -164,7 +164,7 @@ describe('emotion-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     `
     /** @jsx jsx */
@@ -198,7 +198,7 @@ describe('emotion-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     `
     /** @jsx jsx */
@@ -232,7 +232,7 @@ describe('emotion-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     `
     /** @jsx jsx */
@@ -249,7 +249,7 @@ describe('emotion-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     `
     /** @jsx jsx */
@@ -265,7 +265,7 @@ describe('emotion-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
     {},
     `
     /** @jsx jsx */
@@ -283,7 +283,75 @@ describe('emotion-to-compiled transformer', () => {
   );
 
   defineInlineTest(
-    transformer,
+    { default: transformer, parser: 'tsx' },
+    {},
+    `
+    import { css } from '@emotion/core';
+    import styled from '@emotion/styled';
+    import _ from 'lodash';
+    `,
+    `
+    import { styled } from '@compiled/core';
+    import _ from 'lodash';
+    `,
+    'it should not add TODO comment for JSX pragma when not present'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {},
+    `
+    /** @jsx jsx */
+    import { ClassNames, CSSObject, css as c, jsx } from '@emotion/core';
+
+    let cssObject: CSSObject = {};
+
+    const Component = () => (
+      <ClassNames>
+        {({ css, cx }) => (
+          <SomeComponent
+            wrapperClassName={css({ color: 'green' })}
+            css={c\`background-color: green \`}
+            className={css\`
+              color: hotpink;
+            \`}
+          >
+            Hello
+          </SomeComponent>
+        )}
+      </ClassNames>
+    );
+    `,
+    `
+    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
+    Eg. import React from 'react'; */
+    /* TODO: (from codemod) "ClassNames" is not exported from "@compiled/core" at the moment. Please find an alternative for it. */
+    /* TODO: (from codemod) "CSSObject" is not exported from "@compiled/core" at the moment. Please find an alternative for it. */
+    import '@compiled/core';
+
+    let cssObject: CSSObject = {};
+
+    const Component = () => (
+      <ClassNames>
+        {({ css, cx }) => (
+          <SomeComponent
+            wrapperClassName={css({ color: 'green' })}
+            css={\`background-color: green \`}
+            className={css\`
+              color: hotpink;
+            \`}
+          >
+            Hello
+          </SomeComponent>
+        )}
+      </ClassNames>
+    );
+    `,
+    'it adds TODO comment for imports which are not resolved'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
     {},
     "import react from 'react';",
     "import react from 'react';",
