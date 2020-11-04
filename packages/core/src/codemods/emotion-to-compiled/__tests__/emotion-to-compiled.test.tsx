@@ -294,6 +294,42 @@ describe('emotion-to-compiled transformer', () => {
     {},
     `
     /** @jsx jsx */
+    import { css, jsx } from '@emotion/core';
+    import styled from '@emotion/styled';
+    import _ from 'lodash';
+    import React from 'react';
+    `,
+    `
+    import { styled } from '@compiled/core';
+    import _ from 'lodash';
+    import React from 'react';
+    `,
+    'it should not add `React` identifier to already imported react package if default is present'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {},
+    `
+    /** @jsx jsx */
+    import { css, jsx } from '@emotion/core';
+    import styled from '@emotion/styled';
+    import _ from 'lodash';
+    import * as React from 'react';
+    `,
+    `
+    import { styled } from '@compiled/core';
+    import _ from 'lodash';
+    import * as React from 'react';
+    `,
+    'it should not add `React` identifier to already imported react package if namespace is present'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {},
+    `
+    /** @jsx jsx */
     import { ClassNames, CSSObject, css as c, jsx } from '@emotion/core';
 
     let cssObject: CSSObject = {};
