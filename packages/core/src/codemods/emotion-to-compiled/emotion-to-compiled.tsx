@@ -31,7 +31,7 @@ const addReactIdentifier = (j: core.JSCodeshift, collection: Collection) => {
     collection.find(j.Program).forEach((programPath) => {
       programPath.node.body.unshift(
         j.importDeclaration(
-          [j.importDefaultSpecifier(j.identifier(imports.reactImportName))],
+          [j.importNamespaceSpecifier(j.identifier(imports.reactImportName))],
           j.literal(imports.reactPackageName)
         )
       );
@@ -47,10 +47,14 @@ const addReactIdentifier = (j: core.JSCodeshift, collection: Collection) => {
       const importDefaultSpecifierCollection = j(importDeclarationPath).find(
         j.ImportDefaultSpecifier
       );
+      const importNamespaceSpecifierCollection = j(importDeclarationPath).find(
+        j.ImportNamespaceSpecifier
+      );
 
-      const hasDefaultReactImportDeclaration = importDefaultSpecifierCollection.length > 0;
+      const hasNoDefaultReactImportDeclaration = importDefaultSpecifierCollection.length === 0;
+      const hasNoNamespaceReactImportDeclaration = importNamespaceSpecifierCollection.length === 0;
 
-      if (!hasDefaultReactImportDeclaration) {
+      if (hasNoDefaultReactImportDeclaration && hasNoNamespaceReactImportDeclaration) {
         importDeclarationPath.node.specifiers.unshift(
           j.importDefaultSpecifier(j.identifier(imports.reactImportName))
         );
