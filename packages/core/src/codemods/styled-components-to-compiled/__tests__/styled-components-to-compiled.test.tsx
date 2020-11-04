@@ -26,11 +26,11 @@ describe('styled-components-to-compiled transformer', () => {
     {},
     `
     import styled from 'styled-components';
-    import react from 'react';
+    import React from 'react';
     `,
     `
     import { styled } from '@compiled/core';
-    import react from 'react';
+    import React from 'react';
     `,
     'it ignores other imports'
   );
@@ -38,8 +38,8 @@ describe('styled-components-to-compiled transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     {},
-    "import react from 'react';",
-    "import react from 'react';",
+    "import React from 'react';",
+    "import React from 'react';",
     'it should not transform when styled-components imports are not present'
   );
 });

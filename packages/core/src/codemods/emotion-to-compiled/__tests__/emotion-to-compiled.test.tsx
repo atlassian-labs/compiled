@@ -29,8 +29,7 @@ describe('emotion-to-compiled transformer', () => {
     import { css, jsx } from '@emotion/core';
     `,
     `
-    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
-    Eg. import React from 'react'; */
+    import React from 'react';
     import '@compiled/core';
     `,
     'it transforms all named @emotion/core imports'
@@ -44,8 +43,7 @@ describe('emotion-to-compiled transformer', () => {
     import { css as c, jsx } from '@emotion/core';
     `,
     `
-    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
-    Eg. import React from 'react'; */
+    import React from 'react';
     import '@compiled/core';
     `,
     'it transforms all named @emotion/core imports with different imported name'
@@ -60,8 +58,7 @@ describe('emotion-to-compiled transformer', () => {
     import styled from '@emotion/styled';
     `,
     `
-    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
-    Eg. import React from 'react'; */
+    import React from 'react';
     import { styled } from '@compiled/core';
     `,
     'it transforms all named @emotion/core and default @emotion/styled imports'
@@ -76,8 +73,7 @@ describe('emotion-to-compiled transformer', () => {
     import sc from '@emotion/styled';
     `,
     `
-    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
-    Eg. import React from 'react'; */
+    import React from 'react';
     import { styled as sc } from '@compiled/core';
     `,
     'it transforms all named @emotion/core with different imported name and default with different name than "styled" @emotion/styled imports'
@@ -104,8 +100,7 @@ describe('emotion-to-compiled transformer', () => {
     );
     `,
     `
-    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
-    Eg. import React from 'react'; */
+    import React from 'react';
     import { styled } from '@compiled/core';
 
     const Component = (props) => (
@@ -144,8 +139,7 @@ describe('emotion-to-compiled transformer', () => {
     );
     `,
     `
-    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
-    Eg. import React from 'react'; */
+    import React from 'react';
     import { styled } from '@compiled/core';
 
     const Component = (props) => (
@@ -181,8 +175,7 @@ describe('emotion-to-compiled transformer', () => {
     );
     `,
     `
-    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
-    Eg. import React from 'react'; */
+    import React from 'react';
     import { styled } from '@compiled/core';
 
     const Component = (props) => (
@@ -215,8 +208,7 @@ describe('emotion-to-compiled transformer', () => {
     );
     `,
     `
-    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
-    Eg. import React from 'react'; */
+    import React from 'react';
     import { styled } from '@compiled/core';
 
     const Component = (props) => (
@@ -240,8 +232,7 @@ describe('emotion-to-compiled transformer', () => {
     import { css, jsx } from '@emotion/core';
     `,
     `
-    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
-    Eg. import React from 'react'; */
+    import React from 'react';
     import _ from 'lodash';
     import '@compiled/core';
     `,
@@ -257,8 +248,7 @@ describe('emotion-to-compiled transformer', () => {
     import { css, jsx } from '@emotion/core';
     `,
     `
-    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
-    Eg. import React from 'react'; */
+    import React from 'react';
     import { styled } from '@compiled/core';
     `,
     'it removes jsx pragma when @emotion/core is defined far from it and @emotion/styled is present'
@@ -274,8 +264,7 @@ describe('emotion-to-compiled transformer', () => {
     import _ from 'lodash';
     `,
     `
-    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
-    Eg. import React from 'react'; */
+    import React from 'react';
     import { styled } from '@compiled/core';
     import _ from 'lodash';
     `,
@@ -286,15 +275,18 @@ describe('emotion-to-compiled transformer', () => {
     { default: transformer, parser: 'tsx' },
     {},
     `
-    import { css } from '@emotion/core';
+    /** @jsx jsx */
+    import { css, jsx } from '@emotion/core';
     import styled from '@emotion/styled';
     import _ from 'lodash';
+    import { useState, useEffect } from 'react';
     `,
     `
     import { styled } from '@compiled/core';
     import _ from 'lodash';
+    import React, { useState, useEffect } from 'react';
     `,
-    'it should not add TODO comment for JSX pragma when not present'
+    'it adds `React` identifier to already imported react package if not present'
   );
 
   defineInlineTest(
@@ -323,10 +315,9 @@ describe('emotion-to-compiled transformer', () => {
     );
     `,
     `
-    /* TODO: (from codemod) Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
-    Eg. import React from 'react'; */
     /* TODO: (from codemod) "ClassNames" is not exported from "@compiled/core" at the moment. Please find an alternative for it. */
     /* TODO: (from codemod) "CSSObject" is not exported from "@compiled/core" at the moment. Please find an alternative for it. */
+    import React from 'react';
     import '@compiled/core';
 
     let cssObject: CSSObject = {};
@@ -353,8 +344,8 @@ describe('emotion-to-compiled transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     {},
-    "import react from 'react';",
-    "import react from 'react';",
+    "import React from 'react';",
+    "import React from 'react';",
     'it should not transform when emotion imports are not present'
   );
 });

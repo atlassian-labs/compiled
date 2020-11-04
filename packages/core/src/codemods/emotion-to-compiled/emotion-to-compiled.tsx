@@ -16,20 +16,47 @@ const imports = {
   emotionCoreJSXPragma: '@jsx jsx',
   emotionCoreImportNames: { jsx: 'jsx', css: 'css' },
   emotionCorePackageName: '@emotion/core',
+  reactImportName: 'React',
+  reactPackageName: 'react',
 };
 
-const addCommentToStartOfFileWhenJSXPragmaRemoved = (
-  j: core.JSCodeshift,
-  collection: Collection
-) => {
-  addCommentToStartOfFile({
+const addReactIdentifier = (j: core.JSCodeshift, collection: Collection) => {
+  const hasReactImportDeclaration = hasImportDeclaration({
     j,
     collection,
-    message: `
-        Emotion's JSX pragma has been removed. Please import appropriate JSX transformer.
-        Eg. import React from 'react';
-      `,
+    importPath: imports.reactPackageName,
   });
+
+  if (!hasReactImportDeclaration) {
+    collection.find(j.Program).forEach((programPath) => {
+      programPath.node.body.unshift(
+        j.importDeclaration(
+          [j.importDefaultSpecifier(j.identifier(imports.reactImportName))],
+          j.literal(imports.reactPackageName)
+        )
+      );
+    });
+  } else {
+    const importDeclarationCollection = getImportDeclarationCollection({
+      j,
+      collection,
+      importPath: imports.reactPackageName,
+    });
+
+    importDeclarationCollection.forEach((importDeclarationPath) => {
+      const importDefaultSpecifierCollection = j(importDeclarationPath).find(
+        j.ImportDefaultSpecifier
+      );
+
+      const hasDefaultReactImportDeclaration = importDefaultSpecifierCollection.length > 0;
+
+      if (!hasDefaultReactImportDeclaration) {
+        importDeclarationPath.node.specifiers.unshift(
+          j.importDefaultSpecifier(j.identifier(imports.reactImportName))
+        );
+      }
+    });
+  }
 };
 
 const removeEmotionCoreJSXPragma = (j: core.JSCodeshift, collection: Collection) => {
@@ -45,7 +72,7 @@ const removeEmotionCoreJSXPragma = (j: core.JSCodeshift, collection: Collection)
     commentBlockCollection.forEach((commentBlockPath) => {
       j(commentBlockPath).remove();
 
-      addCommentToStartOfFileWhenJSXPragmaRemoved(j, collection);
+      addReactIdentifier(j, collection);
     });
   });
 };
