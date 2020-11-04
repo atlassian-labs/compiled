@@ -22,11 +22,18 @@
     "emotion-js",
     "typescript"
   ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./babel-plugin": "./dist/babel-plugin.js"
+  },
   "files": [
     "dist",
-    "src"
+    "src",
+    "babel-plugin",
+    "README.md"
   ],
   "dependencies": {
+    "@compiled/babel-plugin": "0.4.7",
     "@compiled/runtime": "0.4.7",
     "csstype": "^2.0.0"
   },

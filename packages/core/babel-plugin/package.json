@@ -1,0 +1,5 @@
+{
+  "main": "../dist/babel-plugin.js",
+  "module": "../dist/babel-plugin.js",
+  "types": "../dist/babel-plugin.d.ts"
+}

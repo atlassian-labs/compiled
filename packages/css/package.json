@@ -16,7 +16,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "src"
+    "src",
+    "README.md"
   ],
   "dependencies": {
     "@compiled/utils": "0.4.7",

@@ -16,7 +16,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "src"
+    "src",
+    "README.md"
   ],
   "dependencies": {
     "convert-source-map": "^1.7.0",
