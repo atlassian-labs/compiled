@@ -1,6 +1,8 @@
+import { isNodeEnvironment } from '../is-node';
+
 import { ProviderComponent, UseCacheHook } from './types';
 
-if (process.env.NODE_ENV === 'development' && typeof window === 'undefined') {
+if (process.env.NODE_ENV === 'development' && !isNodeEnvironment()) {
   throw new Error(
     `
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
@@ -12,7 +14,7 @@ if (process.env.NODE_ENV === 'development' && typeof window === 'undefined') {
 
   @compiled/runtime - ERROR
 
-  This code should only run on the client. You might need to configure your bunder to respect the "browser" field in package json.
+  This code should only run on the client. You might need to configure your bundler to respect the "browser" field in package json.
 `
   );
 }
