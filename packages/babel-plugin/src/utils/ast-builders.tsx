@@ -209,7 +209,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     }
   )({
     styleProp,
-    cssNode: t.arrayExpression(opts.sheets.map((sheet) => hoistSheet(sheet, meta))),
+    cssNode: t.arrayExpression(unique(opts.sheets).map((sheet) => hoistSheet(sheet, meta))),
   }) as t.Node;
 };
 
@@ -236,7 +236,7 @@ export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Met
     }
   )({
     jsxNode: node,
-    cssNode: t.arrayExpression(sheets.map((sheet) => hoistSheet(sheet, meta))),
+    cssNode: t.arrayExpression(unique(sheets).map((sheet) => hoistSheet(sheet, meta))),
   }) as t.Node;
 };
 

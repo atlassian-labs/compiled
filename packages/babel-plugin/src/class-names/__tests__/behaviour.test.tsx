@@ -110,7 +110,7 @@ describe('class names behaviour', () => {
       const _ = \\"._syaz5scu{color:red}\\";
 
       const ListItem = () => <CC>
-          <CS>{[_, _2, _3, _2]}</CS>
+          <CS>{[_, _2, _3]}</CS>
           {<div className={{
           button: \\"_syaz5scu _1wybgktf\\",
           container: \\"_syaz13q2 _1wybgktf\\"
