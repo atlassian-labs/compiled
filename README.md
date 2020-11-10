@@ -1,5 +1,11 @@
 # Compiled
 
+**Build time atomic CSS in JS without the runtime cost. Bake, consume, extract. Everywhere.**
+
+[![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](./LICENSE)
+[![@compiled/core](https://img.shields.io/npm/v/@compiled/core.svg?style=flat-square)](https://www.npmjs.com/package/@compiled/core)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](./CONTRIBUTING.md)
+
 [Read the docs →](https://compiledcssinjs.com)
 
 ## Usage
@@ -18,11 +24,13 @@ const StyledButton = styled.button`
 
 ## Installation
 
+Install the core library:
+
 ```bash
 npm install @compiled/react
 ```
 
-**Configure [Babel](https://babeljs.io/docs/en/config-files)**
+Configure [Babel](https://babeljs.io/docs/en/config-files):
 
 ```json
 {
@@ -54,12 +62,12 @@ yarn start
 
 ## Contributions
 
-Contributions to Compiled are welcome!
+Contributions to Compiled are welcomed!
 Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
 ## License
 
-Copyright © 2020 - Current Atlassian and others.
+Copyright © 2019 - Present Atlassian and others.
 Apache 2.0 licensed,
 see [LICENSE](./LICENSE) file.
 
