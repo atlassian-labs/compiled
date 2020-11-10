@@ -2,7 +2,7 @@ import { isNodeEnvironment } from '../is-node';
 
 import { ProviderComponent, UseCacheHook } from './types';
 
-if (process.env.NODE_ENV === 'development' && !isNodeEnvironment()) {
+if (process.env.NODE_ENV === 'development' && isNodeEnvironment()) {
   throw new Error(
     `
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
