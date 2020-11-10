@@ -1,16 +1,25 @@
-# 👷‍♀ ‍Compiled
+# Compiled
 
 [Read the docs →](https://compiledcssinjs.com)
 
-## Get started
+## Usage
 
-**Install**
+```jsx
+import { styled } from '@compiled/core';
+import { background } from './tokens';
 
-> ⚠️ Work is in progress re-writing/architecting a new Babel plugin.
-> Use the nightly at your own risk until it is officially released.
+const StyledButton = styled.button`
+  color: ${(props) => props.color};
+  background-color: ${background};
+`;
+
+<StyledButton css={{ fontSize: 16 }} color="pink" />;
+```
+
+## Installation
 
 ```bash
-npm install @compiled/react@nightly
+npm install @compiled/react
 ```
 
 **Configure [Babel](https://babeljs.io/docs/en/config-files)**
@@ -21,26 +30,38 @@ npm install @compiled/react@nightly
 }
 ```
 
-**Style**
+## Tests
 
-```jsx
-import { styled, ClassNames } from '@compiled/react';
-import { background } from './tokens';
+Make sure to install dependencies with `yarn` locally before continuing.
 
-const StyledButton = styled.button`
-  color: ${props => props.color};
-  background-color: ${background};
-`;
+### Unit tests
 
-<StyledButton css={{ fontSize: 16 }} />
+Run tests locally where `<filter>` can be omitted,
+a file path,
+or a partial file name.
 
-<ClassNames>{({ css }) => <div className={css`font-size: 24`} />}</ClassNames>
+```bash
+yarn test <filter> --watch
 ```
 
-## Contributing
+### Storybook
 
-Thank you for considering to contribute to Compiled!
-Before doing so please make sure to read our [contribution guidelines](/CONTRIBUTING.md).
+Run storybook locally.
+
+```bash
+yarn start
+```
+
+## Contributions
+
+Contributions to Compiled are welcome!
+Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
+
+## License
+
+Copyright © 2020 - Current Atlassian and others.
+Apache 2.0 licensed,
+see [LICENSE](./LICENSE) file.
 
 ## Thanks
 
