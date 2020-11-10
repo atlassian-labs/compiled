@@ -32,6 +32,7 @@
     "@babel/preset-typescript": "^7.10.4",
     "@compiled/core": "*",
     "@compiled/jest": "*",
+    "@emotion/core": "^10.1.1",
     "@size-limit/preset-small-lib": "^4.4.5",
     "@storybook/addons": "^5.2.8",
     "@storybook/react": "^5.3.18",
