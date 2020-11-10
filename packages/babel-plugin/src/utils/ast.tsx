@@ -61,7 +61,13 @@ export const buildCodeFrameError = (error: string, node: t.Node, parentPath: Nod
  *
  * @param expression - Member expression node.
  */
-export const getMemberExpressionMeta = (expression: t.MemberExpression) => {
+export const getMemberExpressionMeta = (
+  expression: t.MemberExpression
+): {
+  accessPath: t.Identifier[];
+  bindingIdentifier: t.Identifier | null;
+  originalBindingType: t.Expression['type'];
+} => {
   const accessPath: t.Identifier[] = [];
   let bindingIdentifier: t.Identifier | null = null;
   let originalBindingType: t.Expression['type'] = 'Identifier';
@@ -91,7 +97,7 @@ export const getMemberExpressionMeta = (expression: t.MemberExpression) => {
 
   return {
     accessPath: accessPath.reverse(),
-    bindingIdentifier: bindingIdentifier!,
+    bindingIdentifier,
     originalBindingType,
   };
 };

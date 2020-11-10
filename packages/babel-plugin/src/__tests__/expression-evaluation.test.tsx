@@ -276,4 +276,19 @@ describe('import specifiers', () => {
       '{background-color:blue}',
     ]);
   });
+
+  it('should not blow up when member expression object is other than "Identifier" or "Call Expression"', () => {
+    expect(() => {
+      transform(`
+      import '@compiled/core';
+      import React from 'react';
+
+      function Component() {
+        return (
+          <span css={{ width: [{ bar: 10 }][0].bar }} />
+        );
+      };
+    `);
+    }).not.toThrow();
+  });
 });
