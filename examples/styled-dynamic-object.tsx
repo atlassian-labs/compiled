@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { styled } from '@compiled/core';
 
 export default {
-  title: 'styled component dynamic object',
+  title: 'styled | dynamic object',
 };
 
 const Highlight = styled.div<{ primary: string }>({

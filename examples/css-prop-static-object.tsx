@@ -11,7 +11,7 @@ const inlineMixinObj = {
 };
 
 export default {
-  title: 'css prop static object',
+  title: 'css prop | static object',
 };
 
 export const ObjectLiteral = () => {

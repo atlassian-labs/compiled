@@ -2,7 +2,7 @@ import React from 'react';
 import { styled } from '@compiled/core';
 
 export default {
-  title: 'media queries',
+  title: 'media queries | styled',
 };
 
 const ResponsiveStyledObjectLiteral = styled.div({

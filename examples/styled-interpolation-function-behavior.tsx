@@ -2,7 +2,7 @@ import React from 'react';
 import { styled } from '@compiled/core';
 
 export default {
-  title: 'styled components interpolation function behavior',
+  title: 'styled | interpolations',
 };
 
 interface Props {

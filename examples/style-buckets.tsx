@@ -4,7 +4,7 @@ import '@compiled/core';
 import { hover } from './mixins/mixins';
 
 export default {
-  title: 'style buckets',
+  title: 'atomic | style buckets',
 };
 
 export const Example = () => {
