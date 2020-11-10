@@ -150,21 +150,24 @@ const traverseMemberExpression = (expression: t.MemberExpression, meta: Metadata
   const { accessPath, bindingIdentifier, originalBindingType } = getMemberExpressionMeta(
     expression
   );
-  const resolvedBinding = resolveBindingNode(bindingIdentifier.name, updatedMeta);
 
-  if (resolvedBinding && resolvedBinding.constant && t.isExpression(resolvedBinding.node)) {
-    if (originalBindingType === 'Identifier') {
-      ({ value, meta: updatedMeta } = evaluateIdentifierBindingMemberExpression(
-        resolvedBinding.node,
-        accessPath,
-        resolvedBinding.meta
-      ));
-    } else if (originalBindingType === 'CallExpression') {
-      ({ value, meta: updatedMeta } = evaluateCallExpressionBindingMemberExpression(
-        resolvedBinding.node,
-        accessPath,
-        resolvedBinding.meta
-      ));
+  if (bindingIdentifier) {
+    const resolvedBinding = resolveBindingNode(bindingIdentifier.name, updatedMeta);
+
+    if (resolvedBinding && resolvedBinding.constant && t.isExpression(resolvedBinding.node)) {
+      if (originalBindingType === 'Identifier') {
+        ({ value, meta: updatedMeta } = evaluateIdentifierBindingMemberExpression(
+          resolvedBinding.node,
+          accessPath,
+          resolvedBinding.meta
+        ));
+      } else if (originalBindingType === 'CallExpression') {
+        ({ value, meta: updatedMeta } = evaluateCallExpressionBindingMemberExpression(
+          resolvedBinding.node,
+          accessPath,
+          resolvedBinding.meta
+        ));
+      }
     }
   }
 
