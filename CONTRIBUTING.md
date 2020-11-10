@@ -24,3 +24,25 @@ The Corporate CLA is for those who are contributing as a member of an organizati
 
 - [CLA for individuals](https://opensource.atlassian.com/individual)
 - [CLA for corporate contributors](https://opensource.atlassian.com/corporate)
+
+## Local development
+
+Make sure to install dependencies with `yarn` locally before continuing.
+
+### Unit tests
+
+Run tests locally where `<filter>` can be omitted,
+a file path,
+or a partial file name.
+
+```bash
+yarn test <filter> --watch
+```
+
+### Storybook
+
+Run [storybook](https://storybook.js.org/) locally.
+
+```bash
+yarn storybook
+```
