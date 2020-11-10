@@ -7,6 +7,7 @@ import { importSpecifier } from './utils/ast-builders';
 import { Cache } from './utils/cache';
 import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
+import { visitClassNamesPath } from './class-names';
 import { State } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -70,13 +71,15 @@ export default declare<State>((api) => {
             return;
           }
 
-          if (specifier.node.imported.name === 'styled') {
-            // Enable styled API with the local name
-            state.compiledImports.styled = specifier.node.local.name;
+          (['styled', 'ClassNames'] as const).forEach((apiName) => {
+            if (state.compiledImports && specifier.node.imported.name === apiName) {
+              // Enable the API with the local name
+              state.compiledImports[apiName] = specifier.node.local.name;
 
-            // Remove specifier
-            specifier.remove();
-          }
+              // Remove specifier
+              specifier.remove();
+            }
+          });
         });
 
         // Add the runtime entrypoint module
@@ -105,6 +108,13 @@ export default declare<State>((api) => {
         }
 
         visitStyledPath(path, { state, parentPath: path });
+      },
+      JSXElement(path, state) {
+        if (!state.compiledImports?.ClassNames) {
+          return;
+        }
+
+        visitClassNamesPath(path, { state, parentPath: path });
       },
       JSXOpeningElement(path, state) {
         if (!state.compiledImports) {

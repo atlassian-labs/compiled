@@ -1,17 +1,17 @@
 import { transformSync } from '@babel/core';
 import babelPlugin from '../../index';
 
-const transform = (code: string) => {
+const transform = (code: string, nonce?: string) => {
   return transformSync(code, {
     configFile: false,
     babelrc: false,
-    compact: true,
-    plugins: [babelPlugin],
+    compact: false,
+    plugins: [[babelPlugin, { nonce }]],
   })?.code;
 };
 
 describe('class names behaviour', () => {
-  xit('should replace class names component style element', () => {
+  it('should transform class names single usage', () => {
     const actual = transform(`
       import { ClassNames } from '@compiled/react';
 
@@ -22,18 +22,62 @@ describe('class names behaviour', () => {
       );
     `);
 
-    expect(actual).toInclude(
-      'const ListItem = () => (<CC><CS hash="css-test">{[".css-test{font-size:20px}"]}</CS><div className={"css-test"}>hello, world!</div></CC>)'
-    );
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from 'react';
+      import { ax, CC, CS } from '@compiled/react';
+      const _ = \\"._1wybgktf{font-size:20px}\\";
+
+      const ListItem = () => <CC>
+          <CS>{[_]}</CS>
+          {<div className={\\"_1wybgktf\\"}>hello, world!</div>}
+        </CC>;"
+    `);
   });
 
-  xit('should remove class names import', () => {
+  it('should transform class names prop single usage', () => {
     const actual = transform(`
       import { ClassNames } from '@compiled/react';
 
       const ListItem = () => (
         <ClassNames>
-          {({ css }) => <div className={css({ fontSize: '20px' })}>hello, world!</div>}
+          {(props) => (<div className={props.css({ fontSize: '20px' })}>hello, world!</div>)}
+        </ClassNames>
+      );
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from 'react';
+      import { ax, CC, CS } from '@compiled/react';
+      const _ = \\"._1wybgktf{font-size:20px}\\";
+
+      const ListItem = () => <CC>
+          <CS>{[_]}</CS>
+          {<div className={\\"_1wybgktf\\"}>hello, world!</div>}
+        </CC>;"
+    `);
+  });
+
+  xit('should not transform class names invalid prop single usage', () => {
+    const actual = transform(`
+      import { ClassNames } from '@compiled/react';
+
+      const ListItem = () => (
+        <ClassNames>
+          {(props) => (<div className={dontexist.css({ fontSize: '20px' })}>hello, world!</div>)}
+        </ClassNames>
+      );
+    `);
+
+    expect(actual).toEqual(false);
+  });
+
+  xit('should transform class names renamed prop single usage', () => {
+    const actual = transform(`
+      import { ClassNames } from '@compiled/react';
+
+      const ListItem = () => (
+        <ClassNames>
+          {({ css: c }) => (<div className={c({ fontSize: '20px' })}>hello, world!</div>)}
         </ClassNames>
       );
     `);
@@ -41,57 +85,106 @@ describe('class names behaviour', () => {
     expect(actual).not.toInclude(`import { ClassNames } from "@compiled/react";`);
   });
 
-  xit('should add an identifier nonce to the style element', () => {
+  it('should transform class names multiple usage', () => {
+    const actual = transform(`
+      import { ClassNames } from '@compiled/react';
+
+      const ListItem = () => (
+        <ClassNames>
+          {({ css }) => (
+            <div
+              className={{
+                button: css({ color: 'red', fontSize: 20 }),
+                container: css({ color: 'blue', fontSize: 20 }),
+              }}>hello, world!</div>
+          )}
+        </ClassNames>
+      );
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from 'react';
+      import { ax, CC, CS } from '@compiled/react';
+      const _3 = \\"._syaz13q2{color:blue}\\";
+      const _2 = \\"._1wybgktf{font-size:20px}\\";
+      const _ = \\"._syaz5scu{color:red}\\";
+
+      const ListItem = () => <CC>
+          <CS>{[_, _2, _3, _2]}</CS>
+          {<div className={{
+          button: \\"_syaz5scu _1wybgktf\\",
+          container: \\"_syaz13q2 _1wybgktf\\"
+        }}>hello, world!</div>}
+        </CC>;"
+    `);
+  });
+
+  it('should transform class names renamed usage', () => {
+    const actual = transform(`
+      import { ClassNames as CN } from '@compiled/react';
+
+      const ListItem = () => (
+        <CN>
+          {({ css }) => <div className={css({ fontSize: '20px' })}>hello, world!</div>}
+        </CN>
+      );
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from 'react';
+      import { ax, CC, CS } from '@compiled/react';
+      const _ = \\"._1wybgktf{font-size:20px}\\";
+
+      const ListItem = () => <CC>
+          <CS>{[_]}</CS>
+          {<div className={\\"_1wybgktf\\"}>hello, world!</div>}
+        </CC>;"
+    `);
+  });
+
+  it('should add an identifier nonce to the style element', () => {
     const actual = transform(
       `
-        import { ClassNames } from '@compiled/react';
+      import { ClassNames } from '@compiled/react';
 
-        const ZoomOnHover = ({ children }) => (
-          <ClassNames>
-            {({ css }) =>
-              children({
-                className: css({
-                  transition: 'transform 2000ms',
-                  ':hover': {
-                    transform: 'scale(2)',
-                  },
-                }),
-              })
-            }
-          </ClassNames>
-        );
-      `
+      const ListItem = () => (
+        <ClassNames>
+          {({ css }) => (<div className={css({ fontSize: '20px' })}>hello, world!</div>)}
+        </ClassNames>
+      );
+      `,
+      '__webpack_nonce__'
     );
 
-    expect(actual).toInclude('<CS hash="css-test" nonce={__webpack_nonce__}>');
+    expect(actual).toInclude('<CS nonce={__webpack_nonce__}>');
   });
 
-  xit('should set children as function into a jsx expression', () => {
+  it('should transform children as function return', () => {
     const actual = transform(`
-    import { ClassNames } from '@compiled/react';
+      import { ClassNames } from '@compiled/react';
 
-    const ZoomOnHover = ({ children }) => (
-      <ClassNames>
-        {({ css }) =>
-          children({
-            className: css({
-              transition: 'transform 2000ms',
-              ':hover': {
-                transform: 'scale(2)',
-              },
-            }),
-          })
-        }
-      </ClassNames>
-    );
-  `);
+      const ListItem = ({ children }) => (
+        <ClassNames>
+          {({ css }) => children(css({ fontSize: '20px' }))}
+        </ClassNames>
+      );
+   `);
 
-    expect(actual).toInclude(`{children({
-    className: "css-test",
-})}`);
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from 'react';
+      import { ax, CC, CS } from '@compiled/react';
+      const _ = \\"._1wybgktf{font-size:20px}\\";
+
+      const ListItem = ({
+        children
+      }) => <CC>
+          <CS>{[_]}</CS>
+          {children(\\"_1wybgktf\\")}
+        </CC>;"
+    `);
   });
 
-  xit('should place self closing jsx element as a child', () => {
+  it('should place self closing jsx element as a child', () => {
     const actual = transform(`
     import { ClassNames } from '@compiled/react';
 
@@ -102,6 +195,6 @@ describe('class names behaviour', () => {
     );
   `);
 
-    expect(actual).toInclude(`</CS><div className={\"css-test\"}/></CC>`);
+    expect(actual).toInclude(`<div className={\"_1wyb1fwx\"} /`);
   });
 });

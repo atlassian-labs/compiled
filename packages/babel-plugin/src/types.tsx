@@ -32,6 +32,7 @@ export interface State {
    */
   compiledImports?: {
     styled?: string;
+    ClassNames?: string;
   };
 
   /**

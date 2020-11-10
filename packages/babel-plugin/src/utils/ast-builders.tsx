@@ -221,7 +221,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
  * @param sheets Stylesheets
  * @param meta Metadata
  */
-const compiledTemplate = (node: t.JSXElement, sheets: string[], meta: Metadata): t.Node => {
+export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
 
   return template(
