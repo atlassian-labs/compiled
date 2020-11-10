@@ -2,7 +2,7 @@ import * as t from '@babel/types';
 import { NodePath } from '@babel/core';
 import { transformCss } from '@compiled/css';
 import { pickFunctionBody } from '../utils/ast';
-import { compiledTemplate } from '../utils/ast-builders';
+import { compiledTemplate, buildCssVariablesProp } from '../utils/ast-builders';
 import { buildCss, CSSOutput } from '../utils/css-builders';
 import { Metadata } from '../types';
 
@@ -51,7 +51,6 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
     return;
   }
 
-  let css = '';
   let variables: CSSOutput['variables'] = [];
   let sheets: string[] = [];
 
@@ -66,11 +65,25 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
       const builtCss = buildCss(styles, meta);
       const transformed = transformCss(builtCss.css);
 
-      css += builtCss.css;
       variables = variables.concat(builtCss.variables);
       sheets = sheets.concat(transformed.sheets);
 
       path.replaceWith(t.stringLiteral(transformed.classNames.join(' ')));
+    },
+  });
+
+  path.traverse({
+    Identifier(path) {
+      if (path.node.name !== 'style' || path.parentPath.isProperty()) {
+        // Nothing to do - skip.
+        return;
+      }
+
+      const styleValue = variables.length
+        ? t.objectExpression(buildCssVariablesProp(variables))
+        : t.identifier('undefined');
+
+      path.replaceWith(styleValue);
     },
   });
 

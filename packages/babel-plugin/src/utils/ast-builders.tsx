@@ -62,7 +62,7 @@ const hoistSheet = (sheet: string, meta: Metadata): t.Identifier => {
  * @param variables CSS variables that will be placed in the AST
  * @param transform Transform function that can be used to change the CSS variable expression
  */
-const buildCssVariablesProp = (
+export const buildCssVariablesProp = (
   variables: CSSOutput['variables'],
   transform = (expression: t.Expression) => expression
 ): (t.ObjectProperty | t.SpreadElement)[] => {

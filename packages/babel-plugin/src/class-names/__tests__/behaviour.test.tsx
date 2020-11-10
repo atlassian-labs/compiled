@@ -197,4 +197,46 @@ describe('class names behaviour', () => {
 
     expect(actual).toInclude(`<div className={\"_1wyb1fwx\"} /`);
   });
+
+  it('should replace style identifier with undefined', () => {
+    const actual = transform(`
+      import { ClassNames } from '@compiled/core';
+
+      const Component = ({ children }) => (
+        <ClassNames>
+          {({ css, style }) => <div style={style} className={css({ fontSize: 12 })} />}
+        </ClassNames>
+      );
+  `);
+
+    expect(actual).toInclude(`style={undefined}`);
+  });
+
+  it('should replace style identifier with css variable object', () => {
+    const actual = transform(`
+      import { ClassNames } from '@compiled/core';
+
+      const Component = ({ children, color }) => (
+        <ClassNames>
+          {({ css, style }) => <div style={style} className={css({ color })} />}
+        </ClassNames>
+      );
+  `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from 'react';
+      import { ax, CC, CS } from '@compiled/core';
+      const _ = \\"._syaz1aj3{color:var(--_1ylxx6h)}\\";
+
+      const Component = ({
+        children,
+        color
+      }) => <CC>
+          <CS>{[_]}</CS>
+          {<div style={{
+          \\"--_1ylxx6h\\": color
+        }} className={\\"_syaz1aj3\\"} />}
+        </CC>;"
+    `);
+  });
 });
