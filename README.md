@@ -20,7 +20,7 @@ import { styled } from '@compiled/core';
 // Define styles with the CSS prop
 <div css={{ color: 'purple' }} />;
 
-// Create a styled components
+// Create a component with associated styles
 const StyledButton = styled.button`
   color: ${(props) => props.color};
 `;
