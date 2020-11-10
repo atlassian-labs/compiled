@@ -1,7 +1,7 @@
-const mockFunction = jest.fn();
+const mockNodeEnvFunction = jest.fn();
 
 jest.mock('../is-node', () => ({
-  isNodeEnvironment: mockFunction,
+  isNodeEnvironment: mockNodeEnvFunction,
 }));
 
 const OLD_ENV = process.env;
@@ -12,33 +12,26 @@ describe('Provider index.tsx', () => {
     process.env = { ...OLD_ENV }; // make a copy
     process.env.NODE_ENV = 'development';
   });
+
   afterAll(() => {
     process.env = OLD_ENV; // restore old env
   });
+
   it('returns the browser provider when isNodeEnvironment returns false', () => {
-    mockFunction.mockImplementation(() => false);
-    const loadComp = (path, name = 'default') => {
-      let comp = undefined;
-      try {
-        comp = require(path)[name];
-      } catch (_) {}
-      return comp;
-    };
-    const BrowserProvider = loadComp('../provider/provider-browser');
-    const Provider = loadComp('../provider');
+    mockNodeEnvFunction.mockImplementation(() => false);
+
+    const BrowserProvider = require('../provider/provider-browser').default;
+    const Provider = require('../provider').default;
+
     expect(Provider).toEqual(BrowserProvider);
   });
+
   it('returns the server provider when isNodeEnvironment returns true', () => {
-    mockFunction.mockImplementation(() => true);
-    const loadComp = (path, name = 'default') => {
-      let comp = undefined;
-      try {
-        comp = require(path)[name];
-      } catch (_) {}
-      return comp;
-    };
-    const ServerProvider = loadComp('../provider/provider-server');
-    const Provider = loadComp('../provider');
+    mockNodeEnvFunction.mockImplementation(() => true);
+
+    const ServerProvider = require('../provider/provider-server').default;
+    const Provider = require('../provider').default;
+
     expect(Provider).toEqual(ServerProvider);
   });
 });
@@ -49,38 +42,21 @@ describe('Server Provider', () => {
     process.env = { ...OLD_ENV }; // make a copy
     process.env.NODE_ENV = 'development';
   });
+
   afterAll(() => {
     process.env = OLD_ENV; // restore old env
   });
+
   it('should throw when "isNodeEnvironment" returns false', () => {
-    mockFunction.mockImplementation(() => false);
+    mockNodeEnvFunction.mockImplementation(() => false);
 
-    const loadComp = (path, name = 'default') => {
-      let comp = undefined;
-      try {
-        comp = require(path)[name];
-      } catch (error) {
-        expect(error).toBeDefined();
-      }
-      return comp;
-    };
-
-    loadComp('../provider/provider-server');
+    expect(() => require('../provider/provider-server')).toThrowErrorMatchingSnapshot();
   });
+
   it('should not throw when "isNodeEnvironment" returns true', () => {
-    mockFunction.mockImplementation(() => true);
+    mockNodeEnvFunction.mockImplementation(() => true);
 
-    const loadComp = (path, name = 'default') => {
-      let comp = undefined;
-      try {
-        comp = require(path)[name];
-      } catch (error) {
-        expect(error).toBeFalsy();
-      }
-      return comp;
-    };
-
-    loadComp('../provider/provider-server');
+    expect(() => require('../provider/provider-server')).not.toThrowError();
   });
 });
 
@@ -90,37 +66,20 @@ describe('Browser Provider', () => {
     process.env = { ...OLD_ENV }; // make a copy
     process.env.NODE_ENV = 'development';
   });
+
   afterAll(() => {
     process.env = OLD_ENV; // restore old env
   });
+
   it('should throw when "isNodeEnvironment" returns true', () => {
-    mockFunction.mockImplementation(() => true);
+    mockNodeEnvFunction.mockImplementation(() => true);
 
-    const loadComp = (path, name = 'default') => {
-      let comp = undefined;
-      try {
-        comp = require(path)[name];
-      } catch (error) {
-        expect(error).toBeDefined();
-      }
-      return comp;
-    };
-
-    loadComp('../provider/provider-browser');
+    expect(() => require('../provider/provider-browser')).toThrowErrorMatchingSnapshot();
   });
+
   it('should not throw when "isNodeEnvironment" returns false', () => {
-    mockFunction.mockImplementation(() => false);
+    mockNodeEnvFunction.mockImplementation(() => false);
 
-    const loadComp = (path, name = 'default') => {
-      let comp = undefined;
-      try {
-        comp = require(path)[name];
-      } catch (error) {
-        expect(error).toBeFalsy();
-      }
-      return comp;
-    };
-
-    loadComp('../provider/provider-browser');
+    expect(() => require('../provider/provider-browser')).not.toThrowError();
   });
 });

@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Browser Provider should throw when "isNodeEnvironment" returns true 1`] = `
+"
+ ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
+██╔════╝██╔═══██╗████╗ ████║██╔══██╗██║██║     ██╔════╝██╔══██╗
+██║     ██║   ██║██╔████╔██║██████╔╝██║██║     █████╗  ██║  ██║
+██║     ██║   ██║██║╚██╔╝██║██╔═══╝ ██║██║     ██╔══╝  ██║  ██║
+╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║███████╗███████╗██████╔╝
+ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═════╝
+
+  @compiled/runtime - ERROR
+
+  This code should only run on the client. You might need to configure your bundler to respect the \\"browser\\" field in package json.
+"
+`;
+
+exports[`Server Provider should throw when "isNodeEnvironment" returns false 1`] = `
+"
+ ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
+██╔════╝██╔═══██╗████╗ ████║██╔══██╗██║██║     ██╔════╝██╔══██╗
+██║     ██║   ██║██╔████╔██║██████╔╝██║██║     █████╗  ██║  ██║
+██║     ██║   ██║██║╚██╔╝██║██╔═══╝ ██║██║     ██╔══╝  ██║  ██║
+╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║███████╗███████╗██████╔╝
+ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═════╝
+
+  @compiled/runtime - ERROR
+
+  This code should only run on the server. You might need to configure your bundler to respect the \\"browser\\" field in package json.
+"
+`;
