@@ -1,7 +1,7 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/core';
 import { transformCss } from '@compiled/css';
-import { pickFunctionBody } from '../utils/ast';
+import { pickFunctionBody, buildCodeFrameError } from '../utils/ast';
 import { compiledTemplate, buildCssVariablesProp } from '../utils/ast-builders';
 import { buildCss, CSSOutput } from '../utils/css-builders';
 import { Metadata } from '../types';
@@ -31,6 +31,20 @@ const extractStyleObjectExpression = (path: NodePath<t.CallExpression>) => {
   return undefined;
 };
 
+const getJsxChildrenAsFunction = (path: NodePath<t.JSXElement>) => {
+  const children = path.node.children.find((node) => t.isJSXExpressionContainer(node));
+  if (t.isJSXExpressionContainer(children) && t.isFunction(children.expression)) {
+    return children.expression;
+  }
+
+  throw buildCodeFrameError(
+    `ClassNames children should be a function
+E.g: <ClassNames>{props => <div />}</ClassNames>`,
+    path.node,
+    path
+  );
+};
+
 /**
  * Takes a class name component and transforms it into a compiled component.
  * This method will traverse the AST twice,
@@ -51,9 +65,11 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
     return;
   }
 
+  const children = getJsxChildrenAsFunction(path);
   let variables: CSSOutput['variables'] = [];
   let sheets: string[] = [];
 
+  // First pass to replace all usages of `css({})`
   path.traverse({
     CallExpression(path) {
       const styles = extractStyleObjectExpression(path);
@@ -72,6 +88,7 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
     },
   });
 
+  // Second pass to replace all usages of `style`.
   path.traverse({
     Identifier(path) {
       if (path.node.name !== 'style' || path.parentPath.isProperty()) {
@@ -87,10 +104,7 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
     },
   });
 
-  const children = path.node.children.find((node) => t.isJSXExpressionContainer(node));
-
-  if (t.isJSXExpressionContainer(children) && t.isArrowFunctionExpression(children.expression)) {
-    const body = pickFunctionBody(children.expression);
-    path.replaceWith(compiledTemplate(body, sheets, meta));
-  }
+  // All done! Pick the children as function body and replace the original ClassNames node with it.
+  const body = pickFunctionBody(children);
+  path.replaceWith(compiledTemplate(body, sheets, meta));
 };
