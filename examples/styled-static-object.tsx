@@ -2,7 +2,7 @@ import React from 'react';
 import { styled } from '@compiled/core';
 
 export default {
-  title: 'styled component static object',
+  title: 'styled | static object',
 };
 
 const Thing = styled.div({

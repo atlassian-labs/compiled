@@ -4,7 +4,7 @@ import { colors, objectStyles } from 'module-a';
 import { hover } from './mixins/mixins';
 
 export default {
-  title: 'module traversal',
+  title: 'ast | module traversal',
 };
 
 const { backgroundColor: borderColor } = objectStyles;

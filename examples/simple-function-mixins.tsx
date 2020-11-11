@@ -3,7 +3,7 @@ import { styled } from '@compiled/core';
 import { objectStyles, colorMixin } from 'module-a';
 
 export default {
-  title: 'simple function mixins',
+  title: 'mixins | simple functions',
 };
 
 const StyledObjectLiteral = styled.div({

@@ -2,7 +2,7 @@ import React from 'react';
 import { styled } from '@compiled/core';
 
 export default {
-  title: 'static evaluation',
+  title: 'ast | static evaluation',
 };
 
 const fontSize = 12;

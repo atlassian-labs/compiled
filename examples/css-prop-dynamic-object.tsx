@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '@compiled/core';
 
 export default {
-  title: 'css prop dynamic object',
+  title: 'css prop | dynamic object',
 };
 
 export const DynamicCssProp = () => {
