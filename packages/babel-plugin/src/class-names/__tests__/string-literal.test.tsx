@@ -27,7 +27,7 @@ describe('class names string literal', () => {
     expect(actual).toInclude('.css-test{font-size:20px}');
   });
 
-  xit('should transform no template string literal', () => {
+  it('should transform no template string literal', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
 
@@ -38,7 +38,12 @@ describe('class names string literal', () => {
         );
       `);
 
-    expect(actual).toInclude('.css-test{font-size:20px}');
+    expect(actual).toMatchInlineSnapshot(`
+      "import*as React from'react';import{ax,CC,CS}from'@compiled/core';const _=\\"._1wybgktf{font-size:20px}\\";const ListItem=()=><CC>
+          <CS>{[_]}</CS>
+          {<div className={\\"_1wybgktf\\"}>hello, world!</div>}
+        </CC>;"
+    `);
   });
 
   xit('should transform template string literal with string variable', () => {

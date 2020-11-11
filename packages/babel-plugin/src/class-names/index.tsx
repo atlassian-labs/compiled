@@ -6,11 +6,12 @@ import { compiledTemplate, buildCssVariablesProp } from '../utils/ast-builders';
 import { buildCss, CSSOutput } from '../utils/css-builders';
 import { Metadata } from '../types';
 
-const extractStyleObjectExpression = (path: NodePath<t.CallExpression>) => {
+const extractStyles = (path: NodePath<t.Expression>) => {
   if (
+    t.isCallExpression(path.node) &&
     t.isIdentifier(path.node.callee) &&
     path.node.callee.name === 'css' &&
-    t.isObjectExpression(path.node.arguments[0])
+    t.isExpression(path.node.arguments[0])
   ) {
     // css({}) call
     const styles = path.node.arguments[0];
@@ -18,13 +19,19 @@ const extractStyleObjectExpression = (path: NodePath<t.CallExpression>) => {
   }
 
   if (
+    t.isCallExpression(path.node) &&
     t.isMemberExpression(path.node.callee) &&
     t.isIdentifier(path.node.callee.property) &&
     path.node.callee.property.name === 'css' &&
-    t.isObjectExpression(path.node.arguments[0])
+    t.isExpression(path.node.arguments[0])
   ) {
     // props.css({}) call
     const styles = path.node.arguments[0];
+    return styles;
+  }
+
+  if (t.isTaggedTemplateExpression(path.node)) {
+    const styles = path.node.quasi;
     return styles;
   }
 
@@ -71,8 +78,8 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
 
   // First pass to replace all usages of `css({})`
   path.traverse({
-    CallExpression(path) {
-      const styles = extractStyleObjectExpression(path);
+    Expression(path) {
+      const styles = extractStyles(path);
       if (!styles) {
         // Nothing to do - skip.
         return;
