@@ -13,6 +13,7 @@
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
+  "browser": "./dist/browser/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
   "keywords": [
@@ -24,7 +25,8 @@
   ],
   "exports": {
     ".": "./dist/index.js",
-    "./babel-plugin": "./dist/babel-plugin.js"
+    "./babel-plugin": "./dist/babel-plugin.js",
+    "./runtime": "./dist/runtime.js"
   },
   "files": [
     "dist",
@@ -33,14 +35,13 @@
     "README.md"
   ],
   "dependencies": {
-    "@compiled/babel-plugin": "0.4.7",
-    "@compiled/runtime": "0.4.7",
     "csstype": "^2.0.0"
   },
   "peerDependencies": {
     "react": "^16.12.0"
   },
   "devDependencies": {
+    "@compiled/babel-plugin": "0.4.7",
     "@testing-library/react": "^10.0.4",
     "@types/jscodeshift": "^0.7.1",
     "jscodeshift": "^0.11.0",

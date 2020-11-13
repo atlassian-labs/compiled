@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { styled } from '@compiled/react';
 
-jest.mock('../../../runtime/dist/is-node', () => ({
+jest.mock('../runtime/is-node', () => ({
   isNodeEnvironment: () => false,
 }));
 

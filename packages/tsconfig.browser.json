@@ -1,4 +1,4 @@
 {
   "files": [],
-  "references": [{ "path": "runtime/tsconfig.browser.json" }]
+  "references": [{ "path": "react/tsconfig.browser.json" }]
 }

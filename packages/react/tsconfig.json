@@ -6,7 +6,15 @@
     "baseUrl": "src",
     "paths": {
       "@compiled/react": ["index.tsx"]
-    }
+    },
+    "plugins": [
+      {
+        "transform": "ts-transform-define",
+        "replace": {
+          "isNodeEnvironment()": "process.env.IS_NODE_EXPRESSION"
+        }
+      }
+    ]
   },
-  "references": [{ "path": "../babel-plugin" }, { "path": "../runtime" }]
+  "references": [{ "path": "../babel-plugin" }]
 }

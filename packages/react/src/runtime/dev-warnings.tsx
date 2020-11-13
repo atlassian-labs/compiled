@@ -11,7 +11,7 @@ export const warn = (str: string, ...args: any[]) =>
 ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║███████╗███████╗██████╔╝
  ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═════╝
 
-  @compiled/runtime - DEV WARNING
+  @compiled/react/runtime - DEV WARNING
 
   ${str}
 `,

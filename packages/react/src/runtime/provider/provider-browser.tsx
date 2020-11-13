@@ -1,8 +1,8 @@
-import React, { useRef, useContext, createContext } from 'react';
 import { isNodeEnvironment } from '../is-node';
+
 import { ProviderComponent, UseCacheHook } from './types';
 
-if (process.env.NODE_ENV === 'development' && !isNodeEnvironment()) {
+if (process.env.NODE_ENV === 'development' && isNodeEnvironment()) {
   throw new Error(
     `
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
@@ -12,23 +12,28 @@ if (process.env.NODE_ENV === 'development' && !isNodeEnvironment()) {
 ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║███████╗███████╗██████╔╝
  ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═════╝
 
-  @compiled/runtime - ERROR
+  @compiled/react/runtime - ERROR
 
-  This code should only run on the server. You might need to configure your bundler to respect the "browser" field in package json.
+  This code should only run on the client. You might need to configure your bundler to respect the "browser" field in package json.
 `
   );
 }
 
-// We don't set this to an empty object else it will act like a singleton.
-const Cache = createContext<Record<string, true> | null>(null);
+/**
+ * Singleton cache for tracking what styles have already been added to the head.
+ * Should only run on the client!
+ */
+const inserted: Record<string, true> = {};
 
-export const useCache: UseCacheHook = () => {
-  return useContext(Cache) || {};
-};
+/**
+ * Noops on the client
+ */
+export const useCache: UseCacheHook = () => inserted;
 
-const CompiledComponent: ProviderComponent = (props: { children: JSX.Element[] | JSX.Element }) => {
-  const inserted = useRef<Record<string, true>>(useCache());
-  return <Cache.Provider value={inserted.current}>{props.children}</Cache.Provider>;
-};
+/**
+ * Noops on the client
+ */
+const Fragment: ProviderComponent = (props: { children: JSX.Element[] | JSX.Element }) =>
+  props.children as JSX.Element;
 
-export default CompiledComponent;
+export default Fragment;
