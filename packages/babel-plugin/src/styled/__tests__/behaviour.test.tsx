@@ -13,7 +13,7 @@ const transform = (code: string) => {
 describe('styled component behaviour', () => {
   it('should generate styled object component code', () => {
     const actual = transform(`
-      import { styled, ThemeProvider } from '@compiled/core';
+      import { styled, ThemeProvider } from '@compiled/react';
 
       const ListItem = styled.div({
         fontSize: '20px',
@@ -21,7 +21,7 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import*as React from'react';import{ThemeProvider,ax,CC,CS}from'@compiled/core';const _=\\"._1wybgktf{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import*as React from'react';import{ThemeProvider,ax,CC,CS}from'@compiled/react';const _=\\"._1wybgktf{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS>{[_]}</CS>
             <C{...props}style={style}ref={ref}className={ax([\\"_1wybgktf\\",props.className])}/>
           </CC>);"
@@ -30,7 +30,7 @@ describe('styled component behaviour', () => {
 
   it('should generate styled template literal component code', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
 
       const ListItem = styled.div\`
         font-size: 20px;
@@ -38,7 +38,7 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import*as React from'react';import{ax,CC,CS}from'@compiled/core';const _=\\"._1wybgktf{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import*as React from'react';import{ax,CC,CS}from'@compiled/react';const _=\\"._1wybgktf{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS>{[_]}</CS>
             <C{...props}style={style}ref={ref}className={ax([\\"_1wybgktf\\",props.className])}/>
           </CC>);"
@@ -47,7 +47,7 @@ describe('styled component behaviour', () => {
 
   it('should compose CSS from multiple sources', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
 
       const styles = { fontSize: 12 };
 
@@ -65,7 +65,7 @@ describe('styled component behaviour', () => {
 
   it('should not pass down invalid html attributes to the node', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
       const ListItem = styled.div({
         fontSize: props => props.textSize,
       });
@@ -77,25 +77,25 @@ describe('styled component behaviour', () => {
 
   it('should remove styled import', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
       const ListItem = styled.div({
         fontSize: '20px',
       });
     `);
 
-    expect(actual).not.toInclude(`import { styled } from '@compiled/core';`);
+    expect(actual).not.toInclude(`import { styled } from '@compiled/react';`);
   });
 
   it('should replace string literal styled component with component', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import*as React from'react';import{ax,CC,CS}from'@compiled/core';const _=\\"._1wybgktf{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
+      "import*as React from'react';import{ax,CC,CS}from'@compiled/react';const _=\\"._1wybgktf{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
             <CS>{[_]}</CS>
             <C{...props}style={style}ref={ref}className={ax([\\"_1wybgktf\\",props.className])}/>
           </CC>);"
@@ -105,7 +105,7 @@ describe('styled component behaviour', () => {
   it('should add an identifier nonce to the style element', () => {
     const actual = transformSync(
       `
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
 
       const ListItem = styled.div\`
         font-size: \${props => props.color}px;
@@ -124,7 +124,7 @@ describe('styled component behaviour', () => {
 
   it('should shortcircuit props with suffix to a empty string to avoid undefined in css', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
 
       const ListItem = styled.div\`
         font-size: \${props => props.color}px;
@@ -136,7 +136,7 @@ describe('styled component behaviour', () => {
 
   it('should spread down props to element', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
 
       const ListItem = styled.div\`
         font-size: 20px;
@@ -149,7 +149,7 @@ describe('styled component behaviour', () => {
   it('should compose a component using template literal', () => {
     const actual = transform(`
       import React from 'react';
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
 
       const Component = () => null;
 
@@ -164,7 +164,7 @@ describe('styled component behaviour', () => {
   it('should compose a component using object literal', () => {
     const actual = transform(`
       import React from 'react';
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
 
       const Component = () => null;
 
@@ -178,7 +178,7 @@ describe('styled component behaviour', () => {
 
   it('should concat class name prop if defined', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
@@ -189,7 +189,7 @@ describe('styled component behaviour', () => {
 
   it('should inline constant identifier string literal', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
 
       const fontSize = '20px';
 
@@ -203,7 +203,7 @@ describe('styled component behaviour', () => {
 
   it('should transform an arrow function with a body into an IIFE', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
 
       const ListItem = styled.div({
         color: props => { return props.color; },
@@ -216,7 +216,7 @@ describe('styled component behaviour', () => {
 
   it('should transform an arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
 
       const ListItem = styled.div({
         fontSize: props => { return props.textSize; },
@@ -230,7 +230,7 @@ describe('styled component behaviour', () => {
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
 
       const ListItem = styled.div({
         color: \`very$\{props => { return props.color; }}dark\`
@@ -243,7 +243,7 @@ describe('styled component behaviour', () => {
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
 
       const ListItem = styled.div({
         fontSize: \`super$\{props => { return props.textSize; }}big\`

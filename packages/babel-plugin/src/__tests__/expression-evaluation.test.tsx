@@ -13,7 +13,7 @@ const transform = (code: string) => {
 describe('import specifiers', () => {
   it('should evaluate simple expressions', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       <div css={{ fontSize: 8 * 2 }}>hello world</div>
@@ -24,7 +24,7 @@ describe('import specifiers', () => {
 
   it('should inline mutable identifier that is not mutated', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       let notMutatedAgain = 20;
@@ -37,7 +37,7 @@ describe('import specifiers', () => {
 
   it('should bail out evaluating expression referencing a mutable identifier', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       let mutable = 2;
@@ -51,7 +51,7 @@ describe('import specifiers', () => {
 
   it('should bail out evaluating identifier expression referencing a mutated identifier', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       let mutable = 2;
@@ -67,7 +67,7 @@ describe('import specifiers', () => {
   it('should not exhaust the stack when an identifier references itself', () => {
     expect(() => {
       transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       let heading = heading || 20;
@@ -79,7 +79,7 @@ describe('import specifiers', () => {
 
   it('should bail out evaluating expression that references a constant expression referencing a mutated expression', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       let mutable = false;
@@ -94,7 +94,7 @@ describe('import specifiers', () => {
 
   it('should bail out evaluating a binary expression referencing a mutated identifier', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       let mutable = 2;
@@ -110,7 +110,7 @@ describe('import specifiers', () => {
     expect(() => {
       transform(
         `
-        import '@compiled/core';
+        import '@compiled/react';
 
         export const Component = ({ foo, color }) => {
           return (
@@ -126,7 +126,7 @@ describe('import specifiers', () => {
     expect(() => {
       transform(
         `
-        import '@compiled/core';
+        import '@compiled/react';
 
         export const Component = (props) => {
           return (
@@ -142,7 +142,7 @@ describe('import specifiers', () => {
     expect(() => {
       transform(
         `
-        import '@compiled/core';
+        import '@compiled/react';
 
         function Component({ foo, color }) {
           return (
@@ -158,7 +158,7 @@ describe('import specifiers', () => {
     expect(() => {
       transform(
         `
-        import '@compiled/core';
+        import '@compiled/react';
 
         function Component(props) {
           return (
@@ -174,7 +174,7 @@ describe('import specifiers', () => {
     expect(() => {
       transform(
         `
-      import '@compiled/core';
+      import '@compiled/react';
 
       function DestructuredComp(props) {
         const { foo, color } = props;
@@ -190,7 +190,7 @@ describe('import specifiers', () => {
 
   it('handles object destructuring', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const { foo, color } = { foo: 14, color: 'blue' };
@@ -211,7 +211,7 @@ describe('import specifiers', () => {
 
   it('handles the destructuring coming from an identifier', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const obj = { foo: 14, color: 'blue' };
@@ -233,7 +233,7 @@ describe('import specifiers', () => {
 
   it('handles the destructuring coming from a referenced identifier', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const obj = { foo: 14, color: 'blue' };
@@ -256,7 +256,7 @@ describe('import specifiers', () => {
 
   it('handles the function call destructuring coming from a referenced identifier', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const obj = { foo: () => ({ bar: 14 }), color: 'blue' };
@@ -280,7 +280,7 @@ describe('import specifiers', () => {
   it('should not blow up when member expression object is other than "Identifier" or "Call Expression"', () => {
     expect(() => {
       transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       function Component() {

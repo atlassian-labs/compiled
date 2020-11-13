@@ -13,7 +13,7 @@ const transform = (code: string) => {
 describe('styled component object literal', () => {
   it('should respect the definition of pseudo element content ala emotion with double quotes', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         const ListItem = styled.div({
           ':after': {
             content: '""',
@@ -26,7 +26,7 @@ describe('styled component object literal', () => {
 
   it('should respect the definition of pseudo element content ala emotion with single quotes', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         const ListItem = styled.div({
           ':after': {
             content: "''",
@@ -39,7 +39,7 @@ describe('styled component object literal', () => {
 
   it('should respect the definition of pseudo element content ala styled components with no content', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         const ListItem = styled.div({
           ':after': {
             content: '',
@@ -52,7 +52,7 @@ describe('styled component object literal', () => {
 
   it('should respect the definition of pseudo element content ala styled components with content', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         const ListItem = styled.div({
           ':after': {
             content: '😎',
@@ -65,7 +65,7 @@ describe('styled component object literal', () => {
 
   it('should append "px" on numeric literals if missing', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         const ListItem = styled.div({
           fontSize: 12,
         });
@@ -76,7 +76,7 @@ describe('styled component object literal', () => {
 
   it('should reference property access expression', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         let color = { blue: 'red' };
         color = {};
 
@@ -91,7 +91,7 @@ describe('styled component object literal', () => {
 
   it('should not pass down invalid html attributes to the node when property has a suffix', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         const ListItem = styled.div({
           fontSize: props => \`\${props.textSize}px\`,
         });
@@ -104,7 +104,7 @@ describe('styled component object literal', () => {
 
   it('should not pass down invalid html attributes to the node when property has a suffix when func in template literal', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         const ListItem = styled.div({
           fontSize: \`\${props => props.textSize}px\`,
         });
@@ -117,7 +117,7 @@ describe('styled component object literal', () => {
 
   it('should transform object with simple values', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const ListItem = styled.div({
           color: 'blue',
@@ -131,7 +131,7 @@ describe('styled component object literal', () => {
 
   it('should transform object with nested object into a selector', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const ListItem = styled.div({
           ':hover': {
@@ -147,7 +147,7 @@ describe('styled component object literal', () => {
 
   it('should reference identifier pointing to a call expression if it returns simple value', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const em = (str) => str;
         const color = em('blue');
@@ -163,7 +163,7 @@ describe('styled component object literal', () => {
 
   it('should inline call if it returns simple value', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const em = (str) => str;
 
@@ -178,7 +178,7 @@ describe('styled component object literal', () => {
 
   it('should inline constant string literal', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const color = 'blue';
 
@@ -192,7 +192,7 @@ describe('styled component object literal', () => {
 
   it('should transform template object with prop reference', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const ListItem = styled.div({
           color: props => props.color,
@@ -205,7 +205,7 @@ describe('styled component object literal', () => {
 
   it('should transform object spread from variable', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const h100 = { fontSize: '12px' };
 
@@ -221,7 +221,7 @@ describe('styled component object literal', () => {
 
   it('should transform object with mutable identifier', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         let color = 'blue';
         color = 'red';
@@ -237,7 +237,7 @@ describe('styled component object literal', () => {
 
   it('should transform object with obj variable', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const hover = { color: 'red' };
 
@@ -253,7 +253,7 @@ describe('styled component object literal', () => {
 
   it('should transform object with no argument arrow function variable', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const mixin = () => ({ color: 'red' });
 
@@ -267,7 +267,7 @@ describe('styled component object literal', () => {
 
   it('should transform object with no argument function variable', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         function mixin() {
           return { color: 'red' };
@@ -283,7 +283,7 @@ describe('styled component object literal', () => {
 
   it('should transform object with no argument functions', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const bgColor = 'blue';
         const fontStyling = {
@@ -312,7 +312,7 @@ describe('styled component object literal', () => {
 
   it('should transform object with no argument function properties belonging to a variable', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const bgColor = 'blue';
         const fontSize = 12;
@@ -342,7 +342,7 @@ describe('styled component object literal', () => {
 
   it('should transform function returning an object', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         import React from 'react';
 
         const color = 'red';
@@ -358,7 +358,7 @@ describe('styled component object literal', () => {
 
   it('should transform member expression referencing a function which returns an object', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         import React from 'react';
 
         const color = 'red';

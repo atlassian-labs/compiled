@@ -13,7 +13,7 @@ const transform = (code: string) => {
 describe('css prop behaviour', () => {
   it('should not apply class name when no styles are present', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       <div css={{}} />
@@ -24,7 +24,7 @@ describe('css prop behaviour', () => {
 
   it('should replace css prop with class name', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       <div css={{}}>hello world</div>
@@ -35,7 +35,7 @@ describe('css prop behaviour', () => {
 
   it('should pass through style identifier when there is no dynamic styles in the css', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize: 12 }}>hello world</div>;
@@ -46,7 +46,7 @@ describe('css prop behaviour', () => {
 
   it('should pass through style property access when there is no dynamic styles in the css', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const Component = ({ className, ...props }) => <div className={className} style={props.style} css={{ fontSize: 12 }}>hello world</div>;
@@ -57,7 +57,7 @@ describe('css prop behaviour', () => {
 
   it('should spread style identifier when there is dynamic styles in the css', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
       const [fontSize] = React.useState('10px');
       const red = 'red';
@@ -70,7 +70,7 @@ describe('css prop behaviour', () => {
 
   it('should spread style property access when there is dynamic styles in the css', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
       const [background] = React.useState("violet");
       const red = 'red';
@@ -82,7 +82,7 @@ describe('css prop behaviour', () => {
 
   it('should spread style identifier when there is styles already set', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12 }}>hello world</div>;
@@ -93,7 +93,7 @@ describe('css prop behaviour', () => {
 
   it('should spread style identifier when there is styles already set and using dynamic css', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const [background] = React.useState('yellow');
@@ -109,7 +109,7 @@ describe('css prop behaviour', () => {
 
   it('should concat explicit use of class name prop on an element', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       <div className="foobar" css={{ display: 'block' }}>hello world</div>
@@ -120,7 +120,7 @@ describe('css prop behaviour', () => {
 
   it('should pass through spread props', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const props = {};
@@ -138,7 +138,7 @@ describe('css prop behaviour', () => {
 
   it('should pass through static props', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       <div
@@ -154,7 +154,7 @@ describe('css prop behaviour', () => {
 
   it('should concat explicit use of class name prop from an identifier on an element', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const className = "foobar";
@@ -166,7 +166,7 @@ describe('css prop behaviour', () => {
 
   it('should pick up array composition', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const base = { color: 'black' };
@@ -181,7 +181,7 @@ describe('css prop behaviour', () => {
 
   it('should persist static style prop', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       <div style={{ display: 'block' }} css={{ color: 'blue' }}>hello world</div>
@@ -195,7 +195,7 @@ describe('css prop behaviour', () => {
 
   it('should concat explicit use of style prop on an element when destructured template', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const [color] = ['blue'];
@@ -208,7 +208,7 @@ describe('css prop behaviour', () => {
 
   it('should concat implicit use of class name prop where class name is a jsx expression', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const getFoo = () => 'foobar';
@@ -221,7 +221,7 @@ describe('css prop behaviour', () => {
 
   it('should allow inlined expressions as property values', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
 
       let hello = true;
       hello = false;
@@ -237,7 +237,7 @@ describe('css prop behaviour', () => {
   it('should inline multi interpolation constant variable', () => {
     // See: https://codesandbox.io/s/dank-star-443ps?file=/src/index.js
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
 
       const N30 = 'gray';
 
@@ -257,7 +257,7 @@ describe('css prop behaviour', () => {
   it('should move dynamic multi interpolation variable into css variable', () => {
     // See: https://codesandbox.io/s/dank-star-443ps?file=/src/index.js
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import {useState} from 'react';
 
       let N30 = 'gray';
@@ -279,7 +279,7 @@ describe('css prop behaviour', () => {
 
   it('should allow expressions stored in a variable as shorthand property values', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
 
       let hello = true;
       hello = false;
@@ -294,7 +294,7 @@ describe('css prop behaviour', () => {
 
   it('should allow expressions stored in a variable as property values', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
 
       let hello = true;
       hello = false;
@@ -309,7 +309,7 @@ describe('css prop behaviour', () => {
 
   it('should remove css prop', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const color = 'blue';
@@ -322,7 +322,7 @@ describe('css prop behaviour', () => {
 
   it('should keep other props around', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const color = 'blue';
@@ -336,7 +336,7 @@ describe('css prop behaviour', () => {
   it('should add an identifier nonce to the style element', () => {
     const actual = transformSync(
       `
-    import '@compiled/core';
+    import '@compiled/react';
     import React from 'react';
 
     const color = 'blue';
@@ -356,7 +356,7 @@ describe('css prop behaviour', () => {
 
   it('should bubble up top level pseudo inside a media atrule', () => {
     const actual = transform(`
-    import '@compiled/core';
+    import '@compiled/react';
     import React from 'react';
 
     const fontSize = 20;
@@ -375,7 +375,7 @@ describe('css prop behaviour', () => {
 
   it('should bubble up top level pseduo inside a support atrule', () => {
     const actual = transform(`
-    import '@compiled/core';
+    import '@compiled/react';
     import React from 'react';
 
     const fontSize = 20;

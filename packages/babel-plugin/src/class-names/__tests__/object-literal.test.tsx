@@ -13,7 +13,7 @@ const transform = (code: string) => {
 describe('class names object literal', () => {
   xit('should persist suffix of dynamic property value into inline styles', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
         import {useState} from 'react';
 
         const fontSize = useState(20);
@@ -33,7 +33,7 @@ describe('class names object literal', () => {
 
   xit('should transform object with simple values', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
 
         const ListItem = () => (
           <ClassNames>
@@ -47,7 +47,7 @@ describe('class names object literal', () => {
 
   xit('should transform object with nested object into a selector', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
 
         const ListItem = () => (
           <ClassNames>
@@ -61,7 +61,7 @@ describe('class names object literal', () => {
 
   xit('should transform object that has a variable reference', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
 
         const color = 'red';
 
@@ -77,7 +77,7 @@ describe('class names object literal', () => {
 
   xit('should transform object spread from variable', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
 
         const mixin = {
           color: 'red',
@@ -95,7 +95,7 @@ describe('class names object literal', () => {
 
   xit('should transform object with string variable', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
         import {useState} from 'react';
         const color = 'blue';
         const [fontSize] = useState('10px');
@@ -115,7 +115,7 @@ describe('class names object literal', () => {
 
   xit('should transform object with obj variable', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
 
         const hover = { color: 'red' };
 

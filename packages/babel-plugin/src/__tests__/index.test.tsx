@@ -22,7 +22,7 @@ describe('babel plugin', () => {
   it('should transform basic styled component', () => {
     const output = transformSync(
       `
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
 
       const MyDiv = styled.div\`
         font-size: 12px;
@@ -33,7 +33,7 @@ describe('babel plugin', () => {
 
     expect(output?.code).toMatchInlineSnapshot(`
       "import * as React from 'react';
-      import { ax, CC, CS } from '@compiled/core';
+      import { ax, CC, CS } from '@compiled/react';
       const _ = \\"._1wyb1fwx{font-size:12px}\\";
       const MyDiv = React.forwardRef(({
         as: C = \\"div\\",
@@ -49,7 +49,7 @@ describe('babel plugin', () => {
   it('should transform basic css prop', () => {
     const output = transformSync(
       `
-      import '@compiled/core';
+      import '@compiled/react';
 
       const MyDiv = () => {
         return <div css="font-size:12px;">hello</div>
@@ -60,7 +60,7 @@ describe('babel plugin', () => {
 
     expect(output?.code).toMatchInlineSnapshot(`
       "import * as React from 'react';
-      import { ax, CC, CS } from '@compiled/core';
+      import { ax, CC, CS } from '@compiled/react';
       const _ = \\"._1wyb1fwx{font-size:12px}\\";
 
       const MyDiv = () => {

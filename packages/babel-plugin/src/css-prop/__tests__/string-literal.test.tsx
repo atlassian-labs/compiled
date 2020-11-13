@@ -13,7 +13,7 @@ const transform = (code: string) => {
 describe('css prop string literal', () => {
   it('should persist suffix of dynamic value into inline styles', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         let fontSize = 20;
@@ -28,7 +28,7 @@ describe('css prop string literal', () => {
 
   it('should persist suffix of constant value', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         const fontSize = 20;
@@ -41,7 +41,7 @@ describe('css prop string literal', () => {
 
   it('should transform string literal', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         <div css="font-size: 20px;">hello world</div>
@@ -52,7 +52,7 @@ describe('css prop string literal', () => {
 
   it('should inline constant object property value', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         const colors = { error: 'red' };
@@ -70,7 +70,7 @@ describe('css prop string literal', () => {
 
   it('should evaluate deep member expression referencing an identifier', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         const primaryColor = 'blue';
@@ -99,7 +99,7 @@ describe('css prop string literal', () => {
 
   it('should inline nested constant object property value', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         const theme = {
@@ -126,7 +126,7 @@ describe('css prop string literal', () => {
 
   it('should transform binary expression', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
 
         export const EmphasisText = (props) => (
           <span
@@ -146,7 +146,7 @@ describe('css prop string literal', () => {
 
   it('should transform no template string literal', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         <div css={\`font-size: 20px;\`}>hello world</div>
@@ -157,7 +157,7 @@ describe('css prop string literal', () => {
 
   it('should inline constant expression', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         const color = 'blue';
@@ -169,7 +169,7 @@ describe('css prop string literal', () => {
 
   it('should transform an expression', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         let sidenav = true;
@@ -196,7 +196,7 @@ describe('css prop string literal', () => {
 
   it('should transform template string literal with obj variable', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         const style = { color: 'blue', fontSize: '30px' };
@@ -210,7 +210,7 @@ describe('css prop string literal', () => {
 
   it('should transform template string with no argument arrow function variable', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         const mixin = () => ({ color: 'blue', fontSize: '30px' });
@@ -223,7 +223,7 @@ describe('css prop string literal', () => {
 
   it('should transform template string with no argument arrow function call variable', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         const mixin = () => ({ color: 'blue', fontSize: '30px' });
@@ -236,7 +236,7 @@ describe('css prop string literal', () => {
 
   it('should transform template string with no argument functions', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         const color = () => 'blue';
@@ -266,7 +266,7 @@ describe('css prop string literal', () => {
 
   it('should transform template string with no argument function properties belonging to a variable', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         const fontSize = 12;
@@ -298,7 +298,7 @@ describe('css prop string literal', () => {
 
   it('should transform template string with no argument function variable', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         function mixin() {
@@ -314,7 +314,7 @@ describe('css prop string literal', () => {
   it('should inline multiple constant interpolations', () => {
     const actual = transform(`
         import React from 'react';
-        import '@compiled/core';
+        import '@compiled/react';
 
         const x = 1;
         const y = '2px';
@@ -334,7 +334,7 @@ describe('css prop string literal', () => {
   it('should reference multiple interpolations in a group', () => {
     const actual = transform(`
         import React from 'react';
-        import '@compiled/core';
+        import '@compiled/react';
 
         let x = 1;
         x = 1;
@@ -359,7 +359,7 @@ describe('css prop string literal', () => {
 
   it('should transform function returning an object', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         const color = 'red';
@@ -373,7 +373,7 @@ describe('css prop string literal', () => {
 
   it('should transform member expression referencing a function which returns an object', () => {
     const actual = transform(`
-        import '@compiled/core';
+        import '@compiled/react';
         import React from 'react';
 
         const color = 'red';

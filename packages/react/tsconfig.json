@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.options.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "baseUrl": "src",
+    "paths": {
+      "@compiled/react": ["index.tsx"]
+    }
+  },
+  "references": [{ "path": "../babel-plugin" }, { "path": "../runtime" }]
+}

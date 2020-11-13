@@ -20,7 +20,7 @@ suite
   .add('#initial-run', () => {
     transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       import { colorMixin } from '../__fixtures__/mixins/objects';
@@ -33,7 +33,7 @@ suite
   .add('#with-cache', () => {
     transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       import { colorMixin } from '../__fixtures__/mixins/objects';
@@ -47,7 +47,7 @@ suite
   .add('#no-cache', () => {
     transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       import { colorMixin } from '../__fixtures__/mixins/objects';

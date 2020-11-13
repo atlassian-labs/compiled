@@ -16,7 +16,7 @@ describe('error handling', () => {
   it('should throw when using using an invalid css node', () => {
     expect(() => {
       transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       <div css={() => {}} />
@@ -27,7 +27,7 @@ describe('error handling', () => {
   it('should throw when spreading an identifier that does not exist', () => {
     expect(() => {
       transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       <div css={{ ...dontexist }} />
@@ -38,7 +38,7 @@ describe('error handling', () => {
   it('should throw when referencing an identifier that does not exist', () => {
     expect(() => {
       transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       <div css={dontexist} />
@@ -49,7 +49,7 @@ describe('error handling', () => {
   it('should throw when referencing an identifier that isnt supported', () => {
     expect(() => {
       transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       class HelloWorld {}
@@ -62,7 +62,7 @@ describe('error handling', () => {
   it('should throw when composing invalid css', () => {
     expect(() => {
       transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       <div css={[...hello]} />

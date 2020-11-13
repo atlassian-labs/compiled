@@ -31,7 +31,7 @@ export default declare<State>((api) => {
         },
       },
       ImportDeclaration(path, state) {
-        if (path.node.source.value !== '@compiled/core') {
+        if (path.node.source.value !== '@compiled/react') {
           return;
         }
 
