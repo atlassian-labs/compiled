@@ -1,4 +1,4 @@
-import { axArr, axArgs, axStatic } from './ax';
+import { ax } from '@compiled/runtime';
 import Benchmark, { Event as BenchmarkEvent } from 'benchmark';
 
 console.log('Start ax benchmarking');
@@ -7,8 +7,8 @@ console.log();
 const suite = new Benchmark.Suite('ax');
 
 suite
-  .add('axArr array', () => {
-    axArr([
+  .add('ax array', () => {
+    ax([
       '_19itglyw',
       '_2rko1l7b',
       '_ca0qftgi',
@@ -25,41 +25,11 @@ suite
       undefined,
     ]);
   })
-  .add('axArr single string', () => {
-    axArr([
+  .add('ax single string', () => {
+    ax([
       '_19itglyw _2rko1l7b _ca0qftgi _u5f319bv _n3tdftgi _19bv19bv _bfhk1mzw _syazu67f _k48p1nn1 _ect41kw7 _1wybdlk8 _irr3mlcl _1di6vctu',
       undefined,
     ]);
-  })
-  .add('axArgs array', () => {
-    axArgs(
-      '_19itglyw',
-      '_2rko1l7b',
-      '_ca0qftgi',
-      '_u5f319bv',
-      '_n3tdftgi',
-      '_19bv19bv',
-      '_bfhk1mzw',
-      '_syazu67f',
-      '_k48p1nn1',
-      '_ect41kw7',
-      '_1wybdlk8',
-      '_irr3mlcl',
-      '_1di6vctu',
-      undefined
-    );
-  })
-  .add('axArgs single string', () => {
-    axArgs(
-      '_19itglyw _2rko1l7b _ca0qftgi _u5f319bv _n3tdftgi _19bv19bv _bfhk1mzw _syazu67f _k48p1nn1 _ect41kw7 _1wybdlk8 _irr3mlcl _1di6vctu',
-      undefined
-    );
-  })
-  .add('axArgs static', () => {
-    axStatic(
-      '_19itglyw _2rko1l7b _ca0qftgi _u5f319bv _n3tdftgi _19bv19bv _bfhk1mzw _syazu67f _k48p1nn1 _ect41kw7 _1wybdlk8 _irr3mlcl _1di6vctu',
-      undefined
-    );
   })
   .on('cycle', (event: BenchmarkEvent) => {
     console.log('==> ', String(event.target));
