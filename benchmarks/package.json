@@ -1,0 +1,14 @@
+{
+  "name": "@compiled/benchmarks",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "ax": "ts-node  --files ./ax-benchmark",
+    "babel-module-traversal": "ts-node --files ./module-traversal-caching"
+  },
+  "devDependencies": {
+    "@compiled/core": "*",
+    "benchmark": "^2.1.4",
+    "ts-node": "8.9.1"
+  }
+}
