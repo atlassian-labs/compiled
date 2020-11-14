@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "ax": "ts-node  --files ./ax-benchmark",
-    "babel-module-traversal": "ts-node --files ./module-traversal-caching"
+    "ax": "ts-node ./src/ax/benchmark",
+    "ssr": "ts-node ./src/ssr/benchmark"
   },
   "devDependencies": {
     "@compiled/core": "*",
     "benchmark": "^2.1.4",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
     "ts-node": "8.9.1"
   }
 }
