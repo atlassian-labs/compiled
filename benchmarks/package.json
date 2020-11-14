@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "ax": "ts-node ./src/ax/benchmark",
-    "ssr": "ts-node ./src/ssr/benchmark"
+    "ax": "NODE_ENV=production && ts-node ./src/ax/benchmark",
+    "ssr": "NODE_ENV=production && ts-node ./src/ssr/benchmark"
   },
   "devDependencies": {
     "@compiled/core": "*",
