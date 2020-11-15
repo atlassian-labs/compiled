@@ -5,6 +5,7 @@
   "author": "Michael Dougall",
   "license": "Apache-2.0",
   "scripts": {
+    "benchmark:all": "cd benchmarks && yarn all",
     "benchmark:ax": "cd benchmarks && yarn ax",
     "benchmark:ssr": "cd benchmarks && yarn ssr",
     "benchmark:stylesheet": "cd benchmarks && yarn stylesheet",

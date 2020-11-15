@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "all": "yarn ax && yarn ssr && yarn stylesheet",
     "ax": "NODE_ENV=production && ts-node ./src/ax/benchmark",
     "ssr": "NODE_ENV=production && ts-node ./src/ssr/benchmark",
     "stylesheet": "NODE_ENV=production && ts-node ./src/stylesheet/benchmark"
