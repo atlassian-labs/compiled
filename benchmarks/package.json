@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "ax": "NODE_ENV=production && ts-node ./src/ax/benchmark",
-    "ssr": "NODE_ENV=production && ts-node ./src/ssr/benchmark"
+    "ssr": "NODE_ENV=production && ts-node ./src/ssr/benchmark",
+    "stylesheet": "NODE_ENV=production && ts-node ./src/stylesheet/benchmark"
   },
   "devDependencies": {
     "@compiled/core": "*",
