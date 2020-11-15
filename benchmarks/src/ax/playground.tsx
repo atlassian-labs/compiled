@@ -24,39 +24,3 @@ export function newAx(classNames: (string | undefined | false)[]): string {
 
   return str;
 }
-
-const cache: Record<string, string | undefined> = {};
-
-export function newAxCache(classNames: (string | undefined | false)[]): string {
-  const key = classNames.join('');
-  if (cache[key]) {
-    return cache[key]!;
-  }
-
-  const atomicGroups: Record<string, string> = {};
-
-  for (let i = 0; i < classNames.length; i++) {
-    const val = classNames[i];
-    if (!val) {
-      continue;
-    }
-
-    const groups = val.split(' ');
-
-    for (let x = 0; x < groups.length; x++) {
-      const val = groups[x];
-      atomicGroups[val.slice(0, val.charCodeAt(0) === 95 ? 5 : undefined)] = val;
-    }
-  }
-
-  let str = '';
-
-  for (const key in atomicGroups) {
-    const value = atomicGroups[key];
-    str += value;
-  }
-
-  cache[key] = str;
-
-  return str;
-}

@@ -1,6 +1,6 @@
 import { ax } from '@compiled/runtime';
 import Benchmark, { Event as BenchmarkEvent } from 'benchmark';
-import { newAx, newAxCache } from './playground';
+import { newAx } from './playground';
 
 console.log('Start ax benchmarking');
 console.log();
