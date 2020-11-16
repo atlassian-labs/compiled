@@ -4,4 +4,3 @@ import { withPerformance } from 'storybook-addon-performance';
 
 addDecorator(withPerformance);
 configure(require.context('../examples', false, /\.(tsx)$/), module);
-configure(require.context('../examples/benchmarks', false, /\.(tsx)$/), module);
