@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { memo } from 'react';
 import createStyleSheet, { groupSheetsByBucket, styleBucketOrdering } from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts } from './types';
@@ -16,25 +16,17 @@ interface StyleProps extends StyleSheetOpts {
 // Variable declaration list because it's smaller.
 let stylesheet: ReturnType<typeof createStyleSheet>;
 
-export default function Style(props: StyleProps) {
+function Style(props: StyleProps) {
   const inserted = useCache();
 
   if (process.env.NODE_ENV === 'development') {
     props.children.forEach(analyzeCssInDev);
   }
 
-  const sheets = props.children.filter((sheet) => {
-    if (inserted[sheet]) {
-      return false;
-    }
-
-    return (inserted[sheet] = true);
-  });
-
-  if (sheets.length) {
+  if (props.children.length) {
     if (isNodeEnvironment()) {
       // The following code will not exist in the browser bundle.
-      const sheetsGroupedByBucket = groupSheetsByBucket(sheets);
+      const sheetsGroupedByBucket = groupSheetsByBucket(props.children);
 
       return (
         <style nonce={props.nonce}>
@@ -42,11 +34,25 @@ export default function Style(props: StyleProps) {
         </style>
       );
     } else {
-      // Keep re-assigning over ternary because it's smaller
-      stylesheet = stylesheet || createStyleSheet(props);
-      sheets.forEach(stylesheet);
+      if (!stylesheet) {
+        stylesheet = createStyleSheet(props);
+      }
+
+      for (let i = 0; i < props.children.length; i++) {
+        const sheet = props.children[i];
+
+        if (inserted[sheet]) {
+          continue;
+        }
+
+        inserted[sheet] = true;
+
+        stylesheet(sheet);
+      }
     }
   }
 
   return null;
 }
+
+export default memo(Style, () => true);

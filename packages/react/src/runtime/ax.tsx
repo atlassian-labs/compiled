@@ -27,27 +27,38 @@ const ATOMIC_GROUP_LENGTH = 5;
  *
  * @param classes
  */
-export default function ax(classNames: (string | undefined | false)[]): string {
-  const atomicGroups: Record<string, string> = {};
-  let i = -1;
+export default function ax(classNames: (string | undefined | false)[]): string | undefined {
+  if (classNames.length <= 1) {
+    // short circuit if theres no custom class names.
+    return classNames[0] || undefined;
+  }
 
-  while (++i < classNames.length) {
-    if (!classNames[i]) {
+  const atomicGroups: Record<string, string> = {};
+
+  for (let i = 0; i < classNames.length; i++) {
+    const cls = classNames[i];
+    if (!cls) {
       continue;
     }
 
-    const groups = (classNames[i] as string).split(' ');
-    let x = -1;
+    const groups = cls.split(' ');
 
-    while (++x < groups.length) {
-      atomicGroups[
-        groups[x].slice(
-          0,
-          groups[x].charCodeAt(0) === UNDERSCORE_UNICODE ? ATOMIC_GROUP_LENGTH : undefined
-        )
-      ] = groups[x];
+    for (let x = 0; x < groups.length; x++) {
+      const atomic = groups[x];
+      const atomicGroupName = atomic.slice(
+        0,
+        atomic.charCodeAt(0) === UNDERSCORE_UNICODE ? ATOMIC_GROUP_LENGTH : undefined
+      );
+      atomicGroups[atomicGroupName] = atomic;
     }
   }
 
-  return Object.values(atomicGroups).join(' ');
+  let str = '';
+
+  for (const key in atomicGroups) {
+    const value = atomicGroups[key];
+    str += value + ' ';
+  }
+
+  return str;
 }
