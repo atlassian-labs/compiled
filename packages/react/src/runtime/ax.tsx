@@ -60,5 +60,5 @@ export default function ax(classNames: (string | undefined | false)[]): string |
     str += value + ' ';
   }
 
-  return str;
+  return str.slice(0, -1);
 }

@@ -14,6 +14,17 @@ describe('#css-transform', () => {
       expect(actual.join('\n')).toMatchInlineSnapshot(`"._f8pj1q9v:focus{color:hotpink}"`);
     });
 
+    it('should discard duplicates', () => {
+      const { sheets: actual } = transformCss(
+        `
+      display: block;
+      display: flex;
+    `
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`"._1e0c1txw{display:flex}"`);
+    });
+
     it('should not reparent when parent has a combinator', () => {
       const { sheets: actual } = transformCss(
         `
@@ -28,9 +39,9 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
-      "._169r1j6v._169r1j6v > *{margin-bottom:1rem}
-      ._1wzbidpf._1wzbidpf > *:last-child{margin-bottom:0}"
-    `);
+              "._169r1j6v._169r1j6v > *{margin-bottom:1rem}
+              ._1wzbidpf._1wzbidpf > *:last-child{margin-bottom:0}"
+          `);
     });
 
     it('should parent multiple pseduos in a group', () => {

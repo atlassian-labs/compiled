@@ -3,6 +3,7 @@ import autoprefixer from 'autoprefixer';
 import nested from 'postcss-nested';
 import whitespace from 'postcss-normalize-whitespace';
 import { unique } from '@compiled/utils';
+import { discardDuplicates } from '../plugins/discard-duplicates';
 import { parentOrphanedPseudos } from '../plugins/parent-orphaned-pseudos';
 import { minify } from '../plugins/minify';
 import { extractStyleSheets } from '../plugins/extract-stylesheets';
@@ -29,6 +30,7 @@ export const transformCss = (css: string, opts: Opts = { minify: false }) => {
   const classNames: string[] = [];
 
   const result = postcss([
+    discardDuplicates(),
     parentOrphanedPseudos(),
     nested(),
     expandShorthands(),

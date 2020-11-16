@@ -240,7 +240,6 @@ describe('css prop object literal', () => {
         <div css={{ color: 'blue', ...mixin }}>hello world</div>
       `);
 
-    expect(actual).toInclude('{color:blue}');
     expect(actual).toInclude('{color:red}');
   });
 
@@ -304,7 +303,6 @@ describe('css prop object literal', () => {
         <div css={{ color: 'blue', ...mixin() }}>hello world</div>
       `);
 
-    expect(actual).toInclude(`{color:blue}`);
     expect(actual).toInclude(`{color:red}`);
   });
 
@@ -329,7 +327,6 @@ describe('css prop object literal', () => {
         <div css={{ color: 'blue', ...mixin() }}>hello world</div>
       `);
 
-    expect(actual).toInclude('{color:blue}');
     expect(actual).toInclude('{color:red}');
   });
 
@@ -364,7 +361,6 @@ describe('css prop object literal', () => {
         <div css={{ color: 'blue', ...mixin() }}>hello world</div>
       `);
 
-    expect(actual).toInclude(`{color:blue}`);
     expect(actual).toInclude(`{color:red}`);
   });
 
@@ -503,7 +499,6 @@ describe('css prop object literal', () => {
         <div css={{ color: 'blue', ...mixin() }}>hello world</div>
       `);
 
-    expect(actual).toInclude('{color:blue}');
     expect(actual).toInclude('{color:red}');
   });
 
