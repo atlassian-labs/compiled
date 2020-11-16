@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
-import createStyleSheet, { groupSheetsByBucket, styleBucketOrdering } from './sheet';
+import createStyleSheet, { getStyleBucketName, styleBucketOrdering } from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
-import { StyleSheetOpts } from './types';
+import { StyleSheetOpts, Bucket } from './types';
 import { useCache } from './provider';
 import { isNodeEnvironment } from './is-node';
 
@@ -25,12 +25,30 @@ function Style(props: StyleProps) {
 
   if (props.children.length) {
     if (isNodeEnvironment()) {
-      // The following code will not exist in the browser bundle.
-      const sheetsGroupedByBucket = groupSheetsByBucket(props.children);
+      const bucketedSheets: Partial<Record<Bucket, string[]>> = {};
+      let hasSheets = false;
+
+      for (let i = 0; i < props.children.length; i++) {
+        const sheet = props.children[i];
+        if (inserted[sheet]) {
+          continue;
+        } else {
+          inserted[sheet] = true;
+          hasSheets = true;
+        }
+
+        const bucketName = getStyleBucketName(sheet);
+        bucketedSheets[bucketName] = bucketedSheets[bucketName] || [];
+        bucketedSheets[bucketName]!.push(sheet);
+      }
+
+      if (!hasSheets) {
+        return null;
+      }
 
       return (
         <style nonce={props.nonce}>
-          {styleBucketOrdering.map((bucket) => sheetsGroupedByBucket[bucket])}
+          {styleBucketOrdering.map((bucket) => bucketedSheets[bucket])}
         </style>
       );
     } else {
@@ -40,13 +58,11 @@ function Style(props: StyleProps) {
 
       for (let i = 0; i < props.children.length; i++) {
         const sheet = props.children[i];
-
         if (inserted[sheet]) {
           continue;
         }
 
         inserted[sheet] = true;
-
         stylesheet(sheet);
       }
     }

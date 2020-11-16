@@ -102,7 +102,7 @@ function lazyAddStyleBucketToHead(bucketName: Bucket, opts: StyleSheetOpts): HTM
  *
  * @param sheet styles for which we are getting the bucket
  */
-const getStyleBucketName = (sheet: string): Bucket => {
+export const getStyleBucketName = (sheet: string): Bucket => {
   // We are grouping all the at-rules like @media, @supports etc under `m` bucket.
   if (sheet.charCodeAt(0) === 64 /* "@" */) {
     return 'm';
@@ -121,21 +121,6 @@ const getStyleBucketName = (sheet: string): Bucket => {
 
   // Return default catch all bucket
   return '';
-};
-
-/**
- * Group sheets by bucket.
- *
- * @returns { 'h': ['._a1234567:hover{ color: red; }', '._a1234567:hover{ color: green; }'] }
- * @param sheets styles which are grouping under bucket
- */
-export const groupSheetsByBucket = (sheets: string[]) => {
-  return sheets.reduce<Record<Bucket, string[]>>((accum, sheet) => {
-    const bucketName = getStyleBucketName(sheet);
-    accum[bucketName] = accum[bucketName] || [];
-    accum[bucketName].push(sheet);
-    return accum;
-  }, {} as Record<Bucket, string[]>);
 };
 
 /**
