@@ -62,11 +62,11 @@ const pseudosMap: Record<string, Bucket | undefined> = {
  */
 function lazyAddStyleBucketToHead(bucketName: Bucket, opts: StyleSheetOpts): HTMLStyleElement {
   if (!styleBucketsInHead[bucketName]) {
-    let currentBucketIndex = styleBucketOrdering.indexOf(bucketName);
+    let currentBucketIndex = styleBucketOrdering.indexOf(bucketName) + 1;
     let nextBucketFromCache = null;
 
     // Find the next bucket which we will add our new style bucket before.
-    while (++currentBucketIndex < styleBucketOrdering.length) {
+    for (; currentBucketIndex < styleBucketOrdering.length; currentBucketIndex++) {
       const nextBucket = styleBucketsInHead[styleBucketOrdering[currentBucketIndex]];
       if (nextBucket) {
         nextBucketFromCache = nextBucket;

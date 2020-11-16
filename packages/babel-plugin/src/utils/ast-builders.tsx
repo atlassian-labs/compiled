@@ -199,9 +199,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
         {...props}
         style={%%styleProp%%}
         ref={ref}
-        className={ax([${opts.classNames
-          .map((className) => `"${className}"`)
-          .join(',')}, props.className])}
+        className={ax(["${opts.classNames.join(' ')}", props.className])}
       />
     </CC>
   ));
@@ -346,9 +344,9 @@ export const buildCompiledComponent = (
     // the class name we're going to put on it.
     const classNameExpression = getPropValue(classNameProp.value);
 
-    const values: t.Expression[] = classNames
-      .map((className) => t.stringLiteral(className) as t.Expression)
-      .concat(classNameExpression);
+    const values: t.Expression[] = [t.stringLiteral(classNames.join(' ')) as t.Expression].concat(
+      classNameExpression
+    );
 
     classNameProp.value = t.jsxExpressionContainer(
       t.callExpression(t.identifier('ax'), [t.arrayExpression(values)])
@@ -360,7 +358,7 @@ export const buildCompiledComponent = (
         t.jsxIdentifier('className'),
         t.jsxExpressionContainer(
           t.callExpression(t.identifier('ax'), [
-            t.arrayExpression(classNames.map((name) => t.stringLiteral(name))),
+            t.arrayExpression([t.stringLiteral(classNames.join(' '))]),
           ])
         )
       )
