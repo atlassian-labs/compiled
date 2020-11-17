@@ -1,4 +1,4 @@
-import { ax } from '@compiled/runtime';
+import { ax } from '@compiled/react/runtime';
 import Benchmark, { Event as BenchmarkEvent } from 'benchmark';
 import { newAx } from './playground';
 

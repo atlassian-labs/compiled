@@ -9,7 +9,7 @@
     "stylesheet": "NODE_ENV=production && ts-node ./src/stylesheet/benchmark"
   },
   "devDependencies": {
-    "@compiled/core": "*",
+    "@compiled/react": "*",
     "benchmark": "^2.1.4",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",

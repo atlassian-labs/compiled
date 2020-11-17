@@ -1,5 +1,5 @@
 import { createStyleSheet as css } from './playground';
-import createStyleSheet from '@compiled/runtime/dist/sheet';
+import createStyleSheet from '@compiled/react/dist/runtime/sheet';
 import Benchmark, { Event as BenchmarkEvent } from 'benchmark';
 
 console.log('Start stylesheet benchmarking');
