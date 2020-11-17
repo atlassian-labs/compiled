@@ -4,8 +4,8 @@ import glob from 'glob';
 import isDev from '../../../isDev';
 
 const basePath = isDev
-  ? path.join(process.cwd(), '..', 'core', 'src', 'codemods')
-  : path.join(process.cwd(), 'node_modules', '@compiled', 'core', 'dist', 'codemods');
+  ? path.join(process.cwd(), '..', 'react', 'src', 'codemods')
+  : path.join(process.cwd(), 'node_modules', '@compiled', 'react', 'dist', 'codemods');
 
 const parseTransformPath = (transformPath: string) => path.parse(transformPath);
 

@@ -25,7 +25,7 @@
     "src"
   ],
   "dependencies": {
-    "@compiled/core": "0.4.7",
+    "@compiled/react": "0.4.7",
     "chalk": "^4.1.0",
     "enquirer": "^2.3.6",
     "exec-sh": "^0.3.4",

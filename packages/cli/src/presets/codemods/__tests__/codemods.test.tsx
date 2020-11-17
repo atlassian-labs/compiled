@@ -49,8 +49,8 @@ describe('main', () => {
 
   it('should run transforms contained in directories with filtered jscodeshift options', async () => {
     (globSync as jest.Mock).mockImplementationOnce(() => [
-      'node_modules/@compiled/core/dist/codemods/styled-components-to-compiled/index.tsx',
-      'node_modules/@compiled/core/dist/codemods/emotion-to-compiled/index.tsx',
+      'node_modules/@compiled/react/dist/codemods/styled-components-to-compiled/index.tsx',
+      'node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx',
     ]);
 
     ((AutoComplete as unknown) as jest.Mock).mockImplementation(({ choices, result }) => ({
@@ -111,14 +111,14 @@ describe('main', () => {
     );
 
     expect(execShPromise).toHaveBeenCalledWith(
-      'jscodeshift --parser=tsx --transform=node_modules/@compiled/core/dist/codemods/emotion-to-compiled/index.tsx src/components/Button.tsx'
+      'jscodeshift --parser=tsx --transform=node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx src/components/Button.tsx'
     );
   });
 
   it('should run transforms contained in directories with all jscodeshift options', async () => {
     (globSync as jest.Mock).mockImplementationOnce(() => [
-      'node_modules/@compiled/core/dist/codemods/styled-components-to-compiled/index.tsx',
-      'node_modules/@compiled/core/dist/codemods/emotion-to-compiled/index.tsx',
+      'node_modules/@compiled/react/dist/codemods/styled-components-to-compiled/index.tsx',
+      'node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx',
     ]);
 
     ((AutoComplete as unknown) as jest.Mock).mockImplementation(({ choices, result }) => ({
@@ -182,7 +182,7 @@ describe('main', () => {
     );
 
     expect(execShPromise).toHaveBeenCalledWith(
-      'jscodeshift --parser=tsx --extensions=tsx --ignore-pattern=**/*utils* --verbose=2 --cpus=1 --transform=node_modules/@compiled/core/dist/codemods/emotion-to-compiled/index.tsx src/components/**/*.tsx'
+      'jscodeshift --parser=tsx --extensions=tsx --ignore-pattern=**/*utils* --verbose=2 --cpus=1 --transform=node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx src/components/**/*.tsx'
     );
   });
 });
