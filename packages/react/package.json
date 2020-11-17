@@ -35,13 +35,13 @@
     "README.md"
   ],
   "dependencies": {
+    "@compiled/babel-plugin": "0.4.7",
     "csstype": "^2.0.0"
   },
   "peerDependencies": {
     "react": "^16.12.0"
   },
   "devDependencies": {
-    "@compiled/babel-plugin": "0.4.7",
     "@testing-library/react": "^10.0.4",
     "@types/jscodeshift": "^0.7.1",
     "jscodeshift": "^0.11.0",
