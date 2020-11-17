@@ -1,4 +1,5 @@
-import React, { useRef, useContext, createContext } from 'react';
+import * as React from 'react';
+import { useRef, useContext, createContext } from 'react';
 import { isNodeEnvironment } from '../is-node';
 import { ProviderComponent, UseCacheHook } from './types';
 

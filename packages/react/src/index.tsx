@@ -1,6 +1,3 @@
-// TODO: REMOVE THIS EXPORT
-export { CS, CC, ax } from './runtime';
-// END TODO
 export { styled } from './styled';
 export { ClassNames } from './class-names';
 import { CssFunction } from './types';

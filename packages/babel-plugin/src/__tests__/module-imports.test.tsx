@@ -11,15 +11,26 @@ const transform = (code: string) => {
 };
 
 describe('import specifiers', () => {
-  it('should retain default import', () => {
+  it('should remove entrypoint if no imports found', () => {
     const actual = transform(`
-      import defaultImport from '@compiled/react';
+      import '@compiled/react';
       import React from 'react';
 
       <div css={{}} />
     `);
 
-    expect(actual).toInclude('defaultImport');
+    expect(actual).not.toInclude(`'@compiled/react'`);
+  });
+
+  it('should remove react primary entrypoint if no named imports found', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+      import React from 'react';
+
+      <div css={{}} />
+    `);
+
+    expect(actual).not.toInclude(`'@compiled/react'`);
   });
 
   it('should add react import if missing', () => {
@@ -59,18 +70,39 @@ describe('import specifiers', () => {
 
   it('should transform with a rebound named import', () => {
     const actual = transform(`
-      import { styled as styledFunction, ThemeProvider } from '@compiled/react';
+      import { styled as styledFunction } from '@compiled/react';
 
       const ListItem = styledFunction.div({
         fontSize: '20px',
       });
     `);
 
-    expect(actual).toMatchInlineSnapshot(`
-      "import*as React from'react';import{ThemeProvider,ax,CC,CS}from'@compiled/react';const _=\\"._1wybgktf{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
-            <CS>{[_]}</CS>
-            <C{...props}style={style}ref={ref}className={ax([\\"_1wybgktf\\",props.className])}/>
-          </CC>);"
+    expect(actual).toInclude(
+      '<C{...props}style={style}ref={ref}className={ax(["_1wybgktf",props.className])}/>'
+    );
+  });
+
+  it('should persist any exports not used ', () => {
+    const actual = transform(`
+      import { styled as styledFunction, ThemeNotUsedInTransform } from '@compiled/react';
+
+      const ListItem = styledFunction.div({
+        fontSize: '20px',
+      });
     `);
+
+    expect(actual).toInclude('ThemeNotUsedInTransform');
+  });
+
+  it('should import runtime from the runtime entrypoint', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const ListItem = styled.div({
+        fontSize: '20px',
+      });
+    `);
+
+    expect(actual).toInclude('import{ax,CC,CS}from"@compiled/react/runtime";');
   });
 });

@@ -33,7 +33,7 @@ describe('babel plugin', () => {
 
     expect(output?.code).toMatchInlineSnapshot(`
       "import * as React from 'react';
-      import { ax, CC, CS } from '@compiled/react';
+      import { ax, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._1wyb1fwx{font-size:12px}\\";
       const MyDiv = React.forwardRef(({
         as: C = \\"div\\",
@@ -60,7 +60,7 @@ describe('babel plugin', () => {
 
     expect(output?.code).toMatchInlineSnapshot(`
       "import * as React from 'react';
-      import { ax, CC, CS } from '@compiled/react';
+      import { ax, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._1wyb1fwx{font-size:12px}\\";
 
       const MyDiv = () => {

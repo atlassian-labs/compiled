@@ -3,7 +3,8 @@
  */
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { styled, CC } from '@compiled/react';
+import { styled } from '@compiled/react';
+import { CC as CompiledRoot } from '@compiled/react/runtime';
 
 describe('SSR', () => {
   it('should render styles inline', () => {
@@ -24,10 +25,10 @@ describe('SSR', () => {
     `;
 
     const result = renderToStaticMarkup(
-      <CC>
+      <CompiledRoot>
         <StyledDiv>hello world</StyledDiv>
         <StyledDiv>hello world</StyledDiv>
-      </CC>
+      </CompiledRoot>
     );
 
     expect(result).toMatchInlineSnapshot(
@@ -41,7 +42,7 @@ describe('SSR', () => {
     `;
 
     const result = renderToStaticMarkup(
-      <CC>
+      <CompiledRoot>
         <div>
           <div>
             <div>
@@ -51,7 +52,7 @@ describe('SSR', () => {
 
           <StyledDiv>hello world</StyledDiv>
         </div>
-      </CC>
+      </CompiledRoot>
     );
 
     expect(result).toMatchInlineSnapshot(
