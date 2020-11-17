@@ -56,30 +56,6 @@ suite
       undefined,
     ]);
   })
-  .add('newAxCache() array', () => {
-    newAxCache([
-      '_19itglyw',
-      '_2rko1l7b',
-      '_ca0qftgi',
-      '_u5f319bv',
-      '_n3tdftgi',
-      '_19bv19bv',
-      '_bfhk1mzw',
-      '_syazu67f',
-      '_k48p1nn1',
-      '_ect41kw7',
-      '_1wybdlk8',
-      '_irr3mlcl',
-      '_1di6vctu',
-      undefined,
-    ]);
-  })
-  .add('newAxCache() single string', () => {
-    newAxCache([
-      '_19itglyw _2rko1l7b _ca0qftgi _u5f319bv _n3tdftgi _19bv19bv _bfhk1mzw _syazu67f _k48p1nn1 _ect41kw7 _1wybdlk8 _irr3mlcl _1di6vctu',
-      undefined,
-    ]);
-  })
   .on('cycle', (event: BenchmarkEvent) => {
     console.log('==> ', String(event.target));
   })
