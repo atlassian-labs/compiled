@@ -1,6 +1,4 @@
-<div style="background:rgba(0, 0, 0, 0) linear-gradient(120deg, rgb(101, 84, 192) 0%, rgb(255, 116, 82) 100%) repeat scroll 0% 0%">
-  <h1 style="color: rgba(255, 255, 255, 0.75)">Compiled</h1>
-</div>
+# Compiled
 
 **Build time [atomic CSS](https://deploy-preview-11--compiled-css-in-js.netlify.app/docs/atomic-css)-in-JS.
 Baked and ready to serve.**
@@ -9,7 +7,7 @@ Baked and ready to serve.**
 [![@compiled/react](https://img.shields.io/npm/v/@compiled/core.svg?style=flat-square)](https://www.npmjs.com/package/@compiled/react)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](./CONTRIBUTING.md)
 
-[Read the docs →](https://compiledcssinjs.com)
+[Get started now →](https://compiledcssinjs.com/docs)
 
 ## Usage
 
