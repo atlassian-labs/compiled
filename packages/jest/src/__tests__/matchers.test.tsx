@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { styled } from '@compiled/core';
+import { styled } from '@compiled/react';
 import { toHaveCompiledCss } from '../matchers';
 import '../index';
 

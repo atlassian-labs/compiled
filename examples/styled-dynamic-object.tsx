@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { styled } from '@compiled/core';
+import { styled } from '@compiled/react';
 
 export default {
   title: 'styled | dynamic object',

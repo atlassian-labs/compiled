@@ -24,7 +24,7 @@ describe('module traversal', () => {
   it('should replace an identifier referencing a default import specifier object', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
       import colors from '../__fixtures__/mixins/objects';
 
@@ -38,7 +38,7 @@ describe('module traversal', () => {
   it('should replace an identifier referencing a default import specificer string literal', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
       import color from '../__fixtures__/mixins/simple';
 
@@ -52,7 +52,7 @@ describe('module traversal', () => {
   it('should replace an identifier referencing a default import specificer string literal', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
       import { primary } from '../__fixtures__/mixins/simple';
 
@@ -66,7 +66,7 @@ describe('module traversal', () => {
   it('should replace an identifier referencing a named import specifier object', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
       import { colors } from '../__fixtures__/mixins/objects';
 
@@ -80,7 +80,7 @@ describe('module traversal', () => {
   it('should replace an identifier referencing a node modules named import specifier object', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
       import { colors } from 'module-a';
 
@@ -94,7 +94,7 @@ describe('module traversal', () => {
   it('should use css from an identifier referencing a named import object', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
       import { style } from '../__fixtures__/mixins/objects';
 
@@ -108,7 +108,7 @@ describe('module traversal', () => {
   it('should inline css from a object spread referencing a named import object', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
       import { style } from '../__fixtures__/mixins/objects';
 
@@ -123,7 +123,7 @@ describe('module traversal', () => {
   it('should inline css from a object with multiple identifiers referenced from a named import', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
       import { styleInlining } from '../__fixtures__/mixins/objects';
 
@@ -139,7 +139,7 @@ describe('module traversal', () => {
   it('should inline css from a object with multiple identifiers referenced from a named import', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
       import { styleInlining } from '../__fixtures__/mixins/objects';
 
@@ -155,7 +155,7 @@ describe('module traversal', () => {
   it('should inline css from a spread referencing an identifier from another module', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
       import { styleModuleInlining } from '../__fixtures__/mixins/objects';
 
@@ -169,7 +169,7 @@ describe('module traversal', () => {
   it('should inline css from an identifier referencing an identifier from another module', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
       import { styleModuleInlining } from '../__fixtures__/mixins/objects';
 
@@ -183,7 +183,7 @@ describe('module traversal', () => {
   it('should inline css from an export rexporting an identifier from another module', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import { reexport } from '../__fixtures__/mixins/reexport';
 
       <div css={{ color: reexport }} />
@@ -196,7 +196,7 @@ describe('module traversal', () => {
   it('should inline css from a member expression export rexporting an identifier from another module', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import { objectReexport } from '../__fixtures__/mixins/reexport';
 
       <div css={{ color: objectReexport.foo }} />
@@ -209,7 +209,7 @@ describe('module traversal', () => {
   it('should inline a static string', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import { bold } from '../__fixtures__/mixins/strings';
 
       <div css={bold} />
@@ -223,7 +223,7 @@ describe('module traversal', () => {
   it('should inline a string with module interpolations', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import { italics } from '../__fixtures__/mixins/strings';
 
       <div css={[italics]} />
@@ -237,7 +237,7 @@ describe('module traversal', () => {
   it('should inline a string with import interpolations', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import { danger } from '../__fixtures__/mixins/strings';
 
       <div css={[danger]} />
@@ -251,7 +251,7 @@ describe('module traversal', () => {
   it('should inline css from a spread referencing an identifier with an IIFE property from another module', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import { fontMixin } from '../__fixtures__/mixins/objects';
 
       <div css={{ ...fontMixin }} />
@@ -264,7 +264,7 @@ describe('module traversal', () => {
   it('should inline css from an array referencing an identifier with an IIFE property from another module', () => {
     const result = transform(
       `
-    import '@compiled/core';
+    import '@compiled/react';
     import { fontMixin } from '../__fixtures__/mixins/objects';
 
     <div css={[fontMixin]} />
@@ -277,7 +277,7 @@ describe('module traversal', () => {
   it('should inline css from a function mixin referencing an identifier from another module', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import { colorMixin } from '../__fixtures__/mixins/objects';
 
       <div css={{ ':hover': colorMixin() }} />
@@ -291,7 +291,7 @@ describe('module traversal', () => {
   it('should inline css for object literal from a directly called & assigned function mixin referencing an identifier from another module', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import { colorMixin } from '../__fixtures__/mixins/objects';
 
       const colors = colorMixin();
@@ -306,7 +306,7 @@ describe('module traversal', () => {
   it('should inline css for string literal from a directly called & assigned function mixin referencing an identifier from another module', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import { colorMixin } from '../__fixtures__/mixins/objects';
 
       const colors = colorMixin();
@@ -321,7 +321,7 @@ describe('module traversal', () => {
   it('should inline css from a directly called function mixin referencing an identifier from another module', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import { colorMixin } from '../__fixtures__/mixins/objects';
 
       <div css={{':hover': { color: colorMixin().color }}} />
@@ -334,7 +334,7 @@ describe('module traversal', () => {
   it('should inline css from a directly called function mixin referencing an identifier with an IIFE property from another module', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import { spacingMixin } from '../__fixtures__/mixins/objects';
 
       <div css={{':hover': { paddingTop: spacingMixin.padding.top() }}} />
@@ -347,7 +347,7 @@ describe('module traversal', () => {
   it('should inline css when destructuring an identifier from another module', () => {
     const result = transform(
       `
-      import '@compiled/core';
+      import '@compiled/react';
       import { spacingMixin } from '../__fixtures__/mixins/objects';
 
       const { padding: { top } } = spacingMixin;

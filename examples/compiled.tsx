@@ -1,5 +1,5 @@
 import * as React from 'react';
-import '@compiled/core';
+import '@compiled/react';
 
 export default {
   title: 'benchmarks | compiled',

@@ -11,20 +11,31 @@ const transform = (code: string) => {
 };
 
 describe('import specifiers', () => {
-  it('should retain default import', () => {
+  it('should remove entrypoint if no imports found', () => {
     const actual = transform(`
-      import defaultImport from '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       <div css={{}} />
     `);
 
-    expect(actual).toInclude('defaultImport');
+    expect(actual).not.toInclude(`'@compiled/react'`);
+  });
+
+  it('should remove react primary entrypoint if no named imports found', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+      import React from 'react';
+
+      <div css={{}} />
+    `);
+
+    expect(actual).not.toInclude(`'@compiled/react'`);
   });
 
   it('should add react import if missing', () => {
     const actual = transform(`
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
@@ -36,7 +47,7 @@ describe('import specifiers', () => {
   it('should do nothing if react default import is already defined', () => {
     const actual = transform(`
       import React from 'react';
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
@@ -48,7 +59,7 @@ describe('import specifiers', () => {
   it('should retain named imports from react when adding missing react import', () => {
     const actual = transform(`
       import { useState } from 'react';
-      import { styled } from '@compiled/core';
+      import { styled } from '@compiled/react';
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
@@ -59,18 +70,39 @@ describe('import specifiers', () => {
 
   it('should transform with a rebound named import', () => {
     const actual = transform(`
-      import { styled as styledFunction, ThemeProvider } from '@compiled/core';
+      import { styled as styledFunction } from '@compiled/react';
 
       const ListItem = styledFunction.div({
         fontSize: '20px',
       });
     `);
 
-    expect(actual).toMatchInlineSnapshot(`
-      "import*as React from'react';import{ThemeProvider,ax,CC,CS}from'@compiled/core';const _=\\"._1wybgktf{font-size:20px}\\";const ListItem=React.forwardRef(({as:C=\\"div\\",style,...props},ref)=><CC>
-            <CS>{[_]}</CS>
-            <C{...props}style={style}ref={ref}className={ax([\\"_1wybgktf\\",props.className])}/>
-          </CC>);"
+    expect(actual).toInclude(
+      '<C{...props}style={style}ref={ref}className={ax(["_1wybgktf",props.className])}/>'
+    );
+  });
+
+  it('should persist any exports not used ', () => {
+    const actual = transform(`
+      import { styled as styledFunction, ThemeNotUsedInTransform } from '@compiled/react';
+
+      const ListItem = styledFunction.div({
+        fontSize: '20px',
+      });
     `);
+
+    expect(actual).toInclude('ThemeNotUsedInTransform');
+  });
+
+  it('should import runtime from the runtime entrypoint', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const ListItem = styled.div({
+        fontSize: '20px',
+      });
+    `);
+
+    expect(actual).toInclude('import{ax,CC,CS}from"@compiled/react/runtime";');
   });
 });

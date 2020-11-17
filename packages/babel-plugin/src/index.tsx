@@ -31,31 +31,41 @@ export default declare<State>((api) => {
         },
       },
       ImportDeclaration(path, state) {
-        if (path.node.source.value !== '@compiled/core') {
+        if (path.node.source.value !== '@compiled/react') {
           return;
         }
 
         // The presence of the module enables CSS prop
         state.compiledImports = {};
 
-        path.node.specifiers = path.node.specifiers
-          .filter((specifier) => {
-            if (!state.compiledImports || !t.isImportSpecifier(specifier)) {
-              // Bail out early
-              return true;
-            }
+        // Go through each import and enable each found API
+        path.get('specifiers').forEach((specifier) => {
+          if (!state.compiledImports || !specifier.isImportSpecifier()) {
+            // Bail out early
+            return;
+          }
 
-            if (specifier.imported.name === 'styled') {
-              state.compiledImports.styled = specifier.local.name;
-              // Remove the import
-              return false;
-            }
+          if (specifier.node.imported.name === 'styled') {
+            // Enable styled API with the local name
+            state.compiledImports.styled = specifier.node.local.name;
 
-            // Keep the import
-            return true;
-          })
-          // Add on the util imports we're going to use later in the transform.
-          .concat([importSpecifier('ax'), importSpecifier('CC'), importSpecifier('CS')]);
+            // Remove specifier
+            specifier.remove();
+          }
+        });
+
+        // Add the runtime entrypoint module
+        path.insertBefore(
+          t.importDeclaration(
+            [importSpecifier('ax'), importSpecifier('CC'), importSpecifier('CS')],
+            t.stringLiteral('@compiled/react/runtime')
+          )
+        );
+
+        if (path.node.specifiers.length === 0) {
+          // No more imports - remove the whole lot!
+          path.remove();
+        }
       },
       TaggedTemplateExpression(path, state) {
         if (!state.compiledImports?.styled) {

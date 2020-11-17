@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled } from '@compiled/core';
+import { styled } from '@compiled/react';
 import { objectStyles, colorMixin } from 'module-a';
 
 export default {

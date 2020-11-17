@@ -13,7 +13,7 @@ const transform = (code: string) => {
 describe('class names string literal', () => {
   xit('should move suffix of interpolation into inline styles', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
 
         const fontSize = 20;
 
@@ -29,7 +29,7 @@ describe('class names string literal', () => {
 
   xit('should transform no template string literal', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
 
         const ListItem = () => (
           <ClassNames>
@@ -43,7 +43,7 @@ describe('class names string literal', () => {
 
   xit('should transform template string literal with string variable', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
 
         const fontSize = '12px';
 
@@ -59,7 +59,7 @@ describe('class names string literal', () => {
 
   xit('should transform template string literal with numeric variable', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
 
         const fontSize = 12;
 
@@ -75,7 +75,7 @@ describe('class names string literal', () => {
 
   xit('should transform template string literal with obj variable', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
 
         const color = { color: 'blue' };
 
@@ -95,7 +95,7 @@ describe('class names string literal', () => {
 
   xit('should transform template string with no argument arrow function variable', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
 
         const color = () => ({ color: 'blue' });
 
@@ -111,7 +111,7 @@ describe('class names string literal', () => {
 
   xit('should transform template string with no argument function variable', () => {
     const actual = transform(`
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
 
         function color() { return { color: 'blue' }; }
 

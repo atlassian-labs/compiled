@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled } from '@compiled/core';
+import { styled } from '@compiled/react';
 import { colors, objectStyles } from 'module-a';
 import { hover } from './mixins/mixins';
 

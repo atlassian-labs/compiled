@@ -10,21 +10,21 @@
 > Use the nightly at your own risk until it is officially released.
 
 ```bash
-npm install @compiled/core@nightly @compiled/babel-plugin@nightly
+npm install @compiled/react@nightly
 ```
 
 **Configure [Babel](https://babeljs.io/docs/en/config-files)**
 
 ```json
 {
-  "plugins": ["@compiled/babel-plugin"]
+  "plugins": ["@compiled/react/babel-plugin"]
 }
 ```
 
 **Style**
 
 ```jsx
-import { styled, ClassNames } from '@compiled/core';
+import { styled, ClassNames } from '@compiled/react';
 import { background } from './tokens';
 
 const StyledButton = styled.button`

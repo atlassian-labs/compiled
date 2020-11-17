@@ -13,7 +13,7 @@ const transform = (code: string) => {
 describe('styled component string literal', () => {
   it('should respect missing units', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         const ListItem = styled.div\`
           font-size: 12;
         \`;
@@ -24,7 +24,7 @@ describe('styled component string literal', () => {
 
   it('should not pass down invalid html attributes to the node when property has a suffix', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         const ListItem = styled.div\`
           font-size: \${props => props.textSize}px;
         \`;
@@ -37,7 +37,7 @@ describe('styled component string literal', () => {
 
   it('should inline constant numeric literal', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const fontSize = 20;
 
@@ -51,7 +51,7 @@ describe('styled component string literal', () => {
 
   it('should move suffix to inline styles when referencing a mutable numeric literal', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         let fontSize = 20;
         fontSize = 19;
@@ -67,7 +67,7 @@ describe('styled component string literal', () => {
 
   it('should move suffix to inline styles when referencing a mutable numeric literal when missing a semi colon', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         let fontSize = 20;
         fontSize = 19;
@@ -83,7 +83,7 @@ describe('styled component string literal', () => {
 
   it('should transform a static template literal', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
           font-size: 20px;
@@ -95,7 +95,7 @@ describe('styled component string literal', () => {
 
   it('should inline constant string literal', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const fontSize = '20px';
 
@@ -109,7 +109,7 @@ describe('styled component string literal', () => {
 
   it('should transform template string literal with prop reference', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
           color: \${props => props.color};
@@ -122,7 +122,7 @@ describe('styled component string literal', () => {
 
   it('should transform an arrow function with a body into an IIFE', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
           color: \${props => { return props.color; }};
@@ -135,7 +135,7 @@ describe('styled component string literal', () => {
 
   it('should transform an arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
           font-size: \${props => { return props.textSize; }};
@@ -149,7 +149,7 @@ describe('styled component string literal', () => {
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
           color: very$\{props => { return props.color; }}dark;
@@ -162,7 +162,7 @@ describe('styled component string literal', () => {
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
           font-size: super$\{props => { return props.textSize; }}big;
@@ -176,7 +176,7 @@ describe('styled component string literal', () => {
 
   it('should transform template string literal with obj variable', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const h200 = { fontSize: '12px' };
 
@@ -192,7 +192,7 @@ describe('styled component string literal', () => {
 
   it('should reference identifier pointing to a call expression if it returns simple value', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const em = (str) => str;
         const color = em('blue');
@@ -208,7 +208,7 @@ describe('styled component string literal', () => {
 
   it('should inline call if it returns simple value', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const em = (str) => str;
 
@@ -223,7 +223,7 @@ describe('styled component string literal', () => {
 
   it('should transform template string with no argument arrow function variable', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const mixin = () => ({ color: 'red' });
 
@@ -237,7 +237,7 @@ describe('styled component string literal', () => {
 
   it('should transform template string with no argument arrow function variable when not called', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const mixin = () => ({ color: 'red' });
 
@@ -251,7 +251,7 @@ describe('styled component string literal', () => {
 
   it('should transform template string with no argument functions', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const color = () => 'blue';
         const fontStyling = {
@@ -278,7 +278,7 @@ describe('styled component string literal', () => {
 
   it('should transform template string with no argument function properties belonging to a variable', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const color = () => 'blue';
         const fontSize = 12;
@@ -310,7 +310,7 @@ describe('styled component string literal', () => {
 
   it('should move suffix and prefix of a dynamic arrow func property into the style property', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
           font-size: super$\{props => props.color}big;
@@ -322,7 +322,7 @@ describe('styled component string literal', () => {
 
   it('should move any prefix of a dynamic arrow func property into the style property', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
           font-size: super$\{props => props.color};
@@ -334,7 +334,7 @@ describe('styled component string literal', () => {
 
   it('should move any suffix of a dynamic arrow func property into the style property', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
           font-size: $\{props => props.color}big;
@@ -346,7 +346,7 @@ describe('styled component string literal', () => {
 
   it('should move suffix and prefix of a dynamic property into the style property', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         let color = 'red';
         color = 'blue';
@@ -363,7 +363,7 @@ describe('styled component string literal', () => {
 
   it('should do nothing with suffix/prefix when referencing constant literal', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const color = 'red';
         const ListItem = styled.div\`
@@ -377,7 +377,7 @@ describe('styled component string literal', () => {
 
   it('should transform template string with no argument function variable', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         function mixin() {
           return { color: 'red' };
@@ -393,7 +393,7 @@ describe('styled component string literal', () => {
 
   it('should only destructure a prop if hasnt been already', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
           > :first-child {
@@ -412,7 +412,7 @@ describe('styled component string literal', () => {
 
   it('should transform identifier referencing an expression with suffix', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         let br = 2 + 2;
         br += br;
@@ -429,7 +429,7 @@ describe('styled component string literal', () => {
 
   it('should transform inline arrow function with suffix', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const getBr = () => 4;
         const Div = styled.div\`
@@ -444,7 +444,7 @@ describe('styled component string literal', () => {
 
   it('should transform arrow function call that returns css like object', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const getBr = () => ({ fontSize: 12 });
         const Div = styled.div\`
@@ -459,7 +459,7 @@ describe('styled component string literal', () => {
 
   it('should transform arrow function call that returns number', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const getBr = () => 12;
         const Div = styled.div\`
@@ -474,7 +474,7 @@ describe('styled component string literal', () => {
 
   it('should transform arrow function call that has a complex body', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
 
         const getBr = () => {
           return true ? '1' : '2';
@@ -491,7 +491,7 @@ describe('styled component string literal', () => {
 
   it('should transform function returning an object', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         import React from 'react';
 
         const color = 'red';
@@ -507,7 +507,7 @@ describe('styled component string literal', () => {
 
   it('should transform member expression referencing a function which returns an object', () => {
     const actual = transform(`
-        import { styled } from '@compiled/core';
+        import { styled } from '@compiled/react';
         import React from 'react';
 
         const color = 'red';

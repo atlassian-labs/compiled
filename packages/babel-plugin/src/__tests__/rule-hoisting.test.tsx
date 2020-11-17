@@ -13,7 +13,7 @@ const transform = (code: string) => {
 describe('rule hoisting', () => {
   it('should hoist to the top of the module', () => {
     const actual = transform(`
-      import '@compiled/core';
+      import '@compiled/react';
       import React from 'react';
 
       const Component = () => (
@@ -25,7 +25,7 @@ describe('rule hoisting', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import{ax,CC,CS}from'@compiled/core';import React from'react';const _2=\\"._1wyb1tcg{font-size:24px}\\";const _=\\"._1wyb1fwx{font-size:12px}\\";const Component=()=><>
+      "import{ax,CC,CS}from\\"@compiled/react/runtime\\";import React from'react';const _2=\\"._1wyb1tcg{font-size:24px}\\";const _=\\"._1wyb1fwx{font-size:12px}\\";const Component=()=><>
                 <CC>
           <CS>{[_]}</CS>
           {<div className={ax([\\"_1wyb1fwx\\"])}>hello world</div>}
@@ -40,7 +40,7 @@ describe('rule hoisting', () => {
 
   it('should reuse rules already hoisted', () => {
     const actual = transform(`
-    import '@compiled/core';
+    import '@compiled/react';
     import React from 'react';
 
     const Component = () => (
@@ -52,7 +52,7 @@ describe('rule hoisting', () => {
   `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import{ax,CC,CS}from'@compiled/core';import React from'react';const _=\\"._1wyb1fwx{font-size:12px}\\";const Component=()=><>
+      "import{ax,CC,CS}from\\"@compiled/react/runtime\\";import React from'react';const _=\\"._1wyb1fwx{font-size:12px}\\";const Component=()=><>
               <CC>
           <CS>{[_]}</CS>
           {<div className={ax([\\"_1wyb1fwx\\"])}>hello world</div>}

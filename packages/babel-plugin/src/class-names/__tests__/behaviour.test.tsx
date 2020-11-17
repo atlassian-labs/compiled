@@ -13,7 +13,7 @@ const transform = (code: string) => {
 describe('class names behaviour', () => {
   xit('should replace class names component style element', () => {
     const actual = transform(`
-      import { ClassNames } from '@compiled/core';
+      import { ClassNames } from '@compiled/react';
 
       const ListItem = () => (
         <ClassNames>
@@ -29,7 +29,7 @@ describe('class names behaviour', () => {
 
   xit('should remove class names import', () => {
     const actual = transform(`
-      import { ClassNames } from '@compiled/core';
+      import { ClassNames } from '@compiled/react';
 
       const ListItem = () => (
         <ClassNames>
@@ -38,13 +38,13 @@ describe('class names behaviour', () => {
       );
     `);
 
-    expect(actual).not.toInclude(`import { ClassNames } from "@compiled/core";`);
+    expect(actual).not.toInclude(`import { ClassNames } from "@compiled/react";`);
   });
 
   xit('should add an identifier nonce to the style element', () => {
     const actual = transform(
       `
-        import { ClassNames } from '@compiled/core';
+        import { ClassNames } from '@compiled/react';
 
         const ZoomOnHover = ({ children }) => (
           <ClassNames>
@@ -68,7 +68,7 @@ describe('class names behaviour', () => {
 
   xit('should set children as function into a jsx expression', () => {
     const actual = transform(`
-    import { ClassNames } from '@compiled/core';
+    import { ClassNames } from '@compiled/react';
 
     const ZoomOnHover = ({ children }) => (
       <ClassNames>
@@ -93,7 +93,7 @@ describe('class names behaviour', () => {
 
   xit('should place self closing jsx element as a child', () => {
     const actual = transform(`
-    import { ClassNames } from '@compiled/core';
+    import { ClassNames } from '@compiled/react';
 
     const ZoomOnHover = ({ children }) => (
       <ClassNames>
