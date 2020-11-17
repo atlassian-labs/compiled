@@ -1,6 +1,6 @@
 {
   "main": "../dist/runtime.js",
   "module": "../dist/runtime.js",
-  "browser": "./dist/browser/index.js",
+  "browser": "../dist/browser/runtime.js",
   "types": "../dist/runtime.d.ts"
 }
