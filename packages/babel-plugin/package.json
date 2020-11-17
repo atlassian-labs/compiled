@@ -20,7 +20,7 @@
     "README.md"
   ],
   "scripts": {
-    "perf": "ts-node --files ./src/__perf__/module-traversal-caching"
+    "benchmark:module-traversal": "ts-node --files ./src/__perf__/module-traversal-caching"
   },
   "dependencies": {
     "@babel/core": "^7.10.2",
