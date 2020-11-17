@@ -1,13 +1,12 @@
-# Compiled
+<div style="background:rgba(0, 0, 0, 0) linear-gradient(120deg, rgb(101, 84, 192) 0%, rgb(255, 116, 82) 100%) repeat scroll 0% 0%">
+  <h1 style="color: rgba(255, 255, 255, 0.75)">Compiled</h1>
+</div>
 
-**Build time atomic CSS in JS without the runtime cost.
-Bake,
-consume,
-extract.
-Everywhere.**
+**Build time [atomic CSS](https://deploy-preview-11--compiled-css-in-js.netlify.app/docs/atomic-css)-in-JS.
+Baked and ready to serve.**
 
 [![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](./LICENSE)
-[![@compiled/core](https://img.shields.io/npm/v/@compiled/core.svg?style=flat-square)](https://www.npmjs.com/package/@compiled/core)
+[![@compiled/react](https://img.shields.io/npm/v/@compiled/core.svg?style=flat-square)](https://www.npmjs.com/package/@compiled/react)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](./CONTRIBUTING.md)
 
 [Read the docs →](https://compiledcssinjs.com)
@@ -15,7 +14,7 @@ Everywhere.**
 ## Usage
 
 ```jsx
-import { styled } from '@compiled/core';
+import { styled } from '@compiled/react';
 
 // Define styles with the CSS prop
 <div css={{ color: 'purple' }} />;
@@ -31,7 +30,7 @@ const StyledButton = styled.button`
 
 ## Installation
 
-Install the core library:
+Install the React package:
 
 ```bash
 npm install @compiled/react
@@ -50,7 +49,7 @@ Style your components!
 ## Contributions
 
 Contributions to Compiled are welcomed!
-Please see [CONTRIBUTING.md](./CONTRIBUTING.md) fo details.
+Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
 ## Thanks
 
