@@ -24,7 +24,7 @@ describe('class names behaviour', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from 'react';
-      import { ax, CC, CS } from '@compiled/react';
+      import { ax, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._1wybgktf{font-size:20px}\\";
 
       const ListItem = () => <CC>
@@ -47,7 +47,7 @@ describe('class names behaviour', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from 'react';
-      import { ax, CC, CS } from '@compiled/react';
+      import { ax, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._1wybgktf{font-size:20px}\\";
 
       const ListItem = () => <CC>
@@ -104,7 +104,7 @@ describe('class names behaviour', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from 'react';
-      import { ax, CC, CS } from '@compiled/react';
+      import { ax, CC, CS } from \\"@compiled/react/runtime\\";
       const _3 = \\"._syaz13q2{color:blue}\\";
       const _2 = \\"._1wybgktf{font-size:20px}\\";
       const _ = \\"._syaz5scu{color:red}\\";
@@ -132,7 +132,7 @@ describe('class names behaviour', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from 'react';
-      import { ax, CC, CS } from '@compiled/react';
+      import { ax, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._1wybgktf{font-size:20px}\\";
 
       const ListItem = () => <CC>
@@ -172,7 +172,7 @@ describe('class names behaviour', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from 'react';
-      import { ax, CC, CS } from '@compiled/react';
+      import { ax, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._1wybgktf{font-size:20px}\\";
 
       const ListItem = ({
@@ -200,7 +200,7 @@ describe('class names behaviour', () => {
 
   it('should replace style identifier with undefined', () => {
     const actual = transform(`
-      import { ClassNames } from '@compiled/core';
+      import { ClassNames } from '@compiled/react';
 
       const Component = ({ children }) => (
         <ClassNames>
@@ -214,7 +214,7 @@ describe('class names behaviour', () => {
 
   it('should replace style identifier with css variable object', () => {
     const actual = transform(`
-      import { ClassNames } from '@compiled/core';
+      import { ClassNames } from '@compiled/react';
 
       const Component = ({ children, color }) => (
         <ClassNames>
@@ -225,7 +225,7 @@ describe('class names behaviour', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from 'react';
-      import { ax, CC, CS } from '@compiled/core';
+      import { ax, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._syaz1aj3{color:var(--_1ylxx6h)}\\";
 
       const Component = ({

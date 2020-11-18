@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ClassNames } from '@compiled/core';
+import { ClassNames } from '@compiled/react';
 
 export default {
   title: 'ClassNames | dynamic',
