@@ -77,12 +77,12 @@ const Lozenge = (props: { bg: string; color: string }) => (
 );
 
 export const Dynamic = () => {
-  const [toggle, setToggle] = React.useState(false);
+  const [toggle, setToggle] = React.useState<boolean[]>([]);
 
-  return (
-    <React.Fragment>
-      <button onClick={() => setToggle(!toggle)}>Toggle</button>
-      {toggle && (
+  return Array.from(new Array(100)).map((_, index) => (
+    <React.Fragment key={index}>
+      <button onClick={() => setToggle([...toggle, !toggle[index]])}>Toggle</button>
+      {toggle[index] && (
         <div>
           <Row>
             <Col>
@@ -97,7 +97,7 @@ export const Dynamic = () => {
         </div>
       )}
     </React.Fragment>
-  );
+  ));
 };
 
 Dynamic.story = {
