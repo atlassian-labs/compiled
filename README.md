@@ -12,18 +12,20 @@ Baked and ready to serve.**
 ## Usage
 
 ```jsx
-import { styled } from '@compiled/react';
+import { styled, ClassNames } from '@compiled/react';
 
-// Define styles with the CSS prop
+// Tie styles to an element
 <div css={{ color: 'purple' }} />;
 
-// Create a component with associated styles
+// Create a component that ties styles to an element
 const StyledButton = styled.button`
   color: ${(props) => props.color};
 `;
 
-// Define extra styles with the CSS prop
-<StyledButton css={{ fontSize: 16 }} color="pink" />;
+// Create a component which styles are not necessarily tied to an element
+<ClassNames>
+  {({ css, style }) => children({ className: css({ fontSize: 12, style }) })}
+</ClassNames>;
 ```
 
 ## Installation
@@ -41,8 +43,6 @@ Configure [Babel](https://babeljs.io/docs/en/config-files):
   "plugins": ["@compiled/react/babel-plugin"]
 }
 ```
-
-Style your components!
 
 ## Contributions
 
