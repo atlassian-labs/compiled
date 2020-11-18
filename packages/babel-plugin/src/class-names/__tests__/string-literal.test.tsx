@@ -11,11 +11,10 @@ const transform = (code: string) => {
 };
 
 describe('class names string literal', () => {
-  xit('should move suffix of interpolation into inline styles', () => {
+  it('should move suffix of interpolation into inline styles', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
-
-        const fontSize = 20;
+        import { fontSize } from './nah';
 
         const ListItem = () => (
           <ClassNames>
@@ -24,7 +23,10 @@ describe('class names string literal', () => {
         );
       `);
 
-    expect(actual).toInclude('.css-test{font-size:20px}');
+    expect(actual).toIncludeMultiple([
+      'font-size:var(--_1j2e0s2)',
+      'style={{"--_1j2e0s2":(fontSize||"")+"px"}}',
+    ]);
   });
 
   it('should transform no template string literal', () => {
@@ -46,7 +48,7 @@ describe('class names string literal', () => {
     `);
   });
 
-  xit('should transform template string literal with string variable', () => {
+  it('should transform template string literal with string variable', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
 
@@ -59,10 +61,10 @@ describe('class names string literal', () => {
         );
       `);
 
-    expect(actual).toInclude(`.css-test{font-size:12px}`);
+    expect(actual).toInclude(`{font-size:12px}`);
   });
 
-  xit('should transform template string literal with numeric variable', () => {
+  it('should transform template string literal with numeric variable', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
 
@@ -75,10 +77,10 @@ describe('class names string literal', () => {
         );
       `);
 
-    expect(actual).toInclude(`.css-test{font-size:12}`);
+    expect(actual).toInclude(`{font-size:12}`);
   });
 
-  xit('should transform template string literal with obj variable', () => {
+  it('should transform template string literal with obj variable', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
 
@@ -91,14 +93,10 @@ describe('class names string literal', () => {
         );
       `);
 
-    expect(actual).toInclude(`.css-test{color:blue}`);
+    expect(actual).toInclude(`{color:blue}`);
   });
 
-  it.todo('should transform template string literal with array variable');
-
-  it.todo('should transform template string literal with array import');
-
-  xit('should transform template string with no argument arrow function variable', () => {
+  it('should transform template string with no argument arrow function variable', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
 
@@ -111,10 +109,10 @@ describe('class names string literal', () => {
         );
       `);
 
-    expect(actual).toInclude(`.css-test{color:blue}`);
+    expect(actual).toInclude(`{color:blue}`);
   });
 
-  xit('should transform template string with no argument function variable', () => {
+  it('should transform template string with no argument function variable', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
 
@@ -127,10 +125,6 @@ describe('class names string literal', () => {
         );
       `);
 
-    expect(actual).toInclude(`.css-test{color:blue}`);
+    expect(actual).toInclude(`{color:blue}`);
   });
-
-  it.todo('should transform template string with argument function variable');
-
-  it.todo('should transform template string with argument arrow function variable');
 });

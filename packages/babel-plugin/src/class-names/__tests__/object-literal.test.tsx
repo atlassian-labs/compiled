@@ -11,7 +11,7 @@ const transform = (code: string) => {
 };
 
 describe('class names object literal', () => {
-  xit('should persist suffix of dynamic property value into inline styles', () => {
+  it('should persist suffix of dynamic property value into inline styles', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
         import {useState} from 'react';
@@ -25,41 +25,41 @@ describe('class names object literal', () => {
         );
       `);
 
-    expect(actual).toInclude(
-      '<div style={{ "--_test-fontsize": (fontSize || "") + "px" }} className={"css-test"}>hello, world!</div>'
-    );
-    expect(actual).toInclude('.css-test{font-size:var(--_test-fontsize)}');
+    expect(actual).toIncludeMultiple([
+      'style={{"--_1j2e0s2":(fontSize||"")+"px"}}',
+      'font-size:var(--_1j2e0s2)',
+    ]);
   });
 
-  xit('should transform object with simple values', () => {
+  it('should transform object with simple values', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
 
         const ListItem = () => (
           <ClassNames>
-            {({ css, style }) => <div style={style} className={css({ color: 'red', margin: 0 })}>hello, world!</div>}
+            {({ css, style }) => <div style={style} className={css({ color: 'red', marginTop: 0 })}>hello, world!</div>}
           </ClassNames>
         );
       `);
 
-    expect(actual).toInclude('.css-test{color:red;margin:0}');
+    expect(actual).toIncludeMultiple(['{color:red}', '{margin-top:0}']);
   });
 
-  xit('should transform object with nested object into a selector', () => {
+  it('should transform object with nested object into a selector', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
 
         const ListItem = () => (
           <ClassNames>
-            {({ css, style }) => <div style={style} className={css({ ':hover': { color: 'red', margin: 0 } })}>hello, world!</div>}
+            {({ css, style }) => <div style={style} className={css({ ':hover': { color: 'red', marginTop: 0 } })}>hello, world!</div>}
           </ClassNames>
         );
       `);
 
-    expect(actual).toInclude('.css-test:hover{color:red;margin:0}');
+    expect(actual).toIncludeMultiple([':hover{color:red}', ':hover{margin-top:0}']);
   });
 
-  xit('should transform object that has a variable reference', () => {
+  it('should transform object that has a variable reference', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
 
@@ -72,10 +72,10 @@ describe('class names object literal', () => {
         );
       `);
 
-    expect(actual).toInclude('.css-test{color:red;margin:0}');
+    expect(actual).toIncludeMultiple(['{color:red}', '{margin-top:0}']);
   });
 
-  xit('should transform object spread from variable', () => {
+  it('should transform object spread from variable', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
 
@@ -90,10 +90,10 @@ describe('class names object literal', () => {
         );
       `);
 
-    expect(actual).toInclude('.css-test{color:blue;color:red}');
+    expect(actual).toIncludeMultiple(['{color:blue}']);
   });
 
-  xit('should transform object with string variable', () => {
+  it('should transform object with string variable', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
         import {useState} from 'react';
@@ -107,13 +107,13 @@ describe('class names object literal', () => {
         );
       `);
 
-    expect(actual).toInclude('.css-test{color:blue;font-size:var(--_test-fontsize)}');
-    expect(actual).toInclude(
-      '<div style={{ "--_test-fontsize": fontSize }} className={"css-test"}>hello, world!</div>'
-    );
+    expect(actual).toIncludeMultiple([
+      'style={{"--_1j2e0s2":fontSize}}',
+      'font-size:var(--_1j2e0s2)',
+    ]);
   });
 
-  xit('should transform object with obj variable', () => {
+  it('should transform object with obj variable', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';
 
@@ -125,17 +125,7 @@ describe('class names object literal', () => {
           </ClassNames>
         );
       `);
-    expect(actual).toInclude('.css-test{font-size:20px}');
-    expect(actual).toInclude('.css-test:hover{color:red}');
+
+    expect(actual).toIncludeMultiple([':hover{color:red}', '{font-size:20px}']);
   });
-
-  it.todo('should transform object with array variable');
-
-  it.todo('should transform object with no argument arrow function variable');
-
-  it.todo('should transform object with no argument function variable');
-
-  it.todo('should transform object with argument function variable');
-
-  it.todo('should transform object with argument arrow function variable');
 });
