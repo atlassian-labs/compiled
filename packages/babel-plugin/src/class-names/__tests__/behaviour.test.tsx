@@ -34,13 +34,13 @@ describe('class names behaviour', () => {
     `);
   });
 
-  it('should transform class names prop single usage', () => {
+  xit('should transform style property access', () => {
     const actual = transform(`
       import { ClassNames } from '@compiled/react';
 
       const ListItem = () => (
         <ClassNames>
-          {(props) => (<div className={props.css({ fontSize: '20px' })}>hello, world!</div>)}
+          {(props) => (<div style={props.style} className={props.css({ fontSize: '20px' })}>hello, world!</div>)}
         </ClassNames>
       );
     `);
@@ -52,7 +52,7 @@ describe('class names behaviour', () => {
 
       const ListItem = () => <CC>
           <CS>{[_]}</CS>
-          {<div className={\\"_1wybgktf\\"}>hello, world!</div>}
+          {<div style={undefined} className={\\"_1wybgktf\\"}>hello, world!</div>}
         </CC>;"
     `);
   });
