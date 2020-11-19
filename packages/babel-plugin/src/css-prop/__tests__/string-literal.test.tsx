@@ -203,7 +203,6 @@ describe('css prop string literal', () => {
         <div css={\`\${style};color: red;\`}>hello world</div>
       `);
 
-    expect(actual).toInclude('{color:blue}');
     expect(actual).toInclude('{color:red}');
     expect(actual).toInclude('{font-size:30px}');
   });

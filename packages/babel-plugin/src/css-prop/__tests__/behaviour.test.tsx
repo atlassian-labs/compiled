@@ -175,7 +175,6 @@ describe('css prop behaviour', () => {
       <div css={[base, top]}>hello world</div>
     `);
 
-    expect(actual).toInclude('{color:black}');
     expect(actual).toInclude('{color:red}');
   });
 
