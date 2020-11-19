@@ -6,6 +6,11 @@ import { compiledTemplate, buildCssVariablesProp } from '../utils/ast-builders';
 import { buildCss, CSSOutput } from '../utils/css-builders';
 import { Metadata } from '../types';
 
+/**
+ * Extracts styles from an expression.
+ *
+ * @param path Expression node
+ */
 const extractStyles = (path: NodePath<t.Expression>) => {
   if (
     t.isCallExpression(path.node) &&
@@ -38,6 +43,12 @@ const extractStyles = (path: NodePath<t.Expression>) => {
   return undefined;
 };
 
+/**
+ * Returns the children of a children as function expression.
+ * Will throw if no children as function was found.
+ *
+ * @param path
+ */
 const getJsxChildrenAsFunction = (path: NodePath<t.JSXElement>) => {
   const children = path.node.children.find((node) => t.isJSXExpressionContainer(node));
   if (t.isJSXExpressionContainer(children) && t.isFunction(children.expression)) {
@@ -72,9 +83,8 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
     return;
   }
 
-  const children = getJsxChildrenAsFunction(path);
-  let variables: CSSOutput['variables'] = [];
-  let sheets: string[] = [];
+  const variables: CSSOutput['variables'] = [];
+  const sheets: string[] = [];
 
   // First pass to replace all usages of `css({})`
   path.traverse({
@@ -88,8 +98,8 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
       const builtCss = buildCss(styles, meta);
       const transformed = transformCss(builtCss.css);
 
-      variables = variables.concat(builtCss.variables);
-      sheets = sheets.concat(transformed.sheets);
+      variables.push(...builtCss.variables);
+      sheets.push(...transformed.sheets);
 
       path.replaceWith(t.stringLiteral(transformed.classNames.join(' ')));
     },
@@ -112,6 +122,7 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
   });
 
   // All done! Pick the children as function body and replace the original ClassNames node with it.
+  const children = getJsxChildrenAsFunction(path);
   const body = pickFunctionBody(children);
   path.replaceWith(compiledTemplate(body, sheets, meta));
 };
