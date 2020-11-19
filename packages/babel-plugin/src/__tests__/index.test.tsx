@@ -8,7 +8,7 @@ const babelOpts: TransformOptions = {
 };
 
 describe('babel plugin', () => {
-  it('should not comment file if not transformation occured', () => {
+  it('should not comment file if no transformation occurred', () => {
     const output = transformSync(
       `
       import { ClassNames } from '@compiled/react/runtime';
