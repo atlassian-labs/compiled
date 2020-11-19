@@ -90,7 +90,7 @@ describe('class names object literal', () => {
         );
       `);
 
-    expect(actual).toIncludeMultiple(['{color:blue}']);
+    expect(actual).toIncludeMultiple(['{color:red}']);
   });
 
   it('should transform object with string variable', () => {
