@@ -62,7 +62,7 @@ const hoistSheet = (sheet: string, meta: Metadata): t.Identifier => {
  * @param variables CSS variables that will be placed in the AST
  * @param transform Transform function that can be used to change the CSS variable expression
  */
-const buildCssVariablesProp = (
+export const buildCssVariablesProp = (
   variables: CSSOutput['variables'],
   transform = (expression: t.Expression) => expression
 ): (t.ObjectProperty | t.SpreadElement)[] => {
@@ -209,7 +209,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     }
   )({
     styleProp,
-    cssNode: t.arrayExpression(opts.sheets.map((sheet) => hoistSheet(sheet, meta))),
+    cssNode: t.arrayExpression(unique(opts.sheets).map((sheet) => hoistSheet(sheet, meta))),
   }) as t.Node;
 };
 
@@ -221,7 +221,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
  * @param sheets Stylesheets
  * @param meta Metadata
  */
-const compiledTemplate = (node: t.JSXElement, sheets: string[], meta: Metadata): t.Node => {
+export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
 
   return template(
@@ -236,7 +236,7 @@ const compiledTemplate = (node: t.JSXElement, sheets: string[], meta: Metadata):
     }
   )({
     jsxNode: node,
-    cssNode: t.arrayExpression(sheets.map((sheet) => hoistSheet(sheet, meta))),
+    cssNode: t.arrayExpression(unique(sheets).map((sheet) => hoistSheet(sheet, meta))),
   }) as t.Node;
 };
 
