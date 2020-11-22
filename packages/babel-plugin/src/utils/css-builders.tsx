@@ -7,8 +7,13 @@ import { Metadata } from '../types';
 import { getKey, resolveBindingNode, buildCodeFrameError } from './ast';
 import { evaluateExpression } from './evaluate-expression';
 
-export interface CSSOutput {
+interface CssItem {
+  expression?: t.Expression;
   css: string;
+}
+
+export interface CSSOutput {
+  css: Array<CssItem>;
   variables: {
     name: string;
     expression: t.Expression;
@@ -35,8 +40,8 @@ const normalizeContentValue = (value: string) => {
  * @param state Babel state - should house options and meta data used during the transformation.
  */
 const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSOutput => {
-  let variables: CSSOutput['variables'] = [];
-  let css = '';
+  const variables: CSSOutput['variables'] = [];
+  const css: CSSOutput['css'] = [];
 
   node.properties.forEach((prop) => {
     if (t.isObjectProperty(prop)) {
@@ -58,14 +63,15 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       } else if (t.isObjectExpression(propValue)) {
         // We've found a nested object like: `':hover': { color: 'red' }`
         const result = extractObjectExpression(propValue, updatedMeta);
-        css += `${key} { ${result.css} }`;
-        variables = variables.concat(result.variables);
+        css.push(...result.css.map((x) => ({ ...x, css: `${key} { ${x.css} }` })));
+        variables.push(...result.variables);
         return;
       } else if (t.isTemplateLiteral(propValue)) {
         // We've found a template literal like: `fontSize: `${fontSize}px`
         const result = extractTemplateLiteral(propValue, updatedMeta);
-        value = result.css;
-        variables = variables.concat(result.variables);
+        css.push(...result.css.map((x) => ({ ...x, css: `${kebabCase(key)}: ${x.css};` })));
+        variables.push(...result.variables);
+        return;
       } else {
         // This is the catch all for any kind of expression.
         // We don't want to explicitly handle each expression node differently if we can avoid it!
@@ -75,7 +81,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       }
 
       // Time to add this key+value to the CSS string we're building up.
-      css += `${kebabCase(key)}: ${value};`;
+      css.push({ css: `${kebabCase(key)}: ${value};` });
     } else if (t.isSpreadElement(prop)) {
       let resolvedBinding = undefined;
 
@@ -105,8 +111,8 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
           );
         }
 
-        css += result.css;
-        variables = variables.concat(result.variables);
+        css.push(...result.css);
+        variables.push(...result.variables);
       }
     }
   });
@@ -121,22 +127,25 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
  * @param state Babel state - should house options and meta data used during the transformation.
  */
 const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOutput => {
-  let variables: CSSOutput['variables'] = [];
+  const variables: CSSOutput['variables'] = [];
+  const css: CSSOutput['css'] = [];
+
   // quasis are the string pieces of the template literal - the parts around the interpolations.
-  const css = node.quasis.reduce((css, q, index) => {
-    const nodeExpression: t.Expression = node.expressions[index] as t.Expression;
+  const literalResult = node.quasis.reduce<string>((acc, q, index): string => {
+    const nodeExpression = node.expressions[index];
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
 
     if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
       // Simple case - we can immediately inline the value.
-      return css + q.value.raw + interpolation.value;
+      return acc + q.value.raw + interpolation.value;
     }
 
     if (t.isObjectExpression(interpolation)) {
       // We found an object like: css`${{ red: 'blue' }}`.
       const result = extractObjectExpression(interpolation, updatedMeta);
-      variables = variables.concat(result.variables);
-      return css + result.css;
+      variables.push(...result.variables);
+      css.push(...result.css);
+      return acc;
     }
 
     if (interpolation) {
@@ -173,11 +182,13 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       nextQuasis.value.raw = after.css; // Removes any suffixes from the next quasis.
       variables.push({ name: variableName, expression });
 
-      return before.css + `var(${variableName})`;
+      return acc + before.css + `var(${variableName})`;
     }
 
-    return css + q.value.raw;
+    return acc + q.value.raw;
   }, '');
+
+  css.push({ css: literalResult });
 
   return { css, variables };
 };
@@ -190,7 +201,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
  */
 export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
   if (t.isStringLiteral(node)) {
-    return { css: node.value, variables: [] };
+    return { css: [{ css: node.value }], variables: [] };
   }
 
   if (t.isTemplateLiteral(node)) {
@@ -235,8 +246,8 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
   }
 
   if (t.isArrayExpression(node)) {
-    let css = '';
-    let variables: CSSOutput['variables'] = [];
+    const css: CSSOutput['css'] = [];
+    const variables: CSSOutput['variables'] = [];
 
     node.elements.forEach((element) => {
       if (!t.isExpression(element)) {
@@ -248,8 +259,8 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
       }
 
       const result = buildCss(element, meta);
-      css += result.css;
-      variables = variables.concat(result.variables);
+      css.push(...result.css);
+      variables.push(...result.variables);
     });
 
     return {

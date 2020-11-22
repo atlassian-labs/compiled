@@ -96,7 +96,7 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
       }
 
       const builtCss = buildCss(styles, meta);
-      const transformed = transformCss(builtCss.css);
+      const transformed = transformCss(builtCss.css.map((x) => x.css).join(''));
 
       variables.push(...builtCss.variables);
       sheets.push(...transformed.sheets);

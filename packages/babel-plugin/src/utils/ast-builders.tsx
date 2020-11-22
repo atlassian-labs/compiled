@@ -280,7 +280,7 @@ export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExp
  * @param meta Plugin metadata
  */
 export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
-  const { classNames, sheets } = transformCss(cssOutput.css);
+  const { classNames, sheets } = transformCss(cssOutput.css.map((x) => x.css).join(''));
 
   return styledTemplate(
     {
@@ -334,7 +334,7 @@ export const buildCompiledComponent = (
   cssOutput: CSSOutput,
   meta: Metadata
 ): t.Node => {
-  const { sheets, classNames } = transformCss(cssOutput.css);
+  const { sheets, classNames } = transformCss(cssOutput.css.map((x) => x.css).join(''));
   const classNameProp = node.openingElement.attributes.find((prop): prop is t.JSXAttribute => {
     return t.isJSXAttribute(prop) && prop.name.name === 'className';
   });

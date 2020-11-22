@@ -390,4 +390,21 @@ describe('css prop behaviour', () => {
 
     expect(actual).toInclude(':hover{color:red}');
   });
+
+  xit('should apply conditional object spread styles', () => {
+    const actual = transform(`
+    import '@compiled/react';
+    import React from 'react';
+
+    const Component = props => (
+      <div css={{
+        ...props.isPrimary && {
+          color: 'blue',
+        }
+      }}>hello world</div>
+    );
+  `);
+
+    expect(actual).toInclude('{color: blue}');
+  });
 });

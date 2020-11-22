@@ -44,7 +44,7 @@ export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Meta
   // Remove css prop
   path.node.attributes.splice(cssPropIndex, 1);
 
-  if (!cssOutput.css) {
+  if (!cssOutput.css.length) {
     // No css was generated - return early!
     return;
   }
