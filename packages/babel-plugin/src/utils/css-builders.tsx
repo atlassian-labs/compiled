@@ -34,6 +34,41 @@ const normalizeContentValue = (value: string) => {
 };
 
 /**
+ * Will merge all unconditional css expressions together.
+ *
+ * Input:
+ *
+ * ```
+ * [{ css: 'color: blue' }, { css: 'font-size: 20px' }]
+ * ```
+ *
+ * Output:
+ *
+ * ```
+ * [{ css: 'color: blue', 'font-size: 20px' }]
+ * ```
+ *
+ * @param arr
+ */
+const reduceCssExpressions = (arr: Array<CssItem>): Array<CssItem> => {
+  let unconditionalItem: CssItem | undefined;
+
+  return arr.reduce<CssItem[]>((acc, item, index) => {
+    if (!unconditionalItem && !item.expression) {
+      unconditionalItem = item;
+    }
+
+    if (index === 0 || item.expression || !unconditionalItem) {
+      acc.push(item);
+    } else {
+      unconditionalItem.css += item.css;
+    }
+
+    return acc;
+  }, []);
+};
+
+/**
  * Extracts CSS data from an object expression node.
  *
  * @param node Node we're interested in extracting CSS from.
@@ -117,7 +152,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
     }
   });
 
-  return { css, variables };
+  return { css: reduceCssExpressions(css), variables };
 };
 
 /**
@@ -190,7 +225,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   css.push({ css: literalResult });
 
-  return { css, variables };
+  return { css: reduceCssExpressions(css), variables };
 };
 
 /**
