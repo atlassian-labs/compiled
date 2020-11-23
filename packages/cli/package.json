@@ -18,7 +18,7 @@
     "start": "ts-node --files src/index.tsx"
   },
   "bin": {
-    "compiled-css-in-js": "./dist/index.js"
+    "compiled-cli": "./dist/index.js"
   },
   "files": [
     "dist",
@@ -31,9 +31,7 @@
     "exec-sh": "^0.3.4",
     "glob": "^7.1.6",
     "jscodeshift": "^0.11.0",
-    "meow": "^8.0.0"
-  },
-  "devDependencies": {
+    "meow": "^8.0.0",
     "ts-node": "^9.0.0"
   }
 }

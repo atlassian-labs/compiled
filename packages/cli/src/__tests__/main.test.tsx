@@ -1,3 +1,11 @@
+import chalk from 'chalk';
+import { AutoComplete } from 'enquirer';
+
+import { castToJestMock } from '../testUtils';
+
+import presets from '../presets';
+import main from '../main';
+
 jest.mock('enquirer', () => ({
   AutoComplete: jest.fn(),
 }));
@@ -6,12 +14,6 @@ jest.mock('../presets', () => ({
   mockedPreset: jest.fn(),
 }));
 
-import chalk from 'chalk';
-import { AutoComplete } from 'enquirer';
-
-import presets from '../presets';
-import main from '../main';
-
 describe('main', () => {
   beforeEach(() => {
     jest.spyOn(global.console, 'log').mockImplementation();
@@ -19,10 +21,10 @@ describe('main', () => {
   });
 
   afterEach(() => {
-    (global.console.log as jest.Mock).mockReset();
-    (global.console.warn as jest.Mock).mockReset();
-    ((AutoComplete as unknown) as jest.Mock).mockReset();
-    (presets.mockedPreset as jest.Mock).mockReset();
+    castToJestMock(global.console.log).mockReset();
+    castToJestMock(global.console.warn).mockReset();
+    castToJestMock(AutoComplete).mockReset();
+    castToJestMock(presets.mockedPreset).mockReset();
   });
 
   const setup = async (preset: string) => {
@@ -60,7 +62,7 @@ describe('main', () => {
   });
 
   it('should warn when invalid preset is provided using prompt', async () => {
-    ((AutoComplete as unknown) as jest.Mock).mockImplementation(() => ({
+    castToJestMock(AutoComplete).mockImplementation(() => ({
       run: () => Promise.resolve('invalid-using-prompt'),
     }));
 
@@ -82,7 +84,7 @@ describe('main', () => {
   });
 
   it('should execute valid present when provided as cli input', async () => {
-    (presets.mockedPreset as jest.Mock).mockImplementation(() => jest.fn());
+    castToJestMock(presets.mockedPreset).mockImplementation(() => jest.fn());
 
     const { cli } = await setup('mockedPreset');
 
@@ -92,9 +94,9 @@ describe('main', () => {
   });
 
   it('should execute valid present when provided using prompt', async () => {
-    (presets.mockedPreset as jest.Mock).mockImplementation(() => jest.fn());
+    castToJestMock(presets.mockedPreset).mockImplementation(() => jest.fn());
 
-    ((AutoComplete as unknown) as jest.Mock).mockImplementation(({ choices }) => ({
+    castToJestMock(AutoComplete).mockImplementation(({ choices }) => ({
       run: () => Promise.resolve(choices[0]),
     }));
 

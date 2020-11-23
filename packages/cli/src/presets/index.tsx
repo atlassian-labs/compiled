@@ -2,9 +2,9 @@ import { Result } from '../cli';
 
 import codemods from './codemods';
 
-type Presets = {
+interface Presets {
   [preset: string]: (result?: Result) => Promise<void>;
-};
+}
 const presets: Presets = {
   codemods,
 };

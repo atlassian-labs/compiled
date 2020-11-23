@@ -4,6 +4,8 @@ jest.mock('glob', () => ({
 
 import { sync as globSync } from 'glob';
 
+import { castToJestMock } from '../../../../testUtils';
+
 import { getTransformPath, getTransforms } from '../transforms';
 
 describe('transforms', () => {
@@ -25,7 +27,7 @@ describe('transforms', () => {
 
   describe('#getTransforms', () => {
     it('should get available transforms in alphabetical directory sorted order', () => {
-      (globSync as jest.Mock).mockImplementationOnce(() => [
+      castToJestMock(globSync).mockImplementationOnce(() => [
         'node_modules/@compiled/react/dist/codemods/styled-components-to-compiled/index.tsx',
         'node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx',
       ]);

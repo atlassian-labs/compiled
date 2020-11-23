@@ -16,6 +16,8 @@ import chalk from 'chalk';
 import { AutoComplete, Form } from 'enquirer';
 import { promise as execShPromise } from 'exec-sh';
 
+import { castToJestMock } from '../../../testUtils';
+
 import codemods from '../codemods';
 
 describe('main', () => {
@@ -25,16 +27,16 @@ describe('main', () => {
   });
 
   afterEach(() => {
-    (global.console.log as jest.Mock).mockReset();
-    (global.console.warn as jest.Mock).mockReset();
-    (globSync as jest.Mock).mockReset();
-    ((AutoComplete as unknown) as jest.Mock).mockReset();
-    ((Form as unknown) as jest.Mock).mockReset();
-    ((execShPromise as unknown) as jest.Mock).mockReset();
+    castToJestMock(global.console.log).mockReset();
+    castToJestMock(global.console.warn).mockReset();
+    castToJestMock(globSync).mockReset();
+    castToJestMock(AutoComplete).mockReset();
+    castToJestMock(Form).mockReset();
+    castToJestMock(execShPromise).mockReset();
   });
 
   it('should should warn if no codemods are available', async () => {
-    (globSync as jest.Mock).mockImplementationOnce(() => []);
+    castToJestMock(globSync).mockImplementationOnce(() => []);
 
     await codemods();
 
@@ -48,16 +50,16 @@ describe('main', () => {
   });
 
   it('should run transforms contained in directories with filtered jscodeshift options', async () => {
-    (globSync as jest.Mock).mockImplementationOnce(() => [
+    castToJestMock(globSync).mockImplementationOnce(() => [
       'node_modules/@compiled/react/dist/codemods/styled-components-to-compiled/index.tsx',
       'node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx',
     ]);
 
-    ((AutoComplete as unknown) as jest.Mock).mockImplementation(({ choices, result }) => ({
+    castToJestMock(AutoComplete).mockImplementation(({ choices, result }) => ({
       run: () => Promise.resolve(result(choices[0])),
     }));
 
-    ((Form as unknown) as jest.Mock).mockImplementation(() => ({
+    castToJestMock(Form).mockImplementation(() => ({
       run: () =>
         Promise.resolve({
           parser: 'tsx',
@@ -81,7 +83,11 @@ describe('main', () => {
         message: `Please provide the following jscodeshift cli options ${chalk.cyan(
           '<https://github.com/facebook/jscodeshift#usage-cli>'
         )}`,
-        hint: chalk.bold(chalk.red('**NOTE**: [PATH] is mandatory option')),
+        hint: chalk.bold(
+          chalk.red(
+            '**NOTE**: [PATH] is mandatory option. It is the source code directory eg. /project/src'
+          )
+        ),
         choices: [
           {
             name: 'path',
@@ -101,37 +107,33 @@ describe('main', () => {
             name: 'ignorePattern',
             message: '--ignore-pattern',
           },
-          {
-            name: 'others',
-            message: 'other cli options',
-            hint: `eg. ${chalk.cyan('--verbose=0 --version --help --silent')}`,
-          },
         ],
       })
     );
 
     expect(execShPromise).toHaveBeenCalledWith(
-      'jscodeshift --parser=tsx --transform=node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx src/components/Button.tsx'
+      expect.stringContaining(
+        '--cpus=8 --parser=tsx --transform=node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx src/components/Button.tsx'
+      )
     );
   });
 
   it('should run transforms contained in directories with all jscodeshift options', async () => {
-    (globSync as jest.Mock).mockImplementationOnce(() => [
+    castToJestMock(globSync).mockImplementationOnce(() => [
       'node_modules/@compiled/react/dist/codemods/styled-components-to-compiled/index.tsx',
       'node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx',
     ]);
 
-    ((AutoComplete as unknown) as jest.Mock).mockImplementation(({ choices, result }) => ({
+    castToJestMock(AutoComplete).mockImplementation(({ choices, result }) => ({
       run: () => Promise.resolve(result(choices[0])),
     }));
 
-    ((Form as unknown) as jest.Mock).mockImplementation(() => ({
+    castToJestMock(Form).mockImplementation(() => ({
       run: () =>
         Promise.resolve({
           parser: 'tsx',
           extensions: 'tsx',
           ignorePattern: '**/*utils*',
-          others: '--verbose=2 --cpus=1',
           path: 'src/components/**/*.tsx',
         }),
     }));
@@ -152,7 +154,11 @@ describe('main', () => {
         message: `Please provide the following jscodeshift cli options ${chalk.cyan(
           '<https://github.com/facebook/jscodeshift#usage-cli>'
         )}`,
-        hint: chalk.bold(chalk.red('**NOTE**: [PATH] is mandatory option')),
+        hint: chalk.bold(
+          chalk.red(
+            '**NOTE**: [PATH] is mandatory option. It is the source code directory eg. /project/src'
+          )
+        ),
         choices: [
           {
             name: 'path',
@@ -172,17 +178,14 @@ describe('main', () => {
             name: 'ignorePattern',
             message: '--ignore-pattern',
           },
-          {
-            name: 'others',
-            message: 'other cli options',
-            hint: `eg. ${chalk.cyan('--verbose=0 --version --help --silent')}`,
-          },
         ],
       })
     );
 
     expect(execShPromise).toHaveBeenCalledWith(
-      'jscodeshift --parser=tsx --extensions=tsx --ignore-pattern=**/*utils* --verbose=2 --cpus=1 --transform=node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx src/components/**/*.tsx'
+      expect.stringContaining(
+        '--cpus=8 --parser=tsx --extensions=tsx --ignore-pattern=**/*utils* --transform=node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx src/components/**/*.tsx'
+      )
     );
   });
 });

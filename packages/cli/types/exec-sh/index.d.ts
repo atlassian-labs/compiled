@@ -12,7 +12,8 @@ declare module 'exec-sh' {
   const execSh: ExecSh;
 
   export const promise: (
-    commands: string | string[]
+    commands: string | string[],
+    options?: SpawnOptions
   ) => Promise<{
     stdout: string | null;
     stderr: string | null;

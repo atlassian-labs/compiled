@@ -19,7 +19,11 @@ const getTransformForm = async () =>
     message: `Please provide the following jscodeshift cli options ${chalk.cyan(
       '<https://github.com/facebook/jscodeshift#usage-cli>'
     )}`,
-    hint: chalk.bold(chalk.red('**NOTE**: [PATH] is mandatory option')),
+    hint: chalk.bold(
+      chalk.red(
+        '**NOTE**: [PATH] is mandatory option. It is the source code directory eg. /project/src'
+      )
+    ),
     choices: [
       {
         name: 'path',
@@ -39,11 +43,6 @@ const getTransformForm = async () =>
         name: 'ignorePattern',
         message: '--ignore-pattern',
       },
-      {
-        name: 'others',
-        message: 'other cli options',
-        hint: `eg. ${chalk.cyan('--verbose=0 --version --help --silent')}`,
-      },
     ],
   }).run();
 
@@ -61,6 +60,8 @@ const codemods = async () => {
   const form = await getTransformForm();
 
   const args = [
+    // Limit CPUs to 8 to prevent issues when running on CI with a large amount of cpus
+    '--cpus=8',
     form.parser && `--parser=${form.parser}`,
     form.extensions && `--extensions=${form.extensions}`,
     form.ignorePattern && `--ignore-pattern=${form.ignorePattern}`,
@@ -69,7 +70,7 @@ const codemods = async () => {
     form.path,
   ].filter((arg) => !!arg);
 
-  const command = ['jscodeshift', ...args].join(' ');
+  const command = [require.resolve('.bin/jscodeshift'), ...args].join(' ');
 
   console.log(
     chalk.green(

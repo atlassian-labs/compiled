@@ -6,7 +6,7 @@ import presets from './presets';
 const cli = meow(
   `
   Usage
-    ${chalk.cyan('$ npx @compiled/cli [options]')}
+    ${chalk.cyan('npx @compiled/cli [options]')}
 
   Options
     --preset, -p the preset to run. ${chalk.cyan('Available presets:')} ${Object.keys(presets)
@@ -15,8 +15,8 @@ const cli = meow(
     --help Help me 😱
 
   Examples
-    ${chalk.cyan('$ npx @compiled/cli -p codemods')}
-    ${chalk.cyan('$ npx @compiled/cli --preset codemods')}
+    ${chalk.cyan('npx @compiled/cli -p codemods')}
+    ${chalk.cyan('npx @compiled/cli --preset codemods')}
 `,
   {
     flags: {

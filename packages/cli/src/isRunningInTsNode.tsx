@@ -11,6 +11,6 @@ declare global {
   }
 }
 
-const isDev = typeof process[REGISTER_INSTANCE] === 'object';
+const isRunningInTsNode = typeof process[REGISTER_INSTANCE] === 'object';
 
-export default isDev;
+export default isRunningInTsNode;
