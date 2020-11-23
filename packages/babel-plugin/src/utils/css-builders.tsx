@@ -148,6 +148,12 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 
         css.push(...result.css);
         variables.push(...result.variables);
+      } else if (t.isLogicalExpression(propValue)) {
+        const expression = propValue.left;
+        const result = buildCss(propValue.right, meta);
+
+        css.push(...result.css.map((x) => Object.assign(x, { expression })));
+        variables.push(...result.variables);
       }
     }
   });
