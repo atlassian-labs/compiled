@@ -54,13 +54,13 @@ const normalizeContentValue = (value: string) => {
  * Input:
  *
  * ```
- * [{ css: 'color: blue' }, { css: 'font-size: 20px' }]
+ * [{ type: 'unconditional', css: 'color: blue' }, { type: 'unconditional', css: 'font-size: 20px' }]
  * ```
  *
  * Output:
  *
  * ```
- * [{ css: 'color: blue', 'font-size: 20px' }]
+ * [{ type: 'unconditional', css: 'color: blue; font-size: 20px' }]
  * ```
  *
  * @param arr
@@ -83,6 +83,11 @@ const reduceCssExpressions = (arr: Array<CssItem>): Array<CssItem> => {
   }, []);
 };
 
+/**
+ * Returns the item css.
+ *
+ * @param item
+ */
 export const getItemCss = (item: CssItem) => {
   switch (item.type) {
     case 'ternary':
@@ -176,23 +181,28 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       } else if (t.isLogicalExpression(propValue)) {
         const expression = propValue.left;
         const result = buildCss(propValue.right, meta);
+        const sheets = result.css.map((item) => {
+          if (item.type !== 'unconditional') {
+            return item;
+          }
 
-        css.push(
-          ...result.css.map((item) => {
-            if (item.type !== 'unconditional') {
-              return item;
-            }
+          const logicalItem: LogicalCssItem = {
+            type: 'logical',
+            css: item.css,
+            expression,
+          };
 
-            const logicalItem: LogicalCssItem = {
-              type: 'logical',
-              css: item.css,
-              expression,
-            };
+          return logicalItem;
+        });
 
-            return logicalItem;
-          })
-        );
+        css.push(...sheets);
         variables.push(...result.variables);
+      } else {
+        throw buildCodeFrameError(
+          'Expression not currently supported.',
+          prop.argument,
+          meta.parentPath
+        );
       }
     }
   });
