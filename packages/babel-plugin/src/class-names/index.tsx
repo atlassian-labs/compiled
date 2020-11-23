@@ -3,7 +3,7 @@ import { NodePath } from '@babel/core';
 import { transformCss } from '@compiled/css';
 import { pickFunctionBody, buildCodeFrameError } from '../utils/ast';
 import { compiledTemplate, buildCssVariablesProp } from '../utils/ast-builders';
-import { buildCss, CSSOutput } from '../utils/css-builders';
+import { buildCss, CSSOutput, getItemCss } from '../utils/css-builders';
 import { Metadata } from '../types';
 
 /**
@@ -96,7 +96,7 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
       }
 
       const builtCss = buildCss(styles, meta);
-      const { sheets, classNames } = transformCss(builtCss.css.map((x) => x.css).join(''));
+      const { sheets, classNames } = transformCss(builtCss.css.map((x) => getItemCss(x)).join(''));
 
       collectedVariables.push(...builtCss.variables);
       collectedSheets.push(...sheets);

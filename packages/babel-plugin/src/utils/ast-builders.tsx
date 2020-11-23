@@ -5,7 +5,7 @@ import { unique } from '@compiled/utils';
 import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
 import { Tag } from '../types';
-import { CSSOutput } from './css-builders';
+import { CSSOutput, getItemCss } from './css-builders';
 import { pickFunctionBody } from './ast';
 import { Metadata } from '../types';
 
@@ -280,7 +280,7 @@ export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExp
  * @param meta Plugin metadata
  */
 export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
-  const { sheets, classNames } = transformCss(cssOutput.css.map((x) => x.css).join(''));
+  const { sheets, classNames } = transformCss(cssOutput.css.map((x) => getItemCss(x)).join(''));
 
   return styledTemplate(
     {
@@ -322,19 +322,19 @@ export const getPropValue = (
   return value;
 };
 
-const transformConditionalCss = (cssOutput: CSSOutput) => {
+const transformItemCss = (cssOutput: CSSOutput) => {
   const sheets: string[] = [];
   const classNames: t.Expression[] = [];
 
   cssOutput.css.forEach((item) => {
-    const css = transformCss(item.css);
+    const css = transformCss(getItemCss(item));
     const className = css.classNames.join(' ');
 
     sheets.push(...css.sheets);
 
-    if (item.expression) {
+    if (item.type === 'logical') {
       classNames.push(t.logicalExpression('&&', item.expression, t.stringLiteral(className)));
-    } else {
+    } else if (item.type === 'unconditional') {
       classNames.push(t.stringLiteral(className));
     }
   });
@@ -354,7 +354,7 @@ export const buildCompiledComponent = (
   cssOutput: CSSOutput,
   meta: Metadata
 ): t.Node => {
-  const { sheets, classNames } = transformConditionalCss(cssOutput);
+  const { sheets, classNames } = transformItemCss(cssOutput);
 
   const classNameProp = node.openingElement.attributes.find((prop): prop is t.JSXAttribute => {
     return t.isJSXAttribute(prop) && prop.name.name === 'className';

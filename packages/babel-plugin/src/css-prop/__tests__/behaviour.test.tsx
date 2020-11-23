@@ -391,7 +391,7 @@ describe('css prop behaviour', () => {
     expect(actual).toInclude(':hover{color:red}');
   });
 
-  it('should apply conditional object spread styles', () => {
+  it('should apply conditional logical expression object spread styles', () => {
     const actual = transform(`
     import '@compiled/react';
     import React from 'react';
@@ -400,6 +400,25 @@ describe('css prop behaviour', () => {
       <div css={{
         ...props.isPrimary && {
           color: 'blue',
+        }
+      }}>hello world</div>
+    );
+  `);
+
+    expect(actual).toInclude('className={ax([props.isPrimary&&"_syaz13q2"])}');
+  });
+
+  xit('should apply conditional ternary expression object spread styles', () => {
+    const actual = transform(`
+    import '@compiled/react';
+    import React from 'react';
+
+    const Component = props => (
+      <div css={{
+        ...props.isPrimary ? {
+          color: 'blue',
+        } : {
+          color: 'red',
         }
       }}>hello world</div>
     );

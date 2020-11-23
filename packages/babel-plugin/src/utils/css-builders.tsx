@@ -7,10 +7,25 @@ import { Metadata } from '../types';
 import { getKey, resolveBindingNode, buildCodeFrameError } from './ast';
 import { evaluateExpression } from './evaluate-expression';
 
-interface CssItem {
-  expression?: t.Expression;
+interface UnconditionalCssItem {
+  type: 'unconditional';
   css: string;
 }
+
+interface LogicalCssItem {
+  type: 'logical';
+  expression: t.Expression;
+  css: string;
+}
+
+interface TernaryCssItem {
+  type: 'ternary';
+  expression: t.Expression;
+  leftCss: string;
+  rightCss: string;
+}
+
+type CssItem = UnconditionalCssItem | LogicalCssItem | TernaryCssItem;
 
 export interface CSSOutput {
   css: Array<CssItem>;
@@ -51,14 +66,14 @@ const normalizeContentValue = (value: string) => {
  * @param arr
  */
 const reduceCssExpressions = (arr: Array<CssItem>): Array<CssItem> => {
-  let unconditionalItem: CssItem | undefined;
+  let unconditionalItem: UnconditionalCssItem | undefined;
 
   return arr.reduce<CssItem[]>((acc, item, index) => {
-    if (!unconditionalItem && !item.expression) {
+    if (!unconditionalItem && item.type === 'unconditional') {
       unconditionalItem = item;
     }
 
-    if (index === 0 || item.expression || !unconditionalItem) {
+    if (index === 0 || item.type !== 'unconditional' || !unconditionalItem) {
       acc.push(item);
     } else {
       unconditionalItem.css += item.css;
@@ -66,6 +81,16 @@ const reduceCssExpressions = (arr: Array<CssItem>): Array<CssItem> => {
 
     return acc;
   }, []);
+};
+
+export const getItemCss = (item: CssItem) => {
+  switch (item.type) {
+    case 'ternary':
+      return item.leftCss + item.rightCss;
+
+    default:
+      return item.css;
+  }
 };
 
 /**
@@ -98,13 +123,13 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       } else if (t.isObjectExpression(propValue)) {
         // We've found a nested object like: `':hover': { color: 'red' }`
         const result = extractObjectExpression(propValue, updatedMeta);
-        css.push(...result.css.map((x) => ({ ...x, css: `${key} { ${x.css} }` })));
+        css.push(...result.css.map((x) => ({ ...x, css: `${key} { ${getItemCss(x)} }` })));
         variables.push(...result.variables);
         return;
       } else if (t.isTemplateLiteral(propValue)) {
         // We've found a template literal like: `fontSize: `${fontSize}px`
         const result = extractTemplateLiteral(propValue, updatedMeta);
-        css.push(...result.css.map((x) => ({ ...x, css: `${kebabCase(key)}: ${x.css};` })));
+        css.push(...result.css.map((x) => ({ ...x, css: `${kebabCase(key)}: ${getItemCss(x)};` })));
         variables.push(...result.variables);
         return;
       } else {
@@ -116,7 +141,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       }
 
       // Time to add this key+value to the CSS string we're building up.
-      css.push({ css: `${kebabCase(key)}: ${value};` });
+      css.push({ type: 'unconditional', css: `${kebabCase(key)}: ${value};` });
     } else if (t.isSpreadElement(prop)) {
       let resolvedBinding = undefined;
 
@@ -152,7 +177,21 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         const expression = propValue.left;
         const result = buildCss(propValue.right, meta);
 
-        css.push(...result.css.map((x) => Object.assign(x, { expression })));
+        css.push(
+          ...result.css.map((item) => {
+            if (item.type !== 'unconditional') {
+              return item;
+            }
+
+            const logicalItem: LogicalCssItem = {
+              type: 'logical',
+              css: item.css,
+              expression,
+            };
+
+            return logicalItem;
+          })
+        );
         variables.push(...result.variables);
       }
     }
@@ -229,7 +268,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     return acc + q.value.raw;
   }, '');
 
-  css.push({ css: literalResult });
+  css.push({ type: 'unconditional', css: literalResult });
 
   return { css: reduceCssExpressions(css), variables };
 };
@@ -242,7 +281,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
  */
 export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
   if (t.isStringLiteral(node)) {
-    return { css: [{ css: node.value }], variables: [] };
+    return { css: [{ type: 'unconditional', css: node.value }], variables: [] };
   }
 
   if (t.isTemplateLiteral(node)) {
