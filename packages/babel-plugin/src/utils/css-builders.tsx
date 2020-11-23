@@ -63,10 +63,6 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         return;
       } else if (t.isTemplateLiteral(propValue)) {
         // We've found a template literal like: `fontSize: `${fontSize}px`
-        // -----
-        // Both functions (extractTemplateLiteral + extractObjectExpression) reference each other.
-        // One needs to disable this warning.
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         const result = extractTemplateLiteral(propValue, updatedMeta);
         value = result.css;
         variables = variables.concat(result.variables);

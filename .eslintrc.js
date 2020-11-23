@@ -16,6 +16,7 @@ module.exports = {
     'react/prop-types': 'off',
     'react/display-name': 'off',
     '@typescript-eslint/ban-ts-ignore': 'off',
+    '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
