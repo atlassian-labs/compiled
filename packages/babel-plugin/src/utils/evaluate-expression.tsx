@@ -1,6 +1,3 @@
-// TODO: Please fix this eslint rule. It is showing error for function declarations also.
-/* eslint-disable @typescript-eslint/no-use-before-define */
-
 import * as t from '@babel/types';
 import traverse from '@babel/traverse';
 

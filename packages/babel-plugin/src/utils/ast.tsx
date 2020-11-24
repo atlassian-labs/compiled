@@ -359,9 +359,6 @@ const resolveObjectPatternValueNode = (
       },
     });
   } else if (t.isIdentifier(expression)) {
-    // Both functions (resolveObjectPatternValueNode + resolveBindingNode) reference each other.
-    // One needs to disable this warning.
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     const resolvedBinding = resolveBindingNode(expression.name, meta);
 
     if (resolvedBinding) {
