@@ -2,33 +2,40 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import ReactDOM from 'react-dom';
 import { styled } from '@compiled/react';
+import { isNodeEnvironment } from '@compiled/react/dist/runtime/is-node';
+import { useCache } from '@compiled/react/dist/runtime/provider';
+
+jest.mock('@compiled/react/dist/runtime/is-node');
 
 describe('server side hydrate', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     jest.spyOn(global.console, 'error');
+    flushEnvironment('node');
   });
 
-  const flushClientModules = () => {
-    const originalName = process.release.name;
-    delete process.release.name;
+  const flushEnvironment = (env: 'node' | 'browser') => {
+    // This isn't a real hook.
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const cache = useCache();
+    for (const key in cache) {
+      // Flush the cache out - unfortunately it persisted between tests.
+      delete cache[key];
+    }
+    (isNodeEnvironment as jest.Mock).mockReturnValue(env === 'node');
     jest.resetModules();
     // We need to force this module to re-instantiate because on the client
-    // when it does it will move all found SSRd style elements to the  head.
+    // when it does it will move all found SSRd style elements to the head.
     require('@compiled/react/runtime');
-
-    return () => {
-      process.release.name = originalName;
-    };
   };
 
-  const appendServerHTML = (markup: string) => {
+  const appendHTML = (markup: string) => {
     const elem = document.createElement('div');
     elem.innerHTML = markup;
     document.body.appendChild(elem);
     return elem;
   };
 
-  it('should not log any warnings and cleanup style elements when hydrating HTML', () => {
+  it('should not log any warnings and cleanup SSRd styles when hydrating HTML', () => {
     const StyledDiv = styled.div`
       font-size: 12px;
       color: blue;
@@ -36,10 +43,9 @@ describe('server side hydrate', () => {
     `;
 
     const element = <StyledDiv>hello world</StyledDiv>;
-    const app = appendServerHTML(renderToString(element));
-    const reset = flushClientModules();
+    const app = appendHTML(renderToString(element));
+    flushEnvironment('browser');
     ReactDOM.hydrate(element, app);
-    reset();
 
     expect(console.error).not.toHaveBeenCalled();
     expect(document.querySelectorAll('style[data-cmpld]').length).toEqual(0);

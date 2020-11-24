@@ -123,6 +123,9 @@ export const getStyleBucketName = (sheet: string): Bucket => {
   return '';
 };
 
+/**
+ * We only clean style elements once in a browser session.
+ */
 let ssrStyleElementsCleaned = false;
 
 /**
@@ -133,8 +136,9 @@ let ssrStyleElementsCleaned = false;
  * @param inserted Singleton cache for tracking what styles have already been added to the head
  */
 export default function createStyleSheet() {
+  // Two step process for SSR.
+  // SSR step 1: Move the styles out of the way of React hydration - BEFORE hydration has started!
   const ssrStyles = document.querySelectorAll('style[data-cmpld]');
-
   for (let i = 0; i < ssrStyles.length; i++) {
     const styleElement = ssrStyles[i];
     document.head.appendChild(styleElement);
@@ -152,6 +156,8 @@ export default function createStyleSheet() {
     }
 
     if (!ssrStyleElementsCleaned) {
+      // SSR step 2: Clean up the SSRd styles - we don't need them anymore
+      // as their client side counterparts have been applied above.
       const ssrStyles = document.querySelectorAll('style[data-cmpld]');
 
       for (let i = 0; i < ssrStyles.length; i++) {

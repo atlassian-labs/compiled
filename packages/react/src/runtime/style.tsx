@@ -13,7 +13,9 @@ interface StyleProps extends StyleSheetOpts {
   children: string[];
 }
 
-const stylesheet = createStyleSheet();
+const stylesheet = (!isNodeEnvironment() && createStyleSheet()) as ReturnType<
+  typeof createStyleSheet
+>;
 
 function Style(props: StyleProps) {
   const inserted = useCache();
