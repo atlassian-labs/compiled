@@ -15,7 +15,7 @@ describe('SSR', () => {
     const result = renderToStaticMarkup(<StyledDiv>hello world</StyledDiv>);
 
     expect(result).toMatchInlineSnapshot(
-      `"<style nonce=\\"k0Mp1lEd\\">._1wyb1fwx{font-size:12px}</style><div class=\\"_1wyb1fwx\\">hello world</div>"`
+      `"<style data-compiled=\\"true\\" nonce=\\"k0Mp1lEd\\">._1wyb1fwx{font-size:12px}</style><div class=\\"_1wyb1fwx\\">hello world</div>"`
     );
   });
 
@@ -32,7 +32,7 @@ describe('SSR', () => {
     );
 
     expect(result).toMatchInlineSnapshot(
-      `"<style nonce=\\"k0Mp1lEd\\">._1wyb1fwx{font-size:12px}</style><div class=\\"_1wyb1fwx\\">hello world</div><div class=\\"_1wyb1fwx\\">hello world</div>"`
+      `"<style data-compiled=\\"true\\" nonce=\\"k0Mp1lEd\\">._1wyb1fwx{font-size:12px}</style><div class=\\"_1wyb1fwx\\">hello world</div><div class=\\"_1wyb1fwx\\">hello world</div>"`
     );
   });
 
@@ -56,7 +56,7 @@ describe('SSR', () => {
     );
 
     expect(result).toMatchInlineSnapshot(
-      `"<div><div><div><style nonce=\\"k0Mp1lEd\\">._1wyb1fwx{font-size:12px}</style><div class=\\"_1wyb1fwx\\">hello world</div></div></div><div class=\\"_1wyb1fwx\\">hello world</div></div>"`
+      `"<div><div><div><style data-compiled=\\"true\\" nonce=\\"k0Mp1lEd\\">._1wyb1fwx{font-size:12px}</style><div class=\\"_1wyb1fwx\\">hello world</div></div></div><div class=\\"_1wyb1fwx\\">hello world</div></div>"`
     );
   });
 
@@ -76,7 +76,7 @@ describe('SSR', () => {
     );
 
     expect(result).toMatchInlineSnapshot(
-      `"<style nonce=\\"k0Mp1lEd\\">._1e0c1txw{display:flex}</style><div class=\\"_1e0c1txw\\"><style nonce=\\"k0Mp1lEd\\">._1wyb1fwx{font-size:12px}</style><div class=\\"_1wyb1fwx\\">hello world</div><div class=\\"_1wyb1fwx\\">hello world</div></div>"`
+      `"<style data-compiled=\\"true\\" nonce=\\"k0Mp1lEd\\">._1e0c1txw{display:flex}</style><div class=\\"_1e0c1txw\\"><style data-compiled=\\"true\\" nonce=\\"k0Mp1lEd\\">._1wyb1fwx{font-size:12px}</style><div class=\\"_1wyb1fwx\\">hello world</div><div class=\\"_1wyb1fwx\\">hello world</div></div>"`
     );
   });
 
@@ -123,7 +123,7 @@ describe('SSR', () => {
     );
 
     expect(result.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
-      "<style nonce=\\"k0Mp1lEd\\">._1e0c1txw{display:flex}._1wyb12am{font-size:50px}._syaz1cnh{color:purple}._ysv75scu:link{color:red}._105332ev:visited{color:pink}._f8pjbf54:focus{color:green}._30l31gy6:hover{color:yellow}._9h8h13q2:active{color:blue}@supports (display: grid){._qxnw1gy6:focus{color:yellow}._p7tw11x8:active{color:black}}@media (max-width: 800px){._vyxz1gy6:focus{color:yellow}._ojvu11x8:active{color:black}}</style>
+      "<style data-compiled=\\"true\\" nonce=\\"k0Mp1lEd\\">._1e0c1txw{display:flex}._1wyb12am{font-size:50px}._syaz1cnh{color:purple}._ysv75scu:link{color:red}._105332ev:visited{color:pink}._f8pjbf54:focus{color:green}._30l31gy6:hover{color:yellow}._9h8h13q2:active{color:blue}@supports (display: grid){._qxnw1gy6:focus{color:yellow}._p7tw11x8:active{color:black}}@media (max-width: 800px){._vyxz1gy6:focus{color:yellow}._ojvu11x8:active{color:black}}</style>
       <a href=\\"https://atlassian.design\\" class=\\"_1e0c1txw _1wyb12am _syaz1cnh _30l31gy6 _9h8h13q2 _ysv75scu _p7tw11x8 _qxnw1gy6 _f8pjbf54 _105332ev _ojvu11x8 _vyxz1gy6\\">Atlassian Design System</a>"
     `);
   });

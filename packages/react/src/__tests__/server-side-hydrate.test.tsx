@@ -4,9 +4,31 @@ import ReactDOM from 'react-dom';
 import { styled } from '@compiled/react';
 
 describe('server side hydrate', () => {
-  it('should not log unexpected warnings when hydrating HTML', () => {
-    jest.spyOn(global.console, 'error').mockImplementation(() => {});
+  beforeAll(() => {
+    jest.spyOn(global.console, 'error');
+  });
 
+  const flushClientModules = () => {
+    const originalName = process.release.name;
+    delete process.release.name;
+    jest.resetModules();
+    // We need to force this module to re-instantiate because on the client
+    // when it does it will move all found SSRd style elements to the  head.
+    require('@compiled/react/runtime');
+
+    return () => {
+      process.release.name = originalName;
+    };
+  };
+
+  const appendServerHTML = (markup: string) => {
+    const elem = document.createElement('div');
+    elem.innerHTML = markup;
+    document.body.appendChild(elem);
+    return elem;
+  };
+
+  it('should not log any warnings and cleanup style elements when hydrating HTML', () => {
     const StyledDiv = styled.div`
       font-size: 12px;
       color: blue;
@@ -14,27 +36,12 @@ describe('server side hydrate', () => {
     `;
 
     const element = <StyledDiv>hello world</StyledDiv>;
+    const app = appendServerHTML(renderToString(element));
+    const reset = flushClientModules();
+    ReactDOM.hydrate(element, app);
+    reset();
 
-    const elem = document.createElement('div');
-    elem.innerHTML = renderToString(element);
-
-    const releaseName = process.release.name;
-    // We have to delete this so that client code can execute properly
-    delete process.release.name;
-
-    ReactDOM.hydrate(element, elem);
-
-    // Restore the release name after hydration is complete
-    process.release.name = releaseName;
-
-    // We will get mismatches for the style rendering but this is expected because
-    // we inline the style elements in the server rendered markup and then on the client
-    // when the JavaScript initializes they get moved to the head of the document.
-    const mockCalls = (console.error as jest.Mock).mock.calls.filter(
-      ([f, s]) =>
-        !(f === 'Warning: Did not expect server HTML to contain a <%s> in <%s>.%s' && s === 'style')
-    );
-
-    expect(mockCalls.length).toBe(0);
+    expect(console.error).not.toHaveBeenCalled();
+    expect(document.querySelectorAll('style[data-cmpld]').length).toEqual(0);
   });
 });

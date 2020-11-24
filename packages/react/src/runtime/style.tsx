@@ -13,8 +13,7 @@ interface StyleProps extends StyleSheetOpts {
   children: string[];
 }
 
-// Variable declaration list because it's smaller.
-let stylesheet: ReturnType<typeof createStyleSheet>;
+const stylesheet = createStyleSheet();
 
 function Style(props: StyleProps) {
   const inserted = useCache();
@@ -47,15 +46,11 @@ function Style(props: StyleProps) {
       }
 
       return (
-        <style nonce={props.nonce}>
+        <style data-cmpld nonce={props.nonce}>
           {styleBucketOrdering.map((bucket) => bucketedSheets[bucket])}
         </style>
       );
     } else {
-      if (!stylesheet) {
-        stylesheet = createStyleSheet(props);
-      }
-
       for (let i = 0; i < props.children.length; i++) {
         const sheet = props.children[i];
         if (inserted[sheet]) {
@@ -63,7 +58,7 @@ function Style(props: StyleProps) {
         }
 
         inserted[sheet] = true;
-        stylesheet(sheet);
+        stylesheet(sheet, props);
       }
     }
   }

@@ -123,6 +123,8 @@ export const getStyleBucketName = (sheet: string): Bucket => {
   return '';
 };
 
+let ssrStyleElementsCleaned = false;
+
 /**
  * Returns a style sheet object that is used to move styles to the head of the application
  * during runtime.
@@ -130,8 +132,15 @@ export const getStyleBucketName = (sheet: string): Bucket => {
  * @param opts StyleSheetOpts
  * @param inserted Singleton cache for tracking what styles have already been added to the head
  */
-export default function createStyleSheet(opts: StyleSheetOpts) {
-  return (css: string) => {
+export default function createStyleSheet() {
+  const ssrStyles = document.querySelectorAll('style[data-cmpld]');
+
+  for (let i = 0; i < ssrStyles.length; i++) {
+    const styleElement = ssrStyles[i];
+    document.head.appendChild(styleElement);
+  }
+
+  return (css: string, opts: StyleSheetOpts) => {
     const bucketName = getStyleBucketName(css);
     const style = lazyAddStyleBucketToHead(bucketName, opts);
 
@@ -140,6 +149,17 @@ export default function createStyleSheet(opts: StyleSheetOpts) {
       sheet.insertRule(css, sheet.cssRules.length);
     } else {
       style.appendChild(document.createTextNode(css));
+    }
+
+    if (!ssrStyleElementsCleaned) {
+      const ssrStyles = document.querySelectorAll('style[data-cmpld]');
+
+      for (let i = 0; i < ssrStyles.length; i++) {
+        const styleElement = ssrStyles[i];
+        styleElement.remove();
+      }
+
+      ssrStyleElementsCleaned = true;
     }
   };
 }
