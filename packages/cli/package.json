@@ -1,0 +1,37 @@
+{
+  "name": "@compiled/cli",
+  "version": "0.4.7",
+  "description": "The CSS in JS authoring experience you love without the runtime cost",
+  "author": "Michael Dougall",
+  "license": "Apache-2.0",
+  "homepage": "https://compiledcssinjs.com",
+  "bugs": "https://github.com/atlassian-labs/compiled-css-in-js/issues/new?assignees=&labels=bug&template=bug_report.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlassian-labs/compiled-css-in-js.git",
+    "directory": "packages/cli"
+  },
+  "main": "./dist/main.js",
+  "module": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "scripts": {
+    "start": "ts-node --files src/index.tsx"
+  },
+  "bin": {
+    "compiled-cli": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "dependencies": {
+    "@compiled/react": "0.4.7",
+    "chalk": "^4.1.0",
+    "enquirer": "^2.3.6",
+    "exec-sh": "^0.3.4",
+    "glob": "^7.1.6",
+    "jscodeshift": "^0.11.0",
+    "meow": "^8.0.0",
+    "ts-node": "^9.0.0"
+  }
+}
