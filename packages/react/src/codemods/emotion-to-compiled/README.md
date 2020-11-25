@@ -59,4 +59,6 @@ const Component = (props) => (
 
 ## Updating Instructions
 
-When a new version of `@compiled/react` is released, Please update `@compiled/react` and `@compiled/cli` to the same new version simultaneously.
+- Bump up `@compiled/react` to x.x.x version.
+- Ensure `@compiled/cli` is also running with the same version: `npx @compiled/cli@x.x.x --preset codemods`
+  - Use `npx @compiled/cli --preset codemods` if `@compiled/react` is bumped up to the latest version.
