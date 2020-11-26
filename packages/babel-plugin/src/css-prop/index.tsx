@@ -50,6 +50,6 @@ export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Meta
   }
 
   path.parentPath.replaceWith(
-    buildCompiledComponent(path.parentPath.node as t.JSXElement, cssOutput, meta)
+    buildCompiledComponent(path.parentPath.node as t.JSXElement, cssOutput)
   );
 };

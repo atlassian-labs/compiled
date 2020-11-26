@@ -7,7 +7,6 @@ import isPropValid from '@emotion/is-prop-valid';
 import { Tag } from '../types';
 import { CSSOutput } from './css-builders';
 import { pickFunctionBody } from './ast';
-import { Metadata } from '../types';
 
 export interface StyledTemplateOpts {
   /**
@@ -30,31 +29,6 @@ export interface StyledTemplateOpts {
    */
   sheets: string[];
 }
-
-/**
- * Hoists a sheet to the top of the module if its not already there.
- * Returns the referencing identifier.
- *
- * @param sheet Stylesheet
- * @param meta Plugin metadata
- */
-const hoistSheet = (sheet: string, meta: Metadata): t.Identifier => {
-  if (meta.state.sheets[sheet]) {
-    return meta.state.sheets[sheet];
-  }
-
-  const sheetIdentifier = meta.parentPath.scope.generateUidIdentifier('');
-  const parent = meta.parentPath.findParent((path) => path.isProgram()).get('body') as NodePath[];
-  const path = parent.filter((path) => !path.isImportDeclaration())[0];
-
-  path.insertBefore(
-    t.variableDeclaration('const', [t.variableDeclarator(sheetIdentifier, t.stringLiteral(sheet))])
-  );
-
-  meta.state.sheets[sheet] = sheetIdentifier;
-
-  return sheetIdentifier;
-};
 
 /**
  * Will build up the CSS variables prop to be placed as inline styles.
@@ -150,8 +124,7 @@ const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor:
  * @param opts Template options
  * @param meta Plugin metadata
  */
-const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
-  const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
+const styledTemplate = (opts: StyledTemplateOpts): t.Node => {
   const propsToDestructure: string[] = [];
   const styleProp = opts.variables.length
     ? styledStyleProp(opts.variables, (node) => {
@@ -193,15 +166,12 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     ${propsToDestructure.map((prop) => prop + ',').join('')}
     ...props
   }, ref) => (
-      <>
-        <style ${nonceAttribute}>{%%cssNode%%}</style>
-        <C
-          {...props}
-          style={%%styleProp%%}
-          ref={ref}
-          className={ax(["${opts.classNames.join(' ')}", props.className])}
-        />
-      </>
+    <C
+      {...props}
+      style={%%styleProp%%}
+      ref={ref}
+      className={ax(["${opts.classNames.join(' ')}", props.className])}
+    />
   ));
 `,
     {
@@ -209,7 +179,6 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     }
   )({
     styleProp,
-    cssNode: t.arrayExpression(unique(opts.sheets).map((sheet) => hoistSheet(sheet, meta))),
   }) as t.Node;
 };
 
@@ -221,13 +190,10 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
  * @param sheets Stylesheets
  * @param meta Metadata
  */
-export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Metadata): t.Node => {
-  const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
-
+export const compiledTemplate = (node: t.Expression): t.Node => {
   return template(
     `
     <>
-      <style ${nonceAttribute}>{%%cssNode%%}</style>
       {%%jsxNode%%}
     </>
   `,
@@ -236,7 +202,6 @@ export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Met
     }
   )({
     jsxNode: node,
-    cssNode: t.arrayExpression(unique(sheets).map((sheet) => hoistSheet(sheet, meta))),
   }) as t.Node;
 };
 
@@ -279,18 +244,15 @@ export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExp
  * @param cssOutput CSS and variables to place onto the component
  * @param meta Plugin metadata
  */
-export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
+export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput): t.Node => {
   const { classNames, sheets } = transformCss(cssOutput.css);
 
-  return styledTemplate(
-    {
-      classNames,
-      tag,
-      sheets,
-      variables: cssOutput.variables,
-    },
-    meta
-  );
+  return styledTemplate({
+    classNames,
+    tag,
+    sheets,
+    variables: cssOutput.variables,
+  });
 };
 
 /**
@@ -329,12 +291,8 @@ export const getPropValue = (
  * @param cssOutput CSS and variables to place onto the component
  * @param meta Plugin metadata
  */
-export const buildCompiledComponent = (
-  node: t.JSXElement,
-  cssOutput: CSSOutput,
-  meta: Metadata
-): t.Node => {
-  const { sheets, classNames } = transformCss(cssOutput.css);
+export const buildCompiledComponent = (node: t.JSXElement, cssOutput: CSSOutput): t.Node => {
+  const { classNames } = transformCss(cssOutput.css);
   const classNameProp = node.openingElement.attributes.find((prop): prop is t.JSXAttribute => {
     return t.isJSXAttribute(prop) && prop.name.name === 'className';
   });
@@ -416,5 +374,5 @@ export const buildCompiledComponent = (
     );
   }
 
-  return compiledTemplate(node, sheets, meta);
+  return compiledTemplate(node);
 };

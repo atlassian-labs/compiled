@@ -124,5 +124,5 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
   // All done! Pick the children as function body and replace the original ClassNames node with it.
   const children = getJsxChildrenAsFunction(path);
   const body = pickFunctionBody(children);
-  path.replaceWith(compiledTemplate(body, sheets, meta));
+  path.replaceWith(compiledTemplate(body));
 };

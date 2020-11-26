@@ -2,9 +2,7 @@ import { declare } from '@babel/helper-plugin-utils';
 import template from '@babel/template';
 import * as t from '@babel/types';
 import jsxSyntax from '@babel/plugin-syntax-jsx';
-import { NodePath } from '@babel/traverse';
 import * as path from 'path';
-import { importSpecifier } from './utils/ast-builders';
 import { Cache } from './utils/cache';
 import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
@@ -21,55 +19,6 @@ const parseFilename = (filename: string | undefined) => {
     return 'File';
   }
   return path.basename(filename);
-};
-
-/**
- * Appends runtime import to code. If it is already present, it will append import specifiers
- * to already imported declaration path else it will create fresh import declaration path
- * with runtime import specifiers.
- *
- * @param path ImportDeclaration node path
- */
-const appendRuntimeImports = (path: NodePath<t.ImportDeclaration>) => {
-  const runtimeImportNames = ['ax', 'CC', 'CS'];
-  const runtimeImportModuleName = '@compiled/react/runtime';
-
-  // Check if we have any sibling runtime import
-  const runtimeImportFound = path
-    .getAllPrevSiblings()
-    .concat(path.getAllNextSiblings())
-    .find(
-      (path) =>
-        t.isImportDeclaration(path.node) && path.node.source.value === runtimeImportModuleName
-    ) as NodePath<t.ImportDeclaration> | undefined;
-
-  if (runtimeImportFound) {
-    /**
-     * Get local import name instead of imported name to handle scenario when
-     * import specifier is imported as named and normal both.
-     *
-     * eg. import { CC as CompiledRoot, ax, CC, CS } from '@compiled/react/runtime';
-     * In above example `CC` is used both as `CompiledRoot` and `CC`.
-     */
-    const localImportNames = runtimeImportFound
-      .get('specifiers')
-      .map((specifier) => specifier.node.local.name);
-
-    runtimeImportNames.forEach((runtimeImportName) => {
-      // Avoids duplicate imports from being appended if already present
-      if (!localImportNames.includes(runtimeImportName)) {
-        runtimeImportFound.pushContainer('specifiers', importSpecifier(runtimeImportName));
-      }
-    });
-  } else {
-    // Add the runtime entrypoint module
-    path.insertBefore(
-      t.importDeclaration(
-        runtimeImportNames.map((runtimeImportName) => importSpecifier(runtimeImportName)),
-        t.stringLiteral(runtimeImportModuleName)
-      )
-    );
-  }
 };
 
 export default declare<State>((api) => {
@@ -131,8 +80,6 @@ export default declare<State>((api) => {
             }
           });
         });
-
-        appendRuntimeImports(path);
 
         if (path.node.specifiers.length === 0) {
           // No more imports - remove the whole lot!
