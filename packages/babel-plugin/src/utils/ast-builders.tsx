@@ -193,15 +193,15 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     ${propsToDestructure.map((prop) => prop + ',').join('')}
     ...props
   }, ref) => (
-    <CC>
-      <CS ${nonceAttribute}>{%%cssNode%%}</CS>
-      <C
-        {...props}
-        style={%%styleProp%%}
-        ref={ref}
-        className={ax(["${opts.classNames.join(' ')}", props.className])}
-      />
-    </CC>
+      <>
+        <style ${nonceAttribute}>{%%cssNode%%}</style>
+        <C
+          {...props}
+          style={%%styleProp%%}
+          ref={ref}
+          className={ax(["${opts.classNames.join(' ')}", props.className])}
+        />
+      </>
   ));
 `,
     {
@@ -226,10 +226,10 @@ export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Met
 
   return template(
     `
-  <CC>
-    <CS ${nonceAttribute}>{%%cssNode%%}</CS>
-    {%%jsxNode%%}
-  </CC>
+    <>
+      <style ${nonceAttribute}>{%%cssNode%%}</style>
+      {%%jsxNode%%}
+    </>
   `,
     {
       plugins: ['jsx'],
