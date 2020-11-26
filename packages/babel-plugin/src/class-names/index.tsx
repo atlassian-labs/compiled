@@ -2,7 +2,7 @@ import * as t from '@babel/types';
 import { NodePath } from '@babel/core';
 import { transformCss } from '@compiled/css';
 import { pickFunctionBody, buildCodeFrameError } from '../utils/ast';
-import { compiledTemplate, buildCssVariablesProp } from '../utils/ast-builders';
+import { buildCssVariablesProp } from '../utils/ast-builders';
 import { buildCss, CSSOutput } from '../utils/css-builders';
 import { Metadata } from '../types';
 
@@ -124,5 +124,5 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
   // All done! Pick the children as function body and replace the original ClassNames node with it.
   const children = getJsxChildrenAsFunction(path);
   const body = pickFunctionBody(children);
-  path.replaceWith(compiledTemplate(body));
+  path.replaceWith(body);
 };

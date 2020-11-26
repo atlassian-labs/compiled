@@ -183,29 +183,6 @@ const styledTemplate = (opts: StyledTemplateOpts): t.Node => {
 };
 
 /**
- * Will return a generated AST for a Compiled Component.
- * This is primarily used for CSS prop and ClassNames apis.
- *
- * @param node Originating node
- * @param sheets Stylesheets
- * @param meta Metadata
- */
-export const compiledTemplate = (node: t.Expression): t.Node => {
-  return template(
-    `
-    <>
-      {%%jsxNode%%}
-    </>
-  `,
-    {
-      plugins: ['jsx'],
-    }
-  )({
-    jsxNode: node,
-  }) as t.Node;
-};
-
-/**
  * Will join two expressions together,
  * Looks like `left + ' ' + right`.
  *
@@ -374,5 +351,5 @@ export const buildCompiledComponent = (node: t.JSXElement, cssOutput: CSSOutput)
     );
   }
 
-  return compiledTemplate(node);
+  return node;
 };
