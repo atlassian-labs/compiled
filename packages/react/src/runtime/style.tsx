@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import createStyleSheet, { getStyleBucketName, styleBucketOrdering } from './sheet';
+import insertRule, { getStyleBucketName, styleBucketOrdering } from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts, Bucket } from './types';
 import { useCache } from './provider';
@@ -12,10 +12,6 @@ interface StyleProps extends StyleSheetOpts {
    */
   children: string[];
 }
-
-const stylesheet = (!isNodeEnvironment() && createStyleSheet()) as ReturnType<
-  typeof createStyleSheet
->;
 
 function Style(props: StyleProps) {
   const inserted = useCache();
@@ -60,7 +56,7 @@ function Style(props: StyleProps) {
         }
 
         inserted[sheet] = true;
-        stylesheet(sheet, props);
+        insertRule(sheet, props);
       }
     }
   }

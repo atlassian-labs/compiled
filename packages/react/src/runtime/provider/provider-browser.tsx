@@ -25,9 +25,28 @@ if (process.env.NODE_ENV === 'development' && isNodeEnvironment()) {
 const inserted: Record<string, true> = {};
 
 /**
+ * Iterates through all found style elements generated when server side rendering.
+ *
+ * @param cb
+ */
+const forEachSSRdStyleElement = (cb: (element: HTMLStyleElement) => void) => {
+  const ssrStyles = document.querySelectorAll<HTMLStyleElement>('style[data-cmpld]');
+  for (let i = 0; i < ssrStyles.length; i++) {
+    cb(ssrStyles[i]);
+  }
+};
+
+// Move all found server-side rendered style elements to the head before React hydration happens.
+forEachSSRdStyleElement((styleElement) => {
+  document.head.appendChild(styleElement);
+});
+
+/**
  * Noops on the client
  */
-export const useCache: UseCacheHook = () => inserted;
+export const useCache: UseCacheHook = () => {
+  return inserted;
+};
 
 /**
  * Noops on the client

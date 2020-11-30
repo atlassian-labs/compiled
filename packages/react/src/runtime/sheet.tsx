@@ -124,48 +124,20 @@ export const getStyleBucketName = (sheet: string): Bucket => {
 };
 
 /**
- * We only clean style elements once in a browser session.
- */
-let ssrStyleElementsCleaned = false;
-
-/**
  * Returns a style sheet object that is used to move styles to the head of the application
  * during runtime.
  *
  * @param opts StyleSheetOpts
  * @param inserted Singleton cache for tracking what styles have already been added to the head
  */
-export default function createStyleSheet() {
-  // Two step process for SSR.
-  // SSR step 1: Move the styles out of the way of React hydration - BEFORE hydration has started!
-  const ssrStyles = document.querySelectorAll('style[data-cmpld]');
-  for (let i = 0; i < ssrStyles.length; i++) {
-    const styleElement = ssrStyles[i];
-    document.head.appendChild(styleElement);
+export default function insertRule(css: string, opts: StyleSheetOpts) {
+  const bucketName = getStyleBucketName(css);
+  const style = lazyAddStyleBucketToHead(bucketName, opts);
+
+  if (process.env.NODE_ENV === 'production') {
+    const sheet = style.sheet as CSSStyleSheet;
+    sheet.insertRule(css, sheet.cssRules.length);
+  } else {
+    style.appendChild(document.createTextNode(css));
   }
-
-  return (css: string, opts: StyleSheetOpts) => {
-    const bucketName = getStyleBucketName(css);
-    const style = lazyAddStyleBucketToHead(bucketName, opts);
-
-    if (process.env.NODE_ENV === 'production') {
-      const sheet = style.sheet as CSSStyleSheet;
-      sheet.insertRule(css, sheet.cssRules.length);
-    } else {
-      style.appendChild(document.createTextNode(css));
-    }
-
-    if (!ssrStyleElementsCleaned) {
-      // SSR step 2: Clean up the SSRd styles - we don't need them anymore
-      // as their client side counterparts have been applied above.
-      const ssrStyles = document.querySelectorAll('style[data-cmpld]');
-
-      for (let i = 0; i < ssrStyles.length; i++) {
-        const styleElement = ssrStyles[i];
-        styleElement.remove();
-      }
-
-      ssrStyleElementsCleaned = true;
-    }
-  };
 }
