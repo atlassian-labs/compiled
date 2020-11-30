@@ -22,7 +22,7 @@ function Style(props: StyleProps) {
 
   if (props.children.length) {
     if (isNodeEnvironment()) {
-      const bucketedSheets: Partial<Record<Bucket, string[]>> = {};
+      const bucketedSheets: Partial<Record<Bucket, string>> = {};
       let hasSheets = false;
 
       for (let i = 0; i < props.children.length; i++) {
@@ -35,8 +35,7 @@ function Style(props: StyleProps) {
         }
 
         const bucketName = getStyleBucketName(sheet);
-        bucketedSheets[bucketName] = bucketedSheets[bucketName] || [];
-        bucketedSheets[bucketName]!.push(sheet);
+        bucketedSheets[bucketName] = (bucketedSheets[bucketName] || '') + sheet;
       }
 
       if (!hasSheets) {
@@ -45,7 +44,7 @@ function Style(props: StyleProps) {
 
       return (
         <style data-cmpld nonce={props.nonce}>
-          {styleBucketOrdering.map((bucket) => bucketedSheets[bucket])}
+          {styleBucketOrdering.map((bucket) => bucketedSheets[bucket]).join('')}
         </style>
       );
     } else {

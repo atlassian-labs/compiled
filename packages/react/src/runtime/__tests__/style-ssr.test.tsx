@@ -1,5 +1,5 @@
 import React from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
+import { renderToStaticMarkup, renderToString } from 'react-dom/server';
 import Style from '../style';
 
 describe('<Style />', () => {
@@ -15,6 +15,14 @@ describe('<Style />', () => {
     expect(result).toInclude(
       '<style data-cmpld="true" nonce="1234">.a { display: block; }</style>'
     );
+  });
+
+  it('should not output html comments', () => {
+    const result = renderToString(
+      <Style>{[`._a1234567:hover{ color: red; }`, `._b1234567:active{ color: blue; }`]}</Style>
+    );
+
+    expect(result).not.toContain('<!--');
   });
 
   it('should render style as children on the server in buckets', () => {

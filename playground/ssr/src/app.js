@@ -22,10 +22,10 @@ const Content = () => (
 
 export default function Home() {
   return (
-    <>
+    <div css={{ fontSize: '100%' }}>
       <Header />
       <Content />
       <Footer />
-    </>
+    </div>
   );
 }

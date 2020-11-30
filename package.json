@@ -10,7 +10,7 @@
     "benchmark:ssr": "cd benchmarks && yarn ssr",
     "benchmark:stylesheet": "cd benchmarks && yarn stylesheet",
     "benchmark:module-traversal": "cd packages/babel-plugin && yarn benchmark:module-traversal",
-    "clean": "rm -rf node_modules/.cache && rm -rf test/dead-code-elimination/dist && rm -f test/dead-code-elimination/tsconfig.tsbuildinfo && workspaces-run -- rm -rf dist -- rm -f tsconfig.tsbuildinfo -- rm -f tsconfig.browser.tsbuildinfo",
+    "clean": "rm -rf node_modules/.cache && rm -rf test/dead-code-elimination/dist && rm -f test/dead-code-elimination/tsconfig.tsbuildinfo && workspaces-run -- rm -rf dist -- rm -f tsconfig.tsbuildinfo -- rm -f tsconfig.browser.tsbuildinfo -- rm -rf build",
     "start": "yarn build:main && npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "start:prod": "NODE_ENV=production yarn start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
