@@ -35,7 +35,7 @@ describe('server side hydrate', () => {
     return elem;
   };
 
-  it('should not log any warnings and cleanup SSRd styles when hydrating HTML', () => {
+  it('should not log any warnings when hydrating HTML', () => {
     const StyledDiv = styled.div`
       font-size: 12px;
       color: blue;
@@ -48,6 +48,5 @@ describe('server side hydrate', () => {
     ReactDOM.hydrate(element, app);
 
     expect(console.error).not.toHaveBeenCalled();
-    expect(document.querySelectorAll('style[data-cmpld]').length).toEqual(0);
   });
 });

@@ -17,6 +17,7 @@
     "test": "yarn build:main && jest --no-cache",
     "test:watch": "yarn build:main && jest --no-cache --watch",
     "test:cover": "yarn test --collectCoverage",
+    "test:ssr": "cd playground/ssr && yarn start",
     "lint": "eslint --config .eslintrc.js --ext tsx,ts ./packages/**/src ./examples",
     "lint:fix": "yarn lint -- --fix",
     "build": "yarn build:main && yarn build:browser",
@@ -75,6 +76,7 @@
   "workspaces": [
     "benchmarks",
     "packages/*",
+    "playground/*",
     "examples/packages/*"
   ],
   "resolutions": {
