@@ -12,12 +12,12 @@
     "benchmark:module-traversal": "cd packages/babel-plugin && yarn benchmark:module-traversal",
     "clean": "rm -rf node_modules/.cache && rm -rf test/dead-code-elimination/dist && rm -f test/dead-code-elimination/tsconfig.tsbuildinfo && workspaces-run -- rm -rf dist -- rm -f tsconfig.tsbuildinfo -- rm -f tsconfig.browser.tsbuildinfo -- rm -rf build",
     "start": "yarn build:main && npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
+    "start:ssr": "cd playground/ssr && yarn start",
     "start:prod": "NODE_ENV=production yarn start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "test": "yarn build:main && jest --no-cache",
     "test:watch": "yarn build:main && jest --no-cache --watch",
     "test:cover": "yarn test --collectCoverage",
-    "test:ssr": "cd playground/ssr && yarn start",
     "lint": "eslint --config .eslintrc.js --ext tsx,ts ./packages/**/src ./examples",
     "lint:fix": "yarn lint -- --fix",
     "build": "yarn build:main && yarn build:browser",
@@ -30,7 +30,8 @@
     "version": "bash scripts/version.sh && git add .",
     "version-nightly": "bash scripts/should-nightly-run.sh && npm version prerelease --no-git-tag-version --preid=$(git rev-parse HEAD)",
     "postversion": "bash scripts/push-if-git.sh",
-    "bundlesize": "yarn build && yarn build:dead-code-elimination && size-limit"
+    "bundlesize": "yarn build && yarn build:dead-code-elimination && size-limit",
+    "postinstall": "npx yarn-deduplicate"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.11.0",

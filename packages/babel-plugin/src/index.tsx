@@ -122,7 +122,11 @@ export default declare<State>((api) => {
           }
 
           (['styled', 'ClassNames'] as const).forEach((apiName) => {
-            if (state.compiledImports && specifier.node?.imported.name === apiName) {
+            if (
+              state.compiledImports &&
+              t.isIdentifier(specifier.node?.imported) &&
+              specifier.node?.imported.name === apiName
+            ) {
               // Enable the API with the local name
               state.compiledImports[apiName] = specifier.node.local.name;
 
