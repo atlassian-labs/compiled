@@ -159,51 +159,23 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       }
 
       const { value: propValue, meta: updatedMeta } = evaluateExpression(prop.argument, meta);
+      const result = buildCss(propValue, updatedMeta);
 
-      if (t.isObjectExpression(propValue)) {
-        const result = extractObjectExpression(propValue, updatedMeta);
-
-        if (resolvedBinding?.source === 'import' && result.variables.length > 0) {
-          // NOTE: Currently we throw if the found CSS has any variables found from an
-          // import. This is because we'd need to ensure all identifiers are added to
-          // the owning file - if not done they would just error at runtime. Because
-          // this isn't a required feature at the moment we're deprioritizing support
-          // for this.
-          throw buildCodeFrameError(
-            "Identifier contains values that can't be statically evaluated",
-            prop.argument,
-            meta.parentPath
-          );
-        }
-
-        css.push(...result.css);
-        variables.push(...result.variables);
-      } else if (t.isLogicalExpression(propValue)) {
-        const expression = propValue.left;
-        const result = buildCss(propValue.right, meta);
-        const sheets = result.css.map((item) => {
-          if (item.type !== 'unconditional') {
-            return item;
-          }
-
-          const logicalItem: LogicalCssItem = {
-            type: 'logical',
-            css: item.css,
-            expression,
-          };
-
-          return logicalItem;
-        });
-
-        css.push(...sheets);
-        variables.push(...result.variables);
-      } else {
+      if (resolvedBinding?.source === 'import' && result.variables.length > 0) {
+        // NOTE: Currently we throw if the found CSS has any variables found from an
+        // import. This is because we'd need to ensure all identifiers are added to
+        // the owning file - if not done they would just error at runtime. Because
+        // this isn't a required feature at the moment we're deprioritizing support
+        // for this.
         throw buildCodeFrameError(
-          'Expression not currently supported.',
+          "Identifier contains values that can't be statically evaluated",
           prop.argument,
           meta.parentPath
         );
       }
+
+      css.push(...result.css);
+      variables.push(...result.variables);
     }
   });
 
@@ -232,7 +204,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
     if (t.isObjectExpression(interpolation)) {
       // We found an object like: css`${{ red: 'blue' }}`.
-      const result = extractObjectExpression(interpolation, updatedMeta);
+      const result = buildCss(interpolation, updatedMeta);
       variables.push(...result.variables);
       css.push(...result.css);
       return acc;
@@ -356,6 +328,29 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
     return {
       css,
       variables,
+    };
+  }
+
+  if (t.isLogicalExpression(node)) {
+    const expression = node.left;
+    const result = buildCss(node.right, meta);
+    const css = result.css.map((item) => {
+      if (item.type !== 'unconditional') {
+        return item;
+      }
+
+      const logicalItem: LogicalCssItem = {
+        type: 'logical',
+        css: item.css,
+        expression,
+      };
+
+      return logicalItem;
+    });
+
+    return {
+      css,
+      variables: result.variables,
     };
   }
 
