@@ -124,11 +124,10 @@ export const getStyleBucketName = (sheet: string): Bucket => {
 };
 
 /**
- * Returns a style sheet object that is used to move styles to the head of the application
- * during runtime.
+ * Used to move styles to the head of the application during runtime.
  *
+ * @param css string
  * @param opts StyleSheetOpts
- * @param inserted Singleton cache for tracking what styles have already been added to the head
  */
 export default function insertRule(css: string, opts: StyleSheetOpts) {
   const bucketName = getStyleBucketName(css);

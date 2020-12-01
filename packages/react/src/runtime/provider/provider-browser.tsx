@@ -42,7 +42,7 @@ forEachSSRdStyleElement((styleElement) => {
 });
 
 /**
- * Noops on the client
+ * Will return a singleton objet used for knowing if a sheet has been inserted.
  */
 export const useCache: UseCacheHook = () => {
   return inserted;
