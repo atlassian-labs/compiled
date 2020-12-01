@@ -393,37 +393,77 @@ describe('css prop behaviour', () => {
 
   it('should apply conditional logical expression object spread styles', () => {
     const actual = transform(`
-    import '@compiled/react';
-    import React from 'react';
+      import '@compiled/react';
+      import React from 'react';
 
-    const Component = props => (
-      <div css={{
-        ...props.isPrimary && {
-          color: 'blue',
-        }
-      }}>hello world</div>
-    );
-  `);
+      const Component = props => (
+        <div css={{
+          ...props.isPrimary && {
+            color: 'blue',
+            fontSize: 20,
+          }
+        }}>hello world</div>
+      );
+    `);
 
-    expect(actual).toInclude('className={ax([props.isPrimary&&"_syaz13q2"])}');
+    expect(actual).toInclude('className={ax([props.isPrimary&&"_syaz13q2 _1wybgktf"])}');
   });
 
-  xit('should apply conditional ternary expression object spread styles', () => {
+  it('should apply conditional logical expression object styles', () => {
     const actual = transform(`
-    import '@compiled/react';
-    import React from 'react';
+      import '@compiled/react';
+      import React from 'react';
 
-    const Component = props => (
-      <div css={{
-        ...props.isPrimary ? {
-          color: 'blue',
-        } : {
-          color: 'red',
-        }
-      }}>hello world</div>
+      const Component = props => (
+        <div css={{
+          ':hover': props.isPrimary && {
+            color: 'blue',
+            fontSize: 20,
+          }
+        }}>hello world</div>
+      );
+    `);
+
+    expect(actual).toInclude('className={ax([props.isPrimary&&"_30l313q2 _e915gktf"])}');
+  });
+
+  it('should combine conditional logical expressions', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      import React from 'react';
+
+      const Component = props => (
+        <div css={{
+          ':hover': props.isPrimary && {
+            color: 'blue',
+            ...props.isBold && {
+              fontWeight: 700,
+            },
+          }
+        }}>hello world</div>
+      );
+    `);
+
+    expect(actual).toInclude(
+      'className={ax([props.isPrimary&&"_30l313q2",props.isPrimary&&props.isBold&&"_79b11fw0"])}'
     );
-  `);
+  });
 
-    expect(actual).toInclude('className={ax([props.isPrimary&&"_syaz13q2"])}');
+  it('should apply multi conditional logical expression', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      import React from 'react';
+
+      const Component = props => (
+        <div css={{
+          ...(props.isPrimary || props.isMaybe) && {
+            color: 'blue',
+            fontSize: 20,
+          }
+        }}>hello world</div>
+      );
+    `);
+
+    expect(actual).toInclude('ax([(props.isPrimary||props.isMaybe)&&"_syaz13q2 _1wybgktf"])');
   });
 });

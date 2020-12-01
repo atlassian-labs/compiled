@@ -18,14 +18,7 @@ interface LogicalCssItem {
   css: string;
 }
 
-interface TernaryCssItem {
-  type: 'ternary';
-  expression: t.Expression;
-  leftCss: string;
-  rightCss: string;
-}
-
-type CssItem = UnconditionalCssItem | LogicalCssItem | TernaryCssItem;
+type CssItem = UnconditionalCssItem | LogicalCssItem;
 
 export interface CSSOutput {
   css: Array<CssItem>;
@@ -89,13 +82,7 @@ const reduceCssExpressions = (arr: Array<CssItem>): Array<CssItem> => {
  * @param item
  */
 export const getItemCss = (item: CssItem) => {
-  switch (item.type) {
-    case 'ternary':
-      return item.leftCss + item.rightCss;
-
-    default:
-      return item.css;
-  }
+  return item.css;
 };
 
 /**
@@ -125,9 +112,8 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       } else if (t.isNumericLiteral(propValue)) {
         // We've found a numeric literal like: `fontSize: 12`
         value = addUnitIfNeeded(key, propValue.value);
-      } else if (t.isObjectExpression(propValue)) {
-        // We've found a nested object like: `':hover': { color: 'red' }`
-        const result = extractObjectExpression(propValue, updatedMeta);
+      } else if (t.isObjectExpression(propValue) || t.isLogicalExpression(propValue)) {
+        const result = buildCss(propValue, updatedMeta);
         css.push(...result.css.map((x) => ({ ...x, css: `${key} { ${getItemCss(x)} }` })));
         variables.push(...result.variables);
         return;
@@ -336,7 +322,10 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
     const result = buildCss(node.right, meta);
     const css = result.css.map((item) => {
       if (item.type !== 'unconditional') {
-        return item;
+        return {
+          ...item,
+          expression: t.logicalExpression('&&', expression, item.expression),
+        };
       }
 
       const logicalItem: LogicalCssItem = {
