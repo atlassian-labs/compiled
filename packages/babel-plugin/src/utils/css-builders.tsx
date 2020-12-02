@@ -58,7 +58,7 @@ const normalizeContentValue = (value: string) => {
  *
  * @param arr
  */
-const reduceCssExpressions = (arr: Array<CssItem>): Array<CssItem> => {
+const reduceUnconditionalCssItems = (arr: Array<CssItem>): Array<CssItem> => {
   let unconditionalItem: UnconditionalCssItem | undefined;
 
   return arr.reduce<CssItem[]>((acc, item, index) => {
@@ -165,7 +165,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
     }
   });
 
-  return { css: reduceCssExpressions(css), variables };
+  return { css: reduceUnconditionalCssItems(css), variables };
 };
 
 /**
@@ -238,7 +238,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   css.push({ type: 'unconditional', css: literalResult });
 
-  return { css: reduceCssExpressions(css), variables };
+  return { css: reduceUnconditionalCssItems(css), variables };
 };
 
 /**

@@ -322,6 +322,11 @@ export const getPropValue = (
   return value;
 };
 
+/**
+ * Transforms CSS output into `sheets` and `classNames` ASTs.
+ *
+ * @param cssOutput CSSOutput
+ */
 const transformItemCss = (cssOutput: CSSOutput) => {
   const sheets: string[] = [];
   const classNames: t.Expression[] = [];
