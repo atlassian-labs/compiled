@@ -466,4 +466,25 @@ describe('css prop behaviour', () => {
 
     expect(actual).toInclude('ax([(props.isPrimary||props.isMaybe)&&"_syaz13q2 _1wybgktf"])');
   });
+
+  it('should apply array conditional css', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      import React from 'react';
+
+      const Component = props => (
+        <div css={[
+          { fontSize: 40, },
+          (props.isPrimary || props.isMaybe) && {
+            color: 'blue',
+            fontSize: 20,
+          },
+        ]}>hello world</div>
+      );
+    `);
+
+    expect(actual).toInclude(
+      'ax(["_1wyb1ylp",(props.isPrimary||props.isMaybe)&&"_syaz13q2 _1wybgktf"])'
+    );
+  });
 });
