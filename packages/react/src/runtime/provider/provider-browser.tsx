@@ -29,17 +29,11 @@ const inserted: Record<string, true> = {};
  *
  * @param cb
  */
-const forEachSSRdStyleElement = (cb: (element: HTMLStyleElement) => void) => {
-  const ssrStyles = document.querySelectorAll<HTMLStyleElement>('style[data-cmpld]');
-  for (let i = 0; i < ssrStyles.length; i++) {
-    cb(ssrStyles[i]);
-  }
-};
-
-// Move all found server-side rendered style elements to the head before React hydration happens.
-forEachSSRdStyleElement((styleElement) => {
-  document.head.appendChild(styleElement);
-});
+const ssrStyles = document.querySelectorAll<HTMLStyleElement>('style[data-cmpld]');
+for (let i = 0; i < ssrStyles.length; i++) {
+  // Move all found server-side rendered style elements to the head before React hydration happens.
+  document.head.appendChild(ssrStyles[i]);
+}
 
 /**
  * Will return a singleton objet used for knowing if a sheet has been inserted.
