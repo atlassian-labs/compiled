@@ -108,7 +108,11 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
   // Second pass to replace all usages of `style`.
   path.traverse({
     Identifier(path) {
-      if (path.node.name !== 'style' || path.parentPath.isProperty()) {
+      if (
+        path.node.name !== 'style' ||
+        path.parentPath.isProperty() ||
+        !path.scope.hasOwnBinding('style')
+      ) {
         // Nothing to do - skip.
         return;
       }

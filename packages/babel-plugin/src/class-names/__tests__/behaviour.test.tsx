@@ -278,4 +278,32 @@ describe('class names behaviour', () => {
         </CC>;"
     `);
   });
+
+  it('should not transform style identifier when its coming from outer scope', () => {
+    const actual = transform(`
+      import { ClassNames } from '@compiled/react';
+
+      const EmphasisText = ({ className, children, style }) => (
+        <ClassNames>
+          {({ css }) => (
+            <span
+              style={style}
+              className={
+                css({
+                  color: '#00b8d9',
+                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                }) +
+                ' ' +
+                className
+              }>
+              {children}
+            </span>
+          )}
+        </ClassNames>
+      );
+  `);
+
+    expect(actual).toInclude(`style={style}`);
+  });
 });
