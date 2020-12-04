@@ -304,8 +304,6 @@ describe('class names behaviour', () => {
       );
   `);
 
-    console.log(actual);
-
     expect(actual).toInclude(`style={style}`);
   });
 });
