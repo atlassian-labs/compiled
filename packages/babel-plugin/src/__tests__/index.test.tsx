@@ -148,7 +148,7 @@ describe('babel plugin', () => {
       import { CC as CompiledRoot, ax } from '@compiled/react/runtime';
       import '@compiled/react';
 
-      const classes = ax['1', '2'];
+      const classes = ax(['1', '2']);
 
       <CompiledRoot>
         <div css={{ display: 'block' }}  />
@@ -163,7 +163,7 @@ describe('babel plugin', () => {
       import * as React from 'react';
       import { CC as CompiledRoot, ax, CC, CS } from '@compiled/react/runtime';
       const _ = \\"._1e0c1ule{display:block}\\";
-      const classes = ax[('1', '2')];
+      const classes = ax(['1', '2']);
       <CompiledRoot>
               <CC>
           <CS>{[_]}</CS>

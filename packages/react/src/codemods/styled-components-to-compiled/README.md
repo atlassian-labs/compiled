@@ -25,4 +25,13 @@ import { styled } from '@compiled/react';
 
 ## Updating Instructions
 
-When a new version of `@compiled/react` is released, Please update `@compiled/react` and `@compiled/cli` to the same new version simultaneously.
+When wanting to update to a later version make sure `@compiled/cli` is being ran with the same version.
+
+> Watch out for it being cached!
+
+For example when upgrading `@compiled/react` to `v0.6.0` where you've already used the CLI,
+on your next run explicitly set the version number:
+
+```bash
+npx @compiled/cli@0.6.0 --preset codemods
+```
