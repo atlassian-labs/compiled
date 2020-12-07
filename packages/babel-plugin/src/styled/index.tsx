@@ -4,6 +4,14 @@ import { buildStyledComponent } from '../utils/ast-builders';
 import { buildCss } from '../utils/css-builders';
 import { Metadata, Tag } from '../types';
 
+interface StyledData {
+  tag: {
+    name: string;
+    type: Tag['type'];
+  };
+  cssNode: t.Expression | t.Expression[];
+}
+
 const createStyledDataPair = ({
   tagName,
   tagType,
@@ -11,7 +19,7 @@ const createStyledDataPair = ({
 }: {
   tagName: string;
   tagType: Tag['type'];
-  cssNode: t.Expression;
+  cssNode: t.Expression | t.Expression[];
 }) => ({
   tag: {
     name: tagName,
@@ -23,7 +31,7 @@ const createStyledDataPair = ({
 const extractStyledDataFromTemplateLiteral = (
   node: t.TaggedTemplateExpression,
   meta: Metadata
-): { tag: Tag; cssNode: t.Expression } | undefined => {
+): StyledData | undefined => {
   if (
     t.isMemberExpression(node.tag) &&
     t.isIdentifier(node.tag.object) &&
@@ -54,7 +62,7 @@ const extractStyledDataFromTemplateLiteral = (
 const extractStyledDataFromObjectLiteral = (
   node: t.CallExpression,
   meta: Metadata
-): { tag: Tag; cssNode: t.Expression } | undefined => {
+): StyledData | undefined => {
   if (
     t.isMemberExpression(node.callee) &&
     t.isIdentifier(node.callee.object) &&
@@ -63,7 +71,7 @@ const extractStyledDataFromObjectLiteral = (
     t.isIdentifier(node.callee.property)
   ) {
     const tagName = node.callee.property.name;
-    const cssNode = node.arguments[0];
+    const cssNode = node.arguments as t.Expression[];
 
     return createStyledDataPair({ tagName, tagType: 'InBuiltComponent', cssNode });
   }
@@ -76,7 +84,7 @@ const extractStyledDataFromObjectLiteral = (
     t.isIdentifier(node.callee.arguments[0])
   ) {
     const tagName = node.callee.arguments[0].name;
-    const cssNode = node.arguments[0];
+    const cssNode = node.arguments as t.Expression[];
 
     return createStyledDataPair({ tagName, tagType: 'UserDefinedComponent', cssNode });
   }
@@ -91,7 +99,7 @@ const extractStyledDataFromObjectLiteral = (
 const extractStyledDataFromNode = (
   node: t.TaggedTemplateExpression | t.CallExpression,
   meta: Metadata
-): { tag: Tag; cssNode: t.Expression } | undefined => {
+) => {
   if (t.isTaggedTemplateExpression(node)) {
     return extractStyledDataFromTemplateLiteral(node, meta);
   }

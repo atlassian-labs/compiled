@@ -44,7 +44,15 @@ export const getPathOfNode = <TNode extends {}>(
  * @param node
  * @param parentPath
  */
-export const buildCodeFrameError = (error: string, node: t.Node, parentPath: NodePath<any>) => {
+export const buildCodeFrameError = (
+  error: string,
+  node: t.Node | null,
+  parentPath: NodePath<any>
+) => {
+  if (!node) {
+    throw parentPath.buildCodeFrameError(error);
+  }
+
   const startLoc = node.loc ? ` (${node.loc.start.line}:${node.loc.start.column})` : '';
 
   return getPathOfNode(node, parentPath).buildCodeFrameError(`${error}${startLoc}.`);
