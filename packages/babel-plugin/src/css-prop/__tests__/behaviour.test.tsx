@@ -487,4 +487,45 @@ describe('css prop behaviour', () => {
       'ax(["_1wyb1ylp",(props.isPrimary||props.isMaybe)&&"_syaz13q2 _1wybgktf"])'
     );
   });
+
+  it('should apply partial  conditional css rule', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      import React from 'react';
+
+      const Component = props => (
+        <div css={{
+          ...props.isPrimary && {
+            color: 'blue',
+            fontSize: 20,
+          },
+          border: '1px solid black',
+        }}>hello world</div>
+      );
+    `);
+
+    expect(actual).toInclude('ax([props.isPrimary&&"_syaz13q2 _1wybgktf","_19itjoc5"])');
+  });
+
+  it('should apply unconditional before and after a conditional css rule', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      import React from 'react';
+
+      const Component = props => (
+        <div css={{
+          fontSize: 15,
+          ...props.isPrimary && {
+            color: 'blue',
+            fontSize: 20,
+          },
+          border: '1px solid black',
+        }}>hello world</div>
+      );
+    `);
+
+    expect(actual).toInclude(
+      'ax(["_1wybo7ao",props.isPrimary&&"_syaz13q2 _1wybgktf","_19itjoc5"])'
+    );
+  });
 });

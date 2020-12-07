@@ -42,7 +42,7 @@ const normalizeContentValue = (value: string) => {
 };
 
 /**
- * Will merge all unconditional css expressions together.
+ * Will merge all subsequent unconditional CSS expressions together.
  *
  * Input:
  *
@@ -58,22 +58,31 @@ const normalizeContentValue = (value: string) => {
  *
  * @param arr
  */
-const reduceUnconditionalCssItems = (arr: Array<CssItem>): Array<CssItem> => {
-  let unconditionalItem: UnconditionalCssItem | undefined;
+const mergeSubsequentUnconditionalCssItems = (arr: Array<CssItem>): Array<CssItem> => {
+  const items: CssItem[] = [];
 
-  return arr.reduce<CssItem[]>((acc, item, index) => {
-    if (!unconditionalItem && item.type === 'unconditional') {
-      unconditionalItem = item;
+  for (let index = 0; index < arr.length; index++) {
+    const item = arr[index];
+    if (item.type === 'unconditional') {
+      // We found an unconditional. Let's iterate further and merge all subsequent ones.
+
+      for (let subsequentIndex = index + 1; subsequentIndex < arr.length; subsequentIndex++) {
+        const subsequentItem = arr[subsequentIndex];
+        if (subsequentItem.type === 'unconditional') {
+          item.css += subsequentItem.css;
+        } else {
+          break;
+        }
+
+        // Update index back to the new one which we'll start from again.
+        index = subsequentIndex;
+      }
     }
 
-    if (index === 0 || item.type !== 'unconditional' || !unconditionalItem) {
-      acc.push(item);
-    } else {
-      unconditionalItem.css += item.css;
-    }
+    items.push(item);
+  }
 
-    return acc;
-  }, []);
+  return items;
 };
 
 /**
@@ -165,7 +174,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
     }
   });
 
-  return { css: reduceUnconditionalCssItems(css), variables };
+  return { css: mergeSubsequentUnconditionalCssItems(css), variables };
 };
 
 /**
@@ -238,7 +247,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   css.push({ type: 'unconditional', css: literalResult });
 
-  return { css: reduceUnconditionalCssItems(css), variables };
+  return { css: mergeSubsequentUnconditionalCssItems(css), variables };
 };
 
 /**
