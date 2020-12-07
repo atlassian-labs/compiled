@@ -124,22 +124,19 @@ export const getStyleBucketName = (sheet: string): Bucket => {
 };
 
 /**
- * Returns a style sheet object that is used to move styles to the head of the application
- * during runtime.
+ * Used to move styles to the head of the application during runtime.
  *
+ * @param css string
  * @param opts StyleSheetOpts
- * @param inserted Singleton cache for tracking what styles have already been added to the head
  */
-export default function createStyleSheet(opts: StyleSheetOpts) {
-  return (css: string) => {
-    const bucketName = getStyleBucketName(css);
-    const style = lazyAddStyleBucketToHead(bucketName, opts);
+export default function insertRule(css: string, opts: StyleSheetOpts) {
+  const bucketName = getStyleBucketName(css);
+  const style = lazyAddStyleBucketToHead(bucketName, opts);
 
-    if (process.env.NODE_ENV === 'production') {
-      const sheet = style.sheet as CSSStyleSheet;
-      sheet.insertRule(css, sheet.cssRules.length);
-    } else {
-      style.appendChild(document.createTextNode(css));
-    }
-  };
+  if (process.env.NODE_ENV === 'production') {
+    const sheet = style.sheet as CSSStyleSheet;
+    sheet.insertRule(css, sheet.cssRules.length);
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
 }

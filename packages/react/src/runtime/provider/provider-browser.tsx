@@ -25,9 +25,22 @@ if (process.env.NODE_ENV === 'development' && isNodeEnvironment()) {
 const inserted: Record<string, true> = {};
 
 /**
- * Noops on the client
+ * Iterates through all found style elements generated when server side rendering.
+ *
+ * @param cb
  */
-export const useCache: UseCacheHook = () => inserted;
+const ssrStyles = document.querySelectorAll<HTMLStyleElement>('style[data-cmpld]');
+for (let i = 0; i < ssrStyles.length; i++) {
+  // Move all found server-side rendered style elements to the head before React hydration happens.
+  document.head.appendChild(ssrStyles[i]);
+}
+
+/**
+ * Will return a singleton objet used for knowing if a sheet has been inserted.
+ */
+export const useCache: UseCacheHook = () => {
+  return inserted;
+};
 
 /**
  * Noops on the client

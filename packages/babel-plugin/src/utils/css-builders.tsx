@@ -124,7 +124,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   let variables: CSSOutput['variables'] = [];
   // quasis are the string pieces of the template literal - the parts around the interpolations.
   const css = node.quasis.reduce((css, q, index) => {
-    const nodeExpression = node.expressions[index];
+    const nodeExpression: t.Expression = node.expressions[index] as t.Expression;
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
 
     if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {

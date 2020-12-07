@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import createStyleSheet, { getStyleBucketName, styleBucketOrdering } from './sheet';
+import insertRule, { getStyleBucketName, styleBucketOrdering } from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts, Bucket } from './types';
 import { useCache } from './provider';
@@ -13,9 +13,6 @@ interface StyleProps extends StyleSheetOpts {
   children: string[];
 }
 
-// Variable declaration list because it's smaller.
-let stylesheet: ReturnType<typeof createStyleSheet>;
-
 function Style(props: StyleProps) {
   const inserted = useCache();
 
@@ -25,7 +22,7 @@ function Style(props: StyleProps) {
 
   if (props.children.length) {
     if (isNodeEnvironment()) {
-      const bucketedSheets: Partial<Record<Bucket, string[]>> = {};
+      const bucketedSheets: Partial<Record<Bucket, string>> = {};
       let hasSheets = false;
 
       for (let i = 0; i < props.children.length; i++) {
@@ -38,8 +35,7 @@ function Style(props: StyleProps) {
         }
 
         const bucketName = getStyleBucketName(sheet);
-        bucketedSheets[bucketName] = bucketedSheets[bucketName] || [];
-        bucketedSheets[bucketName]!.push(sheet);
+        bucketedSheets[bucketName] = (bucketedSheets[bucketName] || '') + sheet;
       }
 
       if (!hasSheets) {
@@ -47,15 +43,11 @@ function Style(props: StyleProps) {
       }
 
       return (
-        <style nonce={props.nonce}>
-          {styleBucketOrdering.map((bucket) => bucketedSheets[bucket])}
+        <style data-cmpld nonce={props.nonce}>
+          {styleBucketOrdering.map((bucket) => bucketedSheets[bucket]).join('')}
         </style>
       );
     } else {
-      if (!stylesheet) {
-        stylesheet = createStyleSheet(props);
-      }
-
       for (let i = 0; i < props.children.length; i++) {
         const sheet = props.children[i];
         if (inserted[sheet]) {
@@ -63,7 +55,7 @@ function Style(props: StyleProps) {
         }
 
         inserted[sheet] = true;
-        stylesheet(sheet);
+        insertRule(sheet, props);
       }
     }
   }
