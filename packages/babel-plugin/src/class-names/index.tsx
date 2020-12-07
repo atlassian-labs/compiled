@@ -3,8 +3,9 @@ import { NodePath } from '@babel/core';
 import { transformCss } from '@compiled/css';
 import { pickFunctionBody, buildCodeFrameError } from '../utils/ast';
 import { compiledTemplate, buildCssVariablesProp } from '../utils/ast-builders';
-import { buildCss, CSSOutput } from '../utils/css-builders';
+import { buildCss, getItemCss } from '../utils/css-builders';
 import { Metadata } from '../types';
+import { CSSOutput } from '../utils/types';
 
 /**
  * Extracts styles from an expression.
@@ -83,8 +84,8 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
     return;
   }
 
-  const variables: CSSOutput['variables'] = [];
-  const sheets: string[] = [];
+  const collectedVariables: CSSOutput['variables'] = [];
+  const collectedSheets: string[] = [];
 
   // First pass to replace all usages of `css({})`
   path.traverse({
@@ -96,12 +97,12 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
       }
 
       const builtCss = buildCss(styles, meta);
-      const transformed = transformCss(builtCss.css);
+      const { sheets, classNames } = transformCss(builtCss.css.map((x) => getItemCss(x)).join(''));
 
-      variables.push(...builtCss.variables);
-      sheets.push(...transformed.sheets);
+      collectedVariables.push(...builtCss.variables);
+      collectedSheets.push(...sheets);
 
-      path.replaceWith(t.stringLiteral(transformed.classNames.join(' ')));
+      path.replaceWith(t.stringLiteral(classNames.join(' ')));
     },
   });
 
@@ -117,8 +118,8 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
         return;
       }
 
-      const styleValue = variables.length
-        ? t.objectExpression(buildCssVariablesProp(variables))
+      const styleValue = collectedVariables.length
+        ? t.objectExpression(buildCssVariablesProp(collectedVariables))
         : t.identifier('undefined');
 
       path.replaceWith(styleValue);
@@ -128,5 +129,5 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
   // All done! Pick the children as function body and replace the original ClassNames node with it.
   const children = getJsxChildrenAsFunction(path);
   const body = pickFunctionBody(children);
-  path.replaceWith(compiledTemplate(body, sheets, meta));
+  path.replaceWith(compiledTemplate(body, collectedSheets, meta));
 };

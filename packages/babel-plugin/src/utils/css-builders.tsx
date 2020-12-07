@@ -6,14 +6,7 @@ import { joinExpressions } from './ast-builders';
 import { Metadata } from '../types';
 import { getKey, resolveBindingNode, buildCodeFrameError } from './ast';
 import { evaluateExpression } from './evaluate-expression';
-
-export interface CSSOutput {
-  css: string;
-  variables: {
-    name: string;
-    expression: t.Expression;
-  }[];
-}
+import { CSSOutput, CssItem, LogicalCssItem } from './types';
 
 /**
  * Will normalize the value of a `content` CSS property to ensure it has quotations around it.
@@ -29,14 +22,90 @@ const normalizeContentValue = (value: string) => {
 };
 
 /**
+ * Will merge all subsequent unconditional CSS expressions together.
+ *
+ * Input
+ *
+ * ```
+ * [l, u, u, l, u, u, u, u, l, u]
+ * ```
+ *
+ * Output
+ *
+ * ```
+ * [l, uu, l, uuuu, l, u]
+ * ```
+ *
+ * Where `l` is a logical item,
+ * and `u` is a unconditional item.
+ *
+ * @param arr
+ */
+const mergeSubsequentUnconditionalCssItems = (arr: Array<CssItem>): Array<CssItem> => {
+  const items: CssItem[] = [];
+
+  for (let index = 0; index < arr.length; index++) {
+    const item = arr[index];
+    if (item.type === 'unconditional') {
+      // We found an unconditional. Let's iterate further and merge all subsequent ones.
+
+      for (let subsequentIndex = index + 1; subsequentIndex < arr.length; subsequentIndex++) {
+        const subsequentItem = arr[subsequentIndex];
+        if (subsequentItem.type === 'unconditional') {
+          item.css += subsequentItem.css;
+        } else {
+          break;
+        }
+
+        // Update index back to the new one which we'll start from again.
+        index = subsequentIndex;
+      }
+    }
+
+    items.push(item);
+  }
+
+  return items;
+};
+
+/**
+ * Returns the item css.
+ *
+ * @param item
+ */
+export const getItemCss = (item: CssItem) => {
+  return item.css;
+};
+
+/**
+ * Parses a CSS output to amn array of CSS item rules.
+ *
+ * @param selector
+ * @param result
+ */
+const toCSSRule = (selector: string, result: CSSOutput) => {
+  return result.css.map((x) => ({ ...x, css: `${selector} { ${getItemCss(x)} }` }));
+};
+
+/**
+ * Parses a CSS output to an array of CSS item declarations.
+ *
+ * @param key
+ * @param result
+ */
+const toCSSDeclaration = (key: string, result: CSSOutput) => {
+  return result.css.map((x) => ({ ...x, css: `${kebabCase(key)}: ${getItemCss(x)};` }));
+};
+
+/**
  * Extracts CSS data from an object expression node.
  *
  * @param node Node we're interested in extracting CSS from.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
 const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSOutput => {
-  let variables: CSSOutput['variables'] = [];
-  let css = '';
+  const variables: CSSOutput['variables'] = [];
+  const css: CSSOutput['css'] = [];
 
   node.properties.forEach((prop) => {
     if (t.isObjectProperty(prop)) {
@@ -55,17 +124,19 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       } else if (t.isNumericLiteral(propValue)) {
         // We've found a numeric literal like: `fontSize: 12`
         value = addUnitIfNeeded(key, propValue.value);
-      } else if (t.isObjectExpression(propValue)) {
-        // We've found a nested object like: `':hover': { color: 'red' }`
-        const result = extractObjectExpression(propValue, updatedMeta);
-        css += `${key} { ${result.css} }`;
-        variables = variables.concat(result.variables);
+      } else if (t.isObjectExpression(propValue) || t.isLogicalExpression(propValue)) {
+        // We've found either an object like `{}` or a logical expression `isPrimary && {}`.
+        // We can handle both the same way as they end up resulting in a CSS rule.
+        const result = buildCss(propValue, updatedMeta);
+        css.push(...toCSSRule(key, result));
+        variables.push(...result.variables);
         return;
       } else if (t.isTemplateLiteral(propValue)) {
         // We've found a template literal like: `fontSize: `${fontSize}px`
         const result = extractTemplateLiteral(propValue, updatedMeta);
-        value = result.css;
-        variables = variables.concat(result.variables);
+        css.push(...toCSSDeclaration(key, result));
+        variables.push(...result.variables);
+        return;
       } else {
         // This is the catch all for any kind of expression.
         // We don't want to explicitly handle each expression node differently if we can avoid it!
@@ -75,7 +146,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       }
 
       // Time to add this key+value to the CSS string we're building up.
-      css += `${kebabCase(key)}: ${value};`;
+      css.push({ type: 'unconditional', css: `${kebabCase(key)}: ${value};` });
     } else if (t.isSpreadElement(prop)) {
       let resolvedBinding = undefined;
 
@@ -88,30 +159,27 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       }
 
       const { value: propValue, meta: updatedMeta } = evaluateExpression(prop.argument, meta);
+      const result = buildCss(propValue, updatedMeta);
 
-      if (t.isObjectExpression(propValue)) {
-        const result = extractObjectExpression(propValue, updatedMeta);
-
-        if (resolvedBinding?.source === 'import' && result.variables.length > 0) {
-          // NOTE: Currently we throw if the found CSS has any variables found from an
-          // import. This is because we'd need to ensure all identifiers are added to
-          // the owning file - if not done they would just error at runtime. Because
-          // this isn't a required feature at the moment we're deprioritizing support
-          // for this.
-          throw buildCodeFrameError(
-            "Identifier contains values that can't be statically evaluated",
-            prop.argument,
-            meta.parentPath
-          );
-        }
-
-        css += result.css;
-        variables = variables.concat(result.variables);
+      if (resolvedBinding?.source === 'import' && result.variables.length > 0) {
+        // NOTE: Currently we throw if the found CSS has any variables found from an
+        // import. This is because we'd need to ensure all identifiers are added to
+        // the owning file - if not done they would just error at runtime. Because
+        // this isn't a required feature at the moment we're deprioritizing support
+        // for this.
+        throw buildCodeFrameError(
+          "Identifier contains values that can't be statically evaluated",
+          prop.argument,
+          meta.parentPath
+        );
       }
+
+      css.push(...result.css);
+      variables.push(...result.variables);
     }
   });
 
-  return { css, variables };
+  return { css: mergeSubsequentUnconditionalCssItems(css), variables };
 };
 
 /**
@@ -121,22 +189,25 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
  * @param state Babel state - should house options and meta data used during the transformation.
  */
 const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOutput => {
-  let variables: CSSOutput['variables'] = [];
+  const variables: CSSOutput['variables'] = [];
+  const css: CSSOutput['css'] = [];
+
   // quasis are the string pieces of the template literal - the parts around the interpolations.
-  const css = node.quasis.reduce((css, q, index) => {
+  const literalResult = node.quasis.reduce<string>((acc, q, index): string => {
     const nodeExpression: t.Expression = node.expressions[index] as t.Expression;
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
 
     if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
       // Simple case - we can immediately inline the value.
-      return css + q.value.raw + interpolation.value;
+      return acc + q.value.raw + interpolation.value;
     }
 
     if (t.isObjectExpression(interpolation)) {
       // We found an object like: css`${{ red: 'blue' }}`.
-      const result = extractObjectExpression(interpolation, updatedMeta);
-      variables = variables.concat(result.variables);
-      return css + result.css;
+      const result = buildCss(interpolation, updatedMeta);
+      variables.push(...result.variables);
+      css.push(...result.css);
+      return acc;
     }
 
     if (interpolation) {
@@ -173,13 +244,15 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       nextQuasis.value.raw = after.css; // Removes any suffixes from the next quasis.
       variables.push({ name: variableName, expression });
 
-      return before.css + `var(${variableName})`;
+      return acc + before.css + `var(${variableName})`;
     }
 
-    return css + q.value.raw;
+    return acc + q.value.raw;
   }, '');
 
-  return { css, variables };
+  css.push({ type: 'unconditional', css: literalResult });
+
+  return { css: mergeSubsequentUnconditionalCssItems(css), variables };
 };
 
 /**
@@ -190,7 +263,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
  */
 export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
   if (t.isStringLiteral(node)) {
-    return { css: node.value, variables: [] };
+    return { css: [{ type: 'unconditional', css: node.value }], variables: [] };
   }
 
   if (t.isTemplateLiteral(node)) {
@@ -235,8 +308,8 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
   }
 
   if (t.isArrayExpression(node)) {
-    let css = '';
-    let variables: CSSOutput['variables'] = [];
+    const css: CSSOutput['css'] = [];
+    const variables: CSSOutput['variables'] = [];
 
     node.elements.forEach((element) => {
       if (!t.isExpression(element)) {
@@ -248,13 +321,39 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
       }
 
       const result = buildCss(element, meta);
-      css += result.css;
-      variables = variables.concat(result.variables);
+      css.push(...result.css);
+      variables.push(...result.variables);
     });
 
     return {
       css,
       variables,
+    };
+  }
+
+  if (t.isLogicalExpression(node)) {
+    const expression = node.left;
+    const result = buildCss(node.right, meta);
+    const css = result.css.map((item) => {
+      if (item.type !== 'unconditional') {
+        return {
+          ...item,
+          expression: t.logicalExpression('&&', expression, item.expression),
+        };
+      }
+
+      const logicalItem: LogicalCssItem = {
+        type: 'logical',
+        css: item.css,
+        expression,
+      };
+
+      return logicalItem;
+    });
+
+    return {
+      css,
+      variables: result.variables,
     };
   }
 

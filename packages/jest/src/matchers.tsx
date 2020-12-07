@@ -22,14 +22,24 @@ const findMediaRules = (
   allRules: StyleRules['rules'] = [],
   media: string
 ): Media['rules'] | undefined => {
+  const rules: Media['rules'] = [];
+
   for (const rule of allRules) {
-    if (!rule) return;
+    if (!rule) {
+      continue;
+    }
+
     if ('media' in rule) {
-      if (removeSpaces(rule.media) === removeSpaces(media) && 'rules' in rule) return rule.rules;
-      if ('rules' in rule) return findMediaRules(rule.rules, media);
+      if (removeSpaces(rule.media) === removeSpaces(media) && 'rules' in rule && rule.rules) {
+        rules.push(...rule.rules);
+      } else if ('rules' in rule) {
+        const found = findMediaRules(rule.rules, media);
+        found && rules.push(...found);
+      }
     }
   }
-  return;
+
+  return rules;
 };
 
 const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) => {

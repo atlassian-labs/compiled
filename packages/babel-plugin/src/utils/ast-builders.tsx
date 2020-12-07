@@ -5,9 +5,10 @@ import { unique } from '@compiled/utils';
 import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
 import { Tag } from '../types';
-import { CSSOutput } from './css-builders';
+import { getItemCss } from './css-builders';
 import { pickFunctionBody } from './ast';
 import { Metadata } from '../types';
+import { CSSOutput } from '../utils/types';
 
 export interface StyledTemplateOpts {
   /**
@@ -280,7 +281,7 @@ export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExp
  * @param meta Plugin metadata
  */
 export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
-  const { classNames, sheets } = transformCss(cssOutput.css);
+  const { sheets, classNames } = transformCss(cssOutput.css.map((x) => getItemCss(x)).join(''));
 
   return styledTemplate(
     {
@@ -323,6 +324,36 @@ export const getPropValue = (
 };
 
 /**
+ * Transforms CSS output into `sheets` and `classNames` ASTs.
+ *
+ * @param cssOutput CSSOutput
+ */
+const transformItemCss = (cssOutput: CSSOutput) => {
+  const sheets: string[] = [];
+  const classNames: t.Expression[] = [];
+
+  cssOutput.css.forEach((item) => {
+    const css = transformCss(getItemCss(item));
+    const className = css.classNames.join(' ');
+
+    sheets.push(...css.sheets);
+
+    switch (item.type) {
+      case 'logical':
+        classNames.push(t.logicalExpression('&&', item.expression, t.stringLiteral(className)));
+        break;
+
+      case 'unconditional':
+      default:
+        classNames.push(t.stringLiteral(className));
+        break;
+    }
+  });
+
+  return { sheets, classNames };
+};
+
+/**
  * Returns a Compiled Component AST.
  *
  * @param node Originating node
@@ -334,7 +365,8 @@ export const buildCompiledComponent = (
   cssOutput: CSSOutput,
   meta: Metadata
 ): t.Node => {
-  const { sheets, classNames } = transformCss(cssOutput.css);
+  const { sheets, classNames } = transformItemCss(cssOutput);
+
   const classNameProp = node.openingElement.attributes.find((prop): prop is t.JSXAttribute => {
     return t.isJSXAttribute(prop) && prop.name.name === 'className';
   });
@@ -343,10 +375,7 @@ export const buildCompiledComponent = (
     // If there is a class name prop statically defined we want to concatenate it with
     // the class name we're going to put on it.
     const classNameExpression = getPropValue(classNameProp.value);
-
-    const values: t.Expression[] = [t.stringLiteral(classNames.join(' ')) as t.Expression].concat(
-      classNameExpression
-    );
+    const values: t.Expression[] = classNames.concat(classNameExpression);
 
     classNameProp.value = t.jsxExpressionContainer(
       t.callExpression(t.identifier('ax'), [t.arrayExpression(values)])
@@ -357,9 +386,7 @@ export const buildCompiledComponent = (
       t.jsxAttribute(
         t.jsxIdentifier('className'),
         t.jsxExpressionContainer(
-          t.callExpression(t.identifier('ax'), [
-            t.arrayExpression([t.stringLiteral(classNames.join(' '))]),
-          ])
+          t.callExpression(t.identifier('ax'), [t.arrayExpression(classNames)])
         )
       )
     );
