@@ -24,17 +24,20 @@ const normalizeContentValue = (value: string) => {
 /**
  * Will merge all subsequent unconditional CSS expressions together.
  *
- * Input:
+ * Input
  *
  * ```
- * [{ type: 'unconditional', css: 'color: blue' }, { type: 'unconditional', css: 'font-size: 20px' }]
+ * [l, u, u, l, u, u, u, l, u]
  * ```
  *
- * Output:
+ * Output
  *
  * ```
- * [{ type: 'unconditional', css: 'color: blue; font-size: 20px' }]
+ * [l, uu, l, uuuu, l, u]
  * ```
+ *
+ * Where `l` is a logical item,
+ * and `u` is a unconditional item.
  *
  * @param arr
  */
