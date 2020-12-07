@@ -23,9 +23,7 @@ const StyledButton = styled.button`
 `;
 
 // Create a component which styles are not necessarily tied to an element
-<ClassNames>
-  {({ css, style }) => children({ className: css({ fontSize: 12, style }) })}
-</ClassNames>;
+<ClassNames>{({ css }) => children({ className: css({ fontSize: 12 }) })}</ClassNames>;
 ```
 
 ## Installation
