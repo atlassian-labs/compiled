@@ -528,4 +528,22 @@ describe('css prop behaviour', () => {
       'ax(["_1wybo7ao",props.isPrimary&&"_syaz13q2 _1wybgktf","_19itjoc5"])'
     );
   });
+
+  it('should use destructured props in conditional css rule', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      import React from 'react';
+
+      const Component = ({ isPrimary }) => (
+        <div css={{
+          ...isPrimary && {
+            color: 'blue',
+            fontSize: 20,
+          },
+        }}>hello world</div>
+      );
+    `);
+
+    expect(actual).toInclude('ax([isPrimary&&"_syaz13q2 _1wybgktf"])');
+  });
 });

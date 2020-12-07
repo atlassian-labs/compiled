@@ -6,27 +6,7 @@ import { joinExpressions } from './ast-builders';
 import { Metadata } from '../types';
 import { getKey, resolveBindingNode, buildCodeFrameError } from './ast';
 import { evaluateExpression } from './evaluate-expression';
-
-interface UnconditionalCssItem {
-  type: 'unconditional';
-  css: string;
-}
-
-interface LogicalCssItem {
-  type: 'logical';
-  expression: t.Expression;
-  css: string;
-}
-
-type CssItem = UnconditionalCssItem | LogicalCssItem;
-
-export interface CSSOutput {
-  css: Array<CssItem>;
-  variables: {
-    name: string;
-    expression: t.Expression;
-  }[];
-}
+import { CSSOutput, CssItem, LogicalCssItem } from './types';
 
 /**
  * Will normalize the value of a `content` CSS property to ensure it has quotations around it.
@@ -95,6 +75,26 @@ export const getItemCss = (item: CssItem) => {
 };
 
 /**
+ * Parses a CSS output to amn array of CSS item rules.
+ *
+ * @param selector
+ * @param result
+ */
+const toCSSRule = (selector: string, result: CSSOutput) => {
+  return result.css.map((x) => ({ ...x, css: `${selector} { ${getItemCss(x)} }` }));
+};
+
+/**
+ * Parses a CSS output to an array of CSS item declarations.
+ *
+ * @param key
+ * @param result
+ */
+const toCSSDeclaration = (key: string, result: CSSOutput) => {
+  return result.css.map((x) => ({ ...x, css: `${kebabCase(key)}: ${getItemCss(x)};` }));
+};
+
+/**
  * Extracts CSS data from an object expression node.
  *
  * @param node Node we're interested in extracting CSS from.
@@ -122,14 +122,16 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         // We've found a numeric literal like: `fontSize: 12`
         value = addUnitIfNeeded(key, propValue.value);
       } else if (t.isObjectExpression(propValue) || t.isLogicalExpression(propValue)) {
+        // We've found either an object like `{}` or a logical expression `isPrimary && {}`.
+        // We can handle both the same way as they end up resulting in a CSS rule.
         const result = buildCss(propValue, updatedMeta);
-        css.push(...result.css.map((x) => ({ ...x, css: `${key} { ${getItemCss(x)} }` })));
+        css.push(...toCSSRule(key, result));
         variables.push(...result.variables);
         return;
       } else if (t.isTemplateLiteral(propValue)) {
         // We've found a template literal like: `fontSize: `${fontSize}px`
         const result = extractTemplateLiteral(propValue, updatedMeta);
-        css.push(...result.css.map((x) => ({ ...x, css: `${kebabCase(key)}: ${getItemCss(x)};` })));
+        css.push(...toCSSDeclaration(key, result));
         variables.push(...result.variables);
         return;
       } else {
@@ -189,7 +191,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   // quasis are the string pieces of the template literal - the parts around the interpolations.
   const literalResult = node.quasis.reduce<string>((acc, q, index): string => {
-    const nodeExpression = node.expressions[index];
+    const nodeExpression: t.Expression = node.expressions[index] as t.Expression;
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
 
     if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {

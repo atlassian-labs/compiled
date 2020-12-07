@@ -3,8 +3,9 @@ import { NodePath } from '@babel/core';
 import { transformCss } from '@compiled/css';
 import { pickFunctionBody, buildCodeFrameError } from '../utils/ast';
 import { compiledTemplate, buildCssVariablesProp } from '../utils/ast-builders';
-import { buildCss, CSSOutput, getItemCss } from '../utils/css-builders';
+import { buildCss, getItemCss } from '../utils/css-builders';
 import { Metadata } from '../types';
+import { CSSOutput } from '../utils/types';
 
 /**
  * Extracts styles from an expression.

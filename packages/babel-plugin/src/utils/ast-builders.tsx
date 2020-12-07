@@ -5,9 +5,10 @@ import { unique } from '@compiled/utils';
 import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
 import { Tag } from '../types';
-import { CSSOutput, getItemCss } from './css-builders';
+import { getItemCss } from './css-builders';
 import { pickFunctionBody } from './ast';
 import { Metadata } from '../types';
+import { CSSOutput } from '../utils/types';
 
 export interface StyledTemplateOpts {
   /**
@@ -337,10 +338,15 @@ const transformItemCss = (cssOutput: CSSOutput) => {
 
     sheets.push(...css.sheets);
 
-    if (item.type === 'logical') {
-      classNames.push(t.logicalExpression('&&', item.expression, t.stringLiteral(className)));
-    } else if (item.type === 'unconditional') {
-      classNames.push(t.stringLiteral(className));
+    switch (item.type) {
+      case 'logical':
+        classNames.push(t.logicalExpression('&&', item.expression, t.stringLiteral(className)));
+        break;
+
+      case 'unconditional':
+      default:
+        classNames.push(t.stringLiteral(className));
+        break;
     }
   });
 
