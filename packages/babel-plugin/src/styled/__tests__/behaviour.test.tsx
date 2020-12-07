@@ -271,4 +271,21 @@ describe('styled component behaviour', () => {
       'ax(["_syaz1paq _1wyb1fwx",props.className])',
     ]);
   });
+
+  it('should add missing semicolon', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const ListItem = styled.div(
+        \`color: red\`,
+        { fontSize: 20 }
+      );
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '{color:red}',
+      '{font-size:20px}',
+      'ax(["_syaz5scu _1wybgktf",props.className])',
+    ]);
+  });
 });
