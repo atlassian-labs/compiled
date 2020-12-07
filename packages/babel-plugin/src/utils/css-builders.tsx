@@ -27,7 +27,7 @@ const normalizeContentValue = (value: string) => {
  * Input
  *
  * ```
- * [l, u, u, l, u, u, u, l, u]
+ * [l, u, u, l, u, u, u, u, l, u]
  * ```
  *
  * Output
