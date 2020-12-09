@@ -302,4 +302,21 @@ describe('styled component', () => {
 
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '15px');
   });
+
+  it('should accept css args', () => {
+    const StyledDiv = styled.div(
+      { fontSize: 12 },
+      `font-size: 15px;`,
+      { color: 'blue', display: 'none' },
+      [{ color: 'red' }]
+    );
+
+    const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
+
+    expect(getByText('hello world')).toHaveCompiledCss({
+      fontSize: '15px',
+      color: 'red',
+      display: 'none',
+    });
+  });
 });

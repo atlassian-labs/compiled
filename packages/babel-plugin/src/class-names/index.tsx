@@ -12,7 +12,7 @@ import { CSSOutput } from '../utils/types';
  *
  * @param path Expression node
  */
-const extractStyles = (path: NodePath<t.Expression>) => {
+const extractStyles = (path: NodePath<t.Expression>): t.Expression[] | t.Expression | undefined => {
   if (
     t.isCallExpression(path.node) &&
     t.isIdentifier(path.node.callee) &&
@@ -20,7 +20,7 @@ const extractStyles = (path: NodePath<t.Expression>) => {
     t.isExpression(path.node.arguments[0])
   ) {
     // css({}) call
-    const styles = path.node.arguments[0];
+    const styles = path.node.arguments as t.Expression[];
     return styles;
   }
 
@@ -32,7 +32,7 @@ const extractStyles = (path: NodePath<t.Expression>) => {
     t.isExpression(path.node.arguments[0])
   ) {
     // props.css({}) call
-    const styles = path.node.arguments[0];
+    const styles = path.node.arguments as t.Expression[];
     return styles;
   }
 

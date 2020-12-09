@@ -44,3 +44,16 @@ export const Array = () => (
     {({ css }) => <div className={css([{ fontSize: 20 }, `color: green;`])}>hello world</div>}
   </ClassNames>
 );
+
+export const CNArgs = () => (
+  <ClassNames>
+    {({ css }) => (
+      <div
+        className={css({ fontSize: 20 }, `color: blue;`, [{ padding: 20 }], {
+          backgroundColor: 'red',
+        })}>
+        hello world
+      </div>
+    )}
+  </ClassNames>
+);

@@ -111,4 +111,28 @@ describe('class names component', () => {
 
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '13px');
   });
+
+  it('should accept css args', () => {
+    const { getByText } = render(
+      <ClassNames>
+        {({ css }) => (
+          <div
+            className={css(
+              { fontSize: 12 },
+              `font-size: 15px;`,
+              { color: 'blue', display: 'none' },
+              [{ color: 'red' }]
+            )}>
+            hello world
+          </div>
+        )}
+      </ClassNames>
+    );
+
+    expect(getByText('hello world')).toHaveCompiledCss({
+      fontSize: '15px',
+      color: 'red',
+      display: 'none',
+    });
+  });
 });

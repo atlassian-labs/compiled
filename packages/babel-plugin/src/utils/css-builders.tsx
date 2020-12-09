@@ -247,7 +247,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       return acc + before.css + `var(${variableName})`;
     }
 
-    return acc + q.value.raw;
+    return acc + q.value.raw + ';';
   }, '');
 
   css.push({ type: 'unconditional', css: literalResult });
@@ -261,7 +261,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
  * @param node Node we're interested in extracting CSS from.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
+export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): CSSOutput => {
   if (t.isStringLiteral(node)) {
     return { css: [{ type: 'unconditional', css: node.value }], variables: [] };
   }
@@ -307,15 +307,16 @@ export const buildCss = (node: t.Expression, meta: Metadata): CSSOutput => {
     return result;
   }
 
-  if (t.isArrayExpression(node)) {
+  if (t.isArrayExpression(node) || Array.isArray(node)) {
     const css: CSSOutput['css'] = [];
     const variables: CSSOutput['variables'] = [];
+    const elements = t.isArrayExpression(node) ? node.elements : node;
 
-    node.elements.forEach((element) => {
+    elements.forEach((element) => {
       if (!t.isExpression(element)) {
         throw buildCodeFrameError(
           `${element && element.type} isn't a supported CSS type - try using an object or string`,
-          node,
+          t.isArrayExpression(node) ? node : element,
           meta.parentPath
         );
       }

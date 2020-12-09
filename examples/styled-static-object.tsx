@@ -10,4 +10,10 @@ const Thing = styled.div({
   color: 'red',
 });
 
+const Box = styled.div({ fontSize: 20 }, `color: blue;`, [{ padding: 20 }], {
+  backgroundColor: 'red',
+});
+
 export const ObjectLiteral = () => <Thing>hello world</Thing>;
+
+export const StyledArgs = () => <Box>HELLO WORLD</Box>;

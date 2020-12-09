@@ -254,4 +254,34 @@ describe('styled component behaviour', () => {
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
     expect(actual).toInclude('"--_1j0t240":"super"+((()=>{return textSize;})()||"")+"big"');
   });
+
+  it('should collect args as styles', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const ListItem = styled.div(
+        { color: 'darkorchid' },
+        { fontSize: 12 },
+      );
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '{color:darkorchid}',
+      '{font-size:12px}',
+      'ax(["_syaz1paq _1wyb1fwx",props.className])',
+    ]);
+  });
+
+  it('should not throw when template literal CSS has no terminating semi colon', () => {
+    expect(() => {
+      transform(`
+      import { styled } from '@compiled/react';
+
+      const ListItem = styled.div(
+        \`color: red\`,
+        { fontSize: 20 }
+      );
+    `);
+    }).not.toThrow();
+  });
 });
