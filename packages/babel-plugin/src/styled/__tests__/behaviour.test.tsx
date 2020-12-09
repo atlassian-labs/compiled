@@ -272,8 +272,9 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should add missing semicolon', () => {
-    const actual = transform(`
+  it('should not throw when template literal CSS has no terminating semi colon', () => {
+    expect(() => {
+      transform(`
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div(
@@ -281,11 +282,6 @@ describe('styled component behaviour', () => {
         { fontSize: 20 }
       );
     `);
-
-    expect(actual).toIncludeMultiple([
-      '{color:red}',
-      '{font-size:20px}',
-      'ax(["_syaz5scu _1wybgktf",props.className])',
-    ]);
+    }).not.toThrow();
   });
 });

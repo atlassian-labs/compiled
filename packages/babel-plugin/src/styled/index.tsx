@@ -5,10 +5,7 @@ import { buildCss } from '../utils/css-builders';
 import { Metadata, Tag } from '../types';
 
 interface StyledData {
-  tag: {
-    name: string;
-    type: Tag['type'];
-  };
+  tag: Tag;
   cssNode: t.Expression | t.Expression[];
 }
 
