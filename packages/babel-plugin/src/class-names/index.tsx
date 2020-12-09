@@ -8,6 +8,43 @@ import { Metadata } from '../types';
 import { CSSOutput } from '../utils/types';
 
 /**
+ * Handles style prop value. If variables are present it will replace its value with it
+ * otherwise will add undefined.
+ *
+ * @param variables CSS variables prop to be placed as inline styles
+ * @param path Any Expression path
+ */
+const handleStyleProp = (variables: CSSOutput['variables'], path: NodePath<t.Expression>) => {
+  const styleValue = variables.length
+    ? t.objectExpression(buildCssVariablesProp(variables))
+    : t.identifier('undefined');
+
+  path.replaceWith(styleValue);
+};
+
+/**
+ * Will recursively checks if type (`css` or `style`) coming from destructuring.
+ *
+ * @param type `css` or `style` type
+ * @param node Any Expression node
+ */
+const isTypeComingFromDestructuring = (
+  type: 'css' | 'style',
+  node: t.Expression | undefined
+): boolean => {
+  if (t.isObjectPattern(node)) {
+    return !!node.properties.find(
+      (property) =>
+        t.isObjectProperty(property) && t.isIdentifier(property.key) && property.key.name === type
+    );
+  } else if (t.isVariableDeclarator(node)) {
+    return isTypeComingFromDestructuring(type, node.id as t.Expression);
+  }
+
+  return false;
+};
+
+/**
  * Extracts styles from an expression.
  *
  * @param path Expression node
@@ -26,14 +63,37 @@ const extractStyles = (path: NodePath<t.Expression>): t.Expression[] | t.Express
 
   if (
     t.isCallExpression(path.node) &&
-    t.isMemberExpression(path.node.callee) &&
-    t.isIdentifier(path.node.callee.property) &&
-    path.node.callee.property.name === 'css' &&
-    t.isExpression(path.node.arguments[0])
+    t.isIdentifier(path.node.callee) &&
+    t.isExpression(path.node.arguments[0]) &&
+    path.scope.hasOwnBinding(path.node.callee.name)
   ) {
-    // props.css({}) call
-    const styles = path.node.arguments as t.Expression[];
-    return styles;
+    const binding = path.scope.getBinding(path.node.callee.name)?.path.node;
+
+    if (isTypeComingFromDestructuring('css', binding as t.Expression)) {
+      // c({}) rename call
+      const styles = path.node.arguments as t.Expression[];
+      return styles;
+    }
+  }
+
+  if (t.isCallExpression(path.node) && t.isMemberExpression(path.node.callee)) {
+    // filter out invalid calls like dontexist.css({})
+    if (
+      t.isIdentifier(path.node.callee.object) &&
+      !path.scope.hasOwnBinding(path.node.callee.object.name)
+    ) {
+      return;
+    }
+
+    if (
+      t.isIdentifier(path.node.callee.property) &&
+      path.node.callee.property.name === 'css' &&
+      t.isExpression(path.node.arguments[0])
+    ) {
+      // props.css({}) call
+      const styles = path.node.arguments as t.Expression[];
+      return styles;
+    }
   }
 
   if (t.isTaggedTemplateExpression(path.node)) {
@@ -108,21 +168,36 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
 
   // Second pass to replace all usages of `style`.
   path.traverse({
-    Identifier(path) {
-      if (
-        path.node.name !== 'style' ||
-        path.parentPath.isProperty() ||
-        !path.scope.hasOwnBinding('style')
-      ) {
-        // Nothing to do - skip.
-        return;
+    Expression(path) {
+      if (t.isIdentifier(path.node)) {
+        if (path.parentPath.isProperty()) {
+          return;
+        }
+
+        // style={style}
+        if (path.node.name === 'style' && path.scope.hasOwnBinding('style')) {
+          handleStyleProp(collectedVariables, path);
+        }
+
+        // style={styl} rename prop
+        if (path.scope.hasOwnBinding(path.node.name)) {
+          const binding = path.scope.getBinding(path.node.name)?.path.node;
+
+          if (isTypeComingFromDestructuring('style', binding as t.Expression)) {
+            handleStyleProp(collectedVariables, path);
+          }
+        }
+      } else if (t.isMemberExpression(path.node)) {
+        // filter out invalid calls like dontexist.style
+        if (t.isIdentifier(path.node.object) && !path.scope.hasOwnBinding(path.node.object.name)) {
+          return;
+        }
+
+        // style={props.style}
+        if (t.isIdentifier(path.node.property) && path.node.property.name === 'style') {
+          handleStyleProp(collectedVariables, path);
+        }
       }
-
-      const styleValue = collectedVariables.length
-        ? t.objectExpression(buildCssVariablesProp(collectedVariables))
-        : t.identifier('undefined');
-
-      path.replaceWith(styleValue);
     },
   });
 
