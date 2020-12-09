@@ -110,6 +110,9 @@ export const buildDefaultImportDeclaration = ({
     );
 
     if (importDefaultSpecifierCollection.length > 0) {
+      const oldNode = importDeclarationPath.node;
+      const { comments } = oldNode;
+
       j(importDeclarationPath).replaceWith([
         j.importDeclaration(
           [
@@ -121,6 +124,12 @@ export const buildDefaultImportDeclaration = ({
           j.literal(importPathTo)
         ),
       ]);
+
+      const newNode = importDeclarationPath.node;
+
+      if (newNode !== oldNode) {
+        newNode.comments = comments;
+      }
     }
   });
 };

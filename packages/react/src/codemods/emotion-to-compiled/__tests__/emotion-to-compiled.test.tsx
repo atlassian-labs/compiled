@@ -380,6 +380,54 @@ describe('emotion-to-compiled transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     {},
+    `
+    // @top-level comment
+
+    /** @jsx jsx */
+    import { ClassNames, CSSObject, css as c, jsx } from '@emotion/core';
+    // comment 1
+    import * as React from 'react';
+    `,
+    `
+    /* TODO: (from codemod) "ClassNames" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO: (from codemod) "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    // @top-level comment
+
+    import '@compiled/react';
+
+    // comment 1
+    import * as React from 'react';
+    `,
+    'it should not remove top level comments when transformed'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {},
+    `
+    // @top-level comment
+
+    /** @jsx jsx */
+    import * as React from 'react';
+    // comment 1
+    import { ClassNames, CSSObject, css as c, jsx } from '@emotion/core';
+    `,
+    `
+    /* TODO: (from codemod) "ClassNames" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO: (from codemod) "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    // @top-level comment
+
+    import * as React from 'react';
+
+    // comment 1
+    import '@compiled/react';
+    `,
+    'it should not remove comments before transformed statement when not on top'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {},
     "import * as React from 'react';",
     "import * as React from 'react';",
     'it should not transform when emotion imports are not present'
