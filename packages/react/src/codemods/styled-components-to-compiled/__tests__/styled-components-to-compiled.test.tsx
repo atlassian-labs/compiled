@@ -38,6 +38,50 @@ describe('styled-components-to-compiled transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     {},
+    `
+    // @top-level comment
+
+    // comment 1
+    import styled from 'styled-components';
+    // comment 2
+    import * as React from 'react';
+    `,
+    `
+    // @top-level comment
+
+    // comment 1
+    import { styled } from '@compiled/react';
+    // comment 2
+    import * as React from 'react';
+    `,
+    'it should not remove top level comments when transformed'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {},
+    `
+    // @top-level comment
+
+    // comment 1
+    import * as React from 'react';
+    // comment 2
+    import styled from 'styled-components';
+    `,
+    `
+    // @top-level comment
+
+    // comment 1
+    import * as React from 'react';
+    // comment 2
+    import { styled } from '@compiled/react';
+    `,
+    'it should not remove comments before transformed statement when not on top'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {},
     "import * as React from 'react';",
     "import * as React from 'react';",
     'it should not transform when styled-components imports are not present'

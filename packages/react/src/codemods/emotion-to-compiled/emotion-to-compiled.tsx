@@ -174,9 +174,18 @@ const buildCompiledImportDeclaration = (j: core.JSCodeshift, collection: Collect
   });
 
   importDeclarationCollection.forEach((importDeclarationPath) => {
+    const oldNode = importDeclarationPath.node;
+    const { comments } = oldNode;
+
     j(importDeclarationPath).replaceWith([
       j.importDeclaration([], j.literal(imports.compiledPackageName)),
     ]);
+
+    const newNode = importDeclarationPath.node;
+
+    if (newNode !== oldNode) {
+      newNode.comments = comments;
+    }
   });
 };
 
