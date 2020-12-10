@@ -1,7 +1,11 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/core';
 import { transformCss } from '@compiled/css';
-import { pickFunctionBody, buildCodeFrameError } from '../utils/ast';
+import {
+  pickFunctionBody,
+  buildCodeFrameError,
+  isIdentifierComingFromDestructuring,
+} from '../utils/ast';
 import { compiledTemplate, buildCssVariablesProp } from '../utils/ast-builders';
 import { buildCss, getItemCss } from '../utils/css-builders';
 import { Metadata } from '../types';
@@ -20,28 +24,6 @@ const handleStyleProp = (variables: CSSOutput['variables'], path: NodePath<t.Exp
     : t.identifier('undefined');
 
   path.replaceWith(styleValue);
-};
-
-/**
- * Will recursively checks if type (`css` or `style`) coming from destructuring.
- *
- * @param type `css` or `style` type
- * @param node Any Expression node
- */
-const isTypeComingFromDestructuring = (
-  type: 'css' | 'style',
-  node: t.Expression | undefined
-): boolean => {
-  if (t.isObjectPattern(node)) {
-    return !!node.properties.find(
-      (property) =>
-        t.isObjectProperty(property) && t.isIdentifier(property.key) && property.key.name === type
-    );
-  } else if (t.isVariableDeclarator(node)) {
-    return isTypeComingFromDestructuring(type, node.id as t.Expression);
-  }
-
-  return false;
 };
 
 /**
@@ -69,7 +51,7 @@ const extractStyles = (path: NodePath<t.Expression>): t.Expression[] | t.Express
   ) {
     const binding = path.scope.getBinding(path.node.callee.name)?.path.node;
 
-    if (isTypeComingFromDestructuring('css', binding as t.Expression)) {
+    if (isIdentifierComingFromDestructuring('css', binding as t.Expression)) {
       // c({}) rename call
       const styles = path.node.arguments as t.Expression[];
       return styles;
@@ -183,7 +165,7 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
         if (path.scope.hasOwnBinding(path.node.name)) {
           const binding = path.scope.getBinding(path.node.name)?.path.node;
 
-          if (isTypeComingFromDestructuring('style', binding as t.Expression)) {
+          if (isIdentifierComingFromDestructuring('style', binding as t.Expression)) {
             handleStyleProp(collectedVariables, path);
           }
         }
