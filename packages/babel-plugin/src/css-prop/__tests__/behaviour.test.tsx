@@ -409,6 +409,24 @@ describe('css prop behaviour', () => {
     expect(actual).toInclude('className={ax([props.isPrimary&&"_syaz13q2 _1wybgktf"])}');
   });
 
+  it('should apply inverse conditional logical expression object spread', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      import React from 'react';
+
+      const Component = props => (
+        <div css={{
+          ...props.isPrimary || {
+            color: 'blue',
+            fontSize: 20,
+          }
+        }}>hello world</div>
+      );
+    `);
+
+    expect(actual).toInclude('className={ax([props.isPrimary||"_syaz13q2 _1wybgktf"])}');
+  });
+
   it('should apply conditional logical expression object styles', () => {
     const actual = transform(`
       import '@compiled/react';
