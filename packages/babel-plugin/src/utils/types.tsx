@@ -8,6 +8,7 @@ export interface UnconditionalCssItem {
 export interface LogicalCssItem {
   type: 'logical';
   expression: t.Expression;
+  operator: '||' | '??' | '&&';
   css: string;
 }
 

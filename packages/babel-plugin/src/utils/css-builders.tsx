@@ -339,7 +339,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
       if (item.type !== 'unconditional') {
         return {
           ...item,
-          expression: t.logicalExpression('&&', expression, item.expression),
+          expression: t.logicalExpression(item.operator, expression, item.expression),
         };
       }
 
@@ -347,6 +347,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
         type: 'logical',
         css: item.css,
         expression,
+        operator: node.operator,
       };
 
       return logicalItem;

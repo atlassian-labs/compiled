@@ -340,7 +340,9 @@ const transformItemCss = (cssOutput: CSSOutput) => {
 
     switch (item.type) {
       case 'logical':
-        classNames.push(t.logicalExpression('&&', item.expression, t.stringLiteral(className)));
+        classNames.push(
+          t.logicalExpression(item.operator, item.expression, t.stringLiteral(className))
+        );
         break;
 
       case 'unconditional':
