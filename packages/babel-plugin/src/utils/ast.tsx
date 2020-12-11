@@ -526,3 +526,25 @@ const tryWrappingBlockStatementInIIFE = (node: t.BlockStatement | t.Expression) 
  * @param node Node of type ArrowFunctionExpression
  */
 export const pickFunctionBody = (node: t.Function) => tryWrappingBlockStatementInIIFE(node.body);
+
+/**
+ * Will recursively checks if identifier is coming from destructuring.
+ *
+ * @param name Identifier name
+ * @param node Any Expression node
+ */
+export const isIdentifierComingFromDestructuring = (
+  name: string,
+  node: t.Expression | undefined
+): boolean => {
+  if (t.isObjectPattern(node)) {
+    return !!node.properties.find(
+      (property) =>
+        t.isObjectProperty(property) && t.isIdentifier(property.key) && property.key.name === name
+    );
+  } else if (t.isVariableDeclarator(node)) {
+    return isIdentifierComingFromDestructuring(name, node.id as t.Expression);
+  }
+
+  return false;
+};
