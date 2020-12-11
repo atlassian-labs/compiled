@@ -114,13 +114,13 @@ describe('class names behaviour', () => {
     `);
   });
 
-  it('should not transform object property access from invalid prop', () => {
+  it('should not transform object property access from invalid style prop', () => {
     const actual = transform(`
       import { ClassNames } from '@compiled/react';
 
       const ListItem = () => (
         <ClassNames>
-          {(props) => (<div style={dontexist.style} className={dontexist.css({ fontSize: '20px' })}>hello, world!</div>)}
+          {(props) => (<div style={dontexist.style}>hello, world!</div>)}
         </ClassNames>
       );
     `);
@@ -133,9 +133,7 @@ describe('class names behaviour', () => {
 
       const ListItem = () => <CC>
           <CS>{[]}</CS>
-          {<div style={dontexist.style} className={dontexist.css({
-          fontSize: '20px'
-        })}>hello, world!</div>}
+          {<div style={dontexist.style}>hello, world!</div>}
         </CC>;"
     `);
   });

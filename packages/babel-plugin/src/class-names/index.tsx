@@ -59,14 +59,6 @@ const extractStyles = (path: NodePath<t.Expression>): t.Expression[] | t.Express
   }
 
   if (t.isCallExpression(path.node) && t.isMemberExpression(path.node.callee)) {
-    // filter out invalid calls like dontexist.css({})
-    if (
-      t.isIdentifier(path.node.callee.object) &&
-      !path.scope.hasOwnBinding(path.node.callee.object.name)
-    ) {
-      return;
-    }
-
     if (
       t.isIdentifier(path.node.callee.property) &&
       path.node.callee.property.name === 'css' &&
