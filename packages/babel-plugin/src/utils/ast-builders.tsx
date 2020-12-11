@@ -6,7 +6,7 @@ import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
 import { Tag } from '../types';
 import { getItemCss } from './css-builders';
-import { pickFunctionBody } from './ast';
+import { pickFunctionBody, isIdentifierComingFromDestructuring } from './ast';
 import { Metadata } from '../types';
 import { CSSOutput } from '../utils/types';
 
@@ -170,6 +170,15 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
               }
 
               path.replaceWith(propertyAccessName);
+            }
+          },
+          Identifier(path: NodePath<t.Identifier>) {
+            const node = path.scope.getBinding(path.node.name)?.path.node as t.Expression;
+
+            if (node && isIdentifierComingFromDestructuring(path.node.name, node)) {
+              if (!propsToDestructure.includes(path.node.name)) {
+                propsToDestructure.push(path.node.name);
+              }
             }
           },
         };

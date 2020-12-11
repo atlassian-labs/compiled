@@ -373,4 +373,19 @@ describe('styled component object literal', () => {
 
     expect(actual).toInclude('{color:red}');
   });
+
+  it('should handle destructuring in interpolation functions', () => {
+    const actual = transform(
+      `
+      import { styled } from '@compiled/react';
+      import colors from 'colors';
+
+      export const BadgeSkeleton = styled.span({
+        backgroundColor: ({ loading }) => loading ? colors.N20 : colors.N40
+      });
+    `
+    );
+
+    expect(actual).toInclude('{as:C="span",style,loading,...props}');
+  });
 });
