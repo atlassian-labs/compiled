@@ -351,8 +351,8 @@ describe('emotion-to-compiled transformer', () => {
     );
     `,
     `
-    /* TODO: (from codemod) "ClassNames" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
-    /* TODO: (from codemod) "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO(@compiled/react codemod): "ClassNames" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO(@compiled/react codemod): "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     import * as React from 'react';
     import '@compiled/react';
 
@@ -389,8 +389,8 @@ describe('emotion-to-compiled transformer', () => {
     import * as React from 'react';
     `,
     `
-    /* TODO: (from codemod) "ClassNames" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
-    /* TODO: (from codemod) "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO(@compiled/react codemod): "ClassNames" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO(@compiled/react codemod): "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     // @top-level comment
 
     import '@compiled/react';
@@ -413,8 +413,8 @@ describe('emotion-to-compiled transformer', () => {
     import { ClassNames, CSSObject, css as c, jsx } from '@emotion/core';
     `,
     `
-    /* TODO: (from codemod) "ClassNames" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
-    /* TODO: (from codemod) "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO(@compiled/react codemod): "ClassNames" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO(@compiled/react codemod): "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     // @top-level comment
 
     import * as React from 'react';
