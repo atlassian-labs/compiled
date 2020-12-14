@@ -381,11 +381,18 @@ describe('styled component object literal', () => {
       import colors from 'colors';
 
       export const BadgeSkeleton = styled.span({
-        backgroundColor: ({ loading }) => loading ? colors.N20 : colors.N40
+        backgroundColor: ({ isLoading }) => isLoading ? colors.N20 : colors.N40,
+        color: ({ loading: l }) => l ? colors.N50 : colors.N10,
+        borderColor: (propz) => propz.loading ? colors.N100 : colors.N200,
       });
     `
     );
 
-    expect(actual).toInclude('{as:C="span",style,loading,...props}');
+    expect(actual).toIncludeMultiple([
+      '{as:C="span",style,isLoading,loading,...props}',
+      'isLoading?colors.N20:colors.N40',
+      'loading?colors.N50:colors.N10',
+      'props.loading?colors.N100:colors.N200',
+    ]);
   });
 });

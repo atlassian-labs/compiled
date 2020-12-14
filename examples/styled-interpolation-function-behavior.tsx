@@ -19,9 +19,9 @@ const FunctionStyledObjectLiteral = styled.div<Props>({
   backgroundColor: (props) => {
     return props.bgColor;
   },
-  border: `5px ${({ borderStyle }: Props) => borderStyle} black`,
-  padding: `${(props: Props) => {
-    return props.padding;
+  border: `5px ${({ borderStyle: bs }: Props) => bs} black`,
+  padding: `${(propz: Props) => {
+    return propz.padding;
   }}px`,
 });
 
@@ -31,9 +31,9 @@ const FunctionStyledTemplateLiteral = styled.div<Props>`
   background-color: ${(props) => {
     return props.bgColor;
   }};
-  border: 5px ${({ borderStyle }) => borderStyle} black;
-  padding: ${(props) => {
-    return props.padding;
+  border: 5px ${({ borderStyle: bs }) => bs} black;
+  padding: ${(propz) => {
+    return propz.padding;
   }}px;
 `;
 
