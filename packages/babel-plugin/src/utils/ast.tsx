@@ -331,6 +331,49 @@ const findNamedExportModuleNode = (
 };
 
 /**
+ * Will recursively checks if identifier name is coming from destructuring. If yes,
+ * then will return the resolved identifer. We can look for identifier name
+ * either in destructuring key or its value.
+ *
+ * @param name Identifier name to resolve
+ * @param node Any Expression node
+ * @param resolveFor Either resolve destructuring key or its value
+ */
+export const resolveIdentifierComingFromDestructuring = ({
+  name,
+  node,
+  resolveFor = 'key',
+}: {
+  name: string;
+  node: t.Expression | undefined;
+  resolveFor?: 'key' | 'value';
+}): t.ObjectProperty | undefined => {
+  let resolvedDestructuringIdentifier: t.ObjectProperty | undefined;
+
+  if (t.isObjectPattern(node)) {
+    return node.properties.find((property) => {
+      if (t.isObjectProperty(property)) {
+        if (resolveFor === 'key') {
+          return t.isIdentifier(property.key) && property.key.name === name;
+        } else if (resolveFor === 'value') {
+          return t.isIdentifier(property.value) && property.value.name === name;
+        }
+      }
+
+      return false;
+    }) as t.ObjectProperty | undefined;
+  } else if (t.isVariableDeclarator(node)) {
+    resolvedDestructuringIdentifier = resolveIdentifierComingFromDestructuring({
+      name,
+      node: node.id as t.Expression,
+      resolveFor,
+    });
+  }
+
+  return resolvedDestructuringIdentifier;
+};
+
+/**
  * Will resolve the value `node` for identifier present inside destructuring
  * If value `node` resolves to an identifier, it will recursively search for its
  * value `node`.
@@ -526,25 +569,3 @@ const tryWrappingBlockStatementInIIFE = (node: t.BlockStatement | t.Expression) 
  * @param node Node of type ArrowFunctionExpression
  */
 export const pickFunctionBody = (node: t.Function) => tryWrappingBlockStatementInIIFE(node.body);
-
-/**
- * Will recursively checks if identifier is coming from destructuring.
- *
- * @param name Identifier name
- * @param node Any Expression node
- */
-export const isIdentifierComingFromDestructuring = (
-  name: string,
-  node: t.Expression | undefined
-): boolean => {
-  if (t.isObjectPattern(node)) {
-    return !!node.properties.find(
-      (property) =>
-        t.isObjectProperty(property) && t.isIdentifier(property.key) && property.key.name === name
-    );
-  } else if (t.isVariableDeclarator(node)) {
-    return isIdentifierComingFromDestructuring(name, node.id as t.Expression);
-  }
-
-  return false;
-};

@@ -14,26 +14,26 @@ interface Props {
 }
 
 const FunctionStyledObjectLiteral = styled.div<Props>({
-  color: (props) => props.color,
+  color: ({ color }) => color,
   fontSize: (props) => `${props.textSize}px`,
   backgroundColor: (props) => {
     return props.bgColor;
   },
-  border: `5px ${(props: Props) => props.borderStyle} black`,
-  padding: `${(props: Props) => {
-    return props.padding;
+  border: `5px ${({ borderStyle: bs }: Props) => bs} black`,
+  padding: `${(propz: Props) => {
+    return propz.padding;
   }}px`,
 });
 
 const FunctionStyledTemplateLiteral = styled.div<Props>`
-  color: ${(props) => props.color};
+  color: ${({ color }) => color};
   font-size: ${(props) => props.textSize}px;
   background-color: ${(props) => {
     return props.bgColor;
   }};
-  border: 5px ${(props) => props.borderStyle} black;
-  padding: ${(props) => {
-    return props.padding;
+  border: 5px ${({ borderStyle: bs }) => bs} black;
+  padding: ${(propz) => {
+    return propz.padding;
   }}px;
 `;
 

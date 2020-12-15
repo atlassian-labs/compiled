@@ -4,7 +4,7 @@ import { transformCss } from '@compiled/css';
 import {
   pickFunctionBody,
   buildCodeFrameError,
-  isIdentifierComingFromDestructuring,
+  resolveIdentifierComingFromDestructuring,
 } from '../utils/ast';
 import { compiledTemplate, buildCssVariablesProp } from '../utils/ast-builders';
 import { buildCss, getItemCss } from '../utils/css-builders';
@@ -51,7 +51,9 @@ const extractStyles = (path: NodePath<t.Expression>): t.Expression[] | t.Express
   ) {
     const binding = path.scope.getBinding(path.node.callee.name)?.path.node;
 
-    if (isIdentifierComingFromDestructuring('css', binding as t.Expression)) {
+    if (
+      !!resolveIdentifierComingFromDestructuring({ name: 'css', node: binding as t.Expression })
+    ) {
       // c({}) rename call
       const styles = path.node.arguments as t.Expression[];
       return styles;
@@ -157,7 +159,12 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
         if (path.scope.hasOwnBinding(path.node.name)) {
           const binding = path.scope.getBinding(path.node.name)?.path.node;
 
-          if (isIdentifierComingFromDestructuring('style', binding as t.Expression)) {
+          if (
+            !!resolveIdentifierComingFromDestructuring({
+              name: 'style',
+              node: binding as t.Expression,
+            })
+          ) {
             handleStyleProp(collectedVariables, path);
           }
         }
