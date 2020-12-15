@@ -157,7 +157,7 @@ export const addCommentBefore = ({
   collection: Collection<Program>;
   message: string;
 }) => {
-  const content = ` TODO: (from codemod) ${clean(message)} `;
+  const content = ` TODO(@compiled/react codemod): ${clean(message)} `;
   collection.forEach((path) => {
     path.value.comments = path.value.comments || [];
 
