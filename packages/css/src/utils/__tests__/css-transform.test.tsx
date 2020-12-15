@@ -260,6 +260,14 @@ describe('#css-transform', () => {
     );
   });
 
+  it('should persist important flags', () => {
+    const { sheets: actual } = transformCss(`
+      color: red !important;
+    `);
+
+    expect(actual.join('')).toMatchInlineSnapshot(`"._syaz1qpq{color:red!important}"`);
+  });
+
   describe('browserslist options', () => {
     afterEach(() => {
       delete process.env.BROWSERSLIST;
@@ -274,6 +282,7 @@ describe('#css-transform', () => {
         }
         `
       );
+
       expect(actual.join('')).toMatchInlineSnapshot(
         `"._2a8pglyw div{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}"`
       );
@@ -281,6 +290,7 @@ describe('#css-transform', () => {
 
     it('should generate prefixes for ms', () => {
       process.env.BROWSERSLIST = 'Edge 16';
+
       const { sheets: actual } = transformCss(
         `
         div {
@@ -288,6 +298,7 @@ describe('#css-transform', () => {
         }
         `
       );
+
       expect(actual.join('')).toMatchInlineSnapshot(
         `"._2a8pglyw div{-ms-user-select:none;user-select:none}"`
       );
@@ -295,6 +306,7 @@ describe('#css-transform', () => {
 
     it('should not generate any prefixes', () => {
       process.env.BROWSERSLIST = 'Chrome 78';
+
       const { sheets: actual } = transformCss(
         `
         div {
@@ -302,11 +314,13 @@ describe('#css-transform', () => {
         }
         `
       );
+
       expect(actual.join('')).toMatchInlineSnapshot(`"._2a8pglyw div{user-select:none}"`);
     });
 
     it('should generate ms prefixes for grid', () => {
       process.env.AUTOPREFIXER_GRID = 'autoplace';
+
       const { sheets: actual } = transformCss(
         `
         div {
@@ -314,6 +328,7 @@ describe('#css-transform', () => {
         }
         `
       );
+
       expect(actual.join('')).toMatchInlineSnapshot(
         `"._tkqh11p5 div{display:-ms-grid;display:grid}"`
       );

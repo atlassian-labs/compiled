@@ -411,4 +411,24 @@ describe('atomicify rules', () => {
       `"@charset 'utf-8';@import 'custom.css';@namespace 'XML-namespace-URL';@-webkit-keyframes hello-world{from:{opacity:0}to{opacity:1}}@keyframes hello-world{from:{opacity:0}to{opacity:1}}@font-face{font-family:\\"Open Sans\\"}"`
     );
   });
+
+  it('should persist important flags in CSS', () => {
+    const actual = transform`
+      color: red!important;
+      font-size: var(--font-size) !important;
+    `;
+
+    expect(actual).toMatchInlineSnapshot(
+      `"._syaz1qpq{color:red!important}._1wybit0u{font-size:var(--font-size)!important}"`
+    );
+  });
+
+  it('should generate a different hash when important flag is used', () => {
+    const actual = transform`
+      color: red!important;
+      color: red;
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`"._syaz1qpq{color:red!important}._syaz5scu{color:red}"`);
+  });
 });

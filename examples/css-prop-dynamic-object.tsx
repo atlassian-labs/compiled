@@ -39,3 +39,11 @@ export const DynamicCssProp = () => {
     </div>
   );
 };
+
+const NestedColor = ({ color }: { color: string }) => (
+  <div css={{ div: { color: 'blue' } }}>
+    <div css={{ color: `${color} !important` }}>I SHOULD BE RED</div>
+  </div>
+);
+
+export const ImportantChild = () => <NestedColor color="red" />;

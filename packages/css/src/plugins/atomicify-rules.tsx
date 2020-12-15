@@ -15,17 +15,18 @@ interface AtomicifyOpts extends PluginOpts {
  * Returns an atomic rule class name using this form:
  *
  * ```
- * "_{atrules}{selectors}{propertyname}"
+ * "_{atrulesselectorspropertyname}{propertyvalueimportant}"
  * ```
  *
  * Atomic rules are always prepended with an underscore.
  *
- * @param group
- * @param value
+ * @param node CSS declaration
+ * @param opts AtomicifyOpts
  */
-const atomicClassName = (propName: string, value: string, opts: AtomicifyOpts) => {
+const atomicClassName = (node: Declaration, opts: AtomicifyOpts) => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
-  const group = hash(`${opts.atRule}${selectors}${propName}`).slice(0, 4);
+  const group = hash(`${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
+  const value = node.important ? node.value + node.important : node.value;
   const valueHash = hash(value).slice(0, 4);
 
   return `_${group}${valueHash}`;
@@ -78,7 +79,7 @@ const buildAtomicSelector = (node: Declaration, opts: AtomicifyOpts) => {
 
   (opts.selectors || ['']).forEach((selector) => {
     const normalizedSelector = normalizeSelector(selector);
-    const className = atomicClassName(node.prop, node.value, {
+    const className = atomicClassName(node, {
       ...opts,
       selectors: [normalizedSelector],
     });
@@ -104,6 +105,9 @@ const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
   const selector = buildAtomicSelector(node, opts);
   const newDecl = decl({ prop: node.prop, value: node.value });
   const newRule = rule({ selector, nodes: [newDecl] });
+
+  // Pass on important flag.
+  newDecl.important = node.important;
 
   // We need to link the new node to a parent else autoprefixer blows up.
   newDecl.parent = newRule;
