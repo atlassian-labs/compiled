@@ -9,6 +9,7 @@ import { getItemCss } from './css-builders';
 import { pickFunctionBody, resolveIdentifierComingFromDestructuring } from './ast';
 import { Metadata } from '../types';
 import { CSSOutput } from '../utils/types';
+import { PROPS_IDENTIFIER_NAME } from '../constants';
 
 export interface StyledTemplateOpts {
   /**
@@ -150,15 +151,15 @@ const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor:
  * 1. `propz.loading` in `border-color: \${(propz) => (propz.loading ? colors.N100 : colors.N200)};`
  * Outcome: It will replace `propz.loading` with `props.loading`.
  *
- * 2. `prop.notValidProp` in `border-color: \${(props) => (props.notValidProp ? colors.N100 : colors.N200)};`
+ * 2. `props.notValidProp` in `border-color: \${(props) => (props.notValidProp ? colors.N100 : colors.N200)};`
  * Outcome: It will move `notValidProp` under `propsToDestructure` and replaces `props.notValidProp` with `notValidProp`.
  *
  * @param path MemberExpression path
- * @param propsToDestructure Array which gets mutated with props which are not valid eg. props.notValidProp
+ * @param handlePropsToDestructure Function that will be called with invalid props eg. `notValidProp`
  */
-const handleMemberExpressionInStyledInterpolations = (
+const handleMemberExpressionInStyledInterpolation = (
   path: NodePath<t.MemberExpression>,
-  propsToDestructure: string[]
+  handlePropsToDestructure: (propName: string) => void
 ) => {
   const memberExpressionKey = path.node.object;
 
@@ -169,12 +170,12 @@ const handleMemberExpressionInStyledInterpolations = (
   const traversedUpFunctionPath = path.find((parentPath) => parentPath.isFunction());
   const memberExpressionKeyName = memberExpressionKey.name;
 
-  const isMemberExpressionKeyNameEqualsFunctionParams =
+  const isMemberExpressionNameTheSameAsFunctionFirstParam =
     t.isFunction(traversedUpFunctionPath.node) &&
     t.isIdentifier(traversedUpFunctionPath.node.params[0]) &&
     traversedUpFunctionPath.node.params[0].name === memberExpressionKeyName;
 
-  if (isMemberExpressionKeyNameEqualsFunctionParams) {
+  if (isMemberExpressionNameTheSameAsFunctionFirstParam) {
     const memberExpressionValue = path.node.property;
 
     if (!t.isIdentifier(memberExpressionValue)) {
@@ -183,20 +184,22 @@ const handleMemberExpressionInStyledInterpolations = (
 
     const memberExpressionValueName = memberExpressionValue.name;
 
+    // if valid html attribute let it through - else destructure to prevent
     if (isPropValid(memberExpressionValueName)) {
       // Convert cases like propz.color to props.color
-      if (memberExpressionKeyName !== 'props') {
+      if (memberExpressionKeyName !== PROPS_IDENTIFIER_NAME) {
         path.replaceWith(
-          t.memberExpression(t.identifier('props'), t.identifier(memberExpressionValueName))
+          t.memberExpression(
+            t.identifier(PROPS_IDENTIFIER_NAME),
+            t.identifier(memberExpressionValueName)
+          )
         );
       }
 
       return;
     }
 
-    if (!propsToDestructure.includes(memberExpressionValueName)) {
-      propsToDestructure.push(memberExpressionValueName);
-    }
+    handlePropsToDestructure(memberExpressionValueName);
 
     path.replaceWith(memberExpressionValue);
   }
@@ -211,13 +214,17 @@ const handleMemberExpressionInStyledInterpolations = (
  * Outcome: It will move `loading` under `propsToDestructure` and replaces `l` with `loading`.
  *
  * @param path Identifier path
- * @param propsToDestructure Array which gets mutated with props which extracted from destructuring
+ * @param handlePropsToDestructure Function that will be called with prop which is extracted from destructuring
  */
-const handleDestructuringInStyledInterpolations = (
+const handleDestructuringInStyledInterpolation = (
   path: NodePath<t.Identifier>,
-  propsToDestructure: string[]
+  handlePropsToDestructure: (propName: string) => void
 ) => {
-  // We are not interested in parent object property like `({ loading: l }) => l`
+  // We are not interested in parent object property like `({ loading: load }) => load`.
+  // Both `: load` and `=> load` are identifiers and function is parent for both.
+  // We are not interested in modifying `: load`. We just need to modify `=> load` to `=> loading`.
+  // If we don't skip, `=> load` will not be modified because we have modified `: load` earlier and
+  // second identifier is nowhere to be found inside function params.
   if (t.isObjectProperty(path.parentPath.node)) {
     return;
   }
@@ -237,9 +244,7 @@ const handleDestructuringInStyledInterpolations = (
     const resolvedDestructuringIdentifierKey = resolvedDestructuringIdentifier.key;
     const resolvedDestructuringIdentifierKeyName = resolvedDestructuringIdentifierKey.name;
 
-    if (!propsToDestructure.includes(resolvedDestructuringIdentifierKeyName)) {
-      propsToDestructure.push(resolvedDestructuringIdentifierKeyName);
-    }
+    handlePropsToDestructure(resolvedDestructuringIdentifierKeyName);
 
     // We are only interested in cases when names are different otherwise this will go in infinite recursion.
     if (resolvedDestructuringIdentifierKeyName !== path.node.name) {
@@ -262,10 +267,18 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
         const nestedArrowFunctionExpressionVisitor = {
           noScope: true,
           MemberExpression(path: NodePath<t.MemberExpression>) {
-            handleMemberExpressionInStyledInterpolations(path, propsToDestructure);
+            handleMemberExpressionInStyledInterpolation(path, (propName) => {
+              if (!propsToDestructure.includes(propName)) {
+                propsToDestructure.push(propName);
+              }
+            });
           },
           Identifier(path: NodePath<t.Identifier>) {
-            handleDestructuringInStyledInterpolations(path, propsToDestructure);
+            handleDestructuringInStyledInterpolation(path, (propName) => {
+              if (!propsToDestructure.includes(propName)) {
+                propsToDestructure.push(propName);
+              }
+            });
           },
         };
 
@@ -287,15 +300,15 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     as: C = ${buildComponentTag(opts.tag)},
     style,
     ${propsToDestructure.map((prop) => prop + ',').join('')}
-    ...props
+    ...${PROPS_IDENTIFIER_NAME}
   }, ref) => (
     <CC>
       <CS ${nonceAttribute}>{%%cssNode%%}</CS>
       <C
-        {...props}
+        {...${PROPS_IDENTIFIER_NAME}}
         style={%%styleProp%%}
         ref={ref}
-        className={ax(["${opts.classNames.join(' ')}", props.className])}
+        className={ax(["${opts.classNames.join(' ')}", ${PROPS_IDENTIFIER_NAME}.className])}
       />
     </CC>
   ));

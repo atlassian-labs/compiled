@@ -388,6 +388,10 @@ describe('styled component object literal', () => {
     `
     );
 
+    expect(actual).not.toIncludeMultiple([
+      'l?colors.N50:colors.N10',
+      'propz.loading?colors.N100:colors.N200',
+    ]);
     expect(actual).toIncludeMultiple([
       '{as:C="span",style,isLoading,loading,...props}',
       'isLoading?colors.N20:colors.N40',
