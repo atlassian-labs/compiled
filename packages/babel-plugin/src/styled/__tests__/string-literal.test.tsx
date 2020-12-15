@@ -563,6 +563,6 @@ describe('styled component string literal', () => {
     `
     );
 
-    expect(actual).toIncludeMultiple(['{as:C="span",style,isLoading,loading,...props}']);
+    expect(actual).toInclude('{as:C="span",style,isLoading,loading,...props}');
   });
 });
