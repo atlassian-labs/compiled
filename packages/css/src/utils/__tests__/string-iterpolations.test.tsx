@@ -20,6 +20,15 @@ describe('template literal to css', () => {
       expect(extract.css).toEqual(';font-color:blue;');
     });
 
+    it('should retain suffix with important flag', () => {
+      const simpleParts = ['color: ', 'px !important;'];
+
+      const extract = cssAfterInterpolation(simpleParts[1]);
+
+      expect(extract.variableSuffix).toEqual('px');
+      expect(extract.css).toEqual('!important;');
+    });
+
     it('should ignore a space as prefix', () => {
       const simpleParts = ['padding: 0 ', ' 0'];
 

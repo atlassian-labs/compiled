@@ -26,6 +26,8 @@ export const cssAfterInterpolation = (css: string): AfterInterpolation => {
     // Eg. `marginLeft: calc(100% - ${obj.key}rem)` will give ')rem' in the span literal
     if (css.indexOf(')') !== -1) {
       cssIndex = css.indexOf(')');
+    } else if (css.indexOf('!important') !== -1) {
+      cssIndex = css.indexOf('!important');
     } else if (css.indexOf(';') !== -1) {
       cssIndex = css.indexOf(';');
     } else if (css.indexOf(',') !== -1) {
@@ -38,7 +40,7 @@ export const cssAfterInterpolation = (css: string): AfterInterpolation => {
       cssIndex = css.length;
     }
 
-    variableSuffix = css.slice(0, cssIndex);
+    variableSuffix = css.slice(0, cssIndex).trim();
     css = css.slice(cssIndex);
   }
 
