@@ -388,15 +388,31 @@ describe('styled component object literal', () => {
     `
     );
 
-    expect(actual).not.toIncludeMultiple([
-      'l?colors.N50:colors.N10',
-      'propz.loading?colors.N100:colors.N200',
-    ]);
     expect(actual).toIncludeMultiple([
       '{as:C="span",style,isLoading,loading,...props}',
       'isLoading?colors.N20:colors.N40',
       'loading?colors.N50:colors.N10',
       'props.loading?colors.N100:colors.N200',
+    ]);
+  });
+
+  it('should not use the destructured name to prevent naming collisions', () => {
+    const actual = transform(
+      `
+      import { styled } from '@compiled/react';
+      import colors from 'colors';
+
+      export const BadgeSkeleton = styled.span({
+        backgroundColor: ({ isLoading }) => isLoading ? colors.N20 : colors.N40,
+        color: ({ loading: l }) => l ? colors.N50 : colors.N10,
+        borderColor: (propz) => propz.loading ? colors.N100 : colors.N200,
+      });
+    `
+    );
+
+    expect(actual).not.toIncludeMultiple([
+      'l?colors.N50:colors.N10',
+      'propz.loading?colors.N100:colors.N200',
     ]);
   });
 });
