@@ -210,6 +210,24 @@ describe('template literal to css', () => {
       expect(after.css).toEqual(parts[1]);
       expect(after.variableSuffix).toEqual('');
     });
+
+    it('should move only minus to the prefix', () => {
+      const simpleParts = ['margin: 0 -', ';'];
+
+      const extract = cssBeforeInterpolation(simpleParts[0]);
+
+      expect(extract.variablePrefix).toEqual('-');
+      expect(extract.css).toEqual('margin: 0 ');
+    });
+
+    it('should move whole prefix out', () => {
+      const simpleParts = ['font-size: super', 'big;'];
+
+      const extract = cssBeforeInterpolation(simpleParts[0]);
+
+      expect(extract.variablePrefix).toEqual('super');
+      expect(extract.css).toEqual('font-size: ');
+    });
   });
 
   describe('interpolations without surrounding css', () => {
@@ -237,6 +255,15 @@ describe('template literal to css', () => {
       const extract = cssAfterInterpolation(simpleParts[1]);
 
       expect(extract.variableSuffix).toEqual('"');
+      expect(extract.css).toEqual('');
+    });
+
+    it('should move whole prefix out', () => {
+      const simpleParts = ['super', 'big;'];
+
+      const extract = cssBeforeInterpolation(simpleParts[0]);
+
+      expect(extract.variablePrefix).toEqual('super');
       expect(extract.css).toEqual('');
     });
 
@@ -292,6 +319,15 @@ describe('template literal to css', () => {
 
       expect(extract.variableSuffix).toEqual('');
       expect(extract.css).toEqual(')');
+    });
+
+    it('should move only minus to the prefix', () => {
+      const simpleParts = ['0 -', ';'];
+
+      const extract = cssBeforeInterpolation(simpleParts[0]);
+
+      expect(extract.variablePrefix).toEqual('-');
+      expect(extract.css).toEqual('0 ');
     });
   });
 });

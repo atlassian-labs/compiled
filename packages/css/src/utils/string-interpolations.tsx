@@ -1,3 +1,9 @@
+/**
+ * PLEASE WE SHOULD RE-WRITE THIS MODULE.
+ * It's currently a bunch of string slicing, regex, and BS.
+ * Potentially we can delete this whole module and extract the prefix/suffix in the CSS transform step instead.
+ */
+
 export interface AfterInterpolation {
   css: string;
   variableSuffix: string;
@@ -71,14 +77,16 @@ export const cssBeforeInterpolation = (css: string): BeforeInterpolation => {
     };
   }
 
-  if (!css.match(/:|;/) && !css.includes('(')) {
+  if (!css.match(/:|;/) && !css.includes('(') && !css.includes(' ')) {
     return {
       variablePrefix: css,
       css: '',
     };
   }
 
-  let variablePrefix = css.match(/:(.+$)/)?.[1] || '';
+  // Grab any prefix that is before the end of the string
+  // E.g. "margin: 0 -" will match " -".
+  let variablePrefix: string = css.match(/ +.$/)?.[0] || css.match(/:(.+$)/)?.[1] || '';
   if (variablePrefix) {
     variablePrefix = variablePrefix.trim();
     const lastIndex = css.lastIndexOf(variablePrefix);

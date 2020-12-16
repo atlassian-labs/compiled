@@ -47,3 +47,49 @@ const NestedColor = ({ color }: { color: string }) => (
 );
 
 export const ImportantChild = () => <NestedColor color="red" />;
+
+const FlushChild = ({ spacing }: { spacing: number }) => (
+  <div
+    css={{
+      height: 200,
+      color: 'white',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 200,
+      backgroundColor: 'blue',
+      textAlign: 'center',
+      margin: `-${spacing * 2}px -${spacing * 3}px`,
+    }}>
+    SHOULD BE FLUSH AGAINST PARENT
+  </div>
+);
+
+export const InterpolationsWithMinus = () => (
+  <div css={{ padding: '16px 24px', backgroundColor: 'red' }}>
+    <FlushChild spacing={8} />
+  </div>
+);
+
+const AnotherFlushChild = ({ spacing }: { spacing: number }) => (
+  <div
+    css={{
+      height: 200,
+      color: 'white',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 200,
+      backgroundColor: 'blue',
+      textAlign: 'center',
+      margin: `0 -${spacing * 2}px -${spacing * 3}px`,
+    }}>
+    SHOULD BE FLUSH AGAINST PARENT
+  </div>
+);
+
+export const InterpolationsWithZeroAndMinus = () => (
+  <div css={{ padding: '0 16px 24px', backgroundColor: 'red' }}>
+    <AnotherFlushChild spacing={8} />
+  </div>
+);
