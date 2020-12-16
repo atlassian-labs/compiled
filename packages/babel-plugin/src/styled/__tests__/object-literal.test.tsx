@@ -112,7 +112,7 @@ describe('styled component object literal', () => {
 
     expect(actual).toInclude('{font-size:var(--_fb92co)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--_fb92co":(textSize||"")+"px"');
+    expect(actual).toInclude('"--_fb92co":textSize+"px"');
   });
 
   it('should transform object with simple values', () => {

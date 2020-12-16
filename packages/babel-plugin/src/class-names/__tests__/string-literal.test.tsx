@@ -25,7 +25,7 @@ describe('class names string literal', () => {
 
     expect(actual).toIncludeMultiple([
       'font-size:var(--_1j2e0s2)',
-      'style={{"--_1j2e0s2":(fontSize||"")+"px"}}',
+      'style={{"--_1j2e0s2":fontSize+"px"}}',
     ]);
   });
 

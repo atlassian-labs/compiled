@@ -23,7 +23,7 @@ describe('css prop string literal', () => {
       `);
 
     expect(actual).toInclude('{font-size:var(--_1j2e0s2)}');
-    expect(actual).toInclude('style={{"--_1j2e0s2":(fontSize||"")+"px"}}');
+    expect(actual).toInclude('style={{"--_1j2e0s2":fontSize+"px"}}');
   });
 
   it('should persist suffix of constant value', () => {
@@ -351,7 +351,7 @@ describe('css prop string literal', () => {
       `);
 
     expect(actual).toIncludeMultiple([
-      'style={{"--_65u76s":(x||"")+"px","--_1ohot4b":y}}',
+      'style={{"--_65u76s":x+"px","--_1ohot4b":y}}',
       '{transform:translate3d(var(--_65u76s),var(--_1ohot4b),0)}',
     ]);
   });

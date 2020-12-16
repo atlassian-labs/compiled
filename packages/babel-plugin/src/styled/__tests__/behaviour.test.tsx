@@ -131,7 +131,7 @@ describe('styled component behaviour', () => {
       \`;
     `);
 
-    expect(actual).toInclude('"--_1p69eoh":(props.color||"")+"px"');
+    expect(actual).toInclude('"--_1p69eoh":props.color+"px"');
   });
 
   it('should spread down props to element', () => {
@@ -238,7 +238,7 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toInclude('{color:var(--_1poneq5)}');
-    expect(actual).toInclude('"--_1poneq5":"very"+((()=>{return props.color;})()||"")+"dark"');
+    expect(actual).toInclude('"--_1poneq5":"very"+(()=>{return props.color;})()+"dark"');
   });
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
@@ -252,7 +252,7 @@ describe('styled component behaviour', () => {
 
     expect(actual).toInclude('{font-size:var(--_1j0t240)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--_1j0t240":"super"+((()=>{return textSize;})()||"")+"big"');
+    expect(actual).toInclude('"--_1j0t240":"super"+(()=>{return textSize;})()+"big"');
   });
 
   it('should collect args as styles', () => {
