@@ -307,7 +307,7 @@ describe('styled component behaviour', () => {
     `);
   });
 
-  it('should not blow up with a single property', () => {
+  it('should not blow up with an expanding property', () => {
     expect(() =>
       transform(`
         import { styled } from '@compiled/react';
