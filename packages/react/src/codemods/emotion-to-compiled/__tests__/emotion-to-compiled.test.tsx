@@ -348,7 +348,7 @@ describe('emotion-to-compiled transformer', () => {
 
     const Component = () => (
       <ClassNames>
-        {({ css, cx }) => (
+        {({ css }) => (
           <SomeComponent
             wrapperClassName={css({ color: 'green' })}
             css={c\`background-color: green \`}
@@ -371,7 +371,14 @@ describe('emotion-to-compiled transformer', () => {
 
     const Component = () => (
       <ClassNames>
-        {({ css, cx }) => (
+        {({
+          css,
+
+          /* TODO(@compiled/react codemod): We have exported "style" from "ClassNames" props.
+          If you are using dynamic declarations, make sure to set the "style"
+          prop otherwise remove it. */
+          style: style
+        }) => (
           <SomeComponent
             wrapperClassName={css({ color: 'green' })}
             css={\`background-color: green \`}
@@ -432,6 +439,66 @@ describe('emotion-to-compiled transformer', () => {
     import { ClassNames } from '@compiled/react';
     `,
     'it should not remove comments before transformed statement when not on top'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {},
+    `
+    /** @jsx jsx */
+    import { ClassNames, css as c, jsx } from '@emotion/core';
+
+    const Component = () => (
+      <ClassNames>
+        {({ css, cx }) => (
+          <SomeComponent
+            wrapperClassName={css({ color: 'green' })}
+            css={c\`background-color: green \`}
+            className={cx()}
+          >
+            Hello
+          </SomeComponent>
+        )}
+      </ClassNames>
+    );
+    `,
+    `
+    import * as React from 'react';
+    import { ClassNames } from '@compiled/react';
+
+    const Component = () => (
+      <ClassNames>
+        {({
+          css,
+
+          /* TODO(@compiled/react codemod): Please replace "cx" with "ax" from "@compiled/react/runtime".
+          Usage: import { ax } from '@compiled/react/runtime';
+
+          NOTE: Both "cx" and "ax" have some differences, so we have not replaced its usage.
+          Please check the docs for "ax" usage.
+
+          In future, we will expose "ax" directly from "ClassNames" props.
+
+          Issue tracked on Github: https://github.com/atlassian-labs/compiled/issues/373 */
+          cx,
+
+          /* TODO(@compiled/react codemod): We have exported "style" from "ClassNames" props.
+          If you are using dynamic declarations, make sure to set the "style"
+          prop otherwise remove it. */
+          style: style
+        }) => (
+          <SomeComponent
+            wrapperClassName={css({ color: 'green' })}
+            css={\`background-color: green \`}
+            className={cx()}
+          >
+            Hello
+          </SomeComponent>
+        )}
+      </ClassNames>
+    );
+    `,
+    'it should handle "ClassNames" behavior'
   );
 
   defineInlineTest(
