@@ -210,6 +210,15 @@ describe('template literal to css', () => {
       expect(after.css).toEqual(parts[1]);
       expect(after.variableSuffix).toEqual('');
     });
+
+    it('should move only minus to the prefix', () => {
+      const simpleParts = ['margin: 0 -', ';'];
+
+      const extract = cssBeforeInterpolation(simpleParts[0]);
+
+      expect(extract.variablePrefix).toEqual('-');
+      expect(extract.css).toEqual('margin: 0 ');
+    });
   });
 
   describe('interpolations without surrounding css', () => {
@@ -292,6 +301,15 @@ describe('template literal to css', () => {
 
       expect(extract.variableSuffix).toEqual('');
       expect(extract.css).toEqual(')');
+    });
+
+    it('should move only minus to the prefix', () => {
+      const simpleParts = ['0 -', ';'];
+
+      const extract = cssBeforeInterpolation(simpleParts[0]);
+
+      expect(extract.variablePrefix).toEqual('-');
+      expect(extract.css).toEqual('0 ');
     });
   });
 });

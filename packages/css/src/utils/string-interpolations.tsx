@@ -71,14 +71,16 @@ export const cssBeforeInterpolation = (css: string): BeforeInterpolation => {
     };
   }
 
-  if (!css.match(/:|;/) && !css.includes('(')) {
+  if (!css.match(/:|;/) && !css.includes('(') && !css.includes(' ')) {
     return {
       variablePrefix: css,
       css: '',
     };
   }
 
-  let variablePrefix = css.match(/:(.+$)/)?.[1] || '';
+  // Grab any prefix that is before the end of the string
+  // E.g. "margin: 0 -" will match " -".
+  let variablePrefix = css.match(/ +.$/)?.[0] || '';
   if (variablePrefix) {
     variablePrefix = variablePrefix.trim();
     const lastIndex = css.lastIndexOf(variablePrefix);
