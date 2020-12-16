@@ -1,10 +1,13 @@
 import { FileInfo, API, Options } from 'jscodeshift';
 
-import { hasImportDeclaration, buildDefaultImportDeclaration } from '../codemods-helpers';
+import {
+  hasImportDeclaration,
+  convertDefaultImportToNamedImport,
+  addCommentForUnresolvedImportSpecifiers,
+} from '../codemods-helpers';
 
 const imports = {
-  compiledPackageName: '@compiled/react',
-  compiledImportName: 'styled',
+  compiledStyledImportName: 'styled',
   styledComponentsPackageName: 'styled-components',
 };
 
@@ -22,12 +25,18 @@ const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Optio
     return source;
   }
 
-  buildDefaultImportDeclaration({
+  addCommentForUnresolvedImportSpecifiers({
     j,
     collection,
-    importPathFrom: imports.styledComponentsPackageName,
-    importPathTo: imports.compiledPackageName,
-    importPathToName: imports.compiledImportName,
+    importPath: imports.styledComponentsPackageName,
+    allowedImportSpecifierNames: [],
+  });
+
+  convertDefaultImportToNamedImport({
+    j,
+    collection,
+    importPath: imports.styledComponentsPackageName,
+    namedImport: imports.compiledStyledImportName,
   });
 
   return collection.toSource(options.printOptions || { quote: 'single' });

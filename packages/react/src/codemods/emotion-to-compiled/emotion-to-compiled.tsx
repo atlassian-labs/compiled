@@ -4,63 +4,19 @@ import {
   hasImportDeclaration,
   getImportDeclarationCollection,
   findImportSpecifierName,
-  buildDefaultImportDeclaration,
-  addCommentToStartOfFile,
-  getAllImportSpecifiers,
+  addCommentForUnresolvedImportSpecifiers,
+  addReactIdentifier,
+  convertDefaultImportToNamedImport,
+  replaceImportDeclaration,
+  mergeImportSpecifiersAlongWithTheirComments,
 } from '../codemods-helpers';
 
 const imports = {
-  compiledPackageName: '@compiled/react',
-  compiledImportName: 'styled',
+  compiledStyledImportName: 'styled',
   emotionStyledPackageName: '@emotion/styled',
   emotionCoreJSXPragma: '@jsx jsx',
-  emotionCoreImportNames: { jsx: 'jsx', css: 'css' },
+  emotionCoreImportNames: { jsx: 'jsx', css: 'css', ClassNames: 'ClassNames' },
   emotionCorePackageName: '@emotion/core',
-  reactImportName: 'React',
-  reactPackageName: 'react',
-};
-
-const addReactIdentifier = (j: core.JSCodeshift, collection: Collection) => {
-  const hasReactImportDeclaration = hasImportDeclaration({
-    j,
-    collection,
-    importPath: imports.reactPackageName,
-  });
-
-  if (!hasReactImportDeclaration) {
-    collection.find(j.Program).forEach((programPath) => {
-      programPath.node.body.unshift(
-        j.importDeclaration(
-          [j.importNamespaceSpecifier(j.identifier(imports.reactImportName))],
-          j.literal(imports.reactPackageName)
-        )
-      );
-    });
-  } else {
-    const importDeclarationCollection = getImportDeclarationCollection({
-      j,
-      collection,
-      importPath: imports.reactPackageName,
-    });
-
-    importDeclarationCollection.forEach((importDeclarationPath) => {
-      const importDefaultSpecifierCollection = j(importDeclarationPath).find(
-        j.ImportDefaultSpecifier
-      );
-      const importNamespaceSpecifierCollection = j(importDeclarationPath).find(
-        j.ImportNamespaceSpecifier
-      );
-
-      const hasNoDefaultReactImportDeclaration = importDefaultSpecifierCollection.length === 0;
-      const hasNoNamespaceReactImportDeclaration = importNamespaceSpecifierCollection.length === 0;
-
-      if (hasNoDefaultReactImportDeclaration && hasNoNamespaceReactImportDeclaration) {
-        importDeclarationPath.node.specifiers.unshift(
-          j.importDefaultSpecifier(j.identifier(imports.reactImportName))
-        );
-      }
-    });
-  }
 };
 
 const removeEmotionCoreJSXPragma = (j: core.JSCodeshift, collection: Collection) => {
@@ -76,7 +32,7 @@ const removeEmotionCoreJSXPragma = (j: core.JSCodeshift, collection: Collection)
     commentBlockCollection.forEach((commentBlockPath) => {
       j(commentBlockPath).remove();
 
-      addReactIdentifier(j, collection);
+      addReactIdentifier({ j, collection });
     });
   });
 };
@@ -116,76 +72,19 @@ const replaceEmotionCoreCSSTaggedTemplateExpression = (
     });
 };
 
-const addCommentBeforeUnresolvedIdentifiers = (j: core.JSCodeshift, collection: Collection) => {
-  const importDeclarationCollection = getImportDeclarationCollection({
+const mergeCompiledImportSpecifiers = (j: core.JSCodeshift, collection: Collection) => {
+  const allowedCompiledNames = [
+    imports.compiledStyledImportName,
+    ...Object.values(imports.emotionCoreImportNames),
+  ].filter(
+    (name) =>
+      ![imports.emotionCoreImportNames.jsx, imports.emotionCoreImportNames.css].includes(name)
+  );
+
+  mergeImportSpecifiersAlongWithTheirComments({
     j,
     collection,
-    importPath: imports.emotionCorePackageName,
-  });
-  const importSpecifiers = getAllImportSpecifiers({
-    j,
-    importDeclarationCollection,
-  });
-
-  const emotionCoreImportValues = Object.values(imports.emotionCoreImportNames);
-
-  importSpecifiers
-    .filter((identifierPath) => !emotionCoreImportValues.includes(identifierPath.name))
-    .forEach((importSpecifierPath) => {
-      collection.find(j.Identifier).some((identifierPath) => {
-        const name = identifierPath.node.name;
-
-        const isValidIdentiferFound = name === importSpecifierPath.name;
-
-        if (isValidIdentiferFound) {
-          addCommentToStartOfFile({
-            j,
-            collection,
-            message: `
-              "${name}" is not exported from "${imports.compiledPackageName}" at the moment. Please find an alternative for it.
-            `,
-          });
-
-          return true;
-        }
-
-        return false;
-      });
-    });
-};
-
-const removeEmotionCoreImportDeclaration = (j: core.JSCodeshift, collection: Collection) => {
-  const importDeclarationCollection = getImportDeclarationCollection({
-    j,
-    collection,
-    importPath: imports.emotionCorePackageName,
-  });
-
-  importDeclarationCollection.forEach((importDeclarationPath) => {
-    j(importDeclarationPath).remove();
-  });
-};
-
-const buildCompiledImportDeclaration = (j: core.JSCodeshift, collection: Collection) => {
-  const importDeclarationCollection = getImportDeclarationCollection({
-    j,
-    collection,
-    importPath: imports.emotionCorePackageName,
-  });
-
-  importDeclarationCollection.forEach((importDeclarationPath) => {
-    const oldNode = importDeclarationPath.node;
-    const { comments } = oldNode;
-
-    j(importDeclarationPath).replaceWith([
-      j.importDeclaration([], j.literal(imports.compiledPackageName)),
-    ]);
-
-    const newNode = importDeclarationPath.node;
-
-    if (newNode !== oldNode) {
-      newNode.comments = comments;
-    }
+    filter: (name) => !!(name && allowedCompiledNames.includes(name)),
   });
 };
 
@@ -208,25 +107,28 @@ const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Optio
     return source;
   }
 
-  if (hasEmotionCoreImportDeclaration) {
-    removeEmotionCoreJSXPragma(j, collection);
-    addCommentBeforeUnresolvedIdentifiers(j, collection);
-    replaceEmotionCoreCSSTaggedTemplateExpression(j, collection);
-
-    hasEmotionStyledImportDeclaration
-      ? removeEmotionCoreImportDeclaration(j, collection)
-      : buildCompiledImportDeclaration(j, collection);
-  }
-
   if (hasEmotionStyledImportDeclaration) {
-    buildDefaultImportDeclaration({
+    convertDefaultImportToNamedImport({
       j,
       collection,
-      importPathFrom: imports.emotionStyledPackageName,
-      importPathTo: imports.compiledPackageName,
-      importPathToName: imports.compiledImportName,
+      importPath: imports.emotionStyledPackageName,
+      namedImport: imports.compiledStyledImportName,
     });
   }
+
+  if (hasEmotionCoreImportDeclaration) {
+    removeEmotionCoreJSXPragma(j, collection);
+    addCommentForUnresolvedImportSpecifiers({
+      j,
+      collection,
+      importPath: imports.emotionCorePackageName,
+      allowedImportSpecifierNames: Object.values(imports.emotionCoreImportNames),
+    });
+    replaceEmotionCoreCSSTaggedTemplateExpression(j, collection);
+    replaceImportDeclaration({ j, collection, importPath: imports.emotionCorePackageName });
+  }
+
+  mergeCompiledImportSpecifiers(j, collection);
 
   return collection.toSource(options.printOptions || { quote: 'single' });
 };

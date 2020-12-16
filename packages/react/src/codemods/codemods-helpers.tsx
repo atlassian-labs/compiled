@@ -7,8 +7,11 @@ import {
   Identifier,
   JSXIdentifier,
   TSTypeParameter,
+  Node,
 } from 'jscodeshift';
 import { Collection } from 'jscodeshift/src/Collection';
+
+import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from './constants';
 
 export const getImportDeclarationCollection = ({
   j,
@@ -52,17 +55,17 @@ export const getAllImportSpecifiers = ({
   j: JSCodeshift;
   importDeclarationCollection: Collection<ImportDeclaration>;
 }) => {
-  const importSpecifiers: (Identifier | JSXIdentifier | TSTypeParameter)[] = [];
+  const importSpecifiersImportedNodes: (Identifier | JSXIdentifier | TSTypeParameter)[] = [];
 
   importDeclarationCollection.find(j.ImportSpecifier).forEach((importSpecifierPath) => {
     const node = importSpecifierPath.node.imported;
 
     if (node) {
-      importSpecifiers.push(node);
+      importSpecifiersImportedNodes.push(node);
     }
   });
 
-  return importSpecifiers;
+  return importSpecifiersImportedNodes;
 };
 
 export const findImportSpecifierName = ({
@@ -85,23 +88,21 @@ export const findImportSpecifierName = ({
   return getImportSpecifierName(importSpecifierCollection);
 };
 
-export const buildDefaultImportDeclaration = ({
+export const convertDefaultImportToNamedImport = ({
   j,
   collection,
-  importPathFrom,
-  importPathTo,
-  importPathToName,
+  importPath,
+  namedImport,
 }: {
   j: JSCodeshift;
   collection: Collection<any>;
-  importPathFrom: string;
-  importPathTo: string;
-  importPathToName: string;
+  importPath: string;
+  namedImport: string;
 }) => {
   const importDeclarationCollection = getImportDeclarationCollection({
     j,
     collection,
-    importPath: importPathFrom,
+    importPath,
   });
 
   importDeclarationCollection.forEach((importDeclarationPath) => {
@@ -117,11 +118,11 @@ export const buildDefaultImportDeclaration = ({
         j.importDeclaration(
           [
             j.importSpecifier(
-              j.identifier(importPathToName),
+              j.identifier(namedImport),
               j.identifier(getImportDefaultSpecifierName(importDefaultSpecifierCollection))
             ),
           ],
-          j.literal(importPathTo)
+          j.literal(COMPILED_IMPORT_PATH)
         ),
       ]);
 
@@ -138,15 +139,12 @@ export const buildDefaultImportDeclaration = ({
 const spacesAndTabs = /[ \t]{2,}/g;
 const lineStartWithSpaces = /^[ \t]*/gm;
 
-function clean(value: string): string {
-  return (
-    value
-      .replace(spacesAndTabs, ' ')
-      .replace(lineStartWithSpaces, '')
-      // using .trim() to clear the any newlines before the first text and after last text
-      .trim()
-  );
-}
+const clean = (value: string) =>
+  value
+    .replace(spacesAndTabs, ' ')
+    .replace(lineStartWithSpaces, '')
+    // using .trim() to clear the any newlines before the first text and after last text
+    .trim();
 
 export const addCommentBefore = ({
   j,
@@ -157,7 +155,7 @@ export const addCommentBefore = ({
   collection: Collection<Program>;
   message: string;
 }) => {
-  const content = ` TODO(@compiled/react codemod): ${clean(message)} `;
+  const content = ` TODO(${COMPILED_IMPORT_PATH} codemod): ${clean(message)} `;
   collection.forEach((path) => {
     path.value.comments = path.value.comments || [];
 
@@ -185,5 +183,157 @@ export const addCommentToStartOfFile = ({
     j,
     collection: collection.find(j.Program),
     message,
+  });
+};
+
+export const addCommentForUnresolvedImportSpecifiers = ({
+  j,
+  collection,
+  importPath,
+  allowedImportSpecifierNames,
+}: {
+  j: JSCodeshift;
+  collection: Collection<Node>;
+  importPath: string;
+  allowedImportSpecifierNames: string[];
+}) => {
+  const importDeclarationCollection = getImportDeclarationCollection({
+    j,
+    collection,
+    importPath,
+  });
+  const importSpecifiers = getAllImportSpecifiers({
+    j,
+    importDeclarationCollection,
+  });
+
+  importSpecifiers
+    .filter((identifierPath) => !allowedImportSpecifierNames.includes(identifierPath.name))
+    .forEach((importSpecifierPath) => {
+      addCommentToStartOfFile({
+        j,
+        collection,
+        message: `"${importSpecifierPath.name}" is not exported from "${COMPILED_IMPORT_PATH}" at the moment. Please find an alternative for it.`,
+      });
+    });
+};
+
+export const addReactIdentifier = ({
+  j,
+  collection,
+}: {
+  j: JSCodeshift;
+  collection: Collection<Node>;
+}) => {
+  const hasReactImportDeclaration = hasImportDeclaration({
+    j,
+    collection,
+    importPath: REACT_IMPORT_PATH,
+  });
+
+  if (!hasReactImportDeclaration) {
+    collection.find(j.Program).forEach((programPath) => {
+      programPath.node.body.unshift(
+        j.importDeclaration(
+          [j.importNamespaceSpecifier(j.identifier(REACT_IMPORT_NAME))],
+          j.literal(REACT_IMPORT_PATH)
+        )
+      );
+    });
+  } else {
+    const importDeclarationCollection = getImportDeclarationCollection({
+      j,
+      collection,
+      importPath: REACT_IMPORT_PATH,
+    });
+
+    importDeclarationCollection.forEach((importDeclarationPath) => {
+      const importDefaultSpecifierCollection = j(importDeclarationPath).find(
+        j.ImportDefaultSpecifier
+      );
+      const importNamespaceSpecifierCollection = j(importDeclarationPath).find(
+        j.ImportNamespaceSpecifier
+      );
+
+      const hasNoDefaultReactImportDeclaration = importDefaultSpecifierCollection.length === 0;
+      const hasNoNamespaceReactImportDeclaration = importNamespaceSpecifierCollection.length === 0;
+
+      if (hasNoDefaultReactImportDeclaration && hasNoNamespaceReactImportDeclaration) {
+        importDeclarationPath.node.specifiers.unshift(
+          j.importDefaultSpecifier(j.identifier(REACT_IMPORT_NAME))
+        );
+      }
+    });
+  }
+};
+
+export const replaceImportDeclaration = ({
+  j,
+  collection,
+  importPath,
+}: {
+  j: JSCodeshift;
+  collection: Collection<Node>;
+  importPath: string;
+}) => {
+  const importDeclarationCollection = getImportDeclarationCollection({
+    j,
+    collection,
+    importPath,
+  });
+
+  importDeclarationCollection.forEach((importDeclarationPath) => {
+    importDeclarationPath.node.source.value = COMPILED_IMPORT_PATH;
+  });
+};
+
+export const mergeImportSpecifiersAlongWithTheirComments = ({
+  j,
+  collection,
+  filter = (_) => true,
+}: {
+  j: JSCodeshift;
+  collection: Collection<Node>;
+  filter?: (name: string | undefined) => boolean;
+}) => {
+  const importDeclarationCollection = getImportDeclarationCollection({
+    j,
+    collection,
+    importPath: COMPILED_IMPORT_PATH,
+  });
+
+  const importSpecifiers: ImportSpecifier[] = [];
+
+  importDeclarationCollection
+    .find(j.ImportSpecifier)
+    .filter((importSpecifierPath) => filter(importSpecifierPath.node.imported.name))
+    .forEach((importSpecifierPath) => {
+      importSpecifiers.push(importSpecifierPath.node);
+    });
+
+  const importDeclarationCollectionLength = importDeclarationCollection.length;
+  const importDeclarationComments: Node['comments'] = [];
+
+  importDeclarationCollection.forEach((importDeclarationPath, index) => {
+    const oldNode = importDeclarationPath.node;
+    const { comments } = oldNode;
+
+    if (comments) {
+      importDeclarationComments.push(...comments);
+    }
+
+    if (index === importDeclarationCollectionLength - 1) {
+      j(importDeclarationPath).replaceWith([
+        j.importDeclaration(importSpecifiers, j.literal(COMPILED_IMPORT_PATH)),
+      ]);
+
+      const newNode = importDeclarationPath.node;
+
+      if (newNode !== oldNode) {
+        newNode.comments = importDeclarationComments;
+      }
+    } else {
+      j(importDeclarationPath).remove();
+    }
   });
 };
