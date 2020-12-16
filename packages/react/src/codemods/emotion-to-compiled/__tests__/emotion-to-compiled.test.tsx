@@ -97,6 +97,20 @@ describe('emotion-to-compiled transformer', () => {
     `
     /** @jsx jsx */
     import { css, jsx } from '@emotion/core';
+    `,
+    `
+    import * as React from 'react';
+    import '@compiled/react';
+    `,
+    'it handles the case when no api is imported from compiled package'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {},
+    `
+    /** @jsx jsx */
+    import { css, jsx } from '@emotion/core';
     import styled from '@emotion/styled';
 
     const Component = (props) => (
@@ -446,10 +460,10 @@ describe('emotion-to-compiled transformer', () => {
     {},
     `
     /** @jsx jsx */
-    import { ClassNames, css as c, jsx } from '@emotion/core';
+    import { ClassNames as CN, css as c, jsx } from '@emotion/core';
 
     const Component = () => (
-      <ClassNames>
+      <CN>
         {({ css, cx }) => (
           <SomeComponent
             wrapperClassName={css({ color: 'green' })}
@@ -459,15 +473,15 @@ describe('emotion-to-compiled transformer', () => {
             Hello
           </SomeComponent>
         )}
-      </ClassNames>
+      </CN>
     );
     `,
     `
     import * as React from 'react';
-    import { ClassNames } from '@compiled/react';
+    import { ClassNames as CN } from '@compiled/react';
 
     const Component = () => (
-      <ClassNames>
+      <CN>
         {({
           css,
 
@@ -495,7 +509,7 @@ describe('emotion-to-compiled transformer', () => {
             Hello
           </SomeComponent>
         )}
-      </ClassNames>
+      </CN>
     );
     `,
     'it should handle "ClassNames" behavior'
