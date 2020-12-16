@@ -82,6 +82,25 @@ describe('styled-components-to-compiled transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     {},
+    `
+    import styled, { css, keyframes, createGlobalStyle, ThemeProvider, withTheme } from 'styled-components';
+    import * as React from 'react';
+    `,
+    `
+    /* TODO(@compiled/react codemod): "css" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO(@compiled/react codemod): "keyframes" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO(@compiled/react codemod): "createGlobalStyle" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO(@compiled/react codemod): "ThemeProvider" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO(@compiled/react codemod): "withTheme" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    import { styled } from '@compiled/react';
+    import * as React from 'react';
+    `,
+    'it adds TODO comment for imports which are not resolved'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {},
     "import * as React from 'react';",
     "import * as React from 'react';",
     'it should not transform when styled-components imports are not present'

@@ -25,12 +25,24 @@ describe('emotion-to-compiled transformer', () => {
     { default: transformer, parser: 'tsx' },
     {},
     `
+    import { ClassNames } from '@emotion/core';
+    `,
+    `
+    import { ClassNames } from '@compiled/react';
+    `,
+    'it transforms ClassNames named @emotion/core import'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {},
+    `
     /** @jsx jsx */
-    import { css, jsx } from '@emotion/core';
+    import { css, jsx, ClassNames } from '@emotion/core';
     `,
     `
     import * as React from 'react';
-    import '@compiled/react';
+    import { ClassNames } from '@compiled/react';
     `,
     'it transforms all named @emotion/core imports'
   );
@@ -40,11 +52,11 @@ describe('emotion-to-compiled transformer', () => {
     {},
     `
     /** @jsx jsx */
-    import { css as c, jsx } from '@emotion/core';
+    import { css as c, jsx, ClassNames as CN } from '@emotion/core';
     `,
     `
     import * as React from 'react';
-    import '@compiled/react';
+    import { ClassNames as CN } from '@compiled/react';
     `,
     'it transforms all named @emotion/core imports with different imported name'
   );
@@ -54,12 +66,12 @@ describe('emotion-to-compiled transformer', () => {
     {},
     `
     /** @jsx jsx */
-    import { css, jsx } from '@emotion/core';
+    import { css, jsx, ClassNames } from '@emotion/core';
     import styled from '@emotion/styled';
     `,
     `
     import * as React from 'react';
-    import { styled } from '@compiled/react';
+    import { ClassNames, styled } from '@compiled/react';
     `,
     'it transforms all named @emotion/core and default @emotion/styled imports'
   );
@@ -69,14 +81,28 @@ describe('emotion-to-compiled transformer', () => {
     {},
     `
     /** @jsx jsx */
-    import { css as c, jsx } from '@emotion/core';
+    import { css as c, jsx, ClassNames as CN } from '@emotion/core';
     import sc from '@emotion/styled';
     `,
     `
     import * as React from 'react';
-    import { styled as sc } from '@compiled/react';
+    import { ClassNames as CN, styled as sc } from '@compiled/react';
     `,
     'it transforms all named @emotion/core with different imported name and default with different name than "styled" @emotion/styled imports'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {},
+    `
+    /** @jsx jsx */
+    import { css, jsx } from '@emotion/core';
+    `,
+    `
+    import * as React from 'react';
+    import '@compiled/react';
+    `,
+    'it handles the case when no api is imported from compiled package'
   );
 
   defineInlineTest(
@@ -336,7 +362,7 @@ describe('emotion-to-compiled transformer', () => {
 
     const Component = () => (
       <ClassNames>
-        {({ css, cx }) => (
+        {({ css }) => (
           <SomeComponent
             wrapperClassName={css({ color: 'green' })}
             css={c\`background-color: green \`}
@@ -351,16 +377,22 @@ describe('emotion-to-compiled transformer', () => {
     );
     `,
     `
-    /* TODO(@compiled/react codemod): "ClassNames" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     /* TODO(@compiled/react codemod): "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     import * as React from 'react';
-    import '@compiled/react';
+    import { ClassNames } from '@compiled/react';
 
     let cssObject: CSSObject = {};
 
     const Component = () => (
       <ClassNames>
-        {({ css, cx }) => (
+        {({
+          css,
+
+          /* TODO(@compiled/react codemod): We have exported "style" from "ClassNames" props.
+          If you are using dynamic declarations, make sure to set the "style"
+          prop otherwise remove it. */
+          style: style
+        }) => (
           <SomeComponent
             wrapperClassName={css({ color: 'green' })}
             css={\`background-color: green \`}
@@ -389,11 +421,10 @@ describe('emotion-to-compiled transformer', () => {
     import * as React from 'react';
     `,
     `
-    /* TODO(@compiled/react codemod): "ClassNames" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     /* TODO(@compiled/react codemod): "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     // @top-level comment
 
-    import '@compiled/react';
+    import { ClassNames } from '@compiled/react';
 
     // comment 1
     import * as React from 'react';
@@ -413,16 +444,75 @@ describe('emotion-to-compiled transformer', () => {
     import { ClassNames, CSSObject, css as c, jsx } from '@emotion/core';
     `,
     `
-    /* TODO(@compiled/react codemod): "ClassNames" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     /* TODO(@compiled/react codemod): "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     // @top-level comment
 
     import * as React from 'react';
 
     // comment 1
-    import '@compiled/react';
+    import { ClassNames } from '@compiled/react';
     `,
     'it should not remove comments before transformed statement when not on top'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {},
+    `
+    /** @jsx jsx */
+    import { ClassNames as CN, css as c, jsx } from '@emotion/core';
+
+    const Component = () => (
+      <CN>
+        {({ css, cx }) => (
+          <SomeComponent
+            wrapperClassName={css({ color: 'green' })}
+            css={c\`background-color: green \`}
+            className={cx()}
+          >
+            Hello
+          </SomeComponent>
+        )}
+      </CN>
+    );
+    `,
+    `
+    import * as React from 'react';
+    import { ClassNames as CN } from '@compiled/react';
+
+    const Component = () => (
+      <CN>
+        {({
+          css,
+
+          /* TODO(@compiled/react codemod): Please replace "cx" with "ax" from "@compiled/react/runtime".
+          Usage: import { ax } from '@compiled/react/runtime';
+
+          NOTE: Both "cx" and "ax" have some differences, so we have not replaced its usage.
+          Please check the docs for "ax" usage.
+
+          In future, we will expose "ax" directly from "ClassNames" props.
+
+          Issue tracked on Github: https://github.com/atlassian-labs/compiled/issues/373 */
+          cx,
+
+          /* TODO(@compiled/react codemod): We have exported "style" from "ClassNames" props.
+          If you are using dynamic declarations, make sure to set the "style"
+          prop otherwise remove it. */
+          style: style
+        }) => (
+          <SomeComponent
+            wrapperClassName={css({ color: 'green' })}
+            css={\`background-color: green \`}
+            className={cx()}
+          >
+            Hello
+          </SomeComponent>
+        )}
+      </CN>
+    );
+    `,
+    'it should handle "ClassNames" behavior'
   );
 
   defineInlineTest(
