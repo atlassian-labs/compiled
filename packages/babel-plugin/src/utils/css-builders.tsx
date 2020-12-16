@@ -221,13 +221,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       const nextQuasis = node.quasis[index + 1];
       const before = cssBeforeInterpolation(css + q.value.raw);
       const after = cssAfterInterpolation(nextQuasis.value.raw);
-
-      let expression: t.Expression =
-        before.variablePrefix || after.variableSuffix
-          ? // When there is a prefix or suffix we want to ensure the interpolation at least
-            // resolves to an empty string - so we short circuit it to one.
-            t.logicalExpression('||', interpolation, t.stringLiteral(''))
-          : interpolation;
+      let expression = interpolation;
 
       if (before.variablePrefix) {
         // A prefix is defined - we want to add them together!

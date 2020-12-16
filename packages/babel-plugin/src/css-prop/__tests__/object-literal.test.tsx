@@ -88,7 +88,7 @@ describe('css prop object literal', () => {
 
     expect(actual).toInclude('{margin-left:var(--_5un9uz)}');
     expect(actual).toInclude('{color:red}');
-    expect(actual).toInclude('style={{"--_5un9uz":(heading.depth||"")+"rem"}}');
+    expect(actual).toInclude('style={{"--_5un9uz":heading.depth+"rem"}}');
   });
 
   it('should persist prefix of dynamic property value into inline styles', () => {
@@ -104,7 +104,7 @@ describe('css prop object literal', () => {
 
     expect(actual).toInclude('{font-size:calc(100% - var(--_1j2e0s2))}');
     expect(actual).toInclude('{color:red}');
-    expect(actual).toInclude('style={{"--_1j2e0s2":(fontSize||"")+"px"}}');
+    expect(actual).toInclude('style={{"--_1j2e0s2":fontSize+"px"}}');
   });
 
   it('should move prefix of grouped interpolation into inline styles', () => {
@@ -120,7 +120,7 @@ describe('css prop object literal', () => {
       `);
 
     expect(actual).toInclude('{margin-left:calc(100% - var(--_5un9uz))}');
-    expect(actual).toInclude('style={{"--_5un9uz":(heading.depth||"")+"rem"}}');
+    expect(actual).toInclude('style={{"--_5un9uz":heading.depth+"rem"}}');
   });
 
   it('should move multiple groups of interpolations into inline styles', () => {
