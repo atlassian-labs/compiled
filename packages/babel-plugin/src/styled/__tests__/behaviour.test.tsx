@@ -306,4 +306,16 @@ describe('styled component behaviour', () => {
           </CC>);"
     `);
   });
+
+  it('should not blow up with a single property', () => {
+    expect(() =>
+      transform(`
+        import { styled } from '@compiled/react';
+
+        export const BoardContent = styled.span\`
+          flex: 1;
+        \`;
+    `)
+    ).not.toThrow();
+  });
 });

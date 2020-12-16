@@ -268,6 +268,16 @@ describe('#css-transform', () => {
     expect(actual.join('')).toMatchInlineSnapshot(`"._syaz1qpq{color:red!important}"`);
   });
 
+  it('shouldnt blow up when expanding', () => {
+    const actual = transformCss(`
+      flex: 1;
+    `);
+
+    expect(actual.sheets.join('')).toMatchInlineSnapshot(
+      `"._16jlkb7n{flex-grow:1}._1o9zkb7n{flex-shrink:1}._i0dlidpf{flex-basis:0}"`
+    );
+  });
+
   describe('browserslist options', () => {
     afterEach(() => {
       delete process.env.BROWSERSLIST;

@@ -247,7 +247,9 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       return acc + before.css + `var(${variableName})`;
     }
 
-    return acc + q.value.raw + ';';
+    const cssPart = (acc + q.value.raw).trim();
+
+    return cssPart.endsWith(';') ? cssPart : cssPart + ';';
   }, '');
 
   css.push({ type: 'unconditional', css: literalResult });

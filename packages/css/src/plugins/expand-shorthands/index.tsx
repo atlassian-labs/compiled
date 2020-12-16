@@ -75,7 +75,14 @@ export const expandShorthands = plugin('expand-shorthands', () => {
           throw new Error('Longform properties were not returned!');
         }
 
-        const nodes = longforms.map((val) => decl.clone(val));
+        const nodes = longforms.map((val) => {
+          const newNode = decl.clone({
+            ...val,
+            // Value needs to be a string else autoprefixer blows up.
+            value: `${val.value}`,
+          });
+          return newNode;
+        });
 
         decl.replaceWith(nodes);
       }
