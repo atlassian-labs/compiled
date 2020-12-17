@@ -2,6 +2,7 @@
 
 Thank you for considering to contribute to Compiled!
 Pull requests, issues and comments are welcome.
+
 For pull requests,
 please:
 
@@ -9,7 +10,7 @@ please:
 - Follow the existing style
 - Separate unrelated changes into multiple pull requests
 
-See the existing issues for things to start contributing.
+See the [existing issues](https://github.com/atlassian-labs/compiled/issues) for things to start contributing.
 
 For bigger changes,
 please make sure you start a discussion first by creating an issue and explaining the intended change.
@@ -25,7 +26,7 @@ The Corporate CLA is for those who are contributing as a member of an organizati
 - [CLA for individuals](https://opensource.atlassian.com/individual)
 - [CLA for corporate contributors](https://opensource.atlassian.com/corporate)
 
-## Local development
+## Getting started with local development
 
 Make sure to install dependencies with `yarn` locally before continuing.
 
@@ -39,10 +40,18 @@ or a partial file name.
 yarn test <filter> --watch
 ```
 
+Looking at tests first is generally the best way to get started.
+
 ### Storybook
 
 Run [storybook](https://storybook.js.org/) locally.
 
 ```bash
-yarn storybook
+yarn start
 ```
+
+### Helpful links
+
+- [astexplorer.net](astexplorer.net) — When working on the Babel Plugin make sure to utilise this,
+  it's a super useful tool that can visualize the abstract syntax tree (AST).
+- [Babel Handbook](https://github.com/jamiebuilds/babel-handbook) — For getting started with Babel Plugins have a read of this first.
