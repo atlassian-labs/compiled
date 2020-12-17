@@ -161,10 +161,13 @@ const handleMemberExpressionInStyledInterpolation = (path: NodePath<t.MemberExpr
   const propsToDestructure: string[] = [];
 
   if (t.isIdentifier(memberExpressionKey)) {
-    const traversedUpFunctionPath = path.find((parentPath) => parentPath.isFunction());
+    const traversedUpFunctionPath: NodePath<t.Node> | undefined = path.find((parentPath) =>
+      parentPath.isFunction()
+    );
     const memberExpressionKeyName = memberExpressionKey.name;
 
-    const isMemberExpressionNameTheSameAsFunctionFirstParam =
+    const isMemberExpressionNameTheSameAsFunctionFirstParam: boolean =
+      traversedUpFunctionPath &&
       t.isFunction(traversedUpFunctionPath.node) &&
       t.isIdentifier(traversedUpFunctionPath.node.params[0]) &&
       traversedUpFunctionPath.node.params[0].name === memberExpressionKeyName;
@@ -188,7 +191,6 @@ const handleMemberExpressionInStyledInterpolation = (path: NodePath<t.MemberExpr
           }
         } else {
           propsToDestructure.push(memberExpressionValueName);
-
           path.replaceWith(memberExpressionValue);
         }
       }
@@ -216,11 +218,15 @@ const handleDestructuringInStyledInterpolation = (path: NodePath<t.Identifier>) 
   // We are not interested in modifying `: load`. We just need to modify `=> load` to `=> loading`.
   // If we don't skip, `=> load` will not be modified because we have modified `: load` earlier and
   // second identifier is nowhere to be found inside function params.
-  if (!t.isObjectProperty(path.parentPath.node)) {
-    const traversedUpFunctionPath = path.find((parentPath) => parentPath.isFunction());
+  if (path.parentPath && !t.isObjectProperty(path.parentPath.node)) {
+    const traversedUpFunctionPath: NodePath<t.Node> | undefined = path.find((parentPath) =>
+      parentPath.isFunction()
+    );
 
     const firstFunctionParam =
-      t.isFunction(traversedUpFunctionPath.node) && traversedUpFunctionPath.node.params[0];
+      traversedUpFunctionPath &&
+      t.isFunction(traversedUpFunctionPath.node) &&
+      traversedUpFunctionPath.node.params[0];
 
     const resolvedDestructuringIdentifier = resolveIdentifierComingFromDestructuring({
       name: path.node.name,
