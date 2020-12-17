@@ -1,19 +1,40 @@
-# 👷‍♀ ‍Compiled
+# Compiled
 
-[Read the docs →](https://compiledcssinjs.com)
+**Build time [atomic CSS](https://deploy-preview-11--compiled-css-in-js.netlify.app/docs/atomic-css)-in-JS.
+Baked and ready to serve.**
 
-## Get started
+[![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](./LICENSE)
+[![@compiled/react](https://img.shields.io/npm/v/@compiled/core.svg?style=flat-square)](https://www.npmjs.com/package/@compiled/react)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](./CONTRIBUTING.md)
 
-**Install**
+[Get started now →](https://compiledcssinjs.com/docs)
 
-> ⚠️ Work is in progress re-writing/architecting a new Babel plugin.
-> Use the nightly at your own risk until it is officially released.
+## Usage
 
-```bash
-npm install @compiled/react@nightly
+```jsx
+import { styled, ClassNames } from '@compiled/react';
+
+// Tie styles to an element
+<div css={{ color: 'purple' }} />;
+
+// Create a component that ties styles to an element
+const StyledButton = styled.button`
+  color: ${(props) => props.color};
+`;
+
+// Create a component which styles are not necessarily tied to an element
+<ClassNames>{({ css }) => children({ className: css({ fontSize: 12 }) })}</ClassNames>;
 ```
 
-**Configure [Babel](https://babeljs.io/docs/en/config-files)**
+## Installation
+
+Install the React package:
+
+```bash
+npm install @compiled/react
+```
+
+Configure [Babel](https://babeljs.io/docs/en/config-files):
 
 ```json
 {
@@ -21,26 +42,10 @@ npm install @compiled/react@nightly
 }
 ```
 
-**Style**
+## Contributions
 
-```jsx
-import { styled, ClassNames } from '@compiled/react';
-import { background } from './tokens';
-
-const StyledButton = styled.button`
-  color: ${props => props.color};
-  background-color: ${background};
-`;
-
-<StyledButton css={{ fontSize: 16 }} />
-
-<ClassNames>{({ css }) => <div className={css`font-size: 24`} />}</ClassNames>
-```
-
-## Contributing
-
-Thank you for considering to contribute to Compiled!
-Before doing so please make sure to read our [contribution guidelines](/CONTRIBUTING.md).
+Contributions to Compiled are welcomed!
+Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
 ## Thanks
 
