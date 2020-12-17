@@ -1,6 +1,6 @@
 # Compiled
 
-**Build time [atomic CSS](https://deploy-preview-11--compiled-css-in-js.netlify.app/docs/atomic-css)-in-JS.
+**Build time [atomic CSS](https://compiledcssinjs.com/docs/atomic-css)-in-JS.
 Baked and ready to serve.**
 
 [![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](./LICENSE)

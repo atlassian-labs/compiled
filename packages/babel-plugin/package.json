@@ -1,7 +1,7 @@
 {
   "name": "@compiled/babel-plugin",
   "version": "0.5.1",
-  "description": "The CSS in JS authoring experience you love without the runtime cost",
+  "description": "Build time atomic CSS-in-JS. Baked and ready to serve.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
   "homepage": "https://compiledcssinjs.com",
