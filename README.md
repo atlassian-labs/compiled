@@ -4,7 +4,7 @@
 Baked and ready to serve.**
 
 [![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](./LICENSE)
-[![@compiled/react](https://img.shields.io/npm/v/@compiled/core.svg?style=flat-square)](https://www.npmjs.com/package/@compiled/react)
+[![@compiled/react](https://img.shields.io/npm/v/@compiled/react?style=flat-square)](https://www.npmjs.com/package/@compiled/react)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](./CONTRIBUTING.md)
 
 [Get started now →](https://compiledcssinjs.com/docs)
