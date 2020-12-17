@@ -1,6 +1,6 @@
 {
   "name": "@compiled/css",
-  "version": "0.4.7",
+  "version": "0.5.0",
   "description": "The CSS in JS authoring experience you love without the runtime cost",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
@@ -20,7 +20,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@compiled/utils": "0.4.7",
+    "@compiled/utils": "0.5.0",
     "autoprefixer": "^9.7.6",
     "convert-source-map": "^1.7.0",
     "cssnano-preset-default": "^4.0.7",

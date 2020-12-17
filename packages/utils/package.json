@@ -1,6 +1,6 @@
 {
   "name": "@compiled/utils",
-  "version": "0.4.7",
+  "version": "0.5.0",
   "description": "The CSS in JS authoring experience you love without the runtime cost",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
