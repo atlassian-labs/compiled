@@ -41,8 +41,6 @@ describe('server side hydrate', () => {
       elem
     );
 
-    console.log(document.body.innerHTML);
-
     expect(console.error).not.toHaveBeenCalled();
   });
 });
