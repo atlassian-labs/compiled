@@ -79,9 +79,9 @@ export const Stacking = () => (
   <>
     <div css={{ display: 'inline-block' }}>before</div>
     <HorizontalStack gap={2} spacing={4}>
-      <div css={{ display: 'inline-block', color: 'red' }}>one</div>
-      <div css={{ display: 'inline-block', color: 'blue' }}>two</div>
-      <div css={{ display: 'inline-block', color: 'purple' }}>three</div>
+      <div css={{ display: 'inline-block', backgroundColor: 'red' }}>one</div>
+      <div css={{ display: 'inline-block', backgroundColor: 'blue' }}>two</div>
+      <div css={{ display: 'inline-block', backgroundColor: 'purple' }}>three</div>
     </HorizontalStack>
     <div css={{ display: 'inline-block' }}>after</div>
   </>
