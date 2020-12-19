@@ -27,11 +27,13 @@ if (!isNodeEnvironment()) {
  */
 export const useCache: UseCacheHook = () => {
   if (isNodeEnvironment()) {
-    // This code path isn't conditionally called at build time - safe to ignore.
+    // On the server we use React Context to we don't leak the cache between SSR calls.
+    // During runtime this hook isn't conditionally called - it is at build time that the flow gets decided.
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useContext(Cache) || {};
   }
 
+  // On the client we use the object singleton.
   return Cache;
 };
 
