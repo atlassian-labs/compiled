@@ -1,5 +1,5 @@
 {
-  "main": "../dist/babel-plugin.js",
-  "module": "../dist/babel-plugin.js",
-  "types": "../dist/babel-plugin.d.ts"
+  "main": "../dist/esm/babel-plugin.js",
+  "module": "../dist/cjs/babel-plugin.js",
+  "types": "../dist/esm/babel-plugin.d.ts"
 }
