@@ -3,7 +3,7 @@ import { createSetupError } from '../utils/error';
 import { CssFunction, BasicTemplateInterpolations } from '../types';
 
 export interface FunctionIterpolation<TProps> {
-  (props: TProps): string | number;
+  (props: TProps): string | number | undefined;
 }
 
 /**

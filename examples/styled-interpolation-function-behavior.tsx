@@ -58,3 +58,31 @@ export const TemplateLiteral = () => (
     hello world
   </FunctionStyledTemplateLiteral>
 );
+
+const HorizontalStack = styled.div<{ spacing?: number; gap?: number }>`
+  margin-top: ${(props) => props.spacing}rem;
+  margin-bottom: ${(props) => props.spacing}rem;
+  margin-right: ${(props) => props.gap}rem;
+
+  @media only screen and (min-width: 900px) {
+    && > * {
+      margin-right: ${(props) => props.gap}rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+`;
+
+export const Stacking = () => (
+  <>
+    <div css={{ display: 'inline-block' }}>before</div>
+    <HorizontalStack gap={2} spacing={4}>
+      <div css={{ display: 'inline-block', color: 'red' }}>one</div>
+      <div css={{ display: 'inline-block', color: 'blue' }}>two</div>
+      <div css={{ display: 'inline-block', color: 'purple' }}>three</div>
+    </HorizontalStack>
+    <div css={{ display: 'inline-block' }}>after</div>
+  </>
+);
