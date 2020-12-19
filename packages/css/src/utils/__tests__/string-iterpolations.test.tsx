@@ -26,7 +26,7 @@ describe('template literal to css', () => {
       const extract = cssAfterInterpolation(simpleParts[1]);
 
       expect(extract.variableSuffix).toEqual('px');
-      expect(extract.css).toEqual('!important;');
+      expect(extract.css).toEqual(' !important;');
     });
 
     it('should ignore a space as prefix', () => {
@@ -221,23 +221,23 @@ describe('template literal to css', () => {
     });
 
     it('should move whole prefix out', () => {
-      const simpleParts = ['font-size: super', 'big;'];
+      const simpleParts = ['font-size: "', 'big;'];
 
       const extract = cssBeforeInterpolation(simpleParts[0]);
 
-      expect(extract.variablePrefix).toEqual('super');
+      expect(extract.variablePrefix).toEqual('"');
       expect(extract.css).toEqual('font-size: ');
     });
   });
 
   describe('interpolations without surrounding css', () => {
     it('should extract the suffix with not prefix', () => {
-      const simpleParts = ['px'];
+      const simpleParts = ['px;'];
 
       const extract = cssAfterInterpolation(simpleParts[0]);
 
       expect(extract.variableSuffix).toEqual('px');
-      expect(extract.css).toEqual('');
+      expect(extract.css).toEqual(';');
     });
 
     it('should extract the prefix of a simple template literal', () => {
@@ -250,20 +250,20 @@ describe('template literal to css', () => {
     });
 
     it('should extract the suffix of a simple template literal', () => {
-      const simpleParts = ['"', '"'];
+      const simpleParts = ['"', '";'];
 
       const extract = cssAfterInterpolation(simpleParts[1]);
 
       expect(extract.variableSuffix).toEqual('"');
-      expect(extract.css).toEqual('');
+      expect(extract.css).toEqual(';');
     });
 
     it('should move whole prefix out', () => {
-      const simpleParts = ['super', 'big;'];
+      const simpleParts = ['"', 'big;'];
 
       const extract = cssBeforeInterpolation(simpleParts[0]);
 
-      expect(extract.variablePrefix).toEqual('super');
+      expect(extract.variablePrefix).toEqual('"');
       expect(extract.css).toEqual('');
     });
 
