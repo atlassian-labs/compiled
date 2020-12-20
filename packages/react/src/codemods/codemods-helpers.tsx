@@ -36,7 +36,7 @@ export const hasImportDeclaration = ({
   j: JSCodeshift;
   collection: Collection<any>;
   importPath: string;
-}) =>
+}): boolean =>
   getImportDeclarationCollection({
     j,
     collection,
@@ -45,10 +45,18 @@ export const hasImportDeclaration = ({
 
 export const getImportDefaultSpecifierName = (
   importDefaultSpecifierCollection: Collection<ImportDefaultSpecifier>
-) => importDefaultSpecifierCollection.nodes()[0]!.local!.name;
+): string => {
+  const name = importDefaultSpecifierCollection.nodes()[0]!.local!.name;
+  if (!name) {
+    throw new Error('Name should exist.');
+  }
 
-export const getImportSpecifierName = (importSpecifierCollection: Collection<ImportSpecifier>) =>
-  importSpecifierCollection.nodes()[0]!.local!.name;
+  return name;
+};
+
+export const getImportSpecifierName = (
+  importSpecifierCollection: Collection<ImportSpecifier>
+): string | undefined => importSpecifierCollection.nodes()[0]!.local!.name;
 
 export const getAllImportSpecifiers = ({
   j,
@@ -78,7 +86,7 @@ export const findImportSpecifierName = ({
   j: JSCodeshift;
   importDeclarationCollection: Collection<ImportDeclaration>;
   importName: string;
-}) => {
+}): string | null | undefined => {
   const importSpecifierCollection = importDeclarationCollection
     .find(j.ImportSpecifier)
     .filter((importSpecifierPath) => importSpecifierPath.node.imported.name === importName);
@@ -100,7 +108,7 @@ export const convertDefaultImportToNamedImport = ({
   collection: Collection<any>;
   importPath: string;
   namedImport: string;
-}) => {
+}): void => {
   const importDeclarationCollection = getImportDeclarationCollection({
     j,
     collection,
@@ -156,7 +164,7 @@ export const addCommentBefore = ({
   j: JSCodeshift;
   collection: Collection<Program>;
   message: string;
-}) => {
+}): void => {
   const content = ` TODO(${COMPILED_IMPORT_PATH} codemod): ${clean(message)} `;
   collection.forEach((path) => {
     path.value.comments = path.value.comments || [];
@@ -180,7 +188,7 @@ export const addCommentToStartOfFile = ({
   j: JSCodeshift;
   collection: Collection<Node>;
   message: string;
-}) => {
+}): void => {
   addCommentBefore({
     j,
     collection: collection.find(j.Program),
@@ -198,7 +206,7 @@ export const addCommentForUnresolvedImportSpecifiers = ({
   collection: Collection<Node>;
   importPath: string;
   allowedImportSpecifierNames: string[];
-}) => {
+}): void => {
   const importDeclarationCollection = getImportDeclarationCollection({
     j,
     collection,
@@ -226,7 +234,7 @@ export const addReactIdentifier = ({
 }: {
   j: JSCodeshift;
   collection: Collection<Node>;
-}) => {
+}): void => {
   const hasReactImportDeclaration = hasImportDeclaration({
     j,
     collection,
@@ -277,7 +285,7 @@ export const replaceImportDeclaration = ({
   j: JSCodeshift;
   collection: Collection<Node>;
   importPath: string;
-}) => {
+}): void => {
   const importDeclarationCollection = getImportDeclarationCollection({
     j,
     collection,
@@ -297,7 +305,7 @@ export const mergeImportSpecifiersAlongWithTheirComments = ({
   j: JSCodeshift;
   collection: Collection<Node>;
   filter?: (name: string | undefined) => boolean;
-}) => {
+}): void => {
   const importDeclarationCollection = getImportDeclarationCollection({
     j,
     collection,
