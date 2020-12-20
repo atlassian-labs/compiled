@@ -1,4 +1,3 @@
-import React from 'react';
 import '@compiled/react';
 
 import { hover } from './mixins/mixins';

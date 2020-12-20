@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { ClassNames } from '@compiled/react';
 
 export default {
@@ -55,7 +54,7 @@ const ClassNamesArray = ({ weight }: { weight: number }) => (
   </ClassNames>
 );
 
-export const Object = () => <ClassNamesObject color="pink" />;
+export const ObjectCSS = () => <ClassNamesObject color="pink" />;
 
 export const StringTemplateLiteral = () => <ClassNamesStringTemplateLiteral size={50} />;
 

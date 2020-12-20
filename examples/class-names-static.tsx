@@ -1,11 +1,10 @@
-import * as React from 'react';
 import { ClassNames } from '@compiled/react';
 
 export default {
   title: 'ClassNames | static',
 };
 
-export const Object = () => (
+export const ObjectCSS = () => (
   <ClassNames>
     {({ css }) => <div className={css({ fontSize: 20, color: 'blue' })}>hello world</div>}
   </ClassNames>
