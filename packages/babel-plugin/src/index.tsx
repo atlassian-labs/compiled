@@ -76,6 +76,7 @@ export default declare<State>((api) => {
   api.assertVersion(7);
 
   return {
+    name: '@compiled/react',
     inherits: jsxSyntax,
     pre() {
       this.sheets = {};
@@ -90,9 +91,20 @@ export default declare<State>((api) => {
             return;
           }
 
-          if (!path.scope.getBinding('React')) {
+          const transformJsxPlugin = state.file.opts.plugins.find(
+            (plugin: any) => plugin.key === 'transform-react-jsx'
+          );
+          if (
+            (!transformJsxPlugin || transformJsxPlugin.options.runtime !== 'automatic') &&
+            !path.scope.getBinding('React')
+          ) {
             // React is missing - add it in at the last moment!
             path.unshiftContainer('body', template.ast(`import * as React from 'react'`));
+          }
+
+          if (state.compiledImports.styled && !path.scope.getBinding('forwardRef')) {
+            // forwardRef is missing - add it in at the last moment!
+            path.unshiftContainer('body', template.ast(`import { forwardRef } from 'react'`));
           }
 
           const version = process.env.TEST_PKG_VERSION || pkgJson.version;

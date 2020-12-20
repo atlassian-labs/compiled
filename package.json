@@ -35,12 +35,13 @@
     "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts"
   },
   "devDependencies": {
+    "@babel/plugin-transform-react-jsx-self": "^7.12.1",
+    "@babel/plugin-transform-react-jsx-source": "^7.12.1",
     "@babel/preset-env": "^7.11.0",
     "@babel/preset-react": "^7.10.4",
     "@babel/preset-typescript": "^7.10.4",
     "@compiled/jest": "*",
     "@compiled/react": "*",
-    "@emotion/core": "^10.1.1",
     "@size-limit/preset-small-lib": "^4.4.5",
     "@storybook/addons": "^5.2.8",
     "@storybook/react": "^5.3.18",
