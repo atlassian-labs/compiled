@@ -8,9 +8,9 @@ import {
   JSXIdentifier,
   TSTypeParameter,
   Node,
+  ImportNamespaceSpecifier,
 } from 'jscodeshift';
 import { Collection } from 'jscodeshift/src/Collection';
-
 import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from './constants';
 
 type Identifiers = Array<Identifier | JSXIdentifier | TSTypeParameter>;
@@ -23,10 +23,13 @@ export const getImportDeclarationCollection = ({
   j: JSCodeshift;
   collection: Collection<any>;
   importPath: string;
-}): Collection<ImportDeclaration> =>
-  collection
+}): Collection<ImportDeclaration> => {
+  const found: Collection<ImportDeclaration> = collection
     .find(j.ImportDeclaration)
     .filter((importDeclarationPath) => importDeclarationPath.node.source.value === importPath);
+
+  return found;
+};
 
 export const hasImportDeclaration = ({
   j,
@@ -36,12 +39,15 @@ export const hasImportDeclaration = ({
   j: JSCodeshift;
   collection: Collection<any>;
   importPath: string;
-}): boolean =>
-  getImportDeclarationCollection({
+}): boolean => {
+  const result: Collection<ImportDeclaration> = getImportDeclarationCollection({
     j,
     collection,
     importPath,
-  }).length > 0;
+  });
+
+  return result.length > 0;
+};
 
 export const getImportDefaultSpecifierName = (
   importDefaultSpecifierCollection: Collection<ImportDefaultSpecifier>
@@ -87,7 +93,7 @@ export const findImportSpecifierName = ({
   importDeclarationCollection: Collection<ImportDeclaration>;
   importName: string;
 }): string | null | undefined => {
-  const importSpecifierCollection = importDeclarationCollection
+  const importSpecifierCollection: Collection<ImportSpecifier> = importDeclarationCollection
     .find(j.ImportSpecifier)
     .filter((importSpecifierPath) => importSpecifierPath.node.imported.name === importName);
 
@@ -109,11 +115,13 @@ export const convertDefaultImportToNamedImport = ({
   importPath: string;
   namedImport: string;
 }): void => {
-  const importDeclarationCollection = getImportDeclarationCollection({
-    j,
-    collection,
-    importPath,
-  });
+  const importDeclarationCollection: Collection<ImportDeclaration> = getImportDeclarationCollection(
+    {
+      j,
+      collection,
+      importPath,
+    }
+  );
 
   importDeclarationCollection.forEach((importDeclarationPath) => {
     const importDefaultSpecifierCollection = j(importDeclarationPath).find(
@@ -207,12 +215,14 @@ export const addCommentForUnresolvedImportSpecifiers = ({
   importPath: string;
   allowedImportSpecifierNames: string[];
 }): void => {
-  const importDeclarationCollection = getImportDeclarationCollection({
-    j,
-    collection,
-    importPath,
-  });
-  const importSpecifiers = getAllImportSpecifiers({
+  const importDeclarationCollection: Collection<ImportDeclaration> = getImportDeclarationCollection(
+    {
+      j,
+      collection,
+      importPath,
+    }
+  );
+  const importSpecifiers: Identifiers = getAllImportSpecifiers({
     j,
     importDeclarationCollection,
   });
@@ -235,7 +245,7 @@ export const addReactIdentifier = ({
   j: JSCodeshift;
   collection: Collection<Node>;
 }): void => {
-  const hasReactImportDeclaration = hasImportDeclaration({
+  const hasReactImportDeclaration: boolean = hasImportDeclaration({
     j,
     collection,
     importPath: REACT_IMPORT_PATH,
@@ -251,19 +261,21 @@ export const addReactIdentifier = ({
       );
     });
   } else {
-    const importDeclarationCollection = getImportDeclarationCollection({
-      j,
-      collection,
-      importPath: REACT_IMPORT_PATH,
-    });
+    const importDeclarationCollection: Collection<ImportDeclaration> = getImportDeclarationCollection(
+      {
+        j,
+        collection,
+        importPath: REACT_IMPORT_PATH,
+      }
+    );
 
     importDeclarationCollection.forEach((importDeclarationPath) => {
-      const importDefaultSpecifierCollection = j(importDeclarationPath).find(
-        j.ImportDefaultSpecifier
-      );
-      const importNamespaceSpecifierCollection = j(importDeclarationPath).find(
-        j.ImportNamespaceSpecifier
-      );
+      const importDefaultSpecifierCollection: Collection<ImportDefaultSpecifier> = j(
+        importDeclarationPath
+      ).find(j.ImportDefaultSpecifier);
+      const importNamespaceSpecifierCollection: Collection<ImportNamespaceSpecifier> = j(
+        importDeclarationPath
+      ).find(j.ImportNamespaceSpecifier);
 
       const hasNoDefaultReactImportDeclaration = importDefaultSpecifierCollection.length === 0;
       const hasNoNamespaceReactImportDeclaration = importNamespaceSpecifierCollection.length === 0;
@@ -286,11 +298,13 @@ export const replaceImportDeclaration = ({
   collection: Collection<Node>;
   importPath: string;
 }): void => {
-  const importDeclarationCollection = getImportDeclarationCollection({
-    j,
-    collection,
-    importPath,
-  });
+  const importDeclarationCollection: Collection<ImportDeclaration> = getImportDeclarationCollection(
+    {
+      j,
+      collection,
+      importPath,
+    }
+  );
 
   importDeclarationCollection.forEach((importDeclarationPath) => {
     importDeclarationPath.node.source.value = COMPILED_IMPORT_PATH;
@@ -306,11 +320,13 @@ export const mergeImportSpecifiersAlongWithTheirComments = ({
   collection: Collection<Node>;
   filter?: (name: string | undefined) => boolean;
 }): void => {
-  const importDeclarationCollection = getImportDeclarationCollection({
-    j,
-    collection,
-    importPath: COMPILED_IMPORT_PATH,
-  });
+  const importDeclarationCollection: Collection<ImportDeclaration> = getImportDeclarationCollection(
+    {
+      j,
+      collection,
+      importPath: COMPILED_IMPORT_PATH,
+    }
+  );
 
   const importSpecifiers: ImportSpecifier[] = [];
 
