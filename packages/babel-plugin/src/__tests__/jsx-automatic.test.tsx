@@ -7,7 +7,7 @@ const transform = (code: TemplateStringsArray) => {
     babelrc: false,
     filename: 'jsx-automatic.test.tsx',
     presets: [['@babel/preset-react', { runtime: 'automatic' }]],
-    plugins: [babelPlugin],
+    plugins: [[babelPlugin, { importReact: false }]],
   })?.code;
 };
 

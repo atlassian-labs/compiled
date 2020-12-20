@@ -1,6 +1,6 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
-
+import { PluginPass } from '@babel/core';
 import { Cache } from './utils/cache';
 
 export interface PluginOptions {
@@ -8,13 +8,22 @@ export interface PluginOptions {
    * Security nonce that will be applied to inline style elements if defined.
    */
   nonce?: string;
+
   /**
    * Whether to use the cache or not. Will make subsequent builds faster.
    */
   cache?: boolean;
+
+  /**
+   * Will import the React namespace if it is missing.
+   * When using the `'automatic'` jsx runtime set this to `false`.
+   *
+   * Defaults to `true`.
+   */
+  importReact?: boolean;
 }
 
-export interface State {
+export interface State extends PluginPass {
   /**
    * Boolean turned true if the compiled module import is found.
    * If the module is found, the object will be defined.
@@ -36,24 +45,14 @@ export interface State {
   };
 
   /**
-   * Current working directory.
+   * Userland options that can be set to change what happens when the Babel Plugin is ran.
    */
-  cwd: string;
+  opts: PluginOptions;
 
   /**
    * Data of the current file being transformed.
    */
   file: any;
-
-  /**
-   * Optional filename.
-   */
-  filename: string | undefined;
-
-  /**
-   * Userland options that can be set to change what happens when the Babel Plugin is ran.
-   */
-  opts: PluginOptions;
 
   /**
    * Holds a record of currently hoisted sheets in the module.

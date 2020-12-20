@@ -80,7 +80,6 @@ export default declare<State>((api) => {
     inherits: jsxSyntax,
     pre() {
       this.sheets = {};
-
       cache.initialize(this.opts);
       this.cache = cache;
     },
@@ -91,13 +90,8 @@ export default declare<State>((api) => {
             return;
           }
 
-          const transformJsxPlugin = state.file.opts.plugins.find(
-            (plugin: any) => plugin.key === 'transform-react-jsx'
-          );
-          if (
-            (!transformJsxPlugin || transformJsxPlugin.options.runtime !== 'automatic') &&
-            !path.scope.getBinding('React')
-          ) {
+          const shouldImportReact = state.opts.importReact === undefined || state.opts.importReact;
+          if (shouldImportReact && !path.scope.getBinding('React')) {
             // React is missing - add it in at the last moment!
             path.unshiftContainer('body', template.ast(`import * as React from 'react'`));
           }
