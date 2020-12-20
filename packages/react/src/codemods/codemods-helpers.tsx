@@ -13,6 +13,8 @@ import { Collection } from 'jscodeshift/src/Collection';
 
 import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from './constants';
 
+type Identifiers = Array<Identifier | JSXIdentifier | TSTypeParameter>;
+
 export const getImportDeclarationCollection = ({
   j,
   collection,
@@ -21,7 +23,7 @@ export const getImportDeclarationCollection = ({
   j: JSCodeshift;
   collection: Collection<any>;
   importPath: string;
-}) =>
+}): Collection<ImportDeclaration> =>
   collection
     .find(j.ImportDeclaration)
     .filter((importDeclarationPath) => importDeclarationPath.node.source.value === importPath);
@@ -54,8 +56,8 @@ export const getAllImportSpecifiers = ({
 }: {
   j: JSCodeshift;
   importDeclarationCollection: Collection<ImportDeclaration>;
-}) => {
-  const importSpecifiersImportedNodes: (Identifier | JSXIdentifier | TSTypeParameter)[] = [];
+}): Identifiers => {
+  const importSpecifiersImportedNodes: Identifiers = [];
 
   importDeclarationCollection.find(j.ImportSpecifier).forEach((importSpecifierPath) => {
     const node = importSpecifierPath.node.imported;

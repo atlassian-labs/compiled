@@ -46,12 +46,16 @@ const hoistSheet = (sheet: string, meta: Metadata): t.Identifier => {
   }
 
   const sheetIdentifier = meta.parentPath.scope.generateUidIdentifier('');
-  const parent = meta.parentPath.findParent((path) => path.isProgram()).get('body') as NodePath[];
-  const path = parent.filter((path) => !path.isImportDeclaration())[0];
+  const parent = meta.parentPath.findParent((path) => path.isProgram());
+  const parentBody = parent && (parent.get('body') as NodePath[]);
+  const path = parentBody && parentBody.filter((path) => !path.isImportDeclaration())[0];
 
-  path.insertBefore(
-    t.variableDeclaration('const', [t.variableDeclarator(sheetIdentifier, t.stringLiteral(sheet))])
-  );
+  path &&
+    path.insertBefore(
+      t.variableDeclaration('const', [
+        t.variableDeclarator(sheetIdentifier, t.stringLiteral(sheet)),
+      ])
+    );
 
   meta.state.sheets[sheet] = sheetIdentifier;
 
@@ -161,12 +165,12 @@ const handleMemberExpressionInStyledInterpolation = (path: NodePath<t.MemberExpr
   const propsToDestructure: string[] = [];
 
   if (t.isIdentifier(memberExpressionKey)) {
-    const traversedUpFunctionPath: NodePath<t.Node> | undefined = path.find((parentPath) =>
+    const traversedUpFunctionPath: NodePath<t.Node> | null = path.find((parentPath) =>
       parentPath.isFunction()
     );
     const memberExpressionKeyName = memberExpressionKey.name;
 
-    const isMemberExpressionNameTheSameAsFunctionFirstParam: boolean =
+    const isMemberExpressionNameTheSameAsFunctionFirstParam: boolean | null =
       traversedUpFunctionPath &&
       t.isFunction(traversedUpFunctionPath.node) &&
       t.isIdentifier(traversedUpFunctionPath.node.params[0]) &&
@@ -219,7 +223,7 @@ const handleDestructuringInStyledInterpolation = (path: NodePath<t.Identifier>) 
   // If we don't skip, `=> load` will not be modified because we have modified `: load` earlier and
   // second identifier is nowhere to be found inside function params.
   if (path.parentPath && !t.isObjectProperty(path.parentPath.node)) {
-    const traversedUpFunctionPath: NodePath<t.Node> | undefined = path.find((parentPath) =>
+    const traversedUpFunctionPath: NodePath<t.Node> | null = path.find((parentPath) =>
       parentPath.isFunction()
     );
 

@@ -351,7 +351,9 @@ export const resolveIdentifierComingFromDestructuring = ({
   let resolvedDestructuringIdentifier: t.ObjectProperty | undefined;
 
   if (t.isObjectPattern(node)) {
-    return node.properties.find((property) => {
+    const pattern = node as t.ObjectPattern;
+
+    return pattern.properties.find((property) => {
       if (t.isObjectProperty(property)) {
         if (resolveFor === 'key') {
           return t.isIdentifier(property.key) && property.key.name === name;
@@ -363,9 +365,11 @@ export const resolveIdentifierComingFromDestructuring = ({
       return false;
     }) as t.ObjectProperty | undefined;
   } else if (t.isVariableDeclarator(node)) {
+    const declarator = node as t.VariableDeclarator;
+
     resolvedDestructuringIdentifier = resolveIdentifierComingFromDestructuring({
       name,
-      node: node.id as t.Expression,
+      node: declarator.id as t.Expression,
       resolveFor,
     });
   }
