@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import insertRule, { getStyleBucketName, styleBucketOrdering } from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts, Bucket } from './types';
-import { useCache } from './provider';
+import { useCache } from './style-cache';
 import { isNodeEnvironment } from './is-node';
 
 interface StyleProps extends StyleSheetOpts {

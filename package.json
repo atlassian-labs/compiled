@@ -96,7 +96,7 @@
     },
     {
       "path": "./packages/react/dist/browser/runtime.js",
-      "limit": "489B",
+      "limit": "445B",
       "import": "{ CC, CS }",
       "ignore": [
         "react"

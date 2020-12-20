@@ -29,3 +29,7 @@ export type Bucket =
   | 'a'
   // at-rules
   | 'm';
+
+export type UseCacheHook = () => Record<string, true>;
+
+export type ProviderComponent = (props: { children: JSX.Element[] | JSX.Element }) => JSX.Element;
