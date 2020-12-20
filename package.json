@@ -80,11 +80,6 @@
     "playground/*",
     "examples/packages/*"
   ],
-  "resolutions": {
-    "typescript": "3.7.x",
-    "@types/node": "13.11.1",
-    "@testing-library/dom": "7.2.2"
-  },
   "size-limit": [
     {
       "path": "./packages/react/dist/browser/runtime.js",
