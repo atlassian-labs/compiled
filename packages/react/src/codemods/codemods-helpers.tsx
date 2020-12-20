@@ -9,8 +9,8 @@ import {
   TSTypeParameter,
   Node,
   ImportNamespaceSpecifier,
+  Collection,
 } from 'jscodeshift';
-import { Collection } from 'jscodeshift/src/Collection';
 import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from './constants';
 
 type Identifiers = Array<Identifier | JSXIdentifier | TSTypeParameter>;
