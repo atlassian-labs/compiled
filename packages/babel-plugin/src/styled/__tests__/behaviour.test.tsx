@@ -233,12 +233,12 @@ describe('styled component behaviour', () => {
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div({
-        color: \`very$\{props => { return props.color; }}dark\`
+        content: \`"$\{props => { return props.color; }}"\`
       });
     `);
 
-    expect(actual).toInclude('{color:var(--_1poneq5)}');
-    expect(actual).toInclude('"--_1poneq5":"very"+(()=>{return props.color;})()+"dark"');
+    expect(actual).toInclude('{content:var(--_1poneq5)}');
+    expect(actual).toInclude('"--_1poneq5":"\\""+(()=>{return props.color;})()+"\\""');
   });
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
@@ -246,13 +246,13 @@ describe('styled component behaviour', () => {
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div({
-        fontSize: \`super$\{props => { return props.textSize; }}big\`
+        content: \`"$\{props => { return props.textSize; }}"\`
       });
     `);
 
-    expect(actual).toInclude('{font-size:var(--_1j0t240)}');
+    expect(actual).toInclude('{content:var(--_1j0t240)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--_1j0t240":"super"+(()=>{return textSize;})()+"big"');
+    expect(actual).toInclude('"--_1j0t240":"\\""+(()=>{return textSize;})()+"\\""');
   });
 
   it('should collect args as styles', () => {

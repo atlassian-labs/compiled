@@ -18,4 +18,5 @@ export type CssFunction<TValue = void> =
   | CSSProps
   | AnyKeyCssProps<TValue>
   | TemplateStringsArray
-  | string;
+  | string
+  | undefined;

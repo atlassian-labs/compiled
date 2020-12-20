@@ -152,12 +152,12 @@ describe('styled component string literal', () => {
         import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
-          color: very$\{props => { return props.color; }}dark;
+          content: "$\{props => { return props.color; }}";
         \`;
       `);
 
-    expect(actual).toInclude('{color:var(--_1poneq5)}');
-    expect(actual).toInclude('"--_1poneq5":"very"+(()=>{return props.color;})()+"dark"');
+    expect(actual).toInclude('{content:var(--_1poneq5)}');
+    expect(actual).toInclude('"--_1poneq5":"\\""+(()=>{return props.color;})()+"\\""');
   });
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
@@ -165,13 +165,13 @@ describe('styled component string literal', () => {
         import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
-          font-size: super$\{props => { return props.textSize; }}big;
+          content: "$\{props => { return props.textSize; }}";
         \`;
       `);
 
-    expect(actual).toInclude('{font-size:var(--_1j0t240)}');
+    expect(actual).toInclude('{content:var(--_1j0t240)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--_1j0t240":"super"+(()=>{return textSize;})()+"big"');
+    expect(actual).toInclude('"--_1j0t240":"\\""+(()=>{return textSize;})()+"\\""');
   });
 
   it('should transform template string literal with obj variable', () => {
@@ -313,11 +313,11 @@ describe('styled component string literal', () => {
         import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
-          font-size: super$\{props => props.color}big;
+          content: "$\{props => props.color}";
         \`;
       `);
 
-    expect(actual).toInclude('"--_1p69eoh":"super"+props.color+"big"');
+    expect(actual).toInclude('"--_1p69eoh":"\\""+props.color+"\\""');
   });
 
   it('should move any prefix of a dynamic arrow func property into the style property', () => {
@@ -325,11 +325,11 @@ describe('styled component string literal', () => {
         import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
-          font-size: super$\{props => props.color};
+          content: "$\{props => props.color}";
         \`;
       `);
 
-    expect(actual).toInclude('"--_1p69eoh":"super"+props.color');
+    expect(actual).toInclude('"--_1p69eoh":"\\""+props.color+"\\""');
   });
 
   it('should move any suffix of a dynamic arrow func property into the style property', () => {
@@ -337,11 +337,11 @@ describe('styled component string literal', () => {
         import { styled } from '@compiled/react';
 
         const ListItem = styled.div\`
-          font-size: $\{props => props.color}big;
+          font-size: $\{props => props.color}px;
         \`;
       `);
 
-    expect(actual).toInclude('"--_1p69eoh":props.color+"big"');
+    expect(actual).toInclude('"--_1p69eoh":props.color+"px"');
   });
 
   it('should move suffix and prefix of a dynamic property into the style property', () => {
@@ -352,13 +352,13 @@ describe('styled component string literal', () => {
         color = 'blue';
 
         const ListItem = styled.div\`
-          font-size: super$\{color}big;
+          content: "$\{color}";
           color: red;
         \`;
       `);
 
-    expect(actual).toInclude('{font-size:var(--_1ylxx6h)}');
-    expect(actual).toInclude('"--_1ylxx6h":"super"+color+"big"');
+    expect(actual).toInclude('{content:var(--_1ylxx6h)}');
+    expect(actual).toInclude('"--_1ylxx6h":"\\""+color+"\\""');
   });
 
   it('should do nothing with suffix/prefix when referencing constant literal', () => {
@@ -367,12 +367,12 @@ describe('styled component string literal', () => {
 
         const color = 'red';
         const ListItem = styled.div\`
-          font-size: super$\{color}big;
+          content: "$\{color}";
           color: red;
         \`;
       `);
 
-    expect(actual).toInclude('{font-size:superredbig}');
+    expect(actual).toInclude('{content:\\"red\\"}');
   });
 
   it('should transform template string with no argument function variable', () => {
