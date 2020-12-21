@@ -11,10 +11,10 @@
     "url": "https://github.com/atlassian-labs/compiled.git",
     "directory": "packages/react"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
   "browser": "./dist/browser/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/esm/index.d.ts",
   "sideEffects": false,
   "keywords": [
     "compiled",
@@ -24,9 +24,9 @@
     "typescript"
   ],
   "exports": {
-    ".": "./dist/index.js",
-    "./babel-plugin": "./dist/babel-plugin.js",
-    "./runtime": "./dist/runtime.js"
+    ".": "./dist/esm/index.js",
+    "./babel-plugin": "./dist/esm/babel-plugin.js",
+    "./runtime": "./dist/esm/runtime.js"
   },
   "files": [
     "dist",
