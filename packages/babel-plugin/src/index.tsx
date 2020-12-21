@@ -31,7 +31,7 @@ const parseFilename = (filename: string | undefined) => {
  * @param path ImportDeclaration node path
  */
 const appendRuntimeImports = (path: NodePath<t.ImportDeclaration>) => {
-  const runtimeImportNames = ['ax', 'CC', 'CS'];
+  const runtimeImportNames = ['ax', 'ix', 'CC', 'CS'];
   const runtimeImportModuleName = '@compiled/react/runtime';
 
   // Check if we have any sibling runtime import

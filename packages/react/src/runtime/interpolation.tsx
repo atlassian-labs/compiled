@@ -15,5 +15,5 @@ export default function interpolation(
     return value;
   }
 
-  return ' ';
+  return '/* */';
 }
