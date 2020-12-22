@@ -49,8 +49,11 @@ const NoVisible = styled.div<{ open: boolean; inherentHeight: number }>`
 
 export const ShouldNotBeVisible = () => {
   return (
-    <NoVisible open={false} inherentHeight={200}>
-      <div css={{ background: 'pink', height: 200, width: 200 }}>SHOULD NOT BE SEEN</div>
-    </NoVisible>
+    <>
+      <div>this should be visible</div>
+      <NoVisible open={false} inherentHeight={200}>
+        <div css={{ background: 'pink', height: 200, width: 200 }}>this should NOT be visible</div>
+      </NoVisible>
+    </>
   );
 };
