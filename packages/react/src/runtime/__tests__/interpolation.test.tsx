@@ -15,6 +15,14 @@ describe('interpolation', () => {
     expect(actual).toEqual(value);
   });
 
+  it('should return zero', () => {
+    const value = 0;
+
+    const actual = interpolation(value, undefined, undefined);
+
+    expect(actual).toEqual(value);
+  });
+
   it('should append suffix', () => {
     const actual = interpolation(12, 'px', undefined);
 

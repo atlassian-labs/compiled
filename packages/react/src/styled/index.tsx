@@ -18,7 +18,7 @@ export interface StyledProps {
   as?: keyof JSX.IntrinsicElements;
 }
 
-export type Interpolations<TProps extends Record<string, unknown>> = (
+export type Interpolations<TProps extends unknown> = (
   | BasicTemplateInterpolations
   | FunctionIterpolation<TProps>
   | CssObject<TProps>
@@ -31,15 +31,15 @@ export type Interpolations<TProps extends Record<string, unknown>> = (
  * props from `StyledProps`.
  */
 export interface StyledFunctionFromTag<TTag extends keyof JSX.IntrinsicElements> {
-  <TProps extends Record<string, unknown>>(
+  <TProps extends unknown>(
     // Allows either string or object (`` or ({}))
     css: CssObject<TProps> | CssObject<TProps>[],
     ...interpoltations: Interpolations<TProps>
   ): React.ComponentType<TProps & JSX.IntrinsicElements[TTag] & StyledProps>;
 }
 
-export interface StyledFunctionFromComponent<TInheritedProps extends Record<string, unknown>> {
-  <TProps extends Record<string, unknown>>(
+export interface StyledFunctionFromComponent<TInheritedProps extends unknown> {
+  <TProps extends unknown>(
     // Allows either string or object (`` or ({}))
     css: CssObject<TProps> | TemplateStringsArray,
     ...interpoltations: Interpolations<TProps>
@@ -55,7 +55,7 @@ export interface StyledComponentInstantiator extends StyledComponentMap {
   /**
    * Typing to enable consumers to compose components, e.g: `styled(Component)`
    */
-  <TInheritedProps extends Record<string, unknown>>(
+  <TInheritedProps extends unknown>(
     Component: ComponentType<TInheritedProps>
   ): StyledFunctionFromComponent<TInheritedProps>;
 }

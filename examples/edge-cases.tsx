@@ -41,3 +41,16 @@ export const ContentInterpolation = () => (
     middle
   </DynamicContent>
 );
+
+const NoVisible = styled.div<{ open: boolean; inherentHeight: number }>`
+  max-height: ${(props) => (props.open ? props.inherentHeight : 0)}px;
+  overflow: hidden;
+`;
+
+export const ShouldNotBeVisible = () => {
+  return (
+    <NoVisible open={false} inherentHeight={200}>
+      <div css={{ background: 'pink', height: 200, width: 200 }}>SHOULD NOT BE SEEN</div>
+    </NoVisible>
+  );
+};

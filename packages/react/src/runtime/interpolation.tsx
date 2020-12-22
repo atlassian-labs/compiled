@@ -3,7 +3,7 @@ export default function interpolation(
   suffix: string | undefined,
   prefix: string | undefined
 ): string | number {
-  if (value) {
+  if (value != undefined) {
     if (suffix) {
       if (prefix) {
         return prefix + value + suffix;
