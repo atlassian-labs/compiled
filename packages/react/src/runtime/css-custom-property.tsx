@@ -9,8 +9,8 @@
  */
 export default function cssCustomPropertyValue(
   value: string | number | number,
-  suffix: string | undefined,
-  prefix: string | undefined
+  suffix?: string | undefined,
+  prefix?: string | undefined
 ): string | number {
   if (value != undefined) {
     if (suffix) {
