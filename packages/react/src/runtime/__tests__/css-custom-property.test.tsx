@@ -1,10 +1,10 @@
-import interpolation from '../interpolation';
+import interpolation from '../css-custom-property';
 
 describe('interpolation', () => {
   it('should return an empty CSS comment when undefined', () => {
     const actual = interpolation(undefined, undefined, undefined);
 
-    expect(actual).toEqual(' ');
+    expect(actual).toEqual('var(--, )');
   });
 
   it('should pass through the value if there are no suffix prefix', () => {
