@@ -19,6 +19,16 @@ describe('SSR', () => {
     );
   });
 
+  it('should not render undefined into the output HTML when the interpolation is undefined', () => {
+    const Interpolation = styled.div<{ fontSize?: number }>`
+      font-size: ${(props) => props.fontSize}px;
+    `;
+
+    const result = renderToStaticMarkup(<Interpolation>hello world</Interpolation>);
+
+    expect(result).not.toContain('undefined');
+  });
+
   it('should only render one style block when wrapped in a compiled component when siblings', () => {
     const StyledDiv = styled.div`
       font-size: 12px;
