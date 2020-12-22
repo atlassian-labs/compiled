@@ -295,7 +295,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
 
   return template(
     `
-  React.forwardRef(({
+  forwardRef(({
     as: C = ${buildComponentTag(opts.tag)},
     style,
     ${unique(propsToDestructure)

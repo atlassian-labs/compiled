@@ -76,10 +76,10 @@ export default declare<State>((api) => {
   api.assertVersion(7);
 
   return {
+    name: pkgJson.name,
     inherits: jsxSyntax,
     pre() {
       this.sheets = {};
-
       cache.initialize(this.opts);
       this.cache = cache;
     },
@@ -90,9 +90,18 @@ export default declare<State>((api) => {
             return;
           }
 
-          if (!path.scope.getBinding('React')) {
+          const {
+            opts: { importReact: shouldImportReact = true },
+          } = state;
+
+          if (shouldImportReact && !path.scope.getBinding('React')) {
             // React is missing - add it in at the last moment!
             path.unshiftContainer('body', template.ast(`import * as React from 'react'`));
+          }
+
+          if (state.compiledImports.styled && !path.scope.getBinding('forwardRef')) {
+            // forwardRef is missing - add it in at the last moment!
+            path.unshiftContainer('body', template.ast(`import { forwardRef } from 'react'`));
           }
 
           const version = process.env.TEST_PKG_VERSION || pkgJson.version;

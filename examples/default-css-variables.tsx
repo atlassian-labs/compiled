@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { styled } from '@compiled/react';
 
 const Container = styled.div<{ open: boolean; inherentHeight: number }>`
