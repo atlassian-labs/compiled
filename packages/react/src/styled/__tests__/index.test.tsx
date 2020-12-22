@@ -198,7 +198,7 @@ describe('styled component', () => {
   });
 
   it('should compose a component using template literal', () => {
-    const Div = (props: {}) => <div {...props} />;
+    const Div = (props: Record<string, unknown>) => <div {...props} />;
     const StyledDiv = styled(Div)`
       font-size: 12px;
     `;
@@ -224,7 +224,7 @@ describe('styled component', () => {
   });
 
   it('should compose a component using object literal', () => {
-    const Div = (props: {}) => <div {...props} />;
+    const Div = (props: Record<string, unknown>) => <div {...props} />;
     const StyledDiv = styled(Div)({
       fontSize: 12,
     });

@@ -112,6 +112,7 @@ export function toHaveCompiledCss(
     // This is a hack to get ahold of the styles.
     // Unfortunately JSDOM doesn't handle css variables properly
     // See: https://github.com/jsdom/jsdom/issues/1895
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const styles = element[Object.keys(element)[0]].memoizedProps.style;
 
