@@ -26,7 +26,7 @@ describe('class names object literal', () => {
       `);
 
     expect(actual).toIncludeMultiple([
-      'style={{"--_1j2e0s2":fontSize+"px"}}',
+      'style={{"--_1j2e0s2":ix(fontSize,"px")}}',
       'font-size:var(--_1j2e0s2)',
     ]);
   });
@@ -108,7 +108,7 @@ describe('class names object literal', () => {
       `);
 
     expect(actual).toIncludeMultiple([
-      'style={{"--_1j2e0s2":fontSize}}',
+      'style={{"--_1j2e0s2":ix(fontSize)}}',
       'font-size:var(--_1j2e0s2)',
     ]);
   });

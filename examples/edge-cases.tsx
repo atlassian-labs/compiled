@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { styled } from '@compiled/react';
 
 const Container = styled.div<{ color?: string }>`
@@ -11,7 +10,7 @@ export default {
   title: 'edge cases | interpolations',
 };
 
-export const DontBleed = () => {
+export const PreventCSSVariablesLeaking = () => {
   return (
     <Container color="pink">
       border should be pink

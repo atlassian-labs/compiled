@@ -78,6 +78,14 @@ export interface Metadata {
 }
 
 export interface Tag {
+  /**
+   * Name of the component.
+   * Could be inbuilt "div" or user defined "MyComponent".
+   */
   name: string;
+
+  /**
+   * Type of the component - inbuilt e.g. "div" or user defined e.g. "MyComponent".
+   */
   type: 'InBuiltComponent' | 'UserDefinedComponent';
 }

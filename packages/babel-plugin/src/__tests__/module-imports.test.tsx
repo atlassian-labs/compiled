@@ -103,6 +103,6 @@ describe('import specifiers', () => {
       });
     `);
 
-    expect(actual).toInclude('import{ax,CC,CS}from"@compiled/react/runtime";');
+    expect(actual).toInclude('import{ax,ix,CC,CS}from"@compiled/react/runtime";');
   });
 });

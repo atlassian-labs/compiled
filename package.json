@@ -15,7 +15,7 @@
     "start:ssr": "yarn build && cd playground/ssr && yarn start",
     "start:prod": "NODE_ENV=production yarn start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
-    "test": "yarn build:esm && jest --no-cache",
+    "test": "yarn build:cjs && yarn build:esm && jest --no-cache",
     "test:watch": "yarn build:esm && jest --no-cache --watch",
     "test:cover": "yarn test --collectCoverage",
     "lint": "eslint --config .eslintrc.js --ext tsx,ts ./packages/**/src ./examples",

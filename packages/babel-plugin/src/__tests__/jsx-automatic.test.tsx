@@ -24,7 +24,7 @@ describe('jsx automatic', () => {
       import { jsx as _jsx } from \\"react/jsx-runtime\\";
       import { jsxs as _jsxs } from \\"react/jsx-runtime\\";
 
-      import { ax, CC, CS } from \\"@compiled/react/runtime\\";
+      import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._syaz13q2{color:blue}\\";
 
       /*#__PURE__*/
@@ -52,7 +52,7 @@ describe('jsx automatic', () => {
       import { jsxs as _jsxs } from \\"react/jsx-runtime\\";
       import { jsx as _jsx } from \\"react/jsx-runtime\\";
 
-      import { ax, CC, CS } from \\"@compiled/react/runtime\\";
+      import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._syaz13q2{color:blue}\\";
 
       /*#__PURE__*/
@@ -81,7 +81,7 @@ describe('jsx automatic', () => {
       import { jsx as _jsx } from \\"react/jsx-runtime\\";
 
       import { forwardRef } from 'react';
-      import { ax, CC, CS } from \\"@compiled/react/runtime\\";
+      import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._syaz13q2{color:blue}\\";
       forwardRef(({
         as: C = \\"div\\",

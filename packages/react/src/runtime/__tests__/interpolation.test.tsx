@@ -4,7 +4,7 @@ describe('interpolation', () => {
   it('should return an empty CSS comment when undefined', () => {
     const actual = interpolation(undefined, undefined, undefined);
 
-    expect(actual).toEqual(' ');
+    expect(actual).toEqual('/* */');
   });
 
   it('should pass through the value if there are no suffix prefix', () => {

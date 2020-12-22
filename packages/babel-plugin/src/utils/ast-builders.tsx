@@ -81,11 +81,16 @@ export const buildCssVariablesProp = (
     // Map them into object properties.
     return t.objectProperty(
       t.stringLiteral(variable.name),
-      t.callExpression(t.identifier('ix'), [
-        // Allow callers to transform the expression if needed,
-        // for example the styled API strips away the arrow function.
-        transform(variable.expression),
-      ])
+      t.callExpression(
+        t.identifier('ix'),
+        [
+          // Allow callers to transform the expression if needed,
+          // for example the styled API strips away the arrow function.
+          transform(variable.expression),
+          (variable.suffix && t.stringLiteral(variable.suffix)) as t.Expression,
+          (variable.suffix && variable.prefix && t.stringLiteral(variable.prefix)) as t.Expression,
+        ].filter(Boolean)
+      )
     );
   });
 };
