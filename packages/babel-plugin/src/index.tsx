@@ -76,7 +76,7 @@ export default declare<State>((api) => {
   api.assertVersion(7);
 
   return {
-    name: '@compiled/react',
+    name: pkgJson.name,
     inherits: jsxSyntax,
     pre() {
       this.sheets = {};
@@ -90,7 +90,10 @@ export default declare<State>((api) => {
             return;
           }
 
-          const shouldImportReact = state.opts.importReact === undefined || state.opts.importReact;
+          const {
+            opts: { importReact: shouldImportReact = false },
+          } = state;
+
           if (shouldImportReact && !path.scope.getBinding('React')) {
             // React is missing - add it in at the last moment!
             path.unshiftContainer('body', template.ast(`import * as React from 'react'`));
