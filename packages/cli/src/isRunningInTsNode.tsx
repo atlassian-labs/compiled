@@ -6,7 +6,7 @@ const REGISTER_INSTANCE = Symbol.for('ts-node.register.instance');
 declare global {
   namespace NodeJS {
     interface Process {
-      [REGISTER_INSTANCE]?: object;
+      [REGISTER_INSTANCE]?: Record<string, unknown>;
     }
   }
 }

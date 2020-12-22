@@ -5,7 +5,7 @@
  * @param arr
  * @param getId
  */
-export const unique = <TArrItem extends {}>(
+export const unique = <TArrItem extends Record<string, unknown>>(
   arr: TArrItem[],
   getId: (item: TArrItem) => any = (item) => item
 ): TArrItem[] => {
@@ -25,6 +25,6 @@ export const unique = <TArrItem extends {}>(
  *
  * @param arrays
  */
-export const flatten = <TArr extends {}>(...arrays: TArr[][]): TArr[] => {
+export const flatten = <TArr extends Record<string, unknown>>(...arrays: TArr[][]): TArr[] => {
   return arrays.reduce((acc, arr) => acc.concat(arr), []);
 };

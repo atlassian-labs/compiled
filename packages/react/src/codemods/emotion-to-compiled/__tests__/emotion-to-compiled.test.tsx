@@ -1,5 +1,6 @@
 jest.disableAutomock();
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const defineInlineTest = require('jscodeshift/dist/testUtils').defineInlineTest;
 
 import transformer from '../emotion-to-compiled';

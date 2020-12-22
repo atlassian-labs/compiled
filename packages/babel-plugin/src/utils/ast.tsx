@@ -11,7 +11,7 @@ import { Metadata } from '../types';
  * @param node
  * @param parentPath
  */
-export const getPathOfNode = <TNode extends {}>(
+export const getPathOfNode = <TNode extends Record<string, unknown>>(
   node: TNode,
   parentPath: NodePath
 ): NodePath<TNode> => {
