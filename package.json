@@ -89,6 +89,14 @@
   "size-limit": [
     {
       "path": "./packages/react/dist/browser/runtime.js",
+      "limit": "28B",
+      "import": "{ ix }",
+      "ignore": [
+        "react"
+      ]
+    },
+    {
+      "path": "./packages/react/dist/browser/runtime.js",
       "limit": "134B",
       "import": "{ ax }",
       "ignore": [
@@ -105,7 +113,7 @@
     },
     {
       "path": "./test/dead-code-elimination/dist/index.js",
-      "limit": "600B",
+      "limit": "550B",
       "ignore": [
         "react"
       ]

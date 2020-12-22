@@ -7,6 +7,12 @@ describe('interpolation', () => {
     expect(actual).toEqual('var(--, )');
   });
 
+  it('should return an empty CSS comment when null', () => {
+    const actual = interpolation(null, undefined, undefined);
+
+    expect(actual).toEqual('var(--, )');
+  });
+
   it('should pass through the value if there are no suffix prefix', () => {
     const value = 12;
 

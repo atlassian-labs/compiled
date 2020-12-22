@@ -8,9 +8,9 @@
  * @param prefix
  */
 export default function cssCustomPropertyValue(
-  value: string | number | number,
-  suffix?: string | undefined,
-  prefix?: string | undefined
+  value: string | number | number | null,
+  suffix?: string | undefined | null,
+  prefix?: string | undefined | null
 ): string | number {
   if (value != undefined) {
     if (suffix) {
