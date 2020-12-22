@@ -91,7 +91,7 @@ export default declare<State>((api) => {
           }
 
           const {
-            opts: { importReact: shouldImportReact = false },
+            opts: { importReact: shouldImportReact = true },
           } = state;
 
           if (shouldImportReact && !path.scope.getBinding('React')) {
