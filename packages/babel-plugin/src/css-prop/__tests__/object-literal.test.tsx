@@ -502,7 +502,7 @@ describe('css prop object literal', () => {
     expect(actual).toInclude('{color:red}');
   });
 
-  xit('should parse an inline string interpolation delimited by spaces', () => {
+  it('should parse an inline string interpolation delimited by spaces', () => {
     const actual = transform(`
         import '@compiled/react';
         import React from 'react';
@@ -517,12 +517,12 @@ describe('css prop object literal', () => {
       `);
 
     expect(actual).toInclude('{padding-top:0}');
-    expect(actual).toInclude('{padding-right:4px}');
+    expect(actual).toInclude('{padding-right:var(--_1xlms2h)}');
     expect(actual).toInclude('{padding-bottom:0}');
-    expect(actual).toInclude('{padding-left:4px}');
+    expect(actual).toInclude('{padding-left:var(--_1xlms2h)}');
   });
 
-  xit('should parse an inline string interpolation delimited by multiple spaces', () => {
+  it('should parse an inline string interpolation delimited by multiple spaces', () => {
     const actual = transform(`
         import '@compiled/react';
         import React from 'react';
@@ -537,7 +537,7 @@ describe('css prop object literal', () => {
       `);
 
     expect(actual).toInclude('{padding-top:0}');
-    expect(actual).toInclude('{padding-right:4px}');
+    expect(actual).toInclude('{padding-right:var(--_1xlms2h)}');
     expect(actual).toInclude('{padding-bottom:0}');
     expect(actual).toInclude('{padding-left:0}');
   });

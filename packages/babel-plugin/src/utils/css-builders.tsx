@@ -140,7 +140,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         // This is the catch all for any kind of expression.
         // We don't want to explicitly handle each expression node differently if we can avoid it!
         const variableName = `--_${hash(generate(propValue).code)}`;
-        variables.push({ name: variableName, expression: propValue, suffix: '', prefix: '' });
+        variables.push({ name: variableName, expression: propValue });
         value = `var(${variableName})`;
       }
 
