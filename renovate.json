@@ -1,5 +1,5 @@
 {
-  "extends": ["group:monorepos", "group:recommended", "workarounds:all"],
+  "extends": ["group:monorepos", "group:recommended", "group:postcss", "group:definitelyTyped"],
   "lockFileMaintenance": {
     "enabled": true
   },
