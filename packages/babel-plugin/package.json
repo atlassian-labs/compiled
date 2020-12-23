@@ -33,7 +33,7 @@
     "@babel/types": "^7.12.12",
     "@compiled/css": "0.5.2",
     "@compiled/utils": "0.5.2",
-    "@emotion/is-prop-valid": "^0.8.6",
+    "@emotion/is-prop-valid": "^0.8.8",
     "resolve": "^1.17.0"
   },
   "devDependencies": {
