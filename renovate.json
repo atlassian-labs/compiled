@@ -1,5 +1,5 @@
 {
-  "extends": ["group:monorepos", "group:recommended", "group:postcss", "group:definitelyTyped"],
+  "extends": ["group:monorepos", "group:recommended", "group:definitelyTyped"],
   "lockFileMaintenance": {
     "enabled": true
   },
@@ -16,8 +16,13 @@
     {
       "updateTypes": ["lockFileMaintenance"],
       "automerge": true
+    },
+    {
+      "packageNames": ["postcss"],
+      "packagePatterns": ["^postcss-", "autoprefixer"]
     }
   ],
   "postUpdateOptions": ["yarnDedupeHighest"],
-  "rangeStrategy": "auto"
+  "rangeStrategy": "bump",
+  "semanticCommits": true
 }
