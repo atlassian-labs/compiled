@@ -37,7 +37,7 @@
     "resolve": "^1.17.0"
   },
   "devDependencies": {
-    "@types/babel__core": "^7.1.7",
+    "@types/babel__core": "^7.1.12",
     "@types/benchmark": "^1.0.33",
     "@types/resolve": "^1.17.1",
     "benchmark": "^2.1.4"
