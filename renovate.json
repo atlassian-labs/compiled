@@ -18,8 +18,9 @@
       "automerge": true
     },
     {
-      "packageNames": ["postcss"],
-      "packagePatterns": ["^postcss-", "autoprefixer"]
+      "extends": "group:postcss",
+      "packagePatterns": ["^postcss-", "^autoprefixer"],
+      "groupName": "postcss packages"
     }
   ],
   "postUpdateOptions": ["yarnDedupeHighest"],
