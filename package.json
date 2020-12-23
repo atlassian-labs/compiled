@@ -52,7 +52,7 @@
     "babel-loader": "^8.1.0",
     "chromatic": "^5.1.0",
     "eslint": "^6.8.0",
-    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^3.0.0",
     "git-branch-is": "^3.1.0",
     "husky": "^4.2.5",
