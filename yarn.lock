@@ -4162,7 +4162,7 @@ chownr@^1.1.1, chownr@^1.1.2:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-1.1.4.tgz#6fc9d7b42d32a583596337666e7d08084da2cc6b"
   integrity sha512-jJ0bqzaylmJtVnNgzTeSOs8DPavpbYgEr/b0YL8/2GO3xJEhInFmhKMUnEJQjZumK7KXGFhUy89PrsJWlakBVg==
 
-chromatic@^5.1.0:
+chromatic@^5.5.0:
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-5.5.0.tgz#664808ae41c662560a475004e6353847a9c13ed3"
   integrity sha512-MaSyaNO4uIx7Ve+uMEBYDgkQKMi8iQdg62kHfpum5QDSlxXTUreQYSaUM1P66ud7uFcmS4Sq+csWTY2LjT3F+g==
