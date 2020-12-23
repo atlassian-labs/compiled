@@ -23,7 +23,7 @@ describe('css prop string literal', () => {
       `);
 
     expect(actual).toInclude('{font-size:var(--_1j2e0s2)}');
-    expect(actual).toInclude('style={{"--_1j2e0s2":fontSize+"px"}}');
+    expect(actual).toInclude('style={{"--_1j2e0s2":ix(fontSize,"px")}}');
   });
 
   it('should persist suffix of constant value', () => {
@@ -141,7 +141,7 @@ describe('css prop string literal', () => {
     expect(actual).toInclude('{color:var(--_kmurgp)');
     expect(actual).toInclude('{text-transform:uppercase}');
     expect(actual).toInclude('{font-weight:600}');
-    expect(actual).toInclude('style={{"--_kmurgp":props.color}}');
+    expect(actual).toInclude('style={{"--_kmurgp":ix(props.color)}}');
   });
 
   it('should transform no template string literal', () => {
@@ -190,7 +190,7 @@ describe('css prop string literal', () => {
     expect(actual).toInclude('{display:grid}');
     expect(actual).toInclude('{grid-template-areas:var(--_1o3snts)}');
     expect(actual).toInclude(
-      `style={{\"--_1o3snts\":sidenav?\"'header header' 'sidebar content'\":\"'header header' 'content content'\"}}`
+      `style={{\"--_1o3snts\":ix(sidenav?\"'header header' 'sidebar content'\":\"'header header' 'content content'\")}}`
     );
   });
 
@@ -351,7 +351,7 @@ describe('css prop string literal', () => {
       `);
 
     expect(actual).toIncludeMultiple([
-      'style={{"--_65u76s":x+"px","--_1ohot4b":y}}',
+      'style={{"--_65u76s":ix(x,"px"),"--_1ohot4b":ix(y)}}',
       '{transform:translate3d(var(--_65u76s),var(--_1ohot4b),0)}',
     ]);
   });

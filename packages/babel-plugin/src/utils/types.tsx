@@ -19,5 +19,7 @@ export interface CSSOutput {
   variables: {
     name: string;
     expression: t.Expression;
+    prefix?: string;
+    suffix?: string;
   }[];
 }

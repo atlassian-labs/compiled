@@ -2,7 +2,6 @@ import * as t from '@babel/types';
 import generate from '@babel/generator';
 import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '@compiled/css';
 import { kebabCase, hash } from '@compiled/utils';
-import { joinExpressions } from './ast-builders';
 import { Metadata } from '../types';
 import { getKey, resolveBindingNode, buildCodeFrameError } from './ast';
 import { evaluateExpression } from './evaluate-expression';
@@ -221,22 +220,14 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       const nextQuasis = node.quasis[index + 1];
       const before = cssBeforeInterpolation(css + q.value.raw);
       const after = cssAfterInterpolation(nextQuasis.value.raw);
-      let expression = interpolation;
-
-      if (before.variablePrefix) {
-        // A prefix is defined - we want to add them together!
-        // E.g: prefix + expression
-        expression = joinExpressions(t.stringLiteral(before.variablePrefix), expression, null);
-      }
-
-      if (after.variableSuffix) {
-        // A suffix is defined - we want to add it to the whatever has been defined as the expression.
-        // E.g: expression + suffix
-        expression = joinExpressions(expression, t.stringLiteral(after.variableSuffix), null);
-      }
-
       nextQuasis.value.raw = after.css; // Removes any suffixes from the next quasis.
-      variables.push({ name: variableName, expression });
+
+      variables.push({
+        name: variableName,
+        expression: interpolation,
+        prefix: before.variablePrefix,
+        suffix: after.variableSuffix,
+      });
 
       return acc + before.css + `var(${variableName})`;
     }

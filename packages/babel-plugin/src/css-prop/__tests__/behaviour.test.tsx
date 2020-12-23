@@ -65,7 +65,7 @@ describe('css prop behaviour', () => {
       const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize, color: red }}>hello world</div>;
     `);
 
-    expect(actual).toInclude('style={{...style,"--_1j2e0s2":fontSize}}');
+    expect(actual).toInclude('style={{...style,"--_1j2e0s2":ix(fontSize)}}');
   });
 
   it('should spread style property access when there is dynamic styles in the css', () => {
@@ -77,7 +77,7 @@ describe('css prop behaviour', () => {
       const Component = ({ className, ...props }) => <div className={className} style={props.style} css={{ fontSize: 12, color: red, background }}>hello world</div>;
     `);
 
-    expect(actual).toInclude('style={{...props.style,"--_1k9t07z":background}}');
+    expect(actual).toInclude('style={{...props.style,"--_1k9t07z":ix(background)}}');
   });
 
   it('should spread style identifier when there is styles already set', () => {
@@ -102,7 +102,7 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      `style={{...style,display:'block',\"--_1k9t07z\":background}}`,
+      `style={{...style,display:'block',\"--_1k9t07z\":ix(background)}}`,
       'color:red',
     ]);
   });
@@ -202,7 +202,19 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toInclude(`color:var(--_1ylxx6h)`);
-    expect(actual).toInclude(`style={{display:'block',\"--_1ylxx6h\":color}}`);
+    expect(actual).toInclude(`style={{display:'block',\"--_1ylxx6h\":ix(color)}}`);
+  });
+
+  it('should place suffix into ix call', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      import { useState } from 'react';
+
+      const size = useState(10);
+      <div css={\` font-size: $\{size}px; \`}>hello world</div>
+    `);
+
+    expect(actual).toInclude(`ix(size,"px")`);
   });
 
   it('should concat implicit use of class name prop where class name is a jsx expression', () => {
@@ -230,7 +242,7 @@ describe('css prop behaviour', () => {
 
     expect(actual).toInclude('color:var(--_15b8wfu)');
     expect(actual).toInclude('font-size:10px');
-    expect(actual).toInclude(`style={{\"--_15b8wfu\":hello?'red':'blue'}}`);
+    expect(actual).toInclude(`style={{\"--_15b8wfu\":ix(hello?'red':'blue')}}`);
   });
 
   it('should inline multi interpolation constant variable', () => {
@@ -273,7 +285,7 @@ describe('css prop behaviour', () => {
     expect(actual).toInclude(
       `{background-image:linear-gradient(45deg,var(--_1vrvste\) 25%,transparent 25%),linear-gradient(-45deg,var(--_1vrvste\) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--_1vrvste\) 75%),linear-gradient(-45deg,transparent 75%,var(--_1vrvste\) 75%)}`
     );
-    expect(actual).toInclude('style={{"--_1vrvste":N30}}');
+    expect(actual).toInclude('style={{"--_1vrvste":ix(N30)}}');
   });
 
   it('should allow expressions stored in a variable as shorthand property values', () => {
@@ -288,7 +300,7 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toInclude('{color:var(--_1ylxx6h)}');
-    expect(actual).toInclude(`style={{\"--_1ylxx6h\":color}}`);
+    expect(actual).toInclude(`style={{\"--_1ylxx6h\":ix(color)}}`);
   });
 
   it('should allow expressions stored in a variable as property values', () => {
@@ -303,7 +315,7 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toInclude('{color:var(--_19p4bcs)}');
-    expect(actual).toInclude(`style={{\"--_19p4bcs\":colorsz}}`);
+    expect(actual).toInclude(`style={{\"--_19p4bcs\":ix(colorsz)}}`);
   });
 
   it('should remove css prop', () => {

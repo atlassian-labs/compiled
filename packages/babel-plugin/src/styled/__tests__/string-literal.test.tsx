@@ -32,7 +32,7 @@ describe('styled component string literal', () => {
 
     expect(actual).toInclude('{font-size:var(--_fb92co)}');
     expect(actual).toInclude('textSize,...props}');
-    expect(actual).toInclude('"--_fb92co":textSize+"px"');
+    expect(actual).toInclude('"--_fb92co":ix(textSize,"px")');
   });
 
   it('should inline constant numeric literal', () => {
@@ -61,7 +61,7 @@ describe('styled component string literal', () => {
         \`;
       `);
 
-    expect(actual).toInclude('"--_1j2e0s2":fontSize+"px"');
+    expect(actual).toInclude('"--_1j2e0s2":ix(fontSize,"px")');
     expect(actual).toInclude('{font-size:var(--_1j2e0s2)}');
   });
 
@@ -77,7 +77,7 @@ describe('styled component string literal', () => {
         \`;
       `);
 
-    expect(actual).toInclude('"--_1j2e0s2":fontSize+"px"');
+    expect(actual).toInclude('"--_1j2e0s2":ix(fontSize,"px")');
     expect(actual).toInclude('{font-size:var(--_1j2e0s2)}');
   });
 
@@ -117,7 +117,7 @@ describe('styled component string literal', () => {
       `);
 
     expect(actual).toInclude('{color:var(--_1p69eoh)');
-    expect(actual).toInclude('"--_1p69eoh":props.color');
+    expect(actual).toInclude('"--_1p69eoh":ix(props.color)');
   });
 
   it('should transform an arrow function with a body into an IIFE', () => {
@@ -130,7 +130,7 @@ describe('styled component string literal', () => {
       `);
 
     expect(actual).toInclude('{color:var(--_1poneq5)}');
-    expect(actual).toInclude('"--_1poneq5":(()=>{return props.color;})()}}');
+    expect(actual).toInclude('"--_1poneq5":ix((()=>{return props.color;})())');
   });
 
   it('should transform an arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
@@ -144,7 +144,7 @@ describe('styled component string literal', () => {
 
     expect(actual).toInclude('{font-size:var(--_1j0t240)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--_1j0t240":(()=>{return textSize;})()}}');
+    expect(actual).toInclude('"--_1j0t240":ix((()=>{return textSize;})())');
   });
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE', () => {
@@ -157,7 +157,7 @@ describe('styled component string literal', () => {
       `);
 
     expect(actual).toInclude('{content:var(--_1poneq5)}');
-    expect(actual).toInclude('"--_1poneq5":"\\""+(()=>{return props.color;})()+"\\""');
+    expect(actual).toInclude('"--_1poneq5":ix((()=>{return props.color;})(),"\\"","\\"")');
   });
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
@@ -171,7 +171,7 @@ describe('styled component string literal', () => {
 
     expect(actual).toInclude('{content:var(--_1j0t240)}');
     expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--_1j0t240":"\\""+(()=>{return textSize;})()+"\\""');
+    expect(actual).toInclude('"--_1j0t240":ix((()=>{return textSize;})(),"\\"","\\"")');
   });
 
   it('should transform template string literal with obj variable', () => {
@@ -203,7 +203,7 @@ describe('styled component string literal', () => {
       `);
 
     expect(actual).toInclude('{color:var(--_1ylxx6h)');
-    expect(actual).toInclude('"--_1ylxx6h":color');
+    expect(actual).toInclude('"--_1ylxx6h":ix(color)');
   });
 
   it('should inline call if it returns simple value', () => {
@@ -218,7 +218,7 @@ describe('styled component string literal', () => {
       `);
 
     expect(actual).toInclude('{color:var(--_16ywsic)}');
-    expect(actual).toInclude(`"--_16ywsic":em('blue')`);
+    expect(actual).toInclude(`"--_16ywsic":ix(em('blue'))`);
   });
 
   it('should transform template string with no argument arrow function variable', () => {
@@ -317,7 +317,7 @@ describe('styled component string literal', () => {
         \`;
       `);
 
-    expect(actual).toInclude('"--_1p69eoh":"\\""+props.color+"\\""');
+    expect(actual).toInclude('"--_1p69eoh":ix(props.color,"\\"","\\"")');
   });
 
   it('should move any prefix of a dynamic arrow func property into the style property', () => {
@@ -329,7 +329,7 @@ describe('styled component string literal', () => {
         \`;
       `);
 
-    expect(actual).toInclude('"--_1p69eoh":"\\""+props.color+"\\""');
+    expect(actual).toInclude('"--_1p69eoh":ix(props.color,"\\"","\\"")');
   });
 
   it('should move any suffix of a dynamic arrow func property into the style property', () => {
@@ -341,7 +341,7 @@ describe('styled component string literal', () => {
         \`;
       `);
 
-    expect(actual).toInclude('"--_1p69eoh":props.color+"px"');
+    expect(actual).toInclude('"--_1p69eoh":ix(props.color,"px")');
   });
 
   it('should move suffix and prefix of a dynamic property into the style property', () => {
@@ -358,7 +358,7 @@ describe('styled component string literal', () => {
       `);
 
     expect(actual).toInclude('{content:var(--_1ylxx6h)}');
-    expect(actual).toInclude('"--_1ylxx6h":"\\""+color+"\\""');
+    expect(actual).toInclude('"--_1ylxx6h":ix(color,"\\"","\\"")');
   });
 
   it('should do nothing with suffix/prefix when referencing constant literal', () => {
@@ -424,7 +424,7 @@ describe('styled component string literal', () => {
       `);
 
     expect(actual).toInclude('{border-radius:var(--_1hwymmh)}');
-    expect(actual).toInclude('"--_1hwymmh":br+"px"');
+    expect(actual).toInclude('"--_1hwymmh":ix(br,"px")');
   });
 
   it('should transform inline arrow function with suffix', () => {
