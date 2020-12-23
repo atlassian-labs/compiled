@@ -21,6 +21,10 @@
       "extends": "group:postcss",
       "packagePatterns": ["^postcss-", "^autoprefixer"],
       "groupName": "postcss packages"
+    },
+    {
+      "depTypeList": ["peerDependencies"],
+      "rangeStrategy": "widen"
     }
   ],
   "postUpdateOptions": ["yarnDedupeHighest"],
