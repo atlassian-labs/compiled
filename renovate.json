@@ -1,5 +1,23 @@
 {
-  "extends": [
-    "config:base"
-  ]
+  "extends": ["group:monorepos", "group:recommended", "workarounds:all"],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "managers": ["npm"],
+      "updateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "managers": ["nvm"],
+      "automerge": true
+    },
+    {
+      "updateTypes": ["lockFileMaintenance"],
+      "automerge": true
+    }
+  ],
+  "postUpdateOptions": ["yarnDedupeHighest"],
+  "rangeStrategy": "auto"
 }
