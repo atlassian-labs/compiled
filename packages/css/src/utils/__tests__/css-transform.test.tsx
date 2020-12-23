@@ -1,6 +1,94 @@
 import { transformCss } from '../css-transform';
 
 describe('#css-transform', () => {
+  beforeEach(() => {
+    delete process.env.NODE_ENV;
+  });
+
+  describe('production builds', () => {
+    it('should order values', () => {
+      process.env.NODE_ENV = 'production';
+
+      const { sheets: actualOne } = transformCss(`
+        border: green solid 2px;
+      `);
+      const { sheets: actualTwo } = transformCss(`
+        border: 2px solid green;
+      `);
+
+      expect(actualOne.join('\n')).toEqual(actualTwo.join('\n'));
+    });
+
+    it('should normalize values', () => {
+      process.env.NODE_ENV = 'production';
+
+      const { sheets: actual } = transformCss(`
+        margin-left: initial;
+        content: 'hello';
+        color: hotpink;
+        border-color: currentColor;
+        background-color: currentcolor;
+        border-left-color: current-color;
+
+      `);
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._18u0idpf{margin-left:0}
+        ._1sb21e8g{content:\\"hello\\"}
+        ._syazhrp1{color:#ff69b4}
+        ._1h6d1r31{border-color:currentColor}
+        ._bfhk1r31{background-color:currentColor}
+        ._5wra1r31{border-left-color:currentColor}"
+      `);
+    });
+
+    it('should normalize empty values', () => {
+      process.env.NODE_ENV = 'production';
+
+      const { sheets: actual } = transformCss(`
+        margin-left: initial;
+        margin-top: 0px;
+        margin-bottom: 0;
+      `);
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._18u0idpf{margin-left:0}
+        ._19pkidpf{margin-top:0}
+        ._otyridpf{margin-bottom:0}"
+      `);
+    });
+  });
+
+  it('should generate the same selectors even if white space is different', () => {
+    const { sheets: actualOne } = transformCss(`
+      >   :first-child {
+        color: red;
+      }
+    `);
+    const { sheets: actualTwo } = transformCss(`
+      >:first-child{
+        color: red;
+      }
+    `);
+
+    expect(actualOne.join('\n')).toEqual(actualTwo.join('\n'));
+  });
+
+  it('should generate the same at rules even if white space is different', () => {
+    const { sheets: actualOne } = transformCss(`
+      @media (max-width:   400px)  and    (min-width: 10px) {
+        color: red;
+      }
+    `);
+    const { sheets: actualTwo } = transformCss(`
+      @media (max-width:400px) and (min-width:10px){
+        color: red;
+      }
+    `);
+
+    expect(actualOne.join('\n')).toEqual(actualTwo.join('\n'));
+  });
+
   describe('leading pseduos in css', () => {
     it('should parent a single pseudo', () => {
       const { sheets: actual } = transformCss(
@@ -39,9 +127,9 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
-              "._169r1j6v._169r1j6v > *{margin-bottom:1rem}
-              ._1wzbidpf._1wzbidpf > *:last-child{margin-bottom:0}"
-          `);
+        "._1xhg1j6v._1xhg1j6v>*{margin-bottom:1rem}
+        ._1ym1idpf._1ym1idpf>:last-child{margin-bottom:0}"
+      `);
     });
 
     it('should parent multiple pseduos in a group', () => {
@@ -55,7 +143,7 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(
-        `"._1sfm1q9v:hover div, ._f8pj1q9v:focus{color:hotpink}"`
+        `"._f8pj1q9v:focus, ._1sfm1q9v:hover div{color:hotpink}"`
       );
     });
 
@@ -76,18 +164,18 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n').split(',').join(',\n')).toMatchInlineSnapshot(`
-        "._t7rc1q9v .foo:first-child,
-         ._ppxs1q9v .foo div,
-         ._1fa31q9v .foo span,
-         ._1pdx1q9v .foo:last-child,
-         ._1sbr1q9v .bar div:first-child,
+        "._1sbr1q9v .bar div:first-child,
+         ._15h31q9v .bar div:last-child,
          ._kq2v1q9v .bar div div,
          ._11eb1q9v .bar div span,
-         ._15h31q9v .bar div:last-child,
+         ._t7rc1q9v .foo:first-child,
+         ._1pdx1q9v .foo:last-child,
+         ._ppxs1q9v .foo div,
+         ._1fa31q9v .foo span,
          ._1g8a1q9v .qwe:first-child,
+         ._1j9g1q9v .qwe:last-child,
          ._1z9o1q9v .qwe div,
-         ._1qid1q9v .qwe span,
-         ._1j9g1q9v .qwe:last-child{color:hotpink}"
+         ._1qid1q9v .qwe span{color:hotpink}"
       `);
     });
 
@@ -150,7 +238,7 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(
-        `"@media (max-width: 400px){@supports (display: grid){._1vye1q9v div, ._18e01q9v:first-child{color:hotpink}}}"`
+        `"@media (max-width:400px){@supports (display:grid){._jbdf1q9v:first-child, ._ex911q9v div{color:hotpink}}}"`
       );
     });
 
@@ -163,7 +251,7 @@ describe('#css-transform', () => {
     `
       );
 
-      expect(actual.join('\n')).toMatchInlineSnapshot(`"._19601q9v > :first-child{color:hotpink}"`);
+      expect(actual.join('\n')).toMatchInlineSnapshot(`"._129w1q9v >:first-child{color:hotpink}"`);
     });
   });
 
@@ -256,7 +344,7 @@ describe('#css-transform', () => {
     `);
 
     expect(actual.join('\n')).toMatchInlineSnapshot(
-      `"@media (max-width: 400px){._3pn21gy6:link{color:yellow}._kqa111x8:visited{color:black}._1vpvtwqo:focus-within{color:grey}._9yhd32ev:focus{color:pink}._nfm81x77:focus-visible{color:white}._1ragbf54:hover{color:green}._2ddc5scu:active, ._3pn25scu:link{color:red}}"`
+      `"@media (max-width:400px){._buol1gy6:link{color:yellow}._st8p11x8:visited{color:black}._4h7jtwqo:focus-within{color:grey}._6i6132ev:focus{color:pink}._is8y1x77:focus-visible{color:white}._axlybf54:hover{color:green}._1i6q5scu:active, ._buol5scu:link{color:red}}"`
     );
   });
 

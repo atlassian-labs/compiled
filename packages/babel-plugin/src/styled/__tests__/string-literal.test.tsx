@@ -302,7 +302,7 @@ describe('styled component string literal', () => {
       `);
 
     expect(actual).toInclude(`{color:blue}`);
-    expect(actual).toInclude(`{border:1px black solid}`);
+    expect(actual).toInclude(`{border:1px solid black}`);
     expect(actual).toInclude(`{font-size:12px}`);
     expect(actual).toInclude(`{font-weight:500}`);
     expect(actual).toInclude(':hover{background-color:blue}');

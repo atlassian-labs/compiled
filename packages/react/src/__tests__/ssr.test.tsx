@@ -133,8 +133,8 @@ describe('SSR', () => {
     );
 
     expect(result.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
-      "<style data-cmpld=\\"true\\" nonce=\\"k0Mp1lEd\\">._1e0c1txw{display:flex}._1wyb12am{font-size:50px}._syaz1cnh{color:purple}._ysv75scu:link{color:red}._105332ev:visited{color:pink}._f8pjbf54:focus{color:green}._30l31gy6:hover{color:yellow}._9h8h13q2:active{color:blue}@supports (display: grid){._qxnw1gy6:focus{color:yellow}._p7tw11x8:active{color:black}}@media (max-width: 800px){._vyxz1gy6:focus{color:yellow}._ojvu11x8:active{color:black}}</style>
-      <a href=\\"https://atlassian.design\\" class=\\"_1e0c1txw _1wyb12am _syaz1cnh _30l31gy6 _9h8h13q2 _ysv75scu _p7tw11x8 _qxnw1gy6 _f8pjbf54 _105332ev _ojvu11x8 _vyxz1gy6\\">Atlassian Design System</a>"
+      "<style data-cmpld=\\"true\\" nonce=\\"k0Mp1lEd\\">._1e0c1txw{display:flex}._1wyb12am{font-size:50px}._syaz1cnh{color:purple}._ysv75scu:link{color:red}._105332ev:visited{color:pink}._f8pjbf54:focus{color:green}._30l31gy6:hover{color:yellow}._9h8h13q2:active{color:blue}@supports (display:grid){._1df61gy6:focus{color:yellow}._7okp11x8:active{color:black}}@media (max-width:800px){._1o8z1gy6:focus{color:yellow}._1cld11x8:active{color:black}}</style>
+      <a href=\\"https://atlassian.design\\" class=\\"_1e0c1txw _1wyb12am _syaz1cnh _30l31gy6 _9h8h13q2 _ysv75scu _7okp11x8 _1df61gy6 _f8pjbf54 _105332ev _1cld11x8 _1o8z1gy6\\">Atlassian Design System</a>"
     `);
   });
 });

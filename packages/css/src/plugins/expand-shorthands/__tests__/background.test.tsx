@@ -33,16 +33,4 @@ describe('background property expander', () => {
           "
     `);
   });
-
-  it('should order value nodes alphabetically greater than one', () => {
-    const result = transform`
-      background: red repeat scroll border-box;
-    `;
-
-    expect(result).toMatchInlineSnapshot(`
-      "
-            background: border-box red repeat scroll;
-          "
-    `);
-  });
 });
