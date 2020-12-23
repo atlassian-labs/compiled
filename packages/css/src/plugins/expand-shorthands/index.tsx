@@ -12,7 +12,6 @@ import { flexFlow } from './flex-flow';
 import { outline } from './outline';
 import { textDecoration } from './text-decoration';
 import { background } from './background';
-import { order } from './order';
 
 const shorthands: Record<string, ConversionFunction> = {
   // These properties are fully expanded
@@ -27,25 +26,23 @@ const shorthands: Record<string, ConversionFunction> = {
   outline,
   'text-decoration': textDecoration,
 
-  // These properties are partially expanded (and ordered otherwise)
+  // These properties are partially expanded
   background,
 
-  // These properties are ordered only but may be expanded later.
-  'column-rule': order,
-  'list-style': order,
-  columns: order,
-  border: order,
-  borderTop: order,
-  borderRight: order,
-  borderLeft: order,
-  borderBottom: order,
-
-  // These properties are excluded for now
+  // These properties are excluded for now but will be ordered when building production.
   /**
+   * border
+   * border-top
+   * border-right
+   * border-left
+   * border-bottom
    * border-color
    * border-radius
    * border-style
    * border-width
+   * column-rule'
+   * list-style'
+   * columns
    * animation
    * transition
    * font

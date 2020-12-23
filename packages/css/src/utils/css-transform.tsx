@@ -5,18 +5,11 @@ import whitespace from 'postcss-normalize-whitespace';
 import { unique } from '@compiled/utils';
 import { discardDuplicates } from '../plugins/discard-duplicates';
 import { parentOrphanedPseudos } from '../plugins/parent-orphaned-pseudos';
-import { minify } from '../plugins/minify';
+import { normalizeCSS } from '../plugins/normalize-css';
 import { extractStyleSheets } from '../plugins/extract-stylesheets';
 import { atomicifyRules } from '../plugins/atomicify-rules';
 import { expandShorthands } from '../plugins/expand-shorthands';
 import { sortAtRulePseudos } from '../plugins/sort-at-rule-pseudos';
-
-interface Opts {
-  /**
-   * Enables minifying CSS through `cssnano`.
-   */
-  minify?: boolean;
-}
 
 /**
  * Will transform CSS into multiple CSS sheets.
@@ -25,7 +18,7 @@ interface Opts {
  * @param css CSS string
  * @param opts Transformation options
  */
-export const transformCss = (css: string, opts: Opts = { minify: false }) => {
+export const transformCss = (css: string): { sheets: string[]; classNames: string[] } => {
   const sheets: string[] = [];
   const classNames: string[] = [];
 
@@ -33,11 +26,12 @@ export const transformCss = (css: string, opts: Opts = { minify: false }) => {
     discardDuplicates(),
     parentOrphanedPseudos(),
     nested(),
+    ...normalizeCSS(),
     expandShorthands(),
     atomicifyRules({ callback: (className) => classNames.push(className) }),
     sortAtRulePseudos(),
     autoprefixer(),
-    ...(opts.minify ? minify() : [whitespace]),
+    whitespace,
     extractStyleSheets({ callback: (sheet: string) => sheets.push(sheet) }),
   ]).process(css, {
     from: undefined,

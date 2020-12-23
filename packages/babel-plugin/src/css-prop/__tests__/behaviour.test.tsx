@@ -522,7 +522,7 @@ describe('css prop behaviour', () => {
       );
     `);
 
-    expect(actual).toInclude('ax([props.isPrimary&&"_syaz13q2 _1wybgktf","_19itjoc5"])');
+    expect(actual).toInclude('ax([props.isPrimary&&"_syaz13q2 _1wybgktf","_19it97hw"])');
   });
 
   it('should apply unconditional before and after a conditional css rule', () => {
@@ -543,7 +543,7 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toInclude(
-      'ax(["_1wybo7ao",props.isPrimary&&"_syaz13q2 _1wybgktf","_19itjoc5"])'
+      'ax(["_1wybo7ao",props.isPrimary&&"_syaz13q2 _1wybgktf","_19it97hw"])'
     );
   });
 

@@ -10,10 +10,5 @@ export const background: ConversionFunction = (value) => {
     return [{ prop: 'background-color', value: value.nodes[0].toString() }];
   }
 
-  const orderedValues = value.nodes
-    .map((val) => val.toString())
-    .sort()
-    .join(' ');
-
-  return [{ value: orderedValues }];
+  return [{ value: value.nodes.join(' ') }];
 };

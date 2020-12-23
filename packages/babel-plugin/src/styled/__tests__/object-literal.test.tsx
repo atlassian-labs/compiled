@@ -335,7 +335,7 @@ describe('styled component object literal', () => {
       `);
 
     expect(actual).toInclude(`{color:blue}`);
-    expect(actual).toInclude(`{border:1px blue solid}`);
+    expect(actual).toInclude(`{border:1px solid blue}`);
     expect(actual).toInclude(`{font-size:12px}`);
     expect(actual).toInclude(`{font-weight:500}`);
   });
