@@ -25,6 +25,10 @@
     {
       "depTypeList": ["peerDependencies"],
       "rangeStrategy": "widen"
+    },
+    {
+      "extends": "packages:eslint",
+      "groupName": "eslint packages"
     }
   ],
   "postUpdateOptions": ["yarnDedupeHighest"],
