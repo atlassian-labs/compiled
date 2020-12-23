@@ -25,6 +25,6 @@
   },
   "devDependencies": {
     "@types/css": "^0.0.31",
-    "csstype": "^2.6.10"
+    "csstype": "^2.6.14"
   }
 }
