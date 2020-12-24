@@ -11,8 +11,8 @@
   "devDependencies": {
     "@compiled/react": "*",
     "benchmark": "^2.1.4",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "ts-node": "^9.1.1"
   }
 }
