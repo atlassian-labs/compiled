@@ -1,7 +1,7 @@
 import { ClassNames } from '@compiled/react';
 
 export default {
-  title: 'ClassNames | static',
+  title: 'ClassNames/static',
 };
 
 export const ObjectCSS = () => (

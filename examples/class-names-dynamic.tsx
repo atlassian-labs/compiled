@@ -1,7 +1,7 @@
 import { ClassNames } from '@compiled/react';
 
 export default {
-  title: 'ClassNames | dynamic',
+  title: 'ClassNames/dynamic',
 };
 
 const ClassNamesObject = ({ color }: { color: string }) => (

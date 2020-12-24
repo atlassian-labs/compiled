@@ -1,7 +1,7 @@
 import { styled } from '@compiled/react';
 
 export default {
-  title: 'styled | interpolations',
+  title: 'styled/interpolations',
 };
 
 interface Props {

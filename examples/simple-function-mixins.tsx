@@ -2,7 +2,7 @@ import { styled } from '@compiled/react';
 import { objectStyles, colorMixin } from 'module-a';
 
 export default {
-  title: 'mixins | simple functions',
+  title: 'mixins/simple functions',
 };
 
 const StyledObjectLiteral = styled.div({

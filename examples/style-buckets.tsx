@@ -3,7 +3,7 @@ import '@compiled/react';
 import { hover } from './mixins/mixins';
 
 export default {
-  title: 'atomic | style buckets',
+  title: 'atomic/style buckets',
 };
 
 export const Example = () => {

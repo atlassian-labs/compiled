@@ -1,7 +1,7 @@
 import { styled } from '@compiled/react';
 
 export default {
-  title: 'styled | static object',
+  title: 'styled/static object',
 };
 
 const Thing = styled.div({

@@ -1,7 +1,7 @@
 import '@compiled/react';
 
 export default {
-  title: 'conditional rules | css prop',
+  title: 'conditional rules/css prop',
 };
 
 const Lozenge = (props: { isPrimary?: boolean; children: any }) => (

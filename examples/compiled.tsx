@@ -1,7 +1,7 @@
 import '@compiled/react';
 
 export default {
-  title: 'benchmarks | compiled',
+  title: 'benchmarks/compiled',
 };
 
 export const Static = () => (
