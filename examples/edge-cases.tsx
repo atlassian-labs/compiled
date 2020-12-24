@@ -7,7 +7,7 @@ const Container = styled.div<{ color?: string }>`
 `;
 
 export default {
-  title: 'edge cases | interpolations',
+  title: 'edge cases/interpolations',
 };
 
 export const PreventCSSVariablesLeaking = () => {

@@ -1,7 +1,7 @@
 import { styled } from '@compiled/react';
 
 export default {
-  title: 'composition | user components',
+  title: 'composition/user components',
 };
 
 const GreenFontCssProp = (props: { children: any; className?: string }) => (

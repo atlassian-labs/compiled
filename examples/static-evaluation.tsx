@@ -1,7 +1,7 @@
 import { styled } from '@compiled/react';
 
 export default {
-  title: 'ast | static evaluation',
+  title: 'ast/static evaluation',
 };
 
 const fontSize = 12;
