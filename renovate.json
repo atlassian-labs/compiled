@@ -1,5 +1,6 @@
 {
   "extends": ["group:monorepos", "group:recommended", "group:definitelyTyped"],
+  "dependencyDashboard": true,
   "lockFileMaintenance": {
     "enabled": true
   },
