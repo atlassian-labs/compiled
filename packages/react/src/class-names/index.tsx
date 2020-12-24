@@ -11,6 +11,33 @@ export interface ClassNamesProps {
   }) => ReactNode;
 }
 
+/**
+ * Use `ClassNames` to have more control over a component that has styles not necessarily tied to an element,
+ * enabling powerful patterns with render props.
+ *
+ * ```
+ * // Object CSS
+ * <ClassNames>
+ *   {({ css, style }) => children({ className: css({ fontSize: 12 }) })}
+ * </ClassNames>
+ *
+ * // Template literal CSS
+ * <ClassNames>
+ *   {({ css, style }) => children({ className: css`font-size: 12px;` })}
+ * </ClassNames>
+ *
+ * // Array CSS
+ * <ClassNames>
+ *   {({ css, style }) =>
+ *    children({ className: css([{ fontSize: 12 }, `font-size: 12px`]) })}
+ * </ClassNames>
+ * ```
+ *
+ * For more help, read the docs:
+ * https://compiledcssinjs.com/docs/class-names
+ *
+ * @param props
+ */
 export function ClassNames(_: ClassNamesProps): JSX.Element {
   throw createSetupError();
 }

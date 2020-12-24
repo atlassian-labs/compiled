@@ -60,6 +60,19 @@ export interface StyledComponentInstantiator extends StyledComponentMap {
   ): StyledFunctionFromComponent<TInheritedProps>;
 }
 
+/**
+ * Use `styled` to create a component that has styles tied to an element which comes with built-in behavior such as `ref` and `as` prop support.
+ *
+ * ```
+ * styled.div`font-size: 12px`; // Template literal CSS
+ * styled.div({ fontSize: 12 }); // Object CSS
+ * styled.div([{ fontSize: 12 }, `font-size: 12px;`]) // Array CSS
+ * styled.div({ fontSize: 12 }, `font-size: 12px`) Multi arguments CSS
+ * ```
+ *
+ * For more help, read the docs:
+ * https://compiledcssinjs.com/docs/styled
+ */
 export const styled: StyledComponentInstantiator = new Proxy(
   {},
   {
