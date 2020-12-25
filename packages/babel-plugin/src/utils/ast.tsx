@@ -573,3 +573,20 @@ const tryWrappingBlockStatementInIIFE = (node: t.BlockStatement | t.Expression) 
  * @param node Node of type ArrowFunctionExpression
  */
 export const pickFunctionBody = (node: t.Function) => tryWrappingBlockStatementInIIFE(node.body);
+
+/**
+ * Returns the valeus of a jsx attribute expression.
+ *
+ * @param node
+ */
+export const getJsxAttributeExpression = (node: t.JSXAttribute): t.Expression => {
+  if (t.isStringLiteral(node.value)) {
+    return node.value;
+  }
+
+  if (t.isJSXExpressionContainer(node.value)) {
+    return node.value.expression as t.Expression;
+  }
+
+  throw new Error('Value of JSX attribute was unexpected.');
+};

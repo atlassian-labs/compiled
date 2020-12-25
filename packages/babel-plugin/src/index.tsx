@@ -9,6 +9,7 @@ import { Cache } from './utils/cache';
 import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
 import { visitClassNamesPath } from './class-names';
+import { visitGlobalPath } from './global';
 import { State } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -130,7 +131,7 @@ export default declare<State>((api) => {
             return;
           }
 
-          (['styled', 'ClassNames'] as const).forEach((apiName) => {
+          (['styled', 'ClassNames', 'Global'] as const).forEach((apiName) => {
             if (
               state.compiledImports &&
               t.isIdentifier(specifier.node?.imported) &&
@@ -179,6 +180,10 @@ export default declare<State>((api) => {
         }
 
         visitCssPropPath(path, { state, parentPath: path });
+
+        if (state.compiledImports.Global) {
+          visitGlobalPath(path, { state, parentPath: path });
+        }
       },
     },
   };

@@ -3,18 +3,7 @@ import { NodePath } from '@babel/core';
 import { buildCompiledComponent } from '../utils/ast-builders';
 import { buildCss } from '../utils/css-builders';
 import { Metadata } from '../types';
-
-const getJsxAttributeExpression = (node: t.JSXAttribute) => {
-  if (t.isStringLiteral(node.value)) {
-    return node.value;
-  }
-
-  if (t.isJSXExpressionContainer(node.value)) {
-    return node.value.expression as t.Expression;
-  }
-
-  throw new Error('Value of JSX attribute was unexpected.');
-};
+import { getJsxAttributeExpression } from '../utils/ast';
 
 /**
  * Takes a JSX opening element and then transforms any usage of `css` prop to a compiled component.

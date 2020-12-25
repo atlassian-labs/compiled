@@ -42,6 +42,7 @@ export interface State extends PluginPass {
   compiledImports?: {
     styled?: string;
     ClassNames?: string;
+    Global?: string;
   };
 
   /**
