@@ -1,8 +1,32 @@
 import { declare } from '@babel/helper-plugin-utils';
 import * as t from '@babel/types';
+import { NodePath } from '@babel/core';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkgJson = require('../../package.json');
+
+const removeStyleDeclarations = (path: NodePath<any>) => {
+  if (t.isCallExpression(path.node)) {
+    // We've found something that looks like React.createElement(CS)
+  } else if (
+    t.isJSXElement(path.node) &&
+    t.isJSXIdentifier(path.node.openingElement.name) &&
+    path.node.openingElement.name.name === 'CS'
+  ) {
+    // We've found something that looks like <CS>
+    const children = path.node.children[0];
+    if (t.isJSXExpressionContainer(children) && t.isArrayExpression(children.expression)) {
+      children.expression.elements.forEach((value) => {
+        if (!t.isIdentifier(value)) {
+          return;
+        }
+
+        const binding = path.scope.getBinding('_');
+        binding?.path.remove();
+      });
+    }
+  }
+};
 
 export default declare((api) => {
   api.assertVersion(7);
@@ -36,8 +60,14 @@ export default declare((api) => {
           return;
         }
 
-        const children = path.get('arguments')[3];
-        path.replaceWith(children);
+        const [, , compiledStyles, nodeToReplace] = path.get('arguments');
+
+        // Before we replace this node with its children we need to go through and remove all the
+        // style declarations from the CS call.
+        removeStyleDeclarations(compiledStyles);
+
+        // All done! Let's replace this node with the user land child.
+        path.replaceWith(nodeToReplace);
         path.node.leadingComments = null;
       },
     },

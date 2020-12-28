@@ -14,7 +14,7 @@ const transform = (opts: { runtime: 'automatic' | 'classic' } = { runtime: 'clas
 };
 
 describe('removal behaviour', () => {
-  it('should remove compiled runtime from CSS prop when classic runtime', () => {
+  it('should remove compiled runtime from CSS prop when classic runtime during the same run', () => {
     const actual = transform()`
       import '@compiled/react';
 
@@ -26,7 +26,6 @@ describe('removal behaviour', () => {
 
       import * as React from 'react';
       import { ax, ix } from \\"@compiled/react/runtime\\";
-      const _ = \\"._1wyb1fwx{font-size:12px}\\";
 
       /*#__PURE__*/
       React.createElement(\\"div\\", {
@@ -34,6 +33,4 @@ describe('removal behaviour', () => {
       }, \\"hello world\\");"
     `);
   });
-
-  xit('should remove CSS declarations', () => {});
 });

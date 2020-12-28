@@ -50,12 +50,14 @@ const hoistSheet = (sheet: string, meta: Metadata): t.Identifier => {
   const parentBody = parent && (parent.get('body') as NodePath[]);
   const path = parentBody && parentBody.filter((path) => !path.isImportDeclaration())[0];
 
-  path &&
-    path.insertBefore(
-      t.variableDeclaration('const', [
-        t.variableDeclarator(sheetIdentifier, t.stringLiteral(sheet)),
-      ])
-    );
+  if (path) {
+    const kind = 'const' as const;
+    const newVariable = t.variableDeclarator(sheetIdentifier, t.stringLiteral(sheet));
+    path.insertBefore(t.variableDeclaration(kind, [newVariable])).forEach((newVariable) => {
+      // Register the binding so it's now available in scope.
+      meta.parentPath.scope.registerBinding(kind, newVariable as NodePath<t.Node>);
+    });
+  }
 
   meta.state.sheets[sheet] = sheetIdentifier;
 
