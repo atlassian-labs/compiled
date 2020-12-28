@@ -19,6 +19,19 @@
     "src",
     "README.md"
   ],
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/generator": "^7.12.11",
+    "@babel/helper-plugin-utils": "^7.10.4",
+    "@babel/plugin-syntax-jsx": "^7.12.1",
+    "@babel/plugin-transform-flow-strip-types": "^7.12.10",
+    "@babel/preset-react": "^7.12.10",
+    "@babel/template": "^7.12.7",
+    "@babel/traverse": "^7.12.12",
+    "@babel/types": "^7.12.12"
+  },
+  "devDependencies": {
+    "@compiled/babel-plugin": "*",
+    "@types/babel__core": "^7.1.12"
+  }
 }
