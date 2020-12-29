@@ -5,9 +5,30 @@ import { NodePath } from '@babel/core';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkgJson = require('../../package.json');
 
+const isCreateElement = (node: t.Node): node is t.CallExpression => {
+  return (
+    t.isMemberExpression(node) &&
+    t.isIdentifier(node.object) &&
+    node.object.name === 'React' &&
+    t.isIdentifier(node.property) &&
+    node.property.name === 'createElement'
+  );
+};
+
 const removeStyleDeclarations = (node: t.Node, parentPath: NodePath<any>) => {
-  if (t.isCallExpression(node)) {
+  if (t.isCallExpression(node) && isCreateElement(node.callee)) {
     // We've found something that looks like React.createElement(CS)
+    const children = node.arguments[2];
+    if (t.isArrayExpression(children)) {
+      children.elements.forEach((value) => {
+        if (!t.isIdentifier(value)) {
+          return;
+        }
+
+        const binding = parentPath.scope.getBinding(value.name);
+        binding?.path.remove();
+      });
+    }
   } else if (
     t.isJSXElement(node) &&
     t.isJSXIdentifier(node.openingElement.name) &&
@@ -21,7 +42,7 @@ const removeStyleDeclarations = (node: t.Node, parentPath: NodePath<any>) => {
           return;
         }
 
-        const binding = parentPath.scope.getBinding('_');
+        const binding = parentPath.scope.getBinding(value.name);
         binding?.path.remove();
       });
     }
@@ -41,13 +62,7 @@ export default declare((api) => {
       },
       CallExpression(path) {
         const callee = path.node.callee;
-        if (
-          t.isMemberExpression(callee) &&
-          t.isIdentifier(callee.object) &&
-          callee.object.name === 'React' &&
-          t.isIdentifier(callee.property) &&
-          callee.property.name === 'createElement'
-        ) {
+        if (isCreateElement(callee)) {
           // We've found something that looks like React.createElement(...)
           // Now we want to check if it's from the Compiled Runtime and if it is - replace with its children.
           const component = path.node.arguments[0];
