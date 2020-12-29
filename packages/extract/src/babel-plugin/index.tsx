@@ -5,23 +5,23 @@ import { NodePath } from '@babel/core';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkgJson = require('../../package.json');
 
-const removeStyleDeclarations = (path: NodePath<any>) => {
-  if (t.isCallExpression(path.node)) {
+const removeStyleDeclarations = (node: t.Node, parentPath: NodePath<any>) => {
+  if (t.isCallExpression(node)) {
     // We've found something that looks like React.createElement(CS)
   } else if (
-    t.isJSXElement(path.node) &&
-    t.isJSXIdentifier(path.node.openingElement.name) &&
-    path.node.openingElement.name.name === 'CS'
+    t.isJSXElement(node) &&
+    t.isJSXIdentifier(node.openingElement.name) &&
+    node.openingElement.name.name === 'CS'
   ) {
     // We've found something that looks like <CS>
-    const children = path.node.children[0];
+    const children = node.children[0];
     if (t.isJSXExpressionContainer(children) && t.isArrayExpression(children.expression)) {
       children.expression.elements.forEach((value) => {
         if (!t.isIdentifier(value)) {
           return;
         }
 
-        const binding = path.scope.getBinding('_');
+        const binding = parentPath.scope.getBinding('_');
         binding?.path.remove();
       });
     }
@@ -41,34 +41,66 @@ export default declare((api) => {
       },
       CallExpression(path) {
         const callee = path.node.callee;
-        if (!t.isMemberExpression(callee)) {
+        if (
+          t.isMemberExpression(callee) &&
+          t.isIdentifier(callee.object) &&
+          callee.object.name === 'React' &&
+          t.isIdentifier(callee.property) &&
+          callee.property.name === 'createElement'
+        ) {
+          // We've found something that looks like React.createElement(...)
+          // Now we want to check if it's from the Compiled Runtime and if it is - replace with its children.
+          const component = path.node.arguments[0];
+          if (!t.isIdentifier(component) || component.name !== 'CC') {
+            return;
+          }
+
+          const [, , compiledStyles, nodeToReplace] = path.get('arguments');
+
+          // Before we replace this node with its children we need to go through and remove all the
+          // style declarations from the CS call.
+          removeStyleDeclarations(compiledStyles.node, path);
+
+          // All done! Let's replace this node with the user land child.
+          path.replaceWith(nodeToReplace);
+          path.node.leadingComments = null;
           return;
         }
 
-        const isReactObject = t.isIdentifier(callee.object) && callee.object.name === 'React';
-        const isCreateElementCall =
-          t.isIdentifier(callee.property) && callee.property.name === 'createElement';
+        if (t.isIdentifier(callee) && callee.name === '_jsxs') {
+          // We've found something that looks like _jsxs(...)
+          // Now we want to check if it's from the Compiled Runtime and if it is - replace with its children.
+          const component = path.node.arguments[0];
+          if (!t.isIdentifier(component) || component.name !== 'CC') {
+            return;
+          }
 
-        if (!isReactObject || !isCreateElementCall) {
+          const [, props] = path.get('arguments');
+          if (!t.isObjectExpression(props.node)) {
+            return;
+          }
+
+          const children = props.node.properties.find((prop): prop is t.ObjectProperty => {
+            return (
+              t.isObjectProperty(prop) && t.isIdentifier(prop.key) && prop.key.name === 'children'
+            );
+          });
+
+          if (!children || !t.isArrayExpression(children.value)) {
+            return;
+          }
+
+          const [compiledStyles, nodeToReplace] = children.value.elements as t.Expression[];
+
+          // Before we replace this node with its children we need to go through and remove all the
+          // style declarations from the CS call.
+          removeStyleDeclarations(compiledStyles, path);
+
+          // All done! Let's replace this node with the user land child.
+          path.replaceWith(nodeToReplace);
+          path.node.leadingComments = null;
           return;
         }
-
-        // We've found something that looks like React.createElement(...)
-        // Now we want to check if it's from the Compiled Runtime and if it is - replace with its children.
-        const component = path.node.arguments[0];
-        if (!t.isIdentifier(component) || component.name !== 'CC') {
-          return;
-        }
-
-        const [, , compiledStyles, nodeToReplace] = path.get('arguments');
-
-        // Before we replace this node with its children we need to go through and remove all the
-        // style declarations from the CS call.
-        removeStyleDeclarations(compiledStyles);
-
-        // All done! Let's replace this node with the user land child.
-        path.replaceWith(nodeToReplace);
-        path.node.leadingComments = null;
       },
     },
   };
