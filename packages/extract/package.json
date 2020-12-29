@@ -28,10 +28,14 @@
     "@babel/preset-react": "^7.12.10",
     "@babel/template": "^7.12.7",
     "@babel/traverse": "^7.12.12",
-    "@babel/types": "^7.12.12"
+    "@babel/types": "^7.12.12",
+    "@types/webpack": "^4.41.25",
+    "memfs": "^3.2.0"
   },
   "devDependencies": {
     "@compiled/babel-plugin": "*",
-    "@types/babel__core": "^7.1.12"
+    "@types/babel__core": "^7.1.12",
+    "babel-loader": "^8.2.2",
+    "webpack": "^5.11.1"
   }
 }

@@ -50,7 +50,8 @@ const removeStyleDeclarations = (node: t.Node, parentPath: NodePath<any>, pass: 
 
         const binding = parentPath.scope.getBinding(value.name);
         if (binding) {
-          const value = binding?.path.node.init.value;
+          const value = ((binding?.path?.node as t.VariableDeclarator)?.init as t.StringLiteral)
+            ?.value;
           pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(value);
           binding.path.remove();
         }
@@ -68,7 +69,8 @@ const removeStyleDeclarations = (node: t.Node, parentPath: NodePath<any>, pass: 
 
         const binding = parentPath.scope.getBinding(value.name);
         if (binding) {
-          const value = binding?.path.node.init.value;
+          const value = ((binding?.path?.node as t.VariableDeclarator)?.init as t.StringLiteral)
+            ?.value;
           pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(value);
           binding.path.remove();
         }
@@ -89,7 +91,8 @@ const removeStyleDeclarations = (node: t.Node, parentPath: NodePath<any>, pass: 
 
         const binding = parentPath.scope.getBinding(value.name);
         if (binding) {
-          const value = binding?.path.node.init.value;
+          const value = ((binding?.path?.node as t.VariableDeclarator)?.init as t.StringLiteral)
+            ?.value;
           pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(value);
           binding.path.remove();
         }
