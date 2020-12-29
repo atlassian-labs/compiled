@@ -38,7 +38,7 @@ const getJsxRuntimeChildren = (node: t.CallExpression): Array<t.Expression> => {
   return children;
 };
 
-const removeStyleDeclarations = (node: t.Node, parentPath: NodePath<any>) => {
+const removeStyleDeclarations = (node: t.Node, parentPath: NodePath<any>, pass: PluginPass) => {
   if (t.isCallExpression(node) && isCreateElement(node.callee)) {
     // We've found something that looks like React.createElement(CS)
     const children = node.arguments[2];
@@ -49,7 +49,11 @@ const removeStyleDeclarations = (node: t.Node, parentPath: NodePath<any>) => {
         }
 
         const binding = parentPath.scope.getBinding(value.name);
-        binding?.path.remove();
+        if (binding) {
+          const value = binding?.path.node.init.value;
+          pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(value);
+          binding.path.remove();
+        }
       });
     }
   } else if (isJsxRuntime(node)) {
@@ -63,7 +67,11 @@ const removeStyleDeclarations = (node: t.Node, parentPath: NodePath<any>) => {
         }
 
         const binding = parentPath.scope.getBinding(value.name);
-        binding?.path.remove();
+        if (binding) {
+          const value = binding?.path.node.init.value;
+          pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(value);
+          binding.path.remove();
+        }
       });
     }
   } else if (
@@ -80,13 +88,23 @@ const removeStyleDeclarations = (node: t.Node, parentPath: NodePath<any>) => {
         }
 
         const binding = parentPath.scope.getBinding(value.name);
-        binding?.path.remove();
+        if (binding) {
+          const value = binding?.path.node.init.value;
+          pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(value);
+          binding.path.remove();
+        }
       });
     }
   }
 };
 
-export default declare((api) => {
+interface PluginPass {
+  opts: {
+    onFoundStyleSheet?: (style: string) => void;
+  };
+}
+
+export default declare<PluginPass>((api) => {
   api.assertVersion(7);
 
   return {
@@ -97,7 +115,7 @@ export default declare((api) => {
           path.remove();
         }
       },
-      CallExpression(path) {
+      CallExpression(path, pass) {
         const callee = path.node.callee;
         if (isCreateElement(callee)) {
           // We've found something that looks like React.createElement(...)
@@ -111,7 +129,7 @@ export default declare((api) => {
 
           // Before we replace this node with its children we need to go through and remove all the
           // style declarations from the CS call.
-          removeStyleDeclarations(compiledStyles.node, path);
+          removeStyleDeclarations(compiledStyles.node, path, pass);
 
           // All done! Let's replace this node with the user land child.
           path.replaceWith(nodeToReplace);
@@ -146,7 +164,7 @@ export default declare((api) => {
 
           // Before we replace this node with its children we need to go through and remove all the
           // style declarations from the CS call.
-          removeStyleDeclarations(compiledStyles, path);
+          removeStyleDeclarations(compiledStyles, path, pass);
 
           // All done! Let's replace this node with the user land child.
           path.replaceWith(nodeToReplace);

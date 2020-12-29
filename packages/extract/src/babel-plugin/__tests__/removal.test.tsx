@@ -3,7 +3,11 @@ import reactBabelPlugin from '@compiled/babel-plugin';
 import extractBabelPlugin from '../index';
 
 const transform = (
-  opts: { runtime: 'automatic' | 'classic'; run: 'bake' | 'extract' | 'both' } = {
+  opts: {
+    callback?: (style: string) => void;
+    runtime: 'automatic' | 'classic';
+    run: 'bake' | 'extract' | 'both';
+  } = {
     runtime: 'classic',
     run: 'both',
   }
@@ -14,7 +18,7 @@ const transform = (
 
   const plugins = [
     runBake && [reactBabelPlugin, { importReact: opts.runtime === 'classic' }],
-    runExtract && extractBabelPlugin,
+    runExtract && [extractBabelPlugin, { onFoundStyleSheet: opts.callback }],
   ].filter(Boolean);
 
   return transformSync(typeof code === 'string' ? code : code[0], {
@@ -66,6 +70,32 @@ describe('removal behaviour', () => {
         });"
       `);
     });
+
+    it('should callback on every found style classic', () => {
+      const callback = jest.fn();
+
+      transform({ runtime: 'classic', run: 'both', callback })`
+        import '@compiled/react';
+
+        const Component = () => <div css={{ fontSize: 12, color: 'blue' }}>hello world</div>
+      `;
+
+      expect(callback).toHaveBeenCalledWith('._1wyb1fwx{font-size:12px}');
+      expect(callback).toHaveBeenCalledWith('._syaz13q2{color:blue}');
+    });
+
+    it('should callback on every found style automatic', () => {
+      const callback = jest.fn();
+
+      transform({ runtime: 'automatic', run: 'both', callback })`
+        import '@compiled/react';
+
+        const Component = () => <div css={{ fontSize: 12, color: 'blue' }}>hello world</div>
+      `;
+
+      expect(callback).toHaveBeenCalledWith('._1wyb1fwx{font-size:12px}');
+      expect(callback).toHaveBeenCalledWith('._syaz13q2{color:blue}');
+    });
   });
 
   describe('when ran in subsequent steps', () => {
@@ -110,6 +140,34 @@ describe('removal behaviour', () => {
           children: \\"hello world\\"
         });"
       `);
+    });
+
+    it('should callback on every found style classic', () => {
+      const callback = jest.fn();
+      const baked = transform({ runtime: 'classic', run: 'bake' })`
+        import '@compiled/react';
+
+        const Component = () => <div css={{ fontSize: 12, color: 'blue' }}>hello world</div>
+      `;
+
+      transform({ runtime: 'classic', run: 'both', callback })(baked);
+
+      expect(callback).toHaveBeenCalledWith('._1wyb1fwx{font-size:12px}');
+      expect(callback).toHaveBeenCalledWith('._syaz13q2{color:blue}');
+    });
+
+    it('should callback on every found style automatic', () => {
+      const callback = jest.fn();
+      const baked = transform({ runtime: 'automatic', run: 'bake' })`
+        import '@compiled/react';
+
+        const Component = () => <div css={{ fontSize: 12, color: 'blue' }}>hello world</div>
+      `;
+
+      transform({ runtime: 'automatic', run: 'both', callback })(baked);
+
+      expect(callback).toHaveBeenCalledWith('._1wyb1fwx{font-size:12px}');
+      expect(callback).toHaveBeenCalledWith('._syaz13q2{color:blue}');
     });
   });
 });
