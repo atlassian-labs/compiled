@@ -15,6 +15,29 @@ const isCreateElement = (node: t.Node): node is t.CallExpression => {
   );
 };
 
+const isJsxRuntime = (node: t.Node): node is t.CallExpression => {
+  return t.isCallExpression(node) && t.isIdentifier(node.callee) && node.callee.name === '_jsx';
+};
+
+const isJsxsRuntime = (node: t.Node): node is t.CallExpression => {
+  return t.isCallExpression(node) && t.isIdentifier(node.callee) && node.callee.name === '_jsxs';
+};
+
+const getJsxRuntimeChildren = (node: t.CallExpression): Array<t.Expression> => {
+  const props = node.arguments[1];
+  const children: t.Expression[] = [];
+
+  if (t.isObjectExpression(props)) {
+    props.properties.forEach((prop) => {
+      if (t.isObjectProperty(prop) && t.isExpression(prop.value)) {
+        children.push(prop.value);
+      }
+    });
+  }
+
+  return children;
+};
+
 const removeStyleDeclarations = (node: t.Node, parentPath: NodePath<any>) => {
   if (t.isCallExpression(node) && isCreateElement(node.callee)) {
     // We've found something that looks like React.createElement(CS)
@@ -29,15 +52,29 @@ const removeStyleDeclarations = (node: t.Node, parentPath: NodePath<any>) => {
         binding?.path.remove();
       });
     }
+  } else if (isJsxRuntime(node)) {
+    // We've found something that looks like _jsx(CS)
+    const [styles] = getJsxRuntimeChildren(node);
+
+    if (t.isArrayExpression(styles)) {
+      styles.elements.forEach((value) => {
+        if (!t.isIdentifier(value)) {
+          return;
+        }
+
+        const binding = parentPath.scope.getBinding(value.name);
+        binding?.path.remove();
+      });
+    }
   } else if (
     t.isJSXElement(node) &&
     t.isJSXIdentifier(node.openingElement.name) &&
     node.openingElement.name.name === 'CS'
   ) {
     // We've found something that looks like <CS>
-    const children = node.children[0];
-    if (t.isJSXExpressionContainer(children) && t.isArrayExpression(children.expression)) {
-      children.expression.elements.forEach((value) => {
+    const [styles] = node.children;
+    if (t.isJSXExpressionContainer(styles) && t.isArrayExpression(styles.expression)) {
+      styles.expression.elements.forEach((value) => {
         if (!t.isIdentifier(value)) {
           return;
         }
@@ -82,7 +119,7 @@ export default declare((api) => {
           return;
         }
 
-        if (t.isIdentifier(callee) && callee.name === '_jsxs') {
+        if (isJsxsRuntime(path.node)) {
           // We've found something that looks like _jsxs(...)
           // Now we want to check if it's from the Compiled Runtime and if it is - replace with its children.
           const component = path.node.arguments[0];

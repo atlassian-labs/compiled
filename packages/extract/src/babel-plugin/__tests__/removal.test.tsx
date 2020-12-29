@@ -104,8 +104,6 @@ describe('removal behaviour', () => {
         import { jsx as _jsx } from \\"react/jsx-runtime\\";
         import { jsxs as _jsxs } from \\"react/jsx-runtime\\";
         import { ax, ix } from \\"@compiled/react/runtime\\";
-        const _2 = \\"._syaz13q2{color:blue}\\";
-        const _ = \\"._1wyb1fwx{font-size:12px}\\";
 
         const Component = () => _jsx(\\"div\\", {
           className: ax([\\"_1wyb1fwx _syaz13q2\\"]),
