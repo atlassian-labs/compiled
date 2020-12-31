@@ -29,3 +29,6 @@ jobs:
 
       - name: Build sources
         run: yarn build
+
+      - name: Build SSR example
+        run: yarn build:ssr

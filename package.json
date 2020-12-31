@@ -12,7 +12,7 @@
     "benchmark:module-traversal": "cd packages/babel-plugin && yarn benchmark:module-traversal",
     "clean": "rm -rf node_modules/.cache && rm -rf test/dead-code-elimination/dist && rm -f test/dead-code-elimination/tsconfig.tsbuildinfo && workspaces-run -- rm -rf dist -- rm -f tsconfig.tsbuildinfo -- rm -f tsconfig.browser.tsbuildinfo -- rm -rf build -- rm -rf tsconfig.cjs.tsbuildinfo -- rm -rf tsconfig.esm.tsbuildinfo",
     "start": "npx nodemon --exec \"yarn build:esm && start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
-    "start:ssr": "yarn build && cd playground/ssr && yarn start",
+    "start:ssr": "yarn build && cd examples/ssr && yarn start",
     "start:prod": "NODE_ENV=production yarn start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "test": "yarn build:cjs && yarn build:esm && jest --no-cache",
@@ -27,6 +27,7 @@
     "build:dead-code-elimination": "cd test/dead-code-elimination && ttsc",
     "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js --build packages",
     "build-storybook": "build-storybook",
+    "build-ssr": "yarn build && cd examples/ssr && yarn build",
     "preversion": "git-branch-is master && yarn clean && yarn build && yarn test",
     "version": "bash scripts/version.sh && git add .",
     "version-nightly": "bash scripts/should-nightly-run.sh && npm version prerelease --no-git-tag-version --preid=$(git rev-parse HEAD)",
@@ -83,7 +84,7 @@
   "workspaces": [
     "benchmarks",
     "packages/*",
-    "playground/*",
+    "examples/ssr",
     "examples/packages/*"
   ],
   "size-limit": [
