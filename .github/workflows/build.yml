@@ -31,4 +31,4 @@ jobs:
         run: yarn build
 
       - name: Build SSR example
-        run: yarn build:ssr
+        run: yarn build-ssr
