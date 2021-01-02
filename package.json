@@ -52,7 +52,7 @@
     "@typescript-eslint/parser": "^4.11.1",
     "babel-loader": "^8.2.2",
     "chromatic": "^5.5.0",
-    "eslint": "^7.16.0",
+    "eslint": "^7.17.0",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "git-branch-is": "^4.0.0",
