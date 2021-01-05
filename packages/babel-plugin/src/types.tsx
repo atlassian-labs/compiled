@@ -75,6 +75,11 @@ export interface Metadata {
    * Path of a parent node.
    */
   parentPath: NodePath<any>;
+
+  /**
+   * Path of the own node.
+   */
+  ownPath?: NodePath<any>;
 }
 
 export interface Tag {

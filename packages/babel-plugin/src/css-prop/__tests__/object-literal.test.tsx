@@ -306,6 +306,89 @@ describe('css prop object literal', () => {
     expect(actual).toInclude(`{color:red}`);
   });
 
+  it('should transform object with argument arrow function variable', () => {
+    const actual = transform(`
+        import '@compiled/react';
+        import React from 'react';
+
+        const color1 = 'black';
+        const mixin = ({ color1, color2: c }, color3, radius) => ({
+          color: color1,
+          backgroundColor: c,
+          borderColor: color3 ,
+          borderRadius: radius,
+        });
+
+        const color = { red: 'red' };
+        const greenColor = 'green';
+
+        const Component = (props) => {
+          const color2 = 'black';
+
+          return <div css={{ ...mixin({ color1: color.red, color2: 'blue' }, greenColor, 10) }} />
+        };
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '{color:red}',
+      '{background-color:blue}',
+      '{border-color:green}',
+      '{border-radius:10px}',
+    ]);
+  });
+
+  it('should transform object with unresolved argument arrow function variable', () => {
+    const actual = transform(`
+        import '@compiled/react';
+        import React from 'react';
+
+        const radius = 10;
+        const mixin = (color1, radius, size, weight) => ({
+          color: color1,
+          borderRadius: radius,
+          fontSize: size,
+          fontWeight: weight
+        });
+
+        const Component = (props) => <div css={{ ...mixin(props.color1, radius) }} />
+      `);
+
+    expect(actual).toIncludeMultiple([
+      '{color:var(--_zo7lop)}',
+      '"--_zo7lop":ix(props.color1)',
+      '{border-radius:10px}',
+      '{font-weight:var(--_u6vle4)}',
+      '"--_u6vle4":ix()',
+      '{font-size:var(--_kre2x8)}',
+      '"--_kre2x8":ix()',
+    ]);
+  });
+
+  it('should transform object with argument arrow function variable inside member expression', () => {
+    const actual = transform(`
+        import '@compiled/react';
+        import React from 'react';
+
+        const mixin = {
+          value: (color1, r, color2) => ({
+            color: color1,
+            borderRadius: r,
+            borderColor: color2,
+          })
+        }
+
+        const radius = 10;
+
+        const Component = (props) => <div css={{ ...mixin.value(props.color1, radius, 'red') }} />
+      `);
+
+    expect(actual).toIncludeMultiple([
+      '"--_zo7lop":ix(props.color1)',
+      '{border-radius:10px}',
+      '{border-color:red}',
+    ]);
+  });
+
   it('should transform template literal value', () => {
     const actual = transform(`
         import '@compiled/react';

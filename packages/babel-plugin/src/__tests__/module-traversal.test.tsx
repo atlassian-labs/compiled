@@ -358,4 +358,19 @@ describe('module traversal', () => {
 
     expect(result).toInclude(':hover{padding-top:10px}');
   });
+
+  it('should inline css from a function mixin with parameters referencing an identifier from another module', () => {
+    const actual = transform(`
+        import '@compiled/react';
+        import { colorMixin2 } from '../__fixtures__/mixins/objects';
+
+        const color = { blue: 'blue' };
+
+        const Component = (props) => {
+          return <div css={{ ...colorMixin2(color.blue) }} />
+        };
+    `);
+
+    expect(actual).toIncludeMultiple(['{color:red}', '{background-color:blue}']);
+  });
 });

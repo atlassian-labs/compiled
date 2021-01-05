@@ -437,6 +437,39 @@ const resolveObjectPatternValueNode = (
 };
 
 /**
+ * Will return property key if it is different from its value and its value is
+ * equal to reference name for which we have to resolve binding.
+ *
+ * Eg. If we have something like `const { key: value } = { key: 'something' }`, and
+ * reference name is `value`, it will return `key` so that it can be resolved to
+ * 'something' otherwise it won't get resolved.
+ *
+ * @param node Object pattern node which we have to investigate
+ * @param referenceName Reference name for which `binding` to be resolved
+ */
+const getObjectPatternKeyWhenNotSameAsValue = (
+  node: t.ObjectPattern,
+  referenceName: string
+): string => {
+  let result = referenceName;
+
+  for (const property of node.properties) {
+    if (t.isObjectProperty(property)) {
+      const keyName = t.isIdentifier(property.key) ? property.key.name : '';
+      const keyValue = t.isIdentifier(property.value) ? property.value.name : '';
+
+      if (keyName !== keyValue && keyValue === referenceName) {
+        result = keyName;
+
+        break;
+      }
+    }
+  }
+
+  return result;
+};
+
+/**
  * Will return the `node` of the a binding.
  * This function will follow import specifiers to return the actual `node`.
  *
@@ -450,7 +483,11 @@ export const resolveBindingNode = (
   referenceName: string,
   meta: Metadata
 ): PartialBindingWithMeta | undefined => {
-  const binding = meta.parentPath.scope.getBinding(referenceName);
+  // Check binding in own scope first so that manually created scopes can be
+  // evaluated first then parent scopes or scopes coming from different module.
+  const binding =
+    meta.ownPath?.scope.getOwnBinding(referenceName) ||
+    meta.parentPath.scope.getBinding(referenceName);
 
   if (!binding || binding.path.isObjectPattern()) {
     // Bail early if there is no binding or its a node that we don't want to resolve
@@ -462,7 +499,11 @@ export const resolveBindingNode = (
     let node = binding.path.node.init as t.Node;
 
     if (t.isObjectPattern(binding.path.node.id) && t.isExpression(node)) {
-      node = resolveObjectPatternValueNode(node, meta, referenceName) as t.Node;
+      node = resolveObjectPatternValueNode(
+        node,
+        meta,
+        getObjectPatternKeyWhenNotSameAsValue(binding.path.node.id, referenceName)
+      ) as t.Node;
     }
 
     return {

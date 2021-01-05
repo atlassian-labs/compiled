@@ -37,3 +37,5 @@ export const spacingMixin = {
     top: () => (() => 10)(),
   },
 };
+
+export const colorMixin2 = (bgColor) => ({ color: colors.primary, backgroundColor: bgColor });

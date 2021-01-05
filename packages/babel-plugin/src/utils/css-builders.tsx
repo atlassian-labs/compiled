@@ -97,6 +97,39 @@ const toCSSDeclaration = (key: string, result: CSSOutput) => {
 };
 
 /**
+ * Will return the variable declarator value node from meta's own path.
+ * It will compare the variable declarator node id's name with passed node name and
+ * returns its stringified value along with the node.
+ *
+ * Eg. If passed node is an Identifier with name `abcd` and somewhere in own path
+ * we have any variable declarator `const abcd = obj.value`, it will return
+ * stringified `obj.value` along with node `obj.value`.
+ * If variable declarator's value is undefined `const abcd = undefined`, it will
+ * return stringified `abcd` along with undefined.
+ *
+ * @param node
+ * @param meta Meta data used during the transformation.
+ */
+const getVariableDeclaratorValueForOwnPath = (node: t.Expression, meta: Metadata) => {
+  let variableName = generate(node).code;
+  let expression = node;
+
+  meta.ownPath?.traverse({
+    VariableDeclarator(path) {
+      if (t.isIdentifier(node) && t.isIdentifier(path.node.id, { name: node.name })) {
+        const { init } = path.node;
+
+        variableName = init ? generate(init).code : node.name;
+        expression = init as t.Expression;
+        path.stop();
+      }
+    },
+  });
+
+  return { variableName, expression };
+};
+
+/**
  * Extracts CSS data from an object expression node.
  *
  * @param node Node we're interested in extracting CSS from.
@@ -137,10 +170,18 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         variables.push(...result.variables);
         return;
       } else {
+        const variableDeclaratorValueForOwnPath = getVariableDeclaratorValueForOwnPath(
+          propValue,
+          updatedMeta
+        );
+
         // This is the catch all for any kind of expression.
         // We don't want to explicitly handle each expression node differently if we can avoid it!
-        const variableName = `--_${hash(generate(propValue).code)}`;
-        variables.push({ name: variableName, expression: propValue });
+        const variableName = `--_${hash(variableDeclaratorValueForOwnPath.variableName)}`;
+        variables.push({
+          name: variableName,
+          expression: variableDeclaratorValueForOwnPath.expression,
+        });
         value = `var(${variableName})`;
       }
 
@@ -210,13 +251,18 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     }
 
     if (interpolation) {
+      const variableDeclaratorValueForOwnPath = getVariableDeclaratorValueForOwnPath(
+        interpolation,
+        updatedMeta
+      );
+
       // Everything else is considered a catch all expression.
       // The only difficulty here is what we do around prefixes and suffixes.
       // CSS variables can't have them! So we need to move them to the inline style.
       // E.g. `font-size: ${fontSize}px` will end up needing to look like:
       // `font-size: var(--_font-size)`, with the suffix moved to inline styles
       // style={{ '--_font-size': fontSize + 'px' }}
-      const variableName = `--_${hash(generate(interpolation).code)}`;
+      const variableName = `--_${hash(variableDeclaratorValueForOwnPath.variableName)}`;
       const nextQuasis = node.quasis[index + 1];
       const before = cssBeforeInterpolation(css + q.value.raw);
       const after = cssAfterInterpolation(nextQuasis.value.raw);
@@ -224,7 +270,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
       variables.push({
         name: variableName,
-        expression: interpolation,
+        expression: variableDeclaratorValueForOwnPath.expression,
         prefix: before.variablePrefix,
         suffix: after.variableSuffix,
       });

@@ -44,7 +44,7 @@ describe('styled component', () => {
 
     const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
 
-    expect(getByText('hello world')).toHaveCompiledCss('font-size', '12');
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
   });
 
   it('should at runtime use a identifier referencing a call expression', () => {

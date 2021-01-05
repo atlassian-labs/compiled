@@ -172,8 +172,7 @@ describe('styled component object literal', () => {
         });
       `);
 
-    expect(actual).toInclude('{color:var(--_16ywsic)}');
-    expect(actual).toInclude('"--_16ywsic":ix(em(\'blue\'))');
+    expect(actual).toInclude('{color:blue}');
   });
 
   it('should inline constant string literal', () => {
@@ -338,6 +337,88 @@ describe('styled component object literal', () => {
     expect(actual).toInclude(`{border:1px solid blue}`);
     expect(actual).toInclude(`{font-size:12px}`);
     expect(actual).toInclude(`{font-weight:500}`);
+  });
+
+  it('should transform object with argument arrow function variable', () => {
+    const actual = transform(`
+        import { styled } from '@compiled/react';
+
+        const color1 = 'black';
+        const mixin = ({ color1, color2: c }, color3, radius) => ({
+          color: color1,
+          backgroundColor: c,
+          borderColor: color3 ,
+          borderRadius: radius,
+        });
+
+        const color = { red: 'red' };
+        const greenColor = 'green';
+
+        const ListItem = styled.div({
+          ...mixin({ color1: color.red, color2: 'blue' }, greenColor, 10)
+        });
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '{color:red}',
+      '{background-color:blue}',
+      '{border-color:green}',
+      '{border-radius:10px}',
+    ]);
+  });
+
+  it('should transform object with unresolved argument arrow function variable', () => {
+    const actual = transform(`
+        import { styled } from '@compiled/react';
+
+        const radius = 10;
+        const mixin = (color1, radius, size, weight) => ({
+          color: color1,
+          borderRadius: radius,
+          fontSize: size,
+          fontWeight: weight
+        });
+
+        const ListItem = styled.div({
+          ...mixin(props.color1, radius)
+        });
+      `);
+
+    expect(actual).toIncludeMultiple([
+      '{color:var(--_zo7lop)}',
+      '"--_zo7lop":ix(props.color1)',
+      '{border-radius:10px}',
+      '{font-weight:var(--_u6vle4)}',
+      '"--_u6vle4":ix()',
+      '{font-size:var(--_kre2x8)}',
+      '"--_kre2x8":ix()',
+    ]);
+  });
+
+  it('should transform object with argument arrow function variable inside member expression', () => {
+    const actual = transform(`
+        import { styled } from '@compiled/react';
+
+        const mixin = {
+          value: (color1, r, color2) => ({
+            color: color1,
+            borderRadius: r,
+            borderColor: color2,
+          })
+        }
+
+        const radius = 10;
+
+        const ListItem = styled.div({
+          ...mixin.value(props.color1, radius, 'red')
+        });
+      `);
+
+    expect(actual).toIncludeMultiple([
+      '"--_zo7lop":ix(props.color1)',
+      '{border-radius:10px}',
+      '{border-color:red}',
+    ]);
   });
 
   it('should transform function returning an object', () => {

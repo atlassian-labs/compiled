@@ -8,6 +8,7 @@ import {
   getMemberExpressionMeta,
   getValueFromObjectExpression,
   tryEvaluateExpression,
+  wrapNodeInIIFE,
 } from './ast';
 
 const createResultPair = (value: t.Expression, meta: Metadata) => ({
@@ -122,8 +123,8 @@ const evaluateIdentifierBindingMemberExpression = (
 
   if (t.isObjectExpression(expression)) {
     ({ value, meta: updatedMeta } = evaluateObjectExpression(expression, accessPath, meta));
-  } else if (t.isCallExpression(expression) && t.isExpression(expression.callee)) {
-    ({ value, meta: updatedMeta } = evaluateExpression(expression.callee, meta));
+  } else if (t.isCallExpression(expression)) {
+    ({ value, meta: updatedMeta } = evaluateExpression(expression, meta));
     ({ value, meta: updatedMeta } = evaluateObjectExpression(value, accessPath, updatedMeta));
   }
 
@@ -206,6 +207,90 @@ const traverseFunction = (expression: t.Function, meta: Metadata) => {
 };
 
 /**
+ * Will find the function node for the call expression and wrap an IIFE around it (to avoid name collision)
+ * and move all the parameters mapped to passed arguments in the IIFE's scope (own scope in this case).
+ * It will also set own scope path so that when we recursively evaluate any node,
+ * we will look for its binding in own scope first, then parent scope.
+ *
+ * @param expression Expression we want to interrogate.
+ * @param meta Meta data used during the transformation.
+ */
+const traverseCallExpression = (expression: t.CallExpression, meta: Metadata) => {
+  const callee = expression.callee;
+  let value: t.Node | undefined | null = undefined;
+  let updatedMeta: Metadata = meta;
+
+  if (t.isExpression(callee)) {
+    let functionNode = null;
+
+    if (t.isIdentifier(callee)) {
+      const resolvedBinding = resolveBindingNode(callee.name, updatedMeta);
+
+      if (resolvedBinding && resolvedBinding.constant) {
+        functionNode = resolvedBinding.node;
+      }
+    } else if (t.isMemberExpression(callee) && t.isIdentifier(callee.property)) {
+      const { accessPath, bindingIdentifier } = getMemberExpressionMeta(callee);
+
+      if (bindingIdentifier) {
+        const resolvedBinding = resolveBindingNode(bindingIdentifier.name, updatedMeta);
+
+        if (resolvedBinding && resolvedBinding.constant) {
+          if (t.isObjectExpression(resolvedBinding.node)) {
+            functionNode = getValueFromObjectExpression(resolvedBinding.node, accessPath);
+          }
+        }
+      }
+    }
+
+    if (functionNode && t.isFunction(functionNode)) {
+      const { params } = functionNode;
+
+      const evaluatedArguments = expression.arguments.map(
+        (argument) => evaluateExpression(argument as t.Expression, updatedMeta).value
+      );
+
+      updatedMeta.parentPath.traverse({
+        CallExpression(callExpressionPath) {
+          // Only look for expression for which we are evaluating
+          if (callExpressionPath.node === expression) {
+            const callExpressionWrappingNode = wrapNodeInIIFE(callExpressionPath.node);
+
+            const [wrappingNodePath] = callExpressionPath.replaceWith(callExpressionWrappingNode);
+
+            wrappingNodePath.traverse({
+              ArrowFunctionExpression(arrowFunctionExpressionPath) {
+                params
+                  .filter((param) => t.isIdentifier(param) || t.isObjectPattern(param))
+                  .forEach((param, index) => {
+                    const evaluatedArgument = evaluatedArguments[index];
+
+                    arrowFunctionExpressionPath.scope.push({
+                      id: param,
+                      init: evaluatedArgument,
+                      kind: 'const',
+                    });
+                  });
+
+                updatedMeta.ownPath = arrowFunctionExpressionPath;
+
+                arrowFunctionExpressionPath.stop();
+              },
+            });
+
+            callExpressionPath.stop();
+          }
+        },
+      });
+    }
+
+    ({ value, meta: updatedMeta } = evaluateExpression(callee, updatedMeta));
+  }
+
+  return createResultPair(value as t.Expression, updatedMeta);
+};
+
+/**
  * Will look in an expression and return the actual value along with updated metadata.
  * If the expression is an identifier node (a variable) and a constant,
  * it will return the variable reference.
@@ -232,8 +317,8 @@ export const evaluateExpression = (
     ({ value, meta: updatedMeta } = traverseMemberExpression(expression, updatedMeta));
   } else if (t.isFunction(expression)) {
     ({ value, meta: updatedMeta } = traverseFunction(expression, updatedMeta));
-  } else if (t.isCallExpression(expression) && t.isExpression(expression.callee)) {
-    ({ value, meta: updatedMeta } = evaluateExpression(expression.callee, updatedMeta));
+  } else if (t.isCallExpression(expression)) {
+    ({ value, meta: updatedMeta } = traverseCallExpression(expression, updatedMeta));
   }
 
   if (t.isStringLiteral(value) || t.isNumericLiteral(value) || t.isObjectExpression(value)) {
