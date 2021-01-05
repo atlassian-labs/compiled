@@ -15,6 +15,12 @@ const StyledTemplateLiteral = styled.div`
   background-color: ${objectStyles.backgroundColor(colors.primary)};
 `;
 
+const getColor = (c: string) => ({ color: c });
+
+const Children = ({ color }: { color: string }) => (
+  <span css={{ ...getColor(color) }}>Hello css prop component. Hover me Please.</span>
+);
+
 export const ObjectLiteral = () => (
   <>
     <StyledObjectLiteral>Hello styled component</StyledObjectLiteral>
@@ -25,7 +31,7 @@ export const ObjectLiteral = () => (
         border: `1px solid ${objectStyles.backgroundColor(colors.danger)}`,
         ':hover': colorMixin(2),
       }}>
-      Hello css prop component. Hover me Please.
+      <Children color="red" />
     </div>
   </>
 );
@@ -43,7 +49,7 @@ export const TemplateLiteral = () => (
           background-color: ${objectStyles.backgroundColor(colors.primary)};
         }
       `}>
-      Hello css prop component. Hover me Please.
+      <Children color="blue" />
     </div>
   </>
 );
