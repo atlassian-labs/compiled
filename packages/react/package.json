@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "@compiled/babel-plugin": "0.5.2",
-    "csstype": "^3.0.5"
+    "csstype": "^3.0.6"
   },
   "peerDependencies": {
     "react": ">= 16.12.0"
