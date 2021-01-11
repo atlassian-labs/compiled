@@ -110,4 +110,11 @@ describe('main', () => {
 
     expect(presets.mockedPreset).toHaveBeenCalledWith(cli);
   });
+
+  it('should find codemods in node modules', () => {
+    expect(() => {
+      require('@compiled/react/dist/cjs/codemods/emotion-to-compiled');
+      require('@compiled/react/dist/cjs/codemods/styled-components-to-compiled');
+    }).not.toThrow();
+  });
 });
