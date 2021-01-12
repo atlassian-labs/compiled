@@ -1,4 +1,5 @@
 import { styled } from '@compiled/react';
+import '@compiled/react';
 
 export default {
   title: 'ast/static evaluation',

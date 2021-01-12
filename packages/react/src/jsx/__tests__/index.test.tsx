@@ -129,4 +129,31 @@ describe('css prop', () => {
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '20px');
     expect(getByText('hello world')).not.toHaveCompiledCss('font-size', '12px');
   });
+
+  it('should create css from object reference with true condition', () => {
+    const condition = true;
+    const base = { fontSize: 12 };
+    const { getByText } = render(<div css={condition && base}>hello world</div>);
+
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
+  });
+
+  it('should create css from object reference with false condition', () => {
+    const condition = false;
+    const base = { fontSize: 12 };
+    const { getByText } = render(<div css={condition && base}>hello world</div>);
+
+    expect(getByText('hello world')).not.toHaveCompiledCss('font-size', '12px');
+  });
+
+  it('should create css from array of object reference with condition', () => {
+    const condition = true;
+    const base = { fontSize: 12 };
+    const base2 = { fontSize: 20 };
+    const { getByText } = render(
+      <div css={[condition && base, !condition && base2]}>hello world</div>
+    );
+
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
+  });
 });
