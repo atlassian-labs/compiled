@@ -1,11 +1,15 @@
 import path, { ParsedPath } from 'path';
 import glob from 'glob';
 
-import isRunningInTsNode from '../../../isRunningInTsNode';
-
-const basePath = isRunningInTsNode
-  ? path.join(process.cwd(), '..', 'react', 'src', 'codemods')
-  : path.join(process.cwd(), 'node_modules', '@compiled', 'react', 'dist', 'codemods');
+const basePath = path.join(
+  process.cwd(),
+  'node_modules',
+  '@compiled',
+  'react',
+  'dist',
+  'cjs',
+  'codemods'
+);
 
 const parseTransformPath = (transformPath: string) => path.parse(transformPath);
 

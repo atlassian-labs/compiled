@@ -1,6 +1,9 @@
-jest.mock('glob', () => ({
-  sync: jest.fn(),
-}));
+import chalk from 'chalk';
+import { AutoComplete, Form } from 'enquirer';
+import { promise as exec } from 'exec-sh';
+import { castToJestMock } from '../../../testUtils';
+import codemods from '../codemods';
+import { CodemodOptions } from '../types';
 
 jest.mock('enquirer', () => ({
   AutoComplete: jest.fn(),
@@ -11,14 +14,40 @@ jest.mock('exec-sh', () => ({
   promise: jest.fn(),
 }));
 
-import { sync as globSync } from 'glob';
-import chalk from 'chalk';
-import { AutoComplete, Form } from 'enquirer';
-import { promise as execShPromise } from 'exec-sh';
+const expectCodemodToHaveBeenRan = (name: string, runPath: string) => {
+  const regexPath = runPath.replace(/\\/g, '\\').replace(/\*/g, '\\*');
 
-import { castToJestMock } from '../../../testUtils';
+  expect(exec).toHaveBeenCalledWith(
+    expect.stringMatching(
+      new RegExp(
+        `.*--transform=.*node_modules\\/@compiled\\/react\\/dist\\/cjs\\/codemods\\/${name}\\/index.js ${regexPath}`
+      )
+    )
+  );
+};
 
-import codemods from '../codemods';
+const expectCodemodToHaveOption = (key: string, value: string) => {
+  expect(exec).toHaveBeenCalledWith(expect.stringContaining(`${key}=${value}`));
+};
+
+const setupCliRunner = (opts: {
+  choice: number;
+  runPath: string;
+  codemodOpts?: CodemodOptions;
+}) => {
+  castToJestMock(AutoComplete).mockImplementation(({ choices, result }) => ({
+    run: () => Promise.resolve(result(choices[opts.choice])),
+  }));
+
+  castToJestMock(Form).mockImplementation(() => ({
+    run: () =>
+      Promise.resolve({
+        parser: 'tsx',
+        ...opts.codemodOpts,
+        path: opts.runPath,
+      }),
+  }));
+};
 
 describe('main', () => {
   beforeEach(() => {
@@ -29,43 +58,13 @@ describe('main', () => {
   afterEach(() => {
     castToJestMock(global.console.log).mockReset();
     castToJestMock(global.console.warn).mockReset();
-    castToJestMock(globSync).mockReset();
     castToJestMock(AutoComplete).mockReset();
     castToJestMock(Form).mockReset();
-    castToJestMock(execShPromise).mockReset();
+    castToJestMock(exec).mockReset();
   });
 
-  it('should should warn if no codemods are available', async () => {
-    castToJestMock(globSync).mockImplementationOnce(() => []);
-
-    await codemods();
-
-    expect(global.console.warn).toHaveBeenCalledWith(chalk.red('No codemods available right now.'));
-
-    expect(AutoComplete).not.toHaveBeenCalledTimes(1);
-
-    expect(Form).not.toHaveBeenCalledTimes(1);
-
-    expect(execShPromise).not.toHaveBeenCalledTimes(1);
-  });
-
-  it('should run transforms contained in directories with filtered jscodeshift options', async () => {
-    castToJestMock(globSync).mockImplementationOnce(() => [
-      'node_modules/@compiled/react/dist/codemods/styled-components-to-compiled/index.tsx',
-      'node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx',
-    ]);
-
-    castToJestMock(AutoComplete).mockImplementation(({ choices, result }) => ({
-      run: () => Promise.resolve(result(choices[0])),
-    }));
-
-    castToJestMock(Form).mockImplementation(() => ({
-      run: () =>
-        Promise.resolve({
-          parser: 'tsx',
-          path: 'src/components/Button.tsx',
-        }),
-    }));
+  it('should present all available codemods in an autocomplete', async () => {
+    setupCliRunner({ choice: 0, runPath: 'src/components/Button.tsx' });
 
     await codemods();
 
@@ -76,6 +75,12 @@ describe('main', () => {
         choices: ['emotion-to-compiled', 'styled-components-to-compiled'],
       })
     );
+  });
+
+  it('should present a form after autocomplete for user input for jscodeshift cli', async () => {
+    setupCliRunner({ choice: 0, runPath: 'src/components/Button.tsx' });
+
+    await codemods();
 
     expect(Form).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -110,82 +115,51 @@ describe('main', () => {
         ],
       })
     );
-
-    expect(execShPromise).toHaveBeenCalledWith(
-      expect.stringContaining(
-        '--cpus=8 --parser=tsx --transform=node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx src/components/Button.tsx'
-      )
-    );
   });
 
-  it('should run transforms contained in directories with all jscodeshift options', async () => {
-    castToJestMock(globSync).mockImplementationOnce(() => [
-      'node_modules/@compiled/react/dist/codemods/styled-components-to-compiled/index.tsx',
-      'node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx',
-    ]);
-
-    castToJestMock(AutoComplete).mockImplementation(({ choices, result }) => ({
-      run: () => Promise.resolve(result(choices[0])),
-    }));
-
-    castToJestMock(Form).mockImplementation(() => ({
-      run: () =>
-        Promise.resolve({
-          parser: 'tsx',
-          extensions: 'tsx',
-          ignorePattern: '**/*utils*',
-          path: 'src/components/**/*.tsx',
-        }),
-    }));
+  it('should run on 8 cpus', async () => {
+    setupCliRunner({ choice: 0, runPath: 'src/components/**/*.tsx' });
 
     await codemods();
 
-    expect(AutoComplete).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: 'Select which codemod would you like to run? 🤔',
-        limit: 18,
-        choices: ['emotion-to-compiled', 'styled-components-to-compiled'],
-      })
-    );
+    expectCodemodToHaveOption('cpus', '8');
+  });
 
-    expect(Form).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'jscodeshift',
-        message: `Please provide the following jscodeshift cli options ${chalk.cyan(
-          '<https://github.com/facebook/jscodeshift#usage-cli>'
-        )}`,
-        hint: chalk.bold(
-          chalk.red(
-            '**NOTE**: [PATH] is mandatory option. It is the source code directory eg. /project/src'
-          )
-        ),
-        choices: [
-          {
-            name: 'path',
-            message: 'PATH',
-          },
-          {
-            name: 'parser',
-            message: '--parser',
-            hint: `default: ${chalk.cyan('babel')}`,
-          },
-          {
-            name: 'extensions',
-            message: '--extensions',
-            hint: `default: ${chalk.cyan('js')}`,
-          },
-          {
-            name: 'ignorePattern',
-            message: '--ignore-pattern',
-          },
-        ],
-      })
-    );
+  it('should run emotion codemod with default options', async () => {
+    const path = 'src/components/Button.tsx';
+    setupCliRunner({ choice: 0, runPath: path });
 
-    expect(execShPromise).toHaveBeenCalledWith(
-      expect.stringContaining(
-        '--cpus=8 --parser=tsx --extensions=tsx --ignore-pattern=**/*utils* --transform=node_modules/@compiled/react/dist/codemods/emotion-to-compiled/index.tsx src/components/**/*.tsx'
-      )
-    );
+    await codemods();
+
+    expectCodemodToHaveBeenRan('emotion-to-compiled', path);
+  });
+
+  it('should run styled codemod with default options', async () => {
+    const path = 'src/components/Button.tsx';
+    setupCliRunner({ choice: 1, runPath: path });
+
+    await codemods();
+
+    expectCodemodToHaveBeenRan('styled-components-to-compiled', path);
+  });
+
+  it('should run emotion codemod with all custom options', async () => {
+    const path = 'src/components/**/*.tsx';
+    setupCliRunner({
+      choice: 0,
+      runPath: path,
+      codemodOpts: {
+        parser: 'tsx',
+        extensions: 'tsx',
+        ignorePattern: '**/*utils*',
+      },
+    });
+
+    await codemods();
+
+    expectCodemodToHaveBeenRan('emotion-to-compiled', path);
+    expectCodemodToHaveOption('parser', 'tsx');
+    expectCodemodToHaveOption('extensions', 'tsx');
+    expectCodemodToHaveOption('ignore-pattern', '**/*utils*');
   });
 });

@@ -1,20 +1,42 @@
 import chalk from 'chalk';
 import path, { ParsedPath } from 'path';
 import { AutoComplete, Form } from 'enquirer';
-import { promise as execShPromise } from 'exec-sh';
-
+import { promise as execAsync } from 'exec-sh';
 import { getTransforms, getTransformPath } from './utils/transforms';
+import { Choice, CodemodOptions } from './types';
 
-const getTransformPrompt = async (transforms: ParsedPath[]): Promise<ParsedPath> =>
-  await new AutoComplete({
+const getTransformPrompt = async (transforms: ParsedPath[]): Promise<ParsedPath> => {
+  return await new AutoComplete({
     message: 'Select which codemod would you like to run? 🤔',
     limit: 18,
     choices: transforms.map(({ dir }) => path.basename(dir)),
     result: (choice: string) => transforms.find(({ dir }) => dir.includes(choice)),
   }).run();
+};
 
-const getTransformForm = async () =>
-  await new Form({
+const codemodChoice: Array<Choice<keyof CodemodOptions>> = [
+  {
+    name: 'path',
+    message: 'PATH',
+  },
+  {
+    name: 'parser',
+    message: '--parser',
+    hint: `default: ${chalk.cyan('babel')}`,
+  },
+  {
+    name: 'extensions',
+    message: '--extensions',
+    hint: `default: ${chalk.cyan('js')}`,
+  },
+  {
+    name: 'ignorePattern',
+    message: '--ignore-pattern',
+  },
+];
+
+const getTransformForm = async () => {
+  return await new Form({
     name: 'jscodeshift',
     message: `Please provide the following jscodeshift cli options ${chalk.cyan(
       '<https://github.com/facebook/jscodeshift#usage-cli>'
@@ -24,39 +46,18 @@ const getTransformForm = async () =>
         '**NOTE**: [PATH] is mandatory option. It is the source code directory eg. /project/src'
       )
     ),
-    choices: [
-      {
-        name: 'path',
-        message: 'PATH',
-      },
-      {
-        name: 'parser',
-        message: '--parser',
-        hint: `default: ${chalk.cyan('babel')}`,
-      },
-      {
-        name: 'extensions',
-        message: '--extensions',
-        hint: `default: ${chalk.cyan('js')}`,
-      },
-      {
-        name: 'ignorePattern',
-        message: '--ignore-pattern',
-      },
-    ],
+    choices: codemodChoice,
   }).run();
+};
 
 const codemods = async () => {
   const transforms = getTransforms();
-
   if (transforms.length === 0) {
     return console.warn(chalk.red('No codemods available right now.'));
   }
 
   const transform = await getTransformPrompt(transforms);
-
   const transformPath = getTransformPath(transform);
-
   const form = await getTransformForm();
 
   const args = [
@@ -79,7 +80,7 @@ const codemods = async () => {
     )
   );
 
-  await execShPromise(command);
+  await execAsync(command);
 };
 
 export default codemods;
