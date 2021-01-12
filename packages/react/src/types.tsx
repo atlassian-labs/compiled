@@ -19,4 +19,5 @@ export type CssFunction<TValue = void> =
   | AnyKeyCssProps<TValue>
   | TemplateStringsArray
   | string
+  | boolean
   | undefined;

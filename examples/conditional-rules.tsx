@@ -32,3 +32,35 @@ export const PrimaryLozenge = () => {
 export const NotPrimaryLozenge = () => {
   return <Lozenge>Hello secondary</Lozenge>;
 };
+
+const LozengeWithArray = (props: { isPrimary?: boolean; children: any }) => (
+  <div
+    css={[
+      {
+        fontWeight: 500,
+        fontSize: 12,
+        display: 'inline-block',
+        borderRadius: 3,
+        padding: '2px 4px',
+      },
+      props.isPrimary && {
+        color: 'blue',
+        border: '1px solid blue',
+      },
+
+      !props.isPrimary && {
+        color: 'red',
+        border: '1px solid red',
+      },
+    ]}>
+    {props.children}
+  </div>
+);
+
+export const PrimaryLozengeWithArray = () => {
+  return <LozengeWithArray isPrimary>Hello primay</LozengeWithArray>;
+};
+
+export const NotPrimaryLozengeWithArray = () => {
+  return <LozengeWithArray>Hello secondary</LozengeWithArray>;
+};
