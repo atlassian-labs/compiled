@@ -1,5 +1,5 @@
 import { sync as globSync } from 'glob';
-import { castToJestMock } from '../../../../testUtils';
+import { castToJestMock } from '../../../../__tests__/test-utils';
 import { getTransformPath, getTransforms } from '../transforms';
 
 jest.mock('glob', () => ({

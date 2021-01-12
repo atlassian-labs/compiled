@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { AutoComplete } from 'enquirer';
 
-import { castToJestMock } from '../testUtils';
+import { castToJestMock } from './test-utils';
 
 import presets from '../presets';
 import main from '../main';

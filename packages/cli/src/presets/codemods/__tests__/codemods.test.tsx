@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { AutoComplete, Form } from 'enquirer';
-import { promise as exec } from 'exec-sh';
-import { castToJestMock } from '../../../testUtils';
+import { promise as execAsync } from 'exec-sh';
+import { castToJestMock } from '../../../__tests__/test-utils';
 import codemods from '../codemods';
 import { CodemodOptions } from '../types';
 
@@ -17,7 +17,7 @@ jest.mock('exec-sh', () => ({
 const expectCodemodToHaveBeenRan = (name: string, runPath: string) => {
   const regexPath = runPath.replace(/\\/g, '\\').replace(/\*/g, '\\*');
 
-  expect(exec).toHaveBeenCalledWith(
+  expect(execAsync).toHaveBeenCalledWith(
     expect.stringMatching(
       new RegExp(
         `.*--transform=.*node_modules\\/@compiled\\/react\\/dist\\/cjs\\/codemods\\/${name}\\/index.js ${regexPath}`
@@ -27,7 +27,7 @@ const expectCodemodToHaveBeenRan = (name: string, runPath: string) => {
 };
 
 const expectCodemodToHaveOption = (key: string, value: string) => {
-  expect(exec).toHaveBeenCalledWith(expect.stringContaining(`${key}=${value}`));
+  expect(execAsync).toHaveBeenCalledWith(expect.stringContaining(`${key}=${value}`));
 };
 
 const setupCliRunner = (opts: {
@@ -60,7 +60,7 @@ describe('main', () => {
     castToJestMock(global.console.warn).mockReset();
     castToJestMock(AutoComplete).mockReset();
     castToJestMock(Form).mockReset();
-    castToJestMock(exec).mockReset();
+    castToJestMock(execAsync).mockReset();
   });
 
   it('should present all available codemods in an autocomplete', async () => {
