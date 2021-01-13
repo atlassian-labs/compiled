@@ -24,9 +24,18 @@
     "typescript"
   ],
   "exports": {
-    ".": "./dist/esm/index.js",
-    "./babel-plugin": "./dist/esm/babel-plugin.js",
-    "./runtime": "./dist/esm/runtime.js"
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./babel-plugin": {
+      "import": "./dist/esm/babel-plugin.js",
+      "require": "./dist/cjs/babel-plugin.js"
+    },
+    "./runtime": {
+      "import": "./dist/esm/runtime.js",
+      "require": "./dist/cjs/runtime.js"
+    }
   },
   "files": [
     "dist",
