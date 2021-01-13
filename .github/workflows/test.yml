@@ -1,6 +1,13 @@
 name: Test
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - '*'
 
 jobs:
   build:
@@ -8,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [v12.3.1]
+        node-version: [v12.15, v14, v15]
 
     steps:
       - uses: actions/checkout@v2
@@ -35,6 +42,9 @@ jobs:
 
       - name: Run tests
         run: yarn test:cover --ci
+
+      - name: Run import test
+        run: yarn test:imports
 
       - name: Bundle size
         run: |

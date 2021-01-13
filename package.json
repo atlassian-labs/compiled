@@ -17,6 +17,7 @@
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "test": "yarn build:cjs && yarn build:esm && jest --no-cache",
     "test:watch": "yarn build:esm && jest --no-cache --watch",
+    "test:imports": "node test/test-imports",
     "test:cover": "yarn test --collectCoverage",
     "lint": "eslint --config .eslintrc.js --ext tsx,ts ./packages/**/src ./examples",
     "lint:fix": "yarn lint -- --fix",
