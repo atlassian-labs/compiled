@@ -1,8 +1,9 @@
 import path, { ParsedPath } from 'path';
 import glob from 'glob';
+import appRoot from 'app-root-path';
 
 const basePath = path.join(
-  process.cwd(),
+  appRoot.path,
   'node_modules',
   '@compiled',
   'react',
