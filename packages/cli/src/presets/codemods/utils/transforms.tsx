@@ -2,8 +2,15 @@ import path, { ParsedPath } from 'path';
 import glob from 'glob';
 import appRoot from 'app-root-path';
 
+/**
+ * Local run is defined as running in ts-node.
+ */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const isLocalRun = typeof process[Symbol.for('ts-node.register.instance')] === 'object';
+
 const basePath = path.join(
-  appRoot.path,
+  isLocalRun ? appRoot.path : process.cwd(),
   'node_modules',
   '@compiled',
   'react',
