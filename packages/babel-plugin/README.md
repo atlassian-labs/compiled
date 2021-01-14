@@ -5,7 +5,7 @@ Babel plugin used to transform your code.
 ## Installation
 
 ```bash
-npm i @compiled/babel-plugin
+npm i @compiled/babel-plugin --save-dev
 ```
 
 ## Usage
