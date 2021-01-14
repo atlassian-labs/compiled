@@ -45,7 +45,6 @@
     "README.md"
   ],
   "dependencies": {
-    "@compiled/babel-plugin": "0.5.3",
     "csstype": "^3.0.6"
   },
   "peerDependencies": {

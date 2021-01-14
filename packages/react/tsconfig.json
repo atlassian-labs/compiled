@@ -17,5 +17,5 @@
     ],
     "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo"
   },
-  "references": [{ "path": "../babel-plugin" }]
+  "references": []
 }
