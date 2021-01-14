@@ -31,7 +31,8 @@ const StyledButton = styled.button`
 Install the React package:
 
 ```bash
-npm install @compiled/react @compiled/babel-plugin
+npm install @compiled/react
+npm install @compiled/babel-plugin --save-dev
 ```
 
 Configure [Babel](https://babeljs.io/docs/en/config-files):
