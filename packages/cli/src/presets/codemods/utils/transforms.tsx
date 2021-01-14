@@ -1,11 +1,23 @@
 import path, { ParsedPath } from 'path';
 import glob from 'glob';
+import appRoot from 'app-root-path';
 
-import isRunningInTsNode from '../../../isRunningInTsNode';
+/**
+ * Local run is defined as running in ts-node.
+ */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const isLocalRun = typeof process[Symbol.for('ts-node.register.instance')] === 'object';
 
-const basePath = isRunningInTsNode
-  ? path.join(process.cwd(), '..', 'react', 'src', 'codemods')
-  : path.join(process.cwd(), 'node_modules', '@compiled', 'react', 'dist', 'codemods');
+const basePath = path.join(
+  isLocalRun ? appRoot.path : process.cwd(),
+  'node_modules',
+  '@compiled',
+  'react',
+  'dist',
+  'cjs',
+  'codemods'
+);
 
 const parseTransformPath = (transformPath: string) => path.parse(transformPath);
 

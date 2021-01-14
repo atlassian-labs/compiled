@@ -28,6 +28,7 @@
     "@compiled/react": ">= 0.4.7"
   },
   "dependencies": {
+    "app-root-path": "^3.0.0",
     "chalk": "^4.1.0",
     "enquirer": "^2.3.6",
     "exec-sh": "^0.3.4",
@@ -35,5 +36,8 @@
     "jscodeshift": "^0.11.0",
     "meow": "^9.0.0",
     "ts-node": "^9.1.1"
+  },
+  "devDependencies": {
+    "@types/app-root-path": "^1.2.4"
   }
 }
