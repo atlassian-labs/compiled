@@ -1,6 +1,6 @@
 {
   "name": "@compiled/jest",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "description": "Build time atomic CSS-in-JS. Baked and ready to serve.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
