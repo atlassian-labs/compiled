@@ -2,9 +2,9 @@
   "extends": "@parcel/config-default",
   "transformers": {
     "*.{js,jsx,ts,tsx}": [
-      "@parcel/transformer-babel",
       "@compiled/parcel-transformer",
+      "@parcel/transformer-babel",
       "@parcel/transformer-js"
-    ],
+    ]
   }
 }

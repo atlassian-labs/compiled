@@ -2,8 +2,8 @@
   "name": "@private/parcel",
   "version": "1.0.0",
   "scripts": {
-    "start": "parcel serve ./src/index.html --no-cache",
-    "build": "parcel build ./src/index.html"
+    "start": "PARCEL=true parcel serve ./src/index.html --no-cache",
+    "build": "PARCEL=true parcel build ./src/index.html"
   },
   "dependencies": {
     "@compiled/react": "*",
