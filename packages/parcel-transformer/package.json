@@ -27,6 +27,6 @@
   },
   "devDependencies": {},
   "engines": {
-    "parcel": "2.x"
+    "parcel": "2.0.0-beta.1"
   }
 }
