@@ -21,7 +21,9 @@
     "README.md"
   ],
   "dependencies": {
-    "@compiled/babel-plugin": "0.6.0"
+    "@compiled/babel-plugin": "0.6.0",
+    "@parcel/plugin": "^2.0.0-alpha.3",
+    "semver": "^7.3.4"
   },
   "devDependencies": {},
   "engines": {

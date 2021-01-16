@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "module": "commonjs"
+    "module": "commonjs",
+    "target": "ES2020"
   },
   "references": [{ "path": "../babel-plugin" }]
 }
