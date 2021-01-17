@@ -101,24 +101,35 @@ const toCSSDeclaration = (key: string, result: CSSOutput) => {
  * It will compare the variable declarator node id's name with passed node name and
  * returns its stringified value along with the node.
  *
- * Eg. If passed node is an Identifier with name `abcd` and somewhere in own path
+ * Eg.
+ * 1. If passed node is an Identifier with name `abcd` and somewhere in own path
  * we have any variable declarator `const abcd = obj.value`, it will return
  * stringified `obj.value` along with node `obj.value`.
- * If variable declarator's value is undefined `const abcd = undefined`, it will
+ * Input: `node: const abcd = obj.value`
+ * Output: `{ variableName: 'obj.value', expression: Expression // obj.value Expression  }`
+
+ * 2. If variable declarator's value is undefined `const abcd = undefined`, it will
  * return stringified `abcd` along with undefined.
+ * Input: `node: const abcd = undefined`
+ * Output: `{ variableName: 'abcd', expression: undefined  }`
  *
  * @param node
  * @param meta Meta data used during the transformation.
  */
 const getVariableDeclaratorValueForOwnPath = (node: t.Expression, meta: Metadata) => {
+  // Will give stringified code for the node. If node is a function it will stringified 'function(){}'
   let variableName = generate(node).code;
   let expression = node;
 
+  // Traverse variable declarator. If its value is not undefined/null return it along with
+  // its stringified value otherwise return undefined/null along with stringified
+  // variable name.
   meta.ownPath?.traverse({
     VariableDeclarator(path) {
       if (t.isIdentifier(node) && t.isIdentifier(path.node.id, { name: node.name })) {
         const { init } = path.node;
 
+        // Get stringified value or original variable name
         variableName = init ? generate(init).code : node.name;
         expression = init as t.Expression;
         path.stop();

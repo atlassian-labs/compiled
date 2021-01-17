@@ -443,14 +443,19 @@ const resolveObjectPatternValueNode = (
  * Eg. If we have something like `const { key: value } = { key: 'something' }`, and
  * reference name is `value`, it will return `key` so that it can be resolved to
  * 'something' otherwise it won't get resolved.
+ * Input: `node: const { key: value } = { key: 'something' }, referenceName: 'value'`
+ * Output: `'key'`
  *
+ * Input: `node: const { key } = { key: 'something' }, referenceName: 'value'`
+ * Output: `'value'`
+ *
+ * Input: `node: const { key } = { key: 'something' }, referenceName: 'key'`
+ * Output: `'key'`
+
  * @param node Object pattern node which we have to investigate
  * @param referenceName Reference name for which `binding` to be resolved
  */
-const getObjectPatternKeyWhenNotSameAsValue = (
-  node: t.ObjectPattern,
-  referenceName: string
-): string => {
+const getDestructuredObjectPatternKey = (node: t.ObjectPattern, referenceName: string): string => {
   let result = referenceName;
 
   for (const property of node.properties) {
@@ -502,7 +507,7 @@ export const resolveBindingNode = (
       node = resolveObjectPatternValueNode(
         node,
         meta,
-        getObjectPatternKeyWhenNotSameAsValue(binding.path.node.id, referenceName)
+        getDestructuredObjectPatternKey(binding.path.node.id, referenceName)
       ) as t.Node;
     }
 

@@ -190,7 +190,7 @@ describe('styled component string literal', () => {
     expect(actual).toInclude('{color:blue}');
   });
 
-  it('should reference identifier pointing to a call expression if it returns simple value', () => {
+  it('should resolve identifier pointing to a call expression if it returns simple value', () => {
     const actual = transform(`
         import { styled } from '@compiled/react';
 
@@ -202,8 +202,7 @@ describe('styled component string literal', () => {
         \`;
       `);
 
-    expect(actual).toInclude('{color:var(--_1ylxx6h)');
-    expect(actual).toInclude('"--_1ylxx6h":ix(color)');
+    expect(actual).toInclude('{color:blue}');
   });
 
   it('should inline call if it returns simple value', () => {

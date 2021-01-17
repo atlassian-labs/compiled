@@ -9,6 +9,7 @@ import {
   getValueFromObjectExpression,
   tryEvaluateExpression,
   wrapNodeInIIFE,
+  getPathOfNode,
 } from './ast';
 
 const createResultPair = (value: t.Expression, meta: Metadata) => ({
@@ -220,9 +221,26 @@ const traverseCallExpression = (expression: t.CallExpression, meta: Metadata) =>
   let value: t.Node | undefined | null = undefined;
   let updatedMeta: Metadata = meta;
 
+  /*
+    Basically flow is as follows:
+    1. Get the calling function node. It can be either identifier `func('arg')` or a
+       member expression `x.func('arg')`;
+    2. Save the reference of function node for example `func`.
+    3. Pull out its parameters.
+    4. Evaluate the args of calling function `func('arg')` by traversing recursively.
+    5. Loop through params, and map the args with params.
+    6. Pull the params and create an IIFE around the calling function `CallExpression` which creates
+       a new scope around calling function and isolates everything (We add bindings at this step by pushing into its scope).
+    7. Add that IIFE node path to `ownPath`, and check only for own binding in `resolveBindingNode` function
+       so that only isolated params are evaluated.
+    8. In `resolveBindingNode`, if `ownPath` is not set (module traversal case or any other case), it will pick things from `parentPath`.
+  */
   if (t.isExpression(callee)) {
     let functionNode = null;
 
+    // Get func node either from `Identifier` i.e. `func('arg')` or `MemberExpression` i.e. `x.func('arg')`.
+    // Right now we are only supported these 2 flavors. If we have complex case like `func('arg').fn().variable`,
+    // it will not get evaluated.
     if (t.isIdentifier(callee)) {
       const resolvedBinding = resolveBindingNode(callee.name, updatedMeta);
 
@@ -243,45 +261,48 @@ const traverseCallExpression = (expression: t.CallExpression, meta: Metadata) =>
       }
     }
 
+    // Check if it is resolved
     if (functionNode && t.isFunction(functionNode)) {
+      // Pull its parameters
       const { params } = functionNode;
 
+      // Evaluate the passed args recursively
       const evaluatedArguments = expression.arguments.map(
         (argument) => evaluateExpression(argument as t.Expression, updatedMeta).value
       );
 
-      updatedMeta.parentPath.traverse({
-        CallExpression(callExpressionPath) {
-          // Only look for expression for which we are evaluating
-          if (callExpressionPath.node === expression) {
-            const callExpressionWrappingNode = wrapNodeInIIFE(callExpressionPath.node);
+      // Get path of the call expression `func('arg')` or `x.func('arg')`
+      const expressionPath = getPathOfNode(expression, updatedMeta.parentPath);
+      // Create an IIFE around it and replace its path. So `func('arg')` will become `(() => func('arg'))()`
+      // and `x.func('arg')` will become `(() => x.func('arg'))()`.
+      // `wrappingNodePath` is the path above.
+      const [wrappingNodePath] = expressionPath.replaceWith(wrapNodeInIIFE(expression));
 
-            const [wrappingNodePath] = callExpressionPath.replaceWith(callExpressionWrappingNode);
+      // Get arrowFunctionExpressionPath, which was created using the IIFE
+      const arrowFunctionExpressionPath = getPathOfNode(
+        wrappingNodePath.node.callee,
+        wrappingNodePath as any
+      );
 
-            wrappingNodePath.traverse({
-              ArrowFunctionExpression(arrowFunctionExpressionPath) {
-                params
-                  .filter((param) => t.isIdentifier(param) || t.isObjectPattern(param))
-                  .forEach((param, index) => {
-                    const evaluatedArgument = evaluatedArguments[index];
+      // Loop through the parameters. Right now only identifier `param` and object pattern `{ param }` or `{ param: p }`
+      // are supported.
+      params
+        .filter((param) => t.isIdentifier(param) || t.isObjectPattern(param))
+        .forEach((param, index) => {
+          const evaluatedArgument = evaluatedArguments[index];
 
-                    arrowFunctionExpressionPath.scope.push({
-                      id: param,
-                      init: evaluatedArgument,
-                      kind: 'const',
-                    });
-                  });
+          // Push evaluated args and params in the IIFE's scope by created a local variable
+          // `const param = 'evaluated arg value'`
+          arrowFunctionExpressionPath.scope.push({
+            id: param,
+            init: evaluatedArgument,
+            kind: 'const',
+          });
+        });
 
-                updatedMeta.ownPath = arrowFunctionExpressionPath;
-
-                arrowFunctionExpressionPath.stop();
-              },
-            });
-
-            callExpressionPath.stop();
-          }
-        },
-      });
+      // Set the `ownPath` which `resolveBindingNode` will use to check own binding for the
+      // local variables we created above.
+      updatedMeta.ownPath = arrowFunctionExpressionPath;
     }
 
     ({ value, meta: updatedMeta } = evaluateExpression(callee, updatedMeta));
