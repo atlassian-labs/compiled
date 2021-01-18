@@ -17,18 +17,11 @@ export default new Transformer({
     }
 
     if (asset.isSource) {
-      asset.meta.babelPlugins = ['@compiled/babel-plugin'];
+      asset.meta.babelPlugins = [['@compiled/babel-plugin', { cache: false }]];
 
-      if (
-        asset.filePath === '/Users/mdougall/projects/compiled/examples/packages/parcel/src/index.js'
-      ) {
-        // asset.addDependency({
-        //   moduleSpecifier: './module.js',
-        // });
-        console.log('hello world im doin it');
-        asset.addIncludedFile(
-          '/Users/mdougall/projects/compiled/examples/packages/parcel/src/module.js'
-        );
+      if (asset.filePath.endsWith('examples/packages/parcel/src/index.js')) {
+        console.log('ADDING HARDCODED ASSET');
+        asset.addIncludedFile('./module.js');
       }
     }
 

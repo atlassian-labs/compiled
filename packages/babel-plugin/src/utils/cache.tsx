@@ -114,6 +114,8 @@ export class Cache {
     value?: () => T;
   }) {
     if (!this._options.cache) {
+      console.log('IGNORING CACHE');
+
       return value();
     }
 
