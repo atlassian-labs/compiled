@@ -6,10 +6,13 @@ export const colors: {
 export const objectStyles: {
   fontSize: number;
   color: string;
-  backgroundColor: () => string;
+  backgroundColor: (bgColor: string) => string;
 };
 
-export const colorMixin: () => {
+export const colorMixin: (
+  radius: number
+) => {
   color: string;
   backgroundColor: string;
+  borderRadius: number;
 };

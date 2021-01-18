@@ -75,6 +75,13 @@ export interface Metadata {
    * Path of a parent node.
    */
   parentPath: NodePath<any>;
+
+  /**
+   * We used this to store path of the IIFE node we created around the calling
+   * function. We created an IIFE to resolve the parameters to the args in isolation
+   * (using isolated scope created around IIFE).
+   */
+  ownPath?: NodePath<any>;
 }
 
 export interface Tag {
