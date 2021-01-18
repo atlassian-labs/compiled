@@ -18,6 +18,18 @@ export default new Transformer({
 
     if (asset.isSource) {
       asset.meta.babelPlugins = ['@compiled/babel-plugin'];
+
+      if (
+        asset.filePath === '/Users/mdougall/projects/compiled/examples/packages/parcel/src/index.js'
+      ) {
+        // asset.addDependency({
+        //   moduleSpecifier: './module.js',
+        // });
+        console.log('hello world im doin it');
+        asset.addIncludedFile(
+          '/Users/mdougall/projects/compiled/examples/packages/parcel/src/module.js'
+        );
+      }
     }
 
     return [asset];
