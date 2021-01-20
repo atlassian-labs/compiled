@@ -1,4 +1,4 @@
 module.exports = {
-  addons: ['storybook-addon-performance/register'],
+  addons: ['storybook-addon-performance/register', 'storybook-addon-pseudo-states'],
   stories: ['../examples/*.tsx'],
 };
