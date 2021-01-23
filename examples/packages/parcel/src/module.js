@@ -1,1 +1,1 @@
-export const primary = 'blue';
+export const primary = 'red';
