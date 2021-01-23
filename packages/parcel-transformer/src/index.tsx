@@ -17,11 +17,15 @@ export default new Transformer({
     }
 
     if (asset.isSource) {
+      console.log('bundling', asset.filePath);
+
       asset.meta.babelPlugins = [['@compiled/babel-plugin', { cache: false }]];
 
-      if (asset.filePath.endsWith('examples/packages/parcel/src/index.js')) {
+      if (asset.filePath.endsWith('examples/packages/parcel/src/app.js')) {
         console.log('ADDING HARDCODED ASSET');
-        asset.addIncludedFile('./module.js');
+        await asset.addIncludedFile(
+          '/Users/madou/projects/compiled/examples/packages/parcel/src/module.js'
+        );
       }
     }
 
