@@ -1,0 +1,29 @@
+"use strict";
+
+var process = require("process");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.isNodeEnvironment = void 0;
+
+/**
+ * Returns `true` when inside a node environment,
+ * else `false`.
+ *
+ * When using this it will remove any node code from the browser bundle - for example:
+ *
+ * ```js
+ * if (isNodeEnvironment()) {
+ *   // This code will be removed from the browser bundle
+ * }
+ * ```
+ */
+var isNodeEnvironment = function () {
+  var _a; // https://nodejs.org/api/process.html#process_process_release
+
+
+  return ((_a = process === null || process === void 0 ? void 0 : process.release) === null || _a === void 0 ? void 0 : _a.name) === 'node';
+};
+
+exports.isNodeEnvironment = isNodeEnvironment;

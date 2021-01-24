@@ -1,0 +1,18 @@
+"use strict";
+
+var _jsxRuntime = require("react/jsx-runtime");
+
+var _react = _interopRequireDefault(require("react"));
+
+var _reactDom = require("react-dom");
+
+var _app = _interopRequireDefault(require("./app"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(0, _reactDom.hydrate)( /*#__PURE__*/(0, _jsxRuntime.jsx)(_app.default, {}), document.getElementById('root'));
+global = window;
+
+if (module.hot) {
+  module.hot.accept();
+}
