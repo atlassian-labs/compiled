@@ -1,5 +1,5 @@
 import '@compiled/react';
-import { hover } from './mixins/mixins';
+import { hover } from '../mixins/mixins';
 
 const inlineMixinFunc = () => ({
   color: 'red',

@@ -1,6 +1,6 @@
 import { styled } from '@compiled/react';
 import { colors, objectStyles } from 'module-a';
-import { hover } from './mixins/mixins';
+import { hover } from '../mixins/mixins';
 
 export default {
   title: 'ast/module traversal',
