@@ -6,3 +6,4 @@ storybook-static
 .tmp
 coverage
 *.tsbuildinfo
+.parcel-cache
