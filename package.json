@@ -45,7 +45,7 @@
     "@babel/preset-typescript": "^7.12.7",
     "@compiled/jest": "*",
     "@compiled/react": "*",
-    "@size-limit/preset-small-lib": "^4.9.1",
+    "@size-limit/preset-small-lib": "^4.9.2",
     "@storybook/addons": "^6.1.15",
     "@storybook/react": "^6.1.15",
     "@types/jest": "^26.0.20",
