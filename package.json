@@ -66,7 +66,7 @@
     "pretty-quick": "^3.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "size-limit": "^4.9.1",
+    "size-limit": "^4.9.2",
     "storybook-addon-performance": "^0.14.0",
     "storybook-addon-pseudo-states": "^1.0.0-rc.3",
     "ts-node": "^9.1.1",
