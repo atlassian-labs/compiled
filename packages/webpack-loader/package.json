@@ -1,5 +1,5 @@
 {
-  "name": "@compiled/webpack-plugin",
+  "name": "@compiled/webpack-loader",
   "version": "0.6.1",
   "description": "Build time atomic CSS-in-JS. Baked and ready to serve.",
   "author": "Michael Dougall",
@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/atlassian-labs/compiled.git",
-    "directory": "packages/webpack-plugin"
+    "directory": "packages/webpack-loader"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
