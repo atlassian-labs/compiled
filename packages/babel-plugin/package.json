@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.12.13",
-    "@babel/generator": "^7.12.13",
+    "@babel/generator": "^7.12.15",
     "@babel/helper-plugin-utils": "^7.12.13",
     "@babel/plugin-syntax-jsx": "^7.12.13",
     "@babel/plugin-transform-flow-strip-types": "^7.12.13",
