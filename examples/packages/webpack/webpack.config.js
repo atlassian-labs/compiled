@@ -18,6 +18,13 @@ module.exports = {
           loader: 'babel-loader',
         },
       },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: '@compiled/webpack-loader',
+        },
+      },
     ],
   },
   plugins: [new HtmlWebpackPlugin()],
