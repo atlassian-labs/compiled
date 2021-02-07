@@ -1,5 +1,5 @@
 {
-  "plugins": [["@compiled/babel-plugin", { "importReact": false }]],
+  "plugins": [["@compiled/babel-plugin", { "importReact": false, "cache": false }]],
   "presets": [
     ["@babel/preset-env", { "targets": { "browsers": "last 1 version" } }],
     "@babel/preset-typescript",
