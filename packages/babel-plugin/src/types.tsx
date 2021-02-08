@@ -11,8 +11,12 @@ export interface PluginOptions {
 
   /**
    * Whether to use the cache or not. Will make subsequent builds faster.
+   *
+   * - `true` caches for the duration of the node run (useful for single builds)
+   * - `"file-pass"` caches per file pass (useful for watch mode)
+   * - `false` turns caching off
    */
-  cache?: boolean;
+  cache?: boolean | 'file-pass';
 
   /**
    * Will import the React namespace if it is missing.

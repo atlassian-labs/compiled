@@ -14,7 +14,7 @@ import { State } from './types';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkgJson = require('../package.json');
 
-const cache = new Cache();
+let globalCache: Cache | undefined;
 
 const parseFilename = (filename: string | undefined) => {
   if (!filename) {
@@ -80,7 +80,16 @@ export default declare<State>((api) => {
     inherits: jsxSyntax,
     pre() {
       this.sheets = {};
-      cache.initialize(this.opts);
+      let cache: Cache;
+
+      if (this.opts.cache === true) {
+        globalCache = new Cache();
+        cache = globalCache;
+      } else {
+        cache = new Cache();
+      }
+
+      cache.initialize({ ...this.opts, cache: !!this.opts.cache });
       this.cache = cache;
     },
     visitor: {
