@@ -11,7 +11,7 @@ export default new Transformer({
     return ast.type === 'babel' && semver.satisfies(ast.version, '^7.0.0');
   },
 
-  async transform({ asset, ast, resolve }: any) {
+  async transform({ asset, ast }: any) {
     if (ast) {
       throw new Error('@compiled/parcel-transformer should run before all other transformers.');
     }
@@ -21,13 +21,11 @@ export default new Transformer({
 
       asset.meta.babelPlugins = [['@compiled/babel-plugin', { cache: false }]];
 
-      if (asset.filePath.endsWith('examples/packages/parcel/src/app.js')) {
-        console.log('ADDING HARDCODED ASSET');
+      if (asset.filePath === '/Users/madou/projects/compiled/examples/packages/parcel/src/app.js') {
+        console.log('including file');
+
         await asset.addIncludedFile(
-          await resolve(
-            '/Users/madou/projects/compiled/examples/packages/parcel/src/module.js',
-            './module.js'
-          )
+          '/Users/madou/projects/compiled/examples/packages/parcel/src/module.js'
         );
       }
     }
