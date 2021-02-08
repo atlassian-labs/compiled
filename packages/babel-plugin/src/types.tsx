@@ -25,6 +25,12 @@ export interface PluginOptions {
    * Defaults to `true`.
    */
   importReact?: boolean;
+
+  /**
+   * Will callback when a file has been included in the transformation.
+   * Useful for telling bundlers what the re-compile in watch mode.
+   */
+  onIncludedFile?: (absolutePath: string) => void;
 }
 
 export interface State extends PluginPass {
@@ -99,4 +105,17 @@ export interface Tag {
    * Type of the component - inbuilt e.g. "div" or user defined e.g. "MyComponent".
    */
   type: 'InBuiltComponent' | 'UserDefinedComponent';
+}
+
+export interface TransformResult {
+  /**
+   * File that have been included in this files transformation.
+   * Useful for telling bundlers what the re-compile in watch mode.
+   */
+  includedFiles: string[];
+
+  /**
+   * Transformed code.
+   */
+  code: string | null | undefined;
 }
