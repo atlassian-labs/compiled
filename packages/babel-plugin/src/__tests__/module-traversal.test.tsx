@@ -393,9 +393,7 @@ describe('module traversal', () => {
     );
 
     expect(result).toHaveLength(1);
-    expect(result[0]).toInclude(
-      'projects/compiled/packages/babel-plugin/src/__fixtures__/mixins/objects'
-    );
+    expect(result[0]).toInclude('compiled/packages/babel-plugin/src/__fixtures__/mixins/objects');
   });
 
   it('should callback with included filepath using CSS property', () => {
@@ -414,9 +412,7 @@ describe('module traversal', () => {
     );
 
     expect(result).toHaveLength(1);
-    expect(result[0]).toInclude(
-      'projects/compiled/packages/babel-plugin/src/__fixtures__/mixins/simple'
-    );
+    expect(result[0]).toInclude('compiled/packages/babel-plugin/src/__fixtures__/mixins/simple');
   });
 
   it('should callback with included filepath using CSS template literal', () => {
@@ -435,8 +431,6 @@ describe('module traversal', () => {
     );
 
     expect(result).toHaveLength(1);
-    expect(result[0]).toInclude(
-      'projects/compiled/packages/babel-plugin/src/__fixtures__/mixins/simple'
-    );
+    expect(result[0]).toInclude('compiled/packages/babel-plugin/src/__fixtures__/mixins/simple');
   });
 });
