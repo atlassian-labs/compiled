@@ -9,11 +9,16 @@ import { transform } from '@compiled/babel-plugin';
  */
 export default async function compiledLoader(this: any, content: string): Promise<void> {
   const callback = this.async();
-  const result = await transform(content);
 
-  result.includedFiles.forEach((file) => {
-    this.addDependency(path.normalize(file));
-  });
+  try {
+    const result = await transform(content);
 
-  callback(null, result.code);
+    result.includedFiles.forEach((file) => {
+      this.addDependency(path.normalize(file));
+    });
+
+    callback(null, result.code);
+  } catch (e) {
+    callback(e);
+  }
 }
