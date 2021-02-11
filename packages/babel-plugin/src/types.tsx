@@ -109,7 +109,7 @@ export interface Tag {
 
 export interface TransformResult {
   /**
-   * File that have been included in this files transformation.
+   * Files that have been included in this transformation.
    * Useful for telling bundlers what the re-compile in watch mode.
    */
   includedFiles: string[];
