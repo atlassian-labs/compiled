@@ -23,7 +23,7 @@
     "benchmark:module-traversal": "ts-node --files ./src/__perf__/module-traversal-caching"
   },
   "dependencies": {
-    "@babel/core": "^7.12.13",
+    "@babel/core": "^7.12.16",
     "@babel/generator": "^7.12.15",
     "@babel/helper-plugin-utils": "^7.12.13",
     "@babel/plugin-syntax-jsx": "^7.12.13",
