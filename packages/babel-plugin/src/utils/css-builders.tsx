@@ -140,6 +140,13 @@ const getVariableDeclaratorValueForOwnPath = (node: t.Expression, meta: Metadata
   return { variableName, expression };
 };
 
+const callbackIfFileIncluded = (prev: Metadata, next: Metadata) => {
+  if (prev.state.filename !== next.state.filename && prev.state.opts.onIncludedFile) {
+    // Notify the caller that we are including a file in the current transformation.
+    prev.state.opts.onIncludedFile(next.state.filename);
+  }
+};
+
 /**
  * Extracts CSS data from an object expression node.
  *
@@ -157,6 +164,8 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         prop.value as t.Expression,
         meta
       );
+
+      callbackIfFileIncluded(meta, updatedMeta);
 
       const key = getKey(prop.key);
       let value = '';
@@ -212,6 +221,8 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       const { value: propValue, meta: updatedMeta } = evaluateExpression(prop.argument, meta);
       const result = buildCss(propValue, updatedMeta);
 
+      callbackIfFileIncluded(meta, updatedMeta);
+
       if (resolvedBinding?.source === 'import' && result.variables.length > 0) {
         // NOTE: Currently we throw if the found CSS has any variables found from an
         // import. This is because we'd need to ensure all identifiers are added to
@@ -247,6 +258,8 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   const literalResult = node.quasis.reduce<string>((acc, q, index): string => {
     const nodeExpression: t.Expression = node.expressions[index] as t.Expression;
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
+
+    callbackIfFileIncluded(meta, updatedMeta);
 
     if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
       // Simple case - we can immediately inline the value.

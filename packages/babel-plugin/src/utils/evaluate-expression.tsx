@@ -352,11 +352,6 @@ export const evaluateExpression = (
   // there is something we could do better here.
   // --------------
 
-  if (meta.state.filename !== updatedMeta.state.filename && meta.state.opts.onIncludedFile) {
-    // Notify the caller that we are including a file in the current transformation.
-    meta.state.opts.onIncludedFile(updatedMeta.state.filename);
-  }
-
   if (value) {
     return createResultPair(
       tryEvaluateExpression(value as t.Expression, updatedMeta, expression),

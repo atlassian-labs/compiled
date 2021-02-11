@@ -1,9 +1,10 @@
 import { transformSync } from '@babel/core';
 import babelPlugin from '../index';
+import { PluginOptions } from '../types';
 
 jest.mock('../utils/cache');
 
-const transform = (code: string) => {
+const transform = (code: string, opts: PluginOptions = {}) => {
   try {
     return transformSync(code, {
       configFile: false,
@@ -11,7 +12,7 @@ const transform = (code: string) => {
       compact: true,
       highlightCode: false,
       filename: process.cwd() + '/packages/babel-plugin/src/__tests__/module-traversal.test.js',
-      plugins: [babelPlugin],
+      plugins: [[babelPlugin, opts]],
     })?.code;
   } catch (e) {
     // remove cwd from error message to it is consistent local and in CI
@@ -372,5 +373,70 @@ describe('module traversal', () => {
     `);
 
     expect(actual).toIncludeMultiple(['{color:red}', '{background-color:blue}']);
+  });
+
+  it('should callback with included filepath using CSS object', () => {
+    const result: string[] = [];
+
+    transform(
+      `
+        import '@compiled/react';
+        import { colorMixin2 } from '../__fixtures__/mixins/objects';
+
+        const color = { blue: 'blue' };
+
+        const Component = (props) => {
+          return <div css={{ ...colorMixin2(color.blue) }} />
+        };
+    `,
+      { onIncludedFile: (file) => result.push(file) }
+    );
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toInclude(
+      'projects/compiled/packages/babel-plugin/src/__fixtures__/mixins/objects'
+    );
+  });
+
+  it('should callback with included filepath using CSS property', () => {
+    const result: string[] = [];
+
+    transform(
+      `
+        import '@compiled/react';
+        import { primary } from '../__fixtures__/mixins/simple';
+
+        const Component = (props) => {
+          return <div css={{ color: primary }} />
+        };
+    `,
+      { onIncludedFile: (file) => result.push(file) }
+    );
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toInclude(
+      'projects/compiled/packages/babel-plugin/src/__fixtures__/mixins/simple'
+    );
+  });
+
+  it('should callback with included filepath using CSS template literal', () => {
+    const result: string[] = [];
+
+    transform(
+      `
+        import '@compiled/react';
+        import { primary } from '../__fixtures__/mixins/simple';
+
+        const Component = (props) => {
+          return <div css={\`color: \${primary}\`} />
+        };
+    `,
+      { onIncludedFile: (file) => result.push(file) }
+    );
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toInclude(
+      'projects/compiled/packages/babel-plugin/src/__fixtures__/mixins/simple'
+    );
   });
 });
