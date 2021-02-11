@@ -11,7 +11,10 @@ export default async function compiledLoader(this: any, content: string): Promis
   const callback = this.async();
 
   try {
-    const result = await transform(content);
+    const result = await transform(content, {
+      filename: this.resourcePath,
+      opts: { cache: false },
+    });
 
     result.includedFiles.forEach((file) => {
       this.addDependency(path.normalize(file));
