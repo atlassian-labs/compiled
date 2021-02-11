@@ -140,10 +140,17 @@ const getVariableDeclaratorValueForOwnPath = (node: t.Expression, meta: Metadata
   return { variableName, expression };
 };
 
+/**
+ * Will callback if the filenames from metadata do not match,
+ * meaning the next meta imported from another module and was statically evaluated.
+ *
+ * @param prev
+ * @param next
+ */
 const callbackIfFileIncluded = (prev: Metadata, next: Metadata) => {
   if (prev.state.filename !== next.state.filename && prev.state.opts.onIncludedFile) {
     // Notify the caller that we are including a file in the current transformation.
-    prev.state.opts.onIncludedFile(next.state.filename);
+    prev.state.opts.onIncludedFile(next.state.file.loc.filename);
   }
 };
 
