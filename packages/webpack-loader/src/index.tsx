@@ -13,7 +13,7 @@ export default async function compiledLoader(this: any, content: string): Promis
   try {
     const result = await transform(content, {
       filename: this.resourcePath,
-      opts: { cache: false },
+      opts: { cache: true },
     });
 
     result.includedFiles.forEach((file) => {
