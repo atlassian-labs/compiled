@@ -24,6 +24,10 @@
       "groupName": "postcss packages"
     },
     {
+      "packagePatterns": ["webpack"],
+      "groupName": "webpack packages"
+    },
+    {
       "depTypeList": ["peerDependencies"],
       "rangeStrategy": "widen"
     },
