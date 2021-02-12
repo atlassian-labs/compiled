@@ -5,13 +5,18 @@ import { transform } from '@compiled/babel-plugin';
  * Compiled webpack loader.
  *
  * @param this
- * @param content
+ * @param code
  */
-export default async function compiledLoader(this: any, content: string): Promise<void> {
+export default async function compiledLoader(this: any, code: string): Promise<void> {
   const callback = this.async();
 
+  // Bail early if Compiled isn't in the module.
+  if (code.indexOf('@compiled/react') === -1) {
+    return callback(null, code);
+  }
+
   try {
-    const result = await transform(content, {
+    const result = await transform(code, {
       filename: this.resourcePath,
       opts: { cache: true },
     });
