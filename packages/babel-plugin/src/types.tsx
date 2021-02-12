@@ -11,8 +11,12 @@ export interface PluginOptions {
 
   /**
    * Whether to use the cache or not. Will make subsequent builds faster.
+   *
+   * - `true` caches for the duration of the node run (useful for single builds)
+   * - `"file-pass"` caches per file pass (useful for watch mode)
+   * - `false` turns caching off
    */
-  cache?: boolean;
+  cache?: boolean | 'file-pass';
 
   /**
    * Will import the React namespace if it is missing.
@@ -21,6 +25,12 @@ export interface PluginOptions {
    * Defaults to `true`.
    */
   importReact?: boolean;
+
+  /**
+   * Will callback when a file has been included in the transformation.
+   * Useful for telling bundlers to recompile the owning file if any of the included files change.
+   */
+  onIncludedFile?: (absolutePath: string) => void;
 }
 
 export interface State extends PluginPass {
@@ -95,4 +105,17 @@ export interface Tag {
    * Type of the component - inbuilt e.g. "div" or user defined e.g. "MyComponent".
    */
   type: 'InBuiltComponent' | 'UserDefinedComponent';
+}
+
+export interface TransformResult {
+  /**
+   * Files that have been included in this transformation.
+   * Useful for telling bundlers to recompile the owning file if any of the included files change.
+   */
+  includedFiles: string[];
+
+  /**
+   * Transformed code.
+   */
+  code: string | null | undefined;
 }

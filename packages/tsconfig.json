@@ -2,10 +2,11 @@
   "files": [],
   "references": [
     { "path": "babel-plugin/tsconfig.json" },
+    { "path": "cli/tsconfig.json" },
     { "path": "css/tsconfig.json" },
-    { "path": "react/tsconfig.json" },
     { "path": "jest/tsconfig.json" },
+    { "path": "react/tsconfig.json" },
     { "path": "utils/tsconfig.json" },
-    { "path": "cli/tsconfig.json" }
+    { "path": "webpack-loader/tsconfig.json" }
   ]
 }
