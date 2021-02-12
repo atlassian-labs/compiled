@@ -15,11 +15,12 @@ const Component = (props) => {
       { filename: process.cwd() + '/packages/babel-plugin/src/__tests__/transform.test.js' }
     );
 
-    expect(result.includedFiles).toMatchInlineSnapshot(`
-      Array [
-        "/Users/mdougall/projects/compiled/packages/babel-plugin/src/__fixtures__/mixins/simple.js",
-        "/Users/mdougall/projects/compiled/packages/babel-plugin/src/__fixtures__/mixins/objects.js",
-      ]
-    `);
+    expect(result.includedFiles).toHaveLength(2);
+    expect(result.includedFiles[0]).toInclude(
+      'compiled/packages/babel-plugin/src/__fixtures__/mixins/simple.js'
+    );
+    expect(result.includedFiles[1]).toInclude(
+      'compiled/packages/babel-plugin/src/__fixtures__/mixins/objects.js'
+    );
   });
 });
