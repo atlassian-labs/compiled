@@ -10,7 +10,7 @@
     "@compiled/react": "*",
     "@compiled/webpack-loader": "*",
     "babel-loader": "^8.2.2",
-    "html-webpack-plugin": "5.0.0-beta.6",
+    "html-webpack-plugin": "5.1.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "webpack": "^5.19.0",
