@@ -1,5 +1,5 @@
 import path from 'path';
-import { transform } from '@compiled/babel-plugin';
+import { transformAsync } from '@compiled/babel-plugin';
 
 /**
  * Compiled webpack loader.
@@ -16,7 +16,7 @@ export default async function compiledLoader(this: any, code: string): Promise<v
   }
 
   try {
-    const result = await transform(code, {
+    const result = await transformAsync(code, {
       filename: this.resourcePath,
       opts: { cache: true },
     });

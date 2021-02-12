@@ -1,5 +1,5 @@
 import loader from '../index';
-import { transform } from '@compiled/babel-plugin';
+import { transformAsync } from '@compiled/babel-plugin';
 
 jest.mock('@compiled/babel-plugin');
 
@@ -16,7 +16,7 @@ describe('webpack loader', () => {
 
     loader('console.log(undefined);');
 
-    expect(transform).not.toHaveBeenCalled();
+    expect(transformAsync).not.toHaveBeenCalled();
   });
 
   it('should transform code if compiled has been found', () => {
@@ -25,7 +25,7 @@ describe('webpack loader', () => {
 
     loader(code);
 
-    expect(transform).toHaveBeenCalledWith(code, {
+    expect(transformAsync).toHaveBeenCalledWith(code, {
       // Filename needed for module traversal
       filename: '/projects/index.js',
       // Cache module traversal calls
@@ -35,7 +35,7 @@ describe('webpack loader', () => {
 
   it('should callback with transformed code', async () => {
     const callback = jest.fn();
-    (transform as jest.Mock).mockReturnValue(
+    (transformAsync as jest.Mock).mockReturnValue(
       Promise.resolve({ code: 'transformed-code', includedFiles: [] })
     );
     const loader = getLoader({ addDependency: jest.fn(), callback });
@@ -47,7 +47,7 @@ describe('webpack loader', () => {
 
   it('should add dependencies for included files', async () => {
     const addDependency = jest.fn();
-    (transform as jest.Mock).mockReturnValue(
+    (transformAsync as jest.Mock).mockReturnValue(
       Promise.resolve({ code: 'transformed-code', includedFiles: ['one', 'two'] })
     );
     const loader = getLoader({ callback: jest.fn(), addDependency });
@@ -61,7 +61,7 @@ describe('webpack loader', () => {
 
   it('should callback on error', async () => {
     const callback = jest.fn();
-    (transform as jest.Mock).mockReturnValue(Promise.reject('error occurred'));
+    (transformAsync as jest.Mock).mockReturnValue(Promise.reject('error occurred'));
     const loader = getLoader({ addDependency: jest.fn(), callback });
 
     await loader(`import '@compiled/react';`);

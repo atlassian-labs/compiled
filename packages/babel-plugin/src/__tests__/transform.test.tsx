@@ -1,8 +1,8 @@
-import { transform } from '../transform';
+import { transformAsync } from '../transform';
 
 describe('transform()', () => {
   it('should ensure only unique included files are returned', async () => {
-    const result = await transform(
+    const result = await transformAsync(
       `
 import '@compiled/react';
 import { primary, secondary } from '../__fixtures__/mixins/simple';

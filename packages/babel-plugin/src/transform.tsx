@@ -1,4 +1,4 @@
-import { transformAsync } from '@babel/core';
+import { transformAsync as babelTransformAsync } from '@babel/core';
 import { unique } from '@compiled/utils';
 import babelPlugin from './babel-plugin';
 import type { TransformResult, PluginOptions } from './types';
@@ -14,10 +14,10 @@ interface TransformOpts {
  * @param code Code to transform
  * @param opts Userland options
  */
-export async function transform(code: string, opts: TransformOpts): Promise<TransformResult> {
+export async function transformAsync(code: string, opts: TransformOpts): Promise<TransformResult> {
   const includedFiles: string[] = [];
 
-  const result = await transformAsync(code, {
+  const result = await babelTransformAsync(code, {
     babelrc: false,
     configFile: false,
     filename: opts.filename,
