@@ -56,6 +56,7 @@ describe('webpack loader', () => {
 
     expect(addDependency).toHaveBeenCalledWith('one');
     expect(addDependency).toHaveBeenCalledWith('two');
+    expect(addDependency).toHaveBeenCalledTimes(2);
   });
 
   it('should callback on error', async () => {

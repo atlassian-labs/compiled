@@ -1,4 +1,5 @@
 import { transformAsync } from '@babel/core';
+import { unique } from '@compiled/utils';
 import babelPlugin from './babel-plugin';
 import type { TransformResult, PluginOptions } from './types';
 
@@ -27,6 +28,6 @@ export async function transform(code: string, opts: TransformOpts): Promise<Tran
 
   return {
     code: result?.code,
-    includedFiles,
+    includedFiles: unique(includedFiles),
   };
 }
