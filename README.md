@@ -28,7 +28,7 @@ const StyledButton = styled.button`
 
 ## Installation
 
-Install the React package:
+Install the React package.
 
 ```bash
 npm install @compiled/react
