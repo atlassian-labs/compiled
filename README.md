@@ -32,16 +32,29 @@ Install the React package:
 
 ```bash
 npm install @compiled/react
+```
+
+Then configure your bundler of choice or use [Babel](https://babeljs.io/docs/en/config-files) directly.
+
+### Webpack
+
+Install the Webpack loader.
+
+```bash
+npm install @compiled/webpack-loader --save-dev
+```
+
+See [installation](https://compiledcssinjs.com/docs/installation#webpack) for more information.
+
+### Babel
+
+Install the Babel plugin.
+
+```
 npm install @compiled/babel-plugin --save-dev
 ```
 
-Configure [Babel](https://babeljs.io/docs/en/config-files):
-
-```json
-{
-  "plugins": ["@compiled/babel-plugin"]
-}
-```
+See [installation](https://compiledcssinjs.com/docs/installation#babel) for more information.
 
 ## Contributions
 
