@@ -2,9 +2,7 @@ import { Transformer } from '@parcel/plugin';
 import semver from 'semver';
 
 /**
- * Compiled Transformer
- *
- * Should run before any other Babel transformers.
+ * Compiled parcel transformer.
  */
 export default new Transformer({
   canReuseAST({ ast }: any) {
@@ -24,7 +22,7 @@ export default new Transformer({
       if (asset.filePath === '/Users/madou/projects/compiled/examples/packages/parcel/src/app.js') {
         console.log('including file');
 
-        await asset.addIncludedFile(
+        asset.addIncludedFile(
           '/Users/madou/projects/compiled/examples/packages/parcel/src/module.js'
         );
       }

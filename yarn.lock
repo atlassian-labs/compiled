@@ -2064,12 +2064,19 @@
   dependencies:
     "@parcel/plugin" "2.0.0-beta.1"
 
-"@parcel/plugin@2.0.0-beta.1", "@parcel/plugin@^2.0.0-alpha.3":
+"@parcel/plugin@2.0.0-beta.1":
   version "2.0.0-beta.1"
   resolved "https://registry.yarnpkg.com/@parcel/plugin/-/plugin-2.0.0-beta.1.tgz#b19f571f59a4f979cc1310d3e0d073fbd9988bd2"
   integrity sha512-ik8kwNTJ7wfPRWHQK5NrUat3WGOZazIv8v1Lbgew6XuVTc333FitvBn6mxpPWp2N3+GWWrVGmBG8m7MI6kB8zw==
   dependencies:
     "@parcel/types" "2.0.0-beta.1"
+
+"@parcel/plugin@^2.0.0-beta.1":
+  version "2.0.0-nightly.587"
+  resolved "https://registry.yarnpkg.com/@parcel/plugin/-/plugin-2.0.0-nightly.587.tgz#49b88584b597e6a273fc2ed2fe85f2945850617e"
+  integrity sha512-7QZO+x6ZkKLqsAaot1wglFQU6fzgtCAwMBgiN91ybzSaf7AQx2nETLKBJRkzQadjo16LOUPMJOzz5tJby8pchQ==
+  dependencies:
+    "@parcel/types" "2.0.0-nightly.587+a26f6397"
 
 "@parcel/reporter-bundle-analyzer@2.0.0-beta.1":
   version "2.0.0-beta.1"
@@ -2423,6 +2430,11 @@
   version "2.0.0-beta.1"
   resolved "https://registry.yarnpkg.com/@parcel/types/-/types-2.0.0-beta.1.tgz#c5581aa754c342a1e5ef382f2bf20555923b672a"
   integrity sha512-2aB5MoEyNUXb34IG1YVRiC5HTHgqWAX8/mM+JGAUit/kTb7eRVtnQtOhQHWyGyLqkEwbLrLo3s272sp5LNK90A==
+
+"@parcel/types@2.0.0-nightly.587+a26f6397":
+  version "2.0.0-nightly.587"
+  resolved "https://registry.yarnpkg.com/@parcel/types/-/types-2.0.0-nightly.587.tgz#4c0b3c7e967dd2a6c2ef03738d8b0557aea3692c"
+  integrity sha512-aEtB8+Swr6cRacdZfFAkC3VBwCV0TxIVoICY3gsbY1bVFnFpBcbxl/RbKXB7KO/0hNYdY8WzhSygRwdrByAZIQ==
 
 "@parcel/utils@2.0.0-beta.1":
   version "2.0.0-beta.1"
