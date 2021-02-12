@@ -16,9 +16,21 @@ export default async function compiledLoader(this: any, code: string): Promise<v
   }
 
   try {
+    const options = this.getOptions({
+      type: 'object',
+      properties: {
+        importReact: {
+          type: 'boolean',
+        },
+        nonce: {
+          type: 'string',
+        },
+      },
+    });
+
     const result = await transformAsync(code, {
       filename: this.resourcePath,
-      opts: { cache: true },
+      opts: { ...options, cache: true },
     });
 
     result.includedFiles.forEach((file) => {

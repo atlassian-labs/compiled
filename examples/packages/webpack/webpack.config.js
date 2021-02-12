@@ -24,6 +24,9 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: '@compiled/webpack-loader',
+          options: {
+            importReact: false,
+          },
         },
       },
     ],
