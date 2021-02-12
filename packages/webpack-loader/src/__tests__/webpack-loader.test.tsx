@@ -8,6 +8,7 @@ const getLoader = (opts: { addDependency: jest.Mock; callback: jest.Mock }) =>
     async: () => opts.callback,
     resourcePath: '/projects/index.js',
     addDependency: opts.addDependency,
+    getOptions: () => ({ importReact: false }),
   });
 
 describe('webpack loader', () => {
@@ -28,8 +29,12 @@ describe('webpack loader', () => {
     expect(transformAsync).toHaveBeenCalledWith(code, {
       // Filename needed for module traversal
       filename: '/projects/index.js',
-      // Cache module traversal calls
-      opts: { cache: true },
+      opts: {
+        // Force caching module traversal calls
+        cache: true,
+        // Userland configuration
+        importReact: false,
+      },
     });
   });
 
