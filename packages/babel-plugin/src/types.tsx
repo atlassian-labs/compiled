@@ -28,7 +28,7 @@ export interface PluginOptions {
 
   /**
    * Will callback when a file has been included in the transformation.
-   * Useful for telling bundlers what the re-compile in watch mode.
+   * Useful for telling bundlers to recompile the owning file if any of the included files change.
    */
   onIncludedFile?: (absolutePath: string) => void;
 }
@@ -110,7 +110,7 @@ export interface Tag {
 export interface TransformResult {
   /**
    * Files that have been included in this transformation.
-   * Useful for telling bundlers what the re-compile in watch mode.
+   * Useful for telling bundlers to recompile the owning file if any of the included files change.
    */
   includedFiles: string[];
 
