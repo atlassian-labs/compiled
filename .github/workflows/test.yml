@@ -46,6 +46,9 @@ jobs:
       - name: Run import test
         run: yarn test:imports
 
+      - name: Build webpack example
+        run: yarn build:webpack-example
+
       - name: Bundle size
         run: |
           GITHUB_RUN_NUMBER_TMP=GITHUB_RUN_NUMBER && export GITHUB_RUN_NUMBER=1;
