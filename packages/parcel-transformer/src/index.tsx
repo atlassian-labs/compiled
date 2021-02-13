@@ -1,5 +1,8 @@
 import { Transformer } from '@parcel/plugin';
 import semver from 'semver';
+import compiledBabelPlugin from '@compiled/babel-plugin';
+import { transformAsync } from '@babel/core';
+import { generate, babelErrorEnhancer } from '@parcel/babel-ast-utils';
 
 /**
  * Compiled parcel transformer.
@@ -15,19 +18,39 @@ export default new Transformer({
     }
 
     if (asset.isSource) {
-      console.log('bundling', asset.filePath);
+      try {
+        const includedFiles: string[] = [];
+        const result = await transformAsync(asset.getCode(), {
+          code: false,
+          ast: true,
+          filename: asset.filePath,
+          babelrc: false,
+          configFile: false,
+          plugins: [
+            [compiledBabelPlugin, { onIncludedFile: (file: string) => includedFiles.push(file) }],
+          ],
+        });
 
-      asset.meta.babelPlugins = [['@compiled/babel-plugin', { cache: false }]];
+        includedFiles.forEach((file) => {
+          asset.addIncludedFile(file);
+        });
 
-      if (asset.filePath === '/Users/madou/projects/compiled/examples/packages/parcel/src/app.js') {
-        console.log('including file');
-
-        asset.addIncludedFile(
-          '/Users/madou/projects/compiled/examples/packages/parcel/src/module.js'
-        );
+        if (result?.ast) {
+          asset.setAST({
+            type: 'babel',
+            version: '7.0.0',
+            program: result.ast,
+          });
+        }
+      } catch (e) {
+        throw await babelErrorEnhancer(e);
       }
     }
 
     return [asset];
+  },
+
+  async generate({ asset, ast, options }: any) {
+    return generate({ asset, ast, options });
   },
 });
