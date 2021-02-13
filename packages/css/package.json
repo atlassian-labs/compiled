@@ -1,6 +1,6 @@
 {
   "name": "@compiled/css",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Build time atomic CSS-in-JS. Baked and ready to serve.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
@@ -20,7 +20,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@compiled/utils": "0.6.2",
+    "@compiled/utils": "0.6.3",
     "autoprefixer": "^9.8.6",
     "convert-source-map": "^1.7.0",
     "cssnano-preset-default": "^4.0.7",
