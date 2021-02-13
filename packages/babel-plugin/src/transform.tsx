@@ -1,4 +1,4 @@
-import { transformAsync as babelTransformAsync } from '@babel/core';
+import { transformFromAstAsync, parseAsync } from '@babel/core';
 import { unique } from '@compiled/utils';
 import babelPlugin from './babel-plugin';
 import type { TransformResult, PluginOptions } from './types';
@@ -17,7 +17,14 @@ interface TransformOpts {
 export async function transformAsync(code: string, opts: TransformOpts): Promise<TransformResult> {
   const includedFiles: string[] = [];
 
-  const result = await babelTransformAsync(code, {
+  // Transform to an AST using the local babel config.
+  const ast = await parseAsync(code, {
+    filename: opts.filename,
+    caller: { name: 'compiled' },
+  });
+
+  // Transform using the Compiled Babel Plugin - we deliberately turn off using the local config.
+  const result = await transformFromAstAsync(ast!, code, {
     babelrc: false,
     configFile: false,
     filename: opts.filename,
