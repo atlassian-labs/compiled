@@ -2,9 +2,6 @@ import { declare } from '@babel/helper-plugin-utils';
 import * as t from '@babel/types';
 import { NodePath } from '@babel/core';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const pkgJson = require('../../package.json');
-
 const isCreateElement = (node: t.Node): node is t.CallExpression => {
   return (
     t.isMemberExpression(node) &&
@@ -111,7 +108,7 @@ export default declare<PluginPass>((api) => {
   api.assertVersion(7);
 
   return {
-    name: `${pkgJson.name}/babel-plugin`,
+    name: '@compiled/babel-plugin-extract',
     visitor: {
       ImportSpecifier(path) {
         if (t.isIdentifier(path.node.imported) && ['CC', 'CS'].includes(path.node.imported.name)) {
