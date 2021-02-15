@@ -4,8 +4,9 @@ import babelPlugin from './babel-plugin';
 import type { TransformResult, PluginOptions } from './types';
 
 interface TransformOpts {
-  opts?: Omit<PluginOptions, 'onIncludedFile'>;
   filename: string;
+  opts?: Omit<PluginOptions, 'onIncludedFile'>;
+  postPlugins?: Array<string | [string, Record<string, any>]>;
 }
 
 /**
@@ -29,7 +30,11 @@ export async function transformAsync(code: string, opts: TransformOpts): Promise
     configFile: false,
     filename: opts.filename,
     plugins: [
+      // The first plugin will convert user land usage into baked Compiled Components
       [babelPlugin, { ...opts.opts, onIncludedFile: (file: string) => includedFiles.push(file) }],
+
+      // Pass through any other plugins that should run after the first plugin.
+      ...(opts.postPlugins || []),
     ],
   });
 
