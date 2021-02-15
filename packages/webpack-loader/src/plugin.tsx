@@ -1,9 +1,6 @@
 import { Compilation, sources } from 'webpack';
-// import safeRequire from 'safe-require';
 import { createStore } from './sheet-store';
 import type { SheetStore } from './types';
-
-// const HtmlWebpackPlugin = safeRequire('html-webpack-plugin');
 
 const findCompiledLoaders = (rules: any) => {
   const loaders: any[] = [];
@@ -49,17 +46,6 @@ export class CompiledExtractPlugin {
     loaders.forEach((loader) => injectStore(loader, this.sheetStore));
 
     compiler.hooks.compilation.tap('CompiledExtractPlugin', (compilation: any) => {
-      // console.log(HtmlWebpackPlugin);
-
-      // HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tap(
-      //   'CompiledExtractPlugin',
-      //   (data: any) => {
-      //     console.log('hello??????');
-
-      //     return data;
-      //   }
-      // );
-
       compilation.hooks.processAssets.tap(
         {
           name: 'CompiledExtractPlugin',
@@ -71,12 +57,18 @@ export class CompiledExtractPlugin {
             return;
           }
 
+          console.log('emitting!!');
+
           const name = 'atomic.css';
 
           if (compilation.getAsset(name)) {
-            compilation.updateAsset(name, new sources.OriginalSource(stylesheet, name));
+            compilation.updateAsset(name, new sources.OriginalSource(stylesheet, name), {
+              type: 'css/compiled',
+            });
           } else {
-            compilation.emitAsset(name, new sources.OriginalSource(stylesheet, name));
+            compilation.emitAsset(name, new sources.OriginalSource(stylesheet, name), {
+              type: 'css/compiled',
+            });
           }
         }
       );
