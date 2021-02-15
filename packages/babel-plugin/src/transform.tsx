@@ -1,4 +1,4 @@
-import { transformFromAstAsync, parseAsync } from '@babel/core';
+import { transformFromAstAsync, parseAsync, PluginItem } from '@babel/core';
 import { unique } from '@compiled/utils';
 import babelPlugin from './babel-plugin';
 import type { TransformResult, PluginOptions } from './types';
@@ -31,13 +31,13 @@ export async function transformAsync(code: string, opts: TransformOpts): Promise
     filename: opts.filename,
     plugins: [
       [babelPlugin, { ...opts.opts, onIncludedFile: (file: string) => includedFiles.push(file) }],
-      [
+      opts.opts?.extract && [
         '@compiled/babel-plugin-extract',
         {
           onFoundStyleSheet: (sheet: string) => sheets.push(sheet),
         },
       ],
-    ],
+    ].filter(Boolean) as PluginItem[],
   });
 
   return {
