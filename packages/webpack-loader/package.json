@@ -20,8 +20,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@compiled/babel-plugin": "0.6.3",
-    "@compiled/babel-plugin-extract": "0.6.3"
+    "@compiled/babel-plugin": "0.6.3"
   },
   "devDependencies": {}
 }

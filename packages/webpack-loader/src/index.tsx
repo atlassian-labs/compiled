@@ -35,7 +35,6 @@ export default async function compiledLoader(this: any, code: string): Promise<v
     const result = await transformAsync(code, {
       filename: this.resourcePath,
       opts: { ...options, cache: true },
-      postPlugins: [['@compiled/babel-plugin-extract', {}]],
     });
 
     result.includedFiles.forEach((file) => {

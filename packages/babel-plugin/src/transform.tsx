@@ -5,8 +5,7 @@ import type { TransformResult, PluginOptions } from './types';
 
 interface TransformOpts {
   filename: string;
-  opts?: Omit<PluginOptions, 'onIncludedFile'>;
-  postPlugins?: Array<string | [string, Record<string, any>]>;
+  opts?: Omit<PluginOptions, 'onIncludedFile'> & { extract?: boolean };
 }
 
 /**
@@ -17,6 +16,7 @@ interface TransformOpts {
  */
 export async function transformAsync(code: string, opts: TransformOpts): Promise<TransformResult> {
   const includedFiles: string[] = [];
+  const sheets: string[] = [];
 
   // Transform to an AST using the local babel config.
   const ast = await parseAsync(code, {
@@ -30,16 +30,19 @@ export async function transformAsync(code: string, opts: TransformOpts): Promise
     configFile: false,
     filename: opts.filename,
     plugins: [
-      // The first plugin will convert user land usage into baked Compiled Components
       [babelPlugin, { ...opts.opts, onIncludedFile: (file: string) => includedFiles.push(file) }],
-
-      // Pass through any other plugins that should run after the first plugin.
-      ...(opts.postPlugins || []),
+      [
+        '@compiled/babel-plugin-extract',
+        {
+          onFoundStyleSheet: (sheet: string) => sheets.push(sheet),
+        },
+      ],
     ],
   });
 
   return {
     code: result?.code,
     includedFiles: unique(includedFiles),
+    sheets,
   };
 }

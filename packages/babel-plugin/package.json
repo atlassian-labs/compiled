@@ -31,6 +31,7 @@
     "@babel/template": "^7.12.13",
     "@babel/traverse": "^7.12.13",
     "@babel/types": "^7.12.13",
+    "@compiled/babel-plugin-extract": "0.6.3",
     "@compiled/css": "0.6.3",
     "@compiled/utils": "0.6.3",
     "@emotion/is-prop-valid": "^1.1.0",

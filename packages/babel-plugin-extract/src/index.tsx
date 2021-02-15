@@ -115,6 +115,27 @@ export default declare<PluginPass>((api) => {
           path.remove();
         }
       },
+      JSXElement(path, pass) {
+        if (!t.isJSXIdentifier(path.node.openingElement.name)) {
+          return;
+        }
+
+        const componentName = path.node.openingElement.name.name;
+        if (componentName !== 'CC') {
+          return;
+        }
+
+        const [, compiledStyles, , nodeToReplace] = path.get('children');
+
+        // Before we replace this node with its children we need to go through and remove all the
+        // style declarations from the CS call.
+        removeStyleDeclarations(compiledStyles.node, path, pass);
+
+        // All done! Let's replace this node with the user land child.
+        path.replaceWith(nodeToReplace);
+        path.node.leadingComments = null;
+        return;
+      },
       CallExpression(path, pass) {
         const callee = path.node.callee;
         if (isCreateElement(callee)) {

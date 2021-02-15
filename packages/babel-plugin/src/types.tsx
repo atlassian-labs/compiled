@@ -118,4 +118,9 @@ export interface TransformResult {
    * Transformed code.
    */
   code: string | null | undefined;
+
+  /**
+   * When `extract` is `true` will return any CSS that has been extracted.
+   */
+  sheets: string[];
 }
