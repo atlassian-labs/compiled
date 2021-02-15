@@ -2,6 +2,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+const { CompiledExtractPlugin } = require('@compiled/webpack-loader');
 
 module.exports = {
   mode: 'development',
@@ -31,5 +32,9 @@ module.exports = {
       },
     ],
   },
-  plugins: [new HtmlWebpackPlugin(), new webpack.HotModuleReplacementPlugin()],
+  plugins: [
+    new HtmlWebpackPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new CompiledExtractPlugin(),
+  ],
 };
