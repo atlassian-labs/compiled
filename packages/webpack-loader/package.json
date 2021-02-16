@@ -20,7 +20,8 @@
     "README.md"
   ],
   "dependencies": {
-    "@compiled/babel-plugin": "0.6.3"
+    "@compiled/babel-plugin": "0.6.3",
+    "@compiled/css": "0.6.3"
   },
   "peerDependencies": {
     "webpack": "^5.22.0"
