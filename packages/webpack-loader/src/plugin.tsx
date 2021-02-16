@@ -1,4 +1,4 @@
-import { Compilation, sources } from 'webpack';
+import { sources } from 'webpack';
 import { createStore } from './sheet-store';
 import type { SheetStore } from './types';
 
@@ -46,30 +46,25 @@ export class CompiledExtractPlugin {
     loaders.forEach((loader) => injectStore(loader, this.sheetStore));
 
     compiler.hooks.compilation.tap('CompiledExtractPlugin', (compilation: any) => {
-      compilation.hooks.processAssets.tap(
-        {
-          name: 'CompiledExtractPlugin',
-          stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
-        },
-        () => {
+      compilation.hooks.renderManifest.tap(
+        'CompiledExtractPlugin',
+        (result: any, { chunk }: any) => {
           const stylesheet = this.sheetStore.get().join('');
           if (!stylesheet) {
             return;
           }
 
-          console.log('emitting!!');
-
           const name = 'atomic.css';
 
-          if (compilation.getAsset(name)) {
-            compilation.updateAsset(name, new sources.OriginalSource(stylesheet, name), {
-              type: 'css/compiled',
-            });
-          } else {
-            compilation.emitAsset(name, new sources.OriginalSource(stylesheet, name), {
-              type: 'css/compiled',
-            });
-          }
+          result.push({
+            render: () => new sources.OriginalSource(stylesheet, name),
+            filenameTemplate: name,
+            pathOptions: {
+              chunk,
+              contentHashType: 'css/compiled',
+            },
+            identifier: `CompiledExtractPlugin.${chunk.id}`,
+          });
         }
       );
     });
