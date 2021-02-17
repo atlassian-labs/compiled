@@ -117,13 +117,13 @@ export class CompiledExtractPlugin {
         // HtmlWebpackPlugin - simplifying consumptions quite a bit, which is nice.
         result.push({
           render: () => new sources.OriginalSource(stylesheet, this.__filename),
+          identifier: `${pluginName}.${chunk.id}`,
           filenameTemplate: this.__filename,
+          hash: chunk.contentHash[moduleType],
           pathOptions: {
             chunk,
             contentHashType: moduleType,
           },
-          identifier: `${pluginName}.${chunk.id}`,
-          hash: chunk.contentHash[moduleType],
         });
 
         return result;

@@ -1,6 +1,11 @@
 import { loaderName } from './constants';
 
-export const createSetupError = (message: string) => {
+/**
+ * Returns a new formatted compiled error for you to throw.
+ *
+ * @param message
+ */
+export const createSetupError = (message: string): Error => {
   return new Error(`
 
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
