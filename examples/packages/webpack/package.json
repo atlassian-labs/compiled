@@ -9,6 +9,7 @@
   "dependencies": {
     "@compiled/react": "*",
     "@compiled/webpack-loader": "*",
+    "@private/babel-component": "*",
     "babel-loader": "^8.2.2",
     "html-webpack-plugin": "5.1.0",
     "react": "17.0.1",

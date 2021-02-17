@@ -1,0 +1,21 @@
+{
+  "name": "@private/babel-component",
+  "version": "0.0.1",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "babel ./src --out-dir=./dist"
+  },
+  "dependencies": {
+    "@compiled/react": "*",
+    "@compiled/webpack-loader": "*"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/cli": "^7.12.16",
+    "@babel/preset-env": "^7.12.16",
+    "@babel/preset-react": "^7.12.13"
+  },
+  "peerDependencies": {
+    "react": "^17.0.1"
+  }
+}

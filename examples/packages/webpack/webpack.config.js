@@ -30,6 +30,15 @@ module.exports = {
           },
         ],
       },
+      {
+        include: /@private\/babel-component/,
+        use: {
+          loader: '@compiled/webpack-loader',
+          options: {
+            extract: true,
+          },
+        },
+      },
     ],
   },
   plugins: [
