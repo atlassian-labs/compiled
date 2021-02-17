@@ -4,6 +4,7 @@ import { createStore } from './utils/sheet-store';
 import type { SheetStore, PluginOptions } from './types';
 import { loaderName, pluginName, moduleType } from './utils/constants';
 import { createSetupError } from './utils/create-error';
+import { hash } from './utils/hash';
 
 /**
  * This will iterate through the webpack userland rules,
@@ -60,11 +61,11 @@ export class CompiledExtractPlugin {
   /**
    * Name of the output stylesheet.
    */
-  __name: string;
+  __filename: string;
 
   constructor(options: PluginOptions = {}) {
     this.__sheetStore = createStore();
-    this.__name = options.name || 'compiled.css';
+    this.__filename = options.filename || 'compiled.css';
   }
 
   apply(compiler: Compiler): void {
@@ -107,17 +108,22 @@ export class CompiledExtractPlugin {
           return result;
         }
 
+        // For [contenthash] to work in the filename template we need to hash the stylesheet
+        // and set its content hash in owning chunk.
+        chunk.contentHash[moduleType] = hash(stylesheet, compilation.outputOptions);
+
         // We hook into the "renderManifest" so we can add new entrypoints (from webpacks perspective).
         // Here we are adding a new "CSS" entrypoint which allows it to be automatically picked up by the
         // HtmlWebpackPlugin - simplifying consumptions quite a bit, which is nice.
         result.push({
-          render: () => new sources.OriginalSource(stylesheet, this.__name),
-          filenameTemplate: this.__name,
+          render: () => new sources.OriginalSource(stylesheet, this.__filename),
+          filenameTemplate: this.__filename,
           pathOptions: {
             chunk,
             contentHashType: moduleType,
           },
           identifier: `${pluginName}.${chunk.id}`,
+          hash: chunk.contentHash[moduleType],
         });
 
         return result;

@@ -42,5 +42,5 @@ export interface PluginOptions {
    * Name of the output atomic stylesheet.
    * Defaults to `"compiled.css"`.
    */
-  name?: string;
+  filename?: string;
 }
