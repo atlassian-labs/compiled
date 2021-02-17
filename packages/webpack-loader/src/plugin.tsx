@@ -1,8 +1,8 @@
 import { sources } from 'webpack';
 import type { Compiler, RuleSetRule, RuleSetUseItem } from 'webpack';
 import { createStore } from './utils/sheet-store';
-import type { SheetStore } from './types';
-import { loaderName, pluginName } from './utils/constants';
+import type { SheetStore, PluginOptions } from './types';
+import { loaderName, pluginName, moduleType } from './utils/constants';
 import { createSetupError } from './utils/create-error';
 
 /**
@@ -57,8 +57,14 @@ export class CompiledExtractPlugin {
    */
   __sheetStore: SheetStore;
 
-  constructor() {
+  /**
+   * Name of the output stylesheet.
+   */
+  __name: string;
+
+  constructor(options: PluginOptions = {}) {
     this.__sheetStore = createStore();
+    this.__name = options.name || 'compiled.css';
   }
 
   apply(compiler: Compiler): void {
@@ -101,17 +107,15 @@ export class CompiledExtractPlugin {
           return result;
         }
 
-        const name = 'atomic.css';
-
         // We hook into the "renderManifest" so we can add new entrypoints (from webpacks perspective).
         // Here we are adding a new "CSS" entrypoint which allows it to be automatically picked up by the
         // HtmlWebpackPlugin - simplifying consumptions quite a bit, which is nice.
         result.push({
-          render: () => new sources.OriginalSource(stylesheet, name),
-          filenameTemplate: name,
+          render: () => new sources.OriginalSource(stylesheet, this.__name),
+          filenameTemplate: this.__name,
           pathOptions: {
             chunk,
-            contentHashType: 'css/compiled',
+            contentHashType: moduleType,
           },
           identifier: `${pluginName}.${chunk.id}`,
         });

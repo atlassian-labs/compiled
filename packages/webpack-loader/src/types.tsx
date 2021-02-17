@@ -33,3 +33,14 @@ export interface LoaderOptions {
    */
   __sheetStore?: SheetStore;
 }
+
+/**
+ * Options the extract plugin can take.
+ */
+export interface PluginOptions {
+  /**
+   * Name of the output atomic stylesheet.
+   * Defaults to `"compiled.css"`.
+   */
+  name?: string;
+}

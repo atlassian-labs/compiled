@@ -35,6 +35,6 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new CompiledExtractPlugin(),
+    new CompiledExtractPlugin({ name: '[fullhash].css' }),
   ],
 };
