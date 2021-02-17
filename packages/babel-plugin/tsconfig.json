@@ -5,5 +5,9 @@
     "outDir": "dist",
     "module": "commonjs"
   },
-  "references": [{ "path": "../css" }, { "path": "../utils" }, { "path": "../babel-extract" }]
+  "references": [
+    { "path": "../css" },
+    { "path": "../utils" },
+    { "path": "../babel-plugin-extract" }
+  ]
 }

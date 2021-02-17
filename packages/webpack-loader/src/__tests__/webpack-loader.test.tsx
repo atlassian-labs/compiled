@@ -1,5 +1,5 @@
-import loader from '../index';
 import { transformAsync } from '@compiled/babel-plugin';
+import loader from '../index';
 
 jest.mock('@compiled/babel-plugin');
 
