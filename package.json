@@ -42,9 +42,9 @@
   "devDependencies": {
     "@babel/plugin-transform-react-jsx-self": "^7.12.13",
     "@babel/plugin-transform-react-jsx-source": "^7.12.13",
-    "@babel/preset-env": "^7.12.16",
+    "@babel/preset-env": "^7.12.17",
     "@babel/preset-react": "^7.12.13",
-    "@babel/preset-typescript": "^7.12.16",
+    "@babel/preset-typescript": "^7.12.17",
     "@compiled/jest": "*",
     "@compiled/react": "*",
     "@size-limit/preset-small-lib": "^4.9.2",
