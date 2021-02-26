@@ -101,7 +101,7 @@
     semver "^6.3.0"
     source-map "^0.5.0"
 
-"@babel/generator@^7.0.0", "@babel/generator@^7.11.0", "@babel/generator@^7.12.15", "@babel/generator@^7.13.0", "@babel/generator@^7.3.3", "@babel/generator@^7.4.0":
+"@babel/generator@^7.0.0", "@babel/generator@^7.11.0", "@babel/generator@^7.13.0", "@babel/generator@^7.3.3", "@babel/generator@^7.4.0":
   version "7.13.0"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.13.0.tgz#bd00d4394ca22f220390c56a0b5b85568ec1ec0c"
   integrity sha512-zBZfgvBB/ywjx0Rgc2+BwoH/3H+lDtlgD4hBOpEv5LxRnYsm/753iRuLepqnYlynpjC3AdQxtxsoeHJoEEwOAw==
@@ -1096,7 +1096,7 @@
     "@babel/parser" "^7.12.13"
     "@babel/types" "^7.12.13"
 
-"@babel/traverse@^7.0.0", "@babel/traverse@^7.1.0", "@babel/traverse@^7.11.0", "@babel/traverse@^7.12.13", "@babel/traverse@^7.13.0", "@babel/traverse@^7.2.3", "@babel/traverse@^7.4.3", "@babel/traverse@^7.4.5":
+"@babel/traverse@^7.0.0", "@babel/traverse@^7.1.0", "@babel/traverse@^7.11.0", "@babel/traverse@^7.13.0", "@babel/traverse@^7.2.3", "@babel/traverse@^7.4.3", "@babel/traverse@^7.4.5":
   version "7.13.0"
   resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.13.0.tgz#6d95752475f86ee7ded06536de309a65fc8966cc"
   integrity sha512-xys5xi5JEhzC3RzEmSGrs/b3pJW/o87SypZ+G/PhaE7uqVQNv/jlmVIBXuoh5atqQ434LfXV+sf23Oxj0bchJQ==
@@ -1147,47 +1147,6 @@
   dependencies:
     exec-sh "^0.3.2"
     minimist "^1.2.0"
-
-"@compiled/babel-plugin@0.6.2":
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/@compiled/babel-plugin/-/babel-plugin-0.6.2.tgz#122b5bb7d7d14a2bf3400c7e289f706dcb594a51"
-  integrity sha512-xmH+mWRUO9JyD8Q4n8WqU+H9NF1IeKInxGRTGckDE4T6VacWjPt3NsWmsqp/Tk0eTMHRZdxWTpdnTl1CpjzL9g==
-  dependencies:
-    "@babel/core" "^7.12.16"
-    "@babel/generator" "^7.12.15"
-    "@babel/helper-plugin-utils" "^7.12.13"
-    "@babel/plugin-syntax-jsx" "^7.12.13"
-    "@babel/plugin-transform-flow-strip-types" "^7.12.13"
-    "@babel/template" "^7.12.13"
-    "@babel/traverse" "^7.12.13"
-    "@babel/types" "^7.12.13"
-    "@compiled/css" "0.6.2"
-    "@compiled/utils" "0.6.2"
-    "@emotion/is-prop-valid" "^1.1.0"
-    resolve "^1.20.0"
-
-"@compiled/css@0.6.2":
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/@compiled/css/-/css-0.6.2.tgz#5db07ac9f88d2ed81018c3db89e42971054f257a"
-  integrity sha512-LutVP14xvL3btNyPje2eice/M45F7+20Hc0OR43wqtbulN7xbENhgja2K0tcud/RCUSr7iDItGAz0Js75j4UtQ==
-  dependencies:
-    "@compiled/utils" "0.6.2"
-    autoprefixer "^9.8.6"
-    convert-source-map "^1.7.0"
-    cssnano-preset-default "^4.0.7"
-    postcss "^7.0.35"
-    postcss-nested "^4.2.3"
-    postcss-normalize-whitespace "^4.0.2"
-    postcss-selector-parser "^6.0.4"
-    postcss-values-parser "^4.0.0"
-
-"@compiled/utils@0.6.2":
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/@compiled/utils/-/utils-0.6.2.tgz#ba1f6ff5340d5b989ee4ac5d57485851d6c30639"
-  integrity sha512-XO3ilnIrLik7j0eZXljM1itKoUgFqn1yEygMJHL+xXPjHDQVAzoT/RDNgginaXqumfB26i6VQ0vD8Sa/bwm7BQ==
-  dependencies:
-    convert-source-map "^1.7.0"
-    source-map "^0.7.3"
 
 "@csstools/convert-colors@^1.4.0":
   version "1.4.0"

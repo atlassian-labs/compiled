@@ -1,8 +1,8 @@
 import { Transformer } from '@parcel/plugin';
 import semver from 'semver';
 import compiledBabelPlugin from '@compiled/babel-plugin';
-import { transformAsync } from '@babel/core';
-import { generate, babelErrorEnhancer } from '@parcel/babel-ast-utils';
+import { parseAsync, transformFromAstAsync } from '@babel/core';
+import { generate } from '@parcel/babel-ast-utils';
 
 /**
  * Compiled parcel transformer.
@@ -12,15 +12,26 @@ export default new Transformer({
     return ast.type === 'babel' && semver.satisfies(ast.version, '^7.0.0');
   },
 
-  async transform({ asset, ast }: any) {
-    if (ast) {
-      throw new Error('@compiled/parcel-transformer should run before all other transformers.');
-    }
+  async parse({ asset }: any) {
+    const code = await asset.getCode();
 
+    const ast = await parseAsync(code, {
+      filename: asset.filePath,
+      caller: { name: 'compiled' },
+      plugins: ['@babel/plugin-syntax-jsx'],
+    });
+
+    return ast;
+  },
+
+  async transform({ asset, ast }: any) {
     if (asset.isSource) {
-      try {
-        const includedFiles: string[] = [];
-        const result = await transformAsync(asset.getCode(), {
+      const includedFiles: string[] = [];
+
+      const result = await transformFromAstAsync(
+        ast.program,
+        asset.isASTDirty() ? undefined : await asset.getCode(),
+        {
           code: false,
           ast: true,
           filename: asset.filePath,
@@ -29,21 +40,22 @@ export default new Transformer({
           plugins: [
             [compiledBabelPlugin, { onIncludedFile: (file: string) => includedFiles.push(file) }],
           ],
-        });
-
-        includedFiles.forEach((file) => {
-          asset.addIncludedFile(file);
-        });
-
-        if (result?.ast) {
-          asset.setAST({
-            type: 'babel',
-            version: '7.0.0',
-            program: result.ast,
-          });
+          caller: {
+            name: 'compiled',
+          },
         }
-      } catch (e) {
-        throw await babelErrorEnhancer(e);
+      );
+
+      includedFiles.forEach((file) => {
+        asset.addIncludedFile(file);
+      });
+
+      if (result?.ast) {
+        asset.setAST({
+          type: 'babel',
+          version: '7.0.0',
+          program: result.ast,
+        });
       }
     }
 
