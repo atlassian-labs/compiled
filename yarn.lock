@@ -101,7 +101,7 @@
     semver "^6.3.0"
     source-map "^0.5.0"
 
-"@babel/generator@^7.0.0", "@babel/generator@^7.11.0", "@babel/generator@^7.13.0", "@babel/generator@^7.3.3", "@babel/generator@^7.4.0":
+"@babel/generator@^7.0.0", "@babel/generator@^7.11.0", "@babel/generator@^7.12.16", "@babel/generator@^7.13.0", "@babel/generator@^7.3.3", "@babel/generator@^7.4.0":
   version "7.13.0"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.13.0.tgz#bd00d4394ca22f220390c56a0b5b85568ec1ec0c"
   integrity sha512-zBZfgvBB/ywjx0Rgc2+BwoH/3H+lDtlgD4hBOpEv5LxRnYsm/753iRuLepqnYlynpjC3AdQxtxsoeHJoEEwOAw==
@@ -1690,15 +1690,6 @@
     "@parcel/source-map" "2.0.0-alpha.4.13"
     "@parcel/utils" "2.0.0-beta.1"
 
-"@parcel/babel-ast-utils@^2.0.0-beta.1":
-  version "2.0.0-nightly.1799"
-  resolved "https://registry.yarnpkg.com/@parcel/babel-ast-utils/-/babel-ast-utils-2.0.0-nightly.1799.tgz#7c02f1cb1b0d1cd4b12fe6aca15d9cbbf5b65fea"
-  integrity sha512-crpthhfSKafRbkB6Iq7GEP/MSanXTeMDCT4F0QIi9tqZxsvFk/lVUpt3LSSoUus5LtNCAxYelYIJsaq5s9/MAg==
-  dependencies:
-    "@babel/generator" "^7.0.0"
-    "@babel/parser" "^7.0.0"
-    "@parcel/source-map" "^2.0.0-alpha.4.3"
-
 "@parcel/babel-preset-env@2.0.0-beta.1":
   version "2.0.0-beta.1"
   resolved "https://registry.yarnpkg.com/@parcel/babel-preset-env/-/babel-preset-env-2.0.0-beta.1.tgz#562837d4c28c271a0e30bc5970ef63965ddc82dc"
@@ -2148,14 +2139,6 @@
   dependencies:
     node-addon-api "^2.0.0"
     node-gyp-build "^4.2.2"
-
-"@parcel/source-map@^2.0.0-alpha.4.3":
-  version "2.0.0-alpha.4.21"
-  resolved "https://registry.yarnpkg.com/@parcel/source-map/-/source-map-2.0.0-alpha.4.21.tgz#608f37fefe05ba1d8a8527ca0f3a8487560d4695"
-  integrity sha512-rKuySz3wRrAhmFriWGmAoAiVF+8VmA+Bzc19y9ITopk4Ax8a8+gmM5AJcXLZCmeVfr6gqdCwr+NsDwmT2Fk7QA==
-  dependencies:
-    node-addon-api "^3.0.0"
-    node-gyp-build "^4.2.3"
 
 "@parcel/transformer-babel@2.0.0-beta.1":
   version "2.0.0-beta.1"
@@ -11199,7 +11182,7 @@ node-addon-api@^2.0.0:
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-2.0.2.tgz#432cfa82962ce494b132e9d72a15b29f71ff5d32"
   integrity sha512-Ntyt4AIXyaLIuMHF6IOoTakB3K+RWxwtsHNRxllEoA6vPwP9o4866g6YWDLUdnucilZhmkxiHwHr11gAENw+QA==
 
-node-addon-api@^3.0.0, node-addon-api@^3.0.2:
+node-addon-api@^3.0.2:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-3.1.0.tgz#98b21931557466c6729e51cb77cd39c965f42239"
   integrity sha512-flmrDNB06LIl5lywUz7YlNGZH/5p0M7W28k8hzd9Lshtdh1wshD2Y+U4h9LD6KObOy1f+fEVdgprPrEymjM5uw==
