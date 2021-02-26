@@ -2,7 +2,7 @@
   "name": "@private/parcel",
   "version": "1.0.0",
   "scripts": {
-    "start": "PARCEL=true parcel serve ./src/index.html --no-cache",
+    "start": "PARCEL=true parcel serve ./src/index.html --open",
     "build": "PARCEL=true parcel build ./src/index.html"
   },
   "dependencies": {
