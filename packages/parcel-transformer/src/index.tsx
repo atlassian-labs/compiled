@@ -14,7 +14,7 @@ export default new Transformer({
 
   async parse({ asset }: any) {
     const code = await asset.getCode();
-    if (code.indexOf('@compiled/react') === -1) {
+    if (!asset.isSource || code.indexOf('@compiled/react') === -1) {
       // We only want to parse files that are actually using Compiled.
       // For everything else we bail out.
       return undefined;
@@ -23,10 +23,6 @@ export default new Transformer({
     const ast = await parseAsync(code, {
       filename: asset.filePath,
       caller: { name: 'compiled' },
-      // TODO: We want to inherit user land configuration for the initial parse,
-      // but Parcel also ships with a "default" config. We should figure out if we
-      // can grab theirs.
-      plugins: ['@babel/plugin-syntax-jsx'],
     });
 
     return ast;
@@ -34,8 +30,8 @@ export default new Transformer({
 
   async transform({ asset, ast }: any) {
     if (!asset.isSource || !ast) {
-      // We will only recieve asts for assets we're interested in.
-      // Since this is undefined we aren't interested in it.
+      // We will only recieve ASTs for assets we're interested in.
+      // Since this is undefined (or in node modules) we aren't interested in it.
       return [asset];
     }
 

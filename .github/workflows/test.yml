@@ -47,7 +47,10 @@ jobs:
         run: yarn test:imports
 
       - name: Build webpack example
-        run: yarn build:webpack-example
+        run: yarn build:webpack
+
+      - name: Build parcel example
+        run: yarn build:parcel
 
       - name: Bundle size
         run: |
