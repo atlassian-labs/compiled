@@ -34,23 +34,17 @@ jobs:
       - name: Install packages
         run: yarn
 
-      - name: Build sources
-        run: yarn build
-
       - name: Validate
         run: yarn lint
+
+      - name: Build source
+        run: yarn build
 
       - name: Run tests
         run: yarn test:cover --ci
 
       - name: Run import test
         run: yarn test:imports
-
-      - name: Build webpack example
-        run: yarn build:webpack
-
-      - name: Build parcel example
-        run: yarn build:parcel
 
       - name: Bundle size
         run: |

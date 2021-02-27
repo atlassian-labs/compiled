@@ -21,7 +21,7 @@ jobs:
       - name: Install packages
         run: yarn
 
-      - name: Build sources
+      - name: Build source
         run: yarn build
 
       - uses: chromaui/action@v1
