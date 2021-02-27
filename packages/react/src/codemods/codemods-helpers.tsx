@@ -280,7 +280,11 @@ export const addReactIdentifier = ({
       const hasNoDefaultReactImportDeclaration = importDefaultSpecifierCollection.length === 0;
       const hasNoNamespaceReactImportDeclaration = importNamespaceSpecifierCollection.length === 0;
 
-      if (hasNoDefaultReactImportDeclaration && hasNoNamespaceReactImportDeclaration) {
+      if (
+        hasNoDefaultReactImportDeclaration &&
+        hasNoNamespaceReactImportDeclaration &&
+        importDeclarationPath.node.specifiers
+      ) {
         importDeclarationPath.node.specifiers.unshift(
           j.importDefaultSpecifier(j.identifier(REACT_IMPORT_NAME))
         );
