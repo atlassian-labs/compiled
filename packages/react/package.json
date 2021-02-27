@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.5",
-    "@types/jscodeshift": "^0.7.2",
+    "@types/jscodeshift": "^0.11.0",
     "jscodeshift": "^0.11.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
