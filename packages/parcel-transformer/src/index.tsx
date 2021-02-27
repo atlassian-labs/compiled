@@ -51,7 +51,7 @@ export default new Transformer({
       plugins: [
         [
           compiledBabelPlugin,
-          { onIncludedFile: (file: string) => includedFiles.push(file), cache: false },
+          { onIncludedFile: (file: string) => includedFiles.push(file), cache: 'single-pass' },
         ],
       ],
       caller: {

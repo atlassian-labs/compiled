@@ -12,6 +12,10 @@
   },
   "devDependencies": {
     "@compiled/parcel-transformer": "*",
+    "@parcel/transformer-html": "^2.0.0-nightly.610",
+    "@parcel/transformer-posthtml": "^2.0.0-nightly.610",
+    "@parcel/optimizer-htmlnano": "^2.0.0-nightly.610",
+    "@parcel/packager-html": "^2.0.0-nightly.610",
     "parcel": "^2.0.0-nightly.610"
   }
 }
