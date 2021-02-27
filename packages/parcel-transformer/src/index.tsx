@@ -12,7 +12,7 @@ export default new Transformer({
     return false;
   },
 
-  async parse({ asset }: any) {
+  async parse({ asset }) {
     const code = await asset.getCode();
     if (!asset.isSource || code.indexOf('@compiled/react') === -1) {
       // We only want to parse files that are actually using Compiled.
@@ -28,7 +28,7 @@ export default new Transformer({
     return ast;
   },
 
-  async transform({ asset, ast }: any) {
+  async transform({ asset, ast }) {
     if (!asset.isSource || !ast) {
       // We will only recieve ASTs for assets we're interested in.
       // Since this is undefined (or in node modules) we aren't interested in it.
@@ -72,7 +72,7 @@ export default new Transformer({
     return [asset];
   },
 
-  generate({ ast, asset }: any) {
+  generate({ ast, asset }) {
     const { code, map } = generate(ast.program, {
       filename: asset.filePath,
     });
