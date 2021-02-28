@@ -1,12 +1,33 @@
 import { Transformer } from '@parcel/plugin';
 import compiledBabelPlugin from '@compiled/babel-plugin';
+import type { PluginOptions } from '@compiled/babel-plugin';
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import generate from '@babel/generator';
+
+type UserlandOpts = Omit<PluginOptions, 'cache' | 'onIncludedFile'>;
 
 /**
  * Compiled parcel transformer.
  */
-export default new Transformer({
+export default new Transformer<UserlandOpts>({
+  async loadConfig({ config }) {
+    const conf = await config.getConfig(
+      ['.compiledcssrc', '.compiledcssrc.json', 'compiledcss.js', 'compiledcss.config.js'],
+      {
+        packageKey: 'compiled',
+      }
+    );
+
+    if (conf) {
+      config.shouldInvalidateOnStartup();
+
+      config.setResult({
+        importReact: conf.contents.importReact,
+        nonce: conf.contents.nonce,
+      });
+    }
+  },
+
   canReuseAST() {
     // Compiled should run before any other JS transformer.
     return false;
@@ -28,7 +49,7 @@ export default new Transformer({
     return ast;
   },
 
-  async transform({ asset, ast }) {
+  async transform({ asset, ast, config }) {
     if (!asset.isSource || !ast) {
       // We will only recieve ASTs for assets we're interested in.
       // Since this is undefined (or in node modules) we aren't interested in it.
@@ -47,7 +68,11 @@ export default new Transformer({
       plugins: [
         [
           compiledBabelPlugin,
-          { onIncludedFile: (file: string) => includedFiles.push(file), cache: 'single-pass' },
+          {
+            ...config,
+            onIncludedFile: (file: string) => includedFiles.push(file),
+            cache: 'single-pass',
+          },
         ],
       ],
       caller: {
