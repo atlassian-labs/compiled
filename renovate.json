@@ -28,6 +28,10 @@
       "groupName": "webpack packages"
     },
     {
+      "packagePatterns": ["^parcel", "^@parcel"],
+      "groupName": "parcel packages"
+    },
+    {
       "depTypeList": ["peerDependencies"],
       "rangeStrategy": "widen"
     },
