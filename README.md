@@ -23,7 +23,7 @@ const StyledButton = styled.button`
   color: ${(props) => props.color};
 `;
 
-// Use a component which styles are not necessarily tied to an element
+// Use a component where styles are not necessarily tied to an element
 <ClassNames>
   {({ css }) => children({ className: css({ fontSize: 12 }) })}
 </ClassNames>
