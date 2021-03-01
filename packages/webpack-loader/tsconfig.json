@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "module": "commonjs"
+    "module": "commonjs",
+    "target": "es2017"
   },
   "references": [{ "path": "../babel-plugin" }]
 }
