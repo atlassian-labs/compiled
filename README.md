@@ -9,8 +9,6 @@ Baked and ready to serve.**
 
 [Get started now ➚](https://compiledcssinjs.com/docs/installation)
 
-<br />
-
 ## Usage
 
 <!-- prettier-ignore -->
@@ -30,8 +28,6 @@ const StyledButton = styled.button`
   {({ css }) => children({ className: css({ fontSize: 12 }) })}
 </ClassNames>
 ```
-
-<br />
 
 ## Installation
 
@@ -75,14 +71,10 @@ npm install @compiled/babel-plugin --save-dev
 
 See [installation](https://compiledcssinjs.com/docs/installation#babel) for more information.
 
-<br />
-
 ## Contributions
 
 Contributions are welcomed!
 Please see [CONTRIBUTING.md](./CONTRIBUTING.md) to get started.
-
-<br />
 
 ## Thanks
 
