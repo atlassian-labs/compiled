@@ -1,0 +1,21 @@
+{
+  "name": "@private/parcel",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "parcel serve ./src/index.html --open",
+    "build": "parcel build ./src/index.html"
+  },
+  "dependencies": {
+    "@compiled/react": "*",
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
+  },
+  "devDependencies": {
+    "@compiled/parcel-transformer": "*",
+    "@parcel/transformer-html": "^2.0.0-nightly.610",
+    "@parcel/transformer-posthtml": "^2.0.0-nightly.610",
+    "@parcel/optimizer-htmlnano": "^2.0.0-nightly.610",
+    "@parcel/packager-html": "^2.0.0-nightly.610",
+    "parcel": "^2.0.0-nightly.610"
+  }
+}

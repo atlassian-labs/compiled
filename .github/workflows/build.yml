@@ -1,4 +1,4 @@
-name: Build
+name: Build packages
 
 on:
   push:
@@ -34,8 +34,14 @@ jobs:
       - name: Install packages
         run: yarn
 
-      - name: Build sources
+      - name: Build source
         run: yarn build
 
       - name: Build SSR example
         run: yarn build-ssr
+
+      - name: Build webpack example
+        run: yarn build:webpack
+
+      - name: Build parcel example
+        run: yarn build:parcel

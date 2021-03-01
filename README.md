@@ -46,6 +46,16 @@ npm install @compiled/webpack-loader --save-dev
 
 See [installation](https://compiledcssinjs.com/docs/installation#webpack) for more information.
 
+### Parcel
+
+Install the Parcel v2 transformer.
+
+```bash
+npm install @compiled/parcel-transformer --save-dev
+```
+
+See [installation](https://compiledcssinjs.com/docs/installation#parcel) for more information.
+
 ### Babel
 
 Install the Babel plugin.
