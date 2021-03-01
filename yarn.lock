@@ -1874,7 +1874,7 @@
     nullthrows "^1.1.1"
     querystring "^0.2.0"
 
-"@parcel/optimizer-htmlnano@^2.0.0-nightly.610":
+"@parcel/optimizer-htmlnano@^2.0.0-nightly.612":
   version "2.0.0-nightly.612"
   resolved "https://registry.yarnpkg.com/@parcel/optimizer-htmlnano/-/optimizer-htmlnano-2.0.0-nightly.612.tgz#dbd44b0e8b5ca1e48883a9acfd23248ecf439e80"
   integrity sha512-rB1zrR7Fv2qrF55wqLphYo9KRhnSa6GlwuKNYBn2L4kZOHq6Xya4+5HF3b1ojrB0yz/i46SC6lKR8WdBmJpUmA==
