@@ -1874,7 +1874,7 @@
     nullthrows "^1.1.1"
     querystring "^0.2.0"
 
-"@parcel/optimizer-htmlnano@^2.0.0-nightly.610":
+"@parcel/optimizer-htmlnano@^2.0.0-nightly.612":
   version "2.0.0-nightly.612"
   resolved "https://registry.yarnpkg.com/@parcel/optimizer-htmlnano/-/optimizer-htmlnano-2.0.0-nightly.612.tgz#dbd44b0e8b5ca1e48883a9acfd23248ecf439e80"
   integrity sha512-rB1zrR7Fv2qrF55wqLphYo9KRhnSa6GlwuKNYBn2L4kZOHq6Xya4+5HF3b1ojrB0yz/i46SC6lKR8WdBmJpUmA==
@@ -1913,7 +1913,7 @@
     semver "^5.4.1"
     split2 "^3.1.1"
 
-"@parcel/packager-html@^2.0.0-nightly.610":
+"@parcel/packager-html@^2.0.0-nightly.612":
   version "2.0.0-nightly.612"
   resolved "https://registry.yarnpkg.com/@parcel/packager-html/-/packager-html-2.0.0-nightly.612.tgz#1ac2a2be298c875653d78fed6ce6225658d1dbcb"
   integrity sha512-2C6NESl+5TcWJ+pi++2QQ6uT6lFS782XqWp0o0Ex38NMvrwj9GzAiNYp8aSUuSjTMgHbBZpFygQWepU82JXtAQ==
@@ -1943,7 +1943,7 @@
   dependencies:
     "@parcel/plugin" "2.0.0-nightly.612+8a4fa3ee"
 
-"@parcel/plugin@2.0.0-nightly.612+8a4fa3ee", "@parcel/plugin@^2.0.0-nightly.610":
+"@parcel/plugin@2.0.0-nightly.612+8a4fa3ee", "@parcel/plugin@^2.0.0-nightly.612":
   version "2.0.0-nightly.612"
   resolved "https://registry.yarnpkg.com/@parcel/plugin/-/plugin-2.0.0-nightly.612.tgz#d72f557fe330440f56cd49942a124c151f864eeb"
   integrity sha512-95FKwD3fqqQPoVFJW5h53yNRDQlZ7XnJvO7EvQ+DMnWuAzKyomaoLoZE50Ds+MIpfl/0pQahc1KmcZf/epSnOw==
@@ -2058,7 +2058,7 @@
     nullthrows "^1.1.1"
     semver "^5.7.0"
 
-"@parcel/transformer-html@^2.0.0-nightly.610":
+"@parcel/transformer-html@^2.0.0-nightly.612":
   version "2.0.0-nightly.612"
   resolved "https://registry.yarnpkg.com/@parcel/transformer-html/-/transformer-html-2.0.0-nightly.612.tgz#ea85177f52537d3ee9c074ee9caaf7af4f7ccf72"
   integrity sha512-BnyfCyP3oUYYuWkzmOLnL3tpyfhc6l2cNpMCOhnhPI+hkCIfVm9myCWwRrxlOvKLIESclUGL5gPTeu5jht8lQQ==
@@ -2100,7 +2100,7 @@
     "@parcel/plugin" "2.0.0-nightly.612+8a4fa3ee"
     json5 "^2.1.0"
 
-"@parcel/transformer-posthtml@^2.0.0-nightly.610":
+"@parcel/transformer-posthtml@^2.0.0-nightly.612":
   version "2.0.0-nightly.612"
   resolved "https://registry.yarnpkg.com/@parcel/transformer-posthtml/-/transformer-posthtml-2.0.0-nightly.612.tgz#4afc7eabaf08cd2d74a77ab6e44365f08474582c"
   integrity sha512-LjIhwKVQ8rGdWpm//eCC8BoM59K54BK6+L5VxbJXMcJB1QPEpGoQ88tRNF6ToqeCCOTI66MOagKPZShZFHV9Kg==
