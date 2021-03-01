@@ -5,6 +5,7 @@ declare module '@parcel/plugin' {
     isASTDirty(): boolean;
     addIncludedFile(file: string): void;
     getCode(): Promise<string>;
+    getAST(): Promise<any>;
     setAST(opts: { type: string; version: string; program: any }): void;
   }
 
@@ -25,7 +26,7 @@ declare module '@parcel/plugin' {
   interface TransformerOpts<TConfig extends unknown> {
     canReuseAST(opts: { asset: Asset; config: TConfig }): boolean;
     parse(opts: { asset: Asset; config: TConfig }): Promise<any>;
-    transform(opts: { asset: Asset; ast: any; config: TConfig }): Promise<any[]>;
+    transform(opts: { asset: Asset; config: TConfig }): Promise<any[]>;
     generate(opts: { asset: Asset; ast: any }): { content: string; map: any };
     loadConfig(opts: { config: ConfigSetup<TConfig> }): Promise<void>;
   }

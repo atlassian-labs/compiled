@@ -49,7 +49,8 @@ export default new Transformer<UserlandOpts>({
     return ast;
   },
 
-  async transform({ asset, ast, config }) {
+  async transform({ asset, config }) {
+    const ast = await asset.getAST();
     if (!asset.isSource || !ast) {
       // We will only recieve ASTs for assets we're interested in.
       // Since this is undefined (or in node modules) we aren't interested in it.
