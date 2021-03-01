@@ -19,7 +19,7 @@
       "automerge": true
     },
     {
-      "extends": "group:postcss",
+      "extends": ["group:postcss", "schedule:weekly"],
       "packagePatterns": ["^postcss-", "^autoprefixer"],
       "groupName": "postcss packages"
     },
@@ -29,14 +29,15 @@
     },
     {
       "packagePatterns": ["^parcel", "^@parcel"],
-      "groupName": "parcel packages"
+      "groupName": "parcel packages",
+      "extends": ["schedule:weekly"]
     },
     {
       "depTypeList": ["peerDependencies"],
       "rangeStrategy": "widen"
     },
     {
-      "extends": "packages:eslint",
+      "extends": ["packages:eslint", "schedule:monthly"],
       "groupName": "eslint packages"
     }
   ],
