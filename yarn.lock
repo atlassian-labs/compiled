@@ -2058,7 +2058,7 @@
     nullthrows "^1.1.1"
     semver "^5.7.0"
 
-"@parcel/transformer-html@^2.0.0-nightly.610":
+"@parcel/transformer-html@^2.0.0-nightly.612":
   version "2.0.0-nightly.612"
   resolved "https://registry.yarnpkg.com/@parcel/transformer-html/-/transformer-html-2.0.0-nightly.612.tgz#ea85177f52537d3ee9c074ee9caaf7af4f7ccf72"
   integrity sha512-BnyfCyP3oUYYuWkzmOLnL3tpyfhc6l2cNpMCOhnhPI+hkCIfVm9myCWwRrxlOvKLIESclUGL5gPTeu5jht8lQQ==
