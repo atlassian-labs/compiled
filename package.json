@@ -82,7 +82,7 @@
   "resolutions": {
     "typescript": "^4.2.2",
     "jest": "^26.6.3",
-    "@babel/core": "^7.0.0"
+    "@babel/core": "^7.13.8"
   },
   "husky": {
     "hooks": {
