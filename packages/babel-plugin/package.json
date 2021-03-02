@@ -1,6 +1,6 @@
 {
   "name": "@compiled/babel-plugin",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "Build time atomic CSS-in-JS. Baked and ready to serve.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
@@ -31,8 +31,8 @@
     "@babel/template": "^7.12.13",
     "@babel/traverse": "^7.13.0",
     "@babel/types": "^7.13.0",
-    "@compiled/css": "0.6.4",
-    "@compiled/utils": "0.6.4",
+    "@compiled/css": "0.6.5",
+    "@compiled/utils": "0.6.5",
     "@emotion/is-prop-valid": "^1.1.0",
     "resolve": "^1.20.0"
   },
