@@ -1,5 +1,6 @@
 import path from 'path';
 import { transformAsync } from '@compiled/babel-plugin';
+import { getOptions } from 'loader-utils';
 
 /**
  * Compiled webpack loader.
@@ -16,17 +17,22 @@ export default async function compiledLoader(this: any, code: string): Promise<v
   }
 
   try {
-    const options = this.getOptions({
-      type: 'object',
-      properties: {
-        importReact: {
-          type: 'boolean',
-        },
-        nonce: {
-          type: 'string',
-        },
-      },
-    });
+    const options =
+      typeof this.getOptions === 'undefined'
+        ? // Webpack v4 flow
+          getOptions(this)
+        : // Webpack v5 flow
+          this.getOptions({
+            type: 'object',
+            properties: {
+              importReact: {
+                type: 'boolean',
+              },
+              nonce: {
+                type: 'string',
+              },
+            },
+          });
 
     const result = await transformAsync(code, {
       filename: this.resourcePath,
