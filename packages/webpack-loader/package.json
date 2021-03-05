@@ -1,6 +1,6 @@
 {
   "name": "@compiled/webpack-loader",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "Build time atomic CSS-in-JS. Baked and ready to serve.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
@@ -20,7 +20,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@compiled/babel-plugin": "0.6.6",
+    "@compiled/babel-plugin": "0.6.7",
     "loader-utils": "2.0.0"
   },
   "peerDependencies": {
