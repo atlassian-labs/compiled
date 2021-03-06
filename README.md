@@ -1,6 +1,6 @@
 # Compiled
 
-**Build time [atomic CSS](https://compiledcssinjs.com/docs/atomic-css)-in-JS.
+**Build time [CSS-in-JS](https://reactjs.org/docs/faq-styling.html#what-is-css-in-js) for [React](https://reactjs.org/).
 Baked and ready to serve.**
 
 [![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](./LICENSE)
