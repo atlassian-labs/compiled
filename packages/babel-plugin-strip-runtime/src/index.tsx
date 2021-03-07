@@ -108,7 +108,7 @@ export default declare<PluginPass>((api) => {
   api.assertVersion(7);
 
   return {
-    name: '@compiled/babel-plugin-extract',
+    name: '@compiled/babel-plugin-strip-runtime',
     visitor: {
       ImportSpecifier(path) {
         if (t.isIdentifier(path.node.imported) && ['CC', 'CS'].includes(path.node.imported.name)) {
