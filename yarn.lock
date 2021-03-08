@@ -2254,25 +2254,25 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@size-limit/file@4.10.0":
-  version "4.10.0"
-  resolved "https://registry.yarnpkg.com/@size-limit/file/-/file-4.10.0.tgz#b09d70bdf476cbff84938c7a7afb163fc4b92c23"
-  integrity sha512-cqJcGyZmA45n/GI1TF3M3DD0ZVRZYvEMA1+mYbIqx8GIYvFv4LAU3tw4KfitXsnyKgTSPUvyhiIhaAqa9x/lsg==
+"@size-limit/file@4.10.1":
+  version "4.10.1"
+  resolved "https://registry.yarnpkg.com/@size-limit/file/-/file-4.10.1.tgz#e5cb204edf4974b1cad6a6eb0b639dcf6b48091b"
+  integrity sha512-3+h+CfrbIeTodPNpjJgs+jQoXYhAIAuK3HN9j5hdV9H6Q84hshbdn/TMYMIQuVQm9JodPk6l2G1wDd6LqweKHQ==
   dependencies:
     semver "7.3.4"
 
-"@size-limit/preset-small-lib@^4.10.0":
-  version "4.10.0"
-  resolved "https://registry.yarnpkg.com/@size-limit/preset-small-lib/-/preset-small-lib-4.10.0.tgz#de3d5d49a3fe7f81a3965fe25611b9ea142bf603"
-  integrity sha512-rJKJJij3S+Md7BXbSwEsTlNHhlCYLQQt2MLfzsD11iR/s11l74T+5pl+uD5ivAV1T6+JXEAmUSLkFeFYNi+V8Q==
+"@size-limit/preset-small-lib@^4.10.1":
+  version "4.10.1"
+  resolved "https://registry.yarnpkg.com/@size-limit/preset-small-lib/-/preset-small-lib-4.10.1.tgz#ad154b5760410c089816245490743a74e8300608"
+  integrity sha512-a1hUwbKiPy5INmWXiJFUUy6N7vFHGNecAkrwCxQbsjRn3rkA2qqt5JHJRpzFCBpynQBR1qA5OtQNd2fN2VKB/Q==
   dependencies:
-    "@size-limit/file" "4.10.0"
-    "@size-limit/webpack" "4.10.0"
+    "@size-limit/file" "4.10.1"
+    "@size-limit/webpack" "4.10.1"
 
-"@size-limit/webpack@4.10.0":
-  version "4.10.0"
-  resolved "https://registry.yarnpkg.com/@size-limit/webpack/-/webpack-4.10.0.tgz#ebe5ccb6309ac43be74a49cf2901d8ea8bf9ada5"
-  integrity sha512-uwTfuZsKE9grO8yKdtP05h894hooN4coBsYHiTm1O/N8NhidoUeDYA1yqOCxBW7kYu2fsoX8VZ9ZxMAgfntTKw==
+"@size-limit/webpack@4.10.1":
+  version "4.10.1"
+  resolved "https://registry.yarnpkg.com/@size-limit/webpack/-/webpack-4.10.1.tgz#c1d8cc7f7e387b76944485c8416cf0a11894cccc"
+  integrity sha512-BZMl/FrJVgKuXen9gGf+5MspDzvAQWl+cEDYdzvf7JQb7e/oiH89ACLQJsWY1Q4f+j0N9U5XlDMHdsHVdNdp5w==
   dependencies:
     css-loader "^5.1.1"
     escape-string-regexp "^4.0.0"
