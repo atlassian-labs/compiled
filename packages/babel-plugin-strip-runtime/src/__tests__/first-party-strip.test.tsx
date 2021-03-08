@@ -35,7 +35,7 @@ const transform = (
   return result.code;
 };
 
-describe('removal behaviour', () => {
+describe('first party strip runtime', () => {
   describe('when ran in the same step', () => {
     it('should remove CSS prop runtime when classic runtime', () => {
       const actual = transform()`
