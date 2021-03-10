@@ -2,15 +2,17 @@ import path from 'path';
 import { transformFromAstAsync, parseAsync } from '@babel/core';
 import type { PluginItem } from '@babel/core';
 import { getOptions } from 'loader-utils';
-import type { CompiledLoaderOptions } from './types';
-
+import type { CompiledLoaderOptions, LoaderThis } from './types';
 /**
  * Compiled webpack loader.
  *
  * @param this
  * @param code
  */
-export default async function compiledLoader(this: any, code: string): Promise<void> {
+export default async function compiledLoader(
+  this: LoaderThis<CompiledLoaderOptions>,
+  code: string
+): Promise<void> {
   const callback = this.async();
 
   // Bail early if Compiled isn't in the module.

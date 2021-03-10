@@ -1,11 +1,12 @@
 import { URLSearchParams } from 'url';
+import type { LoaderThis } from './types';
 
 /**
  * CSSLoader will take the query params and turn it into CSS.
  *
  * @param {string} source
  */
-export default function CSSLoader(this: any): string {
+export default function CSSLoader(this: LoaderThis): string {
   const query = new URLSearchParams(this.resourceQuery);
   const styleRule = query.get('style');
   return styleRule || '';
