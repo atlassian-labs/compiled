@@ -27,7 +27,7 @@ const transform = (
     configFile: false,
     babelrc: false,
     filename: process.cwd() + '/src/__tests__/third-party-strip.test.tsx',
-    plugins: [stripRuntimeBabelPlugin],
+    plugins: [[stripRuntimeBabelPlugin, { onFoundStyleSheet: opts.callback }]],
   });
 
   if (!result?.code) {
@@ -38,6 +38,34 @@ const transform = (
 };
 
 describe('third party strip runtime', () => {
+  it('should callback on every found style classic', () => {
+    const callback = jest.fn();
+
+    transform({ callback, runtime: 'classic' })`
+      import '@compiled/react';
+
+      const Component = () => <div css={{ fontSize: 12, color: 'blue' }}>hello world</div>
+    `;
+
+    expect(callback).toHaveBeenCalledTimes(2);
+    expect(callback).toHaveBeenCalledWith('._1wyb1fwx{font-size:12px}');
+    expect(callback).toHaveBeenCalledWith('._syaz13q2{color:blue}');
+  });
+
+  it('should callback on every found style automatic', () => {
+    const callback = jest.fn();
+
+    transform({ callback, runtime: 'automatic' })`
+      import '@compiled/react';
+
+      const Component = () => <div css={{ fontSize: 12, color: 'blue' }}>hello world</div>
+    `;
+
+    expect(callback).toHaveBeenCalledTimes(2);
+    expect(callback).toHaveBeenCalledWith('._1wyb1fwx{font-size:12px}');
+    expect(callback).toHaveBeenCalledWith('._syaz13q2{color:blue}');
+  });
+
   it('should strip the runtime of a classic third party with transformed modules', () => {
     const actual = transform()`
       import '@compiled/react';
