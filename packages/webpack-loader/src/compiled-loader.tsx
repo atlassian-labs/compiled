@@ -3,6 +3,7 @@ import { transformFromAstAsync, parseAsync } from '@babel/core';
 import type { PluginItem } from '@babel/core';
 import { getOptions } from 'loader-utils';
 import type { CompiledLoaderOptions, LoaderThis } from './types';
+
 /**
  * Compiled webpack loader.
  *

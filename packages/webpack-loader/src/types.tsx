@@ -1,6 +1,20 @@
 export interface CompiledLoaderOptions {
+  /**
+   * Extracts to CSS when `true`.
+   * Defaults to `false`.
+   */
   extract?: boolean;
+
+  /**
+   * Will import React into the module if it is not found.
+   * When using @babel/preset-react with the automatic runtime this is not needed and can be set to false.
+   */
   importReact?: boolean;
+
+  /**
+   * Enables CSP support,
+   * read [Security](https://compiledcssinjs.com/docs/security) for more information.
+   */
   nonce?: string;
 }
 
