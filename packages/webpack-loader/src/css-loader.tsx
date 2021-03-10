@@ -12,7 +12,7 @@ export default function CSSLoader(this: any): string {
 }
 
 /**
- * Move the atomic loader to the end of the loader queue
+ * Move the CSS loader to the end of the loader queue so it runs first.
  */
 export function pitch(this: any): void {
   if (this.loaders[0].path !== __filename) {
