@@ -1,7 +1,7 @@
 {
   "name": "@compiled/jest",
   "version": "0.6.7",
-  "description": "Build time atomic CSS-in-JS. Baked and ready to serve.",
+  "description": "Build time CSS-in-JS for React. Baked and ready to serve.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
   "homepage": "https://compiledcssinjs.com",
