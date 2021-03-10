@@ -2,7 +2,7 @@
   "name": "@private/parcel",
   "version": "1.0.0",
   "scripts": {
-    "start": "parcel serve ./src/index.html --open",
+    "start": "parcel serve ./src/index.html --open --no-cache",
     "build": "parcel build ./src/index.html"
   },
   "dependencies": {

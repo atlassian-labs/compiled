@@ -1,5 +1,5 @@
 import path from 'path';
-import { transformAsync } from '@compiled/babel-plugin';
+import { transformFromAstAsync, parseAsync } from '@babel/core';
 import { getOptions } from 'loader-utils';
 
 /**
@@ -17,6 +17,7 @@ export default async function compiledLoader(this: any, code: string): Promise<v
   }
 
   try {
+    const includedFiles: string[] = [];
     const options =
       typeof this.getOptions === 'undefined'
         ? // Webpack v4 flow
@@ -34,16 +35,31 @@ export default async function compiledLoader(this: any, code: string): Promise<v
             },
           });
 
-    const result = await transformAsync(code, {
+    // Transform to an AST using the local babel config.
+    const ast = await parseAsync(code, {
       filename: this.resourcePath,
-      opts: { ...options, cache: true },
+      caller: { name: 'compiled' },
     });
 
-    result.includedFiles.forEach((file) => {
+    // Transform using the Compiled Babel Plugin - we deliberately turn off using the local config.
+    const result = await transformFromAstAsync(ast!, code, {
+      babelrc: false,
+      configFile: false,
+      sourceMaps: true,
+      filename: this.resourcePath,
+      plugins: [
+        [
+          '@compiled/babel-plugin',
+          { ...options, onIncludedFiles: (files: string[]) => includedFiles.push(...files) },
+        ],
+      ],
+    });
+
+    includedFiles.forEach((file) => {
       this.addDependency(path.normalize(file));
     });
 
-    callback(null, result.code);
+    callback(null, result?.code, result?.map ?? undefined);
   } catch (e) {
     callback(e);
   }

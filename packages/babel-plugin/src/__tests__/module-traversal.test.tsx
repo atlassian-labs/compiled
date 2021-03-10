@@ -389,7 +389,7 @@ describe('module traversal', () => {
           return <div css={{ ...colorMixin2(color.blue) }} />
         };
     `,
-      { onIncludedFile: (file) => result.push(file) }
+      { onIncludedFiles: (files) => result.push(...files) }
     );
 
     expect(result).toHaveLength(1);
@@ -410,7 +410,7 @@ describe('module traversal', () => {
           return <div css={{ color: primary }} />
         };
     `,
-      { onIncludedFile: (file) => result.push(file) }
+      { onIncludedFiles: (files) => result.push(...files) }
     );
 
     expect(result).toHaveLength(1);
@@ -429,7 +429,7 @@ describe('module traversal', () => {
           return <div css={\`color: \${primary}\`} />
         };
     `,
-      { onIncludedFile: (file) => result.push(file) }
+      { onIncludedFiles: (files) => result.push(...files) }
     );
 
     expect(result).toHaveLength(1);

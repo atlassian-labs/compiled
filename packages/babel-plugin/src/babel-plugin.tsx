@@ -3,6 +3,7 @@ import template from '@babel/template';
 import * as t from '@babel/types';
 import jsxSyntax from '@babel/plugin-syntax-jsx';
 import { NodePath } from '@babel/traverse';
+import { unique } from '@compiled/utils';
 import * as path from 'path';
 import { importSpecifier } from './utils/ast-builders';
 import { Cache } from './utils/cache';
@@ -92,6 +93,7 @@ export default declare<State>((api) => {
 
       cache.initialize({ ...this.opts, cache: !!this.opts.cache });
       this.cache = cache;
+      this.includedFiles = [];
     },
     visitor: {
       Program: {
@@ -123,6 +125,11 @@ export default declare<State>((api) => {
 
           // Add a line break the comment
           path.unshiftContainer('body', t.noop());
+
+          // Callback when included files have been added.
+          if (this.includedFiles.length && this.opts.onIncludedFiles) {
+            this.opts.onIncludedFiles(unique(this.includedFiles));
+          }
         },
       },
       ImportDeclaration(path, state) {
