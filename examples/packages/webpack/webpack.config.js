@@ -4,6 +4,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
+const extractCss = process.env.EXTRACT_TO_CSS === 'true';
+
 module.exports = {
   mode: 'development',
   entry: './src/index.js',
@@ -25,20 +27,20 @@ module.exports = {
             loader: '@compiled/webpack-loader',
             options: {
               importReact: false,
-              extract: true,
+              extract: extractCss,
             },
           },
         ],
       },
-      {
+      extractCss && {
         test: /\.css$/i,
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
-    ],
+    ].filter(Boolean),
   },
   plugins: [
-    new MiniCssExtractPlugin(),
+    extractCss && new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-  ],
+  ].filter(Boolean),
 };
