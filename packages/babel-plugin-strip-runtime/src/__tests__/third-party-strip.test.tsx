@@ -4,7 +4,7 @@ import stripRuntimeBabelPlugin from '../index';
 
 const transform = (
   opts: {
-    callback?: (style: string) => void;
+    callback?: (style: string[]) => void;
     runtime?: 'automatic' | 'classic';
     modules?: boolean;
   } = {}
@@ -27,7 +27,7 @@ const transform = (
     configFile: false,
     babelrc: false,
     filename: process.cwd() + '/src/__tests__/third-party-strip.test.tsx',
-    plugins: [[stripRuntimeBabelPlugin, { onFoundStyleSheet: opts.callback }]],
+    plugins: [[stripRuntimeBabelPlugin, { onFoundStyleRules: opts.callback }]],
   });
 
   if (!result?.code) {
@@ -47,9 +47,8 @@ describe('third party strip runtime', () => {
       const Component = () => <div css={{ fontSize: 12, color: 'blue' }}>hello world</div>
     `;
 
-    expect(callback).toHaveBeenCalledTimes(2);
-    expect(callback).toHaveBeenCalledWith('._1wyb1fwx{font-size:12px}');
-    expect(callback).toHaveBeenCalledWith('._syaz13q2{color:blue}');
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(['._1wyb1fwx{font-size:12px}', '._syaz13q2{color:blue}']);
   });
 
   it('should callback on every found style automatic', () => {
@@ -61,9 +60,8 @@ describe('third party strip runtime', () => {
       const Component = () => <div css={{ fontSize: 12, color: 'blue' }}>hello world</div>
     `;
 
-    expect(callback).toHaveBeenCalledTimes(2);
-    expect(callback).toHaveBeenCalledWith('._1wyb1fwx{font-size:12px}');
-    expect(callback).toHaveBeenCalledWith('._syaz13q2{color:blue}');
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(['._1wyb1fwx{font-size:12px}', '._syaz13q2{color:blue}']);
   });
 
   it('should strip the runtime of a classic third party with transformed modules', () => {

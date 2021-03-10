@@ -63,7 +63,7 @@ export default async function compiledLoader(this: any, code: string): Promise<v
           '@compiled/babel-plugin',
           { ...options, onIncludedFiles: (files: string[]) => includedFiles.push(...files) },
         ],
-      ] as PluginItem[],
+      ].filter(Boolean) as PluginItem[],
     });
 
     includedFiles.forEach((file) => {

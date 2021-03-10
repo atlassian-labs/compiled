@@ -4,7 +4,7 @@ import stripRuntimeBabelPlugin from '../index';
 
 const transform = (
   opts: {
-    callback?: (style: string) => void;
+    callback?: (style: string[]) => void;
     runtime: 'automatic' | 'classic';
     run: 'bake' | 'extract' | 'both';
   } = {
@@ -18,7 +18,7 @@ const transform = (
 
   const plugins: any = [
     runBake && [compiledBabelPlugin, { importReact: opts.runtime === 'classic' }],
-    runExtract && [stripRuntimeBabelPlugin, { onFoundStyleSheet: opts.callback }],
+    runExtract && [stripRuntimeBabelPlugin, { onFoundStyleRules: opts.callback }],
   ].filter(Boolean);
 
   const result = transformSync(typeof code === 'string' ? code : code[0], {
@@ -86,8 +86,10 @@ describe('first party strip runtime', () => {
         const Component = () => <div css={{ fontSize: 12, color: 'blue' }}>hello world</div>
       `;
 
-      expect(callback).toHaveBeenCalledWith('._1wyb1fwx{font-size:12px}');
-      expect(callback).toHaveBeenCalledWith('._syaz13q2{color:blue}');
+      expect(callback).toHaveBeenCalledWith([
+        '._1wyb1fwx{font-size:12px}',
+        '._syaz13q2{color:blue}',
+      ]);
     });
 
     it('should callback on every found style automatic', () => {
@@ -99,8 +101,10 @@ describe('first party strip runtime', () => {
         const Component = () => <div css={{ fontSize: 12, color: 'blue' }}>hello world</div>
       `;
 
-      expect(callback).toHaveBeenCalledWith('._1wyb1fwx{font-size:12px}');
-      expect(callback).toHaveBeenCalledWith('._syaz13q2{color:blue}');
+      expect(callback).toHaveBeenCalledWith([
+        '._1wyb1fwx{font-size:12px}',
+        '._syaz13q2{color:blue}',
+      ]);
     });
   });
 
@@ -158,8 +162,10 @@ describe('first party strip runtime', () => {
 
       transform({ runtime: 'classic', run: 'both', callback })(baked);
 
-      expect(callback).toHaveBeenCalledWith('._1wyb1fwx{font-size:12px}');
-      expect(callback).toHaveBeenCalledWith('._syaz13q2{color:blue}');
+      expect(callback).toHaveBeenCalledWith([
+        '._1wyb1fwx{font-size:12px}',
+        '._syaz13q2{color:blue}',
+      ]);
     });
 
     it('should callback on every found style automatic', () => {
@@ -172,8 +178,10 @@ describe('first party strip runtime', () => {
 
       transform({ runtime: 'automatic', run: 'both', callback })(baked);
 
-      expect(callback).toHaveBeenCalledWith('._1wyb1fwx{font-size:12px}');
-      expect(callback).toHaveBeenCalledWith('._syaz13q2{color:blue}');
+      expect(callback).toHaveBeenCalledWith([
+        '._1wyb1fwx{font-size:12px}',
+        '._syaz13q2{color:blue}',
+      ]);
     });
   });
 });
