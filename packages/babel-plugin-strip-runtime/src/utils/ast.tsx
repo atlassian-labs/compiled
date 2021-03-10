@@ -1,5 +1,6 @@
 import * as t from '@babel/types';
 import type { NodePath } from '@babel/core';
+import type { Binding } from '@babel/traverse';
 import type { PluginPass } from '../types';
 
 /**
@@ -86,6 +87,25 @@ export const isCCComponent = (node: t.Node): boolean => {
 };
 
 /**
+ * Returns the value of a binding.
+ *
+ * @param identifierName
+ * @param parentPath
+ */
+const getBindingValue = (
+  identifierName: string,
+  parentPath: NodePath<any>
+): [Binding, t.Expression | null | undefined] => {
+  const binding = parentPath.scope.getBinding(identifierName);
+  if (binding && t.isVariableDeclarator(binding.path.node)) {
+    const value = binding.path.node.init;
+    return [binding, value];
+  }
+
+  throw new Error('Binding not found.');
+};
+
+/**
  * Will remove found style declarations tied to the passed in `node`,
  * and callback with any found.
  *
@@ -107,16 +127,18 @@ export const removeStyleDeclarations = (
           return;
         }
 
-        const binding = parentPath.scope.getBinding(value.name);
-        if (binding) {
-          const value = ((binding?.path?.node as t.VariableDeclarator)?.init as t.StringLiteral)
-            ?.value;
-          pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(value);
+        const [binding, bindingValue] = getBindingValue(value.name, parentPath);
+        if (bindingValue && t.isStringLiteral(bindingValue)) {
+          pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(bindingValue.value);
           binding.path.remove();
         }
       });
     }
-  } else if (isAutomaticRuntime(node, 'jsx')) {
+
+    return;
+  }
+
+  if (isAutomaticRuntime(node, 'jsx')) {
     // We've found something that looks like _jsx(CS)
     const [styles] = getJsxRuntimeChildren(node);
 
@@ -126,16 +148,18 @@ export const removeStyleDeclarations = (
           return;
         }
 
-        const binding = parentPath.scope.getBinding(value.name);
-        if (binding) {
-          const value = ((binding?.path?.node as t.VariableDeclarator)?.init as t.StringLiteral)
-            ?.value;
-          pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(value);
+        const [binding, bindingValue] = getBindingValue(value.name, parentPath);
+        if (bindingValue && t.isStringLiteral(bindingValue)) {
+          pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(bindingValue.value);
           binding.path.remove();
         }
       });
     }
-  } else if (
+
+    return;
+  }
+
+  if (
     t.isJSXElement(node) &&
     t.isJSXIdentifier(node.openingElement.name) &&
     node.openingElement.name.name === 'CS'
@@ -148,14 +172,14 @@ export const removeStyleDeclarations = (
           return;
         }
 
-        const binding = parentPath.scope.getBinding(value.name);
-        if (binding) {
-          const value = ((binding?.path?.node as t.VariableDeclarator)?.init as t.StringLiteral)
-            ?.value;
-          pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(value);
+        const [binding, bindingValue] = getBindingValue(value.name, parentPath);
+        if (bindingValue && t.isStringLiteral(bindingValue)) {
+          pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(bindingValue.value);
           binding.path.remove();
         }
       });
     }
+
+    return;
   }
 };

@@ -85,7 +85,10 @@ export default declare<PluginPass>((api) => {
             return;
           }
 
-          const [compiledStyles, nodeToReplace] = children.value.elements as t.Expression[];
+          const [compiledStyles, nodeToReplace] = children.value.elements;
+          if (!t.isExpression(nodeToReplace) || !t.isExpression(compiledStyles)) {
+            throw new Error('Nodes should be expressions.');
+          }
 
           // Before we replace this node with its children we need to go through and remove all the
           // style declarations from the CS call.
