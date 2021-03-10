@@ -74,6 +74,11 @@ export default async function compiledLoader(this: any, code: string): Promise<v
 
     if (options.extract && foundCSSRules.length) {
       foundCSSRules.forEach((rule) => {
+        // For each found CSS rule we will create a new import that uses `@compiled/webpack-loader/css-loader`.
+        // The primary benefit is for caching -- resulting in faster builds.
+        // Another benefit is we can use this as a communication channel that is thread safe.
+        // The final benefit is doing this allows us to pump the CSS through all loaders naturally without
+        // us having to manually create new assets. Way less fiddly.
         const params = encodeURIComponent(rule);
 
         output = `
