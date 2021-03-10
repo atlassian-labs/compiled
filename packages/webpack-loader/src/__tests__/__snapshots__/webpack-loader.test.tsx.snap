@@ -1,8 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`webpack loader should callback on error 1`] = `
-[SyntaxError: /projects/index.js: A numeric separator is only allowed between two digits (1:29)
-
-[0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m [32m'@compiled/react'[39m[33m;[39m [35m222[39m_[33m![39m[33m![39m[33m![39m[0m
-[0m [90m   |[39m                              [31m[1m^[22m[39m[0m]
-`;
