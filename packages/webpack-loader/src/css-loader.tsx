@@ -8,18 +8,13 @@ import { URLSearchParams } from 'url';
 export default function CSSLoader(this: any): string {
   const query = new URLSearchParams(this.resourceQuery);
   const styleRule = query.get('style');
-
-  console.log(styleRule);
-
-  return `
-
-  `;
+  return styleRule || '';
 }
 
 /**
  * Move the atomic loader to the end of the loader queue
  */
-export function pitch(this: any) {
+export function pitch(this: any): void {
   if (this.loaders[0].path !== __filename) {
     return;
   }

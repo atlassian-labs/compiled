@@ -1,4 +1,4 @@
-import { hydrate } from 'react-dom';
+import { render } from 'react-dom';
 import App from './app';
 
 function createRoot() {
@@ -9,7 +9,7 @@ function createRoot() {
 }
 
 const element = document.getElementById('root') || createRoot();
-hydrate(<App />, element);
+render(<App />, element);
 
 if (module.hot) {
   module.hot.accept();

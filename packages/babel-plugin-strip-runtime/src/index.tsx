@@ -13,7 +13,17 @@ export default declare<PluginPass>((api) => {
 
   return {
     name: '@compiled/babel-plugin-strip-runtime',
+    pre() {
+      this.styleRules = [];
+    },
     visitor: {
+      Program: {
+        exit() {
+          if (this.opts.onFoundStyleRules) {
+            this.opts.onFoundStyleRules(this.styleRules);
+          }
+        },
+      },
       ImportSpecifier(path) {
         if (t.isIdentifier(path.node.imported) && ['CC', 'CS'].includes(path.node.imported.name)) {
           path.remove();

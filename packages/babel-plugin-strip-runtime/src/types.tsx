@@ -1,5 +1,7 @@
 export interface PluginPass {
   opts: {
-    onFoundStyleSheet?: (style: string) => void;
+    onFoundStyleRules?: (rules: string[]) => void;
   };
+
+  styleRules: string[];
 }

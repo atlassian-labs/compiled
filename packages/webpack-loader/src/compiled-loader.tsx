@@ -1,6 +1,8 @@
 import path from 'path';
 import { transformFromAstAsync, parseAsync } from '@babel/core';
+import type { PluginItem } from '@babel/core';
 import { getOptions } from 'loader-utils';
+import type { CompiledLoaderOptions } from './types';
 
 /**
  * Compiled webpack loader.
@@ -18,7 +20,9 @@ export default async function compiledLoader(this: any, code: string): Promise<v
 
   try {
     const includedFiles: string[] = [];
-    const options =
+    const foundCSSRules: string[] = [];
+
+    const options: CompiledLoaderOptions =
       typeof this.getOptions === 'undefined'
         ? // Webpack v4 flow
           getOptions(this)
@@ -51,11 +55,15 @@ export default async function compiledLoader(this: any, code: string): Promise<v
       sourceMaps: true,
       filename: this.resourcePath,
       plugins: [
+        options.extract && [
+          '@compiled/babel-plugin-strip-runtime',
+          { onFoundStyleRules: (rules: string[]) => foundCSSRules.push(...rules) },
+        ],
         [
           '@compiled/babel-plugin',
           { ...options, onIncludedFiles: (files: string[]) => includedFiles.push(...files) },
         ],
-      ],
+      ] as PluginItem[],
     });
 
     includedFiles.forEach((file) => {
@@ -64,12 +72,14 @@ export default async function compiledLoader(this: any, code: string): Promise<v
 
     let output: string = result?.code || '';
 
-    if (options.extract) {
-      const styleParams = encodeURIComponent('.hello { color: blue; }');
+    if (options.extract && foundCSSRules.length) {
+      foundCSSRules.forEach((rule) => {
+        const params = encodeURIComponent(rule);
 
-      output = `
-import '@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/extract.css?style=${styleParams}';
-${output}`;
+        output = `
+  import '@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/extract.css?style=${params}';
+  ${output}`;
+      });
     }
 
     callback(null, output, result?.map ?? undefined);
