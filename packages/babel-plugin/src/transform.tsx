@@ -29,7 +29,10 @@ export async function transformAsync(code: string, opts: TransformOpts): Promise
     configFile: false,
     filename: opts.filename,
     plugins: [
-      [babelPlugin, { ...opts.opts, onIncludedFile: (file: string) => includedFiles.push(file) }],
+      [
+        babelPlugin,
+        { ...opts.opts, onIncludedFiles: (files: string[]) => includedFiles.push(...files) },
+      ],
     ],
   });
 

@@ -147,10 +147,9 @@ const getVariableDeclaratorValueForOwnPath = (node: t.Expression, meta: Metadata
  * @param prev
  * @param next
  */
-const callbackIfFileIncluded = (prev: Metadata, next: Metadata) => {
-  if (prev.state.filename !== next.state.filename && prev.state.opts.onIncludedFile) {
-    // Notify the caller that we are including a file in the current transformation.
-    prev.state.opts.onIncludedFile(next.state.file.loc.filename);
+const callbackIfFileIncluded = (meta: Metadata, next: Metadata) => {
+  if (meta.state.filename !== next.state.filename) {
+    meta.state.includedFiles.push(next.state.file.loc.filename);
   }
 };
 

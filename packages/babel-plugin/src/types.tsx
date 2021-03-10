@@ -27,10 +27,9 @@ export interface PluginOptions {
   importReact?: boolean;
 
   /**
-   * Will callback when a file has been included in the transformation.
-   * Useful for telling bundlers to recompile the owning file if any of the included files change.
+   * Callback fired at the end of the file pass when files have been included in the transformation.
    */
-  onIncludedFile?: (absolutePath: string) => void;
+  onIncludedFiles?: (files: string[]) => void;
 }
 
 export interface State extends PluginPass {
@@ -73,6 +72,11 @@ export interface State extends PluginPass {
    * For storing cache of any type. For eg. caching deep traversed path value.
    */
   cache: InstanceType<typeof Cache>;
+
+  /**
+   * Files that have been included in this pass.
+   */
+  includedFiles: string[];
 }
 
 export interface Metadata {

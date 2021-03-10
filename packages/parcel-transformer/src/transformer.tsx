@@ -3,7 +3,7 @@ import type { PluginOptions } from '@compiled/babel-plugin';
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import generate from '@babel/generator';
 
-type UserlandOpts = Omit<PluginOptions, 'cache' | 'onIncludedFile'>;
+type UserlandOpts = Omit<PluginOptions, 'cache' | 'onIncludedFiles'>;
 
 const configFiles = [
   '.compiledcssrc',
@@ -80,7 +80,7 @@ export default new Transformer<UserlandOpts>({
           '@compiled/babel-plugin',
           {
             ...config,
-            onIncludedFile: (file: string) => includedFiles.push(file),
+            onIncludedFiles: (files: string[]) => includedFiles.push(...files),
             cache: 'single-pass',
           },
         ],
