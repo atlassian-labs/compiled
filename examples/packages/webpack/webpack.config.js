@@ -24,6 +24,7 @@ module.exports = {
             loader: '@compiled/webpack-loader',
             options: {
               importReact: false,
+              extract: true,
             },
           },
         ],
