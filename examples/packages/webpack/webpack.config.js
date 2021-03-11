@@ -3,6 +3,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CompiledCSSSortingPlugin } = require('@compiled/webpack-loader');
 
 const extractCss = process.env.EXTRACT_TO_CSS === 'true';
 
@@ -40,6 +41,7 @@ module.exports = {
   },
   plugins: [
     extractCss && new MiniCssExtractPlugin(),
+    extractCss && new CompiledCSSSortingPlugin(),
     new HtmlWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
   ].filter(Boolean),

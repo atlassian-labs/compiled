@@ -3,6 +3,37 @@ import { transformFromAstAsync, parseAsync } from '@babel/core';
 import type { PluginItem } from '@babel/core';
 import { getOptions } from 'loader-utils';
 import type { CompiledLoaderOptions, LoaderThis } from './types';
+import { CompiledCSSSortingPlugin } from './sorting-plugin';
+
+/**
+ * Returns user configuration.
+ *
+ * @param loader
+ * @returns
+ */
+function getLoaderOptions(context: LoaderThis<CompiledLoaderOptions>) {
+  const options: CompiledLoaderOptions =
+    typeof context.getOptions === 'undefined'
+      ? // Webpack v4 flow
+        getOptions(context)
+      : // Webpack v5 flow
+        context.getOptions({
+          type: 'object',
+          properties: {
+            importReact: {
+              type: 'boolean',
+            },
+            nonce: {
+              type: 'string',
+            },
+            extract: {
+              type: 'boolean',
+            },
+          },
+        });
+
+  return options;
+}
 
 /**
  * Compiled webpack loader.
@@ -24,26 +55,7 @@ export default async function compiledLoader(
   try {
     const includedFiles: string[] = [];
     const foundCSSRules: string[] = [];
-
-    const options: CompiledLoaderOptions =
-      typeof this.getOptions === 'undefined'
-        ? // Webpack v4 flow
-          getOptions(this)
-        : // Webpack v5 flow
-          this.getOptions({
-            type: 'object',
-            properties: {
-              importReact: {
-                type: 'boolean',
-              },
-              nonce: {
-                type: 'string',
-              },
-              extract: {
-                type: 'boolean',
-              },
-            },
-          });
+    const options = getLoaderOptions(this);
 
     // Transform to an AST using the local babel config.
     const ast = await parseAsync(code, {
@@ -93,5 +105,19 @@ export default async function compiledLoader(
     callback(null, output, result?.map ?? undefined);
   } catch (e) {
     callback(e);
+  }
+}
+
+export function pitch(this: any): void {
+  const options = getLoaderOptions(this);
+
+  if (options.extract) {
+    const pluginDefined = this._compiler.options.plugins.find((plugin: any) => {
+      return plugin instanceof CompiledCSSSortingPlugin;
+    });
+
+    if (!pluginDefined) {
+      throw new Error('Add the plugin dude!');
+    }
   }
 }
