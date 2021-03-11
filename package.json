@@ -37,8 +37,8 @@
     "build-storybook": "build-storybook",
     "build-ssr": "CI=false && yarn build && cd examples/packages/ssr && yarn build",
     "bundlesize": "yarn build && yarn build:dead-code-elimination && size-limit",
-    "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts",
-    "release": "yarn clean && yarn build && yarn changeset publish"
+    "release": "yarn clean && yarn build && yarn changeset publish",
+    "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts && cd examples/packages/babel-component && yarn build"
   },
   "devDependencies": {
     "@babel/plugin-transform-react-jsx-self": "^7.12.13",

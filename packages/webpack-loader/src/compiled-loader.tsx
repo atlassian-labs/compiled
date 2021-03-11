@@ -96,8 +96,10 @@ export default async function compiledLoader(
         // us having to manually create new assets. Way less fiddly.
         const params = encodeURIComponent(rule);
 
+        // We use require instead of import so it works with both ESM and CJS source.
+        // If we used ESM it would blow up with CJS source, unfortunately.
         output = `
-  import '@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/extract.css?style=${params}';
+  require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/extract.css?style=${params}');
   ${output}`;
       });
     }
