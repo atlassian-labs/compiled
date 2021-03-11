@@ -2,7 +2,7 @@ import path from 'path';
 import { transformFromAstAsync, parseAsync } from '@babel/core';
 import { getOptions } from 'loader-utils';
 import type { CompiledLoaderOptions, LoaderThis } from './types';
-import { CompiledCSSSortingPlugin } from './sorting-plugin';
+import { CompiledExtractPlugin } from './extract-plugin';
 import { predicate } from './utils/predicate';
 
 /**
@@ -115,7 +115,7 @@ export function pitch(this: any): void {
 
   if (options.extract) {
     const pluginDefined = this._compiler.options.plugins.find((plugin: any) => {
-      return plugin instanceof CompiledCSSSortingPlugin;
+      return plugin instanceof CompiledExtractPlugin;
     });
 
     if (!pluginDefined) {
