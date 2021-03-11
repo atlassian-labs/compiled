@@ -1,9 +1,9 @@
 import path from 'path';
 import { transformFromAstAsync, parseAsync } from '@babel/core';
-import type { PluginItem } from '@babel/core';
 import { getOptions } from 'loader-utils';
 import type { CompiledLoaderOptions, LoaderThis } from './types';
 import { CompiledCSSSortingPlugin } from './sorting-plugin';
+import { predicate } from './utils/predicate';
 
 /**
  * Returns user configuration.
@@ -78,7 +78,7 @@ export default async function compiledLoader(
           '@compiled/babel-plugin',
           { ...options, onIncludedFiles: (files: string[]) => includedFiles.push(...files) },
         ],
-      ].filter(Boolean) as PluginItem[],
+      ].filter(predicate),
     });
 
     includedFiles.forEach((file) => {
