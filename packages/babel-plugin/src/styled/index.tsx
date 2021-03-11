@@ -119,7 +119,7 @@ const extractStyledDataFromNode = (
 export const visitStyledPath = (
   path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
   meta: Metadata
-) => {
+): void => {
   const styledData = extractStyledDataFromNode(path.node, meta);
   if (!styledData) {
     // We didn't find a node we're interested in - bail out!

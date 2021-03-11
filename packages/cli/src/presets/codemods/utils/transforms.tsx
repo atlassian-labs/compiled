@@ -21,7 +21,7 @@ const basePath = path.join(
 
 const parseTransformPath = (transformPath: string) => path.parse(transformPath);
 
-export const getTransformPath = ({ dir, base }: ParsedPath) => `${dir}/${base}`;
+export const getTransformPath = ({ dir, base }: ParsedPath): string => `${dir}/${base}`;
 
 export const getTransforms = (): ParsedPath[] =>
   [path.join(basePath, '*', 'index.@(ts|tsx|js)')]

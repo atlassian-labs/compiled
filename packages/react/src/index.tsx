@@ -3,6 +3,8 @@ export { ClassNames } from './class-names';
 import { CssFunction } from './types';
 
 declare module 'react' {
+  // We must match the same type signature so the generic needs to stay.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface DOMAttributes<T> {
     css?: CssFunction | CssFunction[];
   }

@@ -368,8 +368,8 @@ export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Met
  * @param spacer Optional spacer node to place between the left and right node. Defaults to a space string.
  */
 export const joinExpressions = (
-  left: any,
-  right: any,
+  left: t.Expression,
+  right: t.Expression,
   spacer: any = t.stringLiteral(' ')
 ): t.BinaryExpression => {
   return t.binaryExpression('+', left, spacer ? t.binaryExpression('+', spacer, right) : right);
@@ -379,7 +379,10 @@ export const joinExpressions = (
  * Will conditionally join two expressions together depending on the right expression.
  * Looks like: `left + right ? ' ' + right : ''`
  */
-export const conditionallyJoinExpressions = (left: any, right: any): t.BinaryExpression => {
+export const conditionallyJoinExpressions = (
+  left: t.Expression,
+  right: t.Expression
+): t.BinaryExpression => {
   return t.binaryExpression(
     '+',
     left,
@@ -420,7 +423,7 @@ export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metad
  * @param name import name
  * @param localName local name
  */
-export const importSpecifier = (name: string, localName?: string) => {
+export const importSpecifier = (name: string, localName?: string): t.ImportSpecifier => {
   return t.importSpecifier(t.identifier(name), t.identifier(localName || name));
 };
 
@@ -431,7 +434,7 @@ export const importSpecifier = (name: string, localName?: string) => {
  */
 export const getPropValue = (
   node: t.JSXElement | t.JSXFragment | t.StringLiteral | t.JSXExpressionContainer
-) => {
+): t.Expression => {
   const value = t.isJSXExpressionContainer(node) ? node.expression : node;
 
   if (t.isJSXEmptyExpression(value)) {

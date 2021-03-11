@@ -12,12 +12,11 @@ const defaultOptions = {
   maxSize: 500,
 };
 
-export class Cache {
+export class Cache<T = any> {
   _options: CacheOptions & typeof defaultOptions = defaultOptions;
-  _cache: InstanceType<typeof Map>;
+  _cache: Map<string, T>;
 
   constructor() {
-    // TODO: Replace `this._instanceKey` with `this.#instanceKey` once we upgrade to typescript >= 3.8
     this._cache = new Map();
   }
 
@@ -28,7 +27,7 @@ export class Cache {
    * @param cacheKey Key for caching
    * @param namespace Namespace for grouping
    */
-  static getUniqueKey(cacheKey: string, namespace?: string) {
+  static getUniqueKey(cacheKey: string, namespace?: string): string {
     return hash(namespace ? `${namespace}----${cacheKey}` : cacheKey);
   }
 
@@ -39,7 +38,7 @@ export class Cache {
    * @param uniqueKey Unique cache key
    * @param value Value to be cached
    */
-  _saveToCache<T>(uniqueKey: string, value: () => T) {
+  _saveToCache<TValue extends T>(uniqueKey: string, value: () => TValue): TValue {
     const lazyValue = value();
 
     this._cache.set(uniqueKey, lazyValue);
@@ -51,7 +50,7 @@ export class Cache {
    * Deletes least recently used value (first in queue) from cache if cache size
    * reaches its max size.
    */
-  _tryDeletingLRUCachedValue() {
+  _tryDeletingLRUCachedValue(): void {
     if (this._cache.size >= this._options.maxSize) {
       const key = this._cache.keys().next().value;
 
@@ -66,7 +65,7 @@ export class Cache {
    * @param uniqueKey Unique cache key
    * @param cacheValue Cached value
    */
-  _moveLastInQueue<T>(uniqueKey: string, cacheValue: T) {
+  _moveLastInQueue(uniqueKey: string, cacheValue: T): void {
     this._cache.delete(uniqueKey);
 
     this._cache.set(uniqueKey, cacheValue);
@@ -77,12 +76,12 @@ export class Cache {
    *
    * @param uniqueKey Unique cache key
    */
-  _loadFromCache<T>(uniqueKey: string) {
-    const cacheValue = this._cache.get(uniqueKey);
+  _loadFromCache<TValue extends T>(uniqueKey: string): TValue {
+    const cacheValue = this._cache.get(uniqueKey) as TValue;
 
     this._moveLastInQueue(uniqueKey, cacheValue);
 
-    return cacheValue as T;
+    return cacheValue;
   }
 
   /**
@@ -90,7 +89,7 @@ export class Cache {
    *
    * @param options Cache options
    */
-  initialize(options: CacheOptions) {
+  initialize(options: CacheOptions): void {
     this._options = { ...defaultOptions, ...options };
   }
 
@@ -104,15 +103,15 @@ export class Cache {
    * @param namespace Namespace for grouping
    * @param value Value to be cached
    */
-  load<T>({
+  load<TValue extends T>({
     cacheKey,
     namespace,
-    value = () => ({} as T),
+    value,
   }: {
-    cacheKey: string;
     namespace?: string;
-    value?: () => T;
-  }) {
+    cacheKey: string;
+    value: () => TValue;
+  }): TValue {
     if (!this._options.cache) {
       return value();
     }
@@ -120,32 +119,32 @@ export class Cache {
     const uniqueKey = Cache.getUniqueKey(cacheKey, namespace);
 
     if (this._cache.has(uniqueKey)) {
-      return this._loadFromCache<T>(uniqueKey);
+      return this._loadFromCache(uniqueKey);
     }
 
     this._tryDeletingLRUCachedValue();
 
-    return this._saveToCache<T>(uniqueKey, value);
+    return this._saveToCache(uniqueKey, value);
   }
 
   /**
    * Returns cache size
    */
-  getSize() {
+  getSize(): number {
     return this._cache.size;
   }
 
   /**
    * Returns cache keys
    */
-  getKeys() {
+  getKeys(): IterableIterator<string> {
     return this._cache.keys();
   }
 
   /**
    * Returns cache values
    */
-  getValues() {
+  getValues(): IterableIterator<T> {
     return this._cache.values();
   }
 }

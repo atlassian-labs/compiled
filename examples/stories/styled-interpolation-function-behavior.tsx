@@ -36,7 +36,7 @@ const FunctionStyledTemplateLiteral = styled.div<Props>`
   }}px;
 `;
 
-export const ObjectLiteral = () => (
+export const ObjectLiteral = (): JSX.Element => (
   <FunctionStyledObjectLiteral
     color="blue"
     bgColor="red"
@@ -47,7 +47,7 @@ export const ObjectLiteral = () => (
   </FunctionStyledObjectLiteral>
 );
 
-export const TemplateLiteral = () => (
+export const TemplateLiteral = (): JSX.Element => (
   <FunctionStyledTemplateLiteral
     color="red"
     bgColor="blue"
@@ -74,7 +74,7 @@ const HorizontalStack = styled.div<{ spacing?: number; gap?: number }>`
   }
 `;
 
-export const Stacking = () => (
+export const Stacking = (): JSX.Element => (
   <>
     <div css={{ display: 'inline-block' }}>before</div>
     <HorizontalStack gap={2} spacing={4}>

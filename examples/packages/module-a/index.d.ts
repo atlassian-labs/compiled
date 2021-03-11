@@ -6,7 +6,7 @@ export const colors: {
 export const objectStyles: {
   fontSize: number;
   color: string;
-  backgroundColor: (bgColor: string) => string;
+  backgroundColor: (bgColor?: string) => string | undefined;
 };
 
 export const colorMixin: (

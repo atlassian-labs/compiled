@@ -112,7 +112,10 @@ const isUnitlessProperty = (propertyName: string): boolean => {
  * @param name CSS property name
  * @param value CSS property value
  */
-export function addUnitIfNeeded(name: string, value: any): any {
+export function addUnitIfNeeded(
+  name: string,
+  value: null | undefined | boolean | string | number
+): any {
   if (value == null || typeof value === 'boolean' || value === '') {
     return '';
   }

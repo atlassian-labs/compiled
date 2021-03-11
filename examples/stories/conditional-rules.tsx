@@ -25,11 +25,11 @@ const Lozenge = (props: { isPrimary?: boolean; children: any }) => (
   </div>
 );
 
-export const PrimaryLozenge = () => {
+export const PrimaryLozenge = (): JSX.Element => {
   return <Lozenge isPrimary>Hello primay</Lozenge>;
 };
 
-export const NotPrimaryLozenge = () => {
+export const NotPrimaryLozenge = (): JSX.Element => {
   return <Lozenge>Hello secondary</Lozenge>;
 };
 
@@ -57,10 +57,10 @@ const LozengeWithArray = (props: { isPrimary?: boolean; children: any }) => (
   </div>
 );
 
-export const PrimaryLozengeWithArray = () => {
+export const PrimaryLozengeWithArray = (): JSX.Element => {
   return <LozengeWithArray isPrimary>Hello primay</LozengeWithArray>;
 };
 
-export const NotPrimaryLozengeWithArray = () => {
+export const NotPrimaryLozengeWithArray = (): JSX.Element => {
   return <LozengeWithArray>Hello secondary</LozengeWithArray>;
 };

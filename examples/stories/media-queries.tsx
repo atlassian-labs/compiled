@@ -23,10 +23,10 @@ const ResponsiveStyledTemplateLiteral = styled.div`
   }
 `;
 
-export const ObjectLiteral = () => (
+export const ObjectLiteral = (): JSX.Element => (
   <ResponsiveStyledObjectLiteral>hello world</ResponsiveStyledObjectLiteral>
 );
 
-export const TemplateLiteral = () => (
+export const TemplateLiteral = (): JSX.Element => (
   <ResponsiveStyledTemplateLiteral>hello world</ResponsiveStyledTemplateLiteral>
 );

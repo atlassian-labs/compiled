@@ -24,7 +24,7 @@ const getJsxAttributeExpression = (node: t.JSXAttribute) => {
  * @param path Babel path - expects to be a JSX opening element.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Metadata) => {
+export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Metadata): void => {
   let cssPropIndex = -1;
   const cssProp = path.node.attributes.find((attr, index): attr is t.JSXAttribute => {
     if (t.isJSXAttribute(attr) && attr.name.name === 'css') {

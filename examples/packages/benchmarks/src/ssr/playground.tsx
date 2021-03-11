@@ -2,15 +2,17 @@ import React, { useContext, createContext } from 'react';
 
 const Cache = createContext<Record<string, true> | null>(null);
 
-export const useCache = () => {
+export const useCache = (): Record<string, true> => {
   return useContext(Cache) || {};
 };
 
-export const CompiledComponent = (props: { children: JSX.Element[] | JSX.Element }) => {
+export const CompiledComponent = (props: {
+  children: JSX.Element[] | JSX.Element;
+}): JSX.Element => {
   return <Cache.Provider value={useCache()}>{props.children}</Cache.Provider>;
 };
 
-export function StyleStr(props: any) {
+export function StyleStr(props: { children: string; nonce: string }): JSX.Element | null {
   const inserted = useCache();
 
   // The following code will not exist in the browser bundle.
@@ -32,7 +34,7 @@ export function StyleStr(props: any) {
   return <style nonce={props.nonce}>{toInsert}</style>;
 }
 
-export function StyleArr(props: any) {
+export function StyleArr(props: { children: string[]; nonce: string }): JSX.Element | null {
   const inserted = useCache();
 
   // The following code will not exist in the browser bundle.

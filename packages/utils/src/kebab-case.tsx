@@ -5,7 +5,7 @@ const KEBAB_REGEX = /[A-Z\u00C0-\u00D6\u00D8-\u00DE]/g;
  *
  * @param str
  */
-export function kebabCase(str: string) {
+export function kebabCase(str: string): string {
   return str.replace(KEBAB_REGEX, (match) => {
     return `-${match.toLowerCase()}`;
   });

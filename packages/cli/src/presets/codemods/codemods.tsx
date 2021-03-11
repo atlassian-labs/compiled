@@ -50,7 +50,7 @@ const getTransformForm = async () => {
   }).run();
 };
 
-const codemods = async () => {
+const codemods = async (): Promise<void> => {
   const transforms = getTransforms();
   if (transforms.length === 0) {
     return console.warn(chalk.red('No codemods available right now.'));

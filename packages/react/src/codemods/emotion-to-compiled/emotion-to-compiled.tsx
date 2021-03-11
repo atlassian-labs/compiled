@@ -200,7 +200,7 @@ const mergeCompiledImportSpecifiers = (j: core.JSCodeshift, collection: Collecti
   });
 };
 
-const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Options) => {
+const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Options): string => {
   const { source } = fileInfo;
   const collection = j(source);
 

@@ -21,7 +21,7 @@ const Children = ({ color }: { color: string }) => (
   <span css={{ ...getColor(color) }}>Hello css prop component. Hover me Please.</span>
 );
 
-export const ObjectLiteral = () => (
+export const ObjectLiteral = (): JSX.Element => (
   <>
     <StyledObjectLiteral>Hello styled component</StyledObjectLiteral>
     <div
@@ -36,7 +36,7 @@ export const ObjectLiteral = () => (
   </>
 );
 
-export const TemplateLiteral = () => (
+export const TemplateLiteral = (): JSX.Element => (
   <>
     <StyledTemplateLiteral>Hello styled component</StyledTemplateLiteral>
     <div

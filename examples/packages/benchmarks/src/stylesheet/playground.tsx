@@ -128,8 +128,8 @@ const getStyleBucketName = (sheet: string): any => {
  * @param opts StyleSheetOpts
  * @param inserted Singleton cache for tracking what styles have already been added to the head
  */
-export function createStyleSheet(opts: any) {
-  return (css: string) => {
+export function createStyleSheet(opts: unknown) {
+  return (css: string): void => {
     const bucketName = getStyleBucketName(css);
     const style = lazyAddStyleBucketToHead(bucketName, opts);
 

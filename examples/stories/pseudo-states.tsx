@@ -34,23 +34,23 @@ const PseudoStates = styled.a`
   }
 `;
 
-export const Hover = () => <PseudoStates>Should be red</PseudoStates>;
+export const Hover = (): JSX.Element => <PseudoStates>Should be red</PseudoStates>;
 Hover.parameters = { pseudo: { hover: true } };
 
-export const Focus = () => <PseudoStates>Should be blue</PseudoStates>;
+export const Focus = (): JSX.Element => <PseudoStates>Should be blue</PseudoStates>;
 Focus.parameters = { pseudo: { focus: true } };
 
-export const Link = () => <PseudoStates>Should be pink</PseudoStates>;
+export const Link = (): JSX.Element => <PseudoStates>Should be pink</PseudoStates>;
 Link.parameters = { pseudo: { link: true } };
 
-export const Target = () => <PseudoStates>Should be purple</PseudoStates>;
+export const Target = (): JSX.Element => <PseudoStates>Should be purple</PseudoStates>;
 Target.parameters = { pseudo: { target: true } };
 
-export const FocusWithin = () => <PseudoStates>Should be orange</PseudoStates>;
+export const FocusWithin = (): JSX.Element => <PseudoStates>Should be orange</PseudoStates>;
 FocusWithin.parameters = { pseudo: { focusWithin: true } };
 
-export const Visited = () => <PseudoStates>Should be brown</PseudoStates>;
+export const Visited = (): JSX.Element => <PseudoStates>Should be brown</PseudoStates>;
 Visited.parameters = { pseudo: { visited: true } };
 
-export const Active = () => <PseudoStates>Should be yellow</PseudoStates>;
+export const Active = (): JSX.Element => <PseudoStates>Should be yellow</PseudoStates>;
 Active.parameters = { pseudo: { active: true } };

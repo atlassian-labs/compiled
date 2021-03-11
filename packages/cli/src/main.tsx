@@ -27,7 +27,7 @@ const executePreset = async (cli: Result) => {
   await preset(cli);
 };
 
-const main = async (cli: Result) => {
+const main = async (cli: Result): Promise<void> => {
   console.log(chalk.bgCyan(chalk.black('👷 Compiled cli 👷')));
 
   await executePreset(cli);

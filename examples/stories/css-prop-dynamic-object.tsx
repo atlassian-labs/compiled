@@ -5,7 +5,7 @@ export default {
   title: 'css prop/dynamic object',
 };
 
-export const DynamicCssProp = () => {
+export const DynamicCssProp = (): JSX.Element => {
   const [color, setColor] = useState('red');
 
   return (
@@ -46,7 +46,7 @@ const NestedColor = ({ color }: { color: string }) => (
   </div>
 );
 
-export const ImportantChild = () => <NestedColor color="red" />;
+export const ImportantChild = (): JSX.Element => <NestedColor color="red" />;
 
 const FlushChild = ({ spacing }: { spacing: number }) => (
   <div
@@ -65,7 +65,7 @@ const FlushChild = ({ spacing }: { spacing: number }) => (
   </div>
 );
 
-export const InterpolationsWithMinus = () => (
+export const InterpolationsWithMinus = (): JSX.Element => (
   <div css={{ padding: '16px 24px', backgroundColor: 'red' }}>
     <FlushChild spacing={8} />
   </div>
@@ -88,7 +88,7 @@ const AnotherFlushChild = ({ spacing }: { spacing: number }) => (
   </div>
 );
 
-export const InterpolationsWithZeroAndMinus = () => (
+export const InterpolationsWithZeroAndMinus = (): JSX.Element => (
   <div css={{ padding: '0 16px 24px', backgroundColor: 'red' }}>
     <AnotherFlushChild spacing={8} />
   </div>
