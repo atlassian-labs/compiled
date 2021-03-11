@@ -1,4 +1,4 @@
-export const createSetupError = () => {
+export const createSetupError = (): Error => {
   return new Error(`
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
 ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██║██║     ██╔════╝██╔══██╗

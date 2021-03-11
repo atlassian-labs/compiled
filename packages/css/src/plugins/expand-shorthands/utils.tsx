@@ -11,7 +11,7 @@ export const globalValues = ['inherit', 'initial', 'unset'];
  *
  * @param node
  */
-export const isColor = (node: Node) => {
+export const isColor = (node: Node): boolean => {
   return (node.type === 'word' || node.type === 'func') && node.isColor;
 };
 
@@ -21,7 +21,7 @@ export const isColor = (node: Node) => {
  *
  * @param node
  */
-export const isWidth = (node: Node) => {
+export const isWidth = (node: Node): boolean => {
   if (node.type === 'numeric') {
     if (
       [
@@ -57,7 +57,7 @@ export const isWidth = (node: Node) => {
  *
  * @param node
  */
-export const getWidth = (node: Node) => {
+export const getWidth = (node: Node): string | undefined => {
   if (node.type === 'numeric') {
     return `${node.value}${node.unit}`;
   }

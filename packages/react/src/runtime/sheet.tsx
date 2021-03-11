@@ -129,7 +129,7 @@ export const getStyleBucketName = (sheet: string): Bucket => {
  * @param css string
  * @param opts StyleSheetOpts
  */
-export default function insertRule(css: string, opts: StyleSheetOpts) {
+export default function insertRule(css: string, opts: StyleSheetOpts): void {
   const bucketName = getStyleBucketName(css);
   const style = lazyAddStyleBucketToHead(bucketName, opts);
 

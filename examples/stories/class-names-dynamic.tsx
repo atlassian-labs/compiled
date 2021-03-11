@@ -54,10 +54,12 @@ const ClassNamesArray = ({ weight }: { weight: number }) => (
   </ClassNames>
 );
 
-export const ObjectCSS = () => <ClassNamesObject color="pink" />;
+export const ObjectCSS = (): JSX.Element => <ClassNamesObject color="pink" />;
 
-export const StringTemplateLiteral = () => <ClassNamesStringTemplateLiteral size={50} />;
+export const StringTemplateLiteral = (): JSX.Element => (
+  <ClassNamesStringTemplateLiteral size={50} />
+);
 
-export const String = () => <ClassNamesString decoration="underline" />;
+export const String = (): JSX.Element => <ClassNamesString decoration="underline" />;
 
-export const Array = () => <ClassNamesArray weight={800} />;
+export const Array = (): JSX.Element => <ClassNamesArray weight={800} />;

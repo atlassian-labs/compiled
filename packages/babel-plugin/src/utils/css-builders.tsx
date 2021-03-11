@@ -72,7 +72,7 @@ const mergeSubsequentUnconditionalCssItems = (arr: Array<CssItem>): Array<CssIte
  *
  * @param item
  */
-export const getItemCss = (item: CssItem) => {
+export const getItemCss = (item: CssItem): string => {
   return item.css;
 };
 

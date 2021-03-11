@@ -1,4 +1,3 @@
-import * as React from 'react';
 import '@compiled/react';
 import { primary } from './module';
 
@@ -6,7 +5,7 @@ interface TSProps {
   color: string;
 }
 
-export default function TypeScriptHome({ color }: TSProps) {
+export default function TypeScriptHome({ color }: TSProps): JSX.Element {
   return (
     <div
       css={{

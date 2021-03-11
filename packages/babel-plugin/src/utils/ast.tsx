@@ -48,7 +48,7 @@ export const buildCodeFrameError = (
   error: string,
   node: t.Node | null,
   parentPath: NodePath<any>
-) => {
+): Error => {
   if (!node) {
     throw parentPath.buildCodeFrameError(error);
   }
@@ -162,7 +162,7 @@ export const getValueFromObjectExpression = (
  *
  * @param node
  */
-export const getKey = (node: t.Expression) => {
+export const getKey = (node: t.Expression): string => {
   if (t.isIdentifier(node)) {
     return node.name;
   }
@@ -602,7 +602,7 @@ export const resolveBindingNode = (
  *
  * @param node Node of type either BlockStatement or Expression
  */
-export const wrapNodeInIIFE = (node: t.BlockStatement | t.Expression) =>
+export const wrapNodeInIIFE = (node: t.BlockStatement | t.Expression): t.CallExpression =>
   t.callExpression(t.arrowFunctionExpression([], node), []);
 
 const tryWrappingBlockStatementInIIFE = (node: t.BlockStatement | t.Expression) =>
@@ -618,4 +618,5 @@ const tryWrappingBlockStatementInIIFE = (node: t.BlockStatement | t.Expression) 
  *
  * @param node Node of type ArrowFunctionExpression
  */
-export const pickFunctionBody = (node: t.Function) => tryWrappingBlockStatementInIIFE(node.body);
+export const pickFunctionBody = (node: t.Function): t.Expression =>
+  tryWrappingBlockStatementInIIFE(node.body);

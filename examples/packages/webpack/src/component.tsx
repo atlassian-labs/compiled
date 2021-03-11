@@ -6,6 +6,6 @@ const HelloWorld = styled.div`
   font-weight: 500;
 `;
 
-export default function TSComponent(props: { children: string }) {
+export default function TSComponent(props: { children: string }): JSX.Element {
   return <HelloWorld>{props.children}</HelloWorld>;
 }

@@ -61,6 +61,6 @@ const MediaOrder = () => {
   );
 };
 
-export const MediaOrdering = () => {
+export const MediaOrdering = (): JSX.Element => {
   return <MediaOrder />;
 };

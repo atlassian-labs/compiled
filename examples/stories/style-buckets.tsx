@@ -6,7 +6,7 @@ export default {
   title: 'atomic/style buckets',
 };
 
-export const Example = () => {
+export const Example = (): JSX.Element => {
   return (
     <a
       href="https://atlassian.design"

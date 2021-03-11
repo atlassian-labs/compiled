@@ -111,7 +111,7 @@ E.g: <ClassNames>{props => <div />}</ClassNames>`,
  * @param path Babel path - expects to be a JSX opening element.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata) => {
+export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata): void => {
   if (
     t.isJSXIdentifier(path.node.openingElement.name) &&
     path.node.openingElement.name.name !== meta.state.compiledImports?.ClassNames

@@ -15,8 +15,8 @@ const Block = styled.div`
   color: ${colors.primary};
 `;
 
-export const Styled = () => <Block>hello primary</Block>;
+export const Styled = (): JSX.Element => <Block>hello primary</Block>;
 
-export const CssProp = () => (
+export const CssProp = (): JSX.Element => (
   <div css={{ fontSize: fontSize * 3, color: colors.danger }}>hello danger</div>
 );

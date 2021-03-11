@@ -8,6 +8,8 @@ import { getOptions } from 'loader-utils';
  * @param this
  * @param code
  */
+// We type it in another PR.
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default async function compiledLoader(this: any, code: string): Promise<void> {
   const callback = this.async();
 

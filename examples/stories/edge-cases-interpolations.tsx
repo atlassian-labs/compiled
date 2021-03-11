@@ -10,7 +10,7 @@ export default {
   title: 'edge cases/interpolations',
 };
 
-export const PreventCSSVariablesLeaking = () => {
+export const PreventCSSVariablesLeaking = (): JSX.Element => {
   return (
     <Container color="pink">
       border should be pink
@@ -36,7 +36,7 @@ const DynamicContent = styled.div<{ pre: string; post: string }>`
   }
 `;
 
-export const ContentInterpolation = () => (
+export const ContentInterpolation = (): JSX.Element => (
   <DynamicContent pre="i am before" post="i am after">
     middle
   </DynamicContent>
@@ -47,7 +47,7 @@ const NoVisible = styled.div<{ open: boolean; inherentHeight: number }>`
   overflow: hidden;
 `;
 
-export const ShouldNotBeVisible = () => {
+export const ShouldNotBeVisible = (): JSX.Element => {
   return (
     <>
       <div>this should be visible</div>

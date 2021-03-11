@@ -13,11 +13,11 @@ export default {
   title: 'css prop/static object',
 };
 
-export const ObjectLiteral = () => {
+export const ObjectLiteral = (): JSX.Element => {
   return <div css={{ display: 'flex', fontSize: '50px', color: 'blue' }}>blue text</div>;
 };
 
-export const ObjectLiteralSpreadFromFunc = () => {
+export const ObjectLiteralSpreadFromFunc = (): JSX.Element => {
   return (
     <div
       css={{
@@ -31,7 +31,7 @@ export const ObjectLiteralSpreadFromFunc = () => {
   );
 };
 
-export const ObjectLiteralSpreadFromObj = () => {
+export const ObjectLiteralSpreadFromObj = (): JSX.Element => {
   return (
     <div
       css={{
@@ -45,7 +45,7 @@ export const ObjectLiteralSpreadFromObj = () => {
   );
 };
 
-export const ObjectLiteralLocalObj = () => {
+export const ObjectLiteralLocalObj = (): JSX.Element => {
   return (
     <div
       css={{
@@ -59,7 +59,7 @@ export const ObjectLiteralLocalObj = () => {
   );
 };
 
-export const ObjectLiteralImportedObj = () => {
+export const ObjectLiteralImportedObj = (): JSX.Element => {
   return (
     <div
       css={{

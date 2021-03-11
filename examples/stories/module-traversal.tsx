@@ -16,4 +16,4 @@ const Thing = styled.div<{ bg: 'blue' }>({
   border: `5px dashed ${borderColor()}`,
 });
 
-export const Example = () => <Thing bg="blue">hello world</Thing>;
+export const Example = (): JSX.Element => <Thing bg="blue">hello world</Thing>;

@@ -4,7 +4,7 @@ export default {
   title: 'benchmarks/compiled',
 };
 
-export const Static = () => (
+export const Static = (): JSX.Element => (
   <span
     css={{
       backgroundColor: 'rgb(66, 82, 110)',
@@ -70,4 +70,6 @@ const Lozenge = (props: { bg: string; color: string }) => (
   </span>
 );
 
-export const Dynamic = () => <Lozenge bg="rgb(227, 252, 239)" color="rgb(0, 102, 68)" />;
+export const Dynamic = (): JSX.Element => (
+  <Lozenge bg="rgb(227, 252, 239)" color="rgb(0, 102, 68)" />
+);

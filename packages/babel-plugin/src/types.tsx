@@ -71,7 +71,7 @@ export interface State extends PluginPass {
   /**
    * For storing cache of any type. For eg. caching deep traversed path value.
    */
-  cache: InstanceType<typeof Cache>;
+  cache: Cache;
 
   /**
    * Files that have been included in this pass.

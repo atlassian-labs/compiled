@@ -1,7 +1,7 @@
 const selectorsToWarn = [':first-child', ':nth-child'];
 const hasWarned: Record<string, true> = {};
 
-export const warn = (str: string, ...args: any[]) =>
+export const warn = (str: string, ...args: any[]): void =>
   console.error(
     `
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
@@ -18,7 +18,7 @@ export const warn = (str: string, ...args: any[]) =>
     ...args
   );
 
-export const analyzeCssInDev = (sheet: string) => {
+export const analyzeCssInDev = (sheet: string): void => {
   if (hasWarned[sheet]) {
     return;
   }

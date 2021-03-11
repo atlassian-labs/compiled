@@ -20,10 +20,10 @@ const BlueFontWrapped = styled(GreenFontStyled)`
   color: blue;
 `;
 
-export const GreenCssProp = () => <GreenFontCssProp>Green font</GreenFontCssProp>;
+export const GreenCssProp = (): JSX.Element => <GreenFontCssProp>Green font</GreenFontCssProp>;
 
-export const GreenStyled = () => <GreenFontStyled>Green font</GreenFontStyled>;
+export const GreenStyled = (): JSX.Element => <GreenFontStyled>Green font</GreenFontStyled>;
 
-export const RedWrapped = () => <RedFontWrapped>Red font</RedFontWrapped>;
+export const RedWrapped = (): JSX.Element => <RedFontWrapped>Red font</RedFontWrapped>;
 
-export const BlueWrapped = () => <BlueFontWrapped>Blue font</BlueFontWrapped>;
+export const BlueWrapped = (): JSX.Element => <BlueFontWrapped>Blue font</BlueFontWrapped>;

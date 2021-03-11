@@ -4,13 +4,13 @@ export default {
   title: 'ClassNames/static',
 };
 
-export const ObjectCSS = () => (
+export const ObjectCSS = (): JSX.Element => (
   <ClassNames>
     {({ css }) => <div className={css({ fontSize: 20, color: 'blue' })}>hello world</div>}
   </ClassNames>
 );
 
-export const StringTemplateLiteral = () => (
+export const StringTemplateLiteral = (): JSX.Element => (
   <ClassNames>
     {({ css }) => (
       <div
@@ -24,7 +24,7 @@ export const StringTemplateLiteral = () => (
   </ClassNames>
 );
 
-export const String = () => (
+export const String = (): JSX.Element => (
   <ClassNames>
     {({ css }) => (
       <div
@@ -38,13 +38,13 @@ export const String = () => (
   </ClassNames>
 );
 
-export const Array = () => (
+export const Array = (): JSX.Element => (
   <ClassNames>
     {({ css }) => <div className={css([{ fontSize: 20 }, `color: green;`])}>hello world</div>}
   </ClassNames>
 );
 
-export const CNArgs = () => (
+export const CNArgs = (): JSX.Element => (
   <ClassNames>
     {({ css }) => (
       <div
