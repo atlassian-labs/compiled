@@ -4,5 +4,7 @@
 
 We use `extract.css` for two reasons:
 
-1. as a stub in the `compiled-loader.tsx` module as a communication channel to pass information to the `css-loader.tsx` module
-1. to tell webpack that this is CSS so it can naturally flow through all other CSS loaders
+1. caching -- resulting in faster re-bundles
+1. thread safe communication channel
+
+You can find it being used here `packages/webpack-loader/src/compiled-loader.tsx`.

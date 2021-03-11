@@ -2,9 +2,7 @@ import { URLSearchParams } from 'url';
 import type { LoaderThis } from './types';
 
 /**
- * CSSLoader will take the query params and turn it into CSS.
- *
- * @param {string} source
+ * CSSLoader will take the style query params added by `./compiled-loader.tsx` and turn it into CSS.
  */
 export default function CSSLoader(this: LoaderThis): string {
   const query = new URLSearchParams(this.resourceQuery);
