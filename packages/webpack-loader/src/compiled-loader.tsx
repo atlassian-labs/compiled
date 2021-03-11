@@ -109,7 +109,7 @@ export default async function compiledLoader(
   }
 }
 
-export function pitch(this: any): void {
+export function pitch(this: LoaderThis<CompiledLoaderOptions>): void {
   const options = getLoaderOptions(this);
 
   if (options.extract) {

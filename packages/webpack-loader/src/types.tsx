@@ -53,4 +53,14 @@ export interface LoaderThis<TOptions = unknown> {
    * Call the return value when the loader has completed.
    */
   async(): (err: any, result?: string, map?: any) => void;
+
+  /**
+   * Internal access to the current webpack compiler.
+   */
+  _compiler: any;
+
+  /**
+   * Internal access to the loaders for this run.
+   */
+  loaders: any[];
 }
