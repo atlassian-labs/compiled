@@ -1,24 +1,8 @@
 import { plugin, Rule, AtRule } from 'postcss';
-
-/**
- * Ordered style buckets using the long psuedo selector.
- * If changes make sure that it aligns with the definition in `sheet.tsx`.
- */
-const pseudoClassesInOrder = [
-  ':link',
-  ':visited',
-  ':focus-within',
-  ':focus',
-  ':focus-visible',
-  ':hover',
-  ':active',
-];
+import { styleOrder } from '../utils/style-ordering';
 
 const getPseudoClassScore = (selector: string) => {
-  const index = pseudoClassesInOrder.findIndex((pseudoClass) =>
-    selector.trim().endsWith(pseudoClass)
-  );
-
+  const index = styleOrder.findIndex((pseudoClass) => selector.trim().endsWith(pseudoClass));
   return index + 1;
 };
 
