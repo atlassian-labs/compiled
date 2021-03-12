@@ -1,9 +1,9 @@
 import path from 'path';
 import { transformFromAstAsync, parseAsync } from '@babel/core';
 import { getOptions } from 'loader-utils';
+import { predicate } from '@compiled/utils';
 import type { CompiledLoaderOptions, LoaderThis } from './types';
 import { CompiledExtractPlugin } from './extract-plugin';
-import { predicate } from './utils/predicate';
 
 /**
  * Returns user configuration.

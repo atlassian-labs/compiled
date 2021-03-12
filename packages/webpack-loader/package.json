@@ -23,6 +23,7 @@
     "@babel/core": "^7.13.10",
     "@compiled/babel-plugin": "0.6.8",
     "@compiled/css": "0.6.8",
+    "@compiled/utils": "0.6.8",
     "loader-utils": "2.0.0"
   },
   "peerDependencies": {
