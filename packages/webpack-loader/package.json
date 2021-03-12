@@ -30,6 +30,6 @@
     "webpack": ">= 4.46.0"
   },
   "devDependencies": {
-    "webpack": "^5.25.0"
+    "webpack": "^5.26.3"
   }
 }

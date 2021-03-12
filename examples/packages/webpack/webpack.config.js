@@ -5,7 +5,7 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CompiledExtractPlugin } = require('@compiled/webpack-loader');
 
-const extractCss = process.env.EXTRACT_TO_CSS === 'true';
+const extractCSS = process.env.EXTRACT_TO_CSS === 'true';
 
 module.exports = {
   mode: 'development',
@@ -28,20 +28,20 @@ module.exports = {
             loader: '@compiled/webpack-loader',
             options: {
               importReact: false,
-              extract: extractCss,
+              extract: extractCSS,
             },
           },
         ],
       },
-      extractCss && {
+      {
         test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        use: [extractCSS ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader'],
       },
     ].filter(Boolean),
   },
   plugins: [
-    extractCss && new MiniCssExtractPlugin({ filename: '[name].css' }),
-    extractCss && new CompiledExtractPlugin(),
+    extractCSS && new MiniCssExtractPlugin({ filename: '[name].css' }),
+    extractCSS && new CompiledExtractPlugin(),
     new HtmlWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
   ].filter(Boolean),
