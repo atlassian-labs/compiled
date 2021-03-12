@@ -1,4 +1,5 @@
 import { render } from 'react-dom';
+import './extra.css';
 import App from './app';
 
 function createRoot() {
