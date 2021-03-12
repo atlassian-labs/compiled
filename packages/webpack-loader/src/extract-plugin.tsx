@@ -1,5 +1,6 @@
 import { Compilation, sources } from 'webpack';
 import type { Compiler } from 'webpack';
+import { sort } from '@compiled/css';
 
 const pluginName = 'CompiledExtractPlugin';
 const styleSheetName = 'compiled-css';
@@ -76,7 +77,7 @@ export class CompiledExtractPlugin {
   apply(compiler: Compiler): void {
     forceCSSIntoOneStyleSheet(compiler);
 
-    compiler.hooks.compilation.tap(pluginName, (compilation: Compilation) => {
+    compiler.hooks.compilation.tap(pluginName, (compilation) => {
       compilation.hooks.processAssets.tapPromise(
         {
           name: pluginName,
@@ -90,7 +91,7 @@ export class CompiledExtractPlugin {
 
           const [asset] = cssAssets;
           const contents = getAssetSourceContents(asset.source);
-          const newSource = new sources.RawSource(contents);
+          const newSource = new sources.RawSource(sort(contents));
 
           compilation.updateAsset(asset.name, newSource, asset.info);
         }
