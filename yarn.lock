@@ -13148,10 +13148,10 @@ razzle-dev-utils@latest:
     strip-ansi "6.0.0"
     webpack-dev-server "~3.10.3"
 
-razzle@^3.3.13:
-  version "3.3.13"
-  resolved "https://registry.yarnpkg.com/razzle/-/razzle-3.3.13.tgz#0576d66dec2d9b0def7d8d6178673dca45780988"
-  integrity sha512-B5Z+eLJ7C3liKWHIbBxPM/80wXjm315kMdjDa+QG6/bdDFAxFQdm34crnBJxNIveOtLDKt/sulP+1XhGX7N4sg==
+razzle@^3.4.2:
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/razzle/-/razzle-3.4.2.tgz#ad9b7e64a17b2bd8fb00e1f3e7843f27b8f0eaa8"
+  integrity sha512-lHsLfbE7LKiHVjpg72GjfR9Hz8/14W5hIpmsK1//S6rKHbA1vXTKKyBEQM9mxgqyVYtbI1nwOTS802QwxNj83g==
   dependencies:
     "@babel/core" "7.11.1"
     "@pmmmwh/react-refresh-webpack-plugin" "0.3.0"
