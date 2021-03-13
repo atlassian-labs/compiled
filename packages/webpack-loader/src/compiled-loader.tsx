@@ -98,7 +98,7 @@ export default async function compiledLoader(
         // We use require instead of import so it works with both ESM and CJS source.
         // If we used ESM it would blow up with CJS source, unfortunately.
         output = `
-  require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/extract.css?style=${params}');
+  require("@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/extract.css?style=${params}");
   ${output}`;
       });
     }
