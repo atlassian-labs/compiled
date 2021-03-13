@@ -13,6 +13,10 @@ const LoadedAsync = styled.button`
   :hover {
     color: red;
   }
+
+  @media (min-width: 500px) {
+    border: 2px solid red;
+  }
 `;
 
 export default LoadedAsync;

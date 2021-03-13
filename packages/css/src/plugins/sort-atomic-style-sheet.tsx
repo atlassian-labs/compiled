@@ -8,7 +8,7 @@ import { styleOrder } from '../utils/style-ordering';
  * @param selector
  * @returns
  */
-const getPseudoClassScore = (selector: string) => {
+const pseudoSelectorScore = (selector: string) => {
   const index = styleOrder.findIndex((pseudoClass) => selector.trim().endsWith(pseudoClass));
   return index + 1;
 };
@@ -21,7 +21,7 @@ export const sortAtomicStyleSheet = plugin('sort-atomic-style-sheet', () => {
   return (root) => {
     const catchAll: Node[] = [];
     const rules: Rule[] = [];
-    const atRules: Rule[] = [];
+    const atRules: Node[] = [];
 
     root.each((node) => {
       switch (node.type) {
@@ -35,6 +35,11 @@ export const sortAtomicStyleSheet = plugin('sort-atomic-style-sheet', () => {
           break;
         }
 
+        case 'atrule': {
+          atRules.push(node);
+          break;
+        }
+
         default: {
           catchAll.push(node);
         }
@@ -44,7 +49,7 @@ export const sortAtomicStyleSheet = plugin('sort-atomic-style-sheet', () => {
     rules.sort((rule1, rule2) => {
       const selector1 = rule1.selectors.length ? rule1.selectors[0] : rule1.selector;
       const selector2 = rule2.selectors.length ? rule2.selectors[0] : rule2.selector;
-      return getPseudoClassScore(selector1) - getPseudoClassScore(selector2);
+      return pseudoSelectorScore(selector1) - pseudoSelectorScore(selector2);
     });
 
     root.nodes = [...catchAll, ...rules, ...atRules] as ChildNode[];
