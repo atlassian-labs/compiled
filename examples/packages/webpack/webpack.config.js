@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CompiledExtractPlugin } = require('@compiled/webpack-loader');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 const extractCSS = process.env.EXTRACT_TO_CSS === 'true';
 
@@ -45,4 +46,7 @@ module.exports = {
     new HtmlWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
   ].filter(Boolean),
+  optimization: {
+    minimizer: ['...', new CssMinimizerPlugin()],
+  },
 };
