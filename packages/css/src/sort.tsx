@@ -9,7 +9,7 @@ import { discardDuplicateAtRuleChildren } from './plugins/discard-duplicate-at-r
  * @returns
  */
 export function sort(stylesheet: string): string {
-  const result = postcss([sortAtomicStyleSheet(), discardDuplicateAtRuleChildren()]).process(
+  const result = postcss([discardDuplicateAtRuleChildren(), sortAtomicStyleSheet()]).process(
     stylesheet,
     {
       from: undefined,
