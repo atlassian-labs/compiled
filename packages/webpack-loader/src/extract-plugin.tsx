@@ -1,9 +1,9 @@
-import { Compilation, sources } from 'webpack';
+import { Compilation, sources, NormalModule } from 'webpack';
 import type { Compiler } from 'webpack';
 import { sort } from '@compiled/css';
 
-const pluginName = 'CompiledExtractPlugin';
-const styleSheetName = 'compiled-css';
+export const pluginName = 'CompiledExtractPlugin';
+export const styleSheetName = 'compiled-css';
 
 /**
  * Returns CSS Assets that we're interested in.
@@ -78,6 +78,13 @@ export class CompiledExtractPlugin {
     forceCSSIntoOneStyleSheet(compiler);
 
     compiler.hooks.compilation.tap(pluginName, (compilation) => {
+      NormalModule.getCompilationHooks(compilation).loader.tap(pluginName, (loaderContext) => {
+        // We add some information here to tell loaders that the plugin has been configured.
+        // The bundle will throw if this is missing (i.e. consumers did not setup correctly).
+        // @ts-ignore
+        loaderContext[pluginName] = true;
+      });
+
       compilation.hooks.processAssets.tapPromise(
         {
           name: pluginName,

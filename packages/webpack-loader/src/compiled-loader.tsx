@@ -1,9 +1,9 @@
 import path from 'path';
 import { transformFromAstAsync, parseAsync } from '@babel/core';
 import { getOptions } from 'loader-utils';
-import { predicate } from '@compiled/utils';
+import { predicate, createError } from '@compiled/utils';
 import type { CompiledLoaderOptions, LoaderThis } from './types';
-import { CompiledExtractPlugin } from './extract-plugin';
+import { pluginName } from './extract-plugin';
 
 /**
  * Returns user configuration.
@@ -112,13 +112,10 @@ export default async function compiledLoader(
 export function pitch(this: LoaderThis<CompiledLoaderOptions>): void {
   const options = getLoaderOptions(this);
 
-  if (options.extract) {
-    const pluginDefined = this._compiler.options.plugins.find((plugin: any) => {
-      return plugin instanceof CompiledExtractPlugin;
-    });
-
-    if (!pluginDefined) {
-      throw new Error('Add the plugin dude!');
-    }
+  // @ts-ignore
+  if (options.extract && !this[pluginName]) {
+    throw createError('webpack-loader')(
+      `You forgot to add the 'CompiledExtractPlugin' plugin (i.e \`{ plugins: [new CompiledExtractPlugin()] }\`), please read https://compiledcssinjs.com/docs/webpack-extract`
+    );
   }
 }
