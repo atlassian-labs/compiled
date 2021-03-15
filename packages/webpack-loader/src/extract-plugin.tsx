@@ -1,5 +1,4 @@
-import { Compilation, sources, NormalModule } from 'webpack';
-import type { Compiler } from 'webpack';
+import type { Compiler, Compilation, sources } from 'webpack';
 import { sort } from '@compiled/css';
 
 export const pluginName = 'CompiledExtractPlugin';
@@ -75,22 +74,37 @@ const forceCSSIntoOneStyleSheet = (compiler: Compiler) => {
  */
 export class CompiledExtractPlugin {
   apply(compiler: Compiler): void {
+    const { NormalModule, Compilation, sources } = compiler.webpack;
+
     forceCSSIntoOneStyleSheet(compiler);
 
     compiler.hooks.compilation.tap(pluginName, (compilation) => {
-      NormalModule.getCompilationHooks(compilation).loader.tap(pluginName, (loaderContext) => {
+      const normalModuleHook =
+        typeof NormalModule.getCompilationHooks !== 'undefined'
+          ? // Webpack 5 flow
+            NormalModule.getCompilationHooks(compilation).loader
+          : // Webpack 4 flow
+            compilation.hooks.normalModuleLoader;
+
+      normalModuleHook.tap(pluginName, (loaderContext) => {
         // We add some information here to tell loaders that the plugin has been configured.
         // The bundle will throw if this is missing (i.e. consumers did not setup correctly).
         // @ts-ignore
         loaderContext[pluginName] = true;
       });
 
-      compilation.hooks.processAssets.tapPromise(
+      const processAssetsAfterOptimize =
+        // Webpack 5 flow
+        compilation.hooks.processAssets ||
+        // Webpack 4 flow
+        compilation.hooks.afterOptimizeChunkAssets;
+
+      processAssetsAfterOptimize.tap(
         {
           name: pluginName,
           stage: Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE,
         },
-        async (assets) => {
+        (assets) => {
           const cssAssets = getCSSAssets(assets);
           if (cssAssets.length === 0) {
             return;
