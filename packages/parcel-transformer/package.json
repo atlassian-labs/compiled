@@ -25,7 +25,7 @@
     "@babel/generator": "^7.13.9",
     "@compiled/babel-plugin": "0.6.7",
     "@compiled/utils": "0.6.7",
-    "@parcel/plugin": "^2.0.0-nightly.621"
+    "@parcel/plugin": "^2.0.0-nightly.628"
   },
   "devDependencies": {
     "@types/babel__core": "^7.1.12"
