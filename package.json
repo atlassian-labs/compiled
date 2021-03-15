@@ -53,7 +53,7 @@
     "@storybook/addons": "^6.1.21",
     "@storybook/react": "^6.1.21",
     "@types/jest": "^26.0.20",
-    "@types/node": "^14.14.34",
+    "@types/node": "^14.14.35",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
     "babel-loader": "^8.2.2",
