@@ -1,7 +1,6 @@
 # Compiled
 
-**Build time [CSS-in-JS](https://reactjs.org/docs/faq-styling.html#what-is-css-in-js) for [React](https://reactjs.org/).
-Baked and ready to serve.**
+A familiar and performant compile time [CSS-in-JS](https://reactjs.org/docs/faq-styling.html#what-is-css-in-js) library for [React](https://reactjs.org/).
 
 [![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](./LICENSE)
 [![@compiled/react](https://img.shields.io/npm/v/@compiled/react?style=flat-square)](https://www.npmjs.com/package/@compiled/react)
