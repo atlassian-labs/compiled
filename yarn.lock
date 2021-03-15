@@ -4495,10 +4495,10 @@ babel-preset-jest@^26.6.2:
     babel-plugin-transform-undefined-to-void "^6.9.4"
     lodash "^4.17.11"
 
-babel-preset-razzle@latest:
-  version "3.4.2"
-  resolved "https://registry.yarnpkg.com/babel-preset-razzle/-/babel-preset-razzle-3.4.2.tgz#8f631133d6ced424c40ea0979b009d302a141e0f"
-  integrity sha512-5tBmNsa9mUa4EIsanPqzqmbelODpSF3v5se8vx1AIGkCAvo8F+VeHMssUGLmUEef43b8q/oKPxiKY3Q+0xdlxw==
+babel-preset-razzle@3.4.5:
+  version "3.4.5"
+  resolved "https://registry.yarnpkg.com/babel-preset-razzle/-/babel-preset-razzle-3.4.5.tgz#203be645cd707686bdf41bcb3d3da4ecdef0d9f6"
+  integrity sha512-0GU6pKSSUjKBH5wcmp+MMdSE06dh7mrRfJmQ9D6uDdQ4dVgqyw4DbpJd6RIv7g92c/K99ZTY964P4Q7UrX5TSQ==
   dependencies:
     "@babel/core" "7.11.1"
     "@babel/plugin-proposal-class-properties" "^7.8.3"
@@ -13134,10 +13134,10 @@ raw-loader@^4.0.1:
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
 
-razzle-dev-utils@latest:
-  version "3.4.2"
-  resolved "https://registry.yarnpkg.com/razzle-dev-utils/-/razzle-dev-utils-3.4.2.tgz#5dab96daba40a668abe2378f069d6d1bd1e0bde9"
-  integrity sha512-YqZx67RXTENN2sCWeNK0IlH0h9ZTyMSwL3V2HOY2ZNazbDmVdMDkDtYsNsmp7JzUfKSTr/hlFUPTgsG8ZaG4DA==
+razzle-dev-utils@3.4.5:
+  version "3.4.5"
+  resolved "https://registry.yarnpkg.com/razzle-dev-utils/-/razzle-dev-utils-3.4.5.tgz#08830de9b75757b2b415c88a0ed83c3f77a7b0ad"
+  integrity sha512-4aosuS8aJPCq6SwCTH6DQbSKaO1lQf5P0YzJwkdxlzLbjuaP6yP+a4T/ttQ3Jd10LAjTw0ceug03z1guvsZD5A==
   dependencies:
     "@babel/code-frame" "^7.8.3"
     chalk "3.0.0"
@@ -13149,10 +13149,10 @@ razzle-dev-utils@latest:
     strip-ansi "6.0.0"
     webpack-dev-server "~3.10.3"
 
-razzle@^3.4.2:
-  version "3.4.2"
-  resolved "https://registry.yarnpkg.com/razzle/-/razzle-3.4.2.tgz#ad9b7e64a17b2bd8fb00e1f3e7843f27b8f0eaa8"
-  integrity sha512-lHsLfbE7LKiHVjpg72GjfR9Hz8/14W5hIpmsK1//S6rKHbA1vXTKKyBEQM9mxgqyVYtbI1nwOTS802QwxNj83g==
+razzle@^3.4.5:
+  version "3.4.5"
+  resolved "https://registry.yarnpkg.com/razzle/-/razzle-3.4.5.tgz#c8c6e2d37623aa40990de90ff6af9aeea3c60a3e"
+  integrity sha512-SKZJjLJXTaVT9USiBlZAppU94/Jr8yJWL+9UDigGqLgxembKnoWqS9+deCJM25RrL+FMFRdxCXwi/4wOmp5Ivw==
   dependencies:
     "@babel/core" "7.11.1"
     "@pmmmwh/react-refresh-webpack-plugin" "0.3.0"
@@ -13162,7 +13162,7 @@ razzle@^3.4.2:
     babel-loader "^8.0.6"
     babel-plugin-syntax-jsx "6.18.0"
     babel-plugin-transform-define "2.0.0"
-    babel-preset-razzle latest
+    babel-preset-razzle "3.4.5"
     chalk "^3.0.0"
     copy-webpack-plugin "5.1.2"
     css-loader "3.5.3"
@@ -13181,7 +13181,7 @@ razzle@^3.4.2:
     postcss-loader "^3.0.0"
     postcss-preset-env "^6.7.0"
     postcss-safe-parser "^4.0.2"
-    razzle-dev-utils latest
+    razzle-dev-utils "3.4.5"
     react-dev-utils "10.2.0"
     react-error-overlay "^6.0.6"
     react-refresh "^0.8.1"
