@@ -1,4 +1,4 @@
-import { transformCss } from '../css-transform';
+import { transformCss } from '../transform';
 
 describe('#css-transform', () => {
   beforeEach(() => {
