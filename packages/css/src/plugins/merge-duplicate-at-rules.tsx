@@ -18,7 +18,7 @@ import type { ChildNode, AtRule } from 'postcss';
  * @media (min-width:500px){._171dak0l{border:2px solid red}._1swkri7e:before{content:'large screen'}}
  * ```
  */
-export const discardDuplicateAtRuleChildren = plugin('discard-duplicate-at-rule-children', () => {
+export const mergeDuplicateAtRules = plugin('merge-duplicate-at-rules', () => {
   return (root) => {
     const atRuleStore: Record<string, { node: AtRule; children: Record<string, ChildNode> }> = {};
 

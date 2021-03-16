@@ -1,6 +1,6 @@
 import postcss from 'postcss';
 import { sortAtomicStyleSheet } from './plugins/sort-atomic-style-sheet';
-import { discardDuplicateAtRuleChildren } from './plugins/discard-duplicate-at-rule-children';
+import { mergeDuplicateAtRules } from './plugins/merge-duplicate-at-rules';
 
 /**
  * Sorts an atomic style sheet.
@@ -9,12 +9,9 @@ import { discardDuplicateAtRuleChildren } from './plugins/discard-duplicate-at-r
  * @returns
  */
 export function sort(stylesheet: string): string {
-  const result = postcss([discardDuplicateAtRuleChildren(), sortAtomicStyleSheet()]).process(
-    stylesheet,
-    {
-      from: undefined,
-    }
-  );
+  const result = postcss([mergeDuplicateAtRules(), sortAtomicStyleSheet()]).process(stylesheet, {
+    from: undefined,
+  });
 
   return result.css;
 }

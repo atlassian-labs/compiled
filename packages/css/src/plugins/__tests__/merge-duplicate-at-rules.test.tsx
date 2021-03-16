@@ -1,8 +1,8 @@
 import postcss from 'postcss';
-import { discardDuplicateAtRuleChildren } from '../discard-duplicate-at-rule-children';
+import { mergeDuplicateAtRules } from '../merge-duplicate-at-rules';
 
 const transform = (css: TemplateStringsArray) => {
-  const result = postcss([discardDuplicateAtRuleChildren()]).process(css[0], {
+  const result = postcss([mergeDuplicateAtRules()]).process(css[0], {
     from: undefined,
   });
 
