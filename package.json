@@ -39,7 +39,8 @@
     "version-nightly": "bash scripts/should-nightly-run.sh && npm version prerelease --no-git-tag-version --preid=$(git rev-parse HEAD)",
     "postversion": "bash scripts/push-if-git.sh",
     "bundlesize": "yarn build && yarn build:dead-code-elimination && size-limit",
-    "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts"
+    "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts",
+    "release": "yarn build && yarn changeset publish"
   },
   "devDependencies": {
     "@babel/plugin-transform-react-jsx-self": "^7.12.13",
@@ -47,6 +48,7 @@
     "@babel/preset-env": "^7.13.10",
     "@babel/preset-react": "^7.12.13",
     "@babel/preset-typescript": "^7.13.0",
+    "@changesets/cli": "^2.6.2",
     "@compiled/jest": "*",
     "@compiled/react": "*",
     "@size-limit/preset-small-lib": "^4.10.1",
