@@ -2,8 +2,8 @@
 
 ## What's `extract.css`
 
-It is a place holder CSS file we use for extraction.
-It's used for two reasons:
+It's a placeholder CSS file we use for style extraction,
+used for two reasons:
 
 1. thread safe collection of styles
 1. caching -- resulting in faster bundles
