@@ -1,7 +1,7 @@
 import path from 'path';
 import { transformFromAstAsync, parseAsync } from '@babel/core';
 import { getOptions } from 'loader-utils';
-import { predicate, createError } from '@compiled/utils';
+import { toBoolean, createError } from '@compiled/utils';
 import type { CompiledLoaderOptions, LoaderThis } from './types';
 import { pluginName } from './extract-plugin';
 
@@ -78,7 +78,7 @@ export default async function compiledLoader(
           '@compiled/babel-plugin',
           { ...options, onIncludedFiles: (files: string[]) => includedFiles.push(...files) },
         ],
-      ].filter(predicate),
+      ].filter(toBoolean),
     });
 
     includedFiles.forEach((file) => {
@@ -89,10 +89,10 @@ export default async function compiledLoader(
 
     if (options.extract && foundCSSRules.length) {
       foundCSSRules.forEach((rule) => {
-        // For each found CSS rule we will create a new import that uses `@compiled/webpack-loader/css-loader`.
+        // Each found atomic rule will create a new import that uses `@compiled/webpack-loader/css-loader`.
         // The benefit is two fold:
-        // (1) caching -- resulting in faster builds
-        // (2) thread safe communication channel
+        // (1) thread safe collection of styles
+        // (2) caching -- resulting in faster builds (one import per rule!)
         const params = encodeURIComponent(rule);
 
         // We use require instead of import so it works with both ESM and CJS source.

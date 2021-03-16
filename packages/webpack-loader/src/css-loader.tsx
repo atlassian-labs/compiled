@@ -11,7 +11,7 @@ export default function CSSLoader(this: LoaderThis): string {
 }
 
 /**
- * Move the CSS loader to the end of the loader queue so it runs first.
+ * Moves CSSloader to the end of the loader queue so it runs first.
  */
 export function pitch(this: LoaderThis): void {
   if (this.loaders[0].path !== __filename) {
