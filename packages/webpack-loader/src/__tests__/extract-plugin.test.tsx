@@ -55,4 +55,20 @@ describe('CompiledExtractPlugin', () => {
       `You forgot to add the 'CompiledExtractPlugin' plugin (i.e \`{ plugins: [new CompiledExtractPlugin()] }\`), please read https://compiledcssinjs.com/docs/webpack-extract`
     );
   });
+
+  it('should extract from a pre-built babel files', async () => {
+    const actual = await bundle(require.resolve('./fixtures/babel.js'));
+
+    expect(actual['compiled-css.css']).toMatchInlineSnapshot(`
+      "._19pk1ul9{margin-top:30px}
+      ._19bvftgi{padding-left:8px}
+      ._n3tdftgi{padding-bottom:8px}
+      ._u5f3ftgi{padding-right:8px}
+      ._ca0qftgi{padding-top:8px}
+      ._19itlf8h{border:2px solid blue}
+      ._1wyb1ul9{font-size:30px}
+      ._syaz13q2{color:blue}
+      "
+    `);
+  });
 });
