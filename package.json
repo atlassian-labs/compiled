@@ -26,8 +26,9 @@
     "lint": "eslint --config .eslintrc.js --ext tsx,ts ./packages/**/src ./examples",
     "lint:fix": "yarn lint -- --fix",
     "build": "yarn build:esm && yarn build:cjs && yarn build:browser",
-    "build:esm": "ttsc --build packages/tsconfig.json",
+    "build:esm": "ttsc --build packages/tsconfig.json && yarn build:examples-babel",
     "build:cjs": "ttsc --build packages/tsconfig.cjs.json",
+    "build:examples-babel": "cd examples/packages/babel-component && yarn build",
     "build:browser": "IS_NODE_EXPRESSION='false' ttsc --build packages/tsconfig.browser.json",
     "build:dead-code-elimination": "cd test/dead-code-elimination && ttsc",
     "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js --build packages",
@@ -38,7 +39,7 @@
     "build-ssr": "CI=false && yarn build && cd examples/packages/ssr && yarn build",
     "bundlesize": "yarn build && yarn build:dead-code-elimination && size-limit",
     "release": "yarn clean && yarn build && yarn changeset publish",
-    "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts && cd examples/packages/babel-component && yarn build"
+    "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts"
   },
   "devDependencies": {
     "@babel/plugin-transform-react-jsx-self": "^7.12.13",
