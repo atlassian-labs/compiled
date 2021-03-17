@@ -1,6 +1,6 @@
 {
   "name": "@compiled/webpack-loader",
-  "version": "0.6.7",
+  "version": "0.6.8",
   "description": "Build time CSS-in-JS for React. Baked and ready to serve.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "@babel/core": "^7.13.10",
-    "@compiled/babel-plugin": "0.6.7",
+    "@compiled/babel-plugin": "0.6.8",
     "loader-utils": "2.0.0"
   },
   "peerDependencies": {
