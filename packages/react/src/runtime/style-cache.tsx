@@ -7,13 +7,23 @@ import { ProviderComponent, UseCacheHook } from './types';
  * Cache to hold already used styles.
  * React Context on the server - singleton object on the client.
  */
-const Cache: any = isNodeEnvironment() ? createContext<Record<string, true> | null>(null) : {};
+let ClientCache: { [key: string]: any } = {};
+const Cache: any = createContext<Record<string, true> | null>(null) || ClientCache;
 
 if (!isNodeEnvironment()) {
   /**
+   * Iterates through all found script elements with styles already inserted when server side rendering.
+   */
+  const compiledCaches = document.querySelectorAll<HTMLScriptElement>('script[data-cmpld-cache]');
+  for (let i = 0; i < compiledCaches.length; i++) {
+    let cacheData = {};
+    try {
+      cacheData = JSON.parse(compiledCaches[i].innerText);
+    } catch {}
+    ClientCache = { ...ClientCache, ...cacheData };
+  }
+  /**
    * Iterates through all found style elements generated when server side rendering.
-   *
-   * @param cb
    */
   const ssrStyles = document.querySelectorAll<HTMLStyleElement>('style[data-cmpld]');
   for (let i = 0; i < ssrStyles.length; i++) {
@@ -27,14 +37,14 @@ if (!isNodeEnvironment()) {
  */
 export const useCache: UseCacheHook = () => {
   if (isNodeEnvironment()) {
-    // On the server we use React Context to we don't leak the cache between SSR calls.
+    // On the server we use React Context so we don't leak the cache between SSR calls.
     // During runtime this hook isn't conditionally called - it is at build time that the flow gets decided.
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useContext(Cache) || {};
   }
 
   // On the client we use the object singleton.
-  return Cache;
+  return ClientCache;
 };
 
 /**

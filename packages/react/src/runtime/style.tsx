@@ -43,19 +43,23 @@ export default function Style(props: StyleProps): JSX.Element | null {
       }
 
       return (
-        <style data-cmpld nonce={props.nonce}>
-          {styleBucketOrdering.map((bucket) => bucketedSheets[bucket]).join('')}
-        </style>
+        <>
+          <style data-cmpld nonce={props.nonce}>
+            {styleBucketOrdering.map((bucket) => bucketedSheets[bucket]).join('')}
+          </style>
+          <script
+            data-cmpld-cache
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(inserted) }}></script>
+        </>
       );
     } else {
       for (let i = 0; i < props.children.length; i++) {
         const sheet = props.children[i];
-        if (inserted[sheet]) {
-          continue;
-        }
 
-        inserted[sheet] = true;
-        insertRule(sheet, props);
+        if (!inserted[sheet]) {
+          inserted[sheet] = true;
+          insertRule(sheet, props);
+        }
       }
     }
   }
