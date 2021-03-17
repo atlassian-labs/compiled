@@ -1,6 +1,6 @@
 {
   "name": "@compiled/parcel-transformer",
-  "version": "0.6.7",
+  "version": "0.6.8",
   "description": "Build time CSS-in-JS for React. Baked and ready to serve.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
@@ -23,8 +23,8 @@
   "dependencies": {
     "@babel/core": "^7.13.10",
     "@babel/generator": "^7.13.9",
-    "@compiled/babel-plugin": "0.6.7",
-    "@compiled/utils": "0.6.7",
+    "@compiled/babel-plugin": "0.6.8",
+    "@compiled/utils": "0.6.8",
     "@parcel/plugin": "^2.0.0-nightly.628"
   },
   "devDependencies": {
