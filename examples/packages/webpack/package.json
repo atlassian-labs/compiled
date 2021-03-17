@@ -13,7 +13,7 @@
     "html-webpack-plugin": "5.3.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "webpack": "^5.26.1",
+    "webpack": "^5.26.2",
     "webpack-cli": "^4.5.0"
   }
 }
