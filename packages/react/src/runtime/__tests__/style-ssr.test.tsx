@@ -44,7 +44,7 @@ describe('<Style />', () => {
 
     expect(result.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
       "<style data-cmpld=\\"true\\">._c1234567{ display: block; }._d1234567:link{ color: green; }._g1234567:visited{ color: grey; }._i1234567:focus-within{ color: black; }._f1234567:focus{ color: pink; }._h1234567:focus-visible{ color: white; }._a1234567:hover{ color: red; }._b1234567:active{ color: blue; }@media (max-width: 800px){ ._e1234567{ color: yellow; } }</style>
-      <script data-cmpld-cache=\\"true\\">{\\"._a1234567:hover{ color: red; }\\":true,\\"._b1234567:active{ color: blue; }\\":true,\\"._c1234567{ display: block; }\\":true,\\"._d1234567:link{ color: green; }\\":true,\\"@media (max-width: 800px){ ._e1234567{ color: yellow; } }\\":true,\\"._f1234567:focus{ color: pink; }\\":true,\\"._g1234567:visited{ color: grey; }\\":true,\\"._h1234567:focus-visible{ color: white; }\\":true,\\"._i1234567:focus-within{ color: black; }\\":true}</script>"
+      "
     `);
   });
 });
