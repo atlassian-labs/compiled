@@ -43,14 +43,9 @@ export default function Style(props: StyleProps): JSX.Element | null {
       }
 
       return (
-        <>
-          <style data-cmpld nonce={props.nonce}>
-            {styleBucketOrdering.map((bucket) => bucketedSheets[bucket]).join('')}
-          </style>
-          <script
-            data-cmpld-cache
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(inserted) }}></script>
-        </>
+        <style data-cmpld nonce={props.nonce}>
+          {styleBucketOrdering.map((bucket) => bucketedSheets[bucket]).join('')}
+        </style>
       );
     } else {
       for (let i = 0; i < props.children.length; i++) {

@@ -7,28 +7,31 @@ import { ProviderComponent, UseCacheHook } from './types';
  * Cache to hold already used styles.
  * React Context on the server - singleton object on the client.
  */
-let ClientCache: { [key: string]: any } = {};
+let ClientCache = {};
 const Cache: any = createContext<Record<string, true> | null>(null) || ClientCache;
 
 if (!isNodeEnvironment()) {
-  /**
-   * Iterates through all found script elements with styles already inserted when server side rendering.
-   */
-  const compiledCaches = document.querySelectorAll<HTMLScriptElement>('script[data-cmpld-cache]');
-  for (let i = 0; i < compiledCaches.length; i++) {
-    let cacheData = {};
-    try {
-      cacheData = JSON.parse(compiledCaches[i].innerText);
-    } catch {}
-    ClientCache = { ...ClientCache, ...cacheData };
-  }
   /**
    * Iterates through all found style elements generated when server side rendering.
    */
   const ssrStyles = document.querySelectorAll<HTMLStyleElement>('style[data-cmpld]');
   for (let i = 0; i < ssrStyles.length; i++) {
+    // Create the client cache for all SSR'd classes
+    const inserted: Record<string, true> = {};
+    const stylesheet = ssrStyles[i];
+    const rulesText = stylesheet.innerText;
+
+    if (rulesText) {
+      rulesText.split('}').forEach((rule: string) => {
+        const sheet = `${rule}}`;
+        inserted[sheet] = true;
+      });
+    }
+
+    ClientCache = { ...ClientCache, ...inserted };
     // Move all found server-side rendered style elements to the head before React hydration happens.
-    document.head.appendChild(ssrStyles[i]);
+
+    document.head.appendChild(stylesheet);
   }
 }
 
