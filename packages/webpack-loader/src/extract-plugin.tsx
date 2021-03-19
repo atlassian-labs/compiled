@@ -67,6 +67,26 @@ const forceCSSIntoOneStyleSheet = (compiler: Compiler) => {
 };
 
 /**
+ * Pushes a new loader onto the compiler.
+ * The loader will be applied to all JS files found in node modules that import `@compiled/react`.
+ *
+ * @param compiler
+ */
+const applyExtractFromNodeModule = (compiler: Compiler): void => {
+  compiler.options.module.rules.push({
+    test: /node_modules.+\.js$/,
+    use: {
+      loader: '@compiled/webpack-loader',
+      options: {
+        // We turn off baking as we're only interested in extracting from node modules (they're already baked)!
+        bake: false,
+        extract: true,
+      },
+    },
+  });
+};
+
+/**
  * CompiledExtractPlugin
  *
  * This webpack plugin should be paired with `@compiled/webpack-loader` when `extract` is `true`.
@@ -76,19 +96,7 @@ export class CompiledExtractPlugin {
   apply(compiler: Compiler): void {
     const { NormalModule, Compilation, sources } = compiler.webpack;
 
-    // Apply the loader to extract from node_modules
-    compiler.options.module.rules.push({
-      test: /node_modules.+\.js$/,
-      use: {
-        loader: '@compiled/webpack-loader',
-        options: {
-          // We turn off baking as we're only interested in extracting from node modules (they're already baked!)
-          bake: false,
-          extract: true,
-        },
-      },
-    });
-
+    applyExtractFromNodeModule(compiler);
     forceCSSIntoOneStyleSheet(compiler);
 
     compiler.hooks.compilation.tap(pluginName, (compilation) => {
