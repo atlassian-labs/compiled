@@ -1,5 +1,6 @@
-import type { Compiler, Compilation, sources } from 'webpack';
 import { sort } from '@compiled/css';
+import type { Compiler, Compilation, sources } from 'webpack';
+import type { CompiledExtractPluginOptions } from './types';
 
 export const pluginName = 'CompiledExtractPlugin';
 export const styleSheetName = 'compiled-css';
@@ -72,9 +73,14 @@ const forceCSSIntoOneStyleSheet = (compiler: Compiler) => {
  *
  * @param compiler
  */
-const applyExtractFromNodeModule = (compiler: Compiler): void => {
+const applyExtractFromNodeModule = (
+  compiler: Compiler,
+  options: CompiledExtractPluginOptions
+): void => {
   compiler.options.module.rules.push({
     test: /node_modules.+\.js$/,
+    include: options.nodeModulesInclude,
+    exclude: options.nodeModulesExclude,
     use: {
       loader: '@compiled/webpack-loader',
       options: {
@@ -93,10 +99,16 @@ const applyExtractFromNodeModule = (compiler: Compiler): void => {
  * It hoists unstable atomic styles to the parent CSS chunk and then sorts the style sheet.
  */
 export class CompiledExtractPlugin {
+  #options: CompiledExtractPluginOptions;
+
+  constructor(options: CompiledExtractPluginOptions) {
+    this.#options = options;
+  }
+
   apply(compiler: Compiler): void {
     const { NormalModule, Compilation, sources } = compiler.webpack;
 
-    applyExtractFromNodeModule(compiler);
+    applyExtractFromNodeModule(compiler, this.#options);
     forceCSSIntoOneStyleSheet(compiler);
 
     compiler.hooks.compilation.tap(pluginName, (compilation) => {
@@ -109,7 +121,7 @@ export class CompiledExtractPlugin {
 
       normalModuleHook.tap(pluginName, (loaderContext) => {
         // We add some information here to tell loaders that the plugin has been configured.
-        // The bundle will throw if this is missing (i.e. consumers did not setup correctly).
+        // Bundling will throw if this is missing (i.e. consumers did not setup correctly).
         // @ts-ignore
         loaderContext[pluginName] = true;
       });

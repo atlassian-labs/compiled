@@ -1,3 +1,5 @@
+import type { RuleSetCondition } from 'webpack';
+
 export interface CompiledLoaderOptions {
   /**
    * Converts your source code into a Compiled component.
@@ -71,4 +73,18 @@ export interface LoaderThis<TOptions = unknown> {
    * Internal access to the loaders for this run.
    */
   loaders: any[];
+}
+
+export interface CompiledExtractPluginOptions {
+  /**
+   * When set will include all conditions passed through.
+   * See: https://webpack.js.org/configuration/module/#condition
+   */
+  nodeModulesInclude?: RuleSetCondition;
+
+  /**
+   * When set will exclude all conditions passed through.
+   * See: https://webpack.js.org/configuration/module/#condition
+   */
+  nodeModulesExclude?: RuleSetCondition;
 }
