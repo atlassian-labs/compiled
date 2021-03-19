@@ -1,4 +1,5 @@
 import { sort } from '@compiled/css';
+import { toBoolean } from '@compiled/utils';
 import type { Compiler, Compilation, sources } from 'webpack';
 import type { CompiledExtractPluginOptions } from './types';
 
@@ -78,7 +79,7 @@ const applyExtractFromNodeModule = (
   options: CompiledExtractPluginOptions
 ): void => {
   compiler.options.module.rules.push({
-    test: /node_modules.+\.js$/,
+    test: { and: [/node_modules.+\.js$/, options.nodeModulesTest].filter(toBoolean) },
     include: options.nodeModulesInclude,
     exclude: options.nodeModulesExclude,
     use: {
@@ -96,12 +97,11 @@ const applyExtractFromNodeModule = (
  * CompiledExtractPlugin
  *
  * This webpack plugin should be paired with `@compiled/webpack-loader` when `extract` is `true`.
- * It hoists unstable atomic styles to the parent CSS chunk and then sorts the style sheet.
  */
 export class CompiledExtractPlugin {
   #options: CompiledExtractPluginOptions;
 
-  constructor(options: CompiledExtractPluginOptions) {
+  constructor(options: CompiledExtractPluginOptions = {}) {
     this.#options = options;
   }
 
@@ -122,8 +122,7 @@ export class CompiledExtractPlugin {
       normalModuleHook.tap(pluginName, (loaderContext) => {
         // We add some information here to tell loaders that the plugin has been configured.
         // Bundling will throw if this is missing (i.e. consumers did not setup correctly).
-        // @ts-ignore
-        loaderContext[pluginName] = true;
+        (loaderContext as any)[pluginName] = true;
       });
 
       const processAssetsAfterOptimize =

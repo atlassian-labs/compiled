@@ -77,6 +77,12 @@ export interface LoaderThis<TOptions = unknown> {
 
 export interface CompiledExtractPluginOptions {
   /**
+   * When set will include all matching conditions.
+   * See: https://webpack.js.org/configuration/module/#condition
+   */
+  nodeModulesTest?: RuleSetCondition;
+
+  /**
    * When set will include all conditions passed through.
    * See: https://webpack.js.org/configuration/module/#condition
    */
