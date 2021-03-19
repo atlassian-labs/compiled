@@ -1,5 +1,11 @@
 export interface CompiledLoaderOptions {
   /**
+   * Converts your source code into a Compiled component.
+   * Defaults to `true`.
+   */
+  bake?: boolean;
+
+  /**
    * Extracts to CSS when `true`.
    * Defaults to `false`.
    */
@@ -39,7 +45,9 @@ export interface LoaderThis<TOptions = unknown> {
    */
   getOptions?: (schema?: {
     type: string;
-    properties: Required<{ [P in keyof TOptions]: { type: string } }>;
+    properties: Required<
+      { [P in keyof TOptions]: { type: string } | { anyOf: Array<{ type: string }> } }
+    >;
   }) => TOptions;
 
   /**

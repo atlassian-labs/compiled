@@ -76,6 +76,19 @@ export class CompiledExtractPlugin {
   apply(compiler: Compiler): void {
     const { NormalModule, Compilation, sources } = compiler.webpack;
 
+    // Apply the loader to extract from node_modules
+    compiler.options.module.rules.push({
+      test: /node_modules.+\.js$/,
+      use: {
+        loader: '@compiled/webpack-loader',
+        options: {
+          // We turn off baking as we're only interested in extracting from node modules (they're already baked!)
+          bake: false,
+          extract: true,
+        },
+      },
+    });
+
     forceCSSIntoOneStyleSheet(compiler);
 
     compiler.hooks.compilation.tap(pluginName, (compilation) => {

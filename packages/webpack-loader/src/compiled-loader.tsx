@@ -12,7 +12,12 @@ import { pluginName } from './extract-plugin';
  * @returns
  */
 function getLoaderOptions(context: LoaderThis<CompiledLoaderOptions>) {
-  const options: CompiledLoaderOptions =
+  const {
+    bake = true,
+    extract = false,
+    importReact = false,
+    nonce = undefined,
+  }: CompiledLoaderOptions =
     typeof context.getOptions === 'undefined'
       ? // Webpack v4 flow
         getOptions(context)
@@ -29,10 +34,13 @@ function getLoaderOptions(context: LoaderThis<CompiledLoaderOptions>) {
             extract: {
               type: 'boolean',
             },
+            bake: {
+              type: 'boolean',
+            },
           },
         });
 
-  return options;
+  return { bake, extract, importReact, nonce };
 }
 
 /**
@@ -74,7 +82,7 @@ export default async function compiledLoader(
           '@compiled/babel-plugin-strip-runtime',
           { onFoundStyleRules: (rules: string[]) => foundCSSRules.push(...rules) },
         ],
-        [
+        options.bake && [
           '@compiled/babel-plugin',
           { ...options, onIncludedFiles: (files: string[]) => includedFiles.push(...files) },
         ],

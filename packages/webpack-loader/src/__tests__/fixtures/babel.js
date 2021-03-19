@@ -1,5 +1,5 @@
-import BabelCJS from './imports/babel-cjs';
-import BabelESM from './imports/babel-esm';
+import BabelCJS from 'babel-cjs';
+import BabelESM from 'babel-esm';
 
 export default function Babel() {
   return (
