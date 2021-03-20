@@ -24,7 +24,7 @@
       "groupName": "postcss packages"
     },
     {
-      "packagePatterns": ["webpack"],
+      "packagePatterns": ["webpack", "-loader", "webpack-plugin"],
       "groupName": "webpack packages"
     },
     {
