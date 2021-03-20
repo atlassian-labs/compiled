@@ -27,6 +27,6 @@
   },
   "devDependencies": {
     "@compiled/babel-plugin": "*",
-    "@types/babel__core": "^7.1.13"
+    "@types/babel__core": "^7.1.14"
   }
 }

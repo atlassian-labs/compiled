@@ -28,7 +28,7 @@
     "@parcel/plugin": "^2.0.0-nightly.628"
   },
   "devDependencies": {
-    "@types/babel__core": "^7.1.13"
+    "@types/babel__core": "^7.1.14"
   },
   "engines": {
     "parcel": "^2.0.0 || ^2.0.0-beta.1"
