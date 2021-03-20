@@ -1,6 +1,6 @@
 {
   "name": "@compiled/utils",
-  "version": "0.6.8",
+  "version": "0.6.9",
   "description": "Build time CSS-in-JS for React. Baked and ready to serve.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
