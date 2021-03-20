@@ -43,5 +43,8 @@ jobs:
       - name: Build webpack example
         run: yarn build:webpack
 
+      - name: Build webpack extracted example
+        run: yarn build:webpack:extract
+
       - name: Build parcel example
         run: yarn build:parcel

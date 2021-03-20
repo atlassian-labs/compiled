@@ -18,6 +18,7 @@
     "start:cli": "cd packages/cli && yarn start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "start:webpack": "yarn build:browser && yarn build:esm && cd examples/packages/webpack && yarn start",
+    "start:webpack:extract": "yarn build:browser && yarn build:esm && cd examples/packages/webpack && EXTRACT_TO_CSS=true yarn start",
     "test": "yarn build:cjs && yarn build:esm && jest --no-cache",
     "test:watch": "yarn build:esm && jest --no-cache --watch",
     "test:imports": "node test/test-imports",
@@ -25,18 +26,20 @@
     "lint": "eslint --config .eslintrc.js --ext tsx,ts ./packages/**/src ./examples",
     "lint:fix": "yarn lint -- --fix",
     "build": "yarn build:esm && yarn build:cjs && yarn build:browser",
-    "build:esm": "ttsc --build packages/tsconfig.json",
+    "build:esm": "ttsc --build packages/tsconfig.json && yarn build:examples-babel",
     "build:cjs": "ttsc --build packages/tsconfig.cjs.json",
+    "build:examples-babel": "cd examples/packages/babel-component && yarn build",
     "build:browser": "IS_NODE_EXPRESSION='false' ttsc --build packages/tsconfig.browser.json",
     "build:dead-code-elimination": "cd test/dead-code-elimination && ttsc",
     "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js --build packages",
     "build:webpack": "yarn build:browser && yarn build:esm && cd examples/packages/webpack && yarn build",
+    "build:webpack:extract": "yarn build:browser && yarn build:esm && cd examples/packages/webpack && EXTRACT_TO_CSS=true yarn build",
     "build:parcel": "yarn build:browser && yarn build:esm && cd examples/packages/parcel && yarn build",
     "build-storybook": "build-storybook",
     "build-ssr": "CI=false && yarn build && cd examples/packages/ssr && yarn build",
     "bundlesize": "yarn build && yarn build:dead-code-elimination && size-limit",
-    "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts",
-    "release": "yarn clean && yarn build && yarn changeset publish"
+    "release": "yarn clean && yarn build && yarn changeset publish",
+    "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts"
   },
   "devDependencies": {
     "@babel/plugin-transform-react-jsx-self": "^7.12.13",
@@ -78,9 +81,9 @@
     "workspaces-run": "^1.0.1"
   },
   "resolutions": {
-    "typescript": "^4.2.3",
+    "@babel/core": "^7.13.10",
     "jest": "^26.6.3",
-    "@babel/core": "^7.13.10"
+    "typescript": "^4.2.3"
   },
   "husky": {
     "hooks": {

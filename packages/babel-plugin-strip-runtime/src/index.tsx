@@ -7,13 +7,24 @@ import {
   isAutomaticRuntime,
 } from './utils/ast';
 import type { PluginPass } from './types';
+import type { NodePath } from '@babel/traverse';
 
 export default declare<PluginPass>((api) => {
   api.assertVersion(7);
 
   return {
     name: '@compiled/babel-plugin-strip-runtime',
+    pre() {
+      this.styleRules = [];
+    },
     visitor: {
+      Program: {
+        exit() {
+          if (this.opts.onFoundStyleRules) {
+            this.opts.onFoundStyleRules(this.styleRules);
+          }
+        },
+      },
       ImportSpecifier(path) {
         if (t.isIdentifier(path.node.imported) && ['CC', 'CS'].includes(path.node.imported.name)) {
           path.remove();
@@ -35,8 +46,14 @@ export default declare<PluginPass>((api) => {
         // style declarations from the CS call.
         removeStyleDeclarations(compiledStyles.node, path, pass);
 
+        if (t.isJSXExpressionContainer(nodeToReplace.node)) {
+          const container = nodeToReplace as NodePath<t.JSXExpressionContainer>;
+          path.replaceWith(container.node.expression);
+        } else {
+          path.replaceWith(nodeToReplace);
+        }
+
         // All done! Let's replace this node with the user land child.
-        path.replaceWith(nodeToReplace);
         path.node.leadingComments = null;
         return;
       },

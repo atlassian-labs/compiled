@@ -6,5 +6,5 @@
     "module": "commonjs",
     "target": "es2017"
   },
-  "references": [{ "path": "../babel-plugin" }]
+  "references": [{ "path": "../babel-plugin" }, { "path": "../css" }, { "path": "../utils" }]
 }

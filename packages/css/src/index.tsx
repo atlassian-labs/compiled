@@ -6,3 +6,4 @@ export {
   AfterInterpolation,
   BeforeInterpolation,
 } from './utils/string-interpolations';
+export { sort } from './sort';

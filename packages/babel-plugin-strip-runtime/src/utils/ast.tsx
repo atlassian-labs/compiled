@@ -129,7 +129,7 @@ export const removeStyleDeclarations = (
 
         const [binding, bindingValue] = getBindingValue(value.name, parentPath);
         if (bindingValue && t.isStringLiteral(bindingValue)) {
-          pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(bindingValue.value);
+          pass.styleRules.push(bindingValue.value);
           binding.path.remove();
         }
       });
@@ -150,7 +150,7 @@ export const removeStyleDeclarations = (
 
         const [binding, bindingValue] = getBindingValue(value.name, parentPath);
         if (bindingValue && t.isStringLiteral(bindingValue)) {
-          pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(bindingValue.value);
+          pass.styleRules.push(bindingValue.value);
           binding.path.remove();
         }
       });
@@ -174,7 +174,7 @@ export const removeStyleDeclarations = (
 
         const [binding, bindingValue] = getBindingValue(value.name, parentPath);
         if (bindingValue && t.isStringLiteral(bindingValue)) {
-          pass.opts.onFoundStyleSheet && pass.opts.onFoundStyleSheet(bindingValue.value);
+          pass.styleRules.push(bindingValue.value);
           binding.path.remove();
         }
       });

@@ -1,0 +1,5 @@
+{
+  "main": "../dist/css-loader.js",
+  "module": "../dist/css-loader.js",
+  "types": "../dist/css-loader.d.ts"
+}
