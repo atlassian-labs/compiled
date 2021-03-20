@@ -1,4 +1,5 @@
 import type { RuleSetCondition } from 'webpack';
+import { pluginName } from './extract-plugin';
 
 export interface CompiledLoaderOptions {
   /**
@@ -73,6 +74,11 @@ export interface LoaderThis<TOptions = unknown> {
    * Internal access to the loaders for this run.
    */
   loaders: any[];
+
+  /**
+   * When set confirms that the extract plugin has been configured.
+   */
+  [pluginName]?: true;
 }
 
 export interface CompiledExtractPluginOptions {

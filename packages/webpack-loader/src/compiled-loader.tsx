@@ -120,7 +120,6 @@ export default async function compiledLoader(
 export function pitch(this: LoaderThis<CompiledLoaderOptions>): void {
   const options = getLoaderOptions(this);
 
-  // @ts-ignore
   if (options.extract && !this[pluginName]) {
     throw createError('webpack-loader')(
       `You forgot to add the 'CompiledExtractPlugin' plugin (i.e \`{ plugins: [new CompiledExtractPlugin()] }\`), please read https://compiledcssinjs.com/docs/webpack-extract`
