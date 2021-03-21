@@ -106,14 +106,20 @@ export class CompiledExtractPlugin {
   }
 
   apply(compiler: Compiler): void {
-    const { NormalModule, Compilation, sources } = compiler.webpack;
+    const { NormalModule, Compilation, version, sources } =
+      // Webpack 5 flow
+      compiler.webpack ||
+      // Webpack 4 flow
+      require('webpack');
+
+    console.log(version);
 
     applyExtractFromNodeModule(compiler, this.#options);
     forceCSSIntoOneStyleSheet(compiler);
 
     compiler.hooks.compilation.tap(pluginName, (compilation) => {
       const normalModuleHook =
-        typeof NormalModule.getCompilationHooks !== 'undefined'
+        NormalModule && typeof NormalModule.getCompilationHooks !== 'undefined'
           ? // Webpack 5 flow
             NormalModule.getCompilationHooks(compilation).loader
           : // Webpack 4 flow
