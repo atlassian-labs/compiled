@@ -55,6 +55,10 @@ const forceCSSIntoOneStyleSheet = (compiler: Compiler) => {
     },
   };
 
+  if (!compiler.options.optimization) {
+    compiler.options.optimization = {};
+  }
+
   if (!compiler.options.optimization.splitChunks) {
     compiler.options.optimization.splitChunks = {
       cacheGroups: {},
@@ -78,6 +82,10 @@ const applyExtractFromNodeModule = (
   compiler: Compiler,
   options: CompiledExtractPluginOptions
 ): void => {
+  if (!compiler.options.module) {
+    throw new Error();
+  }
+
   compiler.options.module.rules.push({
     test: { and: [/node_modules.+\.js$/, options.nodeModulesTest].filter(toBoolean) },
     include: options.nodeModulesInclude,
@@ -106,13 +114,16 @@ export class CompiledExtractPlugin {
   }
 
   apply(compiler: Compiler): void {
-    const { NormalModule, Compilation, version, sources } =
+    const { NormalModule, Compilation, version, sources: wp5sources } =
       // Webpack 5 flow
       compiler.webpack ||
+      // Override flow
+      this.#options.webpack ||
       // Webpack 4 flow
       require('webpack');
 
-    console.log(version);
+    const sources = wp5sources || require('webpack-sources');
+    const isWebpack4 = version.startsWith('4.');
 
     applyExtractFromNodeModule(compiler, this.#options);
     forceCSSIntoOneStyleSheet(compiler);
@@ -131,17 +142,19 @@ export class CompiledExtractPlugin {
         (loaderContext as any)[pluginName] = true;
       });
 
-      const processAssetsAfterOptimize =
+      const optimizeAssets =
         // Webpack 5 flow
         compilation.hooks.processAssets ||
         // Webpack 4 flow
-        compilation.hooks.afterOptimizeChunkAssets;
+        compilation.hooks.optimizeAssets;
 
-      processAssetsAfterOptimize.tap(
-        {
-          name: pluginName,
-          stage: Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE,
-        },
+      optimizeAssets.tap(
+        isWebpack4
+          ? pluginName
+          : {
+              name: pluginName,
+              stage: Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE,
+            },
         (assets) => {
           const cssAssets = getCSSAssets(assets);
           if (cssAssets.length === 0) {

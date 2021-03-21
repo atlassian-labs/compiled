@@ -41,7 +41,7 @@ module.exports = {
   },
   plugins: [
     extractCSS && new MiniCssExtractPlugin({ filename: '[name].css' }),
-    extractCSS && new CompiledExtractPlugin(),
+    extractCSS && new CompiledExtractPlugin({ webpack }),
     new HtmlWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
   ].filter(Boolean),

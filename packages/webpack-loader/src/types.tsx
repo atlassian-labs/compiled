@@ -99,4 +99,9 @@ export interface CompiledExtractPluginOptions {
    * See: https://webpack.js.org/configuration/module/#condition
    */
   nodeModulesExclude?: RuleSetCondition;
+
+  /**
+   * @deprecated
+   */
+  webpack?: any;
 }
