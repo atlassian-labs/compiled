@@ -13,10 +13,10 @@
   },
   "devDependencies": {
     "@compiled/parcel-transformer": "*",
-    "@parcel/transformer-html": "^2.0.0-nightly.628",
-    "@parcel/transformer-posthtml": "^2.0.0-nightly.628",
-    "@parcel/optimizer-htmlnano": "^2.0.0-nightly.628",
-    "@parcel/packager-html": "^2.0.0-nightly.628",
-    "parcel": "^2.0.0-nightly.626"
+    "@parcel/transformer-html": "^2.0.0-nightly.632",
+    "@parcel/transformer-posthtml": "^2.0.0-nightly.632",
+    "@parcel/optimizer-htmlnano": "^2.0.0-nightly.632",
+    "@parcel/packager-html": "^2.0.0-nightly.632",
+    "parcel": "^2.0.0-nightly.630"
   }
 }
