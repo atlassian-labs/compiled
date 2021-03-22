@@ -40,7 +40,6 @@
       "groupName": "parcel packages"
     },
     {
-      "extends": ["schedule:monthly"],
       "depTypeList": ["peerDependencies"],
       "rangeStrategy": "widen"
     },
