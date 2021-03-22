@@ -19,8 +19,6 @@
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "start:webpack": "yarn build:browser && yarn build:esm && cd examples/packages/webpack && yarn start",
     "start:webpack:extract": "yarn build:browser && yarn build:esm && cd examples/packages/webpack && EXTRACT_TO_CSS=true yarn start",
-    "start:webpack4": "yarn build:browser && yarn build:esm && cd examples/packages/webpack4 && yarn start",
-    "start:webpack4:extract": "yarn build:browser && yarn build:esm && cd examples/packages/webpack4 && EXTRACT_TO_CSS=true yarn start",
     "test": "yarn build:cjs && yarn build:esm && jest --no-cache",
     "test:watch": "yarn build:esm && jest --no-cache --watch",
     "test:imports": "node test/test-imports",
