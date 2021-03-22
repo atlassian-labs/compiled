@@ -1,4 +1,0 @@
-body::before {
-  display: block;
-  content: 'CSS FROM A FILE OUTSIDE OF COMPILED';
-}
