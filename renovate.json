@@ -1,10 +1,14 @@
 {
-  "extends": ["group:monorepos", "group:recommended", "group:definitelyTyped"],
+  "extends": [
+    "group:monorepos",
+    "group:recommended",
+    "group:definitelyTyped",
+    "schedule:earlyMondays"
+  ],
   "dependencyDashboard": true,
   "postUpdateOptions": ["yarnDedupeHighest"],
   "rangeStrategy": "bump",
   "semanticCommits": true,
-  "schedule": ["weekly"],
   "lockFileMaintenance": {
     "enabled": true
   },
