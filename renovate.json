@@ -1,6 +1,10 @@
 {
   "extends": ["group:monorepos", "group:recommended", "group:definitelyTyped"],
   "dependencyDashboard": true,
+  "postUpdateOptions": ["yarnDedupeHighest"],
+  "rangeStrategy": "bump",
+  "semanticCommits": true,
+  "schedule": ["weekly"],
   "lockFileMaintenance": {
     "enabled": true
   },
@@ -29,8 +33,7 @@
     },
     {
       "packagePatterns": ["^parcel", "^@parcel"],
-      "groupName": "parcel packages",
-      "extends": ["schedule:weekly"]
+      "groupName": "parcel packages"
     },
     {
       "depTypeList": ["peerDependencies"],
@@ -40,8 +43,5 @@
       "extends": ["packages:eslint", "schedule:monthly"],
       "groupName": "eslint packages"
     }
-  ],
-  "postUpdateOptions": ["yarnDedupeHighest"],
-  "rangeStrategy": "bump",
-  "semanticCommits": true
+  ]
 }
