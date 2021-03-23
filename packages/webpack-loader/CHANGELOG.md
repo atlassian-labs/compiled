@@ -1,5 +1,11 @@
 # @compiled/webpack-loader
 
+## 0.6.10
+
+### Patch Changes
+
+- 660309a: Support for webpack 4 has been added, follow the [extraction guide](https://compiledcssinjs.com/docs/css-extraction-webpack) to get started.
+
 ## 0.6.9
 
 ### Patch Changes
