@@ -1,6 +1,6 @@
 {
   "name": "@compiled/babel-plugin",
-  "version": "0.6.9",
+  "version": "0.6.10",
   "description": "Build time CSS-in-JS for React. Baked and ready to serve.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
@@ -31,8 +31,8 @@
     "@babel/template": "^7.12.13",
     "@babel/traverse": "^7.13.0",
     "@babel/types": "^7.13.0",
-    "@compiled/css": "^0.6.9",
-    "@compiled/utils": "^0.6.9",
+    "@compiled/css": "^0.6.10",
+    "@compiled/utils": "^0.6.10",
     "@emotion/is-prop-valid": "^1.1.0",
     "resolve": "^1.20.0"
   },
