@@ -70,6 +70,35 @@ npm install @compiled/babel-plugin --save-dev
 
 See [installation](https://compiledcssinjs.com/docs/installation#babel) for more information.
 
+## Extract styles
+
+Turn on extraction and all components styled in your app and sourced through NPM will have their runtime stripped and styles extracted to an atomic style sheet.
+
+```diff
+-import { CC, CS } from '@compiled/react/runtime';
+-
+-const _2 = '._syaz1q9v{color: hotpink}';
+-const _ = '._1wybfyhu{font-size: 48px}';
+-
+export const LargeHotPinkText = () => (
+-  <CC>
+-   <CS>{[_, _2]}</CS>
+    <span className="_syaz1q9v _1wybfyhu">Hello world</span>
+-  </CC>
+);
+```
+
+```css
+._1wybfyhu {
+  font-size: 48px;
+}
+._syaz1q9v {
+  color: hotpink;
+}
+```
+
+See [CSS extraction](https://compiledcssinjs.com/docs/css-extraction-webpack) for more information.
+
 ## Contributions
 
 Contributions are welcomed!
