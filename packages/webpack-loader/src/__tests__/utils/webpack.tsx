@@ -53,7 +53,7 @@ export function bundle(
     },
     plugins: disablePlugins
       ? []
-      : [new MiniCssExtractPlugin({ filename: '[name].css' }), new CompiledExtractPlugin()],
+      : [new MiniCssExtractPlugin({ filename: 'static/[name].css' }), new CompiledExtractPlugin()],
   });
 
   const fs = createFsFromVolume(new Volume());

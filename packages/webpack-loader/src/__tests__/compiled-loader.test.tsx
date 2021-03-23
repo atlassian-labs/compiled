@@ -48,6 +48,8 @@ describe('webpack loader', () => {
 
     await loader(`import '@compiled/react'; 222_!!!`);
 
-    expect(callback.mock.calls[0][0]).toBeDefined();
+    expect(callback.mock.calls[0][0].message).toInclude(
+      'SyntaxError: /projects/index.js: A numeric separator is only allowed between two digits (1:29)'
+    );
   });
 });

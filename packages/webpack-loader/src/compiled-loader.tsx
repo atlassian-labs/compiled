@@ -113,7 +113,7 @@ export default async function compiledLoader(
 
     callback(null, output, result?.map ?? undefined);
   } catch (e) {
-    const error = createError('compiled-loader')(`Unhandled exception\n${e.stack}`);
+    const error = createError('compiled-loader', 'Unhandled exception')(e.stack);
     callback(error);
   }
 }
