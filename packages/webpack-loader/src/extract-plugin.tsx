@@ -1,5 +1,5 @@
 import { sort } from '@compiled/css';
-import { toBoolean } from '@compiled/utils';
+import { toBoolean, createError } from '@compiled/utils';
 import type { Compiler, Compilation } from 'webpack';
 import type { CompiledExtractPluginOptions } from './types';
 import {
@@ -74,7 +74,7 @@ const pushNodeModulesExtractLoader = (
   options: CompiledExtractPluginOptions
 ): void => {
   if (!compiler.options.module) {
-    throw new Error();
+    throw createError('webpack-loader')('module options not defined');
   }
 
   compiler.options.module.rules.push({
