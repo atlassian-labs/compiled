@@ -10,7 +10,7 @@ import {
 } from './utils/webpack';
 
 export const pluginName = 'CompiledExtractPlugin';
-export const styleSheetName = 'compiled-css';
+export const styleSheetName = 'compiled-css.css';
 
 /**
  * Returns CSS Assets that we're interested in.
@@ -22,7 +22,7 @@ export const styleSheetName = 'compiled-css';
 const getCSSAssets = (assets: Compilation['assets']) => {
   return Object.keys(assets)
     .filter((assetName) => {
-      return assetName.startsWith(styleSheetName);
+      return assetName.endsWith(styleSheetName);
     })
     .map((assetName) => ({ name: assetName, source: assets[assetName], info: {} }));
 };

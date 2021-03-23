@@ -84,7 +84,7 @@ export const getOptimizeAssetsHook = (
 export const getSources = (compiler: Compiler): typeof sources => {
   const { sources } =
     // Webpack 5 flow
-    compiler.webpack;
+    compiler.webpack || {};
 
   return (
     // Webpack 5 flow
