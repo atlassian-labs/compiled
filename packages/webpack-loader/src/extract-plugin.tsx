@@ -1,7 +1,13 @@
 import { sort } from '@compiled/css';
-import { toBoolean } from '@compiled/utils';
-import type { Compiler, Compilation, sources } from 'webpack';
+import { toBoolean, createError } from '@compiled/utils';
+import type { Compiler, Compilation } from 'webpack';
 import type { CompiledExtractPluginOptions } from './types';
+import {
+  getAssetSourceContents,
+  getNormalModuleHook,
+  getOptimizeAssetsHook,
+  getSources,
+} from './utils/webpack';
 
 export const pluginName = 'CompiledExtractPlugin';
 export const styleSheetName = 'compiled-css';
@@ -19,21 +25,6 @@ const getCSSAssets = (assets: Compilation['assets']) => {
       return assetName.startsWith(styleSheetName);
     })
     .map((assetName) => ({ name: assetName, source: assets[assetName], info: {} }));
-};
-
-/**
- * Returns the string representation of an assets source.
- *
- * @param source
- * @returns
- */
-const getAssetSourceContents = (assetSource: sources.Source) => {
-  const source = assetSource.source();
-  if (typeof source === 'string') {
-    return source;
-  }
-
-  return source.toString();
 };
 
 /**
@@ -55,6 +46,10 @@ const forceCSSIntoOneStyleSheet = (compiler: Compiler) => {
     },
   };
 
+  if (!compiler.options.optimization) {
+    compiler.options.optimization = {};
+  }
+
   if (!compiler.options.optimization.splitChunks) {
     compiler.options.optimization.splitChunks = {
       cacheGroups: {},
@@ -74,10 +69,14 @@ const forceCSSIntoOneStyleSheet = (compiler: Compiler) => {
  *
  * @param compiler
  */
-const applyExtractFromNodeModule = (
+const pushNodeModulesExtractLoader = (
   compiler: Compiler,
   options: CompiledExtractPluginOptions
 ): void => {
+  if (!compiler.options.module) {
+    throw createError('webpack-loader')('module options not defined');
+  }
+
   compiler.options.module.rules.push({
     test: { and: [/node_modules.+\.js$/, options.nodeModulesTest].filter(toBoolean) },
     include: options.nodeModulesInclude,
@@ -106,49 +105,30 @@ export class CompiledExtractPlugin {
   }
 
   apply(compiler: Compiler): void {
-    const { NormalModule, Compilation, sources } = compiler.webpack;
+    const { RawSource } = getSources(compiler);
 
-    applyExtractFromNodeModule(compiler, this.#options);
+    pushNodeModulesExtractLoader(compiler, this.#options);
     forceCSSIntoOneStyleSheet(compiler);
 
     compiler.hooks.compilation.tap(pluginName, (compilation) => {
-      const normalModuleHook =
-        typeof NormalModule.getCompilationHooks !== 'undefined'
-          ? // Webpack 5 flow
-            NormalModule.getCompilationHooks(compilation).loader
-          : // Webpack 4 flow
-            compilation.hooks.normalModuleLoader;
-
-      normalModuleHook.tap(pluginName, (loaderContext) => {
+      getNormalModuleHook(compiler, compilation).tap(pluginName, (loaderContext) => {
         // We add some information here to tell loaders that the plugin has been configured.
         // Bundling will throw if this is missing (i.e. consumers did not setup correctly).
         (loaderContext as any)[pluginName] = true;
       });
 
-      const processAssetsAfterOptimize =
-        // Webpack 5 flow
-        compilation.hooks.processAssets ||
-        // Webpack 4 flow
-        compilation.hooks.afterOptimizeChunkAssets;
-
-      processAssetsAfterOptimize.tap(
-        {
-          name: pluginName,
-          stage: Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE,
-        },
-        (assets) => {
-          const cssAssets = getCSSAssets(assets);
-          if (cssAssets.length === 0) {
-            return;
-          }
-
-          const [asset] = cssAssets;
-          const contents = getAssetSourceContents(asset.source);
-          const newSource = new sources.RawSource(sort(contents));
-
-          compilation.updateAsset(asset.name, newSource, asset.info);
+      getOptimizeAssetsHook(compiler, compilation).tap(pluginName, (assets) => {
+        const cssAssets = getCSSAssets(assets);
+        if (cssAssets.length === 0) {
+          return;
         }
-      );
+
+        const [asset] = cssAssets;
+        const contents = getAssetSourceContents(asset.source);
+        const newSource = new RawSource(sort(contents));
+
+        compilation.updateAsset(asset.name, newSource, asset.info);
+      });
     });
   }
 }

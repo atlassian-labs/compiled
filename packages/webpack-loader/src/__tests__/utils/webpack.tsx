@@ -69,7 +69,7 @@ export function bundle(
         return;
       }
 
-      if (stats?.hasErrors && stats.compilation.errors.length) {
+      if (stats?.hasErrors() && stats.compilation.errors.length) {
         rej(stats.compilation.errors);
         return;
       }
