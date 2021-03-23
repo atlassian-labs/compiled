@@ -1,5 +1,11 @@
 # @compiled/utils
 
+## 0.6.10
+
+### Patch Changes
+
+- 992e401: `createError` now takes a second optional argument for the error group.
+
 ## 0.6.9
 
 ### Patch Changes

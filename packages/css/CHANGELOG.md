@@ -1,5 +1,13 @@
 # @compiled/css
 
+## 0.6.10
+
+### Patch Changes
+
+- 37108e4: Compiled dependencies are now using carat range.
+- Updated dependencies [992e401]
+  - @compiled/utils@0.6.10
+
 ## 0.6.9
 
 ### Patch Changes

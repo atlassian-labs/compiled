@@ -1,5 +1,20 @@
 # @compiled/webpack-loader
 
+## 0.6.11
+
+### Patch Changes
+
+- 37108e4: Fixed webpack 4 flow throwing unexpectedly.
+- 37108e4: Added missing babel dependency.
+- 37108e4: Fixed css loader entrypoint not making its way to npm.
+- 37108e4: Compiled dependencies are now using carat range.
+- 37108e4: Fixed bug picking up an unexpected asset during webpack compilation.
+- Updated dependencies [992e401]
+- Updated dependencies [37108e4]
+  - @compiled/utils@0.6.10
+  - @compiled/babel-plugin@0.6.10
+  - @compiled/css@0.6.10
+
 ## 0.6.10
 
 ### Patch Changes

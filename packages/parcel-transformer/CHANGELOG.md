@@ -1,5 +1,15 @@
 # @compiled/parcel-transformer
 
+## 0.6.10
+
+### Patch Changes
+
+- 37108e4: Compiled dependencies are now using carat range.
+- Updated dependencies [992e401]
+- Updated dependencies [37108e4]
+  - @compiled/utils@0.6.10
+  - @compiled/babel-plugin@0.6.10
+
 ## 0.6.9
 
 ### Patch Changes
