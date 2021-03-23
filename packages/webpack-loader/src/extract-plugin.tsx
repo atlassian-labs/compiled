@@ -22,7 +22,7 @@ export const styleSheetName = 'compiled-css';
 const getCSSAssets = (assets: Compilation['assets']) => {
   return Object.keys(assets)
     .filter((assetName) => {
-      return assetName.startsWith(styleSheetName);
+      return assetName.endsWith(`${styleSheetName}.css`);
     })
     .map((assetName) => ({ name: assetName, source: assets[assetName], info: {} }));
 };

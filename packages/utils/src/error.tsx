@@ -1,4 +1,4 @@
-export const createError = (packageName: string) => (message: string): Error => {
+export const createError = (packageName: string, group = '') => (message: string): Error => {
   return new Error(`
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
 ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██║██║     ██╔════╝██╔══██╗
@@ -7,7 +7,7 @@ export const createError = (packageName: string) => (message: string): Error => 
 ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║███████╗███████╗██████╔╝
  ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═════╝
 
-  @compiled/${packageName}
+  @compiled/${packageName} ${group ? `- ${group}` : ''}
 
   ${message}
 `);
