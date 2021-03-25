@@ -1,5 +1,11 @@
 # @compiled/webpack-loader
 
+## 0.6.12
+
+### Patch Changes
+
+- 4032cd4: The `importReact` option now correctly defaults to `true`.
+
 ## 0.6.11
 
 ### Patch Changes
