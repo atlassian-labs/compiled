@@ -92,4 +92,12 @@ describe('<Style />', () => {
       "
     `);
   });
+
+  it('should update styles', () => {
+    const { rerender } = render(<Style>{[`.first-render { display: block; }`]}</Style>);
+
+    rerender(<Style>{[`.second-render { display: block; }`]}</Style>);
+
+    expect(document.head.innerHTML).toInclude('.second-render { display: block; }');
+  });
 });
