@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import insertRule, { getStyleBucketName, styleBucketOrdering } from './sheet';
 import { analyzeCssInDev } from './dev-warnings';
 import { StyleSheetOpts, Bucket } from './types';
@@ -13,7 +13,7 @@ interface StyleProps extends StyleSheetOpts {
   children: string[];
 }
 
-function Style(props: StyleProps) {
+export default function Style(props: StyleProps): JSX.Element | null {
   const inserted = useCache();
 
   if (process.env.NODE_ENV === 'development') {
@@ -62,5 +62,3 @@ function Style(props: StyleProps) {
 
   return null;
 }
-
-export default memo(Style, () => true);
