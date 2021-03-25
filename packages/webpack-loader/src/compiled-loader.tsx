@@ -15,7 +15,7 @@ function getLoaderOptions(context: LoaderThis<CompiledLoaderOptions>) {
   const {
     bake = true,
     extract = false,
-    importReact = false,
+    importReact = undefined,
     nonce = undefined,
   }: CompiledLoaderOptions =
     typeof context.getOptions === 'undefined'
