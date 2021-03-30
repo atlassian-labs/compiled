@@ -71,6 +71,7 @@ export default async function compiledLoader(
     const ast = await parseAsync(code, {
       filename: this.resourcePath,
       caller: { name: 'compiled' },
+      rootMode: 'upward-optional',
     });
 
     // Transform using the Compiled Babel Plugin - we deliberately turn off using the local config.

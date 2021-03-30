@@ -52,6 +52,7 @@ export default new Transformer<UserlandOpts>({
     const ast = await parseAsync(code, {
       filename: asset.filePath,
       caller: { name: 'compiled' },
+      rootMode: 'upward-optional',
     });
 
     return ast;
