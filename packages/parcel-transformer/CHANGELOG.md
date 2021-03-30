@@ -1,5 +1,11 @@
 # @compiled/parcel-transformer
 
+## 0.6.11
+
+### Patch Changes
+
+- 6a7261e: Programmatic babel use now searches upwards for a project root, and if found will use that config. This fixes issues in some monorepo setups.
+
 ## 0.6.10
 
 ### Patch Changes
