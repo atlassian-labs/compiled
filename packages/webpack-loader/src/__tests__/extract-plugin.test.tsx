@@ -104,4 +104,14 @@ describe('CompiledExtractPlugin', () => {
       "
     `);
   });
+
+  it('should extract important', async () => {
+    const actual = await bundle(require.resolve('./fixtures/important-styles.js'));
+
+    expect(actual[assetName]).toMatchInlineSnapshot(`
+      "._syaz13q2{color:blue}
+      ._1wybc038{font-size:12!important}
+      "
+    `);
+  });
 });
