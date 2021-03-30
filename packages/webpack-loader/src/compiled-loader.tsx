@@ -4,6 +4,7 @@ import { getOptions } from 'loader-utils';
 import { toBoolean, createError } from '@compiled/utils';
 import type { CompiledLoaderOptions, LoaderThis } from './types';
 import { pluginName } from './extract-plugin';
+import { toURIComponent } from './utils/webpack';
 
 let hasErrored = false;
 
@@ -104,7 +105,7 @@ export default async function compiledLoader(
         // The benefit is two fold:
         // (1) thread safe collection of styles
         // (2) caching -- resulting in faster builds (one import per rule!)
-        const params = encodeURIComponent(rule);
+        const params = toURIComponent(rule);
 
         // We use require instead of import so it works with both ESM and CJS source.
         // If we used ESM it would blow up with CJS source, unfortunately.
