@@ -5,6 +5,8 @@ import { toBoolean, createError } from '@compiled/utils';
 import type { CompiledLoaderOptions, LoaderThis } from './types';
 import { pluginName } from './extract-plugin';
 
+let hasErrored = false;
+
 /**
  * Returns user configuration.
  *
@@ -121,9 +123,14 @@ export default async function compiledLoader(
 export function pitch(this: LoaderThis<CompiledLoaderOptions>): void {
   const options = getLoaderOptions(this);
 
-  if (options.extract && !this[pluginName]) {
-    throw createError('webpack-loader')(
-      `You forgot to add the 'CompiledExtractPlugin' plugin (i.e \`{ plugins: [new CompiledExtractPlugin()] }\`), please read https://compiledcssinjs.com/docs/webpack-extract`
+  if (!hasErrored && options.extract && !this[pluginName]) {
+    this.emitError(
+      createError('webpack-loader')(
+        `You forgot to add the 'CompiledExtractPlugin' plugin (i.e \`{ plugins: [new CompiledExtractPlugin()] }\`), please read https://compiledcssinjs.com/docs/css-extraction-webpack`
+      )
     );
+
+    // We only want to error once, if we didn't do this you'd get an error for every file found.
+    hasErrored = true;
   }
 }
