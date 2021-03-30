@@ -1,5 +1,14 @@
 # @compiled/webpack-loader
 
+## 0.6.13
+
+### Patch Changes
+
+- 6a7261e: Programmatic babel use now searches upwards for a project root, and if found will use that config. This fixes issues in some monorepo setups.
+- 8a13ee9: The loader now only errors once when running without the webpack extract plugin.
+- Updated dependencies [b92eb6d]
+  - @compiled/babel-plugin-strip-runtime@0.6.11
+
 ## 0.6.12
 
 ### Patch Changes

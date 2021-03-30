@@ -1,5 +1,11 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.6.11
+
+### Patch Changes
+
+- b92eb6d: Binding not found error appearing during strip runtime pass has been fixed.
+
 ## 0.6.9
 
 ### Patch Changes
