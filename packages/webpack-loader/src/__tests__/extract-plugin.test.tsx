@@ -54,7 +54,7 @@ describe('CompiledExtractPlugin', () => {
     }).catch((err) => err);
 
     expect(error[0].message).toInclude(
-      `You forgot to add the 'CompiledExtractPlugin' plugin (i.e \`{ plugins: [new CompiledExtractPlugin()] }\`), please read https://compiledcssinjs.com/docs/webpack-extract`
+      `You forgot to add the 'CompiledExtractPlugin' plugin (i.e \`{ plugins: [new CompiledExtractPlugin()] }\`), please read https://compiledcssinjs.com/docs/css-extraction-webpack`
     );
   });
 

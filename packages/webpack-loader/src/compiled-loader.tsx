@@ -126,7 +126,7 @@ export function pitch(this: LoaderThis<CompiledLoaderOptions>): void {
   if (!hasErrored && options.extract && !this[pluginName]) {
     this.emitError(
       createError('webpack-loader')(
-        `You forgot to add the 'CompiledExtractPlugin' plugin (i.e \`{ plugins: [new CompiledExtractPlugin()] }\`), please read https://compiledcssinjs.com/docs/webpack-extract`
+        `You forgot to add the 'CompiledExtractPlugin' plugin (i.e \`{ plugins: [new CompiledExtractPlugin()] }\`), please read https://compiledcssinjs.com/docs/css-extraction-webpack`
       )
     );
 
