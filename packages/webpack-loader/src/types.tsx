@@ -76,6 +76,13 @@ export interface LoaderThis<TOptions = unknown> {
   loaders: any[];
 
   /**
+   * Emits an error during the loader run.
+   *
+   * @param error
+   */
+  emitError(error: Error): void;
+
+  /**
    * When set confirms that the extract plugin has been configured.
    */
   [pluginName]?: true;
