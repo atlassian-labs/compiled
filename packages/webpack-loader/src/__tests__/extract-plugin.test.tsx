@@ -73,4 +73,35 @@ describe('CompiledExtractPlugin', () => {
       "
     `);
   });
+
+  it('should find bindings', async () => {
+    const actual = await bundle(require.resolve('./fixtures/binding-not-found.tsx'));
+
+    expect(actual[assetName]).toMatchInlineSnapshot(`
+      "._syaz1r31{color:currentColor}
+      ._ajmmnqa1{-webkit-text-decoration-style:solid;text-decoration-style:solid}
+      ._1hmsglyw{-webkit-text-decoration-line:none;text-decoration-line:none}
+      ._4bfu1r31{-webkit-text-decoration-color:currentColor;text-decoration-color:currentColor}
+      ._syaz14aq{color:var(--_1p69eoh)}
+      ._n7zl1fc7{border-bottom:1px solid var(--_1gpyhvo)}
+      ._p12f1us4{max-width:140rem}
+      ._18u01wug{margin-left:auto}
+      ._otyridpf{margin-bottom:0}
+      ._2hwx1wug{margin-right:auto}
+      ._19pkidpf{margin-top:0}
+      ._1xi2idpf{right:0}
+      ._1ltvidpf{left:0}
+      ._154iidpf{top:0}
+      ._kqswstnw{position:absolute}
+      ._1pbykb7n{z-index:1}
+      ._19bv1wto{padding-left:3rem}
+      ._n3tdidpf{padding-bottom:0}
+      ._u5f31wto{padding-right:3rem}
+      ._ca0qidpf{padding-top:0}
+      ._4cvr1h6o{align-items:center}
+      ._1e0c1txw{display:flex}
+      ._4t3i1jdh{height:9rem}
+      "
+    `);
+  });
 });
