@@ -95,14 +95,17 @@ export const isCCComponent = (node: t.Node): boolean => {
 const getBindingValue = (
   identifierName: string,
   parentPath: NodePath<any>
-): [Binding, t.Expression | null | undefined] => {
+): [Binding, t.Expression] | [undefined, undefined] => {
   const binding = parentPath.scope.getBinding(identifierName);
+
   if (binding && t.isVariableDeclarator(binding.path.node)) {
     const value = binding.path.node.init;
-    return [binding, value];
+    if (value !== null && value !== undefined) {
+      return [binding, value];
+    }
   }
 
-  throw new Error('Binding not found.');
+  return [undefined, undefined];
 };
 
 /**
@@ -128,7 +131,7 @@ export const removeStyleDeclarations = (
         }
 
         const [binding, bindingValue] = getBindingValue(value.name, parentPath);
-        if (bindingValue && t.isStringLiteral(bindingValue)) {
+        if (binding && bindingValue && t.isStringLiteral(bindingValue)) {
           pass.styleRules.push(bindingValue.value);
           binding.path.remove();
         }
@@ -149,7 +152,7 @@ export const removeStyleDeclarations = (
         }
 
         const [binding, bindingValue] = getBindingValue(value.name, parentPath);
-        if (bindingValue && t.isStringLiteral(bindingValue)) {
+        if (binding && bindingValue && t.isStringLiteral(bindingValue)) {
           pass.styleRules.push(bindingValue.value);
           binding.path.remove();
         }
@@ -173,7 +176,7 @@ export const removeStyleDeclarations = (
         }
 
         const [binding, bindingValue] = getBindingValue(value.name, parentPath);
-        if (bindingValue && t.isStringLiteral(bindingValue)) {
+        if (binding && bindingValue && t.isStringLiteral(bindingValue)) {
           pass.styleRules.push(bindingValue.value);
           binding.path.remove();
         }
