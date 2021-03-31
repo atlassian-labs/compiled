@@ -30,6 +30,5 @@ jobs:
           # this expects you to have a script called release which does a build for your packages and calls changeset publish
           publish: yarn release
         env:
-          GITHUB_USER: atlas-dst-bot
           GITHUB_TOKEN: ${{ secrets.ATLAS_DST_BOT_GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.COMPILED_CSS_IN_JS_NPM_TOKEN }}
