@@ -1,6 +1,6 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/core';
-import { buildStyledComponent } from '../utils/ast-builders';
+import { buildStyledComponent, buildDisplayName } from '../utils/ast-builders';
 import { buildCss } from '../utils/css-builders';
 import { Metadata, Tag } from '../types';
 
@@ -129,4 +129,13 @@ export const visitStyledPath = (
   const cssOutput = buildCss(styledData.cssNode, meta);
 
   path.replaceWith(buildStyledComponent(styledData.tag, cssOutput, meta));
+
+  const parentVariableDeclaration = path.findParent((x) => x.isVariableDeclaration());
+  if (parentVariableDeclaration && t.isVariableDeclaration(parentVariableDeclaration.node)) {
+    const variableDeclarator = parentVariableDeclaration.node.declarations[0];
+    if (t.isIdentifier(variableDeclarator.id)) {
+      const variableName = variableDeclarator.id.name;
+      parentVariableDeclaration.insertAfter(buildDisplayName(variableName));
+    }
+  }
 };
