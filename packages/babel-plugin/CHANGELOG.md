@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.6.12
+
+### Patch Changes
+
+- ca573d7: Styled APIs now have display names when running development builds.
+
 ## 0.6.10
 
 ### Patch Changes
