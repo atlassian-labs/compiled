@@ -91,7 +91,11 @@ describe('babel plugin', () => {
       }, ref) => <CC>
             <CS>{[_]}</CS>
             <C {...props} style={style} ref={ref} className={ax([\\"_1wyb1fwx\\", props.className])} />
-          </CC>);"
+          </CC>);
+
+      if (process.env.NODE_ENV !== 'production') {
+        MyDiv.displayName = 'MyDiv';
+      }"
     `);
   });
 
