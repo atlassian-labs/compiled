@@ -1,4 +1,4 @@
-import type { CssFunction } from '../types';
+import type { CssFunction, CSSProps } from '../types';
 
 /**
  * Use `css` to create styles that can be re-used between components.
@@ -14,6 +14,6 @@ import type { CssFunction } from '../types';
  *
  * @param css
  */
-export default function css(css: CssFunction): CssFunction {
-  return css;
+export default function css(css: CssFunction): CSSProps {
+  return css as CSSProps;
 }

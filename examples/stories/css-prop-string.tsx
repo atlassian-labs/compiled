@@ -1,4 +1,5 @@
 import { css } from '@compiled/react';
+import { primary } from '../mixins/mixins';
 
 export default {
   title: 'css prop/string',
@@ -28,4 +29,16 @@ export const TemplateLiteralCSS = (): JSX.Element => {
       red text
     </div>
   );
+};
+
+export const UsingMixinImportSpread = (): JSX.Element => {
+  return <div css={{ ...primary }}>purple text spread</div>;
+};
+
+export const UsingMixinImportIdentifier = (): JSX.Element => {
+  return <div css={primary}>purple text ident</div>;
+};
+
+export const UsingMixinImportArray = (): JSX.Element => {
+  return <div css={[primary]}>purple text arr</div>;
 };
