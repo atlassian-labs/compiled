@@ -1,3 +1,4 @@
+import { createSetupError } from '../utils/error';
 import type { CssFunction, CSSProps } from '../types';
 
 /**
@@ -14,6 +15,6 @@ import type { CssFunction, CSSProps } from '../types';
  *
  * @param css
  */
-export default function css(css: CssFunction): CSSProps {
-  return css as CSSProps;
+export default function css(_css: CssFunction): CSSProps {
+  throw createSetupError();
 }

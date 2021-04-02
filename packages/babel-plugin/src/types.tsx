@@ -1,7 +1,7 @@
 import * as t from '@babel/types';
-import { NodePath } from '@babel/traverse';
-import { PluginPass } from '@babel/core';
-import { Cache } from './utils/cache';
+import type { NodePath } from '@babel/traverse';
+import type { PluginPass } from '@babel/core';
+import type { Cache } from './utils/cache';
 
 export interface PluginOptions {
   /**
@@ -53,6 +53,11 @@ export interface State extends PluginPass {
     ClassNames?: string;
     css?: string;
   };
+
+  /**
+   * Paths that will be cleaned up on pass exit.
+   */
+  pathsToCleanup: Array<{ action: 'replace' | 'remove'; path: NodePath }>;
 
   /**
    * Userland options that can be set to change what happens when the Babel Plugin is ran.
