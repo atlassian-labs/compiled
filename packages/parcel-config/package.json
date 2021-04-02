@@ -1,0 +1,29 @@
+{
+  "name": "@compiled/parcel-config",
+  "version": "0.1.0",
+  "description": "Build time CSS-in-JS for React. Baked and ready to serve.",
+  "author": "Michael Dougall",
+  "license": "Apache-2.0",
+  "homepage": "https://compiledcssinjs.com",
+  "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlassian-labs/compiled.git",
+    "directory": "packages/parcel-transformer"
+  },
+  "main": "config.json",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "dependencies": {
+    "@compiled/parcel-optimizer": "^0.1.0",
+    "@compiled/parcel-transformer": "^0.6.11",
+    "@compiled/parcel-transformer-css": "^0.1.0"
+  },
+  "engines": {
+    "parcel": "^2.0.0 || ^2.0.0-beta.1"
+  }
+}

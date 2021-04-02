@@ -1,0 +1,13 @@
+{
+  "transformers": {
+    "*.{js,jsx,ts,tsx}": ["@compiled/parcel-transformer", "..."],
+    "css:*": [
+      "@compiled/parcel-transformer-css",
+      "@parcel/transformer-postcss",
+      "@parcel/transformer-css"
+    ]
+  },
+  "optimizers": {
+    "css:*.css": ["@compiled/parcel-optimizer", "..."]
+  }
+}
