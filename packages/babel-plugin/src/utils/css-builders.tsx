@@ -420,6 +420,22 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     };
   }
 
+  if (
+    t.isTaggedTemplateExpression(node) &&
+    t.isIdentifier(node.tag) &&
+    node.tag.name === meta.state.compiledImports?.css
+  ) {
+    return buildCss(node.quasi, meta);
+  }
+
+  if (
+    t.isCallExpression(node) &&
+    t.isIdentifier(node.callee) &&
+    node.callee.name === meta.state.compiledImports?.css
+  ) {
+    return buildCss(node.arguments[0] as t.Expression, meta);
+  }
+
   throw buildCodeFrameError(
     `${node.type} isn't a supported CSS type - try using an object or string`,
     node,

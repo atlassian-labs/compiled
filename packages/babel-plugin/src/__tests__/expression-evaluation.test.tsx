@@ -231,6 +231,34 @@ describe('import specifiers', () => {
     ]);
   });
 
+  it('should build css template literal from the css api', () => {
+    const actual = transform(`
+      import { css } from '@compiled/react';
+
+      const primary = css\`
+        color: red;
+      \`;
+
+      <span css={primary} />
+    `);
+
+    expect(actual).toIncludeMultiple(['{color:red}']);
+  });
+
+  it('should build css object from the css api', () => {
+    const actual = transform(`
+      import { css } from '@compiled/react';
+
+      const primary = css({
+        color: 'red',
+      });
+
+      <span css={primary} />
+    `);
+
+    expect(actual).toIncludeMultiple(['{color:red}']);
+  });
+
   it('handles the destructuring coming from a referenced identifier', () => {
     const actual = transform(`
       import '@compiled/react';

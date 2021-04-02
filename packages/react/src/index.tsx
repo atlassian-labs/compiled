@@ -1,5 +1,7 @@
 export { styled } from './styled';
 export { ClassNames } from './class-names';
+export { default as css } from './css';
+
 import { CssFunction } from './types';
 
 declare module 'react' {

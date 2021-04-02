@@ -147,7 +147,7 @@ export default declare<State>((api) => {
             return;
           }
 
-          (['styled', 'ClassNames'] as const).forEach((apiName) => {
+          (['styled', 'ClassNames', 'css'] as const).forEach((apiName) => {
             if (
               state.compiledImports &&
               t.isIdentifier(specifier.node?.imported) &&
