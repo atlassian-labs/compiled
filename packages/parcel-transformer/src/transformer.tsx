@@ -1,9 +1,8 @@
 import { Transformer } from '@parcel/plugin';
-import type { PluginOptions } from '@compiled/babel-plugin';
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import generate from '@babel/generator';
-
-type UserlandOpts = Omit<PluginOptions, 'cache' | 'onIncludedFiles'>;
+import type { ParcelTransformerOpts } from './types';
+import { toBoolean } from '@compiled/utils';
 
 const configFiles = [
   '.compiledcssrc',
@@ -15,13 +14,16 @@ const configFiles = [
 /**
  * Compiled parcel transformer.
  */
-export default new Transformer<UserlandOpts>({
+export default new Transformer<ParcelTransformerOpts>({
   async loadConfig({ config }) {
     const conf = await config.getConfig(configFiles, {
       packageKey: '@compiled/parcel-transformer',
     });
 
-    const contents: UserlandOpts = {};
+    const contents: ParcelTransformerOpts = {
+      extract: false,
+      importReact: true,
+    };
 
     if (conf) {
       config.shouldInvalidateOnStartup();
@@ -67,11 +69,12 @@ export default new Transformer<UserlandOpts>({
     }
 
     const includedFiles: string[] = [];
+    const foundCSSRules: string[] = [];
     const code = asset.isASTDirty() ? undefined : await asset.getCode();
 
     const result = await transformFromAstAsync(ast.program, code, {
-      code: false,
-      ast: true,
+      code: true,
+      ast: false,
       filename: asset.filePath,
       babelrc: false,
       configFile: false,
@@ -85,11 +88,19 @@ export default new Transformer<UserlandOpts>({
             cache: 'single-pass',
           },
         ],
-      ],
+        config.extract && [
+          '@compiled/babel-plugin-strip-runtime',
+          {
+            onFoundStyleRules: (styles: string[]) => foundCSSRules.push(...styles),
+          },
+        ],
+      ].filter(toBoolean),
       caller: {
         name: 'compiled',
       },
     });
+
+    let output = result?.code || '';
 
     includedFiles.forEach((file) => {
       // Included files are those which have been statically evaluated into this asset.
@@ -98,15 +109,16 @@ export default new Transformer<UserlandOpts>({
       asset.addIncludedFile(file);
     });
 
-    if (result?.ast) {
-      asset.setAST({
-        // TODO: Currently if we set this as `'babel'` the babel transformer blows up.
-        // Let's figure out what we can do to reuse it.
-        type: 'compiled',
-        version: '0.0.0',
-        program: result.ast,
+    if (config.extract && foundCSSRules.length) {
+      foundCSSRules.forEach((rule) => {
+        const params = encodeURIComponent(rule);
+        output = `
+import "css:@compiled/parcel-transformer-css/extract.css?style=${params}";
+${output}`;
       });
     }
+
+    asset.setCode(output);
 
     return [asset];
   },

@@ -1,6 +1,6 @@
 {
-  "name": "@compiled/parcel-transformer",
-  "version": "0.6.11",
+  "name": "@compiled/parcel-transformer-css",
+  "version": "0.1.0",
   "description": "Build time CSS-in-JS for React. Baked and ready to serve.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
@@ -9,11 +9,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/atlassian-labs/compiled.git",
-    "directory": "packages/parcel-transformer"
+    "directory": "packages/parcel-resolver"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "module": "./index.js",
   "sideEffects": false,
   "files": [
     "dist",
@@ -21,15 +19,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@babel/core": "^7.13.10",
-    "@babel/generator": "^7.13.9",
-    "@compiled/babel-plugin": "^0.6.10",
-    "@compiled/babel-plugin-strip-runtime": "^0.6.11",
-    "@compiled/utils": "^0.6.10",
     "@parcel/plugin": "^2.0.0-nightly.632"
-  },
-  "devDependencies": {
-    "@types/babel__core": "^7.1.14"
   },
   "engines": {
     "parcel": "^2.0.0 || ^2.0.0-beta.1"

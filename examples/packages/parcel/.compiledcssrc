@@ -1,3 +1,4 @@
 {
-  "importReact": false
+  "importReact": false,
+  "extract": true
 }

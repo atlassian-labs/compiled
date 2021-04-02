@@ -1,10 +1,15 @@
 {
-  "extends": "@parcel/config-default",
+  "extends": ["@parcel/config-default"],
+  "resolvers": ["@parcel/resolver-default", "..."],
   "transformers": {
     "*.{js,jsx,ts,tsx}": [
       "@compiled/parcel-transformer",
-      "@parcel/transformer-babel",
-      "@parcel/transformer-js"
-    ]
+      "..."
+    ],
+    "css:*": [
+      "@compiled/parcel-transformer-css",
+      "@parcel/transformer-postcss",
+      "@parcel/transformer-css"
+    ],
   }
 }

@@ -6,6 +6,7 @@ declare module '@parcel/plugin' {
     addIncludedFile(file: string): void;
     getCode(): Promise<string>;
     getAST(): Promise<any>;
+    setCode(code: string): void;
     setAST(opts: { type: string; version: string; program: any }): void;
   }
 
