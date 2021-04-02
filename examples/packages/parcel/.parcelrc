@@ -11,5 +11,8 @@
       "@parcel/transformer-postcss",
       "@parcel/transformer-css"
     ],
+  },
+  "optimizers": {
+    "css:*.css": ["@compiled/parcel-optimizer", "..."]
   }
 }
