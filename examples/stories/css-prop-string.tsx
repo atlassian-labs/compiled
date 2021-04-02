@@ -1,5 +1,5 @@
 import { css } from '@compiled/react';
-import { primary } from '../mixins/mixins';
+import { primary, secondary } from '../mixins/mixins';
 
 export default {
   title: 'css prop/string',
@@ -40,5 +40,5 @@ export const UsingMixinImportIdentifier = (): JSX.Element => {
 };
 
 export const UsingMixinImportArray = (): JSX.Element => {
-  return <div css={[primary]}>purple text arr</div>;
+  return <div css={[primary, secondary]}>purple text arr</div>;
 };

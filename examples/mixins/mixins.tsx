@@ -11,3 +11,7 @@ export const primary = css`
   color: purple;
   text-decoration: underline;
 `;
+
+export const secondary = css({
+  border: '1px solid red',
+});
