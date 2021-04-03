@@ -355,7 +355,7 @@ export const evaluateExpression = (
 
   if (value) {
     if (isCompiledCSSTemplateLiteral(value, updatedMeta)) {
-      // Honestly, this is a hack.
+      // !! HACK ALERT !!
       // Sometimes we want to return the evaluated value instead of the original expression
       // however this is an edge case. Ideally we want to re-think this a little.
       return createResultPair(value, updatedMeta);
@@ -363,6 +363,8 @@ export const evaluateExpression = (
 
     // If we fail to statically evaluate `value` we will return `expression` instead.
     // It's preferrable to use the identifier than its result if it can't be statically evaluated.
+    // E.g. say we got the result of an identifier `foo` as `bar()` -- its more preferable to return
+    // `foo` instead of `bar()`.
     const babelEvaluatedNode = babelEvaluateExpression(value, updatedMeta, expression);
     return createResultPair(babelEvaluatedNode, updatedMeta);
   }

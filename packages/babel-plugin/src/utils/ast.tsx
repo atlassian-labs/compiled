@@ -44,7 +44,10 @@ export const getPathOfNode = <TNode extends unknown>(
  * @param meta
  * @returns
  */
-export const isCompiledCSSTemplateLiteral = (node: t.Expression, meta: Metadata): boolean => {
+export const isCompiledCSSTemplateLiteral = (
+  node: t.Expression,
+  meta: Metadata
+): node is t.TaggedTemplateExpression => {
   return (
     t.isTaggedTemplateExpression(node) &&
     t.isIdentifier(node.tag) &&

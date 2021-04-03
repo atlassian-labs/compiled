@@ -427,11 +427,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     };
   }
 
-  if (
-    t.isTaggedTemplateExpression(node) &&
-    t.isIdentifier(node.tag) &&
-    node.tag.name === meta.state.compiledImports?.css
-  ) {
+  if (isCompiledCSSTemplateLiteral(node, meta)) {
     return buildCss(node.quasi, meta);
   }
 
