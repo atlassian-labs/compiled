@@ -4,7 +4,8 @@ import { parse } from '@babel/parser';
 import fs from 'fs';
 import path from 'path';
 import resolve from 'resolve';
-import { Metadata } from '../types';
+import type { Metadata } from '../types';
+import type { PartialBindingWithMeta } from './types';
 
 /**
  * Returns the nodes path including the scope of a parent.
@@ -279,14 +280,6 @@ export const babelEvaluateExpression = (
 
   return fallbackNode;
 };
-
-interface PartialBindingWithMeta {
-  node: t.Node;
-  path: NodePath;
-  constant: boolean;
-  meta: Metadata;
-  source: 'import' | 'module';
-}
 
 const findDefaultExportModuleNode = (
   ast: t.File

@@ -1,4 +1,6 @@
 import * as t from '@babel/types';
+import type { NodePath } from '@babel/traverse';
+import type { Metadata } from '../types';
 
 export interface UnconditionalCssItem {
   type: 'unconditional';
@@ -22,4 +24,12 @@ export interface CSSOutput {
     prefix?: string;
     suffix?: string;
   }[];
+}
+
+export interface PartialBindingWithMeta {
+  node: t.Node;
+  path: NodePath;
+  constant: boolean;
+  meta: Metadata;
+  source: 'import' | 'module';
 }
