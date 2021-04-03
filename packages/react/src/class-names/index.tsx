@@ -12,8 +12,7 @@ export interface ClassNamesProps {
 }
 
 /**
- * Use `ClassNames` to have more control over a component that has styles not necessarily tied to an element,
- * enabling powerful patterns with render props.
+ * Use a component where styles are not necessarily tied to an element.
  *
  * ```
  * // Object CSS
@@ -34,7 +33,7 @@ export interface ClassNamesProps {
  * ```
  *
  * For more help, read the docs:
- * https://compiledcssinjs.com/docs/class-names
+ * https://compiledcssinjs.com/docs/api-class-names
  *
  * @param props
  */

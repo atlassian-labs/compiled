@@ -2,7 +2,7 @@ import { createSetupError } from '../utils/error';
 import type { CssFunction, CSSProps } from '../types';
 
 /**
- * Use `css` to create styles that can be re-used between components.
+ * Create styles that can be re-used between components.
  *
  * ```
  * css`color: red;`;
@@ -11,7 +11,7 @@ import type { CssFunction, CSSProps } from '../types';
  * ```
  *
  * For more help, read the docs:
- * https://compiledcssinjs.com/docs/css
+ * https://compiledcssinjs.com/docs/api-css
  *
  * @param css
  */
