@@ -1,7 +1,7 @@
 {
   "name": "@compiled/babel-plugin",
   "version": "0.6.12",
-  "description": "Build time CSS-in-JS for React. Baked and ready to serve.",
+  "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",
   "homepage": "https://compiledcssinjs.com",
