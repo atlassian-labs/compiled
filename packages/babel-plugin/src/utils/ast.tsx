@@ -38,6 +38,21 @@ export const getPathOfNode = <TNode extends unknown>(
 };
 
 /**
+ * Returns `true` if the expression is using `css` from `@compiled/react`.
+ *
+ * @param node
+ * @param meta
+ * @returns
+ */
+export const isCompiledCSSTemplateLiteral = (node: t.Expression, meta: Metadata): boolean => {
+  return (
+    t.isTaggedTemplateExpression(node) &&
+    t.isIdentifier(node.tag) &&
+    node.tag.name === meta.state.compiledImports?.css
+  );
+};
+
+/**
  * Builds a code frame error from a passed in node.
  *
  * @param error

@@ -3,24 +3,14 @@ import generate from '@babel/generator';
 import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '@compiled/css';
 import { kebabCase, hash } from '@compiled/utils';
 import { Metadata } from '../types';
-import { getKey, resolveBindingNode, buildCodeFrameError } from './ast';
+import {
+  getKey,
+  resolveBindingNode,
+  buildCodeFrameError,
+  isCompiledCSSTemplateLiteral,
+} from './ast';
 import { evaluateExpression } from './evaluate-expression';
 import { CSSOutput, CssItem, LogicalCssItem } from './types';
-
-/**
- * Returns `true` if the expression is using `css` from `@compiled/react`.
- *
- * @param node
- * @param meta
- * @returns
- */
-const isCompiledCSSTemplateLiteral = (node: t.Expression, meta: Metadata): boolean => {
-  return (
-    t.isTaggedTemplateExpression(node) &&
-    t.isIdentifier(node.tag) &&
-    node.tag.name === meta.state.compiledImports?.css
-  );
-};
 
 /**
  * Will normalize the value of a `content` CSS property to ensure it has quotations around it.
