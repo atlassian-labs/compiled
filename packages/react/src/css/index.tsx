@@ -1,13 +1,11 @@
 import { createSetupError } from '../utils/error';
-import type { CssFunction, CSSProps } from '../types';
+import type { CSSProps } from '../types';
 
 /**
  * Create styles that can be re-used between components.
  *
  * ```
  * css`color: red;`;
- * css({ color: 'red' });
- * css(`color: red`);
  * ```
  *
  * For more help, read the docs:
@@ -15,6 +13,6 @@ import type { CssFunction, CSSProps } from '../types';
  *
  * @param css
  */
-export default function css(_css: CssFunction): CSSProps {
+export default function css(_css: TemplateStringsArray): CSSProps {
   throw createSetupError();
 }

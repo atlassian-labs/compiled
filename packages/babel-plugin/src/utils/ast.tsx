@@ -238,15 +238,11 @@ export const isPathReferencingAnyMutatedIdentifiers = (path: NodePath<any>): boo
  * @param meta
  * @param fallbackNode Optional node to return if evaluation is not successful. Defaults to `node`.
  */
-export const tryEvaluateExpression = (
+export const babelEvaluateExpression = (
   node: t.Expression,
   meta: Metadata,
   fallbackNode: t.Expression = node
 ): t.Expression => {
-  if (!node) {
-    return node;
-  }
-
   const path = getPathOfNode(node, meta.parentPath);
   if (isPathReferencingAnyMutatedIdentifiers(path)) {
     return fallbackNode;

@@ -12,6 +12,6 @@ export const primary = css`
   text-decoration: underline;
 `;
 
-export const secondary = css({
-  border: '1px solid red',
-});
+export const secondary = css`
+  border: 1px solid red;
+`;

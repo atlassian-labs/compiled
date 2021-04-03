@@ -7,7 +7,7 @@ import {
   resolveBindingNode,
   getMemberExpressionMeta,
   getValueFromObjectExpression,
-  tryEvaluateExpression,
+  babelEvaluateExpression,
   wrapNodeInIIFE,
   getPathOfNode,
 } from './ast';
@@ -32,7 +32,7 @@ const traverseIdentifier = (expression: t.Identifier, meta: Metadata) => {
 
   const resolvedBinding = resolveBindingNode(expression.name, updatedMeta);
 
-  if (resolvedBinding && resolvedBinding.constant) {
+  if (resolvedBinding && resolvedBinding.constant && resolvedBinding.node) {
     // We recursively call get interpolation until it not longer returns an identifier or member expression
     ({ value, meta: updatedMeta } = evaluateExpression(
       resolvedBinding.node as t.Expression,
@@ -353,11 +353,12 @@ export const evaluateExpression = (
   // --------------
 
   if (value) {
-    return createResultPair(
-      tryEvaluateExpression(value as t.Expression, updatedMeta, expression),
-      updatedMeta
-    );
+    // WHAT IS THIS? Why don't we try and return value here,
+    // but instead expression? Damnit Douges!
+    const babelEvaluatedNode = babelEvaluateExpression(value, updatedMeta, expression);
+    return createResultPair(babelEvaluatedNode, updatedMeta);
   }
 
-  return createResultPair(tryEvaluateExpression(expression, updatedMeta), updatedMeta);
+  const babelEvaluatedNode = babelEvaluateExpression(expression, updatedMeta);
+  return createResultPair(babelEvaluatedNode, updatedMeta);
 };

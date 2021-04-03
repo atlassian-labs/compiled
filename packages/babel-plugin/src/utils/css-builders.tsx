@@ -8,6 +8,20 @@ import { evaluateExpression } from './evaluate-expression';
 import { CSSOutput, CssItem, LogicalCssItem } from './types';
 
 /**
+ * Returns `true` if the expression is using `css` from `@compiled/react`.
+ * @param node
+ * @param meta
+ * @returns
+ */
+const isCompiledCSSTemplateLiteral = (node: t.Expression, meta: Metadata): boolean => {
+  return (
+    t.isTaggedTemplateExpression(node) &&
+    t.isIdentifier(node.tag) &&
+    node.tag.name === meta.state.compiledImports?.css
+  );
+};
+
+/**
  * Will normalize the value of a `content` CSS property to ensure it has quotations around it.
  * This is done to replicate both how Styled Components behaves,
  * while not breaking how Emotion handles it.
@@ -190,7 +204,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         variables.push(...result.variables);
         return;
       } else if (t.isTemplateLiteral(propValue)) {
-        // We've found a template literal like: `fontSize: `${fontSize}px`
+        // We've found a template literal like: "fontSize: `${fontSize}px`"
         const result = extractTemplateLiteral(propValue, updatedMeta);
         css.push(...toCSSDeclaration(key, result));
         variables.push(...result.variables);
@@ -262,7 +276,11 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   // quasis are the string pieces of the template literal - the parts around the interpolations.
   const literalResult = node.quasis.reduce<string>((acc, q, index): string => {
-    const nodeExpression: t.Expression = node.expressions[index] as t.Expression;
+    const nodeExpression = node.expressions[index] as t.Expression;
+    if (!nodeExpression) {
+      return acc + q.value.raw + ';';
+    }
+
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
 
     callbackIfFileIncluded(meta, updatedMeta);
@@ -272,43 +290,41 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       return acc + q.value.raw + interpolation.value;
     }
 
-    if (t.isObjectExpression(interpolation)) {
-      // We found an object like: css`${{ red: 'blue' }}`.
+    if (t.isObjectExpression(interpolation) || isCompiledCSSTemplateLiteral(interpolation, meta)) {
+      // We found something that looks like CSS.
       const result = buildCss(interpolation, updatedMeta);
       variables.push(...result.variables);
       css.push(...result.css);
       return acc;
     }
 
-    if (interpolation) {
-      const variableDeclaratorValueForOwnPath = getVariableDeclaratorValueForOwnPath(
-        interpolation,
-        updatedMeta
-      );
+    const variableDeclaratorValueForOwnPath = getVariableDeclaratorValueForOwnPath(
+      nodeExpression,
+      meta
+    );
 
-      // Everything else is considered a catch all expression.
-      // The only difficulty here is what we do around prefixes and suffixes.
-      // CSS variables can't have them! So we need to move them to the inline style.
-      // E.g. `font-size: ${fontSize}px` will end up needing to look like:
-      // `font-size: var(--_font-size)`, with the suffix moved to inline styles
-      // style={{ '--_font-size': fontSize + 'px' }}
-      const variableName = `--_${hash(variableDeclaratorValueForOwnPath.variableName)}`;
-      const nextQuasis = node.quasis[index + 1];
-      const before = cssBeforeInterpolation(css + q.value.raw);
-      const after = cssAfterInterpolation(nextQuasis.value.raw);
-      nextQuasis.value.raw = after.css; // Removes any suffixes from the next quasis.
+    // Everything else is considered a catch all expression.
+    // The only difficulty here is what we do around prefixes and suffixes.
+    // CSS variables can't have them! So we need to move them to the inline style.
+    // E.g. `font-size: ${fontSize}px` will end up needing to look like:
+    // `font-size: var(--_font-size)`, with the suffix moved to inline styles
+    // style={{ '--_font-size': fontSize + 'px' }}
+    const variableName = `--_${hash(variableDeclaratorValueForOwnPath.variableName)}`;
+    const nextQuasis = node.quasis[index + 1];
+    const before = cssBeforeInterpolation(q.value.raw);
+    const after = cssAfterInterpolation(nextQuasis.value.raw);
 
-      variables.push({
-        name: variableName,
-        expression: variableDeclaratorValueForOwnPath.expression,
-        prefix: before.variablePrefix,
-        suffix: after.variableSuffix,
-      });
+    // Removes any suffixes from the next quasis.
+    nextQuasis.value.raw = after.css;
 
-      return acc + before.css + `var(${variableName})`;
-    }
+    variables.push({
+      name: variableName,
+      expression: variableDeclaratorValueForOwnPath.expression,
+      prefix: before.variablePrefix,
+      suffix: after.variableSuffix,
+    });
 
-    return acc + q.value.raw + ';';
+    return acc + before.css + `var(${variableName})`;
   }, '');
 
   css.push({ type: 'unconditional', css: literalResult });
@@ -426,14 +442,6 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     node.tag.name === meta.state.compiledImports?.css
   ) {
     return buildCss(node.quasi, meta);
-  }
-
-  if (
-    t.isCallExpression(node) &&
-    t.isIdentifier(node.callee) &&
-    node.callee.name === meta.state.compiledImports?.css
-  ) {
-    return buildCss(node.arguments[0] as t.Expression, meta);
   }
 
   throw buildCodeFrameError(
