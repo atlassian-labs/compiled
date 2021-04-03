@@ -2,7 +2,7 @@ import postcss from 'postcss';
 import autoprefixer from 'autoprefixer';
 import nested from 'postcss-nested';
 import whitespace from 'postcss-normalize-whitespace';
-import { unique } from '@compiled/utils';
+import { unique, createError } from '@compiled/utils';
 import { discardDuplicates } from './plugins/discard-duplicates';
 import { parentOrphanedPseudos } from './plugins/parent-orphaned-pseudos';
 import { normalizeCSS } from './plugins/normalize-css';
@@ -21,26 +21,42 @@ export const transformCss = (css: string): { sheets: string[]; classNames: strin
   const sheets: string[] = [];
   const classNames: string[] = [];
 
-  const result = postcss([
-    discardDuplicates(),
-    parentOrphanedPseudos(),
-    nested(),
-    ...normalizeCSS(),
-    expandShorthands(),
-    atomicifyRules({ callback: (className) => classNames.push(className) }),
-    sortAtRulePseudos(),
-    autoprefixer(),
-    whitespace,
-    extractStyleSheets({ callback: (sheet: string) => sheets.push(sheet) }),
-  ]).process(css, {
-    from: undefined,
-  });
+  try {
+    const result = postcss([
+      discardDuplicates(),
+      parentOrphanedPseudos(),
+      nested(),
+      ...normalizeCSS(),
+      expandShorthands(),
+      atomicifyRules({ callback: (className) => classNames.push(className) }),
+      sortAtRulePseudos(),
+      autoprefixer(),
+      whitespace,
+      extractStyleSheets({ callback: (sheet: string) => sheets.push(sheet) }),
+    ]).process(css, {
+      from: undefined,
+    });
 
-  // We need to access something to make the transformation happen.
-  result.css;
+    // We need to access something to make the transformation happen.
+    result.css;
 
-  return {
-    sheets,
-    classNames: unique(classNames),
-  };
+    return {
+      sheets,
+      classNames: unique(classNames),
+    };
+  } catch (e) {
+    throw createError(
+      'css',
+      'Unhandled exception'
+    )(
+      `An unhandled exception was raised when parsing your CSS, this is probably a bug!
+  Raise an issue here: https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=&template=bug_report.md&title=CSS%20Parsing%20Exception:%20
+
+  Input CSS: {
+    ${css}
+  }
+
+  Exception: ${e.message}`
+    );
+  }
 };
