@@ -195,14 +195,6 @@ export default declare<State>((api) => {
         visitStyledPath(path, { state, parentPath: path });
       },
       CallExpression(path, state) {
-        if (
-          t.isIdentifier(path.node.callee) &&
-          path.node.callee.name === state.compiledImports?.css
-        ) {
-          state.pathsToCleanup.push({ path, action: 'replace' });
-          return;
-        }
-
         if (!state.compiledImports) {
           return;
         }

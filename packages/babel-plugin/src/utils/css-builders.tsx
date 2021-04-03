@@ -9,6 +9,7 @@ import { CSSOutput, CssItem, LogicalCssItem } from './types';
 
 /**
  * Returns `true` if the expression is using `css` from `@compiled/react`.
+ *
  * @param node
  * @param meta
  * @returns
@@ -276,7 +277,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   // quasis are the string pieces of the template literal - the parts around the interpolations.
   const literalResult = node.quasis.reduce<string>((acc, q, index): string => {
-    const nodeExpression = node.expressions[index] as t.Expression;
+    const nodeExpression = node.expressions[index] as t.Expression | undefined;
     if (!nodeExpression) {
       return acc + q.value.raw + ';';
     }

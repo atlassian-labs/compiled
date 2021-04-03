@@ -14,9 +14,7 @@ describe('css', () => {
     const actual = transform`
       import { css } from '@compiled/react';
 
-      export const _1 = css({ color: 'red' });
-
-      export const _2 = css\`color: red;\`;
+      export const _1 = css\`color: red;\`;
     `;
 
     expect(actual).toMatchInlineSnapshot(`
@@ -24,8 +22,7 @@ describe('css', () => {
 
       import * as React from 'react';
       import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
-      export const _1 = null;
-      export const _2 = null;"
+      export const _1 = null;"
     `);
   });
 });

@@ -353,8 +353,8 @@ export const evaluateExpression = (
   // --------------
 
   if (value) {
-    // WHAT IS THIS? Why don't we try and return value here,
-    // but instead expression? Damnit Douges!
+    // If we fail to statically evaluate `value` we will return `expression` instead.
+    // It's preferrable to use the identifier than its result if it can't be statically evaluated.
     const babelEvaluatedNode = babelEvaluateExpression(value, updatedMeta, expression);
     return createResultPair(babelEvaluatedNode, updatedMeta);
   }
