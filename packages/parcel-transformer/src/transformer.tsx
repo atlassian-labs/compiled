@@ -39,8 +39,8 @@ export default new Transformer<ParcelTransformerOpts>({
     return false;
   },
 
-  async parse({ asset }) {
-    if (!asset.isSource) {
+  async parse({ asset, config }) {
+    if (!asset.isSource && !config.extract) {
       return undefined;
     }
 
@@ -62,7 +62,7 @@ export default new Transformer<ParcelTransformerOpts>({
 
   async transform({ asset, config }) {
     const ast = await asset.getAST();
-    if (!asset.isSource || !ast) {
+    if (!ast) {
       // We will only recieve ASTs for assets we're interested in.
       // Since this is undefined (or in node modules) we aren't interested in it.
       return [asset];
@@ -80,7 +80,7 @@ export default new Transformer<ParcelTransformerOpts>({
       configFile: false,
       sourceMaps: true,
       plugins: [
-        [
+        asset.isSource && [
           '@compiled/babel-plugin',
           {
             ...config,

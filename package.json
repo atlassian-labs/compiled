@@ -14,7 +14,7 @@
     "start": "npx nodemon --exec \"yarn build:esm && start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "start:ssr": "yarn build && cd examples/packages/ssr && yarn start",
     "start:prod": "NODE_ENV=production yarn start",
-    "start:parcel": "yarn build:esm && cd examples/packages/parcel && yarn start",
+    "start:parcel": "yarn build:browser && yarn build:esm && cd examples/packages/parcel && yarn start",
     "start:cli": "cd packages/cli && yarn start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "start:webpack": "yarn build:browser && yarn build:esm && cd examples/packages/webpack && yarn start",
