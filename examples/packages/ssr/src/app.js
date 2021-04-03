@@ -11,6 +11,9 @@ const Header = () => (
       height: 56,
       display: 'flex',
       alignItems: 'center',
+      '@media only screen and (max-width:1100px)': {
+        background: 'green',
+      },
     }}>
     server side rendering
   </header>

@@ -7,8 +7,7 @@ import { ProviderComponent, UseCacheHook } from './types';
  * Cache to hold already used styles.
  * React Context on the server - singleton object on the client.
  */
-let ClientCache = {};
-const Cache: any = createContext<Record<string, true> | null>(null) || ClientCache;
+const Cache: any = isNodeEnvironment() ? createContext<Record<string, true> | null>(null) : {};
 
 if (!isNodeEnvironment()) {
   /**
@@ -17,20 +16,38 @@ if (!isNodeEnvironment()) {
   const ssrStyles = document.querySelectorAll<HTMLStyleElement>('style[data-cmpld]');
   for (let i = 0; i < ssrStyles.length; i++) {
     // Create the client cache for all SSR'd classes
-    const inserted: Record<string, true> = {};
     const stylesheet = ssrStyles[i];
     const rulesText = stylesheet.innerText;
 
     if (rulesText) {
-      rulesText.split('}').forEach((rule: string) => {
-        const sheet = `${rule}}`;
-        inserted[sheet] = true;
-      });
+      // We split the stylesheet innerText by the closing } then loop over the array
+      const arr = rulesText.split('}');
+
+      // Nested rule string
+      let nestedRule = '';
+
+      for (let i = 0; i < arr.length; i++) {
+        const myRule = `${arr[i]}}`;
+        // check if rule starts with @
+        if (myRule.charCodeAt(0) === 64) {
+          // begin building nested rule string
+          nestedRule = myRule;
+          // if the nested rule ends with }} then it's considered complete
+        } else if (nestedRule.substr(-2) === '}}') {
+          // add nested rule to Cache and reset nestedRule string
+          Cache[nestedRule] = true;
+          nestedRule = '';
+          // if we have started building a nested rule but it is not complete then append an }
+        } else if (nestedRule) {
+          nestedRule += '}';
+        } else {
+          // if not an @ rule then just add to Cache
+          Cache[myRule] = true;
+        }
+      }
     }
 
-    ClientCache = { ...ClientCache, ...inserted };
     // Move all found server-side rendered style elements to the head before React hydration happens.
-
     document.head.appendChild(stylesheet);
   }
 }
@@ -47,7 +64,7 @@ export const useCache: UseCacheHook = () => {
   }
 
   // On the client we use the object singleton.
-  return ClientCache;
+  return Cache;
 };
 
 /**
