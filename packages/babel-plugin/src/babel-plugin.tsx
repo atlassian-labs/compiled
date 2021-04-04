@@ -92,8 +92,10 @@ export default declare<State>((api) => {
       }
 
       cache.initialize({ ...this.opts, cache: !!this.opts.cache });
+
       this.cache = cache;
       this.includedFiles = [];
+      this.pathsToCleanup = [];
     },
     visitor: {
       Program: {
@@ -130,6 +132,24 @@ export default declare<State>((api) => {
           if (this.includedFiles.length && this.opts.onIncludedFiles) {
             this.opts.onIncludedFiles(unique(this.includedFiles));
           }
+
+          // Cleanup paths that have been marked.
+          state.pathsToCleanup.forEach((clean) => {
+            switch (clean.action) {
+              case 'remove': {
+                clean.path.remove();
+                return;
+              }
+
+              case 'replace': {
+                clean.path.replaceWith(t.nullLiteral());
+                return;
+              }
+
+              default:
+                return;
+            }
+          });
         },
       },
       ImportDeclaration(path, state) {
@@ -147,7 +167,7 @@ export default declare<State>((api) => {
             return;
           }
 
-          (['styled', 'ClassNames'] as const).forEach((apiName) => {
+          (['styled', 'ClassNames', 'css'] as const).forEach((apiName) => {
             if (
               state.compiledImports &&
               t.isIdentifier(specifier.node?.imported) &&
@@ -155,21 +175,19 @@ export default declare<State>((api) => {
             ) {
               // Enable the API with the local name
               state.compiledImports[apiName] = specifier.node.local.name;
-
-              // Remove specifier
-              specifier.remove();
             }
           });
         });
 
         appendRuntimeImports(path);
-
-        if (path.node.specifiers.length === 0) {
-          // No more imports - remove the whole lot!
-          path.remove();
-        }
+        path.remove();
       },
       TaggedTemplateExpression(path, state) {
+        if (t.isIdentifier(path.node.tag) && path.node.tag.name === state.compiledImports?.css) {
+          state.pathsToCleanup.push({ path, action: 'replace' });
+          return;
+        }
+
         if (!state.compiledImports?.styled) {
           return;
         }

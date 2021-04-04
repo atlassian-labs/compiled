@@ -4,7 +4,8 @@ import { parse } from '@babel/parser';
 import fs from 'fs';
 import path from 'path';
 import resolve from 'resolve';
-import { Metadata } from '../types';
+import type { Metadata } from '../types';
+import type { PartialBindingWithMeta } from './types';
 
 /**
  * Returns the nodes path including the scope of a parent.
@@ -35,6 +36,24 @@ export const getPathOfNode = <TNode extends unknown>(
   }
 
   return foundPath;
+};
+
+/**
+ * Returns `true` if the expression is using `css` from `@compiled/react`.
+ *
+ * @param node
+ * @param meta
+ * @returns
+ */
+export const isCompiledCSSTemplateLiteral = (
+  node: t.Expression,
+  meta: Metadata
+): node is t.TaggedTemplateExpression => {
+  return (
+    t.isTaggedTemplateExpression(node) &&
+    t.isIdentifier(node.tag) &&
+    node.tag.name === meta.state.compiledImports?.css
+  );
 };
 
 /**
@@ -238,15 +257,11 @@ export const isPathReferencingAnyMutatedIdentifiers = (path: NodePath<any>): boo
  * @param meta
  * @param fallbackNode Optional node to return if evaluation is not successful. Defaults to `node`.
  */
-export const tryEvaluateExpression = (
+export const babelEvaluateExpression = (
   node: t.Expression,
   meta: Metadata,
   fallbackNode: t.Expression = node
 ): t.Expression => {
-  if (!node) {
-    return node;
-  }
-
   const path = getPathOfNode(node, meta.parentPath);
   if (isPathReferencingAnyMutatedIdentifiers(path)) {
     return fallbackNode;
@@ -265,14 +280,6 @@ export const tryEvaluateExpression = (
 
   return fallbackNode;
 };
-
-interface PartialBindingWithMeta {
-  node: t.Node;
-  path: NodePath;
-  constant: boolean;
-  meta: Metadata;
-  source: 'import' | 'module';
-}
 
 const findDefaultExportModuleNode = (
   ast: t.File

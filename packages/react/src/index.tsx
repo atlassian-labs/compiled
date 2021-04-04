@@ -1,5 +1,7 @@
 export { styled } from './styled';
 export { ClassNames } from './class-names';
+export { default as css } from './css';
+
 import { CssFunction } from './types';
 
 declare module 'react' {
@@ -14,10 +16,8 @@ declare global {
   namespace JSX {
     interface IntrinsicAttributes {
       /**
-       * Use `css` prop to have more control over a component that has styles tied to an element.
-       *
-       * It is enabled when any usage of the `@compiled/react` module is found,
-       * for example when using the `styled` API it will be enabled.
+       * Tie styles to an element.
+       * It is available when the `@compiled/react` module is in scope.
        *
        * ```
        * css={{ fontSize: 12 }} // Object CSS
@@ -26,7 +26,7 @@ declare global {
        * ```
        *
        * For more help, read the docs:
-       * https://compiledcssinjs.com/docs/css-prop
+       * https://compiledcssinjs.com/docs/api-css-prop
        */
       css?: CssFunction | CssFunction[];
     }

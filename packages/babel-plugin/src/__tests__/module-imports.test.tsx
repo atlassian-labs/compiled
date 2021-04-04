@@ -82,18 +82,6 @@ describe('import specifiers', () => {
     );
   });
 
-  it('should persist any exports not used ', () => {
-    const actual = transform(`
-      import { styled as styledFunction, ThemeNotUsedInTransform } from '@compiled/react';
-
-      const ListItem = styledFunction.div({
-        fontSize: '20px',
-      });
-    `);
-
-    expect(actual).toInclude('ThemeNotUsedInTransform');
-  });
-
   it('should import runtime from the runtime entrypoint', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';

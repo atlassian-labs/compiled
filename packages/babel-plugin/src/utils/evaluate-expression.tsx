@@ -7,9 +7,10 @@ import {
   resolveBindingNode,
   getMemberExpressionMeta,
   getValueFromObjectExpression,
-  tryEvaluateExpression,
+  babelEvaluateExpression,
   wrapNodeInIIFE,
   getPathOfNode,
+  isCompiledCSSTemplateLiteral,
 } from './ast';
 
 const createResultPair = (value: t.Expression, meta: Metadata) => ({
@@ -32,7 +33,7 @@ const traverseIdentifier = (expression: t.Identifier, meta: Metadata) => {
 
   const resolvedBinding = resolveBindingNode(expression.name, updatedMeta);
 
-  if (resolvedBinding && resolvedBinding.constant) {
+  if (resolvedBinding && resolvedBinding.constant && resolvedBinding.node) {
     // We recursively call get interpolation until it not longer returns an identifier or member expression
     ({ value, meta: updatedMeta } = evaluateExpression(
       resolvedBinding.node as t.Expression,
@@ -353,11 +354,21 @@ export const evaluateExpression = (
   // --------------
 
   if (value) {
-    return createResultPair(
-      tryEvaluateExpression(value as t.Expression, updatedMeta, expression),
-      updatedMeta
-    );
+    if (isCompiledCSSTemplateLiteral(value, updatedMeta)) {
+      // !! NOT GREAT !!
+      // Sometimes we want to return the evaluated value instead of the original expression
+      // however this is an edge case. When we implement keyframes we'll want to re-think this a little.
+      return createResultPair(value, updatedMeta);
+    }
+
+    // If we fail to statically evaluate `value` we will return `expression` instead.
+    // It's preferrable to use the identifier than its result if it can't be statically evaluated.
+    // E.g. say we got the result of an identifier `foo` as `bar()` -- its more preferable to return
+    // `foo` instead of `bar()` for a single source of truth.
+    const babelEvaluatedNode = babelEvaluateExpression(value, updatedMeta, expression);
+    return createResultPair(babelEvaluatedNode, updatedMeta);
   }
 
-  return createResultPair(tryEvaluateExpression(expression, updatedMeta), updatedMeta);
+  const babelEvaluatedNode = babelEvaluateExpression(expression, updatedMeta);
+  return createResultPair(babelEvaluatedNode, updatedMeta);
 };

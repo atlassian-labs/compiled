@@ -35,6 +35,28 @@ describe('styled component string literal', () => {
     expect(actual).toInclude('"--_fb92co":ix(textSize,"px")');
   });
 
+  it('should use css mixins', () => {
+    const actual = transform(`
+      import { styled, css } from '@compiled/react';
+
+      const big = \`font-size: 60px;\`;
+      const color = { color: 'red' };
+      const border = css\`border-left: 1px solid black\`;
+
+      const ListItem = styled.div\`
+        \${big};
+        \${color};
+        \${border};
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '{font-size:60px}',
+      '{color:red}',
+      '{border-left:1px solid black}',
+    ]);
+  });
+
   it('should inline constant numeric literal', () => {
     const actual = transform(`
         import { styled } from '@compiled/react';
