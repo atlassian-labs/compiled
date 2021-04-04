@@ -1,5 +1,11 @@
 # @compiled/utils
 
+## 0.6.11
+
+### Patch Changes
+
+- 40bc0d9: Package descriptions have been updated.
+
 ## 0.6.10
 
 ### Patch Changes

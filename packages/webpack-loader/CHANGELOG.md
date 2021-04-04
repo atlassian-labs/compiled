@@ -1,5 +1,18 @@
 # @compiled/webpack-loader
 
+## 0.6.15
+
+### Patch Changes
+
+- 40bc0d9: Package descriptions have been updated.
+- Updated dependencies [40bc0d9]
+- Updated dependencies [1b1c964]
+- Updated dependencies [1b1c964]
+  - @compiled/babel-plugin@0.6.13
+  - @compiled/babel-plugin-strip-runtime@0.6.13
+  - @compiled/css@0.6.11
+  - @compiled/utils@0.6.11
+
 ## 0.6.14
 
 ### Patch Changes

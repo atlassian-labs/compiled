@@ -1,6 +1,6 @@
 {
   "name": "@compiled/react",
-  "version": "0.6.9",
+  "version": "0.6.10",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "author": "Michael Dougall",
   "license": "Apache-2.0",

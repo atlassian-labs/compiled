@@ -1,5 +1,11 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.6.13
+
+### Patch Changes
+
+- 40bc0d9: Package descriptions have been updated.
+
 ## 0.6.11
 
 ### Patch Changes
