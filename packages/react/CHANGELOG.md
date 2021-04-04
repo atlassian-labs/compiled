@@ -1,5 +1,28 @@
 # @compiled/react
 
+## 0.6.10
+
+### Patch Changes
+
+- 40bc0d9: Package descriptions have been updated.
+- 1b1c964: The `css` mixin API is now available,
+  functioning similarly to the [emotion equivalent](https://emotion.sh/docs/composition).
+
+  ```jsx
+  import { css } from '@compiled/react';
+
+  <div
+    css={css`
+      display: flex;
+      font-size: 50px;
+      color: blue;
+    `}>
+    blue text
+  </div>;
+  ```
+
+  For more help, read the docs: https://compiledcssinjs.com/docs/css.
+
 ## 0.6.9
 
 ### Patch Changes

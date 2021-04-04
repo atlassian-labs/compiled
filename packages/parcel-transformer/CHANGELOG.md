@@ -1,5 +1,15 @@
 # @compiled/parcel-transformer
 
+## 0.6.12
+
+### Patch Changes
+
+- 40bc0d9: Package descriptions have been updated.
+- Updated dependencies [40bc0d9]
+- Updated dependencies [1b1c964]
+  - @compiled/babel-plugin@0.6.13
+  - @compiled/utils@0.6.11
+
 ## 0.6.11
 
 ### Patch Changes
