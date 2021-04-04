@@ -15,6 +15,8 @@ jobs:
         with:
           # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
           fetch-depth: 0
+          # Needed to ensure we always use the atlas-dst-bot creds.
+          persist-credentials: false
 
       - name: Setup Node.js 14.x
         uses: actions/setup-node@master
