@@ -7490,10 +7490,15 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     md5.js "^1.3.4"
     safe-buffer "^5.1.1"
 
-exec-sh@^0.3.2, exec-sh@^0.3.4:
+exec-sh@^0.3.2:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.3.6.tgz#ff264f9e325519a60cb5e273692943483cca63bc"
   integrity sha512-nQn+hI3yp+oD0huYhKwvYI32+JFeq+XkNcD1GAo3Y/MjxsfVGmrrzrnzjWiNY6f+pUCP440fThsFh5gZrRAU/w==
+
+exec-sh@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.4.0.tgz#0f4ae8c36d166bae80e5c69aba0793d80c3488d5"
+  integrity sha512-BgAFra+J+hK/wquyWchMiqgaxSv1ec2c+//DRSePlF3NLx/tBOmkIkJEc1hWrX4Yis3tzxgv1+FiFs/mmucs/g==
 
 execa@^0.7.0:
   version "0.7.0"
