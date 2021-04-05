@@ -13,6 +13,6 @@ import type { CSSProps } from '../types';
  *
  * @param css
  */
-export default function css(_css: TemplateStringsArray): CSSProps {
+export function css(_css: TemplateStringsArray): CSSProps {
   throw createSetupError();
 }

@@ -1,6 +1,7 @@
 export { styled } from './styled';
 export { ClassNames } from './class-names';
-export { default as css } from './css';
+export { css } from './css';
+export { keyframes } from './keyframes';
 
 import { CssFunction } from './types';
 
