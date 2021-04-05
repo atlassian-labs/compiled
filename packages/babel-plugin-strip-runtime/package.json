@@ -20,10 +20,10 @@
     "README.md"
   ],
   "dependencies": {
-    "@babel/core": "^7.13.10",
+    "@babel/core": "^7.13.14",
     "@babel/helper-plugin-utils": "^7.13.0",
-    "@babel/types": "^7.13.0",
-    "@babel/traverse": "^7.13.0"
+    "@babel/types": "^7.13.14",
+    "@babel/traverse": "^7.13.13"
   },
   "devDependencies": {
     "@compiled/babel-plugin": "*",
