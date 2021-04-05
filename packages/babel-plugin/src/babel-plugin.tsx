@@ -167,7 +167,7 @@ export default declare<State>((api) => {
             return;
           }
 
-          (['styled', 'ClassNames', 'css'] as const).forEach((apiName) => {
+          (['styled', 'ClassNames', 'css', 'keyframes'] as const).forEach((apiName) => {
             if (
               state.compiledImports &&
               t.isIdentifier(specifier.node?.imported) &&
@@ -183,7 +183,11 @@ export default declare<State>((api) => {
         path.remove();
       },
       TaggedTemplateExpression(path, state) {
-        if (t.isIdentifier(path.node.tag) && path.node.tag.name === state.compiledImports?.css) {
+        if (
+          t.isIdentifier(path.node.tag) &&
+          (path.node.tag.name === state.compiledImports?.css ||
+            path.node.tag.name === state.compiledImports?.keyframes)
+        ) {
           state.pathsToCleanup.push({ path, action: 'replace' });
           return;
         }

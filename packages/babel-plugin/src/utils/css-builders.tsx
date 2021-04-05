@@ -2,7 +2,6 @@ import * as t from '@babel/types';
 import generate from '@babel/generator';
 import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '@compiled/css';
 import { kebabCase, hash } from '@compiled/utils';
-import { Metadata } from '../types';
 import {
   getKey,
   resolveBindingNode,
@@ -10,7 +9,8 @@ import {
   isCompiledCSSTemplateLiteral,
 } from './ast';
 import { evaluateExpression } from './evaluate-expression';
-import { CSSOutput, CssItem, LogicalCssItem } from './types';
+import type { Metadata } from '../types';
+import type { CSSOutput, CssItem, LogicalCssItem } from './types';
 
 /**
  * Will normalize the value of a `content` CSS property to ensure it has quotations around it.

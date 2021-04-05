@@ -7,3 +7,4 @@ export {
   BeforeInterpolation,
 } from './utils/string-interpolations';
 export { sort } from './sort';
+export { process } from './process';

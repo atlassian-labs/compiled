@@ -12,7 +12,7 @@ import { expandShorthands } from './plugins/expand-shorthands';
 import { sortAtRulePseudos } from './plugins/sort-at-rule-pseudos';
 
 /**
- * Will transform CSS into multiple CSS sheets.
+ * Transforms CSS to atomic rules.
  *
  * @param css CSS string
  * @param opts Transformation options

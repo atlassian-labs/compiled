@@ -1,5 +1,5 @@
 import { transformSync } from '@babel/core';
-import babelPlugin from '../../index';
+import babelPlugin from '../index';
 
 const transform = (code: TemplateStringsArray) => {
   return transformSync(code[0], {

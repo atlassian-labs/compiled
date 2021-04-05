@@ -52,6 +52,7 @@ export interface State extends PluginPass {
     styled?: string;
     ClassNames?: string;
     css?: string;
+    keyframes?: string;
   };
 
   /**
