@@ -31,7 +31,7 @@
     "app-root-path": "^3.0.0",
     "chalk": "^4.1.0",
     "enquirer": "^2.3.6",
-    "exec-sh": "^0.3.4",
+    "exec-sh": "^0.4.0",
     "glob": "^7.1.6",
     "jscodeshift": "^0.11.0",
     "meow": "^9.0.0",
