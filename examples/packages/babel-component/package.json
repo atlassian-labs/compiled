@@ -11,10 +11,10 @@
   },
   "devDependencies": {
     "@compiled/babel-plugin": "*",
-    "@babel/core": "^7.12.16",
-    "@babel/cli": "^7.12.16",
-    "@babel/preset-env": "^7.12.16",
-    "@babel/preset-react": "^7.12.13"
+    "@babel/core": "^7.13.14",
+    "@babel/cli": "^7.13.14",
+    "@babel/preset-env": "^7.13.12",
+    "@babel/preset-react": "^7.13.13"
   },
   "peerDependencies": {
     "react": "^17.0.1"
