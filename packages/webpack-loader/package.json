@@ -27,7 +27,7 @@
     "@compiled/css": "^0.6.11",
     "@compiled/utils": "^0.6.11",
     "loader-utils": "^2.0.0",
-    "webpack-sources": "^1.4.2"
+    "webpack-sources": "^2.2.0"
   },
   "peerDependencies": {
     "webpack": ">= 4.46.0"
