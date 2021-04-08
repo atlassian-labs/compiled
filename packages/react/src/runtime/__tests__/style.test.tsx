@@ -24,14 +24,19 @@ describe('<Style />', () => {
   it('should add style to the head on the client', () => {
     render(<Style>{[`.b { display: block; }`]}</Style>);
 
-    expect(document.head.innerHTML).toInclude('<style>.b { display: block; }</style>');
+    expect(document.head.innerHTML).toInclude(
+      '<style data-cmpld="h">.b { display: block; }</style>'
+    );
   });
 
   it('should only add one style if it was already added', () => {
     render(<Style>{[`.c { display: block; }`]}</Style>);
     render(<Style>{[`.c { display: block; }`]}</Style>);
 
-    expect(document.head.innerHTML).toIncludeRepeated('<style>.c { display: block; }</style>', 1);
+    expect(document.head.innerHTML).toIncludeRepeated(
+      '<style data-cmpld="h">.c { display: block; }</style>',
+      1
+    );
   });
 
   it('should noop in prod', () => {
@@ -80,15 +85,15 @@ describe('<Style />', () => {
     );
 
     expect(document.head.innerHTML.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
-      "<style>._d1234567{ display: block; }</style>
-      <style>._c1234567:link{ color: green; }</style>
-      <style>._g1234567:visited{ color: grey; }</style>
-      <style>._i1234567:focus-within{ color: black; }</style>
-      <style>._f1234567:focus{ color: pink; }</style>
-      <style>._h1234567:focus-visible{ color: white; }</style>
-      <style>._a1234567:hover{ color: red; }</style>
-      <style>._b1234567:active{ color: blue; }</style>
-      <style>@media (max-width: 800px){ ._e1234567{ color: yellow; } }</style>
+      "<style data-cmpld=\\"h\\">._d1234567{ display: block; }</style>
+      <style data-cmpld=\\"h\\">._c1234567:link{ color: green; }</style>
+      <style data-cmpld=\\"h\\">._g1234567:visited{ color: grey; }</style>
+      <style data-cmpld=\\"h\\">._i1234567:focus-within{ color: black; }</style>
+      <style data-cmpld=\\"h\\">._f1234567:focus{ color: pink; }</style>
+      <style data-cmpld=\\"h\\">._h1234567:focus-visible{ color: white; }</style>
+      <style data-cmpld=\\"h\\">._a1234567:hover{ color: red; }</style>
+      <style data-cmpld=\\"h\\">._b1234567:active{ color: blue; }</style>
+      <style data-cmpld=\\"h\\">@media (max-width: 800px){ ._e1234567{ color: yellow; } }</style>
       "
     `);
   });

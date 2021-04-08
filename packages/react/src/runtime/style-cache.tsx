@@ -1,54 +1,70 @@
 import * as React from 'react';
 import { createContext, useContext } from 'react';
 import { isNodeEnvironment } from './is-node';
+import insertRule from './sheet';
 import { ProviderComponent, UseCacheHook } from './types';
 
 /**
  * Cache to hold already used styles.
  * React Context on the server - singleton object on the client.
  */
-const Cache: any = isNodeEnvironment() ? createContext<Record<string, true> | null>(null) : {};
+let Cache: any = isNodeEnvironment() ? createContext<Record<string, true> | null>(null) : {};
 
 if (!isNodeEnvironment()) {
+  const ssrCache = document.querySelector('script[data-cmpld="c"]');
+  if (ssrCache) {
+    try {
+      Cache = { ...Cache, ...JSON.parse(ssrCache.innerHTML) };
+      ssrCache.remove();
+    } catch (e) {
+      console.log('Error reading SSR cache', e);
+    }
+  }
+
   /**
    * Iterates through all found style elements generated when server side rendering.
    */
-  const ssrStyles = document.querySelectorAll<HTMLStyleElement>('style[data-cmpld]');
+  const ssrStyles = document.querySelectorAll<HTMLStyleElement>('style[data-cmpld="s"]');
   for (let i = 0; i < ssrStyles.length; i++) {
     // Create the client cache for all SSR'd classes
     const stylesheet = ssrStyles[i];
-    const rulesText = stylesheet.innerText;
+    // move all SSR style tags to the head straight away
+    document.head.appendChild(stylesheet);
 
-    if (rulesText) {
-      // We split the stylesheet innerText by the closing } then loop over the array
-      const arr = rulesText.split('}');
+    // consolidate styles
+    setTimeout(() => {
+      const { nonce } = stylesheet;
+      const rulesText = stylesheet.innerHTML || '';
+      if (rulesText) {
+        const rulesArr = rulesText.split(/}[.@]?/g);
+        for (let j = 0; j < rulesArr.length; j++) {
+          let rule = rulesArr[j];
+          // if the rule is empty we continue
+          if (!rule) continue;
+          switch (rule.charCodeAt(0)) {
+            // rule starts with . so we just need to close witn }
+            case 46:
+              rule += '}';
+              break;
 
-      // Nested rule string
-      let nestedRule = '';
+            // rule starts with _ so needs to prepend . and close with }
+            case 95:
+              rule = '.' + rule + '}';
+              break;
 
-      for (let i = 0; i < arr.length; i++) {
-        const myRule = `${arr[i]}}`;
-        // check if rule starts with @
-        if (myRule.charCodeAt(0) === 64) {
-          // begin building nested rule string
-          nestedRule = myRule;
-          // if the nested rule ends with }} then it's considered complete
-        } else if (nestedRule.substr(-2) === '}}') {
-          // add nested rule to Cache and reset nestedRule string
-          Cache[nestedRule] = true;
-          nestedRule = '';
-          // if we have started building a nested rule but it is not complete then append an }
-        } else if (nestedRule) {
-          nestedRule += '}';
-        } else {
-          // if not an @ rule then just add to Cache
-          Cache[myRule] = true;
+            // this is for @ rules so we prepend @ and close with }
+            default:
+              rule = '@' + rule + '}';
+              break;
+          }
+
+          // Add the rule to a new style tag in the head
+          insertRule(rule, { nonce });
         }
       }
-    }
-
-    // Move all found server-side rendered style elements to the head before React hydration happens.
-    document.head.appendChild(stylesheet);
+      // remove SSR'd style tag
+      stylesheet.remove();
+    }, 20);
   }
 }
 
@@ -66,6 +82,17 @@ export const useCache: UseCacheHook = () => {
   // On the client we use the object singleton.
   return Cache;
 };
+
+export const SSRCacheComponent = ({ nonce }: { nonce: string }): JSX.Element | null =>
+  isNodeEnvironment() ? (
+    <script
+      type="text/json"
+      data-cmpld="c"
+      nonce={nonce}
+      // During runtime this hook isn't conditionally called - it is at build time that the flow gets decided.
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(useCache()) }}></script>
+  ) : null;
 
 /**
  * On the server this ensures the minimal amount of styles will be rendered

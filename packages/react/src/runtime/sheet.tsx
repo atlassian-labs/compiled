@@ -75,6 +75,8 @@ function lazyAddStyleBucketToHead(bucketName: Bucket, opts: StyleSheetOpts): HTM
     }
 
     const tag = document.createElement('style');
+    // set data-cmpld attribute to "h" for hydrated
+    tag.setAttribute('data-cmpld', 'h');
     opts.nonce && tag.setAttribute('nonce', opts.nonce);
     tag.appendChild(document.createTextNode(''));
     styleBucketsInHead[bucketName] = tag;

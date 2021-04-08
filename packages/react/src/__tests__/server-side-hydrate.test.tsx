@@ -29,7 +29,7 @@ describe('server side hydrate', () => {
     // It's notoriously hard to do both server and client rendering in this test.
     // Instead of doing the server flow we hardcode the result instead.
     const elem = appendHTML(
-      `<style data-cmpld="true">.foo{color:blue}</style><div class="foo">hello world</div>`
+      `<style data-cmpld="s">.foo{color:blue}</style><div class="foo">hello world</div>`
     );
 
     flushRuntimeModule();

@@ -1,1 +1,1 @@
-export { CC, CS, ax, ix } from './runtime/index';
+export { CC, CS, ax, ix, SSRCacheComponent } from './runtime/index';
