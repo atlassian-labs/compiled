@@ -51,6 +51,7 @@
     "@compiled/react": "*",
     "@size-limit/preset-small-lib": "^4.10.2",
     "@storybook/addons": "^6.2.2",
+    "@storybook/builder-webpack5": "^6.3.0-alpha.4",
     "@storybook/react": "^6.2.2",
     "@types/jest": "^26.0.22",
     "@types/node": "^14.14.37",
