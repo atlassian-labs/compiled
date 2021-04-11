@@ -49,7 +49,7 @@ describe('CompiledExtractPlugin', () => {
     // Extract the styles into said bundle
     expect(getCSSAssets(actual)).toMatchInlineSnapshot(`
       Object {
-        "static/298.css": "._19itgh5a{border:2px solid orange}
+        "static/696.css": "._19itgh5a{border:2px solid orange}
       ._syazruxl{color:orange}
       ",
         "static/main.css": "._syazmu8g{color:blueviolet}
@@ -58,12 +58,12 @@ describe('CompiledExtractPlugin', () => {
     `);
   });
 
-  it('should sort chunk style declaration', async () => {
+  it('should hoist and sort chunked style declaration', async () => {
     const actual = await bundle(require.resolve('./fixtures/async-sort.js'));
 
     expect(getCSSAssets(actual)).toMatchInlineSnapshot(`
       Object {
-        "static/354.css": "
+        "static/569.css": "
       ._syaz5scu{color:red}
       ._19itgh5a{border:2px solid orange}
       ._syazruxl{color:orange}._f8pjruxl:focus{color:orange}
