@@ -7,6 +7,7 @@ import {
   getNormalModuleHook,
   getOptimizeAssetsHook,
   getSources,
+  getMergeAssetsHook,
 } from './utils/webpack';
 
 export const pluginName = 'CompiledExtractPlugin';
@@ -79,16 +80,24 @@ export class CompiledExtractPlugin {
       });
 
       getOptimizeAssetsHook(compiler, compilation).tap(pluginName, (assets) => {
-        const cssAssets = getCSSAssets(assets);
-        if (cssAssets.length === 0) {
+        const CSSAssets = getCSSAssets(assets);
+        if (CSSAssets.length === 0) {
           return;
         }
 
-        const [asset] = cssAssets;
-        const contents = getAssetSourceContents(asset.source);
-        const newSource = new RawSource(sort(contents));
+        CSSAssets.forEach((asset) => {
+          const contents = getAssetSourceContents(asset.source);
+          const newSource = new RawSource(sort(contents));
 
-        compilation.updateAsset(asset.name, newSource, asset.info);
+          compilation.updateAsset(asset.name, newSource, asset.info);
+        });
+      });
+
+      getMergeAssetsHook(compiler, compilation).tap(pluginName, (assets) => {
+        const CSSAssets = getCSSAssets(assets);
+        if (CSSAssets.length === 0) {
+          return;
+        }
       });
     });
   }

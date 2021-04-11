@@ -52,7 +52,7 @@ describe('CompiledExtractPlugin', () => {
         "static/298.css": "._19itgh5a{border:2px solid orange}
       ._syazruxl{color:orange}
       ",
-        "static/main.css": "._1wyb1fwx{font-size:12px}
+        "static/main.css": "._syazmu8g{color:blueviolet}
       ",
       }
     `);
@@ -65,13 +65,14 @@ describe('CompiledExtractPlugin', () => {
       Object {
         "static/354.css": "
       ._syaz5scu{color:red}
-      ._syazmu8g{color:blueviolet}
       ._19itgh5a{border:2px solid orange}
       ._syazruxl{color:orange}._f8pjruxl:focus{color:orange}
       ._f8pj1cnh:focus{color:purple}
       ._30l31gy6:hover{color:yellow}
       ._30l313q2:hover{color:blue}
       @media screen{._43475scu{color:red}}
+      ",
+        "static/main.css": "._syazmu8g{color:blueviolet}
       ",
       }
     `);
