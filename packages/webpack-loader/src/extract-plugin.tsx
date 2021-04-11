@@ -7,7 +7,6 @@ import {
   getNormalModuleHook,
   getOptimizeAssetsHook,
   getSources,
-  getMergeAssetsHook,
 } from './utils/webpack';
 
 export const pluginName = 'CompiledExtractPlugin';
@@ -85,19 +84,22 @@ export class CompiledExtractPlugin {
           return;
         }
 
-        CSSAssets.forEach((asset) => {
-          const contents = getAssetSourceContents(asset.source);
-          const newSource = new RawSource(sort(contents));
+        const hoistedStyles: string[] = [];
+        const [entry, ...chunks] = CSSAssets;
 
+        chunks.forEach((asset) => {
+          const contents = getAssetSourceContents(asset.source);
+          const { css, unstableRules } = sort(contents, { removeUnstableRules: true });
+          const newSource = new RawSource(css);
+
+          hoistedStyles.push(...unstableRules);
           compilation.updateAsset(asset.name, newSource, asset.info);
         });
-      });
 
-      getMergeAssetsHook(compiler, compilation).tap(pluginName, (assets) => {
-        const CSSAssets = getCSSAssets(assets);
-        if (CSSAssets.length === 0) {
-          return;
-        }
+        const contents = getAssetSourceContents(entry.source);
+        const { css } = sort(contents + hoistedStyles.join(''));
+        const newSource = new RawSource(css);
+        compilation.updateAsset(entry.name, newSource, entry.info);
       });
     });
   }

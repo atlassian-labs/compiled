@@ -78,32 +78,6 @@ export const getOptimizeAssetsHook = (
 };
 
 /**
- * Returns webpack 4 & 5 compatible merge assets hook.
- * @param compiler
- * @param compilation
- * @returns
- */
-export const getMergeAssetsHook = (
-  compiler: Compiler,
-  compilation: CompilationType
-): { tap: CompilationType['hooks']['processAssets']['tap'] } => {
-  const { Compilation } = compiler.webpack;
-  const processAssets = compilation.hooks.processAssets;
-
-  return {
-    tap: (pluginName: string, callback: (assets: CompilationType['assets']) => void) => {
-      processAssets.tap(
-        {
-          name: pluginName,
-          stage: Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_COUNT,
-        },
-        callback
-      );
-    },
-  };
-};
-
-/**
  * Returns webpack 4 & 5 compatible sources.
  * @returns
  */

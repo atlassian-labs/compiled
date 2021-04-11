@@ -63,17 +63,13 @@ describe('CompiledExtractPlugin', () => {
 
     expect(getCSSAssets(actual)).toMatchInlineSnapshot(`
       Object {
-        "static/569.css": "
-      ._syaz5scu{color:red}
+        "static/569.css": "._syaz5scu{color:red}
       ._19itgh5a{border:2px solid orange}
-      ._syazruxl{color:orange}._f8pjruxl:focus{color:orange}
-      ._f8pj1cnh:focus{color:purple}
-      ._30l31gy6:hover{color:yellow}
-      ._30l313q2:hover{color:blue}
+      ._syazruxl{color:orange}
       @media screen{._43475scu{color:red}}
       ",
         "static/main.css": "._syazmu8g{color:blueviolet}
-      ",
+      ._f8pjruxl:focus{color:orange}._f8pj1cnh:focus{color:purple}._30l31gy6:hover{color:yellow}._30l313q2:hover{color:blue}",
       }
     `);
   });
