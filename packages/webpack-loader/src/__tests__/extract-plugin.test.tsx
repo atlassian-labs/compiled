@@ -33,10 +33,11 @@ describe('CompiledExtractPlugin', () => {
       ._syaz5scu{color:red}
       ._syazmu8g{color:blueviolet}
       ._19itgh5a{border:2px solid orange}
-      ._syazruxl{color:orange}
-      ._f8pjruxl:focus{color:orange}
-      ._f8pj1cnh:focus{color:purple}._30l31gy6:hover{color:yellow}
+      ._syazruxl{color:orange}._f8pjruxl:focus{color:orange}
+      ._f8pj1cnh:focus{color:purple}
+      ._30l31gy6:hover{color:yellow}
       ._30l313q2:hover{color:blue}
+      @media screen{._43475scu{color:red}}
       ",
       }
     `);
@@ -52,6 +53,25 @@ describe('CompiledExtractPlugin', () => {
       ._syazruxl{color:orange}
       ",
         "static/main.css": "._1wyb1fwx{font-size:12px}
+      ",
+      }
+    `);
+  });
+
+  it('should sort chunk style declaration', async () => {
+    const actual = await bundle(require.resolve('./fixtures/async-sort.js'));
+
+    expect(getCSSAssets(actual)).toMatchInlineSnapshot(`
+      Object {
+        "static/354.css": "
+      ._syaz5scu{color:red}
+      ._syazmu8g{color:blueviolet}
+      ._19itgh5a{border:2px solid orange}
+      ._syazruxl{color:orange}._f8pjruxl:focus{color:orange}
+      ._f8pj1cnh:focus{color:purple}
+      ._30l31gy6:hover{color:yellow}
+      ._30l313q2:hover{color:blue}
+      @media screen{._43475scu{color:red}}
       ",
       }
     `);

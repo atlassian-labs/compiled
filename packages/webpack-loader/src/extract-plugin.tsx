@@ -1,7 +1,7 @@
 import { sort } from '@compiled/css';
 import { toBoolean, createError } from '@compiled/utils';
 import type { Compiler, Compilation } from 'webpack';
-import type { CompiledExtractPluginOptions } from './types';
+import type { CompiledExtractPluginOptions, LoaderOpts } from './types';
 import {
   getAssetSourceContents,
   getNormalModuleHook,
@@ -72,10 +72,10 @@ export class CompiledExtractPlugin {
     pushNodeModulesExtractLoader(compiler, this.#options);
 
     compiler.hooks.compilation.tap(pluginName, (compilation) => {
-      getNormalModuleHook(compiler, compilation).tap(pluginName, (loaderContext) => {
+      getNormalModuleHook(compiler, compilation).tap(pluginName, (loaderContext: LoaderOpts) => {
         // We add some information here to tell loaders that the plugin has been configured.
         // Bundling will throw if this is missing (i.e. consumers did not setup correctly).
-        (loaderContext as any)[pluginName] = true;
+        loaderContext[pluginName] = true;
       });
 
       getOptimizeAssetsHook(compiler, compilation).tap(pluginName, (assets) => {
