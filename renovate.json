@@ -30,7 +30,7 @@
     },
     {
       "extends": ["group:postcss", "schedule:weekly"],
-      "packagePatterns": ["^postcss-", "^autoprefixer"],
+      "packagePatterns": ["^postcss-", "^autoprefixer", "^cssnano"],
       "groupName": "postcss packages"
     },
     {
