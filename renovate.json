@@ -10,7 +10,7 @@
   "postUpdateOptions": ["yarnDedupeHighest"],
   "rangeStrategy": "bump",
   "semanticCommits": "enabled",
-  "branchConcurrentLimit": 3,
+  "branchConcurrentLimit": 6,
   "lockFileMaintenance": {
     "enabled": true
   },
