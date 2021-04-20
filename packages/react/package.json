@@ -45,7 +45,7 @@
     "README.md"
   ],
   "dependencies": {
-    "csstype": "^3.0.7"
+    "csstype": "^3.0.8"
   },
   "peerDependencies": {
     "react": ">= 16.12.0"
