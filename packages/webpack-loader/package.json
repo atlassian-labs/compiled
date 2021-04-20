@@ -35,7 +35,7 @@
   "devDependencies": {
     "babel-loader": "^8.2.2",
     "css-loader": "^5.2.0",
-    "memfs": "^3.2.1",
+    "memfs": "^3.2.2",
     "mini-css-extract-plugin": "^1.4.0",
     "webpack": "^5.30.0"
   }
