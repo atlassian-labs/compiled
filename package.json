@@ -58,7 +58,7 @@
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.20.0",
     "babel-loader": "^8.2.2",
-    "chromatic": "^5.7.1",
+    "chromatic": "^5.8.0",
     "eslint": "^7.23.0",
     "eslint-plugin-react": "^7.23.1",
     "eslint-plugin-react-hooks": "^4.2.0",
