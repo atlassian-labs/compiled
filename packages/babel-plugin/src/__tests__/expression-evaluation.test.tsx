@@ -323,6 +323,6 @@ describe('import specifiers', () => {
       };
     `);
 
-    expect(actual).toInclude('"@media screen{._434713q2{color:blue}}');
+    expect(actual).toInclude('@media screen{._434713q2{color:blue}}');
   });
 });
