@@ -178,7 +178,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 
       callbackIfFileIncluded(meta, updatedMeta);
 
-      const key = getKey(prop.key);
+      const key = getKey(prop.computed ? evaluateExpression(prop.key, meta).value : prop.key);
       let value = '';
 
       if (t.isStringLiteral(propValue)) {

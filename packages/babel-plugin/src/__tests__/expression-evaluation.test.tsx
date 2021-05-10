@@ -305,4 +305,24 @@ describe('import specifiers', () => {
     `);
     }).not.toThrow();
   });
+
+  it('handles the computed object property with static evaluation of variable', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+      import React from 'react';
+
+      const media = '@media screen'
+      const obj = { [media]: { color: 'blue' } };
+
+      const Span = styled.span(obj);
+
+      function Component() {
+        return (
+          <Span />
+        );
+      };
+    `);
+
+    expect(actual).toInclude('"@media screen{._434713q2{color:blue}}');
+  });
 });
