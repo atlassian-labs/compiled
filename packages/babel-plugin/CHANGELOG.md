@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.6.14
+
+### Patch Changes
+
+- 30ddaf4: Adds a support of computed properties static evaluation in object styles.
+
 ## 0.6.13
 
 ### Patch Changes
