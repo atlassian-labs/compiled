@@ -137,4 +137,22 @@ describe('SSR', () => {
       <a href=\\"https://atlassian.design\\" class=\\"_1e0c1txw _1wyb12am _syaz1cnh _30l31gy6 _9h8h13q2 _ysv75scu _7okp11x8 _1df61gy6 _f8pjbf54 _105332ev _1cld11x8 _1o8z1gy6\\">Atlassian Design System</a>"
     `);
   });
+
+  it('should not render escaped HTML characters in style tags', () => {
+    const Interpolation = styled.div`
+      & > span {
+        color: blue;
+      }
+    `;
+
+    const result = renderToStaticMarkup(
+      <Interpolation>
+        <span>hello world</span>
+      </Interpolation>
+    );
+
+    expect(result).toMatchInlineSnapshot(
+      `"<style data-cmpld=\\"true\\" nonce=\\"k0Mp1lEd\\">._1m9k13q2>span{color:blue}</style><div class=\\"_1m9k13q2\\"><span>hello world</span></div>"`
+    );
+  });
 });
