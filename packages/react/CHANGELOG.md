@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.6.11
+
+### Patch Changes
+
+- ee3363e: Fix HTML characters escapes in style tags on SSR.
+
 ## 0.6.10
 
 ### Patch Changes
