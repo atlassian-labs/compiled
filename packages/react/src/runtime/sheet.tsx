@@ -135,7 +135,11 @@ export default function insertRule(css: string, opts: StyleSheetOpts): void {
 
   if (process.env.NODE_ENV === 'production') {
     const sheet = style.sheet as CSSStyleSheet;
-    sheet.insertRule(css, sheet.cssRules.length);
+
+    // Used to avoid unhandled exceptions across browsers with prefixed selectors such as -moz-placeholder.
+    try {
+      sheet.insertRule(css, sheet.cssRules.length);
+    } catch {}
   } else {
     style.appendChild(document.createTextNode(css));
   }
