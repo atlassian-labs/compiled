@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.6.12
+
+### Patch Changes
+
+- b5b4e8a: Catch unhandled exception on inserting rules with prefixed selectors.
+
 ## 0.6.11
 
 ### Patch Changes
