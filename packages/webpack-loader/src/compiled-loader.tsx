@@ -82,6 +82,7 @@ export default async function compiledLoader(
       sourceMaps: true,
       filename: this.resourcePath,
       plugins: [
+        'babel-plugin-macros',
         options.extract && [
           '@compiled/babel-plugin-strip-runtime',
           { onFoundStyleRules: (rules: string[]) => foundCSSRules.push(...rules) },

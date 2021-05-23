@@ -77,6 +77,7 @@ export default new Transformer<UserlandOpts>({
       configFile: false,
       sourceMaps: true,
       plugins: [
+        'babel-plugin-macros',
         [
           '@compiled/babel-plugin',
           {
