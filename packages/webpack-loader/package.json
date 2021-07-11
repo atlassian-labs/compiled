@@ -21,7 +21,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@babel/core": "^7.13.16",
+    "@babel/core": "^7.14.6",
     "@compiled/babel-plugin": "^0.6.13",
     "@compiled/babel-plugin-strip-runtime": "^0.6.13",
     "@compiled/css": "^0.6.11",
