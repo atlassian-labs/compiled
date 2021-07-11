@@ -12,7 +12,8 @@ import type { CSSProps } from '../types';
  * https://compiledcssinjs.com/docs/api-css
  *
  * @param css
+ * @param values
  */
-export default function css(_css: TemplateStringsArray): CSSProps {
+export default function css(_css: TemplateStringsArray, ..._values:(string|number)[]): CSSProps {
   throw createSetupError();
 }
