@@ -1,5 +1,12 @@
 # @private/ssr
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies [13c3a60]
+  - @compiled/react@0.6.13
+
 ## 1.0.2
 
 ### Patch Changes

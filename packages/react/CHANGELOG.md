@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.6.13
+
+### Patch Changes
+
+- 13c3a60: add support of additional parameters to css function
+
 ## 0.6.12
 
 ### Patch Changes
