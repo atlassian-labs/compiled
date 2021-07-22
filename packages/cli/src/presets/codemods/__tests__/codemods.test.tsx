@@ -117,6 +117,51 @@ describe('main', () => {
     );
   });
 
+  it('should present a form containing custom options for jscodeshift cli', async () => {
+    setupCliRunner({ choice: 1, runPath: 'src/components/Button.tsx' });
+
+    await codemods();
+
+    expect(Form).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'jscodeshift',
+        message: `Please provide the following jscodeshift cli options ${chalk.cyan(
+          '<https://github.com/facebook/jscodeshift#usage-cli>'
+        )}`,
+        hint: chalk.bold(
+          chalk.red(
+            '**NOTE**: [PATH] is mandatory option. It is the source code directory eg. /project/src'
+          )
+        ),
+        choices: [
+          {
+            name: 'path',
+            message: 'PATH',
+          },
+          {
+            name: 'parser',
+            message: '--parser',
+            hint: `default: ${chalk.cyan('babel')}`,
+          },
+          {
+            name: 'extensions',
+            message: '--extensions',
+            hint: `default: ${chalk.cyan('js')}`,
+          },
+          {
+            name: 'ignorePattern',
+            message: '--ignore-pattern',
+          },
+          {
+            name: 'featureFlagExpression',
+            message: '--feature-flag-expression',
+            hint: 'leave empty for no feature flagging',
+          },
+        ],
+      })
+    );
+  });
+
   it('should run on 8 cpus', async () => {
     setupCliRunner({ choice: 0, runPath: 'src/components/**/*.tsx' });
 

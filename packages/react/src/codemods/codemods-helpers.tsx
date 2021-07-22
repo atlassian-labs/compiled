@@ -104,16 +104,33 @@ export const findImportSpecifierName = ({
   return getImportSpecifierName(importSpecifierCollection);
 };
 
+const buildImportDeclaration = ({
+  j,
+  namedImport,
+  localName,
+}: {
+  j: JSCodeshift;
+  namedImport: string;
+  localName: string;
+}): ImportDeclaration[] => [
+  j.importDeclaration(
+    [j.importSpecifier(j.identifier(namedImport), j.identifier(localName))],
+    j.literal(COMPILED_IMPORT_PATH)
+  ),
+];
+
 export const convertDefaultImportToNamedImport = ({
   j,
   collection,
   importPath,
   namedImport,
+  featureFlagExpression,
 }: {
   j: JSCodeshift;
   collection: Collection<any>;
   importPath: string;
   namedImport: string;
+  featureFlagExpression: string | null;
 }): void => {
   const importDeclarationCollection: Collection<ImportDeclaration> = getImportDeclarationCollection(
     {
@@ -132,22 +149,57 @@ export const convertDefaultImportToNamedImport = ({
       const oldNode = importDeclarationPath.node;
       const { comments } = oldNode;
 
-      j(importDeclarationPath).replaceWith([
-        j.importDeclaration(
-          [
-            j.importSpecifier(
-              j.identifier(namedImport),
-              j.identifier(getImportDefaultSpecifierName(importDefaultSpecifierCollection))
+      const defaultSpecifierName = getImportDefaultSpecifierName(importDefaultSpecifierCollection);
+
+      if (featureFlagExpression !== null) {
+        const featureFlagExpressionNode = j(`${featureFlagExpression}`);
+        const compiledImportName = `${defaultSpecifierName}Compiled`;
+        const oldImportName = `${defaultSpecifierName}Old`;
+
+        // Add feature flag expression to select library
+        j(importDeclarationPath).insertAfter(() =>
+          j.variableDeclaration('const', [
+            j.variableDeclarator(
+              j.identifier(defaultSpecifierName),
+              j.conditionalExpression(
+                featureFlagExpressionNode.find(j.ExpressionStatement).get().value.expression,
+                j.identifier(compiledImportName),
+                j.identifier(oldImportName)
+              )
             ),
-          ],
-          j.literal(COMPILED_IMPORT_PATH)
-        ),
-      ]);
+          ])
+        );
 
-      const newNode = importDeclarationPath.node;
+        // Create new import for compiled
+        j(importDeclarationPath).insertAfter(
+          buildImportDeclaration({
+            j,
+            namedImport,
+            localName: compiledImportName,
+          })
+        );
 
-      if (newNode !== oldNode) {
-        newNode.comments = comments;
+        // Update old import to use renamed identifier
+        j(importDeclarationPath)
+          .find(j.ImportDefaultSpecifier)
+          .find(j.Identifier)
+          .replaceWith(j.identifier(oldImportName));
+      } else {
+        // Replace old import with new import to compiled
+        j(importDeclarationPath).replaceWith(
+          buildImportDeclaration({
+            j,
+            namedImport,
+            localName: defaultSpecifierName,
+          })
+        );
+
+        const newNode = importDeclarationPath.node;
+
+        if (newNode !== oldNode) {
+          // Copy comments and remove flowlint disables from the old import
+          newNode.comments = comments?.filter(({ value }) => !value.includes('flowlint-next-line'));
+        }
       }
     }
   });

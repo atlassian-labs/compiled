@@ -225,6 +225,7 @@ const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Optio
       collection,
       importPath: imports.emotionStyledPackageName,
       namedImport: imports.compiledStyledImportName,
+      featureFlagExpression: null,
     });
   }
 

@@ -1,3 +1,4 @@
+import { readFile } from 'fs/promises';
 import chalk from 'chalk';
 import path, { ParsedPath } from 'path';
 import { AutoComplete, Form } from 'enquirer';
@@ -12,6 +13,11 @@ const getTransformPrompt = async (transforms: ParsedPath[]): Promise<ParsedPath>
     choices: transforms.map(({ dir }) => path.basename(dir)),
     result: (choice: string) => transforms.find(({ dir }) => dir.includes(choice)),
   }).run();
+};
+
+const getTransformOptions = async (transform: ParsedPath): Promise<Array<Choice<string>>> => {
+  const file = await readFile(`${transform.dir}/options.json`, { encoding: 'utf-8' });
+  return JSON.parse(file);
 };
 
 const codemodChoice: Array<Choice<keyof CodemodOptions>> = [
@@ -35,7 +41,7 @@ const codemodChoice: Array<Choice<keyof CodemodOptions>> = [
   },
 ];
 
-const getTransformForm = async () => {
+const getTransformForm = async (transformOptions: Array<Choice<string>>) => {
   return await new Form({
     name: 'jscodeshift',
     message: `Please provide the following jscodeshift cli options ${chalk.cyan(
@@ -46,7 +52,7 @@ const getTransformForm = async () => {
         '**NOTE**: [PATH] is mandatory option. It is the source code directory eg. /project/src'
       )
     ),
-    choices: codemodChoice,
+    choices: [...codemodChoice, ...transformOptions],
   }).run();
 };
 
@@ -58,7 +64,8 @@ const codemods = async (): Promise<void> => {
 
   const transform = await getTransformPrompt(transforms);
   const transformPath = getTransformPath(transform);
-  const form = await getTransformForm();
+  const transformOptions = await getTransformOptions(transform);
+  const form = await getTransformForm(transformOptions);
 
   const args = [
     // Limit CPUs to 8 to prevent issues when running on CI with a large amount of cpus
@@ -71,7 +78,7 @@ const codemods = async (): Promise<void> => {
     form.path,
   ].filter((arg) => !!arg);
 
-  const command = [require.resolve('.bin/jscodeshift'), ...args].join(' ');
+  const command = ['node', require.resolve('.bin/jscodeshift'), ...args].join(' ');
 
   console.log(
     chalk.green(

@@ -1,0 +1,7 @@
+[
+  {
+    "name": "featureFlagExpression",
+    "message": "--feature-flag-expression",
+    "hint": "leave empty for no feature flagging"
+  }
+]

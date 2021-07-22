@@ -12,6 +12,7 @@ const imports = {
 };
 
 const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Options): string => {
+  const featureFlagExpression = options['feature-flag-expression'] ?? null;
   const { source } = fileInfo;
   const collection = j(source);
 
@@ -37,6 +38,7 @@ const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Optio
     collection,
     importPath: imports.styledComponentsPackageName,
     namedImport: imports.compiledStyledImportName,
+    featureFlagExpression,
   });
 
   return collection.toSource(options.printOptions || { quote: 'single' });
