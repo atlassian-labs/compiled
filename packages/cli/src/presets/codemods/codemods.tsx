@@ -1,10 +1,13 @@
-import { readFile } from 'fs/promises';
+import { readFile as readFileCallback } from 'fs';
 import chalk from 'chalk';
 import path, { ParsedPath } from 'path';
 import { AutoComplete, Form } from 'enquirer';
 import { promise as execAsync } from 'exec-sh';
 import { getTransforms, getTransformPath } from './utils/transforms';
 import { Choice, CodemodOptions } from './types';
+import { promisify } from 'util';
+
+const readFile = promisify(readFileCallback);
 
 const getTransformPrompt = async (transforms: ParsedPath[]): Promise<ParsedPath> => {
   return await new AutoComplete({

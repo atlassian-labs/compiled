@@ -17,6 +17,6 @@
     ],
     "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo"
   },
-  "include": ["src/**/*.json"],
+  "include": ["src/**/*", "src/**/*.json"],
   "references": []
 }
