@@ -43,7 +43,7 @@
   "devDependencies": {
     "@babel/plugin-transform-react-jsx-self": "^7.14.5",
     "@babel/plugin-transform-react-jsx-source": "^7.14.5",
-    "@babel/preset-env": "^7.14.7",
+    "@babel/preset-env": "^7.14.8",
     "@babel/preset-react": "^7.14.5",
     "@babel/preset-typescript": "^7.14.5",
     "@changesets/cli": "^2.16.0",
@@ -51,10 +51,10 @@
     "@compiled/react": "*",
     "@size-limit/preset-small-lib": "^4.10.2",
     "@storybook/addons": "^6.2.2",
-    "@storybook/builder-webpack5": "^6.3.0-alpha.14",
+    "@storybook/builder-webpack5": "^6.3.6",
     "@storybook/react": "^6.2.2",
     "@types/jest": "^26.0.24",
-    "@types/node": "^14.17.5",
+    "@types/node": "^14.17.6",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "babel-loader": "^8.2.2",
@@ -68,7 +68,7 @@
     "jest-extended": "^0.11.5",
     "jest-watch-typeahead": "^0.6.4",
     "prettier": "^2.2.1",
-    "pretty-quick": "^3.1.0",
+    "pretty-quick": "^3.1.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "size-limit": "^4.10.2",
@@ -81,7 +81,7 @@
     "workspaces-run": "^1.0.1"
   },
   "resolutions": {
-    "@babel/core": "^7.14.6",
+    "@babel/core": "^7.14.8",
     "jest": "^26.6.3",
     "typescript": "^4.2.4"
   },
