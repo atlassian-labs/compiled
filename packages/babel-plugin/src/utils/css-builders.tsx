@@ -159,6 +159,29 @@ const callbackIfFileIncluded = (meta: Metadata, next: Metadata) => {
 };
 
 /**
+ * Extracts CSS data from a logical expression node.
+ *
+ * @param node Node we're interested in extracting CSS from.
+ * @param state Babel state - should house options and meta data used during the transformation.
+ */
+const extractLogicalExpression = (node: t.ArrowFunctionExpression, meta: Metadata): CSSOutput => {
+  const variables: CSSOutput['variables'] = [];
+  const css: CSSOutput['css'] = [];
+
+  if (t.isExpression(node.body)) {
+    const { value: propValue, meta: updatedMeta } = evaluateExpression(node.body, meta);
+    const result = buildCss(propValue, updatedMeta);
+
+    callbackIfFileIncluded(meta, updatedMeta);
+
+    css.push(...result.css);
+    variables.push(...result.variables);
+  }
+
+  return { css: mergeSubsequentUnconditionalCssItems(css), variables };
+};
+
+/**
  * Extracts CSS data from an object expression node.
  *
  * @param node Node we're interested in extracting CSS from.
@@ -268,10 +291,20 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   // quasis are the string pieces of the template literal - the parts around the interpolations.
   const literalResult = node.quasis.reduce<string>((acc, q, index): string => {
     const nodeExpression = node.expressions[index] as t.Expression | undefined;
+
+    if (
+      nodeExpression &&
+      t.isArrowFunctionExpression(nodeExpression) &&
+      t.isLogicalExpression(nodeExpression.body)
+    ) {
+      return acc + q.value.raw + ';';
+    }
+
     if (!nodeExpression) {
       return acc + q.value.raw + ';';
     }
 
+    // The following is used for CSS mixins
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
 
     callbackIfFileIncluded(meta, updatedMeta);
@@ -320,6 +353,31 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   css.push({ type: 'unconditional', css: literalResult });
 
+  // Deals with Conditional CSS Rules
+  node.expressions.forEach((prop) => {
+    if (t.isArrowFunctionExpression(prop)) {
+      let resolvedBinding = undefined;
+
+      if (t.isIdentifier(prop.body)) {
+        resolvedBinding = resolveBindingNode(prop.body.name, meta);
+
+        if (!resolvedBinding) {
+          throw buildCodeFrameError('Variable could not be found', prop.body, meta.parentPath);
+        }
+      }
+
+      if (t.isLogicalExpression(prop.body)) {
+        const { value: propValue, meta: updatedMeta } = evaluateExpression(prop.body, meta);
+        const result = buildCss(propValue, updatedMeta);
+
+        callbackIfFileIncluded(meta, updatedMeta);
+
+        css.push(...result.css);
+        variables.push(...result.variables);
+      }
+    }
+  });
+
   return { css: mergeSubsequentUnconditionalCssItems(css), variables };
 };
 
@@ -340,6 +398,10 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
 
   if (t.isObjectExpression(node)) {
     return extractObjectExpression(node, meta);
+  }
+
+  if (t.isArrowFunctionExpression(node) && t.isLogicalExpression(node.body)) {
+    return extractLogicalExpression(node, meta);
   }
 
   if (t.isIdentifier(node)) {

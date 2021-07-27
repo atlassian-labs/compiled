@@ -15,7 +15,7 @@ export interface StyledTemplateOpts {
   /**
    * Class to be used for the CSS selector.
    */
-  classNames: string[];
+  classNames: t.Expression[];
 
   /**
    * Tag for the Styled Component, for example "div" or user defined component.
@@ -121,6 +121,68 @@ const styledStyleProp = (
  */
 const buildComponentTag = ({ name, type }: Tag) => {
   return type === 'InBuiltComponent' ? `"${name}"` : name;
+};
+
+/**
+ * Returns props used in a logical expression.
+ *
+ * @param name Props Name
+ */
+const buildProps = (name: string) => {
+  return PROPS_IDENTIFIER_NAME + '.' + name;
+};
+
+/**
+ * Recursively traverses a node that contains more than one logical expression
+ * and build the related multi conditional logical expression.
+ *
+ * @param node Node we're interested in extracting logical expression from.
+ */
+let multiLogicalExpressions = '';
+const traverseMulltiLogicalExpressions = (node: t.Expression) => {
+  if (t.isLogicalExpression(node)) {
+    if (t.isMemberExpression(node.left) && t.isIdentifier(node.left.property)) {
+      const propsName = buildProps(node.left.property.name);
+      multiLogicalExpressions += `${propsName} ${node.operator} `;
+    } else if (t.isLogicalExpression(node.left)) {
+      traverseMulltiLogicalExpressions(node.left);
+    }
+
+    if (t.isLogicalExpression(node.right)) {
+      traverseMulltiLogicalExpressions(node.right);
+    } else if (t.isMemberExpression(node.right) && t.isIdentifier(node.right.property)) {
+      const propsName = buildProps(node.right.property.name);
+      multiLogicalExpressions += `${propsName}`;
+    }
+  }
+};
+
+/**
+ * Will return the list of conditional rules used to build a styled templated.
+ *
+ * @param Node we're interested in extracting classNames from.
+ */
+const buildStyledConditionalClasses = (node: t.LogicalExpression) => {
+  if (node.left.extra === undefined) {
+    // if single logical expression
+    if (
+      t.isMemberExpression(node.left) &&
+      t.isIdentifier(node.left.property) &&
+      t.isStringLiteral(node.right)
+    ) {
+      const propsName = buildProps(node.left.property.name);
+      return `${propsName} ${node.operator} "${node.right.value}",`;
+    }
+  } else if (node.left.extra?.parenthesized) {
+    // if multiple logical expressions
+    traverseMulltiLogicalExpressions(node.left);
+
+    if (t.isStringLiteral(node.right)) {
+      return `(${multiLogicalExpressions}) ${node.operator} "${node.right.value}",`;
+    }
+  }
+
+  return;
 };
 
 /**
@@ -325,6 +387,19 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
       })
     : t.identifier('style');
 
+  const unconditionalClassNames: string[] = [];
+  let logicalClassNames = '';
+
+  opts.classNames.forEach((item) => {
+    if (t.isStringLiteral(item)) {
+      unconditionalClassNames.push(item.value);
+    } else if (t.isLogicalExpression(item)) {
+      logicalClassNames += buildStyledConditionalClasses(item);
+    }
+  });
+
+  const classNames = `"${unconditionalClassNames.join(' ')}", ${logicalClassNames}`;
+
   return template(
     `
   forwardRef(({
@@ -341,7 +416,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
         {...${PROPS_IDENTIFIER_NAME}}
         style={%%styleProp%%}
         ref={ref}
-        className={ax(["${opts.classNames.join(' ')}", ${PROPS_IDENTIFIER_NAME}.className])}
+        className={ax([${classNames} ${PROPS_IDENTIFIER_NAME}.className])}
       />
     </CC>
   ));
@@ -425,7 +500,7 @@ export const conditionallyJoinExpressions = (
  * @param meta Plugin metadata
  */
 export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
-  const { sheets, classNames } = transformCss(cssOutput.css.map((x) => getItemCss(x)).join(''));
+  const { sheets, classNames } = transformItemCss(cssOutput);
 
   return styledTemplate(
     {

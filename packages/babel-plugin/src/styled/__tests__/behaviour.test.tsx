@@ -330,4 +330,116 @@ describe('styled component behaviour', () => {
     `)
     ).not.toThrow();
   });
+
+  it('should apply conditional CSS with ternary operator', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.button\`
+        color: \${(props) => (props.isPrimary ? 'blue' : 'red')};
+        font-size: 30px;
+        border: 2px solid blue;
+        padding: 8px;
+      \`;
+    `);
+
+    expect(actual).toInclude(
+      'className={ax(["_syazmuvv _1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.className])}'
+    );
+  });
+
+  it('should apply conditional CSS with template literal', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        color: red;
+        background: white;
+        border: 3px solid yellow; 
+        \${props => props.isPrimary && ({ color: 'blue' })};
+      \`;
+    `);
+
+    expect(actual).toInclude(
+      'className={ax(["_syaz5scu _bfhk1x77 _19it7fe6",props.isPrimary&&"_syaz13q2",props.className])}'
+    );
+  });
+
+  it('should apply unconditional before and after a conditional css rule with template literal', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        color: red;
+        background: white;
+        \${props => props.isPrimary && ({ color: 'blue' })};
+        border: 3px solid yellow; 
+      \`;
+    `);
+
+    expect(actual).toInclude(
+      '{ax(["_syaz5scu _bfhk1x77 _19it7fe6",props.isPrimary&&"_syaz13q2",props.className])}'
+    );
+  });
+
+  it('should apply conditional CSS with object styles', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div(
+        { color: 'red' },
+        props => props.isPrimary && ({ color: 'blue' }),
+      );
+    `);
+
+    expect(actual).toInclude(
+      'className={ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.className])}'
+    );
+  });
+
+  it('should apply unconditional before and after a conditional css rule with object styles', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div(
+        { color: 'red' },
+        props => props.isPrimary && ({ color: 'blue' }),
+        { border: '1px solid black'},
+      );
+    `);
+
+    expect(actual).toInclude(
+      '{ax(["_syaz5scu _19it97hw",props.isPrimary&&"_syaz13q2",props.className])}'
+    );
+  });
+
+  it('should apply conditional CSS with object styles regardless declaration order', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div(
+        props => props.isPrimary && ({ color: 'red' }),
+        { color: 'blue' },
+      );
+    `);
+
+    expect(actual).toInclude(
+      'className={ax(["_syaz13q2",props.isPrimary&&"_syaz5scu",props.className])}'
+    );
+  });
+
+  it('should apply multi conditional logical expression', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div(
+        { color: 'red' },
+        props => (props.isPrimary || props.isMaybe) && ({ color: 'blue' }),
+      );
+    `);
+
+    expect(actual).toInclude(
+      '{ax(["_syaz5scu",(props.isPrimary||props.isMaybe)&&"_syaz13q2",props.className])}'
+    );
+  });
 });
