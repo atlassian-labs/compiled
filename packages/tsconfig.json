@@ -1,6 +1,7 @@
 {
   "files": [],
   "references": [
+    { "path": "codemods/tsconfig.json" },
     { "path": "babel-plugin/tsconfig.json" },
     { "path": "babel-plugin-strip-runtime/tsconfig.json" },
     { "path": "cli/tsconfig.json" },

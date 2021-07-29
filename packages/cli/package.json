@@ -28,6 +28,7 @@
     "@compiled/react": ">=0.6.10"
   },
   "dependencies": {
+    "@compiled/codemods": "*",
     "app-root-path": "^3.0.0",
     "chalk": "^4.1.1",
     "enquirer": "^2.3.6",

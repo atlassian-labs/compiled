@@ -13,10 +13,8 @@ const basePath = path.join(
   isLocalRun ? appRoot.path : process.cwd(),
   'node_modules',
   '@compiled',
-  'react',
-  'dist',
-  'cjs',
-  'codemods'
+  'codemods',
+  'dist'
 );
 
 const parseTransformPath = (transformPath: string) => path.parse(transformPath);

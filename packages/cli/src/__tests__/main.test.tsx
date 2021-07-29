@@ -113,8 +113,8 @@ describe('main', () => {
 
   it('should find codemods in node modules', () => {
     expect(() => {
-      require('@compiled/react/dist/cjs/codemods/emotion-to-compiled');
-      require('@compiled/react/dist/cjs/codemods/styled-components-to-compiled');
+      require('@compiled/codemods/dist/emotion-to-compiled');
+      require('@compiled/codemods/dist/styled-components-to-compiled');
     }).not.toThrow();
   });
 });
