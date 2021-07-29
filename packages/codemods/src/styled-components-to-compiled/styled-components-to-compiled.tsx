@@ -4,16 +4,23 @@ import {
   hasImportDeclaration,
   convertDefaultImportToNamedImport,
   addCommentForUnresolvedImportSpecifiers,
+  withPlugin,
 } from '../codemods-helpers';
+import { CodemodPlugin } from '../plugin';
 
 const imports = {
   compiledStyledImportName: 'styled',
   styledComponentsPackageName: 'styled-components',
 };
 
-const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Options): string => {
+export const transformer = (
+  fileInfo: FileInfo,
+  { jscodeshift: j }: API,
+  options: Options
+): string => {
   const { source } = fileInfo;
   const collection = j(source);
+  const plugin: CodemodPlugin | null = options.pluginModule;
 
   const hasStyledComponentsImportDeclaration = hasImportDeclaration({
     j,
@@ -34,6 +41,7 @@ const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Optio
 
   convertDefaultImportToNamedImport({
     j,
+    plugin,
     collection,
     importPath: imports.styledComponentsPackageName,
     namedImport: imports.compiledStyledImportName,
@@ -42,4 +50,4 @@ const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Optio
   return collection.toSource(options.printOptions || { quote: 'single' });
 };
 
-export default transformer;
+export default withPlugin(transformer);

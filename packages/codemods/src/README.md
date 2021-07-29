@@ -6,3 +6,30 @@
 
 1. [styled-components-to-compiled](./styled-components-to-compiled)
 2. [emotion-to-compiled](./emotion-to-compiled)
+
+## Plugins
+
+Codemods support a simple plugin system where supported implementations can be overridden. The `CodemodPlugin` interface
+lists all the supported methods to be re-implemented. See the following example:
+
+```javascript
+import { JSCodeshift, Collection, ImportDeclaration } from 'jscodeshift';
+import { CodemodPlugin } from '@compiled/codemods';
+
+const insertBeforeImport = ({
+  j,
+}: {
+  j: JSCodeshift,
+  newImport: Collection<ImportDeclaration>,
+}): ImportDeclaration =>
+  j.importDeclaration(
+    [j.importSpecifier(j.identifier('getFeatureFlag'))],
+    j.literal('./feature-flag')
+  );
+
+const ExampleCodemodPlugin: CodemodPlugin = {
+  insertBeforeImport,
+};
+
+export default ExampleCodemodPlugin;
+```

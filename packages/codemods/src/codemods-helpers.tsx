@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import {
   JSCodeshift,
   ImportDeclaration,
@@ -10,10 +11,38 @@ import {
   Node,
   ImportNamespaceSpecifier,
   Collection,
+  FileInfo,
+  API,
+  Options,
 } from 'jscodeshift';
+
 import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from './constants';
+import { CodemodPlugin } from './plugin';
+import DefaultCodemodPlugin from './plugins/default';
 
 type Identifiers = Array<Identifier | JSXIdentifier | TSTypeParameter>;
+
+const getPlugin = async (pluginPath: string | undefined) => {
+  if (pluginPath) {
+    try {
+      const pluginModule = await import(pluginPath);
+      return pluginModule.default;
+    } catch (err) {
+      console.error(
+        chalk.red(`${chalk.bold(`Plugin at path '${pluginPath}' was not loaded`)}\n${err}`)
+      );
+      process.exit(1);
+    }
+  }
+  return null;
+};
+
+export const withPlugin = (
+  transformer: (fileInfo: FileInfo, api: API, options: Options) => string
+) => async (fileInfo: FileInfo, api: API, options: Options): Promise<string> => {
+  options.pluginModule = getPlugin(options.plugin);
+  return transformer(fileInfo, api, options);
+};
 
 export const getImportDeclarationCollection = ({
   j,
@@ -106,11 +135,13 @@ export const findImportSpecifierName = ({
 
 export const convertDefaultImportToNamedImport = ({
   j,
+  plugin,
   collection,
   importPath,
   namedImport,
 }: {
   j: JSCodeshift;
+  plugin: CodemodPlugin | null;
   collection: Collection<any>;
   importPath: string;
   namedImport: string;
@@ -129,26 +160,25 @@ export const convertDefaultImportToNamedImport = ({
     );
 
     if (importDefaultSpecifierCollection.length > 0) {
-      const oldNode = importDeclarationPath.node;
-      const { comments } = oldNode;
+      const newImport = j(importDeclarationPath).replaceWith(
+        (plugin?.buildImport ?? DefaultCodemodPlugin.buildImport)({
+          j,
+          currentNode: importDeclarationPath.node,
+          defaultSpecifierName: getImportDefaultSpecifierName(importDefaultSpecifierCollection),
+          namedImport,
+          compiledImportPath: COMPILED_IMPORT_PATH,
+        })
+      );
 
-      j(importDeclarationPath).replaceWith([
-        j.importDeclaration(
-          [
-            j.importSpecifier(
-              j.identifier(namedImport),
-              j.identifier(getImportDefaultSpecifierName(importDefaultSpecifierCollection))
-            ),
-          ],
-          j.literal(COMPILED_IMPORT_PATH)
-        ),
-      ]);
+      const insertBeforeNodes = (
+        plugin?.insertBeforeImport ?? DefaultCodemodPlugin.insertBeforeImport
+      )({ j, newImport });
+      if (insertBeforeNodes) newImport.insertBefore(insertBeforeNodes);
 
-      const newNode = importDeclarationPath.node;
-
-      if (newNode !== oldNode) {
-        newNode.comments = comments;
-      }
+      const insertAfterNodes = (
+        plugin?.insertAfterImport ?? DefaultCodemodPlugin.insertAfterImport
+      )({ j, newImport });
+      if (insertAfterNodes) newImport.insertAfter(insertAfterNodes);
     }
   });
 };

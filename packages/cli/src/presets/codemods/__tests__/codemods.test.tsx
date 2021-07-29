@@ -112,6 +112,11 @@ describe('main', () => {
             name: 'ignorePattern',
             message: '--ignore-pattern',
           },
+          {
+            name: 'plugin',
+            message: '--plugin (path to source)',
+            value: '--plugin',
+          },
         ],
       })
     );

@@ -33,6 +33,11 @@ const codemodChoice: Array<Choice<keyof CodemodOptions>> = [
     name: 'ignorePattern',
     message: '--ignore-pattern',
   },
+  {
+    name: 'plugin',
+    message: '--plugin (path to source)',
+    value: '--plugin',
+  },
 ];
 
 const getTransformForm = async () => {
@@ -66,12 +71,13 @@ const codemods = async (): Promise<void> => {
     form.parser && `--parser=${form.parser}`,
     form.extensions && `--extensions=${form.extensions}`,
     form.ignorePattern && `--ignore-pattern=${form.ignorePattern}`,
+    form.plugin && `--plugin="${form.plugin}"`,
     form.others,
     `--transform=${transformPath}`,
     form.path,
   ].filter((arg) => !!arg);
 
-  const command = [require.resolve('.bin/jscodeshift'), ...args].join(' ');
+  const command = ['node', require.resolve('.bin/jscodeshift'), ...args].join(' ');
 
   console.log(
     chalk.green(
