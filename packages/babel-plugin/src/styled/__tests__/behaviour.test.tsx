@@ -450,6 +450,30 @@ describe('styled component behaviour', () => {
     );
   });
 
+  it('should apply unconditional after a conditional css rule with template literal', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        \${props => props.isPrimary && ({ color: 'blue' })};
+        border: 3px solid yellow;
+        color: red;
+        background: white;
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syaz13q2{color:blue}',
+      '._bfhk1x77{background-color:white}',
+      '._syaz5scu{color:red}',
+      '._19it7fe6{border:3px solid yellow}',
+    ]);
+
+    expect(actual).toInclude(
+      '{ax(["_19it7fe6 _syaz5scu _bfhk1x77",props.isPrimary&&"_syaz13q2",props.className])}'
+    );
+  });
+
   it('should apply conditional CSS with object styles', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
