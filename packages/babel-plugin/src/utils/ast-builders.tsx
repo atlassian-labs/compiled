@@ -133,56 +133,48 @@ const buildProps = (name: string) => {
 };
 
 /**
- * Recursively traverses a node that contains more than one logical expression
- * and build the related multi conditional logical expression.
- *
- * @param node Node we're interested in extracting logical expression from.
- */
-let multiLogicalExpressions = '';
-const traverseMulltiLogicalExpressions = (node: t.Expression) => {
-  if (t.isLogicalExpression(node)) {
-    if (t.isMemberExpression(node.left) && t.isIdentifier(node.left.property)) {
-      const propsName = buildProps(node.left.property.name);
-      multiLogicalExpressions += `${propsName} ${node.operator} `;
-    } else if (t.isLogicalExpression(node.left)) {
-      traverseMulltiLogicalExpressions(node.left);
-    }
-
-    if (t.isLogicalExpression(node.right)) {
-      traverseMulltiLogicalExpressions(node.right);
-    } else if (t.isMemberExpression(node.right) && t.isIdentifier(node.right.property)) {
-      const propsName = buildProps(node.right.property.name);
-      multiLogicalExpressions += `${propsName}`;
-    }
-  }
-};
-
-/**
- * Will return the list of conditional rules used to build a styled templated.
+ * Will return the list of conditional rules used to build a styled template.
  *
  * @param Node we're interested in extracting classNames from.
  */
 const buildStyledConditionalClasses = (node: t.LogicalExpression) => {
-  if (node.left.extra === undefined) {
-    // if single logical expression
-    if (
-      t.isMemberExpression(node.left) &&
-      t.isIdentifier(node.left.property) &&
-      t.isStringLiteral(node.right)
-    ) {
-      const propsName = buildProps(node.left.property.name);
-      return `${propsName} ${node.operator} "${node.right.value}",`;
-    }
-  } else if (node.left.extra?.parenthesized) {
-    // if multiple logical expressions
-    traverseMulltiLogicalExpressions(node.left);
+  let operator = '',
+    classNames = '',
+    hasMultiLogicalExpression = false,
+    logicalExpressions = '';
 
-    if (t.isStringLiteral(node.right)) {
-      return `(${multiLogicalExpressions}) ${node.operator} "${node.right.value}",`;
-    }
+  if (t.isStringLiteral(node.right)) {
+    operator = node.operator;
+    classNames = node.right.value;
+    hasMultiLogicalExpression = node.left.extra?.parenthesized ? true : false;
   }
 
-  return;
+  // Recursively traverses a node that contains one or more logical expressions
+  const traverseMultiLogicalExpressions = (node: t.Expression) => {
+    if (t.isLogicalExpression(node)) {
+      if (t.isMemberExpression(node.left) && t.isIdentifier(node.left.property)) {
+        const propsName = buildProps(node.left.property.name);
+        if (node.operator && hasMultiLogicalExpression) {
+          logicalExpressions += `${propsName} ${node.operator}`;
+        } else {
+          logicalExpressions = `${propsName}`;
+        }
+      } else if (t.isLogicalExpression(node.left)) {
+        traverseMultiLogicalExpressions(node.left);
+      }
+
+      if (t.isMemberExpression(node.right) && t.isIdentifier(node.right.property)) {
+        const propsName = buildProps(node.right.property.name);
+        logicalExpressions += `${propsName}`;
+      } else if (t.isLogicalExpression(node.right)) {
+        traverseMultiLogicalExpressions(node.right);
+      }
+    }
+  };
+
+  traverseMultiLogicalExpressions(node);
+
+  return `(${logicalExpressions}) ${operator} "${classNames}",`;
 };
 
 /**

@@ -343,8 +343,40 @@ describe('styled component behaviour', () => {
       \`;
     `);
 
+    expect(actual).toIncludeMultiple([
+      '._19bvftgi{padding-left:8px}',
+      '._n3tdftgi{padding-bottom:8px}',
+      '._u5f3ftgi{padding-right:8px}',
+      '._ca0qftgi{padding-top:8px}',
+      '._19itlf8h{border:2px solid blue}',
+      '._1wyb1ul9{font-size:30px}',
+      '._syazmuvv{color:var(--_b3bzwz)}',
+    ]);
+
     expect(actual).toInclude(
-      'className={ax(["_syazmuvv _1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.className])}'
+      `<C{...props}style={{...style,"--_b3bzwz":ix(isPrimary?'blue':'red')}}ref={ref}className={ax(["_syazmuvv _1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.className])}/>`
+    );
+  });
+
+  it('should apply conditional CSS with multiple ternary operators', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.button\`
+        color: \${(props) => (props.isPrimary ? 'blue' : 'red')};
+        border: \${(props) => (props.isPrimary ? '1px solid blue' : '1px solid red')};
+        font-size: 30px;
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._1wyb1ul9{font-size:30px}',
+      '._19it1hus{border:var(--_ubmxli)}',
+      '._syazmuvv{color:var(--_b3bzwz)}',
+    ]);
+
+    expect(actual).toInclude(
+      `<C{...props}style={{...style,\"--_b3bzwz\":ix(isPrimary?'blue':'red'),\"--_ubmxli\":ix(isPrimary?'1px solid blue':'1px solid red')}}ref={ref}className={ax([\"_syazmuvv _19it1hus _1wyb1ul9\",props.className])}/>`
     );
   });
 
@@ -360,8 +392,37 @@ describe('styled component behaviour', () => {
       \`;
     `);
 
+    expect(actual).toIncludeMultiple([
+      '._syaz13q2{color:blue}',
+      '._19it7fe6{border:3px solid yellow}',
+      '._bfhk1x77{background-color:white}',
+      '._syaz5scu{color:red}',
+    ]);
+
     expect(actual).toInclude(
       'className={ax(["_syaz5scu _bfhk1x77 _19it7fe6",props.isPrimary&&"_syaz13q2",props.className])}'
+    );
+  });
+
+  it('should apply conditional CSS with template literal and multiple props lines', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        color: red;
+        \${props => props.isPrimary && ({ color: 'blue' })};
+        \${props => props.isBolded && ({ fontWeight: 'bold' })};
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._k48p8n31{font-weight:bold}',
+      '._syaz13q2{color:blue}',
+      '._syaz5scu{color:red}',
+    ]);
+
+    expect(actual).toInclude(
+      'className={ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.isBolded&&"_k48p8n31",props.className])}'
     );
   });
 
@@ -376,6 +437,13 @@ describe('styled component behaviour', () => {
         border: 3px solid yellow; 
       \`;
     `);
+
+    expect(actual).toIncludeMultiple([
+      '._syaz13q2{color:blue}',
+      '._19it7fe6{border:3px solid yellow}',
+      '._bfhk1x77{background-color:white}',
+      '._syaz5scu{color:red}',
+    ]);
 
     expect(actual).toInclude(
       '{ax(["_syaz5scu _bfhk1x77 _19it7fe6",props.isPrimary&&"_syaz13q2",props.className])}'
@@ -394,6 +462,28 @@ describe('styled component behaviour', () => {
 
     expect(actual).toInclude(
       'className={ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.className])}'
+    );
+  });
+
+  it('should apply conditional CSS with object styles and multiple props lines', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div(
+        { color: 'red' },
+        props => props.isPrimary && ({ color: 'blue' }),
+        props => props.isBolded && ({ fontWeight: 'bold' }),
+      );
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._k48p8n31{font-weight:bold}',
+      '._syaz13q2{color:blue}',
+      '._syaz5scu{color:red}',
+    ]);
+
+    expect(actual).toInclude(
+      'className={ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.isBolded&&"_k48p8n31",props.className])}'
     );
   });
 
@@ -440,6 +530,28 @@ describe('styled component behaviour', () => {
 
     expect(actual).toInclude(
       '{ax(["_syaz5scu",(props.isPrimary||props.isMaybe)&&"_syaz13q2",props.className])}'
+    );
+  });
+
+  it('should apply multi conditional logical expression with different props lines and syntax styles', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div(
+        { color: 'red' },
+        (props) => props.isPrimary && { color: 'blue' },
+        { fontWeight: (props) => (props.isBolded ? 'bold' : 'normal')}
+      );
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._k48phkfe{font-weight:var(--_1aan5t)}',
+      '._syaz13q2{color:blue}',
+      '._syaz5scu{color:red}',
+    ]);
+
+    expect(actual).toInclude(
+      `<C{...props}style={{...style,\"--_1aan5t\":ix(isBolded?'bold':'normal')}}ref={ref}className={ax([\"_syaz5scu _k48phkfe\",props.isPrimary&&\"_syaz13q2\",props.className])}/>`
     );
   });
 });
