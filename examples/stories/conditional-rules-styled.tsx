@@ -7,6 +7,7 @@ export default {
 interface TextProps {
   isPrimary?: boolean;
   isBolded?: boolean;
+  isMaybe?: boolean;
   children: any;
 }
 
@@ -17,8 +18,8 @@ const TextWithTernaryOperator = styled.span<TextProps>`
 
 const TextWithTemplateLiteral = styled.span<TextProps>`
   color: red;
-  ${(props) => props.isPrimary && { color: 'blue' }};
-  ${(props) => props.isBolded && { fontWeight: 'bold'}};
+  ${(props) => (props.isPrimary || props.isMaybe) && { color: 'blue' }};
+  ${(props) => props.isBolded && { fontWeight: 'bold' }};
 `;
 
 const TextWithObjectStyles = styled.span<TextProps>(
@@ -27,10 +28,8 @@ const TextWithObjectStyles = styled.span<TextProps>(
   (props) => props.isBolded && { fontWeight: 'bold' }
 );
 
-const TextWithMixedStyle = styled.span<TextProps>(
-  { color: 'red'},
-  (props) => props.isPrimary && { color: 'blue' },
-  { fontWeight: (props) => (props.isBolded ? 'bold' : 'normal')}
+const TextWithTernaryAndBoolean = styled.span<TextProps>({ fontSize: '20px' }, (props) =>
+  props.isPrimary && props.isBolded ? { color: 'blue', fontWeight: 'bold' } : { color: 'red' }
 );
 
 export const PrimaryTextWithTernaryOperator = (): JSX.Element => {
@@ -38,7 +37,11 @@ export const PrimaryTextWithTernaryOperator = (): JSX.Element => {
 };
 
 export const BoldedPrimaryTextWithTernaryOperator = (): JSX.Element => {
-  return <TextWithTernaryOperator isPrimary isBolded>Hello bolded primary</TextWithTernaryOperator>;
+  return (
+    <TextWithTernaryOperator isPrimary isBolded>
+      Hello bolded primary
+    </TextWithTernaryOperator>
+  );
 };
 
 export const NotPrimaryTextWithTernaryOperator = (): JSX.Element => {
@@ -50,7 +53,11 @@ export const PrimaryTextWithTemplateLiteral = (): JSX.Element => {
 };
 
 export const BoldedPrimaryTextWithTemplateLiteral = (): JSX.Element => {
-  return <TextWithTemplateLiteral isPrimary isBolded>Hello bolded primary</TextWithTemplateLiteral>;
+  return (
+    <TextWithTemplateLiteral isPrimary isBolded>
+      Hello bolded primary
+    </TextWithTemplateLiteral>
+  );
 };
 
 export const NotPrimaryTextWithTemplateLiteral = (): JSX.Element => {
@@ -62,22 +69,35 @@ export const PrimaryTextWithObjectStyles = (): JSX.Element => {
 };
 
 export const BoldedPrimaryTextWithObjectStyles = (): JSX.Element => {
-  return <TextWithObjectStyles isPrimary isBolded>Hello bolded primary</TextWithObjectStyles>;
+  return (
+    <TextWithObjectStyles isPrimary isBolded>
+      Hello bolded primary
+    </TextWithObjectStyles>
+  );
 };
 
 export const NotPrimaryTextWithObjectStyles = (): JSX.Element => {
   return <TextWithObjectStyles>Hello secondary</TextWithObjectStyles>;
 };
 
-export const PrimaryTextWithMixStyles = () : JSX.Element => {
-  return <TextWithMixedStyle isPrimary> Hello primary</TextWithMixedStyle>
+export const PrimaryTextWithTernaryAndBoolean = (): JSX.Element => {
+  return (
+    <TextWithTernaryAndBoolean isPrimary>
+      {' '}
+      Hello primary but not bolded. This should be red
+    </TextWithTernaryAndBoolean>
+  );
 };
 
-export const BoldedPrimaryTextWithMixStyles = () : JSX.Element => {
-  return <TextWithMixedStyle isPrimary isBolded> Hello bolded primary</TextWithMixedStyle>
+export const BoldedPrimaryTextWithTernaryAndBoolean = (): JSX.Element => {
+  return (
+    <TextWithTernaryAndBoolean isPrimary isBolded>
+      {' '}
+      Hello bolded primary
+    </TextWithTernaryAndBoolean>
+  );
 };
 
-export const NotPrimaryTextWithMixStyles = () : JSX.Element => {
-  return <TextWithMixedStyle> Hello primary</TextWithMixedStyle>
+export const NotPrimaryTextWithTernaryAndBoolean = (): JSX.Element => {
+  return <TextWithTernaryAndBoolean> Hello secondary</TextWithTernaryAndBoolean>;
 };
-

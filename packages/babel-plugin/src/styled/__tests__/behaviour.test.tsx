@@ -578,4 +578,25 @@ describe('styled component behaviour', () => {
       `<C{...props}style={{...style,\"--_1aan5t\":ix(isBolded?'bold':'normal')}}ref={ref}className={ax([\"_syaz5scu _k48phkfe\",props.isPrimary&&\"_syaz13q2\",props.className])}/>`
     );
   });
+
+  it('should apply conditional CSS with ternary and boolean in the same line', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div(
+        { fontSize: '20px' },
+        props => props.isPrimary && props.isBolded ? ({ color: 'blue' }) : ({ color: 'red'}),
+      );
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syaz13q2{color:blue}',
+      '._syaz5scu{color:red}',
+      '._1wybgktf{font-size:20px}',
+    ]);
+
+    expect(actual).toInclude(
+      'className={ax(["_1wybgktf _syaz5scu",props.isPrimary&&props.isBolded&&"_syaz13q2",props.className])}/'
+    );
+  });
 });

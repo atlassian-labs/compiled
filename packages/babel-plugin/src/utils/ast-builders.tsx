@@ -140,13 +140,11 @@ const buildProps = (name: string) => {
 const buildStyledConditionalClasses = (node: t.LogicalExpression) => {
   let operator = '',
     classNames = '',
-    hasMultiLogicalExpression = false,
     logicalExpressions = '';
 
   if (t.isStringLiteral(node.right)) {
     operator = node.operator;
     classNames = node.right.value;
-    hasMultiLogicalExpression = node.left.extra?.parenthesized ? true : false;
   }
 
   // Recursively traverses a node that contains one or more logical expressions
@@ -154,7 +152,7 @@ const buildStyledConditionalClasses = (node: t.LogicalExpression) => {
     if (t.isLogicalExpression(node)) {
       if (t.isMemberExpression(node.left) && t.isIdentifier(node.left.property)) {
         const propsName = buildProps(node.left.property.name);
-        if (node.operator && hasMultiLogicalExpression) {
+        if (node.operator && t.isMemberExpression(node.right)) {
           logicalExpressions += `${propsName} ${node.operator}`;
         } else {
           logicalExpressions = `${propsName}`;

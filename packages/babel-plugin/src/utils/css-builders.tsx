@@ -159,6 +159,55 @@ const callbackIfFileIncluded = (meta: Metadata, next: Metadata) => {
 };
 
 /**
+ * Extracts CSS data from a conditional expression node.
+ * Eg. props.isPrimary && props.isBolded ? ({ color: 'blue' }) : ({ color: 'red'})
+ *
+ * @param node Node we're interested in extracting CSS from.
+ * @param state Babel state - should house options and meta data used during the transformation.
+ */
+const extractConditionallExpression = (
+  node: t.ArrowFunctionExpression,
+  meta: Metadata
+): CSSOutput => {
+  const variables: CSSOutput['variables'] = [];
+  const css: CSSOutput['css'] = [];
+
+  if (t.isConditionalExpression(node.body) && t.isObjectExpression(node.body.alternate)) {
+    const alternate = extractObjectExpression(node.body.alternate, meta);
+
+    css.push(...alternate.css);
+    variables.push(...alternate.variables);
+  }
+
+  if (t.isConditionalExpression(node.body) && t.isObjectExpression(node.body.consequent)) {
+    const expression = node.body.test;
+    const result = buildCss(node.body.consequent, meta);
+    const logicalExpressionCss = result.css.map((item) => {
+      if (item.type !== 'unconditional') {
+        return {
+          ...item,
+          expression: t.logicalExpression(item.operator, expression, item.expression),
+        };
+      }
+
+      const logicalItem: LogicalCssItem = {
+        type: 'logical',
+        css: item.css,
+        expression,
+        operator: '&&',
+      };
+
+      return logicalItem;
+    });
+
+    css.push(...logicalExpressionCss);
+    variables.push(...result.variables);
+  }
+
+  return { css: mergeSubsequentUnconditionalCssItems(css), variables };
+};
+
+/**
  * Extracts CSS data from a logical expression node.
  *
  * @param node Node we're interested in extracting CSS from.
@@ -402,6 +451,10 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
 
   if (t.isArrowFunctionExpression(node) && t.isLogicalExpression(node.body)) {
     return extractLogicalExpression(node, meta);
+  }
+
+  if (t.isArrowFunctionExpression(node) && t.isConditionalExpression(node.body)) {
+    return extractConditionallExpression(node, meta);
   }
 
   if (t.isIdentifier(node)) {
