@@ -17,7 +17,7 @@ import {
 } from 'jscodeshift';
 
 import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from './constants';
-import { CodemodPlugin } from './plugin';
+import { CodemodPlugin } from './plugins/contract';
 import DefaultCodemodPlugin from './plugins/default';
 
 type Identifiers = Array<Identifier | JSXIdentifier | TSTypeParameter>;

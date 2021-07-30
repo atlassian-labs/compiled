@@ -106,4 +106,55 @@ describe('styled-components-to-compiled transformer', () => {
     "import * as React from 'react';",
     'it should not transform when styled-components imports are not present'
   );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {
+      pluginModule: {
+        buildImport: ({ j }) =>
+          j.expressionStatement(
+            j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
+              j.literal('Bring back Netscape'),
+            ])
+          ),
+      },
+    },
+    "import styled from 'styled-components';",
+    "console.log('Bring back Netscape');",
+    'it should use the buildImport from the plugin'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {
+      pluginModule: {
+        insertBeforeImport: ({ j }) =>
+          j.expressionStatement(
+            j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
+              j.literal('Bring back Netscape'),
+            ])
+          ),
+      },
+    },
+    "import styled from 'styled-components';",
+    "console.log('Bring back Netscape');\nimport { styled } from '@compiled/react';",
+    'it should use the insertBeforeImport from the plugin'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {
+      pluginModule: {
+        insertAfterImport: ({ j }) =>
+          j.expressionStatement(
+            j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
+              j.literal('Bring back Netscape'),
+            ])
+          ),
+      },
+    },
+    "import styled from 'styled-components';",
+    "import { styled } from '@compiled/react';\nconsole.log('Bring back Netscape');",
+    'it should use the insertAfterImport from the plugin'
+  );
 });

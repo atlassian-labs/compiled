@@ -6,7 +6,7 @@ import {
   addCommentForUnresolvedImportSpecifiers,
   withPlugin,
 } from '../codemods-helpers';
-import { CodemodPlugin } from '../plugin';
+import { CodemodPlugin } from '../plugins/contract';
 
 const imports = {
   compiledStyledImportName: 'styled',

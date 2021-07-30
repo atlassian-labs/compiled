@@ -1,1 +1,1 @@
-export { CodemodPlugin } from './plugin';
+export { CodemodPlugin } from './plugins/contract';

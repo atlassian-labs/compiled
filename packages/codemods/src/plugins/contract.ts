@@ -1,5 +1,6 @@
 import { ImportDeclaration, Collection, JSCodeshift } from 'jscodeshift';
 
+// We want to ensure the config contract is correct so devs can get type safety
 type ValidateConfig<T, Struct> = T extends Struct
   ? Exclude<keyof T, keyof Struct> extends never
     ? T
