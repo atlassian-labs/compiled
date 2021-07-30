@@ -579,6 +579,23 @@ describe('styled component behaviour', () => {
     );
   });
 
+  it('should apply the same CSS property with unconditional as default and logical with ternary and boolean', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div(
+        { color: 'red' },
+        props => props.isPrimary && (props.isBolded || props.isFoo) && ({ color: 'blue' }),
+      );
+    `);
+
+    expect(actual).toIncludeMultiple(['._syaz13q2{color:blue}', '._syaz5scu{color:red}']);
+
+    expect(actual).toInclude(
+      '{ax(["_syaz5scu",props.isPrimary&&(props.isBolded||props.isFoo)&&"_syaz13q2",props.className])}'
+    );
+  });
+
   it('should apply conditional CSS with ternary and boolean in the same line', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';

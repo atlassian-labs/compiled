@@ -1,3 +1,4 @@
+import generate from '@babel/generator';
 import template from '@babel/template';
 import * as t from '@babel/types';
 import traverse, { NodePath, Visitor } from '@babel/traverse';
@@ -121,58 +122,6 @@ const styledStyleProp = (
  */
 const buildComponentTag = ({ name, type }: Tag) => {
   return type === 'InBuiltComponent' ? `"${name}"` : name;
-};
-
-/**
- * Returns props used in a logical expression.
- *
- * @param name Props Name
- */
-const buildProps = (name: string) => {
-  return PROPS_IDENTIFIER_NAME + '.' + name;
-};
-
-/**
- * Will return the list of conditional rules used to build a styled template.
- *
- * @param Node we're interested in extracting classNames from.
- */
-const buildStyledConditionalClasses = (node: t.LogicalExpression) => {
-  let operator = '',
-    classNames = '',
-    logicalExpressions = '';
-
-  if (t.isStringLiteral(node.right)) {
-    operator = node.operator;
-    classNames = node.right.value;
-  }
-
-  // Recursively traverses a node that contains one or more logical expressions
-  const traverseMultiLogicalExpressions = (node: t.Expression) => {
-    if (t.isLogicalExpression(node)) {
-      if (t.isMemberExpression(node.left) && t.isIdentifier(node.left.property)) {
-        const propsName = buildProps(node.left.property.name);
-        if (node.operator && t.isMemberExpression(node.right)) {
-          logicalExpressions += `${propsName} ${node.operator}`;
-        } else {
-          logicalExpressions = `${propsName}`;
-        }
-      } else if (t.isLogicalExpression(node.left)) {
-        traverseMultiLogicalExpressions(node.left);
-      }
-
-      if (t.isMemberExpression(node.right) && t.isIdentifier(node.right.property)) {
-        const propsName = buildProps(node.right.property.name);
-        logicalExpressions += `${propsName}`;
-      } else if (t.isLogicalExpression(node.right)) {
-        traverseMultiLogicalExpressions(node.right);
-      }
-    }
-  };
-
-  traverseMultiLogicalExpressions(node);
-
-  return `(${logicalExpressions}) ${operator} "${classNames}",`;
 };
 
 /**
@@ -384,7 +333,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     if (t.isStringLiteral(item)) {
       unconditionalClassNames.push(item.value);
     } else if (t.isLogicalExpression(item)) {
-      logicalClassNames += buildStyledConditionalClasses(item);
+      logicalClassNames += `${generate(item).code}, `;
     }
   });
 
