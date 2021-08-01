@@ -1,3 +1,4 @@
+import React from 'react';
 import { styled } from '@compiled/react';
 
 export default {
@@ -8,12 +9,13 @@ interface TextProps {
   isPrimary?: boolean;
   isBolded?: boolean;
   isMaybe?: boolean;
-  children: any;
+  children: React.ReactNode;
 }
 
 const TextWithTernaryOperator = styled.span<TextProps>`
   color: ${(props) => (props.isPrimary ? 'blue' : 'red')};
-  font-weight: ${(props) => (props.isBolded ? 'bold' : 'normal')};
+  font-weight: ${(props) =>
+    props.isPrimary && props.isMaybe ? (props.isBolded && 'bold') || 'normal' : 'light'};
 `;
 
 const TextWithTemplateLiteral = styled.span<TextProps>`
@@ -33,12 +35,16 @@ const TextWithTernaryAndBoolean = styled.span<TextProps>({ fontSize: '20px' }, (
 );
 
 export const PrimaryTextWithTernaryOperator = (): JSX.Element => {
-  return <TextWithTernaryOperator isPrimary>Hello primary</TextWithTernaryOperator>;
+  return (
+    <TextWithTernaryOperator isPrimary isMaybe>
+      Hello primary
+    </TextWithTernaryOperator>
+  );
 };
 
 export const BoldedPrimaryTextWithTernaryOperator = (): JSX.Element => {
   return (
-    <TextWithTernaryOperator isPrimary isBolded>
+    <TextWithTernaryOperator isPrimary isMaybe isBolded>
       Hello bolded primary
     </TextWithTernaryOperator>
   );

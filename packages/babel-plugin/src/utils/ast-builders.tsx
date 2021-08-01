@@ -9,7 +9,7 @@ import { Tag } from '../types';
 import { getItemCss } from './css-builders';
 import { pickFunctionBody, resolveIdentifierComingFromDestructuring } from './ast';
 import { Metadata } from '../types';
-import { CSSOutput } from '../utils/types';
+import { CSSOutput, CssItem } from '../utils/types';
 import { PROPS_IDENTIFIER_NAME } from '../constants';
 
 export interface StyledTemplateOpts {
@@ -439,7 +439,29 @@ export const conditionallyJoinExpressions = (
  * @param meta Plugin metadata
  */
 export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
-  const { sheets, classNames } = transformItemCss(cssOutput);
+  const unconditionalCss: string[] = [];
+  const logicalCss: Array<CssItem> = [];
+
+  cssOutput.css.forEach((x) => {
+    if (x.type === 'unconditional') {
+      unconditionalCss.push(getItemCss(x));
+    } else if (x.type === 'logical') {
+      logicalCss.push(x);
+    }
+  });
+
+  // Rely on transformCss to remove duplicates and return only the last unconditional CSS for each property
+  const uniqueUnconditionalCssOutput = transformCss(unconditionalCss.join(''));
+
+  // Rely on transformItemCss to build logicalExpressions for logical CSS
+  const logicalCssOutput = transformItemCss({ css: logicalCss, variables: cssOutput.variables });
+
+  const sheets = [...uniqueUnconditionalCssOutput.sheets, ...logicalCssOutput.sheets];
+
+  const classNames = [
+    ...[t.stringLiteral(uniqueUnconditionalCssOutput.classNames.join(' '))],
+    ...logicalCssOutput.classNames,
+  ];
 
   return styledTemplate(
     {

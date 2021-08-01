@@ -165,7 +165,7 @@ const callbackIfFileIncluded = (meta: Metadata, next: Metadata) => {
  * @param node Node we're interested in extracting CSS from.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-const extractConditionallExpression = (
+const extractConditionalExpression = (
   node: t.ArrowFunctionExpression,
   meta: Metadata
 ): CSSOutput => {
@@ -353,7 +353,6 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       return acc + q.value.raw + ';';
     }
 
-    // The following is used for CSS mixins
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
 
     callbackIfFileIncluded(meta, updatedMeta);
@@ -454,7 +453,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
   }
 
   if (t.isArrowFunctionExpression(node) && t.isConditionalExpression(node.body)) {
-    return extractConditionallExpression(node, meta);
+    return extractConditionalExpression(node, meta);
   }
 
   if (t.isIdentifier(node)) {

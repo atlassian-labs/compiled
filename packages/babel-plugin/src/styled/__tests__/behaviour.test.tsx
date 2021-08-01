@@ -616,4 +616,48 @@ describe('styled component behaviour', () => {
       'className={ax(["_1wybgktf _syaz5scu",props.isPrimary&&props.isBolded&&"_syaz13q2",props.className])}/'
     );
   });
+
+  it('should only evaluate the last unconditional CSS rule for each property', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div(
+        { color: 'red' },
+        { color: 'white', background: 'black' },
+        { color: 'orange'},
+        { background: 'white'},
+      );
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._bfhk1x77{background-color:white}',
+      '._syazruxl{color:orange}',
+    ]);
+
+    expect(actual).toInclude('className={ax(["_syazruxl _bfhk1x77",props.className])}');
+  });
+
+  it('should only evaluate the last unconditional CSS rule for each property along with logical CSS', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div(
+        { color: 'red' },
+        { background: 'white' },
+        props => props.isPrimary ? ({ color: 'blue', background: 'white'  }) : ({ color: 'green', background: 'black' }),
+        { color: 'white', background: 'black' },
+      );
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._bfhk1x77{background-color:white}',
+      '._syaz13q2{color:blue}',
+      '._bfhk11x8{background-color:black}',
+      '._syaz1x77{color:white}',
+    ]);
+
+    expect(actual).toInclude(
+      'className={ax(["_syaz1x77 _bfhk11x8",props.isPrimary&&"_syaz13q2 _bfhk1x77",props.className])}'
+    );
+  });
 });
