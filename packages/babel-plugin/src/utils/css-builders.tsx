@@ -406,7 +406,9 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     if (t.isArrowFunctionExpression(prop)) {
       let resolvedBinding = undefined;
 
-      if (t.isIdentifier(prop.body)) {
+      // Skip this when destructuring in styled interpolation functions
+      // eg border: 5px ${({ borderStyle: bs }) => bs} black;
+      if (!t.isObjectPattern(prop.params[0]) && t.isIdentifier(prop.body)) {
         resolvedBinding = resolveBindingNode(prop.body.name, meta);
 
         if (!resolvedBinding) {
