@@ -21,7 +21,8 @@ const TextWithTernaryOperator = styled.span<TextProps>`
 const TextWithTemplateLiteral = styled.span<TextProps>`
   color: red;
   ${(props) => (props.isPrimary || props.isMaybe) && { color: 'blue' }};
-  ${(props) => props.isBolded && { fontWeight: 'bold' }};
+  ${(props) => props.isPrimary && { fontSize: '20px' }};
+  font-weight: ${(props) => props.isBolded && props.isPrimary && 'bold'};
 `;
 
 const TextWithObjectStyles = styled.span<TextProps>(
@@ -67,7 +68,7 @@ export const BoldedPrimaryTextWithTemplateLiteral = (): JSX.Element => {
 };
 
 export const NotPrimaryTextWithTemplateLiteral = (): JSX.Element => {
-  return <TextWithTemplateLiteral>Hello secondary</TextWithTemplateLiteral>;
+  return <TextWithTemplateLiteral isBolded>Hello secondary</TextWithTemplateLiteral>;
 };
 
 export const PrimaryTextWithObjectStyles = (): JSX.Element => {

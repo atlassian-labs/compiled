@@ -474,6 +474,23 @@ describe('styled component behaviour', () => {
     );
   });
 
+  it('should apply conditional css rules even if default unconditional style is not defined with template literal', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        color: red;
+        font-weight: \${(props) => (props.isPrimary && props.isMaybe) && 'bold'};
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple(['._k48p8n31{font-weight:bold}', '._syaz5scu{color:red}']);
+
+    expect(actual).toInclude(
+      'className={ax(["_syaz5scu",props.isPrimary&&props.isMaybe&&"_k48p8n31",props.className])}'
+    );
+  });
+
   it('should apply conditional CSS with object styles', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
