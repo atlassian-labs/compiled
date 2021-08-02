@@ -41,9 +41,9 @@
     "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts"
   },
   "devDependencies": {
-    "@babel/plugin-transform-react-jsx-self": "^7.14.5",
+    "@babel/plugin-transform-react-jsx-self": "^7.14.9",
     "@babel/plugin-transform-react-jsx-source": "^7.14.5",
-    "@babel/preset-env": "^7.14.8",
+    "@babel/preset-env": "^7.14.9",
     "@babel/preset-react": "^7.14.5",
     "@babel/preset-typescript": "^7.14.5",
     "@changesets/cli": "^2.16.0",
