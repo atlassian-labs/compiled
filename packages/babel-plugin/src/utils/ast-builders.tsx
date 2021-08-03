@@ -326,18 +326,18 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
       })
     : t.identifier('style');
 
-  const unconditionalClassNames: string[] = [];
-  let logicalClassNames = '';
+  let unconditionalClassNames = '',
+    logicalClassNames = '';
 
   opts.classNames.forEach((item) => {
     if (t.isStringLiteral(item)) {
-      unconditionalClassNames.push(item.value);
+      unconditionalClassNames += `${item.value} `;
     } else if (t.isLogicalExpression(item)) {
       logicalClassNames += `${generate(item).code}, `;
     }
   });
 
-  const classNames = `"${unconditionalClassNames.join(' ')}", ${logicalClassNames}`;
+  const classNames = `"${unconditionalClassNames.trim()}", ${logicalClassNames}`;
 
   return template(
     `
@@ -440,13 +440,13 @@ export const conditionallyJoinExpressions = (
  */
 export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
   const unconditionalCss: string[] = [];
-  const logicalCss: Array<CssItem> = [];
+  const logicalCss: CssItem[] = [];
 
-  cssOutput.css.forEach((x) => {
-    if (x.type === 'unconditional') {
-      unconditionalCss.push(getItemCss(x));
-    } else if (x.type === 'logical') {
-      logicalCss.push(x);
+  cssOutput.css.forEach((item) => {
+    if (item.type === 'unconditional') {
+      unconditionalCss.push(getItemCss(item));
+    } else if (item.type === 'logical') {
+      logicalCss.push(item);
     }
   });
 

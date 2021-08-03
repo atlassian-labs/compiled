@@ -501,6 +501,8 @@ describe('styled component behaviour', () => {
       );
     `);
 
+    expect(actual).toIncludeMultiple(['._syaz13q2{color:blue}', '._syaz5scu{color:red}']);
+
     expect(actual).toInclude(
       'className={ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.className])}'
     );
@@ -539,6 +541,12 @@ describe('styled component behaviour', () => {
       );
     `);
 
+    expect.toIncludeMultiple([
+      '._syaz13q2{color:blue}',
+      '._19it97hw{border:1px solid black}',
+      '._syaz5scu{color:red}',
+    ]);
+
     expect(actual).toInclude(
       '{ax(["_syaz5scu _19it97hw",props.isPrimary&&"_syaz13q2",props.className])}'
     );
@@ -554,6 +562,8 @@ describe('styled component behaviour', () => {
       );
     `);
 
+    expect(actual).toIncludeMultiple(['._syaz5scu{color:red}', '._syaz13q2{color:blue}']);
+
     expect(actual).toInclude(
       'className={ax(["_syaz13q2",props.isPrimary&&"_syaz5scu",props.className])}'
     );
@@ -568,6 +578,8 @@ describe('styled component behaviour', () => {
         props => (props.isPrimary || props.isMaybe) && ({ color: 'blue' }),
       );
     `);
+
+    expect(actual).toIncludeMultiple(['._syaz13q2{color:blue}', '._syaz5scu{color:red}']);
 
     expect(actual).toInclude(
       '{ax(["_syaz5scu",(props.isPrimary||props.isMaybe)&&"_syaz13q2",props.className])}'
@@ -661,7 +673,7 @@ describe('styled component behaviour', () => {
       const Component = styled.div(
         { color: 'red' },
         { background: 'white' },
-        props => props.isPrimary ? ({ color: 'blue', background: 'white'  }) : ({ color: 'green', background: 'black' }),
+        props => props.isPrimary ? ({ color: 'blue', background: 'white' }) : ({ color: 'green', background: 'black' }),
         { color: 'white', background: 'black' },
       );
     `);
