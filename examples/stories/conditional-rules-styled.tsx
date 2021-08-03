@@ -12,17 +12,17 @@ interface TextProps {
   children: React.ReactNode;
 }
 
-const TextWithTernaryOperator = styled.span<TextProps>`
-  color: ${(props) => (props.isPrimary ? 'blue' : 'red')};
-  font-weight: ${(props) =>
-    props.isPrimary && props.isMaybe ? (props.isBolded && 'bold') || 'normal' : 'light'};
-`;
-
 const TextWithTemplateLiteral = styled.span<TextProps>`
   color: red;
   ${(props) => (props.isPrimary || props.isMaybe) && { color: 'blue' }};
   ${(props) => props.isPrimary && { fontSize: '20px' }};
   font-weight: ${(props) => props.isBolded && props.isPrimary && 'bold'};
+`;
+
+const TextWithTernaryOperatorTemplateLiteral = styled.span<TextProps>`
+  color: ${(props) => (props.isPrimary ? 'blue' : 'red')};
+  font-weight: ${(props) =>
+    props.isPrimary && props.isMaybe ? (props.isBolded && 'bold') || 'normal' : 'light'};
 `;
 
 const TextWithObjectStyles = styled.span<TextProps>(
@@ -31,29 +31,9 @@ const TextWithObjectStyles = styled.span<TextProps>(
   (props) => props.isBolded && { fontWeight: 'bold' }
 );
 
-const TextWithTernaryAndBoolean = styled.span<TextProps>({ fontSize: '20px' }, (props) =>
+const TextWithTernaryAndBooleanObjectStyle = styled.span<TextProps>({ fontSize: '20px' }, (props) =>
   props.isPrimary && props.isBolded ? { color: 'blue', fontWeight: 'bold' } : { color: 'red' }
 );
-
-export const PrimaryTextWithTernaryOperator = (): JSX.Element => {
-  return (
-    <TextWithTernaryOperator isPrimary isMaybe>
-      Hello primary
-    </TextWithTernaryOperator>
-  );
-};
-
-export const BoldedPrimaryTextWithTernaryOperator = (): JSX.Element => {
-  return (
-    <TextWithTernaryOperator isPrimary isMaybe isBolded>
-      Hello bolded primary
-    </TextWithTernaryOperator>
-  );
-};
-
-export const NotPrimaryTextWithTernaryOperator = (): JSX.Element => {
-  return <TextWithTernaryOperator>Hello secondary</TextWithTernaryOperator>;
-};
 
 export const PrimaryTextWithTemplateLiteral = (): JSX.Element => {
   return <TextWithTemplateLiteral isPrimary>Hello primary</TextWithTemplateLiteral>;
@@ -69,6 +49,28 @@ export const BoldedPrimaryTextWithTemplateLiteral = (): JSX.Element => {
 
 export const NotPrimaryTextWithTemplateLiteral = (): JSX.Element => {
   return <TextWithTemplateLiteral isBolded>Hello secondary</TextWithTemplateLiteral>;
+};
+
+export const PrimaryTextWithTernaryOperatorTemplateLiteral = (): JSX.Element => {
+  return (
+    <TextWithTernaryOperatorTemplateLiteral isPrimary isMaybe>
+      Hello primary
+    </TextWithTernaryOperatorTemplateLiteral>
+  );
+};
+
+export const BoldedPrimaryTextWithTernaryOperatorTemplateLiteral = (): JSX.Element => {
+  return (
+    <TextWithTernaryOperatorTemplateLiteral isPrimary isMaybe isBolded>
+      Hello bolded primary
+    </TextWithTernaryOperatorTemplateLiteral>
+  );
+};
+
+export const NotPrimaryTextWithTernaryOperatorTemplateLiteral = (): JSX.Element => {
+  return (
+    <TextWithTernaryOperatorTemplateLiteral>Hello secondary</TextWithTernaryOperatorTemplateLiteral>
+  );
 };
 
 export const PrimaryTextWithObjectStyles = (): JSX.Element => {
@@ -87,24 +89,26 @@ export const NotPrimaryTextWithObjectStyles = (): JSX.Element => {
   return <TextWithObjectStyles>Hello secondary</TextWithObjectStyles>;
 };
 
-export const PrimaryTextWithTernaryAndBoolean = (): JSX.Element => {
+export const PrimaryTextWithTernaryAndBooleanObjectStyle = (): JSX.Element => {
   return (
-    <TextWithTernaryAndBoolean isPrimary>
+    <TextWithTernaryAndBooleanObjectStyle isPrimary>
       {' '}
       Hello primary but not bolded. This should be red
-    </TextWithTernaryAndBoolean>
+    </TextWithTernaryAndBooleanObjectStyle>
   );
 };
 
-export const BoldedPrimaryTextWithTernaryAndBoolean = (): JSX.Element => {
+export const BoldedPrimaryTextWithTernaryAndBooleanObjectStyle = (): JSX.Element => {
   return (
-    <TextWithTernaryAndBoolean isPrimary isBolded>
+    <TextWithTernaryAndBooleanObjectStyle isPrimary isBolded>
       {' '}
       Hello bolded primary
-    </TextWithTernaryAndBoolean>
+    </TextWithTernaryAndBooleanObjectStyle>
   );
 };
 
-export const NotPrimaryTextWithTernaryAndBoolean = (): JSX.Element => {
-  return <TextWithTernaryAndBoolean> Hello secondary</TextWithTernaryAndBoolean>;
+export const NotPrimaryTextWithTernaryAndBooleanObjectStyle = (): JSX.Element => {
+  return (
+    <TextWithTernaryAndBooleanObjectStyle> Hello secondary</TextWithTernaryAndBooleanObjectStyle>
+  );
 };

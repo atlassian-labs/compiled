@@ -608,7 +608,7 @@ describe('styled component behaviour', () => {
     );
   });
 
-  it('should apply the same CSS property with unconditional as default and logical with ternary and boolean', () => {
+  it('should apply the same CSS property with unconditional as default and multiple logical expressions', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 
