@@ -1,5 +1,5 @@
 import { ImportDeclaration, JSCodeshift, Collection } from 'jscodeshift';
-import { CodemodPlugin } from './contract';
+import { CodemodPlugin } from './types';
 
 const buildImport = ({
   j,

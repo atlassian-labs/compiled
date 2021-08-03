@@ -21,7 +21,7 @@ import {
   addCommentBefore,
   withPlugin,
 } from '../codemods-helpers';
-import { CodemodPlugin } from '../plugins/contract';
+import { CodemodPlugin } from '../plugins/types';
 
 const imports = {
   compiledStyledImportName: 'styled',

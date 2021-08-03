@@ -1,4 +1,4 @@
-import { ImportDeclaration, Collection, JSCodeshift } from 'jscodeshift';
+import { ImportDeclaration, Collection, JSCodeshift, ASTNode } from 'jscodeshift';
 
 // We want to ensure the config contract is correct so devs can get type safety
 type ValidateConfig<T, Struct> = T extends Struct
@@ -8,6 +8,8 @@ type ValidateConfig<T, Struct> = T extends Struct
   : never;
 
 type BaseConfig = { j: JSCodeshift };
+
+export type NodeSupplier = ASTNode | Array<ASTNode> | (() => ASTNode | Array<ASTNode>) | null;
 
 export interface CodemodPlugin {
   /**
@@ -45,7 +47,7 @@ export interface CodemodPlugin {
    */
   insertBeforeImport?<T>(
     config: ValidateConfig<T, BaseConfig & { newImport: Collection<ImportDeclaration> }>
-  ): any;
+  ): NodeSupplier;
 
   /**
    * Insert AST nodes after the compiled import
@@ -58,5 +60,5 @@ export interface CodemodPlugin {
    */
   insertAfterImport?<T>(
     config: ValidateConfig<T, BaseConfig & { newImport: Collection<ImportDeclaration> }>
-  ): any;
+  ): NodeSupplier;
 }

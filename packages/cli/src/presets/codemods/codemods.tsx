@@ -35,8 +35,8 @@ const codemodChoice: Array<Choice<keyof CodemodOptions>> = [
   },
   {
     name: 'plugin',
-    message: '--plugin (path to source)',
-    value: '--plugin',
+    message: '--plugin',
+    hint: 'path to source',
   },
 ];
 

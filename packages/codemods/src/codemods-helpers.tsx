@@ -17,7 +17,7 @@ import {
 } from 'jscodeshift';
 
 import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from './constants';
-import { CodemodPlugin } from './plugins/contract';
+import { CodemodPlugin } from './plugins/types';
 import DefaultCodemodPlugin from './plugins/default';
 
 type Identifiers = Array<Identifier | JSXIdentifier | TSTypeParameter>;
@@ -28,19 +28,23 @@ const getPlugin = async (pluginPath: string | undefined) => {
       const pluginModule = await import(pluginPath);
       return pluginModule.default;
     } catch (err) {
-      console.error(
+      throw new Error(
         chalk.red(`${chalk.bold(`Plugin at path '${pluginPath}' was not loaded`)}\n${err}`)
       );
-      process.exit(1);
     }
   }
   return null;
 };
 
+/*
+ * This functionality is implemented as a higher-order function as jscodeshift
+ * test utilities do not support promises. This means we keep the async functionality
+ * on the dynamic import
+ */
 export const withPlugin = (
   transformer: (fileInfo: FileInfo, api: API, options: Options) => string
 ) => async (fileInfo: FileInfo, api: API, options: Options): Promise<string> => {
-  options.pluginModule = getPlugin(options.plugin);
+  options.pluginModule = await getPlugin(options.plugin);
   return transformer(fileInfo, api, options);
 };
 
