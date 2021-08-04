@@ -18,7 +18,7 @@ import {
 
 import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from './constants';
 import { CodemodPlugin } from './plugins/types';
-import DefaultCodemodPlugin from './plugins/default';
+import { migrationTransform } from './plugins/default';
 
 type Identifiers = Array<Identifier | JSXIdentifier | TSTypeParameter>;
 
@@ -165,7 +165,7 @@ export const convertDefaultImportToNamedImport = ({
 
     if (importDefaultSpecifierCollection.length > 0) {
       const newImport = j(importDeclarationPath).replaceWith(
-        (plugin?.buildImport ?? DefaultCodemodPlugin.buildImport)({
+        (plugin?.migrationTransform?.buildImport ?? migrationTransform.buildImport)({
           j,
           currentNode: importDeclarationPath.node,
           defaultSpecifierName: getImportDefaultSpecifierName(importDefaultSpecifierCollection),
@@ -175,12 +175,12 @@ export const convertDefaultImportToNamedImport = ({
       );
 
       const insertBeforeNodes = (
-        plugin?.insertBeforeImport ?? DefaultCodemodPlugin.insertBeforeImport
+        plugin?.migrationTransform?.insertBeforeImport ?? migrationTransform.insertBeforeImport
       )({ j, newImport });
-      if (insertBeforeNodes) newImport.insertBefore(insertBeforeNodes);
+      if (insertBeforeNodes !== null) newImport.insertBefore(insertBeforeNodes);
 
       const insertAfterNodes = (
-        plugin?.insertAfterImport ?? DefaultCodemodPlugin.insertAfterImport
+        plugin?.migrationTransform?.insertAfterImport ?? migrationTransform.insertAfterImport
       )({ j, newImport });
       if (insertAfterNodes) newImport.insertAfter(insertAfterNodes);
     }

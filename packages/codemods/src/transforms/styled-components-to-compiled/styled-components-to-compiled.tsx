@@ -5,8 +5,8 @@ import {
   convertDefaultImportToNamedImport,
   addCommentForUnresolvedImportSpecifiers,
   withPlugin,
-} from '../codemods-helpers';
-import { CodemodPlugin } from '../plugins/types';
+} from '../../codemods-helpers';
+import { CodemodPlugin } from '../../plugins/types';
 
 const imports = {
   compiledStyledImportName: 'styled',

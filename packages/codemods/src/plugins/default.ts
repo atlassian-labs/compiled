@@ -1,5 +1,5 @@
 import { ImportDeclaration, JSCodeshift, Collection } from 'jscodeshift';
-import { CodemodPlugin } from './types';
+import { MigrationTransformer, CodemodPlugin } from './types';
 
 const buildImport = ({
   j,
@@ -27,17 +27,21 @@ const buildImport = ({
 const insertBeforeImport = ({}: {
   j: JSCodeshift;
   newImport: Collection<ImportDeclaration>;
-}): void => {};
+}): null => null;
 
 const insertAfterImport = ({}: {
   j: JSCodeshift;
   newImport: Collection<ImportDeclaration>;
-}): void => {};
+}): null => null;
 
-const DefaultCodemodPlugin: Required<CodemodPlugin> = {
+export const migrationTransform: Required<MigrationTransformer> = {
   buildImport,
   insertBeforeImport,
   insertAfterImport,
+};
+
+const DefaultCodemodPlugin: Required<CodemodPlugin> = {
+  migrationTransform,
 };
 
 export default DefaultCodemodPlugin;

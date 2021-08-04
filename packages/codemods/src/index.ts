@@ -1,4 +1,4 @@
-export type { CodemodPlugin } from './plugins/types';
+export type { MigrationTransformer, CodemodPlugin } from './plugins/types';
 
-export { default as EmotionToCompiled } from './emotion-to-compiled';
-export { default as StyledComponentsToCompiled } from './styled-components-to-compiled';
+export { default as EmotionToCompiled } from './transforms/emotion-to-compiled';
+export { default as StyledComponentsToCompiled } from './transforms/styled-components-to-compiled';

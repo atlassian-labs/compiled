@@ -528,12 +528,14 @@ describe('emotion-to-compiled transformer', () => {
     { default: transformer, parser: 'tsx' },
     {
       pluginModule: {
-        buildImport: ({ j }) =>
-          j.expressionStatement(
-            j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
-              j.literal('Bring back Netscape'),
-            ])
-          ),
+        migrationTransform: {
+          buildImport: ({ j }) =>
+            j.expressionStatement(
+              j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
+                j.literal('Bring back Netscape'),
+              ])
+            ),
+        },
       },
     },
     "import styled from '@emotion/styled';",
@@ -545,12 +547,14 @@ describe('emotion-to-compiled transformer', () => {
     { default: transformer, parser: 'tsx' },
     {
       pluginModule: {
-        insertBeforeImport: ({ j }) =>
-          j.expressionStatement(
-            j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
-              j.literal('Bring back Netscape'),
-            ])
-          ),
+        migrationTransform: {
+          insertBeforeImport: ({ j }) =>
+            j.expressionStatement(
+              j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
+                j.literal('Bring back Netscape'),
+              ])
+            ),
+        },
       },
     },
     "import styled from '@emotion/styled';",
@@ -562,12 +566,14 @@ describe('emotion-to-compiled transformer', () => {
     { default: transformer, parser: 'tsx' },
     {
       pluginModule: {
-        insertAfterImport: ({ j }) =>
-          j.expressionStatement(
-            j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
-              j.literal('Bring back Netscape'),
-            ])
-          ),
+        migrationTransform: {
+          insertAfterImport: ({ j }) =>
+            j.expressionStatement(
+              j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
+                j.literal('Bring back Netscape'),
+              ])
+            ),
+        },
       },
     },
     "import styled from '@emotion/styled';",

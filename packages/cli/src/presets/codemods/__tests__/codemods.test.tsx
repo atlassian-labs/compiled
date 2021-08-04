@@ -20,7 +20,7 @@ const expectCodemodToHaveBeenRan = (name: string, runPath: string) => {
   expect(execAsync).toHaveBeenCalledWith(
     expect.stringMatching(
       new RegExp(
-        `.*--transform=.*node_modules\\/@compiled\\/codemods\\/dist\\/${name}\\/index.js ${regexPath}`
+        `.*--transform=.*node_modules\\/@compiled\\/codemods\\/dist\\/transforms\\/${name}\\/index.js ${regexPath}`
       )
     )
   );
@@ -114,8 +114,8 @@ describe('main', () => {
           },
           {
             name: 'plugin',
-            message: '--plugin (path to source)',
-            value: '--plugin',
+            message: '--plugin',
+            hint: 'path to source',
           },
         ],
       })

@@ -11,7 +11,10 @@ type BaseConfig = { j: JSCodeshift };
 
 export type NodeSupplier = ASTNode | Array<ASTNode> | (() => ASTNode | Array<ASTNode>) | null;
 
-export interface CodemodPlugin {
+/**
+ * Interface for codemods that handle migration from CSS-in-JS libraries to Compiled
+ */
+export interface MigrationTransformer {
   /**
    * Build the compiled import replacing the existing import
    *
@@ -61,4 +64,8 @@ export interface CodemodPlugin {
   insertAfterImport?<T>(
     config: ValidateConfig<T, BaseConfig & { newImport: Collection<ImportDeclaration> }>
   ): NodeSupplier;
+}
+
+export interface CodemodPlugin {
+  migrationTransform?: MigrationTransformer;
 }

@@ -14,7 +14,8 @@ const basePath = path.join(
   'node_modules',
   '@compiled',
   'codemods',
-  'dist'
+  'dist',
+  'transforms'
 );
 
 const parseTransformPath = (transformPath: string) => path.parse(transformPath);

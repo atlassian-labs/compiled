@@ -8,7 +8,7 @@ import core, {
   ObjectPattern,
 } from 'jscodeshift';
 
-import { COMPILED_IMPORT_PATH } from '../constants';
+import { COMPILED_IMPORT_PATH } from '../../constants';
 import {
   hasImportDeclaration,
   getImportDeclarationCollection,
@@ -20,8 +20,8 @@ import {
   mergeImportSpecifiersAlongWithTheirComments,
   addCommentBefore,
   withPlugin,
-} from '../codemods-helpers';
-import { CodemodPlugin } from '../plugins/types';
+} from '../../codemods-helpers';
+import { CodemodPlugin } from '../../plugins/types';
 
 const imports = {
   compiledStyledImportName: 'styled',
