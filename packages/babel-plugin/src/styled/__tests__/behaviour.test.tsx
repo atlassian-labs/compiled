@@ -689,4 +689,37 @@ describe('styled component behaviour', () => {
       'className={ax(["_syaz1x77 _bfhk11x8",props.isPrimary&&"_syaz13q2 _bfhk1x77",props.className])}'
     );
   });
+
+  it('should conditionally apply CSS mixins', () => {
+    const actual = transform(`
+      import { styled, css } from '@compiled/react';
+
+      const dark = css\`
+        background-color: black;
+        color: white;
+      \`;
+
+      const light = css\`
+        background-color: white;
+        color: black;
+      \`;
+
+      const Component = styled.div\`
+        \${(props) => (props.isDark ? dark : light)};
+        font-size: 30px;
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syaz11x8{color:black}',
+      '._bfhk1x77{background-color:white}',
+      '._syaz1x77{color:white}',
+      '_bfhk11x8{background-color:black}',
+      '_1wyb1ul9{font-size:30px}',
+    ]);
+
+    expect(actual).toInclude(
+      'className={ax(["_1wyb1ul9",props.isDark&&"_bfhk11x8 _syaz1x77",!props.isDark&&"_bfhk1x77 _syaz11x8",props.className])}'
+    );
+  });
 });

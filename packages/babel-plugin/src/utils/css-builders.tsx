@@ -82,6 +82,46 @@ export const getItemCss = (item: CssItem): string => {
 };
 
 /**
+ * Returns the logical item from a conditional expression.
+ *
+ * @param css
+ */
+const getLogicalItemFromConditionalExpression = (
+  css: CSSOutput['css'],
+  node: t.ConditionalExpression,
+  type: string
+) => {
+  const expression = node.test;
+  return css.map((item) => {
+    if (item.type !== 'unconditional') {
+      return {
+        ...item,
+        expression: t.logicalExpression(item.operator, expression, item.expression),
+      };
+    }
+
+    /**
+     * Ensure that the CSS declarations in the alternate mixin are not evaluated as
+     * unconditional rules.
+     * Eg ${(props) => (props.isPrimary ? primary : secondary)}; where primary is
+     * the consequent node and secondary is the alternate node
+     * -> primary mixin will be applied only when props.isPrimary
+     * -> secondary mixin will be applied only when !props.isPrimary
+     *  */
+    const alternateExpression = t.unaryExpression('!', expression);
+
+    const logicalItem: LogicalCssItem = {
+      type: 'logical',
+      css: item.css,
+      expression: type === 'consequent' ? expression : alternateExpression,
+      operator: '&&',
+    };
+
+    return logicalItem;
+  });
+};
+
+/**
  * Parses a CSS output to amn array of CSS item rules.
  *
  * @param selector
@@ -165,43 +205,43 @@ const callbackIfFileIncluded = (meta: Metadata, next: Metadata) => {
  * @param node Node we're interested in extracting CSS from.
  * @param state Babel state - should house options and meta data used during the transformation.
  */
-const extractConditionalExpression = (
-  node: t.ArrowFunctionExpression,
-  meta: Metadata
-): CSSOutput => {
+const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metadata): CSSOutput => {
   const variables: CSSOutput['variables'] = [];
   const css: CSSOutput['css'] = [];
+  let logicalItem: LogicalCssItem[] = [];
 
-  if (t.isConditionalExpression(node.body) && t.isObjectExpression(node.body.alternate)) {
-    const alternate = extractObjectExpression(node.body.alternate, meta);
+  if (t.isObjectExpression(node.consequent)) {
+    const consequent = buildCss(node.consequent, meta);
+    logicalItem = getLogicalItemFromConditionalExpression(consequent.css, node, 'consequent');
+
+    css.push(...logicalItem);
+    variables.push(...consequent.variables);
+  } else if (t.isIdentifier(node.consequent)) {
+    const { value: interpolation, meta: updatedMeta } = evaluateExpression(node.consequent, meta);
+
+    if (isCompiledCSSTemplateLiteral(interpolation, updatedMeta)) {
+      const consequent = buildCss(interpolation, updatedMeta);
+      logicalItem = getLogicalItemFromConditionalExpression(consequent.css, node, 'consequent');
+
+      css.push(...logicalItem);
+      variables.push(...consequent.variables);
+    }
+  }
+
+  if (t.isObjectExpression(node.alternate)) {
+    const alternate = extractObjectExpression(node.alternate, meta);
 
     css.push(...alternate.css);
     variables.push(...alternate.variables);
-  }
+  } else if (t.isIdentifier(node.alternate)) {
+    const { value: interpolation, meta: updatedMeta } = evaluateExpression(node.alternate, meta);
+    if (isCompiledCSSTemplateLiteral(interpolation, updatedMeta)) {
+      const alternate = buildCss(interpolation, updatedMeta);
+      logicalItem = getLogicalItemFromConditionalExpression(alternate.css, node, 'alternate');
 
-  if (t.isConditionalExpression(node.body) && t.isObjectExpression(node.body.consequent)) {
-    const expression = node.body.test;
-    const result = buildCss(node.body.consequent, meta);
-    const logicalExpressionCss = result.css.map((item) => {
-      if (item.type !== 'unconditional') {
-        return {
-          ...item,
-          expression: t.logicalExpression(item.operator, expression, item.expression),
-        };
-      }
-
-      const logicalItem: LogicalCssItem = {
-        type: 'logical',
-        css: item.css,
-        expression,
-        operator: '&&',
-      };
-
-      return logicalItem;
-    });
-
-    css.push(...logicalExpressionCss);
-    variables.push(...result.variables);
+      css.push(...logicalItem);
+      variables.push(...alternate.variables);
+    }
   }
 
   return { css: mergeSubsequentUnconditionalCssItems(css), variables };
@@ -362,12 +402,21 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       return acc + q.value.raw + interpolation.value;
     }
 
-    if (t.isObjectExpression(interpolation) || isCompiledCSSTemplateLiteral(interpolation, meta)) {
+    if (
+      t.isObjectExpression(interpolation) ||
+      isCompiledCSSTemplateLiteral(interpolation, meta) ||
+      (nodeExpression &&
+        t.isArrowFunctionExpression(nodeExpression) &&
+        t.isConditionalExpression(nodeExpression.body))
+    ) {
       // We found something that looks like CSS.
       const result = buildCss(interpolation, updatedMeta);
-      variables.push(...result.variables);
-      css.push(...result.css);
-      return acc;
+
+      if (result.css.length > 0) {
+        variables.push(...result.variables);
+        css.push(...result.css);
+        return acc;
+      }
     }
 
     const variableDeclaratorValueForOwnPath = getVariableDeclaratorValueForOwnPath(
@@ -455,7 +504,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
   }
 
   if (t.isArrowFunctionExpression(node) && t.isConditionalExpression(node.body)) {
-    return extractConditionalExpression(node, meta);
+    return extractConditionalExpression(node.body, meta);
   }
 
   if (t.isIdentifier(node)) {

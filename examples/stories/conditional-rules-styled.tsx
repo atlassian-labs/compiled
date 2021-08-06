@@ -1,5 +1,6 @@
 import React from 'react';
-import { styled } from '@compiled/react';
+import { styled, css } from '@compiled/react';
+import { primary, secondary } from '../mixins/mixins';
 
 export default {
   title: 'conditional rules/styled',
@@ -28,12 +29,20 @@ const TextWithTernaryOperatorTemplateLiteral = styled.span<TextProps>`
 const TextWithObjectStyles = styled.span<TextProps>(
   { color: 'red' },
   (props) => props.isPrimary && { color: 'blue' },
-  (props) => props.isBolded && { fontWeight: 'bold' }
+  (props) => props.isBolded && { fontWeight: 'bold' },
+  css`
+    text-transform: uppercase;
+  `
 );
 
 const TextWithTernaryAndBooleanObjectStyle = styled.span<TextProps>({ fontSize: '20px' }, (props) =>
   props.isPrimary && props.isBolded ? { color: 'blue', fontWeight: 'bold' } : { color: 'red' }
 );
+
+const TextWithMixins = styled.span<TextProps>`
+  ${(props) => (props.isPrimary ? primary : secondary)};
+  padding: 10px;
+`;
 
 export const PrimaryTextWithTemplateLiteral = (): JSX.Element => {
   return <TextWithTemplateLiteral isPrimary>Hello primary</TextWithTemplateLiteral>;
@@ -111,4 +120,12 @@ export const NotPrimaryTextWithTernaryAndBooleanObjectStyle = (): JSX.Element =>
   return (
     <TextWithTernaryAndBooleanObjectStyle> Hello secondary</TextWithTernaryAndBooleanObjectStyle>
   );
+};
+
+export const PrimaryTextWithMixins = (): JSX.Element => {
+  return <TextWithMixins isPrimary> Hello primary</TextWithMixins>;
+};
+
+export const SecondaryTextWithMixins = (): JSX.Element => {
+  return <TextWithMixins> Hello secondary</TextWithMixins>;
 };
