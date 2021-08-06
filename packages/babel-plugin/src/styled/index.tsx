@@ -1,5 +1,6 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/core';
+import { buildCodeFrameError } from '../utils/ast';
 import { buildStyledComponent, buildDisplayName } from '../utils/ast-builders';
 import { buildCss } from '../utils/css-builders';
 import { Metadata, Tag } from '../types';
@@ -109,16 +110,16 @@ const extractStyledDataFromNode = (
 };
 
 /**
- * Transform a node before the style is extracted, if the node value doesn't include a valid CSS declaration.
+ * Check whether the node value includes an invalid CSS declaration.
  * This happens when a CSS property is defined with a conditional rule that doesn't specify a default value,
  * resulting in a node that has a CSS value without property ( eg. 'bold').
  *
- * Eg. Transform font-weight: ${(props) => (props.isPrimary && props.isMaybe) && 'bold'};
+ * Eg. font-weight: ${(props) => (props.isPrimary && props.isMaybe) && 'bold'}; should be converted
  * into ${(props) => props.isPrimary && props.isMaybe && ({ 'font-weight': 'bold' })};
  *
  * @param node
  */
-const transformNodeWithoutDefaultCssValue = (node: t.TaggedTemplateExpression) => {
+const hasInValidExpression = (node: t.TaggedTemplateExpression) => {
   const logicalExpressions = node.quasi.expressions.filter((nodeExpression) => {
     return (
       t.isArrowFunctionExpression(nodeExpression) && t.isLogicalExpression(nodeExpression.body)
@@ -126,36 +127,28 @@ const transformNodeWithoutDefaultCssValue = (node: t.TaggedTemplateExpression) =
   });
 
   if (logicalExpressions.length === 0) {
-    return;
+    return false;
   }
 
-  node.quasi.quasis.forEach((item, index) => {
+  let invalidExpression = 0;
+
+  node.quasi.quasis.forEach((item) => {
     const value = item.value.raw;
     const declarations = value.split(';');
+    const l = declarations.length;
 
-    declarations.forEach((d) => {
+    for (let i = 0; i < l; i++) {
+      const d = declarations[i];
       const css = d.substring(d.indexOf(':') + 1);
 
       // Check if the CSS declaration doesn't contain any value ( eg. '\n font-weight: ')
       if (d.includes(':') && !css.trim().length) {
-        const nodeExpression = node.quasi.expressions[index];
-
-        if (
-          nodeExpression &&
-          t.isArrowFunctionExpression(nodeExpression) &&
-          t.isLogicalExpression(nodeExpression.body) &&
-          t.isStringLiteral(nodeExpression.body.right)
-        ) {
-          const cssValue = nodeExpression.body.right.value;
-          const cssProps = d.substr(0, d.indexOf(':'));
-
-          nodeExpression.body.right.value = `${cssProps}: ${cssValue}`;
-          item.value.raw = item.value.raw.replace(d, '');
-          item.value.cooked = item.value.raw.replace(d, '');
-        }
+        invalidExpression++;
       }
-    });
+    }
   });
+
+  return invalidExpression > 0;
 };
 
 /**
@@ -170,8 +163,15 @@ export const visitStyledPath = (
   path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
   meta: Metadata
 ): void => {
-  if (t.isTaggedTemplateExpression(path.node)) {
-    transformNodeWithoutDefaultCssValue(path.node);
+  if (t.isTaggedTemplateExpression(path.node) && hasInValidExpression(path.node)) {
+    throw buildCodeFrameError(
+      `A logical expression contains an invalid CSS declaration. 
+      Compiled doesn't support CSS properties that are defined with a conditional rule that doesn't specify a default value.
+      Eg. font-weight: \${(props) => (props.isPrimary && props.isMaybe) && 'bold'}; is invalid.
+      Use \${(props) => props.isPrimary && props.isMaybe && ({ 'font-weight': 'bold' })}; instead`,
+      path.node,
+      meta.parentPath
+    );
   }
 
   const styledData = extractStyledDataFromNode(path.node, meta);
