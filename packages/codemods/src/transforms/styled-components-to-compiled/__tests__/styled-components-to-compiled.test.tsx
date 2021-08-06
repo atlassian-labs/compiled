@@ -8,7 +8,7 @@ import { transformer } from '../styled-components-to-compiled';
 describe('styled-components-to-compiled transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    {},
+    { pluginModules: [] },
     "import styled from 'styled-components';",
     "import { styled } from '@compiled/react';",
     'it transforms default styled-components imports'
@@ -16,7 +16,7 @@ describe('styled-components-to-compiled transformer', () => {
 
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    {},
+    { pluginModules: [] },
     "import sc from 'styled-components';",
     "import { styled as sc } from '@compiled/react';",
     'it transforms default with different name than "styled" styled-components imports'
@@ -24,7 +24,7 @@ describe('styled-components-to-compiled transformer', () => {
 
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    {},
+    { pluginModules: [] },
     `
     import styled from 'styled-components';
     import * as React from 'react';
@@ -38,7 +38,7 @@ describe('styled-components-to-compiled transformer', () => {
 
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    {},
+    { pluginModules: [] },
     `
     // @top-level comment
 
@@ -60,7 +60,7 @@ describe('styled-components-to-compiled transformer', () => {
 
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    {},
+    { pluginModules: [] },
     `
     // @top-level comment
 
@@ -82,7 +82,7 @@ describe('styled-components-to-compiled transformer', () => {
 
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    {},
+    { pluginModules: [] },
     `
     import styled, { css, keyframes, createGlobalStyle, ThemeProvider, withTheme } from 'styled-components';
     import * as React from 'react';
@@ -101,7 +101,7 @@ describe('styled-components-to-compiled transformer', () => {
 
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    {},
+    { pluginModules: [] },
     "import * as React from 'react';",
     "import * as React from 'react';",
     'it should not transform when styled-components imports are not present'
@@ -110,16 +110,18 @@ describe('styled-components-to-compiled transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     {
-      pluginModule: {
-        migrationTransform: {
-          buildImport: ({ j }) =>
-            j.expressionStatement(
-              j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
-                j.literal('Bring back Netscape'),
-              ])
-            ),
+      pluginModules: [
+        {
+          migrationTransform: {
+            buildImport: ({ j }) =>
+              j.expressionStatement(
+                j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
+                  j.literal('Bring back Netscape'),
+                ])
+              ),
+          },
         },
-      },
+      ],
     },
     "import styled from 'styled-components';",
     "console.log('Bring back Netscape');",
@@ -129,16 +131,18 @@ describe('styled-components-to-compiled transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     {
-      pluginModule: {
-        migrationTransform: {
-          insertBeforeImport: ({ j }) =>
-            j.expressionStatement(
-              j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
-                j.literal('Bring back Netscape'),
-              ])
-            ),
+      pluginModules: [
+        {
+          migrationTransform: {
+            insertBeforeImport: ({ j }) =>
+              j.expressionStatement(
+                j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
+                  j.literal('Bring back Netscape'),
+                ])
+              ),
+          },
         },
-      },
+      ],
     },
     "import styled from 'styled-components';",
     "console.log('Bring back Netscape');\nimport { styled } from '@compiled/react';",
@@ -148,16 +152,18 @@ describe('styled-components-to-compiled transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     {
-      pluginModule: {
-        migrationTransform: {
-          insertAfterImport: ({ j }) =>
-            j.expressionStatement(
-              j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
-                j.literal('Bring back Netscape'),
-              ])
-            ),
+      pluginModules: [
+        {
+          migrationTransform: {
+            insertAfterImport: ({ j }) =>
+              j.expressionStatement(
+                j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
+                  j.literal('Bring back Netscape'),
+                ])
+              ),
+          },
         },
-      },
+      ],
     },
     "import styled from 'styled-components';",
     "import { styled } from '@compiled/react';\nconsole.log('Bring back Netscape');",

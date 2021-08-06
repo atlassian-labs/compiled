@@ -113,9 +113,10 @@ describe('main', () => {
             message: '--ignore-pattern',
           },
           {
-            name: 'plugin',
-            message: '--plugin',
-            hint: 'path to source',
+            name: 'plugins',
+            message: 'number of plugins',
+            hint: `default: ${chalk.cyan('0')}`,
+            validate: expect.any(Function),
           },
         ],
       })

@@ -1,5 +1,5 @@
-import { ImportDeclaration, JSCodeshift, Collection } from 'jscodeshift';
-import { MigrationTransformer, CodemodPlugin } from './types';
+import { ImportDeclaration, JSCodeshift, ASTNode } from 'jscodeshift';
+import { MigrationTransformer, RequiredCodemodPlugin } from './types';
 
 const buildImport = ({
   j,
@@ -9,11 +9,12 @@ const buildImport = ({
   compiledImportPath,
 }: {
   j: JSCodeshift;
+  originalNode: ImportDeclaration;
   currentNode: ImportDeclaration;
   defaultSpecifierName: string;
   namedImport: string;
   compiledImportPath: string;
-}): ImportDeclaration[] => {
+}): ImportDeclaration => {
   const newImport = j.importDeclaration(
     [j.importSpecifier(j.identifier(namedImport), j.identifier(defaultSpecifierName))],
     j.literal(compiledImportPath)
@@ -21,18 +22,27 @@ const buildImport = ({
 
   // Copy the comments from the previous import to the new one
   newImport.comments = currentNode.comments;
-  return [newImport];
+
+  return newImport;
 };
 
-const insertBeforeImport = ({}: {
+const insertBeforeImport = ({
+  currentNodes,
+}: {
   j: JSCodeshift;
-  newImport: Collection<ImportDeclaration>;
-}): null => null;
+  originalImport: ImportDeclaration;
+  newImport: ImportDeclaration;
+  currentNodes: Array<ASTNode>;
+}): Array<ASTNode> => currentNodes;
 
-const insertAfterImport = ({}: {
+const insertAfterImport = ({
+  currentNodes,
+}: {
   j: JSCodeshift;
-  newImport: Collection<ImportDeclaration>;
-}): null => null;
+  originalImport: ImportDeclaration;
+  newImport: ImportDeclaration;
+  currentNodes: Array<ASTNode>;
+}): Array<ASTNode> => currentNodes;
 
 export const migrationTransform: Required<MigrationTransformer> = {
   buildImport,
@@ -40,7 +50,8 @@ export const migrationTransform: Required<MigrationTransformer> = {
   insertAfterImport,
 };
 
-const DefaultCodemodPlugin: Required<CodemodPlugin> = {
+const DefaultCodemodPlugin: RequiredCodemodPlugin = {
+  metadata: { name: 'default' },
   migrationTransform,
 };
 

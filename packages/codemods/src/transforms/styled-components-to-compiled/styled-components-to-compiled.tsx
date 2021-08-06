@@ -20,7 +20,7 @@ export const transformer = (
 ): string => {
   const { source } = fileInfo;
   const collection = j(source);
-  const plugin: CodemodPlugin | null = options.pluginModule;
+  const plugins: Array<CodemodPlugin> = options.pluginModules;
 
   const hasStyledComponentsImportDeclaration = hasImportDeclaration({
     j,
@@ -41,7 +41,7 @@ export const transformer = (
 
   convertDefaultImportToNamedImport({
     j,
-    plugin,
+    plugins,
     collection,
     importPath: imports.styledComponentsPackageName,
     namedImport: imports.compiledStyledImportName,

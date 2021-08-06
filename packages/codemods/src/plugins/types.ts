@@ -1,4 +1,4 @@
-import { ImportDeclaration, Collection, JSCodeshift, ASTNode } from 'jscodeshift';
+import { ImportDeclaration, JSCodeshift, ASTNode } from 'jscodeshift';
 
 // We want to ensure the config contract is correct so devs can get type safety
 type ValidateConfig<T, Struct> = T extends Struct
@@ -7,9 +7,11 @@ type ValidateConfig<T, Struct> = T extends Struct
     : never
   : never;
 
-type BaseConfig = { j: JSCodeshift };
+export interface PluginMetadata {
+  name: string;
+}
 
-export type NodeSupplier = ASTNode | Array<ASTNode> | (() => ASTNode | Array<ASTNode>) | null;
+type BaseConfig = { processedPlugins: Array<PluginMetadata>; j: JSCodeshift };
 
 /**
  * Interface for codemods that handle migration from CSS-in-JS libraries to Compiled
@@ -31,13 +33,14 @@ export interface MigrationTransformer {
     config: ValidateConfig<
       T,
       BaseConfig & {
+        originalNode: ImportDeclaration;
         currentNode: ImportDeclaration;
         defaultSpecifierName: string;
         namedImport: string;
         compiledImportPath: string;
       }
     >
-  ): ImportDeclaration[];
+  ): ImportDeclaration;
 
   /**
    * Insert AST nodes before the compiled import
@@ -49,8 +52,15 @@ export interface MigrationTransformer {
    * @returns Nodes to insert before the import
    */
   insertBeforeImport?<T>(
-    config: ValidateConfig<T, BaseConfig & { newImport: Collection<ImportDeclaration> }>
-  ): NodeSupplier;
+    config: ValidateConfig<
+      T,
+      BaseConfig & {
+        originalImport: ImportDeclaration;
+        newImport: ImportDeclaration;
+        currentNodes: Array<ASTNode>;
+      }
+    >
+  ): Array<ASTNode>;
 
   /**
    * Insert AST nodes after the compiled import
@@ -62,10 +72,24 @@ export interface MigrationTransformer {
    * @returns Nodes to insert after the import
    */
   insertAfterImport?<T>(
-    config: ValidateConfig<T, BaseConfig & { newImport: Collection<ImportDeclaration> }>
-  ): NodeSupplier;
+    config: ValidateConfig<
+      T,
+      BaseConfig & {
+        originalImport: ImportDeclaration;
+        newImport: ImportDeclaration;
+        currentNodes: Array<ASTNode>;
+      }
+    >
+  ): Array<ASTNode>;
 }
 
 export interface CodemodPlugin {
+  metadata: PluginMetadata;
   migrationTransform?: MigrationTransformer;
 }
+
+export type RequiredCodemodPlugin = Required<
+  {
+    [K in keyof CodemodPlugin]: Required<CodemodPlugin[K]>;
+  }
+>;

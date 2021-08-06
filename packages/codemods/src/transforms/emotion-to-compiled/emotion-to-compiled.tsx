@@ -208,7 +208,7 @@ export const transformer = (
 ): string => {
   const { source } = fileInfo;
   const collection = j(source);
-  const plugin: CodemodPlugin | null = options.pluginModule;
+  const plugins: Array<CodemodPlugin> = options.pluginModules;
 
   const hasEmotionCoreImportDeclaration = hasImportDeclaration({
     j,
@@ -228,7 +228,7 @@ export const transformer = (
   if (hasEmotionStyledImportDeclaration) {
     convertDefaultImportToNamedImport({
       j,
-      plugin,
+      plugins,
       collection,
       importPath: imports.emotionStyledPackageName,
       namedImport: imports.compiledStyledImportName,
