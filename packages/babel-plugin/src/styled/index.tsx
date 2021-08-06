@@ -144,6 +144,7 @@ const hasInValidExpression = (node: t.TaggedTemplateExpression) => {
       // Check if the CSS declaration doesn't contain any value ( eg. '\n font-weight: ')
       if (d.includes(':') && !css.trim().length) {
         invalidExpression++;
+        break;
       }
     }
   });
