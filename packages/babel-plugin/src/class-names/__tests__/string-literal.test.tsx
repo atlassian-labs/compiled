@@ -148,17 +148,25 @@ describe('class names string literal', () => {
 
           return (
             <ClassNames>
-              {({ css }) => <div className={css\`\${mixin({ color1: color.red, color2: 'blue' }, greenColor, 10)}\`} />}
+              {({ css }) => <div className={css\`
+                padding-top: 10px;
+                padding-bottom: 15px;
+                \${mixin({ color1: color.red, color2: 'blue' }, greenColor, 10)};
+                font-size: 20px;
+              \`} />}
             </ClassNames>
           );
         };
     `);
 
     expect(actual).toIncludeMultiple([
+      '{padding-top:10px}',
+      '{padding-bottom:15px}',
       '{color:red}',
       '{background-color:blue}',
       '{border-color:green}',
       '{border-radius:10px}',
+      '{font-size:20px}',
     ]);
   });
 
@@ -176,12 +184,17 @@ describe('class names string literal', () => {
 
         const Component = (props) => (
           <ClassNames>
-            {({ css, style }) => <div style={style} className={css\`\${mixin(props.color1, radius)}\`} />}
+            {({ css, style }) => <div style={style} className={css\`
+              border: 1px solid black;
+              \${mixin(props.color1, radius)};
+              margin-top: 20px;
+            \`} />}
           </ClassNames>
         );
       `);
 
     expect(actual).toIncludeMultiple([
+      '{border:1px solid black}',
       '{color:var(--_zo7lop)}',
       '"--_zo7lop":ix(props.color1)',
       '{border-radius:10px}',
@@ -189,6 +202,7 @@ describe('class names string literal', () => {
       '"--_u6vle4":ix()',
       '{font-size:var(--_kre2x8)}',
       '"--_kre2x8":ix()',
+      '{margin-top:20px}',
     ]);
   });
 
@@ -208,15 +222,21 @@ describe('class names string literal', () => {
 
         const Component = (props) => (
           <ClassNames>
-            {({ css, style }) => <div style={style} className={css\`\${mixin.value(props.color1, radius, 'red')}\`} />}
+            {({ css, style }) => <div style={style} className={css\`
+              font-size: 20px;
+              \${mixin.value(props.color1, radius, 'red')};
+              font-weight: bold;
+            \`} />}
           </ClassNames>
         );
       `);
 
     expect(actual).toIncludeMultiple([
+      'font-size:20px',
       '"--_zo7lop":ix(props.color1)',
       '{border-radius:10px}',
       '{border-color:red}',
+      'font-weight:bold',
     ]);
   });
 });
