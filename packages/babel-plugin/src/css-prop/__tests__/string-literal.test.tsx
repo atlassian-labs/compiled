@@ -207,7 +207,7 @@ describe('css prop string literal', () => {
     expect(actual).toInclude('{font-size:30px}');
   });
 
-  it.only('should transform template string with no argument arrow function variable', () => {
+  it('should transform template string with no argument arrow function variable', () => {
     const actual = transform(`
         import '@compiled/react';
         import React from 'react';
