@@ -2,8 +2,6 @@
   "name": "@compiled/cli",
   "version": "0.6.9",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
-  "author": "Michael Dougall",
-  "license": "Apache-2.0",
   "homepage": "https://compiledcssinjs.com",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
@@ -11,12 +9,11 @@
     "url": "https://github.com/atlassian-labs/compiled.git",
     "directory": "packages/cli"
   },
+  "license": "Apache-2.0",
+  "author": "Michael Dougall",
   "main": "./dist/main.js",
   "module": "./dist/main.js",
   "types": "./dist/main.d.ts",
-  "scripts": {
-    "start": "ts-node --files src/index.tsx"
-  },
   "bin": {
     "compiled-cli": "./dist/index.js"
   },
@@ -24,8 +21,8 @@
     "dist",
     "src"
   ],
-  "peerDependencies": {
-    "@compiled/react": ">=0.6.10"
+  "scripts": {
+    "start": "ts-node --files src/index.tsx"
   },
   "dependencies": {
     "app-root-path": "^3.0.0",
@@ -39,5 +36,8 @@
   },
   "devDependencies": {
     "@types/app-root-path": "^1.2.4"
+  },
+  "peerDependencies": {
+    "@compiled/react": ">=0.6.10"
   }
 }
