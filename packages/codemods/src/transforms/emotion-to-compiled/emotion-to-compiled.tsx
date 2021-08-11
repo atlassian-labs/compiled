@@ -1,4 +1,4 @@
-import core, {
+import type {
   FileInfo,
   API,
   Options,
@@ -7,6 +7,7 @@ import core, {
   CommentBlock,
   ObjectPattern,
 } from 'jscodeshift';
+import type core from 'jscodeshift';
 
 import { COMPILED_IMPORT_PATH } from '../../constants';
 import {
@@ -21,7 +22,7 @@ import {
   addCommentBefore,
   withPlugin,
 } from '../../codemods-helpers';
-import { CodemodPlugin } from '../../plugins/types';
+import type { CodemodPlugin } from '../../plugins/types';
 
 const imports = {
   compiledStyledImportName: 'styled',

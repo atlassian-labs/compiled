@@ -1,4 +1,5 @@
-import path, { ParsedPath } from 'path';
+import type { ParsedPath } from 'path';
+import path from 'path';
 import glob from 'glob';
 import appRoot from 'app-root-path';
 

@@ -19,6 +19,11 @@
     "css-in-js",
     "typescript"
   ],
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "jscodeshift": "^0.12.0"
+  },
+  "devDependencies": {
+    "@types/jscodeshift": "^0.11.2"
+  }
 }

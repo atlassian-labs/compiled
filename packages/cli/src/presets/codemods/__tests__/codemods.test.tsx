@@ -3,7 +3,7 @@ import { AutoComplete, Form } from 'enquirer';
 import { promise as execAsync } from 'exec-sh';
 import { castToJestMock } from '../../../__tests__/test-utils';
 import codemods from '../codemods';
-import { CodemodOptions } from '../types';
+import type { CodemodOptions } from '../types';
 
 jest.mock('enquirer', () => ({
   AutoComplete: jest.fn(),

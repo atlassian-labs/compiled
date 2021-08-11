@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { AutoComplete } from 'enquirer';
 
-import { Result } from './cli';
+import type { Result } from './cli';
 import presets from './presets';
 
 const getPresetPrompt = async (): Promise<string> =>

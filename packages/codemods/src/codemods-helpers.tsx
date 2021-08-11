@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import {
+import type {
   JSCodeshift,
   ASTNode,
   ImportDeclaration,
@@ -18,7 +18,7 @@ import {
 } from 'jscodeshift';
 
 import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from './constants';
-import { CodemodPlugin } from './plugins/types';
+import type { CodemodPlugin } from './plugins/types';
 import DefaultPlugin from './plugins/default';
 
 type Identifiers = Array<Identifier | JSXIdentifier | TSTypeParameter>;

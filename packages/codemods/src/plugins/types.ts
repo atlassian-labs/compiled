@@ -1,4 +1,4 @@
-import { ImportDeclaration, JSCodeshift, ASTNode } from 'jscodeshift';
+import type { ImportDeclaration, JSCodeshift, ASTNode } from 'jscodeshift';
 
 // We want to ensure the config contract is correct so devs can get type safety
 type ValidateConfig<T, Struct> = T extends Struct

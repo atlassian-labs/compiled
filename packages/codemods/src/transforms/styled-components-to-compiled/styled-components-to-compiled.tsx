@@ -1,4 +1,4 @@
-import { FileInfo, API, Options } from 'jscodeshift';
+import type { FileInfo, API, Options } from 'jscodeshift';
 
 import {
   hasImportDeclaration,
@@ -6,7 +6,7 @@ import {
   addCommentForUnresolvedImportSpecifiers,
   withPlugin,
 } from '../../codemods-helpers';
-import { CodemodPlugin } from '../../plugins/types';
+import type { CodemodPlugin } from '../../plugins/types';
 
 const imports = {
   compiledStyledImportName: 'styled',

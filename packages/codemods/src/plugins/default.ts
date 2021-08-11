@@ -1,5 +1,5 @@
-import { ImportDeclaration, JSCodeshift, ASTNode } from 'jscodeshift';
-import { MigrationTransformer, RequiredCodemodPlugin } from './types';
+import type { ImportDeclaration, JSCodeshift, ASTNode } from 'jscodeshift';
+import type { MigrationTransformer, RequiredCodemodPlugin } from './types';
 
 const buildImport = ({
   j,
