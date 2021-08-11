@@ -207,6 +207,40 @@ describe('css prop string literal', () => {
     expect(actual).toInclude('{font-size:30px}');
   });
 
+  it('should be able to override properties in a mixin', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      import React from 'react';
+
+      const primary = () => ({
+        fontSize: '32px',
+        fontWeight: 'bold',
+        color: 'purple',
+      });
+
+      const secondary = {
+        border: '1px solid red'
+      };
+
+      const Component = () => {
+        return <div css={\`
+          \${primary};
+          font-size: 30px;
+          \${secondary};
+          color: blue;
+          border: 2px solid black;
+        \`} />
+      };
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '{border:2px solid black}',
+      '{color:blue}',
+      '{font-size:30px}',
+      '{font-weight:bold}',
+    ]);
+  });
+
   it('should transform template string with no argument arrow function variable', () => {
     const actual = transform(`
         import '@compiled/react';

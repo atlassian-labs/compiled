@@ -170,6 +170,44 @@ describe('class names string literal', () => {
     ]);
   });
 
+  it('should be able to override properties in a mixin', () => {
+    const actual = transform(`
+        import { ClassNames } from '@compiled/react';
+
+        const primary = () => ({
+          fontSize: '32px',
+          fontWeight: 'bold',
+          color: 'purple',
+        });
+
+        const secondary = {
+          border: '1px solid red'
+        };
+
+        const Component = (props) => {
+
+          return (
+            <ClassNames>
+              {({ css }) => <div className={css\`
+                \${primary()};
+                font-size: 30px;
+                \${secondary};
+                color: blue;
+                border: 2px solid black;
+              \`} />}
+            </ClassNames>
+          );
+        };
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '{border:2px solid black}',
+      '{color:blue}',
+      '{font-size:30px}',
+      '{font-weight:bold}',
+    ]);
+  });
+
   it('should transform template string with unresolved argument arrow function variable', () => {
     const actual = transform(`
         import { ClassNames } from '@compiled/react';

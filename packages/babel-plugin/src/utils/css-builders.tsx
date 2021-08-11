@@ -274,14 +274,6 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
 
-    // If there is a node Expression ( eg a mixin), the quasi at the same index won't be evaluated
-    // unless it contains a valid CSS declaration with no interpolation.
-    // This is needed to evaluate CSS declarations defined before a mixin
-    if (nodeExpression && templateElementContainsValidStaticCss(q, interpolation)) {
-      const literal = acc + q.value.raw + ';';
-      css.push({ type: 'unconditional', css: literal });
-    }
-
     callbackIfFileIncluded(meta, updatedMeta);
 
     if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
@@ -294,6 +286,11 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       const result = buildCss(interpolation, updatedMeta);
       variables.push(...result.variables);
       css.push(...result.css);
+
+      if (q.hasOwnProperty('value')) {
+        return acc + q.value.raw;
+      }
+
       return acc;
     }
 
@@ -329,46 +326,6 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   css.push({ type: 'unconditional', css: literalResult });
 
   return { css: mergeSubsequentUnconditionalCssItems(css), variables };
-};
-
-/**
- * Check if quasis, the string pieces of a template literal,
- * contains a valid CSS declaration ( eg. '\n  border: 1px solid black;\n  ')
- * with no interpolation.
- * @param quasi s
- * @param interpolation
- */
-const templateElementContainsValidStaticCss = (
-  quasis: t.TemplateElement,
-  interpolation: t.Expression
-): boolean => {
-  const value = quasis.value.raw;
-
-  if (
-    value.split(':').length === 0 ||
-    interpolation.hasOwnProperty('value') ||
-    t.isIdentifier(interpolation) ||
-    t.isArrowFunctionExpression(interpolation)
-  ) {
-    return false;
-  }
-
-  const declarations = value.split(';');
-  const l = declarations.length;
-  let validExpression = 0;
-
-  for (let i = 0; i < l; i++) {
-    const d = declarations[i];
-    const cssProperty = d.substring(0, d.indexOf(':'));
-    const cssValue = d.substring(d.indexOf(':') + 1);
-
-    if (cssProperty.trim().length && cssValue.trim().length) {
-      validExpression++;
-      break;
-    }
-  }
-
-  return validExpression > 0;
 };
 
 /**

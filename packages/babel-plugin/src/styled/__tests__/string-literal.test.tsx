@@ -57,6 +57,37 @@ describe('styled component string literal', () => {
     ]);
   });
 
+  it('should be able to override properties in a mixin', () => {
+    const actual = transform(`
+      import { styled, css } from '@compiled/react';
+
+      const primary = css\`
+        font-size: 32px;
+        font-weight: bold;
+        color: purple;
+      \`;
+    
+      const secondary = css\`
+        border: 1px solid red;
+      \`;
+
+      const Component = styled.button\`
+        \${primary};
+        font-size: 30px;
+        \${secondary};
+        color: blue;
+        border: 2px solid black;
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '{border:2px solid black}',
+      '{color:blue}',
+      '{font-size:30px}',
+      '{font-weight:bold}',
+    ]);
+  });
+
   it('should inline constant numeric literal', () => {
     const actual = transform(`
         import { styled } from '@compiled/react';
