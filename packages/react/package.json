@@ -2,20 +2,6 @@
   "name": "@compiled/react",
   "version": "0.6.13",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
-  "author": "Michael Dougall",
-  "license": "Apache-2.0",
-  "homepage": "https://compiledcssinjs.com",
-  "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/atlassian-labs/compiled.git",
-    "directory": "packages/react"
-  },
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "browser": "./dist/browser/index.js",
-  "types": "./dist/esm/index.d.ts",
-  "sideEffects": false,
   "keywords": [
     "compiled",
     "css-in-js",
@@ -23,6 +9,16 @@
     "emotion-js",
     "typescript"
   ],
+  "homepage": "https://compiledcssinjs.com",
+  "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlassian-labs/compiled.git",
+    "directory": "packages/react"
+  },
+  "license": "Apache-2.0",
+  "author": "Michael Dougall",
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
@@ -37,6 +33,10 @@
       "require": "./dist/cjs/runtime.js"
     }
   },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "browser": "./dist/browser/index.js",
+  "types": "./dist/esm/index.d.ts",
   "files": [
     "dist",
     "src",
@@ -47,14 +47,14 @@
   "dependencies": {
     "csstype": "^3.0.8"
   },
-  "peerDependencies": {
-    "react": ">= 16.12.0"
-  },
   "devDependencies": {
     "@testing-library/react": "^11.2.7",
     "@types/jscodeshift": "^0.11.2",
     "jscodeshift": "^0.12.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
+  },
+  "peerDependencies": {
+    "react": ">= 16.12.0"
   }
 }
