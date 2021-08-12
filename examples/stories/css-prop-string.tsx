@@ -10,7 +10,7 @@ export const TemplateLiteral = (): JSX.Element => {
     <div
       css={`
         display: flex;
-        font-size: 50px;
+        font-size: 30px;
         color: blue;
       `}>
       blue text
@@ -18,7 +18,7 @@ export const TemplateLiteral = (): JSX.Element => {
   );
 };
 
-export const TemplateLiteralCSS = (): JSX.Element => {
+export const InlineCssTaggedTemplateExpression = (): JSX.Element => {
   return (
     <div
       css={css`
@@ -29,6 +29,16 @@ export const TemplateLiteralCSS = (): JSX.Element => {
       red text
     </div>
   );
+};
+
+const taggedTemplateExpressionCss = css`
+  display: flex;
+  font-size: 30px;
+  color: green;
+`;
+
+export const CssTaggedTemplateExpression = (): JSX.Element => {
+  return <div css={taggedTemplateExpressionCss}>green text</div>;
 };
 
 export const UsingMixinImportSpread = (): JSX.Element => {
