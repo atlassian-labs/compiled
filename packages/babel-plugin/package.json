@@ -40,6 +40,7 @@
     "@types/babel__core": "^7.1.15",
     "@types/benchmark": "^2.1.1",
     "@types/resolve": "^1.20.1",
-    "benchmark": "^2.1.4"
+    "benchmark": "^2.1.4",
+    "prettier": "^2.2.1"
   }
 }
