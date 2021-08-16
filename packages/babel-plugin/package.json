@@ -23,14 +23,14 @@
     "benchmark:module-traversal": "ts-node --files ./src/__perf__/module-traversal-caching"
   },
   "dependencies": {
-    "@babel/core": "^7.14.8",
-    "@babel/generator": "^7.14.9",
+    "@babel/core": "^7.15.0",
+    "@babel/generator": "^7.15.0",
     "@babel/helper-plugin-utils": "^7.14.5",
     "@babel/plugin-syntax-jsx": "^7.14.5",
     "@babel/plugin-transform-flow-strip-types": "^7.14.5",
     "@babel/template": "^7.14.5",
-    "@babel/traverse": "^7.14.9",
-    "@babel/types": "^7.14.9",
+    "@babel/traverse": "^7.15.0",
+    "@babel/types": "^7.15.0",
     "@compiled/css": "^0.6.11",
     "@compiled/utils": "^0.6.11",
     "@emotion/is-prop-valid": "^1.1.0",
