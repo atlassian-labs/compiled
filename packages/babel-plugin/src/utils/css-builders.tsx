@@ -382,14 +382,9 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     const nodeExpression = node.expressions[index] as t.Expression | undefined;
 
     if (
-      nodeExpression &&
-      t.isArrowFunctionExpression(nodeExpression) &&
-      t.isLogicalExpression(nodeExpression.body)
+      !nodeExpression ||
+      (t.isArrowFunctionExpression(nodeExpression) && t.isLogicalExpression(nodeExpression.body))
     ) {
-      return acc + q.value.raw + ';';
-    }
-
-    if (!nodeExpression) {
       return acc + q.value.raw + ';';
     }
 
@@ -405,8 +400,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     if (
       t.isObjectExpression(interpolation) ||
       isCompiledCSSTemplateLiteral(interpolation, meta) ||
-      (nodeExpression &&
-        t.isArrowFunctionExpression(nodeExpression) &&
+      (t.isArrowFunctionExpression(nodeExpression) &&
         t.isConditionalExpression(nodeExpression.body))
     ) {
       // We found something that looks like CSS.
@@ -453,18 +447,6 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   // Deals with Conditional CSS Rules
   node.expressions.forEach((prop) => {
     if (t.isArrowFunctionExpression(prop)) {
-      let resolvedBinding = undefined;
-
-      // Skip this when destructuring in styled interpolation functions
-      // eg border: 5px ${({ borderStyle: bs }) => bs} black;
-      if (!t.isObjectPattern(prop.params[0]) && t.isIdentifier(prop.body)) {
-        resolvedBinding = resolveBindingNode(prop.body.name, meta);
-
-        if (!resolvedBinding) {
-          throw buildCodeFrameError('Variable could not be found', prop.body, meta.parentPath);
-        }
-      }
-
       if (t.isLogicalExpression(prop.body)) {
         const { value: propValue, meta: updatedMeta } = evaluateExpression(prop.body, meta);
         const result = buildCss(propValue, updatedMeta);
