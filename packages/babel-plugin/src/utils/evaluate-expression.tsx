@@ -220,7 +220,9 @@ const traverseFunction = (expression: t.Function, meta: Metadata) => {
 const traverseCallExpression = (expression: t.CallExpression, meta: Metadata) => {
   const callee = expression.callee;
   let value: t.Node | undefined | null = undefined;
-  let updatedMeta: Metadata = meta;
+  // Make sure updatedMeta is a new object, so that when the ownPath is set, the meta does not get re-used incorrectly in
+  // later parts of the AST
+  let updatedMeta: Metadata = { ...meta };
 
   /*
     Basically flow is as follows:

@@ -2,8 +2,6 @@
   "name": "@compiled/babel-plugin",
   "version": "0.6.14",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
-  "author": "Michael Dougall",
-  "license": "Apache-2.0",
   "homepage": "https://compiledcssinjs.com",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
@@ -11,6 +9,8 @@
     "url": "https://github.com/atlassian-labs/compiled.git",
     "directory": "packages/babel-plugin"
   },
+  "license": "Apache-2.0",
+  "author": "Michael Dougall",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -24,13 +24,13 @@
   },
   "dependencies": {
     "@babel/core": "^7.14.8",
-    "@babel/generator": "^7.14.8",
+    "@babel/generator": "^7.14.9",
     "@babel/helper-plugin-utils": "^7.14.5",
     "@babel/plugin-syntax-jsx": "^7.14.5",
     "@babel/plugin-transform-flow-strip-types": "^7.14.5",
     "@babel/template": "^7.14.5",
-    "@babel/traverse": "^7.14.8",
-    "@babel/types": "^7.14.8",
+    "@babel/traverse": "^7.14.9",
+    "@babel/types": "^7.14.9",
     "@compiled/css": "^0.6.11",
     "@compiled/utils": "^0.6.11",
     "@emotion/is-prop-valid": "^1.1.0",
@@ -40,6 +40,7 @@
     "@types/babel__core": "^7.1.15",
     "@types/benchmark": "^2.1.1",
     "@types/resolve": "^1.20.1",
-    "benchmark": "^2.1.4"
+    "benchmark": "^2.1.4",
+    "prettier": "^2.2.1"
   }
 }

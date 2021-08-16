@@ -2,8 +2,6 @@
   "name": "@compiled/webpack-loader",
   "version": "0.6.15",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
-  "author": "Michael Dougall",
-  "license": "Apache-2.0",
   "homepage": "https://compiledcssinjs.com",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
@@ -11,6 +9,8 @@
     "url": "https://github.com/atlassian-labs/compiled.git",
     "directory": "packages/webpack-loader"
   },
+  "license": "Apache-2.0",
+  "author": "Michael Dougall",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -29,14 +29,14 @@
     "loader-utils": "^2.0.0",
     "webpack-sources": "^1.4.3"
   },
-  "peerDependencies": {
-    "webpack": ">= 4.46.0"
-  },
   "devDependencies": {
     "babel-loader": "^8.2.2",
     "css-loader": "^5.2.7",
     "memfs": "^3.2.2",
     "mini-css-extract-plugin": "^1.5.0",
     "webpack": "^5.46.0"
+  },
+  "peerDependencies": {
+    "webpack": ">= 4.46.0"
   }
 }
