@@ -405,10 +405,15 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     ) {
       // We found something that looks like CSS.
       const result = buildCss(interpolation, updatedMeta);
+      variables.push(...result.variables);
+      css.push(...result.css);
+
+      if (!t.isArrowFunctionExpression(nodeExpression) && q.hasOwnProperty('value')) {
+        // To ensure that CSS is generated for declaration before a mixin
+        return acc + q.value.raw;
+      }
 
       if (result.css.length > 0) {
-        variables.push(...result.variables);
-        css.push(...result.css);
         return acc;
       }
     }
