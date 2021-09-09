@@ -1,5 +1,5 @@
-import type { ImportDeclaration, JSCodeshift, ASTNode } from 'jscodeshift';
-import type { MigrationTransformer, RequiredCodemodPlugin } from './types';
+import type { ImportDeclaration, JSCodeshift } from 'jscodeshift';
+import type { PluginMetadata, MigrationTransformer, CodemodPlugin } from './types';
 
 const buildImport = ({
   j,
@@ -8,6 +8,7 @@ const buildImport = ({
   namedImport,
   compiledImportPath,
 }: {
+  processedPlugins: Array<PluginMetadata>;
   j: JSCodeshift;
   originalNode: ImportDeclaration;
   currentNode: ImportDeclaration;
@@ -26,31 +27,11 @@ const buildImport = ({
   return newImport;
 };
 
-const insertBeforeImport = ({
-  currentNodes,
-}: {
-  j: JSCodeshift;
-  originalImport: ImportDeclaration;
-  newImport: ImportDeclaration;
-  currentNodes: Array<ASTNode>;
-}): Array<ASTNode> => currentNodes;
-
-const insertAfterImport = ({
-  currentNodes,
-}: {
-  j: JSCodeshift;
-  originalImport: ImportDeclaration;
-  newImport: ImportDeclaration;
-  currentNodes: Array<ASTNode>;
-}): Array<ASTNode> => currentNodes;
-
-export const migrationTransform: Required<MigrationTransformer> = {
+export const migrationTransform: MigrationTransformer = {
   buildImport,
-  insertBeforeImport,
-  insertAfterImport,
 };
 
-const DefaultCodemodPlugin: RequiredCodemodPlugin = {
+const DefaultCodemodPlugin: CodemodPlugin = {
   metadata: { name: 'default' },
   migrationTransform,
 };

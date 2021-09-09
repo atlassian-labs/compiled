@@ -6,11 +6,13 @@ import type {
   ASTPath,
   CommentBlock,
   ObjectPattern,
+  Program,
 } from 'jscodeshift';
 import type core from 'jscodeshift';
 
 import { COMPILED_IMPORT_PATH } from '../../constants';
 import {
+  applyVisitor,
   hasImportDeclaration,
   getImportDeclarationCollection,
   findImportSpecifierName,
@@ -211,6 +213,8 @@ export const transformer = (
   const collection = j(source);
   const plugins: Array<CodemodPlugin> = options.pluginModules;
 
+  const originalProgram: Program = j(source).find(j.Program).get();
+
   const hasEmotionCoreImportDeclaration = hasImportDeclaration({
     j,
     collection,
@@ -250,6 +254,14 @@ export const transformer = (
   }
 
   mergeCompiledImportSpecifiers(j, collection);
+
+  const currentProgram = collection.find(j.Program);
+  applyVisitor({
+    j,
+    plugins,
+    originalProgram,
+    currentProgram: currentProgram.get(),
+  });
 
   return collection.toSource(options.printOptions || { quote: 'single' });
 };

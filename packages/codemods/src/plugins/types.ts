@@ -1,4 +1,4 @@
-import type { ImportDeclaration, JSCodeshift, ASTNode } from 'jscodeshift';
+import type { ImportDeclaration, JSCodeshift, Program } from 'jscodeshift';
 
 // We want to ensure the config contract is correct so devs can get type safety
 type ValidateConfig<T, Struct> = T extends Struct
@@ -11,7 +11,34 @@ export interface PluginMetadata {
   name: string;
 }
 
-type BaseConfig = { processedPlugins: Array<PluginMetadata>; j: JSCodeshift };
+type BaseConfig = {
+  processedPlugins: Array<PluginMetadata>;
+  j: JSCodeshift;
+};
+
+/**
+ * Visitor interface for interacting with the AST
+ */
+export interface Visitor {
+  /**
+   * Program visitor
+   *
+   * @param config The configuration object
+   * @param config.processedPlugins The plugins processed so far
+   * @param config.j The JSCodeshift object
+   * @param config.originalProgram The initial state of the program (before any processing)
+   * @param config.program The current state of the program
+   */
+  program?<T>(
+    config: ValidateConfig<
+      T,
+      BaseConfig & {
+        originalProgram: Program;
+        program: Program;
+      }
+    >
+  ): void;
+}
 
 /**
  * Interface for codemods that handle migration from CSS-in-JS libraries to Compiled
@@ -41,55 +68,10 @@ export interface MigrationTransformer {
       }
     >
   ): ImportDeclaration;
-
-  /**
-   * Insert AST nodes before the compiled import
-   *
-   * @param config The configuration object
-   * @param config.j The JSCodeshift object
-   * @param config.newImport The new import node replaced in `buildImport`
-   *
-   * @returns Nodes to insert before the import
-   */
-  insertBeforeImport?<T>(
-    config: ValidateConfig<
-      T,
-      BaseConfig & {
-        originalImport: ImportDeclaration;
-        newImport: ImportDeclaration;
-        currentNodes: Array<ASTNode>;
-      }
-    >
-  ): Array<ASTNode>;
-
-  /**
-   * Insert AST nodes after the compiled import
-   *
-   * @param config The configuration object
-   * @param config.j The JSCodeshift object
-   * @param config.newImport The new import node replaced in `buildImport`
-   *
-   * @returns Nodes to insert after the import
-   */
-  insertAfterImport?<T>(
-    config: ValidateConfig<
-      T,
-      BaseConfig & {
-        originalImport: ImportDeclaration;
-        newImport: ImportDeclaration;
-        currentNodes: Array<ASTNode>;
-      }
-    >
-  ): Array<ASTNode>;
 }
 
 export interface CodemodPlugin {
   metadata: PluginMetadata;
+  visitor?: Visitor;
   migrationTransform?: MigrationTransformer;
 }
-
-export type RequiredCodemodPlugin = Required<
-  {
-    [K in keyof CodemodPlugin]: Required<CodemodPlugin[K]>;
-  }
->;

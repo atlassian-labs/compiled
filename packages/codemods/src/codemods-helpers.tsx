@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import type {
   JSCodeshift,
-  ASTNode,
   ImportDeclaration,
   ImportDefaultSpecifier,
   ImportSpecifier,
@@ -183,54 +182,6 @@ const applyBuildImport = ({
     });
   }, originalNode);
 
-const applyBeforeImport = ({
-  j,
-  plugins,
-  originalImport,
-  newImport,
-}: {
-  j: JSCodeshift;
-  plugins: Array<CodemodPlugin>;
-  originalImport: ImportDeclaration;
-  newImport: ImportDeclaration;
-}) =>
-  [DefaultPlugin, ...plugins].reduce((currentNodes, plugin, i, array) => {
-    const insertBeforeImportImpl = plugin.migrationTransform?.insertBeforeImport ?? null;
-    if (insertBeforeImportImpl === null) return currentNodes;
-
-    return insertBeforeImportImpl({
-      j,
-      processedPlugins: array.slice(0, i).map((p) => p.metadata),
-      originalImport,
-      newImport,
-      currentNodes: currentNodes,
-    });
-  }, [] as Array<ASTNode>);
-
-const applyAfterImport = ({
-  j,
-  plugins,
-  originalImport,
-  newImport,
-}: {
-  j: JSCodeshift;
-  plugins: Array<CodemodPlugin>;
-  originalImport: ImportDeclaration;
-  newImport: ImportDeclaration;
-}) =>
-  [DefaultPlugin, ...plugins].reduce((currentNodes, plugin, i, array) => {
-    const insertAfterImportImpl = plugin.migrationTransform?.insertAfterImport ?? null;
-    if (insertAfterImportImpl === null) return currentNodes;
-
-    return insertAfterImportImpl({
-      j,
-      processedPlugins: array.slice(0, i).map((p) => p.metadata),
-      originalImport,
-      newImport,
-      currentNodes: currentNodes,
-    });
-  }, [] as Array<ASTNode>);
-
 export const convertDefaultImportToNamedImport = ({
   j,
   plugins,
@@ -265,25 +216,8 @@ export const convertDefaultImportToNamedImport = ({
         defaultSpecifierName: getImportDefaultSpecifierName(importDefaultSpecifierCollection),
         namedImport,
       });
+
       j(importDeclarationPath).replaceWith(newImport);
-
-      j(importDeclarationPath).insertBefore(
-        applyBeforeImport({ j, plugins, originalImport: importDeclarationPath.node, newImport })
-      );
-
-      j(importDeclarationPath).insertAfter(
-        applyAfterImport({ j, plugins, originalImport: importDeclarationPath.node, newImport })
-      );
-
-      // const insertBeforeNodes = (
-      //   plugin?.migrationTransform?.insertBeforeImport ?? migrationTransform.insertBeforeImport
-      // )({ j, newImport });
-      // if (insertBeforeNodes !== null) newImport.insertBefore(insertBeforeNodes);
-
-      // const insertAfterNodes = (
-      //   plugin?.migrationTransform?.insertAfterImport ?? migrationTransform.insertAfterImport
-      // )({ j, newImport });
-      // if (insertAfterNodes !== null) newImport.insertAfter(insertAfterNodes);
     }
   });
 };
@@ -502,3 +436,27 @@ export const mergeImportSpecifiersAlongWithTheirComments = ({
     }
   });
 };
+
+export const applyVisitor = ({
+  j,
+  plugins,
+  originalProgram,
+  currentProgram,
+}: {
+  j: JSCodeshift;
+  plugins: Array<CodemodPlugin>;
+  originalProgram: Program;
+  currentProgram: Program;
+}): void =>
+  // Run default plugin first and apply plugins in order
+  [DefaultPlugin, ...plugins].forEach((plugin, i, array) => {
+    const programImpl = plugin.visitor?.program;
+    if (programImpl) {
+      programImpl({
+        j,
+        processedPlugins: array.slice(0, i).map((p) => p.metadata),
+        originalProgram,
+        program: currentProgram,
+      });
+    }
+  });

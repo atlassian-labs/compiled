@@ -3,6 +3,7 @@ jest.disableAutomock();
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const defineInlineTest = require('jscodeshift/dist/testUtils').defineInlineTest;
 
+import type { JSCodeshift, Program } from 'jscodeshift';
 import { transformer } from '../emotion-to-compiled';
 
 describe('emotion-to-compiled transformer', () => {
@@ -550,40 +551,25 @@ describe('emotion-to-compiled transformer', () => {
     {
       pluginModules: [
         {
-          migrationTransform: {
-            insertBeforeImport: ({ j }) =>
-              j.expressionStatement(
-                j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
-                  j.literal('Bring back Netscape'),
-                ])
-              ),
+          visitor: {
+            program: ({ j, program }: { j: JSCodeshift; program: Program }) => {
+              j(program)
+                .find(j.ImportDeclaration)
+                .insertBefore(() =>
+                  j.expressionStatement(
+                    j.callExpression(
+                      j.memberExpression(j.identifier('console'), j.identifier('log')),
+                      [j.literal('Bring back Netscape')]
+                    )
+                  )
+                );
+            },
           },
         },
       ],
     },
     "import styled from '@emotion/styled';",
     "console.log('Bring back Netscape');\nimport { styled } from '@compiled/react';",
-    'it should use the insertBeforeImport from the plugin'
-  );
-
-  defineInlineTest(
-    { default: transformer, parser: 'tsx' },
-    {
-      pluginModules: [
-        {
-          migrationTransform: {
-            insertAfterImport: ({ j }) =>
-              j.expressionStatement(
-                j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
-                  j.literal('Bring back Netscape'),
-                ])
-              ),
-          },
-        },
-      ],
-    },
-    "import styled from '@emotion/styled';",
-    "import { styled } from '@compiled/react';\nconsole.log('Bring back Netscape');",
-    'it should use the insertAfterImport from the plugin'
+    'it should use the program visitor from the plugin'
   );
 });
