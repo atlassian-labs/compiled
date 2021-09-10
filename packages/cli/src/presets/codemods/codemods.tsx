@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import type { ParsedPath } from 'path';
 import path from 'path';
-import { AutoComplete, Form } from 'enquirer';
+import { AutoComplete, Form, List } from 'enquirer';
 import { promise as execAsync } from 'exec-sh';
 import { getTransforms, getTransformPath } from './utils/transforms';
 import type { Choice, CodemodOptions } from './types';
@@ -34,19 +34,6 @@ const codemodChoice: Array<Choice<keyof CodemodOptions>> = [
     name: 'ignorePattern',
     message: '--ignore-pattern',
   },
-  {
-    name: 'plugins',
-    message: 'number of plugins',
-    hint: `default: ${chalk.cyan('0')}`,
-    validate: (value: string) => {
-      if (value.length === 0) {
-        return true;
-      }
-
-      const pluginsNumber = parseInt(value);
-      return Number.isInteger(pluginsNumber) && pluginsNumber >= 0;
-    },
-  },
 ];
 
 const getTransformForm = async () => {
@@ -64,25 +51,13 @@ const getTransformForm = async () => {
   }).run();
 };
 
-const getPluginsForm = async (pluginCount: string): Promise<Array<string>> => {
-  const count = parseInt(pluginCount);
+const getPluginsForm = async (): Promise<Array<string>> => {
+  const result = await new List({
+    name: 'plugins',
+    message: 'Specify any plugins you which to use (multiple can be specified separated with `,`)',
+  }).run();
 
-  if (count > 0) {
-    const choices: Array<any> = [...Array(count)].map((_, i) => ({
-      name: `Plugin ${i + 1}`,
-      message: `(${i + 1})`,
-    }));
-
-    const result = await new Form({
-      name: 'plugins',
-      message: 'Please provide the path to each plugin you want to use',
-      choices,
-    }).run();
-
-    return Object.values(result);
-  }
-
-  return [];
+  return Object.values(result);
 };
 
 const codemods = async (): Promise<void> => {
@@ -94,7 +69,7 @@ const codemods = async (): Promise<void> => {
   const transform = await getTransformPrompt(transforms);
   const transformPath = getTransformPath(transform);
   const form = await getTransformForm();
-  const plugins = await getPluginsForm(form.plugins);
+  const plugins = await getPluginsForm();
 
   const args = [
     // Limit CPUs to 8 to prevent issues when running on CI with a large amount of cpus

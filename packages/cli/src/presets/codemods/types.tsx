@@ -6,7 +6,6 @@ export interface CodemodOptions {
   parser?: string;
   extensions?: string;
   ignorePattern?: string;
-  plugins?: string;
 }
 
 /**
