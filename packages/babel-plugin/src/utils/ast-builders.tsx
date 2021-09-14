@@ -369,33 +369,23 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   }) as t.Node;
 };
 
-const getKeyAttributeExpression = (node: t.Expression): t.Expression | null => {
+const getKeyAttribute = (node: t.Expression): t.JSXAttribute | void => {
   if (!t.isJSXElement(node)) {
-    return null;
+    return;
   }
 
-  const keyAttribute = node.openingElement.attributes.find(
-    (attribute) => t.isJSXAttribute(attribute) && attribute.name.name === 'key'
-  ) as t.JSXAttribute | undefined;
+  const isKeyAttribute = (
+    attribute: t.JSXAttribute | t.JSXSpreadAttribute
+  ): attribute is t.JSXAttribute => t.isJSXAttribute(attribute) && attribute.name.name === 'key';
 
-  if (
-    !keyAttribute ||
-    !t.isJSXExpressionContainer(keyAttribute.value) ||
-    !t.isExpression(keyAttribute.value.expression)
-  ) {
-    return null;
+  const keyAttribute = node.openingElement.attributes.find(isKeyAttribute);
+
+  if (!keyAttribute || !t.isJSXExpressionContainer(keyAttribute.value)) {
+    return;
   }
 
-  return keyAttribute.value.expression;
+  return keyAttribute;
 };
-
-const buildKeyAttribute = (expression: t.Expression, label: string) =>
-  generate(
-    t.jsxAttribute(
-      t.jsxIdentifier('key'),
-      t.jsxExpressionContainer(t.binaryExpression('+', expression, t.stringLiteral(label)))
-    )
-  ).code;
 
 /**
  * Will return a generated AST for a Compiled Component.
@@ -408,14 +398,12 @@ const buildKeyAttribute = (expression: t.Expression, label: string) =>
 export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
 
-  const keyAttributeExpression = getKeyAttributeExpression(node);
+  const keyAttribute = getKeyAttribute(node);
 
   return template(
     `
-  <CC ${keyAttributeExpression ? buildKeyAttribute(keyAttributeExpression, '--cc') : ''}>
-    <CS ${
-      keyAttributeExpression ? buildKeyAttribute(keyAttributeExpression, '--cc') : ''
-    } ${nonceAttribute}>{%%cssNode%%}</CS>
+  <CC ${keyAttribute ? generate(keyAttribute).code : ''}>
+    <CS ${nonceAttribute}>{%%cssNode%%}</CS>
     {%%jsxNode%%}
   </CC>
   `,

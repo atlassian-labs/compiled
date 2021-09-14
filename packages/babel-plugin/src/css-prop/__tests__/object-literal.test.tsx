@@ -741,8 +741,6 @@ describe('css prop object literal', () => {
         ));
       `);
 
-    console.log(actual);
-    expect(actual).toMatch(/<CC key={.+}>/);
-    expect(actual).toMatch(/<CS key={.+}>/);
+    expect(actual).toInclude('<CC key={str}>');
   });
 });
