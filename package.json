@@ -32,7 +32,7 @@
     "lint:fix": "yarn lint -- --fix",
     "prettier": "pretty-quick",
     "release": "yarn clean && yarn build && yarn changeset publish",
-    "start": "npx nodemon --exec \"yarn build:esm && start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
+    "start": "npx nodemon --exec \"yarn build && start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "start:cli": "cd packages/cli && yarn start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "start:parcel": "yarn build:esm && cd examples/packages/parcel && yarn start",
