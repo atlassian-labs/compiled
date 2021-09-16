@@ -72,3 +72,13 @@ export const ObjectLiteralImportedObj = (): JSX.Element => {
     </div>
   );
 };
+
+export const ObjectLiteralMapWithKeys = (): JSX.Element => (
+  <div>
+    {['foo', 'bar'].map((string) => (
+      <div key={string} css={{ backgroundColor: 'blue' }}>
+        {string}
+      </div>
+    ))}
+  </div>
+);

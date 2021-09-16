@@ -369,6 +369,24 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   }) as t.Node;
 };
 
+const getKeyAttribute = (node: t.Expression): t.JSXAttribute | void => {
+  if (!t.isJSXElement(node)) {
+    return;
+  }
+
+  const isKeyAttribute = (
+    attribute: t.JSXAttribute | t.JSXSpreadAttribute
+  ): attribute is t.JSXAttribute => t.isJSXAttribute(attribute) && attribute.name.name === 'key';
+
+  const keyAttribute = node.openingElement.attributes.find(isKeyAttribute);
+
+  if (!keyAttribute || !t.isJSXExpressionContainer(keyAttribute.value)) {
+    return;
+  }
+
+  return keyAttribute;
+};
+
 /**
  * Will return a generated AST for a Compiled Component.
  * This is primarily used for CSS prop and ClassNames apis.
@@ -380,9 +398,11 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
 export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
 
+  const keyAttribute = getKeyAttribute(node);
+
   return template(
     `
-  <CC>
+  <CC ${keyAttribute ? generate(keyAttribute).code : ''}>
     <CS ${nonceAttribute}>{%%cssNode%%}</CS>
     {%%jsxNode%%}
   </CC>
