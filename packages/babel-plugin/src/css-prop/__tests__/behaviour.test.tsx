@@ -615,4 +615,19 @@ describe('css prop behaviour', () => {
 
     expect(actual).toInclude('ax([isPrimary&&"_syaz13q2 _1wybgktf"])');
   });
+
+  it('should retain keys for mapped react components', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      import React from 'react';
+
+      ['foo', 'bar'].map((str) => (
+        <div key={str} css={{ backgroundColor: 'blue' }}>
+          {str}
+        </div>
+      ));
+    `);
+
+    expect(actual).toInclude('<CC key={str}>');
+  });
 });

@@ -729,18 +729,4 @@ describe('css prop object literal', () => {
 
     expect(actual).toInclude('{color:red}');
   });
-
-  it('should retain keys for mapped react components', () => {
-    const actual = transform(`
-        import '@compiled/react';
-
-        ['foo', 'bar'].map((str) => (
-          <div key={str} css={{ backgroundColor: 'blue' }}>
-            {str}
-          </div>
-        ));
-      `);
-
-    expect(actual).toInclude('<CC key={str}>');
-  });
 });
