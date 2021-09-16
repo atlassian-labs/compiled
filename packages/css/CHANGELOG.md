@@ -1,5 +1,11 @@
 # @compiled/css
 
+## 0.7.0
+
+### Minor Changes
+
+- bcb2a68: Add option to disable the autoprefixer by setting `process.env.AUTOPREFIXER` to `off`
+
 ## 0.6.11
 
 ### Patch Changes

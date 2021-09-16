@@ -1,5 +1,18 @@
 # @compiled/webpack-loader
 
+## 0.6.16
+
+### Patch Changes
+
+- Updated dependencies [bcb2a68]
+- Updated dependencies [a7ab8e1]
+- Updated dependencies [e1dc346]
+- Updated dependencies [bcb2a68]
+- Updated dependencies [48805ec]
+- Updated dependencies [587e729]
+  - @compiled/babel-plugin@0.7.0
+  - @compiled/css@0.7.0
+
 ## 0.6.15
 
 ### Patch Changes
