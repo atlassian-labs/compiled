@@ -1,5 +1,13 @@
 # @compiled/cli
 
+## 1.0.0
+
+### Patch Changes
+
+- Updated dependencies [bcb2a68]
+- Updated dependencies [a7ab8e1]
+  - @compiled/react@0.7.0
+
 ## 0.6.9
 
 ### Patch Changes

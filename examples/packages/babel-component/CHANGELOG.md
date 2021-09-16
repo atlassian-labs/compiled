@@ -1,5 +1,13 @@
 # @private/babel-component
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies [bcb2a68]
+- Updated dependencies [a7ab8e1]
+  - @compiled/react@0.7.0
+
 ## 0.0.4
 
 ### Patch Changes

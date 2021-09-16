@@ -1,6 +1,6 @@
 {
   "name": "@private/parcel",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "scripts": {
     "start": "parcel serve ./src/index.html --open --no-cache",

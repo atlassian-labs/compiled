@@ -1,5 +1,20 @@
 # @compiled/babel-plugin
 
+## 0.7.0
+
+### Minor Changes
+
+- bcb2a68: Add support for `keyframes`
+- a7ab8e1: Add support for conditional rules for `Styled`
+
+### Patch Changes
+
+- e1dc346: Fix missing key prop on generated React elements
+- 48805ec: Use the correct expression in the style prop, when an identifier is shadowed by a function argument
+- 587e729: Generate CSS for rules defined before a mixin and ensure that mixins can be overriden
+- Updated dependencies [bcb2a68]
+  - @compiled/css@0.7.0
+
 ## 0.6.14
 
 ### Patch Changes
