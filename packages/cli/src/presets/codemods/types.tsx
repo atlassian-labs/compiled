@@ -16,5 +16,4 @@ export interface Choice<TName = string> {
   message: string;
   value?: string;
   hint?: string;
-  validate?: (value: string) => boolean;
 }

@@ -57,7 +57,7 @@ const getPluginsForm = async (): Promise<Array<string>> => {
     message: 'Specify any plugins you which to use (multiple can be specified separated with `,`)',
   }).run();
 
-  return Object.values(result);
+  return result;
 };
 
 const codemods = async (): Promise<void> => {
