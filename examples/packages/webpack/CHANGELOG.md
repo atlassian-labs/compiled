@@ -1,5 +1,15 @@
 # @private/webpack
 
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies [bcb2a68]
+- Updated dependencies [a7ab8e1]
+  - @compiled/react@0.7.0
+  - @private/babel-component@0.0.5
+  - @compiled/webpack-loader@0.6.16
+
 ## 1.0.3
 
 ### Patch Changes

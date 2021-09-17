@@ -1,3 +1,4 @@
+import generate from '@babel/generator';
 import template from '@babel/template';
 import * as t from '@babel/types';
 import traverse, { NodePath, Visitor } from '@babel/traverse';
@@ -8,14 +9,14 @@ import { Tag } from '../types';
 import { getItemCss } from './css-builders';
 import { pickFunctionBody, resolveIdentifierComingFromDestructuring } from './ast';
 import { Metadata } from '../types';
-import { CSSOutput } from '../utils/types';
+import { CSSOutput, CssItem } from '../utils/types';
 import { PROPS_IDENTIFIER_NAME } from '../constants';
 
 export interface StyledTemplateOpts {
   /**
    * Class to be used for the CSS selector.
    */
-  classNames: string[];
+  classNames: t.Expression[];
 
   /**
    * Tag for the Styled Component, for example "div" or user defined component.
@@ -37,8 +38,8 @@ export interface StyledTemplateOpts {
  * Hoists a sheet to the top of the module if its not already there.
  * Returns the referencing identifier.
  *
- * @param sheet Stylesheet
- * @param meta Plugin metadata
+ * @param sheet {string} Stylesheet
+ * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 const hoistSheet = (sheet: string, meta: Metadata): t.Identifier => {
   if (meta.state.sheets[sheet]) {
@@ -289,8 +290,8 @@ export const buildDisplayName = (identifier: string, displayName: string = ident
 /**
  * Will return a generated AST for a Styled Component.
  *
- * @param opts Template options
- * @param meta Plugin metadata
+ * @param opts {StyledTemplateOpts} Template options
+ * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
@@ -325,6 +326,19 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
       })
     : t.identifier('style');
 
+  let unconditionalClassNames = '',
+    logicalClassNames = '';
+
+  opts.classNames.forEach((item) => {
+    if (t.isStringLiteral(item)) {
+      unconditionalClassNames += `${item.value} `;
+    } else if (t.isLogicalExpression(item)) {
+      logicalClassNames += `${generate(item).code}, `;
+    }
+  });
+
+  const classNames = `"${unconditionalClassNames.trim()}", ${logicalClassNames}`;
+
   return template(
     `
   forwardRef(({
@@ -341,7 +355,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
         {...${PROPS_IDENTIFIER_NAME}}
         style={%%styleProp%%}
         ref={ref}
-        className={ax(["${opts.classNames.join(' ')}", ${PROPS_IDENTIFIER_NAME}.className])}
+        className={ax([${classNames} ${PROPS_IDENTIFIER_NAME}.className])}
       />
     </CC>
   ));
@@ -355,20 +369,40 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   }) as t.Node;
 };
 
+const getKeyAttribute = (node: t.Expression): t.JSXAttribute | void => {
+  if (!t.isJSXElement(node)) {
+    return;
+  }
+
+  const isKeyAttribute = (
+    attribute: t.JSXAttribute | t.JSXSpreadAttribute
+  ): attribute is t.JSXAttribute => t.isJSXAttribute(attribute) && attribute.name.name === 'key';
+
+  const keyAttribute = node.openingElement.attributes.find(isKeyAttribute);
+
+  if (!keyAttribute || !t.isJSXExpressionContainer(keyAttribute.value)) {
+    return;
+  }
+
+  return keyAttribute;
+};
+
 /**
  * Will return a generated AST for a Compiled Component.
  * This is primarily used for CSS prop and ClassNames apis.
  *
  * @param node Originating node
- * @param sheets Stylesheets
- * @param meta Metadata
+ * @param sheets {string[]} Stylesheets
+ * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
 
+  const keyAttribute = getKeyAttribute(node);
+
   return template(
     `
-  <CC>
+  <CC ${keyAttribute ? generate(keyAttribute).code : ''}>
     <CS ${nonceAttribute}>{%%cssNode%%}</CS>
     {%%jsxNode%%}
   </CC>
@@ -420,12 +454,34 @@ export const conditionallyJoinExpressions = (
 /**
  * Returns a Styled Component AST.
  *
- * @param tag Styled tag either an inbuilt or user define
- * @param cssOutput CSS and variables to place onto the component
- * @param meta Plugin metadata
+ * @param tag {Tag} Styled tag either an inbuilt or user define
+ * @param cssOutput {CSSOutput} CSS and variables to place onto the component
+ * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
-  const { sheets, classNames } = transformCss(cssOutput.css.map((x) => getItemCss(x)).join(''));
+  const unconditionalCss: string[] = [];
+  const logicalCss: CssItem[] = [];
+
+  cssOutput.css.forEach((item) => {
+    if (item.type === 'logical') {
+      logicalCss.push(item);
+    } else {
+      unconditionalCss.push(getItemCss(item));
+    }
+  });
+
+  // Rely on transformCss to remove duplicates and return only the last unconditional CSS for each property
+  const uniqueUnconditionalCssOutput = transformCss(unconditionalCss.join(''));
+
+  // Rely on transformItemCss to build logicalExpressions for logical CSS
+  const logicalCssOutput = transformItemCss({ css: logicalCss, variables: cssOutput.variables });
+
+  const sheets = [...uniqueUnconditionalCssOutput.sheets, ...logicalCssOutput.sheets];
+
+  const classNames = [
+    ...[t.stringLiteral(uniqueUnconditionalCssOutput.classNames.join(' '))],
+    ...logicalCssOutput.classNames,
+  ];
 
   return styledTemplate(
     {
@@ -470,7 +526,7 @@ export const getPropValue = (
 /**
  * Transforms CSS output into `sheets` and `classNames` ASTs.
  *
- * @param cssOutput CSSOutput
+ * @param cssOutput {CSSOutput}
  */
 const transformItemCss = (cssOutput: CSSOutput) => {
   const sheets: string[] = [];
@@ -489,9 +545,10 @@ const transformItemCss = (cssOutput: CSSOutput) => {
         );
         break;
 
-      case 'unconditional':
       default:
-        classNames.push(t.stringLiteral(className));
+        if (className) {
+          classNames.push(t.stringLiteral(className));
+        }
         break;
     }
   });
@@ -504,7 +561,7 @@ const transformItemCss = (cssOutput: CSSOutput) => {
  *
  * @param node Originating node
  * @param cssOutput CSS and variables to place onto the component
- * @param meta Plugin metadata
+ * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 export const buildCompiledComponent = (
   node: t.JSXElement,

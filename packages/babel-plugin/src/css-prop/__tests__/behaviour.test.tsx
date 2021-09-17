@@ -11,6 +11,14 @@ const transform = (code: string) => {
 };
 
 describe('css prop behaviour', () => {
+  beforeAll(() => {
+    process.env.AUTOPREFIXER = 'off';
+  });
+
+  afterAll(() => {
+    delete process.env.AUTOPREFIXER;
+  });
+
   it('should not apply class name when no styles are present', () => {
     const actual = transform(`
       import '@compiled/react';
@@ -403,6 +411,37 @@ describe('css prop behaviour', () => {
     expect(actual).toInclude(':hover{color:red}');
   });
 
+  it('should handle an animation that references an inline @keyframes', () => {
+    const actual = transform(`
+      import { css } from '@compiled/react';
+
+      const helloWorld = css\`
+        @keyframes fadeOut {
+          from {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.5;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+
+        animation: fadeOut 2s ease-in-out;
+      \`;
+
+      <div css={helloWorld}>hello world</div>
+    `);
+
+    expect(actual).toIncludeMultiple([
+      'const _2="._y44vk4ag{animation:fadeOut 2s ease-in-out}"',
+      'const _="@keyframes fadeOut{0%{opacity:1}50%{opacity:0.5}to{opacity:0}}"',
+      '<CS>{[_,_2]}</CS>',
+      'className={ax(["_y44vk4ag"])}',
+    ]);
+  });
+
   it('should apply conditional logical expression object spread styles', () => {
     const actual = transform(`
       import '@compiled/react';
@@ -575,5 +614,20 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toInclude('ax([isPrimary&&"_syaz13q2 _1wybgktf"])');
+  });
+
+  it('should retain keys for mapped react components', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      import React from 'react';
+
+      ['foo', 'bar'].map((str) => (
+        <div key={str} css={{ backgroundColor: 'blue' }}>
+          {str}
+        </div>
+      ));
+    `);
+
+    expect(actual).toInclude('<CC key={str}>');
   });
 });

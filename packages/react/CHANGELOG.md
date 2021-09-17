@@ -1,5 +1,12 @@
 # @compiled/react
 
+## 0.7.0
+
+### Minor Changes
+
+- bcb2a68: Add support for `keyframes`
+- a7ab8e1: Add support for conditional rules for `Styled`
+
 ## 0.6.13
 
 ### Patch Changes
