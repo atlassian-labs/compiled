@@ -1,5 +1,6 @@
 import '@compiled/react';
-import { hover } from '../mixins/mixins';
+import { css } from '@compiled/react';
+import { hover, primary } from '../mixins/mixins';
 
 const inlineMixinFunc = () => ({
   color: 'red',
@@ -82,3 +83,38 @@ export const ObjectLiteralMapWithKeys = (): JSX.Element => (
     ))}
   </div>
 );
+
+const objectLiteralTaggedCss = css({
+  display: 'flex',
+  fontSize: '30px',
+  color: 'purple',
+});
+
+export const ObjectLiteralCssTagged = (): JSX.Element => {
+  return <div css={objectLiteralTaggedCss}>purple text</div>;
+};
+
+const variableColor = 'orange';
+
+const objectLiteralTaggedCssVariable = css({
+  display: 'flex',
+  fontSize: '30px',
+  color: variableColor,
+});
+
+export const ObjectLiteralCssTaggedVariable = (): JSX.Element => {
+  return <div css={objectLiteralTaggedCssVariable}>orange text</div>;
+};
+
+export const ObjectLiteralCssTaggedImport = (): JSX.Element => {
+  return <div css={primary}>primary text</div>;
+};
+
+const objectLiteralCssTaggedVariableImportVariable = {
+  ...primary,
+  backgroundColor: 'cyan',
+};
+
+export const ObjectLiteralCssTaggedVariableImport = (): JSX.Element => {
+  return <div css={objectLiteralCssTaggedVariableImportVariable}>primary text</div>;
+};
