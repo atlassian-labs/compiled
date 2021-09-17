@@ -8,12 +8,19 @@ import type { CSSProps } from '../types';
  * css`color: red;`;
  * ```
  *
+ * ```
+ * css({ color: 'red' });
+ * ```
+ *
  * For more help, read the docs:
  * https://compiledcssinjs.com/docs/api-css
  *
  * @param css
  * @param values
  */
-export default function css(_css: TemplateStringsArray, ..._values:(string|number)[]): CSSProps {
+export default function css(
+  _css: TemplateStringsArray | CSSProps,
+  ..._values: (string | number)[]
+): CSSProps {
   throw createSetupError();
 }

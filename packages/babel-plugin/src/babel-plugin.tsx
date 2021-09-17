@@ -209,7 +209,8 @@ export default declare<State>((api) => {
 
         if (
           t.isIdentifier(path.node.callee) &&
-          path.node.callee.name === state.compiledImports?.keyframes
+          (path.node.callee.name === state.compiledImports?.css ||
+            path.node.callee.name === state.compiledImports?.keyframes)
         ) {
           state.pathsToCleanup.push({ path, action: 'replace' });
           return;
