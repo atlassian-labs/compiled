@@ -45,7 +45,7 @@
     "README.md"
   ],
   "dependencies": {
-    "csstype": "^3.0.8"
+    "csstype": "^3.0.9"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.7",
