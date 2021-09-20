@@ -33,8 +33,8 @@ const getPlugins = async (
       try {
         const pluginModule = await import(path);
 
-        const pluginName = pluginModule?.default?.metadata?.name ?? null;
-        if (pluginName === null) {
+        const pluginName = pluginModule?.default?.metadata?.name;
+        if (!pluginName) {
           throw new Error(
             chalk.yellow(
               `${chalk.bold(`Plugin at path '${path}' did not export 'name' in metadata`)}`
@@ -168,8 +168,10 @@ const applyBuildImport = ({
 }) =>
   // Run default plugin first and apply plugins in order
   [DefaultPlugin, ...plugins].reduce((currentNode, plugin, i, array) => {
-    const buildImportImpl = plugin.migrationTransform?.buildImport ?? null;
-    if (buildImportImpl === null) return currentNode;
+    const buildImportImpl = plugin.migrationTransform?.buildImport;
+    if (!buildImportImpl) {
+      return currentNode;
+    }
 
     return buildImportImpl({
       j,
