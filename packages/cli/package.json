@@ -38,6 +38,6 @@
     "@types/app-root-path": "^1.2.4"
   },
   "peerDependencies": {
-    "@compiled/react": ">=0.7.0"
+    "@compiled/codemods": ">=0.7.0"
   }
 }

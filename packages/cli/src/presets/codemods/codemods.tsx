@@ -1,9 +1,10 @@
 import chalk from 'chalk';
-import path, { ParsedPath } from 'path';
-import { AutoComplete, Form } from 'enquirer';
+import type { ParsedPath } from 'path';
+import path from 'path';
+import { AutoComplete, Form, List } from 'enquirer';
 import { promise as execAsync } from 'exec-sh';
 import { getTransforms, getTransformPath } from './utils/transforms';
-import { Choice, CodemodOptions } from './types';
+import type { Choice, CodemodOptions } from './types';
 
 const getTransformPrompt = async (transforms: ParsedPath[]): Promise<ParsedPath> => {
   return await new AutoComplete({
@@ -50,6 +51,15 @@ const getTransformForm = async () => {
   }).run();
 };
 
+const getPluginsForm = async (): Promise<Array<string>> => {
+  const result = await new List({
+    name: 'plugins',
+    message: 'Specify any plugins you which to use (multiple can be specified separated with `,`)',
+  }).run();
+
+  return result;
+};
+
 const codemods = async (): Promise<void> => {
   const transforms = getTransforms();
   if (transforms.length === 0) {
@@ -59,6 +69,7 @@ const codemods = async (): Promise<void> => {
   const transform = await getTransformPrompt(transforms);
   const transformPath = getTransformPath(transform);
   const form = await getTransformForm();
+  const plugins = await getPluginsForm();
 
   const args = [
     // Limit CPUs to 8 to prevent issues when running on CI with a large amount of cpus
@@ -66,12 +77,13 @@ const codemods = async (): Promise<void> => {
     form.parser && `--parser=${form.parser}`,
     form.extensions && `--extensions=${form.extensions}`,
     form.ignorePattern && `--ignore-pattern=${form.ignorePattern}`,
+    ...plugins.map((path) => `--plugin="${path}"`),
     form.others,
     `--transform=${transformPath}`,
     form.path,
   ].filter((arg) => !!arg);
 
-  const command = [require.resolve('.bin/jscodeshift'), ...args].join(' ');
+  const command = ['node', require.resolve('.bin/jscodeshift'), ...args].join(' ');
 
   console.log(
     chalk.green(

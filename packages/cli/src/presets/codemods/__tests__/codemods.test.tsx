@@ -1,13 +1,14 @@
 import chalk from 'chalk';
-import { AutoComplete, Form } from 'enquirer';
+import { AutoComplete, Form, List } from 'enquirer';
 import { promise as execAsync } from 'exec-sh';
 import { castToJestMock } from '../../../__tests__/test-utils';
 import codemods from '../codemods';
-import { CodemodOptions } from '../types';
+import type { CodemodOptions } from '../types';
 
 jest.mock('enquirer', () => ({
   AutoComplete: jest.fn(),
   Form: jest.fn(),
+  List: jest.fn(),
 }));
 
 jest.mock('exec-sh', () => ({
@@ -20,7 +21,7 @@ const expectCodemodToHaveBeenRan = (name: string, runPath: string) => {
   expect(execAsync).toHaveBeenCalledWith(
     expect.stringMatching(
       new RegExp(
-        `.*--transform=.*node_modules\\/@compiled\\/react\\/dist\\/cjs\\/codemods\\/${name}\\/index.js ${regexPath}`
+        `.*--transform=.*node_modules\\/@compiled\\/codemods\\/dist\\/transforms\\/${name}\\/index.js ${regexPath}`
       )
     )
   );
@@ -34,6 +35,7 @@ const setupCliRunner = (opts: {
   choice: number;
   runPath: string;
   codemodOpts?: CodemodOptions;
+  pluginPaths?: string[];
 }) => {
   castToJestMock(AutoComplete).mockImplementation(({ choices, result }) => ({
     run: () => Promise.resolve(result(choices[opts.choice])),
@@ -46,6 +48,10 @@ const setupCliRunner = (opts: {
         ...opts.codemodOpts,
         path: opts.runPath,
       }),
+  }));
+
+  castToJestMock(List).mockImplementation(() => ({
+    run: () => Promise.resolve([...(opts.pluginPaths || [])]),
   }));
 };
 
@@ -161,5 +167,16 @@ describe('main', () => {
     expectCodemodToHaveOption('parser', 'tsx');
     expectCodemodToHaveOption('extensions', 'tsx');
     expectCodemodToHaveOption('ignore-pattern', '**/*utils*');
+  });
+
+  it('should run codemod with plugins', async () => {
+    const path = 'src/components/Button.tsx';
+    setupCliRunner({ choice: 0, runPath: path, pluginPaths: ['path1', 'path2'] });
+
+    await codemods();
+
+    expectCodemodToHaveBeenRan('emotion-to-compiled', path);
+    expectCodemodToHaveOption('plugin', '"path1"');
+    expectCodemodToHaveOption('plugin', '"path2"');
   });
 });

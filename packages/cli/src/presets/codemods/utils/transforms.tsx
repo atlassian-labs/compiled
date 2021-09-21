@@ -1,4 +1,5 @@
-import path, { ParsedPath } from 'path';
+import type { ParsedPath } from 'path';
+import path from 'path';
 import glob from 'glob';
 import appRoot from 'app-root-path';
 
@@ -13,10 +14,9 @@ const basePath = path.join(
   isLocalRun ? appRoot.path : process.cwd(),
   'node_modules',
   '@compiled',
-  'react',
+  'codemods',
   'dist',
-  'cjs',
-  'codemods'
+  'transforms'
 );
 
 const parseTransformPath = (transformPath: string) => path.parse(transformPath);

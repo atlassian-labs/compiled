@@ -12,4 +12,9 @@ declare module 'enquirer' {
     render(): void;
     run(): Promise<any>;
   }
+  export class List extends Prompt {
+    constructor(options?: any);
+    render(): void;
+    run(): Promise<any>;
+  }
 }

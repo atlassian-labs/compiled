@@ -1,4 +1,4 @@
-import core, {
+import type {
   FileInfo,
   API,
   Options,
@@ -6,11 +6,13 @@ import core, {
   ASTPath,
   CommentBlock,
   ObjectPattern,
+  Program,
 } from 'jscodeshift';
+import type core from 'jscodeshift';
 
-import { COMPILED_IMPORT_PATH } from '../constants';
-
+import { COMPILED_IMPORT_PATH } from '../../constants';
 import {
+  applyVisitor,
   hasImportDeclaration,
   getImportDeclarationCollection,
   findImportSpecifierName,
@@ -20,7 +22,9 @@ import {
   replaceImportDeclaration,
   mergeImportSpecifiersAlongWithTheirComments,
   addCommentBefore,
-} from '../codemods-helpers';
+  withPlugin,
+} from '../../codemods-helpers';
+import type { CodemodPlugin } from '../../plugins/types';
 
 const imports = {
   compiledStyledImportName: 'styled',
@@ -200,9 +204,16 @@ const mergeCompiledImportSpecifiers = (j: core.JSCodeshift, collection: Collecti
   });
 };
 
-const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Options): string => {
+export const transformer = (
+  fileInfo: FileInfo,
+  { jscodeshift: j }: API,
+  options: Options
+): string => {
   const { source } = fileInfo;
   const collection = j(source);
+  const plugins: Array<CodemodPlugin> = options.pluginModules;
+
+  const originalProgram: Program = j(source).find(j.Program).get();
 
   const hasEmotionCoreImportDeclaration = hasImportDeclaration({
     j,
@@ -222,6 +233,7 @@ const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Optio
   if (hasEmotionStyledImportDeclaration) {
     convertDefaultImportToNamedImport({
       j,
+      plugins,
       collection,
       importPath: imports.emotionStyledPackageName,
       namedImport: imports.compiledStyledImportName,
@@ -243,7 +255,15 @@ const transformer = (fileInfo: FileInfo, { jscodeshift: j }: API, options: Optio
 
   mergeCompiledImportSpecifiers(j, collection);
 
+  const currentProgram = collection.find(j.Program);
+  applyVisitor({
+    j,
+    plugins,
+    originalProgram,
+    currentProgram: currentProgram.get(),
+  });
+
   return collection.toSource(options.printOptions || { quote: 'single' });
 };
 
-export default transformer;
+export default withPlugin(transformer);

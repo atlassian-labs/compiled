@@ -1,4 +1,4 @@
-import { Result } from '../cli';
+import type { Result } from '../cli';
 
 import codemods from './codemods';
 

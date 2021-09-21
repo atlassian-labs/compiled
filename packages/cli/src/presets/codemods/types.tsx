@@ -14,5 +14,6 @@ export interface CodemodOptions {
 export interface Choice<TName = string> {
   name: TName;
   message: string;
+  value?: string;
   hint?: string;
 }

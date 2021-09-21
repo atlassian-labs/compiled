@@ -1,4 +1,5 @@
-import {
+import chalk from 'chalk';
+import type {
   JSCodeshift,
   ImportDeclaration,
   ImportDefaultSpecifier,
@@ -10,10 +11,58 @@ import {
   Node,
   ImportNamespaceSpecifier,
   Collection,
+  FileInfo,
+  API,
+  Options,
 } from 'jscodeshift';
+
 import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from './constants';
+import type { CodemodPlugin } from './plugins/types';
+import DefaultPlugin from './plugins/default';
 
 type Identifiers = Array<Identifier | JSXIdentifier | TSTypeParameter>;
+
+const getPlugins = async (
+  pluginPathsInput: string | Array<string> | undefined
+): Promise<Array<CodemodPlugin>> => {
+  if (!pluginPathsInput) return [];
+  const pluginPaths = Array.isArray(pluginPathsInput) ? pluginPathsInput : [pluginPathsInput];
+
+  return Promise.all(
+    pluginPaths.map(async (path) => {
+      try {
+        const pluginModule = await import(path);
+
+        const pluginName = pluginModule?.default?.metadata?.name;
+        if (!pluginName) {
+          throw new Error(
+            chalk.yellow(
+              `${chalk.bold(`Plugin at path '${path}' did not export 'name' in metadata`)}`
+            )
+          );
+        }
+
+        return pluginModule.default;
+      } catch (err) {
+        throw new Error(
+          chalk.red(`${chalk.bold(`Plugin at path '${path}' was not loaded`)}\n${err}`)
+        );
+      }
+    })
+  );
+};
+
+/*
+ * This functionality is implemented as a higher-order function as jscodeshift
+ * test utilities do not support promises. This means we keep the async functionality
+ * on the dynamic import
+ */
+export const withPlugin = (
+  transformer: (fileInfo: FileInfo, api: API, options: Options) => string
+) => async (fileInfo: FileInfo, api: API, options: Options): Promise<string> => {
+  options.pluginModules = await getPlugins(options.plugin);
+  return transformer(fileInfo, api, options);
+};
 
 export const getImportDeclarationCollection = ({
   j,
@@ -104,13 +153,46 @@ export const findImportSpecifierName = ({
   return getImportSpecifierName(importSpecifierCollection);
 };
 
+const applyBuildImport = ({
+  j,
+  plugins,
+  originalNode,
+  defaultSpecifierName,
+  namedImport,
+}: {
+  j: JSCodeshift;
+  plugins: Array<CodemodPlugin>;
+  originalNode: ImportDeclaration;
+  defaultSpecifierName: string;
+  namedImport: string;
+}) =>
+  // Run default plugin first and apply plugins in order
+  [DefaultPlugin, ...plugins].reduce((currentNode, plugin, i, array) => {
+    const buildImportImpl = plugin.migrationTransform?.buildImport;
+    if (!buildImportImpl) {
+      return currentNode;
+    }
+
+    return buildImportImpl({
+      j,
+      processedPlugins: array.slice(0, i).map((p) => p.metadata),
+      originalNode,
+      currentNode,
+      defaultSpecifierName,
+      namedImport,
+      compiledImportPath: COMPILED_IMPORT_PATH,
+    });
+  }, originalNode);
+
 export const convertDefaultImportToNamedImport = ({
   j,
+  plugins,
   collection,
   importPath,
   namedImport,
 }: {
   j: JSCodeshift;
+  plugins: Array<CodemodPlugin>;
   collection: Collection<any>;
   importPath: string;
   namedImport: string;
@@ -129,26 +211,15 @@ export const convertDefaultImportToNamedImport = ({
     );
 
     if (importDefaultSpecifierCollection.length > 0) {
-      const oldNode = importDeclarationPath.node;
-      const { comments } = oldNode;
+      const newImport = applyBuildImport({
+        j,
+        plugins,
+        originalNode: importDeclarationPath.node,
+        defaultSpecifierName: getImportDefaultSpecifierName(importDefaultSpecifierCollection),
+        namedImport,
+      });
 
-      j(importDeclarationPath).replaceWith([
-        j.importDeclaration(
-          [
-            j.importSpecifier(
-              j.identifier(namedImport),
-              j.identifier(getImportDefaultSpecifierName(importDefaultSpecifierCollection))
-            ),
-          ],
-          j.literal(COMPILED_IMPORT_PATH)
-        ),
-      ]);
-
-      const newNode = importDeclarationPath.node;
-
-      if (newNode !== oldNode) {
-        newNode.comments = comments;
-      }
+      j(importDeclarationPath).replaceWith(newImport);
     }
   });
 };
@@ -367,3 +438,27 @@ export const mergeImportSpecifiersAlongWithTheirComments = ({
     }
   });
 };
+
+export const applyVisitor = ({
+  j,
+  plugins,
+  originalProgram,
+  currentProgram,
+}: {
+  j: JSCodeshift;
+  plugins: Array<CodemodPlugin>;
+  originalProgram: Program;
+  currentProgram: Program;
+}): void =>
+  // Run default plugin first and apply plugins in order
+  [DefaultPlugin, ...plugins].forEach((plugin, i, array) => {
+    const programImpl = plugin.visitor?.program;
+    if (programImpl) {
+      programImpl({
+        j,
+        processedPlugins: array.slice(0, i).map((p) => p.metadata),
+        originalProgram,
+        program: currentProgram,
+      });
+    }
+  });
