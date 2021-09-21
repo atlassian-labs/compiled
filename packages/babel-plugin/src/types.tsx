@@ -1,4 +1,4 @@
-import * as t from '@babel/types';
+import type * as t from '@babel/types';
 import type { NodePath } from '@babel/traverse';
 import type { PluginPass } from '@babel/core';
 import type { Cache } from './utils/cache';

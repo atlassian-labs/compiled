@@ -1,5 +1,5 @@
 import * as t from '@babel/types';
-import { NodePath } from '@babel/core';
+import type { NodePath } from '@babel/core';
 import { transformCss } from '@compiled/css';
 import {
   pickFunctionBody,
@@ -8,8 +8,8 @@ import {
 } from '../utils/ast';
 import { compiledTemplate, buildCssVariablesProp } from '../utils/ast-builders';
 import { buildCss, getItemCss } from '../utils/css-builders';
-import { Metadata } from '../types';
-import { CSSOutput } from '../utils/types';
+import type { Metadata } from '../types';
+import type { CSSOutput } from '../utils/types';
 
 /**
  * Handles style prop value. If variables are present it will replace its value with it

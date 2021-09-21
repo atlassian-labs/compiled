@@ -1,4 +1,5 @@
-import { plugin, Node, Declaration, decl, Container, rule, Rule, AtRule } from 'postcss';
+import type { Node, Declaration, Container, Rule, AtRule } from 'postcss';
+import { plugin, decl, rule } from 'postcss';
 import { hash } from '@compiled/utils';
 
 interface PluginOpts {

@@ -1,4 +1,4 @@
-import { ConversionFunction } from './types';
+import type { ConversionFunction } from './types';
 import { isColor } from './utils';
 
 /**

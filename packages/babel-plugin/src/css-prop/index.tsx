@@ -1,8 +1,8 @@
 import * as t from '@babel/types';
-import { NodePath } from '@babel/core';
+import type { NodePath } from '@babel/core';
 import { buildCompiledComponent } from '../utils/ast-builders';
 import { buildCss } from '../utils/css-builders';
-import { Metadata } from '../types';
+import type { Metadata } from '../types';
 
 const getJsxAttributeExpression = (node: t.JSXAttribute) => {
   if (t.isStringLiteral(node.value)) {

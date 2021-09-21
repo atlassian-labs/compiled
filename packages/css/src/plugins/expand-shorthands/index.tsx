@@ -1,6 +1,6 @@
 import { plugin } from 'postcss';
 import { parse } from 'postcss-values-parser';
-import { ConversionFunction } from './types';
+import type { ConversionFunction } from './types';
 import { margin } from './margin';
 import { padding } from './padding';
 import { placeContent } from './place-content';

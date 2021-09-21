@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { MatchFilter } from './types';
+import type { MatchFilter } from './types';
 
 declare global {
   namespace jest {

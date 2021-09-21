@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createContext, useContext } from 'react';
 import { isNodeEnvironment } from './is-node';
-import { ProviderComponent, UseCacheHook } from './types';
+import type { ProviderComponent, UseCacheHook } from './types';
 
 /**
  * Cache to hold already used styles.

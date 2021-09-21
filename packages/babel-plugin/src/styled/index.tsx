@@ -1,9 +1,9 @@
 import * as t from '@babel/types';
-import { NodePath } from '@babel/core';
+import type { NodePath } from '@babel/core';
 import { buildCodeFrameError } from '../utils/ast';
 import { buildStyledComponent, buildDisplayName } from '../utils/ast-builders';
 import { buildCss } from '../utils/css-builders';
-import { Metadata, Tag } from '../types';
+import type { Metadata, Tag } from '../types';
 
 interface StyledData {
   tag: Tag;

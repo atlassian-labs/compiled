@@ -1,6 +1,6 @@
 import { hash } from '@compiled/utils';
 
-import { PluginOptions } from '../types';
+import type { PluginOptions } from '../types';
 
 export interface CacheOptions extends PluginOptions {
   cache?: boolean;

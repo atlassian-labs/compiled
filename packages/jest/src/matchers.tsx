@@ -1,5 +1,6 @@
-import CSS, { StyleRules, Media } from 'css';
-import { MatchFilter } from './types';
+import type { StyleRules, Media } from 'css';
+import CSS from 'css';
+import type { MatchFilter } from './types';
 
 type Arg = [{ [key: string]: string }, MatchFilter?];
 

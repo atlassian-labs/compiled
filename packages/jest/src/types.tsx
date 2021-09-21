@@ -1,4 +1,4 @@
-import { Pseudos } from 'csstype';
+import type { Pseudos } from 'csstype';
 
 /**
  * {} is used to enabled the compiler to not reduce Target down to a string.
