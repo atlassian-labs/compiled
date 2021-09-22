@@ -35,6 +35,9 @@ jobs:
       - name: Build source
         run: yarn build
 
+      - name: Build flow types
+        run: yarn build:types-flow
+
       - name: Build SSR example
         run: yarn build-ssr
 
