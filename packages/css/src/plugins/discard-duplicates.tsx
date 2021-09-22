@@ -1,4 +1,5 @@
-import { plugin, Declaration } from 'postcss';
+import type { Declaration } from 'postcss';
+import { plugin } from 'postcss';
 
 /**
  * Discards top level duplicate declarations.

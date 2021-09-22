@@ -1,4 +1,5 @@
-import Benchmark, { Event as BenchmarkEvent } from 'benchmark';
+import type { Event as BenchmarkEvent } from 'benchmark';
+import Benchmark from 'benchmark';
 import { transformSync } from '@babel/core';
 
 import babelPlugin from '../index';

@@ -1,5 +1,5 @@
-import { Node } from 'postcss-values-parser';
-import { ConversionFunction } from './types';
+import type { Node } from 'postcss-values-parser';
+import type { ConversionFunction } from './types';
 import { globalValues } from './utils';
 
 /**

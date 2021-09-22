@@ -1,15 +1,16 @@
 import generate from '@babel/generator';
 import template from '@babel/template';
 import * as t from '@babel/types';
-import traverse, { NodePath, Visitor } from '@babel/traverse';
+import type { NodePath, Visitor } from '@babel/traverse';
+import traverse from '@babel/traverse';
 import { unique } from '@compiled/utils';
 import { transformCss } from '@compiled/css';
 import isPropValid from '@emotion/is-prop-valid';
-import { Tag } from '../types';
+import type { Tag } from '../types';
 import { getItemCss } from './css-builders';
 import { pickFunctionBody, resolveIdentifierComingFromDestructuring } from './ast';
-import { Metadata } from '../types';
-import { CSSOutput, CssItem } from '../utils/types';
+import type { Metadata } from '../types';
+import type { CSSOutput, CssItem } from '../utils/types';
 import { PROPS_IDENTIFIER_NAME } from '../constants';
 
 export interface StyledTemplateOpts {

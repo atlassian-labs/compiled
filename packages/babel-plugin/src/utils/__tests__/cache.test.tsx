@@ -1,4 +1,5 @@
-import { Cache, CacheOptions } from '../cache';
+import type { CacheOptions } from '../cache';
+import { Cache } from '../cache';
 
 jest.mock('../cache');
 

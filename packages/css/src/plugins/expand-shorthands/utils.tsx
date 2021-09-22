@@ -1,4 +1,4 @@
-import { Node } from 'postcss-values-parser';
+import type { Node } from 'postcss-values-parser';
 
 /**
  * Common global values

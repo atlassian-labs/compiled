@@ -2,7 +2,7 @@ import { declare } from '@babel/helper-plugin-utils';
 import template from '@babel/template';
 import * as t from '@babel/types';
 import jsxSyntax from '@babel/plugin-syntax-jsx';
-import { NodePath } from '@babel/traverse';
+import type { NodePath } from '@babel/traverse';
 import { unique } from '@compiled/utils';
 import * as path from 'path';
 import { importSpecifier } from './utils/ast-builders';
@@ -10,7 +10,7 @@ import { Cache } from './utils/cache';
 import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
 import { visitClassNamesPath } from './class-names';
-import { State } from './types';
+import type { State } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkgJson = require('../package.json');

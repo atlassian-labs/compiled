@@ -1,4 +1,4 @@
-import { ConversionFunction } from './types';
+import type { ConversionFunction } from './types';
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/CSS/place-self

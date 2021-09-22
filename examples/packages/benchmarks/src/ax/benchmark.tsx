@@ -1,5 +1,6 @@
 import { ax } from '@compiled/react/runtime';
-import Benchmark, { Event as BenchmarkEvent } from 'benchmark';
+import type { Event as BenchmarkEvent } from 'benchmark';
+import Benchmark from 'benchmark';
 import { newAx } from './playground';
 
 console.log('Start ax benchmarking');

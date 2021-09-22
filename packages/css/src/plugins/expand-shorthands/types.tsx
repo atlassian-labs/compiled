@@ -1,4 +1,4 @@
-import { Root as ValuesRoot } from 'postcss-values-parser';
+import type { Root as ValuesRoot } from 'postcss-values-parser';
 
 export type ConversionFunction = (
   value: ValuesRoot

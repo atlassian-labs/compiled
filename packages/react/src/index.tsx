@@ -3,7 +3,7 @@ export { styled } from './styled';
 export { ClassNames } from './class-names';
 export { default as css } from './css';
 
-import { CssFunction } from './types';
+import type { CssFunction } from './types';
 
 declare module 'react' {
   // We must match the same type signature so the generic needs to stay.

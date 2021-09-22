@@ -1,6 +1,7 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import Benchmark, { Event as BenchmarkEvent } from 'benchmark';
+import type { Event as BenchmarkEvent } from 'benchmark';
+import Benchmark from 'benchmark';
 import { CC, CS } from '@compiled/react/runtime';
 import { CompiledComponent, StyleArr, StyleStr } from './playground';
 

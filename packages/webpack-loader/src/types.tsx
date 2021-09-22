@@ -1,5 +1,5 @@
 import type { RuleSetCondition } from 'webpack';
-import { pluginName } from './extract-plugin';
+import type { pluginName } from './extract-plugin';
 
 export interface CompiledLoaderOptions {
   /**

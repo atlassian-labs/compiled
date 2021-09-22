@@ -1,6 +1,6 @@
 import { transformSync } from '@babel/core';
 import babelPlugin from '../index';
-import { PluginOptions } from '../types';
+import type { PluginOptions } from '../types';
 
 jest.mock('../utils/cache');
 

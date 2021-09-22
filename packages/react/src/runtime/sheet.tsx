@@ -1,4 +1,4 @@
-import { StyleSheetOpts, Bucket } from './types';
+import type { StyleSheetOpts, Bucket } from './types';
 
 /**
  * Ordered style buckets using their short psuedo name.

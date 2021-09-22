@@ -1,4 +1,5 @@
-import { plugin, Rule, AtRule } from 'postcss';
+import type { Rule, AtRule } from 'postcss';
+import { plugin } from 'postcss';
 import { styleOrder } from '../utils/style-ordering';
 
 const getPseudoClassScore = (selector: string) => {
