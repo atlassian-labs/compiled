@@ -3,4 +3,4 @@
 '@compiled/react': minor
 ---
 
-Support CSS defined with JS object variables
+Add `ObjectExpression` support to `css`

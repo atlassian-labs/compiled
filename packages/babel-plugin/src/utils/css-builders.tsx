@@ -10,7 +10,7 @@ import {
   isCompiledCSSTemplateLiteral,
   isCompiledKeyframesTaggedTemplateExpression,
   isCompiledKeyframesCallExpression,
-  isCompiledCSSObjectLiteral,
+  isCompiledCSSCallExpression,
 } from './ast';
 import { evaluateExpression } from './evaluate-expression';
 import { CSSOutput, CssItem, LogicalCssItem, SheetCssItem } from './types';
@@ -682,12 +682,8 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     return buildCss(node.quasi, meta);
   }
 
-  if (
-    isCompiledCSSObjectLiteral(node, meta) &&
-    node.arguments.length === 1 &&
-    t.isObjectExpression(node.arguments[0])
-  ) {
-    return buildCss(node.arguments[0], meta);
+  if (isCompiledCSSCallExpression(node, meta)) {
+    return buildCss(node.arguments[0] as t.ObjectExpression, meta);
   }
 
   throw buildCodeFrameError(

@@ -39,7 +39,7 @@ export const getPathOfNode = <TNode extends unknown>(
 };
 
 /**
- * Returns `true` if the expression is using `css` from `@compiled/react` with a template literal.
+ * Returns `true` if the expression is using `css` from `@compiled/react` as a tagged template expression
  *
  * @param node {t.Expression} The expression that is being checked
  * @param meta {Metadata} Useful metadata that can be used during the transformation
@@ -57,13 +57,13 @@ export const isCompiledCSSTemplateLiteral = (
 };
 
 /**
- * Returns `true` if the expression is using `css` from `@compiled/react` with an object literal.
+ * Returns `true` if the expression is using `css` from `@compiled/react` as an object call expression.
  *
  * @param node {t.Expression} The expression that is being checked
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  * @returns {boolean} Whether the node is a css usage from compiled
  */
-export const isCompiledCSSObjectLiteral = (
+export const isCompiledCSSCallExpression = (
   node: t.Expression,
   meta: Metadata
 ): node is t.CallExpression => {
