@@ -1,6 +1,6 @@
 import '@compiled/react';
 
-import { hover } from '../mixins/mixins';
+import { hoverObjectLiteral } from '../mixins/mixins';
 
 export default {
   title: 'atomic/style buckets',
@@ -15,7 +15,7 @@ export const Example = (): JSX.Element => {
           display: 'flex',
           fontSize: '50px',
           color: 'purple',
-          ':hover': hover,
+          ':hover': hoverObjectLiteral,
           ':active': {
             color: 'blue',
           },

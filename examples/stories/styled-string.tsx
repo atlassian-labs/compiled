@@ -1,22 +1,25 @@
 import { styled, css } from '@compiled/react';
-import { primary, secondary } from '../mixins/mixins';
+import {
+  primaryTaggedTemplateExpression,
+  secondaryTaggedTemplateExpression,
+} from '../mixins/mixins';
 
 export default {
   title: 'styled/string',
 };
 
 const SingleUse = styled.div`
-  ${primary};
+  ${primaryTaggedTemplateExpression};
 `;
 
 const DoubleUse = styled.div`
-  ${primary};
-  ${secondary};
+  ${primaryTaggedTemplateExpression};
+  ${secondaryTaggedTemplateExpression};
 `;
 
 const ArrayUse = styled.div(
-  primary,
-  secondary,
+  primaryTaggedTemplateExpression,
+  secondaryTaggedTemplateExpression,
   css`
     text-transform: uppercase;
   `

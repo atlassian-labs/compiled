@@ -732,35 +732,32 @@ describe('css prop object literal', () => {
 
   it('should transform the CSS call expression', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import { css } from '@compiled/react';
+      import { css } from '@compiled/react';
 
-        const taggedObjectLiteralCss = css({
-          color: 'purple',
-        });
+      const taggedObjectLiteralCss = css({
+        color: 'purple',
+      });
 
-        <div css={taggedObjectLiteralCss}>hello world</div>
-      `);
+      <div css={taggedObjectLiteralCss}>hello world</div>
+    `);
 
     expect(actual).toInclude('{color:purple}');
   });
 
   it('should transform the CSS call expression and traverse referenced variables', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import { css } from '@compiled/react';
+      import { css } from '@compiled/react';
 
-        const backgroundColor = 'green';
+      const backgroundColor = 'green';
 
-        const taggedObjectLiteralCss = css({
-          color: 'purple',
-          backgroundColor,
-        });
+      const taggedObjectLiteralCss = css({
+        color: 'purple',
+        backgroundColor,
+      });
 
-        <div css={taggedObjectLiteralCss}>hello world</div>
-      `);
+      <div css={taggedObjectLiteralCss}>hello world</div>
+    `);
 
-    expect(actual).toInclude('{color:purple}');
-    expect(actual).toInclude('{background-color:green}');
+    expect(actual).toIncludeMultiple(['{color:purple}', '{background-color:green}']);
   });
 });
