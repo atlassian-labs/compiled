@@ -3,7 +3,6 @@ import { css, keyframes, styled } from '@compiled/react';
 import '../keyframes/globals';
 import { fadeOut as shadowedFadeOut } from '../keyframes/tagged-template-literal';
 
-// TODO Add css prop using a call expression mixin once supported: https://github.com/atlassian-labs/compiled/issues/789
 export default {
   title: 'keyframes/tagged template expression',
 };
@@ -142,6 +141,17 @@ const taggedTemplateExpressionCss = css`
 
 export const CssPropTaggedTemplateExpression = (): JSX.Element => (
   <div css={taggedTemplateExpressionCss}>blue to indigo</div>
+);
+
+const callExpressionCss = css({
+  animationDuration: '2s',
+  animationIterationCount: 'infinite',
+  animationName: fadeOut,
+  animationTimingFunction: 'ease-in-out',
+});
+
+export const CssPropCallExpression = (): JSX.Element => (
+  <div css={callExpressionCss}>blue to indigo</div>
 );
 
 export const InlineCssPropObjectCallExpression = (): JSX.Element => (
