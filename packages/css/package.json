@@ -21,10 +21,10 @@
   ],
   "dependencies": {
     "@compiled/utils": "^0.6.11",
-    "autoprefixer": "^9.8.6",
+    "autoprefixer": "^9.8.7",
     "convert-source-map": "^1.8.0",
     "cssnano-preset-default": "^4.0.8",
-    "postcss": "^7.0.36",
+    "postcss": "^7.0.38",
     "postcss-nested": "^4.2.3",
     "postcss-normalize-whitespace": "^4.0.2",
     "postcss-selector-parser": "^6.0.6",
