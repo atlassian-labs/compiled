@@ -1,3 +1,4 @@
+import { css } from '@compiled/react';
 import {
   primaryTaggedTemplateExpression,
   secondaryTaggedTemplateExpression,
@@ -6,6 +7,10 @@ import {
 export default {
   title: 'css prop/string',
 };
+
+// Workaround missing CSS API without import https://github.com/atlassian-labs/compiled/issues/836
+// TODO Remove this usage once bug is resolved
+css``;
 
 export const TemplateLiteral = (): JSX.Element => {
   return (
