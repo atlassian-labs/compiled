@@ -16,6 +16,7 @@ export default declare<PluginPass>((api) => {
     name: '@compiled/babel-plugin-strip-runtime',
     pre() {
       this.styleRules = [];
+      this.removed = new Set();
     },
     visitor: {
       Program: {
@@ -27,6 +28,7 @@ export default declare<PluginPass>((api) => {
       },
       ImportSpecifier(path) {
         if (t.isIdentifier(path.node.imported) && ['CC', 'CS'].includes(path.node.imported.name)) {
+          this.removed.add(path.node.local.name);
           path.remove();
         }
       },
@@ -63,7 +65,8 @@ export default declare<PluginPass>((api) => {
           // We've found something that looks like React.createElement(...)
           // Now we want to check if it's from the Compiled Runtime and if it is - replace with its children.
           const component = path.node.arguments[0];
-          if (!isCCComponent(component)) {
+          // @ts-ignore
+          if (!isCCComponent(component) && !this.removed.has(component.name)) {
             return;
           }
 
@@ -83,7 +86,8 @@ export default declare<PluginPass>((api) => {
           // We've found something that looks like _jsxs(...)
           // Now we want to check if it's from the Compiled Runtime and if it is - replace with its children.
           const component = path.node.arguments[0];
-          if (!isCCComponent(component)) {
+          // @ts-ignore
+          if (!isCCComponent(component) && !this.removed.has(component.name)) {
             return;
           }
 

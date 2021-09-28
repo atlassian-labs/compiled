@@ -13,7 +13,7 @@ export const isCreateElement = (node: t.Node): node is t.CallExpression => {
   return (
     t.isMemberExpression(node) &&
     t.isIdentifier(node.object) &&
-    node.object.name === 'React' &&
+    node.object.name.startsWith('React') &&
     t.isIdentifier(node.property) &&
     node.property.name === 'createElement'
   );

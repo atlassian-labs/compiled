@@ -10,4 +10,8 @@ export interface PluginPass {
    * Stores all found style rules during the file pass.
    */
   styleRules: string[];
+  /**
+   * Stores all removed node (local) names during the file pass.
+   */
+  removed: Set<string>;
 }
