@@ -1,7 +1,7 @@
 declare module 'postcss-normalize-whitespace' {
-  import { Plugin } from 'postcss';
+  import type { Plugin } from 'postcss';
 
-  const Export: Plugin<void>;
+  const Export: Plugin;
 
   export default Export;
 }
