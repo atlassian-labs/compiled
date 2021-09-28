@@ -115,7 +115,7 @@ describe('first party strip runtime', () => {
 
         const Component = () => <div css={{ fontSize: 12, color: 'blue' }}>hello world</div>
       `;
-
+      console.log(baked);
       const actual = transform({ runtime: 'classic', run: 'extract' })(baked);
 
       expect(actual).toMatchInlineSnapshot(`
@@ -149,6 +149,29 @@ describe('first party strip runtime', () => {
           className: ax([\\"_1wyb1fwx _syaz13q2\\"]),
           children: \\"hello world\\"
         });"
+      `);
+    });
+
+    it('should remove CSS prop runtime when js is bundled by other tools (eg. esbuild/rollup)', () => {
+      const baked = `
+        import React4 from "react";
+        import { ax as ax2, ix as ix2, CC as CC2, CS as CS2 } from "@compiled/react/runtime";
+        const _2 = "._syaz13q2{color:blue";
+        const _ = "._1wyb1fwx{font-size:12px";
+
+        const Component = () => /*#__PURE__*/React4.createElement(CC2, null, /*#__PURE__*/React4.createElement(CS2, null, [_, _2]), /*#__PURE__*/React4.createElement("div", {
+          className: ax2(["_1wyb1fwx _syaz13q2"])
+        }, "hello world"));`;
+
+      const actual = transform({ runtime: 'classic', run: 'extract' })(baked);
+
+      expect(actual).toMatchInlineSnapshot(`
+        "import React4 from \\"react\\";
+        import { ax as ax2, ix as ix2 } from \\"@compiled/react/runtime\\";
+
+        const Component = () => /*#__PURE__*/React4.createElement(\\"div\\", {
+          className: ax2([\\"_1wyb1fwx _syaz13q2\\"])
+        }, \\"hello world\\");"
       `);
     });
 
