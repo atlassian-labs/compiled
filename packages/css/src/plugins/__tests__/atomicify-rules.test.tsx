@@ -5,7 +5,7 @@ import nested from 'postcss-nested';
 import { atomicifyRules } from '../atomicify-rules';
 
 const transform = (css: TemplateStringsArray) => {
-  const result = postcss([atomicifyRules(), whitespace, autoprefixer]).process(css[0], {
+  const result = postcss([atomicifyRules(), whitespace, autoprefixer()]).process(css[0], {
     from: undefined,
   });
 
@@ -322,7 +322,7 @@ describe('atomicify rules', () => {
   });
 
   it('should not blow up if a doubly nested rule was found after nested plugin', () => {
-    const result = postcss([nested, atomicifyRules(), whitespace, autoprefixer]).process(
+    const result = postcss([nested(), atomicifyRules(), whitespace, autoprefixer()]).process(
       `
       div {
         div {
