@@ -564,7 +564,7 @@ export const resolveBindingNode = (
     };
   }
 
-  if (binding.path.parentPath.isImportDeclaration()) {
+  if (binding.path.parentPath?.isImportDeclaration()) {
     // NOTE: We're skipping traversal when file name is not resolved. Imported identifier
     // will end up as a dynamic variable instead.
     if (!meta.state.filename) {

@@ -28,7 +28,7 @@ export const transformCss = (css: string): { sheets: string[]; classNames: strin
       nested(),
       ...normalizeCSS(),
       expandShorthands(),
-      atomicifyRules({ callback: (className) => classNames.push(className) }),
+      atomicifyRules({ callback: (className: string) => classNames.push(className) }),
       sortAtRulePseudos(),
       ...(process.env.AUTOPREFIXER === 'off' ? [] : [autoprefixer()]),
       whitespace,
@@ -44,7 +44,8 @@ export const transformCss = (css: string): { sheets: string[]; classNames: strin
       sheets,
       classNames: unique(classNames),
     };
-  } catch (e) {
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : e;
     throw createError(
       'css',
       'Unhandled exception'
@@ -56,7 +57,7 @@ export const transformCss = (css: string): { sheets: string[]; classNames: strin
     ${css}
   }
 
-  Exception: ${e.message}`
+  Exception: ${message}`
     );
   }
 };

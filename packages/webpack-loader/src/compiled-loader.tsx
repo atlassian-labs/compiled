@@ -20,28 +20,27 @@ function getLoaderOptions(context: LoaderThis<CompiledLoaderOptions>) {
     extract = false,
     importReact = undefined,
     nonce = undefined,
-  }: CompiledLoaderOptions =
-    typeof context.getOptions === 'undefined'
-      ? // Webpack v4 flow
-        getOptions(context)
-      : // Webpack v5 flow
-        context.getOptions({
-          type: 'object',
-          properties: {
-            importReact: {
-              type: 'boolean',
-            },
-            nonce: {
-              type: 'string',
-            },
-            extract: {
-              type: 'boolean',
-            },
-            bake: {
-              type: 'boolean',
-            },
+  }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
+    ? // Webpack v4 flow
+      getOptions(context)
+    : // Webpack v5 flow
+      context.getOptions({
+        type: 'object',
+        properties: {
+          importReact: {
+            type: 'boolean',
           },
-        });
+          nonce: {
+            type: 'string',
+          },
+          extract: {
+            type: 'boolean',
+          },
+          bake: {
+            type: 'boolean',
+          },
+        },
+      });
 
   return { bake, extract, importReact, nonce };
 }
@@ -116,7 +115,8 @@ export default async function compiledLoader(
     }
 
     callback(null, output, result?.map ?? undefined);
-  } catch (e) {
+  } catch (e: unknown) {
+    // @ts-expect-error Not checking for error type
     const error = createError('compiled-loader', 'Unhandled exception')(e.stack);
     callback(error);
   }
