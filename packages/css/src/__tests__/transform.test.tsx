@@ -25,7 +25,7 @@ describe('#css-transform', () => {
       const { sheets: actual } = transformCss(`
         margin-left: initial;
         content: 'hello';
-        color: hotpink;
+        color: rebeccapurple;
         border-color: currentColor;
         background-color: currentcolor;
         border-left-color: current-color;
@@ -35,7 +35,7 @@ describe('#css-transform', () => {
       expect(actual.join('\n')).toMatchInlineSnapshot(`
         "._18u0idpf{margin-left:0}
         ._1sb21e8g{content:\\"hello\\"}
-        ._syazhrp1{color:#ff69b4}
+        ._syaz15td{color:#639}
         ._1h6d1r31{border-color:currentColor}
         ._bfhk1r31{background-color:currentColor}
         ._5wra1r31{border-left-color:currentColor}"
