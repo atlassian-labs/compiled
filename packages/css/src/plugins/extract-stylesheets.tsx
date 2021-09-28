@@ -1,15 +1,17 @@
-import { plugin } from 'postcss';
+import type { Plugin } from 'postcss';
 
 /**
  * PostCSS plugin which will callback when traversing through each root declaration.
  */
-export const extractStyleSheets = plugin<{ callback: (sheet: string) => void }>(
-  'extract-style-sheets',
-  (opts) => {
-    return (root) => {
+export const extractStyleSheets = (opts?: { callback: (sheet: string) => void }): Plugin => {
+  return {
+    postcssPlugin: 'extract-style-sheets',
+    OnceExit(root) {
       root.each((node) => {
         opts?.callback(node.toString());
       });
-    };
-  }
-);
+    },
+  };
+};
+
+module.exports.postcss = true;

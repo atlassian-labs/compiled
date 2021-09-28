@@ -1,4 +1,4 @@
-import type { Node, Declaration, Container, Rule, AtRule } from 'postcss';
+import type { Plugin, Postcss, Node, Declaration, Container, Rule, AtRule } from 'postcss';
 import { plugin, decl, rule } from 'postcss';
 import { hash } from '@compiled/utils';
 
@@ -200,33 +200,38 @@ const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
  *
  * 1. No nested rules allowed - normalize them with the `parent-orphaned-pseudos` and `nested` plugins first.
  */
-export const atomicifyRules = plugin<PluginOpts>('atomicify-rules', (opts = {}) => {
-  return (root) => {
-    root.each((node) => {
-      switch (node.type) {
-        case 'atrule':
-          const supported = ['media', 'supports', 'document'];
-          if (supported.includes(node.name)) {
-            node.replaceWith(atomicifyAtRule(node, opts));
-          }
+export const atomicifyRules = (opts = {}): Plugin => {
+  return {
+    postcssPlugin: 'atomicify-rules',
+    OnceExit(root) {
+      root.each((node) => {
+        switch (node.type) {
+          case 'atrule':
+            const supported = ['media', 'supports', 'document'];
+            if (supported.includes(node.name)) {
+              node.replaceWith(atomicifyAtRule(node, opts));
+            }
 
-          break;
+            break;
 
-        case 'rule':
-          node.replaceWith(atomicifyRule(node, opts));
-          break;
+          case 'rule':
+            node.replaceWith(atomicifyRule(node, opts));
+            break;
 
-        case 'decl':
-          node.replaceWith(atomicifyDecl(node, opts));
-          break;
+          case 'decl':
+            node.replaceWith(atomicifyDecl(node, opts));
+            break;
 
-        case 'comment':
-          node.remove();
-          break;
+          case 'comment':
+            node.remove();
+            break;
 
-        default:
-          break;
-      }
-    });
+          default:
+            break;
+        }
+      });
+    },
   };
-});
+};
+
+module.exports.postcss = true;

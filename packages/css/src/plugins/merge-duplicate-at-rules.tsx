@@ -1,5 +1,4 @@
-import { plugin } from 'postcss';
-import type { ChildNode, AtRule } from 'postcss';
+import type { Plugin, ChildNode, AtRule } from 'postcss';
 
 /**
  * Plugin to remove duplicate children found in at rules.
@@ -18,33 +17,38 @@ import type { ChildNode, AtRule } from 'postcss';
  * @media (min-width:500px){._171dak0l{border:2px solid red}._1swkri7e:before{content:'large screen'}}
  * ```
  */
-export const mergeDuplicateAtRules = plugin('merge-duplicate-at-rules', () => {
-  return (root) => {
-    const atRuleStore: Record<string, { node: AtRule; children: Record<string, ChildNode> }> = {};
+export const mergeDuplicateAtRules = (): Plugin => {
+  return {
+    postcssPlugin: 'merge-duplicate-at-rules',
+    Once(root) {
+      const atRuleStore: Record<string, { node: AtRule; children: Record<string, ChildNode> }> = {};
 
-    root.walkAtRules((atRule) => {
-      const name = atRule.name + atRule.params;
-      if (!atRuleStore[name]) {
-        atRuleStore[name] = {
-          node: atRule,
-          children: {},
-        };
-      }
-
-      atRule.each((node) => {
-        const stringifiedNode = node.toString();
-        if (!atRuleStore[name].children[stringifiedNode]) {
-          atRuleStore[name].children[stringifiedNode] = node;
+      root.walkAtRules((atRule) => {
+        const name = atRule.name + atRule.params;
+        if (!atRuleStore[name]) {
+          atRuleStore[name] = {
+            node: atRule,
+            children: {},
+          };
         }
+
+        atRule.each((node) => {
+          const stringifiedNode = node.toString();
+          if (!atRuleStore[name].children[stringifiedNode]) {
+            atRuleStore[name].children[stringifiedNode] = node;
+          }
+        });
+
+        atRule.remove();
       });
 
-      atRule.remove();
-    });
-
-    for (const key in atRuleStore) {
-      const { node, children } = atRuleStore[key];
-      node.nodes = Object.values(children);
-      root.append(node);
-    }
+      for (const key in atRuleStore) {
+        const { node, children } = atRuleStore[key];
+        node.nodes = Object.values(children);
+        root.append(node);
+      }
+    },
   };
-});
+};
+
+module.exports.postcss = true;

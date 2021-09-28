@@ -1,5 +1,4 @@
-import { plugin } from 'postcss';
-import type { Rule, Node, ChildNode } from 'postcss';
+import type { Plugin, Rule, Node, ChildNode } from 'postcss';
 import { styleOrder } from '../utils/style-ordering';
 
 /**
@@ -17,41 +16,46 @@ const pseudoSelectorScore = (selector: string) => {
  * PostCSS plugin for sorting rules inside AtRules based on lvfha ordering.
  * Only top level CSS rules will be sorted.
  */
-export const sortAtomicStyleSheet = plugin('sort-atomic-style-sheet', () => {
-  return (root) => {
-    const catchAll: Node[] = [];
-    const rules: Rule[] = [];
-    const atRules: Node[] = [];
+export const sortAtomicStyleSheet = (): Plugin => {
+  return {
+    postcssPlugin: 'sort-atomic-style-sheet',
+    Once(root) {
+      const catchAll: Node[] = [];
+      const rules: Rule[] = [];
+      const atRules: Node[] = [];
 
-    root.each((node) => {
-      switch (node.type) {
-        case 'rule': {
-          if (node.first?.type === 'atrule') {
-            atRules.push(node);
-          } else {
-            rules.push(node);
+      root.each((node) => {
+        switch (node.type) {
+          case 'rule': {
+            if (node.first?.type === 'atrule') {
+              atRules.push(node);
+            } else {
+              rules.push(node);
+            }
+
+            break;
           }
 
-          break;
+          case 'atrule': {
+            atRules.push(node);
+            break;
+          }
+
+          default: {
+            catchAll.push(node);
+          }
         }
+      });
 
-        case 'atrule': {
-          atRules.push(node);
-          break;
-        }
+      rules.sort((rule1, rule2) => {
+        const selector1 = rule1.selectors.length ? rule1.selectors[0] : rule1.selector;
+        const selector2 = rule2.selectors.length ? rule2.selectors[0] : rule2.selector;
+        return pseudoSelectorScore(selector1) - pseudoSelectorScore(selector2);
+      });
 
-        default: {
-          catchAll.push(node);
-        }
-      }
-    });
-
-    rules.sort((rule1, rule2) => {
-      const selector1 = rule1.selectors.length ? rule1.selectors[0] : rule1.selector;
-      const selector2 = rule2.selectors.length ? rule2.selectors[0] : rule2.selector;
-      return pseudoSelectorScore(selector1) - pseudoSelectorScore(selector2);
-    });
-
-    root.nodes = [...catchAll, ...rules, ...atRules] as ChildNode[];
+      root.nodes = [...catchAll, ...rules, ...atRules] as ChildNode[];
+    },
   };
-});
+};
+
+module.exports.postcss = true;

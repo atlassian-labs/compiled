@@ -1,4 +1,4 @@
-import { plugin } from 'postcss';
+import type { Plugin } from 'postcss';
 import { parse } from 'postcss-values-parser';
 import type { ConversionFunction } from './types';
 import { margin } from './margin';
@@ -58,31 +58,36 @@ const shorthands: Record<string, ConversionFunction> = {
 /**
  * PostCSS plugin that expands shortform properties to their longform equivalents.
  */
-export const expandShorthands = plugin('expand-shorthands', () => {
+export const expandShorthands = (): Plugin => {
   const filter = new RegExp(Object.keys(shorthands).join('|'));
 
-  return (root) => {
-    root.walkDecls(filter, (decl) => {
-      const valueNode = parse(decl.value);
-      const expand = shorthands[decl.prop];
+  return {
+    postcssPlugin: 'expand-shorthands',
+    Once(root) {
+      root.walkDecls(filter, (decl) => {
+        const valueNode = parse(decl.value);
+        const expand = shorthands[decl.prop];
 
-      if (expand) {
-        const longforms = expand(valueNode);
-        if (!longforms) {
-          throw new Error('Longform properties were not returned!');
-        }
+        if (expand) {
+          const longforms = expand(valueNode);
+          if (!longforms) {
+            throw new Error('Longform properties were not returned!');
+          }
 
-        const nodes = longforms.map((val) => {
-          const newNode = decl.clone({
-            ...val,
-            // Value needs to be a string else autoprefixer blows up.
-            value: `${val.value}`,
+          const nodes = longforms.map((val) => {
+            const newNode = decl.clone({
+              ...val,
+              // Value needs to be a string else autoprefixer blows up.
+              value: `${val.value}`,
+            });
+            return newNode;
           });
-          return newNode;
-        });
 
-        decl.replaceWith(nodes);
-      }
-    });
+          decl.replaceWith(nodes);
+        }
+      });
+    },
   };
-});
+};
+
+module.exports.postcss = true;
