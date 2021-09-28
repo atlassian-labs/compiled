@@ -1,5 +1,4 @@
-import type { Plugin, Postcss, Node, Declaration, Container, Rule, AtRule } from 'postcss';
-import { plugin, decl, rule } from 'postcss';
+import type { Plugin, Postcss, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
 import { hash } from '@compiled/utils';
 
 interface PluginOpts {
@@ -102,19 +101,24 @@ const buildAtomicSelector = (node: Declaration, opts: AtomicifyOpts) => {
  * @param node
  * @param opts
  */
-const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
+const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts, postcss: Postcss) => {
   const selector = buildAtomicSelector(node, opts);
-  const newDecl = decl({ prop: node.prop, value: node.value });
-  const newRule = rule({ selector, nodes: [newDecl] });
-
-  // Pass on important flag.
-  newDecl.important = node.important;
+  const newDecl = postcss.decl({
+    raws: { before: '', value: { value: '', raw: '' }, between: '' },
+    // Pass on important flag.
+    important: node.important,
+    prop: node.prop,
+    value: node.value,
+  });
+  const newRule = postcss.rule({
+    raws: { before: '', after: '', between: '', selector: { raw: '', value: '' } },
+    nodes: [newDecl],
+    selector,
+  });
 
   // We need to link the new node to a parent else autoprefixer blows up.
   newDecl.parent = newRule;
-  newDecl.raws.before = '';
   newRule.parent = opts.parentNode!;
-  newRule.raws.before = '';
 
   return newRule;
 };
@@ -125,7 +129,7 @@ const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
  * @param node
  * @param opts
  */
-const atomicifyRule = (node: Rule, opts: AtomicifyOpts): Rule[] => {
+const atomicifyRule = (node: Rule, opts: AtomicifyOpts, postcss: Postcss): Rule[] => {
   if (!node.nodes) {
     return [];
   }
@@ -142,10 +146,14 @@ const atomicifyRule = (node: Rule, opts: AtomicifyOpts): Rule[] => {
         return undefined;
       }
 
-      return atomicifyDecl(childNode, {
-        ...opts,
-        selectors: node.selectors,
-      });
+      return atomicifyDecl(
+        childNode,
+        {
+          ...opts,
+          selectors: node.selectors,
+        },
+        postcss
+      );
     })
     .filter((child): child is Rule => !!child);
 };
@@ -156,9 +164,20 @@ const atomicifyRule = (node: Rule, opts: AtomicifyOpts): Rule[] => {
  * @param node
  * @param opts
  */
-const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
-  const children: Node[] = [];
-  const newNode = node.clone({ nodes: children });
+const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts, postcss: Postcss): AtRule => {
+  const children: ChildNode[] = [];
+  const newNode = postcss.atRule({
+    raws: {
+      before: '',
+      between: '',
+      semicolon: false,
+      params: { raw: '', value: '' },
+    },
+    name: node.name,
+    params: node.params,
+    source: node.source,
+    nodes: children,
+  });
   const atRuleLabel = `${opts.atRule || ''}${node.name}${node.params}`;
   const atRuleOpts = {
     ...opts,
@@ -171,23 +190,25 @@ const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
   node.each((childNode) => {
     switch (childNode.type) {
       case 'atrule':
-        children.push(atomicifyAtRule(childNode, atRuleOpts));
+        children.push(atomicifyAtRule(childNode, atRuleOpts, postcss));
         break;
 
       case 'rule':
-        atomicifyRule(childNode, atRuleOpts).forEach((rule) => {
+        atomicifyRule(childNode, atRuleOpts, postcss).forEach((rule) => {
           children.push(rule);
         });
         break;
 
       case 'decl':
-        children.push(atomicifyDecl(childNode, atRuleOpts));
+        children.push(atomicifyDecl(childNode, atRuleOpts, postcss));
         break;
 
       default:
         break;
     }
   });
+
+  newNode.nodes = children;
 
   return newNode;
 };
@@ -203,23 +224,23 @@ const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
 export const atomicifyRules = (opts = {}): Plugin => {
   return {
     postcssPlugin: 'atomicify-rules',
-    OnceExit(root) {
+    OnceExit(root, postcss) {
       root.each((node) => {
         switch (node.type) {
           case 'atrule':
             const supported = ['media', 'supports', 'document'];
             if (supported.includes(node.name)) {
-              node.replaceWith(atomicifyAtRule(node, opts));
+              node.replaceWith(atomicifyAtRule(node, opts, postcss));
             }
 
             break;
 
           case 'rule':
-            node.replaceWith(atomicifyRule(node, opts));
+            node.replaceWith(atomicifyRule(node, opts, postcss));
             break;
 
           case 'decl':
-            node.replaceWith(atomicifyDecl(node, opts));
+            node.replaceWith(atomicifyDecl(node, opts, postcss));
             break;
 
           case 'comment':
