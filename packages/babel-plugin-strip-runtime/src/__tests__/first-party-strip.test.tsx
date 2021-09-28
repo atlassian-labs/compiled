@@ -115,7 +115,7 @@ describe('first party strip runtime', () => {
 
         const Component = () => <div css={{ fontSize: 12, color: 'blue' }}>hello world</div>
       `;
-      console.log(baked);
+
       const actual = transform({ runtime: 'classic', run: 'extract' })(baked);
 
       expect(actual).toMatchInlineSnapshot(`
