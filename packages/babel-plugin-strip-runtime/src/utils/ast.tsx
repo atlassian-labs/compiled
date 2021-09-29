@@ -32,7 +32,8 @@ export const isAutomaticRuntime = (
   func: 'jsx' | 'jsxs'
 ): node is t.CallExpression => {
   if (t.isCallExpression(node)) {
-    if (t.isIdentifier(node.callee) && node.callee.name === `_${func}`) {
+    // Different bundlers (eg esbuild/rollup) may append affix to func name
+    if (t.isIdentifier(node.callee) && node.callee.name.startsWith(`_${func}`)) {
       return true;
     }
 
@@ -40,7 +41,8 @@ export const isAutomaticRuntime = (
       t.isSequenceExpression(node.callee) &&
       t.isMemberExpression(node.callee.expressions[1]) &&
       t.isIdentifier(node.callee.expressions[1].property) &&
-      node.callee.expressions[1].property.name === func
+      // Different bundlers (eg esbuild/rollup) may append affix to func name
+      node.callee.expressions[1].property.name.startsWith(func)
     ) {
       return true;
     }

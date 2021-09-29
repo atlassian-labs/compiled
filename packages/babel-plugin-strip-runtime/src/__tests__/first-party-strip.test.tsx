@@ -152,7 +152,7 @@ describe('first party strip runtime', () => {
       `);
     });
 
-    it('should remove CSS prop runtime when js is bundled by other tools (eg. esbuild/rollup)', () => {
+    it('should remove CSS prop runtime when js is bundled by other tools (eg. esbuild/rollup) classic', () => {
       const baked = `
         import React4 from "react";
         import { ax as ax2, ix as ix2, CC as CC2, CS as CS2 } from "@compiled/react/runtime";
@@ -172,6 +172,38 @@ describe('first party strip runtime', () => {
         const Component = () => /*#__PURE__*/React4.createElement(\\"div\\", {
           className: ax2([\\"_1wyb1fwx _syaz13q2\\"])
         }, \\"hello world\\");"
+      `);
+    });
+
+    it('should remove CSS prop runtime when js is bundled by other tools (eg. esbuild/rollup) automatic', () => {
+      const baked = `
+        import { ax as ax2, ix as ix2, CC as CC2, CS as CS2 } from "@compiled/react/runtime";
+        import { jsxs as _jsxs2 } from "react/jsx-runtime";
+        import { jsx as _jsx2 } from "react/jsx-runtime";
+        const _2 = "._syaz13q2{color:blue}";
+        const _ = "._1wyb1fwx{font-size:12px}";
+
+        const Component = () => /*#__PURE__*/_jsxs2(CC, {
+          children: [/*#__PURE__*/_jsx2(CS2, {
+            children: [_, _2]
+          }), /*#__PURE__*/_jsx2("div", {
+            className: ax2(["_1wyb1fwx _syaz13q2"]),
+            children: "hello world"
+          })]
+        });
+      `;
+
+      const actual = transform({ runtime: 'classic', run: 'extract' })(baked);
+
+      expect(actual).toMatchInlineSnapshot(`
+        "import { ax as ax2, ix as ix2 } from \\"@compiled/react/runtime\\";
+        import { jsxs as _jsxs2 } from \\"react/jsx-runtime\\";
+        import { jsx as _jsx2 } from \\"react/jsx-runtime\\";
+
+        const Component = () => _jsx2(\\"div\\", {
+          className: ax2([\\"_1wyb1fwx _syaz13q2\\"]),
+          children: \\"hello world\\"
+        });"
       `);
     });
 
