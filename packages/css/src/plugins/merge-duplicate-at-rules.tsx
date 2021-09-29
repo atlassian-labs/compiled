@@ -20,33 +20,35 @@ import type { AtRule, ChildNode, Plugin } from 'postcss';
 export const mergeDuplicateAtRules = (): Plugin => {
   return {
     postcssPlugin: 'merge-duplicate-at-rules',
-    Once(root) {
+    prepare() {
       const atRuleStore: Record<string, { node: AtRule; children: Record<string, ChildNode> }> = {};
-
-      root.walkAtRules((atRule) => {
-        const name = atRule.name + atRule.params;
-        if (!atRuleStore[name]) {
-          atRuleStore[name] = {
-            node: atRule,
-            children: {},
-          };
-        }
-
-        atRule.each((node) => {
-          const stringifiedNode = node.toString();
-          if (!atRuleStore[name].children[stringifiedNode]) {
-            atRuleStore[name].children[stringifiedNode] = node;
+      return {
+        AtRule(atRule) {
+          const name = atRule.name + atRule.params;
+          if (!atRuleStore[name]) {
+            atRuleStore[name] = {
+              node: atRule,
+              children: {},
+            };
           }
-        });
 
-        atRule.remove();
-      });
+          atRule.each((node) => {
+            const stringifiedNode = node.toString();
+            if (!atRuleStore[name].children[stringifiedNode]) {
+              atRuleStore[name].children[stringifiedNode] = node;
+            }
+          });
 
-      for (const key in atRuleStore) {
-        const { node, children } = atRuleStore[key];
-        node.nodes = Object.values(children);
-        root.append(node);
-      }
+          atRule.remove();
+        },
+        OnceExit(root) {
+          for (const key in atRuleStore) {
+            const { node, children } = atRuleStore[key];
+            node.nodes = Object.values(children);
+            root.append(node);
+          }
+        },
+      };
     },
   };
 };
