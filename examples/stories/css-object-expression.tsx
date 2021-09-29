@@ -15,18 +15,16 @@ export const Static = (): JSX.Element => {
   return <div css={styles}>purple text</div>;
 };
 
-export const Inline = (): JSX.Element => {
-  return (
-    <div
-      css={css({
-        display: 'flex',
-        fontSize: '30px',
-        color: 'purple',
-      })}>
-      purple text
-    </div>
-  );
-};
+export const Inline = (): JSX.Element => (
+  <div
+    css={css({
+      display: 'flex',
+      fontSize: '30px',
+      color: 'purple',
+    })}>
+    purple text
+  </div>
+);
 
 export const LocalVariable = (): JSX.Element => {
   const variableColor = 'orange';
@@ -39,9 +37,9 @@ export const LocalVariable = (): JSX.Element => {
   return <div css={styles}>orange text</div>;
 };
 
-export const ImportedVariable = (): JSX.Element => {
-  return <div css={primaryCallExpression}>bold, underlined primary text</div>;
-};
+export const ImportedVariable = (): JSX.Element => (
+  <div css={primaryCallExpression}>bold, underlined primary text</div>
+);
 
 export const SpreadImportedVariable = (): JSX.Element => {
   const styles = css({

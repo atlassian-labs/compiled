@@ -2,7 +2,7 @@ import { css } from '@compiled/react';
 import { primaryTaggedTemplateExpression } from '../mixins/mixins';
 
 export default {
-  title: 'css/string',
+  title: 'css/tagged template expression',
 };
 
 export const Static = (): JSX.Element => {

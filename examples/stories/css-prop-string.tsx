@@ -1,7 +1,7 @@
 import { css } from '@compiled/react';
 import {
-  primaryTaggedTemplateExpression,
-  secondaryTaggedTemplateExpression,
+  primaryTaggedTemplateExpression as primary,
+  secondaryTaggedTemplateExpression as secondary,
 } from '../mixins/mixins';
 
 export default {
@@ -26,17 +26,13 @@ export const TemplateLiteral = (): JSX.Element => {
 };
 
 export const UsingMixinImportSpread = (): JSX.Element => {
-  return <div css={{ ...primaryTaggedTemplateExpression }}>purple text spread</div>;
+  return <div css={{ ...primary }}>purple text spread</div>;
 };
 
 export const UsingMixinImportIdentifier = (): JSX.Element => {
-  return <div css={primaryTaggedTemplateExpression}>purple text ident</div>;
+  return <div css={primary}>purple text ident</div>;
 };
 
 export const UsingMixinImportArray = (): JSX.Element => {
-  return (
-    <div css={[primaryTaggedTemplateExpression, secondaryTaggedTemplateExpression]}>
-      purple text arr
-    </div>
-  );
+  return <div css={[primary, secondary]}>purple text arr</div>;
 };

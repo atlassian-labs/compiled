@@ -143,17 +143,6 @@ export const CssPropTaggedTemplateExpression = (): JSX.Element => (
   <div css={taggedTemplateExpressionCss}>blue to indigo</div>
 );
 
-const callExpressionCss = css({
-  animationDuration: '2s',
-  animationIterationCount: 'infinite',
-  animationName: fadeOut,
-  animationTimingFunction: 'ease-in-out',
-});
-
-export const CssPropCallExpression = (): JSX.Element => (
-  <div css={callExpressionCss}>blue to indigo</div>
-);
-
 export const InlineCssPropObjectCallExpression = (): JSX.Element => (
   <div
     css={{

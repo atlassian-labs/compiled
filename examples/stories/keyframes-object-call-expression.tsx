@@ -120,7 +120,7 @@ export const ShorthandCssPropTaggedTemplateExpression = (): JSX.Element => (
 );
 
 export const ShorthandInlineCssPropObjectCallExpression = (): JSX.Element => (
-  <div css={{ animation: `${fadeOut} 2s ease-in-out infinite` }}>blue to indigo</div>
+  <div css={css({ animation: `${fadeOut} 2s ease-in-out infinite` })}>blue to indigo</div>
 );
 
 export const ShorthandInlineCssPropTaggedTemplateExpression = (): JSX.Element => (
@@ -143,25 +143,14 @@ export const CssPropTaggedTemplateExpression = (): JSX.Element => (
   <div css={taggedTemplateExpressionCss}>blue to indigo</div>
 );
 
-const callExpressionCss = css({
-  animationDuration: '2s',
-  animationIterationCount: 'infinite',
-  animationName: fadeOut,
-  animationTimingFunction: 'ease-in-out',
-});
-
-export const CssPropCallExpression = (): JSX.Element => (
-  <div css={callExpressionCss}>blue to indigo</div>
-);
-
 export const InlineCssPropObjectCallExpression = (): JSX.Element => (
   <div
-    css={{
+    css={css({
       animationDuration: '2s',
       animationIterationCount: 'infinite',
       animationName: fadeOut,
       animationTimingFunction: 'ease-in-out',
-    }}>
+    })}>
     blue to indigo
   </div>
 );
