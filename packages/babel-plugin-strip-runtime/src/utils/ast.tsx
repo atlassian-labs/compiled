@@ -13,6 +13,7 @@ export const isCreateElement = (node: t.Node): node is t.CallExpression => {
   return (
     t.isMemberExpression(node) &&
     t.isIdentifier(node.object) &&
+    // Different bundlers (eg esbuild/rollup) may append affix to `React`
     node.object.name.startsWith('React') &&
     t.isIdentifier(node.property) &&
     node.property.name === 'createElement'
@@ -30,18 +31,19 @@ export const isAutomaticRuntime = (
   node: t.Node,
   func: 'jsx' | 'jsxs'
 ): node is t.CallExpression => {
-  if (t.isCallExpression(node) && t.isIdentifier(node.callee) && node.callee.name === `_${func}`) {
-    return true;
-  }
+  if (t.isCallExpression(node)) {
+    if (t.isIdentifier(node.callee) && node.callee.name === `_${func}`) {
+      return true;
+    }
 
-  if (
-    t.isCallExpression(node) &&
-    t.isSequenceExpression(node.callee) &&
-    t.isMemberExpression(node.callee.expressions[1]) &&
-    t.isIdentifier(node.callee.expressions[1].property) &&
-    node.callee.expressions[1].property.name === func
-  ) {
-    return true;
+    if (
+      t.isSequenceExpression(node.callee) &&
+      t.isMemberExpression(node.callee.expressions[1]) &&
+      t.isIdentifier(node.callee.expressions[1].property) &&
+      node.callee.expressions[1].property.name === func
+    ) {
+      return true;
+    }
   }
 
   return false;
@@ -74,13 +76,17 @@ export const getJsxRuntimeChildren = (node: t.CallExpression): Array<t.Expressio
  * @param node
  * @returns
  */
-export const isCCComponent = (node: t.Node): boolean => {
-  if (t.isIdentifier(node) && node.name === 'CC') {
-    return true;
+export const isCCComponent = (node: t.Node, removed: PluginPass['removed']): boolean => {
+  if (t.isIdentifier(node)) {
+    if (node.name === 'CC' || removed.has(node.name)) {
+      return true;
+    }
   }
 
-  if (t.isMemberExpression(node) && t.isIdentifier(node.property) && node.property.name === 'CC') {
-    return true;
+  if (t.isMemberExpression(node) && t.isIdentifier(node.property)) {
+    if (node.property.name === 'CC' || removed.has(node.property.name)) {
+      return true;
+    }
   }
 
   return false;

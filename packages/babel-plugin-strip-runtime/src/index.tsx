@@ -65,8 +65,7 @@ export default declare<PluginPass>((api) => {
           // We've found something that looks like React.createElement(...)
           // Now we want to check if it's from the Compiled Runtime and if it is - replace with its children.
           const component = path.node.arguments[0];
-          // @ts-ignore
-          if (!isCCComponent(component) && !this.removed.has(component.name)) {
+          if (!isCCComponent(component, this.removed)) {
             return;
           }
 
@@ -86,8 +85,7 @@ export default declare<PluginPass>((api) => {
           // We've found something that looks like _jsxs(...)
           // Now we want to check if it's from the Compiled Runtime and if it is - replace with its children.
           const component = path.node.arguments[0];
-          // @ts-ignore
-          if (!isCCComponent(component) && !this.removed.has(component.name)) {
+          if (!isCCComponent(component, this.removed)) {
             return;
           }
 
