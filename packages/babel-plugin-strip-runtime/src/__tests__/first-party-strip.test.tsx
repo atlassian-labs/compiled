@@ -193,7 +193,7 @@ describe('first party strip runtime', () => {
         });
       `;
 
-      const actual = transform({ runtime: 'classic', run: 'extract' })(baked);
+      const actual = transform({ runtime: 'automatic', run: 'extract' })(baked);
 
       expect(actual).toMatchInlineSnapshot(`
         "import { ax as ax2, ix as ix2 } from \\"@compiled/react/runtime\\";
