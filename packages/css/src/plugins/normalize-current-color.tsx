@@ -6,13 +6,11 @@ import type { Plugin } from 'postcss';
 export const normalizeCurrentColor = (): Plugin => {
   return {
     postcssPlugin: 'normalize-current-color',
-    OnceExit(root) {
-      root.walkDecls((rule) => {
-        const lowerValue = rule.value.toLowerCase();
-        if (lowerValue === 'currentcolor' || lowerValue === 'current-color') {
-          rule.value = 'currentColor';
-        }
-      });
+    Declaration(declaration) {
+      const lowerValue = declaration.value.toLowerCase();
+      if (lowerValue === 'currentcolor' || lowerValue === 'current-color') {
+        declaration.value = 'currentColor';
+      }
     },
   };
 };

@@ -4,11 +4,11 @@ import type { Plugin, Declaration } from 'postcss';
  * Discards top level duplicate declarations.
  */
 export const discardDuplicates = (): Plugin => {
-  const decls: Record<string, Declaration[]> = {};
-
   return {
     postcssPlugin: 'discard-duplicates',
     Once(root) {
+      const decls: Record<string, Declaration[]> = {};
+
       root.each((node) => {
         if (node.type === 'decl') {
           decls[node.prop] = decls[node.prop] || [];
