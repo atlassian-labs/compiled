@@ -30,6 +30,30 @@ find "${PACKAGES[@]}" -type f -path '*/dist/*' -name '*.d.ts' -print0 | while re
   fi
 done
 
+echo "Patching types"
+find "${PACKAGES[@]}" -type f -path '*/dist/*' -name '*.js.flow' -print0 | while read -rd $'\0' file; do
+  # Change import to import type (bug in flowgen)
+  sed -i '' 's/import {/import type {/g' "$file"
+
+  # Define TemplateStringsArray type
+  sed -i '' 's/TemplateStringsArray/$ReadOnlyArray<string>/g' "$file"
+
+  # Rename JSX.IntrinsicElements to existing flow type
+  sed -i '' 's/JSX.IntrinsicElements/$JSXIntrinsics/g' "$file"
+
+  # Rename jest.CustomMatcherResult type to existing flow type
+  sed -i '' 's/jest.CustomMatcherResult/JestMatcherResult/g' "$file"
+
+  # Refactor to flow style handling of default generic types
+  awk -v RS='' '{gsub(/CssFunction[^\S|]*\|[^\S|]*CssFunction\[\]/, "CssFunction<> | CssFunction<>[]"); print}' "$file" >"$file.tmp" &&
+    mv "$file.tmp" "$file"
+done
+
+echo "Running Prettier"
+for package in "${PACKAGES[@]}"; do
+  npx prettier --write "$package/dist/**/*.js.flow"
+done
+
 # Make sure to always stop the flow background process
 trap "flow stop &> /dev/null" EXIT
 echo "Validating with flow"
