@@ -37,7 +37,7 @@ describe('browser', () => {
     render(
       <>
         <StyledDiv>hello world</StyledDiv>
-        <StyledDiv>Hello World!</StyledDiv>
+        <StyledDiv>hello world</StyledDiv>
       </>
     );
 
