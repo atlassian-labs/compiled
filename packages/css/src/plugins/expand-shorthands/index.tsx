@@ -90,4 +90,4 @@ export const expandShorthands = (): Plugin => {
   };
 };
 
-module.exports.postcss = true;
+export const postcss = true;

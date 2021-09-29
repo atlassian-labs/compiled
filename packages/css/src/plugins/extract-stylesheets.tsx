@@ -14,4 +14,4 @@ export const extractStyleSheets = (opts?: { callback: (sheet: string) => void })
   };
 };
 
-module.exports.postcss = true;
+export const postcss = true;

@@ -51,4 +51,4 @@ export const mergeDuplicateAtRules = (): Plugin => {
   };
 };
 
-module.exports.postcss = true;
+export const postcss = true;
