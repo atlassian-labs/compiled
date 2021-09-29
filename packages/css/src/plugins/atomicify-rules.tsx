@@ -255,4 +255,4 @@ export const atomicifyRules = (opts = {}): Plugin => {
   };
 };
 
-module.exports.postcss = true;
+export const postcss = true;

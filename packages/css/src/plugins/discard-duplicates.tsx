@@ -26,4 +26,4 @@ export const discardDuplicates = (): Plugin => {
   };
 };
 
-module.exports.postcss = true;
+export const postcss = true;
