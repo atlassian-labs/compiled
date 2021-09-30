@@ -39,6 +39,8 @@ const sortPseudoClasses = (atRule: AtRule) => {
 
 /**
  * PostCSS plugin for sorting rules inside AtRules based on lvfha ordering.
+ * Using Once rather than AtRule as remove + append behaviour
+ * leads to adding infinitely to the call stack
  */
 export const sortAtRulePseudos = (): Plugin => {
   return {
