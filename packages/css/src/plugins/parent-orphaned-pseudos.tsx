@@ -15,6 +15,7 @@ const prependNestingTypeToSelector = (selector: selectorParser.Node) => {
  * This plugin will move child nested orphened pseudos to the parent declaration.
  *
  * E.g: `.class { &:hover {} }` will become `.class:hover {}`
+ *
  * Requires the use of Once over Rule else it runs into conflicts with the postcss-nested plugin
  */
 export const parentOrphanedPseudos = (): Plugin => {
