@@ -44,6 +44,9 @@ find "${PACKAGES[@]}" -type f -path '*/dist/*' -name '*.js.flow' -print0 | while
   # Rename jest.CustomMatcherResult type to existing flow type
   sed -i '' 's/jest.CustomMatcherResult/JestMatcherResult/g' "$file"
 
+  # Refactor interface to object type to allow spreading
+  sed -i '' 's/export interface StyledProps {/export type StyledProps = {/g' "$file"
+
   # Refactor to flow style handling of default generic types
   awk -v RS='' '{gsub(/CssFunction[^\S|]*\|[^\S|]*CssFunction\[\]/, "CssFunction<> | CssFunction<>[]"); print}' "$file" >"$file.tmp" &&
     mv "$file.tmp" "$file"
