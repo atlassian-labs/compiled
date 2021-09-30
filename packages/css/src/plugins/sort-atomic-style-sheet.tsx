@@ -16,6 +16,7 @@ const pseudoSelectorScore = (selector: string) => {
 /**
  * PostCSS plugin for sorting rules inside AtRules based on lvfha ordering.
  * Only top level CSS rules will be sorted.
+ * Using Once due to the catchAll behaviour
  */
 export const sortAtomicStyleSheet = (): Plugin => {
   return {
