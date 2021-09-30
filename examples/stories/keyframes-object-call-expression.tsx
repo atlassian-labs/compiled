@@ -44,7 +44,7 @@ export const RuntimeKeyframes = (): JSX.Element => (
       coral to pink
     </div>
     <div
-      css={{
+      css={css({
         animationDuration: '2s',
         animationIterationCount: 'infinite',
         animationName: generateKeyframes(
@@ -52,7 +52,7 @@ export const RuntimeKeyframes = (): JSX.Element => (
           window.runtime.purpleToSlateBlue.to
         ),
         animationTimingFunction: 'ease-in-out',
-      }}>
+      })}>
       purple to slate blue
     </div>
   </>
@@ -100,12 +100,12 @@ export const ShadowedKeyframes = (): JSX.Element => (
       coral to pink
     </div>
     <div
-      css={{
+      css={css({
         animationDuration: '2s',
         animationIterationCount: 'infinite',
         animationName: shadowedKeyframes.fadeOut,
         animationTimingFunction: 'ease-in-out',
-      }}>
+      })}>
       purple to slate blue
     </div>
   </>
