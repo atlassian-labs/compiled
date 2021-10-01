@@ -1,9 +1,16 @@
 import { css } from '@compiled/react';
-import { primary, secondary } from '../mixins/mixins';
+import {
+  primaryTaggedTemplateExpression as primary,
+  secondaryTaggedTemplateExpression as secondary,
+} from '../mixins/mixins';
 
 export default {
   title: 'css prop/string',
 };
+
+// Workaround missing CSS API without import https://github.com/atlassian-labs/compiled/issues/836
+// TODO Remove this usage once bug is resolved
+css``;
 
 export const TemplateLiteral = (): JSX.Element => {
   return (
@@ -16,29 +23,6 @@ export const TemplateLiteral = (): JSX.Element => {
       blue text
     </div>
   );
-};
-
-export const InlineCssTaggedTemplateExpression = (): JSX.Element => {
-  return (
-    <div
-      css={css`
-        display: flex;
-        font-size: 30px;
-        color: red;
-      `}>
-      red text
-    </div>
-  );
-};
-
-const taggedTemplateExpressionCss = css`
-  display: flex;
-  font-size: 30px;
-  color: green;
-`;
-
-export const CssTaggedTemplateExpression = (): JSX.Element => {
-  return <div css={taggedTemplateExpressionCss}>green text</div>;
 };
 
 export const UsingMixinImportSpread = (): JSX.Element => {
