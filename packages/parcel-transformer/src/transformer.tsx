@@ -28,7 +28,6 @@ export default new Transformer<UserlandOpts>({
       Object.assign(contents, conf.contents);
     }
 
-    // We always set a result so it's only evaluated once.
     return contents;
   },
 
