@@ -10,6 +10,7 @@ import {
   isCompiledCSSTemplateLiteral,
   isCompiledKeyframesTaggedTemplateExpression,
   isCompiledKeyframesCallExpression,
+  isCompiledCSSCallExpression,
 } from './ast';
 import { evaluateExpression } from './evaluate-expression';
 import type { CSSOutput, CssItem, LogicalCssItem, SheetCssItem } from './types';
@@ -679,6 +680,10 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
 
   if (isCompiledCSSTemplateLiteral(node, meta)) {
     return buildCss(node.quasi, meta);
+  }
+
+  if (isCompiledCSSCallExpression(node, meta)) {
+    return buildCss(node.arguments[0] as t.ObjectExpression, meta);
   }
 
   throw buildCodeFrameError(

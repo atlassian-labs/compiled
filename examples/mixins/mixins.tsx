@@ -1,17 +1,24 @@
 import { css } from '@compiled/react';
 
-export const hover = {
+export const hoverObjectLiteral = {
   color: 'purple',
   backgroundColor: 'red',
 };
 
-export const primary = css`
+export const primaryTaggedTemplateExpression = css`
   font-size: 32px;
   font-weight: bold;
   color: purple;
   text-decoration: underline;
 `;
 
-export const secondary = css`
+export const secondaryTaggedTemplateExpression = css`
   border: 1px solid red;
 `;
+
+export const primaryCallExpression = css({
+  fontSize: '32px',
+  fontWeight: 'bold',
+  color: 'purple',
+  textDecoration: 'underline',
+});

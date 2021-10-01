@@ -1,6 +1,9 @@
 import React from 'react';
 import { styled, css } from '@compiled/react';
-import { primary, secondary } from '../mixins/mixins';
+import {
+  primaryTaggedTemplateExpression,
+  secondaryTaggedTemplateExpression,
+} from '../mixins/mixins';
 
 export default {
   title: 'conditional rules/styled',
@@ -39,7 +42,8 @@ const TextWithTernaryAndBooleanObjectStyle = styled.span<TextProps>({ fontSize: 
 );
 
 const TextWithMixins = styled.span<TextProps>`
-  ${(props) => (props.isPrimary ? primary : secondary)};
+  ${(props) =>
+    props.isPrimary ? primaryTaggedTemplateExpression : secondaryTaggedTemplateExpression};
   padding: 10px;
 `;
 
