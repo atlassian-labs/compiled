@@ -24,12 +24,12 @@ export default new Transformer<UserlandOpts>({
     const contents: UserlandOpts = {};
 
     if (conf) {
-      config.shouldInvalidateOnStartup();
+      config.invalidateOnStartup();
       Object.assign(contents, conf.contents);
     }
 
     // We always set a result so it's only evaluated once.
-    config.setResult(contents);
+    return contents;
   },
 
   canReuseAST() {
@@ -49,13 +49,18 @@ export default new Transformer<UserlandOpts>({
       return undefined;
     }
 
-    const ast = await parseAsync(code, {
+    const program = await parseAsync(code, {
       filename: asset.filePath,
       caller: { name: 'compiled' },
       rootMode: 'upward-optional',
     });
 
-    return ast;
+    return {
+      type: 'babel',
+      version: '7.0.0',
+      code,
+      program,
+    };
   },
 
   async transform({ asset, config }) {
@@ -95,7 +100,7 @@ export default new Transformer<UserlandOpts>({
       // Included files are those which have been statically evaluated into this asset.
       // This tells parcel that if any of those files change this asset should be transformed
       // again.
-      asset.addIncludedFile(file);
+      asset.invalidateOnFileChange(file);
     });
 
     if (result?.ast) {
@@ -111,13 +116,14 @@ export default new Transformer<UserlandOpts>({
     return [asset];
   },
 
-  generate({ ast, asset }) {
+  async generate({ ast, asset }) {
     // TODO: We're using babels standard generator. Internally parcel does some hacks in
     // the official Babel transformer to make it faster - using ASTree directly.
     // Perhaps we should do the same thing.
-    const { code, map } = generate(ast.program, {
+    const { code } = generate(ast.program, {
       filename: asset.filePath,
     });
+    const map = await asset.getMap();
 
     return { content: code, map };
   },
