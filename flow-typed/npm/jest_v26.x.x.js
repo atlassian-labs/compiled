@@ -1,8 +1,6 @@
 // flow-typed signature: ec1949e99980c0b12113832818d455c9
 // flow-typed version: 644a595e77/jest_v26.x.x/flow_>=v0.134.x
 
-import type { toHaveCompiledCss } from '@compiled/jest';
-
 type JestMockFn<TArguments: $ReadOnlyArray<*>, TReturn> = {
   (...args: TArguments): TReturn,
   /**
