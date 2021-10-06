@@ -70,6 +70,7 @@ compare() {
     echo
     echo "The following flow types are out of sync:"
     echo "$changed_types"
+    git diff HEAD
     exit 1
   else
     echo "Flow types are in sync"
