@@ -7693,7 +7693,7 @@ escodegen@^2.0.0:
 
 eslint-plugin-flowtype@^6.1.0:
   version "6.1.0"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/eslint-plugin-flowtype/-/eslint-plugin-flowtype-6.1.0.tgz#626f44d9adbdb681644accd5fa29dffcb0d6d531"
+  resolved "https://registry.yarnpkg.com/npm/npm-remote/eslint-plugin-flowtype/-/eslint-plugin-flowtype-6.1.0.tgz#626f44d9adbdb681644accd5fa29dffcb0d6d531"
   integrity sha1-Ym9E2a29toFkSszV+inf/LDW1TE=
   dependencies:
     lodash "^4.17.21"
@@ -15956,7 +15956,7 @@ string-length@^4.0.1:
 
 string-natural-compare@^3.0.1:
   version "3.0.1"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/string-natural-compare/-/string-natural-compare-3.0.1.tgz#7a42d58474454963759e8e8b7ae63d71c1e7fdf4"
+  resolved "https://registry.yarnpkg.com/npm/npm-remote/string-natural-compare/-/string-natural-compare-3.0.1.tgz#7a42d58474454963759e8e8b7ae63d71c1e7fdf4"
   integrity sha1-ekLVhHRFSWN1no6LeuY9ccHn/fQ=
 
 string-width@^1.0.1:
