@@ -7,21 +7,22 @@ import {
   withPlugin,
   applyVisitor,
 } from '../../codemods-helpers';
-import type { CodemodPlugin } from '../../plugins/types';
+import type { CodemodPluginInstance } from '../../plugins/types';
+import defaultCodemodPlugin from '../../plugins/default';
 
 const imports = {
   compiledStyledImportName: 'styled',
   styledComponentsPackageName: 'styled-components',
 };
 
-export const transformer = (
-  fileInfo: FileInfo,
-  { jscodeshift: j }: API,
-  options: Options
-): string => {
+const transformer = (fileInfo: FileInfo, api: API, options: Options): string => {
   const { source } = fileInfo;
+  const { jscodeshift: j } = api;
   const collection = j(source);
-  const plugins: Array<CodemodPlugin> = options.pluginModules;
+  const plugins: Array<CodemodPluginInstance> = [
+    defaultCodemodPlugin,
+    ...options.normalizedPlugins,
+  ].map((plugin) => plugin.create(fileInfo, api, options));
 
   const originalProgram: Program = j(source).find(j.Program).get();
 
@@ -50,12 +51,10 @@ export const transformer = (
     namedImport: imports.compiledStyledImportName,
   });
 
-  const currentProgram = collection.find(j.Program);
   applyVisitor({
-    j,
     plugins,
     originalProgram,
-    currentProgram: currentProgram.get(),
+    currentProgram: collection.find(j.Program).get(),
   });
 
   return collection.toSource(options.printOptions || { quote: 'single' });

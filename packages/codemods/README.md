@@ -12,23 +12,28 @@
 Codemods support a simple plugin system where supported implementations can be overridden. The `CodemodPlugin` interface
 lists all the supported methods to be re-implemented. See the following example:
 
-```javascript
-import { JSCodeshift, Collection, ImportDeclaration } from 'jscodeshift';
-import { CodemodPlugin } from '@compiled/codemods';
-
-const insertBeforeImport = ({
-  j,
-}: {
-  j: JSCodeshift,
-  newImport: Collection<ImportDeclaration>,
-}): ImportDeclaration =>
-  j.importDeclaration(
-    [j.importSpecifier(j.identifier('getFeatureFlag'))],
-    j.literal('./feature-flag')
-  );
+```ts
+import type { API, FileInfo, Options } from 'jscodeshift';
+import type { CodemodPlugin } from '@compiled/codemods';
 
 const ExampleCodemodPlugin: CodemodPlugin = {
-  migrationTransform: { insertBeforeImport },
+  name: 'example-codemod-plugin',
+  create: (fileInfo: FileInfo, { jscodeshift: j }: API, options: Options) => ({
+    visitor: {
+      program({ program }) {
+        j(program)
+          .find(j.ImportDeclaration)
+          .at(-1)
+          .get()
+          .insertAfter(
+            j.importDeclaration(
+              [j.importSpecifier(j.identifier('getFeatureFlag'))],
+              j.literal('./feature-flags')
+            )
+          );
+      },
+    },
+  }),
 };
 
 export default ExampleCodemodPlugin;
