@@ -3,7 +3,7 @@
 .*/__tests__/.*
 
 [include]
-packages/.*/dist/.*/*.js.flow
+packages/.*/flow-types/.*/*.js.flow
 examples/packages/flow-types/.*/*.js
 
 [libs]
@@ -17,3 +17,8 @@ examples/packages/flow-types/.*/*.js
 [options]
 
 [strict]
+nonstrict-import
+unclear-type
+unsafe-getters-setters
+untyped-import
+untyped-type-import

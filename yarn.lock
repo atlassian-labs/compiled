@@ -7691,6 +7691,14 @@ escodegen@^2.0.0:
   optionalDependencies:
     source-map "~0.6.1"
 
+eslint-plugin-flowtype@^6.1.0:
+  version "6.1.0"
+  resolved "https://packages.atlassian.com/api/npm/npm-remote/eslint-plugin-flowtype/-/eslint-plugin-flowtype-6.1.0.tgz#626f44d9adbdb681644accd5fa29dffcb0d6d531"
+  integrity sha1-Ym9E2a29toFkSszV+inf/LDW1TE=
+  dependencies:
+    lodash "^4.17.21"
+    string-natural-compare "^3.0.1"
+
 eslint-plugin-react-hooks@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.2.0.tgz#8c229c268d468956334c943bb45fc860280f5556"
@@ -8383,7 +8391,7 @@ flatten@^1.0.2:
 
 flow-bin@^0.160.1:
   version "0.160.1"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/flow-bin/-/flow-bin-0.160.1.tgz#ae24ad6def1f05ae37789b6cc332b58975d29de0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.160.1.tgz#ae24ad6def1f05ae37789b6cc332b58975d29de0"
   integrity sha1-riStbe8fBa43eJtswzK1iXXSneA=
 
 flow-parser@0.*:
@@ -8393,7 +8401,7 @@ flow-parser@0.*:
 
 flowgen@^1.14.1:
   version "1.14.1"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/flowgen/-/flowgen-1.14.1.tgz#a1da7cbe78bd3897291257dc60c566e14540c95a"
+  resolved "https://registry.yarnpkg.com/flowgen/-/flowgen-1.14.1.tgz#a1da7cbe78bd3897291257dc60c566e14540c95a"
   integrity sha1-odp8vni9OJcpElfcYMVm4UVAyVo=
   dependencies:
     "@babel/code-frame" "^7.10.4"
@@ -9615,7 +9623,7 @@ internal-slot@^1.0.3:
 
 interpret@^1.0.0:
   version "1.4.0"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/interpret/-/interpret-1.4.0.tgz#665ab8bc4da27a774a40584e812e3e0fa45b1a1e"
+  resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.4.0.tgz#665ab8bc4da27a774a40584e812e3e0fa45b1a1e"
   integrity sha1-Zlq4vE2iendKQFhOgS4+D6RbGh4=
 
 interpret@^2.2.0:
@@ -13988,7 +13996,7 @@ prettier@^1.19.1:
 
 prettier@^2.1.1, prettier@^2.2.1:
   version "2.4.1"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/prettier/-/prettier-2.4.1.tgz#671e11c89c14a4cfc876ce564106c4a6726c9f5c"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.4.1.tgz#671e11c89c14a4cfc876ce564106c4a6726c9f5c"
   integrity sha1-Zx4RyJwUpM/Ids5WQQbEpnJsn1w=
 
 pretty-error@^2.1.1:
@@ -14750,7 +14758,7 @@ recast@^0.20.3, recast@^0.20.4:
 
 rechoir@^0.6.2:
   version "0.6.2"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/rechoir/-/rechoir-0.6.2.tgz#85204b54dba82d5742e28c96756ef43af50e3384"
+  resolved "https://registry.yarnpkg.com/rechoir/-/rechoir-0.6.2.tgz#85204b54dba82d5742e28c96756ef43af50e3384"
   integrity sha1-hSBLVNuoLVdC4oyWdW70OvUOM4Q=
   dependencies:
     resolve "^1.1.6"
@@ -15441,7 +15449,7 @@ shell-quote@1.7.2:
 
 shelljs@^0.8.4:
   version "0.8.4"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/shelljs/-/shelljs-0.8.4.tgz#de7684feeb767f8716b326078a8a00875890e3c2"
+  resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.8.4.tgz#de7684feeb767f8716b326078a8a00875890e3c2"
   integrity sha1-3naE/ut2f4cWsyYHiooAh1iQ48I=
   dependencies:
     glob "^7.0.0"
@@ -15945,6 +15953,11 @@ string-length@^4.0.1:
   dependencies:
     char-regex "^1.0.2"
     strip-ansi "^6.0.0"
+
+string-natural-compare@^3.0.1:
+  version "3.0.1"
+  resolved "https://packages.atlassian.com/api/npm/npm-remote/string-natural-compare/-/string-natural-compare-3.0.1.tgz#7a42d58474454963759e8e8b7ae63d71c1e7fdf4"
+  integrity sha1-ekLVhHRFSWN1no6LeuY9ccHn/fQ=
 
 string-width@^1.0.1:
   version "1.0.2"
@@ -16814,7 +16827,7 @@ typedarray@^0.0.6:
 
 typescript-compiler@^1.4.1-2:
   version "1.4.1-2"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/typescript-compiler/-/typescript-compiler-1.4.1-2.tgz#ba4f7db22d91534a1929d90009dce161eb72fd3f"
+  resolved "https://registry.yarnpkg.com/typescript-compiler/-/typescript-compiler-1.4.1-2.tgz#ba4f7db22d91534a1929d90009dce161eb72fd3f"
   integrity sha1-uk99si2RU0oZKdkACdzhYety/T8=
 
 typescript@^3.7.0, typescript@^4.0.2, typescript@^4.2.4:

@@ -35,8 +35,8 @@ jobs:
       - name: Build source
         run: yarn build
 
-      - name: Build flow types
-        run: yarn build:types-flow
+      - name: Compare committed flow types to generated
+        run: yarn flow-types compare
 
       - name: Build SSR example
         run: yarn build-ssr

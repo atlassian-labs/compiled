@@ -1,5 +1,4 @@
 // @flow strict-local
-
 import React from 'react';
 import { css, ClassNames, styled, keyframes } from '@compiled/react';
 
@@ -23,7 +22,6 @@ import { css, ClassNames, styled, keyframes } from '@compiled/react';
         color: 'red',
         fdsf: 'hello',
       });
-
       return <div className={styles}>red text</div>;
     }}
   </ClassNames>
