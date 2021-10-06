@@ -6,7 +6,7 @@
  */
 import type { CSSProps } from '../types';
 /**
- * Create styles that can be re-used between components.
+ * Create styles that can be re-used between components with a template literal.
  *
  * ```
  * css`color: red;`;
@@ -21,3 +21,15 @@ declare export default function css(
   _css: $ReadOnlyArray<string>,
   ..._values: (string | number)[]
 ): CSSProps;
+/**
+ * Create styles that can be re-used between components with an object
+ *
+ * ```
+ * css({ color: 'red' });
+ * ```
+ *
+ * For more help, read the docs:
+ * https://compiledcssinjs.com/docs/api-css
+ * @param css
+ */
+declare export default function css(_css: CSSProps): CSSProps;
