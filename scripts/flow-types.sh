@@ -41,7 +41,7 @@ generate() {
 
   echo "Running Prettier"
   for package in "${PACKAGES[@]}"; do
-    npx prettier --write "$package/src/**/*.js.flow"
+    npx pretty-quick
   done
 }
 
