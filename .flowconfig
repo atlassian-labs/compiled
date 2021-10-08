@@ -1,10 +1,7 @@
 [ignore]
-.*/__fixtures__/.*
-.*/__tests__/.*
 
 [include]
-packages/.*/flow-types/.*/*.js.flow
-examples/packages/flow-types/.*/*.js
+packages/.*/*.js.flow
 
 [libs]
 

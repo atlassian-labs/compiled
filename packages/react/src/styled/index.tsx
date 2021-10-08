@@ -34,7 +34,7 @@ export interface StyledFunctionFromTag<TTag extends keyof JSX.IntrinsicElements>
   <TProps extends unknown>(
     // Allows either string or object (`` or ({}))
     css: CssObject<TProps> | CssObject<TProps>[],
-    ...interpoltations: Interpolations<TProps>
+    ...interpolations: Interpolations<TProps>
   ): React.ComponentType<TProps & JSX.IntrinsicElements[TTag] & StyledProps>;
 }
 
@@ -42,7 +42,7 @@ export interface StyledFunctionFromComponent<TInheritedProps extends unknown> {
   <TProps extends unknown>(
     // Allows either string or object (`` or ({}))
     css: CssObject<TProps> | TemplateStringsArray,
-    ...interpoltations: Interpolations<TProps>
+    ...interpolations: Interpolations<TProps>
   ): React.ComponentType<TProps & StyledProps & TInheritedProps>;
 }
 

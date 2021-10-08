@@ -32,8 +32,8 @@ export type Interpolations<TProps: mixed> = (
  */
 export interface StyledFunctionFromTag<TTag: $Keys<$JSXIntrinsics>> {
   <TProps: mixed>(
-    css: CssObject<TProps> | CssObject<TProps>[],
-    ...interpoltations: Interpolations<TProps>
+    css: CssObject<TProps> | $ReadOnlyArray<CssObject<TProps>>,
+    ...interpolations: Interpolations<TProps>
   ): React$ComponentType<{
     ...TProps,
     ...$ElementType<$JSXIntrinsics, TTag>,
@@ -43,7 +43,7 @@ export interface StyledFunctionFromTag<TTag: $Keys<$JSXIntrinsics>> {
 export interface StyledFunctionFromComponent<TInheritedProps: mixed> {
   <TProps: mixed>(
     css: CssObject<TProps> | $ReadOnlyArray<string>,
-    ...interpoltations: Interpolations<TProps>
+    ...interpolations: Interpolations<TProps>
   ): React$ComponentType<{ ...TProps, ...StyledProps, ...TInheritedProps }>;
 }
 export type StyledComponentMap = $ObjMapi<$JSXIntrinsics, <Tag>(Tag) => StyledFunctionFromTag<Tag>>;

@@ -49,7 +49,7 @@ module.exports = {
   overrides: [
     {
       // Flow specific rules
-      files: ['*/*.js.flow'],
+      files: ['**/*.js.flow'],
       extends: ['plugin:flowtype/recommended'],
       plugins: ['flowtype'],
       rules: {

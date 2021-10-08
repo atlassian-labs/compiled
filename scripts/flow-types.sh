@@ -25,6 +25,9 @@ generate() {
     # Define TemplateStringsArray type
     sed -i.bak 's/TemplateStringsArray/$ReadOnlyArray<string>/g' "$file" && rm "$file.bak"
 
+    # Use readonly array to handle flow strict mode
+    sed -i.bak 's/css: CssObject<TProps> \| CssObject<TProps>\[\],/css: CssObject<TProps> \| \$ReadOnlyArray<CssObject<TProps>>,/g' "$file" && rm "$file.bak"
+
     # Rename JSX.IntrinsicElements to existing flow type
     sed -i.bak 's/JSX.IntrinsicElements/$JSXIntrinsics/g' "$file" && rm "$file.bak"
 

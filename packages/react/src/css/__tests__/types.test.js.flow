@@ -1,0 +1,17 @@
+// @flow strict-local
+import React from 'react';
+import { css } from '@compiled/react';
+
+// Tagged template expression
+(): React$Element<'div'> => {
+  const styles = css`
+    color: red;
+  `;
+  return <div css={styles}>red text</div>;
+};
+
+// Object call expression
+(): React$Element<'div'> => {
+  const styles = css({ color: 'red' });
+  return <div css={styles}>red text</div>;
+};
