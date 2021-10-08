@@ -24,7 +24,8 @@ import {
   addCommentBefore,
   withPlugin,
 } from '../../codemods-helpers';
-import type { CodemodPlugin } from '../../plugins/types';
+import defaultCodemodPlugin from '../../plugins/default';
+import type { CodemodPluginInstance } from '../../plugins/types';
 
 const imports = {
   compiledStyledImportName: 'styled',
@@ -204,15 +205,15 @@ const mergeCompiledImportSpecifiers = (j: core.JSCodeshift, collection: Collecti
   });
 };
 
-export const transformer = (
-  fileInfo: FileInfo,
-  { jscodeshift: j }: API,
-  options: Options
-): string => {
+const transformer = (fileInfo: FileInfo, api: API, options: Options): string => {
   const { source } = fileInfo;
+  const { jscodeshift: j } = api;
   const collection = j(source);
-  const plugins: Array<CodemodPlugin> = options.pluginModules;
-
+  // Run default plugin first and apply plugins in order
+  const plugins: Array<CodemodPluginInstance> = [
+    defaultCodemodPlugin,
+    ...options.normalizedPlugins,
+  ].map((plugin) => plugin.create(fileInfo, api, options));
   const originalProgram: Program = j(source).find(j.Program).get();
 
   const hasEmotionCoreImportDeclaration = hasImportDeclaration({
@@ -220,6 +221,7 @@ export const transformer = (
     collection,
     importPath: imports.emotionCorePackageName,
   });
+
   const hasEmotionStyledImportDeclaration = hasImportDeclaration({
     j,
     collection,
@@ -255,12 +257,10 @@ export const transformer = (
 
   mergeCompiledImportSpecifiers(j, collection);
 
-  const currentProgram = collection.find(j.Program);
   applyVisitor({
-    j,
     plugins,
     originalProgram,
-    currentProgram: currentProgram.get(),
+    currentProgram: collection.find(j.Program).get(),
   });
 
   return collection.toSource(options.printOptions || { quote: 'single' });

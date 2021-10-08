@@ -17,35 +17,44 @@ import type {
 } from 'jscodeshift';
 
 import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from './constants';
-import type { CodemodPlugin } from './plugins/types';
-import DefaultPlugin from './plugins/default';
+import type { CodemodPlugin, CodemodPluginInstance } from './plugins/types';
 
 type Identifiers = Array<Identifier | JSXIdentifier | TSTypeParameter>;
 
-const getPlugins = async (
-  pluginPathsInput: string | Array<string> | undefined
-): Promise<Array<CodemodPlugin>> => {
-  if (!pluginPathsInput) return [];
-  const pluginPaths = Array.isArray(pluginPathsInput) ? pluginPathsInput : [pluginPathsInput];
+type PluginItem = CodemodPlugin | string;
+
+const isCodemodPlugin = (pluginItem: PluginItem): pluginItem is CodemodPlugin =>
+  typeof pluginItem === 'object';
+
+const getPlugins = (
+  items: PluginItem | Array<PluginItem>
+): Array<CodemodPlugin> | Promise<Array<CodemodPlugin>> => {
+  const pluginItems = Array.isArray(items) ? items : [items];
+  // Remove this code block once https://github.com/facebook/jscodeshift/issues/454 is resolved
+  if (pluginItems.every(isCodemodPlugin)) {
+    return pluginItems;
+  }
 
   return Promise.all(
-    pluginPaths.map(async (path) => {
-      try {
-        const pluginModule = await import(path);
+    pluginItems.map(async (pluginItem) => {
+      if (isCodemodPlugin(pluginItem)) {
+        return pluginItem;
+      }
 
-        const pluginName = pluginModule?.default?.metadata?.name;
+      try {
+        const pluginModule = await import(pluginItem);
+
+        const pluginName = pluginModule?.default?.name;
         if (!pluginName) {
           throw new Error(
-            chalk.yellow(
-              `${chalk.bold(`Plugin at path '${path}' did not export 'name' in metadata`)}`
-            )
+            chalk.yellow(`${chalk.bold(`Plugin at path '${pluginItem}' did not export 'name'`)}`)
           );
         }
 
         return pluginModule.default;
       } catch (err) {
         throw new Error(
-          chalk.red(`${chalk.bold(`Plugin at path '${path}' was not loaded`)}\n${err}`)
+          chalk.red(`${chalk.bold(`Plugin at path '${pluginItem}' was not loaded`)}\n${err}`)
         );
       }
     })
@@ -59,9 +68,23 @@ const getPlugins = async (
  */
 export const withPlugin = (
   transformer: (fileInfo: FileInfo, api: API, options: Options) => string
-) => async (fileInfo: FileInfo, api: API, options: Options): Promise<string> => {
-  options.pluginModules = await getPlugins(options.plugin);
-  return transformer(fileInfo, api, options);
+) => (fileInfo: FileInfo, api: API, options: Options): string | Promise<string> => {
+  const plugins = options.plugin ?? options.plugins ?? [];
+  // TODO Await this when https://github.com/facebook/jscodeshift/issues/454 is resolved
+  const maybeNormalizedPlugins = getPlugins(plugins);
+  if (maybeNormalizedPlugins instanceof Promise) {
+    return maybeNormalizedPlugins.then((normalizedPlugins) =>
+      transformer(fileInfo, api, {
+        ...options,
+        normalizedPlugins,
+      })
+    );
+  }
+
+  return transformer(fileInfo, api, {
+    ...options,
+    normalizedPlugins: maybeNormalizedPlugins,
+  });
 };
 
 export const getImportDeclarationCollection = ({
@@ -154,28 +177,23 @@ export const findImportSpecifierName = ({
 };
 
 const applyBuildImport = ({
-  j,
   plugins,
   originalNode,
   defaultSpecifierName,
   namedImport,
 }: {
-  j: JSCodeshift;
-  plugins: Array<CodemodPlugin>;
+  plugins: Array<CodemodPluginInstance>;
   originalNode: ImportDeclaration;
   defaultSpecifierName: string;
   namedImport: string;
 }) =>
-  // Run default plugin first and apply plugins in order
-  [DefaultPlugin, ...plugins].reduce((currentNode, plugin, i, array) => {
-    const buildImportImpl = plugin.migrationTransform?.buildImport;
+  plugins.reduce((currentNode, plugin) => {
+    const buildImportImpl = plugin.transform?.buildImport;
     if (!buildImportImpl) {
       return currentNode;
     }
 
     return buildImportImpl({
-      j,
-      processedPlugins: array.slice(0, i).map((p) => p.metadata),
       originalNode,
       currentNode,
       defaultSpecifierName,
@@ -192,7 +210,7 @@ export const convertDefaultImportToNamedImport = ({
   namedImport,
 }: {
   j: JSCodeshift;
-  plugins: Array<CodemodPlugin>;
+  plugins: Array<CodemodPluginInstance>;
   collection: Collection<any>;
   importPath: string;
   namedImport: string;
@@ -212,7 +230,6 @@ export const convertDefaultImportToNamedImport = ({
 
     if (importDefaultSpecifierCollection.length > 0) {
       const newImport = applyBuildImport({
-        j,
         plugins,
         originalNode: importDeclarationPath.node,
         defaultSpecifierName: getImportDefaultSpecifierName(importDefaultSpecifierCollection),
@@ -440,25 +457,21 @@ export const mergeImportSpecifiersAlongWithTheirComments = ({
 };
 
 export const applyVisitor = ({
-  j,
   plugins,
   originalProgram,
   currentProgram,
 }: {
-  j: JSCodeshift;
-  plugins: Array<CodemodPlugin>;
+  plugins: Array<CodemodPluginInstance>;
   originalProgram: Program;
   currentProgram: Program;
-}): void =>
-  // Run default plugin first and apply plugins in order
-  [DefaultPlugin, ...plugins].forEach((plugin, i, array) => {
+}): void => {
+  for (const plugin of plugins) {
     const programImpl = plugin.visitor?.program;
     if (programImpl) {
       programImpl({
-        j,
-        processedPlugins: array.slice(0, i).map((p) => p.metadata),
         originalProgram,
         program: currentProgram,
       });
     }
-  });
+  }
+};

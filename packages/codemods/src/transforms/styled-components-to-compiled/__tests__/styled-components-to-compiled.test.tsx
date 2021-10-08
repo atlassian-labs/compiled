@@ -1,15 +1,17 @@
+import type { API, FileInfo } from 'jscodeshift';
+
+import type { ProgramVisitorContext } from '../../../plugins/types';
+import transformer from '../styled-components-to-compiled';
+
 jest.disableAutomock();
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const defineInlineTest = require('jscodeshift/dist/testUtils').defineInlineTest;
 
-import type { JSCodeshift, Program } from 'jscodeshift';
-import { transformer } from '../styled-components-to-compiled';
-
 describe('styled-components-to-compiled transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    { pluginModules: [] },
+    { plugins: [] },
     "import styled from 'styled-components';",
     "import { styled } from '@compiled/react';",
     'it transforms default styled-components imports'
@@ -17,7 +19,7 @@ describe('styled-components-to-compiled transformer', () => {
 
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    { pluginModules: [] },
+    { plugins: [] },
     "import sc from 'styled-components';",
     "import { styled as sc } from '@compiled/react';",
     'it transforms default with different name than "styled" styled-components imports'
@@ -25,7 +27,7 @@ describe('styled-components-to-compiled transformer', () => {
 
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    { pluginModules: [] },
+    { plugins: [] },
     `
     import styled from 'styled-components';
     import * as React from 'react';
@@ -39,7 +41,7 @@ describe('styled-components-to-compiled transformer', () => {
 
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    { pluginModules: [] },
+    { plugins: [] },
     `
     // @top-level comment
 
@@ -61,7 +63,7 @@ describe('styled-components-to-compiled transformer', () => {
 
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    { pluginModules: [] },
+    { plugins: [] },
     `
     // @top-level comment
 
@@ -83,7 +85,7 @@ describe('styled-components-to-compiled transformer', () => {
 
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    { pluginModules: [] },
+    { plugins: [] },
     `
     import styled, { css, keyframes, createGlobalStyle, ThemeProvider, withTheme } from 'styled-components';
     import * as React from 'react';
@@ -102,7 +104,7 @@ describe('styled-components-to-compiled transformer', () => {
 
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
-    { pluginModules: [] },
+    { plugins: [] },
     "import * as React from 'react';",
     "import * as React from 'react';",
     'it should not transform when styled-components imports are not present'
@@ -111,16 +113,19 @@ describe('styled-components-to-compiled transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     {
-      pluginModules: [
+      plugins: [
         {
-          migrationTransform: {
-            buildImport: ({ j }) =>
-              j.expressionStatement(
-                j.callExpression(j.memberExpression(j.identifier('console'), j.identifier('log')), [
-                  j.literal('Bring back Netscape'),
-                ])
-              ),
-          },
+          create: (_: FileInfo, { jscodeshift: j }: API) => ({
+            transform: {
+              buildImport: () =>
+                j.expressionStatement(
+                  j.callExpression(
+                    j.memberExpression(j.identifier('console'), j.identifier('log')),
+                    [j.literal('Bring back Netscape')]
+                  )
+                ),
+            },
+          }),
         },
       ],
     },
@@ -132,22 +137,24 @@ describe('styled-components-to-compiled transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     {
-      pluginModules: [
+      plugins: [
         {
-          visitor: {
-            program: ({ j, program }: { j: JSCodeshift; program: Program }) => {
-              j(program)
-                .find(j.ImportDeclaration)
-                .insertBefore(() =>
-                  j.expressionStatement(
-                    j.callExpression(
-                      j.memberExpression(j.identifier('console'), j.identifier('log')),
-                      [j.literal('Bring back Netscape')]
+          create: (_: FileInfo, { jscodeshift: j }: API) => ({
+            visitor: {
+              program: ({ program }: ProgramVisitorContext<void>) => {
+                j(program)
+                  .find(j.ImportDeclaration)
+                  .insertBefore(() =>
+                    j.expressionStatement(
+                      j.callExpression(
+                        j.memberExpression(j.identifier('console'), j.identifier('log')),
+                        [j.literal('Bring back Netscape')]
+                      )
                     )
-                  )
-                );
+                  );
+              },
             },
-          },
+          }),
         },
       ],
     },
