@@ -20,22 +20,22 @@ generate() {
   echo "Patching types"
   find "${PACKAGES[@]}" -type f -path '*/src/*' -name '*.js.flow' -not -path '*/node_modules/*' -not -path '*/__tests__/*' -print0 | while read -rd $'\0' file; do
     # Change import to import type (bug in flowgen)
-    sed -i.bak 's/import {/import type {/g' "$file" && rm "$file.bak"
+    sed -i.bak -E 's/import {/import type {/g' "$file" && rm "$file.bak"
 
     # Define TemplateStringsArray type
-    sed -i.bak 's/TemplateStringsArray/$ReadOnlyArray<string>/g' "$file" && rm "$file.bak"
+    sed -i.bak -E 's/TemplateStringsArray/$ReadOnlyArray<string>/g' "$file" && rm "$file.bak"
 
     # Use readonly array to handle flow strict mode
-    sed -i.bak 's/css: CssObject<TProps> \| CssObject<TProps>\[\],/css: CssObject<TProps> \| \$ReadOnlyArray<CssObject<TProps>>,/g' "$file" && rm "$file.bak"
+    sed -i.bak -E 's/css: CssObject<TProps> \| CssObject<TProps>\[\],/css: CssObject<TProps> \| \$ReadOnlyArray<CssObject<TProps>>,/g' "$file" && rm "$file.bak"
 
     # Rename JSX.IntrinsicElements to existing flow type
-    sed -i.bak 's/JSX.IntrinsicElements/$JSXIntrinsics/g' "$file" && rm "$file.bak"
+    sed -i.bak -E 's/JSX.IntrinsicElements/$JSXIntrinsics/g' "$file" && rm "$file.bak"
 
     # Rename jest.CustomMatcherResult type to existing flow type
-    sed -i.bak 's/jest.CustomMatcherResult/JestMatcherResult/g' "$file" && rm "$file.bak"
+    sed -i.bak -E 's/jest.CustomMatcherResult/JestMatcherResult/g' "$file" && rm "$file.bak"
 
     # Refactor interface to object type to allow spreading
-    sed -i.bak 's/export interface StyledProps {/export type StyledProps = {/g' "$file" && rm "$file.bak"
+    sed -i.bak -E 's/export interface StyledProps {/export type StyledProps = {/g' "$file" && rm "$file.bak"
 
     # Refactor to flow style handling of default generic types
     awk -v RS='' '{gsub(/CssFunction[^\S|]*\|[^\S|]*CssFunction\[\]/, "CssFunction<> | CssFunction<>[]"); print}' "$file" >"$file.tmp" &&
@@ -57,8 +57,7 @@ validate() {
 
 compare() {
   # Run generate pipeline
-  echo "Generating flow types"
-  generate &>/dev/null
+  generate
 
   # Check if working copy has any changes in flow types
   for package in "${PACKAGES[@]}"; do
