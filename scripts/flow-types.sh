@@ -35,7 +35,7 @@ generate() {
     sed -i.bak -E 's/jest.CustomMatcherResult/JestMatcherResult/g' "$file" && rm "$file.bak"
 
     # Refactor interface to object type to allow spreading
-    sed -i.bak -E 's/export interface StyledProps {/export type StyledProps = {/g' "$file" && rm "$file.bak"
+    sed -i.bak -E 's/export interface StyledProps \{/export type StyledProps = \{/g' "$file" && rm "$file.bak"
 
     # Refactor to flow style handling of default generic types
     awk -v RS='' '{gsub(/CssFunction[^\S|]*\|[^\S|]*CssFunction\[\]/, "CssFunction<> | CssFunction<>[]"); print}' "$file" >"$file.tmp" &&
