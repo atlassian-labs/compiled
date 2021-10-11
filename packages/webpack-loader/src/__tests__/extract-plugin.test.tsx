@@ -1,26 +1,48 @@
-import { bundle } from './utils/webpack';
+import { join } from 'path';
+import { bundle as bundleEntry } from './test-utils';
+import type { BundleOptions } from './test-utils';
 
 describe('CompiledExtractPlugin', () => {
   const assetName = 'static/compiled-css.css';
+  const fixturesPath = join(__dirname, '..', '__fixtures__');
 
-  it('should extract styles from a single file into a style sheet', async () => {
-    const actual = await bundle(require.resolve('./fixtures/single.js'));
+  const bundle = (entry: string, options: BundleOptions = {}) =>
+    bundleEntry(entry, {
+      ...options,
+      extract: true,
+    });
+
+  it('throws when the plugin is not configured', async () => {
+    const errors = await bundle(join(fixturesPath, 'local-styles.tsx'), {
+      disableExtractPlugin: true,
+    }).catch((err) => err);
+
+    expect(errors).toEqual([
+      expect.objectContaining({
+        message: expect.stringContaining("You forgot to add the 'CompiledExtractPlugin' plugin"),
+      }),
+    ]);
+  });
+
+  it('extracts local styles', async () => {
+    const actual = await bundle(join(fixturesPath, 'local-styles.tsx'));
 
     expect(actual[assetName]).toMatchInlineSnapshot(`
-      "._1wyb1fwx{font-size:12px}
+      "._1wybdlk8{font-size:14px}
+      ._syaz13q2{color:blue}
       "
     `);
   });
 
-  it('should extract styles from multiple files into a style sheet', async () => {
-    const actual = await bundle(require.resolve('./fixtures/multiple.js'));
+  it('extracts styles imported through a relative path', async () => {
+    const actual = await bundle(join(fixturesPath, 'relative-styles.tsx'));
 
+    // This should not contain any styles from the unused relative import ./common/css-prop, which includes
+    // {color:coral} or {border:2px solid coral}
     expect(actual[assetName]).toMatchInlineSnapshot(`
       "
       ._syaz5scu{color:red}
       ._syazmu8g{color:blueviolet}
-      ._19itgh5a{border:2px solid orange}
-      ._syazruxl{color:orange}
       ._f8pjruxl:focus{color:orange}
       ._f8pj1cnh:focus{color:purple}._30l31gy6:hover{color:yellow}
       ._30l313q2:hover{color:blue}
@@ -28,38 +50,54 @@ describe('CompiledExtractPlugin', () => {
     `);
   });
 
-  it('should extract styles from an async chunk', async () => {
-    const actual = await bundle(require.resolve('./fixtures/async.js'));
+  it('extracts styles imported through a webpack alias', async () => {
+    const assets = await bundle(join(fixturesPath, 'webpack-alias.tsx'));
 
-    // Only generate one CSS bundle
-    expect(Object.keys(actual)).toMatchInlineSnapshot(`
-      Array [
-        "bundle.js",
-        "298.bundle.js",
-        "static/compiled-css.css",
-        "298.bundle.js.LICENSE.txt",
-      ]
-    `);
-    // Extract the styles into said bundle
-    expect(actual[assetName]).toMatchInlineSnapshot(`
-      "._19itgh5a{border:2px solid orange}
-      ._syazruxl{color:orange}
+    expect(assets[assetName]).toMatchInlineSnapshot(`
+      "._syaz13q2{color:blue}
       "
     `);
   });
 
-  it('should throw when plugin is not configured', async () => {
-    const error: Error = await bundle(require.resolve('./fixtures/single.js'), {
-      disablePlugins: true,
-    }).catch((err) => err);
+  it('extracts styles imported through an overridden resolve configuration', async () => {
+    const assets = await bundle(join(fixturesPath, 'loader-alias.tsx'), {
+      resolve: {
+        // This alias will be put into the compiled plugin options, but not the webpack resolve configuration
+        alias: {
+          'loader-alias': join(fixturesPath, 'lib', 'loader-alias.ts'),
+        },
+      },
+    });
 
-    expect(error[0].message).toInclude(
-      `You forgot to add the 'CompiledExtractPlugin' plugin (i.e \`{ plugins: [new CompiledExtractPlugin()] }\`), please read https://compiledcssinjs.com/docs/css-extraction-webpack`
-    );
+    expect(assets[assetName]).toMatchInlineSnapshot(`
+      "._syaz1if8{color:indigo}
+      "
+    `);
   });
 
-  it('should extract from a pre-built babel files', async () => {
-    const actual = await bundle(require.resolve('./fixtures/babel.js'));
+  it('extracts styles from an async chunk', async () => {
+    const actual = await bundle(join(fixturesPath, 'async-styles.ts'));
+
+    // Only generate one CSS bundle
+    expect(Object.keys(actual)).toMatchInlineSnapshot(`
+      Array [
+        "main.js",
+        "377.js",
+        "static/compiled-css.css",
+        "377.js.LICENSE.txt",
+      ]
+    `);
+
+    // Extract the styles into said bundle
+    expect(actual[assetName]).toMatchInlineSnapshot(`
+      "._19it1e35{border:2px solid coral}
+      ._syaz1vyr{color:coral}
+      "
+    `);
+  });
+
+  it('extracts styles from a pre-built babel files', async () => {
+    const actual = await bundle(join(fixturesPath, 'babel.tsx'));
 
     expect(actual[assetName]).toMatchInlineSnapshot(`
       "._19pk1ul9{margin-top:30px}
@@ -74,8 +112,18 @@ describe('CompiledExtractPlugin', () => {
     `);
   });
 
+  it('extracts important styles', async () => {
+    const actual = await bundle(join(fixturesPath, 'important-styles.tsx'));
+
+    expect(actual[assetName]).toMatchInlineSnapshot(`
+        "._syaz13q2{color:blue}
+        ._1wybc038{font-size:12!important}
+        "
+      `);
+  });
+
   it('should find bindings', async () => {
-    const actual = await bundle(require.resolve('./fixtures/binding-not-found.tsx'));
+    const actual = await bundle(join(fixturesPath, 'binding-not-found.tsx'));
 
     expect(actual[assetName]).toMatchInlineSnapshot(`
       "._syaz1r31{color:currentColor}
@@ -101,16 +149,6 @@ describe('CompiledExtractPlugin', () => {
       ._4cvr1h6o{align-items:center}
       ._1e0c1txw{display:flex}
       ._4t3i1jdh{height:9rem}
-      "
-    `);
-  });
-
-  it('should extract important', async () => {
-    const actual = await bundle(require.resolve('./fixtures/important-styles.js'));
-
-    expect(actual[assetName]).toMatchInlineSnapshot(`
-      "._syaz13q2{color:blue}
-      ._1wybc038{font-size:12!important}
       "
     `);
   });

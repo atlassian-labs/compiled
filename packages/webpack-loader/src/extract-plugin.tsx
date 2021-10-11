@@ -7,7 +7,7 @@ import {
   getNormalModuleHook,
   getOptimizeAssetsHook,
   getSources,
-} from './utils/webpack';
+} from './utils';
 
 export const pluginName = 'CompiledExtractPlugin';
 export const styleSheetName = 'compiled-css';

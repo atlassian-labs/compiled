@@ -3,12 +3,11 @@ import type { NodePath } from '@babel/traverse';
 import type { PluginPass } from '@babel/core';
 import type { Cache } from './utils/cache';
 
-export interface PluginOptions {
-  /**
-   * Security nonce that will be applied to inline style elements if defined.
-   */
-  nonce?: string;
+export interface Resolver {
+  resolveSync(context: string, request: string): string;
+}
 
+export interface PluginOptions {
   /**
    * Whether to use the cache or not. Will make subsequent builds faster.
    *
@@ -27,9 +26,19 @@ export interface PluginOptions {
   importReact?: boolean;
 
   /**
+   * Security nonce that will be applied to inline style elements if defined.
+   */
+  nonce?: string;
+
+  /**
    * Callback fired at the end of the file pass when files have been included in the transformation.
    */
   onIncludedFiles?: (files: string[]) => void;
+
+  /**
+   * A custom resolver used to statically evaluate import declarations
+   */
+  resolver?: Resolver;
 }
 
 export interface State extends PluginPass {
