@@ -20,7 +20,7 @@
     "README.md"
   ],
   "dependencies": {
-    "@babel/core": "^7.15.5",
+    "@babel/core": "^7.15.8",
     "@babel/helper-plugin-utils": "^7.14.5",
     "@babel/traverse": "^7.15.4",
     "@babel/types": "^7.15.6"
