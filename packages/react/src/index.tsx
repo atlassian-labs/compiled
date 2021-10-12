@@ -1,9 +1,11 @@
+import type { CssFunction, CSSProps } from './types';
+
 export { keyframes } from './keyframes';
 export { styled } from './styled';
 export { ClassNames } from './class-names';
 export { default as css } from './css';
-
-import type { CssFunction } from './types';
+export type { CssFunction, CSSProps };
+export type { CssObject } from './styled';
 
 declare module 'react' {
   // We must match the same type signature so the generic needs to stay.

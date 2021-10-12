@@ -1,0 +1,30 @@
+// @flow strict-local
+import React, { type Node } from 'react';
+import { styled, type CssObject, type CSSProps } from '@compiled/react';
+
+// Tagged template expression
+() => {
+  const StyledTaggedTemplateExpression = styled.div`
+    font-size: 12px;
+  `;
+  return <StyledTaggedTemplateExpression>red text</StyledTaggedTemplateExpression>;
+};
+
+// Object call expression
+() => {
+  const StyledTaggedTemplateExpression = styled.div({ fontSize: 12 });
+  return <StyledTaggedTemplateExpression>red text</StyledTaggedTemplateExpression>;
+};
+
+// Array
+() => {
+  const styles: CSSProps[] = [{ fontSize: '12px' }];
+  const StyledTaggedTemplateExpression = styled.div(styles);
+  return <StyledTaggedTemplateExpression>red text</StyledTaggedTemplateExpression>;
+};
+
+// Multiple arguments
+() => {
+  const StyledTaggedTemplateExpression = styled.div({ fontSize: 12 }, `font-size: 12px`);
+  return <StyledTaggedTemplateExpression>red text</StyledTaggedTemplateExpression>;
+};

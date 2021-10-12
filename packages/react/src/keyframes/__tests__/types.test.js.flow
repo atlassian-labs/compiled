@@ -1,0 +1,31 @@
+// @flow strict-local
+import React from 'react';
+import { css, ClassNames, styled, keyframes } from '@compiled/react';
+
+// Tagged template expression
+(): React$Element<'div'> => {
+  const fadeOut = keyframes`
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  `;
+  return <div css={{ animationName: fadeOut }}>hello world</div>;
+};
+
+// Object call expression
+(): React$Element<'div'> => {
+  const fadeOut = keyframes({
+    from: {
+      opacity: 1,
+    },
+    to: {
+      opacity: 0,
+    },
+  });
+  return <div css={{ animationName: fadeOut }}>hello world</div>;
+};
+
+// String call expression
+(): React$Element<'div'> => {
+  const fadeOut = keyframes('from { opacity: 1; } to { opacity: 0; }');
+  return <div css={{ animationName: fadeOut }}>hello world</div>;
+};

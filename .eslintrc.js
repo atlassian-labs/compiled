@@ -46,4 +46,15 @@ module.exports = {
       version: 'detect',
     },
   },
+  overrides: [
+    {
+      // Flow specific rules
+      files: ['**/*.js.flow'],
+      extends: ['plugin:flowtype/recommended'],
+      plugins: ['flowtype'],
+      rules: {
+        'flowtype/generic-spacing': ['off'],
+      },
+    },
+  ],
 };
