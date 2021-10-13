@@ -1,6 +1,6 @@
 {
   "name": "@compiled/cli",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -38,6 +38,6 @@
     "@types/app-root-path": "^1.2.4"
   },
   "peerDependencies": {
-    "@compiled/codemods": ">=0.7.0"
+    "@compiled/codemods": ">=0.1.0"
   }
 }

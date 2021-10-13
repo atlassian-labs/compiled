@@ -1,5 +1,17 @@
 # @compiled/cli
 
+## 1.1.0
+
+### Minor Changes
+
+- a33c65d: New codemod package with plugin system
+
+### Patch Changes
+
+- Updated dependencies [a33c65d]
+- Updated dependencies [10f4fe9]
+  - @compiled/codemods@0.1.0
+
 ## 1.0.0
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.8.0
+
+### Minor Changes
+
+- 53935b3: Add `ObjectExpression` support to `css`
+
 ## 0.7.0
 
 ### Minor Changes

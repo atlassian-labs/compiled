@@ -1,5 +1,11 @@
 # @compiled/jest
 
+## 0.7.0
+
+### Minor Changes
+
+- 4210ff6: Add flow types support
+
 ## 0.6.9
 
 ### Patch Changes
