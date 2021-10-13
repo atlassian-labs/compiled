@@ -1,5 +1,12 @@
 # @compiled/react
 
+## 0.8.0
+
+### Minor Changes
+
+- 4210ff6: Add flow types support
+- 53935b3: Add `ObjectExpression` support to `css`
+
 ## 0.7.0
 
 ### Minor Changes
