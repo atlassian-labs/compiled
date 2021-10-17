@@ -1,10 +1,7 @@
 import type { ComponentType } from 'react';
 import { createSetupError } from '../utils/error';
-import type { BasicTemplateInterpolations, CssFunction, CSSProps } from '../types';
-
-export interface FunctionIterpolation<TProps> {
-  (props: TProps): CSSProps | string | number | boolean | undefined;
-}
+import type { BasicTemplateInterpolations, CssFunction } from '../types';
+import type { FunctionIterpolation } from '../types';
 
 /**
  * Typing for the CSS object.

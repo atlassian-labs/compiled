@@ -463,6 +463,38 @@ describe('styled component behaviour', () => {
     );
   });
 
+  it('should apply conditional CSS when using "key: value" in string form', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        \${props => props.isPrimary ?  'color: green' : 'color: red'};
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple(['._syazbf54{color:green}', '._syaz5scu{color:red}']);
+
+    expect(actual).toInclude(
+      'className={ax(["_syaz5scu",props.isPrimary&&"_syazbf54",props.className])}'
+    );
+  });
+
+  it('should apply conditional CSS when using inline mixins', () => {
+    const actual = transform(`
+      import { styled, css } from '@compiled/react';
+
+      const Component = styled.div\`
+        \${props => props.isPrimary ?  css\`color: green\` : css\`color: red\`};
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple(['._syazbf54{color:green}', '._syaz5scu{color:red}']);
+
+    expect(actual).toInclude(
+      'className={ax(["_syaz5scu",props.isPrimary&&"_syazbf54",props.className])}'
+    );
+  });
+
   it('should apply unconditional before and after a conditional css rule with template literal', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';

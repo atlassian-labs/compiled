@@ -237,45 +237,49 @@ const callbackIfFileIncluded = (meta: Metadata, next: Metadata) => {
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metadata): CSSOutput => {
-  const variables: CSSOutput['variables'] = [];
-  const css: CSSOutput['css'] = [];
-  let logicalItem: LogicalCssItem[] = [];
+  const conditionalPaths: ['consequent', 'alternate'] = ['consequent', 'alternate'];
 
-  if (t.isObjectExpression(node.consequent)) {
-    const consequent = buildCss(node.consequent, meta);
-    logicalItem = getLogicalItemFromConditionalExpression(consequent.css, node, 'consequent');
+  const result = conditionalPaths.reduce<CSSOutput>(
+    (acc, path) => {
+      const pathNode = node[path];
+      let buildOutput;
+      let newCssItems;
 
-    css.push(...logicalItem);
-    variables.push(...consequent.variables);
-  } else if (t.isIdentifier(node.consequent)) {
-    const { value: interpolation, meta: updatedMeta } = evaluateExpression(node.consequent, meta);
+      if (
+        t.isObjectExpression(pathNode) ||
+        // Check if string resembles CSS `property: value`
+        (t.isStringLiteral(pathNode) && pathNode.value.includes(':')) ||
+        isCompiledCSSTemplateLiteral(pathNode, meta) ||
+        isCompiledCSSCallExpression(pathNode, meta)
+      ) {
+        buildOutput = buildCss(pathNode, meta);
+        newCssItems =
+          // Only mark truthy(consequent) condition as conditional CSS.
+          // Falsey(alternate) will always be added to serve as default values
+          path === 'consequent'
+            ? getLogicalItemFromConditionalExpression(buildOutput.css, node, path)
+            : buildOutput.css;
+      } else if (t.isIdentifier(pathNode)) {
+        const { value: interpolation, meta: updatedMeta } = evaluateExpression(pathNode, meta);
 
-    if (isCompiledCSSTemplateLiteral(interpolation, updatedMeta)) {
-      const consequent = buildCss(interpolation, updatedMeta);
-      logicalItem = getLogicalItemFromConditionalExpression(consequent.css, node, 'consequent');
+        if (
+          isCompiledCSSTemplateLiteral(interpolation, updatedMeta) ||
+          isCompiledCSSCallExpression(interpolation, updatedMeta)
+        ) {
+          buildOutput = buildCss(interpolation, updatedMeta);
+          newCssItems = getLogicalItemFromConditionalExpression(buildOutput.css, node, path);
+        }
+      }
 
-      css.push(...logicalItem);
-      variables.push(...consequent.variables);
-    }
-  }
+      return {
+        css: [...acc.css, ...(newCssItems || [])],
+        variables: [...acc.variables, ...(buildOutput?.variables ?? [])],
+      };
+    },
+    { css: [], variables: [] }
+  );
 
-  if (t.isObjectExpression(node.alternate)) {
-    const alternate = extractObjectExpression(node.alternate, meta);
-
-    css.push(...alternate.css);
-    variables.push(...alternate.variables);
-  } else if (t.isIdentifier(node.alternate)) {
-    const { value: interpolation, meta: updatedMeta } = evaluateExpression(node.alternate, meta);
-    if (isCompiledCSSTemplateLiteral(interpolation, updatedMeta)) {
-      const alternate = buildCss(interpolation, updatedMeta);
-      logicalItem = getLogicalItemFromConditionalExpression(alternate.css, node, 'alternate');
-
-      css.push(...logicalItem);
-      variables.push(...alternate.variables);
-    }
-  }
-
-  return { css: mergeSubsequentUnconditionalCssItems(css), variables };
+  return { ...result, css: mergeSubsequentUnconditionalCssItems(result.css) };
 };
 
 /**
@@ -490,16 +494,13 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     ) {
       // We found something that looks like CSS.
       const result = buildCss(interpolation, updatedMeta);
-      css.push(...result.css);
-      variables.push(...result.variables);
 
-      if (!t.isArrowFunctionExpression(nodeExpression) && quasi.hasOwnProperty('value')) {
-        // To ensure that CSS is generated for declaration before a mixin
-        return acc + quasi.value.raw;
-      }
-
-      if (result.css.length > 0) {
-        return acc;
+      if (result.css.length) {
+        // Add previous accumulative CSS first before CSS from expressions
+        css.push({ type: 'unconditional', css: acc + quasi.value.raw }, ...result.css);
+        variables.push(...result.variables);
+        // Reset acc as we just added them
+        return '';
       }
     }
 
@@ -512,9 +513,12 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
         prefix: quasi.value.raw,
         suffix: '',
       });
-      css.push(...result.css);
+
+      // Add keyframes sheet
+      css.push(result.css[0]);
       variables.push(...result.variables);
-      return acc;
+      // result.css[1].css contains quasi.value.raw appended with animation variable name
+      return acc + result.css[1].css;
     }
 
     const { expression, variableName } = getVariableDeclaratorValueForOwnPath(nodeExpression, meta);

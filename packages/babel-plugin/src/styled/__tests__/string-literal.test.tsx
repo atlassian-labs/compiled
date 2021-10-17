@@ -730,4 +730,78 @@ describe('styled component string literal', () => {
 
     expect(actual).toInclude('{as:C="span",style,isLoading,loading,...props}');
   });
+
+  it('should place classes in given order when static styles precede expression', () => {
+    const actual = transform(`
+        import { styled, keyframes } from '@compiled/react';
+        import colors from 'colors';
+
+        const color = {color: colors.color}
+
+        const ListItem = styled.div\`
+          font-size: 20px;
+          border-radius: 3px;
+          \${color};
+        \`;
+      `);
+
+    expect(actual).toInclude('{ax(["_1wybgktf _2rko1l7b _syaz1qjj",props.className])}');
+  });
+
+  it('should place classes in given order when expression is followed by static styles', () => {
+    const actual = transform(`
+        import { styled, keyframes } from '@compiled/react';
+        import colors from 'colors';
+
+        const color = {color: colors.color}
+
+        const ListItem = styled.div\`
+          \${color};
+          font-size: 20px;
+          border-radius: 3px;
+        \`;
+      `);
+
+    expect(actual).toInclude('{ax(["_syaz1qjj _1wybgktf _2rko1l7b",props.className])}');
+  });
+
+  it('should place classes in given order when static styles precede keyframes expression', () => {
+    const actual = transform(`
+        import { styled, keyframes } from '@compiled/react';
+
+        const animation = keyframes\`
+          from {top: 0;}
+          to {top: 100px;}
+        \`;
+
+
+        const ListItem = styled.div\`
+          font-size: 20px;
+          border-radius: 3px;
+          animation: \${animation};
+        \`;
+      `);
+
+    expect(actual).toInclude('{ax(["_1wybgktf _2rko1l7b _y44v1nmh",props.className])}');
+  });
+
+  it('should place classes in given order when keyframes expression is followed by static styles', () => {
+    const actual = transform(`
+        import { styled, keyframes } from '@compiled/react';
+
+        const animation = keyframes\`
+          from {top: 0;}
+          to {top: 100px;}
+        \`;
+
+
+        const ListItem = styled.div\`
+          animation: \${animation};
+          font-size: 20px;
+          border-radius: 3px;
+        \`;
+      `);
+
+    expect(actual).toInclude('{ax(["_y44v1nmh _1wybgktf _2rko1l7b",props.className])}');
+  });
 });

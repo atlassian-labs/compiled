@@ -5,6 +5,10 @@ import type * as CSS from 'csstype';
  */
 export type BasicTemplateInterpolations = string | number;
 
+export interface FunctionIterpolation<TProps> {
+  (props: TProps): CSSProps | string | number | boolean | undefined;
+}
+
 /**
  * These are all the CSS props that will exist.
  */
