@@ -9,6 +9,9 @@ import * as CSS from 'csstype';
  * Typing for the interpolations.
  */
 export type BasicTemplateInterpolations = string | number;
+export interface FunctionIterpolation<TProps> {
+  (props: TProps): CSSProps | string | number | boolean | void;
+}
 /**
  * These are all the CSS props that will exist.
  */
