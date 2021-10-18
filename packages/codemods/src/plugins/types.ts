@@ -1,4 +1,12 @@
-import type { API, FileInfo, ImportDeclaration, Options, Program } from 'jscodeshift';
+import type {
+  API,
+  FileInfo,
+  ImportDeclaration,
+  JSXAttribute,
+  JSXSpreadAttribute,
+  Options,
+  Program,
+} from 'jscodeshift';
 
 // We want to ensure the config contract is correct so devs can get type safety
 type ValidateConfig<T, Struct> = T extends Struct
@@ -23,6 +31,14 @@ export type BuildImportContext<T> = ValidateConfig<
   }
 >;
 
+export type BuildRefAttrsContext<T> = ValidateConfig<
+  T,
+  {
+    originalNode: JSXAttribute;
+    currentNode: JSXAttribute;
+  }
+>;
+
 /**
  * Interface for codemods that handle migration from CSS-in-JS libraries to Compiled
  */
@@ -34,6 +50,9 @@ export interface Transform {
    * @returns {ImportDeclaration} The import to replace config.currentNode
    */
   buildImport?<T>(context: BuildImportContext<T>): ImportDeclaration;
+
+  // TODO
+  buildRefAttrs?<T>(context: BuildRefAttrsContext<T>): JSXAttribute;
 }
 
 export type ProgramVisitorContext<T> = ValidateConfig<

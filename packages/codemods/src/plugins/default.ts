@@ -4,6 +4,10 @@ const defaultCodemodPlugin: CodemodPlugin = {
   name: 'default-plugin',
   create: (_, { jscodeshift: j }) => ({
     transform: {
+      buildRefAttrs({ currentNode }) {
+        return j.jsxAttribute(j.jsxIdentifier('ref'), currentNode.value);
+      },
+
       buildImport({ compiledImportPath, currentNode, defaultSpecifierName, namedImport }) {
         const newImport = j.importDeclaration(
           [j.importSpecifier(j.identifier(namedImport), j.identifier(defaultSpecifierName))],
