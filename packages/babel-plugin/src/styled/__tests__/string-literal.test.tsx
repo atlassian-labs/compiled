@@ -733,75 +733,94 @@ describe('styled component string literal', () => {
 
   it('should place classes in given order when static styles precede expression', () => {
     const actual = transform(`
-        import { styled, keyframes } from '@compiled/react';
-        import colors from 'colors';
+      import { styled, keyframes } from '@compiled/react';
+      import colors from 'colors';
 
-        const color = {color: colors.color}
+      const color = { color: colors.color };
 
-        const ListItem = styled.div\`
-          font-size: 20px;
-          border-radius: 3px;
-          \${color};
-        \`;
-      `);
+      const ListItem = styled.div\`
+        font-size: 20px;
+        border-radius: 3px;
+        \${color};
+      \`;
+    `);
 
-    expect(actual).toInclude('{ax(["_1wybgktf _2rko1l7b _syaz1qjj",props.className])}');
+    expect(actual).toIncludeMultiple([
+      '._1wybgktf{font-size:20px}',
+      '._2rko1l7b{border-radius:3px}',
+      '._syaz1qjj{color:var(--_pvyxdf)}',
+      '{ax(["_1wybgktf _2rko1l7b _syaz1qjj",props.className])}',
+    ]);
   });
 
-  it('should place classes in given order when expression is followed by static styles', () => {
+  it('should place classes in given order when expression precedes static styles', () => {
     const actual = transform(`
-        import { styled, keyframes } from '@compiled/react';
-        import colors from 'colors';
+      import { styled, keyframes } from '@compiled/react';
+      import colors from 'colors';
 
-        const color = {color: colors.color}
+      const color = { color: colors.color };
 
-        const ListItem = styled.div\`
-          \${color};
-          font-size: 20px;
-          border-radius: 3px;
-        \`;
-      `);
+      const ListItem = styled.div\`
+        \${color};
+        font-size: 20px;
+        border-radius: 3px;
+      \`;
+    `);
 
-    expect(actual).toInclude('{ax(["_syaz1qjj _1wybgktf _2rko1l7b",props.className])}');
+    expect(actual).toIncludeMultiple([
+      '._syaz1qjj{color:var(--_pvyxdf)}',
+      '._1wybgktf{font-size:20px}',
+      '._2rko1l7b{border-radius:3px}',
+      '{ax(["_syaz1qjj _1wybgktf _2rko1l7b",props.className])}',
+    ]);
   });
 
   it('should place classes in given order when static styles precede keyframes expression', () => {
     const actual = transform(`
-        import { styled, keyframes } from '@compiled/react';
+      import { styled, keyframes } from '@compiled/react';
 
-        const animation = keyframes\`
-          from {top: 0;}
-          to {top: 100px;}
-        \`;
+      const animation = keyframes\`
+        from { top: 0; }
+        to { top: 100px; }
+      \`;
 
+      const ListItem = styled.div\`
+        font-size: 20px;
+        border-radius: 3px;
+        animation: \${animation};
+      \`;
+    `);
 
-        const ListItem = styled.div\`
-          font-size: 20px;
-          border-radius: 3px;
-          animation: \${animation};
-        \`;
-      `);
-
-    expect(actual).toInclude('{ax(["_1wybgktf _2rko1l7b _y44v1nmh",props.className])}');
+    expect(actual).toIncludeMultiple([
+      '._1wybgktf{font-size:20px}',
+      '._2rko1l7b{border-radius:3px}',
+      '._y44v1bcx{-webkit-animation:kfwl3rt;animation:kfwl3rt}',
+      '{ax(["_1wybgktf _2rko1l7b _y44v1bcx",props.className])}',
+    ]);
   });
 
-  it('should place classes in given order when keyframes expression is followed by static styles', () => {
+  it('should place classes in given order when keyframes expression precedes static styles', () => {
     const actual = transform(`
-        import { styled, keyframes } from '@compiled/react';
+      import { styled, keyframes } from '@compiled/react';
 
-        const animation = keyframes\`
-          from {top: 0;}
-          to {top: 100px;}
-        \`;
+      const animation = keyframes\`
+        from { top: 0; }
+        to { top: 100px; }
+      \`;
 
 
-        const ListItem = styled.div\`
-          animation: \${animation};
-          font-size: 20px;
-          border-radius: 3px;
-        \`;
-      `);
+      const ListItem = styled.div\`
+        animation: \${animation};
+        font-size: 20px;
+        border-radius: 3px;
+      \`;
+    `);
 
-    expect(actual).toInclude('{ax(["_y44v1nmh _1wybgktf _2rko1l7b",props.className])}');
+    expect(actual).toIncludeMultiple([
+      '._y44v1bcx{-webkit-animation:kfwl3rt;animation:kfwl3rt}',
+      '._1wybgktf{font-size:20px}',
+      '._2rko1l7b{border-radius:3px}',
+      '{ax(["_y44v1bcx _1wybgktf _2rko1l7b",props.className])}',
+    ]);
   });
 });

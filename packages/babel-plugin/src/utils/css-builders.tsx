@@ -238,48 +238,46 @@ const callbackIfFileIncluded = (meta: Metadata, next: Metadata) => {
  */
 const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metadata): CSSOutput => {
   const conditionalPaths: ['consequent', 'alternate'] = ['consequent', 'alternate'];
+  const css = [];
+  const variables = [];
 
-  const result = conditionalPaths.reduce<CSSOutput>(
-    (acc, path) => {
-      const pathNode = node[path];
-      let buildOutput;
-      let newCssItems;
+  for (const path of conditionalPaths) {
+    const pathNode = node[path];
+    let buildOutput;
+    let newCssItems;
+
+    if (
+      t.isObjectExpression(pathNode) ||
+      // Check if string resembles CSS `property: value`
+      (t.isStringLiteral(pathNode) && pathNode.value.includes(':')) ||
+      t.isTemplateLiteral(pathNode) ||
+      isCompiledCSSTemplateLiteral(pathNode, meta) ||
+      isCompiledCSSCallExpression(pathNode, meta)
+    ) {
+      buildOutput = buildCss(pathNode, meta);
+      newCssItems =
+        // Only mark truthy(consequent) condition as conditional CSS.
+        // Falsey(alternate) will always be added to serve as default values
+        path === 'consequent'
+          ? getLogicalItemFromConditionalExpression(buildOutput.css, node, path)
+          : buildOutput.css;
+    } else if (t.isIdentifier(pathNode)) {
+      const { value: interpolation, meta: updatedMeta } = evaluateExpression(pathNode, meta);
 
       if (
-        t.isObjectExpression(pathNode) ||
-        // Check if string resembles CSS `property: value`
-        (t.isStringLiteral(pathNode) && pathNode.value.includes(':')) ||
-        isCompiledCSSTemplateLiteral(pathNode, meta) ||
-        isCompiledCSSCallExpression(pathNode, meta)
+        isCompiledCSSTemplateLiteral(interpolation, updatedMeta) ||
+        isCompiledCSSCallExpression(interpolation, updatedMeta)
       ) {
-        buildOutput = buildCss(pathNode, meta);
-        newCssItems =
-          // Only mark truthy(consequent) condition as conditional CSS.
-          // Falsey(alternate) will always be added to serve as default values
-          path === 'consequent'
-            ? getLogicalItemFromConditionalExpression(buildOutput.css, node, path)
-            : buildOutput.css;
-      } else if (t.isIdentifier(pathNode)) {
-        const { value: interpolation, meta: updatedMeta } = evaluateExpression(pathNode, meta);
-
-        if (
-          isCompiledCSSTemplateLiteral(interpolation, updatedMeta) ||
-          isCompiledCSSCallExpression(interpolation, updatedMeta)
-        ) {
-          buildOutput = buildCss(interpolation, updatedMeta);
-          newCssItems = getLogicalItemFromConditionalExpression(buildOutput.css, node, path);
-        }
+        buildOutput = buildCss(interpolation, updatedMeta);
+        newCssItems = getLogicalItemFromConditionalExpression(buildOutput.css, node, path);
       }
+    }
 
-      return {
-        css: [...acc.css, ...(newCssItems || [])],
-        variables: [...acc.variables, ...(buildOutput?.variables ?? [])],
-      };
-    },
-    { css: [], variables: [] }
-  );
+    css.push(...(newCssItems || []));
+    variables.push(...(buildOutput?.variables ?? []));
+  }
 
-  return { ...result, css: mergeSubsequentUnconditionalCssItems(result.css) };
+  return { css: mergeSubsequentUnconditionalCssItems(css), variables };
 };
 
 /**
@@ -489,6 +487,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     if (
       t.isObjectExpression(interpolation) ||
       isCompiledCSSTemplateLiteral(interpolation, meta) ||
+      isCompiledCSSCallExpression(interpolation, meta) ||
       (t.isArrowFunctionExpression(nodeExpression) &&
         t.isConditionalExpression(nodeExpression.body))
     ) {
@@ -508,17 +507,18 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       isCompiledKeyframesCallExpression(interpolation, updatedMeta) ||
       isCompiledKeyframesTaggedTemplateExpression(interpolation, updatedMeta)
     ) {
-      const result = extractKeyframes(interpolation, {
+      const {
+        css: [keyframesSheet, unconditionalKeyframesItem],
+        variables: keyframeVariables,
+      } = extractKeyframes(interpolation, {
         ...updatedMeta,
         prefix: quasi.value.raw,
         suffix: '',
       });
 
-      // Add keyframes sheet
-      css.push(result.css[0]);
-      variables.push(...result.variables);
-      // result.css[1].css contains quasi.value.raw appended with animation variable name
-      return acc + result.css[1].css;
+      css.push(keyframesSheet);
+      variables.push(...keyframeVariables);
+      return acc + unconditionalKeyframesItem.css;
     }
 
     const { expression, variableName } = getVariableDeclaratorValueForOwnPath(nodeExpression, meta);

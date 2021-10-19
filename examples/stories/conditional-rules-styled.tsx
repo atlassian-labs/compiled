@@ -69,7 +69,7 @@ const ComplexMixin = styled.div<TextProps>`
 `;
 
 const KeyValueString = styled.div<TextProps>`
-  ${(props) => (props.isPrimary ? 'color: green' : 'color: red')};
+  ${(props) => (props.isPrimary ? 'color: green' : `color: red`)};
 `;
 
 export const PrimaryTextWithTemplateLiteral = (): JSX.Element => {

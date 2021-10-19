@@ -1,5 +1,5 @@
 import { createSetupError } from '../utils/error';
-import type { CSSProps, FunctionIterpolation } from '../types';
+import type { BasicTemplateInterpolations, CSSProps, FunctionIterpolation } from '../types';
 
 /**
  * Create styles that can be re-used between components with a template literal.
@@ -16,7 +16,7 @@ import type { CSSProps, FunctionIterpolation } from '../types';
  */
 export default function css<T = void>(
   _css: TemplateStringsArray,
-  ..._values: (string | number | FunctionIterpolation<T>)[]
+  ..._values: (BasicTemplateInterpolations | FunctionIterpolation<T>)[]
 ): CSSProps;
 
 /**
@@ -35,7 +35,7 @@ export default function css(_css: CSSProps): CSSProps;
 
 export default function css<T = void>(
   _css: TemplateStringsArray | CSSProps,
-  ..._values: (string | number | FunctionIterpolation<T>)[]
+  ..._values: (BasicTemplateInterpolations | FunctionIterpolation<T>)[]
 ): CSSProps {
   throw createSetupError();
 }

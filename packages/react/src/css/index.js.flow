@@ -4,7 +4,7 @@
  * Flowgen v1.14.1
  * @flow
  */
-import type { CSSProps, FunctionIterpolation } from '../types';
+import type { BasicTemplateInterpolations, CSSProps, FunctionIterpolation } from '../types';
 /**
  * Create styles that can be re-used between components with a template literal.
  *
@@ -19,7 +19,7 @@ import type { CSSProps, FunctionIterpolation } from '../types';
  */
 declare export default function css<T>(
   _css: $ReadOnlyArray<string>,
-  ..._values: (string | number | FunctionIterpolation<T>)[]
+  ..._values: (BasicTemplateInterpolations | FunctionIterpolation<T>)[]
 ): CSSProps;
 /**
  * Create styles that can be re-used between components with an object
