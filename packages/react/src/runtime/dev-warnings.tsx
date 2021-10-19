@@ -1,7 +1,7 @@
 const selectorsToWarn = [':first-child', ':nth-child'];
 const hasWarned: Record<string, true> = {};
 
-export const warn = (str: string, ...args: any[]): void =>
+const warn = (str: string, ...args: any[]): void =>
   console.error(
     `
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
