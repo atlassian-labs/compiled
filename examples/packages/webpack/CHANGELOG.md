@@ -1,4 +1,4 @@
-# @private/webpack
+# @compiled/webpack-app
 
 ## 1.0.5
 

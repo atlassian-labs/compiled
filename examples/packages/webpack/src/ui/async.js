@@ -1,6 +1,6 @@
 import { styled } from '@compiled/react';
 
-const LoadedAsync = styled.button`
+const Async = styled.button`
   font-weight: 700;
   color: purple;
   border: 2px solid pink;
@@ -19,4 +19,4 @@ const LoadedAsync = styled.button`
   }
 `;
 
-export default LoadedAsync;
+export default Async;
