@@ -9,7 +9,7 @@ import * as CSS from 'csstype';
  * Typing for the interpolations.
  */
 export type BasicTemplateInterpolations = string | number;
-export interface FunctionIterpolation<TProps> {
+export interface FunctionInterpolation<TProps> {
   (props: TProps): CSSProps | BasicTemplateInterpolations | boolean | void;
 }
 /**

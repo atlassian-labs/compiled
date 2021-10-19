@@ -5,7 +5,7 @@ import type * as CSS from 'csstype';
  */
 export type BasicTemplateInterpolations = string | number;
 
-export interface FunctionIterpolation<TProps> {
+export interface FunctionInterpolation<TProps> {
   (props: TProps): CSSProps | BasicTemplateInterpolations | boolean | undefined;
 }
 

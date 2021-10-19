@@ -1,12 +1,12 @@
 import type { ComponentType } from 'react';
 import { createSetupError } from '../utils/error';
 import type { BasicTemplateInterpolations, CssFunction } from '../types';
-import type { FunctionIterpolation } from '../types';
+import type { FunctionInterpolation } from '../types';
 
 /**
  * Typing for the CSS object.
  */
-export type CssObject<TProps> = CssFunction<FunctionIterpolation<TProps>>;
+export type CssObject<TProps> = CssFunction<FunctionInterpolation<TProps>>;
 
 /**
  * Extra props added to the output Styled Component.
@@ -17,7 +17,7 @@ export interface StyledProps {
 
 export type Interpolations<TProps extends unknown> = (
   | BasicTemplateInterpolations
-  | FunctionIterpolation<TProps>
+  | FunctionInterpolation<TProps>
   | CssObject<TProps>
   | CssObject<TProps>[]
 )[];
