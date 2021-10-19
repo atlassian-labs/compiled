@@ -1,12 +1,4 @@
-import type {
-  API,
-  FileInfo,
-  ImportDeclaration,
-  JSXAttribute,
-  JSXSpreadAttribute,
-  Options,
-  Program,
-} from 'jscodeshift';
+import type { API, FileInfo, ImportDeclaration, JSXAttribute, Options, Program } from 'jscodeshift';
 
 // We want to ensure the config contract is correct so devs can get type safety
 type ValidateConfig<T, Struct> = T extends Struct
@@ -34,7 +26,9 @@ export type BuildImportContext<T> = ValidateConfig<
 export type BuildRefAttrsContext<T> = ValidateConfig<
   T,
   {
+    // The original attribute node in the source code
     originalNode: JSXAttribute;
+    // The existing attribute node that will be replaced
     currentNode: JSXAttribute;
   }
 >;
@@ -51,7 +45,12 @@ export interface Transform {
    */
   buildImport?<T>(context: BuildImportContext<T>): ImportDeclaration;
 
-  // TODO
+  /**
+   * Build the compiled ref attribute replacing innerRef attributes
+   *
+   * @param context {BuildRefAttrsContext} The context applied to the build attributes
+   * @returns {JSXAttribute} The attribute to replace config.currentNode
+   */
   buildRefAttrs?<T>(context: BuildRefAttrsContext<T>): JSXAttribute;
 }
 

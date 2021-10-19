@@ -1,11 +1,8 @@
-import type { JSCodeshift, Collection, FileInfo, API, Options, JSXAttribute } from 'jscodeshift';
+import type { FileInfo, API, Options, JSXAttribute } from 'jscodeshift';
 
 import { withPlugin } from '../../codemods-helpers';
 import type { CodemodPluginInstance } from '../../plugins/types';
 import defaultCodemodPlugin from '../../plugins/default';
-
-const getInnerRefProp = (j: JSCodeshift, collection: Collection<any>) =>
-  collection.find(j.JSXAttribute);
 
 const applyInnerRefPlugin = (plugins: Array<CodemodPluginInstance>, originalNode: JSXAttribute) =>
   plugins.reduce((currentNode, plugin) => {
@@ -26,12 +23,16 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
     ...options.normalizedPlugins,
   ].map((plugin) => plugin.create(fileInfo, api, options));
 
-  const innerRefProp = getInnerRefProp(j, collection);
-  const newRefAttr = applyInnerRefPlugin(plugins, innerRefProp.get());
+  collection
+    .find(j.JSXAttribute)
+    .filter(({ value }) => value.name.name === 'innerRef')
+    .forEach((innerRefProp) => {
+      const newRefAttr = applyInnerRefPlugin(plugins, innerRefProp.value);
 
-  innerRefProp.replaceWith(newRefAttr);
+      j(innerRefProp).replaceWith(newRefAttr);
+    });
 
-  return collection.toSource();
+  return collection.toSource(options.printOptions || { quote: 'single' });
 };
 
 export default withPlugin(transformer);
