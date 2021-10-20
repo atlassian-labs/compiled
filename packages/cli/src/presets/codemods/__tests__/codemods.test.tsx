@@ -144,7 +144,7 @@ describe('main', () => {
     expectCodemodToHaveBeenRan('emotion-to-compiled', path);
   });
 
-  it('should run styled codemod with default options', async () => {
+  it('should run styled inner ref to ref codemod with default options', async () => {
     const path = 'src/components/Button.tsx';
     setupCliRunner({ choice: 1, runPath: path });
 

@@ -23,7 +23,7 @@ export type BuildImportContext<T> = ValidateConfig<
   }
 >;
 
-export type BuildRefAttrsContext<T> = ValidateConfig<
+export type BuildRefAttributesContext<T> = ValidateConfig<
   T,
   {
     // The original attribute node in the source code
@@ -48,10 +48,10 @@ export interface Transform {
   /**
    * Build the compiled ref attribute replacing innerRef attributes
    *
-   * @param context {BuildRefAttrsContext} The context applied to the build attributes
+   * @param context {BuildRefAttributesContext} The context applied to the build ref attribute
    * @returns {JSXAttribute} The attribute to replace config.currentNode
    */
-  buildRefAttrs?<T>(context: BuildRefAttrsContext<T>): JSXAttribute;
+  buildRefAttribute?<T>(context: BuildRefAttributesContext<T>): JSXAttribute;
 }
 
 export type ProgramVisitorContext<T> = ValidateConfig<
