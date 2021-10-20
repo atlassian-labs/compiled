@@ -1,5 +1,7 @@
 import { transformFromAstAsync, parseAsync } from '@babel/core';
 import { toBoolean, createError } from '@compiled/utils';
+import { CachedInputFileSystem, ResolverFactory } from 'enhanced-resolve';
+import fs from 'fs';
 import { getOptions } from 'loader-utils';
 import { dirname, normalize } from 'path';
 import type { LoaderContext } from 'webpack';
@@ -87,8 +89,12 @@ export default async function compiledLoader(
     });
 
     // Setup the default resolver, where webpack will merge any passed in options with the default
-    // resolve configuration
-    const resolver = this.getResolve({
+    // resolve configuration. Ideally, we use this.getResolve({ ...resolve, useSyncFileSystemCalls: true, })
+    // However, it does not work correctly when in development mode :/
+    const resolver = ResolverFactory.createResolver({
+      // @ts-expect-error
+      fileSystem: new CachedInputFileSystem(fs, 4000),
+      ...(this._compilation?.options.resolve ?? {}),
       ...resolve,
       // This makes the resolver invoke the callback synchronously
       useSyncFileSystemCalls: true,
@@ -113,23 +119,7 @@ export default async function compiledLoader(
             resolver: {
               // The resolver needs to be synchronous, as babel plugins must be synchronous
               resolveSync: (context: string, request: string) => {
-                let resolvedErr;
-                let resolvedPath;
-
-                resolver(dirname(context), request, (err, path) => {
-                  resolvedErr = err;
-                  resolvedPath = path;
-                });
-
-                if ((!resolvedPath && !resolvedErr) || !resolvedPath) {
-                  throw new Error(`Failed to resolve ${request} in ${context}`);
-                }
-
-                if (resolvedErr) {
-                  throw resolvedErr;
-                }
-
-                return resolvedPath;
+                return resolver.resolveSync({}, dirname(context), request);
               },
             },
           },

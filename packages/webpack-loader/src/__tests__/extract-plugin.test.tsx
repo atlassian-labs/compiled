@@ -6,10 +6,11 @@ describe('CompiledExtractPlugin', () => {
   const assetName = 'static/compiled-css.css';
   const fixturesPath = join(__dirname, '..', '__fixtures__');
 
-  const bundle = (entry: string, options: BundleOptions = {}) =>
+  const bundle = (entry: string, options: Omit<BundleOptions, 'mode'> = {}) =>
     bundleEntry(entry, {
       ...options,
       extract: true,
+      mode: 'production',
     });
 
   it('throws when the plugin is not configured', async () => {
