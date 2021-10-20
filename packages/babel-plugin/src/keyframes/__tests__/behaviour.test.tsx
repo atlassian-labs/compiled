@@ -1,6 +1,6 @@
 import { transform } from '../../__tests__/test-utils';
 
-describe('Keyframes behaviour', () => {
+describe('Keyframes', () => {
   it('places classes in given order when static styles precede keyframes expression', () => {
     const actual = transform(`
       import { styled, keyframes } from '@compiled/react';
@@ -33,7 +33,6 @@ describe('Keyframes behaviour', () => {
         from: { top: 0 },
         to: { top: '100px' },
       });
-
 
       const ListItem = styled.div\`
         animation: \${animation};

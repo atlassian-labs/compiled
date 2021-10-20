@@ -1,7 +1,6 @@
 import type { ComponentType } from 'react';
 import { createSetupError } from '../utils/error';
-import type { BasicTemplateInterpolations, CssFunction } from '../types';
-import type { FunctionInterpolation } from '../types';
+import type { BasicTemplateInterpolations, CssFunction, FunctionInterpolation } from '../types';
 
 /**
  * Typing for the CSS object.
