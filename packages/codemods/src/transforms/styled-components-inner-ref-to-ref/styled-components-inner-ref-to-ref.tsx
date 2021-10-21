@@ -1,4 +1,11 @@
-import type { Program, FileInfo, API, Options, JSXAttribute } from 'jscodeshift';
+import type {
+  Program,
+  FileInfo,
+  API,
+  Options,
+  JSXAttribute,
+  JSXSpreadAttribute,
+} from 'jscodeshift';
 
 import { withPlugin, applyVisitor } from '../../codemods-helpers';
 import type { CodemodPluginInstance } from '../../plugins/types';
@@ -12,7 +19,7 @@ const applyInnerRefPlugin = (plugins: Array<CodemodPluginInstance>, originalNode
     }
 
     return buildRefAttributeImpl({ originalNode, currentNode });
-  }, originalNode);
+  }, originalNode as JSXAttribute | JSXSpreadAttribute);
 
 const transformer = (fileInfo: FileInfo, api: API, options: Options): string => {
   const { source } = fileInfo;

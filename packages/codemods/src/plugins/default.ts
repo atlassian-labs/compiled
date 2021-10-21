@@ -1,3 +1,4 @@
+import type { JSXAttribute } from 'jscodeshift';
 import type { CodemodPlugin } from './types';
 
 const defaultCodemodPlugin: CodemodPlugin = {
@@ -17,7 +18,7 @@ const defaultCodemodPlugin: CodemodPlugin = {
       },
 
       buildRefAttribute({ currentNode }) {
-        return j.jsxAttribute(j.jsxIdentifier('ref'), currentNode.value);
+        return j.jsxAttribute(j.jsxIdentifier('ref'), (currentNode as JSXAttribute).value);
       },
     },
   }),
