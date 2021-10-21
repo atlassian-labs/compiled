@@ -1,0 +1,5 @@
+---
+'@compiled/codemods': minor
+---
+
+Keep named imports from Styled Components that are known to be compatible with Compiled when using the styled-components-to-compiled codemod. Currently this only includes the `css` named import.

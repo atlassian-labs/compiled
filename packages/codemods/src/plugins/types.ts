@@ -1,4 +1,11 @@
-import type { API, FileInfo, ImportDeclaration, Options, Program } from 'jscodeshift';
+import type {
+  API,
+  FileInfo,
+  ImportDeclaration,
+  ImportSpecifier,
+  Options,
+  Program,
+} from 'jscodeshift';
 
 // We want to ensure the config contract is correct so devs can get type safety
 type ValidateConfig<T, Struct> = T extends Struct
@@ -14,10 +21,8 @@ export type BuildImportContext<T> = ValidateConfig<
     originalNode: ImportDeclaration;
     // The existing import node that will be replaced
     currentNode: ImportDeclaration;
-    // The import name
-    defaultSpecifierName: string;
-    // The export from Compiled to be imported
-    namedImport: string;
+    // The specifiers to include in the new import declaration
+    specifiers: ImportSpecifier[];
     // The import path for Compiled
     compiledImportPath: string;
   }

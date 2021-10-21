@@ -4,11 +4,8 @@ const defaultCodemodPlugin: CodemodPlugin = {
   name: 'default-plugin',
   create: (_, { jscodeshift: j }) => ({
     transform: {
-      buildImport({ compiledImportPath, currentNode, defaultSpecifierName, namedImport }) {
-        const newImport = j.importDeclaration(
-          [j.importSpecifier(j.identifier(namedImport), j.identifier(defaultSpecifierName))],
-          j.literal(compiledImportPath)
-        );
+      buildImport({ compiledImportPath, currentNode, specifiers }) {
+        const newImport = j.importDeclaration(specifiers, j.literal(compiledImportPath));
 
         // Copy the comments from the previous import to the new one
         newImport.comments = currentNode.comments;
