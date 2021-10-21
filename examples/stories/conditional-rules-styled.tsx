@@ -47,6 +47,31 @@ const TextWithMixins = styled.span<TextProps>`
   padding: 10px;
 `;
 
+const InlineMixin = styled.div<TextProps>`
+  ${(props) =>
+    props.isPrimary
+      ? css`
+          color: green;
+        `
+      : css({
+          color: 'red',
+        })}
+`;
+
+const ComplexMixin = styled.div<TextProps>`
+  ${(props) =>
+    props.isPrimary
+      ? css<TextProps>`
+          color: green;
+          font-weight: ${({ isBolded }) => (isBolded ? 'bold' : undefined)};
+        `
+      : 'color: red'};
+`;
+
+const KeyValueString = styled.div<TextProps>`
+  ${(props) => (props.isPrimary ? 'color: green' : `color: red`)};
+`;
+
 export const PrimaryTextWithTemplateLiteral = (): JSX.Element => {
   return <TextWithTemplateLiteral isPrimary>Hello primary</TextWithTemplateLiteral>;
 };
@@ -118,9 +143,35 @@ export const NotPrimaryTextWithTernaryAndBooleanObjectStyle = (): JSX.Element =>
 };
 
 export const PrimaryTextWithMixins = (): JSX.Element => {
-  return <TextWithMixins isPrimary> Hello primary</TextWithMixins>;
+  return <TextWithMixins isPrimary>Hello primary</TextWithMixins>;
 };
 
 export const SecondaryTextWithMixins = (): JSX.Element => {
-  return <TextWithMixins> Hello secondary</TextWithMixins>;
+  return <TextWithMixins>Hello secondary</TextWithMixins>;
 };
+
+export const TextWithInlineMixin = (): JSX.Element => (
+  <div>
+    <InlineMixin isPrimary>Using css``</InlineMixin>
+    <InlineMixin isPrimary={false}>Using css()</InlineMixin>
+  </div>
+);
+
+export const TextWithComplexMixin = (): JSX.Element => (
+  <div>
+    <ComplexMixin isPrimary isBolded>
+      Primary text using mixin with bold condition
+    </ComplexMixin>
+    <ComplexMixin isPrimary isBolded={false}>
+      Primary text using mixin without bold condition
+    </ComplexMixin>
+    <ComplexMixin isPrimary={false}>Secondary text</ComplexMixin>
+  </div>
+);
+
+export const TextWithKeyValueString = (): JSX.Element => (
+  <div>
+    <KeyValueString isPrimary>color: green</KeyValueString>
+    <KeyValueString isPrimary={false}>color: red</KeyValueString>
+  </div>
+);
