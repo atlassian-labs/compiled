@@ -16,12 +16,6 @@ const imports = {
   styledComponentsPackageName: 'styled-components',
 };
 
-// const supportedCompiledImports = [
-//   imports.compiledStyledImportName,
-//   ...imports.styledComponentsSupportedImportNames,
-// ];
-// const isSupportedCompiledImport = (name?: string) => Boolean(name && supportedCompiledImports.includes(name));
-
 const transformer = (fileInfo: FileInfo, api: API, options: Options): string => {
   const { source } = fileInfo;
   const { jscodeshift: j } = api;
