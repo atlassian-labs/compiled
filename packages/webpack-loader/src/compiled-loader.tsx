@@ -1,49 +1,62 @@
-import path from 'path';
 import { transformFromAstAsync, parseAsync } from '@babel/core';
-import { getOptions } from 'loader-utils';
 import { toBoolean, createError } from '@compiled/utils';
-import type { CompiledLoaderOptions, LoaderThis } from './types';
+import { CachedInputFileSystem, ResolverFactory } from 'enhanced-resolve';
+import fs from 'fs';
+import { getOptions } from 'loader-utils';
+import { dirname, normalize } from 'path';
+import type { LoaderContext } from 'webpack';
+
 import { pluginName } from './extract-plugin';
-import { toURIComponent } from './utils/webpack';
+import type { CompiledLoaderOptions } from './types';
+import { toURIComponent } from './utils';
 
 let hasErrored = false;
 
 /**
  * Returns user configuration.
  *
- * @param loader
+ * @param context
  * @returns
  */
-function getLoaderOptions(context: LoaderThis<CompiledLoaderOptions>) {
+function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
   const {
     bake = true,
     extract = false,
     importReact = undefined,
     nonce = undefined,
-  }: CompiledLoaderOptions =
-    typeof context.getOptions === 'undefined'
-      ? // Webpack v4 flow
-        getOptions(context)
-      : // Webpack v5 flow
-        context.getOptions({
-          type: 'object',
-          properties: {
-            importReact: {
-              type: 'boolean',
-            },
-            nonce: {
-              type: 'string',
-            },
-            extract: {
-              type: 'boolean',
-            },
-            bake: {
-              type: 'boolean',
-            },
+    resolve = {},
+  }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
+    ? // Webpack v4 flow
+      getOptions(context)
+    : // Webpack v5 flow
+      context.getOptions({
+        type: 'object',
+        properties: {
+          bake: {
+            type: 'boolean',
           },
-        });
+          extract: {
+            type: 'boolean',
+          },
+          importReact: {
+            type: 'boolean',
+          },
+          nonce: {
+            type: 'string',
+          },
+          resolve: {
+            type: 'object',
+          },
+        },
+      });
 
-  return { bake, extract, importReact, nonce };
+  return {
+    bake,
+    extract,
+    importReact,
+    nonce,
+    resolve,
+  };
 }
 
 /**
@@ -53,7 +66,7 @@ function getLoaderOptions(context: LoaderThis<CompiledLoaderOptions>) {
  * @param code
  */
 export default async function compiledLoader(
-  this: LoaderThis<CompiledLoaderOptions>,
+  this: LoaderContext<CompiledLoaderOptions>,
   code: string
 ): Promise<void> {
   const callback = this.async();
@@ -66,13 +79,25 @@ export default async function compiledLoader(
   try {
     const includedFiles: string[] = [];
     const foundCSSRules: string[] = [];
-    const options = getLoaderOptions(this);
+    const { resolve, ...options } = getLoaderOptions(this);
 
     // Transform to an AST using the local babel config.
     const ast = await parseAsync(code, {
       filename: this.resourcePath,
       caller: { name: 'compiled' },
       rootMode: 'upward-optional',
+    });
+
+    // Setup the default resolver, where webpack will merge any passed in options with the default
+    // resolve configuration. Ideally, we use this.getResolve({ ...resolve, useSyncFileSystemCalls: true, })
+    // However, it does not work correctly when in development mode :/
+    const resolver = ResolverFactory.createResolver({
+      // @ts-expect-error
+      fileSystem: new CachedInputFileSystem(fs, 4000),
+      ...(this._compilation?.options.resolve ?? {}),
+      ...resolve,
+      // This makes the resolver invoke the callback synchronously
+      useSyncFileSystemCalls: true,
     });
 
     // Transform using the Compiled Babel Plugin - we deliberately turn off using the local config.
@@ -88,13 +113,22 @@ export default async function compiledLoader(
         ],
         options.bake && [
           '@compiled/babel-plugin',
-          { ...options, onIncludedFiles: (files: string[]) => includedFiles.push(...files) },
+          {
+            ...options,
+            onIncludedFiles: (files: string[]) => includedFiles.push(...files),
+            resolver: {
+              // The resolver needs to be synchronous, as babel plugins must be synchronous
+              resolveSync: (context: string, request: string) => {
+                return resolver.resolveSync({}, dirname(context), request);
+              },
+            },
+          },
         ],
       ].filter(toBoolean),
     });
 
     includedFiles.forEach((file) => {
-      this.addDependency(path.normalize(file));
+      this.addDependency(normalize(file));
     });
 
     let output: string = result?.code || '';
@@ -122,9 +156,10 @@ export default async function compiledLoader(
   }
 }
 
-export function pitch(this: LoaderThis<CompiledLoaderOptions>): void {
+export function pitch(this: LoaderContext<CompiledLoaderOptions>): void {
   const options = getLoaderOptions(this);
 
+  // @ts-expect-error No definitions for this[pluginName]
   if (!hasErrored && options.extract && !this[pluginName]) {
     this.emitError(
       createError('webpack-loader')(

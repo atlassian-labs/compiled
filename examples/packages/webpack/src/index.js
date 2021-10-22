@@ -1,6 +1,9 @@
+import { StrictMode } from 'react';
 import { render } from 'react-dom';
-import './extra.css';
-import App from './app';
+
+import { App } from './app';
+
+import './styles.css';
 
 function createRoot() {
   const element = document.createElement('div');
@@ -9,8 +12,12 @@ function createRoot() {
   return element;
 }
 
-const element = document.getElementById('root') || createRoot();
-render(<App />, element);
+render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+  document.getElementById('root') || createRoot()
+);
 
 if (module.hot) {
   module.hot.accept();

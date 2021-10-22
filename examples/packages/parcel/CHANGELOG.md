@@ -1,4 +1,4 @@
-# @private/parcel
+# @compiled/parcel-app
 
 ## 1.0.5
 

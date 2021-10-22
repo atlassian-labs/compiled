@@ -1,5 +1,6 @@
-import type { RuleSetCondition } from 'webpack';
-import type { pluginName } from './extract-plugin';
+import type { ResolveOptions, RuleSetCondition } from 'webpack';
+
+export type { ResolveOptions };
 
 export interface CompiledLoaderOptions {
   /**
@@ -25,67 +26,11 @@ export interface CompiledLoaderOptions {
    * read [Security](https://compiledcssinjs.com/docs/security) for more information.
    */
   nonce?: string;
-}
-
-export interface LoaderThis<TOptions = unknown> {
-  /**
-   * Query param passed to the loader.
-   *
-   * ```
-   * import '!loader-module?query=params';
-   * ```
-   */
-  resourceQuery: string;
 
   /**
-   * Absolute path of this file.
+   * Override the default `resolve` passed into webpack, which is used to statically evaluate import declarations
    */
-  resourcePath: string;
-
-  /**
-   * Returns the passed in options from a user.
-   * Optionally validated with a `schema` object.
-   */
-  getOptions?: (schema?: {
-    type: string;
-    properties: Required<
-      { [P in keyof TOptions]: { type: string } | { anyOf: Array<{ type: string }> } }
-    >;
-  }) => TOptions;
-
-  /**
-   * Notifies webpack that this loader run included another file.
-   * When the other file changes this file will be recompiled.
-   */
-  addDependency(path: string): void;
-
-  /**
-   * Marks the loader async.
-   * Call the return value when the loader has completed.
-   */
-  async(): (err: any, result?: string, map?: any) => void;
-
-  /**
-   * Internal access to the current webpack compiler.
-   */
-  _compiler: any;
-
-  /**
-   * Internal access to the loaders for this run.
-   */
-  loaders: any[];
-
-  /**
-   * Emits an error during the loader run.
-   *
-   * @param error
-   */
-  emitError(error: Error): void;
-
-  /**
-   * When set confirms that the extract plugin has been configured.
-   */
-  [pluginName]?: true;
+  resolve?: ResolveOptions;
 }
 
 export interface CompiledExtractPluginOptions {
