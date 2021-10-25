@@ -3,7 +3,7 @@ import type { NodePath } from '@babel/traverse';
 import traverse from '@babel/traverse';
 import { parse } from '@babel/parser';
 import fs from 'fs';
-import path from 'path';
+import { dirname, join } from 'path';
 import resolve from 'resolve';
 import type { Metadata } from '../types';
 import type { PartialBindingWithMeta } from './types';
@@ -536,6 +536,24 @@ const getDestructuredObjectPatternKey = (node: t.ObjectPattern, referenceName: s
   return result;
 };
 
+const resolveRequest = (request: string, meta: Metadata) => {
+  const { filename, opts } = meta.state;
+  const { resolver } = opts;
+  if (!filename) {
+    throw new Error('Unable to resolve request due to a missing filename, this is probably a bug!');
+  }
+
+  if (!resolver) {
+    const id = request.charAt(0) === '.' ? join(dirname(filename), request) : request;
+
+    return resolve.sync(id, {
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    });
+  }
+
+  return resolver.resolveSync(filename, request);
+};
+
 /**
  * Will return the `node` of the a binding.
  * This function will follow import specifiers to return the actual `node`.
@@ -589,14 +607,8 @@ export const resolveBindingNode = (
       return;
     }
 
-    const moduleImportName = binding.path.parentPath.node.source.value;
-    const isRelative = moduleImportName.charAt(0) === '.';
-    const filename = isRelative
-      ? path.join(path.dirname(meta.state.filename), moduleImportName)
-      : moduleImportName;
-    const modulePath = resolve.sync(filename, {
-      extensions: ['.js', '.jsx', '.ts', '.tsx'],
-    });
+    const moduleImportSource = binding.path.parentPath.node.source.value;
+    const modulePath = resolveRequest(moduleImportSource, meta);
     const moduleCode = meta.state.cache.load({
       namespace: 'read-file',
       cacheKey: modulePath,
@@ -644,7 +656,7 @@ export const resolveBindingNode = (
         state: {
           ...meta.state,
           file: ast,
-          filename,
+          filename: modulePath,
         },
       },
     };

@@ -1,5 +1,5 @@
 {
-  "name": "@private/parcel",
+  "name": "@compiled/parcel-app",
   "version": "1.0.5",
   "private": true,
   "scripts": {
@@ -18,5 +18,8 @@
     "@parcel/optimizer-htmlnano": "^2.0.0-nightly.657",
     "@parcel/packager-html": "^2.0.0-nightly.657",
     "parcel": "^2.0.0-nightly.655"
+  },
+  "alias": {
+    "parcel-alias": "./lib/parcel-alias.tsx"
   }
 }

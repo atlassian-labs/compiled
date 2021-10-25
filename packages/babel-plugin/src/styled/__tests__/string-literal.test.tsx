@@ -730,4 +730,48 @@ describe('styled component string literal', () => {
 
     expect(actual).toInclude('{as:C="span",style,isLoading,loading,...props}');
   });
+
+  it('should place classes in given order when static styles precede expression', () => {
+    const actual = transform(`
+      import { styled, keyframes } from '@compiled/react';
+      import colors from 'colors';
+
+      const color = { color: colors.color };
+
+      const ListItem = styled.div\`
+        font-size: 20px;
+        border-radius: 3px;
+        \${color};
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._1wybgktf{font-size:20px}',
+      '._2rko1l7b{border-radius:3px}',
+      '._syaz1qjj{color:var(--_pvyxdf)}',
+      '{ax(["_1wybgktf _2rko1l7b _syaz1qjj",props.className])}',
+    ]);
+  });
+
+  it('should place classes in given order when expression precedes static styles', () => {
+    const actual = transform(`
+      import { styled, keyframes } from '@compiled/react';
+      import colors from 'colors';
+
+      const color = { color: colors.color };
+
+      const ListItem = styled.div\`
+        \${color};
+        font-size: 20px;
+        border-radius: 3px;
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syaz1qjj{color:var(--_pvyxdf)}',
+      '._1wybgktf{font-size:20px}',
+      '._2rko1l7b{border-radius:3px}',
+      '{ax(["_syaz1qjj _1wybgktf _2rko1l7b",props.className])}',
+    ]);
+  });
 });

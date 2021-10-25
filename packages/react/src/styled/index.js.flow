@@ -5,14 +5,11 @@
  * @flow
  */
 import type { ComponentType } from 'react';
-import type { BasicTemplateInterpolations, CssFunction, CSSProps } from '../types';
-export interface FunctionIterpolation<TProps> {
-  (props: TProps): CSSProps | string | number | boolean | void;
-}
+import type { BasicTemplateInterpolations, CssFunction, FunctionInterpolation } from '../types';
 /**
  * Typing for the CSS object.
  */
-export type CssObject<TProps> = CssFunction<FunctionIterpolation<TProps>>;
+export type CssObject<TProps> = CssFunction<FunctionInterpolation<TProps>>;
 /**
  * Extra props added to the output Styled Component.
  */
@@ -21,7 +18,7 @@ export type StyledProps = {
 };
 export type Interpolations<TProps: mixed> = (
   | BasicTemplateInterpolations
-  | FunctionIterpolation<TProps>
+  | FunctionInterpolation<TProps>
   | CssObject<TProps>
   | CssObject<TProps>[]
 )[];

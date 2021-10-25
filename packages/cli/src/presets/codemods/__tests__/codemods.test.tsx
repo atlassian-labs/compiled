@@ -78,7 +78,11 @@ describe('main', () => {
       expect.objectContaining({
         message: 'Select which codemod would you like to run? 🤔',
         limit: 18,
-        choices: ['emotion-to-compiled', 'styled-components-to-compiled'],
+        choices: [
+          'emotion-to-compiled',
+          'styled-components-inner-ref-to-ref',
+          'styled-components-to-compiled',
+        ],
       })
     );
   });
@@ -140,9 +144,18 @@ describe('main', () => {
     expectCodemodToHaveBeenRan('emotion-to-compiled', path);
   });
 
-  it('should run styled codemod with default options', async () => {
+  it('should run styled inner ref to ref codemod with default options', async () => {
     const path = 'src/components/Button.tsx';
     setupCliRunner({ choice: 1, runPath: path });
+
+    await codemods();
+
+    expectCodemodToHaveBeenRan('styled-components-inner-ref-to-ref', path);
+  });
+
+  it('should run styled codemod with default options', async () => {
+    const path = 'src/components/Button.tsx';
+    setupCliRunner({ choice: 2, runPath: path });
 
     await codemods();
 

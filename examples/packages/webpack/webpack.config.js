@@ -1,35 +1,39 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const webpack = require('webpack');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CompiledExtractPlugin } = require('@compiled/webpack-loader');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { join } = require('path');
+const webpack = require('webpack');
 
 const extractCSS = process.env.EXTRACT_TO_CSS === 'true';
 
 module.exports = {
-  mode: 'development',
   entry: './src/index.js',
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
-  },
-  resolve: {
-    extensions: ['.ts', '.tsx', '.json', '.js'],
-  },
+  mode: 'development',
   module: {
     rules: [
       {
-        test: /\.(js|ts|tsx)$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         use: [
-          { loader: 'babel-loader' },
+          {
+            loader: 'babel-loader',
+            options: {
+              babelrc: false,
+              configFile: false,
+              presets: [
+                '@babel/preset-env',
+                '@babel/preset-typescript',
+                ['@babel/preset-react', { runtime: 'automatic' }],
+              ],
+            },
+          },
           {
             loader: '@compiled/webpack-loader',
             options: {
-              importReact: false,
               extract: extractCSS,
+              importReact: false,
             },
           },
         ],
@@ -40,13 +44,22 @@ module.exports = {
       },
     ].filter(Boolean),
   },
-  plugins: [
-    extractCSS && new MiniCssExtractPlugin({ filename: '[name].css' }),
-    extractCSS && new CompiledExtractPlugin(),
-    new HtmlWebpackPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
-  ].filter(Boolean),
   optimization: {
     minimizer: ['...', new CssMinimizerPlugin()],
+    usedExports: false,
+  },
+  output: {
+    filename: '[name].js',
+    path: join(__dirname, 'dist'),
+  },
+  plugins: [
+    ...(extractCSS
+      ? [new MiniCssExtractPlugin({ filename: '[name].css' }), new CompiledExtractPlugin()]
+      : []),
+    new HtmlWebpackPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+  ],
+  resolve: {
+    extensions: ['.tsx', '.ts', '.jsx', '.js'],
   },
 };

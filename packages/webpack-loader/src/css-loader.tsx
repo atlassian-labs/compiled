@@ -1,10 +1,10 @@
 import { URLSearchParams } from 'url';
-import type { LoaderThis } from './types';
+import type { LoaderContext } from 'webpack';
 
 /**
  * CSSLoader will take the style query params added by `./compiled-loader.tsx` and turn it into CSS.
  */
-export default function CSSLoader(this: LoaderThis): string {
+export default function CSSLoader(this: LoaderContext<void>): string {
   const query = new URLSearchParams(this.resourceQuery);
   const styleRule = query.get('style');
   return styleRule || '';
@@ -13,11 +13,11 @@ export default function CSSLoader(this: LoaderThis): string {
 /**
  * Moves CSSloader to the end of the loader queue so it runs first.
  */
-export function pitch(this: LoaderThis): void {
+export function pitch(this: LoaderContext<void>): void {
   if (this.loaders[0].path !== __filename) {
     return;
   }
 
   const firstLoader = this.loaders.shift();
-  this.loaders.push(firstLoader);
+  this.loaders.push(firstLoader!);
 }

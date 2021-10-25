@@ -1,2 +1,2 @@
 export { default } from './babel-plugin';
-export type { PluginOptions, Metadata, State, Tag, TransformResult } from './types';
+export type { PluginOptions, Metadata, Resolver, State, Tag, TransformResult } from './types';
