@@ -66,26 +66,26 @@ const getPlugins = (
  * test utilities do not support promises. This means we keep the async functionality
  * on the dynamic import
  */
-export const withPlugin = (
-  transformer: (fileInfo: FileInfo, api: API, options: Options) => string
-) => (fileInfo: FileInfo, api: API, options: Options): string | Promise<string> => {
-  const plugins = options.plugin ?? options.plugins ?? [];
-  // TODO Await this when https://github.com/facebook/jscodeshift/issues/454 is resolved
-  const maybeNormalizedPlugins = getPlugins(plugins);
-  if (maybeNormalizedPlugins instanceof Promise) {
-    return maybeNormalizedPlugins.then((normalizedPlugins) =>
-      transformer(fileInfo, api, {
-        ...options,
-        normalizedPlugins,
-      })
-    );
-  }
+export const withPlugin =
+  (transformer: (fileInfo: FileInfo, api: API, options: Options) => string) =>
+  (fileInfo: FileInfo, api: API, options: Options): string | Promise<string> => {
+    const plugins = options.plugin ?? options.plugins ?? [];
+    // TODO Await this when https://github.com/facebook/jscodeshift/issues/454 is resolved
+    const maybeNormalizedPlugins = getPlugins(plugins);
+    if (maybeNormalizedPlugins instanceof Promise) {
+      return maybeNormalizedPlugins.then((normalizedPlugins) =>
+        transformer(fileInfo, api, {
+          ...options,
+          normalizedPlugins,
+        })
+      );
+    }
 
-  return transformer(fileInfo, api, {
-    ...options,
-    normalizedPlugins: maybeNormalizedPlugins,
-  });
-};
+    return transformer(fileInfo, api, {
+      ...options,
+      normalizedPlugins: maybeNormalizedPlugins,
+    });
+  };
 
 export const getImportDeclarationCollection = ({
   j,
@@ -179,13 +179,11 @@ export const findImportSpecifierName = ({
 const applyBuildImport = ({
   plugins,
   originalNode,
-  defaultSpecifierName,
-  namedImport,
+  specifiers,
 }: {
   plugins: Array<CodemodPluginInstance>;
   originalNode: ImportDeclaration;
-  defaultSpecifierName: string;
-  namedImport: string;
+  specifiers: ImportSpecifier[];
 }) =>
   plugins.reduce((currentNode, plugin) => {
     const buildImportImpl = plugin.transform?.buildImport;
@@ -196,8 +194,7 @@ const applyBuildImport = ({
     return buildImportImpl({
       originalNode,
       currentNode,
-      defaultSpecifierName,
-      namedImport,
+      specifiers,
       compiledImportPath: COMPILED_IMPORT_PATH,
     });
   }, originalNode);
@@ -232,12 +229,68 @@ export const convertDefaultImportToNamedImport = ({
       const newImport = applyBuildImport({
         plugins,
         originalNode: importDeclarationPath.node,
-        defaultSpecifierName: getImportDefaultSpecifierName(importDefaultSpecifierCollection),
-        namedImport,
+        specifiers: [
+          j.importSpecifier(
+            j.identifier(namedImport),
+            j.identifier(getImportDefaultSpecifierName(importDefaultSpecifierCollection))
+          ),
+        ],
       });
 
       j(importDeclarationPath).replaceWith(newImport);
     }
+  });
+};
+
+export const convertMixedImportToNamedImport = ({
+  j,
+  plugins,
+  collection,
+  importPath,
+  defaultSourceSpecifierName,
+  allowedImportSpecifierNames,
+}: {
+  j: JSCodeshift;
+  plugins: Array<CodemodPluginInstance>;
+  collection: Collection<any>;
+  importPath: string;
+  defaultSourceSpecifierName: string;
+  allowedImportSpecifierNames: string[];
+}): void => {
+  const importDeclarationCollection: Collection<ImportDeclaration> = getImportDeclarationCollection(
+    {
+      j,
+      collection,
+      importPath,
+    }
+  );
+
+  importDeclarationCollection.forEach((importDeclarationPath) => {
+    const newSpecifiers = (importDeclarationPath.node.specifiers || [])
+      .map((specifier) => {
+        if (specifier.type === 'ImportDefaultSpecifier') {
+          return j.importSpecifier(j.identifier(defaultSourceSpecifierName), specifier.local);
+        } else if (specifier.type === 'ImportSpecifier') {
+          return specifier;
+        }
+        return undefined;
+      })
+      .filter((specifier): specifier is ImportSpecifier =>
+        Boolean(
+          specifier &&
+            [defaultSourceSpecifierName, ...allowedImportSpecifierNames].includes(
+              specifier?.imported.name
+            )
+        )
+      );
+
+    const newImport = applyBuildImport({
+      plugins,
+      originalNode: importDeclarationPath.node,
+      specifiers: newSpecifiers,
+    });
+
+    j(importDeclarationPath).replaceWith(newImport);
   });
 };
 
@@ -349,13 +402,12 @@ export const addReactIdentifier = ({
       );
     });
   } else {
-    const importDeclarationCollection: Collection<ImportDeclaration> = getImportDeclarationCollection(
-      {
+    const importDeclarationCollection: Collection<ImportDeclaration> =
+      getImportDeclarationCollection({
         j,
         collection,
         importPath: REACT_IMPORT_PATH,
-      }
-    );
+      });
 
     importDeclarationCollection.forEach((importDeclarationPath) => {
       const importDefaultSpecifierCollection: Collection<ImportDefaultSpecifier> = j(

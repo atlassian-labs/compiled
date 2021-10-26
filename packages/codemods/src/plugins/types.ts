@@ -2,6 +2,7 @@ import type {
   API,
   FileInfo,
   ImportDeclaration,
+  ImportSpecifier,
   JSXAttribute,
   JSXSpreadAttribute,
   Options,
@@ -22,10 +23,8 @@ export type BuildImportContext<T> = ValidateConfig<
     originalNode: ImportDeclaration;
     // The existing import node that will be replaced
     currentNode: ImportDeclaration;
-    // The import name
-    defaultSpecifierName: string;
-    // The export from Compiled to be imported
-    namedImport: string;
+    // The specifiers to include in the new import declaration
+    specifiers: ImportSpecifier[];
     // The import path for Compiled
     compiledImportPath: string;
   }

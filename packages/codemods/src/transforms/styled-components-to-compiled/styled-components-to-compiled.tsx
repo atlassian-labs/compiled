@@ -2,16 +2,17 @@ import type { FileInfo, API, Options, Program } from 'jscodeshift';
 
 import {
   hasImportDeclaration,
-  convertDefaultImportToNamedImport,
   addCommentForUnresolvedImportSpecifiers,
   withPlugin,
   applyVisitor,
+  convertMixedImportToNamedImport,
 } from '../../codemods-helpers';
 import type { CodemodPluginInstance } from '../../plugins/types';
 import defaultCodemodPlugin from '../../plugins/default';
 
 const imports = {
   compiledStyledImportName: 'styled',
+  styledComponentsSupportedImportNames: ['css'],
   styledComponentsPackageName: 'styled-components',
 };
 
@@ -40,15 +41,16 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
     j,
     collection,
     importPath: imports.styledComponentsPackageName,
-    allowedImportSpecifierNames: [],
+    allowedImportSpecifierNames: imports.styledComponentsSupportedImportNames,
   });
 
-  convertDefaultImportToNamedImport({
+  convertMixedImportToNamedImport({
     j,
     plugins,
     collection,
     importPath: imports.styledComponentsPackageName,
-    namedImport: imports.compiledStyledImportName,
+    defaultSourceSpecifierName: imports.compiledStyledImportName,
+    allowedImportSpecifierNames: imports.styledComponentsSupportedImportNames,
   });
 
   applyVisitor({

@@ -28,6 +28,44 @@ describe('styled-components-to-compiled transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     { plugins: [] },
+    "import { css } from 'styled-components';",
+    "import { css } from '@compiled/react';",
+    'it transforms named imports when they are alone'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    "import styled, { css } from 'styled-components';",
+    "import { styled, css } from '@compiled/react';",
+    'it transforms mixed default and named imports'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    "import styled, { css as customLocal1, css as customLocal2 } from 'styled-components';",
+    "import { styled, css as customLocal1, css as customLocal2 } from '@compiled/react';",
+    "it keeps extra valid named imports' aliases intact"
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import styled from 'styled-components';
+    import styled2, { css } from 'styled-components';
+    `,
+    `
+    import { styled } from '@compiled/react';
+    import { styled as styled2, css } from '@compiled/react';
+    `,
+    'it preserves multiple imports of styled-components'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
     `
     import styled from 'styled-components';
     import * as React from 'react';
@@ -91,15 +129,29 @@ describe('styled-components-to-compiled transformer', () => {
     import * as React from 'react';
     `,
     `
-    /* TODO(@compiled/react codemod): "css" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     /* TODO(@compiled/react codemod): "keyframes" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     /* TODO(@compiled/react codemod): "createGlobalStyle" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     /* TODO(@compiled/react codemod): "ThemeProvider" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     /* TODO(@compiled/react codemod): "withTheme" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
-    import { styled } from '@compiled/react';
+    import { styled, css } from '@compiled/react';
     import * as React from 'react';
     `,
     'it adds TODO comment for imports which are not resolved'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import { multiple, unsupported, imports } from 'styled-components';
+    `,
+    `
+    /* TODO(@compiled/react codemod): "multiple" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO(@compiled/react codemod): "unsupported" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    /* TODO(@compiled/react codemod): "imports" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    import '@compiled/react';
+    `,
+    'it properly handles import statements with no supported imports'
   );
 
   defineInlineTest(
@@ -132,6 +184,57 @@ describe('styled-components-to-compiled transformer', () => {
     "import styled from 'styled-components';",
     "console.log('Bring back Netscape');",
     'it should use the buildImport from the plugin'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {
+      plugins: [
+        {
+          create: (_: FileInfo, { jscodeshift: j }: API) => ({
+            transform: {
+              buildImport: () =>
+                j.expressionStatement(
+                  j.callExpression(
+                    j.memberExpression(j.identifier('console'), j.identifier('log')),
+                    [j.literal('Bring back Netscape')]
+                  )
+                ),
+            },
+          }),
+        },
+        {
+          create: (_: FileInfo, { jscodeshift: j }: API) => ({
+            transform: {
+              buildImport: ({ originalNode, currentNode, specifiers, compiledImportPath }) => {
+                currentNode.comments = [
+                  j.commentLine(j(originalNode).toSource(), true),
+                  j.commentLine(
+                    specifiers
+                      .map((specifier) => `${specifier.imported.name} as ${specifier.local.name}`)
+                      .toString(),
+                    true
+                  ),
+                  j.commentLine(compiledImportPath, true),
+                ];
+
+                return currentNode;
+              },
+            },
+          }),
+        },
+      ],
+    },
+    `
+    import styled, { css } from 'styled-components';
+    `,
+    `
+    //import styled, { css } from 'styled-components';
+    //styled as styled,css as css
+    //@compiled/react
+    console.log('Bring back Netscape');
+    `,
+    'it should pass the expected parameters to the buildImport plugins'
   );
 
   defineInlineTest(
