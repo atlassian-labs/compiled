@@ -226,14 +226,15 @@ export const convertDefaultImportToNamedImport = ({
     );
 
     if (importDefaultSpecifierCollection.length > 0) {
-      const newSpecifier = j.importSpecifier(
-        j.identifier(namedImport),
-        j.identifier(getImportDefaultSpecifierName(importDefaultSpecifierCollection))
-      );
       const newImport = applyBuildImport({
         plugins,
         originalNode: importDeclarationPath.node,
-        specifiers: [newSpecifier],
+        specifiers: [
+          j.importSpecifier(
+            j.identifier(namedImport),
+            j.identifier(getImportDefaultSpecifierName(importDefaultSpecifierCollection))
+          ),
+        ],
       });
 
       j(importDeclarationPath).replaceWith(newImport);

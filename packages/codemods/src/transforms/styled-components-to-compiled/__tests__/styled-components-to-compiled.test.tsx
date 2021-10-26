@@ -203,11 +203,38 @@ describe('styled-components-to-compiled transformer', () => {
             },
           }),
         },
+        {
+          create: (_: FileInfo, { jscodeshift: j }: API) => ({
+            transform: {
+              buildImport: ({ originalNode, currentNode, specifiers, compiledImportPath }) => {
+                currentNode.comments = [
+                  j.commentLine(j(originalNode).toSource(), true),
+                  j.commentLine(
+                    specifiers
+                      .map((specifier) => `${specifier.imported.name} as ${specifier.local.name}`)
+                      .toString(),
+                    true
+                  ),
+                  j.commentLine(compiledImportPath, true),
+                ];
+
+                return currentNode;
+              },
+            },
+          }),
+        },
       ],
     },
-    "import styled, { css } from 'styled-components';",
-    "console.log('Bring back Netscape');",
-    'it should use the buildImport from the plugin, with mix of default and named imports'
+    `
+    import styled, { css } from 'styled-components';
+    `,
+    `
+    //import styled, { css } from 'styled-components';
+    //styled as styled,css as css
+    //@compiled/react
+    console.log('Bring back Netscape');
+    `,
+    'it should pass the expected parameters to the buildImport plugins'
   );
 
   defineInlineTest(
