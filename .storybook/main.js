@@ -4,4 +4,6 @@ module.exports = {
     builder: 'webpack5',
   },
   stories: ['../examples/stories/*.tsx'],
+  // Workaround for https://github.com/storybookjs/storybook/issues/15336
+  typescript: { reactDocgen: false },
 };
