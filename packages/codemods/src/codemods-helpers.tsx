@@ -269,9 +269,15 @@ export const convertMixedImportToNamedImport = ({
     const newSpecifiers = (importDeclarationPath.node.specifiers || [])
       .map((specifier) => {
         if (specifier.type === 'ImportDefaultSpecifier') {
-          return j.importSpecifier(j.identifier(defaultSourceSpecifierName), specifier.local);
+          return j.importSpecifier(
+            j.identifier(defaultSourceSpecifierName),
+            j.identifier(specifier.local?.name || '')
+          );
         } else if (specifier.type === 'ImportSpecifier') {
-          return specifier;
+          return j.importSpecifier(
+            j.identifier(specifier.imported.name),
+            j.identifier(specifier.local?.name || '')
+          );
         }
         return undefined;
       })
