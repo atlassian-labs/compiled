@@ -1,5 +1,17 @@
 # @compiled/webpack-loader
 
+## 0.7.0
+
+### Minor Changes
+
+- 0b60ae1: Use webpack resolution and add custom `resolve` override
+
+### Patch Changes
+
+- Updated dependencies [0b60ae1]
+- Updated dependencies [2092839]
+  - @compiled/babel-plugin@0.9.0
+
 ## 0.6.17
 
 ### Patch Changes

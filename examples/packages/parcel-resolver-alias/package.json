@@ -1,6 +1,6 @@
 {
   "name": "@compiled/parcel-resolver-alias",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "main": "dist/index.js",
   "dependencies": {

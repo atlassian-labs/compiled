@@ -1,5 +1,17 @@
 # @compiled/cli
 
+## 2.0.0
+
+### Minor Changes
+
+- ba66b35: Add styled-components innerRef to ref codemod
+
+### Patch Changes
+
+- Updated dependencies [0ba3ea3]
+- Updated dependencies [ba66b35]
+  - @compiled/codemods@0.2.0
+
 ## 1.1.0
 
 ### Minor Changes

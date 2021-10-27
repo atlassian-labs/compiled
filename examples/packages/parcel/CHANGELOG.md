@@ -1,5 +1,13 @@
 # @compiled/parcel-app
 
+## 1.0.6
+
+### Patch Changes
+
+- 0b60ae1: Add placeholder resolver example
+- Updated dependencies [2092839]
+  - @compiled/react@0.9.0
+
 ## 1.0.5
 
 ### Patch Changes

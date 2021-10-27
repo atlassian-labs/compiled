@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.9.0
+
+### Minor Changes
+
+- 2092839: Allow inline strings and inline css mixins in conditional expressions. Fix ordering of styles in template literals.
+
 ## 0.8.0
 
 ### Minor Changes

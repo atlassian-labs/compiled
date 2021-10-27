@@ -1,5 +1,16 @@
 # @compiled/webpack-app
 
+## 1.0.6
+
+### Patch Changes
+
+- 0b60ae1: Refactor the package structure
+- Updated dependencies [0b60ae1]
+- Updated dependencies [2092839]
+  - @compiled/webpack-loader@0.7.0
+  - @compiled/react@0.9.0
+  - @private/babel-component@0.0.7
+
 ## 1.0.5
 
 ### Patch Changes
