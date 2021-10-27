@@ -167,6 +167,29 @@ describe('styled-components-to-compiled transformer', () => {
     {
       plugins: [
         {
+          create: (_: FileInfo) => ({
+            transform: {
+              buildImport: ({ originalNode, currentNode }) => {
+                for (const specifier of originalNode.specifiers) {
+                  specifier.local.name = `${specifier.local.name}Edited`;
+                }
+                return currentNode;
+              },
+            },
+          }),
+        },
+      ],
+    },
+    "import styled, { css } from 'styled-components';",
+    "import { styled, css } from '@compiled/react';",
+    'it should not share specifier references between the original and new imports'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {
+      plugins: [
+        {
           create: (_: FileInfo, { jscodeshift: j }: API) => ({
             transform: {
               buildImport: () =>
