@@ -39,10 +39,8 @@ const removeEmotionCoreJSXPragma = (j: core.JSCodeshift, collection: Collection)
   const commentCollection = collection.find(j.Comment);
 
   commentCollection.forEach((commentPath) => {
-    const commentBlockCollection = j(
-      (commentPath as unknown) as ASTPath<CommentBlock>
-    ).filter((commentBlockPath) =>
-      commentBlockPath.value.value.includes(imports.emotionCoreJSXPragma)
+    const commentBlockCollection = j(commentPath as unknown as ASTPath<CommentBlock>).filter(
+      (commentBlockPath) => commentBlockPath.value.value.includes(imports.emotionCoreJSXPragma)
     );
 
     commentBlockCollection.forEach((commentBlockPath) => {

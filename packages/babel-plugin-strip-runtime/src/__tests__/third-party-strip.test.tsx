@@ -2,40 +2,42 @@ import { transformSync } from '@babel/core';
 import compiledBabelPlugin from '@compiled/babel-plugin';
 import stripRuntimeBabelPlugin from '../index';
 
-const transform = (
-  opts: {
-    callback?: (style: string[]) => void;
-    runtime?: 'automatic' | 'classic';
-    modules?: boolean;
-  } = {}
-) => (code: TemplateStringsArray | string): string => {
-  const compileDownModules = opts.modules ?? 'auto';
-  const runtime = opts.runtime || 'classic';
-  const initialPass = transformSync(typeof code === 'string' ? code : code[0], {
-    configFile: false,
-    babelrc: false,
-    filename: process.cwd() + '/src/__tests__/third-party-strip.test.tsx',
-    presets: [
-      ['@babel/preset-env', { targets: { esmodules: true }, modules: compileDownModules }],
-      '@babel/preset-typescript',
-      ['@babel/preset-react', { runtime, useBuiltIns: true }],
-    ],
-    plugins: [compiledBabelPlugin],
-  });
+const transform =
+  (
+    opts: {
+      callback?: (style: string[]) => void;
+      runtime?: 'automatic' | 'classic';
+      modules?: boolean;
+    } = {}
+  ) =>
+  (code: TemplateStringsArray | string): string => {
+    const compileDownModules = opts.modules ?? 'auto';
+    const runtime = opts.runtime || 'classic';
+    const initialPass = transformSync(typeof code === 'string' ? code : code[0], {
+      configFile: false,
+      babelrc: false,
+      filename: process.cwd() + '/src/__tests__/third-party-strip.test.tsx',
+      presets: [
+        ['@babel/preset-env', { targets: { esmodules: true }, modules: compileDownModules }],
+        '@babel/preset-typescript',
+        ['@babel/preset-react', { runtime, useBuiltIns: true }],
+      ],
+      plugins: [compiledBabelPlugin],
+    });
 
-  const result = transformSync(initialPass.code, {
-    configFile: false,
-    babelrc: false,
-    filename: process.cwd() + '/src/__tests__/third-party-strip.test.tsx',
-    plugins: [[stripRuntimeBabelPlugin, { onFoundStyleRules: opts.callback }]],
-  });
+    const result = transformSync(initialPass.code, {
+      configFile: false,
+      babelrc: false,
+      filename: process.cwd() + '/src/__tests__/third-party-strip.test.tsx',
+      plugins: [[stripRuntimeBabelPlugin, { onFoundStyleRules: opts.callback }]],
+    });
 
-  if (!result?.code) {
-    throw new Error();
-  }
+    if (!result?.code) {
+      throw new Error();
+    }
 
-  return result.code;
-};
+    return result.code;
+  };
 
 describe('third party strip runtime', () => {
   it('should callback on every found style classic', () => {

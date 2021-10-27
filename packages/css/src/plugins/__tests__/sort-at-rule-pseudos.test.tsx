@@ -4,19 +4,21 @@ import autoprefixer from 'autoprefixer';
 import { atomicifyRules } from '../atomicify-rules';
 import { sortAtRulePseudos } from '../sort-at-rule-pseudos';
 
-const transform = (opts = { withAtomicClasses: true }) => (css: TemplateStringsArray) => {
-  const plugins = [sortAtRulePseudos(), whitespace, autoprefixer];
+const transform =
+  (opts = { withAtomicClasses: true }) =>
+  (css: TemplateStringsArray) => {
+    const plugins = [sortAtRulePseudos(), whitespace, autoprefixer];
 
-  if (opts.withAtomicClasses) {
-    plugins.unshift(atomicifyRules());
-  }
+    if (opts.withAtomicClasses) {
+      plugins.unshift(atomicifyRules());
+    }
 
-  const result = postcss(plugins).process(css[0], {
-    from: undefined,
-  });
+    const result = postcss(plugins).process(css[0], {
+      from: undefined,
+    });
 
-  return result.css;
-};
+    return result.css;
+  };
 
 describe('#sortAtRulePseudos', () => {
   beforeEach(() => {

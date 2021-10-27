@@ -147,9 +147,8 @@ const traverseMemberExpression = (expression: t.MemberExpression, meta: Metadata
   let value: t.Node | undefined | null = undefined;
   let updatedMeta: Metadata = meta;
 
-  const { accessPath, bindingIdentifier, originalBindingType } = getMemberExpressionMeta(
-    expression
-  );
+  const { accessPath, bindingIdentifier, originalBindingType } =
+    getMemberExpressionMeta(expression);
 
   if (bindingIdentifier) {
     const resolvedBinding = resolveBindingNode(bindingIdentifier.name, updatedMeta);

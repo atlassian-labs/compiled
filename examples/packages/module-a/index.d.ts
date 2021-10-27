@@ -9,9 +9,7 @@ export const objectStyles: {
   backgroundColor: (bgColor?: string) => string | undefined;
 };
 
-export const colorMixin: (
-  radius: number
-) => {
+export const colorMixin: (radius: number) => {
   color: string;
   backgroundColor: string;
   borderRadius: number;
