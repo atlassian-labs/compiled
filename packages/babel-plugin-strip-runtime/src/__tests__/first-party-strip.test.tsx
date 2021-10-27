@@ -2,38 +2,40 @@ import { transformSync } from '@babel/core';
 import compiledBabelPlugin from '@compiled/babel-plugin';
 import stripRuntimeBabelPlugin from '../index';
 
-const transform = (
-  opts: {
-    callback?: (style: string[]) => void;
-    runtime: 'automatic' | 'classic';
-    run: 'bake' | 'extract' | 'both';
-  } = {
-    runtime: 'classic',
-    run: 'both',
-  }
-) => (code: TemplateStringsArray | string): string => {
-  const runBoth = opts.run === 'both';
-  const runBake = runBoth || opts.run === 'bake';
-  const runExtract = runBoth || opts.run === 'extract';
+const transform =
+  (
+    opts: {
+      callback?: (style: string[]) => void;
+      runtime: 'automatic' | 'classic';
+      run: 'bake' | 'extract' | 'both';
+    } = {
+      runtime: 'classic',
+      run: 'both',
+    }
+  ) =>
+  (code: TemplateStringsArray | string): string => {
+    const runBoth = opts.run === 'both';
+    const runBake = runBoth || opts.run === 'bake';
+    const runExtract = runBoth || opts.run === 'extract';
 
-  const plugins: any = [
-    runBake && [compiledBabelPlugin, { importReact: opts.runtime === 'classic' }],
-    runExtract && [stripRuntimeBabelPlugin, { onFoundStyleRules: opts.callback }],
-  ].filter(Boolean);
+    const plugins: any = [
+      runBake && [compiledBabelPlugin, { importReact: opts.runtime === 'classic' }],
+      runExtract && [stripRuntimeBabelPlugin, { onFoundStyleRules: opts.callback }],
+    ].filter(Boolean);
 
-  const result = transformSync(typeof code === 'string' ? code : code[0], {
-    configFile: false,
-    babelrc: false,
-    presets: [['@babel/preset-react', { runtime: opts.runtime }]],
-    plugins: plugins,
-  });
+    const result = transformSync(typeof code === 'string' ? code : code[0], {
+      configFile: false,
+      babelrc: false,
+      presets: [['@babel/preset-react', { runtime: opts.runtime }]],
+      plugins: plugins,
+    });
 
-  if (!result?.code) {
-    throw new Error();
-  }
+    if (!result?.code) {
+      throw new Error();
+    }
 
-  return result.code;
-};
+    return result.code;
+  };
 
 describe('first party strip runtime', () => {
   describe('when ran in the same step', () => {

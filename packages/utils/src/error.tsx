@@ -1,5 +1,7 @@
-export const createError = (packageName: string, group = '') => (message: string): Error => {
-  return new Error(`
+export const createError =
+  (packageName: string, group = '') =>
+  (message: string): Error => {
+    return new Error(`
  ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
 ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██║██║     ██╔════╝██╔══██╗
 ██║     ██║   ██║██╔████╔██║██████╔╝██║██║     █████╗  ██║  ██║
@@ -11,4 +13,4 @@ export const createError = (packageName: string, group = '') => (message: string
 
   ${message}
 `);
-};
+  };

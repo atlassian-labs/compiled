@@ -302,9 +302,8 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
         const nestedArrowFunctionExpressionVisitor = {
           noScope: true,
           MemberExpression(path: NodePath<t.MemberExpression>) {
-            const propsToDestructureFromMemberExpression = handleMemberExpressionInStyledInterpolation(
-              path
-            );
+            const propsToDestructureFromMemberExpression =
+              handleMemberExpressionInStyledInterpolation(path);
 
             propsToDestructure.push(...propsToDestructureFromMemberExpression);
           },
