@@ -424,7 +424,7 @@ describe('styled component behaviour', () => {
       const Component = styled.div\`
         color: red;
         background: white;
-        border: 3px solid yellow; 
+        border: 3px solid yellow;
         \${props => props.isPrimary && ({ color: 'blue' })};
       \`;
     `);
@@ -503,7 +503,7 @@ describe('styled component behaviour', () => {
         color: red;
         background: white;
         \${props => props.isPrimary && ({ color: 'blue' })};
-        border: 3px solid yellow; 
+        border: 3px solid yellow;
       \`;
     `);
 
@@ -773,5 +773,26 @@ describe('styled component behaviour', () => {
     expect(actual).toInclude(
       'className={ax(["_1wyb1ul9",props.isDark&&"_bfhk11x8 _syaz1x77",!props.isDark&&"_bfhk1x77 _syaz11x8",props.className])}'
     );
+  });
+
+  it('should only handle the compiled import usage', () => {
+    const actual = transform(`
+      import styledSc from 'styled-components';
+      import { styled as styledCompiled } from '@compiled/react';
+
+      const fontSize = 16;
+
+      const StyledComponent = styledSc.div\`
+        font-size: \${fontSize}px;
+      \`;
+
+      const CompiledComponent = styledCompiled.div\`
+        font-size: \${fontSize}px;
+      \`;
+    `);
+
+    expect(actual).toInclude('._1wybexct{font-size:16px}');
+
+    expect(actual).toInclude('className={ax(["_1wybexct",props.className])}');
   });
 });

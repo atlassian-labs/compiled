@@ -196,11 +196,20 @@ export default declare<State>((api) => {
           return;
         }
 
-        if (!state.compiledImports?.styled) {
+        if (
+          t.isMemberExpression(path.node.tag) &&
+          t.isIdentifier(path.node.tag.object) &&
+          path.node.tag.object.name !== state.compiledImports?.styled
+        ) {
           return;
         }
 
-        visitStyledPath(path, { context: 'root', state, parentPath: path });
+        visitStyledPath(path, {
+          context: 'root',
+          state,
+          parentPath: path,
+          apiType: { api: 'styled', source: 'compiled' },
+        });
       },
       CallExpression(path, state) {
         if (!state.compiledImports) {
@@ -216,21 +225,36 @@ export default declare<State>((api) => {
           return;
         }
 
-        visitStyledPath(path, { context: 'root', state, parentPath: path });
+        visitStyledPath(path, {
+          context: 'root',
+          state,
+          parentPath: path,
+          apiType: { api: 'styled', source: 'compiled' },
+        });
       },
       JSXElement(path, state) {
         if (!state.compiledImports?.ClassNames) {
           return;
         }
 
-        visitClassNamesPath(path, { context: 'root', state, parentPath: path });
+        visitClassNamesPath(path, {
+          context: 'root',
+          state,
+          parentPath: path,
+          apiType: { api: 'classnames', source: 'unknown' },
+        });
       },
       JSXOpeningElement(path, state) {
         if (!state.compiledImports) {
           return;
         }
 
-        visitCssPropPath(path, { context: 'root', state, parentPath: path });
+        visitCssPropPath(path, {
+          context: 'root',
+          state,
+          parentPath: path,
+          apiType: { api: 'css', source: 'unknown' },
+        });
       },
     },
   };

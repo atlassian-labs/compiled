@@ -546,4 +546,28 @@ describe('css prop string literal', () => {
 
     expect(actual).toInclude('{color:red}');
   });
+
+  it('should transform only from compiled import', () => {
+    const actual = transform(`
+      import { css as cssSC } from "styled-components";
+      import { css as cssCompiled } from "@compiled/react";
+
+      const stylesSC = cssSC\`
+        color: red;
+      \`;
+
+      const stylesCompiled = cssCompiled\`
+        color: blue;
+      \`;
+
+      <>
+        <div css={stylesSC}>Red text</div>
+        <div css={stylesCompiled}>Blue text</div>
+      </>;
+    `);
+
+    expect(actual).toMatch(/const stylesSC=cssSC`\s*color: red;\s*`;/);
+
+    expect(actual).toInclude('{color:fred}');
+  });
 });

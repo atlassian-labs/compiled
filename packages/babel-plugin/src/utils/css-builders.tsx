@@ -277,7 +277,7 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
     variables.push(...(buildOutput?.variables ?? []));
   }
 
-  return { css: mergeSubsequentUnconditionalCssItems(css), variables };
+  return { css: mergeSubsequentUnconditionalCssItems(css), variables, apiType: meta.apiType };
 };
 
 /**
@@ -300,7 +300,7 @@ const extractLogicalExpression = (node: t.ArrowFunctionExpression, meta: Metadat
     variables.push(...result.variables);
   }
 
-  return { css: mergeSubsequentUnconditionalCssItems(css), variables };
+  return { css: mergeSubsequentUnconditionalCssItems(css), variables, apiType: meta.apiType };
 };
 
 /*
@@ -339,6 +339,7 @@ const extractKeyframes = (
       { type: 'unconditional', css: prefix + name + suffix },
     ],
     variables: variables,
+    apiType: meta.apiType,
   };
 };
 
@@ -450,7 +451,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
     }
   });
 
-  return { css: mergeSubsequentUnconditionalCssItems(css), variables };
+  return { css: mergeSubsequentUnconditionalCssItems(css), variables, apiType: meta.apiType };
 };
 
 /**
@@ -567,6 +568,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   return {
     css: mergeSubsequentUnconditionalCssItems(css),
     variables,
+    apiType: meta.apiType,
   };
 };
 
@@ -578,7 +580,11 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
  */
 export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): CSSOutput => {
   if (t.isStringLiteral(node)) {
-    return { css: [{ type: 'unconditional', css: node.value }], variables: [] };
+    return {
+      css: [{ type: 'unconditional', css: node.value }],
+      variables: [],
+      apiType: meta.apiType,
+    };
   }
 
   if (t.isTemplateLiteral(node)) {
@@ -652,6 +658,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     return {
       css,
       variables,
+      apiType: meta.apiType,
     };
   }
 
@@ -679,11 +686,20 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     return {
       css,
       variables: result.variables,
+      apiType: meta.apiType,
     };
   }
 
-  if (isCompiledCSSTemplateLiteral(node, meta)) {
-    return buildCss(node.quasi, meta);
+  if (t.isTaggedTemplateExpression(node)) {
+    if (isCompiledCSSTemplateLiteral(node, meta)) {
+      return buildCss(node.quasi, meta);
+    } else if (meta.apiType.source === 'unknown') {
+      return {
+        css: [],
+        variables: [],
+        apiType: { ...meta.apiType, source: 'external' },
+      };
+    }
   }
 
   if (isCompiledCSSCallExpression(node, meta)) {

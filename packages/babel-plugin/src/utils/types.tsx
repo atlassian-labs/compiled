@@ -1,6 +1,6 @@
 import type * as t from '@babel/types';
 import type { NodePath } from '@babel/traverse';
-import type { Metadata } from '../types';
+import type { Metadata, ApiType } from '../types';
 
 export interface UnconditionalCssItem {
   type: 'unconditional';
@@ -29,6 +29,7 @@ export interface CSSOutput {
     prefix?: string;
     suffix?: string;
   }[];
+  apiType: ApiType;
 }
 
 export interface PartialBindingWithMeta {

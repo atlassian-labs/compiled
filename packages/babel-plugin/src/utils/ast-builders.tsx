@@ -474,7 +474,11 @@ export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metad
   const uniqueUnconditionalCssOutput = transformCss(unconditionalCss.join(''));
 
   // Rely on transformItemCss to build logicalExpressions for logical CSS
-  const logicalCssOutput = transformItemCss({ css: logicalCss, variables: cssOutput.variables });
+  const logicalCssOutput = transformItemCss({
+    css: logicalCss,
+    variables: cssOutput.variables,
+    apiType: meta.apiType,
+  });
 
   const sheets = [...uniqueUnconditionalCssOutput.sheets, ...logicalCssOutput.sheets];
 

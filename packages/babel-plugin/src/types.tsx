@@ -95,6 +95,20 @@ export interface State extends PluginPass {
   includedFiles: string[];
 }
 
+export interface ApiType {
+  /**
+   * Type of API the AST is traversing
+   */
+  api: 'css' | 'styled' | 'classnames';
+
+  /**
+   * The library used in the AST
+   *
+   * This is used to track if we're traversing code relevant to Compiled
+   */
+  source: 'compiled' | 'external' | 'unknown';
+}
+
 interface CommonMetadata {
   /**
    * State of the current plugin run.
@@ -105,6 +119,11 @@ interface CommonMetadata {
    * Path of a parent node.
    */
   parentPath: NodePath<any>;
+
+  /**
+   * Type of API the AST represents
+   */
+  apiType: ApiType;
 
   /**
    * We used this to store path of the IIFE node we created around the calling

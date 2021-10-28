@@ -3,7 +3,6 @@ name: Build packages
 on:
   push:
     branches:
-      - master
 
   pull_request:
 

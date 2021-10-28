@@ -40,6 +40,9 @@ export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Meta
   }
 
   const cssOutput = buildCss(getJsxAttributeExpression(cssProp), meta);
+  if (cssOutput.apiType.source === 'external') {
+    return;
+  }
 
   // Remove css prop
   path.node.attributes.splice(cssPropIndex, 1);
