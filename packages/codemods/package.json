@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "chalk": "^4.1.1",
-    "jscodeshift": "^0.12.0"
+    "jscodeshift": "^0.13.0"
   },
   "devDependencies": {
     "@types/jscodeshift": "^0.11.2"
