@@ -30,7 +30,7 @@ const rule: Rule.RuleModule = {
             messageId: 'noPragma',
             loc: pragma.loc!,
             fix(fixer) {
-              return fixer.replaceText(pragma, "import * as React from 'react';");
+              return fixer.replaceText(pragma as any, "import * as React from 'react';");
             },
           });
         }
