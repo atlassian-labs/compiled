@@ -46,7 +46,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { ClassNames } from '@compiled/react';
+    import { css, ClassNames } from '@compiled/react';
     `,
     'it transforms all named @emotion/core imports'
   );
@@ -60,7 +60,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { ClassNames as CN } from '@compiled/react';
+    import { css as c, ClassNames as CN } from '@compiled/react';
     `,
     'it transforms all named @emotion/core imports with different imported name'
   );
@@ -75,7 +75,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { ClassNames, styled } from '@compiled/react';
+    import { css, ClassNames, styled } from '@compiled/react';
     `,
     'it transforms all named @emotion/core and default @emotion/styled imports'
   );
@@ -90,7 +90,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { ClassNames as CN, styled as sc } from '@compiled/react';
+    import { css as c, ClassNames as CN, styled as sc } from '@compiled/react';
     `,
     'it transforms all named @emotion/core with different imported name and default with different name than "styled" @emotion/styled imports'
   );
@@ -104,7 +104,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import '@compiled/react';
+    import { css } from '@compiled/react';
     `,
     'it handles the case when no api is imported from compiled package'
   );
@@ -131,7 +131,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { styled } from '@compiled/react';
+    import { css, styled } from '@compiled/react';
 
     const Component = (props) => (
       <>
@@ -170,7 +170,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { styled } from '@compiled/react';
+    import { css as c, styled } from '@compiled/react';
 
     const Component = (props) => (
       <>
@@ -264,7 +264,7 @@ describe('emotion-to-compiled transformer', () => {
     `
     import * as React from 'react';
     import _ from 'lodash';
-    import '@compiled/react';
+    import { css } from '@compiled/react';
     `,
     'it removes jsx pragma when @emotion/core is defined far from it'
   );
@@ -279,7 +279,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { styled } from '@compiled/react';
+    import { styled, css } from '@compiled/react';
     `,
     'it removes jsx pragma when @emotion/core is defined far from it and @emotion/styled is present'
   );
@@ -295,7 +295,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { styled } from '@compiled/react';
+    import { css, styled } from '@compiled/react';
     import _ from 'lodash';
     `,
     'it ignores other imports'
@@ -312,7 +312,7 @@ describe('emotion-to-compiled transformer', () => {
     import { useState, useEffect } from 'react';
     `,
     `
-    import { styled } from '@compiled/react';
+    import { css, styled } from '@compiled/react';
     import _ from 'lodash';
     import React, { useState, useEffect } from 'react';
     `,
@@ -330,7 +330,7 @@ describe('emotion-to-compiled transformer', () => {
     import React from 'react';
     `,
     `
-    import { styled } from '@compiled/react';
+    import { css, styled } from '@compiled/react';
     import _ from 'lodash';
     import React from 'react';
     `,
@@ -348,7 +348,7 @@ describe('emotion-to-compiled transformer', () => {
     import * as React from 'react';
     `,
     `
-    import { styled } from '@compiled/react';
+    import { css, styled } from '@compiled/react';
     import _ from 'lodash';
     import * as React from 'react';
     `,
@@ -383,7 +383,7 @@ describe('emotion-to-compiled transformer', () => {
     `
     /* TODO(@compiled/react codemod): "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     import * as React from 'react';
-    import { ClassNames } from '@compiled/react';
+    import { ClassNames, css as c } from '@compiled/react';
 
     let cssObject: CSSObject = {};
 
@@ -428,7 +428,7 @@ describe('emotion-to-compiled transformer', () => {
     /* TODO(@compiled/react codemod): "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     // @top-level comment
 
-    import { ClassNames } from '@compiled/react';
+    import { ClassNames, css as c } from '@compiled/react';
 
     // comment 1
     import * as React from 'react';
@@ -454,7 +454,7 @@ describe('emotion-to-compiled transformer', () => {
     import * as React from 'react';
 
     // comment 1
-    import { ClassNames } from '@compiled/react';
+    import { ClassNames, css as c } from '@compiled/react';
     `,
     'it should not remove comments before transformed statement when not on top'
   );
@@ -482,7 +482,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { ClassNames as CN } from '@compiled/react';
+    import { ClassNames as CN, css as c } from '@compiled/react';
 
     const Component = () => (
       <CN>
