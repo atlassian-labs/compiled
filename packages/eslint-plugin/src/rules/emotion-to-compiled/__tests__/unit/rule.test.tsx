@@ -20,7 +20,7 @@ const tests: {
     // FIXME This case produces duplicate imports
     // {
     //   code: `
-    //   /** @jsx jsx */
+    //   // insert pragma here
     //   import { css, jsx } from '@emotion/core';
     //   import styled from '@emotion/styled';`,
     //   output: `
