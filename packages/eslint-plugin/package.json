@@ -5,10 +5,6 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-  "atlassian": {
-    "team": "Design System Team",
-    "releaseModel": "scheduled"
-  },
   "repository": "https://bitbucket.org/atlassian/atlassian-frontend",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
