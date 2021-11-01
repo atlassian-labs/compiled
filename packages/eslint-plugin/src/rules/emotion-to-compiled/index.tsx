@@ -2,6 +2,8 @@ import type { Rule } from 'eslint';
 
 import type { ImportSpecifier, ImportDeclaration } from 'estree';
 
+const COMPILED_IMPORT = '@compiled/react';
+
 const hasStyledImport = (node: ImportDeclaration) => node.source.value === '@emotion/styled';
 const hasCoreImport = (node: ImportDeclaration) =>
   ['@emotion/core', '@emotion/react'].includes(node.source.value as string);
@@ -10,6 +12,7 @@ const getNamedImports = (node: ImportSpecifier) => {
     ? node.local.name
     : `${node.imported.name} as ${node.local.name}`;
 };
+const wrapImport = (node: string) => `import { ${node} } from '${COMPILED_IMPORT}';`;
 
 /**
  * Given a rule, return any `@compiled/react` nodes in the source being parsed.
@@ -22,7 +25,7 @@ const getCompiledNode = (context: Rule.RuleContext) => {
     .getSourceCode()
     .ast.body.filter((node) => node.type === 'ImportDeclaration')
     .find(
-      (node) => (node as ImportDeclaration).source.value === '@compiled/react'
+      (node) => (node as ImportDeclaration).source.value === COMPILED_IMPORT
     ) as ImportDeclaration;
 };
 
@@ -31,9 +34,9 @@ const rule: Rule.RuleModule = {
     fixable: 'code',
     type: 'problem',
     messages: {
-      noStyled: `The '@emotion/styled' library should not be used. Use '@compiled/react' instead.`,
-      noCore: `The {{ version }} library should not be used. Use '@compiled/react' instead.`,
-      noPragma: `The /** @jsx jsx */ pragma is not required in '@compiled/react'. It can be safely removed.`,
+      noStyled: `The '@emotion/styled' library should not be used. Use ${COMPILED_IMPORT} instead.`,
+      noCore: `The {{ version }} library should not be used. Use ${COMPILED_IMPORT} instead.`,
+      noPragma: `The /** @jsx jsx */ pragma is not required in ${COMPILED_IMPORT}. It can be safely removed.`,
     },
   },
   create(context) {
@@ -73,15 +76,14 @@ const rule: Rule.RuleModule = {
 
               if (compiledNode) {
                 yield fixer.remove(node);
-                yield fixer.replaceText(
-                  compiledNode,
-                  `import { ${
-                    // @ts-ignore
-                    compiledNode.specifiers.map(getNamedImports).concat(specifiers).join(', ')
-                  } } from '@compiled/react';`
-                );
+                // @ts-expect-error
+                const allSpecifiers = compiledNode.specifiers
+                  .map(getNamedImports)
+                  .concat(specifiers)
+                  .join(', ');
+                yield fixer.replaceText(compiledNode, wrapImport(allSpecifiers));
               } else {
-                yield fixer.replaceText(node, `import { ${specifiers} } from '@compiled/react';`);
+                yield fixer.replaceText(node, wrapImport(specifiers));
               }
             },
           });
@@ -116,15 +118,15 @@ const rule: Rule.RuleModule = {
                 yield fixer.remove(node);
                 yield fixer.replaceText(
                   compiledNode,
-                  `import { ${
-                    // @ts-ignore
+                  wrapImport(
+                    // @ts-expect-error
                     compiledNode.specifiers.concat(specifiers).map(getNamedImports).join(', ')
-                  } } from '@compiled/react';`
+                  )
                 );
               } else {
                 yield fixer.replaceText(
                   node,
-                  `import { ${specifiers.map(getNamedImports).join(', ')} } from '@compiled/react';`
+                  wrapImport(specifiers.map(getNamedImports).join(', '))
                 );
               }
 
