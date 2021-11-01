@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { RuleTester } from 'eslint';
 
 (RuleTester as any).describe = (text: string, method: (...args: any[]) => void) => {

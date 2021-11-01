@@ -5,7 +5,7 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-  "repository": "https://bitbucket.org/atlassian/atlassian-frontend",
+  "repository": "https://github.com/atlassian-labs/compiled",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,13 +14,10 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^7.7.0",
     "prettier": "^2.4.1",
-    "ts-node": "^10.0.0",
-    "tsconfig-paths": "^3.9.0",
     "typescript": "3.9.6"
   },
   "files": [
     "dist",
-    "src",
-    "README.md"
+    "src"
   ]
 }

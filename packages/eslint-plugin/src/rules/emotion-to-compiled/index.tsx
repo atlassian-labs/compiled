@@ -3,19 +3,37 @@ import type { Rule } from 'eslint';
 import type { ImportSpecifier, ImportDeclaration } from 'estree';
 
 const hasStyledImport = (node: ImportDeclaration) => node.source.value === '@emotion/styled';
-const hasCoreImport = (node: ImportDeclaration) => node.source.value === '@emotion/core';
+const hasCoreImport = (node: ImportDeclaration) =>
+  ['@emotion/core', '@emotion/react'].includes(node.source.value as string);
+const getNamedImports = (node: ImportSpecifier) => {
+  return node.imported.name === node.local.name
+    ? node.local.name
+    : `${node.imported.name} as ${node.local.name}`;
+};
+
+/**
+ * Given a rule, return any `@compiled/react` nodes in the source being parsed.
+ *
+ * @param context Rule context
+ * @returns {Rule.Node} The `@compiled/react` node or undefined
+ */
+const getCompiledNode = (context: Rule.RuleContext) => {
+  return context
+    .getSourceCode()
+    .ast.body.filter((node) => node.type === 'ImportDeclaration')
+    .find(
+      (node) => (node as ImportDeclaration).source.value === '@compiled/react'
+    ) as ImportDeclaration;
+};
 
 const rule: Rule.RuleModule = {
   meta: {
-    docs: {
-      recommended: true,
-    },
     fixable: 'code',
     type: 'problem',
     messages: {
-      noStyled: `The '@emotion/styled' library should no longer be in use. Use '@compiled/react'.`,
-      noCore: `The '@emotion/core' library should no longer be in use. Use '@compiled/react'.`,
-      noPragma: `The /** @jsx jsx */ pragma is not require in '@compiled/react'. It can be safely removed.`,
+      noStyled: `The '@emotion/styled' library should not be used. Use '@compiled/react' instead.`,
+      noCore: `The {{ version }} library should not be used. Use '@compiled/react' instead.`,
+      noPragma: `The /** @jsx jsx */ pragma is not required in '@compiled/react'. It can be safely removed.`,
     },
   },
   create(context) {
@@ -36,54 +54,81 @@ const rule: Rule.RuleModule = {
         }
       },
       ImportDeclaration(node) {
+        if (node.specifiers[0].type === 'ImportNamespaceSpecifier') {
+          return null;
+        }
+
         const hasStyled = hasStyledImport(node);
-        const hasCore = hasCoreImport(node);
 
         if (hasStyled) {
           return context.report({
             messageId: 'noStyled',
             node: node.source,
-            fix(fixer) {
-              // const imports = context.getSourceCode().ast.body.filter(({ type }) => type === 'ImportDeclaration')
-              return fixer.replaceText(
-                node,
-                `import { ${
-                  node.specifiers[0].local.name === 'styled'
-                    ? 'styled'
-                    : `styled as ${node.specifiers[0].local.name}`
-                } } from '@compiled/react';`
-              );
+            *fix(fixer) {
+              const compiledNode = getCompiledNode(context);
+              const specifiers =
+                node.specifiers[0].local.name === 'styled'
+                  ? 'styled'
+                  : `styled as ${node.specifiers[0].local.name}`;
+
+              if (compiledNode) {
+                yield fixer.remove(node);
+                yield fixer.replaceText(
+                  compiledNode,
+                  `import { ${
+                    // @ts-ignore
+                    compiledNode.specifiers.map(getNamedImports).concat(specifiers).join(', ')
+                  } } from '@compiled/react';`
+                );
+              } else {
+                yield fixer.replaceText(node, `import { ${specifiers} } from '@compiled/react';`);
+              }
             },
           });
         }
 
+        const hasCore = hasCoreImport(node);
+
         if (hasCore) {
           return context.report({
             messageId: 'noCore',
+            data: {
+              version: node.source.value as string,
+            },
             node: node.source,
-            fix(fixer) {
-              // need to bail out here
-              if (node.specifiers[0].type === 'ImportNamespaceSpecifier') {
-                return null;
+            *fix(fixer) {
+              const compiledNode = getCompiledNode(context);
+              const specifiers = (
+                node.specifiers.filter(
+                  (specifier) => specifier.type === 'ImportSpecifier'
+                ) as ImportSpecifier[]
+              ).filter(
+                (specifier) =>
+                  specifier.imported.name === 'css' || specifier.imported.name === 'ClassNames'
+              );
+
+              if (!specifiers.length) {
+                yield fixer.remove(node);
+                return;
               }
 
-              const specifiers = node.specifiers.filter((x) => x.type === 'ImportSpecifier');
+              if (compiledNode) {
+                yield fixer.remove(node);
+                yield fixer.replaceText(
+                  compiledNode,
+                  `import { ${
+                    // @ts-ignore
+                    compiledNode.specifiers.concat(specifiers).map(getNamedImports).join(', ')
+                  } } from '@compiled/react';`
+                );
+              } else {
+                yield fixer.replaceText(
+                  node,
+                  `import { ${specifiers.map(getNamedImports).join(', ')} } from '@compiled/react';`
+                );
+              }
 
-              return fixer.replaceText(
-                node,
-                `import { ${specifiers
-                  .filter(
-                    (localNode) =>
-                      (localNode as ImportSpecifier).imported.name === 'css' ||
-                      (localNode as ImportSpecifier).imported.name === 'ClassNames'
-                  )
-                  .map((localNode) =>
-                    (localNode as ImportSpecifier).imported.name === localNode.local.name
-                      ? localNode.local.name
-                      : `${(localNode as ImportSpecifier).imported.name} as ${localNode.local.name}`
-                  )
-                  .join(', ')} } from '@compiled/react';`
-              );
+              return;
             },
           });
         }

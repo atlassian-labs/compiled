@@ -1,11 +1,11 @@
-# Compiled ESLint Plugin
+# @compiled/eslint-plugin
 
 This plugin contains rules that should be used when working with the `@compiled/react`.
 
 ## Installation
 
 ```sh
-yarn add @compiled/eslint-plugin -D
+npm i @compiled/eslint-plugin --save-dev
 ```
 
 ## Usage
@@ -15,7 +15,7 @@ Add the plugin to your `.eslintrc.js` file.
 ```diff
 module.exports = {
   plugins: [
-+    '@compiled/eslint-plugin',
++    '@compiled',
   ],
 };
 ```
@@ -30,7 +30,6 @@ module.exports = {
 };
 ```
 
-Rules will where possible come with fixers.
-For individual rules see the [`rules`](./src/rules) folder,
-however its strongly recommended to use the rules as above.
+Rules will where possible come with fixers. For individual rules see the [`rules`](./src/rules) folder,
+however it's strongly recommended to use the rules as above.
 You can read more about configuring eslint in their [documentation](https://eslint.org/docs/user-guide/configuring).
