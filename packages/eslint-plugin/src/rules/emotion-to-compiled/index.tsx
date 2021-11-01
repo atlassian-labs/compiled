@@ -76,8 +76,8 @@ const rule: Rule.RuleModule = {
 
               if (compiledNode) {
                 yield fixer.remove(node);
-                // @ts-expect-error
                 const allSpecifiers = compiledNode.specifiers
+                  // @ts-expect-error
                   .map(getNamedImports)
                   .concat(specifiers)
                   .join(', ');
