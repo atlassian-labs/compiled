@@ -475,7 +475,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '._syazbf54{color:green}',
       '._syaz5scu{color:red}',
-      'className={ax(["_syaz5scu",props.isPrimary&&"_syazbf54",props.className])}',
+      'className={ax(["",props.isPrimary&&"_syazbf54",!props.isPrimary&&"_syaz5scu",props.className])}',
     ]);
   });
 
@@ -491,7 +491,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '._syazbf54{color:green}',
       '._syaz5scu{color:red}',
-      'className={ax(["_syaz5scu",props.isPrimary&&"_syazbf54",props.className])}',
+      'className={ax(["",props.isPrimary&&"_syazbf54",!props.isPrimary&&"_syaz5scu",props.className])}',
     ]);
   });
 
@@ -691,11 +691,8 @@ describe('styled component behaviour', () => {
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
       '._1wybgktf{font-size:20px}',
+      'className={ax(["_1wybgktf",props.isPrimary&&props.isBolded&&"_syaz13q2",!(props.isPrimary&&props.isBolded)&&"_syaz5scu",props.className])}/',
     ]);
-
-    expect(actual).toInclude(
-      'className={ax(["_1wybgktf _syaz5scu",props.isPrimary&&props.isBolded&&"_syaz13q2",props.className])}/'
-    );
   });
 
   it('should only evaluate the last unconditional CSS rule for each property', () => {
@@ -718,28 +715,36 @@ describe('styled component behaviour', () => {
     expect(actual).toInclude('className={ax(["_syazruxl _bfhk1x77",props.className])}');
   });
 
-  it('should only evaluate the last unconditional CSS rule for each property along with logical CSS', () => {
+  it('should only add falsy condition when truthy condition has no value', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
-        { color: 'red' },
-        { background: 'white' },
-        props => props.isPrimary ? ({ color: 'blue', background: 'white' }) : ({ color: 'green', background: 'black' }),
-        { color: 'white', background: 'black' },
+        props => props.isPrimary ? undefined : { color: 'green', background: 'black' },
       );
     `);
 
     expect(actual).toIncludeMultiple([
-      '._bfhk1x77{background-color:white}',
-      '._syaz13q2{color:blue}',
+      '._syazbf54{color:green}',
       '._bfhk11x8{background-color:black}',
-      '._syaz1x77{color:white}',
+      'className={ax(["",!props.isPrimary&&"_syazbf54 _bfhk11x8",props.className])}',
     ]);
+  });
 
-    expect(actual).toInclude(
-      'className={ax(["_syaz1x77 _bfhk11x8",props.isPrimary&&"_syaz13q2 _bfhk1x77",props.className])}'
-    );
+  it('should only add truthy condition when falsy condition has no value', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div(
+        props => props.isPrimary ? { color: 'green', background: 'black' } : undefined,
+      );
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syazbf54{color:green}',
+      '._bfhk11x8{background-color:black}',
+      'className={ax(["",props.isPrimary&&"_syazbf54 _bfhk11x8",props.className])}',
+    ]);
   });
 
   it('should conditionally apply CSS mixins', () => {

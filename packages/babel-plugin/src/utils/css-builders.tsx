@@ -243,8 +243,7 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
 
   for (const path of conditionalPaths) {
     const pathNode = node[path];
-    let buildOutput;
-    let newCssItems;
+    let cssOutput;
 
     if (
       t.isObjectExpression(pathNode) ||
@@ -254,13 +253,7 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
       isCompiledCSSTemplateLiteral(pathNode, meta) ||
       isCompiledCSSCallExpression(pathNode, meta)
     ) {
-      buildOutput = buildCss(pathNode, meta);
-      newCssItems =
-        // Only mark truthy(consequent) condition as conditional CSS.
-        // Falsey(alternate) will always be added to serve as default values
-        path === 'consequent'
-          ? getLogicalItemFromConditionalExpression(buildOutput.css, node, path)
-          : buildOutput.css;
+      cssOutput = buildCss(pathNode, meta);
     } else if (t.isIdentifier(pathNode)) {
       const { value: interpolation, meta: updatedMeta } = evaluateExpression(pathNode, meta);
 
@@ -268,13 +261,14 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
         isCompiledCSSTemplateLiteral(interpolation, updatedMeta) ||
         isCompiledCSSCallExpression(interpolation, updatedMeta)
       ) {
-        buildOutput = buildCss(interpolation, updatedMeta);
-        newCssItems = getLogicalItemFromConditionalExpression(buildOutput.css, node, path);
+        cssOutput = buildCss(interpolation, updatedMeta);
       }
     }
 
-    css.push(...(newCssItems || []));
-    variables.push(...(buildOutput?.variables ?? []));
+    if (cssOutput) {
+      css.push(...getLogicalItemFromConditionalExpression(cssOutput.css, node, path));
+      variables.push(...cssOutput.variables);
+    }
   }
 
   return { css: mergeSubsequentUnconditionalCssItems(css), variables };

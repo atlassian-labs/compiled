@@ -72,6 +72,10 @@ const KeyValueString = styled.div<TextProps>`
   ${(props) => (props.isPrimary ? 'color: green' : `color: red`)};
 `;
 
+const NoValuePath = styled.div<TextProps>`
+  ${(props) => (props.isPrimary ? undefined : 'color: red')}
+`;
+
 export const PrimaryTextWithTemplateLiteral = (): JSX.Element => {
   return <TextWithTemplateLiteral isPrimary>Hello primary</TextWithTemplateLiteral>;
 };
@@ -175,3 +179,12 @@ export const TextWithKeyValueString = (): JSX.Element => (
     <KeyValueString isPrimary={false}>color: red</KeyValueString>
   </div>
 );
+
+export const ConditionWithNoValuePath = (): JSX.Element => {
+  return (
+    <div>
+      <NoValuePath isPrimary>Primary path with no given CSS</NoValuePath>
+      <NoValuePath>Secondary path with CSS</NoValuePath>
+    </div>
+  );
+};
