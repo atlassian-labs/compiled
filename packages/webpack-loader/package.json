@@ -31,11 +31,11 @@
     "webpack-sources": "^1.4.3"
   },
   "devDependencies": {
-    "babel-loader": "^8.2.2",
+    "babel-loader": "^8.2.3",
     "css-loader": "^5.2.7",
     "memfs": "^3.2.4",
     "mini-css-extract-plugin": "^1.5.0",
-    "webpack": "^5.58.1"
+    "webpack": "^5.61.0"
   },
   "peerDependencies": {
     "webpack": ">= 4.46.0"
