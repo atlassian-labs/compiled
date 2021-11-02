@@ -1,5 +1,6 @@
 import type {
   API,
+  ExportNamedDeclaration,
   FileInfo,
   ImportDeclaration,
   ImportSpecifier,
@@ -7,6 +8,7 @@ import type {
   JSXSpreadAttribute,
   Options,
   Program,
+  VariableDeclaration,
 } from 'jscodeshift';
 
 // We want to ensure the config contract is correct so devs can get type safety
@@ -40,6 +42,20 @@ export type BuildRefAttributesContext<T> = ValidateConfig<
   }
 >;
 
+export type BuildAttributesContext<T> = ValidateConfig<
+  T,
+  {
+    // The original component declaration
+    originalNode: VariableDeclaration | ExportNamedDeclaration;
+    // The existing component declaration
+    currentNode: VariableDeclaration | ExportNamedDeclaration;
+    // The original node after transforms
+    transformedNode: VariableDeclaration | ExportNamedDeclaration;
+
+    extraContent: VariableDeclaration | null;
+  }
+>;
+
 /**
  * Interface for codemods that handle migration from CSS-in-JS libraries to Compiled
  */
@@ -51,6 +67,16 @@ export interface Transform {
    * @returns {ImportDeclaration} The import to replace config.currentNode
    */
   buildImport?<T>(context: BuildImportContext<T>): ImportDeclaration;
+
+  /**
+   * Build the compiled import replacing the existing import
+   *
+   * @param context {BuildImportContext} The context applied to the build import
+   * @returns {VariableDeclaration | ExportNamedDeclaration} The import to replace config.currentNode
+   */
+  buildAttributes?<T>(
+    context: BuildAttributesContext<T>
+  ): VariableDeclaration | ExportNamedDeclaration;
 
   /**
    * Build the compiled ref attribute replacing innerRef attributes

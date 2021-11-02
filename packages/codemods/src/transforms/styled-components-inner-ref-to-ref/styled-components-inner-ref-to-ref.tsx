@@ -7,7 +7,7 @@ import type {
   JSXSpreadAttribute,
 } from 'jscodeshift';
 
-import { withPlugin, applyVisitor } from '../../codemods-helpers';
+import { withPlugin, applyVisitor } from '../../helpers/main';
 import type { CodemodPluginInstance } from '../../plugins/types';
 import defaultCodemodPlugin from '../../plugins/default';
 

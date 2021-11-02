@@ -16,8 +16,8 @@ import type {
   Options,
 } from 'jscodeshift';
 
-import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from './constants';
-import type { CodemodPlugin, CodemodPluginInstance } from './plugins/types';
+import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from '../constants';
+import type { CodemodPlugin, CodemodPluginInstance } from '../plugins/types';
 
 type Identifiers = Array<Identifier | JSXIdentifier | TSTypeParameter>;
 
