@@ -25,6 +25,7 @@
     "start": "ts-node --files src/index.tsx"
   },
   "dependencies": {
+    "@compiled/codemods": ">=0.2.0",
     "app-root-path": "^3.0.0",
     "chalk": "^4.1.2",
     "enquirer": "^2.3.6",
@@ -36,8 +37,5 @@
   },
   "devDependencies": {
     "@types/app-root-path": "^1.2.4"
-  },
-  "peerDependencies": {
-    "@compiled/codemods": ">=0.2.0"
   }
 }
