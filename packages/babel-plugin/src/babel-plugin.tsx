@@ -11,6 +11,14 @@ import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
 import { visitClassNamesPath } from './class-names';
 import type { State } from './types';
+import {
+  isCompiledCSSCallExpression,
+  isCompiledCSSTaggedTemplateExpression,
+  isCompiledKeyframesCallExpression,
+  isCompiledKeyframesTaggedTemplateExpression,
+  isCompiledStyledCallExpression,
+  isCompiledStyledTaggedTemplateExpression,
+} from './utils/ast';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkgJson = require('../package.json');
@@ -183,40 +191,32 @@ export default declare<State>((api) => {
         path.remove();
       },
       TaggedTemplateExpression(path, state) {
-        if (t.isIdentifier(path.node.tag) && path.node.tag.name === state.compiledImports?.css) {
-          state.pathsToCleanup.push({ path, action: 'replace' });
-          return;
-        }
-
         if (
-          t.isIdentifier(path.node.tag) &&
-          path.node.tag.name === state.compiledImports?.keyframes
+          isCompiledCSSTaggedTemplateExpression(path.node, state) ||
+          isCompiledKeyframesTaggedTemplateExpression(path.node, state)
         ) {
           state.pathsToCleanup.push({ path, action: 'replace' });
           return;
         }
 
-        if (!state.compiledImports?.styled) {
+        if (isCompiledStyledTaggedTemplateExpression(path.node, state)) {
+          visitStyledPath(path, { context: 'root', state, parentPath: path });
           return;
         }
-
-        visitStyledPath(path, { context: 'root', state, parentPath: path });
       },
       CallExpression(path, state) {
-        if (!state.compiledImports) {
-          return;
-        }
-
         if (
-          t.isIdentifier(path.node.callee) &&
-          (path.node.callee.name === state.compiledImports?.css ||
-            path.node.callee.name === state.compiledImports?.keyframes)
+          isCompiledCSSCallExpression(path.node, state) ||
+          isCompiledKeyframesCallExpression(path.node, state)
         ) {
           state.pathsToCleanup.push({ path, action: 'replace' });
           return;
         }
 
-        visitStyledPath(path, { context: 'root', state, parentPath: path });
+        if (isCompiledStyledCallExpression(path.node, state)) {
+          visitStyledPath(path, { context: 'root', state, parentPath: path });
+          return;
+        }
       },
       JSXElement(path, state) {
         if (!state.compiledImports?.ClassNames) {
