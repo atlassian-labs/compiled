@@ -191,10 +191,7 @@ const mergeCompiledImportSpecifiers = (j: core.JSCodeshift, collection: Collecti
   const allowedCompiledNames = [
     imports.compiledStyledImportName,
     ...Object.values(imports.emotionCoreImportNames),
-  ].filter(
-    (name) =>
-      ![imports.emotionCoreImportNames.jsx, imports.emotionCoreImportNames.css].includes(name)
-  );
+  ].filter((name) => ![imports.emotionCoreImportNames.jsx].includes(name));
 
   mergeImportSpecifiersAlongWithTheirComments({
     j,
