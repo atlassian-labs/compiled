@@ -2,18 +2,20 @@ import { transformSync } from '@babel/core';
 import { format } from 'prettier';
 
 import babelPlugin from '../babel-plugin';
+import type { PluginOptions } from '../types';
 
-export type TransformOptions = {
-  nonce?: string;
+export type TransformOptions = PluginOptions & {
+  pretty?: boolean;
 };
 
 export const transform = (code: string, options: TransformOptions = {}): string => {
-  const { nonce } = options;
+  const { pretty = true, ...pluginOptions } = options;
   const fileResult = transformSync(code, {
     babelrc: false,
     comments: false,
+    compact: !pretty,
     configFile: false,
-    plugins: [[babelPlugin, { nonce }]],
+    plugins: [[babelPlugin, pluginOptions]],
   });
 
   if (!fileResult || !fileResult.code) {
@@ -21,6 +23,10 @@ export const transform = (code: string, options: TransformOptions = {}): string 
   }
 
   const { code: babelCode } = fileResult;
+  if (!pretty) {
+    return babelCode;
+  }
+
   const ifIndex = babelCode.indexOf('if (process.env.NODE_ENV');
   // Remove the imports from the code, and the styled components display name
   const snippet = babelCode

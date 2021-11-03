@@ -356,7 +356,7 @@ export const evaluateExpression = (
     t.isObjectExpression(value) ||
     t.isTaggedTemplateExpression(value) ||
     // TODO this should be more generic
-    (value && isCompiledKeyframesCallExpression(value, updatedMeta))
+    (value && isCompiledKeyframesCallExpression(value, updatedMeta.state))
   ) {
     return createResultPair(value, updatedMeta);
   }

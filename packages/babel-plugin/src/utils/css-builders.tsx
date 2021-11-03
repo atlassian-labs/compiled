@@ -7,10 +7,10 @@ import {
   getKey,
   resolveBindingNode,
   buildCodeFrameError,
-  isCompiledCSSTemplateLiteral,
+  isCompiledCSSCallExpression,
+  isCompiledCSSTaggedTemplateExpression,
   isCompiledKeyframesTaggedTemplateExpression,
   isCompiledKeyframesCallExpression,
-  isCompiledCSSCallExpression,
 } from './ast';
 import { evaluateExpression } from './evaluate-expression';
 import type { CSSOutput, CssItem, LogicalCssItem, SheetCssItem } from './types';
@@ -250,16 +250,16 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
       // Check if string resembles CSS `property: value`
       (t.isStringLiteral(pathNode) && pathNode.value.includes(':')) ||
       t.isTemplateLiteral(pathNode) ||
-      isCompiledCSSTemplateLiteral(pathNode, meta) ||
-      isCompiledCSSCallExpression(pathNode, meta)
+      isCompiledCSSTaggedTemplateExpression(pathNode, meta.state) ||
+      isCompiledCSSCallExpression(pathNode, meta.state)
     ) {
       cssOutput = buildCss(pathNode, meta);
     } else if (t.isIdentifier(pathNode)) {
       const { value: interpolation, meta: updatedMeta } = evaluateExpression(pathNode, meta);
 
       if (
-        isCompiledCSSTemplateLiteral(interpolation, updatedMeta) ||
-        isCompiledCSSCallExpression(interpolation, updatedMeta)
+        isCompiledCSSTaggedTemplateExpression(interpolation, updatedMeta.state) ||
+        isCompiledCSSCallExpression(interpolation, updatedMeta.state)
       ) {
         cssOutput = buildCss(interpolation, updatedMeta);
       }
@@ -379,8 +379,8 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         variables.push(...result.variables);
         return;
       } else if (
-        isCompiledKeyframesCallExpression(propValue, updatedMeta) ||
-        isCompiledKeyframesTaggedTemplateExpression(propValue, updatedMeta)
+        isCompiledKeyframesCallExpression(propValue, updatedMeta.state) ||
+        isCompiledKeyframesTaggedTemplateExpression(propValue, updatedMeta.state)
       ) {
         const result = extractKeyframes(propValue, {
           ...updatedMeta,
@@ -480,8 +480,8 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
     if (
       t.isObjectExpression(interpolation) ||
-      isCompiledCSSTemplateLiteral(interpolation, meta) ||
-      isCompiledCSSCallExpression(interpolation, meta) ||
+      isCompiledCSSTaggedTemplateExpression(interpolation, meta.state) ||
+      isCompiledCSSCallExpression(interpolation, meta.state) ||
       (t.isArrowFunctionExpression(nodeExpression) &&
         t.isConditionalExpression(nodeExpression.body))
     ) {
@@ -498,8 +498,8 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     }
 
     if (
-      isCompiledKeyframesCallExpression(interpolation, updatedMeta) ||
-      isCompiledKeyframesTaggedTemplateExpression(interpolation, updatedMeta)
+      isCompiledKeyframesCallExpression(interpolation, updatedMeta.state) ||
+      isCompiledKeyframesTaggedTemplateExpression(interpolation, updatedMeta.state)
     ) {
       const {
         css: [keyframesSheet, unconditionalKeyframesItem],
@@ -676,11 +676,11 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     };
   }
 
-  if (isCompiledCSSTemplateLiteral(node, meta)) {
+  if (isCompiledCSSTaggedTemplateExpression(node, meta.state)) {
     return buildCss(node.quasi, meta);
   }
 
-  if (isCompiledCSSCallExpression(node, meta)) {
+  if (isCompiledCSSCallExpression(node, meta.state)) {
     return buildCss(node.arguments[0] as t.ObjectExpression, meta);
   }
 
