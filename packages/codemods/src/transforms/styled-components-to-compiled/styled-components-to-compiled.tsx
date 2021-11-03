@@ -12,7 +12,7 @@ import defaultCodemodPlugin from '../../plugins/default';
 
 const imports = {
   compiledStyledImportName: 'styled',
-  styledComponentsSupportedImportNames: ['css'],
+  styledComponentsSupportedImportNames: ['css', 'keyframes'],
   styledComponentsPackageName: 'styled-components',
 };
 
