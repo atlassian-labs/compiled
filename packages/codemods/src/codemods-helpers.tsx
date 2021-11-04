@@ -290,6 +290,10 @@ export const convertMixedImportToNamedImport = ({
         )
       );
 
+    newSpecifiers.sort(({ imported: { name: nameA } }, { imported: { name: nameB } }) =>
+      nameA.localeCompare(nameB)
+    );
+
     const newImport = applyBuildImport({
       plugins,
       originalNode: importDeclarationPath.node,
