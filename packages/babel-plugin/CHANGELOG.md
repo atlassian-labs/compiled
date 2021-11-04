@@ -1,5 +1,15 @@
 # @compiled/babel-plugin
 
+## 0.10.0
+
+### Minor Changes
+
+- 53a3d71: **Breaking change:** Ternary conditionals will no longer add falsy path styles when expression evaluates truthy
+
+### Patch Changes
+
+- b68411c: Fix styled path check
+
 ## 0.9.0
 
 ### Minor Changes
@@ -50,7 +60,8 @@
       display: flex;
       font-size: 50px;
       color: blue;
-    `}>
+    `}
+  >
     blue text
   </div>;
   ```
