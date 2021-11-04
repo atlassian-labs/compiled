@@ -1,6 +1,6 @@
 {
   "name": "@compiled/eslint-plugin",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Atlassian Pty Ltd",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

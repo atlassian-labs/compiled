@@ -1,5 +1,17 @@
 # @compiled/cli
 
+## 2.1.0
+
+### Minor Changes
+
+- 1185f0e: Use @compiled/codemods as dependency for @compiled/cli to allow npx usage
+
+### Patch Changes
+
+- Updated dependencies [507bcad]
+- Updated dependencies [f12c08d]
+  - @compiled/codemods@0.3.0
+
 ## 2.0.0
 
 ### Minor Changes
