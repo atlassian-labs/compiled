@@ -19,10 +19,10 @@ import {
   addCommentForUnresolvedImportSpecifiers,
   addReactIdentifier,
   convertDefaultImportToNamedImport,
-  replaceImportDeclaration,
   mergeImportSpecifiersAlongWithTheirComments,
   addCommentBefore,
   withPlugin,
+  convertMixedImportToNamedImport,
 } from '../../codemods-helpers';
 import defaultCodemodPlugin from '../../plugins/default';
 import type { CodemodPluginInstance } from '../../plugins/types';
@@ -271,7 +271,14 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
     });
     replaceEmotionCoreCSSTaggedTemplateExpression(j, collection, imports.emotionCorePackageName);
     handleClassNamesBehavior(j, collection, imports.emotionCorePackageName);
-    replaceImportDeclaration({ j, collection, importPath: imports.emotionCorePackageName });
+    convertMixedImportToNamedImport({
+      j,
+      plugins,
+      collection,
+      importPath: imports.emotionCorePackageName,
+      defaultSourceSpecifierName: imports.compiledStyledImportName,
+      allowedImportSpecifierNames: Object.values(imports.emotionCoreReactImportNames),
+    });
   }
 
   if (hasEmotionReactImportDeclaration) {
@@ -283,7 +290,14 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
     });
     replaceEmotionCoreCSSTaggedTemplateExpression(j, collection, imports.emotionReactPackageName);
     handleClassNamesBehavior(j, collection, imports.emotionReactPackageName);
-    replaceImportDeclaration({ j, collection, importPath: imports.emotionReactPackageName });
+    convertMixedImportToNamedImport({
+      j,
+      plugins,
+      collection,
+      importPath: imports.emotionReactPackageName,
+      defaultSourceSpecifierName: imports.compiledStyledImportName,
+      allowedImportSpecifierNames: Object.values(imports.emotionCoreReactImportNames),
+    });
   }
 
   mergeCompiledImportSpecifiers(j, collection);

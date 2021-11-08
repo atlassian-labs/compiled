@@ -42,11 +42,11 @@ describe('emotion-to-compiled transformer', () => {
     { plugins: [] },
     `
     /** @jsx jsx */
-    import { css, jsx, ClassNames, keyframes} from '@emotion/core';
+    import { keyframes, css, jsx, ClassNames } from '@emotion/core';
     `,
     `
     import * as React from 'react';
-    import { css, ClassNames, keyframes } from '@compiled/react';
+    import { ClassNames, css, keyframes } from '@compiled/react';
     `,
     'it transforms all named @emotion/core imports'
   );
@@ -60,7 +60,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { css, ClassNames, keyframes } from '@compiled/react';
+    import { ClassNames, css, keyframes } from '@compiled/react';
     `,
     'it transforms all named @emotion/react imports'
   );
@@ -74,7 +74,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { css as c, ClassNames as CN, keyframes as kf } from '@compiled/react';
+    import { ClassNames as CN, css as c, keyframes as kf } from '@compiled/react';
     `,
     'it transforms all named @emotion/core imports with different imported name'
   );
@@ -89,7 +89,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { css, ClassNames, keyframes, styled } from '@compiled/react';
+    import { ClassNames, css, keyframes, styled } from '@compiled/react';
     `,
     'it transforms all named @emotion/core and default @emotion/styled imports'
   );
@@ -104,7 +104,7 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { css as c, ClassNames as CN, keyframes as kf, styled as sc } from '@compiled/react';
+    import { ClassNames as CN, css as c, keyframes as kf, styled as sc } from '@compiled/react';
     `,
     'it transforms all named @emotion/core with different imported name and default with different name than "styled" @emotion/styled imports'
   );
