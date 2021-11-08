@@ -27,7 +27,7 @@
     "@compiled/css": "^0.7.0",
     "@compiled/utils": "^0.6.11",
     "enhanced-resolve": "^5.8.3",
-    "loader-utils": "^2.0.1",
+    "loader-utils": "^2.0.2",
     "webpack-sources": "^1.4.3"
   },
   "devDependencies": {
