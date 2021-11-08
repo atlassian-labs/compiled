@@ -31,7 +31,12 @@ const imports = {
   compiledStyledImportName: 'styled',
   emotionStyledPackageName: '@emotion/styled',
   emotionJSXPragma: '@jsx jsx',
-  emotionCoreReactImportNames: { jsx: 'jsx', css: 'css', ClassNames: 'ClassNames' },
+  emotionCoreReactImportNames: {
+    jsx: 'jsx',
+    css: 'css',
+    ClassNames: 'ClassNames',
+    keyframes: 'keyframes',
+  },
   emotionCorePackageName: '@emotion/core',
   emotionReactPackageName: '@emotion/react',
 };
