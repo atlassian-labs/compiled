@@ -56,6 +56,20 @@ describe('emotion-to-compiled transformer', () => {
     { plugins: [] },
     `
     /** @jsx jsx */
+    import { css, jsx, ClassNames } from '@emotion/react';
+    `,
+    `
+    import * as React from 'react';
+    import { css, ClassNames } from '@compiled/react';
+    `,
+    'it transforms all named @emotion/react imports'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    /** @jsx jsx */
     import { css as c, jsx, ClassNames as CN } from '@emotion/core';
     `,
     `
