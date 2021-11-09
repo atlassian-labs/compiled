@@ -82,3 +82,19 @@ export const ObjectLiteralMapWithKeys = (): JSX.Element => (
     ))}
   </div>
 );
+
+export const ObjectLiteralDisabledSameLine = (): JSX.Element => (
+  <h1
+    css={{ color: 'red' }} // @compiled-disable transform-css-prop
+  >
+    Black text
+  </h1>
+);
+
+export const ObjectLiteralDisabledNextLine = (): JSX.Element => (
+  <h1
+    // @compiled-disable-next-line transform-css-prop
+    css={{ color: 'red' }}>
+    Black text
+  </h1>
+);
