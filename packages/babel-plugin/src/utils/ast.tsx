@@ -1,5 +1,4 @@
 import * as t from '@babel/types';
-import type { BabelFile } from '@babel/core';
 import type { NodePath } from '@babel/traverse';
 import traverse from '@babel/traverse';
 import { parse } from '@babel/parser';
@@ -741,40 +740,3 @@ const tryWrappingBlockStatementInIIFE = (node: t.BlockStatement | t.Expression) 
  */
 export const pickFunctionBody = (node: t.Function): t.Expression =>
   tryWrappingBlockStatementInIIFE(node.body);
-
-/**
- * Get comments for `path` in both the line before and on the same line.
- *
- * e.g.
- * `<div css={{color: 'green'}} /> // @compiled-disable` will output `{before: [], same: [...]}
- *
- * @param path {NodePath<t.Node>}
- * @param meta {Metadata} Context for the transform
- * @returns {before: t.CommentLine[], same: t.CommentLine[]} Comments before and on the same line as the input path
- */
-export const getNodeDirectiveComments = (
-  path: NodePath<t.Node>,
-  meta: Metadata
-): { before: t.CommentLine[]; same: t.CommentLine[] } => {
-  const lineNumber = path.node?.loc?.start.line;
-  if (!lineNumber || lineNumber !== path.node?.loc?.end.line) {
-    return { before: [], same: [] };
-  }
-
-  const file: BabelFile = meta.state.file;
-  const commentLines =
-    file.ast.comments?.filter<t.CommentLine>(
-      (comment: t.CommentLine | t.CommentBlock): comment is t.CommentLine =>
-        comment.type === 'CommentLine'
-    ) ?? [];
-
-  return {
-    before: commentLines.filter(
-      (comment) =>
-        comment.loc.start.line === lineNumber - 1 && comment.loc.end.line === lineNumber - 1
-    ),
-    same: commentLines.filter(
-      (comment) => comment.loc.start.line === lineNumber && comment.loc.end.line === lineNumber
-    ),
-  };
-};

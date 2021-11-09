@@ -4,12 +4,11 @@ import { buildCompiledComponent } from '../utils/ast-builders';
 import { buildCss } from '../utils/css-builders';
 import {
   COMPILED_DIRECTIVE_DISABLE_NEXT_LINE,
-  COMPILED_DIRECTIVE_DISABLE_SAME_LINE,
+  COMPILED_DIRECTIVE_DISABLE_LINE,
+  COMPILED_DIRECTIVE_TRANSFORM_CSS_PROP,
 } from '../constants';
-import { getNodeDirectiveComments } from '../utils/ast';
+import { getNodeComments } from '../utils/comments';
 import type { Metadata } from '../types';
-
-const COMPILED_DIRECTIVE_TRANSFORM_CSS_PROP = 'transform-css-prop';
 
 const getJsxAttributeExpression = (node: t.JSXAttribute) => {
   if (t.isStringLiteral(node.value)) {
@@ -24,9 +23,9 @@ const getJsxAttributeExpression = (node: t.JSXAttribute) => {
 };
 
 const isCssPropDisabled = (path: NodePath<t.Node>, meta: Metadata): boolean => {
-  const { before, same } = getNodeDirectiveComments(path, meta);
+  const { before, current } = getNodeComments(path, meta);
 
-  // Disable the prop if there's a disable next line comment or disable on same line
+  // Disable the prop if there's a disable next line comment or disable on current line
   return (
     before.some((comment) =>
       comment.value
@@ -35,12 +34,10 @@ const isCssPropDisabled = (path: NodePath<t.Node>, meta: Metadata): boolean => {
           `${COMPILED_DIRECTIVE_DISABLE_NEXT_LINE} ${COMPILED_DIRECTIVE_TRANSFORM_CSS_PROP}`
         )
     ) ||
-    same.some((comment) =>
+    current.some((comment) =>
       comment.value
         .trim()
-        .startsWith(
-          `${COMPILED_DIRECTIVE_DISABLE_SAME_LINE} ${COMPILED_DIRECTIVE_TRANSFORM_CSS_PROP}`
-        )
+        .startsWith(`${COMPILED_DIRECTIVE_DISABLE_LINE} ${COMPILED_DIRECTIVE_TRANSFORM_CSS_PROP}`)
     )
   );
 };
