@@ -7,6 +7,13 @@ export interface UnconditionalCssItem {
   css: string;
 }
 
+export interface ConditionalCssItem {
+  type: 'conditional';
+  test: t.Expression;
+  consequent: CssItem[];
+  alternate: CssItem[];
+}
+
 export interface LogicalCssItem {
   type: 'logical';
   expression: t.Expression;
@@ -19,7 +26,7 @@ export interface SheetCssItem {
   css: string;
 }
 
-export type CssItem = UnconditionalCssItem | LogicalCssItem | SheetCssItem;
+export type CssItem = UnconditionalCssItem | ConditionalCssItem | LogicalCssItem | SheetCssItem;
 
 export interface CSSOutput {
   css: CssItem[];

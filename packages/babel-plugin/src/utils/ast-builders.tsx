@@ -327,17 +327,17 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     : t.identifier('style');
 
   let unconditionalClassNames = '',
-    logicalClassNames = '';
+    conditionalClassNames = '';
 
   opts.classNames.forEach((item) => {
     if (t.isStringLiteral(item)) {
       unconditionalClassNames += `${item.value} `;
-    } else if (t.isLogicalExpression(item)) {
-      logicalClassNames += `${generate(item).code}, `;
+    } else if (t.isLogicalExpression(item) || t.isConditionalExpression(item)) {
+      conditionalClassNames += `${generate(item).code}, `;
     }
   });
 
-  const classNames = `"${unconditionalClassNames.trim()}", ${logicalClassNames}`;
+  const classNames = `"${unconditionalClassNames.trim()}", ${conditionalClassNames}`;
 
   return template(
     `
@@ -460,11 +460,11 @@ export const conditionallyJoinExpressions = (
  */
 export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
   const unconditionalCss: string[] = [];
-  const logicalCss: CssItem[] = [];
+  const conditionalCss: CssItem[] = [];
 
   cssOutput.css.forEach((item) => {
-    if (item.type === 'logical') {
-      logicalCss.push(item);
+    if (item.type === 'logical' || item.type === 'conditional') {
+      conditionalCss.push(item);
     } else {
       unconditionalCss.push(getItemCss(item));
     }
@@ -473,14 +473,13 @@ export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metad
   // Rely on transformCss to remove duplicates and return only the last unconditional CSS for each property
   const uniqueUnconditionalCssOutput = transformCss(unconditionalCss.join(''));
 
-  // Rely on transformItemCss to build logicalExpressions for logical CSS
-  const logicalCssOutput = transformItemCss({ css: logicalCss, variables: cssOutput.variables });
+  // Rely on transformItemCss to build expressions for conditional & logical CSS
+  const conditionalCssOutput = transformItemCss(conditionalCss);
 
-  const sheets = [...uniqueUnconditionalCssOutput.sheets, ...logicalCssOutput.sheets];
-
+  const sheets = [...uniqueUnconditionalCssOutput.sheets, ...conditionalCssOutput.sheets];
   const classNames = [
     ...[t.stringLiteral(uniqueUnconditionalCssOutput.classNames.join(' '))],
-    ...logicalCssOutput.classNames,
+    ...conditionalCssOutput.classNames,
   ];
 
   return styledTemplate(
@@ -526,26 +525,42 @@ export const getPropValue = (
 /**
  * Transforms CSS output into `sheets` and `classNames` ASTs.
  *
- * @param cssOutput {CSSOutput}
+ * @param cssItems {CssItem[]}
  */
-const transformItemCss = (cssOutput: CSSOutput) => {
+const transformItemCss = (cssItems: CssItem[]) => {
   const sheets: string[] = [];
   const classNames: t.Expression[] = [];
 
-  cssOutput.css.forEach((item) => {
-    const css = transformCss(getItemCss(item));
-    const className = css.classNames.join(' ');
-
-    sheets.push(...css.sheets);
-
+  cssItems.forEach((item) => {
     switch (item.type) {
-      case 'logical':
+      case 'conditional':
+        const consequent = transformItemCss(item.consequent);
+        const alternate = transformItemCss(item.alternate);
+
+        sheets.push(...consequent.sheets, ...alternate.sheets);
         classNames.push(
-          t.logicalExpression(item.operator, item.expression, t.stringLiteral(className))
+          t.conditionalExpression(item.test, consequent.classNames[0], alternate.classNames[0])
+        );
+        break;
+
+      case 'logical':
+        const logicalCss = transformCss(getItemCss(item));
+
+        sheets.push(...logicalCss.sheets);
+        classNames.push(
+          t.logicalExpression(
+            item.operator,
+            item.expression,
+            t.stringLiteral(logicalCss.classNames.join(' '))
+          )
         );
         break;
 
       default:
+        const css = transformCss(getItemCss(item));
+        const className = css.classNames.join(' ');
+
+        sheets.push(...css.sheets);
         if (className) {
           classNames.push(t.stringLiteral(className));
         }
@@ -568,7 +583,7 @@ export const buildCompiledComponent = (
   cssOutput: CSSOutput,
   meta: Metadata
 ): t.Node => {
-  const { sheets, classNames } = transformItemCss(cssOutput);
+  const { sheets, classNames } = transformItemCss(cssOutput.css);
 
   const classNameProp = node.openingElement.attributes.find((prop): prop is t.JSXAttribute => {
     return t.isJSXAttribute(prop) && prop.name.name === 'className';

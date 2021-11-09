@@ -91,7 +91,9 @@ const mergeSubsequentUnconditionalCssItems = (arr: Array<CssItem>): Array<CssIte
  * @param item
  */
 export const getItemCss = (item: CssItem): string => {
-  return item.css;
+  return item.type === 'conditional'
+    ? [...item.consequent, ...item.alternate].map(getItemCss).join('')
+    : item.css;
 };
 
 /**
@@ -108,6 +110,10 @@ const getLogicalItemFromConditionalExpression = (
 ) => {
   const expression = node.test;
   return css.map((item) => {
+    if (item.type === 'conditional') {
+      return item;
+    }
+
     if (item.type === 'logical') {
       return {
         ...item,
@@ -127,7 +133,7 @@ const getLogicalItemFromConditionalExpression = (
 
     const logicalItem: LogicalCssItem = {
       type: 'logical',
-      css: item.css,
+      css: getItemCss(item),
       expression: type === 'consequent' ? expression : alternateExpression,
       operator: '&&',
     };
@@ -137,6 +143,24 @@ const getLogicalItemFromConditionalExpression = (
 };
 
 /**
+ * Recursive helper function for toCSSRule to handle conditional CssItems
+ *
+ * @param selector
+ * @param items
+ */
+const toCSSRuleInternal = (selector: string, items: CssItem[]) =>
+  items.map(
+    (item): CssItem =>
+      item.type === 'conditional'
+        ? {
+            ...item,
+            consequent: toCSSRuleInternal(selector, item.consequent),
+            alternate: toCSSRuleInternal(selector, item.alternate),
+          }
+        : { ...item, css: `${selector} { ${getItemCss(item)} }` }
+  );
+
+/**
  * Maps the css in the result to CSS rules.
  *
  * @param selector
@@ -144,8 +168,31 @@ const getLogicalItemFromConditionalExpression = (
  */
 const toCSSRule = (selector: string, result: CSSOutput) => ({
   ...result,
-  css: result.css.map((x) => ({ ...x, css: `${selector} { ${getItemCss(x)} }` })),
+  css: toCSSRuleInternal(selector, result.css),
 });
+
+/**
+ * Recursive helper function for toCSSDeclaration to handle conditional CssItems
+ *
+ * @param key
+ * @param items
+ */
+const toCSSDeclarationInternal = (key: string, items: CssItem[]) =>
+  items.map((item): CssItem => {
+    if (item.type === 'sheet') {
+      // Leave sheets as is
+      return item;
+    } else if (item.type === 'conditional') {
+      // Handle recursion into conditionals
+      return {
+        ...item,
+        consequent: toCSSDeclarationInternal(key, item.consequent),
+        alternate: toCSSDeclarationInternal(key, item.alternate),
+      };
+    } else {
+      return { ...item, css: `${kebabCase(key)}: ${getItemCss(item)};` };
+    }
+  });
 
 /**
  * Maps the css in the result to CSS declarations.
@@ -155,10 +202,7 @@ const toCSSRule = (selector: string, result: CSSOutput) => ({
  */
 const toCSSDeclaration = (key: string, result: CSSOutput) => ({
   ...result,
-  // Leave sheets as is
-  css: result.css.map((x) =>
-    x.type === 'sheet' ? x : { ...x, css: `${kebabCase(key)}: ${getItemCss(x)};` }
-  ),
+  css: toCSSDeclarationInternal(key, result.css),
 });
 
 /**
@@ -238,10 +282,10 @@ const callbackIfFileIncluded = (meta: Metadata, next: Metadata) => {
  */
 const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metadata): CSSOutput => {
   const conditionalPaths: ['consequent', 'alternate'] = ['consequent', 'alternate'];
-  const css = [];
-  const variables = [];
+  const css: CSSOutput['css'] = [];
+  const variables: CSSOutput['variables'] = [];
 
-  for (const path of conditionalPaths) {
+  const [consequentCss, alternateCss] = conditionalPaths.map((path) => {
     const pathNode = node[path];
     let cssOutput;
 
@@ -263,15 +307,33 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
       ) {
         cssOutput = buildCss(interpolation, updatedMeta);
       }
+    } else if (t.isConditionalExpression(pathNode)) {
+      cssOutput = extractConditionalExpression(pathNode, meta);
     }
 
     if (cssOutput) {
-      css.push(...getLogicalItemFromConditionalExpression(cssOutput.css, node, path));
       variables.push(...cssOutput.variables);
+      return mergeSubsequentUnconditionalCssItems(cssOutput.css);
     }
+
+    return [];
+  });
+
+  if (consequentCss.length && alternateCss.length) {
+    css.push({
+      type: 'conditional',
+      test: node.test,
+      consequent: consequentCss,
+      alternate: alternateCss,
+    });
+  } else if (consequentCss?.length) {
+    // convert single-sided conditional into logical statements
+    css.push(...getLogicalItemFromConditionalExpression(consequentCss, node, 'consequent'));
+  } else if (alternateCss?.length) {
+    css.push(...getLogicalItemFromConditionalExpression(alternateCss, node, 'alternate'));
   }
 
-  return { css: mergeSubsequentUnconditionalCssItems(css), variables };
+  return { css: css, variables };
 };
 
 /**
@@ -328,11 +390,11 @@ const extractKeyframes = (
 
   return {
     css: [
-      { type: 'sheet', css: css.map((item) => item.css).join('') },
+      { type: 'sheet', css: css.map((item) => getItemCss(item)).join('') },
       // Use the name of the keyframe instead of the identifier
       { type: 'unconditional', css: prefix + name + suffix },
     ],
-    variables: variables,
+    variables,
   };
 };
 
@@ -512,7 +574,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
       css.push(keyframesSheet);
       variables.push(...keyframeVariables);
-      return acc + unconditionalKeyframesItem.css;
+      return acc + getItemCss(unconditionalKeyframesItem);
     }
 
     const { expression, variableName } = getVariableDeclaratorValueForOwnPath(nodeExpression, meta);
@@ -543,7 +605,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   css.push({ type: 'unconditional', css: literalResult });
 
-  // Deals with Conditional CSS Rules
+  // Deals with Conditional CSS Rules from Logical Expressions
   node.expressions.forEach((prop) => {
     if (t.isArrowFunctionExpression(prop)) {
       if (t.isLogicalExpression(prop.body)) {
@@ -662,7 +724,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
 
       const logicalItem: LogicalCssItem = {
         type: 'logical',
-        css: item.css,
+        css: getItemCss(item),
         expression,
         operator: node.operator,
       };
