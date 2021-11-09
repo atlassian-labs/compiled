@@ -512,22 +512,6 @@ describe('styled component behaviour', () => {
     );
   });
 
-  it('should apply conditional CSS with ternary operators containing logical statements', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-
-      const Component = styled.div\`
-        \${props => props.isPrimary ? (props.isBolded && { fontWeight: 'bold' }) : { color: 'black' }};
-      \`;
-    `);
-
-    expect(actual).toIncludeMultiple(['._k48p8n31{font-weight:bold}', '._syaz11x8{color:black}']);
-
-    expect(actual).toInclude(
-      'className={ax(["_syaz5scu",props.isPrimary?props.isBolded&&"_k48p8n31":"_syaz11x8",props.className])}'
-    );
-  });
-
   it('should not allow a logical statement with a conditional right-hand side', () => {
     expect(() =>
       transform(`
