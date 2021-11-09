@@ -42,11 +42,11 @@ describe('emotion-to-compiled transformer', () => {
     { plugins: [] },
     `
     /** @jsx jsx */
-    import { css, jsx, ClassNames } from '@emotion/core';
+    import { keyframes, css, jsx, ClassNames } from '@emotion/core';
     `,
     `
     import * as React from 'react';
-    import { css, ClassNames } from '@compiled/react';
+    import { ClassNames, css, keyframes } from '@compiled/react';
     `,
     'it transforms all named @emotion/core imports'
   );
@@ -56,11 +56,25 @@ describe('emotion-to-compiled transformer', () => {
     { plugins: [] },
     `
     /** @jsx jsx */
-    import { css as c, jsx, ClassNames as CN } from '@emotion/core';
+    import { css, jsx, ClassNames, keyframes } from '@emotion/react';
     `,
     `
     import * as React from 'react';
-    import { css as c, ClassNames as CN } from '@compiled/react';
+    import { ClassNames, css, keyframes } from '@compiled/react';
+    `,
+    'it transforms all named @emotion/react imports'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    /** @jsx jsx */
+    import { css as c, jsx, ClassNames as CN, keyframes as kf } from '@emotion/core';
+    `,
+    `
+    import * as React from 'react';
+    import { ClassNames as CN, css as c, keyframes as kf } from '@compiled/react';
     `,
     'it transforms all named @emotion/core imports with different imported name'
   );
@@ -70,12 +84,12 @@ describe('emotion-to-compiled transformer', () => {
     { plugins: [] },
     `
     /** @jsx jsx */
-    import { css, jsx, ClassNames } from '@emotion/core';
+    import { css, jsx, ClassNames, keyframes } from '@emotion/core';
     import styled from '@emotion/styled';
     `,
     `
     import * as React from 'react';
-    import { css, ClassNames, styled } from '@compiled/react';
+    import { ClassNames, css, keyframes, styled } from '@compiled/react';
     `,
     'it transforms all named @emotion/core and default @emotion/styled imports'
   );
@@ -85,12 +99,12 @@ describe('emotion-to-compiled transformer', () => {
     { plugins: [] },
     `
     /** @jsx jsx */
-    import { css as c, jsx, ClassNames as CN } from '@emotion/core';
+    import { css as c, jsx, ClassNames as CN, keyframes as kf } from '@emotion/core';
     import sc from '@emotion/styled';
     `,
     `
     import * as React from 'react';
-    import { css as c, ClassNames as CN, styled as sc } from '@compiled/react';
+    import { ClassNames as CN, css as c, keyframes as kf, styled as sc } from '@compiled/react';
     `,
     'it transforms all named @emotion/core with different imported name and default with different name than "styled" @emotion/styled imports'
   );
