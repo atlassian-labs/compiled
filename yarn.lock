@@ -8426,10 +8426,10 @@ flow-parser@0.*:
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.149.0.tgz#6e5749ad832ba211968429accdb6a3858706e4f8"
   integrity sha512-ruUVkZuM9oFQjhSsLO/OJYRYpGnuXJpTnIZmgzna6DyLFb3CLpeO27oJbWyeXaa830hmKf0JRzpcdFsFS8lmpg==
 
-flowgen@^1.14.1:
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/flowgen/-/flowgen-1.14.1.tgz#a1da7cbe78bd3897291257dc60c566e14540c95a"
-  integrity sha1-odp8vni9OJcpElfcYMVm4UVAyVo=
+flowgen@^1.15.0:
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/flowgen/-/flowgen-1.15.0.tgz#6c72116c63fe6f9806872adea23f9f28aeaee2f8"
+  integrity sha512-ym/kL2RGolCHArTAPRTPJa95CC0ZDWSh69KTCLIunc6wsXMT5MGpRFT/UhOVv205a2JHekm5booya1XHOqEi9Q==
   dependencies:
     "@babel/code-frame" "^7.10.4"
     "@babel/highlight" "^7.10.4"
