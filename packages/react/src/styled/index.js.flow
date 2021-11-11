@@ -33,7 +33,7 @@ export interface StyledFunctionFromTag<TTag: $Keys<$JSXIntrinsics>> {
     ...interpolations: Interpolations<TProps>
   ): React$ComponentType<{
     ...TProps,
-    ...$ElementType<$JSXIntrinsics, TTag>,
+    ...$Exact<$ElementType<$JSXIntrinsics, TTag>>,
     ...StyledProps,
   }>;
 }
