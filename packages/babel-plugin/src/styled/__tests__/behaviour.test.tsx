@@ -437,11 +437,8 @@ describe('styled component behaviour', () => {
       '._19itlf8h{border:2px solid blue}',
       '._1wyb1ul9{font-size:30px}',
       '._syaz1xo0{color:var(--_13kr4bd)}',
+      `<C{...props}style={{...style,"--_13kr4bd":ix(isPrimary?isDisabled?'black':'blue':'red')}}ref={ref}className={ax(["_syaz1xo0 _1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.className])}/>`,
     ]);
-
-    expect(actual).toInclude(
-      `<C{...props}style={{...style,"--_13kr4bd":ix(isPrimary?isDisabled?'black':'blue':'red')}}ref={ref}className={ax(["_syaz1xo0 _1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.className])}/>`
-    );
   });
 
   it('should apply conditional CSS with template literal', () => {
@@ -483,11 +480,8 @@ describe('styled component behaviour', () => {
       '._syaz11x8{color:black}',
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
+      'className={ax(["_bfhk1x77",props.isPrimary?props.isDisabled?"_syaz11x8":"_syaz13q2":"_syaz5scu",props.className])}',
     ]);
-
-    expect(actual).toInclude(
-      'className={ax(["_bfhk1x77",props.isPrimary?props.isDisabled?"_syaz11x8":"_syaz13q2":"_syaz5scu",props.className])}'
-    );
   });
 
   it('should apply conditional CSS with template literal and multiple props lines', () => {
@@ -852,10 +846,7 @@ describe('styled component behaviour', () => {
       '._syaz1x77{color:white}',
       '_bfhk11x8{background-color:black}',
       '_1wyb1ul9{font-size:30px}',
+      'className={ax(["_1wyb1ul9",props.isDark?"_bfhk11x8 _syaz1x77":"_bfhk1x77 _syaz11x8",props.className])}',
     ]);
-
-    expect(actual).toInclude(
-      'className={ax(["_1wyb1ul9",props.isDark?"_bfhk11x8 _syaz1x77":"_bfhk1x77 _syaz11x8",props.className])}'
-    );
   });
 });

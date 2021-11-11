@@ -333,7 +333,7 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
     css.push(...getLogicalItemFromConditionalExpression(alternateCss, node, 'alternate'));
   }
 
-  return { css: css, variables };
+  return { css, variables };
 };
 
 /**
