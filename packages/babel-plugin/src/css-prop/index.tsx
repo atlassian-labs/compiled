@@ -2,6 +2,12 @@ import * as t from '@babel/types';
 import type { NodePath } from '@babel/core';
 import { buildCompiledComponent } from '../utils/ast-builders';
 import { buildCss } from '../utils/css-builders';
+import {
+  COMPILED_DIRECTIVE_DISABLE_NEXT_LINE,
+  COMPILED_DIRECTIVE_DISABLE_LINE,
+  COMPILED_DIRECTIVE_TRANSFORM_CSS_PROP,
+} from '../constants';
+import { getNodeComments } from '../utils/comments';
 import type { Metadata } from '../types';
 
 const getJsxAttributeExpression = (node: t.JSXAttribute) => {
@@ -16,6 +22,26 @@ const getJsxAttributeExpression = (node: t.JSXAttribute) => {
   throw new Error('Value of JSX attribute was unexpected.');
 };
 
+const isCssPropDisabled = (path: NodePath<t.Node>, meta: Metadata): boolean => {
+  const { before, current } = getNodeComments(path, meta);
+
+  // Disable the prop if there's a disable next line comment or disable on current line
+  return (
+    before.some((comment) =>
+      comment.value
+        .trim()
+        .startsWith(
+          `${COMPILED_DIRECTIVE_DISABLE_NEXT_LINE} ${COMPILED_DIRECTIVE_TRANSFORM_CSS_PROP}`
+        )
+    ) ||
+    current.some((comment) =>
+      comment.value
+        .trim()
+        .startsWith(`${COMPILED_DIRECTIVE_DISABLE_LINE} ${COMPILED_DIRECTIVE_TRANSFORM_CSS_PROP}`)
+    )
+  );
+};
+
 /**
  * Takes a JSX opening element and then transforms any usage of `css` prop to a compiled component.
  *
@@ -26,8 +52,8 @@ const getJsxAttributeExpression = (node: t.JSXAttribute) => {
  */
 export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Metadata): void => {
   let cssPropIndex = -1;
-  const cssProp = path.node.attributes.find((attr, index): attr is t.JSXAttribute => {
-    if (t.isJSXAttribute(attr) && attr.name.name === 'css') {
+  const cssProp = path.get('attributes').find((attr, index): attr is NodePath<t.JSXAttribute> => {
+    if (t.isJSXAttribute(attr.node) && attr.node.name.name === 'css') {
       cssPropIndex = index;
       return true;
     }
@@ -35,11 +61,16 @@ export const visitCssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Meta
     return false;
   });
 
-  if (!cssProp || !cssProp.value) {
+  if (!cssProp || !cssProp.node.value) {
     return;
   }
 
-  const cssOutput = buildCss(getJsxAttributeExpression(cssProp), meta);
+  // CSS prop disabled with comment directive (check both the JSX element and the css prop)
+  if (isCssPropDisabled(path, meta) || isCssPropDisabled(cssProp, meta)) {
+    return;
+  }
+
+  const cssOutput = buildCss(getJsxAttributeExpression(cssProp.node), meta);
 
   // Remove css prop
   path.node.attributes.splice(cssPropIndex, 1);
