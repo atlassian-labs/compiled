@@ -28,6 +28,15 @@ const TextWithTernaryOperatorTemplateLiteral = styled.span<TextProps>`
     props.isPrimary && props.isMaybe ? (props.isBolded && 'bold') || 'normal' : 'light'};
 `;
 
+const TextWithNestedTernaryOperatorTemplateLiteralCssVariable = styled.span<TextProps>`
+  color: ${(props) => (props.isPrimary ? (props.isMaybe ? 'orange' : 'blue') : 'red')};
+`;
+
+const TextWithNestedTernaryOperatorTemplateLiteral = styled.span<TextProps>`
+  ${(props) =>
+    props.isPrimary ? (props.isMaybe ? 'color: orange' : 'color: blue') : 'color: red'};
+`;
+
 const TextWithObjectStyles = styled.span<TextProps>(
   { color: 'red' },
   (props) => props.isPrimary && { color: 'blue' },
@@ -39,6 +48,16 @@ const TextWithObjectStyles = styled.span<TextProps>(
 
 const TextWithTernaryAndBooleanObjectStyle = styled.span<TextProps>({ fontSize: '20px' }, (props) =>
   props.isPrimary && props.isBolded ? { color: 'blue', fontWeight: 'bold' } : { color: 'red' }
+);
+
+const TextWithNestedTernaryAndBooleanObjectStyle = styled.span<TextProps>(
+  { fontSize: '20px' },
+  (props) =>
+    props.isPrimary
+      ? props.isBolded
+        ? { color: 'blue', fontWeight: 'bold' }
+        : { color: 'blue' }
+      : { color: 'red' }
 );
 
 const TextWithMixins = styled.span<TextProps>`
@@ -106,6 +125,73 @@ export const NotPrimaryTextWithTernaryOperatorTemplateLiteral = (): JSX.Element 
   );
 };
 
+export const PrimaryTextWithNestedTernaryOperatorTemplateLiteralCssVariable = (): JSX.Element => {
+  return (
+    <TextWithNestedTernaryOperatorTemplateLiteralCssVariable isPrimary>
+      Hello primary (blue)
+    </TextWithNestedTernaryOperatorTemplateLiteralCssVariable>
+  );
+};
+
+export const PrimaryMaybeTextWithNestedTernaryOperatorTemplateLiteralCssVariable =
+  (): JSX.Element => {
+    return (
+      <TextWithNestedTernaryOperatorTemplateLiteralCssVariable isPrimary isMaybe>
+        Hello primary maybe (orange)
+      </TextWithNestedTernaryOperatorTemplateLiteralCssVariable>
+    );
+  };
+
+export const NotPrimaryTextWithNestedTernaryOperatorTemplateLiteralCssVariable =
+  (): JSX.Element => {
+    return (
+      <TextWithNestedTernaryOperatorTemplateLiteralCssVariable>
+        Hello secondary (red)
+      </TextWithNestedTernaryOperatorTemplateLiteralCssVariable>
+    );
+  };
+
+export const NotPrimaryMaybeTextWithNestedTernaryOperatorTemplateLiteralCssVariable =
+  (): JSX.Element => {
+    return (
+      <TextWithNestedTernaryOperatorTemplateLiteralCssVariable isMaybe>
+        Hello secondary (red)
+      </TextWithNestedTernaryOperatorTemplateLiteralCssVariable>
+    );
+  };
+
+export const PrimaryTextWithNestedTernaryOperatorTemplateLiteral = (): JSX.Element => {
+  return (
+    <TextWithNestedTernaryOperatorTemplateLiteral isPrimary>
+      Hello primary (blue)
+    </TextWithNestedTernaryOperatorTemplateLiteral>
+  );
+};
+
+export const PrimaryMaybeTextWithNestedTernaryOperatorTemplateLiteral = (): JSX.Element => {
+  return (
+    <TextWithNestedTernaryOperatorTemplateLiteral isPrimary isMaybe>
+      Hello primary maybe (orange)
+    </TextWithNestedTernaryOperatorTemplateLiteral>
+  );
+};
+
+export const NotPrimaryTextWithNestedTernaryOperatorTemplateLiteral = (): JSX.Element => {
+  return (
+    <TextWithNestedTernaryOperatorTemplateLiteral>
+      Hello secondary (red)
+    </TextWithNestedTernaryOperatorTemplateLiteral>
+  );
+};
+
+export const NotPrimaryMaybeTextWithNestedTernaryOperatorTemplateLiteral = (): JSX.Element => {
+  return (
+    <TextWithNestedTernaryOperatorTemplateLiteral isMaybe>
+      Hello secondary (red)
+    </TextWithNestedTernaryOperatorTemplateLiteral>
+  );
+};
+
 export const PrimaryTextWithObjectStyles = (): JSX.Element => {
   return <TextWithObjectStyles isPrimary>Hello primary</TextWithObjectStyles>;
 };
@@ -143,6 +229,43 @@ export const BoldedPrimaryTextWithTernaryAndBooleanObjectStyle = (): JSX.Element
 export const NotPrimaryTextWithTernaryAndBooleanObjectStyle = (): JSX.Element => {
   return (
     <TextWithTernaryAndBooleanObjectStyle> Hello secondary</TextWithTernaryAndBooleanObjectStyle>
+  );
+};
+
+export const PrimaryTextWithNestedTernaryAndBooleanObjectStyle = (): JSX.Element => {
+  return (
+    <TextWithNestedTernaryAndBooleanObjectStyle isPrimary>
+      {' '}
+      Hello primary but not bolded. This should be blue.
+    </TextWithNestedTernaryAndBooleanObjectStyle>
+  );
+};
+
+export const BoldedPrimaryNestedTextWithTernaryAndBooleanObjectStyle = (): JSX.Element => {
+  return (
+    <TextWithNestedTernaryAndBooleanObjectStyle isPrimary isBolded>
+      {' '}
+      Hello bolded primary. This should be blue.
+    </TextWithNestedTernaryAndBooleanObjectStyle>
+  );
+};
+
+export const NotPrimaryTextWithNestedTernaryAndBooleanObjectStyle = (): JSX.Element => {
+  return (
+    // should not render bold since it is not also primary
+    <TextWithNestedTernaryAndBooleanObjectStyle isBolded>
+      {' '}
+      Hello secondary
+    </TextWithNestedTernaryAndBooleanObjectStyle>
+  );
+};
+
+export const NotPrimaryNotBoldedTextWithNestedTernaryAndBooleanObjectStyle = (): JSX.Element => {
+  return (
+    <TextWithNestedTernaryAndBooleanObjectStyle>
+      {' '}
+      Hello secondary
+    </TextWithNestedTernaryAndBooleanObjectStyle>
   );
 };
 

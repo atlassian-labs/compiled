@@ -534,6 +534,23 @@ describe('styled component behaviour', () => {
     ]);
   });
 
+  it('should apply nested conditional CSS when using "key: value" in string form', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        \${props => props.isPrimary ? props.isGreen ? 'color: green' : 'color: blue' : 'color: red'};
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syazbf54{color:green}',
+      '._syaz13q2{color:blue}',
+      '._syaz5scu{color:red}',
+      'className={ax(["",props.isPrimary?props.isGreen?"_syazbf54":"_syaz13q2":"_syaz5scu",props.className])}',
+    ]);
+  });
+
   it('should apply conditional CSS when using "key: value; key: value; ..." in string form', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
