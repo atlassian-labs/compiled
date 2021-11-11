@@ -15,31 +15,19 @@ const defaultCodemodPlugin: CodemodPlugin = {
       },
 
       buildAttributes({ originalNode, transformedNode, composedNode }) {
-        if (
-          originalNode.value.type === 'VariableDeclaration' ||
-          originalNode.value.type === 'TaggedTemplateExpression'
-        ) {
-          const newDeclaration = j(originalNode).replaceWith(transformedNode).get();
+        const newDeclaration = j(originalNode).replaceWith(transformedNode).get();
 
-          if (composedNode) {
-            let candidateForInsertion = newDeclaration;
+        if (composedNode) {
+          let candidateForInsertion = newDeclaration;
 
-            while (
-              candidateForInsertion.parentPath &&
-              candidateForInsertion.parentPath.name !== 'body'
-            ) {
-              candidateForInsertion = candidateForInsertion.parentPath;
-            }
-
-            j(candidateForInsertion).insertBefore(composedNode);
+          while (candidateForInsertion.parentPath?.name !== 'body') {
+            candidateForInsertion = candidateForInsertion.parentPath;
           }
 
-          return newDeclaration;
+          j(candidateForInsertion).insertBefore(composedNode);
         }
 
-        throw new Error(
-          'VariableDeclaration, ExportNamedDeclaration & ExportDefaultDeclaration supported only'
-        );
+        return newDeclaration;
       },
 
       buildRefAttribute({ currentNode }) {
