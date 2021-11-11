@@ -7,6 +7,7 @@ import { dirname, join } from 'path';
 import resolve from 'resolve';
 import type { Metadata, State } from '../types';
 import type { PartialBindingWithMeta } from './types';
+import { getDefaultExport, getNamedExport } from './export-traversers';
 
 /**
  * Returns the nodes path including the scope of a parent.
@@ -199,10 +200,6 @@ export const getMemberExpressionMeta = (
   let bindingIdentifier: t.Identifier | null = null;
   let originalBindingType: t.Expression['type'] = 'Identifier';
 
-  if (t.isIdentifier(expression.property)) {
-    accessPath.push(expression.property);
-  }
-
   traverse(t.expressionStatement(expression), {
     noScope: true,
     MemberExpression(path) {
@@ -387,19 +384,11 @@ const findDefaultExportModuleNode = (
   foundNode: t.Node | undefined;
   foundParentPath: NodePath | undefined;
 } => {
-  let foundNode: t.Node | undefined = undefined;
-  let foundParentPath: NodePath | undefined = undefined;
-
-  traverse(ast, {
-    ExportDefaultDeclaration(path) {
-      foundParentPath = path as NodePath;
-      foundNode = path.node.declaration as t.Node;
-    },
-  });
+  const result = getDefaultExport(ast);
 
   return {
-    foundNode,
-    foundParentPath,
+    foundNode: result?.node,
+    foundParentPath: result?.path,
   };
 };
 
@@ -410,30 +399,11 @@ const findNamedExportModuleNode = (
   foundNode: t.Node | undefined;
   foundParentPath: NodePath | undefined;
 } => {
-  let foundNode: t.Node | undefined = undefined;
-  let foundParentPath: NodePath | undefined = undefined;
-
-  traverse(ast, {
-    ExportNamedDeclaration(path) {
-      if (!path.node.declaration || !t.isVariableDeclaration(path.node.declaration)) {
-        return;
-      }
-
-      for (let i = 0; i < path.node.declaration.declarations.length; i++) {
-        const named = path.node.declaration.declarations[i];
-        if (t.isIdentifier(named.id) && named.id.name === exportName) {
-          foundNode = named.init as t.Node;
-          foundParentPath = path as NodePath;
-          path.stop();
-          break;
-        }
-      }
-    },
-  });
+  const result = getNamedExport(ast, exportName);
 
   return {
-    foundNode,
-    foundParentPath,
+    foundNode: result?.node,
+    foundParentPath: result?.path,
   };
 };
 
@@ -684,6 +654,14 @@ export const resolveBindingNode = (
         cacheKey: `modulePath=${modulePath}&exportName=${exportName}`,
         value: () => findNamedExportModuleNode(ast, exportName),
       }));
+    } else if (binding.path.isImportNamespaceSpecifier()) {
+      // There's no node inside the file to reference for namespace imports
+      // i.e. import * as theme from 'theme';
+      // Therefore we just return the binding path
+      const { path } = binding;
+
+      foundNode = path.node;
+      foundParentPath = path.parentPath;
     }
 
     if (!foundNode || !foundParentPath) {

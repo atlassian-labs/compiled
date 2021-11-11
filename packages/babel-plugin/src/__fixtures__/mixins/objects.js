@@ -9,6 +9,7 @@ export const style = {
 };
 
 const danger = 'blue';
+export { danger };
 
 export const styleInlining = {
   fontSize: 14,
