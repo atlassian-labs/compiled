@@ -92,7 +92,7 @@ const mergeSubsequentUnconditionalCssItems = (arr: Array<CssItem>): Array<CssIte
  */
 export const getItemCss = (item: CssItem): string => {
   return item.type === 'conditional'
-    ? [...item.consequent, ...item.alternate].map(getItemCss).join('')
+    ? [item.consequent, item.alternate].map(getItemCss).join('')
     : item.css;
 };
 
@@ -146,19 +146,16 @@ const getLogicalItemFromConditionalExpression = (
  * Recursive helper function for toCSSRule to handle conditional CssItems
  *
  * @param selector
- * @param items
+ * @param item
  */
-const toCSSRuleInternal = (selector: string, items: CssItem[]) =>
-  items.map(
-    (item): CssItem =>
-      item.type === 'conditional'
-        ? {
-            ...item,
-            consequent: toCSSRuleInternal(selector, item.consequent),
-            alternate: toCSSRuleInternal(selector, item.alternate),
-          }
-        : { ...item, css: `${selector} { ${getItemCss(item)} }` }
-  );
+const toCSSRuleInternal = (selector: string, item: CssItem): CssItem =>
+  item.type === 'conditional'
+    ? {
+        ...item,
+        consequent: toCSSRuleInternal(selector, item.consequent),
+        alternate: toCSSRuleInternal(selector, item.alternate),
+      }
+    : { ...item, css: `${selector} { ${getItemCss(item)} }` };
 
 /**
  * Maps the css in the result to CSS rules.
@@ -168,7 +165,7 @@ const toCSSRuleInternal = (selector: string, items: CssItem[]) =>
  */
 const toCSSRule = (selector: string, result: CSSOutput) => ({
   ...result,
-  css: toCSSRuleInternal(selector, result.css),
+  css: result.css.map((item): CssItem => toCSSRuleInternal(selector, item)),
 });
 
 /**
@@ -177,22 +174,21 @@ const toCSSRule = (selector: string, result: CSSOutput) => ({
  * @param key
  * @param items
  */
-const toCSSDeclarationInternal = (key: string, items: CssItem[]) =>
-  items.map((item): CssItem => {
-    if (item.type === 'sheet') {
-      // Leave sheets as is
-      return item;
-    } else if (item.type === 'conditional') {
-      // Handle recursion into conditionals
-      return {
-        ...item,
-        consequent: toCSSDeclarationInternal(key, item.consequent),
-        alternate: toCSSDeclarationInternal(key, item.alternate),
-      };
-    } else {
-      return { ...item, css: `${kebabCase(key)}: ${getItemCss(item)};` };
-    }
-  });
+const toCSSDeclarationInternal = (key: string, item: CssItem): CssItem => {
+  if (item.type === 'sheet') {
+    // Leave sheets as is
+    return item;
+  } else if (item.type === 'conditional') {
+    // Handle conditional branches
+    return {
+      ...item,
+      consequent: toCSSDeclarationInternal(key, item.consequent),
+      alternate: toCSSDeclarationInternal(key, item.alternate),
+    };
+  } else {
+    return { ...item, css: `${kebabCase(key)}: ${getItemCss(item)};` };
+  }
+};
 
 /**
  * Maps the css in the result to CSS declarations.
@@ -202,7 +198,7 @@ const toCSSDeclarationInternal = (key: string, items: CssItem[]) =>
  */
 const toCSSDeclaration = (key: string, result: CSSOutput) => ({
   ...result,
-  css: toCSSDeclarationInternal(key, result.css),
+  css: result.css.map((item): CssItem => toCSSDeclarationInternal(key, item)),
 });
 
 /**
@@ -287,7 +283,7 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
 
   const [consequentCss, alternateCss] = conditionalPaths.map((path) => {
     const pathNode = node[path];
-    let cssOutput;
+    let cssOutput: CSSOutput | void;
 
     if (
       t.isObjectExpression(pathNode) ||
@@ -313,24 +309,34 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
 
     if (cssOutput) {
       variables.push(...cssOutput.variables);
-      return mergeSubsequentUnconditionalCssItems(cssOutput.css);
+
+      const mergedOutput = mergeSubsequentUnconditionalCssItems(cssOutput.css);
+      if (mergedOutput.length > 1) {
+        // Each branch should evaluate down to a single logical or unconditional CSS Item.
+        throw buildCodeFrameError(
+          'Conditional branch contains unexpected expression',
+          node,
+          meta.parentPath
+        );
+      }
+      return mergedOutput[0];
     }
 
-    return [];
+    return undefined;
   });
 
-  if (consequentCss.length && alternateCss.length) {
+  if (consequentCss && alternateCss) {
     css.push({
       type: 'conditional',
       test: node.test,
       consequent: consequentCss,
       alternate: alternateCss,
     });
-  } else if (consequentCss?.length) {
+  } else if (consequentCss) {
     // convert single-sided conditional into logical statements
-    css.push(...getLogicalItemFromConditionalExpression(consequentCss, node, 'consequent'));
-  } else if (alternateCss?.length) {
-    css.push(...getLogicalItemFromConditionalExpression(alternateCss, node, 'alternate'));
+    css.push(...getLogicalItemFromConditionalExpression([consequentCss], node, 'consequent'));
+  } else if (alternateCss) {
+    css.push(...getLogicalItemFromConditionalExpression([alternateCss], node, 'alternate'));
   }
 
   return { css, variables };

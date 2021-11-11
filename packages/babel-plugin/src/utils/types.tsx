@@ -10,8 +10,8 @@ export interface UnconditionalCssItem {
 export interface ConditionalCssItem {
   type: 'conditional';
   test: t.Expression;
-  consequent: CssItem[];
-  alternate: CssItem[];
+  consequent: CssItem;
+  alternate: CssItem;
 }
 
 export interface LogicalCssItem {

@@ -539,7 +539,7 @@ describe('styled component behaviour', () => {
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
-        \${props => props.isPrimary ? props.isGreen ? 'color: green' : 'color: blue' : 'color: red'};
+        \${props => props.isPrimary ? 'color: blue' :  props.isGreen ? 'color: green' : 'color: red'};
       \`;
     `);
 
@@ -547,7 +547,7 @@ describe('styled component behaviour', () => {
       '._syazbf54{color:green}',
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
-      'className={ax(["",props.isPrimary?props.isGreen?"_syazbf54":"_syaz13q2":"_syaz5scu",props.className])}',
+      'className={ax(["",props.isPrimary?"_syaz13q2":props.isGreen?"_syazbf54":"_syaz5scu",props.className])}',
     ]);
   });
 
