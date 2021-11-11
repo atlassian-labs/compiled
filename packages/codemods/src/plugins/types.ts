@@ -1,6 +1,5 @@
 import type {
   API,
-  ExportNamedDeclaration,
   FileInfo,
   ImportDeclaration,
   ImportSpecifier,
@@ -9,6 +8,9 @@ import type {
   Options,
   Program,
   VariableDeclaration,
+  ASTPath,
+  TaggedTemplateExpression,
+  ArrowFunctionExpression,
 } from 'jscodeshift';
 
 // We want to ensure the config contract is correct so devs can get type safety
@@ -46,13 +48,13 @@ export type BuildAttributesContext<T> = ValidateConfig<
   T,
   {
     // The original component declaration
-    originalNode: VariableDeclaration | ExportNamedDeclaration;
+    originalNode: ASTPath<VariableDeclaration | TaggedTemplateExpression>;
     // The existing component declaration
-    currentNode: VariableDeclaration | ExportNamedDeclaration;
+    currentNode: ASTPath<VariableDeclaration | TaggedTemplateExpression>;
     // The original node after transforms
-    transformedNode: VariableDeclaration | ExportNamedDeclaration;
-
-    extraContent: VariableDeclaration | null;
+    transformedNode: VariableDeclaration | TaggedTemplateExpression | ArrowFunctionExpression;
+    // The composed node that's been created during transformation
+    composedNode: VariableDeclaration | TaggedTemplateExpression | null;
   }
 >;
 
@@ -72,11 +74,11 @@ export interface Transform {
    * Build the compiled import replacing the existing import
    *
    * @param context {BuildImportContext} The context applied to the build import
-   * @returns {VariableDeclaration | ExportNamedDeclaration} The import to replace config.currentNode
+   * @returns {VariableDeclaration | TaggedTemplateExpression} The import to replace config.currentNode
    */
   buildAttributes?<T>(
     context: BuildAttributesContext<T>
-  ): VariableDeclaration | ExportNamedDeclaration;
+  ): ASTPath<VariableDeclaration | TaggedTemplateExpression>;
 
   /**
    * Build the compiled ref attribute replacing innerRef attributes

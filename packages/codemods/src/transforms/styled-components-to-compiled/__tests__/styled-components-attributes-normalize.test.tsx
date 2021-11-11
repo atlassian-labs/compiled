@@ -56,7 +56,7 @@ top: $\{props => props.top\};
       import { styled } from '@compiled/react';
 
       export const Input = styled.input\`
-left: $\{(props, props) => \`$\{props.left}$\{props.top}px\`\};
+left: $\{props => \`$\{props.left}$\{props.top}px\`\};
   position: absolute;
 \`;
       `,
@@ -359,6 +359,95 @@ left: $\{props => props.left};
     export const Input = props => <CompiledInput id={'test-id'} onClick={this.onClick} {...props} />;
     `,
     'attrs with object expression as an argument'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {
+      plugins: [],
+    },
+    `
+    import styled from 'styled-components';
+
+    export default styled.input.attrs({
+      style: props => ({
+        left: props.left,
+      }),
+    })\`
+      position: absolute;
+    \`;
+    `,
+    `
+    import { styled } from '@compiled/react';
+
+    export default styled.input\`
+left: $\{props => props.left};
+  position: absolute;
+\`;
+    `,
+    'should export default component'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {
+      plugins: [],
+    },
+    `
+    import styled from 'styled-components';
+
+    export default styled.input.attrs({
+      style: props => ({
+        left: props.left,
+      }),
+      id: 'test-id',
+      onClick: this.onClick,
+    })\`
+      position: absolute;
+    \`;
+    `,
+    `
+    import { styled } from '@compiled/react';
+
+    const CompiledComposedComponent = styled.input\`
+left: $\{props => props.left};
+  position: absolute;
+\`;
+
+    export default props => <CompiledComposedComponent id={'test-id'} onClick={this.onClick} {...props} />;
+    `,
+    'should export default component wrapper'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    {
+      plugins: [],
+    },
+    `
+    import styled from 'styled-components';
+
+    export default () => styled.input.attrs({
+      style: props => ({
+        left: props.left,
+      }),
+      id: 'test-id',
+      onClick: this.onClick,
+    })\`
+      position: absolute;
+    \`;
+    `,
+    `
+    import { styled } from '@compiled/react';
+
+    const CompiledComposedComponent = styled.input\`
+left: $\{props => props.left};
+  position: absolute;
+\`;
+
+    export default () => props => <CompiledComposedComponent id={'test-id'} onClick={this.onClick} {...props} />;
+    `,
+    'should export default wrapped component with a wrapper'
   );
 
   defineInlineTest(

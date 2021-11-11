@@ -23,7 +23,7 @@ import {
   addCommentBefore,
   withPlugin,
   convertMixedImportToNamedImport,
-} from '../../helpers/main';
+} from '../../utils/main';
 import defaultCodemodPlugin from '../../plugins/default';
 import type { CodemodPluginInstance } from '../../plugins/types';
 

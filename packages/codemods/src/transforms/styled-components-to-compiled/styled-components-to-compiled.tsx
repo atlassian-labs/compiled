@@ -6,8 +6,8 @@ import {
   withPlugin,
   applyVisitor,
   convertMixedImportToNamedImport,
-} from '../../helpers/main';
-import { convertStyledAttrsToComponent } from '../../helpers/styled-components-attributes';
+} from '../../utils/main';
+import { convertStyledAttrsToComponent } from '../../utils/styled-components-attributes';
 import type { CodemodPluginInstance } from '../../plugins/types';
 import defaultCodemodPlugin from '../../plugins/default';
 
@@ -54,18 +54,18 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
     allowedImportSpecifierNames: imports.styledComponentsSupportedImportNames,
   });
 
-  const attrsTemplateExpressions = collection.find(
+  const taggedTemplateExpressions = collection.find(
     j.TaggedTemplateExpression,
     ({ tag: expression }) =>
       expression.callee.object.object.name === 'styled' &&
       expression.callee.property.name === 'attrs'
   );
 
-  if (attrsTemplateExpressions.length) {
+  if (taggedTemplateExpressions.length) {
     convertStyledAttrsToComponent({
       j,
       plugins,
-      templateExpressions: attrsTemplateExpressions,
+      expressions: taggedTemplateExpressions,
     });
   }
 
