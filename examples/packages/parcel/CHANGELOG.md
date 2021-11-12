@@ -1,5 +1,12 @@
 # @compiled/parcel-app
 
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies [4309aaa]
+  - @compiled/react@0.9.1
+
 ## 1.0.6
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.9.1
+
+### Patch Changes
+
+- 4309aaa: Patch inexact flow type on styled
+
 ## 0.9.0
 
 ### Minor Changes
@@ -54,7 +60,8 @@
       display: flex;
       font-size: 50px;
       color: blue;
-    `}>
+    `}
+  >
     blue text
   </div>;
   ```
