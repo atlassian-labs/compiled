@@ -1,5 +1,15 @@
 # @compiled/babel-plugin
 
+## 0.11.0
+
+### Minor Changes
+
+- fa6af90: Add support for nested ternary operators. Additionally, Compiled will no longer transform ternaries into logical statements unless one side is undefined.
+
+### Patch Changes
+
+- e015a3a: Add comment directive `// @compiled-disable(-next)-line) transform-css-prop` to disable Compiled processing on CSS prop
+
 ## 0.10.0
 
 ### Minor Changes
