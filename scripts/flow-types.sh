@@ -31,6 +31,9 @@ generate() {
     # Rename JSX.IntrinsicElements to existing flow type
     sed -i.bak -E 's/JSX.IntrinsicElements/$JSXIntrinsics/g' "$file" && rm "$file.bak"
 
+    # Rename $ElementType<$JSXIntrinsics, TTag> to exact flow typs
+    sed -i.bak -E 's/\$ElementType<\$JSXIntrinsics, TTag>/$Exact<$ElementType<$JSXIntrinsics, TTag>>/g' "$file" && rm "$file.bak"
+
     # Rename jest.CustomMatcherResult type to existing flow type
     sed -i.bak -E 's/jest.CustomMatcherResult/JestMatcherResult/g' "$file" && rm "$file.bak"
 
