@@ -12,6 +12,7 @@ export type { CssObject } from './styled';
 
 // --------------------------------------------------------------------
 // TODO: Delete global types in the next major version
+// Instead of being global they will be sourced via a local jsx namespace
 declare module 'react' {
   // We must match the same type signature so the generic needs to stay.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
