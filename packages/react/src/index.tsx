@@ -1,12 +1,17 @@
-import type { CSSProps, CssFunction } from './types';
+import { createElement } from 'react';
 
+import type { CompiledJSX } from './jsx/jsx-namespace';
+import type { CssFunction, CSSProps } from './types';
 export { keyframes } from './keyframes';
+
 export { styled } from './styled';
 export { ClassNames } from './class-names';
 export { default as css } from './css';
 export type { CssFunction, CSSProps };
 export type { CssObject } from './styled';
 
+// --------------------------------------------------------------------
+// TODO: Delete global types in the next major version
 declare module 'react' {
   // We must match the same type signature so the generic needs to stay.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -20,7 +25,6 @@ declare global {
     interface IntrinsicAttributes {
       /**
        * Tie styles to an element.
-       * It is available when the `@compiled/react` module is in scope.
        *
        * ```
        * css={{ fontSize: 12 }} // Object CSS
@@ -33,5 +37,22 @@ declare global {
        */
       css?: CssFunction | CssFunction[];
     }
+  }
+}
+// END TODO
+// --------------------------------------------------------------------
+
+export const jsx = createElement;
+
+export namespace jsx {
+  export namespace JSX {
+    export type Element = CompiledJSX.Element;
+    export type ElementClass = CompiledJSX.ElementClass;
+    export type ElementAttributesProperty = CompiledJSX.ElementAttributesProperty;
+    export type ElementChildrenAttribute = CompiledJSX.ElementChildrenAttribute;
+    export type LibraryManagedAttributes<C, P> = CompiledJSX.LibraryManagedAttributes<C, P>;
+    export type IntrinsicAttributes = CompiledJSX.IntrinsicAttributes;
+    export type IntrinsicClassAttributes<T> = CompiledJSX.IntrinsicClassAttributes<T>;
+    export type IntrinsicElements = CompiledJSX.IntrinsicElements;
   }
 }

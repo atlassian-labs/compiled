@@ -39,6 +39,14 @@
         "./dist/cjs/runtime.js",
         "./src/runtime.tsx"
       ]
+    },
+    "./jsx-runtime": {
+      "import": "./dist/esm/jsx/runtime.js",
+      "require": "./dist/cjs/jsx/runtime.js"
+    },
+    "./jsx-dev-runtime": {
+      "import": "./dist/esm/jsx/dev-runtime.js",
+      "require": "./dist/cjs/jsx/dev-runtime.js"
     }
   },
   "main": "./dist/cjs/index.js",
