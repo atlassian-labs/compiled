@@ -62,7 +62,7 @@
     "@babel/preset-env": "^7.16.0",
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
-    "@changesets/cli": "^2.17.0",
+    "@changesets/cli": "^2.18.0",
     "@compiled/jest": "*",
     "@compiled/react": "*",
     "@size-limit/preset-small-lib": "^4.12.0",
