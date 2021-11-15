@@ -1,5 +1,11 @@
 # @compiled/cli
 
+## 2.1.1
+
+### Patch Changes
+
+- 44ba755: Update dependencies
+
 ## 2.1.0
 
 ### Minor Changes
