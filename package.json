@@ -80,7 +80,7 @@
     "eslint-plugin-flowtype": "^6.1.1",
     "eslint-plugin-react": "^7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "flow-bin": "^0.163.0",
+    "flow-bin": "^0.164.0",
     "flowgen": "^1.15.0",
     "git-branch-is": "^4.0.0",
     "husky": "^4.3.8",
