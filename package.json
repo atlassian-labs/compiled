@@ -101,7 +101,7 @@
     "workspaces-run": "^1.0.1"
   },
   "engines": {
-    "node": "^v16.13.0"
+    "node": ">=12.15"
   },
   "size-limit": [
     {
