@@ -13,7 +13,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [v12.15, v14, v15]
+        # Test LTS and v12.15 for ensuring support for exports in package.json
+        node-version: [v12.15, v16]
 
     steps:
       - uses: actions/checkout@v2
