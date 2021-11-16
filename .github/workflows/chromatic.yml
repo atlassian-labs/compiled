@@ -11,14 +11,19 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [v16]
-
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0 # Required to retrieve git history
+
+      - name: Read .nvmrc
+        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+        id: nvm
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.nvm.outputs.NVMRC }}
 
       - name: Install packages
         run: yarn
