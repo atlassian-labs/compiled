@@ -536,9 +536,9 @@ describe('module traversal', () => {
 
       expect(result).toIncludeMultiple([
         '{color:red}',
-        // Cannot be resolved statically because of bug where
-        // we assume parent path of member expression is the same throughout
-        // the entire chain
+        // We're not handling statically evaluating param values used from a namespace chain,
+        // as the long term strategy is to only statically evaluate expressions scoped locally
+        // to the current file.
         '{background-color:var(--_1w9snyi)}',
       ]);
     });

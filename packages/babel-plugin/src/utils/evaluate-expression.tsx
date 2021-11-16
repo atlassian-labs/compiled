@@ -142,7 +142,9 @@ const evaluateNamespaceImportExpression = (accessPath: t.Identifier[], meta: Met
     exportName === 'default' ? getDefaultExport(file) : getNamedExport(file, exportName);
 
   if (result) {
-    updatedMeta.parentPath = result.path.parentPath;
+    updatedMeta.ownPath = result.path;
+    // Set parentPath to the path where the import is being used
+    updatedMeta.parentPath = meta.parentPath;
 
     if (t.isObjectExpression(result.node) && accessPath.length > 1) {
       return evaluateObjectExpression(result.node, accessPath.slice(1), updatedMeta);

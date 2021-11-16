@@ -378,35 +378,6 @@ export const babelEvaluateExpression = (
   return fallbackNode;
 };
 
-const findDefaultExportModuleNode = (
-  ast: t.File
-): {
-  foundNode: t.Node | undefined;
-  foundParentPath: NodePath | undefined;
-} => {
-  const result = getDefaultExport(ast);
-
-  return {
-    foundNode: result?.node,
-    foundParentPath: result?.path,
-  };
-};
-
-const findNamedExportModuleNode = (
-  ast: t.File,
-  exportName: string
-): {
-  foundNode: t.Node | undefined;
-  foundParentPath: NodePath | undefined;
-} => {
-  const result = getNamedExport(ast, exportName);
-
-  return {
-    foundNode: result?.node,
-    foundParentPath: result?.path,
-  };
-};
-
 /**
  * Will recursively checks if identifier name is coming from destructuring. If yes,
  * then will return the resolved identifer. We can look for identifier name
@@ -643,7 +614,14 @@ export const resolveBindingNode = (
       ({ foundNode, foundParentPath } = meta.state.cache.load({
         namespace: 'find-default-export-module-node',
         cacheKey: modulePath,
-        value: () => findDefaultExportModuleNode(ast),
+        value: () => {
+          const result = getDefaultExport(ast);
+
+          return {
+            foundNode: result?.node,
+            foundParentPath: result?.path,
+          };
+        },
       }));
     } else if (binding.path.isImportSpecifier()) {
       const { imported } = binding.path.node;
@@ -652,7 +630,14 @@ export const resolveBindingNode = (
       ({ foundNode, foundParentPath } = meta.state.cache.load({
         namespace: 'find-named-export-module-node',
         cacheKey: `modulePath=${modulePath}&exportName=${exportName}`,
-        value: () => findNamedExportModuleNode(ast, exportName),
+        value: () => {
+          const result = getNamedExport(ast, exportName);
+
+          return {
+            foundNode: result?.node,
+            foundParentPath: result?.path,
+          };
+        },
       }));
     } else if (binding.path.isImportNamespaceSpecifier()) {
       // There's no node inside the file to reference for namespace imports
