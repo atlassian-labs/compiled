@@ -28,6 +28,9 @@ jobs:
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
+      - name: Set ignore engines
+        run: yarn config set ignore-engines true
+
       - uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
