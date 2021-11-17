@@ -1,0 +1,8 @@
+{
+  "moduleNameMapper": {
+    "^@compiled/react$": "<rootDir>/packages/react/src/index.tsx"
+  },
+  "testEnvironment": "node",
+  "testMatch": ["**/__perf__/*.test.{ts,tsx}"],
+  "watchPlugins": ["jest-watch-typeahead/filename", "jest-watch-typeahead/testname"]
+}

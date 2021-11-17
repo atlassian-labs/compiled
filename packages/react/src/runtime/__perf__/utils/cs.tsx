@@ -6,17 +6,16 @@ export const useCache = (): Record<string, true> => {
   return useContext(Cache) || {};
 };
 
-export const CompiledComponent = (props: {
-  children: JSX.Element[] | JSX.Element;
-}): JSX.Element => {
-  return <Cache.Provider value={useCache()}>{props.children}</Cache.Provider>;
+export type StyleStrProps = {
+  children: string;
+  nonce: string;
 };
 
-export function StyleStr(props: { children: string; nonce: string }): JSX.Element | null {
+export function StyleStr({ children, nonce }: StyleStrProps): JSX.Element | null {
   const inserted = useCache();
 
   // The following code will not exist in the browser bundle.
-  const sheets = props.children.split('.');
+  const sheets = children.split('.');
   let toInsert = '';
 
   for (let i = 0; i < sheets.length; i++) {
@@ -31,14 +30,18 @@ export function StyleStr(props: { children: string; nonce: string }): JSX.Elemen
     return null;
   }
 
-  return <style nonce={props.nonce}>{toInsert}</style>;
+  return <style nonce={nonce}>{toInsert}</style>;
 }
 
-export function StyleArr(props: { children: string[]; nonce: string }): JSX.Element | null {
+export type StyleArrProps = {
+  children: string[];
+  nonce: string;
+};
+
+export function StyleArr({ children: sheets, nonce }: StyleArrProps): JSX.Element | null {
   const inserted = useCache();
 
   // The following code will not exist in the browser bundle.
-  const sheets = props.children;
   let toInsert = '';
 
   for (let i = 0; i < sheets.length; i++) {
@@ -53,5 +56,5 @@ export function StyleArr(props: { children: string[]; nonce: string }): JSX.Elem
     return null;
   }
 
-  return <style nonce={props.nonce}>{toInsert}</style>;
+  return <style nonce={nonce}>{toInsert}</style>;
 }

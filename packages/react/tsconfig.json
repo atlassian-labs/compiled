@@ -17,5 +17,5 @@
     ],
     "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo"
   },
-  "references": []
+  "references": [{ "path": "../benchmark" }]
 }

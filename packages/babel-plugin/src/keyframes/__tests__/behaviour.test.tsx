@@ -1,4 +1,4 @@
-import { transform } from '../../__tests__/test-utils';
+import { transform } from '../../test-utils';
 
 describe('Keyframes', () => {
   it('places classes in given order when static styles precede keyframes expression', () => {
