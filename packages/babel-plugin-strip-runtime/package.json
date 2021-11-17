@@ -16,8 +16,7 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "src",
-    "README.md"
+    "src"
   ],
   "dependencies": {
     "@babel/core": "^7.16.0",
@@ -27,6 +26,7 @@
   },
   "devDependencies": {
     "@compiled/babel-plugin": "*",
-    "@types/babel__core": "^7.1.16"
+    "@types/babel__core": "^7.1.16",
+    "prettier": "^2.4.1"
   }
 }

@@ -1,6 +1,6 @@
 module.exports = {
   testEnvironment: 'jsdom',
-  testMatch: ['**/src/**/*.test.tsx'],
+  testMatch: ['**/src/**/*.test.(ts|tsx)'],
   setupFilesAfterEnv: ['jest-extended', './test/setup.tsx'],
   moduleNameMapper: {
     '^@compiled/react$': '<rootDir>/packages/react/src/index.tsx',
