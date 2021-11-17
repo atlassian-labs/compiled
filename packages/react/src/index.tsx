@@ -2,13 +2,6 @@ import { createElement } from 'react';
 
 import type { CompiledJSX } from './jsx/jsx-namespace';
 import type { CssFunction, CSSProps } from './types';
-export { keyframes } from './keyframes';
-
-export { styled } from './styled';
-export { ClassNames } from './class-names';
-export { default as css } from './css';
-export type { CssFunction, CSSProps };
-export type { CssObject } from './styled';
 
 // --------------------------------------------------------------------
 // TODO: Delete global types in the next major version
@@ -43,8 +36,20 @@ declare global {
 // END TODO
 // --------------------------------------------------------------------
 
+export { keyframes } from './keyframes';
+export { styled } from './styled';
+export { ClassNames } from './class-names';
+export { default as css } from './css';
+
+// This is deliberate unfortunately import/export doesn't acknowledge namespace exports.
+// eslint-disable-next-line import/export
 export const jsx = createElement;
 
+export type { CssFunction, CSSProps };
+export type { CssObject } from './styled';
+
+// This is deliberate unfortunately import/export doesn't acknowledge namespace exports.
+// eslint-disable-next-line import/export
 export namespace jsx {
   export namespace JSX {
     export type Element = CompiledJSX.Element;

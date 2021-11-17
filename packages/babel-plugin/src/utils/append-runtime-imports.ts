@@ -20,7 +20,7 @@ const importSpecifier = (name: string, localName?: string): t.ImportSpecifier =>
  *
  * @param path ImportDeclaration node path
  */
-export const appendRuntimeImports = (path: NodePath<t.ImportDeclaration>): void => {
+export const appendRuntimeImports = (path: NodePath<t.Program>): void => {
   const runtimeImportNames = ['ax', 'ix', 'CC', 'CS'];
   const runtimeImportModuleName = '@compiled/react/runtime';
 
