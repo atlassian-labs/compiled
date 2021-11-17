@@ -1,23 +1,23 @@
 {
   "name": "@compiled/eslint-plugin",
   "version": "0.1.0",
-  "author": "Atlassian Pty Ltd",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  },
   "repository": "https://github.com/atlassian-labs/compiled",
+  "author": "Atlassian Pty Ltd",
+  "sideEffects": false,
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "sideEffects": false,
+  "files": [
+    "dist",
+    "src"
+  ],
   "devDependencies": {
     "babel-eslint": "^10.1.0",
     "eslint": "^7.32.0",
     "prettier": "^2.4.1",
     "typescript": "3.9.6"
   },
-  "files": [
-    "dist",
-    "src"
-  ]
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
 }
