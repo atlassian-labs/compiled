@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "composite": true,
     "declaration": true,
     "esModuleInterop": true,
@@ -16,7 +15,8 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es5"
+    "target": "es5",
+    "typeRoots": ["../node_modules/@types", "../types"]
   },
-  "exclude": ["**/**.test.tsx", "**/dist", "**/__perf__/**"]
+  "includes": ["../packages", "../examples"]
 }
