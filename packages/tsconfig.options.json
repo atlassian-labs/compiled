@@ -18,5 +18,5 @@
     "strict": true,
     "target": "es5"
   },
-  "exclude": ["**/**.test.tsx", "**/dist", "**/__perf__/**"]
+  "exclude": ["**/**.test.tsx", "**/dist", "dist", "**/__perf__/**"]
 }

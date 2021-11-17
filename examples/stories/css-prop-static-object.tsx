@@ -23,7 +23,6 @@ export const ObjectLiteralSpreadFromFunc = (): JSX.Element => {
       css={{
         display: 'flex',
         fontSize: '50px',
-        color: 'blue',
         ...inlineMixinFunc(),
       }}>
       red text
@@ -37,7 +36,6 @@ export const ObjectLiteralSpreadFromObj = (): JSX.Element => {
       css={{
         display: 'flex',
         fontSize: '50px',
-        color: 'blue',
         ...inlineMixinObj,
       }}>
       green text

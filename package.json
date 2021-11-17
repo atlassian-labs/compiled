@@ -9,11 +9,6 @@
     "examples/packages/*"
   ],
   "scripts": {
-    "benchmark:all": "cd examples/packages/benchmarks && yarn all",
-    "benchmark:ax": "cd examples/packages/benchmarks && yarn ax",
-    "benchmark:module-traversal": "cd packages/babel-plugin && yarn benchmark:module-traversal",
-    "benchmark:ssr": "cd examples/packages/benchmarks && yarn ssr",
-    "benchmark:stylesheet": "cd examples/packages/benchmarks && yarn stylesheet",
     "build": "yarn build:esm && yarn build:examples-babel && yarn build:cjs && yarn build:browser && yarn flow-types build",
     "build-ssr": "CI=false && yarn build && cd examples/packages/ssr && yarn build",
     "build-storybook": "build-storybook",
@@ -44,7 +39,8 @@
     "test": "yarn build:cjs && yarn build:esm && jest --no-cache",
     "test:cover": "yarn test --collectCoverage",
     "test:imports": "node test/test-imports",
-    "test:watch": "yarn build:esm && jest --no-cache --watch"
+    "test:watch": "yarn build:esm && jest --no-cache --watch",
+    "typecheck": "tsc --project ./tsconfig.typecheck.json"
   },
   "husky": {
     "hooks": {
