@@ -37,22 +37,31 @@ const setupCliRunner = (opts: {
   codemodOpts?: CodemodOptions;
   pluginPaths?: string[];
 }) => {
-  castToJestMock(AutoComplete).mockImplementation(({ choices, result }) => ({
-    run: () => Promise.resolve(result(choices[opts.choice])),
-  }));
+  castToJestMock(AutoComplete).mockImplementation(
+    ({ choices, result }: any) =>
+      ({
+        run: () => Promise.resolve(result(choices[opts.choice])),
+      } as any)
+  );
 
-  castToJestMock(Form).mockImplementation(() => ({
-    run: () =>
-      Promise.resolve({
-        parser: 'tsx',
-        ...opts.codemodOpts,
-        path: opts.runPath,
-      }),
-  }));
+  castToJestMock(Form).mockImplementation(
+    () =>
+      ({
+        run: () =>
+          Promise.resolve({
+            parser: 'tsx',
+            ...opts.codemodOpts,
+            path: opts.runPath,
+          }),
+      } as any)
+  );
 
-  castToJestMock(List).mockImplementation(() => ({
-    run: () => Promise.resolve([...(opts.pluginPaths || [])]),
-  }));
+  castToJestMock(List).mockImplementation(
+    () =>
+      ({
+        run: () => Promise.resolve([...(opts.pluginPaths || [])]),
+      } as any)
+  );
 };
 
 describe('main', () => {

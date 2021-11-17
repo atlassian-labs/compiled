@@ -3,10 +3,6 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist/esm",
-    "baseUrl": "src",
-    "paths": {
-      "@compiled/react": ["index.tsx"]
-    },
     "plugins": [
       {
         "transform": "ts-transform-define",
@@ -17,5 +13,5 @@
     ],
     "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo"
   },
-  "references": [{ "path": "../benchmark" }]
+  "references": [{ "path": "../jest" }, { "path": "../benchmark" }]
 }

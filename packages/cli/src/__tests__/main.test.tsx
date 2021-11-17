@@ -62,9 +62,12 @@ describe('main', () => {
   });
 
   it('should warn when invalid preset is provided using prompt', async () => {
-    castToJestMock(AutoComplete).mockImplementation(() => ({
-      run: () => Promise.resolve('invalid-using-prompt'),
-    }));
+    castToJestMock(AutoComplete).mockImplementation(
+      () =>
+        ({
+          run: () => Promise.resolve('invalid-using-prompt'),
+        } as any)
+    );
 
     const { cli } = await setup('');
 
@@ -96,9 +99,12 @@ describe('main', () => {
   it('should execute valid present when provided using prompt', async () => {
     castToJestMock(presets.mockedPreset).mockImplementation(() => jest.fn());
 
-    castToJestMock(AutoComplete).mockImplementation(({ choices }) => ({
-      run: () => Promise.resolve(choices[0]),
-    }));
+    castToJestMock(AutoComplete).mockImplementation(
+      ({ choices }) =>
+        ({
+          run: () => Promise.resolve(choices[0]),
+        } as any)
+    );
 
     const { cli } = await setup('');
 

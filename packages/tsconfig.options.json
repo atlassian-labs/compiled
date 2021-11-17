@@ -10,12 +10,18 @@
     "moduleResolution": "node",
     "noImplicitReturns": true,
     "noImplicitThis": true,
+    "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
     "target": "es5",
+    "paths": {
+      "@compiled/react": ["../packages/react/src/index.tsx"],
+      "@compiled/react/runtime": ["../packages/react/src/runtime.tsx"],
+      "@compiled/jest": ["../packages/jest/src/index.tsx"]
+    },
     "typeRoots": ["../node_modules/@types", "../types"]
   },
   "includes": ["../packages", "../examples"]
