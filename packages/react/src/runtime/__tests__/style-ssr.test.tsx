@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import React from 'react';
 import { renderToStaticMarkup, renderToString } from 'react-dom/server';
 
