@@ -26,7 +26,7 @@
     "build:webpack": "yarn build:browser && yarn build:examples-babel && ttsc --build examples/packages/webpack/tsconfig.json && yarn workspace @compiled/webpack-app build",
     "build:webpack:extract": "yarn build:browser && yarn build:examples-babel && ttsc --build examples/packages/webpack/tsconfig.json && cd examples/packages/webpack && EXTRACT_TO_CSS=true yarn build",
     "bundlesize": "yarn build && size-limit",
-    "clean": "rm -rf node_modules/.cache && rm -rf test/dead-code-elimination/dist && rm -f test/dead-code-elimination/tsconfig.tsbuildinfo && workspaces-run -- rm -rf dist -- rm -f tsconfig.tsbuildinfo -- rm -f tsconfig.browser.tsbuildinfo -- rm -rf build -- rm -rf tsconfig.cjs.tsbuildinfo -- rm -rf tsconfig.esm.tsbuildinfo",
+    "clean": "rm -rf node_modules/.cache && find . -name *.tsbuildinfo -type f -delete",
     "flow-types": "scripts/flow-types.sh",
     "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts",
     "lint": "eslint --config .eslintrc.js --ext tsx,ts ./packages/**/src ./examples",
@@ -97,8 +97,7 @@
     "ts-node": "^9.1.1",
     "ts-transform-define": "^0.1.10",
     "ttypescript": "^1.5.12",
-    "typescript": "^4.2.4",
-    "workspaces-run": "^1.0.1"
+    "typescript": "^4.2.4"
   },
   "engines": {
     "node": "^v14.16.1"
