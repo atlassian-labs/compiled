@@ -24,8 +24,6 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
 const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
-const COMPILED_RUNTIME_IMPORTS = ['ax', 'ix', 'CC', 'CS'];
-const COMPILED_RUNTIME_MODULE = '@compiled/react/runtime';
 const COMPILED_MODULE = '@compiled/react';
 
 let globalCache: Cache | undefined;

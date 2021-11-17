@@ -149,7 +149,7 @@ describe('babel plugin', () => {
     `);
   });
 
-  it.only('should append to manual runtime import if already present and transformation occurs', () => {
+  it('should append to manual runtime import if already present and transformation occurs', () => {
     const output = transformSync(
       `
       import { CC as CompiledRoot, ax } from '@compiled/react/runtime';
