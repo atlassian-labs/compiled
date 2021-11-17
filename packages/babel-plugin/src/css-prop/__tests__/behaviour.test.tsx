@@ -652,10 +652,6 @@ describe('css prop behaviour', () => {
       );
     `);
 
-    expect(actual).toIncludeMultiple([
-      "css={{color:'red'}}",
-      "css={null}",
-      "css={{color:'blue'}}",
-    ]);
+    expect(actual).toIncludeMultiple(["css={{color:'red'}}", 'css={null}', "css={{color:'blue'}}"]);
   });
 });
