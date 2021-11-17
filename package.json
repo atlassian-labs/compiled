@@ -38,10 +38,10 @@
     "start:ssr": "yarn build && cd examples/packages/ssr && yarn start",
     "start:webpack": "yarn build:browser && yarn build:examples-babel && ttsc --build examples/packages/webpack/tsconfig.json && yarn workspace @compiled/webpack-app start",
     "start:webpack:extract": "yarn build:browser && yarn build:examples-babel && ttsc --build examples/packages/webpack/tsconfig.json && cd examples/packages/webpack && EXTRACT_TO_CSS=true yarn start",
-    "test": "yarn build:cjs && yarn build:esm && jest --no-cache",
+    "test": "jest --no-cache",
     "test:cover": "yarn test --collectCoverage",
     "test:imports": "node test/test-imports",
-    "test:watch": "yarn build:esm && jest --no-cache --watch"
+    "test:watch": "jest --no-cache --watch"
   },
   "husky": {
     "hooks": {
