@@ -1,4 +1,4 @@
-*.js
-dist
 CHANGELOG.md
 coverage
+dist
+*.js
