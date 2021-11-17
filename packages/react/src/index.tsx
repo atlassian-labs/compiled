@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 
-import type { CompiledJSX } from './jsx/jsx-namespace';
+import type { CompiledJSX } from './jsx/jsx-local-namespace';
 import type { CssFunction, CSSProps } from './types';
 
 // --------------------------------------------------------------------
@@ -41,6 +41,8 @@ export { styled } from './styled';
 export { ClassNames } from './class-names';
 export { default as css } from './css';
 
+// Pass through the (classic) jsx runtime.
+// Compiled currently doesn't define its own and uses this purely to enable a local jsx namespace.
 // This is deliberate unfortunately import/export doesn't acknowledge namespace exports.
 // eslint-disable-next-line import/export
 export const jsx = createElement;

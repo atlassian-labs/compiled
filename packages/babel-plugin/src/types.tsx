@@ -65,8 +65,6 @@ export interface State extends PluginPass {
     styled?: string;
   };
 
-  compiledPragma?: 'jsx' | 'jsxImportSource';
-
   /**
    * Paths that will be cleaned up on pass exit.
    */
