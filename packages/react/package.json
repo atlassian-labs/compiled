@@ -6,7 +6,6 @@
     "compiled",
     "css-in-js",
     "styled-components",
-    "emotion-js",
     "typescript"
   ],
   "homepage": "https://compiledcssinjs.com",
@@ -56,9 +55,9 @@
   "files": [
     "dist",
     "src",
-    "babel-plugin",
     "runtime",
-    "README.md"
+    "jsx-runtime",
+    "jsx-dev-runtime"
   ],
   "dependencies": {
     "csstype": "^3.0.9"

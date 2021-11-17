@@ -24,6 +24,7 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
 const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
+const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
 const COMPILED_RUNTIME_IMPORTS = ['ax', 'ix', 'CC', 'CS'];
 const COMPILED_RUNTIME_MODULE = '@compiled/react/runtime';
 
@@ -59,12 +60,19 @@ export default declare<State>((api) => {
 
           if (file.ast.comments) {
             for (const comment of file.ast.comments) {
-              const sourceMatches = JSX_SOURCE_ANNOTATION_REGEX.exec(comment.value);
+              const jsxSourceMatches = JSX_SOURCE_ANNOTATION_REGEX.exec(comment.value);
+              const jsxMatches = JSX_ANNOTATION_REGEX.exec(comment.value);
 
-              if (sourceMatches && sourceMatches[1] === '@compiled/react') {
-                // @jsxImportSource pragma found - turn on CSS prop!
+              if (jsxSourceMatches && jsxSourceMatches[1] === '@compiled/react') {
+                // jsxImportSource pragma found - turn on CSS prop!
                 state.compiledImports = {};
                 state.compiledPragma = 'jsxImportSource';
+              }
+
+              if (jsxMatches && jsxMatches[1] === '@compiled/react') {
+                // jsx pragma found - turn on CSS prop!
+                state.compiledImports = {};
+                state.compiledPragma = 'jsx';
               }
             }
           }
@@ -146,11 +154,14 @@ export default declare<State>((api) => {
             ) {
               // Enable the API with the local name
               state.compiledImports[apiName] = specifier.node.local.name;
+              specifier.remove();
             }
           });
         });
 
-        path.remove();
+        if (path.node.specifiers.length === 0) {
+          path.remove();
+        }
       },
       TaggedTemplateExpression(path, state) {
         if (

@@ -1,7 +1,7 @@
 /** @jsxImportSource @compiled/react */
 
 export default {
-  title: 'css prop/local jsx namespace',
+  title: 'css prop/jsx import source pragma',
 };
 
 const DivWithClassName = ({

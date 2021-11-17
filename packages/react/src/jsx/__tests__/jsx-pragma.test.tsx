@@ -1,5 +1,8 @@
-/** @jsxImportSource @compiled/react */
+/** @jsxRuntime classic */
+/** @jsx jsx */
 import { render } from '@testing-library/react';
+import { jsx } from '@compiled/react';
+import '@compiled/jest';
 
 describe('local jsx namespace', () => {
   it('should create css from object literal', () => {
@@ -26,7 +29,6 @@ describe('local jsx namespace', () => {
     const { getByText } = render(
       <Component
         // CSS prop is not allowed when class name is not a declared prop
-        // @ts-expect-error
         css={{ fontSize: '15px' }}>
         hello world
       </Component>
