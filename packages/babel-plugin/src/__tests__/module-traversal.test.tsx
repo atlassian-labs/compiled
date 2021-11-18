@@ -36,7 +36,7 @@ describe('module traversal', () => {
     expect(result).toInclude('{color:blue}');
   });
 
-  it('should replace an identifier referencing a default import specificer string literal', () => {
+  it('should replace an identifier referencing a default import specifier string literal', () => {
     const result = transform(
       `
       import '@compiled/react';
@@ -50,7 +50,7 @@ describe('module traversal', () => {
     expect(result).toInclude('{color:red}');
   });
 
-  it('should replace an identifier referencing a default import specificer string literal', () => {
+  it('should replace an identifier referencing a default import specifier string literal', () => {
     const result = transform(
       `
       import '@compiled/react';
@@ -64,7 +64,7 @@ describe('module traversal', () => {
     expect(result).toInclude('{color:red}');
   });
 
-  it('should replace an identifier referencing a named import specifier object', () => {
+  it('should replace an identifier referencing a named import specifier object from a variable declaration export', () => {
     const result = transform(
       `
       import '@compiled/react';
@@ -76,6 +76,20 @@ describe('module traversal', () => {
     );
 
     expect(result).toInclude('{color:red}');
+  });
+
+  it('should replace an identifier referencing a named import specifier object from an export specifier', () => {
+    const result = transform(
+      `
+      import '@compiled/react';
+      import React from 'react';
+      import { danger } from '../__fixtures__/mixins/objects';
+
+      <div css={{ color: danger }} />
+    `
+    );
+
+    expect(result).toInclude('{color:blue}');
   });
 
   it('should replace an identifier referencing a node modules named import specifier object', () => {
@@ -106,7 +120,7 @@ describe('module traversal', () => {
     expect(result).toInclude('{font-size:12px}');
   });
 
-  it('should inline css from a object spread referencing a named import object', () => {
+  it('should inline css from an object spread referencing a named import object', () => {
     const result = transform(
       `
       import '@compiled/react';
@@ -121,7 +135,7 @@ describe('module traversal', () => {
     expect(result).toInclude('{font-size:12px}');
   });
 
-  it('should inline css from a object with multiple identifiers referenced from a named import', () => {
+  it('should inline css from an object with multiple identifiers referenced from a named import', () => {
     const result = transform(
       `
       import '@compiled/react';
@@ -434,5 +448,110 @@ describe('module traversal', () => {
 
     expect(result).toHaveLength(1);
     expect(result[0]).toInclude('compiled/packages/babel-plugin/src/__fixtures__/mixins/simple.js');
+  });
+
+  describe('Namespace imports', () => {
+    it('should replace a member expression referencing a default export', () => {
+      const result = transform(`
+        import '@compiled/react';
+        import React from 'react';
+        import * as objects from '../__fixtures__/mixins/objects';
+
+        <div css={{ color: objects.default.primary }} />
+      `);
+
+      expect(result).toInclude('{color:blue}');
+    });
+
+    it('should replace a member expression referencing a named variable export', () => {
+      const result = transform(`
+        import '@compiled/react';
+        import React from 'react';
+        import * as objects from '../__fixtures__/mixins/objects';
+
+        <div css={{ color: objects.colors.primary }} />
+      `);
+
+      expect(result).toInclude('{color:red}');
+    });
+
+    it('should replace a member expression referencing an export specifier', () => {
+      const result = transform(`
+        import '@compiled/react';
+        import React from 'react';
+        import * as objects from '../__fixtures__/mixins/objects';
+
+        <div css={{ color: objects.danger }} />
+      `);
+
+      expect(result).toInclude('{color:blue}');
+    });
+
+    it('should inline css from an object spread', () => {
+      const result = transform(`
+        import '@compiled/react';
+        import React from 'react';
+        import * as objects from '../__fixtures__/mixins/objects';
+
+        <div css={{ ...objects.style }} />
+      `);
+
+      expect(result).toInclude('{font-size:12px}');
+    });
+
+    it('should inline css from an call expression', () => {
+      const result = transform(`
+        import '@compiled/react';
+        import React from 'react';
+        import * as objects from '../__fixtures__/mixins/objects';
+
+        <div css={{ ...objects.colorMixin() }} />
+      `);
+
+      expect(result).toIncludeMultiple(['{color:red}', '{background-color:pink}']);
+    });
+
+    it('should inline css from an identifier with an IIFE property', () => {
+      const result = transform(`
+        import '@compiled/react';
+        import * as objects from '../__fixtures__/mixins/objects';
+
+        <div css={{ ...objects.fontMixin }} />
+      `);
+
+      expect(result).toInclude('{font-size:12px}');
+    });
+
+    it('should inline css from a function mixin with parameters', () => {
+      const result = transform(`
+        import '@compiled/react';
+        import * as objects from '../__fixtures__/mixins/objects';
+
+        const color = { blue: 'blue' };
+
+        const Component = (props) => {
+          return <div css={{ ...objects.colorMixin2(color.blue) }} />
+        };
+    `);
+
+      expect(result).toIncludeMultiple([
+        '{color:red}',
+        // We're not handling statically evaluating param values used from a namespace chain,
+        // as the long term strategy is to only statically evaluate expressions scoped locally
+        // to the current file.
+        '{background-color:var(--_1w9snyi)}',
+      ]);
+    });
+
+    it('should inline css from a directly called function mixin', () => {
+      const result = transform(`
+        import '@compiled/react';
+        import * as objects from '../__fixtures__/mixins/objects';
+
+        <div css={{':hover': { paddingTop: objects.spacingMixin.padding.top() }}} />
+      `);
+
+      expect(result).toInclude(':hover{padding-top:10px}');
+    });
   });
 });
