@@ -30,7 +30,7 @@
     "prettier:check": "prettier ./ --check",
     "prettier:fix": "prettier ./ --write",
     "release": "yarn clean && yarn build && yarn changeset publish",
-    "start": "npx nodemon --exec \"yarn build && start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
+    "start": "npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "start:cli": "cd packages/cli && yarn start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "start:parcel": "yarn build:browser && yarn build:esm && ttsc --build examples/packages/parcel/tsconfig.json && yarn workspace @compiled/parcel-app start",
@@ -96,6 +96,7 @@
     "storybook-addon-pseudo-states": "^1.0.0",
     "ts-node": "^9.1.1",
     "ts-transform-define": "^0.1.10",
+    "tsconfig-paths": "^3.11.0",
     "ttypescript": "^1.5.12",
     "typescript": "^4.2.4"
   },

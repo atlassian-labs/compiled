@@ -1,6 +1,7 @@
 {
   "moduleNameMapper": {
-    "^@compiled/react$": "<rootDir>/packages/react/src/index.tsx"
+    "^@compiled/react/runtime$": "<rootDir>/packages/react/src/runtime.tsx",
+    "^@compiled/(.*)$": "<rootDir>/packages/$1/src/index.tsx"
   },
   "setupFilesAfterEnv": ["jest-extended", "./test/setup.tsx"],
   "testEnvironment": "jsdom",
