@@ -38,9 +38,6 @@ jobs:
       - name: Run tests
         run: yarn test:cover --ci
 
-      - name: Run flow types validation
-        run: yarn flow-types validate
-
       - name: Check prettier
         run: yarn prettier:check
 
@@ -51,6 +48,12 @@ jobs:
           yarn bundlesize
           export GITHUB_RUN_NUMBER=GITHUB_RUN_NUMBER_TMP
           echo "$GITHUB_RUN_NUMBER"
+
+      - name: Build source for remainder tests
+        run: yarn build
+
+      - name: Run flow types validation
+        run: yarn flow-types validate
 
       - name: Run import test
         run: yarn test:imports

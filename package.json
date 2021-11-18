@@ -43,7 +43,7 @@
     "start:webpack:extract": "yarn build:browser && yarn build:examples-babel && ttsc --build examples/packages/webpack/tsconfig.json && cd examples/packages/webpack && EXTRACT_TO_CSS=true yarn start",
     "test": "jest --no-cache",
     "test:cover": "yarn test --collectCoverage",
-    "test:imports": "yarn build && node test/test-imports",
+    "test:imports": "node test/test-imports",
     "test:watch": "jest --no-cache --watch"
   },
   "husky": {
