@@ -35,9 +35,6 @@ jobs:
       - name: Validate
         run: yarn lint
 
-      - name: Build source
-        run: yarn build
-
       - name: Run tests
         run: yarn test:cover --ci
 

@@ -23,6 +23,7 @@
     "build:webpack:extract": "yarn build:browser && yarn build:examples-babel && ttsc --build examples/packages/webpack/tsconfig.json && cd examples/packages/webpack && EXTRACT_TO_CSS=true yarn build",
     "bundlesize": "yarn build && size-limit",
     "clean": "rm -rf node_modules/.cache && find . -name \"*.tsbuildinfo\" -type f -delete",
+    "clean:dist": "find . -name \"dist\" -not -path \"*/node_modules/*\" -type d -exec rm -rf {} +",
     "flow-types": "scripts/flow-types.sh",
     "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts",
     "lint": "eslint --config .eslintrc.js --ext flow,json,ts,tsx .",
