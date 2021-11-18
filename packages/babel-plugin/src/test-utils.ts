@@ -1,20 +1,22 @@
 import { transformSync } from '@babel/core';
 import { format } from 'prettier';
 
-import babelPlugin from '../babel-plugin';
-import type { PluginOptions } from '../types';
+import babelPlugin from './babel-plugin';
+import type { PluginOptions } from './types';
 
 export type TransformOptions = PluginOptions & {
+  filename?: string;
   pretty?: boolean;
 };
 
 export const transform = (code: string, options: TransformOptions = {}): string => {
-  const { pretty = true, ...pluginOptions } = options;
+  const { filename, pretty = true, ...pluginOptions } = options;
   const fileResult = transformSync(code, {
     babelrc: false,
     comments: false,
     compact: !pretty,
     configFile: false,
+    filename,
     plugins: [[babelPlugin, pluginOptions]],
   });
 

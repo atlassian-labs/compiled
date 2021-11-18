@@ -1,0 +1,11 @@
+{
+  "moduleNameMapper": {
+    "^@compiled/react$": "<rootDir>/packages/react/src/index.tsx"
+  },
+  "setupFilesAfterEnv": ["jest-extended", "./test/setup.tsx"],
+  "testEnvironment": "jsdom",
+  "testMatch": ["**/src/**/*.test.{ts,tsx}"],
+  "testPathIgnorePatterns": ["__perf__"],
+  "transformIgnorePatterns": ["node_modules/(?!@compiled)"],
+  "watchPlugins": ["jest-watch-typeahead/filename", "jest-watch-typeahead/testname"]
+}

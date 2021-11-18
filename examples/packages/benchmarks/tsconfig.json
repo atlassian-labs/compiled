@@ -1,8 +1,0 @@
-{
-  "extends": "../../../packages/tsconfig.options.json",
-  "compilerOptions": {
-    "rootDir": "./",
-    "outDir": "dist",
-    "module": "commonjs"
-  }
-}

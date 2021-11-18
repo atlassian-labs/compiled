@@ -2,7 +2,7 @@
  * Ordered style buckets using their short psuedo name.
  * If changes are needed make sure that it aligns with the definition in `sort-at-rule-pseudos.tsx`.
  */
-export const styleBucketOrdering: any[] = [
+export const styleBucketOrdering: string[] = [
   // catch-all
   '',
   // link
@@ -26,7 +26,7 @@ export const styleBucketOrdering: any[] = [
 /**
  * Holds all style buckets in memory that have been added to the head.
  */
-const styleBucketsInHead: Partial<Record<any, HTMLStyleElement>> = {};
+const styleBucketsInHead: Record<string, HTMLStyleElement> = {};
 
 /**
  * Maps the long pseudo name to the short pseudo name.
@@ -35,7 +35,7 @@ const styleBucketsInHead: Partial<Record<any, HTMLStyleElement>> = {};
  * We reduce the pseduo name to save bundlesize.
  * Thankfully there aren't any overlaps, see: https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes.
  */
-const pseudosMap: Record<string, any | undefined> = {
+const pseudosMap: Record<string, string> = {
   // link
   k: 'l',
   // visited
@@ -52,13 +52,21 @@ const pseudosMap: Record<string, any | undefined> = {
   ive: 'a',
 };
 
+type StyleBucketOptions = {
+  nonce?: string;
+};
+
 /**
  * Lazily adds a `<style>` bucket to the `<head>`.
  * This will ensure that the style buckets are ordered.
  *
- * @param bucket Bucket to insert in the head.
+ * @param bucketName Bucket to insert in the head.
+ * @param opts
  */
-function lazyAddStyleBucketToHead(bucketName: any, opts: any): HTMLStyleElement {
+function lazyAddStyleBucketToHead(
+  bucketName: string,
+  { nonce }: StyleBucketOptions
+): HTMLStyleElement {
   if (!styleBucketsInHead[bucketName]) {
     let currentBucketIndex = styleBucketOrdering.indexOf(bucketName) + 1;
     let nextBucketFromCache = null;
@@ -73,7 +81,7 @@ function lazyAddStyleBucketToHead(bucketName: any, opts: any): HTMLStyleElement 
     }
 
     const tag = document.createElement('style');
-    opts.nonce && tag.setAttribute('nonce', opts.nonce);
+    nonce && tag.setAttribute('nonce', nonce);
     tag.appendChild(document.createTextNode(''));
     styleBucketsInHead[bucketName] = tag;
     document.head.insertBefore(tag, nextBucketFromCache);
@@ -100,7 +108,7 @@ function lazyAddStyleBucketToHead(bucketName: any, opts: any): HTMLStyleElement 
  *
  * @param sheet styles for which we are getting the bucket
  */
-const getStyleBucketName = (sheet: string): any => {
+const getStyleBucketName = (sheet: string): string => {
   // We are grouping all the at-rules like @media, @supports etc under `m` bucket.
   if (sheet.charCodeAt(0) === 64 /* "@" */) {
     return 'm';
@@ -121,14 +129,14 @@ const getStyleBucketName = (sheet: string): any => {
   return '';
 };
 
+export type CreateStyleSheetOptions = StyleBucketOptions;
+
 /**
- * Returns a style sheet object that is used to move styles to the head of the application
- * during runtime.
+ * Returns a style sheet object that is used to move styles to the head of the application during runtime.
  *
  * @param opts StyleSheetOpts
- * @param inserted Singleton cache for tracking what styles have already been added to the head
  */
-export function createStyleSheet(opts: unknown) {
+export function createStyleSheet(opts: CreateStyleSheetOptions) {
   return (css: string): void => {
     const bucketName = getStyleBucketName(css);
     const style = lazyAddStyleBucketToHead(bucketName, opts);

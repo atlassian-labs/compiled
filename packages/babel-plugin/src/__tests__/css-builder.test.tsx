@@ -1,4 +1,4 @@
-import { transform } from './test-utils';
+import { transform } from '../test-utils';
 
 describe('css builder', () => {
   it('should keep nested unconditional css together', () => {
