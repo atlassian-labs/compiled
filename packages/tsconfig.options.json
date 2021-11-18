@@ -13,6 +13,14 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "plugins": [
+      {
+        "transform": "ts-transform-define",
+        "replace": {
+          "isCacheDisabled()": "false"
+        }
+      }
+    ],
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
