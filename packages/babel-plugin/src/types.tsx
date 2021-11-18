@@ -74,11 +74,6 @@ export interface State extends PluginPass {
   };
 
   /**
-   * Paths that will be cleaned up on pass exit.
-   */
-  pathsToCleanup: { action: 'replace' | 'remove'; path: NodePath }[];
-
-  /**
    * Userland options that can be set to change what happens when the Babel Plugin is ran.
    */
   opts: PluginOptions;

@@ -5,14 +5,11 @@ import type { State } from '../types';
 /**
  * Returns `true` if the node is using `css` from `@compiled/react` as a call expression
  *
- * @param node {t.Expression} The expression node that is being checked
+ * @param node {t.Node} The node that is being checked
  * @param state {State} Plugin state
  * @returns {boolean} Whether the node is a css usage from compiled
  */
-export const isCompiledCSSCallExpression = (
-  node: t.Expression,
-  state: State
-): node is t.CallExpression =>
+export const isCompiledCSSCallExpression = (node: t.Node, state: State): node is t.CallExpression =>
   t.isCallExpression(node) &&
   t.isIdentifier(node.callee) &&
   node.callee.name === state.compiledImports?.css;
@@ -20,12 +17,12 @@ export const isCompiledCSSCallExpression = (
 /**
  * Returns `true` if the node is using `css` from `@compiled/react` as a tagged template expression
  *
- * @param node {t.Expression} The expression node that is being checked
+ * @param node {t.Node} The node that is being checked
  * @param state {State} Plugin state
  * @returns {boolean} Whether the node is a css usage from compiled
  */
 export const isCompiledCSSTaggedTemplateExpression = (
-  node: t.Expression,
+  node: t.Node,
   state: State
 ): node is t.TaggedTemplateExpression =>
   t.isTaggedTemplateExpression(node) &&

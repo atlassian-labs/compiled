@@ -8,13 +8,6 @@ export interface UnconditionalCssItem {
   css: string;
 }
 
-export interface ConditionalCssItem {
-  type: 'conditional';
-  test: t.Expression;
-  consequent: CssItem;
-  alternate: CssItem;
-}
-
 export interface LogicalCssItem {
   type: 'logical';
   expression: t.Expression;
@@ -22,12 +15,29 @@ export interface LogicalCssItem {
   css: string;
 }
 
+export interface ConditionalCssItem {
+  type: 'conditional';
+  test: t.Expression;
+  consequent: CssItem;
+  alternate: CssItem;
+}
+
+export interface ReferenceItem {
+  type: 'reference';
+  reference: string;
+}
+
 export interface SheetCssItem {
   type: 'sheet';
   css: string;
 }
 
-export type CssItem = UnconditionalCssItem | ConditionalCssItem | LogicalCssItem | SheetCssItem;
+export type CssItem =
+  | UnconditionalCssItem
+  | LogicalCssItem
+  | ConditionalCssItem
+  | ReferenceItem
+  | SheetCssItem;
 
 export type Variable = {
   name: string;
@@ -48,3 +58,15 @@ export interface PartialBindingWithMeta {
   meta: Metadata;
   source: 'import' | 'module';
 }
+
+export type CssSheet = {
+  type: 'css';
+  css: string;
+};
+
+export type SheetReference = {
+  type: 'reference';
+  reference: string;
+};
+
+export type Sheet = CssSheet | SheetReference;

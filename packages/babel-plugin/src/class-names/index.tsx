@@ -8,7 +8,7 @@ import { compiledTemplate } from '../utils/build-compiled-component';
 import { buildCssVariables } from '../utils/build-css-variables';
 import { buildCss, getItemCss } from '../utils/css-builders';
 import { resolveIdentifierComingFromDestructuring } from '../utils/resolve-binding';
-import type { CSSOutput } from '../utils/types';
+import type { CSSOutput, Sheet } from '../utils/types';
 
 /**
  * Handles style prop value. If variables are present it will replace its value with it
@@ -120,7 +120,7 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
   }
 
   const collectedVariables: CSSOutput['variables'] = [];
-  const collectedSheets: string[] = [];
+  const collectedSheets: Sheet[] = [];
 
   // First pass to replace all usages of `css({})`
   path.traverse({
@@ -135,7 +135,12 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
       const { sheets, classNames } = transformCss(builtCss.css.map((x) => getItemCss(x)).join(''));
 
       collectedVariables.push(...builtCss.variables);
-      collectedSheets.push(...sheets);
+      for (const sheet of sheets) {
+        collectedSheets.push({
+          type: 'css',
+          css: sheet,
+        });
+      }
 
       path.replaceWith(t.stringLiteral(classNames.join(' ')));
     },

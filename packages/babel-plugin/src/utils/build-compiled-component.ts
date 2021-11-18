@@ -12,35 +12,6 @@ import { transformCssItems } from './transform-css-items';
 import type { CSSOutput } from './types';
 
 /**
- * Will return a generated AST for a Compiled Component.
- * This is primarily used for CSS prop and ClassNames apis.
- *
- * @param node Originating node
- * @param sheets {string[]} Stylesheets
- * @param meta {Metadata} Useful metadata that can be used during the transformation
- */
-export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Metadata): t.Node => {
-  const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
-
-  const [keyAttribute] = getJSXAttribute(node, 'key');
-
-  return template(
-    `
-  <CC ${keyAttribute ? generate(keyAttribute).code : ''}>
-    <CS ${nonceAttribute}>{%%cssNode%%}</CS>
-    {%%jsxNode%%}
-  </CC>
-  `,
-    {
-      plugins: ['jsx'],
-    }
-  )({
-    jsxNode: node,
-    cssNode: t.arrayExpression(unique(sheets).map((sheet: string) => hoistSheet(sheet, meta))),
-  }) as t.Node;
-};
-
-/**
  * Returns the actual value of a jsx value.
  *
  * @param node
@@ -57,21 +28,8 @@ const getExpression = (
   return value;
 };
 
-/**
- * Returns a Compiled Component AST.
- *
- * @param node Originating node
- * @param cssOutput CSS and variables to place onto the component
- * @param meta {Metadata} Useful metadata that can be used during the transformation
- */
-export const buildCompiledComponent = (
-  node: t.JSXElement,
-  cssOutput: CSSOutput,
-  meta: Metadata
-): t.Node => {
-  const { sheets, classNames } = transformCssItems(cssOutput.css);
-
-  const [classNameAttribute] = getJSXAttribute(node, 'className');
+const transformClassNameProp = (element: t.JSXElement, classNames: t.Expression[]) => {
+  const [classNameAttribute] = getJSXAttribute(element, 'className');
 
   if (classNameAttribute && classNameAttribute.value) {
     // If there is a class name prop statically defined we want to concatenate it with
@@ -83,8 +41,8 @@ export const buildCompiledComponent = (
       t.callExpression(t.identifier('ax'), [t.arrayExpression(values)])
     );
   } else {
-    // No class name - just push our own one.
-    node.openingElement.attributes.push(
+    // No className prop - just push our own one.
+    element.openingElement.attributes.push(
       t.jsxAttribute(
         t.jsxIdentifier('className'),
         t.jsxExpressionContainer(
@@ -93,49 +51,102 @@ export const buildCompiledComponent = (
       )
     );
   }
+};
 
-  if (cssOutput.variables.length) {
-    const [styleAttribute, styleAttributeIndex] = getJSXAttribute(node, 'style');
-
-    const dynamicStyleProperties: (t.ObjectProperty | t.SpreadElement)[] = buildCssVariables(
-      cssOutput.variables
-    );
-
-    if (styleAttribute) {
-      // Remove the pre-existing style prop - we're going to redefine it soon.
-      node.openingElement.attributes.splice(styleAttributeIndex, 1);
-
-      if (
-        styleAttribute.value &&
-        t.isJSXExpressionContainer(styleAttribute.value) &&
-        !t.isJSXEmptyExpression(styleAttribute.value.expression)
-      ) {
-        // If it's not an object we just spread the expression into the object
-        if (!t.isObjectExpression(styleAttribute.value.expression)) {
-          dynamicStyleProperties.splice(0, 0, t.spreadElement(styleAttribute.value.expression));
-        } else {
-          // Else it's an object! So we want to place each property into the object
-          styleAttribute.value.expression.properties.forEach((prop, index) => {
-            if (t.isObjectMethod(prop)) {
-              return;
-            }
-
-            // We want to keep the order that they were defined in.
-            // So we're using index here to do just that.
-            dynamicStyleProperties.splice(index, 0, prop);
-          });
-        }
-      }
-    }
-
-    // Finally add the new style prop back to the opening JSX element.
-    node.openingElement.attributes.push(
-      t.jsxAttribute(
-        t.jsxIdentifier('style'),
-        t.jsxExpressionContainer(t.objectExpression(dynamicStyleProperties))
-      )
-    );
+const transformStyleProp = (element: t.JSXElement, variables: CSSOutput['variables']): void => {
+  if (!variables.length) {
+    return;
   }
 
-  return compiledTemplate(node, sheets, meta);
+  const [styleAttribute, styleAttributeIndex] = getJSXAttribute(element, 'style');
+
+  const dynamicStyleProperties: (t.ObjectProperty | t.SpreadElement)[] =
+    buildCssVariables(variables);
+
+  if (styleAttribute) {
+    // Remove the pre-existing style prop - we're going to redefine it soon.
+    element.openingElement.attributes.splice(styleAttributeIndex, 1);
+
+    if (
+      t.isJSXExpressionContainer(styleAttribute.value) &&
+      !t.isJSXEmptyExpression(styleAttribute.value.expression)
+    ) {
+      // If it's not an object we just spread the expression into the object
+      if (!t.isObjectExpression(styleAttribute.value.expression)) {
+        dynamicStyleProperties.splice(0, 0, t.spreadElement(styleAttribute.value.expression));
+      } else {
+        // Else it's an object! So we want to place each property into the object
+        styleAttribute.value.expression.properties.forEach((prop, index) => {
+          if (t.isObjectMethod(prop)) {
+            return;
+          }
+
+          // We want to keep the order that they were defined in.
+          // So we're using index here to do just that.
+          dynamicStyleProperties.splice(index, 0, prop);
+        });
+      }
+    }
+  }
+
+  // Finally add the new style prop back to the opening JSX element.
+  element.openingElement.attributes.push(
+    t.jsxAttribute(
+      t.jsxIdentifier('style'),
+      t.jsxExpressionContainer(t.objectExpression(dynamicStyleProperties))
+    )
+  );
+};
+
+/**
+ * Will return a generated AST for a Compiled Component.
+ * This is primarily used for CSS prop and ClassNames apis.
+ *
+ * @param node Originating node
+ * @param sheets {string[]} Stylesheets
+ * @param meta {Metadata} Useful metadata that can be used during the transformation
+ */
+export const compiledTemplate = (node: t.Expression, sheets: Sheet[], meta: Metadata): t.Node => {
+  const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
+  const [keyAttribute] = getJSXAttribute(node, 'key');
+
+  return template(
+    `
+    <CC ${keyAttribute ? generate(keyAttribute).code : ''}>
+      <CS ${nonceAttribute}>{%%cssNode%%}</CS>
+      {%%jsxNode%%}
+    </CC>
+  `,
+    {
+      plugins: ['jsx'],
+    }
+  )({
+    jsxNode: node,
+    cssNode: t.arrayExpression(
+      unique(sheets).map((sheet) =>
+        sheet.type === 'reference' ? t.identifier(sheet.reference) : hoistSheet(sheet, meta)
+      )
+    ),
+  }) as t.Node;
+};
+
+/**
+ * Returns a Compiled Component AST.
+ *
+ * @param element Originating JSX element
+ * @param cssOutput CSS and variables to place onto the component
+ * @param meta {Metadata} Useful metadata that can be used during the transformation
+ */
+export const buildCompiledComponent = (
+  element: t.JSXElement,
+  cssOutput: CSSOutput,
+  meta: Metadata
+): t.Node => {
+  const { css, variables } = cssOutput;
+  const { sheets, classNames } = transformCssItems(css);
+
+  transformClassNameProp(element, classNames);
+  transformStyleProp(element, variables);
+
+  return compiledTemplate(element, sheets, meta);
 };

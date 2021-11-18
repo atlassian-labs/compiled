@@ -70,21 +70,32 @@ describe('keyframes', () => {
 
     describe('referenced through a css prop object call expression', () => {
       describe('by inlining static values', () => {
-        it('in a single animation used with the longhand syntax', () => {
+        it.only('in a single animation used with the longhand syntax', () => {
           const actual = transform(
             createSingleAnimationSmokeTest(longhandCssPropObjectCallExpression)
           );
 
+          // TODO runtime handle ix(fadeOut)
+
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-            const _3 = \\"._j7hqb4f3{animation-name:k1wmcptp}\\";
-            const _2 = \\"._5sagymdr{animation-duration:2s}\\";
-            const _ =
-              \\"@keyframes k1wmcptp{25%,0%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
-            const fadeOut = null;
+            "const _3 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
+            const _2 = \\"._j7hq13il{animation-name:var(--_129ax8o)}\\";
+            const _ = \\"._5sagymdr{animation-duration:2s}\\";
+            const fadeOut = {
+              name: \\"kug81sc\\",
+              sheet:
+                \\"@keyframes kug81sc{25%,0%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\",
+            };
             <CC>
-              <CS>{[_, _2, _3, _4]}</CS>
-              {<div className={ax([\\"_5sagymdr _j7hqb4f3 _1pgl1ytf\\"])} />}
+              <CS>{[_, _2, _3]}</CS>
+              {
+                <div
+                  className={ax([\\"_5sagymdr _j7hq13il _1pgl1ytf\\"])}
+                  style={{
+                    \\"--_129ax8o\\": ix(fadeOut),
+                  }}
+                />
+              }
             </CC>;
             "
           `);

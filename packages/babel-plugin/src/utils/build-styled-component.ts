@@ -9,7 +9,6 @@ import isPropValid from '@emotion/is-prop-valid';
 
 import { PROPS_IDENTIFIER_NAME } from '../constants';
 import type { Metadata, Tag } from '../types';
-import type { CSSOutput, CssItem } from '../utils/types';
 
 import { pickFunctionBody } from './ast';
 import { buildCssVariables } from './build-css-variables';
@@ -17,42 +16,7 @@ import { getItemCss } from './css-builders';
 import { hoistSheet } from './hoist-sheet';
 import { resolveIdentifierComingFromDestructuring } from './resolve-binding';
 import { transformCssItems } from './transform-css-items';
-
-export interface StyledTemplateOpts {
-  /**
-   * Class to be used for the CSS selector.
-   */
-  classNames: t.Expression[];
-
-  /**
-   * Tag for the Styled Component, for example "div" or user defined component.
-   */
-  tag: Tag;
-
-  /**
-   * CSS variables to be passed to the `style` prop.
-   */
-  variables: CSSOutput['variables'];
-
-  /**
-   * CSS sheets to be passed to the `CS` component.
-   */
-  sheets: string[];
-}
-
-/**
- * Builds up the inline style prop value for a Styled Component.
- *
- * @param variables CSS variables that will be placed in the AST
- * @param transform Transform callback function that can be used to change the CSS variable expression
- */
-const styledStyleProp = (
-  variables: CSSOutput['variables'],
-  transform?: (expression: t.Expression) => t.Expression
-) => {
-  const props: (t.ObjectProperty | t.SpreadElement)[] = [t.spreadElement(t.identifier('style'))];
-  return t.objectExpression(props.concat(buildCssVariables(variables, transform)));
-};
+import type { CSSOutput, CssItem, Sheet, CssSheet } from './types';
 
 /**
  * Returns a tag string in the form of an identifier or string literal.
@@ -206,6 +170,28 @@ const handleDestructuringInStyledInterpolation = (path: NodePath<t.Identifier>) 
   return propsToDestructure;
 };
 
+export interface StyledTemplateOpts {
+  /**
+   * Class to be used for the CSS selector.
+   */
+  classNames: t.Expression[];
+
+  /**
+   * Tag for the Styled Component, for example "div" or user defined component.
+   */
+  tag: Tag;
+
+  /**
+   * CSS variables to be passed to the `style` prop.
+   */
+  variables: CSSOutput['variables'];
+
+  /**
+   * CSS sheets to be passed to the `CS` component.
+   */
+  sheets: Sheet[];
+}
+
 /**
  * Will return a generated AST for a Styled Component.
  *
@@ -215,33 +201,41 @@ const handleDestructuringInStyledInterpolation = (path: NodePath<t.Identifier>) 
 const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
   const propsToDestructure: string[] = [];
+
   const styleProp = opts.variables.length
-    ? styledStyleProp(opts.variables, (node) => {
-        const nestedArrowFunctionExpressionVisitor = {
-          noScope: true,
-          MemberExpression(path: NodePath<t.MemberExpression>) {
-            const propsToDestructureFromMemberExpression =
-              handleMemberExpressionInStyledInterpolation(path);
+    ? [
+        t.spreadElement(t.identifier('style')),
+        buildCssVariables(opts.variables, (node) => {
+          const nestedArrowFunctionExpressionVisitor = {
+            noScope: true,
+            MemberExpression(path: NodePath<t.MemberExpression>) {
+              const propsToDestructureFromMemberExpression =
+                handleMemberExpressionInStyledInterpolation(path);
 
-            propsToDestructure.push(...propsToDestructureFromMemberExpression);
-          },
-          Identifier(path: NodePath<t.Identifier>) {
-            const propsToDestructureFromIdentifier = handleDestructuringInStyledInterpolation(path);
+              propsToDestructure.push(...propsToDestructureFromMemberExpression);
+            },
+            Identifier(path: NodePath<t.Identifier>) {
+              const propsToDestructureFromIdentifier =
+                handleDestructuringInStyledInterpolation(path);
 
-            propsToDestructure.push(...propsToDestructureFromIdentifier);
-          },
-        };
+              propsToDestructure.push(...propsToDestructureFromIdentifier);
+            },
+          };
 
-        if (t.isArrowFunctionExpression(node)) {
-          return traverseStyledArrowFunctionExpression(node, nestedArrowFunctionExpressionVisitor);
-        }
+          if (t.isArrowFunctionExpression(node)) {
+            return traverseStyledArrowFunctionExpression(
+              node,
+              nestedArrowFunctionExpressionVisitor
+            );
+          }
 
-        if (t.isBinaryExpression(node)) {
-          return traverseStyledBinaryExpression(node, nestedArrowFunctionExpressionVisitor);
-        }
+          if (t.isBinaryExpression(node)) {
+            return traverseStyledBinaryExpression(node, nestedArrowFunctionExpressionVisitor);
+          }
 
-        return node;
-      })
+          return node;
+        }),
+      ]
     : t.identifier('style');
 
   let unconditionalClassNames = '',
@@ -254,6 +248,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
       conditionalClassNames += `${generate(item).code}, `;
     }
   });
+
 
   const classNames = `"${unconditionalClassNames.trim()}", ${conditionalClassNames}`;
 
@@ -283,7 +278,11 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     }
   )({
     styleProp,
-    cssNode: t.arrayExpression(unique(opts.sheets).map((sheet: string) => hoistSheet(sheet, meta))),
+    cssNode: t.arrayExpression(
+      unique(opts.sheets).map((sheet) =>
+        sheet.type === 'reference' ? t.identifier(sheet.reference) : hoistSheet(sheet, meta)
+      )
+    ),
   }) as t.Node;
 };
 
@@ -296,26 +295,33 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
  */
 export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
   const unconditionalCss: string[] = [];
-  const conditionalCss: CssItem[] = [];
+  const nonUnconditionalCss: CssItem[] = [];
 
   cssOutput.css.forEach((item) => {
-    if (item.type === 'logical' || item.type === 'conditional') {
-      conditionalCss.push(item);
-    } else {
+    if (item.type === 'unconditional') {
       unconditionalCss.push(getItemCss(item));
+    } else {
+      nonUnconditionalCss.push(item);
     }
   });
 
   // Rely on transformCss to remove duplicates and return only the last unconditional CSS for each property
   const uniqueUnconditionalCssOutput = transformCss(unconditionalCss.join(''));
 
-  // Rely on transformItemCss to build expressions for conditional & logical CSS
-  const conditionalCssOutput = transformCssItems(conditionalCss);
+  // Rely on transformItemCss to build logicalExpressions for logical CSS
+  const nonUnconditionalCssOutput = transformCssItems(nonUnconditionalCss);
 
-  const sheets = [...uniqueUnconditionalCssOutput.sheets, ...conditionalCssOutput.sheets];
+  const sheets = [
+    ...uniqueUnconditionalCssOutput.sheets.map<CssSheet>((sheet) => ({
+      type: 'css',
+      css: sheet,
+    })),
+    ...nonUnconditionalCssOutput.sheets,
+  ];
+
   const classNames = [
     ...[t.stringLiteral(uniqueUnconditionalCssOutput.classNames.join(' '))],
-    ...conditionalCssOutput.classNames,
+    ...nonUnconditionalCssOutput.classNames,
   ];
 
   return styledTemplate(

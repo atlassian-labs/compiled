@@ -4,7 +4,7 @@ import { unique } from '@compiled/utils';
 import type { Variable } from './types';
 
 /**
- * Will build up the CSS variables prop to be placed as inline styles.
+ * Builds up the CSS variables to be placed as inline styles.
  *
  * @param variables CSS variables that will be placed in the AST
  * @param transform Transform function that can be used to change the CSS variable expression

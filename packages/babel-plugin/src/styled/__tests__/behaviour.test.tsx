@@ -465,30 +465,6 @@ describe('styled component behaviour', () => {
     );
   });
 
-  it('should apply conditional CSS with nested ternary operators', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-
-      const Component = styled.button\`
-        color: \${(props) => (props.isPrimary ? props.isDisabled ? 'black' : 'blue' : 'red')};
-        font-size: 30px;
-        border: 2px solid blue;
-        padding: 8px;
-      \`;
-    `);
-
-    expect(actual).toIncludeMultiple([
-      '._19bvftgi{padding-left:8px}',
-      '._n3tdftgi{padding-bottom:8px}',
-      '._u5f3ftgi{padding-right:8px}',
-      '._ca0qftgi{padding-top:8px}',
-      '._19itlf8h{border:2px solid blue}',
-      '._1wyb1ul9{font-size:30px}',
-      '._syaz1xo0{color:var(--_13kr4bd)}',
-      `<C{...props}style={{...style,"--_13kr4bd":ix(isPrimary?isDisabled?'black':'blue':'red')}}ref={ref}className={ax(["_syaz1xo0 _1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.className])}/>`,
-    ]);
-  });
-
   it('should apply conditional CSS with template literal', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
@@ -573,66 +549,19 @@ describe('styled component behaviour', () => {
     );
   });
 
-  it('should not allow a logical statement with a conditional right-hand side', () => {
-    expect(() =>
-      transform(`
-      import { styled } from '@compiled/react';
-
-      const Component = styled.div\`
-        \${props => props.isShown && (props.isPrimary ? { color: 'blue' } : { color: 'green' })};
-      \`;
-    `)
-    ).toThrow("ConditionalExpression isn't a supported CSS type");
-  });
-
   it('should apply conditional CSS when using "key: value" in string form', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
-        \${props => props.isPrimary ? 'color: green' : \`color: red\`};
+        \${props => props.isPrimary ?  'color: green' : \`color: red\`};
       \`;
     `);
 
     expect(actual).toIncludeMultiple([
       '._syazbf54{color:green}',
       '._syaz5scu{color:red}',
-      'className={ax(["",props.isPrimary?"_syazbf54":"_syaz5scu",props.className])}',
-    ]);
-  });
-
-  it('should apply nested conditional CSS when using "key: value" in string form', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-
-      const Component = styled.div\`
-        \${props => props.isPrimary ? 'color: blue' :  props.isGreen ? 'color: green' : 'color: red'};
-      \`;
-    `);
-
-    expect(actual).toIncludeMultiple([
-      '._syazbf54{color:green}',
-      '._syaz13q2{color:blue}',
-      '._syaz5scu{color:red}',
-      'className={ax(["",props.isPrimary?"_syaz13q2":props.isGreen?"_syazbf54":"_syaz5scu",props.className])}',
-    ]);
-  });
-
-  it('should apply conditional CSS when using "key: value; key: value; ..." in string form', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-
-      const Component = styled.div\`
-        \${props => props.isPrimary ? 'color: green; font-size: 12px;' : \`color: red; font-size: 16px;\`};
-      \`;
-    `);
-
-    expect(actual).toIncludeMultiple([
-      '._syazbf54{color:green}',
-      '._syaz5scu{color:red}',
-      '._1wyb1fwx{font-size:12px}',
-      '._1wybexct{font-size:16px}',
-      'className={ax(["",props.isPrimary?"_syazbf54 _1wyb1fwx":"_syaz5scu _1wybexct",props.className])}',
+      'className={ax(["",props.isPrimary&&"_syazbf54",!props.isPrimary&&"_syaz5scu",props.className])}',
     ]);
   });
 
@@ -641,14 +570,14 @@ describe('styled component behaviour', () => {
       import { styled, css } from '@compiled/react';
 
       const Component = styled.div\`
-        \${props => props.isPrimary ? css\`color: green\` : css({ color: 'red' })};
+        \${props => props.isPrimary ?  css\`color: green\` : css({ color: 'red' })};
       \`;
     `);
 
     expect(actual).toIncludeMultiple([
       '._syazbf54{color:green}',
       '._syaz5scu{color:red}',
-      'className={ax(["",props.isPrimary?"_syazbf54":"_syaz5scu",props.className])}',
+      'className={ax(["",props.isPrimary&&"_syazbf54",!props.isPrimary&&"_syaz5scu",props.className])}',
     ]);
   });
 
@@ -848,7 +777,7 @@ describe('styled component behaviour', () => {
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
       '._1wybgktf{font-size:20px}',
-      'className={ax(["_1wybgktf",props.isPrimary&&props.isBolded?"_syaz13q2":"_syaz5scu",props.className])}/',
+      'className={ax(["_1wybgktf",props.isPrimary&&props.isBolded&&"_syaz13q2",!(props.isPrimary&&props.isBolded)&&"_syaz5scu",props.className])}/',
     ]);
   });
 
@@ -930,7 +859,10 @@ describe('styled component behaviour', () => {
       '._syaz1x77{color:white}',
       '_bfhk11x8{background-color:black}',
       '_1wyb1ul9{font-size:30px}',
-      'className={ax(["_1wyb1ul9",props.isDark?"_bfhk11x8 _syaz1x77":"_bfhk1x77 _syaz11x8",props.className])}',
     ]);
+
+    expect(actual).toInclude(
+      'className={ax(["_1wyb1ul9",props.isDark&&"_bfhk11x8 _syaz1x77",!props.isDark&&"_bfhk1x77 _syaz11x8",props.className])}'
+    );
   });
 });

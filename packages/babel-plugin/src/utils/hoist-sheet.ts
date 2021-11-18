@@ -3,14 +3,16 @@ import * as t from '@babel/types';
 
 import type { Metadata } from '../types';
 
-/*
+import type { CssSheet } from './types';
+
+/**
  * Hoists a sheet to the top of the module if its not already there.
  * Returns the referencing identifier.
  *
- * @param sheet {string} Stylesheet
+ * @param sheet {CssSheet} Stylesheet
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
-export const hoistSheet = (sheet: string, meta: Metadata): t.Identifier => {
+export const hoistSheet = ({ css: sheet }: CssSheet, meta: Metadata): t.Identifier => {
   if (meta.state.sheets[sheet]) {
     return meta.state.sheets[sheet];
   }

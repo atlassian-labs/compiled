@@ -6,6 +6,7 @@ import { buildCodeFrameError } from '../utils/ast';
 import { buildDisplayName } from '../utils/build-display-name';
 import { buildStyledComponent } from '../utils/build-styled-component';
 import { buildCss } from '../utils/css-builders';
+import type { CSSOutput } from '../utils/types';
 
 interface StyledData {
   tag: Tag;
@@ -93,25 +94,6 @@ const extractStyledDataFromObjectLiteral = (
 };
 
 /**
- * Interrogates `node` and returns styled data if any were found.
- * @param node
- */
-const extractStyledDataFromNode = (
-  node: t.TaggedTemplateExpression | t.CallExpression,
-  meta: Metadata
-) => {
-  if (t.isTaggedTemplateExpression(node)) {
-    return extractStyledDataFromTemplateLiteral(node, meta);
-  }
-
-  if (t.isCallExpression(node)) {
-    return extractStyledDataFromObjectLiteral(node, meta);
-  }
-
-  return undefined;
-};
-
-/**
  * Check whether the node value includes an invalid CSS declaration.
  * This happens when a CSS property is defined with a conditional rule that doesn't specify a default value,
  * resulting in a node that has a CSS value without property ( eg. 'bold').
@@ -154,19 +136,53 @@ const hasInValidExpression = (node: t.TaggedTemplateExpression) => {
   return invalidExpression > 0;
 };
 
-/**
- * Takes a styled tagged template or call expression and then transforms it to a compiled component.
- *
- * `styled.div({})`
- *
- * @param path {NodePath} The tagged template or call expression
- * @param meta {Metadata} Useful metadata that can be used during the transformation
- */
-export const visitStyledPath = (
-  path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
+export const transformStyledCallExpression = (
+  path: NodePath<t.CallExpression>,
   meta: Metadata
 ): void => {
-  if (t.isTaggedTemplateExpression(path.node) && hasInValidExpression(path.node)) {
+  const styledData = extractStyledDataFromObjectLiteral(path.node, meta);
+  if (!styledData) {
+    // We didn't find a node we're interested in - bail out!
+    return;
+  }
+
+  const cssOutput: CSSOutput = {
+    css: [],
+    variables: [],
+  };
+
+  // @ts-expect-error
+  for (const argument of styledData.cssNode) {
+    if (!t.isExpression(argument)) {
+      throw buildCodeFrameError(
+        `${argument.type} isn't a supported CSS type - try using an object or string`,
+        argument,
+        path.parentPath
+      );
+    }
+
+    const result = buildCss(argument, meta);
+    cssOutput.css.push(...result.css);
+    cssOutput.variables.push(...result.variables);
+  }
+
+  path.replaceWith(buildStyledComponent(styledData.tag, cssOutput, meta));
+
+  const parentVariableDeclaration = path.findParent((x) => x.isVariableDeclaration());
+  if (parentVariableDeclaration && t.isVariableDeclaration(parentVariableDeclaration.node)) {
+    const variableDeclarator = parentVariableDeclaration.node.declarations[0];
+    if (t.isIdentifier(variableDeclarator.id)) {
+      const variableName = variableDeclarator.id.name;
+      parentVariableDeclaration.insertAfter(buildDisplayName(variableName));
+    }
+  }
+};
+
+export const transformStyledTaggedTemplateExpression = (
+  path: NodePath<t.TaggedTemplateExpression>,
+  meta: Metadata
+): void => {
+  if (hasInValidExpression(path.node)) {
     throw buildCodeFrameError(
       `A logical expression contains an invalid CSS declaration.
       Compiled doesn't support CSS properties that are defined with a conditional rule that doesn't specify a default value.
@@ -177,7 +193,7 @@ export const visitStyledPath = (
     );
   }
 
-  const styledData = extractStyledDataFromNode(path.node, meta);
+  const styledData = extractStyledDataFromTemplateLiteral(path.node, meta);
   if (!styledData) {
     // We didn't find a node we're interested in - bail out!
     return;

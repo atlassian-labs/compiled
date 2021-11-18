@@ -2,7 +2,7 @@ import * as t from '@babel/types';
 import { transformCss } from '@compiled/css';
 
 import { getItemCss } from './css-builders';
-import type { CssItem } from './types';
+import type { CssItem, Sheet } from './types';
 
 /**
  * Splits a single item's styles into sheets and an expression that handles
@@ -13,10 +13,16 @@ import type { CssItem } from './types';
 const transformCssItem = (
   item: CssItem
 ): {
-  sheets: string[];
+  sheets: Sheet[];
   classExpression?: t.Expression;
 } => {
   switch (item.type) {
+    case 'reference':
+      return {
+        classExpression: t.identifier(item.reference),
+        sheets: [{ type: 'reference', reference: item.reference }]
+      };
+
     case 'conditional':
       const consequent = transformCssItem(item.consequent);
       const alternate = transformCssItem(item.alternate);
@@ -35,7 +41,7 @@ const transformCssItem = (
       const logicalCss = transformCss(getItemCss(item));
 
       return {
-        sheets: logicalCss.sheets,
+        sheets: logicalCss.sheets.map(sheet => ({ type: 'css', css: sheet })),
         classExpression: t.logicalExpression(
           item.operator,
           item.expression,
@@ -48,7 +54,7 @@ const transformCssItem = (
       const className = css.classNames.join(' ');
 
       return {
-        sheets: css.sheets,
+        sheets: css.sheets.map(sheet => ({ type: 'css', css: sheet })),
         classExpression: className.trim() ? t.stringLiteral(className) : undefined,
       };
   }
@@ -62,18 +68,18 @@ const transformCssItem = (
  */
 export const transformCssItems = (
   cssItems: CssItem[]
-): { sheets: string[]; classNames: t.Expression[] } => {
-  const sheets: string[] = [];
+): { sheets: Sheet[]; classNames: t.Expression[] } => {
+  const sheets: Sheet[] = [];
   const classNames: t.Expression[] = [];
 
-  cssItems.forEach((item) => {
+  for (const item of cssItems) {
     const result = transformCssItem(item);
 
     sheets.push(...result.sheets);
     if (result.classExpression) {
       classNames.push(result.classExpression);
     }
-  });
+  }
 
   return { sheets, classNames };
 };

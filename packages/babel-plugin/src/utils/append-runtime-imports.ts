@@ -1,20 +1,12 @@
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 
-/**
- * Wrapper to make defining import specifiers easier.
- * If `localName` is defined it will rename the import to it,
- * e.g: `name as localName`.
- *
- * @param name import name
- * @param localName local name
- */
+const COMPILED_RUNTIME_IMPORTS = ['ax', 'ix', 'CC', 'CS'];
+const COMPILED_RUNTIME_MODULE = '@compiled/react/runtime';
+
 const importSpecifier = (name: string, localName?: string): t.ImportSpecifier => {
   return t.importSpecifier(t.identifier(name), t.identifier(localName || name));
 };
-
-const COMPILED_RUNTIME_IMPORTS = ['ax', 'ix', 'CC', 'CS'];
-const COMPILED_RUNTIME_MODULE = '@compiled/react/runtime';
 
 /**
  * Appends runtime import to code. If it is already present, it will append import specifiers

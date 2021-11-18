@@ -7,13 +7,7 @@ import type { Metadata } from '../types';
 
 import { buildCodeFrameError, getKey } from './ast';
 import { evaluateExpression } from './evaluate-expression';
-import {
-  isCompiledCSSCallExpression,
-  isCompiledCSSTaggedTemplateExpression,
-  isCompiledKeyframesCallExpression,
-  isCompiledKeyframesTaggedTemplateExpression,
-} from './is-compiled';
-import { resolveBinding } from './resolve-binding';
+import { isCompiledCSSCallExpression, isCompiledCSSTaggedTemplateExpression } from './is-compiled';
 import type { CSSOutput, CssItem, LogicalCssItem, SheetCssItem } from './types';
 
 /**
@@ -92,71 +86,9 @@ const mergeSubsequentUnconditionalCssItems = (arr: CssItem[]): CssItem[] => {
  * @param item
  */
 export const getItemCss = (item: CssItem): string => {
-  return item.type === 'conditional'
-    ? [item.consequent, item.alternate].map(getItemCss).join('')
-    : item.css;
+  // @ts-expect-error
+  return item.css;
 };
-
-/**
- * Returns the logical item from a conditional expression.
- *
- * @param css
- * @param node
- * @param type
- */
-const getLogicalItemFromConditionalExpression = (
-  css: CSSOutput['css'],
-  node: t.ConditionalExpression,
-  type: string
-) => {
-  const expression = node.test;
-  return css.map((item) => {
-    if (item.type === 'conditional') {
-      return item;
-    }
-
-    if (item.type === 'logical') {
-      return {
-        ...item,
-        expression: t.logicalExpression(item.operator, expression, item.expression),
-      };
-    }
-
-    /**
-     * Ensure that the CSS declarations in the alternate mixin are not evaluated as
-     * unconditional rules.
-     * Eg ${(props) => (props.isPrimary ? primary : secondary)}; where primary is
-     * the consequent node and secondary is the alternate node
-     * -> primary mixin will be applied only when props.isPrimary
-     * -> secondary mixin will be applied only when !props.isPrimary
-     *  */
-    const alternateExpression = t.unaryExpression('!', expression);
-
-    const logicalItem: LogicalCssItem = {
-      type: 'logical',
-      css: getItemCss(item),
-      expression: type === 'consequent' ? expression : alternateExpression,
-      operator: '&&',
-    };
-
-    return logicalItem;
-  });
-};
-
-/**
- * Recursive helper function for toCSSRule to handle conditional CssItems
- *
- * @param selector
- * @param item
- */
-const toCSSRuleInternal = (selector: string, item: CssItem): CssItem =>
-  item.type === 'conditional'
-    ? {
-        ...item,
-        consequent: toCSSRuleInternal(selector, item.consequent),
-        alternate: toCSSRuleInternal(selector, item.alternate),
-      }
-    : { ...item, css: `${selector} { ${getItemCss(item)} }` };
 
 /**
  * Maps the css in the result to CSS rules.
@@ -166,30 +98,8 @@ const toCSSRuleInternal = (selector: string, item: CssItem): CssItem =>
  */
 const toCSSRule = (selector: string, result: CSSOutput) => ({
   ...result,
-  css: result.css.map((item): CssItem => toCSSRuleInternal(selector, item)),
+  css: result.css.map((x) => ({ ...x, css: `${selector} { ${getItemCss(x)} }` })),
 });
-
-/**
- * Recursive helper function for toCSSDeclaration to handle conditional CssItems
- *
- * @param key
- * @param items
- */
-const toCSSDeclarationInternal = (key: string, item: CssItem): CssItem => {
-  if (item.type === 'sheet') {
-    // Leave sheets as is
-    return item;
-  } else if (item.type === 'conditional') {
-    // Handle conditional branches
-    return {
-      ...item,
-      consequent: toCSSDeclarationInternal(key, item.consequent),
-      alternate: toCSSDeclarationInternal(key, item.alternate),
-    };
-  } else {
-    return { ...item, css: `${kebabCase(key)}: ${getItemCss(item)};` };
-  }
-};
 
 /**
  * Maps the css in the result to CSS declarations.
@@ -199,7 +109,10 @@ const toCSSDeclarationInternal = (key: string, item: CssItem): CssItem => {
  */
 const toCSSDeclaration = (key: string, result: CSSOutput) => ({
   ...result,
-  css: result.css.map((item): CssItem => toCSSDeclarationInternal(key, item)),
+  // Leave sheets as is
+  css: result.css.map((x) =>
+    x.type === 'sheet' ? x : { ...x, css: `${kebabCase(key)}: ${getItemCss(x)};` }
+  ),
 });
 
 /**
@@ -271,6 +184,52 @@ const callbackIfFileIncluded = (meta: Metadata, next: Metadata) => {
 };
 
 /**
+ * Returns the logical item from a conditional expression.
+ *
+ * @param css
+ * @param node
+ * @param type
+ */
+const getLogicalItemFromConditionalExpression = (
+  css: CSSOutput['css'],
+  node: t.ConditionalExpression,
+  type: string
+) => {
+  const expression = node.test;
+  return css.map((item) => {
+    if (item.type === 'conditional') {
+      return item;
+    }
+
+    if (item.type === 'logical') {
+      return {
+        ...item,
+        expression: t.logicalExpression(item.operator, expression, item.expression),
+      };
+    }
+
+    /**
+     * Ensure that the CSS declarations in the alternate mixin are not evaluated as
+     * unconditional rules.
+     * Eg ${(props) => (props.isPrimary ? primary : secondary)}; where primary is
+     * the consequent node and secondary is the alternate node
+     * -> primary mixin will be applied only when props.isPrimary
+     * -> secondary mixin will be applied only when !props.isPrimary
+     *  */
+    const alternateExpression = t.unaryExpression('!', expression);
+
+    const logicalItem: LogicalCssItem = {
+      type: 'logical',
+      css: getItemCss(item),
+      expression: type === 'consequent' ? expression : alternateExpression,
+      operator: '&&',
+    };
+
+    return logicalItem;
+  });
+};
+
+/**
  * Extracts CSS data from a conditional expression node.
  * Eg. props.isPrimary && props.isBolded ? ({ color: 'blue' }) : ({ color: 'red'})
  *
@@ -294,18 +253,10 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
         pathNode.quasis.some((quasi) => quasi.value.raw.includes(':'))) ||
       // CSS tagged templates are already expected to be valid declarations
       isCompiledCSSTaggedTemplateExpression(pathNode, meta.state) ||
-      isCompiledCSSCallExpression(pathNode, meta.state)
+      isCompiledCSSCallExpression(pathNode, meta.state) ||
+      t.isIdentifier(pathNode)
     ) {
       cssOutput = buildCss(pathNode, meta);
-    } else if (t.isIdentifier(pathNode)) {
-      const { value: interpolation, meta: updatedMeta } = evaluateExpression(pathNode, meta);
-
-      if (
-        isCompiledCSSTaggedTemplateExpression(interpolation, updatedMeta.state) ||
-        isCompiledCSSCallExpression(interpolation, updatedMeta.state)
-      ) {
-        cssOutput = buildCss(interpolation, updatedMeta);
-      }
     } else if (t.isConditionalExpression(pathNode)) {
       cssOutput = extractConditionalExpression(pathNode, meta);
     }
@@ -356,55 +307,13 @@ const extractLogicalExpression = (node: t.ArrowFunctionExpression, meta: Metadat
   const css: CSSOutput['css'] = [];
 
   if (t.isExpression(node.body)) {
-    const { value: propValue, meta: updatedMeta } = evaluateExpression(node.body, meta);
-    const result = buildCss(propValue, updatedMeta);
-
-    callbackIfFileIncluded(meta, updatedMeta);
+    const result = buildCss(node.body, meta);
 
     css.push(...result.css);
     variables.push(...result.variables);
   }
 
   return { css: mergeSubsequentUnconditionalCssItems(css), variables };
-};
-
-/*
- * Extracts the keyframes CSS from the `@compiled/react` keyframes usage.
- *
- * @param expression {t.CallExpression | t.TaggedTemplateExpression} The keyframes declaration
- * @param meta {Metadata} Useful metadata that can be used during the transformation
- * @returns {CSSOutput} The keyframes CSS
- */
-const extractKeyframes = (
-  expression: t.CallExpression | t.TaggedTemplateExpression,
-  meta: Metadata & { prefix: string; suffix: string }
-): CSSOutput => {
-  const { prefix, suffix } = meta;
-
-  // Keyframes cannot start with a number, so let's prefix it with a character
-  const name = `k${hash(generate(expression).code)}`;
-  const selector = `@keyframes ${name}`;
-  const { css, variables } = toCSSRule(
-    selector,
-    buildCss(
-      t.isCallExpression(expression) ? (expression.arguments as t.Expression[]) : expression.quasi,
-      { ...meta, context: 'keyframes', keyframe: name }
-    )
-  );
-
-  const unexpectedCss = css.filter((item) => item.type !== 'unconditional');
-  if (unexpectedCss.length) {
-    throw buildCodeFrameError('Keyframes contains unexpected CSS', expression, meta.parentPath);
-  }
-
-  return {
-    css: [
-      { type: 'sheet', css: css.map((item) => getItemCss(item)).join('') },
-      // Use the name of the keyframe instead of the identifier
-      { type: 'unconditional', css: prefix + name + suffix },
-    ],
-    variables,
-  };
 };
 
 /**
@@ -417,17 +326,16 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
   const css: CSSOutput['css'] = [];
   const variables: CSSOutput['variables'] = [];
 
-  node.properties.forEach((prop) => {
-    if (t.isObjectProperty(prop)) {
-      // Don't use prop.value directly as it extracts constants from identifiers if needed.
-      const { value: propValue, meta: updatedMeta } = evaluateExpression(
-        prop.value as t.Expression,
-        meta
+  for (const property of node.properties) {
+    if (t.isObjectProperty(property)) {
+      const propValue = property.value;
+
+      callbackIfFileIncluded(meta, meta);
+
+      // TODO babel eval
+      const key = getKey(
+        property.computed ? evaluateExpression(property.key, meta).value : property.key
       );
-
-      callbackIfFileIncluded(meta, updatedMeta);
-
-      const key = getKey(prop.computed ? evaluateExpression(prop.key, meta).value : prop.key);
       let value = '';
 
       if (t.isStringLiteral(propValue)) {
@@ -439,81 +347,56 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       } else if (t.isObjectExpression(propValue) || t.isLogicalExpression(propValue)) {
         // We've found either an object like `{}` or a logical expression `isPrimary && {}`.
         // We can handle both the same way as they end up resulting in a CSS rule.
-        const result = toCSSRule(key, buildCss(propValue, updatedMeta));
+        const result = toCSSRule(key, buildCss(propValue, meta));
         css.push(...result.css);
         variables.push(...result.variables);
-        return;
+        continue;
       } else if (t.isTemplateLiteral(propValue)) {
         // We've found a template literal like: "fontSize: `${fontSize}px`"
-        const result = toCSSDeclaration(key, extractTemplateLiteral(propValue, updatedMeta));
+        const result = toCSSDeclaration(key, extractTemplateLiteral(propValue, meta));
         css.push(...result.css);
         variables.push(...result.variables);
-        return;
-      } else if (
-        isCompiledKeyframesCallExpression(propValue, updatedMeta.state) ||
-        isCompiledKeyframesTaggedTemplateExpression(propValue, updatedMeta.state)
-      ) {
-        const result = extractKeyframes(propValue, {
-          ...updatedMeta,
-          prefix: `${kebabCase(key)}: `,
-          suffix: ';',
-        });
-        css.push(...result.css);
-        variables.push(...result.variables);
-
-        return;
+        continue;
       } else {
         const { expression, variableName } = getVariableDeclaratorValueForOwnPath(
-          propValue,
-          updatedMeta
+          propValue as any,
+          meta
         );
 
         // This is the catch all for any kind of expression.
         // We don't want to explicitly handle each expression node differently if we can avoid it!
         const name = `--_${hash(variableName)}`;
-        variables.push({
-          name,
-          expression,
-        });
+
+        // If we have a variable...
+        // TODO It could point to an identifier that is a string too, but we will assume it's a compiled keyframe
+        if (key === 'animationName' || key === 'animation-name') {
+          css.push({
+            type: 'reference',
+            reference: variableName,
+          });
+
+          variables.push({
+            name,
+            expression: t.memberExpression(expression, t.identifier('name')),
+          });
+        } else {
+          variables.push({
+            name,
+            expression,
+          });
+        }
 
         value = `var(${name})`;
       }
 
       // Time to add this key+value to the CSS string we're building up.
       css.push({ type: 'unconditional', css: `${kebabCase(key)}: ${value};` });
-    } else if (t.isSpreadElement(prop)) {
-      let resolvedBinding = undefined;
-
-      if (t.isIdentifier(prop.argument)) {
-        resolvedBinding = resolveBinding(prop.argument.name, meta);
-
-        if (!resolvedBinding) {
-          throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
-        }
-      }
-
-      const { value: propValue, meta: updatedMeta } = evaluateExpression(prop.argument, meta);
-      const result = buildCss(propValue, updatedMeta);
-
-      callbackIfFileIncluded(meta, updatedMeta);
-
-      if (resolvedBinding?.source === 'import' && result.variables.length > 0) {
-        // NOTE: Currently we throw if the found CSS has any variables found from an
-        // import. This is because we'd need to ensure all identifiers are added to
-        // the owning file - if not done they would just error at runtime. Because
-        // this isn't a required feature at the moment we're deprioritizing support
-        // for this.
-        throw buildCodeFrameError(
-          "Identifier contains values that can't be statically evaluated",
-          prop.argument,
-          meta.parentPath
-        );
-      }
-
+    } else if (t.isSpreadElement(property)) {
+      const result = buildCss(property.argument, meta);
       css.push(...result.css);
       variables.push(...result.variables);
     }
-  });
+  }
 
   return { css: mergeSubsequentUnconditionalCssItems(css), variables };
 };
@@ -530,34 +413,29 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   // Quasis are the string pieces of the template literal - the parts around the interpolations
   const literalResult = node.quasis.reduce<string>((acc, quasi, index): string => {
-    const nodeExpression = node.expressions[index] as t.Expression | undefined;
+    const expression = node.expressions[index] as t.Expression | undefined;
 
-    if (
-      !nodeExpression ||
-      (t.isArrowFunctionExpression(nodeExpression) && t.isLogicalExpression(nodeExpression.body))
-    ) {
+    if (!expression) {
       const suffix = meta.context === 'keyframes' ? '' : ';';
       return acc + quasi.value.raw + suffix;
     }
 
-    const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
+    callbackIfFileIncluded(meta, meta);
 
-    callbackIfFileIncluded(meta, updatedMeta);
-
-    if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
+    if (t.isStringLiteral(expression) || t.isNumericLiteral(expression)) {
       // Simple case - we can immediately inline the value.
-      return acc + quasi.value.raw + interpolation.value;
+      return acc + quasi.value.raw + expression.value;
     }
 
     if (
-      t.isObjectExpression(interpolation) ||
-      isCompiledCSSTaggedTemplateExpression(interpolation, meta.state) ||
-      isCompiledCSSCallExpression(interpolation, meta.state) ||
-      (t.isArrowFunctionExpression(nodeExpression) &&
-        t.isConditionalExpression(nodeExpression.body))
+      t.isObjectExpression(expression) ||
+      isCompiledCSSTaggedTemplateExpression(expression, meta.state) ||
+      isCompiledCSSCallExpression(expression, meta.state) ||
+      (t.isArrowFunctionExpression(expression) &&
+        (t.isConditionalExpression(expression.body) || t.isLogicalExpression(expression.body)))
     ) {
       // We found something that looks like CSS.
-      const result = buildCss(interpolation, updatedMeta);
+      const result = buildCss(expression, meta);
 
       if (result.css.length) {
         // Add previous accumulative CSS first before CSS from expressions
@@ -568,25 +446,10 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       }
     }
 
-    if (
-      isCompiledKeyframesCallExpression(interpolation, updatedMeta.state) ||
-      isCompiledKeyframesTaggedTemplateExpression(interpolation, updatedMeta.state)
-    ) {
-      const {
-        css: [keyframesSheet, unconditionalKeyframesItem],
-        variables: keyframeVariables,
-      } = extractKeyframes(interpolation, {
-        ...updatedMeta,
-        prefix: quasi.value.raw,
-        suffix: '',
-      });
-
-      css.push(keyframesSheet);
-      variables.push(...keyframeVariables);
-      return acc + getItemCss(unconditionalKeyframesItem);
-    }
-
-    const { expression, variableName } = getVariableDeclaratorValueForOwnPath(nodeExpression, meta);
+    const { expression: variableExpression, variableName } = getVariableDeclaratorValueForOwnPath(
+      expression,
+      meta
+    );
 
     // Everything else is considered a catch all expression.
     // The only difficulty here is what we do around prefixes and suffixes.
@@ -604,7 +467,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
     variables.push({
       name,
-      expression,
+      expression: variableExpression,
       prefix: before.variablePrefix,
       suffix: after.variableSuffix,
     });
@@ -613,21 +476,6 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   }, '');
 
   css.push({ type: 'unconditional', css: literalResult });
-
-  // Deals with Conditional CSS Rules from Logical Expressions
-  node.expressions.forEach((prop) => {
-    if (t.isArrowFunctionExpression(prop)) {
-      if (t.isLogicalExpression(prop.body)) {
-        const { value: propValue, meta: updatedMeta } = evaluateExpression(prop.body, meta);
-        const result = buildCss(propValue, updatedMeta);
-
-        callbackIfFileIncluded(meta, updatedMeta);
-
-        css.push(...result.css);
-        variables.push(...result.variables);
-      }
-    }
-  });
 
   return {
     css: mergeSubsequentUnconditionalCssItems(css),
@@ -654,6 +502,17 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     return extractObjectExpression(node, meta);
   }
 
+  // @ts-ignore
+  if (isCompiledCSSCallExpression(node, meta.state)) {
+    // @ts-ignore
+    return buildCss(node.arguments[0], meta);
+  }
+
+  // @ts-ignore
+  if (isCompiledCSSTaggedTemplateExpression(node, meta.state)) {
+    return extractTemplateLiteral(node.quasi, meta);
+  }
+
   if (t.isArrowFunctionExpression(node) && t.isLogicalExpression(node.body)) {
     return extractLogicalExpression(node, meta);
   }
@@ -663,60 +522,27 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
   }
 
   if (t.isIdentifier(node)) {
-    const resolvedBinding = resolveBinding(node.name, meta);
-
-    if (!resolvedBinding) {
-      throw buildCodeFrameError('Variable could not be found', node, meta.parentPath);
-    }
-
-    if (!t.isExpression(resolvedBinding.node)) {
-      throw buildCodeFrameError(
-        `${resolvedBinding.node.type} isn't a supported CSS type - try using an object or string`,
-        node,
-        meta.parentPath
-      );
-    }
-
-    const result = buildCss(resolvedBinding.node, resolvedBinding.meta);
-
-    if (resolvedBinding.source === 'import' && result.variables.length > 0) {
-      // NOTE: Currently we throw if the found CSS has any variables found from an
-      // import. This is because we'd need to ensure all identifiers are added to
-      // the owning file - if not done they would just error at runtime. Because
-      // this isn't a required feature at the moment we're deprioritizing support
-      // for this.
-      throw buildCodeFrameError(
-        "Identifier contains values that can't be statically evaluated",
-        node,
-        meta.parentPath
-      );
-    }
-
-    return result;
+    return {
+      css: [
+        {
+          type: 'reference',
+          reference: node.name,
+        },
+      ],
+      variables: [],
+    };
   }
 
-  if (t.isArrayExpression(node) || Array.isArray(node)) {
-    const css: CSSOutput['css'] = [];
-    const variables: CSSOutput['variables'] = [];
-    const elements = t.isArrayExpression(node) ? node.elements : node;
-
-    elements.forEach((element) => {
-      if (!t.isExpression(element)) {
-        throw buildCodeFrameError(
-          `${element && element.type} isn't a supported CSS type - try using an object or string`,
-          t.isArrayExpression(node) ? node : element,
-          meta.parentPath
-        );
-      }
-
-      const result = buildCss(element, meta);
-      css.push(...result.css);
-      variables.push(...result.variables);
-    });
-
+  // TODO
+  if (t.isMemberExpression(node)) {
     return {
-      css,
-      variables,
+      css: [
+        {
+          type: 'reference',
+          reference: generate(node).code,
+        },
+      ],
+      variables: [],
     };
   }
 
@@ -733,7 +559,8 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
 
       const logicalItem: LogicalCssItem = {
         type: 'logical',
-        css: getItemCss(item),
+        // @ts-expect-error
+        css: item.css,
         expression,
         operator: node.operator,
       };
@@ -747,16 +574,10 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     };
   }
 
-  if (isCompiledCSSTaggedTemplateExpression(node, meta.state)) {
-    return buildCss(node.quasi, meta);
-  }
-
-  if (isCompiledCSSCallExpression(node, meta.state)) {
-    return buildCss(node.arguments[0] as t.ObjectExpression, meta);
-  }
-
   throw buildCodeFrameError(
+    // @ts-ignore
     `${node.type} isn't a supported CSS type - try using an object or string`,
+    // @ts-ignore
     node,
     meta.parentPath
   );
