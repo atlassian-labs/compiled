@@ -53,4 +53,4 @@ jobs:
           echo "$GITHUB_RUN_NUMBER"
 
       - name: Run import test
-        run: yarn build && yarn test:imports
+        run: yarn test:imports
