@@ -13,7 +13,7 @@ describe('CompiledExtractPlugin', () => {
       mode: 'production',
     });
 
-  it('throws when the plugin is not configured', async () => {
+  it.concurrent('throws when the plugin is not configured', async () => {
     const errors = await bundle(join(fixturesPath, 'local-styles.tsx'), {
       disableExtractPlugin: true,
     }).catch((err) => err);
@@ -25,7 +25,7 @@ describe('CompiledExtractPlugin', () => {
     ]);
   });
 
-  it('extracts local styles', async () => {
+  it.concurrent('extracts local styles', async () => {
     const actual = await bundle(join(fixturesPath, 'local-styles.tsx'));
 
     expect(actual[assetName]).toMatchInlineSnapshot(`
@@ -35,7 +35,7 @@ describe('CompiledExtractPlugin', () => {
     `);
   });
 
-  it('extracts styles imported through a relative path', async () => {
+  it.concurrent('extracts styles imported through a relative path', async () => {
     const actual = await bundle(join(fixturesPath, 'relative-styles.tsx'));
 
     // This should not contain any styles from the unused relative import ./common/css-prop, which includes
@@ -51,7 +51,7 @@ describe('CompiledExtractPlugin', () => {
     `);
   });
 
-  it('extracts styles imported through a webpack alias', async () => {
+  it.concurrent('extracts styles imported through a webpack alias', async () => {
     const assets = await bundle(join(fixturesPath, 'webpack-alias.tsx'));
 
     expect(assets[assetName]).toMatchInlineSnapshot(`
@@ -60,34 +60,31 @@ describe('CompiledExtractPlugin', () => {
     `);
   });
 
-  it('extracts styles imported through an overridden resolve configuration', async () => {
-    const assets = await bundle(join(fixturesPath, 'loader-alias.tsx'), {
-      resolve: {
-        // This alias will be put into the compiled plugin options, but not the webpack resolve configuration
-        alias: {
-          'loader-alias': join(fixturesPath, 'lib', 'loader-alias.ts'),
+  it.concurrent(
+    'extracts styles imported through an overridden resolve configuration',
+    async () => {
+      const assets = await bundle(join(fixturesPath, 'loader-alias.tsx'), {
+        resolve: {
+          // This alias will be put into the compiled plugin options, but not the webpack resolve configuration
+          alias: {
+            'loader-alias': join(fixturesPath, 'lib', 'loader-alias.ts'),
+          },
         },
-      },
-    });
+      });
 
-    expect(assets[assetName]).toMatchInlineSnapshot(`
+      expect(assets[assetName]).toMatchInlineSnapshot(`
       "._syaz1if8{color:indigo}
       "
     `);
-  });
+    }
+  );
 
-  it('extracts styles from an async chunk', async () => {
+  it.concurrent('extracts styles from an async chunk', async () => {
     const actual = await bundle(join(fixturesPath, 'async-styles.ts'));
 
     // Only generate one CSS bundle
-    expect(Object.keys(actual)).toMatchInlineSnapshot(`
-      Array [
-        "main.js",
-        "377.js",
-        "static/compiled-css.css",
-        "377.js.LICENSE.txt",
-      ]
-    `);
+    const cssFiles = Object.keys(actual).filter((key) => key.endsWith('.css'));
+    expect(cssFiles).toHaveLength(1);
 
     // Extract the styles into said bundle
     expect(actual[assetName]).toMatchInlineSnapshot(`
@@ -97,7 +94,7 @@ describe('CompiledExtractPlugin', () => {
     `);
   });
 
-  it('extracts styles from a pre-built babel files', async () => {
+  it.concurrent('extracts styles from a pre-built babel files', async () => {
     const actual = await bundle(join(fixturesPath, 'babel.tsx'));
 
     expect(actual[assetName]).toMatchInlineSnapshot(`
@@ -113,7 +110,7 @@ describe('CompiledExtractPlugin', () => {
     `);
   });
 
-  it('extracts important styles', async () => {
+  it.concurrent('extracts important styles', async () => {
     const actual = await bundle(join(fixturesPath, 'important-styles.tsx'));
 
     expect(actual[assetName]).toMatchInlineSnapshot(`
@@ -123,7 +120,7 @@ describe('CompiledExtractPlugin', () => {
       `);
   });
 
-  it('should find bindings', async () => {
+  it.concurrent('should find bindings', async () => {
     const actual = await bundle(join(fixturesPath, 'binding-not-found.tsx'));
 
     expect(actual[assetName]).toMatchInlineSnapshot(`
