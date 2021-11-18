@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { runBenchmark } from '@compiled/benchmark';
 import { renderToString } from 'react-dom/server';
 
