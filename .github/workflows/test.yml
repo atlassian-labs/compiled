@@ -47,6 +47,9 @@ jobs:
       - name: Run flow types validation
         run: yarn flow-types validate
 
+      - name: Check prettier
+        run: yarn prettier:check
+
       - name: Bundle size
         run: |
           GITHUB_RUN_NUMBER_TMP=GITHUB_RUN_NUMBER && export GITHUB_RUN_NUMBER=1;
