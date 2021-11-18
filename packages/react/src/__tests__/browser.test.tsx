@@ -2,9 +2,9 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { styled } from '@compiled/react';
 
-// Because of the babel transform these tests are using dist instead of src.
-// Anything we can do to use src instead?
-jest.mock('../../dist/cjs/runtime/is-node', () => ({
+// TODO: When we move back to browser checking (window vs. process) we can remove
+// this and replace with the "jest-environment node" pragma.
+jest.mock('../../src/runtime/is-node', () => ({
   isNodeEnvironment: () => false,
 }));
 
