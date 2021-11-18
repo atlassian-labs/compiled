@@ -38,9 +38,6 @@ jobs:
       - name: Run tests
         run: yarn test:cover --ci
 
-      - name: Run import test
-        run: yarn test:imports
-
       - name: Run flow types validation
         run: yarn flow-types validate
 
@@ -54,3 +51,6 @@ jobs:
           yarn bundlesize
           export GITHUB_RUN_NUMBER=GITHUB_RUN_NUMBER_TMP
           echo "$GITHUB_RUN_NUMBER"
+
+      - name: Run import test
+        run: yarn build && yarn test:imports
