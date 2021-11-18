@@ -3,8 +3,8 @@
   "version": "1.0.8",
   "private": true,
   "scripts": {
-    "start": "webpack serve --hot",
-    "build": "webpack"
+    "build": "webpack",
+    "start": "webpack serve --hot"
   },
   "dependencies": {
     "@compiled/react": "*",

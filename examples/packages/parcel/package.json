@@ -3,8 +3,8 @@
   "version": "1.0.7",
   "private": true,
   "scripts": {
-    "start": "parcel serve ./src/index.html --open --no-cache",
-    "build": "parcel build ./src/index.html"
+    "build": "parcel build ./src/index.html",
+    "start": "parcel serve ./src/index.html --open --no-cache"
   },
   "dependencies": {
     "@compiled/react": "*",
@@ -13,10 +13,10 @@
   },
   "devDependencies": {
     "@compiled/parcel-transformer": "*",
-    "@parcel/transformer-html": "^2.0.0-nightly.657",
-    "@parcel/transformer-posthtml": "^2.0.0-nightly.657",
     "@parcel/optimizer-htmlnano": "^2.0.0-nightly.657",
     "@parcel/packager-html": "^2.0.0-nightly.657",
+    "@parcel/transformer-html": "^2.0.0-nightly.657",
+    "@parcel/transformer-posthtml": "^2.0.0-nightly.657",
     "parcel": "^2.0.0-nightly.655"
   },
   "alias": {

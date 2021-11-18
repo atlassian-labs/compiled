@@ -1,7 +1,7 @@
 {
   "name": "@private/babel-component",
-  "private": true,
   "version": "0.0.8",
+  "private": true,
   "main": "./dist/index.js",
   "scripts": {
     "build": "babel ./src --out-dir=./dist"
@@ -10,11 +10,11 @@
     "@compiled/react": "*"
   },
   "devDependencies": {
-    "@compiled/babel-plugin": "*",
-    "@babel/core": "^7.16.0",
     "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.0",
-    "@babel/preset-react": "^7.16.0"
+    "@babel/preset-react": "^7.16.0",
+    "@compiled/babel-plugin": "*"
   },
   "peerDependencies": {
     "react": "^17.0.1"
