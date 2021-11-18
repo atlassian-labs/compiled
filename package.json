@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "benchmark": "yarn build:cjs && yarn build:esm && jest --config benchmark.config.json",
-    "build": "yarn build:esm && yarn build:examples-babel && yarn build:cjs && yarn build:browser && yarn flow-types build",
+    "build": "yarn build:esm && yarn build:examples-babel && yarn build:cjs && yarn build:browser && yarn flow-types build && yarn postbuild",
     "build-ssr": "CI=false && yarn build && cd examples/packages/ssr && yarn build",
     "build-storybook": "build-storybook",
     "build:browser": "IS_NODE_EXPRESSION='false' ttsc --build packages/tsconfig.browser.json",
@@ -27,6 +27,7 @@
     "clean:node-modules": "rm -rf node_modules/.cache",
     "clean:ts-cache": "find . -name \"*.tsbuildinfo\" -type f -delete",
     "flow-types": "scripts/flow-types.sh",
+    "postbuild": "scripts/postbuild.sh",
     "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts",
     "lint": "eslint --config .eslintrc.js --ext flow,json,ts,tsx .",
     "lint:fix": "yarn lint -- --fix",
