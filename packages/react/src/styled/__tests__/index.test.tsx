@@ -1,6 +1,6 @@
-import { styled } from '@compiled/react';
+/** @jsx jsx */
+import { jsx, styled } from '@compiled/react';
 import { render } from '@testing-library/react';
-import React from 'react';
 
 const em = (str: string | number) => str;
 

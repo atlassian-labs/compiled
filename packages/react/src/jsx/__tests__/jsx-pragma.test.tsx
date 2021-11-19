@@ -29,6 +29,7 @@ describe('local jsx namespace', () => {
     const { getByText } = render(
       <Component
         // CSS prop is not allowed when class name is not a declared prop
+        // @ts-expect-error
         css={{ fontSize: '15px' }}>
         hello world
       </Component>

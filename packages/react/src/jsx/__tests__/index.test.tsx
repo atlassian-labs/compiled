@@ -1,4 +1,5 @@
-import '@compiled/react';
+/** @jsx jsx */
+import { jsx } from '@compiled/react';
 import { render } from '@testing-library/react';
 import React from 'react';
 
