@@ -21,7 +21,7 @@ const expectCodemodToHaveBeenRan = (name: string, runPath: string) => {
   expect(execAsync).toHaveBeenCalledWith(
     expect.stringMatching(
       new RegExp(
-        `.*--transform=.*node_modules\\/@compiled\\/codemods\\/src\\/transforms\\/${name}\\/index.tsx ${regexPath}`
+        `.*--transform=.*node_modules\\/@compiled\\/codemods\\/(dist|src)\\/transforms\\/${name}\\/index.(tsx|js) ${regexPath}`
       )
     )
   );
