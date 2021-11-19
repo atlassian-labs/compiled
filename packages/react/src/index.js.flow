@@ -4,37 +4,21 @@
  * Flowgen v1.15.0
  * @flow
  */
-import type { CSSProps, CssFunction } from './types';
+import type { CssFunction, CSSProps } from './types';
+import type { CompiledJSX } from './jsx/jsx-local-namespace';
+import type { createElement } from 'react';
 declare export { keyframes } from './keyframes';
 declare export { styled } from './styled';
 declare export { ClassNames } from './class-names';
 declare export { default as css } from './css';
+declare export var jsx: typeof createElement;
 export type { CssFunction, CSSProps };
 export type { CssObject } from './styled';
-declare module 'react' {
-  declare interface DOMAttributes<T> {
-    css?: CssFunction<> | CssFunction<>[];
-  }
-}
-declare module 'global' {
-  declare var JSX: typeof npm$namespace$JSX;
-  declare var npm$namespace$JSX: {|
-    IntrinsicAttributes: Class<JSX$IntrinsicAttributes>,
-  |};
-  declare interface JSX$IntrinsicAttributes {
-    /**
-     * Tie styles to an element.
-     * It is available when the `@compiled/react` module is in scope.
-     *
-     * ```
-     * css={{ fontSize: 12 }} // Object CSS
-     * css={`font-size: 12px;`} // Template literal CSS
-     * css={[{ fontSize: 12 }, `font-size: 12px;`]} // Array CSS
-     * ```
-     *
-     * For more help, read the docs:
-     * https://compiledcssinjs.com/docs/api-css-prop
-     */
-    css?: CssFunction<> | CssFunction<>[];
-  }
-}
+declare type jsx$JSX$Element = CompiledJSX$Element;
+declare type jsx$JSX$ElementClass = CompiledJSX$ElementClass;
+declare type jsx$JSX$ElementAttributesProperty = CompiledJSX$ElementAttributesProperty;
+declare type jsx$JSX$ElementChildrenAttribute = CompiledJSX$ElementChildrenAttribute;
+declare type jsx$JSX$LibraryManagedAttributes<C, P> = CompiledJSX$LibraryManagedAttributes<C, P>;
+declare type jsx$JSX$IntrinsicAttributes = CompiledJSX$IntrinsicAttributes;
+declare type jsx$JSX$IntrinsicClassAttributes<T> = CompiledJSX$IntrinsicClassAttributes<T>;
+declare type jsx$$JSXIntrinsics = Compiled$JSXIntrinsics;
