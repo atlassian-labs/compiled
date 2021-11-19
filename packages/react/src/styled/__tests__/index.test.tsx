@@ -140,7 +140,7 @@ describe('styled component', () => {
     expect(StyledDiv.displayName).toEqual(undefined);
   });
 
-  xit('should have a display name', () => {
+  it('should have a display name', () => {
     process.env.NODE_ENV = 'development';
 
     const StyledDiv = styled.div`
