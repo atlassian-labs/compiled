@@ -1,11 +1,16 @@
 module.exports = {
   root: true,
-  ignorePatterns: ['dist', '*.d.ts'],
+  ignorePatterns: [
+    'dist',
+    'flow-typed',
+    '*.d.ts',
+    'babel-cjs.js',
+    'babel-esm.js',
+  ],
   overrides: [
     {
-      files: ['*.{ts,tsx}'],
+      files: ['*.{js,jsx,ts,tsx}'],
       extends: [
-        'plugin:@typescript-eslint/recommended',
         'plugin:import/recommended',
         'plugin:react/recommended',
       ],
@@ -19,11 +24,26 @@ module.exports = {
       },
       plugins: ['react-hooks'],
       rules: {
-        'react-hooks/exhaustive-deps': 'warn',
-        'react-hooks/rules-of-hooks': 'error',
         'react/display-name': 'off',
         'react/prop-types': 'off',
         'react/react-in-jsx-scope': 'off',
+        'react-hooks/exhaustive-deps': 'warn',
+        'react-hooks/rules-of-hooks': 'error',
+        // We will let TypeScript handle this for tsx? files, and ignore it on jsx? files to enable linting without
+        // building packages
+        'import/no-unresolved': 'off',
+        'import/order': ['error', {
+          alphabetize: {
+            order: 'asc'
+          },
+          'newlines-between': 'always'
+        }],
+      },
+    },
+    {
+      files: ['*.{ts,tsx}'],
+      extends: ['plugin:@typescript-eslint/recommended'],
+      rules: {
         '@typescript-eslint/array-type': 'error',
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/ban-ts-ignore': 'off',
@@ -45,14 +65,6 @@ module.exports = {
             ignoreRestSiblings: true,
           },
         ],
-        // TypeScript already enforces this
-        'import/no-unresolved': 'off',
-        'import/order': ['error', {
-          alphabetize: {
-            order: 'asc'
-          },
-          'newlines-between': 'always'
-        }],
       },
     },
     {

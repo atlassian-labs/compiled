@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+const { join } = require('path');
+
 const { CompiledExtractPlugin } = require('@compiled/webpack-loader');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { join } = require('path');
 const webpack = require('webpack');
 
 const extractCSS = process.env.EXTRACT_TO_CSS === 'true';

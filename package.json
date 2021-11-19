@@ -29,7 +29,7 @@
     "clean:ts-cache": "find . -name \"*.tsbuildinfo\" -type f -delete",
     "flow-types": "scripts/flow-types.sh",
     "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts",
-    "lint": "eslint --config .eslintrc.js --ext flow,json,ts,tsx .",
+    "lint": "eslint --config .eslintrc.js --ext js,json,jsx,ts,tsx .",
     "lint:fix": "yarn lint -- --fix",
     "prettier:check": "prettier ./ --check",
     "prettier:fix": "prettier ./ --write",
