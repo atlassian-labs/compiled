@@ -63,7 +63,7 @@ export const getNamedExport = (
         ? node.declaration.declarations
         : node.specifiers;
 
-      (declarations as Array<t.VariableDeclarator | t.ExportSpecifier>).find((declaration) => {
+      (declarations as (t.VariableDeclarator | t.ExportSpecifier)[]).find((declaration) => {
         const identifier = t.isVariableDeclarator(declaration)
           ? declaration.id
           : declaration.exported;

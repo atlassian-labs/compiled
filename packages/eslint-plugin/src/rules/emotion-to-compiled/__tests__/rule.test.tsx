@@ -3,7 +3,7 @@ import { tester } from '../../__tests__/test-utils';
 import rule from '../index';
 
 const tests: {
-  valid?: Array<string | RuleTester.ValidTestCase>;
+  valid?: (string | RuleTester.ValidTestCase)[];
   invalid?: RuleTester.InvalidTestCase[];
 } = {
   valid: [

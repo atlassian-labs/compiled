@@ -15,7 +15,7 @@ const getTransformPrompt = async (transforms: ParsedPath[]): Promise<ParsedPath>
   }).run();
 };
 
-const codemodChoice: Array<Choice<keyof CodemodOptions>> = [
+const codemodChoice: Choice<keyof CodemodOptions>[] = [
   {
     name: 'path',
     message: 'PATH',
@@ -51,7 +51,7 @@ const getTransformForm = async () => {
   }).run();
 };
 
-const getPluginsForm = async (): Promise<Array<string>> => {
+const getPluginsForm = async (): Promise<string[]> => {
   const result = await new List({
     name: 'plugins',
     message: 'Specify any plugins you which to use (multiple can be specified separated with `,`)',

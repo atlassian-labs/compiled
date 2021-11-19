@@ -216,10 +216,9 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
   const { jscodeshift: j } = api;
   const collection = j(source);
   // Run default plugin first and apply plugins in order
-  const plugins: Array<CodemodPluginInstance> = [
-    defaultCodemodPlugin,
-    ...options.normalizedPlugins,
-  ].map((plugin) => plugin.create(fileInfo, api, options));
+  const plugins: CodemodPluginInstance[] = [defaultCodemodPlugin, ...options.normalizedPlugins].map(
+    (plugin) => plugin.create(fileInfo, api, options)
+  );
   const originalProgram: Program = j(source).find(j.Program).get();
 
   const hasEmotionCoreImportDeclaration = hasImportDeclaration({

@@ -1,5 +1,3 @@
 import type { Root as ValuesRoot } from 'postcss-values-parser';
 
-export type ConversionFunction = (
-  value: ValuesRoot
-) => Array<{ prop?: string; value: string | number }>;
+export type ConversionFunction = (value: ValuesRoot) => { prop?: string; value: string | number }[];
