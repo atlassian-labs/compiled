@@ -14,10 +14,13 @@ export default function CSSLoader(this: LoaderContext<void>): string {
  * Moves CSSloader to the end of the loader queue so it runs first.
  */
 export function pitch(this: LoaderContext<void>): void {
-  if (this.loaders[0].path !== __filename) {
+  if (this.loaders[0].pitch !== pitch) {
+    // If the first loader isn't this one - skip.
     return;
   }
 
+  // The first loader is Compiled's css-loader - we need to shift
+  // it to be at the end of the loader chain so it runs first (instead of last).
   const firstLoader = this.loaders.shift();
   this.loaders.push(firstLoader!);
 }

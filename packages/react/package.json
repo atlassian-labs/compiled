@@ -21,16 +21,24 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
-    },
-    "./babel-plugin": {
-      "import": "./dist/esm/babel-plugin.js",
-      "require": "./dist/cjs/babel-plugin.js"
+      "import": [
+        "./dist/esm/index.js",
+        "./src/index.tsx"
+      ],
+      "require": [
+        "./dist/cjs/index.js",
+        "./src/index.tsx"
+      ]
     },
     "./runtime": {
-      "import": "./dist/esm/runtime.js",
-      "require": "./dist/cjs/runtime.js"
+      "import": [
+        "./dist/esm/runtime.js",
+        "./src/runtime.tsx"
+      ],
+      "require": [
+        "./dist/cjs/runtime.js",
+        "./src/runtime.tsx"
+      ]
     }
   },
   "main": "./dist/cjs/index.js",

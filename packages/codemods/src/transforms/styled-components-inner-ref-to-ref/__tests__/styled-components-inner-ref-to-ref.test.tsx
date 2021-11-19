@@ -75,7 +75,7 @@ describe('styled-components-inner-ref-to-ref transformer', () => {
               program: ({ program }: ProgramVisitorContext<void>) => {
                 const node = j(program).find(j.JSXOpeningElement).paths()[0];
 
-                node.value.attributes.push(
+                node.value.attributes?.push(
                   j.jsxAttribute(j.jsxIdentifier('customId'), j.literal('custom-id-val'))
                 );
               },

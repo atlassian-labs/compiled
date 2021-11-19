@@ -9,8 +9,9 @@
     "examples/packages/*"
   ],
   "scripts": {
-    "benchmark": "yarn build:cjs && yarn build:esm && jest --config benchmark.config.json",
-    "build": "yarn build:esm && yarn build:examples-babel && yarn build:cjs && yarn build:browser && yarn flow-types build",
+    "benchmark": "jest --config benchmark.config.json",
+    "build": "yarn build:esm && yarn build:examples-babel && yarn build:cjs && yarn build:browser && yarn flow-types build && yarn postbuild",
+    "postbuild": "scripts/postbuild.sh",
     "build-ssr": "CI=false && yarn build && cd examples/packages/ssr && yarn build",
     "build-storybook": "build-storybook",
     "build:browser": "IS_NODE_EXPRESSION='false' ttsc --build packages/tsconfig.browser.json",
@@ -22,7 +23,10 @@
     "build:webpack": "yarn build:browser && yarn build:examples-babel && ttsc --build examples/packages/webpack/tsconfig.json && yarn workspace @compiled/webpack-app build",
     "build:webpack:extract": "yarn build:browser && yarn build:examples-babel && ttsc --build examples/packages/webpack/tsconfig.json && cd examples/packages/webpack && EXTRACT_TO_CSS=true yarn build",
     "bundlesize": "yarn build && size-limit",
-    "clean": "rm -rf node_modules/.cache && find . -name *.tsbuildinfo -type f -delete",
+    "clean": "yarn clean:node-modules && yarn clean:ts-cache && yarn clean:dist",
+    "clean:dist": "find . -name \"dist\" -not -path \"*/node_modules/*\" -type d -exec rm -rf {} +",
+    "clean:node-modules": "rm -rf node_modules/.cache",
+    "clean:ts-cache": "find . -name \"*.tsbuildinfo\" -type f -delete",
     "flow-types": "scripts/flow-types.sh",
     "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts",
     "lint": "eslint --config .eslintrc.js --ext flow,json,ts,tsx .",
@@ -30,7 +34,7 @@
     "prettier:check": "prettier ./ --check",
     "prettier:fix": "prettier ./ --write",
     "release": "yarn clean && yarn build && yarn changeset publish",
-    "start": "npx nodemon --exec \"yarn build && start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
+    "start": "npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "start:cli": "cd packages/cli && yarn start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "start:parcel": "yarn build:browser && yarn build:esm && ttsc --build examples/packages/parcel/tsconfig.json && yarn workspace @compiled/parcel-app start",
@@ -38,10 +42,10 @@
     "start:ssr": "yarn build && cd examples/packages/ssr && yarn start",
     "start:webpack": "yarn build:browser && yarn build:examples-babel && ttsc --build examples/packages/webpack/tsconfig.json && yarn workspace @compiled/webpack-app start",
     "start:webpack:extract": "yarn build:browser && yarn build:examples-babel && ttsc --build examples/packages/webpack/tsconfig.json && cd examples/packages/webpack && EXTRACT_TO_CSS=true yarn start",
-    "test": "yarn build:cjs && yarn build:esm && jest --no-cache",
+    "test": "jest --no-cache",
     "test:cover": "yarn test --collectCoverage",
     "test:imports": "node test/test-imports",
-    "test:watch": "yarn build:esm && jest --no-cache --watch"
+    "test:watch": "jest --no-cache --watch"
   },
   "husky": {
     "hooks": {
@@ -69,6 +73,8 @@
     "@storybook/react": "^6.3.12",
     "@types/jest": "^26.0.24",
     "@types/node": "^14.17.33",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "babel-loader": "^8.2.3",
@@ -94,6 +100,7 @@
     "storybook-addon-pseudo-states": "^1.0.0",
     "ts-node": "^9.1.1",
     "ts-transform-define": "^0.1.10",
+    "tsconfig-paths": "^3.11.0",
     "ttypescript": "^1.5.12",
     "typescript": "^4.2.4"
   },

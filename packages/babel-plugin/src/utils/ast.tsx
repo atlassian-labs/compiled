@@ -594,6 +594,11 @@ export const resolveBindingNode = (
     }
 
     const moduleImportSource = binding.path.parentPath.node.source.value;
+    if (moduleImportSource.startsWith('@compiled')) {
+      // Ignore @compiled modules.
+      return;
+    }
+
     const modulePath = resolveRequest(moduleImportSource, meta);
     const moduleCode = meta.state.cache.load({
       namespace: 'read-file',

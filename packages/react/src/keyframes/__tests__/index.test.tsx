@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { keyframes, styled } from '@compiled/react';
 import { render } from '@testing-library/react';
 
