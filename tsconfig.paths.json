@@ -2,14 +2,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@compiled/react": ["packages/react/src/index.tsx", "../packages/react/src/index.tsx"],
-      "@compiled/jest": ["packages/jest/src/index.tsx", "../packages/jest/src/index.tsx"],
-      "@compiled/utils": ["packages/utils/src/index.tsx", "../packages/utils/src/index.tsx"],
-      "@compiled/css": ["packages/css/src/index.tsx", "../packages/css/src/index.tsx"],
-      "@compiled/react/runtime": [
-        "packages/react/src/runtime.tsx",
-        "../packages/react/src/runtime.tsx"
-      ]
+      "@compiled/benchmark": ["packages/benchmark/src/index.tsx"],
+      "@compiled/css": ["packages/css/src/index.tsx"],
+      "@compiled/jest": ["packages/jest/src/index.tsx"],
+      "@compiled/react": ["packages/react/src/index.tsx"],
+      "@compiled/react/runtime": ["packages/react/src/runtime.tsx"],
+      "@compiled/utils": ["packages/utils/src/index.tsx"]
     }
   }
 }

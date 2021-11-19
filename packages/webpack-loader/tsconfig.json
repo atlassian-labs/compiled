@@ -10,7 +10,7 @@
     { "path": "../babel-plugin" },
     { "path": "../babel-plugin-strip-runtime" },
     { "path": "../css" },
-    { "path": "../utils" },
-    { "path": "../react" }
+    { "path": "../react" },
+    { "path": "../utils" }
   ]
 }

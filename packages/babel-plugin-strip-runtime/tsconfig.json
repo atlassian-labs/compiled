@@ -5,5 +5,5 @@
     "outDir": "dist",
     "module": "commonjs"
   },
-  "references": [{ "path": "../jest" }, { "path": "../babel-plugin" }]
+  "references": [{ "path": "../babel-plugin" }, { "path": "../jest" }]
 }

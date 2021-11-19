@@ -13,44 +13,34 @@ describe('CompiledExtractPlugin', () => {
       mode: 'production',
     });
 
-  it.concurrent(
-    'throws when the plugin is not configured',
-    async () => {
-      const errors = await bundle(join(fixturesPath, 'local-styles.tsx'), {
-        disableExtractPlugin: true,
-      }).catch((err) => err);
+  it('throws when the plugin is not configured', async () => {
+    const errors = await bundle(join(fixturesPath, 'local-styles.tsx'), {
+      disableExtractPlugin: true,
+    }).catch((err) => err);
 
-      expect(errors).toEqual([
-        expect.objectContaining({
-          message: expect.stringContaining("You forgot to add the 'CompiledExtractPlugin' plugin"),
-        }),
-      ]);
-    },
-    10000
-  );
+    expect(errors).toEqual([
+      expect.objectContaining({
+        message: expect.stringContaining("You forgot to add the 'CompiledExtractPlugin' plugin"),
+      }),
+    ]);
+  }, 10000);
 
-  it.concurrent(
-    'extracts local styles',
-    async () => {
-      const actual = await bundle(join(fixturesPath, 'local-styles.tsx'));
+  it('extracts local styles', async () => {
+    const actual = await bundle(join(fixturesPath, 'local-styles.tsx'));
 
-      expect(actual[assetName]).toMatchInlineSnapshot(`
+    expect(actual[assetName]).toMatchInlineSnapshot(`
       "._1wybdlk8{font-size:14px}
       ._syaz13q2{color:blue}
       "
     `);
-    },
-    10000
-  );
+  }, 10000);
 
-  it.concurrent(
-    'extracts styles imported through a relative path',
-    async () => {
-      const actual = await bundle(join(fixturesPath, 'relative-styles.tsx'));
+  it('extracts styles imported through a relative path', async () => {
+    const actual = await bundle(join(fixturesPath, 'relative-styles.tsx'));
 
-      // This should not contain any styles from the unused relative import ./common/css-prop, which includes
-      // {color:coral} or {border:2px solid coral}
-      expect(actual[assetName]).toMatchInlineSnapshot(`
+    // This should not contain any styles from the unused relative import ./common/css-prop, which includes
+    // {color:coral} or {border:2px solid coral}
+    expect(actual[assetName]).toMatchInlineSnapshot(`
       "
       ._syaz5scu{color:red}
       ._syazmu8g{color:blueviolet}
@@ -59,68 +49,52 @@ describe('CompiledExtractPlugin', () => {
       ._30l313q2:hover{color:blue}
       "
     `);
-    },
-    10000
-  );
+  }, 10000);
 
-  it.concurrent(
-    'extracts styles imported through a webpack alias',
-    async () => {
-      const assets = await bundle(join(fixturesPath, 'webpack-alias.tsx'));
+  it('extracts styles imported through a webpack alias', async () => {
+    const assets = await bundle(join(fixturesPath, 'webpack-alias.tsx'));
 
-      expect(assets[assetName]).toMatchInlineSnapshot(`
+    expect(assets[assetName]).toMatchInlineSnapshot(`
       "._syaz13q2{color:blue}
       "
     `);
-    },
-    10000
-  );
+  }, 10000);
 
-  it.concurrent(
-    'extracts styles imported through an overridden resolve configuration',
-    async () => {
-      const assets = await bundle(join(fixturesPath, 'loader-alias.tsx'), {
-        resolve: {
-          // This alias will be put into the compiled plugin options, but not the webpack resolve configuration
-          alias: {
-            'loader-alias': join(fixturesPath, 'lib', 'loader-alias.ts'),
-          },
+  it('extracts styles imported through an overridden resolve configuration', async () => {
+    const assets = await bundle(join(fixturesPath, 'loader-alias.tsx'), {
+      resolve: {
+        // This alias will be put into the compiled plugin options, but not the webpack resolve configuration
+        alias: {
+          'loader-alias': join(fixturesPath, 'lib', 'loader-alias.ts'),
         },
-      });
+      },
+    });
 
-      expect(assets[assetName]).toMatchInlineSnapshot(`
+    expect(assets[assetName]).toMatchInlineSnapshot(`
       "._syaz1if8{color:indigo}
       "
     `);
-    },
-    10000
-  );
+  }, 10000);
 
-  it.concurrent(
-    'extracts styles from an async chunk',
-    async () => {
-      const actual = await bundle(join(fixturesPath, 'async-styles.ts'));
+  it('extracts styles from an async chunk', async () => {
+    const actual = await bundle(join(fixturesPath, 'async-styles.ts'));
 
-      // Only generate one CSS bundle
-      const cssFiles = Object.keys(actual).filter((key) => key.endsWith('.css'));
-      expect(cssFiles).toHaveLength(1);
+    // Only generate one CSS bundle
+    const cssFiles = Object.keys(actual).filter((key) => key.endsWith('.css'));
+    expect(cssFiles).toHaveLength(1);
 
-      // Extract the styles into said bundle
-      expect(actual[assetName]).toMatchInlineSnapshot(`
+    // Extract the styles into said bundle
+    expect(actual[assetName]).toMatchInlineSnapshot(`
       "._19it1e35{border:2px solid coral}
       ._syaz1vyr{color:coral}
       "
     `);
-    },
-    10000
-  );
+  }, 10000);
 
-  it.concurrent(
-    'extracts styles from a pre-built babel files',
-    async () => {
-      const actual = await bundle(join(fixturesPath, 'babel.tsx'));
+  it('extracts styles from a pre-built babel files', async () => {
+    const actual = await bundle(join(fixturesPath, 'babel.tsx'));
 
-      expect(actual[assetName]).toMatchInlineSnapshot(`
+    expect(actual[assetName]).toMatchInlineSnapshot(`
       "._19pk1ul9{margin-top:30px}
       ._19bvftgi{padding-left:8px}
       ._n3tdftgi{padding-bottom:8px}
@@ -131,30 +105,22 @@ describe('CompiledExtractPlugin', () => {
       ._syaz13q2{color:blue}
       "
     `);
-    },
-    10000
-  );
+  }, 10000);
 
-  it.concurrent(
-    'extracts important styles',
-    async () => {
-      const actual = await bundle(join(fixturesPath, 'important-styles.tsx'));
+  it('extracts important styles', async () => {
+    const actual = await bundle(join(fixturesPath, 'important-styles.tsx'));
 
-      expect(actual[assetName]).toMatchInlineSnapshot(`
+    expect(actual[assetName]).toMatchInlineSnapshot(`
         "._syaz13q2{color:blue}
         ._1wybc038{font-size:12!important}
         "
       `);
-    },
-    10000
-  );
+  }, 10000);
 
-  it.concurrent(
-    'should find bindings',
-    async () => {
-      const actual = await bundle(join(fixturesPath, 'binding-not-found.tsx'));
+  it('should find bindings', async () => {
+    const actual = await bundle(join(fixturesPath, 'binding-not-found.tsx'));
 
-      expect(actual[assetName]).toMatchInlineSnapshot(`
+    expect(actual[assetName]).toMatchInlineSnapshot(`
       "._syaz1r31{color:currentColor}
       ._ajmmnqa1{-webkit-text-decoration-style:solid;text-decoration-style:solid}
       ._1hmsglyw{-webkit-text-decoration-line:none;text-decoration-line:none}
@@ -180,7 +146,5 @@ describe('CompiledExtractPlugin', () => {
       ._4t3i1jdh{height:9rem}
       "
     `);
-    },
-    10000
-  );
+  }, 10000);
 });

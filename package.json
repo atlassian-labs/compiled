@@ -9,7 +9,7 @@
     "examples/packages/*"
   ],
   "scripts": {
-    "benchmark": "yarn build:cjs && yarn build:esm && jest --config benchmark.config.json",
+    "benchmark": "jest --config benchmark.config.json",
     "build": "yarn build:esm && yarn build:examples-babel && yarn build:cjs && yarn build:browser && yarn flow-types build && yarn postbuild",
     "postbuild": "scripts/postbuild.sh",
     "build-ssr": "CI=false && yarn build && cd examples/packages/ssr && yarn build",

@@ -15,7 +15,7 @@ describe.each<'development' | 'production'>(['development', 'production'])(
         mode,
       });
 
-    it.concurrent('does not transform files that do not contain @compiled/react', async () => {
+    it('does not transform files that do not contain @compiled/react', async () => {
       const assets = await bundle(join(fixturesPath, 'no-compiled-styles.ts'));
 
       if (mode === 'development') {
@@ -25,7 +25,7 @@ describe.each<'development' | 'production'>(['development', 'production'])(
       }
     });
 
-    it.concurrent('transforms local styles', async () => {
+    it('transforms local styles', async () => {
       const assets = await bundle(join(fixturesPath, 'local-styles.tsx'));
 
       expect(assets['main.js']).toIncludeMultiple([
@@ -34,7 +34,7 @@ describe.each<'development' | 'production'>(['development', 'production'])(
       ]);
     });
 
-    it.concurrent('transforms styles imported through a relative import', async () => {
+    it('transforms styles imported through a relative import', async () => {
       const assets = await bundle(join(fixturesPath, 'relative-styles.tsx'));
 
       expect(assets['main.js']).toIncludeMultiple([
@@ -51,29 +51,26 @@ describe.each<'development' | 'production'>(['development', 'production'])(
       expect(assets['main.js']).not.toInclude('{color:coral}');
     });
 
-    it.concurrent('transforms styles imported through a webpack alias', async () => {
+    it('transforms styles imported through a webpack alias', async () => {
       const assets = await bundle(join(fixturesPath, 'webpack-alias.tsx'));
 
       expect(assets['main.js']).toInclude('._syaz13q2{color:blue}');
     });
 
-    it.concurrent(
-      'transforms styles imported through an overridden resolve configuration',
-      async () => {
-        const assets = await bundle(join(fixturesPath, 'loader-alias.tsx'), {
-          resolve: {
-            // This alias will be put into the compiled plugin options, but not the webpack resolve configuration
-            alias: {
-              'loader-alias': join(fixturesPath, 'lib', 'loader-alias.ts'),
-            },
+    it('transforms styles imported through an overridden resolve configuration', async () => {
+      const assets = await bundle(join(fixturesPath, 'loader-alias.tsx'), {
+        resolve: {
+          // This alias will be put into the compiled plugin options, but not the webpack resolve configuration
+          alias: {
+            'loader-alias': join(fixturesPath, 'lib', 'loader-alias.ts'),
           },
-        });
+        },
+      });
 
-        expect(assets['main.js']).toInclude('._syaz1if8{color:indigo}');
-      }
-    );
+      expect(assets['main.js']).toInclude('._syaz1if8{color:indigo}');
+    });
 
-    it.concurrent('fails when using unrecognised compiled syntax', async () => {
+    it('fails when using unrecognised compiled syntax', async () => {
       await expect(bundle(join(fixturesPath, 'compiled-error.tsx'))).rejects.toEqual([
         expect.objectContaining({
           message: expect.stringContaining(
