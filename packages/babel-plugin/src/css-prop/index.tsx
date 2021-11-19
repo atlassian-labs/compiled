@@ -1,6 +1,7 @@
 import * as t from '@babel/types';
 import type { NodePath } from '@babel/core';
-import { buildCompiledComponent } from '../utils/ast-builders';
+
+import { buildCompiledComponent } from '../utils/build-compiled-component';
 import { buildCss } from '../utils/css-builders';
 import {
   COMPILED_DIRECTIVE_DISABLE_NEXT_LINE,
