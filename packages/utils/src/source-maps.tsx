@@ -1,5 +1,5 @@
-import { SourceMapGenerator } from 'source-map';
 import convert from 'convert-source-map';
+import { SourceMapGenerator } from 'source-map';
 
 /**
  * Used to generate a inline source map for CSS.

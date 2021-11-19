@@ -1,5 +1,5 @@
 import { styled } from '@compiled/react';
-import { objectStyles, colorMixin, colors } from 'module-a';
+import { colorMixin, colors, objectStyles } from 'module-a';
 
 export default {
   title: 'mixins/simple functions',

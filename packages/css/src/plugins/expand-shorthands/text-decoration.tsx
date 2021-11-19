@@ -1,4 +1,5 @@
 import type { Node } from 'postcss-values-parser';
+
 import type { ConversionFunction } from './types';
 import { globalValues, isColor } from './utils';
 

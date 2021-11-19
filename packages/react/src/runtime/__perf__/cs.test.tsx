@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { runBenchmark } from '@compiled/benchmark';
+import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 
 import { CC, CS } from '../index';

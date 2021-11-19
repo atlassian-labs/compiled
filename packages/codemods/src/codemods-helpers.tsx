@@ -1,22 +1,22 @@
 import chalk from 'chalk';
 import type {
-  JSCodeshift,
-  ImportDeclaration,
-  ImportDefaultSpecifier,
-  ImportSpecifier,
-  Program,
-  Identifier,
-  JSXIdentifier,
-  TSTypeParameter,
-  Node,
-  ImportNamespaceSpecifier,
+  API,
   Collection,
   FileInfo,
-  API,
+  Identifier,
+  ImportDeclaration,
+  ImportDefaultSpecifier,
+  ImportNamespaceSpecifier,
+  ImportSpecifier,
+  JSCodeshift,
+  JSXIdentifier,
+  Node,
   Options,
+  Program,
+  TSTypeParameter,
 } from 'jscodeshift';
 
-import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from './constants';
+import { COMPILED_IMPORT_PATH, REACT_IMPORT_NAME, REACT_IMPORT_PATH } from './constants';
 import type { CodemodPlugin, CodemodPluginInstance } from './plugins/types';
 
 type Identifiers = (Identifier | JSXIdentifier | TSTypeParameter)[];

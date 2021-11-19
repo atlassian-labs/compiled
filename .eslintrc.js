@@ -4,7 +4,11 @@ module.exports = {
   overrides: [
     {
       files: ['*.{ts,tsx}'],
-      extends: ['plugin:react/recommended', 'plugin:@typescript-eslint/recommended'],
+      extends: [
+        'plugin:@typescript-eslint/recommended',
+        'plugin:import/recommended',
+        'plugin:react/recommended',
+      ],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         ecmaFeatures: {
@@ -41,6 +45,14 @@ module.exports = {
             ignoreRestSiblings: true,
           },
         ],
+        // TypeScript already enforces this
+        'import/no-unresolved': 'off',
+        'import/order': ['error', {
+          alphabetize: {
+            order: 'asc'
+          },
+          'newlines-between': 'always'
+        }],
       },
     },
     {

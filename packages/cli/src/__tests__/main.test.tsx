@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 import { AutoComplete } from 'enquirer';
 
-import { castToJestMock } from './test-utils';
-
-import presets from '../presets';
 import main from '../main';
+import presets from '../presets';
+
+import { castToJestMock } from './test-utils';
 
 jest.mock('enquirer', () => ({
   AutoComplete: jest.fn(),

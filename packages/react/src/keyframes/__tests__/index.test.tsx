@@ -1,8 +1,8 @@
-import * as React from 'react';
 import { keyframes, styled } from '@compiled/react';
 import { render } from '@testing-library/react';
+import * as React from 'react';
 
-import defaultFadeOut, { fadeOut as shadowedFadeOut, namedFadeOut } from '../__fixtures__';
+import defaultFadeOut, { namedFadeOut, fadeOut as shadowedFadeOut } from '../__fixtures__';
 
 const getOpacity = (str: string | number) => str;
 

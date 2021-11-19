@@ -1,6 +1,6 @@
-import React from 'react';
-import { render } from '@testing-library/react';
 import { styled } from '@compiled/react';
+import { render } from '@testing-library/react';
+import React from 'react';
 
 // TODO: When we move back to browser checking (window vs. process) we can remove
 // this and replace with the "jest-environment node" pragma.

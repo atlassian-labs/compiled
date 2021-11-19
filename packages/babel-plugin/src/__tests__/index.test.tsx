@@ -1,5 +1,6 @@
 import type { TransformOptions } from '@babel/core';
 import { transformSync } from '@babel/core';
+
 import babelNext from '../index';
 
 const babelOpts: TransformOptions = {

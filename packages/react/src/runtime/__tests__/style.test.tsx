@@ -1,6 +1,6 @@
+import { render } from '@testing-library/react';
 import React from 'react';
 import type { ComponentType } from 'react';
-import { render } from '@testing-library/react';
 
 jest.mock('../is-node', () => ({
   isNodeEnvironment: () => false,

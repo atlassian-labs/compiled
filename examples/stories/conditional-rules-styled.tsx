@@ -1,5 +1,6 @@
+import { css, styled } from '@compiled/react';
 import React from 'react';
-import { styled, css } from '@compiled/react';
+
 import {
   primaryTaggedTemplateExpression,
   secondaryTaggedTemplateExpression,

@@ -1,4 +1,5 @@
 import { transformSync } from '@babel/core';
+
 import babelPlugin from '../index';
 import type { PluginOptions } from '../types';
 

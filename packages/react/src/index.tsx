@@ -1,4 +1,4 @@
-import type { CssFunction, CSSProps } from './types';
+import type { CSSProps, CssFunction } from './types';
 
 export { keyframes } from './keyframes';
 export { styled } from './styled';

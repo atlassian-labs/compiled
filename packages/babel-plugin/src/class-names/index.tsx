@@ -1,11 +1,11 @@
-import * as t from '@babel/types';
 import type { NodePath } from '@babel/core';
+import * as t from '@babel/types';
 import { transformCss } from '@compiled/css';
 
 import type { Metadata } from '../types';
 import {
-  pickFunctionBody,
   buildCodeFrameError,
+  pickFunctionBody,
   resolveIdentifierComingFromDestructuring,
 } from '../utils/ast';
 import { compiledTemplate } from '../utils/build-compiled-component';

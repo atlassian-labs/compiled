@@ -4,7 +4,7 @@
  * Flowgen v1.15.0
  * @flow
  */
-import type { StyleSheetOpts, Bucket } from './types';
+import type { Bucket, StyleSheetOpts } from './types';
 /**
  * Ordered style buckets using their short psuedo name.
  * If changes are needed make sure that it aligns with the definition in `sort-at-rule-pseudos.tsx`.

@@ -1,7 +1,7 @@
-import { Transformer } from '@parcel/plugin';
-import type { PluginOptions } from '@compiled/babel-plugin';
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import generate from '@babel/generator';
+import type { PluginOptions } from '@compiled/babel-plugin';
+import { Transformer } from '@parcel/plugin';
 
 type UserlandOpts = Omit<PluginOptions, 'cache' | 'onIncludedFiles'>;
 

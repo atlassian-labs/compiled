@@ -1,4 +1,5 @@
 import type { JSXAttribute } from 'jscodeshift';
+
 import type { CodemodPlugin } from './types';
 
 const defaultCodemodPlugin: CodemodPlugin = {

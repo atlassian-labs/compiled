@@ -1,5 +1,6 @@
-import type * as t from '@babel/types';
 import type { NodePath } from '@babel/traverse';
+import type * as t from '@babel/types';
+
 import type { Metadata } from '../types';
 
 export interface UnconditionalCssItem {

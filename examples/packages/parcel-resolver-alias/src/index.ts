@@ -1,5 +1,6 @@
-import { Resolver } from '@parcel/plugin';
 import { dirname, join } from 'path';
+
+import { Resolver } from '@parcel/plugin';
 
 export default new Resolver({
   async resolve({ dependency: { moduleSpecifier: specifier, resolveFrom } }) {

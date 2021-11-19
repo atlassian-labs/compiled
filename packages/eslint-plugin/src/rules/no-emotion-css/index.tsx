@@ -1,5 +1,5 @@
 import type { Rule } from 'eslint';
-import type { ImportSpecifier, ImportDeclaration } from 'estree';
+import type { ImportDeclaration, ImportSpecifier } from 'estree';
 
 const COMPILED_IMPORT = '@compiled/react';
 const ALLOWED_EMOTION_IMPORTS = ['css', 'keyframes', 'ClassNames', 'jsx'];

@@ -1,4 +1,5 @@
 import { join } from 'path';
+
 import { bundle as bundleEntry } from './test-utils';
 import type { BundleOptions } from './test-utils';
 

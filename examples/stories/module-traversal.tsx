@@ -1,5 +1,6 @@
 import { styled } from '@compiled/react';
 import { colors, objectStyles } from 'module-a';
+
 import { hoverObjectLiteral } from '../mixins/mixins';
 
 export default {

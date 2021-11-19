@@ -1,4 +1,5 @@
 import type { RuleTester } from 'eslint';
+
 import { tester } from '../../__tests__/test-utils';
 import rule from '../index';
 

@@ -1,9 +1,10 @@
-import { transformFromAstAsync, parseAsync } from '@babel/core';
-import { toBoolean, createError } from '@compiled/utils';
-import { CachedInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 import fs from 'fs';
-import { getOptions } from 'loader-utils';
 import { dirname, normalize } from 'path';
+
+import { parseAsync, transformFromAstAsync } from '@babel/core';
+import { createError, toBoolean } from '@compiled/utils';
+import { CachedInputFileSystem, ResolverFactory } from 'enhanced-resolve';
+import { getOptions } from 'loader-utils';
 import type { LoaderContext } from 'webpack';
 
 import { pluginName } from './extract-plugin';

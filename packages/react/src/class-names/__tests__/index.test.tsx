@@ -1,6 +1,6 @@
+import { ClassNames } from '@compiled/react';
 import { render } from '@testing-library/react';
 import React from 'react';
-import { ClassNames } from '@compiled/react';
 
 describe('class names component', () => {
   it('should create css from object literal', () => {

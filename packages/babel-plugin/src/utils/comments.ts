@@ -1,6 +1,7 @@
-import type * as t from '@babel/types';
 import type { BabelFile } from '@babel/core';
 import type { NodePath } from '@babel/traverse';
+import type * as t from '@babel/types';
+
 import type { Metadata } from '../types';
 
 /**
