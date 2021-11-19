@@ -287,9 +287,11 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
 
     if (
       t.isObjectExpression(pathNode) ||
-      // Check if string resembles CSS `property: value`
+      // Check if string or template resembles CSS `property: value`
       (t.isStringLiteral(pathNode) && pathNode.value.includes(':')) ||
-      t.isTemplateLiteral(pathNode) ||
+      (t.isTemplateLiteral(pathNode) &&
+        pathNode.quasis.some((quasi) => quasi.value.raw.includes(':'))) ||
+      // CSS tagged templates are already expected to be valid declarations
       isCompiledCSSTaggedTemplateExpression(pathNode, meta.state) ||
       isCompiledCSSCallExpression(pathNode, meta.state)
     ) {

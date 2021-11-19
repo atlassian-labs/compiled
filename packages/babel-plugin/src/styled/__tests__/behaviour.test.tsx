@@ -395,6 +395,53 @@ describe('styled component behaviour', () => {
     );
   });
 
+  it('should apply conditional CSS with ternary operator and tagged templates branches', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.button\`
+        color: \${(props) => (props.isPrimary ? \`blue\` : \`red\`)};
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syazcoia{color:var(--_1k1hsek)',
+      `<C{...props}style={{...style,"--_1k1hsek":ix(isPrimary?\`blue\`:\`red\`)}}ref={ref}className={ax(["_syazcoia",props.className])}/>`,
+    ]);
+  });
+
+  it('should apply conditional CSS with ternary operators, template literal branches containing props', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+      import { CUSTOM_WIDTH } from './constants';
+
+      const ListItem = styled.div\`
+        width: \${(props) => props.useCustomWidth ? \`\${CUSTOM_WIDTH}px)\` : '100%'};
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._1bsb1rvt{width:var(--_yklgxf)}',
+      `<C{...props}style={{...style,\"--_yklgxf\":ix(useCustomWidth?\`\${CUSTOM_WIDTH}px)\`:'100%')}}ref={ref}className={ax([\"_1bsb1rvt\",props.className])}/>`,
+    ]);
+  });
+
+  it('should apply conditional CSS with ternary operators, template literal branches containing destructured props', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+      import { CUSTOM_WIDTH } from './constants';
+
+      const ListItem = styled.div\`
+        width: \${({useCustomWidth}) => useCustomWidth ? \`\${CUSTOM_WIDTH}px)\` : '100%'};
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._1bsb1ydh{width:var(--_hilss9)}',
+      `<C{...props}style={{...style,\"--_hilss9\":ix(useCustomWidth?\`\${CUSTOM_WIDTH}px)\`:'100%')}}ref={ref}className={ax([\"_1bsb1ydh\",props.className])}/>`,
+    ]);
+  });
+
   it('should apply conditional CSS with multiple ternary operators', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
@@ -472,6 +519,25 @@ describe('styled component behaviour', () => {
       const Component = styled.div\`
         background: white;
         \${props => props.isPrimary ? props.isDisabled ? { color: 'black' } : { color: 'blue' } : { color: 'red' }};
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._bfhk1x77{background-color:white}',
+      '._syaz11x8{color:black}',
+      '._syaz13q2{color:blue}',
+      '._syaz5scu{color:red}',
+      'className={ax(["_bfhk1x77",props.isPrimary?props.isDisabled?"_syaz11x8":"_syaz13q2":"_syaz5scu",props.className])}',
+    ]);
+  });
+
+  it('should apply conditional CSS with template literal, nested ternary operators, and different types', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        background: white;
+        \${props => props.isPrimary ? props.isDisabled ? { color: 'black' } : 'color: blue' : \`color: red\`};
       \`;
     `);
 
