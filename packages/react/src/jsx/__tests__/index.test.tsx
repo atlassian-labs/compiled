@@ -1,3 +1,4 @@
+/** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx } from '@compiled/react';
 import { render } from '@testing-library/react';
