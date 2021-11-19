@@ -11,7 +11,7 @@ import { withPlugin, applyVisitor } from '../../codemods-helpers';
 import type { CodemodPluginInstance } from '../../plugins/types';
 import defaultCodemodPlugin from '../../plugins/default';
 
-const applyInnerRefPlugin = (plugins: Array<CodemodPluginInstance>, originalNode: JSXAttribute) =>
+const applyInnerRefPlugin = (plugins: CodemodPluginInstance[], originalNode: JSXAttribute) =>
   plugins.reduce((currentNode, plugin) => {
     const buildRefAttributeImpl = plugin.transform?.buildRefAttribute;
     if (!buildRefAttributeImpl) {
@@ -25,10 +25,9 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
   const { source } = fileInfo;
   const { jscodeshift: j } = api;
   const collection = j(source);
-  const plugins: Array<CodemodPluginInstance> = [
-    defaultCodemodPlugin,
-    ...options.normalizedPlugins,
-  ].map((plugin) => plugin.create(fileInfo, api, options));
+  const plugins: CodemodPluginInstance[] = [defaultCodemodPlugin, ...options.normalizedPlugins].map(
+    (plugin) => plugin.create(fileInfo, api, options)
+  );
 
   const originalProgram: Program = j(source).find(j.Program).get();
 

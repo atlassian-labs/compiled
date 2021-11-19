@@ -8,7 +8,7 @@ const getPseudoClassScore = (selector: string) => {
 };
 
 const sortPseudoClasses = (atRule: AtRule) => {
-  const rules: Array<Rule> = [];
+  const rules: Rule[] = [];
 
   atRule.each((childNode) => {
     switch (childNode.type) {

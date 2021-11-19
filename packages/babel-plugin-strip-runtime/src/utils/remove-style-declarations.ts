@@ -13,7 +13,7 @@ import { isCreateElement } from './is-create-element';
  * @param node
  * @returns
  */
-const getJsxRuntimeChildren = (node: t.CallExpression): Array<t.Expression> => {
+const getJsxRuntimeChildren = (node: t.CallExpression): t.Expression[] => {
   const props = node.arguments[1];
   const children: t.Expression[] = [];
 
