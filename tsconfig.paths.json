@@ -7,6 +7,8 @@
       "@compiled/jest": ["packages/jest/src/index.tsx"],
       "@compiled/react": ["packages/react/src/index.tsx"],
       "@compiled/react/runtime": ["packages/react/src/runtime.tsx"],
+      "@compiled/react/jsx-runtime": ["packages/react/src/jsx/jsx-runtime.tsx"],
+      "@compiled/react/jsx-dev-runtime": ["packages/react/src/jsx/jsx-dev-runtime.tsx"],
       "@compiled/utils": ["packages/utils/src/index.tsx"]
     }
   }

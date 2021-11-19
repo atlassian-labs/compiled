@@ -2,11 +2,6 @@
   "extends": "./packages/tsconfig.options.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "react",
-    "paths": {
-      "@compiled/react": ["./packages/react/src/index.tsx"],
-      "@compiled/react/jsx-runtime": ["./packages/react/src/jsx/runtime.tsx"],
-      "@compiled/react/jsx-dev-runtime": ["./packages/react/src/jsx/dev-runtime.tsx"]
-    }
+    "jsxImportSource": "react"
   }
 }

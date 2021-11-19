@@ -40,12 +40,24 @@
       ]
     },
     "./jsx-runtime": {
-      "import": "./dist/esm/jsx/jsx-runtime.js",
-      "require": "./dist/cjs/jsx/jsx-runtime.js"
+      "import": [
+        "./dist/esm/jsx/jsx-runtime.js",
+        "./src/jsx/jsx-runtime.tsx"
+      ],
+      "require": [
+        "./dist/cjs/jsx/jsx-runtime.js",
+        "./src/jsx/jsx-runtime.tsx"
+      ]
     },
     "./jsx-dev-runtime": {
-      "import": "./dist/esm/jsx/jsx-dev-runtime.js",
-      "require": "./dist/cjs/jsx/jsx-dev-runtime.js"
+      "import": [
+        "./dist/esm/jsx/jsx-dev-runtime.js",
+        "./src/jsx/jsx-dev-runtime.tsx"
+      ],
+      "require": [
+        "./dist/cjs/jsx/jsx-dev-runtime.js",
+        "./src/jsx/jsx-dev-runtime.tsx"
+      ]
     }
   },
   "main": "./dist/cjs/index.js",
