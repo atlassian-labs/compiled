@@ -11,45 +11,52 @@ const tests: {
     `import { css } from '@compiled/react';`,
     `import { ClassNames } from '@compiled/react';`,
     `import { css, ClassNames, styled } from '@compiled/react';`,
+    `/** @jsx jsx */`,
+    `/** @jsxImportSource @compiled/react */`,
   ],
   invalid: [
     {
+      code: `/** @jsxImportSource @emotion/react */`,
+      output: `/** @jsxImportSource @compiled/react */`,
+      errors: [{ messageId: 'noEmotionCSS' }],
+    },
+    {
       code: `import styled from '@emotion/styled';`,
       output: `import { styled } from '@compiled/react';`,
-      errors: [{ messageId: 'noStyled' }],
+      errors: [{ messageId: 'noEmotionCSS' }],
     },
     {
       code: `/** @jsx jsx */\nimport { jsx } from '@emotion/core';\nimport styled from '@emotion/styled';`,
-      output: `import * as React from 'react';\n\nimport { styled } from '@compiled/react';`,
-      errors: [{ messageId: 'noPragma' }, { messageId: 'noCore' }, { messageId: 'noStyled' }],
+      output: `/** @jsx jsx */\nimport { jsx } from '@compiled/react';\nimport { styled } from '@compiled/react';`,
+      errors: [{ messageId: 'noEmotionCSS' }, { messageId: 'noEmotionCSS' }],
     },
     {
       code: `import sc from '@emotion/styled';`,
       output: `import { styled as sc } from '@compiled/react';`,
-      errors: [{ messageId: 'noStyled' }],
+      errors: [{ messageId: 'noEmotionCSS' }],
     },
     {
       code: `import { ClassNames } from '@emotion/core';`,
       output: `import { ClassNames } from '@compiled/react';`,
-      errors: [{ messageId: 'noCore' }],
+      errors: [{ messageId: 'noEmotionCSS' }],
     },
     {
       code: `
         /** @jsx jsx */
         import { css, jsx, ClassNames } from '@emotion/core';`,
       output: `
-        import * as React from 'react';
-        import { css, ClassNames } from '@compiled/react';`,
-      errors: [{ messageId: 'noPragma' }, { messageId: 'noCore' }],
+        /** @jsx jsx */
+        import { css, jsx, ClassNames } from '@compiled/react';`,
+      errors: [{ messageId: 'noEmotionCSS' }],
     },
     {
       code: `
         /** @jsx jsx */
         import { css, jsx, ClassNames } from '@emotion/react';`,
       output: `
-        import * as React from 'react';
-        import { css, ClassNames } from '@compiled/react';`,
-      errors: [{ messageId: 'noPragma' }, { messageId: 'noCore' }],
+        /** @jsx jsx */
+        import { css, jsx, ClassNames } from '@compiled/react';`,
+      errors: [{ messageId: 'noEmotionCSS' }],
     },
     {
       code: `
@@ -57,10 +64,10 @@ const tests: {
         import { css as c, jsx, ClassNames as CN } from '@emotion/core';
     `,
       output: `
-        import * as React from 'react';
-        import { css as c, ClassNames as CN } from '@compiled/react';
+        /** @jsx jsx */
+        import { css as c, jsx, ClassNames as CN } from '@compiled/react';
     `,
-      errors: [{ messageId: 'noPragma' }, { messageId: 'noCore' }],
+      errors: [{ messageId: 'noEmotionCSS' }],
     },
     {
       code: `
@@ -68,10 +75,10 @@ const tests: {
         import { css as c, jsx, ClassNames as CN } from '@emotion/react';
     `,
       output: `
-        import * as React from 'react';
-        import { css as c, ClassNames as CN } from '@compiled/react';
+        /** @jsx jsx */
+        import { css as c, jsx, ClassNames as CN } from '@compiled/react';
     `,
-      errors: [{ messageId: 'noPragma' }, { messageId: 'noCore' }],
+      errors: [{ messageId: 'noEmotionCSS' }],
     },
     {
       code: `
@@ -79,10 +86,10 @@ const tests: {
         import { css, jsx } from '@emotion/core';
     `,
       output: `
-        import * as React from 'react';
-        import { css } from '@compiled/react';
+        /** @jsx jsx */
+        import { css, jsx } from '@compiled/react';
     `,
-      errors: [{ messageId: 'noPragma' }, { messageId: 'noCore' }],
+      errors: [{ messageId: 'noEmotionCSS' }],
     },
     {
       code: `
@@ -91,21 +98,21 @@ const tests: {
       output: `
         import { css, styled } from '@compiled/react';
         `,
-      errors: [{ messageId: 'noStyled' }],
+      errors: [{ messageId: 'noEmotionCSS' }],
     },
     {
       code: `import { css } from '@emotion/core';
          import { styled } from '@compiled/react';`,
       output: `
          import { styled, css } from '@compiled/react';`,
-      errors: [{ messageId: 'noCore' }],
+      errors: [{ messageId: 'noEmotionCSS' }],
     },
     {
       code: `import { css } from '@emotion/react';
          import { styled } from '@compiled/react';`,
       output: `
          import { styled, css } from '@compiled/react';`,
-      errors: [{ messageId: 'noCore' }],
+      errors: [{ messageId: 'noEmotionCSS' }],
     },
   ],
 };
