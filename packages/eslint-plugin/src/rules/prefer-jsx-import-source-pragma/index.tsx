@@ -10,7 +10,7 @@ const rule: Rule.RuleModule = {
     type: 'problem',
     messages: {
       preferJsxImportSource:
-        'Use of the automatic runtime is preferred over the classic runtime, make sure to configure TypeScript/Babel as well.',
+        'Use of the jsxImportSource pragma (automatic runtime) is preferred over the jsx pragma (classic runtime).',
     },
   },
   create(context) {
