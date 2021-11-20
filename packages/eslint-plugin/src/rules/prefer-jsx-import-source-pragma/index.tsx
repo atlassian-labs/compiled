@@ -1,6 +1,6 @@
 import type { Rule } from 'eslint';
 import type { ImportSpecifier, ImportDeclaration } from 'estree';
-import { getNamedImports, wrapImport } from '../../utils/ast-string';
+import { buildNamedImport, buildImportDeclaration } from '../../utils/ast-string';
 
 const COMPILED_IMPORT = '@compiled/react';
 
@@ -43,10 +43,10 @@ const rule: Rule.RuleModule = {
               );
 
               if (specifiers.length) {
-                const specifiersString = specifiers.map(getNamedImports).join(', ');
+                const specifiersString = specifiers.map(buildNamedImport).join(', ');
                 yield fixer.replaceText(
                   compiledJSXImport,
-                  wrapImport(specifiersString, COMPILED_IMPORT)
+                  buildImportDeclaration(specifiersString, COMPILED_IMPORT)
                 );
               } else {
                 yield fixer.remove(compiledJSXImport);
