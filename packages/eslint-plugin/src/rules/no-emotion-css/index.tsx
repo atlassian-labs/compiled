@@ -1,17 +1,20 @@
 import type { Rule } from 'eslint';
-
 import type { ImportSpecifier, ImportDeclaration } from 'estree';
 
 const COMPILED_IMPORT = '@compiled/react';
+const ALLOWED_EMOTION_IMPORTS = ['css', 'keyframes', 'ClassNames', 'jsx'];
 
-const hasStyledImport = (node: ImportDeclaration) => node.source.value === '@emotion/styled';
-const hasCoreImport = (node: ImportDeclaration) =>
+const isEmotionStyledImport = (node: ImportDeclaration) => node.source.value === '@emotion/styled';
+
+const isEmotionImport = (node: ImportDeclaration) =>
   ['@emotion/core', '@emotion/react'].includes(node.source.value as string);
+
 const getNamedImports = (node: ImportSpecifier) => {
   return node.imported.name === node.local.name
     ? node.local.name
     : `${node.imported.name} as ${node.local.name}`;
 };
+
 const wrapImport = (node: string) => `import { ${node} } from '${COMPILED_IMPORT}';`;
 
 /**
@@ -23,10 +26,8 @@ const wrapImport = (node: string) => `import { ${node} } from '${COMPILED_IMPORT
 const getCompiledNode = (context: Rule.RuleContext) => {
   return context
     .getSourceCode()
-    .ast.body.filter((node) => node.type === 'ImportDeclaration')
-    .find(
-      (node) => (node as ImportDeclaration).source.value === COMPILED_IMPORT
-    ) as ImportDeclaration;
+    .ast.body.filter((node): node is ImportDeclaration => node.type === 'ImportDeclaration')
+    .find((node) => node.source.value === COMPILED_IMPORT);
 };
 
 const rule: Rule.RuleModule = {
@@ -34,9 +35,7 @@ const rule: Rule.RuleModule = {
     fixable: 'code',
     type: 'problem',
     messages: {
-      noStyled: `The '@emotion/styled' library should not be used. Use ${COMPILED_IMPORT} instead.`,
-      noCore: `The {{ version }} library should not be used. Use ${COMPILED_IMPORT} instead.`,
-      noPragma: `The /** @jsx jsx */ pragma is not required in ${COMPILED_IMPORT}. It can be safely removed.`,
+      noEmotionCSS: `{{ version }} should not be used use ${COMPILED_IMPORT} instead.`,
     },
   },
   create(context) {
@@ -45,27 +44,35 @@ const rule: Rule.RuleModule = {
         const pragma = context
           .getSourceCode()
           .getAllComments()
-          .find((n) => n.value === '* @jsx jsx ');
+          .find((n) => n.value.includes('@jsxImportSource @emotion/react'));
+
         if (pragma) {
           return context.report({
-            messageId: 'noPragma',
+            messageId: 'noEmotionCSS',
+            data: {
+              version: '@emotion/react',
+            },
             loc: pragma.loc!,
             fix(fixer) {
-              return fixer.replaceText(pragma as any, "import * as React from 'react';");
+              return fixer.replaceText(pragma as any, '/** @jsxImportSource @compiled/react */');
             },
           });
         }
       },
       ImportDeclaration(node) {
         if (node.specifiers[0].type === 'ImportNamespaceSpecifier') {
-          return null;
+          return;
         }
 
-        const hasStyled = hasStyledImport(node);
+        const hasStyled = isEmotionStyledImport(node);
+        const hasCore = isEmotionImport(node);
 
         if (hasStyled) {
-          return context.report({
-            messageId: 'noStyled',
+          context.report({
+            messageId: 'noEmotionCSS',
+            data: {
+              version: node.source.value as string,
+            },
             node: node.source,
             *fix(fixer) {
               const compiledNode = getCompiledNode(context);
@@ -89,25 +96,20 @@ const rule: Rule.RuleModule = {
           });
         }
 
-        const hasCore = hasCoreImport(node);
-
         if (hasCore) {
-          return context.report({
-            messageId: 'noCore',
+          context.report({
+            messageId: 'noEmotionCSS',
             data: {
               version: node.source.value as string,
             },
             node: node.source,
             *fix(fixer) {
               const compiledNode = getCompiledNode(context);
-              const specifiers = (
-                node.specifiers.filter(
-                  (specifier) => specifier.type === 'ImportSpecifier'
-                ) as ImportSpecifier[]
-              ).filter(
-                (specifier) =>
-                  specifier.imported.name === 'css' || specifier.imported.name === 'ClassNames'
-              );
+              const specifiers = node.specifiers
+                .filter(
+                  (specifier): specifier is ImportSpecifier => specifier.type === 'ImportSpecifier'
+                )
+                .filter((specifier) => ALLOWED_EMOTION_IMPORTS.includes(specifier.imported.name));
 
               if (!specifiers.length) {
                 yield fixer.remove(node);
@@ -129,8 +131,6 @@ const rule: Rule.RuleModule = {
                   wrapImport(specifiers.map(getNamedImports).join(', '))
                 );
               }
-
-              return;
             },
           });
         }

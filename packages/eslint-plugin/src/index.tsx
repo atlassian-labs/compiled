@@ -1,7 +1,7 @@
-import emotionToCompiled from './rules/emotion-to-compiled';
+import noEmotionCSS from './rules/no-emotion-css';
 
 export const rules = {
-  'emotion-to-compiled': emotionToCompiled,
+  'no-emotion-css': noEmotionCSS,
 };
 
 export const configs = {
