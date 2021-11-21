@@ -292,8 +292,7 @@ describe('#css-transform', () => {
         position: absolute;
         right: -2rem;
       }
-    `,
-      { minify: true }
+    `
     );
 
     expect(actual.join('\n')).toMatchInlineSnapshot(`

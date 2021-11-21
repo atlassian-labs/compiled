@@ -1,4 +1,4 @@
-import { transform } from '../../__tests__/test-utils';
+import { transform } from '../../test-utils';
 
 describe('class names behaviour', () => {
   beforeAll(() => {

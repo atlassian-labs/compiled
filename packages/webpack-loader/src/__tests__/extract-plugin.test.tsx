@@ -23,7 +23,7 @@ describe('CompiledExtractPlugin', () => {
         message: expect.stringContaining("You forgot to add the 'CompiledExtractPlugin' plugin"),
       }),
     ]);
-  });
+  }, 10000);
 
   it('extracts local styles', async () => {
     const actual = await bundle(join(fixturesPath, 'local-styles.tsx'));
@@ -33,7 +33,7 @@ describe('CompiledExtractPlugin', () => {
       ._syaz13q2{color:blue}
       "
     `);
-  });
+  }, 10000);
 
   it('extracts styles imported through a relative path', async () => {
     const actual = await bundle(join(fixturesPath, 'relative-styles.tsx'));
@@ -49,7 +49,7 @@ describe('CompiledExtractPlugin', () => {
       ._30l313q2:hover{color:blue}
       "
     `);
-  });
+  }, 10000);
 
   it('extracts styles imported through a webpack alias', async () => {
     const assets = await bundle(join(fixturesPath, 'webpack-alias.tsx'));
@@ -58,7 +58,7 @@ describe('CompiledExtractPlugin', () => {
       "._syaz13q2{color:blue}
       "
     `);
-  });
+  }, 10000);
 
   it('extracts styles imported through an overridden resolve configuration', async () => {
     const assets = await bundle(join(fixturesPath, 'loader-alias.tsx'), {
@@ -74,20 +74,14 @@ describe('CompiledExtractPlugin', () => {
       "._syaz1if8{color:indigo}
       "
     `);
-  });
+  }, 10000);
 
   it('extracts styles from an async chunk', async () => {
     const actual = await bundle(join(fixturesPath, 'async-styles.ts'));
 
     // Only generate one CSS bundle
-    expect(Object.keys(actual)).toMatchInlineSnapshot(`
-      Array [
-        "main.js",
-        "377.js",
-        "static/compiled-css.css",
-        "377.js.LICENSE.txt",
-      ]
-    `);
+    const cssFiles = Object.keys(actual).filter((key) => key.endsWith('.css'));
+    expect(cssFiles).toHaveLength(1);
 
     // Extract the styles into said bundle
     expect(actual[assetName]).toMatchInlineSnapshot(`
@@ -95,7 +89,7 @@ describe('CompiledExtractPlugin', () => {
       ._syaz1vyr{color:coral}
       "
     `);
-  });
+  }, 10000);
 
   it('extracts styles from a pre-built babel files', async () => {
     const actual = await bundle(join(fixturesPath, 'babel.tsx'));
@@ -111,7 +105,7 @@ describe('CompiledExtractPlugin', () => {
       ._syaz13q2{color:blue}
       "
     `);
-  });
+  }, 10000);
 
   it('extracts important styles', async () => {
     const actual = await bundle(join(fixturesPath, 'important-styles.tsx'));
@@ -121,7 +115,7 @@ describe('CompiledExtractPlugin', () => {
         ._1wybc038{font-size:12!important}
         "
       `);
-  });
+  }, 10000);
 
   it('should find bindings', async () => {
     const actual = await bundle(join(fixturesPath, 'binding-not-found.tsx'));
@@ -152,5 +146,5 @@ describe('CompiledExtractPlugin', () => {
       ._4t3i1jdh{height:9rem}
       "
     `);
-  });
+  }, 10000);
 });

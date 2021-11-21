@@ -19,9 +19,6 @@
     "src",
     "README.md"
   ],
-  "scripts": {
-    "benchmark:module-traversal": "ts-node --files ./src/__perf__/module-traversal-caching"
-  },
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@babel/generator": "^7.16.0",

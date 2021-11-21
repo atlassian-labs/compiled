@@ -1,9 +1,11 @@
 import * as t from '@babel/types';
 import type { NodePath } from '@babel/core';
-import { buildCodeFrameError } from '../utils/ast';
-import { buildStyledComponent, buildDisplayName } from '../utils/ast-builders';
-import { buildCss } from '../utils/css-builders';
+
 import type { Metadata, Tag } from '../types';
+import { buildCodeFrameError } from '../utils/ast';
+import { buildDisplayName } from '../utils/build-display-name';
+import { buildStyledComponent } from '../utils/build-styled-component';
+import { buildCss } from '../utils/css-builders';
 
 interface StyledData {
   tag: Tag;
@@ -166,7 +168,7 @@ export const visitStyledPath = (
 ): void => {
   if (t.isTaggedTemplateExpression(path.node) && hasInValidExpression(path.node)) {
     throw buildCodeFrameError(
-      `A logical expression contains an invalid CSS declaration. 
+      `A logical expression contains an invalid CSS declaration.
       Compiled doesn't support CSS properties that are defined with a conditional rule that doesn't specify a default value.
       Eg. font-weight: \${(props) => (props.isPrimary && props.isMaybe) && 'bold'}; is invalid.
       Use \${(props) => props.isPrimary && props.isMaybe && ({ 'font-weight': 'bold' })}; instead`,

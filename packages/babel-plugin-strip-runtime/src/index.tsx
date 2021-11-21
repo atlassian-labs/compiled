@@ -1,13 +1,12 @@
 import { declare } from '@babel/helper-plugin-utils';
-import * as t from '@babel/types';
-import {
-  removeStyleDeclarations,
-  isCCComponent,
-  isCreateElement,
-  isAutomaticRuntime,
-} from './utils/ast';
-import type { PluginPass } from './types';
 import type { NodePath } from '@babel/traverse';
+import * as t from '@babel/types';
+
+import type { PluginPass } from './types';
+import { isAutomaticRuntime } from './utils/is-automatic-runtime';
+import { isCCComponent } from './utils/is-cc-component';
+import { isCreateElement } from './utils/is-create-element';
+import { removeStyleDeclarations } from './utils/remove-style-declarations';
 
 export default declare<PluginPass>((api) => {
   api.assertVersion(7);

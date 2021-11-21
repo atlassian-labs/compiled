@@ -35,9 +35,6 @@ jobs:
       - name: Build source
         run: yarn build
 
-      - name: Compare committed flow types to generated
-        run: yarn flow-types compare
-
       - name: Build SSR example
         run: yarn build-ssr
 
@@ -49,3 +46,6 @@ jobs:
 
       - name: Build parcel example
         run: yarn build:parcel
+
+      - name: Compare committed flow types to generated
+        run: yarn flow-types compare

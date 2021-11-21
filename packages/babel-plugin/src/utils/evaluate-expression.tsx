@@ -12,6 +12,7 @@ import {
   resolveBindingNode,
   wrapNodeInIIFE,
 } from './ast';
+import { getDefaultExport, getNamedExport } from './export-traversers';
 
 const createResultPair = (value: t.Expression, meta: Metadata) => ({
   value,
@@ -133,6 +134,26 @@ const evaluateIdentifierBindingMemberExpression = (
   return createResultPair(value, updatedMeta);
 };
 
+const evaluateNamespaceImportExpression = (accessPath: t.Identifier[], meta: Metadata) => {
+  const exportName = accessPath[0].name;
+  const updatedMeta: Metadata = { ...meta };
+  const { file } = meta.state;
+  const result =
+    exportName === 'default' ? getDefaultExport(file) : getNamedExport(file, exportName);
+
+  if (result) {
+    updatedMeta.ownPath = result.path;
+    // Set parentPath to the path where the import is being used
+    updatedMeta.parentPath = meta.parentPath;
+
+    if (t.isObjectExpression(result.node) && accessPath.length > 1) {
+      return evaluateObjectExpression(result.node, accessPath.slice(1), updatedMeta);
+    }
+  }
+
+  return evaluateExpression(result?.node as t.Expression, updatedMeta);
+};
+
 /**
  * Will look in an expression and return the actual value along with updated metadata.
  *
@@ -167,6 +188,11 @@ const traverseMemberExpression = (expression: t.MemberExpression, meta: Metadata
           resolvedBinding.meta
         ));
       }
+    } else if (resolvedBinding?.node && t.isImportNamespaceSpecifier(resolvedBinding.node)) {
+      ({ value, meta: updatedMeta } = evaluateNamespaceImportExpression(
+        accessPath,
+        resolvedBinding.meta
+      ));
     }
   }
 

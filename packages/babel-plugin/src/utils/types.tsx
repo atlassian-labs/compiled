@@ -28,14 +28,16 @@ export interface SheetCssItem {
 
 export type CssItem = UnconditionalCssItem | ConditionalCssItem | LogicalCssItem | SheetCssItem;
 
+export type Variable = {
+  name: string;
+  expression: t.Expression;
+  prefix?: string;
+  suffix?: string;
+};
+
 export interface CSSOutput {
   css: CssItem[];
-  variables: {
-    name: string;
-    expression: t.Expression;
-    prefix?: string;
-    suffix?: string;
-  }[];
+  variables: Variable[];
 }
 
 export interface PartialBindingWithMeta {

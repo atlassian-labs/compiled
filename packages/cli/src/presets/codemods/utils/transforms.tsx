@@ -15,7 +15,7 @@ const basePath = path.join(
   'node_modules',
   '@compiled',
   'codemods',
-  'dist',
+  isLocalRun ? 'src' : 'dist',
   'transforms'
 );
 

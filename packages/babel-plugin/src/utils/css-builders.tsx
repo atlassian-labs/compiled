@@ -49,7 +49,7 @@ const normalizeContentValue = (value: string) => {
  *
  * @param arr
  */
-const mergeSubsequentUnconditionalCssItems = (arr: Array<CssItem>): Array<CssItem> => {
+const mergeSubsequentUnconditionalCssItems = (arr: CssItem[]): CssItem[] => {
   const items: Exclude<CssItem, SheetCssItem>[] = [];
   const sheets: SheetCssItem[] = [];
 

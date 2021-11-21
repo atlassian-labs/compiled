@@ -1,7 +1,17 @@
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 
-import { importSpecifier } from './ast-builders';
+/**
+ * Wrapper to make defining import specifiers easier.
+ * If `localName` is defined it will rename the import to it,
+ * e.g: `name as localName`.
+ *
+ * @param name import name
+ * @param localName local name
+ */
+const importSpecifier = (name: string, localName?: string): t.ImportSpecifier => {
+  return t.importSpecifier(t.identifier(name), t.identifier(localName || name));
+};
 
 /**
  * Appends runtime import to code. If it is already present, it will append import specifiers

@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.options.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "references": [{ "path": "../jest" }]
+}
