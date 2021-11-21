@@ -6,7 +6,21 @@ const tests: {
   valid?: (string | RuleTester.ValidTestCase)[];
   invalid?: RuleTester.InvalidTestCase[];
 } = {
-  valid: [`/** @jsxImportSource @compiled/react */`],
+  valid: [
+    `
+      /** @jsxImportSource @compiled/react */
+    `,
+    `
+      /** @jsx jsx */
+      import { jsx } from '@compiled/react';
+
+      <div css={{ display: 'block' }} />
+    `,
+    `
+      /** @jsxImportSource @compiled/react */
+      <div css={{ display: 'block' }} />
+  `,
+  ],
   invalid: [
     {
       code: `/** @jsx jsx */ import { jsx } from '@compiled/react';`,

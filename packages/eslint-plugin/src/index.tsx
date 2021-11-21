@@ -1,9 +1,9 @@
 import noEmotionCSS from './rules/no-emotion-css';
-import preferJSXImportSourcePragma from './rules/prefer-jsx-import-source-pragma';
+import jsxPragma from './rules/jsx-pragma';
 
 export const rules = {
   'no-emotion-css': noEmotionCSS,
-  'prefer-jsx-import-source-pragma': preferJSXImportSourcePragma,
+  'jsx-pragma': jsxPragma,
 };
 
 export const configs = {

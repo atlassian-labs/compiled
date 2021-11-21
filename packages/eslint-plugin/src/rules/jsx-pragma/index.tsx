@@ -4,6 +4,21 @@ import { buildNamedImport, buildImportDeclaration } from '../../utils/ast-string
 
 const COMPILED_IMPORT = '@compiled/react';
 
+/**
+ * Given a rule, return any `@compiled/react` nodes in the source being parsed.
+ *
+ * @param context Rule context
+ * @returns {Rule.Node} The `@compiled/react` node or undefined
+ */
+const findCompiledImportDeclarations = (context: Rule.RuleContext) => {
+  return context
+    .getSourceCode()
+    .ast.body.filter(
+      (node): node is ImportDeclaration =>
+        node.type === 'ImportDeclaration' && node.source.value === COMPILED_IMPORT
+    );
+};
+
 const rule: Rule.RuleModule = {
   meta: {
     fixable: 'code',
@@ -53,6 +68,35 @@ const rule: Rule.RuleModule = {
               }
             },
           });
+        }
+      },
+
+      JSXAttribute(node: any) {
+        if (node.name.type === 'JSXIdentifier' && node.name.name === 'css') {
+          const source = context.getSourceCode();
+          const pragma = source.getAllComments().find((n) => n.value.includes('@jsx jsx'));
+          const compiledImports = findCompiledImportDeclarations(context);
+
+          if (!pragma && compiledImports.length) {
+            context.report({
+              messageId: 'missingPragma',
+              node,
+              *fix(fixer) {
+                yield fixer.insertTextBefore(source.ast.body[0], '/** @jsx jsx */\n');
+
+                if (
+                  !compiledImports.find((imp) =>
+                    imp.specifiers.find(
+                      (spec) => spec.type === 'ImportSpecifier' && spec.imported.name === 'jsx'
+                    )
+                  )
+                ) {
+                  // jsx import is missing time to add one
+                  console.log('hi');
+                }
+              },
+            });
+          }
         }
       },
     };
