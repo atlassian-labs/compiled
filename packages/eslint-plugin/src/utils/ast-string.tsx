@@ -1,4 +1,9 @@
-import type { ImportSpecifier, ImportDefaultSpecifier, ImportNamespaceSpecifier } from 'estree';
+import type {
+  ImportSpecifier,
+  ImportDeclaration,
+  ImportDefaultSpecifier,
+  ImportNamespaceSpecifier,
+} from 'estree';
 
 /**
  * Builds a string representation of an import declaration.
@@ -8,6 +13,17 @@ import type { ImportSpecifier, ImportDefaultSpecifier, ImportNamespaceSpecifier 
  */
 export const buildImportDeclaration = (innerNodeStr: string, module: string): string =>
   `import { ${innerNodeStr} } from '${module}';`;
+
+/**
+ * Adds new imports to a pre-existing import declaration and returns its string representation.
+ *
+ * @param decl Import declaration
+ * @param imports Array of strings of imports to add
+ */
+export const addImportToDeclaration = (decl: ImportDeclaration, imports: string[]): string => {
+  const specifiersString = decl.specifiers.map(buildNamedImport).concat(imports).join(', ');
+  return buildImportDeclaration(specifiersString, decl.source.value + '');
+};
 
 /**
  * Builds a string representation of a named import.

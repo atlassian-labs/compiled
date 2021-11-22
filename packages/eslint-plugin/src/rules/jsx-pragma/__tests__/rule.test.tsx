@@ -24,6 +24,25 @@ tester.run('jsx-pragma', rule, {
     {
       code: `<div css={{ display: 'block' }} />`,
       output: `/** @jsx jsx */
+import { jsx } from '@compiled/react';
+<div css={{ display: 'block' }} />`,
+      options: [{ pragma: 'jsx' }],
+      errors: [
+        {
+          messageId: 'missingPragma',
+        },
+      ],
+    },
+    {
+      code: `
+import '@compiled/react';
+<Fragment>
+  <div css={{ display: 'block' }} />
+  <div css={{ display: 'block' }} />
+</Fragment>`,
+      output: `
+/** @jsx jsx */
+import { jsx } from '@compiled/react';
 <div css={{ display: 'block' }} />`,
       options: [{ pragma: 'jsx' }],
       errors: [

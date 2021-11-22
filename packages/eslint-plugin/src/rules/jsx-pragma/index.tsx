@@ -1,6 +1,10 @@
 import type { Rule } from 'eslint';
 import type { ImportSpecifier, ImportDeclaration } from 'estree';
-import { buildNamedImport, buildImportDeclaration } from '../../utils/ast-string';
+import {
+  buildNamedImport,
+  buildImportDeclaration,
+  addImportToDeclaration,
+} from '../../utils/ast-string';
 
 const COMPILED_IMPORT = '@compiled/react';
 
@@ -115,11 +119,27 @@ const rule: Rule.RuleModule = {
                   options.pragma === 'jsx' &&
                   !compiledImports.find((imp) =>
                     imp.specifiers.find(
-                      (spec) => spec.type === 'ImportSpecifier' && spec.imported.name === 'jsx'
+                      (spec): spec is ImportSpecifier =>
+                        spec.type === 'ImportSpecifier' && spec.imported.name === 'jsx'
                     )
                   )
                 ) {
                   // jsx import is missing time to add one
+                  if (compiledImports.length === 0) {
+                    // No import exists, add a new one!
+                    yield fixer.insertTextBefore(
+                      source.ast.body[0],
+                      "import { jsx } from '@compiled/react';\n"
+                    );
+                  } else {
+                    // An import exists with no JSX! Let's add one to the first found.
+                    const [firstCompiledImport] = compiledImports;
+
+                    yield fixer.replaceText(
+                      firstCompiledImport,
+                      addImportToDeclaration(firstCompiledImport, ['jsx'])
+                    );
+                  }
                 }
               },
             });
