@@ -15,7 +15,7 @@ export const buildImportDeclaration = (innerNodeStr: string, module: string): st
   `import { ${innerNodeStr} } from '${module}';`;
 
 /**
- * Adds new imports to a pre-existing import declaration and returns its string representation.
+ * Adds new imports from an import declaration and returns its string representation.
  *
  * @param decl Import declaration
  * @param imports Array of strings of imports to add
@@ -23,6 +23,25 @@ export const buildImportDeclaration = (innerNodeStr: string, module: string): st
 export const addImportToDeclaration = (decl: ImportDeclaration, imports: string[]): string => {
   const specifiersString = decl.specifiers.map(buildNamedImport).concat(imports).join(', ');
   return buildImportDeclaration(specifiersString, decl.source.value + '');
+};
+
+/**
+ * Removes imports from an import declaration and returns its string representation.
+ * If the import was the last declaration will return an empty string.
+ *
+ * @param decl Import declaration
+ * @param imports Array of strings of imports to remove
+ */
+export const removeImportFromDeclaration = (decl: ImportDeclaration, imports: string[]): string => {
+  const specifiersString = decl.specifiers
+    .map(buildNamedImport)
+    .filter((spec) => !imports.includes(spec));
+
+  if (specifiersString.length === 0) {
+    return '';
+  }
+
+  return buildImportDeclaration(specifiersString.join(', '), decl.source.value + '');
 };
 
 /**

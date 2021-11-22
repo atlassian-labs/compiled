@@ -1,27 +1,6 @@
 import type { Rule } from 'eslint';
-import type { ImportSpecifier, ImportDeclaration } from 'estree';
-import {
-  buildNamedImport,
-  buildImportDeclaration,
-  addImportToDeclaration,
-} from '../../utils/ast-string';
-
-const COMPILED_IMPORT = '@compiled/react';
-
-/**
- * Given a rule, return any `@compiled/react` nodes in the source being parsed.
- *
- * @param context Rule context
- * @returns {Rule.Node} The `@compiled/react` node or undefined
- */
-const findCompiledImportDeclarations = (context: Rule.RuleContext) => {
-  return context
-    .getSourceCode()
-    .ast.body.filter(
-      (node): node is ImportDeclaration =>
-        node.type === 'ImportDeclaration' && node.source.value === COMPILED_IMPORT
-    );
-};
+import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-string';
+import { findCompiledImportDeclarations, findDeclarationWithImport } from '../../utils/ast';
 
 type Options = {
   pragma: 'jsx' | 'jsxImportSource';
@@ -54,96 +33,108 @@ const rule: Rule.RuleModule = {
   create(context) {
     const options: Options = context.options[0] || { pragma: 'jsxImportSource' };
     const source = context.getSourceCode();
-    const jsxPragma = source.getAllComments().find((n) => n.value.includes('@jsx jsx'));
+    if (source.text.indexOf('css={') === -1) {
+      // Bail early nothing to check here.
+      return {};
+    }
+
+    const jsxPragma = source.getAllComments().find((n) => n.value.indexOf('@jsx jsx') > -1);
+
     const jsxImportSourcePragma = source
       .getAllComments()
-      .find((n) => n.value.includes('@jsxImportSource @compiled/react'));
+      .find((n) => n.value.indexOf('@jsxImportSource @compiled/react') > -1);
 
     return {
       Program() {
-        const compiledJSXImport = source.ast.body.find((node): node is ImportDeclaration => {
-          if (node.type === 'ImportDeclaration' && node.source.value === COMPILED_IMPORT) {
-            const hasJsxImport = node.specifiers.find((specifier) => {
-              return specifier.type === 'ImportSpecifier' && specifier.imported.name === 'jsx';
-            });
-
-            return !!hasJsxImport;
-          }
-
-          return false;
-        });
-
-        if (jsxPragma && options.pragma === 'jsxImportSource' && compiledJSXImport) {
+        if (jsxPragma && options.pragma === 'jsxImportSource') {
           return context.report({
             messageId: 'preferJsxImportSource',
             loc: jsxPragma.loc!,
             *fix(fixer) {
               yield fixer.replaceText(jsxPragma as any, '/** @jsxImportSource @compiled/react */');
 
-              const specifiers = compiledJSXImport.specifiers.filter(
-                (specifier): specifier is ImportSpecifier =>
-                  specifier.type === 'ImportSpecifier' && specifier.imported.name !== 'jsx'
-              );
+              const compiledImports = findCompiledImportDeclarations(context);
+              const jsxImport = findDeclarationWithImport(compiledImports, 'jsx');
+              if (!jsxImport) {
+                return;
+              }
 
-              if (specifiers.length) {
-                const specifiersString = specifiers.map(buildNamedImport).join(', ');
-                yield fixer.replaceText(
-                  compiledJSXImport,
-                  buildImportDeclaration(specifiersString, COMPILED_IMPORT)
-                );
+              if (jsxImport.specifiers.length) {
+                const specifiersString = removeImportFromDeclaration(jsxImport, ['jsx']);
+                if (specifiersString.length === 0) {
+                  yield fixer.remove(jsxImport);
+                } else {
+                  yield fixer.replaceText(jsxImport, specifiersString);
+                }
               } else {
-                yield fixer.remove(compiledJSXImport);
+                yield fixer.remove(jsxImport);
               }
             },
           });
         }
-      },
 
-      JSXAttribute(node: any) {
-        if (node.name.type === 'JSXIdentifier' && node.name.name === 'css') {
-          if (!jsxPragma && !jsxImportSourcePragma) {
-            const compiledImports = findCompiledImportDeclarations(context);
-            const pragma =
-              options.pragma === 'jsx' ? '@jsx jsx' : '@jsxImportSource @compiled/react';
+        if (jsxImportSourcePragma && options.pragma === 'jsx') {
+          return context.report({
+            messageId: 'preferJsx',
+            loc: jsxImportSourcePragma.loc!,
+            *fix(fixer) {
+              yield fixer.replaceText(jsxImportSourcePragma as any, '/** @jsx jsx */');
 
-            context.report({
-              messageId: 'missingPragma',
-              data: {
-                pragma: options.pragma,
-              },
-              loc: { column: 1, line: 1 },
-              *fix(fixer) {
-                yield fixer.insertTextBefore(source.ast.body[0], `/** ${pragma} */\n`);
+              const compiledImports = findCompiledImportDeclarations(context);
+              const jsxImport = findDeclarationWithImport(compiledImports, 'jsx');
+              if (jsxImport) {
+                return;
+              }
 
-                if (
-                  options.pragma === 'jsx' &&
-                  !compiledImports.find((imp) =>
-                    imp.specifiers.find(
-                      (spec): spec is ImportSpecifier =>
-                        spec.type === 'ImportSpecifier' && spec.imported.name === 'jsx'
-                    )
-                  )
-                ) {
-                  // jsx import is missing time to add one
-                  if (compiledImports.length === 0) {
-                    // No import exists, add a new one!
-                    yield fixer.insertTextBefore(
-                      source.ast.body[0],
-                      "import { jsx } from '@compiled/react';\n"
-                    );
-                  } else {
-                    // An import exists with no JSX! Let's add one to the first found.
-                    const [firstCompiledImport] = compiledImports;
+              if (compiledImports.length) {
+                const [firstCompiledImport] = compiledImports;
+                const specifiersString = addImportToDeclaration(firstCompiledImport, ['jsx']);
 
-                    yield fixer.replaceText(
-                      firstCompiledImport,
-                      addImportToDeclaration(firstCompiledImport, ['jsx'])
-                    );
-                  }
+                yield fixer.replaceText(firstCompiledImport, specifiersString);
+              } else {
+                yield fixer.insertTextBefore(
+                  source.ast.body[0],
+                  "import { jsx } from '@compiled/react';\n"
+                );
+              }
+            },
+          });
+        }
+
+        if (!jsxPragma && !jsxImportSourcePragma) {
+          const pragma = options.pragma === 'jsx' ? '@jsx jsx' : '@jsxImportSource @compiled/react';
+
+          context.report({
+            messageId: 'missingPragma',
+            data: {
+              pragma: options.pragma,
+            },
+            loc: { column: 1, line: 1 },
+            *fix(fixer) {
+              yield fixer.insertTextBefore(source.ast.body[0], `/** ${pragma} */\n`);
+
+              const compiledImports = findCompiledImportDeclarations(context);
+
+              if (options.pragma === 'jsx' && !findDeclarationWithImport(compiledImports, 'jsx')) {
+                // jsx import is missing time to add one
+                if (compiledImports.length === 0) {
+                  // No import exists, add a new one!
+                  yield fixer.insertTextBefore(
+                    source.ast.body[0],
+                    "import { jsx } from '@compiled/react';\n"
+                  );
+                } else {
+                  // An import exists with no JSX! Let's add one to the first found.
+                  const [firstCompiledImport] = compiledImports;
+
+                  yield fixer.replaceText(
+                    firstCompiledImport,
+                    addImportToDeclaration(firstCompiledImport, ['jsx'])
+                  );
                 }
-              },
-            });
-          }
+              }
+            },
+          });
         }
       },
     };
