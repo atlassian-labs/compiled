@@ -88,7 +88,10 @@ import { jsx } from '@compiled/react';
       options: [{ pragma: 'jsx' }],
       errors: [
         {
-          message: 'The jsx pragma is missing.',
+          message: 'To use CSS prop you must set the jsx pragma.',
+        },
+        {
+          message: 'To use CSS prop you must set the jsx pragma.',
         },
       ],
     },
@@ -114,7 +117,7 @@ import { css } from '@compiled/react';
       `,
       errors: [
         {
-          message: 'The jsxImportSource pragma is missing.',
+          message: 'To use CSS prop you must set the jsxImportSource pragma.',
         },
       ],
     },
