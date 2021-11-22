@@ -1,7 +1,7 @@
 import type { Rule } from 'eslint';
 
 import { findCompiledImportDeclarations, findDeclarationWithImport } from '../../utils/ast';
-import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-string';
+import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-to-string';
 
 type Options = {
   runtime: 'classic' | 'automatic';
@@ -12,7 +12,7 @@ const rule: Rule.RuleModule = {
     fixable: 'code',
     type: 'problem',
     messages: {
-      missingPragma: 'To use CSS prop you must set the {{ pragma }} pragma.',
+      missingPragma: 'To use the `css` prop you must set the {{ pragma }} pragma.',
       preferJsxImportSource:
         'Use of the jsxImportSource pragma (automatic runtime) is preferred over the jsx pragma (classic runtime).',
       preferJsx:
@@ -34,10 +34,11 @@ const rule: Rule.RuleModule = {
   create(context) {
     const options: Options = context.options[0] || { runtime: 'automatic' };
     const source = context.getSourceCode();
-    const jsxPragma = source.getAllComments().find((n) => n.value.indexOf('@jsx jsx') > -1);
-    const jsxImportSourcePragma = source
-      .getAllComments()
-      .find((n) => n.value.indexOf('@jsxImportSource @compiled/react') > -1);
+    const comments = source.getAllComments();
+    const jsxPragma = comments.find((n) => n.value.indexOf('@jsx jsx') > -1);
+    const jsxImportSourcePragma = comments.find(
+      (n) => n.value.indexOf('@jsxImportSource @compiled/react') > -1
+    );
 
     return {
       Program() {

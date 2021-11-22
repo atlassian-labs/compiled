@@ -1,12 +1,9 @@
 # @compiled/eslint-plugin/jsx-pragma
 
-This rule ensures a jsx pragma is used when using CSS prop.
-You can configure which jsx pragma to use via the `runtime` option (either classic or automatic).
-Defaults to automatic.
+Enforce a jsx pragma is set when using the `css` prop.
+The `--fix` option [on the command line] automatically fixes problems reported by this rule.
 
-## Examples
-
-👎 Example of **incorrect** code for this rule:
+## Fail
 
 ```js
 // [{ "pragma": "jsx" }]
@@ -30,7 +27,7 @@ import '@compiled/react';
      ^^^ missing pragma
 ```
 
-👍 Example of **correct** code for this rule:
+## Pass
 
 ```js
 // [{ "pragma": "jsx" }]
@@ -46,3 +43,12 @@ import { jsx } from '@compiled/react';
 
 <div css={{ display: 'block' }} />
 ```
+
+## Options
+
+This rule supports the following options:
+
+### `runtime: 'classic' | 'automatic`
+
+What [JSX runtime](https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html) to adhere to,
+defaults to automatic.

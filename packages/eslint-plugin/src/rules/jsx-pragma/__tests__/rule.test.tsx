@@ -73,25 +73,25 @@ import { jsx } from '@compiled/react';
     },
     {
       code: `
-import '@compiled/react';
-<Fragment>
-  <div css={{ display: 'block' }} />
-  <div css={{ display: 'block' }} />
-</Fragment>`,
+        import '@compiled/react';
+        <Fragment>
+          <div css={{ display: 'block' }} />
+          <div css={{ display: 'block' }} />
+        </Fragment>`,
       output: `
-/** @jsx jsx */
+        /** @jsx jsx */
 import { jsx } from '@compiled/react';
-<Fragment>
-  <div css={{ display: 'block' }} />
-  <div css={{ display: 'block' }} />
-</Fragment>`,
+        <Fragment>
+          <div css={{ display: 'block' }} />
+          <div css={{ display: 'block' }} />
+        </Fragment>`,
       options: [{ runtime: 'classic' }],
       errors: [
         {
-          message: 'To use CSS prop you must set the jsx pragma.',
+          message: 'To use the `css` prop you must set the jsx pragma.',
         },
         {
-          message: 'To use CSS prop you must set the jsx pragma.',
+          message: 'To use the `css` prop you must set the jsx pragma.',
         },
       ],
     },
@@ -117,7 +117,7 @@ import { css } from '@compiled/react';
       `,
       errors: [
         {
-          message: 'To use CSS prop you must set the jsxImportSource pragma.',
+          message: 'To use the `css` prop you must set the jsxImportSource pragma.',
         },
       ],
     },
