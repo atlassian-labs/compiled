@@ -1,10 +1,7 @@
 import { css, styled } from '@compiled/react';
 import React from 'react';
 
-import {
-  primaryTaggedTemplateExpression,
-  secondaryTaggedTemplateExpression,
-} from '../mixins/mixins';
+import { primaryTaggedTemplateExpression, secondaryTaggedTemplateExpression } from './mixins';
 
 export default {
   title: 'conditional rules/styled',

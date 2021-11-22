@@ -1,20 +1,20 @@
-# @private/ssr
+# @compiled/babel-component-fixture
 
-## 1.0.7
+## 0.0.8
 
 ### Patch Changes
 
 - Updated dependencies [4309aaa]
   - @compiled/react@0.9.1
 
-## 1.0.6
+## 0.0.7
 
 ### Patch Changes
 
 - Updated dependencies [2092839]
   - @compiled/react@0.9.0
 
-## 1.0.5
+## 0.0.6
 
 ### Patch Changes
 
@@ -22,7 +22,7 @@
 - Updated dependencies [53935b3]
   - @compiled/react@0.8.0
 
-## 1.0.4
+## 0.0.5
 
 ### Patch Changes
 
@@ -30,21 +30,21 @@
 - Updated dependencies [a7ab8e1]
   - @compiled/react@0.7.0
 
-## 1.0.3
+## 0.0.4
 
 ### Patch Changes
 
 - Updated dependencies [13c3a60]
   - @compiled/react@0.6.13
 
-## 1.0.2
+## 0.0.3
 
 ### Patch Changes
 
 - Updated dependencies [b5b4e8a]
   - @compiled/react@0.6.12
 
-## 1.0.1
+## 0.0.2
 
 ### Patch Changes
 

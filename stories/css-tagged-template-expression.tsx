@@ -1,6 +1,6 @@
 import { css } from '@compiled/react';
 
-import { primaryTaggedTemplateExpression } from '../mixins/mixins';
+import { primaryTaggedTemplateExpression } from './mixins';
 
 export default {
   title: 'css/tagged template expression',

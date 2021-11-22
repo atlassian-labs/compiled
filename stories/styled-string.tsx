@@ -1,9 +1,6 @@
 import { css, styled } from '@compiled/react';
 
-import {
-  primaryTaggedTemplateExpression,
-  secondaryTaggedTemplateExpression,
-} from '../mixins/mixins';
+import { primaryTaggedTemplateExpression, secondaryTaggedTemplateExpression } from './mixins';
 
 export default {
   title: 'styled/string',

@@ -4,5 +4,5 @@
     "outDir": "dist/browser",
     "tsBuildInfoFile": "tsconfig.browser.tsbuildinfo"
   },
-  "references": [{ "path": "../jest" }]
+  "references": [{ "path": "../benchmark" }, { "path": "../jest" }]
 }

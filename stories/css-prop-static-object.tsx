@@ -1,5 +1,5 @@
 import '@compiled/react';
-import { hoverObjectLiteral } from '../mixins/mixins';
+import { hoverObjectLiteral } from './mixins';
 
 const inlineMixinFunc = () => ({
   color: 'red',
