@@ -1,8 +1,9 @@
 // This script is designed so that Renovate can automatically add changesets to the PRs it
 // creates. It is designed to be run in the root of the repo.
 
-import changesetsGit = require('@changesets/git');
 import fs = require('fs');
+
+import changesetsGit = require('@changesets/git');
 
 changesetsGit
   .getChangedPackagesSinceRef({ cwd: process.cwd(), ref: 'origin/master' })
