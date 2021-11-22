@@ -24,6 +24,7 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
 const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
+const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
 const COMPILED_MODULE = '@compiled/react';
 
 let globalCache: Cache | undefined;
@@ -50,6 +51,7 @@ export default declare<State>((api) => {
       this.cache = cache;
       this.includedFiles = [];
       this.pathsToCleanup = [];
+      this.pragma = {};
     },
     visitor: {
       Program: {
@@ -59,10 +61,16 @@ export default declare<State>((api) => {
           if (file.ast.comments) {
             for (const comment of file.ast.comments) {
               const jsxSourceMatches = JSX_SOURCE_ANNOTATION_REGEX.exec(comment.value);
+              const jsxMatches = JSX_ANNOTATION_REGEX.exec(comment.value);
 
               if (jsxSourceMatches && jsxSourceMatches[1] === COMPILED_MODULE) {
                 // jsxImportSource pragma found - turn on CSS prop!
                 state.compiledImports = {};
+                state.pragma.jsxImportSource = true;
+              }
+
+              if (jsxMatches && jsxMatches[1] === 'jsx') {
+                state.pragma.jsx = true;
               }
             }
           }
@@ -73,11 +81,13 @@ export default declare<State>((api) => {
           }
 
           const {
-            compiledPragma,
+            pragma,
             opts: { importReact: shouldImportReact = true },
           } = state;
 
-          if (!compiledPragma && shouldImportReact && !path.scope.getBinding('React')) {
+          const hasPragma = pragma.jsxImportSource || pragma.jsx;
+
+          if (!hasPragma && shouldImportReact && !path.scope.getBinding('React')) {
             // React is missing - add it in at the last moment!
             path.unshiftContainer('body', template.ast(`import * as React from 'react'`));
           }

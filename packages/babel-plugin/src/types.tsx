@@ -66,6 +66,14 @@ export interface State extends PluginPass {
   };
 
   /**
+   * Details of pragmas that are currently enabled in the pass.
+   */
+  pragma: {
+    jsxImportSource?: boolean;
+    jsx?: boolean;
+  };
+
+  /**
    * Paths that will be cleaned up on pass exit.
    */
   pathsToCleanup: { action: 'replace' | 'remove'; path: NodePath }[];
