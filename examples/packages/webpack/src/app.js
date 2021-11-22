@@ -1,6 +1,6 @@
-import { Suspense, lazy } from 'react';
 import '@compiled/react';
 import BabelComponent from '@private/babel-component';
+import { Suspense, lazy } from 'react';
 
 import { primary } from './common/constants';
 import { TypeScript } from './ui/typescript';
