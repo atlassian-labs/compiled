@@ -1,8 +1,8 @@
 # @compiled/eslint-plugin/jsx-pragma
 
 This rule ensures a jsx pragma is used when using CSS prop.
-You can configure which jsx pragma to use (either `jsx` or `jsxImportSource`) via configuration,
-defaults to `jsxImportSource`.
+You can configure which jsx pragma to use via the `runtime` option (either classic or automatic).
+Defaults to automatic.
 
 ## Examples
 
@@ -24,10 +24,10 @@ import { jsx } from '@compiled/react';
 
 ```js
 // [{ "pragma": "jsxImportSource" }]
-^^^ missing pragma
 import '@compiled/react';
 
 <div css={{ display: 'block' }} />;
+     ^^^ missing pragma
 ```
 
 👍 Example of **correct** code for this rule:

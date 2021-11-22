@@ -12,7 +12,7 @@ tester.run('jsx-pragma', rule, {
       /** @jsxImportSource @compiled/react */
       <div css={{ display: 'block' }} />
     `,
-      options: [{ pragma: 'jsxImportSource' }],
+      options: [{ runtime: 'automatic' }],
     },
     {
       code: `
@@ -20,7 +20,7 @@ tester.run('jsx-pragma', rule, {
       import { jsx } from '@compiled/react';
       <div css={{ display: 'block' }} />
     `,
-      options: [{ pragma: 'jsx' }],
+      options: [{ runtime: 'classic' }],
     },
   ],
   invalid: [
@@ -29,7 +29,7 @@ tester.run('jsx-pragma', rule, {
       output: `/** @jsx jsx */
 import { jsx } from '@compiled/react';
 <div css={{ display: 'block' }} />`,
-      options: [{ pragma: 'jsx' }],
+      options: [{ runtime: 'classic' }],
       errors: [
         {
           messageId: 'missingPragma',
@@ -46,7 +46,7 @@ import { jsx } from '@compiled/react';
         import { jsx } from '@compiled/react';
 <div css={{ display: 'block' }} />
       `,
-      options: [{ pragma: 'jsx' }],
+      options: [{ runtime: 'classic' }],
       errors: [
         {
           messageId: 'preferJsx',
@@ -64,7 +64,7 @@ import { jsx } from '@compiled/react';
         import { css, jsx } from '@compiled/react';
         <div css={css({ display: 'block' })} />
       `,
-      options: [{ pragma: 'jsx' }],
+      options: [{ runtime: 'classic' }],
       errors: [
         {
           messageId: 'preferJsx',
@@ -85,7 +85,7 @@ import { jsx } from '@compiled/react';
   <div css={{ display: 'block' }} />
   <div css={{ display: 'block' }} />
 </Fragment>`,
-      options: [{ pragma: 'jsx' }],
+      options: [{ runtime: 'classic' }],
       errors: [
         {
           message: 'To use CSS prop you must set the jsx pragma.',

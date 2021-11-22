@@ -4,7 +4,7 @@ import { findCompiledImportDeclarations, findDeclarationWithImport } from '../..
 import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-string';
 
 type Options = {
-  pragma: 'jsx' | 'jsxImportSource';
+  runtime: 'classic' | 'automatic';
 };
 
 const rule: Rule.RuleModule = {
@@ -22,9 +22,9 @@ const rule: Rule.RuleModule = {
       {
         type: 'object',
         properties: {
-          pragma: {
+          runtime: {
             type: 'string',
-            pattern: '^(jsx|jsxImportSource)$',
+            pattern: '^(classic|automatic)$',
           },
         },
         additionalProperties: false,
@@ -32,7 +32,7 @@ const rule: Rule.RuleModule = {
     ],
   },
   create(context) {
-    const options: Options = context.options[0] || { pragma: 'jsxImportSource' };
+    const options: Options = context.options[0] || { runtime: 'automatic' };
     const source = context.getSourceCode();
     const jsxPragma = source.getAllComments().find((n) => n.value.indexOf('@jsx jsx') > -1);
     const jsxImportSourcePragma = source
@@ -41,7 +41,7 @@ const rule: Rule.RuleModule = {
 
     return {
       Program() {
-        if (jsxPragma && options.pragma === 'jsxImportSource') {
+        if (jsxPragma && options.runtime === 'automatic') {
           return context.report({
             messageId: 'preferJsxImportSource',
             loc: jsxPragma.loc!,
@@ -68,7 +68,7 @@ const rule: Rule.RuleModule = {
           });
         }
 
-        if (jsxImportSourcePragma && options.pragma === 'jsx') {
+        if (jsxImportSourcePragma && options.runtime === 'classic') {
           return context.report({
             messageId: 'preferJsx',
             loc: jsxImportSourcePragma.loc!,
@@ -102,12 +102,13 @@ const rule: Rule.RuleModule = {
           return;
         }
 
-        const pragma = options.pragma === 'jsx' ? '@jsx jsx' : '@jsxImportSource @compiled/react';
+        const pragma =
+          options.runtime === 'classic' ? '@jsx jsx' : '@jsxImportSource @compiled/react';
 
         context.report({
           messageId: 'missingPragma',
           data: {
-            pragma: options.pragma,
+            pragma: options.runtime === 'classic' ? 'jsx' : 'jsxImportSource',
           },
           node,
           *fix(fixer) {
@@ -115,7 +116,10 @@ const rule: Rule.RuleModule = {
 
             const compiledImports = findCompiledImportDeclarations(context);
 
-            if (options.pragma === 'jsx' && !findDeclarationWithImport(compiledImports, 'jsx')) {
+            if (
+              options.runtime === 'classic' &&
+              !findDeclarationWithImport(compiledImports, 'jsx')
+            ) {
               // jsx import is missing time to add one
               if (compiledImports.length === 0) {
                 // No import exists, add a new one!
