@@ -1,5 +1,5 @@
 {
-  "name": "@private/babel-component",
+  "name": "@compiled/babel-component-fixture",
   "version": "0.0.8",
   "private": true,
   "main": "./dist/index.js",

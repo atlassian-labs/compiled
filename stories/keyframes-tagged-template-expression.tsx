@@ -1,7 +1,7 @@
 import { css, keyframes, styled } from '@compiled/react';
 
-import '../keyframes/globals';
-import { fadeOut as shadowedFadeOut } from '../keyframes/tagged-template-literal';
+import './keyframes/globals';
+import { fadeOut as shadowedFadeOut } from './keyframes/tagged-template-literal';
 
 export default {
   title: 'keyframes/tagged template expression',

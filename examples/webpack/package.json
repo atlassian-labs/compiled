@@ -7,9 +7,9 @@
     "start": "webpack serve --hot"
   },
   "dependencies": {
+    "@compiled/babel-component-fixture": "*",
     "@compiled/react": "*",
     "@compiled/webpack-loader": "*",
-    "@private/babel-component": "*",
     "babel-loader": "^8.2.3",
     "css-loader": "^5.2.7",
     "css-minimizer-webpack-plugin": "^1.3.0",

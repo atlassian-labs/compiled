@@ -3,7 +3,7 @@ import { css } from '@compiled/react';
 import {
   primaryTaggedTemplateExpression as primary,
   secondaryTaggedTemplateExpression as secondary,
-} from '../mixins/mixins';
+} from './mixins';
 
 export default {
   title: 'css prop/string',

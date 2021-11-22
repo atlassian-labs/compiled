@@ -3,7 +3,7 @@ module.exports = {
   core: {
     builder: 'webpack5',
   },
-  stories: ['../examples/stories/*.tsx'],
+  stories: ['../stories/*.tsx'],
   // Workaround for https://github.com/storybookjs/storybook/issues/15336
   typescript: { reactDocgen: false },
 };

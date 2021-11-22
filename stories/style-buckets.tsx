@@ -1,6 +1,6 @@
 import '@compiled/react';
 
-import { hoverObjectLiteral } from '../mixins/mixins';
+import { hoverObjectLiteral } from './mixins';
 
 export default {
   title: 'atomic/style buckets',

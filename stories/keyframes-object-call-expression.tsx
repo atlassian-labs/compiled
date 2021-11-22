@@ -1,7 +1,7 @@
 import { css, keyframes, styled } from '@compiled/react';
 
-import '../keyframes/globals';
-import { fadeOut as shadowedFadeOut } from '../keyframes/object-call-expression';
+import './keyframes/globals';
+import { fadeOut as shadowedFadeOut } from './keyframes/object-call-expression';
 
 export default {
   title: 'keyframes/object call expression',

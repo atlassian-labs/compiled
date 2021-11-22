@@ -1,5 +1,5 @@
+import BabelComponent from '@compiled/babel-component-fixture';
 import '@compiled/react';
-import BabelComponent from '@private/babel-component';
 import { Suspense, lazy } from 'react';
 
 import { primary } from './common/constants';
