@@ -5,15 +5,14 @@ import { hash, kebabCase } from '@compiled/utils';
 
 import type { Metadata } from '../types';
 
+import { buildCodeFrameError, getKey } from './ast';
+import { evaluateExpression } from './evaluate-expression';
 import {
-  buildCodeFrameError,
-  getKey,
   isCompiledCSSCallExpression,
   isCompiledCSSTaggedTemplateExpression,
   isCompiledKeyframesCallExpression,
   isCompiledKeyframesTaggedTemplateExpression,
-} from './ast';
-import { evaluateExpression } from './evaluate-expression';
+} from './is-compiled';
 import { resolveBinding } from './resolve-binding';
 import type { CSSOutput, CssItem, LogicalCssItem, SheetCssItem } from './types';
 

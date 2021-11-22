@@ -4,8 +4,9 @@ import * as t from '@babel/types';
 
 import type { Metadata } from '../types';
 
-import { getPathOfNode, isCompiledKeyframesCallExpression, wrapNodeInIIFE } from './ast';
+import { getPathOfNode, wrapNodeInIIFE } from './ast';
 import { getDefaultExport, getNamedExport } from './export-traversers';
+import { isCompiledKeyframesCallExpression } from './is-compiled';
 import { resolveBinding } from './resolve-binding';
 
 const createResultPair = (value: t.Expression, meta: Metadata) => ({
