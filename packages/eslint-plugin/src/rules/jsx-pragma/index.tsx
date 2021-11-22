@@ -1,6 +1,7 @@
 import type { Rule } from 'eslint';
-import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-string';
+
 import { findCompiledImportDeclarations, findDeclarationWithImport } from '../../utils/ast';
+import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-string';
 
 type Options = {
   pragma: 'jsx' | 'jsxImportSource';

@@ -1,5 +1,6 @@
 import type { Rule } from 'eslint';
 import type { ImportSpecifier, ImportDeclaration } from 'estree';
+
 import { buildImportDeclaration, buildNamedImport } from '../../utils/ast-string';
 
 const COMPILED_IMPORT = '@compiled/react';
