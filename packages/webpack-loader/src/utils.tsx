@@ -1,4 +1,4 @@
-import type { Compiler, Compilation as CompilationType, sources } from 'webpack';
+import type { Compilation as CompilationType, Compiler, sources } from 'webpack';
 
 /**
  * Gets the normal module hook for webpack 4 & webpack 5.

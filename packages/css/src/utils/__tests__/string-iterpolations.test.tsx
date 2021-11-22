@@ -1,4 +1,4 @@
-import { cssBeforeInterpolation, cssAfterInterpolation } from '../string-interpolations';
+import { cssAfterInterpolation, cssBeforeInterpolation } from '../string-interpolations';
 
 describe('template literal to css', () => {
   describe('interpolations with surrounding css', () => {

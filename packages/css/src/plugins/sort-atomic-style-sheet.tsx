@@ -1,5 +1,6 @@
 import { plugin } from 'postcss';
-import type { Rule, Node, ChildNode } from 'postcss';
+import type { ChildNode, Node, Rule } from 'postcss';
+
 import { styleOrder } from '../utils/style-ordering';
 
 /**

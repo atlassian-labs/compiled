@@ -1,6 +1,7 @@
-import type * as t from '@babel/types';
-import type { NodePath } from '@babel/traverse';
 import type { PluginPass } from '@babel/core';
+import type { NodePath } from '@babel/traverse';
+import type * as t from '@babel/types';
+
 import type { Cache } from './utils/cache';
 
 export interface Resolver {

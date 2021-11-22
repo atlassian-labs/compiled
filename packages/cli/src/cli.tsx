@@ -1,5 +1,5 @@
-import meow from 'meow';
 import chalk from 'chalk';
+import meow from 'meow';
 
 import presets from './presets';
 

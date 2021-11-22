@@ -1,4 +1,5 @@
 import { URLSearchParams } from 'url';
+
 import type { LoaderContext } from 'webpack';
 
 /**

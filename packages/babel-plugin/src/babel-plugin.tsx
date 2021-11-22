@@ -1,9 +1,9 @@
 import { basename } from 'path';
 
 import { declare } from '@babel/helper-plugin-utils';
+import jsxSyntax from '@babel/plugin-syntax-jsx';
 import template from '@babel/template';
 import * as t from '@babel/types';
-import jsxSyntax from '@babel/plugin-syntax-jsx';
 import { unique } from '@compiled/utils';
 
 import { visitClassNamesPath } from './class-names';

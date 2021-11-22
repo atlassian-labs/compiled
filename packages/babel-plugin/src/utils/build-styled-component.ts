@@ -1,8 +1,8 @@
 import generate from '@babel/generator';
 import template from '@babel/template';
-import * as t from '@babel/types';
 import type { NodePath, Visitor } from '@babel/traverse';
 import traverse from '@babel/traverse';
+import * as t from '@babel/types';
 import { transformCss } from '@compiled/css';
 import { unique } from '@compiled/utils';
 import isPropValid from '@emotion/is-prop-valid';

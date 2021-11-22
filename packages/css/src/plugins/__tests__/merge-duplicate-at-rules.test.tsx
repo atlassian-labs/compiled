@@ -1,4 +1,5 @@
 import postcss from 'postcss';
+
 import { mergeDuplicateAtRules } from '../merge-duplicate-at-rules';
 
 const transform = (css: TemplateStringsArray) => {

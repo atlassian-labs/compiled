@@ -1,4 +1,5 @@
 import { transformSync } from '@babel/core';
+
 import babelPlugin from '../index';
 
 const transform = (code: string) => {

@@ -1,15 +1,15 @@
 import type {
-  Program,
-  FileInfo,
   API,
-  Options,
+  FileInfo,
   JSXAttribute,
   JSXSpreadAttribute,
+  Options,
+  Program,
 } from 'jscodeshift';
 
-import { withPlugin, applyVisitor } from '../../codemods-helpers';
-import type { CodemodPluginInstance } from '../../plugins/types';
+import { applyVisitor, withPlugin } from '../../codemods-helpers';
 import defaultCodemodPlugin from '../../plugins/default';
+import type { CodemodPluginInstance } from '../../plugins/types';
 
 const applyInnerRefPlugin = (plugins: CodemodPluginInstance[], originalNode: JSXAttribute) =>
   plugins.reduce((currentNode, plugin) => {

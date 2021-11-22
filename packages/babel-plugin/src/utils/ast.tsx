@@ -1,13 +1,16 @@
-import * as t from '@babel/types';
-import type { NodePath } from '@babel/traverse';
-import traverse from '@babel/traverse';
-import { parse } from '@babel/parser';
 import fs from 'fs';
 import { dirname, join } from 'path';
+
+import { parse } from '@babel/parser';
+import type { NodePath } from '@babel/traverse';
+import traverse from '@babel/traverse';
+import * as t from '@babel/types';
 import resolve from 'resolve';
+
 import type { Metadata, State } from '../types';
-import type { PartialBindingWithMeta } from './types';
+
 import { getDefaultExport, getNamedExport } from './export-traversers';
+import type { PartialBindingWithMeta } from './types';
 
 /**
  * Returns the nodes path including the scope of a parent.

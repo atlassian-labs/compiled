@@ -1,5 +1,5 @@
-import * as t from '@babel/types';
 import type { NodePath } from '@babel/core';
+import * as t from '@babel/types';
 
 import type { Metadata, Tag } from '../types';
 import { buildCodeFrameError } from '../utils/ast';

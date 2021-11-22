@@ -1,4 +1,5 @@
 import React from 'react';
+
 import '@compiled/react';
 import { coral } from './colors';
 

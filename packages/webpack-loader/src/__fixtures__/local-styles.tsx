@@ -1,5 +1,5 @@
-import React from 'react';
 import { styled } from '@compiled/react';
+import React from 'react';
 
 const Styled = styled.div({
   color: 'blue',
