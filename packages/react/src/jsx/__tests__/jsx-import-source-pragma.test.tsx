@@ -1,6 +1,5 @@
 /** @jsxImportSource @compiled/react */
 import { render } from '@testing-library/react';
-import '@compiled/jest';
 
 describe('local jsx namespace', () => {
   it('should create css from object literal', () => {

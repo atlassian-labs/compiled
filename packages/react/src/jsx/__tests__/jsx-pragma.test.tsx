@@ -1,8 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { render } from '@testing-library/react';
 import { jsx } from '@compiled/react';
-import '@compiled/jest';
+import { render } from '@testing-library/react';
 
 describe('local jsx namespace', () => {
   it('should create css from object literal', () => {
