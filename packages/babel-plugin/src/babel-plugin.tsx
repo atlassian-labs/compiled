@@ -11,6 +11,7 @@ import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
 import type { State } from './types';
 import { appendRuntimeImports } from './utils/append-runtime-imports';
+import { Cache } from './utils/cache';
 import {
   isCompiledCSSCallExpression,
   isCompiledCSSTaggedTemplateExpression,
@@ -18,8 +19,7 @@ import {
   isCompiledKeyframesTaggedTemplateExpression,
   isCompiledStyledCallExpression,
   isCompiledStyledTaggedTemplateExpression,
-} from './utils/ast';
-import { Cache } from './utils/cache';
+} from './utils/is-compiled';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
