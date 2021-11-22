@@ -1,5 +1,7 @@
 import type { Rule } from 'eslint';
-import type { ImportDeclaration, ImportSpecifier } from 'estree';
+import type { ImportSpecifier, ImportDeclaration } from 'estree';
+
+import { buildImportDeclaration, buildNamedImport } from '../../utils/ast-to-string';
 
 const COMPILED_IMPORT = '@compiled/react';
 const ALLOWED_EMOTION_IMPORTS = ['css', 'keyframes', 'ClassNames', 'jsx'];
@@ -8,14 +10,6 @@ const isEmotionStyledImport = (node: ImportDeclaration) => node.source.value ===
 
 const isEmotionImport = (node: ImportDeclaration) =>
   ['@emotion/core', '@emotion/react'].includes(node.source.value as string);
-
-const getNamedImports = (node: ImportSpecifier) => {
-  return node.imported.name === node.local.name
-    ? node.local.name
-    : `${node.imported.name} as ${node.local.name}`;
-};
-
-const wrapImport = (node: string) => `import { ${node} } from '${COMPILED_IMPORT}';`;
 
 /**
  * Given a rule, return any `@compiled/react` nodes in the source being parsed.
@@ -84,13 +78,15 @@ const rule: Rule.RuleModule = {
               if (compiledNode) {
                 yield fixer.remove(node);
                 const allSpecifiers = compiledNode.specifiers
-                  // @ts-expect-error
-                  .map(getNamedImports)
+                  .map(buildNamedImport)
                   .concat(specifiers)
                   .join(', ');
-                yield fixer.replaceText(compiledNode, wrapImport(allSpecifiers));
+                yield fixer.replaceText(
+                  compiledNode,
+                  buildImportDeclaration(allSpecifiers, COMPILED_IMPORT)
+                );
               } else {
-                yield fixer.replaceText(node, wrapImport(specifiers));
+                yield fixer.replaceText(node, buildImportDeclaration(specifiers, COMPILED_IMPORT));
               }
             },
           });
@@ -120,15 +116,18 @@ const rule: Rule.RuleModule = {
                 yield fixer.remove(node);
                 yield fixer.replaceText(
                   compiledNode,
-                  wrapImport(
-                    // @ts-expect-error
-                    compiledNode.specifiers.concat(specifiers).map(getNamedImports).join(', ')
+                  buildImportDeclaration(
+                    compiledNode.specifiers.concat(specifiers).map(buildNamedImport).join(', '),
+                    COMPILED_IMPORT
                   )
                 );
               } else {
                 yield fixer.replaceText(
                   node,
-                  wrapImport(specifiers.map(getNamedImports).join(', '))
+                  buildImportDeclaration(
+                    specifiers.map(buildNamedImport).join(', '),
+                    COMPILED_IMPORT
+                  )
                 );
               }
             },
