@@ -1,18 +1,12 @@
+import type { NodePath } from '@babel/traverse';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
 
 import type { Metadata } from '../types';
 
-import {
-  babelEvaluateExpression,
-  getMemberExpressionMeta,
-  getPathOfNode,
-  getValueFromObjectExpression,
-  isCompiledKeyframesCallExpression,
-  resolveBindingNode,
-  wrapNodeInIIFE,
-} from './ast';
+import { getPathOfNode, isCompiledKeyframesCallExpression, wrapNodeInIIFE } from './ast';
 import { getDefaultExport, getNamedExport } from './export-traversers';
+import { resolveBinding } from './resolve-binding';
 
 const createResultPair = (value: t.Expression, meta: Metadata) => ({
   value,
@@ -32,7 +26,7 @@ const traverseIdentifier = (expression: t.Identifier, meta: Metadata) => {
   let value: t.Node | undefined | null = undefined;
   let updatedMeta: Metadata = meta;
 
-  const resolvedBinding = resolveBindingNode(expression.name, updatedMeta);
+  const resolvedBinding = resolveBinding(expression.name, updatedMeta);
 
   if (resolvedBinding && resolvedBinding.constant && resolvedBinding.node) {
     // We recursively call get interpolation until it not longer returns an identifier or member expression
@@ -43,6 +37,49 @@ const traverseIdentifier = (expression: t.Identifier, meta: Metadata) => {
   }
 
   return createResultPair(value as t.Expression, updatedMeta);
+};
+
+/**
+ * Will return the value of a path from an object expression.
+ *
+ * For example if  we take an object expression that looks like:
+ * ```
+ * { colors: { primary: 'red' } }
+ * ```
+ *
+ * And a path of identifiers that looks like:
+ * ```
+ * [colors, primary]
+ * ```
+ *
+ * Would result in returning the `red` string literal node.
+ * If the value is not found `undefined` will be returned.
+ *
+ * @param expression - Member expression node.
+ * @param accessPath - Access path identifiers.
+ */
+const getValueFromObjectExpression = (
+  expression: t.ObjectExpression,
+  accessPath: t.Identifier[]
+): t.Node | undefined => {
+  let value: t.Node | undefined = undefined;
+
+  traverse(expression, {
+    noScope: true,
+    ObjectProperty(path) {
+      if (t.isIdentifier(path.node.key, { name: accessPath[0].name })) {
+        if (t.isObjectExpression(path.node.value)) {
+          value = getValueFromObjectExpression(path.node.value, accessPath.slice(1));
+        } else {
+          value = path.node.value;
+        }
+
+        path.stop();
+      }
+    },
+  });
+
+  return value;
 };
 
 /**
@@ -155,6 +192,54 @@ const evaluateNamespaceImportExpression = (accessPath: t.Identifier[], meta: Met
 };
 
 /**
+ * Returns the binding identifier for a member expression.
+ *
+ * For example:
+ * 1. Member expression `foo.bar.baz` will return the `foo` identifier along
+ * with `originalBindingType` as 'Identifier'.
+ * 2. Member expression with function call `foo().bar.baz` will return the
+ * `foo` identifier along with `originalBindingType` as 'CallExpression'.
+ *
+ * @param expression - Member expression node.
+ */
+const getMemberExpressionMeta = (
+  expression: t.MemberExpression
+): {
+  accessPath: t.Identifier[];
+  bindingIdentifier: t.Identifier | null;
+  originalBindingType: t.Expression['type'];
+} => {
+  const accessPath: t.Identifier[] = [];
+  let bindingIdentifier: t.Identifier | null = null;
+  let originalBindingType: t.Expression['type'] = 'Identifier';
+
+  traverse(t.expressionStatement(expression), {
+    noScope: true,
+    MemberExpression(path) {
+      if (t.isIdentifier(path.node.object)) {
+        bindingIdentifier = path.node.object;
+        originalBindingType = bindingIdentifier.type;
+      } else if (t.isCallExpression(path.node.object)) {
+        if (t.isIdentifier(path.node.object.callee)) {
+          bindingIdentifier = path.node.object.callee;
+          originalBindingType = path.node.object.type;
+        }
+      }
+
+      if (t.isIdentifier(path.node.property)) {
+        accessPath.push(path.node.property);
+      }
+    },
+  });
+
+  return {
+    accessPath: accessPath.reverse(),
+    bindingIdentifier,
+    originalBindingType,
+  };
+};
+
+/**
  * Will look in an expression and return the actual value along with updated metadata.
  *
  * E.g: If there is a member expression called `colors.primary` that has identifier `color` which
@@ -172,7 +257,7 @@ const traverseMemberExpression = (expression: t.MemberExpression, meta: Metadata
     getMemberExpressionMeta(expression);
 
   if (bindingIdentifier) {
-    const resolvedBinding = resolveBindingNode(bindingIdentifier.name, updatedMeta);
+    const resolvedBinding = resolveBinding(bindingIdentifier.name, updatedMeta);
 
     if (resolvedBinding && resolvedBinding.constant && t.isExpression(resolvedBinding.node)) {
       if (originalBindingType === 'Identifier') {
@@ -270,7 +355,7 @@ const traverseCallExpression = (expression: t.CallExpression, meta: Metadata) =>
     // Right now we are only supported these 2 flavors. If we have complex case like `func('arg').fn().variable`,
     // it will not get evaluated.
     if (t.isIdentifier(callee)) {
-      const resolvedBinding = resolveBindingNode(callee.name, updatedMeta);
+      const resolvedBinding = resolveBinding(callee.name, updatedMeta);
 
       if (resolvedBinding && resolvedBinding.constant) {
         functionNode = resolvedBinding.node;
@@ -279,7 +364,7 @@ const traverseCallExpression = (expression: t.CallExpression, meta: Metadata) =>
       const { accessPath, bindingIdentifier } = getMemberExpressionMeta(callee);
 
       if (bindingIdentifier) {
-        const resolvedBinding = resolveBindingNode(bindingIdentifier.name, updatedMeta);
+        const resolvedBinding = resolveBinding(bindingIdentifier.name, updatedMeta);
 
         if (resolvedBinding && resolvedBinding.constant) {
           if (t.isObjectExpression(resolvedBinding.node)) {
@@ -337,6 +422,94 @@ const traverseCallExpression = (expression: t.CallExpression, meta: Metadata) =>
   }
 
   return createResultPair(value as t.Expression, updatedMeta);
+};
+
+/**
+ * Returns `true` if an identifier or any paths that reference the identifier are mutated.
+ * @param path
+ */
+const isIdentifierReferencesMutated = (path: NodePath<t.Identifier>): boolean => {
+  const binding = path.scope.getBinding(path.node.name);
+  if (!binding) {
+    return false;
+  }
+
+  if (!t.isVariableDeclarator(binding.path.node) || !binding.constant) {
+    return true;
+  }
+
+  for (let i = 0; i < binding.referencePaths.length; i++) {
+    const refPath = binding.referencePaths[i];
+    const innerBinding = refPath.scope.getBinding(path.node.name);
+    if (!innerBinding) {
+      continue;
+    }
+
+    if (!t.isVariableDeclarator(innerBinding.path.node) || !innerBinding.constant) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Will traverse a path and its identifiers to find all bindings.
+ * If any of those bindings are mutated `true` will be returned.
+ *
+ * @param path
+ */
+const isPathReferencingAnyMutatedIdentifiers = (path: NodePath<any>): boolean => {
+  if (path.isIdentifier()) {
+    return isIdentifierReferencesMutated(path);
+  }
+
+  let mutated = false;
+  path.traverse({
+    Identifier(innerPath) {
+      const result = isIdentifierReferencesMutated(path);
+      if (result) {
+        mutated = true;
+        // No need to keep traversing - let's stop!
+        innerPath.stop();
+      }
+    },
+  });
+
+  return mutated;
+};
+
+/**
+ * Will try to statically evaluate the node.
+ * If successful it will return a literal node,
+ * else it will return the fallback node.
+ *
+ * @param node Node to evaluate
+ * @param meta {Metadata} Useful metadata that can be used during the transformation
+ * @param fallbackNode Optional node to return if evaluation is not successful. Defaults to `node`.
+ */
+const babelEvaluateExpression = (
+  node: t.Expression,
+  meta: Metadata,
+  fallbackNode: t.Expression = node
+): t.Expression => {
+  const path = getPathOfNode(node, meta.parentPath);
+  if (isPathReferencingAnyMutatedIdentifiers(path)) {
+    return fallbackNode;
+  }
+
+  const result = path.evaluate();
+  if (result.value) {
+    switch (typeof result.value) {
+      case 'string':
+        return t.stringLiteral(result.value);
+
+      case 'number':
+        return t.numericLiteral(result.value);
+    }
+  }
+
+  return fallbackNode;
 };
 
 /**

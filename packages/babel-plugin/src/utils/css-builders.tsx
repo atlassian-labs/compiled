@@ -12,9 +12,9 @@ import {
   isCompiledCSSTaggedTemplateExpression,
   isCompiledKeyframesCallExpression,
   isCompiledKeyframesTaggedTemplateExpression,
-  resolveBindingNode,
 } from './ast';
 import { evaluateExpression } from './evaluate-expression';
+import { resolveBinding } from './resolve-binding';
 import type { CSSOutput, CssItem, LogicalCssItem, SheetCssItem } from './types';
 
 /**
@@ -486,7 +486,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       let resolvedBinding = undefined;
 
       if (t.isIdentifier(prop.argument)) {
-        resolvedBinding = resolveBindingNode(prop.argument.name, meta);
+        resolvedBinding = resolveBinding(prop.argument.name, meta);
 
         if (!resolvedBinding) {
           throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
@@ -664,7 +664,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
   }
 
   if (t.isIdentifier(node)) {
-    const resolvedBinding = resolveBindingNode(node.name, meta);
+    const resolvedBinding = resolveBinding(node.name, meta);
 
     if (!resolvedBinding) {
       throw buildCodeFrameError('Variable could not be found', node, meta.parentPath);
