@@ -10,15 +10,11 @@ export { default as css } from './css';
 
 // Pass through the (classic) jsx runtime.
 // Compiled currently doesn't define its own and uses this purely to enable a local jsx namespace.
-// This is deliberate unfortunately import/export doesn't acknowledge namespace exports.
-// eslint-disable-next-line import/export
 export const jsx = createElement;
 
 export type { CssFunction, CSSProps };
 export type { CssObject } from './styled';
 
-// This is deliberate unfortunately import/export doesn't acknowledge namespace exports.
-// eslint-disable-next-line import/export
 export namespace jsx {
   export namespace JSX {
     export type Element = CompiledJSX.Element;
