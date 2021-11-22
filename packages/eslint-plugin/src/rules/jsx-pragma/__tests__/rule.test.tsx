@@ -1,27 +1,47 @@
-import type { RuleTester } from 'eslint';
 import { tester } from '../../__tests__/test-utils';
 import rule from '../index';
 
-const tests: {
-  valid?: (string | RuleTester.ValidTestCase)[];
-  invalid?: RuleTester.InvalidTestCase[];
-} = {
+tester.run('jsx-pragma', rule, {
   valid: [
     `
       /** @jsxImportSource @compiled/react */
     `,
-    `
+    {
+      code: `
       /** @jsx jsx */
       import { jsx } from '@compiled/react';
 
       <div css={{ display: 'block' }} />
     `,
+      options: [{ pragma: 'jsx' }],
+    },
     `
       /** @jsxImportSource @compiled/react */
       <div css={{ display: 'block' }} />
   `,
   ],
   invalid: [
+    {
+      code: `<div css={{ display: 'block' }} />`,
+      output: `/** @jsx jsx */
+<div css={{ display: 'block' }} />`,
+      options: [{ pragma: 'jsx' }],
+      errors: [
+        {
+          messageId: 'missingPragma',
+        },
+      ],
+    },
+    {
+      code: `<div css={{ display: 'block' }} />`,
+      output: `/** @jsxImportSource @compiled/react */
+<div css={{ display: 'block' }} />`,
+      errors: [
+        {
+          messageId: 'missingPragma',
+        },
+      ],
+    },
     {
       code: `/** @jsx jsx */ import { jsx } from '@compiled/react';`,
       output: `/** @jsxImportSource @compiled/react */ `,
@@ -50,6 +70,4 @@ const tests: {
       ],
     },
   ],
-};
-
-tester.run('prefer-jsx-import-source-pragma', rule, tests);
+});
