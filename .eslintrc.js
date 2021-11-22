@@ -6,6 +6,7 @@ module.exports = {
     '*.d.ts',
     'babel-cjs.js',
     'babel-esm.js',
+    'storybook-static'
   ],
   overrides: [
     {
