@@ -6,6 +6,8 @@ type Options = {
   pragma: 'jsx' | 'jsxImportSource';
 };
 
+const START_OF_FILE_LOC = { line: 1, column: 0 };
+
 const rule: Rule.RuleModule = {
   meta: {
     fixable: 'code',
@@ -49,7 +51,7 @@ const rule: Rule.RuleModule = {
         if (jsxPragma && options.pragma === 'jsxImportSource') {
           return context.report({
             messageId: 'preferJsxImportSource',
-            loc: jsxPragma.loc!,
+            loc: jsxPragma.loc || START_OF_FILE_LOC,
             *fix(fixer) {
               yield fixer.replaceText(jsxPragma as any, '/** @jsxImportSource @compiled/react */');
 
@@ -76,7 +78,7 @@ const rule: Rule.RuleModule = {
         if (jsxImportSourcePragma && options.pragma === 'jsx') {
           return context.report({
             messageId: 'preferJsx',
-            loc: jsxImportSourcePragma.loc!,
+            loc: jsxImportSourcePragma.loc || START_OF_FILE_LOC,
             *fix(fixer) {
               yield fixer.replaceText(jsxImportSourcePragma as any, '/** @jsx jsx */');
 
@@ -109,7 +111,7 @@ const rule: Rule.RuleModule = {
             data: {
               pragma: options.pragma,
             },
-            loc: { column: 1, line: 1 },
+            loc: START_OF_FILE_LOC,
             *fix(fixer) {
               yield fixer.insertTextBefore(source.ast.body[0], `/** ${pragma} */\n`);
 
