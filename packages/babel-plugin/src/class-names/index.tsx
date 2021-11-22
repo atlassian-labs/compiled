@@ -3,14 +3,11 @@ import * as t from '@babel/types';
 import { transformCss } from '@compiled/css';
 
 import type { Metadata } from '../types';
-import {
-  buildCodeFrameError,
-  pickFunctionBody,
-  resolveIdentifierComingFromDestructuring,
-} from '../utils/ast';
+import { buildCodeFrameError, pickFunctionBody } from '../utils/ast';
 import { compiledTemplate } from '../utils/build-compiled-component';
 import { buildCssVariables } from '../utils/build-css-variables';
 import { buildCss, getItemCss } from '../utils/css-builders';
+import { resolveIdentifierComingFromDestructuring } from '../utils/resolve-binding';
 import type { CSSOutput } from '../utils/types';
 
 /**

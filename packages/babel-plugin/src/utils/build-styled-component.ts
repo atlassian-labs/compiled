@@ -11,10 +11,11 @@ import { PROPS_IDENTIFIER_NAME } from '../constants';
 import type { Metadata, Tag } from '../types';
 import type { CSSOutput, CssItem } from '../utils/types';
 
-import { pickFunctionBody, resolveIdentifierComingFromDestructuring } from './ast';
+import { pickFunctionBody } from './ast';
 import { buildCssVariables } from './build-css-variables';
 import { getItemCss } from './css-builders';
 import { hoistSheet } from './hoist-sheet';
+import { resolveIdentifierComingFromDestructuring } from './resolve-binding';
 import { transformCssItems } from './transform-css-items';
 
 export interface StyledTemplateOpts {
