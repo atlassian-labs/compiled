@@ -6,7 +6,7 @@
  * Flowgen v1.15.0
  * @flow
  */
-import type { CssFunction, CSSProps } from './types';
+import type { CSSProps, CssFunction } from './types';
 declare export { keyframes } from './keyframes';
 declare export { styled } from './styled';
 declare export { ClassNames } from './class-names';
