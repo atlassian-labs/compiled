@@ -1,60 +1,92 @@
 module.exports = {
   root: true,
-  parser: '@typescript-eslint/parser',
-  extends: ['plugin:react/recommended', 'plugin:@typescript-eslint/recommended'],
-  plugins: ['react-hooks'],
-  parserOptions: {
-    ecmaVersion: 2018,
-    sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true,
+  ignorePatterns: [
+    'dist',
+    'flow-typed',
+    '*.d.ts',
+    'babel-cjs.js',
+    'babel-esm.js',
+    'storybook-static'
+  ],
+  overrides: [
+    {
+      files: ['*.{js,jsx,ts,tsx}'],
+      extends: [
+        'plugin:import/recommended',
+        'plugin:react/recommended',
+      ],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+        ecmaVersion: 2018,
+        sourceType: 'module',
+      },
+      plugins: ['react-hooks'],
+      rules: {
+        'react/display-name': 'off',
+        'react/prop-types': 'off',
+        'react/react-in-jsx-scope': 'off',
+        'react-hooks/exhaustive-deps': 'warn',
+        'react-hooks/rules-of-hooks': 'error',
+        // We will let TypeScript handle this for tsx? files, and ignore it on jsx? files to enable linting without
+        // building packages
+        'import/no-unresolved': 'off',
+        'import/order': ['error', {
+          alphabetize: {
+            order: 'asc'
+          },
+          'newlines-between': 'always'
+        }],
+      },
     },
-  },
-  rules: {
-    'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'warn',
-    'react/react-in-jsx-scope': 'off',
-    'react/prop-types': 'off',
-    'react/display-name': 'off',
-    '@typescript-eslint/ban-ts-ignore': 'off',
-    '@typescript-eslint/no-use-before-define': 'off',
-    '@typescript-eslint/no-namespace': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
-    '@typescript-eslint/no-empty-function': 'off',
-    '@typescript-eslint/explicit-member-accessibility': 'off',
-    '@typescript-eslint/no-non-null-assertion': 'off',
-    '@typescript-eslint/no-parameter-properties': 'off',
-    '@typescript-eslint/ban-ts-comment': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'error',
-    '@typescript-eslint/no-unused-vars': [
-      'warn',
-      {
-        ignoreRestSiblings: true,
-        argsIgnorePattern: '^_',
+    {
+      files: ['*.{ts,tsx}'],
+      extends: ['plugin:@typescript-eslint/recommended'],
+      rules: {
+        '@typescript-eslint/array-type': 'error',
+        '@typescript-eslint/ban-ts-comment': 'off',
+        '@typescript-eslint/ban-ts-ignore': 'off',
+        '@typescript-eslint/consistent-type-imports': [
+          'error',
+          {
+            prefer: 'type-imports',
+          },
+        ],
+        '@typescript-eslint/explicit-module-boundary-types': 'error',
+        '@typescript-eslint/no-empty-function': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-namespace': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-unused-vars': [
+          'warn',
+          {
+            argsIgnorePattern: '^_',
+            ignoreRestSiblings: true,
+          },
+        ],
       },
-    ],
-    '@typescript-eslint/consistent-type-imports': [
-      'error',
-      {
-        prefer: 'type-imports',
+    },
+    {
+      files: ['*.js.flow'],
+      extends: ['plugin:flowtype/recommended'],
+      plugins: ['flowtype'],
+      rules: {
+        'flowtype/generic-spacing': 'off',
       },
-    ],
-  },
+    },
+    {
+      files: ['*.json'],
+      plugins: ['json-files'],
+      rules: {
+        'json-files/sort-package-json': 'error',
+      },
+    },
+  ],
   settings: {
     react: {
       version: 'detect',
     },
   },
-  overrides: [
-    {
-      // Flow specific rules
-      files: ['**/*.js.flow'],
-      extends: ['plugin:flowtype/recommended'],
-      plugins: ['flowtype'],
-      rules: {
-        'flowtype/generic-spacing': ['off'],
-      },
-    },
-  ],
 };

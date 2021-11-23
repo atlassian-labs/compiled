@@ -3,5 +3,6 @@
   "compilerOptions": {
     "outDir": "dist/browser",
     "tsBuildInfoFile": "tsconfig.browser.tsbuildinfo"
-  }
+  },
+  "references": [{ "path": "../benchmark" }, { "path": "../jest" }]
 }

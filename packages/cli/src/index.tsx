@@ -2,8 +2,8 @@
 
 import chalk from 'chalk';
 
-import main from './main';
 import cli from './cli';
+import main from './main';
 
 (async () => {
   try {

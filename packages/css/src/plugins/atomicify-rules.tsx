@@ -1,6 +1,6 @@
-import type { Node, Declaration, Container, Rule, AtRule } from 'postcss';
-import { plugin, decl, rule } from 'postcss';
 import { hash } from '@compiled/utils';
+import type { AtRule, Container, Declaration, Node, Rule } from 'postcss';
+import { decl, plugin, rule } from 'postcss';
 
 interface PluginOpts {
   callback?: (className: string) => void;

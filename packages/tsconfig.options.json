@@ -1,6 +1,6 @@
 {
+  "extends": "../tsconfig.paths.json",
   "compilerOptions": {
-    "allowJs": true,
     "composite": true,
     "declaration": true,
     "esModuleInterop": true,
@@ -16,7 +16,7 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es5"
-  },
-  "exclude": ["**/**.test.tsx", "**/dist", "**/__perf__/**"]
+    "target": "es5",
+    "typeRoots": ["../node_modules/@types", "../types"]
+  }
 }

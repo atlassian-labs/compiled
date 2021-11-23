@@ -1,18 +1,19 @@
-import * as t from '@babel/types';
 import generate from '@babel/generator';
+import * as t from '@babel/types';
 import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '@compiled/css';
-import { kebabCase, hash } from '@compiled/utils';
+import { hash, kebabCase } from '@compiled/utils';
+
 import type { Metadata } from '../types';
+
+import { buildCodeFrameError, getKey } from './ast';
+import { evaluateExpression } from './evaluate-expression';
 import {
-  getKey,
-  resolveBindingNode,
-  buildCodeFrameError,
   isCompiledCSSCallExpression,
   isCompiledCSSTaggedTemplateExpression,
-  isCompiledKeyframesTaggedTemplateExpression,
   isCompiledKeyframesCallExpression,
-} from './ast';
-import { evaluateExpression } from './evaluate-expression';
+  isCompiledKeyframesTaggedTemplateExpression,
+} from './is-compiled';
+import { resolveBinding } from './resolve-binding';
 import type { CSSOutput, CssItem, LogicalCssItem, SheetCssItem } from './types';
 
 /**
@@ -49,7 +50,7 @@ const normalizeContentValue = (value: string) => {
  *
  * @param arr
  */
-const mergeSubsequentUnconditionalCssItems = (arr: Array<CssItem>): Array<CssItem> => {
+const mergeSubsequentUnconditionalCssItems = (arr: CssItem[]): CssItem[] => {
   const items: Exclude<CssItem, SheetCssItem>[] = [];
   const sheets: SheetCssItem[] = [];
 
@@ -287,9 +288,11 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
 
     if (
       t.isObjectExpression(pathNode) ||
-      // Check if string resembles CSS `property: value`
+      // Check if string or template resembles CSS `property: value`
       (t.isStringLiteral(pathNode) && pathNode.value.includes(':')) ||
-      t.isTemplateLiteral(pathNode) ||
+      (t.isTemplateLiteral(pathNode) &&
+        pathNode.quasis.some((quasi) => quasi.value.raw.includes(':'))) ||
+      // CSS tagged templates are already expected to be valid declarations
       isCompiledCSSTaggedTemplateExpression(pathNode, meta.state) ||
       isCompiledCSSCallExpression(pathNode, meta.state)
     ) {
@@ -482,7 +485,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       let resolvedBinding = undefined;
 
       if (t.isIdentifier(prop.argument)) {
-        resolvedBinding = resolveBindingNode(prop.argument.name, meta);
+        resolvedBinding = resolveBinding(prop.argument.name, meta);
 
         if (!resolvedBinding) {
           throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
@@ -660,7 +663,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
   }
 
   if (t.isIdentifier(node)) {
-    const resolvedBinding = resolveBindingNode(node.name, meta);
+    const resolvedBinding = resolveBinding(node.name, meta);
 
     if (!resolvedBinding) {
       throw buildCodeFrameError('Variable could not be found', node, meta.parentPath);

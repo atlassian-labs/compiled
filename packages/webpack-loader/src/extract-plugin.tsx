@@ -1,6 +1,7 @@
 import { sort } from '@compiled/css';
-import { toBoolean, createError } from '@compiled/utils';
-import type { Compiler, Compilation } from 'webpack';
+import { createError, toBoolean } from '@compiled/utils';
+import type { Compilation, Compiler } from 'webpack';
+
 import type { CompiledExtractPluginOptions } from './types';
 import {
   getAssetSourceContents,

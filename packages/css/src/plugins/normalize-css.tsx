@@ -1,5 +1,6 @@
 import cssnano from 'cssnano-preset-default';
 import type { Plugin } from 'postcss';
+
 import { normalizeCurrentColor } from './normalize-current-color';
 
 /**

@@ -1,14 +1,15 @@
-import * as t from '@babel/types';
 import type { NodePath } from '@babel/core';
-import { buildCompiledComponent } from '../utils/ast-builders';
-import { buildCss } from '../utils/css-builders';
+import * as t from '@babel/types';
+
 import {
-  COMPILED_DIRECTIVE_DISABLE_NEXT_LINE,
   COMPILED_DIRECTIVE_DISABLE_LINE,
+  COMPILED_DIRECTIVE_DISABLE_NEXT_LINE,
   COMPILED_DIRECTIVE_TRANSFORM_CSS_PROP,
 } from '../constants';
-import { getNodeComments } from '../utils/comments';
 import type { Metadata } from '../types';
+import { buildCompiledComponent } from '../utils/build-compiled-component';
+import { getNodeComments } from '../utils/comments';
+import { buildCss } from '../utils/css-builders';
 
 const getJsxAttributeExpression = (node: t.JSXAttribute) => {
   if (t.isStringLiteral(node.value)) {

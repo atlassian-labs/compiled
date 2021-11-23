@@ -5,5 +5,5 @@
     "module": "commonjs",
     "tsBuildInfoFile": "tsconfig.cjs.tsbuildinfo"
   },
-  "references": []
+  "references": [{ "path": "../benchmark" }, { "path": "../jest" }]
 }

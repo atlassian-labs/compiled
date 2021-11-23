@@ -178,7 +178,7 @@ describe('styled-components-to-compiled transformer', () => {
         {
           create: (_: FileInfo) => ({
             transform: {
-              buildImport: ({ originalNode, currentNode }) => {
+              buildImport: ({ originalNode, currentNode }: any) => {
                 for (const specifier of originalNode.specifiers) {
                   specifier.local.name = `${specifier.local.name}Edited`;
                 }
@@ -238,12 +238,14 @@ describe('styled-components-to-compiled transformer', () => {
         {
           create: (_: FileInfo, { jscodeshift: j }: API) => ({
             transform: {
-              buildImport: ({ originalNode, currentNode, specifiers, compiledImportPath }) => {
+              buildImport: ({ originalNode, currentNode, specifiers, compiledImportPath }: any) => {
                 currentNode.comments = [
                   j.commentLine(j(originalNode).toSource(), true),
                   j.commentLine(
                     specifiers
-                      .map((specifier) => `${specifier.imported.name} as ${specifier.local.name}`)
+                      .map(
+                        (specifier: any) => `${specifier.imported.name} as ${specifier.local.name}`
+                      )
                       .toString(),
                     true
                   ),

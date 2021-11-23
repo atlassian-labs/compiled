@@ -1,5 +1,7 @@
-import { createSetupError } from '../utils/error';
+/* eslint-disable import/export */
+
 import type { BasicTemplateInterpolations, CSSProps, FunctionInterpolation } from '../types';
+import { createSetupError } from '../utils/error';
 
 /**
  * Create styles that can be re-used between components with a template literal.

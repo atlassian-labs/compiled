@@ -1,5 +1,6 @@
 import React from 'react';
 import { hydrate } from 'react-dom';
+
 import { CC, CS } from '../runtime';
 
 jest.mock('../runtime/is-node', () => ({

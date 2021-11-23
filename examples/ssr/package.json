@@ -1,0 +1,21 @@
+{
+  "name": "@compiled/ssr-app",
+  "version": "1.0.7",
+  "private": true,
+  "scripts": {
+    "build": "razzle build",
+    "start": "razzle start",
+    "start:prod": "NODE_ENV=production node build/server.js"
+  },
+  "dependencies": {
+    "@babel/helper-builder-react-jsx": "^7.16.0",
+    "@babel/helper-builder-react-jsx-experimental": "^7.12.11",
+    "@compiled/react": "*",
+    "express": "4.17.1",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
+  },
+  "devDependencies": {
+    "razzle": "^3.4.5"
+  }
+}

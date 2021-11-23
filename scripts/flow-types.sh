@@ -3,7 +3,7 @@ PACKAGES=({packages/react,packages/jest})
 
 generate() {
   echo "Generating flow types with flowgen"
-  find "${PACKAGES[@]}" -type f -path '*/dist/*' -name '*.d.ts' -not -path '*/cjs/*' -not -path '*/browser/*' -not -path '*/__fixtures__/*' -print0 | while read -rd $'\0' file; do
+  find "${PACKAGES[@]}" -type f -path '*/dist/*' -name '*.d.ts' -not -path '*/cjs/*' -not -path '*/browser/*' -not -path '*/__tests__/*' -not -path '*/__perf__/*' -not -path '*/__fixtures__/*' -print0 | while read -rd $'\0' file; do
     flowFilename=${file%.*.*}.js.flow
     flowgen --add-flow-header "$file" -o "$flowFilename"
     if [ ! -f "$flowFilename" ]; then

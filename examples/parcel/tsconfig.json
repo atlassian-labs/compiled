@@ -1,0 +1,4 @@
+{
+  "files": [],
+  "references": [{ "path": "../../fixtures/parcel-resolver-alias/tsconfig.json" }]
+}

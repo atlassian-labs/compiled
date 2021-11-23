@@ -44,17 +44,11 @@ jobs:
       - name: Validate
         run: yarn lint
 
-      - name: Build source
-        run: yarn build
-
       - name: Run tests
         run: yarn test:cover --ci
 
-      - name: Run import test
-        run: yarn test:imports
-
-      - name: Run flow types validation
-        run: yarn flow-types validate
+      - name: Check prettier
+        run: yarn prettier:check
 
       - name: Bundle size
         run: |
@@ -63,3 +57,12 @@ jobs:
           yarn bundlesize
           export GITHUB_RUN_NUMBER=GITHUB_RUN_NUMBER_TMP
           echo "$GITHUB_RUN_NUMBER"
+
+      - name: Build source for remainder tests
+        run: yarn build
+
+      - name: Run flow types validation
+        run: yarn flow-types validate
+
+      - name: Run import test
+        run: yarn test:imports

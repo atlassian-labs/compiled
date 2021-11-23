@@ -1,4 +1,5 @@
 import postcss from 'postcss';
+
 import { discardDuplicates } from '../discard-duplicates';
 
 const transform = (css: TemplateStringsArray) => {

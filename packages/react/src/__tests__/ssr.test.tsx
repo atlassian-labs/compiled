@@ -1,10 +1,10 @@
 /**
  * @jest-environment node
  */
-import React from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { styled } from '@compiled/react';
 import { CC as CompiledRoot } from '@compiled/react/runtime';
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 describe('SSR', () => {
   it('should render styles inline', () => {

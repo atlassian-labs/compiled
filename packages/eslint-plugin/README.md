@@ -1,6 +1,6 @@
 # @compiled/eslint-plugin
 
-This plugin contains rules that should be used when working with the `@compiled/react`.
+This plugin contains rules that should be used when working with `@compiled/react`.
 
 ## Installation
 

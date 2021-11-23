@@ -1,14 +1,13 @@
-import * as t from '@babel/types';
 import type { NodePath } from '@babel/core';
+import * as t from '@babel/types';
 import { transformCss } from '@compiled/css';
-import {
-  pickFunctionBody,
-  buildCodeFrameError,
-  resolveIdentifierComingFromDestructuring,
-} from '../utils/ast';
-import { compiledTemplate, buildCssVariablesProp } from '../utils/ast-builders';
-import { buildCss, getItemCss } from '../utils/css-builders';
+
 import type { Metadata } from '../types';
+import { buildCodeFrameError, pickFunctionBody } from '../utils/ast';
+import { compiledTemplate } from '../utils/build-compiled-component';
+import { buildCssVariables } from '../utils/build-css-variables';
+import { buildCss, getItemCss } from '../utils/css-builders';
+import { resolveIdentifierComingFromDestructuring } from '../utils/resolve-binding';
 import type { CSSOutput } from '../utils/types';
 
 /**
@@ -20,7 +19,7 @@ import type { CSSOutput } from '../utils/types';
  */
 const handleStyleProp = (variables: CSSOutput['variables'], path: NodePath<t.Expression>) => {
   const styleValue = variables.length
-    ? t.objectExpression(buildCssVariablesProp(variables))
+    ? t.objectExpression(buildCssVariables(variables))
     : t.identifier('undefined');
 
   path.replaceWith(styleValue);

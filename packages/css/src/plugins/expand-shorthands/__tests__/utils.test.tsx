@@ -1,5 +1,6 @@
 import { parse } from 'postcss-values-parser';
-import { isWidth, isColor } from '../utils';
+
+import { isColor, isWidth } from '../utils';
 
 describe('expand utils', () => {
   it('should return true for valid width units', () => {

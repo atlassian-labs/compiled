@@ -1,10 +1,12 @@
-import chalk from 'chalk';
 import type { ParsedPath } from 'path';
 import path from 'path';
+
+import chalk from 'chalk';
 import { AutoComplete, Form, List } from 'enquirer';
 import { promise as execAsync } from 'exec-sh';
-import { getTransforms, getTransformPath } from './utils/transforms';
+
 import type { Choice, CodemodOptions } from './types';
+import { getTransformPath, getTransforms } from './utils/transforms';
 
 const getTransformPrompt = async (transforms: ParsedPath[]): Promise<ParsedPath> => {
   return await new AutoComplete({
@@ -15,7 +17,7 @@ const getTransformPrompt = async (transforms: ParsedPath[]): Promise<ParsedPath>
   }).run();
 };
 
-const codemodChoice: Array<Choice<keyof CodemodOptions>> = [
+const codemodChoice: Choice<keyof CodemodOptions>[] = [
   {
     name: 'path',
     message: 'PATH',
@@ -51,7 +53,7 @@ const getTransformForm = async () => {
   }).run();
 };
 
-const getPluginsForm = async (): Promise<Array<string>> => {
+const getPluginsForm = async (): Promise<string[]> => {
   const result = await new List({
     name: 'plugins',
     message: 'Specify any plugins you which to use (multiple can be specified separated with `,`)',

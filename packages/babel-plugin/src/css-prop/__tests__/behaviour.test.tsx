@@ -1,4 +1,5 @@
 import { transformSync } from '@babel/core';
+
 import babelPlugin from '../../index';
 
 const transform = (code: string) => {
@@ -652,10 +653,6 @@ describe('css prop behaviour', () => {
       );
     `);
 
-    expect(actual).toIncludeMultiple([
-      "css={{color:'red'}}",
-      "css={null}",
-      "css={{color:'blue'}}",
-    ]);
+    expect(actual).toIncludeMultiple(["css={{color:'red'}}", 'css={null}', "css={{color:'blue'}}"]);
   });
 });

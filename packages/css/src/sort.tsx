@@ -1,6 +1,7 @@
 import postcss from 'postcss';
-import { sortAtomicStyleSheet } from './plugins/sort-atomic-style-sheet';
+
 import { mergeDuplicateAtRules } from './plugins/merge-duplicate-at-rules';
+import { sortAtomicStyleSheet } from './plugins/sort-atomic-style-sheet';
 
 /**
  * Sorts an atomic style sheet.

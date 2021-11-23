@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { AutoComplete, Form, List } from 'enquirer';
 import { promise as execAsync } from 'exec-sh';
+
 import { castToJestMock } from '../../../__tests__/test-utils';
 import codemods from '../codemods';
 import type { CodemodOptions } from '../types';
@@ -21,7 +22,7 @@ const expectCodemodToHaveBeenRan = (name: string, runPath: string) => {
   expect(execAsync).toHaveBeenCalledWith(
     expect.stringMatching(
       new RegExp(
-        `.*--transform=.*node_modules\\/@compiled\\/codemods\\/dist\\/transforms\\/${name}\\/index.js ${regexPath}`
+        `.*--transform=.*node_modules\\/@compiled\\/codemods\\/(dist|src)\\/transforms\\/${name}\\/index.(tsx|js) ${regexPath}`
       )
     )
   );
@@ -37,22 +38,31 @@ const setupCliRunner = (opts: {
   codemodOpts?: CodemodOptions;
   pluginPaths?: string[];
 }) => {
-  castToJestMock(AutoComplete).mockImplementation(({ choices, result }) => ({
-    run: () => Promise.resolve(result(choices[opts.choice])),
-  }));
+  castToJestMock(AutoComplete).mockImplementation(
+    ({ choices, result }: any) =>
+      ({
+        run: () => Promise.resolve(result(choices[opts.choice])),
+      } as any)
+  );
 
-  castToJestMock(Form).mockImplementation(() => ({
-    run: () =>
-      Promise.resolve({
-        parser: 'tsx',
-        ...opts.codemodOpts,
-        path: opts.runPath,
-      }),
-  }));
+  castToJestMock(Form).mockImplementation(
+    () =>
+      ({
+        run: () =>
+          Promise.resolve({
+            parser: 'tsx',
+            ...opts.codemodOpts,
+            path: opts.runPath,
+          }),
+      } as any)
+  );
 
-  castToJestMock(List).mockImplementation(() => ({
-    run: () => Promise.resolve([...(opts.pluginPaths || [])]),
-  }));
+  castToJestMock(List).mockImplementation(
+    () =>
+      ({
+        run: () => Promise.resolve([...(opts.pluginPaths || [])]),
+      } as any)
+  );
 };
 
 describe('main', () => {
