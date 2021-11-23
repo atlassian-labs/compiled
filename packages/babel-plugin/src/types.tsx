@@ -69,8 +69,8 @@ export interface State extends PluginPass {
    * Details of pragmas that are currently enabled in the pass.
    */
   pragma: {
-    jsxImportSource?: boolean;
     jsx?: boolean;
+    jsxImportSource?: boolean;
   };
 
   /**

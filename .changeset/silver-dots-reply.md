@@ -27,7 +27,7 @@ Make sure to update all Compiled dependencies to latest when adopting this chang
 <div css={{ display: 'block' }} />;
 ```
 
-To aid consumers adopt this change easily a new ESLint rule `jsx-pragma` has been created which will automatically migrate you to use a JSX pragma if missing when running with `--fix`. The rule takes an option to configure the runtime (either classic or automatic) and defaults to automatic.
+To aid consumers in adopting this change easily, a new ESLint rule `jsx-pragma` has been created which will automatically migrate you to use a JSX pragma if missing when running with `--fix`. The rule takes an option to configure the runtime (either classic or automatic) and defaults to automatic.
 
 ```sh
 npm i @compiled/eslint-plugin
