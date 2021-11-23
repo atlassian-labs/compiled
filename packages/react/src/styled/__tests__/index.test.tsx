@@ -1,6 +1,5 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, styled } from '@compiled/react';
+/** @jsxImportSource @compiled/react */
+import { styled } from '@compiled/react';
 import { render } from '@testing-library/react';
 
 const em = (str: string | number) => str;

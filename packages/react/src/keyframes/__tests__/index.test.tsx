@@ -1,6 +1,5 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, keyframes, styled } from '@compiled/react';
+/** @jsxImportSource @compiled/react */
+import { keyframes, styled } from '@compiled/react';
 import { render } from '@testing-library/react';
 
 import defaultFadeOut, { namedFadeOut, fadeOut as shadowedFadeOut } from '../__fixtures__';

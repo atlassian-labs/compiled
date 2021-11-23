@@ -1,6 +1,5 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, css } from '@compiled/react';
+/** @jsxImportSource @compiled/react */
+import { css } from '@compiled/react';
 import { render } from '@testing-library/react';
 
 describe('css prop', () => {
