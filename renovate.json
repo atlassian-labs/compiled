@@ -36,7 +36,7 @@
       "depTypeList": ["dependencies"],
       "prPriority": 1,
       "postUpgradeTasks": {
-        "commands": ["ts-node scripts/generate-renovate-changeset.ts"],
+        "commands": ["yarn ts-node scripts/generate-renovate-changeset.ts"],
         "fileFilters": [".changeset/*", "yarn.lock"]
       }
     },
