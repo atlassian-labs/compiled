@@ -22,7 +22,7 @@ describe('styled component behaviour', () => {
 
   it('should generate styled object component code', () => {
     const actual = transform(`
-      import { styled, ThemeProvider } from '@compiled/react';
+      import { styled } from '@compiled/react';
 
       const ListItem = styled.div({
         fontSize: '20px',

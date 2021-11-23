@@ -1,6 +1,6 @@
-import React from 'react';
+/** @jsx jsx */
+import { jsx } from '@compiled/react';
 
-import '@compiled/react';
 import { coral } from './colors';
 
 export const Coral = (): JSX.Element => (

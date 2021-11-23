@@ -1,6 +1,6 @@
+/** @jsxImportSource @compiled/react */
 import { styled } from '@compiled/react';
 import { render } from '@testing-library/react';
-import React from 'react';
 
 const em = (str: string | number) => str;
 
@@ -139,7 +139,7 @@ describe('styled component', () => {
     expect(StyledDiv.displayName).toEqual(undefined);
   });
 
-  xit('should have a display name', () => {
+  it('should have a display name', () => {
     process.env.NODE_ENV = 'development';
 
     const StyledDiv = styled.div`

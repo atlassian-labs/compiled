@@ -3,7 +3,17 @@ PACKAGES=({packages/react,packages/jest})
 
 generate() {
   echo "Generating flow types with flowgen"
-  find "${PACKAGES[@]}" -type f -path '*/dist/*' -name '*.d.ts' -not -path '*/cjs/*' -not -path '*/browser/*' -not -path '*/__tests__/*' -not -path '*/__perf__/*' -not -path '*/__fixtures__/*' -print0 | while read -rd $'\0' file; do
+  find "${PACKAGES[@]}" -type f -path '*/dist/*' -name '*.d.ts' \
+    -not -path '*/cjs/*' \
+    -not -path '*/browser/*' \
+    -not -path '*/__tests__/*' \
+    -not -path '*/__perf__/*' \
+    -not -path '*/__fixtures__/*' \
+    -not -path 'packages/react/*/index.*' \
+    -not -path 'packages/react/*/jsx/jsx-local-namespace.*' \
+    -not -path 'packages/react/*/jsx/jsx-runtime.*' \
+    -not -path 'packages/react/*/jsx/jsx-dev-runtime.*' \
+    -print0 | while read -rd $'\0' file; do
     flowFilename=${file%.*.*}.js.flow
     flowgen --add-flow-header "$file" -o "$flowFilename"
     if [ ! -f "$flowFilename" ]; then
@@ -18,7 +28,17 @@ generate() {
   done
 
   echo "Patching types"
-  find "${PACKAGES[@]}" -type f -path '*/src/*' -name '*.js.flow' -not -path '*/node_modules/*' -not -path '*/__tests__/*' -print0 | while read -rd $'\0' file; do
+  find "${PACKAGES[@]}" -type f -path '*/src/*' -name '*.js.flow' \
+    -not -path '*/__tests__/*' \
+    -not -path '*/__perf__/*' \
+    -not -path '*/__fixtures__/*' \
+    -not -path '*/node_modules/*' \
+    -not -path 'packages/react/*/index.*' \
+    -not -path 'packages/react/*/jsx/jsx-local-namespace.*' \
+    -not -path 'packages/react/*/jsx/jsx-runtime.*' \
+    -not -path 'packages/react/*/jsx/jsx-dev-runtime.*' \
+    -print0 | while read -rd $'\0' file; do
+
     # Change import to import type (bug in flowgen)
     sed -i.bak -E 's/import {/import type {/g' "$file" && rm "$file.bak"
 
