@@ -1,5 +1,13 @@
 # @compiled/cli
 
+## 2.1.2
+
+### Patch Changes
+
+- 79cfb08: Internal refactor changing how the TypeScript compiler picks up source files.
+- Updated dependencies [79cfb08]
+  - @compiled/codemods@0.3.2
+
 ## 2.1.1
 
 ### Patch Changes

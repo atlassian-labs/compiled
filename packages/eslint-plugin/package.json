@@ -1,6 +1,6 @@
 {
   "name": "@compiled/eslint-plugin",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "repository": "https://github.com/atlassian-labs/compiled",
   "author": "Atlassian Pty Ltd",
   "sideEffects": false,

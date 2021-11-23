@@ -1,5 +1,13 @@
 # @compiled/babel-component-fixture
 
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies [427cead]
+- Updated dependencies [79cfb08]
+  - @compiled/react@0.10.0
+
 ## 0.0.8
 
 ### Patch Changes
