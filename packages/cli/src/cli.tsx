@@ -19,6 +19,7 @@ const cli = meow(
     ${chalk.cyan('npx @compiled/cli --preset codemods')}
 `,
   {
+    importMeta: import.meta,
     flags: {
       preset: {
         type: 'string',
