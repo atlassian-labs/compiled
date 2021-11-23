@@ -1,5 +1,13 @@
 # @compiled/parcel-resolver-alias
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [427cead]
+- Updated dependencies [79cfb08]
+  - @compiled/react@0.10.0
+
 ## 0.0.2
 
 ### Patch Changes

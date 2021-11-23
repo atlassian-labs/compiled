@@ -1,5 +1,11 @@
 # @compiled/utils
 
+## 0.6.12
+
+### Patch Changes
+
+- 79cfb08: Internal refactor changing how the TypeScript compiler picks up source files.
+
 ## 0.6.11
 
 ### Patch Changes

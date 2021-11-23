@@ -1,5 +1,18 @@
 # @compiled/parcel-transformer
 
+## 0.6.18
+
+### Patch Changes
+
+- 427cead: Compiled now supports turning on the `css` prop using jsx pragmas (both with `@jsx` and `@jsxImportSource`).
+- Updated dependencies [79cfb08]
+- Updated dependencies [14368bb]
+- Updated dependencies [68ebac3]
+- Updated dependencies [427cead]
+- Updated dependencies [79cfb08]
+  - @compiled/babel-plugin@0.11.1
+  - @compiled/utils@0.6.12
+
 ## 0.6.17
 
 ### Patch Changes

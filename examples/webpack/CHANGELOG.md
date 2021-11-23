@@ -1,5 +1,17 @@
 # @compiled/webpack-app
 
+## 1.0.9
+
+### Patch Changes
+
+- Updated dependencies [427cead]
+- Updated dependencies [427cead]
+- Updated dependencies [79cfb08]
+- Updated dependencies [79cfb08]
+  - @compiled/react@0.10.0
+  - @compiled/webpack-loader@0.7.3
+  - @compiled/babel-component-fixture@0.0.9
+
 ## 1.0.8
 
 ### Patch Changes

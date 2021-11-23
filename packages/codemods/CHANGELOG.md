@@ -1,5 +1,11 @@
 # @compiled/codemods
 
+## 0.3.2
+
+### Patch Changes
+
+- 79cfb08: Internal refactor changing how the TypeScript compiler picks up source files.
+
 ## 0.3.1
 
 ### Patch Changes
