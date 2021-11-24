@@ -2,7 +2,7 @@
   "name": "@compiled/jest",
   "version": "0.7.0",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
-  "homepage": "https://compiledcssinjs.com",
+  "homepage": "https://compiledcssinjs.com/docs/pkg-jest",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
     "type": "git",
@@ -17,8 +17,7 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "src",
-    "README.md"
+    "src"
   ],
   "dependencies": {
     "css": "^3.0.0"
