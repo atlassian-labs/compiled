@@ -14,7 +14,7 @@ import { createSetupError } from '../utils/error';
  * Define styles that are statically typed and useable with other Compiled APIs.
  * For further details [read the documentation](https://compiledcssinjs.com/docs/api-css).
  *
- * ### Style with template literals
+ * ### Style with objects
  *
  * @example
  * ```
@@ -25,7 +25,7 @@ import { createSetupError } from '../utils/error';
  * <div css={redText} />
  * ```
  *
- * ### Style with objects
+ * ### Style with template literals
  *
  * @example
  * ```
