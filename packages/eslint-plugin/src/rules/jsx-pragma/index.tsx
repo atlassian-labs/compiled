@@ -8,7 +8,7 @@ type Options = {
   runtime: 'classic' | 'automatic';
 };
 
-const findReactDeclaration = (
+const findReactDeclarationWithDefaultImport = (
   source: SourceCode
 ): [ImportDeclaration, ImportDefaultSpecifier] | undefined => {
   for (let i = 0; i < source.ast.body.length; i++) {
@@ -133,7 +133,7 @@ const rule: Rule.RuleModule = {
           },
           node,
           *fix(fixer) {
-            const reactImport = findReactDeclaration(source);
+            const reactImport = findReactDeclarationWithDefaultImport(source);
             if (reactImport) {
               const [declaration, defaultImport] = reactImport;
               const [defaultImportVariable] = context.getDeclaredVariables(defaultImport);
