@@ -4,16 +4,42 @@ type WithConditionalCSSProp<TProps> = 'className' extends keyof TProps
   ? string extends TProps['className' & keyof TProps]
     ? {
         /**
-         * Tie styles to an element.
+         * ## CSS prop
          *
+         * Style a JSX element.
+         * For further details [read the API documentation](https://compiledcssinjs.com/docs/api-css-prop).
+         *
+         * ### Style with objects
+         *
+         * @example
          * ```
-         * css={{ fontSize: 12 }} // Object CSS
-         * css={`font-size: 12px;`} // Template literal CSS
-         * css={[{ fontSize: 12 }, `font-size: 12px;`]} // Array CSS
+         * import { css } from '@compiled/react';
+         *
+         * <div css={css({ fontSize: 12 })} />
          * ```
          *
-         * For more help, read the docs:
-         * https://compiledcssinjs.com/docs/api-css-prop
+         * ### Style with template literals
+         *
+         * @example
+         * ```
+         * import { css } from '@compiled/react';
+         *
+         * <div css={css`color: red;`} />
+         * ```
+         *
+         * ### Compose styles with arrays
+         *
+         * @example
+         * ```
+         * import { css } from '@compiled/react';
+         *
+         * <div
+         *  css={[
+         *    css({ fontSize: 12 }),
+         *    css`color: red;`,
+         *  ]}
+         * />
+         * ```
          */
         css?: CssFunction | CssFunction[];
       }
