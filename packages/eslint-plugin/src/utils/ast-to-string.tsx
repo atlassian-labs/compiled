@@ -35,6 +35,7 @@ export const addImportToDeclaration = (decl: ImportDeclaration, imports: string[
 export const removeImportFromDeclaration = (decl: ImportDeclaration, imports: string[]): string => {
   const specifiersString = decl.specifiers
     .map(buildNamedImport)
+    .filter(Boolean)
     .filter((spec) => !imports.includes(spec));
 
   if (specifiersString.length === 0) {
