@@ -238,5 +238,73 @@ import { useState } from 'react';
         },
       ],
     },
+    {
+      code: `
+        import { useState } from 'react';
+        import { css } from '@compiled/react';
+
+        useState();
+
+        <div css={css({ display: 'block' })} />
+      `,
+      output: `
+        /** @jsxImportSource @compiled/react */
+import { useState } from 'react';
+        import { css } from '@compiled/react';
+
+        useState();
+
+        <div css={css({ display: 'block' })} />
+      `,
+      errors: [
+        {
+          messageId: 'missingPragma',
+        },
+      ],
+    },
+    {
+      code: `
+        import * as React from 'react';
+        import { css } from '@compiled/react';
+
+        React.useState();
+
+        <div css={css({ display: 'block' })} />
+      `,
+      output: `
+        /** @jsxImportSource @compiled/react */
+import * as React from 'react';
+        import { css } from '@compiled/react';
+
+        React.useState();
+
+        <div css={css({ display: 'block' })} />
+      `,
+      errors: [
+        {
+          messageId: 'missingPragma',
+        },
+      ],
+    },
+    {
+      code: `
+        import * as React from 'react';
+        import { css } from '@compiled/react';
+
+        <div css={css({ display: 'block' })} />
+      `,
+      output: `
+        /** @jsxImportSource @compiled/react */
+
+        import { css } from '@compiled/react';
+
+        <div css={css({ display: 'block' })} />
+      `,
+      errors: [
+        {
+          messageId: 'missingPragma',
+        },
+      ],
+    },
   ],
 });

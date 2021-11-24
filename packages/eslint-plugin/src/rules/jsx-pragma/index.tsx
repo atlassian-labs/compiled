@@ -1,5 +1,5 @@
 import type { Rule, SourceCode } from 'eslint';
-import type { ImportDeclaration, ImportDefaultSpecifier } from 'estree';
+import type { ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifier } from 'estree';
 
 import { findCompiledImportDeclarations, findDeclarationWithImport } from '../../utils/ast';
 import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-to-string';
@@ -10,13 +10,13 @@ type Options = {
 
 const findReactDeclarationWithDefaultImport = (
   source: SourceCode
-): [ImportDeclaration, ImportDefaultSpecifier] | undefined => {
-  for (let i = 0; i < source.ast.body.length; i++) {
-    const statement = source.ast.body[i];
+): [ImportDeclaration, ImportDefaultSpecifier | ImportNamespaceSpecifier] | undefined => {
+  for (const statement of source.ast.body) {
     if (statement.type === 'ImportDeclaration' && statement.source.value === 'react') {
       const defaultSpecifier = statement.specifiers.find(
-        (spec): spec is ImportDefaultSpecifier =>
-          spec.type === 'ImportDefaultSpecifier' && spec.local.name === 'React'
+        (spec): spec is ImportDefaultSpecifier | ImportNamespaceSpecifier =>
+          (spec.type === 'ImportDefaultSpecifier' || spec.type === 'ImportNamespaceSpecifier') &&
+          spec.local.name === 'React'
       );
       if (defaultSpecifier) {
         return [statement, defaultSpecifier];
