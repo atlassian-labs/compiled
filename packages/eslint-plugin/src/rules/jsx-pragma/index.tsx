@@ -1,10 +1,30 @@
-import type { Rule } from 'eslint';
+import type { Rule, SourceCode } from 'eslint';
+import type { ImportDeclaration, ImportDefaultSpecifier } from 'estree';
 
 import { findCompiledImportDeclarations, findDeclarationWithImport } from '../../utils/ast';
 import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-to-string';
 
 type Options = {
   runtime: 'classic' | 'automatic';
+};
+
+const findReactDeclaration = (
+  source: SourceCode
+): [ImportDeclaration, ImportDefaultSpecifier] | undefined => {
+  for (let i = 0; i < source.ast.body.length; i++) {
+    const statement = source.ast.body[i];
+    if (statement.type === 'ImportDeclaration' && statement.source.value === 'react') {
+      const defaultSpecifier = statement.specifiers.find(
+        (spec): spec is ImportDefaultSpecifier =>
+          spec.type === 'ImportDefaultSpecifier' && spec.local.name === 'React'
+      );
+      if (defaultSpecifier) {
+        return [statement, defaultSpecifier];
+      }
+    }
+  }
+
+  return undefined;
 };
 
 const rule: Rule.RuleModule = {
@@ -113,6 +133,25 @@ const rule: Rule.RuleModule = {
           },
           node,
           *fix(fixer) {
+            const reactImport = findReactDeclaration(source);
+            if (reactImport) {
+              const [declaration, defaultImport] = reactImport;
+              const [defaultImportVariable] = context.getDeclaredVariables(defaultImport);
+
+              if (defaultImportVariable && defaultImportVariable.references.length === 0) {
+                if (declaration.specifiers.length === 1) {
+                  // Only the default specifier exists and it isn't used - remove the whole declaration!
+                  yield fixer.remove(declaration);
+                } else {
+                  // Multiple specifiers exist but the default one isn't used - remove the default specifier!
+                  yield fixer.replaceText(
+                    declaration,
+                    removeImportFromDeclaration(declaration, [])
+                  );
+                }
+              }
+            }
+
             yield fixer.insertTextBefore(source.ast.body[0], `/** ${pragma} */\n`);
 
             const compiledImports = findCompiledImportDeclarations(context);
