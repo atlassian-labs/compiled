@@ -1,5 +1,11 @@
 # @compiled/cli
 
+## 2.1.3
+
+### Patch Changes
+
+- c092daf: Bumping dependencies via Renovate
+
 ## 2.1.2
 
 ### Patch Changes

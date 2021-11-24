@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.2.1
+
+### Patch Changes
+
+- dedadbb: The `jsx-pragma` rule now removes the default react import when moving to the automatic runtime and it isn't used.
+
 ## 0.2.0
 
 ### Minor Changes
