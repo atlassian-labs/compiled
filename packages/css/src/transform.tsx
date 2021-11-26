@@ -32,7 +32,7 @@ export const transformCss = (css: string): { sheets: string[]; classNames: strin
       atomicifyRules({ callback: (className: string) => classNames.push(className) }),
       sortAtRulePseudos(),
       ...(process.env.AUTOPREFIXER === 'off' ? [] : [autoprefixer()]),
-      whitespace,
+      whitespace(),
       extractStyleSheets({ callback: (sheet: string) => sheets.push(sheet) }),
     ]).process(css, {
       from: undefined,
