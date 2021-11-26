@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "babel-plugin/tsconfig.json" },
+    { "path": "babel-plugin-experimental/tsconfig.json" },
     { "path": "babel-plugin-strip-runtime/tsconfig.json" },
     { "path": "benchmark/tsconfig.json" },
     { "path": "cli/tsconfig.json" },
