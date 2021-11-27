@@ -91,6 +91,10 @@ export function toHaveCompiledCss(
   element: HTMLElement,
   ...args: [Arg | string, string, MatchFilter?]
 ): jest.CustomMatcherResult {
+  if (!(element instanceof HTMLElement)) {
+    throw new Error('Should be an element');
+  }
+
   const [property, value, matchFilter = DEFAULT_MATCH_FILTER] = args;
   const properties = typeof property === 'string' ? { [property]: value } : property;
   const styleElements: HTMLStyleElement[] = [
@@ -107,7 +111,7 @@ export function toHaveCompiledCss(
 
   const stylesToFind = mapProperties(properties);
   const foundStyles: string[] = [];
-  const classNames = element.className.split(' ');
+  const classNames = element.className?.split(' ');
 
   for (const styleElement of styleElements) {
     let css = styleElement.textContent || '';
@@ -116,7 +120,7 @@ export function toHaveCompiledCss(
     // See: https://github.com/jsdom/jsdom/issues/1895
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const styles = element[Object.keys(element)[0]].memoizedProps.style;
+    const styles = element[Object.keys(element)[0]]?.memoizedProps.style;
 
     if (styles && Object.keys(styles).length > 0) {
       Object.entries(styles).forEach(([key, value]: [string, any]) => {
@@ -127,7 +131,7 @@ export function toHaveCompiledCss(
     }
 
     const ast = CSS.parse(css);
-    classNames.forEach((c) => {
+    classNames?.forEach((c) => {
       const rules = getRules(ast, matchFilter, c);
       foundStyles.push(...findStylesInRules(stylesToFind, rules));
     });

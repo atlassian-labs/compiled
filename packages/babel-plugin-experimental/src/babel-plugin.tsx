@@ -32,20 +32,18 @@ export default declare((api) => {
     inherits: jsxSyntax,
     visitor: {
       CallExpression(path) {
-        if (path.node.callee.type === 'Identifier' && path.node.callee.name !== 'css') {
-          return;
+        if (path.node.callee.type === 'Identifier' && path.node.callee.name === 'css') {
+          const rule = generate(path.node.arguments[0]);
+          const evaluatedExpression = eval(`(${rule.code})`);
+          const styles = transformCss(objToCss(evaluatedExpression));
+
+          path.replaceWith(
+            t.arrayExpression([
+              t.stringLiteral(styles.classNames.join(' ')),
+              t.arrayExpression(styles.sheets.map((sheet) => t.stringLiteral(sheet))),
+            ])
+          );
         }
-
-        const rule = generate(path.node.arguments[0]);
-        const evaluatedExpression = eval(`(${rule.code})`);
-        const styles = transformCss(objToCss(evaluatedExpression));
-
-        path.replaceWith(
-          t.arrayExpression([
-            t.stringLiteral(styles.classNames.join(' ')),
-            t.arrayExpression(styles.sheets.map((sheet) => t.stringLiteral(sheet))),
-          ])
-        );
       },
     },
   };

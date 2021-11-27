@@ -1,4 +1,4 @@
 {
-  "plugins": [["@compiled/babel-plugin", { "importReact": false }]],
+  "plugins": [["@compiled/babel-plugin-experimental", { "importReact": false }]],
   "presets": ["@babel/preset-typescript", ["@babel/preset-react", { "runtime": "automatic" }]]
 }
