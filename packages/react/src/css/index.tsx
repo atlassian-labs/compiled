@@ -1,6 +1,11 @@
 /* eslint-disable import/export */
 
-import type { AnyKeyCssProps, BasicTemplateInterpolations, CSSProps, FunctionInterpolation } from '../types';
+import type {
+  AnyKeyCssProps,
+  BasicTemplateInterpolations,
+  CSSProps,
+  FunctionInterpolation,
+} from '../types';
 import { createSetupError } from '../utils/error';
 
 /**
@@ -33,7 +38,7 @@ export default function css<T = void>(
  *
  * @param css
  */
-export default function css(_css: AnyKeyCssProps | CSSProps): CSSProps;
+export default function css(_css: AnyKeyCssProps<void> | CSSProps): CSSProps;
 
 export default function css<T = void>(
   _css: TemplateStringsArray | CSSProps,
