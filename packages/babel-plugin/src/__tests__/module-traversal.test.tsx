@@ -1,4 +1,5 @@
 import { transformSync } from '@babel/core';
+
 import babelPlugin from '../index';
 import type { PluginOptions } from '../types';
 
@@ -574,7 +575,7 @@ describe('module traversal', () => {
         const color = { blue: 'blue' };
 
         <div css={{ ...objects.colorMixin2(color.blue) }} />
-    `);
+      `);
 
       expect(result).toIncludeMultiple(['{color:red}', '{background-color:blue}']);
     });

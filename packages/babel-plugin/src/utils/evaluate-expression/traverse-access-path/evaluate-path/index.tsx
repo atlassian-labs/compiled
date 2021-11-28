@@ -2,8 +2,9 @@ import * as t from '@babel/types';
 
 import type { Metadata } from '../../../../types';
 import { createResultPair } from '../../common';
-import { evaluateObjectPath } from './object';
+
 import { evaluateNamespaceImportPath } from './namespace-import';
+import { evaluateObjectPath } from './object';
 
 export const evaluatePath = (
   expression: t.Expression,

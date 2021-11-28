@@ -1,4 +1,5 @@
 import postcss from 'postcss';
+
 import { expandShorthands } from '../../expand-shorthands';
 
 const transform = (css: TemplateStringsArray) => {

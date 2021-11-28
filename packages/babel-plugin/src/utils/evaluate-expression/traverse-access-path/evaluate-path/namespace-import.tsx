@@ -1,7 +1,7 @@
 import * as t from '@babel/types';
 
-import { getDefaultExport, getNamedExport } from '../../../traversers';
 import type { Metadata } from '../../../../types';
+import { getDefaultExport, getNamedExport } from '../../../traversers';
 import { createResultPair } from '../../common';
 
 export const evaluateNamespaceImportPath = (

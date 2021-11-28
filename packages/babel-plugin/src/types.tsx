@@ -1,6 +1,7 @@
-import type * as t from '@babel/types';
-import type { NodePath } from '@babel/traverse';
 import type { PluginPass } from '@babel/core';
+import type { NodePath } from '@babel/traverse';
+import type * as t from '@babel/types';
+
 import type { Cache } from './utils/cache';
 
 export interface Resolver {
@@ -65,9 +66,17 @@ export interface State extends PluginPass {
   };
 
   /**
+   * Details of pragmas that are currently enabled in the pass.
+   */
+  pragma: {
+    jsx?: boolean;
+    jsxImportSource?: boolean;
+  };
+
+  /**
    * Paths that will be cleaned up on pass exit.
    */
-  pathsToCleanup: Array<{ action: 'replace' | 'remove'; path: NodePath }>;
+  pathsToCleanup: { action: 'replace' | 'remove'; path: NodePath }[];
 
   /**
    * Userland options that can be set to change what happens when the Babel Plugin is ran.

@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "../../fixtures/parcel-resolver-alias/tsconfig.json" },
+    { "path": "../../packages/parcel-transformer/tsconfig.json" },
+    { "path": "../../packages/react/tsconfig.browser.json" }
+  ]
+}

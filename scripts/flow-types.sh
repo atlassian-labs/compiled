@@ -3,7 +3,17 @@ PACKAGES=({packages/react,packages/jest})
 
 generate() {
   echo "Generating flow types with flowgen"
-  find "${PACKAGES[@]}" -type f -path '*/dist/*' -name '*.d.ts' -not -path '*/cjs/*' -not -path '*/browser/*' -not -path '*/__fixtures__/*' -print0 | while read -rd $'\0' file; do
+  find "${PACKAGES[@]}" -type f -path '*/dist/*' -name '*.d.ts' \
+    -not -path '*/cjs/*' \
+    -not -path '*/browser/*' \
+    -not -path '*/__tests__/*' \
+    -not -path '*/__perf__/*' \
+    -not -path '*/__fixtures__/*' \
+    -not -path 'packages/react/*/index.*' \
+    -not -path 'packages/react/*/jsx/jsx-local-namespace.*' \
+    -not -path 'packages/react/*/jsx/jsx-runtime.*' \
+    -not -path 'packages/react/*/jsx/jsx-dev-runtime.*' \
+    -print0 | while read -rd $'\0' file; do
     flowFilename=${file%.*.*}.js.flow
     flowgen --add-flow-header "$file" -o "$flowFilename"
     if [ ! -f "$flowFilename" ]; then
@@ -18,7 +28,17 @@ generate() {
   done
 
   echo "Patching types"
-  find "${PACKAGES[@]}" -type f -path '*/src/*' -name '*.js.flow' -not -path '*/node_modules/*' -not -path '*/__tests__/*' -print0 | while read -rd $'\0' file; do
+  find "${PACKAGES[@]}" -type f -path '*/src/*' -name '*.js.flow' \
+    -not -path '*/__tests__/*' \
+    -not -path '*/__perf__/*' \
+    -not -path '*/__fixtures__/*' \
+    -not -path '*/node_modules/*' \
+    -not -path 'packages/react/*/index.*' \
+    -not -path 'packages/react/*/jsx/jsx-local-namespace.*' \
+    -not -path 'packages/react/*/jsx/jsx-runtime.*' \
+    -not -path 'packages/react/*/jsx/jsx-dev-runtime.*' \
+    -print0 | while read -rd $'\0' file; do
+
     # Change import to import type (bug in flowgen)
     sed -i.bak -E 's/import {/import type {/g' "$file" && rm "$file.bak"
 
@@ -30,6 +50,9 @@ generate() {
 
     # Rename JSX.IntrinsicElements to existing flow type
     sed -i.bak -E 's/JSX.IntrinsicElements/$JSXIntrinsics/g' "$file" && rm "$file.bak"
+
+    # Rename $ElementType<$JSXIntrinsics, TTag> to exact flow typs
+    sed -i.bak -E 's/\$ElementType<\$JSXIntrinsics, TTag>/$Exact<$ElementType<$JSXIntrinsics, TTag>>/g' "$file" && rm "$file.bak"
 
     # Rename jest.CustomMatcherResult type to existing flow type
     sed -i.bak -E 's/jest.CustomMatcherResult/JestMatcherResult/g' "$file" && rm "$file.bak"

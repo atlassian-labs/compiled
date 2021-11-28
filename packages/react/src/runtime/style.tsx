@@ -1,9 +1,10 @@
 import React from 'react';
-import insertRule, { getStyleBucketName, styleBucketOrdering } from './sheet';
+
 import { analyzeCssInDev } from './dev-warnings';
-import type { StyleSheetOpts, Bucket } from './types';
-import { useCache } from './style-cache';
 import { isNodeEnvironment } from './is-node';
+import insertRule, { getStyleBucketName, styleBucketOrdering } from './sheet';
+import { useCache } from './style-cache';
+import type { Bucket, StyleSheetOpts } from './types';
 
 interface StyleProps extends StyleSheetOpts {
   /**

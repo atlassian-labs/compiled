@@ -13,7 +13,7 @@
  * @param prefix
  */
 declare export default function cssCustomPropertyValue(
-  value: string | number | number | null,
+  value: string | number | null | void,
   suffix?: string | void | null,
   prefix?: string | void | null
 ): string | number;

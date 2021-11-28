@@ -1,5 +1,5 @@
-import meow from 'meow';
 import chalk from 'chalk';
+import meow from 'meow';
 
 import presets from './presets';
 
@@ -19,6 +19,7 @@ const cli = meow(
     ${chalk.cyan('npx @compiled/cli --preset codemods')}
 `,
   {
+    importMeta: import.meta,
     flags: {
       preset: {
         type: 'string',

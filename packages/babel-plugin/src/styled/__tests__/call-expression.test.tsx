@@ -1,4 +1,4 @@
-import { transform } from '../../__tests__/test-utils';
+import { transform } from '../../test-utils';
 
 describe('styled object call expression', () => {
   it('only transforms @compiled/react usages', () => {

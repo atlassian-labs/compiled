@@ -1,7 +1,17 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../tsconfig.options.json",
   "compilerOptions": {
     "outDir": "dist/browser",
+    "plugins": [
+      {
+        "transform": "ts-transform-define",
+        "replace": {
+          "isNodeEnvironment()": "false"
+        }
+      }
+    ],
+    "rootDir": "src",
     "tsBuildInfoFile": "tsconfig.browser.tsbuildinfo"
-  }
+  },
+  "references": [{ "path": "../benchmark" }, { "path": "../jest" }]
 }

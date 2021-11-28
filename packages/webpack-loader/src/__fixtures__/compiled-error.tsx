@@ -1,5 +1,5 @@
-import React from 'react';
-import { css } from '@compiled/react';
+/** @jsx jsx */
+import { jsx, css } from '@compiled/react';
 
 // @ts-expect-error
 const styles = css(false);

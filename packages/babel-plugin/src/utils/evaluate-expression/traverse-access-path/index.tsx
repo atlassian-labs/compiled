@@ -2,9 +2,10 @@ import type * as t from '@babel/types';
 
 import type { Metadata } from '../../../types';
 import { createResultPair } from '../common';
+
 import { evaluatePath } from './evaluate-path';
-import type { TraverseHandlers } from './types';
 import { resolveExpressionInMember } from './resolve-expression';
+import type { TraverseHandlers } from './types';
 
 export const traverseMemberAccessPath = (
   expression: t.Expression,

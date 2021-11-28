@@ -1,7 +1,7 @@
 import type * as t from '@babel/types';
 
-import { getObjectProperty } from '../../../traversers';
 import type { Metadata } from '../../../../types';
+import { getObjectProperty } from '../../../traversers';
 import { createResultPair } from '../../common';
 
 export const evaluateObjectPath = (

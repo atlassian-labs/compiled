@@ -1,5 +1,4 @@
-import '@compiled/react';
-import React from 'react';
+/** @jsxImportSource @compiled/react */
 import { render } from '@testing-library/react';
 
 describe('css prop', () => {

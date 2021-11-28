@@ -1,5 +1,5 @@
-import { transform as transformCode } from '../../__tests__/test-utils';
-import type { TransformOptions } from '../../__tests__/test-utils';
+import { transform as transformCode } from '../../test-utils';
+import type { TransformOptions } from '../../test-utils';
 
 const transform = (code: string, options: TransformOptions = {}) => {
   return transformCode(code, options);

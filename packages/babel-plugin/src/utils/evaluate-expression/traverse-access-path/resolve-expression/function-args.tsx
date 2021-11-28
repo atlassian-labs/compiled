@@ -1,5 +1,5 @@
-import * as t from '@babel/types';
 import traverse from '@babel/traverse';
+import * as t from '@babel/types';
 
 /*
  * Finds a call expression within a member given the function name

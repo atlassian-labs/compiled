@@ -1,7 +1,8 @@
 import type { ParsedPath } from 'path';
 import path from 'path';
-import glob from 'glob';
+
 import appRoot from 'app-root-path';
+import glob from 'glob';
 
 /**
  * Local run is defined as running in ts-node.
@@ -15,7 +16,7 @@ const basePath = path.join(
   'node_modules',
   '@compiled',
   'codemods',
-  'dist',
+  isLocalRun ? 'src' : 'dist',
   'transforms'
 );
 

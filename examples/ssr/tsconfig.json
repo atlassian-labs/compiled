@@ -1,0 +1,9 @@
+{
+  "files": [],
+  "references": [
+    { "path": "../../packages/babel-plugin/tsconfig.json" },
+    { "path": "../../packages/react/tsconfig.json" },
+    { "path": "../../packages/react/tsconfig.browser.json" },
+    { "path": "../../packages/react/tsconfig.cjs.json" }
+  ]
+}

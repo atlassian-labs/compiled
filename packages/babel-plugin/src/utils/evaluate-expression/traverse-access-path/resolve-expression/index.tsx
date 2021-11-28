@@ -2,9 +2,10 @@ import * as t from '@babel/types';
 
 import type { Metadata } from '../../../../types';
 import { createResultPair } from '../../common';
-import { evaluateIdentifier } from './identifier';
 import type { TraverseHandlers } from '../types';
+
 import { getFunctionArgs } from './function-args';
+import { evaluateIdentifier } from './identifier';
 
 export const resolveExpressionInMember = (
   expression: t.Expression,

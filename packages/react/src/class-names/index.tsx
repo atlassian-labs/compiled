@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
+
+import type { BasicTemplateInterpolations, CssFunction } from '../types';
 import { createSetupError } from '../utils/error';
-import type { CssFunction, BasicTemplateInterpolations } from '../types';
 
 export type Interpolations = (BasicTemplateInterpolations | CssFunction | CssFunction[])[];
 

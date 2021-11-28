@@ -16,6 +16,35 @@
   },
   "packageRules": [
     {
+      "depTypeList": ["devDependencies"],
+      "updateTypes": ["patch", "minor"],
+
+      "groupName": "devDependencies (non-major)",
+      "postUpgradeTasks": {
+        "commands": ["yarn changeset --empty"],
+        "fileFilters": [".changeset/*", "yarn.lock"]
+      }
+    },
+    {
+      "depTypeList": ["devDependencies"],
+      "postUpgradeTasks": {
+        "commands": ["yarn changeset --empty"],
+        "fileFilters": [".changeset/*", "yarn.lock"]
+      }
+    },
+    {
+      "depTypeList": ["dependencies"],
+      "prPriority": 1,
+      "postUpgradeTasks": {
+        "commands": ["yarn ts-node scripts/generate-renovate-changeset.ts"],
+        "fileFilters": [".changeset/*", "yarn.lock"]
+      }
+    },
+    {
+      "packagePatterns": ["^@types"],
+      "prPriority": -1
+    },
+    {
       "managers": ["npm"],
       "updateTypes": ["minor", "patch"],
       "automerge": true

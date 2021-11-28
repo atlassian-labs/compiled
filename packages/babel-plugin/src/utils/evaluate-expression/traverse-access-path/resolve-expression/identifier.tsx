@@ -1,7 +1,7 @@
 import type * as t from '@babel/types';
 
 import type { Metadata } from '../../../../types';
-import { resolveBindingNode } from '../../../ast';
+import { resolveBinding } from '../../../resolve-binding';
 import { createResultPair } from '../../common';
 
 export const evaluateIdentifier = (
@@ -9,7 +9,7 @@ export const evaluateIdentifier = (
   meta: Metadata
 ): ReturnType<typeof createResultPair> => {
   const { name } = expression;
-  const resolvedBinding = resolveBindingNode(name, meta);
+  const resolvedBinding = resolveBinding(name, meta);
 
   if (resolvedBinding) {
     const { constant, node, meta: updatedMeta } = resolvedBinding;

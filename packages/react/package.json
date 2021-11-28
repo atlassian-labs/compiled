@@ -1,12 +1,11 @@
 {
   "name": "@compiled/react",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "keywords": [
     "compiled",
     "css-in-js",
     "styled-components",
-    "emotion-js",
     "typescript"
   ],
   "homepage": "https://compiledcssinjs.com",
@@ -21,16 +20,44 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
-    },
-    "./babel-plugin": {
-      "import": "./dist/esm/babel-plugin.js",
-      "require": "./dist/cjs/babel-plugin.js"
+      "import": [
+        "./dist/esm/index.js",
+        "./src/index.tsx"
+      ],
+      "require": [
+        "./dist/cjs/index.js",
+        "./src/index.tsx"
+      ]
     },
     "./runtime": {
-      "import": "./dist/esm/runtime.js",
-      "require": "./dist/cjs/runtime.js"
+      "import": [
+        "./dist/esm/runtime.js",
+        "./src/runtime.tsx"
+      ],
+      "require": [
+        "./dist/cjs/runtime.js",
+        "./src/runtime.tsx"
+      ]
+    },
+    "./jsx-runtime": {
+      "import": [
+        "./dist/esm/jsx/jsx-runtime.js",
+        "./src/jsx/jsx-runtime.tsx"
+      ],
+      "require": [
+        "./dist/cjs/jsx/jsx-runtime.js",
+        "./src/jsx/jsx-runtime.tsx"
+      ]
+    },
+    "./jsx-dev-runtime": {
+      "import": [
+        "./dist/esm/jsx/jsx-dev-runtime.js",
+        "./src/jsx/jsx-dev-runtime.tsx"
+      ],
+      "require": [
+        "./dist/cjs/jsx/jsx-dev-runtime.js",
+        "./src/jsx/jsx-dev-runtime.tsx"
+      ]
     }
   },
   "main": "./dist/cjs/index.js",
@@ -40,15 +67,16 @@
   "files": [
     "dist",
     "src",
-    "babel-plugin",
     "runtime",
-    "README.md"
+    "jsx-runtime",
+    "jsx-dev-runtime"
   ],
   "dependencies": {
     "csstype": "^3.0.9"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.7",
+    "@types/react-dom": "^17.0.10",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },

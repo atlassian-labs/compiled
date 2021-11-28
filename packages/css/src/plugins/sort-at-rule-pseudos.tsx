@@ -1,5 +1,6 @@
-import type { Rule, AtRule } from 'postcss';
+import type { AtRule, Rule } from 'postcss';
 import { plugin } from 'postcss';
+
 import { styleOrder } from '../utils/style-ordering';
 
 const getPseudoClassScore = (selector: string) => {
@@ -8,7 +9,7 @@ const getPseudoClassScore = (selector: string) => {
 };
 
 const sortPseudoClasses = (atRule: AtRule) => {
-  const rules: Array<Rule> = [];
+  const rules: Rule[] = [];
 
   atRule.each((childNode) => {
     switch (childNode.type) {

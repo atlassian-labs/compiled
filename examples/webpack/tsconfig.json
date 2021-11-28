@@ -1,0 +1,10 @@
+{
+  "files": [],
+  "references": [
+    { "path": "../../packages/babel-plugin/tsconfig.json" },
+    { "path": "../../packages/react/tsconfig.browser.json" },
+    // This should technically be in babel-component, but the build setup needs to change quite a bit for that to work
+    { "path": "../../packages/react/tsconfig.cjs.json" },
+    { "path": "../../packages/webpack-loader/tsconfig.json" }
+  ]
+}

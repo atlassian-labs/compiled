@@ -1,5 +1,5 @@
 import { plugin } from 'postcss';
-import type { ChildNode, AtRule } from 'postcss';
+import type { AtRule, ChildNode } from 'postcss';
 
 /**
  * Plugin to remove duplicate children found in at rules.

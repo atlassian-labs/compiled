@@ -1,5 +1,30 @@
 # @compiled/webpack-loader
 
+## 0.7.3
+
+### Patch Changes
+
+- 427cead: Compiled now supports turning on the `css` prop using jsx pragmas (both with `@jsx` and `@jsxImportSource`).
+- 79cfb08: Internal refactor changing how the TypeScript compiler picks up source files.
+- 79cfb08: Compiled's CSS loader now uses referential equality instead of pathname to determine if it needs to re-order itself from the last to first.
+- Updated dependencies [79cfb08]
+- Updated dependencies [14368bb]
+- Updated dependencies [68ebac3]
+- Updated dependencies [427cead]
+- Updated dependencies [79cfb08]
+  - @compiled/babel-plugin@0.11.1
+  - @compiled/babel-plugin-strip-runtime@0.11.1
+  - @compiled/css@0.7.1
+  - @compiled/utils@0.6.12
+
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies [e015a3a]
+- Updated dependencies [fa6af90]
+  - @compiled/babel-plugin@0.11.0
+
 ## 0.7.1
 
 ### Patch Changes

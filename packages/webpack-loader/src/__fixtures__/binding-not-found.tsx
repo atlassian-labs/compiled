@@ -1,5 +1,6 @@
+/** @jsx jsx */
+import { jsx, styled } from '@compiled/react';
 import React from 'react';
-import { styled } from '@compiled/react';
 
 const height = '9rem';
 

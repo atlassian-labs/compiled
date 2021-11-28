@@ -1,18 +1,19 @@
-import * as t from '@babel/types';
 import generate from '@babel/generator';
+import * as t from '@babel/types';
 import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '@compiled/css';
-import { kebabCase, hash } from '@compiled/utils';
+import { hash, kebabCase } from '@compiled/utils';
+
 import type { Metadata } from '../types';
+
+import { buildCodeFrameError, getKey } from './ast';
+import { evaluateExpression } from './evaluate-expression';
 import {
-  getKey,
-  resolveBindingNode,
-  buildCodeFrameError,
   isCompiledCSSCallExpression,
   isCompiledCSSTaggedTemplateExpression,
-  isCompiledKeyframesTaggedTemplateExpression,
   isCompiledKeyframesCallExpression,
-} from './ast';
-import { evaluateExpression } from './evaluate-expression';
+  isCompiledKeyframesTaggedTemplateExpression,
+} from './is-compiled';
+import { resolveBinding } from './resolve-binding';
 import type { CSSOutput, CssItem, LogicalCssItem, SheetCssItem } from './types';
 
 /**
@@ -49,7 +50,7 @@ const normalizeContentValue = (value: string) => {
  *
  * @param arr
  */
-const mergeSubsequentUnconditionalCssItems = (arr: Array<CssItem>): Array<CssItem> => {
+const mergeSubsequentUnconditionalCssItems = (arr: CssItem[]): CssItem[] => {
   const items: Exclude<CssItem, SheetCssItem>[] = [];
   const sheets: SheetCssItem[] = [];
 
@@ -91,7 +92,9 @@ const mergeSubsequentUnconditionalCssItems = (arr: Array<CssItem>): Array<CssIte
  * @param item
  */
 export const getItemCss = (item: CssItem): string => {
-  return item.css;
+  return item.type === 'conditional'
+    ? [item.consequent, item.alternate].map(getItemCss).join('')
+    : item.css;
 };
 
 /**
@@ -108,6 +111,10 @@ const getLogicalItemFromConditionalExpression = (
 ) => {
   const expression = node.test;
   return css.map((item) => {
+    if (item.type === 'conditional') {
+      return item;
+    }
+
     if (item.type === 'logical') {
       return {
         ...item,
@@ -127,7 +134,7 @@ const getLogicalItemFromConditionalExpression = (
 
     const logicalItem: LogicalCssItem = {
       type: 'logical',
-      css: item.css,
+      css: getItemCss(item),
       expression: type === 'consequent' ? expression : alternateExpression,
       operator: '&&',
     };
@@ -137,6 +144,21 @@ const getLogicalItemFromConditionalExpression = (
 };
 
 /**
+ * Recursive helper function for toCSSRule to handle conditional CssItems
+ *
+ * @param selector
+ * @param item
+ */
+const toCSSRuleInternal = (selector: string, item: CssItem): CssItem =>
+  item.type === 'conditional'
+    ? {
+        ...item,
+        consequent: toCSSRuleInternal(selector, item.consequent),
+        alternate: toCSSRuleInternal(selector, item.alternate),
+      }
+    : { ...item, css: `${selector} { ${getItemCss(item)} }` };
+
+/**
  * Maps the css in the result to CSS rules.
  *
  * @param selector
@@ -144,8 +166,30 @@ const getLogicalItemFromConditionalExpression = (
  */
 const toCSSRule = (selector: string, result: CSSOutput) => ({
   ...result,
-  css: result.css.map((x) => ({ ...x, css: `${selector} { ${getItemCss(x)} }` })),
+  css: result.css.map((item): CssItem => toCSSRuleInternal(selector, item)),
 });
+
+/**
+ * Recursive helper function for toCSSDeclaration to handle conditional CssItems
+ *
+ * @param key
+ * @param items
+ */
+const toCSSDeclarationInternal = (key: string, item: CssItem): CssItem => {
+  if (item.type === 'sheet') {
+    // Leave sheets as is
+    return item;
+  } else if (item.type === 'conditional') {
+    // Handle conditional branches
+    return {
+      ...item,
+      consequent: toCSSDeclarationInternal(key, item.consequent),
+      alternate: toCSSDeclarationInternal(key, item.alternate),
+    };
+  } else {
+    return { ...item, css: `${kebabCase(key)}: ${getItemCss(item)};` };
+  }
+};
 
 /**
  * Maps the css in the result to CSS declarations.
@@ -155,10 +199,7 @@ const toCSSRule = (selector: string, result: CSSOutput) => ({
  */
 const toCSSDeclaration = (key: string, result: CSSOutput) => ({
   ...result,
-  // Leave sheets as is
-  css: result.css.map((x) =>
-    x.type === 'sheet' ? x : { ...x, css: `${kebabCase(key)}: ${getItemCss(x)};` }
-  ),
+  css: result.css.map((item): CssItem => toCSSDeclarationInternal(key, item)),
 });
 
 /**
@@ -238,18 +279,20 @@ const callbackIfFileIncluded = (meta: Metadata, next: Metadata) => {
  */
 const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metadata): CSSOutput => {
   const conditionalPaths: ['consequent', 'alternate'] = ['consequent', 'alternate'];
-  const css = [];
-  const variables = [];
+  const css: CSSOutput['css'] = [];
+  const variables: CSSOutput['variables'] = [];
 
-  for (const path of conditionalPaths) {
+  const [consequentCss, alternateCss] = conditionalPaths.map((path) => {
     const pathNode = node[path];
-    let cssOutput;
+    let cssOutput: CSSOutput | void;
 
     if (
       t.isObjectExpression(pathNode) ||
-      // Check if string resembles CSS `property: value`
+      // Check if string or template resembles CSS `property: value`
       (t.isStringLiteral(pathNode) && pathNode.value.includes(':')) ||
-      t.isTemplateLiteral(pathNode) ||
+      (t.isTemplateLiteral(pathNode) &&
+        pathNode.quasis.some((quasi) => quasi.value.raw.includes(':'))) ||
+      // CSS tagged templates are already expected to be valid declarations
       isCompiledCSSTaggedTemplateExpression(pathNode, meta.state) ||
       isCompiledCSSCallExpression(pathNode, meta.state)
     ) {
@@ -263,15 +306,43 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
       ) {
         cssOutput = buildCss(interpolation, updatedMeta);
       }
+    } else if (t.isConditionalExpression(pathNode)) {
+      cssOutput = extractConditionalExpression(pathNode, meta);
     }
 
     if (cssOutput) {
-      css.push(...getLogicalItemFromConditionalExpression(cssOutput.css, node, path));
       variables.push(...cssOutput.variables);
+
+      const mergedOutput = mergeSubsequentUnconditionalCssItems(cssOutput.css);
+      if (mergedOutput.length > 1) {
+        // Each branch should evaluate down to a single logical or unconditional CSS Item.
+        throw buildCodeFrameError(
+          'Conditional branch contains unexpected expression',
+          node,
+          meta.parentPath
+        );
+      }
+      return mergedOutput[0];
     }
+
+    return undefined;
+  });
+
+  if (consequentCss && alternateCss) {
+    css.push({
+      type: 'conditional',
+      test: node.test,
+      consequent: consequentCss,
+      alternate: alternateCss,
+    });
+  } else if (consequentCss) {
+    // convert single-sided conditional into logical statements
+    css.push(...getLogicalItemFromConditionalExpression([consequentCss], node, 'consequent'));
+  } else if (alternateCss) {
+    css.push(...getLogicalItemFromConditionalExpression([alternateCss], node, 'alternate'));
   }
 
-  return { css: mergeSubsequentUnconditionalCssItems(css), variables };
+  return { css, variables };
 };
 
 /**
@@ -328,11 +399,11 @@ const extractKeyframes = (
 
   return {
     css: [
-      { type: 'sheet', css: css.map((item) => item.css).join('') },
+      { type: 'sheet', css: css.map((item) => getItemCss(item)).join('') },
       // Use the name of the keyframe instead of the identifier
       { type: 'unconditional', css: prefix + name + suffix },
     ],
-    variables: variables,
+    variables,
   };
 };
 
@@ -414,7 +485,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       let resolvedBinding = undefined;
 
       if (t.isIdentifier(prop.argument)) {
-        resolvedBinding = resolveBindingNode(prop.argument.name, meta);
+        resolvedBinding = resolveBinding(prop.argument.name, meta);
 
         if (!resolvedBinding) {
           throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
@@ -512,7 +583,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
       css.push(keyframesSheet);
       variables.push(...keyframeVariables);
-      return acc + unconditionalKeyframesItem.css;
+      return acc + getItemCss(unconditionalKeyframesItem);
     }
 
     const { expression, variableName } = getVariableDeclaratorValueForOwnPath(nodeExpression, meta);
@@ -543,7 +614,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   css.push({ type: 'unconditional', css: literalResult });
 
-  // Deals with Conditional CSS Rules
+  // Deals with Conditional CSS Rules from Logical Expressions
   node.expressions.forEach((prop) => {
     if (t.isArrowFunctionExpression(prop)) {
       if (t.isLogicalExpression(prop.body)) {
@@ -592,7 +663,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
   }
 
   if (t.isIdentifier(node)) {
-    const resolvedBinding = resolveBindingNode(node.name, meta);
+    const resolvedBinding = resolveBinding(node.name, meta);
 
     if (!resolvedBinding) {
       throw buildCodeFrameError('Variable could not be found', node, meta.parentPath);
@@ -662,7 +733,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
 
       const logicalItem: LogicalCssItem = {
         type: 'logical',
-        css: item.css,
+        css: getItemCss(item),
         expression,
         operator: node.operator,
       };

@@ -1,5 +1,5 @@
 import type { ConversionFunction } from './types';
-import { isWidth, getWidth } from './utils';
+import { getWidth, isWidth } from './utils';
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/CSS/flex
