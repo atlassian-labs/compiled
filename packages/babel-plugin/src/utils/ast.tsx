@@ -7,7 +7,7 @@ import { dirname, join } from 'path';
 import resolve from 'resolve';
 import type { Metadata, State } from '../types';
 import type { PartialBindingWithMeta } from './types';
-import { getDefaultExport, getNamedExport } from './export-traversers';
+import { getDefaultExport, getNamedExport } from './traversers';
 
 /**
  * Returns the nodes path including the scope of a parent.
@@ -186,6 +186,8 @@ export const buildCodeFrameError = (
  * with `originalBindingType` as 'Identifier'.
  * 2. Member expression with function call `foo().bar.baz` will return the
  * `foo` identifier along with `originalBindingType` as 'CallExpression'.
+ * 3. We also want to process call expressions with a member expression callee
+ * i.e. `foo.bar.baz()`
  *
  * @param expression - Member expression node.
  */
@@ -203,6 +205,11 @@ export const getMemberExpressionMeta = (
   traverse(t.expressionStatement(expression), {
     noScope: true,
     MemberExpression(path) {
+      // Skip if member comes from call expression arguments
+      if (path.listKey === 'arguments') {
+        return;
+      }
+
       if (t.isIdentifier(path.node.object)) {
         bindingIdentifier = path.node.object;
         originalBindingType = bindingIdentifier.type;
@@ -215,6 +222,12 @@ export const getMemberExpressionMeta = (
 
       if (t.isIdentifier(path.node.property)) {
         accessPath.push(path.node.property);
+      } else if (
+        // Adds the function name of the trailing call expression
+        t.isCallExpression(path.node.property) &&
+        t.isIdentifier(path.node.property.callee)
+      ) {
+        accessPath.push(path.node.property.callee);
       }
     },
   });
@@ -224,49 +237,6 @@ export const getMemberExpressionMeta = (
     bindingIdentifier,
     originalBindingType,
   };
-};
-
-/**
- * Will return the value of a path from an object expression.
- *
- * For example if  we take an object expression that looks like:
- * ```
- * { colors: { primary: 'red' } }
- * ```
- *
- * And a path of identifiers that looks like:
- * ```
- * [colors, primary]
- * ```
- *
- * Would result in returning the `red` string literal node.
- * If the value is not found `undefined` will be returned.
- *
- * @param expression - Member expression node.
- * @param accessPath - Access path identifiers.
- */
-export const getValueFromObjectExpression = (
-  expression: t.ObjectExpression,
-  accessPath: t.Identifier[]
-): t.Node | undefined => {
-  let value: t.Node | undefined = undefined;
-
-  traverse(expression, {
-    noScope: true,
-    ObjectProperty(path) {
-      if (t.isIdentifier(path.node.key, { name: accessPath[0].name })) {
-        if (t.isObjectExpression(path.node.value)) {
-          value = getValueFromObjectExpression(path.node.value, accessPath.slice(1));
-        } else {
-          value = path.node.value;
-        }
-
-        path.stop();
-      }
-    },
-  });
-
-  return value;
 };
 
 /**

@@ -1,11 +1,7 @@
 import traverse from '@babel/traverse';
-import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 
-type Result<T> = {
-  node: t.Node;
-  path: NodePath<T>;
-};
+import type { Result } from './types';
 
 /**
  * Find the default export of a file and return the export's node and path.
