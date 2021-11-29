@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, CSSProperties } from 'react';
 
 import type { BasicTemplateInterpolations, CssFunction } from '../types';
 import { createSetupError } from '../utils/error';
@@ -8,36 +8,46 @@ export type Interpolations = (BasicTemplateInterpolations | CssFunction | CssFun
 export interface ClassNamesProps {
   children: (opts: {
     css: (css: CssFunction | CssFunction[], ...interpolations: Interpolations) => string;
-    style: { [key: string]: string };
+    style: CSSProperties;
   }) => ReactNode;
 }
 
 /**
- * Use a component where styles are not necessarily tied to an element.
+ * ## Class names
  *
+ * Use a component where styles are not necessarily used on a JSX element.
+ * For further details [read the documentation](https://compiledcssinjs.com/docs/api-class-names).
+ *
+ * ### Style with objects
+ *
+ * @example
  * ```
- * // Object CSS
  * <ClassNames>
  *   {({ css, style }) => children({ className: css({ fontSize: 12 }) })}
  * </ClassNames>
+ * ```
  *
- * // Template literal CSS
+ * ### Style with template literals
+ *
+ * @example
+ * ```
  * <ClassNames>
  *   {({ css, style }) => children({ className: css`font-size: 12px;` })}
  * </ClassNames>
- *
- * // Array CSS
- * <ClassNames>
- *   {({ css, style }) =>
- *    children({ className: css([{ fontSize: 12 }, `font-size: 12px`]) })}
- * </ClassNames>
  * ```
  *
- * For more help, read the docs:
- * https://compiledcssinjs.com/docs/api-class-names
+ * ### Compose styles with arrays
  *
- * @param props
+ * @example
+ * ```
+ * <ClassNames>
+ *   {({ css, style }) =>
+ *    children({ className: css([{ fontSize: 12 }, css`font-size: 12px`]) })}
+ * </ClassNames>
+ * ```
  */
-export function ClassNames(_: ClassNamesProps): JSX.Element {
+export function ClassNames({ children }: ClassNamesProps): JSX.Element;
+
+export function ClassNames(_props: ClassNamesProps): JSX.Element {
   throw createSetupError();
 }
