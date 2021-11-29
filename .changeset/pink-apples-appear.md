@@ -12,4 +12,4 @@
 '@compiled/webpack-loader': patch
 ---
 
-Package jsons have had their homepage and other properties updated.
+Update `homepage` and other `package.json` properties

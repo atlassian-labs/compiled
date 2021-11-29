@@ -41,18 +41,6 @@ export default function css<T = void>(
   ...interpolations: (BasicTemplateInterpolations | FunctionInterpolation<T>)[]
 ): CSSProps;
 
-/**
- * Create styles that can be re-used between components with an object
- *
- * ```
- * css({ color: 'red' });
- * ```
- *
- * For more help, read the docs:
- * https://compiledcssinjs.com/docs/api-css
- *
- * @param css
- */
 export default function css(styles: AnyKeyCssProps<void> | CSSProps): CSSProps;
 
 export default function css<T = void>(
