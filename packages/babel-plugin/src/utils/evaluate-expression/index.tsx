@@ -405,11 +405,7 @@ export const evaluateExpression = (
     // It's preferable to use the identifier than its result if it can't be statically evaluated.
     // E.g. say we got the result of an identifier `foo` as `bar()` -- its more preferable to return
     // `foo` instead of `bar()` for a single source of truth.
-    const babelEvaluatedNode = babelEvaluateExpression(
-      value as t.Expression,
-      updatedMeta,
-      expression
-    );
+    const babelEvaluatedNode = babelEvaluateExpression(value, updatedMeta, expression);
     return createResultPair(babelEvaluatedNode, updatedMeta);
   }
 
