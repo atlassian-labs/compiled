@@ -4,7 +4,7 @@
 
 ## Summary
 
-Preface: This RFC builds on @MonicaOlejniczak's original thoughts around module traversal and leaving it up to the bundler (runtime) to put the pieces back together, it doesn't come with all the answers but hopefully a little bit of inspiration for where we can take Compiled in the future. This is something I've been thinking about since working on Compiled for innovation week, don't take it for the solution but merely my thoughts in the area.
+Preface: This RFC builds on @MonicaOlejniczak's original thoughts around module traversal and leaving it up to the bundler (runtime) to put the pieces back together, it doesn't come with all the answers but hopefully a little bit of inspiration for where we can take Compiled in the future. This is something I've been thinking about since working on Compiled for innovation week, don't take it as _the_ solution but merely my thoughts in the area.
 
 ---
 
@@ -89,6 +89,8 @@ This change should work with all Compiled APIs and ideally be backwards compatib
 Style rules now must be defined using `css`, still leveraging the large majority of code already written to build styles. The main difference being instead of being opaque and resolving to `null` they resolve to an object representation of both class names and styles.
 
 ```jsx
+import { css } from '@compiled/react';
+
 const style = css({
   color: 'black',
   ':hover': {
@@ -98,10 +100,15 @@ const style = css({
 
 // 👇 transforms to
 
-const style = ['_syaz11x8 _30l35scu', ['._syaz11x8{color:black}', '._30l35scu:hover{color:red}']];
+import { i } from '@compiled/react/runtime';
+
+const style = i([
+  '_syaz11x8 _30l35scu',
+  ['._syaz11x8{color:black}', '._30l35scu:hover{color:red}'],
+]);
 ```
 
-If the style rules are not declared at the top of the module they will be hoisted if safe to the top of the module.
+An identity function is used to flag call sites for extraction later. If the style rules are not declared at the top of the module they will be hoisted if safe to the top of the module.
 
 ```jsx
 /** @jsxImportSource @compiled/react */
@@ -112,7 +119,7 @@ function Comp() {
 
 // 👇 transforms to
 
-const _1 = ['_syaz11x8', ['._syaz11x8{color:black}']];
+const _1 = i(['_syaz11x8', ['._syaz11x8{color:black}']]);
 
 function Comp() {
   return <div css={_1} />;
@@ -128,17 +135,76 @@ const styles = css({ color: N800 });
 
 // 👇 transforms to
 
-const styles = ['_syaz4rde', ['._syaz4rde{color: var(--_kmurgp)}'], [['--_kmurgp', N800]]];
+const styles = i(['_syaz4rde', ['._syaz4rde{color: var(--_kmurgp)}'], [['--_kmurgp', N800]]]);
+```
+
+When composing style rules together in an array they would naturally work without extra AST transformation.
+
+```jsx
+const colorStyles = css({
+  color: 'black',
+});
+
+const hoverStyles = css({
+  ':hover': {
+    color: 'red',
+  },
+});
+
+const styles = css([colorStyles, hoverStyles]);
+
+// 👇 transforms to
+
+const colorStyles = i(['_syaz11x8', ['._syaz11x8{color:black}']]);
+
+const hoverStyles = i(['_30l35scu', ['._30l35scu:hover{color:red}']]);
+
+const styles = i([colorStyles, hoverStyles]);
 ```
 
 **Considerations**
 
 - What would the best data structure be for these styles, what would encourage the fastest HOT path?
 - How can we de-duplicate style declarations in the same module?
+- Composition of style rules via object rest wouldn't be possible without further AST transformation
+
+### Keyframes
+
+Keyframes are a bit tricky as they can't easily lean on the same pattern the previous API leans on while still encouraging static compiled strings that can be easily extracted later in time, including module traversal intricacies.
+
+This is probably the weakest part of this RFC currently.
+
+```jsx
+import { css, keyframes } from '@compiled/react';
+
+const fadeIn = keyframes({
+  to: { opacity: 1 },
+});
+
+const styles = css({
+  animationName: fadeIn,
+  animationDuration: '2s',
+});
+
+// 👇 transforms to
+
+const styles = i([
+  '_5sagymdr _5sagymdr',
+  [
+    '._j7hqa2t1{animation-name:kfwl3rt}',
+    '@keyframes kfwl3rt{to{opacity:1}}',
+    '._5sagymdr{animation-duration:2s}',
+  ],
+]);
+```
+
+**Considerations**
+
+- Could there be an alternate way to implement this that leans on similar patterns as the previous API?
 
 ### CSS Prop
 
-CSS prop would now be wired up at runtime for both application of class names and styles. A small jsx runtime would be created for this.
+CSS prop would now be wired up at runtime for both application of class names and style insertion. A component would be created for this. This component would use the `ax` function to build a `className` as well as the `CC` and `CS` components to handle SSR/client side style insertion. All other APIs would use them too.
 
 ```jsx
 /** @jsxImportSource @compiled/react */
@@ -153,11 +219,11 @@ function Comp({ isRed, isHidden, isLarge }) {
   );
 }
 
-// 👇 transforms to (css prop untouched - more dynamic application of styles is now possible)
+// 👇 transforms to
 
-const redColorStyles = ['_syaz5scu', ['._syaz5scu{color:red}']];
-const hiddenStyles = ['_1e0cglyw', ['._1e0cglyw{display:none}']];
-const largeTextStyles = ['_1wyb1sen', ['._1wyb1sen{font-size:50}']];
+const redColorStyles = i(['_syaz5scu', ['._syaz5scu{color:red}']]);
+const hiddenStyles = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
+const largeTextStyles = i(['_1wyb1sen', ['._1wyb1sen{font-size:50}']]);
 
 function Comp({ isRed, isHidden, isLarge }) {
   return (
@@ -166,18 +232,18 @@ function Comp({ isRed, isHidden, isLarge }) {
 }
 ```
 
-Style extraction then becomes a matter of pointing to the extract runtime and stripping out the styles from their arrays.
+Style extraction then becomes a matter of pointing to the extract runtime and stripping out the styles from their arrays. The extract runtime would remove all style insertion behavior.
 
 ```diff
 -/** @jsxImportSource @compiled/react */
 +/** @jsxImportSource @compiled/react/runtime */
 
--const redColorStyles = ["_syaz5scu", ["._syaz5scu{color:red}"]];
--const hiddenStyles = ["_1e0cglyw", ["._1e0cglyw{display:none}"]];
--const largeTextStyles = ["_1wyb1sen", ["._1wyb1sen{font-size:50}"]];
-+const redColorStyles = ["_syaz5scu"];
-+const hiddenStyles = ["_1e0cglyw"];
-+const largeTextStyles = ["_1wyb1sen"];
+-const redColorStyles = i(['_syaz5scu', ['._syaz5scu{color:red}']]);
+-const hiddenStyles = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
+-const largeTextStyles = i(['_1wyb1sen', ['._1wyb1sen{font-size:50}']]);
++const redColorStyles = i(['_syaz5scu']);
++const hiddenStyles = i(['_1e0cglyw']);
++const largeTextStyles = i(['_1wyb1sen']);
 
 function Comp({ isRed, isHidden, isLarge }) {
   return (
@@ -194,7 +260,7 @@ function Comp({ isRed, isHidden, isLarge }) {
 
 ### Styled
 
-Styled components would build on the same foundations as both the `css` func & prop.
+Styled components would build on the same foundations as both the `css` func & prop, still leaning on a runtime to do the application of class names and style insertion.
 
 ```jsx
 import { css, styled } from '@compiled/react';
@@ -207,15 +273,16 @@ const Comp = styled.div`
       : [props.isLarge && css({ fontSize: 50 }), props.isRed && css({ color: 'red' })]}
 `;
 
-// 👇 transforms to (more dynamic application of styles is now possible)
+// 👇 transforms to
+
 import { styled } from '@compiled/react/runtime';
 
-const _1 = ['_1e0cglyw', ['._1e0cglyw{display:none}']];
-const _2 = ['_1wyb1sen', ['._1wyb1sen{font-size:50}']];
-const _3 = ['_syaz5scu', ['._syaz5scu{color:red}']];
+const _1 = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
+const _2 = i(['_1wyb1sen', ['._1wyb1sen{font-size:50}']]);
+const _3 = i(['_syaz5scu', ['._syaz5scu{color:red}']]);
 
 const Comp = styled('div', (props) => [
-  ['_syaz4rde', ['._syaz4rde{color: var(--_kmurgp)}'], [['--_kmurgp', props.color]]],
+  i(['_syaz4rde', ['._syaz4rde{color: var(--_kmurgp)}'], [['--_kmurgp', props.color]]]),
   props.isHidden ? _1 : [props.isLarge && _2, props.isRed && _3],
 ]);
 ```
@@ -223,30 +290,30 @@ const Comp = styled('div', (props) => [
 Style extraction then becomes a matter of pointing to the extract runtime and stripping out the styles from their arrays.
 
 ```diff
--import { styled } from "@compiled/react/runtime";
-+import { styled } from "@compiled/react/extract";
+-import { styled } from '@compiled/react/runtime';
++import { styled } from '@compiled/react/extract';
 
--const _1 = ["_1e0cglyw", ["._1e0cglyw{display:none}"]];
--const _2 = ["_1wyb1sen", ["._1wyb1sen{font-size:50}"]];
--const _3 = ["_syaz5scu", ["._syaz5scu{color:red}"]];
-+const _1 = ["_1e0cglyw"];
-+const _2 = ["_1wyb1sen"];
-+const _3 = ["_syaz5scu"];
+-const _1 = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
+-const _2 = i(['_1wyb1sen', ['._1wyb1sen{font-size:50}']]);
+-const _3 = i(['_syaz5scu', ['._syaz5scu{color:red}']]);
++const _1 = i(['_1e0cglyw']);
++const _2 = i(['_1wyb1sen']);
++const _3 = i(['_syaz5scu']);
 
-const Comp = styled("div", (props) => [
-  [
-    "_syaz4rde",
--    ["._syaz4rde{color: var(--_kmurgp)}"],
+const Comp = styled('div', (props) => [
+  i([
+    '_syaz4rde',
+-    ['._syaz4rde{color: var(--_kmurgp)}'],
 +    undefined,
-    [["--_kmurgp", props.color]],
-  ],
+    [['--_kmurgp', props.color]],
+  ]),
   props.isHidden ? _1 : [props.isLarge && _2, props.isRed && _3],
 ]);
 ```
 
 ### Class names
 
-The class names component can mostly build ontop of what the previous two APIs have done, except dynamic styles prove to be a challenge so for now I've just omitted them.
+The class names component can mostly build on top of what the previous APIs have done, except dynamic styles prove to be a challenge so for now I've omitted them.
 
 ```jsx
 import { ClassNames } from '@compiled/react';
@@ -270,13 +337,13 @@ function Comp(props) {
   );
 }
 
-// 👇 transforms to (more dynamic application of styles is now possible)
+// 👇 transforms to
 
 import { ClassNames } from '@compiled/react/runtime';
 
-const _1 = ['_1e0cglyw', ['._1e0cglyw{display:none}']];
-const largeTextStyles = ['_1wyb1sen', ['._1wyb1sen{font-size:50}']];
-const redColorStyles = ['_syaz5scu', ['._syaz5scu{color:red}']];
+const _1 = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
+const largeTextStyles = i(['_1wyb1sen', ['._1wyb1sen{font-size:50}']]);
+const redColorStyles = i(['_syaz5scu', ['._syaz5scu{color:red}']]);
 
 function Comp(props) {
   return (
@@ -293,21 +360,18 @@ function Comp(props) {
 }
 ```
 
-When calling `css` it uses the `ax` function internally to return a `className`,
-as well as rendering the style rules inside the `ClassNames` component.
-
 Style extraction then becomes a matter of pointing to the extract runtime and stripping out the styles from their arrays.
 
 ```diff
--import { ClassNames } from "@compiled/react/runtime";
-+import { ClassNames } from "@compiled/react/extract";
+-import { ClassNames } from '@compiled/react/runtime';
++import { ClassNames } from '@compiled/react/extract';
 
--const _1 = ["_1e0cglyw", ["._1e0cglyw{display:none}"]];
--const largeTextStyles = ["_1wyb1sen", ["._1wyb1sen{font-size:50}"]];
--const redColorStyles = ["_syaz5scu", ["._syaz5scu{color:red}"]];
-+const _1 = ["_1e0cglyw"];
-+const largeTextStyles = ["_1wyb1sen"];
-+const redColorStyles = ["_syaz5scu"];
+-const _1 = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
+-const largeTextStyles = i(['_1wyb1sen', ['._1wyb1sen{font-size:50}']]);
+-const redColorStyles = i(['_syaz5scu', ['._syaz5scu{color:red}']]);
++const _1 = i(['_1e0cglyw']);
++const largeTextStyles = i(['_1wyb1sen']);
++const redColorStyles = i(['_syaz5scu']);
 
 function Comp(props) {
   return (
@@ -333,10 +397,6 @@ function Comp(props) {
 
 - What would be an idiomatic way to handle dynamic styles without needing additional AST traversal? The main problem is you need to get ahold of a `style` prop. One obvious answer is don't support it.
 
-### Keyframes
-
-Keyframes would operate very similarly to how `css` function would. I've opted not to flesh it out right now but let me know if you'd want it and I can.
-
 ## Drawbacks
 
 - More runtime bundle would be added to the React package
@@ -354,3 +414,4 @@ TBD.
 
 - What edge cases may arise with extraction?
 - What performance characteristics are affected by this change?
+- This doesn't completely get rid of the need of module traversal (style declaration static evaluation)
