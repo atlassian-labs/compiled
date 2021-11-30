@@ -47,7 +47,7 @@ Today Compiled does the following:
 
 This is a lot of steps and prone to running into edge cases unfortunately. But it does work! And allowed the initial architecture to work with any unmarked style rules. If we were to enforce that all style rules **must** be declared using the `css` function things get a little more interesting.
 
-Taking the same example above except styles are now defined through `css` and return a data structure with compiled styles.
+If we take the example above, ensure all styles flow through a `css` call site, and then compile each call site in place to a data structure Compiled can work with, things get _really_ interesting.
 
 ```diff
 /** @jsxImportSource @compiled/react */
@@ -69,7 +69,7 @@ Compiled would:
 2. Generate class name and styles
 3. Lean on the runtime to do the rest
 
-You can see a basic implementation of the above here: https://github.com/atlassian-labs/compiled/compare/babel-experiment?expand=1#diff-7c3b8f72b34155cdf17c42f282ed0cecec4fd2863ba71912213f8932159cd01bR17
+You can see a basic implementation of the above on the [`babel-experiment` branch](https://github.com/atlassian-labs/compiled/compare/babel-experiment?expand=1#diff-7c3b8f72b34155cdf17c42f282ed0cecec4fd2863ba71912213f8932159cd01bR17). Note only tests work, Storybook is broken.
 
 ## Motivation
 
@@ -77,12 +77,12 @@ The primary motivation is for Compiled maintainers to maintain and write less co
 
 Other motivating factors:
 
-- Reduce AST traveral
-- Enable very dynamic conditional styles to work
+- Reduce AST traveral (improved build performance)
+- Enable very dynamic conditional styles to work (improved DX)
 
 ## Detail design
 
-This change should work with all Compiled APIs and ideally be backwards compatible if possible.
+This change should work with all Compiled APIs and ideally be backwards compatible if possible, at least for a while.
 
 ### CSS
 
@@ -126,7 +126,7 @@ function Comp() {
 }
 ```
 
-When referencing an expression Compiled would try to statically evaluate it, if it fails it would be added as the third item in the array for all dynamic items. This behaviour can be re-used for truly dynamic styles.
+When referencing an expression Compiled would try to statically evaluate it, if it fails it would be added as the third item in the array along with all other dynamic styles.
 
 ```jsx
 import { N800 } from '@atlaskit/theme/colors';
@@ -138,7 +138,7 @@ const styles = css({ color: N800 });
 const styles = i(['_syaz4rde', ['._syaz4rde{color: var(--_kmurgp)}'], [['--_kmurgp', N800]]]);
 ```
 
-When composing style rules together in an array they would naturally work without extra AST transformation.
+When composing style rules together in an array they would naturally work **without extra AST transformation**.
 
 ```jsx
 const colorStyles = css({
@@ -164,15 +164,16 @@ const styles = i([colorStyles, hoverStyles]);
 
 **Considerations**
 
-- What would the best data structure be for these styles, what would encourage the fastest HOT path?
+- Could there be a better way to mark sites for extraction?
+- What would the best data structure be for these styles, what would encourage the fastest HOT path? I've chosen arrays as they don't take much bundle size vs. objects.
 - How can we de-duplicate style declarations in the same module?
-- Composition of style rules via object rest wouldn't be possible without further AST transformation
+- Composition of style rules via object rest wouldn't be possible without further AST transformation, though perhaps this remains unsupported? Have only a single way to do composition.
 
 ### Keyframes
 
 Keyframes are a bit tricky as they can't easily lean on the same pattern the previous API leans on while still encouraging static compiled strings that can be easily extracted later in time, including module traversal intricacies.
 
-This is probably the weakest part of this RFC currently.
+This is probably the weakest part of this RFC currently and would love any thoughts of how best to handle them.
 
 ```jsx
 import { css, keyframes } from '@compiled/react';
@@ -189,7 +190,7 @@ const styles = css({
 // 👇 transforms to
 
 const styles = i([
-  '_5sagymdr _5sagymdr',
+  '_5sagymdr _j7hqa2t1',
   [
     '._j7hqa2t1{animation-name:kfwl3rt}',
     '@keyframes kfwl3rt{to{opacity:1}}',
@@ -197,6 +198,32 @@ const styles = i([
   ],
 ]);
 ```
+
+Note that it in essence still behaves the same as it does today. The keyframes call site is erased and merged into the style rule. I had some an idea for keyframes to build its own style rule declaration (below) but it broke down when wanting to define animation in pseudo elements/classes.
+
+```jsx
+import { css, keyframes } from '@compiled/react';
+
+const fadeIn = keyframes({
+  to: { opacity: 1 },
+});
+
+const styles = css({
+  animationName: fadeIn,
+  animationDuration: '2s',
+});
+
+// 👇 transforms to
+
+const fadeIn = i([
+  '_j7hqa2t1',
+  ['._j7hqa2t1{animation-name:kfwl3rt}', '@keyframes kfwl3rt{to{opacity:1}}'],
+]);
+
+const styles = i([fadeIn, ['_5sagymdr', ['._5sagymdr{animation-duration:2s}']]]);
+```
+
+Tough.
 
 **Considerations**
 
@@ -232,7 +259,7 @@ function Comp({ isRed, isHidden, isLarge }) {
 }
 ```
 
-Style extraction then becomes a matter of pointing to the extract runtime and stripping out the styles from their arrays. The extract runtime would remove all style insertion behavior.
+Style extraction then becomes a matter of pointing to the extract runtime and stripping out the styles from their arrays. The extract runtime would remove all style insertion behavior reducing the bundle size.
 
 ```diff
 -/** @jsxImportSource @compiled/react */
@@ -395,16 +422,22 @@ function Comp(props) {
 
 **Considerations**
 
-- What would be an idiomatic way to handle dynamic styles without needing additional AST traversal? The main problem is you need to get ahold of a `style` prop. One obvious answer is don't support it.
+- What would be an idiomatic way to handle dynamic styles without needing additional AST traversal? The main problem is you need to get ahold of a `style` prop. One obvious answer is don't support it. The main goal here is the component should only need to render once to reconcile styles.
 
 ## Drawbacks
 
 - More runtime bundle would be added to the React package
-- Dynamic declarations aren't currently considered with the ClassNames API
+- Keyframes API doesn't currently fit naturally within this architecture.
+- Dynamic declarations aren't currently supported with the ClassNames API without further AST traversal (or clever runtime solutions)
 
 ## Alternatives
 
-TBD.
+The primary alternative to discuss would be what data structure would get the best:
+
+- Runtime performance
+- Minification characteristics
+
+It does not need to be human readable as its a compilation target.
 
 ## Adoption strategy
 
