@@ -441,10 +441,33 @@ It does not need to be human readable as its a compilation target.
 
 ## Adoption strategy
 
-TBD.
+This change would be a big shift from what how Compiled works today. The one consideration for adoption strategy will be ensuring the style extraction (strip runtime) is backwards compatible.
+
+To turn the new functionality on it should be introduced under some configuration where consumers can opt into the new compilation method which would then use what has been defined in this RFC.
+
+For Webpack this could look like:
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        loader: '@compiled/webpack-loader',
+        options: {
+          experimental: {
+            localTransforms: true,
+          },
+        },
+      },
+    ],
+  },
+};
+```
+
+For the strip runtime it needs to be able to work with both transformation targets to ensure all sourced of Compiled transformed components will be extracted.
 
 ## Unresolved questions
 
-- What edge cases may arise with extraction?
-- What performance characteristics are affected by this change?
-- This doesn't completely get rid of the need of module traversal (style declaration static evaluation)
+- What edge cases could arise with style extraction?
+- What performance characteristics (bundle size vs. runtime) are affected by this change?
+- This doesn't completely get rid of the need of module traversal (style declaration static evaluation) - is it possible to?
