@@ -8,19 +8,19 @@ Preface: This RFC builds on @MonicaOlejniczak's original thoughts around module 
 
 ---
 
-Compiled was initially written with the assumption styles could be written in shape or form, strings, objects, arrays, it doesn't matter the library will try and handle it (use of the `css` func is optional!). To enable this to work AST traversal would always originate from three different sources:
+Compiled was initially written with the assumption styles could be written in shape or form, strings, objects, arrays, it doesn't matter the library will try and handle it (remember: use of the `css` func is **optional**!). To make this to work AST traversal would always originate from three different nodes:
 
-1. styled component
+1. styled component declaration
 2. the `css` prop
 3. class names component
 
-Traversal would start at these nodes and then work its way down and up the tree piecing together all the styles it can until it either succeeds, or reach an edge case that isn't explicitly handled. Explicit handling of ASTs is where a lot of the code in Compiled has been written to not only handle the static evaluation of styles, but also the dynamic combination of styles. This is very prevalent in the `css` prop API where each binary expression, conditional, and so on needs to be supported else you'll get a build time error.
+Traversal would start at these nodes and then work its way up and down the tree piecing together all the styles it can until it either succeeds, or reaches an edge case that isn't explicitly handled. Explicit handling of ASTs is where a lot of the code in Compiled has been written to not only handle the static evaluation of styles, but also the dynamic combination of styles. This is very prevalent in the `css` prop API where each binary expression, conditional, and so on needs to be supported else you'll get a build time error.
 
-This RFC is proposing changing Compiled to do what it does best - compile styles! While then giving more room for the runtime to put the styles back together.
+This RFC is proposing changing Compiled to do what it does best - static evaluation of styles! While then giving more room for the runtime to handle the dynamic combination of styles. All while still supporting style extraction.
 
 ## Basic example
 
-Take the following code.
+Take the following code where styles are defined in an object with no clear call site.
 
 ```jsx
 /** @jsxImportSource @compiled/react */
@@ -34,20 +34,19 @@ function Component({ isBlack }) {
 }
 ```
 
-Today Compiled does the following:
+Today Compiled would do the following:
 
-1. Find the JSXAttribute called `css`
+1. Find the JSXAttribute node called `css`
 2. Traverse its children
-3. Find logical expression
+3. Find a logical expression node
 4. Traverse the right node
-5. Find identifier
-6. Resolve identifier
-7. Generate class name and styles
-8. Transform to Compiled Component
+5. Find an identifier
+6. Resolve the identifier
+7. Statically evaluate the styles from the object
+8. Generate class name and styles
+9. Transform the parent of the JSXAttribute node to a Compiled Component
 
-This is a lot of steps and prone to running into edge cases unfortunately. But it does work! And allowed the initial architecture to work with any unmarked style rules. If we were to enforce that all style rules **must** be declared using the `css` function things get a little more interesting.
-
-If we take the example above, ensure all styles flow through a `css` call site, and then compile each call site in place to a data structure Compiled can work with, things get _really_ interesting.
+This is a lot of steps and prone to running into edge cases unfortunately. But it does work! And allowed the initial architecture to work with any unmarked style rules. If we were to enforce that _all style rules must be declared using explicit call sites_ things start to get easier. We can take the example from above using this constraint and then transform them to a data structure Compiled can work with at runtime.
 
 ```diff
 /** @jsxImportSource @compiled/react */
@@ -71,22 +70,19 @@ Compiled would:
 
 You can see a basic implementation of the above on the [`babel-experiment` branch](https://github.com/atlassian-labs/compiled/compare/babel-experiment?expand=1#diff-7c3b8f72b34155cdf17c42f282ed0cecec4fd2863ba71912213f8932159cd01bR17). Note only tests work, Storybook is broken.
 
+A more technical design overview can be found further into the RFC.
+
 ## Motivation
 
-The primary motivation is for Compiled maintainers to maintain and write less code to handle the ever increasing list of edge cases and consumers having a better developer experience because things JustWork (for the most part).
-
-Other motivating factors:
-
-- Reduce AST traveral (improved build performance)
-- Enable very dynamic conditional styles to work (improved DX)
+The primary motivation is for Compiled maintainers to maintain and write less code to handle the ever increasing list of edge cases and consumers having a better developer experience because things JustWork with any number of dynamic application of styles, with supplementary motivators being improved build performance as there is less AST traversal and transformation required at build time.
 
 ## Detail design
 
-This change should work with all Compiled APIs and ideally be backwards compatible if possible, at least for a while.
+This change should work with all Compiled APIs and ensure style extraction is backwards compatible for at least one major version.
 
 ### CSS
 
-Style rules now must be defined using `css`, still leveraging the large majority of code already written to build styles. The main difference being instead of being opaque and resolving to `null` they resolve to an object representation of both class names and styles.
+Style rules now must be defined using clear call sites using `css` instead of raw objects or strings. We can still leverage the large majority of code already written to statically evaluate styles. The main difference however is instead of being opaque and resolving to `null` they now get transformed into an data structure Compiled can understand at runtime.
 
 ```jsx
 import { css } from '@compiled/react';
@@ -100,7 +96,7 @@ const style = css({
 
 // 👇 transforms to
 
-import { i } from '@compiled/react/runtime';
+import { i } from '@compiled/react/insert';
 
 const style = i([
   '_syaz11x8 _30l35scu',
@@ -108,7 +104,7 @@ const style = i([
 ]);
 ```
 
-An identity function is used to flag call sites for extraction later. If the style rules are not declared at the top of the module they will be hoisted if safe to the top of the module.
+An identity function is used to flag call sites for extraction later (naming TBD). If the style rules are not declared at the top of the module they will be hoisted if safe to the top of the module.
 
 ```jsx
 /** @jsxImportSource @compiled/react */
@@ -126,7 +122,7 @@ function Comp() {
 }
 ```
 
-When referencing an expression Compiled would try to statically evaluate it, if it fails it would be added as the third item in the array along with all other dynamic styles.
+When referencing an expression Compiled would try to statically evaluate it else if it fails it would be added as the third item in the array along with all other dynamic styles.
 
 ```jsx
 import { N800 } from '@atlaskit/theme/colors';
@@ -138,7 +134,7 @@ const styles = css({ color: N800 });
 const styles = i(['_syaz4rde', ['._syaz4rde{color: var(--_kmurgp)}'], [['--_kmurgp', N800]]]);
 ```
 
-When composing style rules together in an array they would naturally work **without extra AST transformation**.
+When composing style rules together in an array they would naturally work **without any extra AST transformation**.
 
 ```jsx
 const colorStyles = css({
@@ -173,7 +169,7 @@ const styles = i([colorStyles, hoverStyles]);
 
 Keyframes are a bit tricky as they can't easily lean on the same pattern the previous API leans on while still encouraging static compiled strings that can be easily extracted later in time, including module traversal intricacies.
 
-This is probably the weakest part of this RFC currently and would love any thoughts of how best to handle them.
+This is probably the weakest part of this RFC currently and would **love any thoughts of how best to handle them**!
 
 ```jsx
 import { css, keyframes } from '@compiled/react';
@@ -199,7 +195,7 @@ const styles = i([
 ]);
 ```
 
-Note that it in essence still behaves the same as it does today. The keyframes call site is erased and merged into the style rule. I had some an idea for keyframes to build its own style rule declaration (below) but it broke down when wanting to define animation in pseudo elements/classes.
+Note that it in essence still behaves the same as it does today. The keyframes call site is erased and merged into the style rule. I had an idea for keyframes to build its own style rule (example below) but it broke down when wanting to define animation in pseudo elements/classes so I dropped it for now.
 
 ```jsx
 import { css, keyframes } from '@compiled/react';
@@ -223,7 +219,7 @@ const fadeIn = i([
 const styles = i([fadeIn, ['_5sagymdr', ['._5sagymdr{animation-duration:2s}']]]);
 ```
 
-Tough.
+Breaks idiomatic CSS so the idea was tossed.
 
 **Considerations**
 
@@ -231,7 +227,7 @@ Tough.
 
 ### CSS Prop
 
-CSS prop would now be wired up at runtime for both application of class names and style insertion. A component would be created for this. This component would use the `ax` function to build a `className` as well as the `CC` and `CS` components to handle SSR/client side style insertion. All other APIs would use them too.
+CSS prop would now be wired up at runtime for both application of class names and style insertion. A component would be created for this: `CompiledElement`. This component would use the `ax` function to build a `className` as well as the `CC` and `CS` components to handle SSR/client side style insertion.
 
 ```jsx
 /** @jsxImportSource @compiled/react */
@@ -263,7 +259,7 @@ Style extraction then becomes a matter of pointing to the extract runtime and st
 
 ```diff
 -/** @jsxImportSource @compiled/react */
-+/** @jsxImportSource @compiled/react/runtime */
++/** @jsxImportSource @compiled/react/inject */
 
 -const redColorStyles = i(['_syaz5scu', ['._syaz5scu{color:red}']]);
 -const hiddenStyles = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
@@ -285,9 +281,11 @@ function Comp({ isRed, isHidden, isLarge }) {
 }
 ```
 
+Less edge cases and AST transformation required to strip the runtime. Win!
+
 ### Styled
 
-Styled components would build on the same foundations as both the `css` func & prop, still leaning on a runtime to do the application of class names and style insertion.
+Styled components would build on the same foundation as both the `css` func & prop, still leaning on a runtime to do the application of class names and style insertion.
 
 ```jsx
 import { css, styled } from '@compiled/react';
@@ -302,7 +300,7 @@ const Comp = styled.div`
 
 // 👇 transforms to
 
-import { styled } from '@compiled/react/runtime';
+import { styled } from '@compiled/react/insert';
 
 const _1 = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
 const _2 = i(['_1wyb1sen', ['._1wyb1sen{font-size:50}']]);
@@ -317,7 +315,7 @@ const Comp = styled('div', (props) => [
 Style extraction then becomes a matter of pointing to the extract runtime and stripping out the styles from their arrays.
 
 ```diff
--import { styled } from '@compiled/react/runtime';
+-import { styled } from '@compiled/react/insert';
 +import { styled } from '@compiled/react/extract';
 
 -const _1 = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
@@ -340,7 +338,7 @@ const Comp = styled('div', (props) => [
 
 ### Class names
 
-The class names component can mostly build on top of what the previous APIs have done, except dynamic styles prove to be a challenge so for now I've omitted them.
+The class names component can mostly build on top of what the previous APIs have done, except dynamic styles prove to be a challenge without changing the API a little. Would love a close eye on this with any thoughts in the matter!
 
 ```jsx
 import { ClassNames } from '@compiled/react';
@@ -366,7 +364,7 @@ function Comp(props) {
 
 // 👇 transforms to
 
-import { ClassNames } from '@compiled/react/runtime';
+import { ClassNames } from '@compiled/react/insert';
 
 const _1 = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
 const largeTextStyles = i(['_1wyb1sen', ['._1wyb1sen{font-size:50}']]);
@@ -390,7 +388,7 @@ function Comp(props) {
 Style extraction then becomes a matter of pointing to the extract runtime and stripping out the styles from their arrays.
 
 ```diff
--import { ClassNames } from '@compiled/react/runtime';
+-import { ClassNames } from '@compiled/react/insert';
 +import { ClassNames } from '@compiled/react/extract';
 
 -const _1 = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
@@ -422,13 +420,69 @@ function Comp(props) {
 
 **Considerations**
 
-- What would be an idiomatic way to handle dynamic styles without needing additional AST traversal? The main problem is you need to get ahold of a `style` prop. One obvious answer is don't support it. The main goal here is the component should only need to render once to reconcile styles.
+- What would be an idiomatic way to handle dynamic styles without needing additional AST traversal? The main problem is you need to get ahold of a `style` prop. One obvious answer is don't support it. Another is to do more AST traversal or change the API itself (to return a `className` and `style` element). The main goal here is the component should only need to render once to reconcile styles. Example below.
+
+```jsx
+import { ClassNames } from '@compiled/react';
+
+function Comp(props) {
+  return (
+    <ClassNames>
+      {({ css }) => {
+        const { className, style } = css({ color: props.color });
+
+        return <div className={className} style={style} />;
+      }}
+    </ClassNames>
+  );
+}
+
+// 👇 transforms to
+
+import { i, ClassNames } from '@compiled/react/insert';
+
+function Comp(props) {
+  return (
+    <ClassNames>
+      {({ css }) => {
+        const { className, style } = css(
+          i(['_syaz4rde', ['._syaz4rde{color: var(--_kmurgp)}'], [['--_kmurgp', props.color]]])
+        );
+
+        return <div className={className} style={style} />;
+      }}
+    </ClassNames>
+  );
+}
+```
+
+Style extraction would happen in the usual way.
+
+```diff
+-import { i, ClassNames } from '@compiled/react/insert';
++import { ClassNames } from '@compiled/react/extract';
+
+function Comp(props) {
+  return (
+    <ClassNames>
+      {({ css }) => (
+        <div
+          {...css(
+-            i(['_syaz4rde', ['._syaz4rde{color: var(--_kmurgp)}'], [['--_kmurgp', props.color]]])
++            i(['_syaz4rde', undefined, [['--_kmurgp', props.color]]])
+          )}
+        />
+      )}
+    </ClassNames>
+  );
+}
+```
 
 ## Drawbacks
 
-- More runtime bundle would be added to the React package
-- Keyframes API doesn't currently fit naturally within this architecture.
-- Dynamic declarations aren't currently supported with the ClassNames API without further AST traversal (or clever runtime solutions)
+- More runtime bundle size would be added to the React package (however it might be a net reduction overall as every call site now uses an abstraction instead of the same markup)
+- Keyframes API doesn't fit naturally within this architecture
+- Dynamic declarations aren't supported in the ClassNames API without further AST traversal or changing the API for consumers
 
 ## Alternatives
 
