@@ -195,7 +195,7 @@ const createComposedNode = ({
 
 /**
  * Returns declaration data
- * @returns data.name - component name if it's a variable diclaration or generic component name
+ * @returns data.name - component name if it's a variable declaration or generic component name
  * @returns data.isAnonymous - flag for an anonymous declarations
  * @returns data.declaration - declaration node
  */
@@ -210,13 +210,13 @@ const getDeclarationData = (expression: ASTPath) => {
       name: parentDeclaration.value.id.name as string,
       declaration: findParent(expression, 'VariableDeclaration') as StyledAttributesDeclarationNode,
     };
-  } else {
-    return {
-      name: `ComposedComponent`,
-      declaration: expression as StyledAttributesDeclarationNode,
-      isAnonymous: true,
-    };
   }
+
+  return {
+    name: `ComposedComponent`,
+    declaration: expression as StyledAttributesDeclarationNode,
+    isAnonymous: true,
+  };
 };
 
 /**
@@ -360,7 +360,7 @@ export const convertStyledAttrsToComponent = ({
       applyBuildAttributes({
         plugins,
         originalNode: expressionDeclarator,
-        transformedNode: transformedNode,
+        transformedNode,
         composedNode,
       });
   });
