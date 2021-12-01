@@ -1,4 +1,4 @@
-import { isCacheDisabled } from './disable-cache';
+import { isCacheDisabled } from './cache';
 import type { Bucket, StyleSheetOpts } from './types';
 
 /**

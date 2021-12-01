@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createContext, useContext } from 'react';
 
-import { isCacheDisabled } from './disable-cache';
+import { isCacheDisabled } from './cache';
 import { isNodeEnvironment } from './is-node';
 import type { ProviderComponent, UseCacheHook } from './types';
 
