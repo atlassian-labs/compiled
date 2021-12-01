@@ -1,5 +1,5 @@
 /**
- * Returns `true` when caching should be used, else `false`.
+ * Returns `true` when caching should be disabled, else `false`.
  *
  * Any code within this check will be removed in the output bundles:
  *
