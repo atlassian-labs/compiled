@@ -8,7 +8,7 @@ Preface: This RFC builds on @MonicaOlejniczak's original thoughts around module 
 
 ---
 
-Compiled was initially written with the assumption styles could be written in shape or form, strings, objects, arrays, it doesn't matter the library will try and handle it (remember: use of the `css` func is **optional**!). To make this to work AST traversal would always originate from three different nodes:
+Compiled was initially written with the assumption styles could be written in any shape or form, strings, objects, arrays, it doesn't matter the library will try and handle it (**remember**: use of the `css` func didn't originally exist, and when it was introduced it was **optional**!). To make this work AST traversal would always originate from three different nodes:
 
 1. styled component declaration
 2. the `css` prop
@@ -46,7 +46,7 @@ Today Compiled would do the following:
 8. Generate class name and styles
 9. Transform the parent of the JSXAttribute node to a Compiled Component
 
-This is a lot of steps and prone to running into edge cases unfortunately. But it does work! And allowed the initial architecture to work with any unmarked style rules. If we were to enforce that _all style rules must be declared using explicit call sites_ things start to get easier. We can take the example from above using this constraint and then transform them to a data structure Compiled can work with at runtime.
+This is a lot of steps and prone to running into edge cases unfortunately. But it does work! And allowed the current architecture to work with any unmarked style rules. If we were to enforce that _all style rules must be declared using explicit call sites_ things start to get easier. We can take the example from above using this constraint and then transform them to a data structure Compiled can work with at runtime.
 
 ```diff
 /** @jsxImportSource @compiled/react */
@@ -82,7 +82,7 @@ This change should work with all Compiled APIs and ensure style extraction is ba
 
 ### CSS
 
-Style rules now must be defined using clear call sites using `css` instead of raw objects or strings. We can still leverage the large majority of code already written to statically evaluate styles. The main difference however is instead of being opaque and resolving to `null` they now get transformed into an data structure Compiled can understand at runtime.
+Style rules now must be defined using clear call sites using `css` instead of raw objects or strings. We can still leverage the large majority of code already written to statically evaluate styles. The main difference however is instead of being opaque and resolving to `null` they now get transformed into a data structure Compiled can understand at runtime.
 
 ```jsx
 import { css } from '@compiled/react';
@@ -122,7 +122,7 @@ function Comp() {
 }
 ```
 
-When referencing an expression Compiled would try to statically evaluate it else if it fails it would be added as the third item in the array along with all other dynamic styles.
+When referencing an expression Compiled would try to statically evaluate it else if it fails be added as the third item in the array along with all other dynamic styles.
 
 ```jsx
 import { N800 } from '@atlaskit/theme/colors';
@@ -163,7 +163,7 @@ const styles = i([colorStyles, hoverStyles]);
 - Could there be a better way to mark sites for extraction?
 - What would the best data structure be for these styles, what would encourage the fastest HOT path? I've chosen arrays as they don't take much bundle size vs. objects.
 - How can we de-duplicate style declarations in the same module?
-- Composition of style rules via object rest wouldn't be possible without further AST transformation, though perhaps this remains unsupported? Have only a single way to do composition.
+- Composition of style rules via object rest wouldn't be possible without further AST transformation, though perhaps this remains unsupported? Having only a single way to compose styles is reasonable IMO.
 
 ### Keyframes
 
@@ -259,14 +259,14 @@ Style extraction then becomes a matter of pointing to the extract runtime and st
 
 ```diff
 -/** @jsxImportSource @compiled/react */
-+/** @jsxImportSource @compiled/react/inject */
++/** @jsxImportSource @compiled/react/extract */
 
 -const redColorStyles = i(['_syaz5scu', ['._syaz5scu{color:red}']]);
 -const hiddenStyles = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
 -const largeTextStyles = i(['_1wyb1sen', ['._1wyb1sen{font-size:50}']]);
-+const redColorStyles = i(['_syaz5scu']);
-+const hiddenStyles = i(['_1e0cglyw']);
-+const largeTextStyles = i(['_1wyb1sen']);
++const redColorStyles = ['_syaz5scu'];
++const hiddenStyles = ['_1e0cglyw'];
++const largeTextStyles = ['_1wyb1sen'];
 
 function Comp({ isRed, isHidden, isLarge }) {
   return (
@@ -321,17 +321,19 @@ Style extraction then becomes a matter of pointing to the extract runtime and st
 -const _1 = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
 -const _2 = i(['_1wyb1sen', ['._1wyb1sen{font-size:50}']]);
 -const _3 = i(['_syaz5scu', ['._syaz5scu{color:red}']]);
-+const _1 = i(['_1e0cglyw']);
-+const _2 = i(['_1wyb1sen']);
-+const _3 = i(['_syaz5scu']);
++const _1 = ['_1e0cglyw'];
++const _2 = ['_1wyb1sen'];
++const _3 = ['_syaz5scu'];
 
 const Comp = styled('div', (props) => [
-  i([
+-  i([
++  [
     '_syaz4rde',
 -    ['._syaz4rde{color: var(--_kmurgp)}'],
 +    undefined,
     [['--_kmurgp', props.color]],
-  ]),
+-  ]),
++  ],
   props.isHidden ? _1 : [props.isLarge && _2, props.isRed && _3],
 ]);
 ```
@@ -394,9 +396,9 @@ Style extraction then becomes a matter of pointing to the extract runtime and st
 -const _1 = i(['_1e0cglyw', ['._1e0cglyw{display:none}']]);
 -const largeTextStyles = i(['_1wyb1sen', ['._1wyb1sen{font-size:50}']]);
 -const redColorStyles = i(['_syaz5scu', ['._syaz5scu{color:red}']]);
-+const _1 = i(['_1e0cglyw']);
-+const largeTextStyles = i(['_1wyb1sen']);
-+const redColorStyles = i(['_syaz5scu']);
++const _1 = ['_1e0cglyw'];
++const largeTextStyles = ['_1wyb1sen'];
++const redColorStyles = ['_syaz5scu'];
 
 function Comp(props) {
   return (
@@ -429,7 +431,7 @@ function Comp(props) {
   return (
     <ClassNames>
       {({ css }) => {
-        const { className, style } = css({ color: props.color });
+        const [className, style] = css({ color: props.color });
 
         return <div className={className} style={style} />;
       }}
@@ -445,7 +447,7 @@ function Comp(props) {
   return (
     <ClassNames>
       {({ css }) => {
-        const { className, style } = css(
+        const [className, style] = css(
           i(['_syaz4rde', ['._syaz4rde{color: var(--_kmurgp)}'], [['--_kmurgp', props.color]]])
         );
 
@@ -465,14 +467,14 @@ Style extraction would happen in the usual way.
 function Comp(props) {
   return (
     <ClassNames>
-      {({ css }) => (
-        <div
-          {...css(
--            i(['_syaz4rde', ['._syaz4rde{color: var(--_kmurgp)}'], [['--_kmurgp', props.color]]])
-+            i(['_syaz4rde', undefined, [['--_kmurgp', props.color]]])
-          )}
-        />
-      )}
+      {({ css }) => {
+        const [className, style] = css(
+-          i(['_syaz4rde', ['._syaz4rde{color: var(--_kmurgp)}'], [['--_kmurgp', props.color]]])
++          ['_syaz4rde', undefined, [['--_kmurgp', props.color]]
+        );
+
+        return <div className={className} style={style} />;
+      }}
     </ClassNames>
   );
 }
@@ -518,10 +520,10 @@ module.exports = {
 };
 ```
 
-For the strip runtime it needs to be able to work with both transformation targets to ensure all sourced of Compiled transformed components will be extracted.
+For the strip runtime it needs to be able to work with both transformation targets to ensure all sourced of Compiled transformed components will be extracted, with configuration to turn on/off legacy/experimental extraction.
 
 ## Unresolved questions
 
 - What edge cases could arise with style extraction?
 - What performance characteristics (bundle size vs. runtime) are affected by this change?
-- This doesn't completely get rid of the need of module traversal (style declaration static evaluation) - is it possible to?
+- This doesn't completely get rid of the need of module traversal (for style declaration static evaluation) - is it possible to?
