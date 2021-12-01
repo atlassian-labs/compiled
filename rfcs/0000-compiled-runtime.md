@@ -76,6 +76,12 @@ A more technical design overview can be found further into the RFC.
 
 The primary motivation is for Compiled maintainers to maintain and write less code to handle the ever increasing list of edge cases and consumers having a better developer experience because things JustWork with any number of dynamic application of styles, with supplementary motivators being improved build performance as there is less AST traversal and transformation required at build time.
 
+### Technical design considerations
+
+- 🤏 Minimize AST traversal & transformation
+- ⛓️ One nodes transformation should not be dependent on another nodes
+- 🥇 Ignore intermediate nodes - let the runtime handle it!
+
 ## Detail design
 
 This change should work with all Compiled APIs and ensure style extraction is backwards compatible for at least one major version.
@@ -163,13 +169,13 @@ const styles = i([colorStyles, hoverStyles]);
 - Could there be a better way to mark sites for extraction?
 - What would the best data structure be for these styles, what would encourage the fastest HOT path? I've chosen arrays as they don't take much bundle size vs. objects.
 - How can we de-duplicate style declarations in the same module?
-- Composition of style rules via object rest wouldn't be possible without further AST transformation, though perhaps this remains unsupported? Having only a single way to compose styles is reasonable IMO.
+- Composition of style rules via object rest wouldn't be possible without further AST transformation, however it should probably remain unsupported to be in line with the [technical design considerations](#technical-design-considerations). Having only a single way to compose styles is a good thing to strive for IMO.
 
 ### Keyframes
 
 Keyframes are a bit tricky as they can't easily lean on the same pattern the previous API leans on while still encouraging static compiled strings that can be easily extracted later in time, including module traversal intricacies.
 
-This is probably the weakest part of this RFC currently and would **love any thoughts of how best to handle them**!
+This is probably the weakest part of this RFC currently and would **love any thoughts of how best to handle them**! In it's current state I wouldn't accept it as it goes against the [technical design considerations](#technical-design-considerations).
 
 ```jsx
 import { css, keyframes } from '@compiled/react';
@@ -281,7 +287,7 @@ function Comp({ isRed, isHidden, isLarge }) {
 }
 ```
 
-Less edge cases and AST transformation required to strip the runtime. Win!
+Less edge cases and AST transformation are needed to strip the runtime. Win win!
 
 ### Styled
 
@@ -420,9 +426,7 @@ function Comp(props) {
 }
 ```
 
-**Considerations**
-
-- What would be an idiomatic way to handle dynamic styles without needing additional AST traversal? The main problem is you need to get ahold of a `style` prop. One obvious answer is don't support it. Another is to do more AST traversal or change the API itself (to return a `className` and `style` element). The main goal here is the component should only need to render once to reconcile styles. Example below.
+To handle dynamic runtime styles and stay in line with the [technical design considerations](#technical-design-considerations) we would need to change the API of ClassNames component slightly, `css` would return both a `className` and a `style` prop.
 
 ```jsx
 import { ClassNames } from '@compiled/react';
@@ -458,7 +462,7 @@ function Comp(props) {
 }
 ```
 
-Style extraction would happen in the usual way.
+And then style extract again is pointing to the extract runtime and stripping the style sheets.
 
 ```diff
 -import { i, ClassNames } from '@compiled/react/insert';
@@ -484,7 +488,7 @@ function Comp(props) {
 
 - More runtime bundle size would be added to the React package (however it might be a net reduction overall as every call site now uses an abstraction instead of the same markup)
 - Keyframes API doesn't fit naturally within this architecture
-- Dynamic declarations aren't supported in the ClassNames API without further AST traversal or changing the API for consumers
+- Dynamic declarations aren't supported in the ClassNames API without changing the API for consumers
 
 ## Alternatives
 
