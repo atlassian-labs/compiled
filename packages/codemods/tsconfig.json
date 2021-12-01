@@ -4,5 +4,6 @@
     "rootDir": "src",
     "outDir": "dist",
     "module": "commonjs"
-  }
+  },
+  "references": [{ "path": "../jest" }, { "path": "../utils" }]
 }

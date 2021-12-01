@@ -1,4 +1,13 @@
-import type { API, FileInfo } from 'jscodeshift';
+import type {
+  API,
+  FileInfo,
+  VariableDeclaration,
+  VariableDeclarator,
+  ArrowFunctionExpression,
+  JSXElement,
+} from 'jscodeshift';
+
+import type { Transform } from '../../../plugins/types';
 import transformer from '../styled-components-to-compiled';
 
 jest.disableAutomock();
@@ -458,8 +467,10 @@ left: $\{props => props.left};
           create: (_: FileInfo, { jscodeshift: j }: API) => ({
             transform: {
               buildAttributes: ({ currentNode }) => {
-                const declarationInit = currentNode.value.declarations[0].init;
-                const oldComponentBody = declarationInit.body;
+                const declaration = currentNode.value as VariableDeclaration;
+                const declarator = declaration.declarations[0] as VariableDeclarator;
+                const declarationInit = declarator.init as ArrowFunctionExpression;
+                const oldComponentBody = declarationInit.body as JSXElement;
 
                 declarationInit.body = j.conditionalExpression(
                   j.callExpression(j.identifier('isFeatureFlagEnabled'), []),
@@ -469,7 +480,7 @@ left: $\{props => props.left};
 
                 return currentNode;
               },
-            },
+            } as Transform,
           }),
         },
       ],
