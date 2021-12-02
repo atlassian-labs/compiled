@@ -66,7 +66,10 @@ describe('import specifiers', () => {
       \`;
     `);
 
-    expect(actual).toInclude(`import*as React from'react';import{useState}from'react';`);
+    expect(actual).toIncludeMultiple([
+      `import*as React from'react';`,
+      `import{useState}from'react';`,
+    ]);
   });
 
   it('should transform with a rebound named import', () => {

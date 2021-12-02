@@ -1,7 +1,8 @@
-import { css, styled } from '@compiled/react';
-import React from 'react';
+/** @jsx jsx */
+import { jsx, css, styled } from '@compiled/react';
+import { Fragment } from 'react';
 
-import { blue, blueviolet, orange, purple, red, yellow } from './common/colors';
+import { blueviolet, blue, orange, purple, red, yellow } from './common/colors';
 // @ts-expect-error ↓↓↓ This should not have their styles extracted ↓↓↓
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Coral } from './common/css-prop';
@@ -31,8 +32,8 @@ const styles = css`
 `;
 
 export const App = (): JSX.Element => (
-  <>
+  <Fragment>
     <div css={styles} />
     <Styled />
-  </>
+  </Fragment>
 );

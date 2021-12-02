@@ -1,15 +1,14 @@
 {
   "name": "@compiled/react",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "keywords": [
     "compiled",
     "css-in-js",
     "styled-components",
-    "emotion-js",
     "typescript"
   ],
-  "homepage": "https://compiledcssinjs.com",
+  "homepage": "https://compiledcssinjs.com/docs/pkg-react",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
     "type": "git",
@@ -39,6 +38,26 @@
         "./dist/cjs/runtime.js",
         "./src/runtime.tsx"
       ]
+    },
+    "./jsx-runtime": {
+      "import": [
+        "./dist/esm/jsx/jsx-runtime.js",
+        "./src/jsx/jsx-runtime.tsx"
+      ],
+      "require": [
+        "./dist/cjs/jsx/jsx-runtime.js",
+        "./src/jsx/jsx-runtime.tsx"
+      ]
+    },
+    "./jsx-dev-runtime": {
+      "import": [
+        "./dist/esm/jsx/jsx-dev-runtime.js",
+        "./src/jsx/jsx-dev-runtime.tsx"
+      ],
+      "require": [
+        "./dist/cjs/jsx/jsx-dev-runtime.js",
+        "./src/jsx/jsx-dev-runtime.tsx"
+      ]
     }
   },
   "main": "./dist/cjs/index.js",
@@ -48,9 +67,9 @@
   "files": [
     "dist",
     "src",
-    "babel-plugin",
     "runtime",
-    "README.md"
+    "jsx-runtime",
+    "jsx-dev-runtime"
   ],
   "dependencies": {
     "csstype": "^3.0.9"

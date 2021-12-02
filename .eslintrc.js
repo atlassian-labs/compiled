@@ -30,6 +30,8 @@ module.exports = {
         'react/react-in-jsx-scope': 'off',
         'react-hooks/exhaustive-deps': 'warn',
         'react-hooks/rules-of-hooks': 'error',
+        // This case is covered by the use of TypeScript so we can safely turn it off.
+        'import/export': 'off',
         // We will let TypeScript handle this for tsx? files, and ignore it on jsx? files to enable linting without
         // building packages
         'import/no-unresolved': 'off',
