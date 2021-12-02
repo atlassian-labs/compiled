@@ -1,10 +1,18 @@
-import type * as t from '@babel/types';
 import type { NodePath } from '@babel/traverse';
+import type * as t from '@babel/types';
+
 import type { Metadata } from '../types';
 
 export interface UnconditionalCssItem {
   type: 'unconditional';
   css: string;
+}
+
+export interface ConditionalCssItem {
+  type: 'conditional';
+  test: t.Expression;
+  consequent: CssItem;
+  alternate: CssItem;
 }
 
 export interface LogicalCssItem {
@@ -19,16 +27,18 @@ export interface SheetCssItem {
   css: string;
 }
 
-export type CssItem = UnconditionalCssItem | LogicalCssItem | SheetCssItem;
+export type CssItem = UnconditionalCssItem | ConditionalCssItem | LogicalCssItem | SheetCssItem;
+
+export type Variable = {
+  name: string;
+  expression: t.Expression;
+  prefix?: string;
+  suffix?: string;
+};
 
 export interface CSSOutput {
   css: CssItem[];
-  variables: {
-    name: string;
-    expression: t.Expression;
-    prefix?: string;
-    suffix?: string;
-  }[];
+  variables: Variable[];
 }
 
 export interface PartialBindingWithMeta {

@@ -1,4 +1,6 @@
-import { toHaveCompiledCss } from '@compiled/jest';
+// We can't reference the module here as it won't get picked up by ts-node/tsconfig-paths.
+// Instead we reference it directly - happy days!
+import { toHaveCompiledCss } from '../packages/jest/src';
 
 expect.extend({
   toHaveCompiledCss,

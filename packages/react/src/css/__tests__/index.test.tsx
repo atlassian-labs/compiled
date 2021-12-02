@@ -1,7 +1,6 @@
-import { render } from '@testing-library/react';
-import React from 'react';
-import '@compiled/react';
+/** @jsxImportSource @compiled/react */
 import { css } from '@compiled/react';
+import { render } from '@testing-library/react';
 
 describe('css prop', () => {
   it('should create css from object literal', () => {
@@ -28,6 +27,13 @@ describe('css prop', () => {
     );
 
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '13px');
+  });
+
+  it('should create hover styles', () => {
+    const styles = css({ ':hover': { color: 'red' } });
+    const { getByText } = render(<div css={styles}>hello world</div>);
+
+    expect(getByText('hello world')).toHaveCompiledCss('color', 'red', { target: ':hover' });
   });
 
   it('should create css from tagged template expression variable', () => {

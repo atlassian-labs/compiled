@@ -1,6 +1,7 @@
-import { createFsFromVolume, Volume } from 'memfs';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { join } from 'path';
+
+import { Volume, createFsFromVolume } from 'memfs';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import webpack from 'webpack';
 
 import { CompiledExtractPlugin } from '../index';

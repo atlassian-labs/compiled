@@ -1,6 +1,7 @@
+import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
 import whitespace from 'postcss-normalize-whitespace';
-import autoprefixer from 'autoprefixer';
+
 import { atomicifyRules } from '../atomicify-rules';
 import { sortAtRulePseudos } from '../sort-at-rule-pseudos';
 

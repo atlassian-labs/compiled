@@ -1,21 +1,9 @@
 {
   "extends": "../tsconfig.options.json",
   "compilerOptions": {
-    "rootDir": "src",
     "outDir": "dist/esm",
-    "baseUrl": "src",
-    "paths": {
-      "@compiled/react": ["index.tsx"]
-    },
-    "plugins": [
-      {
-        "transform": "ts-transform-define",
-        "replace": {
-          "isNodeEnvironment()": "process.env.IS_NODE_EXPRESSION"
-        }
-      }
-    ],
+    "rootDir": "src",
     "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo"
   },
-  "references": []
+  "references": [{ "path": "../benchmark" }, { "path": "../jest" }]
 }

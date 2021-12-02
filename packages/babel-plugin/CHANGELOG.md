@@ -1,5 +1,28 @@
 # @compiled/babel-plugin
 
+## 0.11.1
+
+### Patch Changes
+
+- 79cfb08: Compiled will no longer try to traverse modules boundaries of its own.
+- 14368bb: Fix issue where a styled value function using both object destructuring and a template literal in at least one branch resulted in a CSS error
+- 68ebac3: Add support for namespace imports and export specifiers
+- 427cead: Compiled now supports turning on the `css` prop using jsx pragmas (both with `@jsx` and `@jsxImportSource`).
+- 79cfb08: Internal refactor changing how the TypeScript compiler picks up source files.
+- Updated dependencies [79cfb08]
+  - @compiled/css@0.7.1
+  - @compiled/utils@0.6.12
+
+## 0.11.0
+
+### Minor Changes
+
+- fa6af90: Add support for nested ternary operators. Additionally, Compiled will no longer transform ternaries into logical statements unless one side is undefined.
+
+### Patch Changes
+
+- e015a3a: Add comment directive `// @compiled-disable(-next)-line) transform-css-prop` to disable Compiled processing on CSS prop
+
 ## 0.10.0
 
 ### Minor Changes

@@ -1,31 +1,31 @@
 import type {
-  FileInfo,
   API,
-  Options,
-  Collection,
   ASTPath,
+  Collection,
   CommentBlock,
+  FileInfo,
   ObjectPattern,
+  Options,
   Program,
 } from 'jscodeshift';
 import type core from 'jscodeshift';
 
 import { COMPILED_IMPORT_PATH } from '../../constants';
-import {
-  applyVisitor,
-  hasImportDeclaration,
-  getImportDeclarationCollection,
-  findImportSpecifierName,
-  addCommentForUnresolvedImportSpecifiers,
-  addReactIdentifier,
-  convertDefaultImportToNamedImport,
-  mergeImportSpecifiersAlongWithTheirComments,
-  addCommentBefore,
-  withPlugin,
-  convertMixedImportToNamedImport,
-} from '../../utils/main';
 import defaultCodemodPlugin from '../../plugins/default';
 import type { CodemodPluginInstance } from '../../plugins/types';
+import {
+  addCommentBefore,
+  addCommentForUnresolvedImportSpecifiers,
+  addReactIdentifier,
+  applyVisitor,
+  convertDefaultImportToNamedImport,
+  convertMixedImportToNamedImport,
+  findImportSpecifierName,
+  getImportDeclarationCollection,
+  hasImportDeclaration,
+  mergeImportSpecifiersAlongWithTheirComments,
+  withPlugin,
+} from '../../utils/main';
 
 const imports = {
   compiledStyledImportName: 'styled',
@@ -216,10 +216,9 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
   const { jscodeshift: j } = api;
   const collection = j(source);
   // Run default plugin first and apply plugins in order
-  const plugins: Array<CodemodPluginInstance> = [
-    defaultCodemodPlugin,
-    ...options.normalizedPlugins,
-  ].map((plugin) => plugin.create(fileInfo, api, options));
+  const plugins: CodemodPluginInstance[] = [defaultCodemodPlugin, ...options.normalizedPlugins].map(
+    (plugin) => plugin.create(fileInfo, api, options)
+  );
   const originalProgram: Program = j(source).find(j.Program).get();
 
   const hasEmotionCoreImportDeclaration = hasImportDeclaration({

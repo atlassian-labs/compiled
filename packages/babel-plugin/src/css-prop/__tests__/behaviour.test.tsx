@@ -1,4 +1,5 @@
 import { transformSync } from '@babel/core';
+
 import babelPlugin from '../../index';
 
 const transform = (code: string) => {
@@ -629,5 +630,29 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toInclude('<CC key={str}>');
+  });
+
+  it('should not transform css prop with comment directive', () => {
+    const actual = transform(`
+      import { css } from '@compiled/react';
+
+      // @compiled-disable-next-line transform-css-prop
+      const RedDiv = <div css={{ color: 'red' }} />;
+
+      const GreenDiv = () => (
+        <div
+          css={ css\`color: green\` } // @compiled-disable-line transform-css-prop
+        />
+      );
+
+      const BlueDiv = () => (
+        <div
+          // @compiled-disable-next-line transform-css-prop
+          css={{ color: 'blue' }}
+        />
+      );
+    `);
+
+    expect(actual).toIncludeMultiple(["css={{color:'red'}}", 'css={null}', "css={{color:'blue'}}"]);
   });
 });

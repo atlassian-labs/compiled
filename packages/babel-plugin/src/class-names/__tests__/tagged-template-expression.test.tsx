@@ -1,4 +1,4 @@
-import { transform } from '../../__tests__/test-utils';
+import { transform } from '../../test-utils';
 
 describe('ClassNames used with a css tagged template expression', () => {
   describe('transforms a quasi that contains', () => {

@@ -1,0 +1,6 @@
+{
+  "main": "../dist/cjs/jsx/jsx-dev-runtime.js",
+  "module": "../dist/esm/jsx/jsx-dev-runtime.js",
+  "browser": "../dist/browser/jsx/jsx-dev-runtime.js",
+  "types": "../dist/esm/jsx/jsx-dev-runtime.d.ts"
+}

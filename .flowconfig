@@ -10,11 +10,19 @@ packages/.*/*.js.flow
 .*/node_modules/.*
 
 [lints]
+deprecated-utility=warn
+unnecessary-optional-chain=warn
+implicit-inexact-object=error
+untyped-type-import=error
 
 [options]
+exact_by_default=true
 
 [strict]
+deprecated-type
+deprecated-utility
 nonstrict-import
+sketchy-null
 unclear-type
 unsafe-getters-setters
 untyped-import

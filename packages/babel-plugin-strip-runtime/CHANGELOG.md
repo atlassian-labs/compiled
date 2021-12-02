@@ -1,5 +1,11 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.11.1
+
+### Patch Changes
+
+- 79cfb08: Internal refactor changing how the TypeScript compiler picks up source files.
+
 ## 0.6.13
 
 ### Patch Changes

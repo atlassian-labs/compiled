@@ -1,14 +1,14 @@
 {
   "name": "@compiled/codemods",
-  "version": "0.3.0",
-  "description": "Codemods (with JSCodeshift) for Compiled CSS-in-JS.",
+  "version": "0.3.2",
+  "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "keywords": [
     "codemod",
     "compiled",
     "css-in-js",
     "typescript"
   ],
-  "homepage": "https://compiledcssinjs.com",
+  "homepage": "https://compiledcssinjs.com/docs/pkg-cli",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "src"
   ],
   "dependencies": {
-    "chalk": "^4.1.1",
+    "chalk": "^4.1.2",
     "jscodeshift": "^0.13.0"
   },
   "devDependencies": {

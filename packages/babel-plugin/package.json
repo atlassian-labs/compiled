@@ -1,8 +1,8 @@
 {
   "name": "@compiled/babel-plugin",
-  "version": "0.10.0",
+  "version": "0.11.1",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
-  "homepage": "https://compiledcssinjs.com",
+  "homepage": "https://compiledcssinjs.com/docs/pkg-babel-plugin",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
     "type": "git",
@@ -16,12 +16,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "src",
-    "README.md"
+    "src"
   ],
-  "scripts": {
-    "benchmark:module-traversal": "ts-node --files ./src/__perf__/module-traversal-caching"
-  },
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@babel/generator": "^7.16.0",
@@ -29,11 +25,11 @@
     "@babel/plugin-syntax-jsx": "^7.16.0",
     "@babel/plugin-transform-flow-strip-types": "^7.16.0",
     "@babel/template": "^7.16.0",
-    "@babel/traverse": "^7.16.0",
+    "@babel/traverse": "^7.16.3",
     "@babel/types": "^7.16.0",
-    "@compiled/css": "^0.7.0",
-    "@compiled/utils": "^0.6.11",
-    "@emotion/is-prop-valid": "^1.1.0",
+    "@compiled/css": "^0.7.1",
+    "@compiled/utils": "^0.6.12",
+    "@emotion/is-prop-valid": "^1.1.1",
     "resolve": "^1.20.0"
   },
   "devDependencies": {

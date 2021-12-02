@@ -1,5 +1,6 @@
 import React from 'react';
 import { renderToStaticMarkup, renderToString } from 'react-dom/server';
+
 import Style from '../style';
 
 describe('<Style />', () => {

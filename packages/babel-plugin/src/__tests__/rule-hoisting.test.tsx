@@ -1,4 +1,4 @@
-import { transform } from './test-utils';
+import { transform } from '../test-utils';
 
 describe('rule hoisting', () => {
   it('should hoist to the top of the module', () => {

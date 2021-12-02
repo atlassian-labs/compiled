@@ -1,7 +1,8 @@
-import postcss from 'postcss';
-import whitespace from 'postcss-normalize-whitespace';
 import autoprefixer from 'autoprefixer';
+import postcss from 'postcss';
 import nested from 'postcss-nested';
+import whitespace from 'postcss-normalize-whitespace';
+
 import { atomicifyRules } from '../atomicify-rules';
 
 const transform = (css: TemplateStringsArray) => {

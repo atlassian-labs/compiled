@@ -1,25 +1,25 @@
 import chalk from 'chalk';
 import type {
-  JSCodeshift,
-  ImportDeclaration,
-  ImportDefaultSpecifier,
-  ImportSpecifier,
-  Program,
-  Identifier,
-  JSXIdentifier,
-  TSTypeParameter,
-  Node,
-  ImportNamespaceSpecifier,
+  API,
   Collection,
   FileInfo,
-  API,
+  Identifier,
+  ImportDeclaration,
+  ImportDefaultSpecifier,
+  ImportNamespaceSpecifier,
+  ImportSpecifier,
+  JSCodeshift,
+  JSXIdentifier,
+  Node,
   Options,
+  Program,
+  TSTypeParameter,
 } from 'jscodeshift';
 
 import { COMPILED_IMPORT_PATH, REACT_IMPORT_PATH, REACT_IMPORT_NAME } from '../constants';
 import type { CodemodPlugin, CodemodPluginInstance } from '../plugins/types';
 
-type Identifiers = Array<Identifier | JSXIdentifier | TSTypeParameter>;
+type Identifiers = (Identifier | JSXIdentifier | TSTypeParameter)[];
 
 type PluginItem = CodemodPlugin | string;
 
@@ -27,8 +27,8 @@ const isCodemodPlugin = (pluginItem: PluginItem): pluginItem is CodemodPlugin =>
   typeof pluginItem === 'object';
 
 const getPlugins = (
-  items: PluginItem | Array<PluginItem>
-): Array<CodemodPlugin> | Promise<Array<CodemodPlugin>> => {
+  items: PluginItem | PluginItem[]
+): CodemodPlugin[] | Promise<CodemodPlugin[]> => {
   const pluginItems = Array.isArray(items) ? items : [items];
   // Remove this code block once https://github.com/facebook/jscodeshift/issues/454 is resolved
   if (pluginItems.every(isCodemodPlugin)) {
@@ -181,7 +181,7 @@ const applyBuildImport = ({
   originalNode,
   specifiers,
 }: {
-  plugins: Array<CodemodPluginInstance>;
+  plugins: CodemodPluginInstance[];
   originalNode: ImportDeclaration;
   specifiers: ImportSpecifier[];
 }) =>
@@ -207,7 +207,7 @@ export const convertDefaultImportToNamedImport = ({
   namedImport,
 }: {
   j: JSCodeshift;
-  plugins: Array<CodemodPluginInstance>;
+  plugins: CodemodPluginInstance[];
   collection: Collection<any>;
   importPath: string;
   namedImport: string;
@@ -251,7 +251,7 @@ export const convertMixedImportToNamedImport = ({
   allowedImportSpecifierNames,
 }: {
   j: JSCodeshift;
-  plugins: Array<CodemodPluginInstance>;
+  plugins: CodemodPluginInstance[];
   collection: Collection<any>;
   importPath: string;
   defaultSourceSpecifierName: string;
@@ -523,7 +523,7 @@ export const applyVisitor = ({
   originalProgram,
   currentProgram,
 }: {
-  plugins: Array<CodemodPluginInstance>;
+  plugins: CodemodPluginInstance[];
   originalProgram: Program;
   currentProgram: Program;
 }): void => {

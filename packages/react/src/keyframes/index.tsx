@@ -4,28 +4,14 @@ import { createSetupError } from '../utils/error';
 export type KeyframeSteps = string | Record<string, CSSProps>;
 
 /**
- * Create keyframes using a tagged template expression:
+ * ## Keyframes
  *
- * ```
- * const fadeOut = keyframes`
- *   from { opacity: 1; }
- *   to   { opacity: 0; }
- * `;
- * ```
+ * Define keyframes to be used in a [CSS animation](https://developer.mozilla.org/en-US/docs/Web/CSS/animation).
+ * For further details [read the API documentation](https://compiledcssinjs.com/docs/api-keyframes).
  *
- * @param _strings The input string values
- * @param _interpolations The arguments used in the expression
- */
-export function keyframes(
-  _strings: TemplateStringsArray,
-  ..._interpolations: BasicTemplateInterpolations[]
-): string;
-
-/**
- * Create keyframes using:
+ * ### Style with objects
  *
- * 1. An object expression
- *
+ * @example
  * ```
  * const fadeOut = keyframes({
  *   from: {
@@ -35,23 +21,33 @@ export function keyframes(
  *     opacity: 0,
  *   },
  * });
+ *
+ * <div css={{ animation: `${fadeOut} 2s` }} />
  * ```
  *
- * 2. A string
+ * ### Style with template literals
  *
+ * @example
  * ```
- * const fadeOut = keyframes('from { opacity: 1; } to { opacity: 0; }');
- * ```
+ * const fadeOut = keyframes`
+ *   from {
+ *     opacity: 1;
+ *   }
  *
- * 3. A template literal
+ *   to {
+ *     opacity: 0;
+ *   }
+ * `;
  *
+ * <div css={{ animation: `${fadeOut} 2s` }} />
  * ```
- * const fadeOut = keyframes(`from { opacity: 1; } to { opacity: 0; }`);
- * ```
- *
- * @param _steps The waypoints along the animation sequence
  */
-export function keyframes(_steps: KeyframeSteps): string;
+export function keyframes(steps: KeyframeSteps): string;
+
+export function keyframes(
+  strings: TemplateStringsArray,
+  ...interpolations: BasicTemplateInterpolations[]
+): string;
 
 export function keyframes(
   _stringsOrSteps: TemplateStringsArray | KeyframeSteps,

@@ -1,0 +1,11 @@
+{
+  "name": "@compiled/benchmark",
+  "version": "1.0.1",
+  "private": true,
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "devDependencies": {
+    "benchmark": "^2.1.4"
+  }
+}

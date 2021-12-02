@@ -1,17 +1,18 @@
 import { plugin } from 'postcss';
 import { parse } from 'postcss-values-parser';
-import type { ConversionFunction } from './types';
+
+import { background } from './background';
+import { flex } from './flex';
+import { flexFlow } from './flex-flow';
 import { margin } from './margin';
+import { outline } from './outline';
+import { overflow } from './overflow';
 import { padding } from './padding';
 import { placeContent } from './place-content';
 import { placeItems } from './place-items';
 import { placeSelf } from './place-self';
-import { overflow } from './overflow';
-import { flex } from './flex';
-import { flexFlow } from './flex-flow';
-import { outline } from './outline';
 import { textDecoration } from './text-decoration';
-import { background } from './background';
+import type { ConversionFunction } from './types';
 
 const shorthands: Record<string, ConversionFunction> = {
   // These properties are fully expanded

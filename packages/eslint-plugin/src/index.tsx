@@ -1,7 +1,9 @@
-import emotionToCompiled from './rules/emotion-to-compiled';
+import jsxPragma from './rules/jsx-pragma';
+import noEmotionCSS from './rules/no-emotion-css';
 
 export const rules = {
-  'emotion-to-compiled': emotionToCompiled,
+  'jsx-pragma': jsxPragma,
+  'no-emotion-css': noEmotionCSS,
 };
 
 export const configs = {

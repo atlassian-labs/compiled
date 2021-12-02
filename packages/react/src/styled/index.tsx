@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
-import { createSetupError } from '../utils/error';
+
 import type { BasicTemplateInterpolations, CssFunction, FunctionInterpolation } from '../types';
+import { createSetupError } from '../utils/error';
 
 /**
  * Typing for the CSS object.
@@ -57,17 +58,45 @@ export interface StyledComponentInstantiator extends StyledComponentMap {
 }
 
 /**
- * Create a component that ties styles to an element which comes with built-in behavior such as `ref` and `as` prop support.
+ * ## Styled component
  *
+ * Create a component that styles a JSX element which comes with built-in behavior such as `ref` and `as` prop support.
+ * For further details [read the documentation](https://compiledcssinjs.com/docs/api-styled).
+ *
+ * ### Style with objects
+ *
+ * @example
  * ```
- * styled.div`font-size: 12px`; // Template literal CSS
- * styled.div({ fontSize: 12 }); // Object CSS
- * styled.div([{ fontSize: 12 }, `font-size: 12px;`]) // Array CSS
- * styled.div({ fontSize: 12 }, `font-size: 12px`) Multi arguments CSS
+ * styled.div({
+ *   fontSize: 12,
+ * });
  * ```
  *
- * For more help, read the docs:
- * https://compiledcssinjs.com/docs/api-styled
+ * ### Style with template literals
+ *
+ * @example
+ * ```
+ * styled.div`
+ *   font-size: 12px
+ * `;
+ * ```
+ *
+ * ### Compose styles with arrays
+ *
+ * @example
+ * ```
+ * import { css } from '@compiled/react';
+ *
+ * styled.div([
+ *   { fontSize: 12 },
+ *   css`font-size: 12px;`
+ * ]);
+ *
+ * styled.div(
+ *   { fontSize: 12 },
+ *   css`font-size: 12px`
+ * );
+ * ```
  */
 export const styled: StyledComponentInstantiator = new Proxy(
   {},
