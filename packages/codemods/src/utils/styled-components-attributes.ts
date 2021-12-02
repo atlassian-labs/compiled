@@ -1,3 +1,4 @@
+import { kebabCase } from '@compiled/utils';
 import type {
   JSCodeshift,
   Collection,
@@ -16,7 +17,6 @@ import type {
   ASTNode,
   ASTPath,
 } from 'jscodeshift';
-import { kebabCase } from '@compiled/utils';
 
 import type { CodemodPluginInstance } from '../plugins/types';
 
@@ -263,7 +263,7 @@ const applyBuildAttributes = ({
   transformedNode,
   composedNode,
 }: {
-  plugins: Array<CodemodPluginInstance>;
+  plugins: CodemodPluginInstance[];
   originalNode: StyledAttributesDeclarationNode;
   transformedNode: VariableDeclaration | TaggedTemplateExpression | ArrowFunctionExpression;
   composedNode: VariableDeclaration | null;
