@@ -16,6 +16,13 @@ Compiled was initially written with the assumption styles could be written in an
 
 Traversal would start at these nodes and then work its way up and down the tree piecing together all the styles it can until it either succeeds, or reaches an edge case that isn't explicitly handled. Explicit handling of ASTs is where a lot of the code in Compiled has been written to not only handle the static evaluation of styles, but also the dynamic combination of styles. This is very prevalent in the `css` prop API where each binary expression, conditional, and so on needs to be supported else you'll get a build time error.
 
+The original design decisions of Compiled should also be considered:
+
+- Consumers of NPM packages have a seamless transition including zero config streaming SSR
+- Extracting atomic styles from all sources including node_modules
+- Dynamic behaviour such as dynamic styles from props and conditional style expressions
+- Eliminating issues at scale with the CSS cascade
+
 This RFC is proposing changing Compiled to do what it does best - static evaluation of styles! While then giving more room for the runtime to handle the dynamic combination of styles. All while still supporting style extraction.
 
 ## Basic example
