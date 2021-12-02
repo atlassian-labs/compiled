@@ -2,7 +2,7 @@
   "name": "@compiled/webpack-loader",
   "version": "0.7.3",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
-  "homepage": "https://compiledcssinjs.com",
+  "homepage": "https://compiledcssinjs.com/docs/pkg-webpack-loader",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
     "type": "git",
@@ -17,8 +17,7 @@
   "files": [
     "css-loader",
     "dist",
-    "src",
-    "README.md"
+    "src"
   ],
   "dependencies": {
     "@babel/core": "^7.16.0",

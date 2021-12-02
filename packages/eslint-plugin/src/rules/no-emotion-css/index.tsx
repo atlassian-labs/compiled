@@ -28,6 +28,9 @@ const rule: Rule.RuleModule = {
   meta: {
     fixable: 'code',
     type: 'problem',
+    docs: {
+      url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-emotion-css',
+    },
     messages: {
       noEmotionCSS: `{{ version }} should not be used use ${COMPILED_IMPORT} instead.`,
     },

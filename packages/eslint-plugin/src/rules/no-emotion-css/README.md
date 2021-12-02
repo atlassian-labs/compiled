@@ -1,11 +1,9 @@
 # @compiled/eslint-plugin/emotion-to-compiled
 
 Ensures usage of the `@compiled/react` library over `@emotion/core` or `@emotion/styled`.
-This rule acts as a form of codemod.
+The `--fix` option [on the command line] automatically fixes problems reported by this rule.
 
-## Examples
-
-👎 Example of **incorrect** code for this rule:
+## Fail
 
 ```js
 import styled from '@emotion/styled';
@@ -24,7 +22,7 @@ import { jsx } from '@emotion/core';
                      ^^^^^^^^^
 ```
 
-👍 Example of **correct** code for this rule:
+## Pass
 
 ```js
 import { styled } from '@compiled/react';

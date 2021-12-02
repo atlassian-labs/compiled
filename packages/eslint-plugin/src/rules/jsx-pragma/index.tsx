@@ -31,6 +31,10 @@ const rule: Rule.RuleModule = {
   meta: {
     fixable: 'code',
     type: 'problem',
+    docs: {
+      recommended: true,
+      url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/jsx-pragma',
+    },
     messages: {
       missingPragma: 'To use the `css` prop you must set the {{ pragma }} pragma.',
       preferJsxImportSource:

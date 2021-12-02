@@ -2,7 +2,7 @@
   "name": "@compiled/babel-plugin-strip-runtime",
   "version": "0.11.1",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
-  "homepage": "https://compiledcssinjs.com",
+  "homepage": "https://compiledcssinjs.com/docs/pkg-babel-plugin-strip-runtime",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
     "type": "git",

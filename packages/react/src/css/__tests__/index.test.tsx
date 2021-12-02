@@ -29,6 +29,13 @@ describe('css prop', () => {
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '13px');
   });
 
+  it('should create hover styles', () => {
+    const styles = css({ ':hover': { color: 'red' } });
+    const { getByText } = render(<div css={styles}>hello world</div>);
+
+    expect(getByText('hello world')).toHaveCompiledCss('color', 'red', { target: ':hover' });
+  });
+
   it('should create css from tagged template expression variable', () => {
     const style = css`
       font-size: 13px;

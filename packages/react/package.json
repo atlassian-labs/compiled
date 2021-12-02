@@ -8,7 +8,7 @@
     "styled-components",
     "typescript"
   ],
-  "homepage": "https://compiledcssinjs.com",
+  "homepage": "https://compiledcssinjs.com/docs/pkg-react",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
     "type": "git",
