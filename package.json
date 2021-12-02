@@ -108,7 +108,7 @@
     "typescript": "^4.2.4"
   },
   "engines": {
-    "node": "^v14.16.1"
+    "node": "^v16.13.0"
   },
   "size-limit": [
     {
