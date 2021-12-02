@@ -18,6 +18,9 @@
     "dist",
     "src"
   ],
+  "resolutions": {
+    "cssnano-preset-default": "^5.1.7"
+  },
   "dependencies": {
     "@compiled/utils": "^0.6.12",
     "autoprefixer": "^9.8.8",
