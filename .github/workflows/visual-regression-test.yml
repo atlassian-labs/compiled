@@ -32,4 +32,6 @@ jobs:
         run: yarn build
 
       - name: Percy storybook
-        run: yarn percy storybook ./storybook-build
+        run: yarn percy storybook:start
+        env:
+          PERCY_TOKEN: '${{ secrets.PERCY_TOKEN }}'
