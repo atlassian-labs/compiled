@@ -29,6 +29,16 @@
         "./src/index.tsx"
       ]
     },
+    "./experimental": {
+      "import": [
+        "./dist/esm/experimental.js",
+        "./src/experimental.tsx"
+      ],
+      "require": [
+        "./dist/cjs/experimental.js",
+        "./src/experimental.tsx"
+      ]
+    },
     "./runtime": {
       "import": [
         "./dist/esm/runtime.js",
