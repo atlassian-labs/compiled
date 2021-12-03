@@ -67,6 +67,8 @@
     "@changesets/cli": "^2.18.0",
     "@compiled/jest": "*",
     "@compiled/react": "*",
+    "@percy/cli": "^1.0.0-beta.71",
+    "@percy/storybook": "^4.1.0",
     "@size-limit/preset-small-lib": "^4.12.0",
     "@storybook/addons": "^6.3.12",
     "@storybook/builder-webpack5": "^6.3.12",
