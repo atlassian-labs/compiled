@@ -32,5 +32,5 @@ export const UsingMixinImportIdentifier = (): JSX.Element => {
 };
 
 export const UsingMixinImportArray = (): JSX.Element => {
-  return <DoubleUse>purple text double</DoubleUse>;
+  return <DoubleUse>purple text double but I changed it for the test</DoubleUse>;
 };

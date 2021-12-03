@@ -3,7 +3,7 @@ name: Visual regression test
 on:
   push:
     branches:
-      - master
+      # - master
 
   pull_request:
 
