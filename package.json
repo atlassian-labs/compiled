@@ -46,6 +46,7 @@
     "test": "jest --no-cache",
     "test:cover": "yarn test --collectCoverage",
     "test:imports": "node test/test-imports",
+    "test:vr": "yarn loki",
     "test:watch": "jest --no-cache --watch"
   },
   "husky": {
@@ -56,6 +57,7 @@
   "resolutions": {
     "@babel/core": "^7.16.0",
     "jest": "^26.6.3",
+    "react": "^17.0.2",
     "typescript": "^4.2.4"
   },
   "devDependencies": {
@@ -93,6 +95,7 @@
     "jest": "^26.6.3",
     "jest-extended": "^0.11.5",
     "jest-watch-typeahead": "^0.6.5",
+    "loki": "^0.28.1",
     "prettier": "^2.4.1",
     "pretty-quick": "^3.1.1",
     "react": "^17.0.2",
@@ -107,7 +110,18 @@
     "typescript": "^4.2.4"
   },
   "engines": {
-    "node": "^v14.16.1"
+    "node": "^v16.13.0"
+  },
+  "loki": {
+    "configurations": {
+      "chrome.laptop": {
+        "target": "chrome.docker",
+        "width": 1366,
+        "height": 768,
+        "deviceScaleFactor": 1,
+        "mobile": false
+      }
+    }
   },
   "size-limit": [
     {
