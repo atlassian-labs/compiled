@@ -1,7 +1,7 @@
 import type * as t from '@babel/types';
 
 import type { Metadata } from '../../../../types';
-import { getObjectProperty } from '../../../traversers';
+import { getObjectPropertyValue } from '../../../traversers';
 import { createResultPair } from '../../common';
 
 export const evaluateObjectPath = (
@@ -9,7 +9,7 @@ export const evaluateObjectPath = (
   meta: Metadata,
   propertyName: string
 ): ReturnType<typeof createResultPair> => {
-  const result = getObjectProperty(expression, propertyName);
+  const result = getObjectPropertyValue(expression, propertyName);
 
   return createResultPair(result ? (result.node as t.Expression) : expression, meta);
 };

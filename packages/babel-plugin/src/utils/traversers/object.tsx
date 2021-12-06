@@ -3,7 +3,7 @@ import * as t from '@babel/types';
 
 import type { Result } from './types';
 
-export const getObjectProperty = (
+export const getObjectPropertyValue = (
   object: t.ObjectExpression,
   propertyName: string
 ): Result<t.ObjectProperty> | undefined => {
