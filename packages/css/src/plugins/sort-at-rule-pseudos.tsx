@@ -1,5 +1,4 @@
-import type { AtRule, Rule } from 'postcss';
-import { plugin } from 'postcss';
+import type { AtRule, Rule, Plugin } from 'postcss';
 
 import { styleOrder } from '../utils/style-ordering';
 
@@ -41,18 +40,26 @@ const sortPseudoClasses = (atRule: AtRule) => {
 
 /**
  * PostCSS plugin for sorting rules inside AtRules based on lvfha ordering.
+ *
+ * Using Once rather than AtRule as remove + append behaviour
+ * leads to adding infinitely to the call stack
  */
-export const sortAtRulePseudos = plugin('sort-at-rule-pseudos', () => {
-  return (root) => {
-    root.each((node) => {
-      switch (node.type) {
-        case 'atrule':
-          sortPseudoClasses(node);
-          break;
+export const sortAtRulePseudos = (): Plugin => {
+  return {
+    postcssPlugin: 'sort-at-rule-pseudos',
+    Once(root) {
+      root.each((node) => {
+        switch (node.type) {
+          case 'atrule':
+            sortPseudoClasses(node);
+            break;
 
-        default:
-          break;
-      }
-    });
+          default:
+            break;
+        }
+      });
+    },
   };
-});
+};
+
+export const postcss = true;
