@@ -3,8 +3,7 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "module": "ES2020",
-    "lib": ["ES2020", "DOM"]
+    "module": "commonjs"
   },
   "references": [{ "path": "../react" }]
 }
