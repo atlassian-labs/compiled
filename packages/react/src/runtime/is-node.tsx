@@ -11,5 +11,5 @@
  * ```
  */
 export const isNodeEnvironment = (): boolean => {
-  return typeof document === 'undefined';
+  return typeof window === 'undefined';
 };

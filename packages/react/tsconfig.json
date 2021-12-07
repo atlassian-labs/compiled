@@ -3,7 +3,15 @@
   "compilerOptions": {
     "outDir": "dist/esm",
     "rootDir": "src",
-    "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo"
+    "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo",
+    "plugins": [
+      {
+        "transform": "ts-transform-define",
+        "replace": {
+          "isCacheDisabled()": "false"
+        }
+      }
+    ]
   },
   "references": [{ "path": "../benchmark" }, { "path": "../jest" }]
 }
