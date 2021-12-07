@@ -1,5 +1,14 @@
 # @compiled/react
 
+## 0.10.1
+
+### Patch Changes
+
+- d3e257c: Fixes `css` function types to allow nested styles
+- 8c9ab8c: Update `homepage` and other `package.json` properties
+- 8c9ab8c: JSDoc descriptions for all exports have been updated, let us know what you think!
+- 8c9ab8c: `ClassNames` component now has its style prop typed as `CSSProperties` instead of a string map
+
 ## 0.10.0
 
 ### Minor Changes
