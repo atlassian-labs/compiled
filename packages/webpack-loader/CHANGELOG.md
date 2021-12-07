@@ -1,5 +1,17 @@
 # @compiled/webpack-loader
 
+## 0.7.4
+
+### Patch Changes
+
+- 8c9ab8c: Update `homepage` and other `package.json` properties
+- Updated dependencies [8c9ab8c]
+- Updated dependencies [1ca19be]
+  - @compiled/babel-plugin@0.11.2
+  - @compiled/babel-plugin-strip-runtime@0.11.2
+  - @compiled/css@0.7.2
+  - @compiled/utils@0.6.13
+
 ## 0.7.3
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @compiled/utils
 
+## 0.6.13
+
+### Patch Changes
+
+- 8c9ab8c: Update `homepage` and other `package.json` properties
+
 ## 0.6.12
 
 ### Patch Changes
