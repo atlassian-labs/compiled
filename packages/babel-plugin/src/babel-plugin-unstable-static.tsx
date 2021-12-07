@@ -7,7 +7,7 @@ import { buildCodeFrameError } from './utils/ast';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
-const COMPILED_MODULE_EXPERIMENT = '@compiled/react/experimental';
+const COMPILED_MODULE_EXPERIMENT = '@compiled/react/unstable-static';
 
 const objToCss = (obj: Record<string, any>): string => {
   let css = '';

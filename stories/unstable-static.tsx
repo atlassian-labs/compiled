@@ -1,7 +1,7 @@
-import { Style } from '@compiled/react/experimental';
+import { Style } from '@compiled/react/unstable-static';
 
 export default {
-  title: 'experimental',
+  title: 'unstable-static',
 };
 
 const styles = Style.create({
