@@ -1,5 +1,15 @@
 # @compiled/babel-plugin
 
+## 0.11.2
+
+### Patch Changes
+
+- 8c9ab8c: Update `homepage` and other `package.json` properties
+- Updated dependencies [8c9ab8c]
+- Updated dependencies [1ca19be]
+  - @compiled/css@0.7.2
+  - @compiled/utils@0.6.13
+
 ## 0.11.1
 
 ### Patch Changes

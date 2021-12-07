@@ -1,5 +1,14 @@
 # @compiled/parcel-transformer
 
+## 0.6.19
+
+### Patch Changes
+
+- 8c9ab8c: Update `homepage` and other `package.json` properties
+- Updated dependencies [8c9ab8c]
+  - @compiled/babel-plugin@0.11.2
+  - @compiled/utils@0.6.13
+
 ## 0.6.18
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @compiled/jest
 
+## 0.7.1
+
+### Patch Changes
+
+- 8c9ab8c: Update `homepage` and other `package.json` properties
+
 ## 0.7.0
 
 ### Minor Changes

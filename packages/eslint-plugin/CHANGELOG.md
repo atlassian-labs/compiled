@@ -1,5 +1,12 @@
 # @compiled/eslint-plugin
 
+## 0.2.2
+
+### Patch Changes
+
+- 8c9ab8c: Adds url to lint rules
+- 8c9ab8c: Update `homepage` and other `package.json` properties
+
 ## 0.2.1
 
 ### Patch Changes
