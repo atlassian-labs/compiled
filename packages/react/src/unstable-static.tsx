@@ -16,12 +16,16 @@ Style.create = <TKeys extends string>(
     throw createSetupError();
   }
 
-  throw 'c';
+  throw 'cmpld1';
 };
 
 const cache: Record<string, true> = {};
 
 export const insertStyles = (styles: string[]): void => {
+  if (typeof document === 'undefined') {
+    return;
+  }
+
   for (let i = 0; i < styles.length; i++) {
     if (!cache[styles[i]]) {
       cache[styles[i]] = true;
