@@ -1,12 +1,44 @@
-import ax from './runtime/ax';
 import insertRule from './runtime/sheet';
 import type { AnyKeyCssProps, CSSProps } from './types';
 import { createSetupError } from './utils/error';
 
-type ClassNames = string | false | undefined;
+type ClassNames = string | false | undefined | ClassNames[];
+
+/**
+ * This length includes the underscore,
+ * e.g. `"_1s4A"` would be a valid atomic group hash.
+ */
+const ATOMIC_GROUP_LENGTH = 5;
+const STYLE_INSERT_CACHE: Record<string, true> = {};
 
 export const Style = (classNames: ClassNames[]): string | undefined => {
-  return ax(classNames);
+  const atomicDecls: Record<string, string> = {};
+
+  for (let i = 0; i < classNames.length; i++) {
+    const maybeClassName = classNames[i];
+    const className = Array.isArray(maybeClassName) ? Style(maybeClassName) : maybeClassName;
+    if (!className) {
+      continue;
+    }
+
+    const classNameParts = className.split(' ');
+
+    for (let x = 0; x < classNameParts.length; x++) {
+      const classNamePart = classNameParts[x];
+      const atomicGroupName = classNamePart.slice(0, ATOMIC_GROUP_LENGTH);
+
+      atomicDecls[atomicGroupName] = classNamePart;
+    }
+  }
+
+  const str = [];
+
+  for (const key in atomicDecls) {
+    const value = atomicDecls[key];
+    str.push(value);
+  }
+
+  return str.join(' ');
 };
 
 Style.create = <TKeys extends string>(
@@ -16,10 +48,8 @@ Style.create = <TKeys extends string>(
     throw createSetupError();
   }
 
-  throw 'cmpld1';
+  throw 'cmpld';
 };
-
-const cache: Record<string, true> = {};
 
 export const insertStyles = (styles: string[]): void => {
   if (typeof document === 'undefined') {
@@ -27,8 +57,8 @@ export const insertStyles = (styles: string[]): void => {
   }
 
   for (let i = 0; i < styles.length; i++) {
-    if (!cache[styles[i]]) {
-      cache[styles[i]] = true;
+    if (!STYLE_INSERT_CACHE[styles[i]]) {
+      STYLE_INSERT_CACHE[styles[i]] = true;
       insertRule(styles[i], {});
     }
   }
