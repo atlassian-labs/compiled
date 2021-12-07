@@ -46,6 +46,7 @@
     "test": "jest --no-cache",
     "test:cover": "yarn test --collectCoverage",
     "test:imports": "node test/test-imports",
+    "test:vr": "yarn loki",
     "test:watch": "jest --no-cache --watch"
   },
   "husky": {
@@ -55,7 +56,10 @@
   },
   "resolutions": {
     "@babel/core": "^7.16.0",
+    "css-what": "^5.1.0",
     "jest": "^26.6.3",
+    "nth-check": "^2.0.1",
+    "react": "^17.0.2",
     "typescript": "^4.2.4"
   },
   "devDependencies": {
@@ -64,7 +68,7 @@
     "@babel/preset-env": "^7.16.0",
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
-    "@changesets/cli": "^2.18.0",
+    "@changesets/cli": "^2.18.1",
     "@compiled/jest": "*",
     "@compiled/react": "*",
     "@size-limit/preset-small-lib": "^4.12.0",
@@ -93,6 +97,7 @@
     "jest": "^26.6.3",
     "jest-extended": "^0.11.5",
     "jest-watch-typeahead": "^0.6.5",
+    "loki": "^0.28.1",
     "prettier": "^2.4.1",
     "pretty-quick": "^3.1.1",
     "react": "^17.0.2",
@@ -108,6 +113,17 @@
   },
   "engines": {
     "node": "^v16.13.0"
+  },
+  "loki": {
+    "configurations": {
+      "chrome.laptop": {
+        "target": "chrome.docker",
+        "width": 1366,
+        "height": 768,
+        "deviceScaleFactor": 1,
+        "mobile": false
+      }
+    }
   },
   "size-limit": [
     {

@@ -1,5 +1,11 @@
 # @compiled/codemods
 
+## 0.3.3
+
+### Patch Changes
+
+- 8c9ab8c: Update `homepage` and other `package.json` properties
+
 ## 0.3.2
 
 ### Patch Changes
