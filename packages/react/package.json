@@ -29,14 +29,14 @@
         "./src/index.tsx"
       ]
     },
-    "./experimental": {
+    "./unstable-static": {
       "import": [
-        "./dist/esm/experimental.js",
-        "./src/experimental.tsx"
+        "./dist/esm/unstable-static.js",
+        "./src/unstable-static.tsx"
       ],
       "require": [
-        "./dist/cjs/experimental.js",
-        "./src/experimental.tsx"
+        "./dist/cjs/unstable-static.js",
+        "./src/unstable-static.tsx"
       ]
     },
     "./runtime": {
@@ -79,7 +79,8 @@
     "src",
     "runtime",
     "jsx-runtime",
-    "jsx-dev-runtime"
+    "jsx-dev-runtime",
+    "unstable-static"
   ],
   "dependencies": {
     "csstype": "^3.0.9"

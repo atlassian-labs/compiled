@@ -1,8 +1,8 @@
-import { Style } from '@compiled/react/experimental';
+import { Style } from '@compiled/react/unstable-static';
 import { render } from '@testing-library/react';
 import React from 'react';
 
-describe('experimental', () => {
+describe('unstable-static', () => {
   it('should build styles', () => {
     const styles = Style.create({
       red: {

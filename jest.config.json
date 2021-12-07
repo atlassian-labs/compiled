@@ -1,6 +1,6 @@
 {
   "moduleNameMapper": {
-    "^@compiled/react/experimental$": "<rootDir>/packages/react/src/experimental.tsx",
+    "^@compiled/react/unstable-static$": "<rootDir>/packages/react/src/unstable-static.tsx",
     "^@compiled/react/runtime$": "<rootDir>/packages/react/src/runtime.tsx",
     "^@compiled/react/(.*)$": "<rootDir>/packages/react/src/jsx/$1.tsx",
     "^@compiled/(.*)$": "<rootDir>/packages/$1/src/index.tsx"

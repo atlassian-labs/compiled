@@ -1,6 +1,6 @@
 {
   "plugins": [
-    "@compiled/babel-plugin/experimental",
+    "@compiled/babel-plugin/unstable-static",
     ["@compiled/babel-plugin", { "importReact": false }]
   ],
   "presets": ["@babel/preset-typescript", ["@babel/preset-react", { "runtime": "automatic" }]]

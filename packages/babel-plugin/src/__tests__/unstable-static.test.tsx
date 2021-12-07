@@ -1,6 +1,6 @@
 import { transformSync } from '@babel/core';
 
-import babelPlugin from '../babel-plugin-experimental';
+import babelPlugin from '../babel-plugin-unstable-static';
 
 const transform = (code: TemplateStringsArray) => {
   return transformSync(code[0], {
@@ -10,10 +10,10 @@ const transform = (code: TemplateStringsArray) => {
   })?.code;
 };
 
-describe('babel plugin experimental', () => {
+describe('babel plugin unstable-static', () => {
   it('should transform css call', () => {
     const actual = transform`
-      import { Style } from '@compiled/react/experimental';
+      import { Style } from '@compiled/react/unstable-static';
 
       const styles = Style.create({
         red: { color: 'red', fontWeight: 500 },
@@ -24,7 +24,7 @@ describe('babel plugin experimental', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(`
-      "import { insertStyles, Style } from '@compiled/react/experimental';
+      "import { insertStyles, Style } from '@compiled/react/unstable-static';
       const styles = {
         \\"red\\": \\"_syaz5scu _k48pbfng\\",
         \\"blue\\": \\"_syaz13q2 _k48p1nn1\\"
@@ -38,7 +38,7 @@ describe('babel plugin experimental', () => {
     expect(() => {
       transform`
         import gridSize from './theme';
-        import { Style } from '@compiled/react/experimental';
+        import { Style } from '@compiled/react/unstable-static';
 
         const styles = Style.create({
           red: { color: gridSize },

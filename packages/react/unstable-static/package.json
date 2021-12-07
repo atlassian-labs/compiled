@@ -1,0 +1,6 @@
+{
+  "main": "../dist/cjs/unstable-static.js",
+  "module": "../dist/esm/unstable-static.js",
+  "browser": "../dist/browser/unstable-static.js",
+  "types": "../dist/esm/unstable-static.d.ts"
+}
