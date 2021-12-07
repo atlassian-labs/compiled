@@ -1,5 +1,14 @@
 # @compiled/cli
 
+## 2.1.4
+
+### Patch Changes
+
+- 8c9ab8c: Update `homepage` and other `package.json` properties
+- 2e35c48: Revert meow bump from v10 to v9 due to CJS incompatibility
+- Updated dependencies [8c9ab8c]
+  - @compiled/codemods@0.3.3
+
 ## 2.1.3
 
 ### Patch Changes

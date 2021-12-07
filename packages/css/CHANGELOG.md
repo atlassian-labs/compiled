@@ -1,5 +1,14 @@
 # @compiled/css
 
+## 0.7.2
+
+### Patch Changes
+
+- 8c9ab8c: Update `homepage` and other `package.json` properties
+- 1ca19be: Resolve cssnano-preset-default to 5.1.7 for vulnerability patches
+- Updated dependencies [8c9ab8c]
+  - @compiled/utils@0.6.13
+
 ## 0.7.1
 
 ### Patch Changes
