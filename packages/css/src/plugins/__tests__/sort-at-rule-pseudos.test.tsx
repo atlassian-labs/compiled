@@ -8,7 +8,7 @@ import { sortAtRulePseudos } from '../sort-at-rule-pseudos';
 const transform =
   (opts = { withAtomicClasses: true }) =>
   (css: TemplateStringsArray) => {
-    const plugins = [sortAtRulePseudos(), whitespace, autoprefixer];
+    const plugins = [sortAtRulePseudos(), whitespace(), autoprefixer()];
 
     if (opts.withAtomicClasses) {
       plugins.unshift(atomicifyRules());
