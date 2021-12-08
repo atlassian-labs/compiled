@@ -1,17 +1,8 @@
 {
-  "extends": "../tsconfig.options.json",
+  "extends": "./tsconfig.options.json",
   "compilerOptions": {
     "outDir": "dist/esm",
-    "rootDir": "src",
-    "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo",
-    "plugins": [
-      {
-        "transform": "ts-transform-define",
-        "replace": {
-          "isCacheDisabled()": "false"
-        }
-      }
-    ]
+    "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo"
   },
   "references": [{ "path": "../benchmark" }, { "path": "../jest" }]
 }
