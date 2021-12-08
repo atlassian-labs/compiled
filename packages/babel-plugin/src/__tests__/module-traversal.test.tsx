@@ -15,9 +15,11 @@ const transform = (code: string, opts: PluginOptions = {}) => {
       filename: process.cwd() + '/packages/babel-plugin/src/__tests__/module-traversal.test.js',
       plugins: [[babelPlugin, opts]],
     })?.code;
-  } catch (e) {
-    // remove cwd from error message to it is consistent local and in CI
-    e.message = e.message.replace(process.cwd(), '');
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      // remove cwd from error message to it is consistent local and in CI
+      e.message = e.message.replace(process.cwd(), '');
+    }
     throw e;
   }
 };

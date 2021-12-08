@@ -1,4 +1,4 @@
-import { plugin } from 'postcss';
+import type { Plugin } from 'postcss';
 import { parse } from 'postcss-values-parser';
 
 import { background } from './background';
@@ -59,31 +59,38 @@ const shorthands: Record<string, ConversionFunction> = {
 /**
  * PostCSS plugin that expands shortform properties to their longform equivalents.
  */
-export const expandShorthands = plugin('expand-shorthands', () => {
-  const filter = new RegExp(Object.keys(shorthands).join('|'));
-
-  return (root) => {
-    root.walkDecls(filter, (decl) => {
-      const valueNode = parse(decl.value);
+export const expandShorthands = (): Plugin => {
+  return {
+    postcssPlugin: 'expand-shorthands',
+    Declaration(decl) {
       const expand = shorthands[decl.prop];
-
-      if (expand) {
-        const longforms = expand(valueNode);
-        if (!longforms) {
-          throw new Error('Longform properties were not returned!');
-        }
-
-        const nodes = longforms.map((val) => {
-          const newNode = decl.clone({
-            ...val,
-            // Value needs to be a string else autoprefixer blows up.
-            value: `${val.value}`,
-          });
-          return newNode;
-        });
-
-        decl.replaceWith(nodes);
+      /** Return early if no matching property to expand */
+      if (!expand) {
+        return;
       }
-    });
+      const valueNode = parse(decl.value);
+
+      const longforms = expand(valueNode);
+      if (!longforms) {
+        throw new Error('Longform properties were not returned!');
+      }
+      /** Return early if not replacing a node */
+      if (longforms.length === 1 && longforms[0].prop === undefined) {
+        return;
+      }
+
+      const nodes = longforms.map((val) => {
+        const newNode = decl.clone({
+          ...val,
+          // Value needs to be a string else autoprefixer blows up.
+          value: `${val.value}`,
+        });
+        return newNode;
+      });
+
+      decl.replaceWith(nodes);
+    },
   };
-});
+};
+
+export const postcss = true;

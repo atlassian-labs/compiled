@@ -72,7 +72,7 @@
     "jsx-dev-runtime"
   ],
   "dependencies": {
-    "csstype": "^3.0.9"
+    "csstype": "^3.0.10"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.7",

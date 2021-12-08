@@ -49,11 +49,11 @@ const BASE_PLUGINS: string[] = [
  * This plugin runs a subset of the cssnao plugins to normalize CSS during build.
  * During a production build it will run more plugins.
  */
-export const normalizeCSS = (): Plugin<never>[] => {
+export const normalizeCSS = (): Plugin[] => {
   const preset = cssnano();
   // We exclude async because we need this to run synchronously as ts transformers aren't async!
   const extraPlugins = process.env.NODE_ENV === 'production' ? PROD_PLUGINS : [];
-  const pluginsToIncldue = BASE_PLUGINS.concat(extraPlugins);
+  const pluginsToInclude = BASE_PLUGINS.concat(extraPlugins);
 
   const normalizePlugins = preset.plugins
     .map(([creator]: any) => {
@@ -61,12 +61,12 @@ export const normalizeCSS = (): Plugin<never>[] => {
       return creator();
     })
     .filter((plugin: any) => {
-      return pluginsToIncldue.includes(plugin.postcssPlugin);
+      return pluginsToInclude.includes(plugin.postcssPlugin);
     });
 
   // These plugins are custom ones that gap functionality not provided by cssmin.
   if (process.env.NODE_ENV === 'production') {
-    normalizePlugins.push(normalizeCurrentColor);
+    normalizePlugins.push(normalizeCurrentColor());
   }
 
   return normalizePlugins;
