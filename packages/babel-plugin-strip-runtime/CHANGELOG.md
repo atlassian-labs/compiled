@@ -1,5 +1,11 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.11.2
+
+### Patch Changes
+
+- 8c9ab8c: Update `homepage` and other `package.json` properties
+
 ## 0.11.1
 
 ### Patch Changes

@@ -18,16 +18,20 @@ jobs:
           # Needed to ensure we always use the atlas-dst-bot creds.
           persist-credentials: false
 
-      - name: Setup Node.js 14.x
-        uses: actions/setup-node@master
+      - name: Read .nvmrc
+        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+        id: nvm
+
+      - name: Setup node
+        uses: actions/setup-node@v2
         with:
-          node-version: 14.x
+          node-version: ${{ steps.nvm.outputs.NVMRC }}
 
       - name: Install Dependencies
         run: yarn
 
       - name: Create Release Pull Request or Publish to npm
-        uses: changesets/action@master
+        uses: changesets/action@v1
         with:
           # this expects you to have a script called release which does a build for your packages and calls changeset publish
           publish: yarn release

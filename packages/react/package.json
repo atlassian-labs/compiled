@@ -1,6 +1,6 @@
 {
   "name": "@compiled/react",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "keywords": [
     "compiled",
@@ -72,7 +72,7 @@
     "jsx-dev-runtime"
   ],
   "dependencies": {
-    "csstype": "^3.0.9"
+    "csstype": "^3.0.10"
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.7",
