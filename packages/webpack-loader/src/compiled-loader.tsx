@@ -151,7 +151,8 @@ export default async function compiledLoader(
     }
 
     callback(null, output, result?.map ?? undefined);
-  } catch (e) {
+  } catch (e: unknown) {
+    // @ts-expect-error Not checking for error type
     const error = createError('compiled-loader', 'Unhandled exception')(e.stack);
     callback(error);
   }

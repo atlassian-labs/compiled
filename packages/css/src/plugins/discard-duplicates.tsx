@@ -1,15 +1,14 @@
-import type { Declaration } from 'postcss';
-import { plugin } from 'postcss';
+import type { Plugin, Declaration } from 'postcss';
 
 /**
  * Discards top level duplicate declarations.
  */
-export const discardDuplicates = plugin<{ callback: (sheet: string) => void }>(
-  'discard-duplicates',
-  () => {
-    const decls: Record<string, Declaration[]> = {};
+export const discardDuplicates = (): Plugin => {
+  return {
+    postcssPlugin: 'discard-duplicates',
+    Once(root) {
+      const decls: Record<string, Declaration[]> = {};
 
-    return (root) => {
       root.each((node) => {
         if (node.type === 'decl') {
           decls[node.prop] = decls[node.prop] || [];
@@ -23,6 +22,8 @@ export const discardDuplicates = plugin<{ callback: (sheet: string) => void }>(
           found[i].remove();
         }
       }
-    };
-  }
-);
+    },
+  };
+};
+
+export const postcss = true;

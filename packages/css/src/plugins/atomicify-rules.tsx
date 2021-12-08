@@ -1,6 +1,6 @@
 import { hash } from '@compiled/utils';
-import type { AtRule, Container, Declaration, Node, Rule } from 'postcss';
-import { decl, plugin, rule } from 'postcss';
+import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
+import { rule } from 'postcss';
 
 interface PluginOpts {
   callback?: (className: string) => void;
@@ -104,17 +104,18 @@ const buildAtomicSelector = (node: Declaration, opts: AtomicifyOpts) => {
  */
 const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
   const selector = buildAtomicSelector(node, opts);
-  const newDecl = decl({ prop: node.prop, value: node.value });
-  const newRule = rule({ selector, nodes: [newDecl] });
-
-  // Pass on important flag.
-  newDecl.important = node.important;
+  const newDecl = node.clone({
+    raws: { before: '', value: { value: '', raw: '' }, between: '' },
+  });
+  const newRule = rule({
+    raws: { before: '', after: '', between: '', selector: { raw: '', value: '' } },
+    nodes: [newDecl],
+    selector,
+  });
 
   // We need to link the new node to a parent else autoprefixer blows up.
   newDecl.parent = newRule;
-  newDecl.raws.before = '';
   newRule.parent = opts.parentNode!;
-  newRule.raws.before = '';
 
   return newRule;
 };
@@ -157,8 +158,16 @@ const atomicifyRule = (node: Rule, opts: AtomicifyOpts): Rule[] => {
  * @param opts
  */
 const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
-  const children: Node[] = [];
-  const newNode = node.clone({ nodes: children });
+  const children: ChildNode[] = [];
+  const newNode = node.clone({
+    raws: {
+      before: '',
+      between: '',
+      semicolon: false,
+      params: { raw: '', value: '' },
+    },
+    nodes: children,
+  });
   const atRuleLabel = `${opts.atRule || ''}${node.name}${node.params}`;
   const atRuleOpts = {
     ...opts,
@@ -171,17 +180,17 @@ const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
   node.each((childNode) => {
     switch (childNode.type) {
       case 'atrule':
-        children.push(atomicifyAtRule(childNode, atRuleOpts));
+        newNode.nodes.push(atomicifyAtRule(childNode, atRuleOpts));
         break;
 
       case 'rule':
         atomicifyRule(childNode, atRuleOpts).forEach((rule) => {
-          children.push(rule);
+          newNode.nodes.push(rule);
         });
         break;
 
       case 'decl':
-        children.push(atomicifyDecl(childNode, atRuleOpts));
+        newNode.nodes.push(atomicifyDecl(childNode, atRuleOpts));
         break;
 
       default:
@@ -200,33 +209,38 @@ const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
  *
  * 1. No nested rules allowed - normalize them with the `parent-orphaned-pseudos` and `nested` plugins first.
  */
-export const atomicifyRules = plugin<PluginOpts>('atomicify-rules', (opts = {}) => {
-  return (root) => {
-    root.each((node) => {
-      switch (node.type) {
-        case 'atrule':
-          const supported = ['media', 'supports', 'document'];
-          if (supported.includes(node.name)) {
-            node.replaceWith(atomicifyAtRule(node, opts));
-          }
+export const atomicifyRules = (opts = {}): Plugin => {
+  return {
+    postcssPlugin: 'atomicify-rules',
+    OnceExit(root) {
+      root.each((node) => {
+        switch (node.type) {
+          case 'atrule':
+            const supported = ['media', 'supports', 'document'];
+            if (supported.includes(node.name)) {
+              node.replaceWith(atomicifyAtRule(node, opts));
+            }
 
-          break;
+            break;
 
-        case 'rule':
-          node.replaceWith(atomicifyRule(node, opts));
-          break;
+          case 'rule':
+            node.replaceWith(atomicifyRule(node, opts));
+            break;
 
-        case 'decl':
-          node.replaceWith(atomicifyDecl(node, opts));
-          break;
+          case 'decl':
+            node.replaceWith(atomicifyDecl(node, opts));
+            break;
 
-        case 'comment':
-          node.remove();
-          break;
+          case 'comment':
+            node.remove();
+            break;
 
-        default:
-          break;
-      }
-    });
+          default:
+            break;
+        }
+      });
+    },
   };
-});
+};
+
+export const postcss = true;
