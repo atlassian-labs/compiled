@@ -7,9 +7,9 @@ import type {
   Program,
 } from 'jscodeshift';
 
-import { applyVisitor, withPlugin } from '../../codemods-helpers';
 import defaultCodemodPlugin from '../../plugins/default';
 import type { CodemodPluginInstance } from '../../plugins/types';
+import { withPlugin, applyVisitor } from '../../utils/main';
 
 const applyInnerRefPlugin = (plugins: CodemodPluginInstance[], originalNode: JSXAttribute) =>
   plugins.reduce((currentNode, plugin) => {
