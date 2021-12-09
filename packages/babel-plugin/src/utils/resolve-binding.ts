@@ -9,7 +9,7 @@ import resolve from 'resolve';
 
 import type { Metadata } from '../types';
 
-import { getDefaultExport, getNamedExport } from './export-traversers';
+import { getDefaultExport, getNamedExport } from './traversers';
 import type { PartialBindingWithMeta } from './types';
 
 /**

@@ -2,17 +2,13 @@ import type { NodePath } from '@babel/traverse';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
 
-import type { Metadata } from '../types';
+import type { Metadata } from '../../types';
+import { getPathOfNode, wrapNodeInIIFE } from '../ast';
+import { isCompiledKeyframesCallExpression } from '../is-compiled';
+import { resolveBinding } from '../resolve-binding';
 
-import { getPathOfNode, wrapNodeInIIFE } from './ast';
-import { getDefaultExport, getNamedExport } from './export-traversers';
-import { isCompiledKeyframesCallExpression } from './is-compiled';
-import { resolveBinding } from './resolve-binding';
-
-const createResultPair = (value: t.Expression, meta: Metadata) => ({
-  value,
-  meta,
-});
+import { createResultPair } from './common';
+import { traverseMemberAccessPath } from './traverse-access-path';
 
 /**
  * Will look in an expression and return the actual value along with updated metadata.
@@ -41,158 +37,6 @@ const traverseIdentifier = (expression: t.Identifier, meta: Metadata) => {
 };
 
 /**
- * Will return the value of a path from an object expression.
- *
- * For example if  we take an object expression that looks like:
- * ```
- * { colors: { primary: 'red' } }
- * ```
- *
- * And a path of identifiers that looks like:
- * ```
- * [colors, primary]
- * ```
- *
- * Would result in returning the `red` string literal node.
- * If the value is not found `undefined` will be returned.
- *
- * @param expression - Member expression node.
- * @param accessPath - Access path identifiers.
- */
-const getValueFromObjectExpression = (
-  expression: t.ObjectExpression,
-  accessPath: t.Identifier[]
-): t.Node | undefined => {
-  let value: t.Node | undefined = undefined;
-
-  traverse(expression, {
-    noScope: true,
-    ObjectProperty(path) {
-      if (t.isIdentifier(path.node.key, { name: accessPath[0].name })) {
-        if (t.isObjectExpression(path.node.value)) {
-          value = getValueFromObjectExpression(path.node.value, accessPath.slice(1));
-        } else {
-          value = path.node.value;
-        }
-
-        path.stop();
-      }
-    },
-  });
-
-  return value;
-};
-
-/**
- * Will evaluate object values recursively and return the actual value along with updated metadata.
- *
- * E.g: If there is an object expression `{ x: () => 10 }`, it will evaluate and
- * return `value` as `10`.
- * @param expression Expression we want to interrogate.
- * @param accessPath An array of nested object keys
- * @param meta {Metadata} Useful metadata that can be used during the transformation
- */
-const evaluateObjectExpression = (
-  expression: t.Expression,
-  accessPath: t.Identifier[],
-  meta: Metadata
-) => {
-  let value: t.Node | undefined | null = expression;
-  let updatedMeta: Metadata = meta;
-
-  if (t.isObjectExpression(expression)) {
-    const objectValue = getValueFromObjectExpression(expression, accessPath) as t.Expression;
-
-    ({ value, meta: updatedMeta } = evaluateExpression(objectValue, updatedMeta));
-  }
-
-  return createResultPair(value, updatedMeta);
-};
-
-/**
- * Will look in an expression and return the actual value along with updated metadata.
- *
- * E.g: If there is a member expression called `colors().primary` that has identifier `colors` which
- * is set somewhere as `const colors = () => ({ primary: 'blue' })`,
- * passing the `colors` identifier to this function would return `'blue'`.
- *
- * @param expression Expression we want to interrogate.
- * @param accessPath An array of nested object keys
- * @param meta {Metadata} Useful metadata that can be used during the transformation
- */
-const evaluateCallExpressionBindingMemberExpression = (
-  expression: t.Expression,
-  accessPath: t.Identifier[],
-  meta: Metadata
-) => {
-  let value: t.Node | undefined | null = expression;
-  let updatedMeta: Metadata = meta;
-
-  if (t.isFunction(expression)) {
-    ({ value, meta: updatedMeta } = evaluateExpression(expression as t.Expression, meta));
-
-    ({ value, meta: updatedMeta } = evaluateObjectExpression(value, accessPath, updatedMeta));
-  }
-
-  return createResultPair(value, updatedMeta);
-};
-
-/**
- * Will look in an expression and return the actual value along with updated metadata.
- *
- * E.g:
- * 1. If there is a member expression called `colors.primary` that has identifier `colors` which
- * is set somewhere as `const colors = { primary: 'blue' }`,
- * passing the `colors` identifier to this function would return `'blue'`.
- *
- * 2. If there is a member expression called `colors.primary` that has identifier `colors` which
- * is set somewhere as `const colors = colorMixin();` calling another identifier
- * `const colorMixin = () => ({ primary: 'blue' })`, passing the `colors` identifier
- * to this function would return `'blue'`.
- *
- * @param expression Expression we want to interrogate.
- * @param accessPath An array of nested object keys
- * @param meta {Metadata} Useful metadata that can be used during the transformation
- */
-const evaluateIdentifierBindingMemberExpression = (
-  expression: t.Expression,
-  accessPath: t.Identifier[],
-  meta: Metadata
-) => {
-  let value: t.Node | undefined | null = expression;
-  let updatedMeta: Metadata = meta;
-
-  if (t.isObjectExpression(expression)) {
-    ({ value, meta: updatedMeta } = evaluateObjectExpression(expression, accessPath, meta));
-  } else if (t.isCallExpression(expression)) {
-    ({ value, meta: updatedMeta } = evaluateExpression(expression, meta));
-    ({ value, meta: updatedMeta } = evaluateObjectExpression(value, accessPath, updatedMeta));
-  }
-
-  return createResultPair(value, updatedMeta);
-};
-
-const evaluateNamespaceImportExpression = (accessPath: t.Identifier[], meta: Metadata) => {
-  const exportName = accessPath[0].name;
-  const updatedMeta: Metadata = { ...meta };
-  const { file } = meta.state;
-  const result =
-    exportName === 'default' ? getDefaultExport(file) : getNamedExport(file, exportName);
-
-  if (result) {
-    updatedMeta.ownPath = result.path;
-    // Set parentPath to the path where the import is being used
-    updatedMeta.parentPath = meta.parentPath;
-
-    if (t.isObjectExpression(result.node) && accessPath.length > 1) {
-      return evaluateObjectExpression(result.node, accessPath.slice(1), updatedMeta);
-    }
-  }
-
-  return evaluateExpression(result?.node as t.Expression, updatedMeta);
-};
-
-/**
  * Returns the binding identifier for a member expression.
  *
  * For example:
@@ -200,7 +44,8 @@ const evaluateNamespaceImportExpression = (accessPath: t.Identifier[], meta: Met
  * with `originalBindingType` as 'Identifier'.
  * 2. Member expression with function call `foo().bar.baz` will return the
  * `foo` identifier along with `originalBindingType` as 'CallExpression'.
- *
+ * 3. We also want to process call expressions with a member expression callee
+ * i.e. `foo.bar.baz()`
  * @param expression - Member expression node.
  */
 const getMemberExpressionMeta = (
@@ -217,6 +62,11 @@ const getMemberExpressionMeta = (
   traverse(t.expressionStatement(expression), {
     noScope: true,
     MemberExpression(path) {
+      // Skip if member comes from call expression arguments
+      if (path.listKey === 'arguments') {
+        return;
+      }
+
       if (t.isIdentifier(path.node.object)) {
         bindingIdentifier = path.node.object;
         originalBindingType = bindingIdentifier.type;
@@ -229,6 +79,12 @@ const getMemberExpressionMeta = (
 
       if (t.isIdentifier(path.node.property)) {
         accessPath.push(path.node.property);
+      } else if (
+        // Adds the function name of the trailing call expression
+        t.isCallExpression(path.node.property) &&
+        t.isIdentifier(path.node.property.callee)
+      ) {
+        accessPath.push(path.node.property.callee);
       }
     },
   });
@@ -250,39 +106,24 @@ const getMemberExpressionMeta = (
  * @param expression Expression we want to interrogate.
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
-const traverseMemberExpression = (expression: t.MemberExpression, meta: Metadata) => {
-  let value: t.Node | undefined | null = undefined;
-  let updatedMeta: Metadata = meta;
-
-  const { accessPath, bindingIdentifier, originalBindingType } =
-    getMemberExpressionMeta(expression);
+const traverseMemberExpression = (
+  expression: t.MemberExpression,
+  meta: Metadata
+): ReturnType<typeof createResultPair> => {
+  const { accessPath, bindingIdentifier } = getMemberExpressionMeta(expression);
 
   if (bindingIdentifier) {
-    const resolvedBinding = resolveBinding(bindingIdentifier.name, updatedMeta);
-
-    if (resolvedBinding && resolvedBinding.constant && t.isExpression(resolvedBinding.node)) {
-      if (originalBindingType === 'Identifier') {
-        ({ value, meta: updatedMeta } = evaluateIdentifierBindingMemberExpression(
-          resolvedBinding.node,
-          accessPath,
-          resolvedBinding.meta
-        ));
-      } else if (originalBindingType === 'CallExpression') {
-        ({ value, meta: updatedMeta } = evaluateCallExpressionBindingMemberExpression(
-          resolvedBinding.node,
-          accessPath,
-          resolvedBinding.meta
-        ));
-      }
-    } else if (resolvedBinding?.node && t.isImportNamespaceSpecifier(resolvedBinding.node)) {
-      ({ value, meta: updatedMeta } = evaluateNamespaceImportExpression(
-        accessPath,
-        resolvedBinding.meta
-      ));
-    }
+    return traverseMemberAccessPath(
+      t.identifier(bindingIdentifier.name),
+      meta,
+      bindingIdentifier.name,
+      accessPath,
+      expression,
+      { callExpression: traverseCallExpression, memberExpression: traverseMemberExpression }
+    );
   }
 
-  return createResultPair(value as t.Expression, updatedMeta);
+  return createResultPair(expression, meta);
 };
 
 /**
@@ -350,28 +191,26 @@ const traverseCallExpression = (expression: t.CallExpression, meta: Metadata) =>
     8. In `resolveBindingNode`, if `ownPath` is not set (module traversal case or any other case), it will pick things from `parentPath`.
   */
   if (t.isExpression(callee)) {
-    let functionNode = null;
+    let functionNode;
 
-    // Get func node either from `Identifier` i.e. `func('arg')` or `MemberExpression` i.e. `x.func('arg')`.
-    // Right now we are only supported these 2 flavors. If we have complex case like `func('arg').fn().variable`,
-    // it will not get evaluated.
-    if (t.isIdentifier(callee)) {
-      const resolvedBinding = resolveBinding(callee.name, updatedMeta);
-
-      if (resolvedBinding && resolvedBinding.constant) {
-        functionNode = resolvedBinding.node;
-      }
-    } else if (t.isMemberExpression(callee) && t.isIdentifier(callee.property)) {
-      const { accessPath, bindingIdentifier } = getMemberExpressionMeta(callee);
-
-      if (bindingIdentifier) {
-        const resolvedBinding = resolveBinding(bindingIdentifier.name, updatedMeta);
+    if (t.isFunction(callee)) {
+      functionNode = callee;
+    } else {
+      // Get func node either from `Identifier` i.e. `func('arg')` or `MemberExpression` i.e. `x.func('arg')`.
+      // Right now we are only supported these 2 flavors. If we have complex case like `func('arg').fn().variable`,
+      // it will not get evaluated.
+      if (t.isIdentifier(callee)) {
+        const resolvedBinding = resolveBinding(callee.name, updatedMeta);
 
         if (resolvedBinding && resolvedBinding.constant) {
-          if (t.isObjectExpression(resolvedBinding.node)) {
-            functionNode = getValueFromObjectExpression(resolvedBinding.node, accessPath);
-          }
+          functionNode = resolvedBinding.node;
         }
+      } else if (t.isMemberExpression(callee) && t.isIdentifier(callee.property)) {
+        // Convert the last property of the member to a call expression so we attach
+        // the functions arguments
+        callee.property = t.callExpression(callee.property, expression.arguments);
+
+        return traverseMemberExpression(callee, updatedMeta);
       }
     }
 
@@ -530,7 +369,7 @@ const babelEvaluateExpression = (
 export const evaluateExpression = (
   expression: t.Expression,
   meta: Metadata
-): { value: t.Expression; meta: Metadata } => {
+): ReturnType<typeof createResultPair> => {
   let value: t.Node | undefined | null = undefined;
   let updatedMeta: Metadata = meta;
 

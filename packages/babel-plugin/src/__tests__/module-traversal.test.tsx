@@ -224,6 +224,21 @@ describe('module traversal', () => {
     expect(result).toInclude('{color:orange}');
   });
 
+  it('should inline css from a member expression that comprises of an import being exposed by a local variable', () => {
+    const result = transform(
+      `
+      import '@compiled/react';
+      import React from 'react';
+      import { danger } from '../__fixtures__/mixins/objects';
+
+      const theme = { danger };
+      <div css={{ color: theme.danger }} />
+    `
+    );
+
+    expect(result).toInclude('{color:blue}');
+  });
+
   it('should inline a static string', () => {
     const result = transform(
       `
@@ -466,6 +481,35 @@ describe('module traversal', () => {
       expect(result).toInclude('{color:blue}');
     });
 
+    it('should replace a member expression referencing a default export from within a local variable', () => {
+      const result = transform(`
+        import '@compiled/react';
+        import React from 'react';
+        import * as objects from '../__fixtures__/mixins/objects';
+
+        const library = { objects };
+
+        <div css={{ color: library.objects.default.primary }} />
+      `);
+
+      expect(result).toInclude('{color:blue}');
+    });
+
+    it('should replace a member expression referencing a function export from within a local variable', () => {
+      const result = transform(`
+        import '@compiled/react';
+        import React from 'react';
+        import * as objects from '../__fixtures__/mixins/objects';
+
+        const library = { objects };
+        const color = { green: 'green' };
+
+        <div css={{ backgroundColor: library.objects.colorMixin2(color.green).backgroundColor }} />
+      `);
+
+      expect(result).toInclude('{background-color:green}');
+    });
+
     it('should replace a member expression referencing a named variable export', () => {
       const result = transform(`
         import '@compiled/react';
@@ -532,18 +576,10 @@ describe('module traversal', () => {
 
         const color = { blue: 'blue' };
 
-        const Component = (props) => {
-          return <div css={{ ...objects.colorMixin2(color.blue) }} />
-        };
-    `);
+        <div css={{ ...objects.colorMixin2(color.blue) }} />
+      `);
 
-      expect(result).toIncludeMultiple([
-        '{color:red}',
-        // We're not handling statically evaluating param values used from a namespace chain,
-        // as the long term strategy is to only statically evaluate expressions scoped locally
-        // to the current file.
-        '{background-color:var(--_1w9snyi)}',
-      ]);
+      expect(result).toIncludeMultiple(['{color:red}', '{background-color:blue}']);
     });
 
     it('should inline css from a directly called function mixin', () => {
