@@ -1,14 +1,15 @@
 import type { API, FileInfo, Options, Program } from 'jscodeshift';
 
+import defaultCodemodPlugin from '../../plugins/default';
+import type { CodemodPluginInstance } from '../../plugins/types';
 import {
   addCommentForUnresolvedImportSpecifiers,
   applyVisitor,
   convertMixedImportToNamedImport,
   hasImportDeclaration,
   withPlugin,
-} from '../../codemods-helpers';
-import defaultCodemodPlugin from '../../plugins/default';
-import type { CodemodPluginInstance } from '../../plugins/types';
+} from '../../utils/main';
+import { convertStyledAttrsToComponent } from '../../utils/styled-components-attributes';
 
 const imports = {
   compiledStyledImportName: 'styled',
@@ -51,6 +52,21 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
     defaultSourceSpecifierName: imports.compiledStyledImportName,
     allowedImportSpecifierNames: imports.styledComponentsSupportedImportNames,
   });
+
+  const taggedTemplateExpressions = collection.find(
+    j.TaggedTemplateExpression,
+    ({ tag: expression }) =>
+      expression.callee.object.object.name === 'styled' &&
+      expression.callee.property.name === 'attrs'
+  );
+
+  if (taggedTemplateExpressions.length) {
+    convertStyledAttrsToComponent({
+      j,
+      plugins,
+      expressions: taggedTemplateExpressions,
+    });
+  }
 
   applyVisitor({
     plugins,

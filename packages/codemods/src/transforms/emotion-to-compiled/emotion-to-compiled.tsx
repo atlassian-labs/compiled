@@ -10,6 +10,9 @@ import type {
 } from 'jscodeshift';
 import type core from 'jscodeshift';
 
+import { COMPILED_IMPORT_PATH } from '../../constants';
+import defaultCodemodPlugin from '../../plugins/default';
+import type { CodemodPluginInstance } from '../../plugins/types';
 import {
   addCommentBefore,
   addCommentForUnresolvedImportSpecifiers,
@@ -22,10 +25,7 @@ import {
   hasImportDeclaration,
   mergeImportSpecifiersAlongWithTheirComments,
   withPlugin,
-} from '../../codemods-helpers';
-import { COMPILED_IMPORT_PATH } from '../../constants';
-import defaultCodemodPlugin from '../../plugins/default';
-import type { CodemodPluginInstance } from '../../plugins/types';
+} from '../../utils/main';
 
 const imports = {
   compiledStyledImportName: 'styled',
