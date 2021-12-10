@@ -1,5 +1,12 @@
 # @compiled/webpack-app
 
+## 1.0.11
+
+### Patch Changes
+
+- Updated dependencies [b345bf4]
+  - @compiled/webpack-loader@0.7.5
+
 ## 1.0.10
 
 ### Patch Changes

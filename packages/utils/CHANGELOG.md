@@ -1,5 +1,11 @@
 # @compiled/utils
 
+## 0.6.14
+
+### Patch Changes
+
+- b345bf4: Update dependencies and plugins to use postcss v8
+
 ## 0.6.13
 
 ### Patch Changes

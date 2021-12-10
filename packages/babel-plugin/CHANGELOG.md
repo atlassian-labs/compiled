@@ -1,5 +1,16 @@
 # @compiled/babel-plugin
 
+## 0.11.3
+
+### Patch Changes
+
+- 3b7c188: Refactor the way member expressions are statically evaluated and handle more combinations of expressions within a member
+- c2ae4eb: Resolve css-what and nth-check to new versions in @compiled/css
+- Updated dependencies [c2ae4eb]
+- Updated dependencies [b345bf4]
+  - @compiled/css@0.8.0
+  - @compiled/utils@0.6.14
+
 ## 0.11.2
 
 ### Patch Changes
