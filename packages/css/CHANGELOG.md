@@ -1,5 +1,17 @@
 # @compiled/css
 
+## 0.8.0
+
+### Minor Changes
+
+- b345bf4: Update dependencies and plugins to use postcss v8
+
+### Patch Changes
+
+- c2ae4eb: Resolve css-what and nth-check to new versions in @compiled/css
+- Updated dependencies [b345bf4]
+  - @compiled/utils@0.6.14
+
 ## 0.7.2
 
 ### Patch Changes
