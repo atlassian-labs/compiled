@@ -112,7 +112,7 @@
     "typescript": "^4.2.4"
   },
   "engines": {
-    "node": "^v16.13.0"
+    "node": "^v16.13.1"
   },
   "loki": {
     "configurations": {
