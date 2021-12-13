@@ -65,7 +65,7 @@
   "devDependencies": {
     "@babel/plugin-transform-react-jsx-self": "^7.16.0",
     "@babel/plugin-transform-react-jsx-source": "^7.16.0",
-    "@babel/preset-env": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
     "@changesets/cli": "^2.18.1",
@@ -107,11 +107,11 @@
     "ts-node": "^10.4.0",
     "ts-transform-define": "^0.1.10",
     "tsconfig-paths": "^3.11.0",
-    "ttypescript": "^1.5.12",
+    "ttypescript": "^1.5.13",
     "typescript": "^4.2.4"
   },
   "engines": {
-    "node": "^v16.13.0"
+    "node": "^v16.13.1"
   },
   "loki": {
     "configurations": {
