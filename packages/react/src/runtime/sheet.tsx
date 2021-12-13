@@ -1,3 +1,4 @@
+import { isCacheDisabled } from './cache';
 import type { Bucket, StyleSheetOpts } from './types';
 
 /**
@@ -77,8 +78,13 @@ function lazyAddStyleBucketToHead(bucketName: Bucket, opts: StyleSheetOpts): HTM
     const tag = document.createElement('style');
     opts.nonce && tag.setAttribute('nonce', opts.nonce);
     tag.appendChild(document.createTextNode(''));
-    styleBucketsInHead[bucketName] = tag;
     document.head.insertBefore(tag, nextBucketFromCache);
+
+    if (isCacheDisabled()) {
+      return tag;
+    }
+
+    styleBucketsInHead[bucketName] = tag;
   }
 
   return styleBucketsInHead[bucketName]!;
