@@ -20,18 +20,18 @@
   ],
   "resolutions": {
     "css-what": "^5.1.0",
-    "cssnano-preset-default": "^5.1.7",
+    "cssnano-preset-default": "^5.1.8",
     "nth-check": "^2.0.1"
   },
   "dependencies": {
     "@compiled/utils": "^0.6.14",
     "autoprefixer": "^10.4.0",
     "convert-source-map": "^1.8.0",
-    "cssnano-preset-default": "^5.1.7",
-    "postcss": "^8.3.11",
+    "cssnano-preset-default": "^5.1.8",
+    "postcss": "^8.4.5",
     "postcss-nested": "^5.0.6",
     "postcss-normalize-whitespace": "^5.0.1",
-    "postcss-selector-parser": "^6.0.6",
+    "postcss-selector-parser": "^6.0.7",
     "postcss-values-parser": "^6.0.1"
   },
   "devDependencies": {
