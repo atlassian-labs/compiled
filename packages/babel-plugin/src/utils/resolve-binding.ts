@@ -14,7 +14,7 @@ import type { PartialBindingWithMeta } from './types';
 
 /**
  * Will recursively checks if identifier name is coming from destructuring. If yes,
- * then will return the resolved identifer. We can look for identifier name
+ * then will return the resolved identifier. We can look for identifier name
  * either in destructuring key or its value.
  *
  * @param name Identifier name to resolve
@@ -220,7 +220,7 @@ export const resolveBinding = (
     };
   }
 
-  if (binding.path.parentPath.isImportDeclaration()) {
+  if (binding.path.parentPath?.isImportDeclaration()) {
     // NOTE: We're skipping traversal when file name is not resolved. Imported identifier
     // will end up as a dynamic variable instead.
     if (!meta.state.filename) {
