@@ -1,5 +1,17 @@
 # @compiled/webpack-loader
 
+## 0.7.5
+
+### Patch Changes
+
+- b345bf4: Update dependencies and plugins to use postcss v8
+- Updated dependencies [3b7c188]
+- Updated dependencies [c2ae4eb]
+- Updated dependencies [b345bf4]
+  - @compiled/babel-plugin@0.11.3
+  - @compiled/css@0.8.0
+  - @compiled/utils@0.6.14
+
 ## 0.7.4
 
 ### Patch Changes

@@ -15,6 +15,22 @@ const defaultCodemodPlugin: CodemodPlugin = {
         return newImport;
       },
 
+      buildAttributes({ originalNode, transformedNode, composedNode }) {
+        const newDeclaration = j(originalNode).replaceWith(transformedNode).get();
+
+        if (composedNode) {
+          let candidateForInsertion = newDeclaration;
+
+          while (candidateForInsertion.parentPath?.name !== 'body') {
+            candidateForInsertion = candidateForInsertion.parentPath;
+          }
+
+          j(candidateForInsertion).insertBefore(composedNode);
+        }
+
+        return newDeclaration;
+      },
+
       buildRefAttribute({ currentNode }) {
         return j.jsxAttribute(j.jsxIdentifier('ref'), (currentNode as JSXAttribute).value);
       },

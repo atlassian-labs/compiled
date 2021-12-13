@@ -35,3 +35,20 @@ on your next run explicitly set the version number:
 ```bash
 npx @compiled/cli@0.6.0 --preset codemods
 ```
+
+## Gotchas
+
+`styled.div.attrs` spread properties are not supported.
+
+_Example_
+
+```
+styled.div.attrs({
+    style: ({ left, ...props }) => {
+        left: left,
+        top: props.top,
+    }
+})`
+    position: absolute;
+`;
+```
