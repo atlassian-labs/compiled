@@ -1,4 +1,5 @@
-import '@compiled/react';
+/** @jsxImportSource @compiled/react */
+// @ts-expect-error
 import { primary } from '../constants';
 
 interface TypeScriptProps {
