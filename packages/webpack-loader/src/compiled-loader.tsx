@@ -48,6 +48,9 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           resolve: {
             type: 'object',
           },
+          extensions: {
+            type: 'array',
+          },
         },
       });
 

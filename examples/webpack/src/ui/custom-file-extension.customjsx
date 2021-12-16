@@ -1,0 +1,16 @@
+import { styled } from '@compiled/react';
+
+const HelloWorld = styled.div({
+  color: 'orange',
+  fontWeight: 500,
+
+  ':hover': {
+    color: 'red',
+  },
+
+  ':focus': {
+    color: 'blue',
+  },
+});
+
+export const CustomFileExtension = ({ children }) => <HelloWorld>{children}</HelloWorld>;
