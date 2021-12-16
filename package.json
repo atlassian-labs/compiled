@@ -71,7 +71,7 @@
     "@changesets/cli": "^2.18.1",
     "@compiled/jest": "*",
     "@compiled/react": "*",
-    "@size-limit/preset-small-lib": "^7.0.4",
+    "@size-limit/preset-big-lib": "^7.0.4",
     "@storybook/addons": "^6.3.12",
     "@storybook/builder-webpack5": "^6.3.12",
     "@storybook/manager-webpack5": "^6.3.12",
@@ -127,7 +127,7 @@
   "size-limit": [
     {
       "path": "./packages/react/dist/browser/runtime.js",
-      "limit": "28B",
+      "limit": "48B",
       "import": "{ ix }",
       "ignore": [
         "react"
@@ -135,7 +135,7 @@
     },
     {
       "path": "./packages/react/dist/browser/runtime.js",
-      "limit": "134B",
+      "limit": "166B",
       "import": "{ ax }",
       "ignore": [
         "react"
@@ -143,7 +143,7 @@
     },
     {
       "path": "./packages/react/dist/browser/runtime.js",
-      "limit": "436B",
+      "limit": "473B",
       "import": "{ CC, CS }",
       "ignore": [
         "react"
