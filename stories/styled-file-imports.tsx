@@ -7,7 +7,7 @@ export default {
   title: 'styled/file imports',
 };
 
-const BackgroundImage = styled.div({
+const CallExpressionBackgroundImage = styled.div({
   backgroundColor: 'cyan',
   backgroundImage: `url(${caratDown})`,
   backgroundSize: '64px 64px',
@@ -15,9 +15,9 @@ const BackgroundImage = styled.div({
   height: '64px',
 });
 
-export const StyledBackgroundImage = (): JSX.Element => <BackgroundImage />;
+export const CallExpressionUrl = (): JSX.Element => <CallExpressionBackgroundImage />;
 
-const BackgroundImageMultiple = styled.div({
+const CallExpressionMultipleBackgroundImage = styled.div({
   backgroundColor: 'cyan',
   backgroundImage: `url(${caratDown}), url(${caratUp})`,
   backgroundSize: '64px 64px',
@@ -25,4 +25,30 @@ const BackgroundImageMultiple = styled.div({
   height: '64px',
 });
 
-export const StyledBackgroundImageMultiple = (): JSX.Element => <BackgroundImageMultiple />;
+export const CallExpressionMultipleUrl = (): JSX.Element => (
+  <CallExpressionMultipleBackgroundImage />
+);
+
+const TaggedTemplateExpressionBackgroundImage = styled.div`
+  background-color: cyan;
+  background-image: url(${caratDown});
+  background-size: 64px 64px;
+  width: 64px;
+  height: 64px;
+`;
+
+export const TaggedTemplateExpressionUrl = (): JSX.Element => (
+  <TaggedTemplateExpressionBackgroundImage />
+);
+
+const TaggedTemplateExpressionMultipleBackgroundImage = styled.div`
+  background-color: cyan;
+  background-image: url(${caratDown}), url(${caratUp});
+  background-size: 64px 64px;
+  width: 64px;
+  height: 64px;
+`;
+
+export const TaggedTemplateExpressionMultipleUrl = (): JSX.Element => (
+  <TaggedTemplateExpressionMultipleBackgroundImage />
+);
