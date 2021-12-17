@@ -4,5 +4,5 @@ export {
   cssAffixInterpolation,
   AfterInterpolation,
   BeforeInterpolation,
-} from './utils/string-interpolations';
+} from './utils/css-affix-interpolation';
 export { sort } from './sort';

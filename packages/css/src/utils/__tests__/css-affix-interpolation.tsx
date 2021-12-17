@@ -1,142 +1,105 @@
-import { cssAffixInterpolation } from '../string-interpolations';
+import { cssAffixInterpolation } from '../css-affix-interpolation';
 
-describe('template literal to css', () => {
+describe('cssAffixInterpolation', () => {
   describe('interpolations with surrounding css', () => {
     it('should extract the prefix of a simple template literal', () => {
-      const simpleParts = ['content: "', '";font-color:blue;'];
-
-      const [before] = cssAffixInterpolation(simpleParts[0], simpleParts[1]);
+      const [before] = cssAffixInterpolation('content: "', '";font-color:blue;');
 
       expect(before.variablePrefix).toEqual('"');
       expect(before.css).toEqual('content: ');
     });
 
     it('should extract the suffix of a simple template literal', () => {
-      const simpleParts = ['content: "', '";font-color:blue;'];
-
-      const [, after] = cssAffixInterpolation(simpleParts[0], simpleParts[1]);
+      const [, after] = cssAffixInterpolation('content: "', '";font-color:blue;');
 
       expect(after.variableSuffix).toEqual('"');
       expect(after.css).toEqual(';font-color:blue;');
     });
 
     it('should retain suffix with important flag', () => {
-      const simpleParts = ['color: ', 'px !important;'];
-
-      const [, after] = cssAffixInterpolation(simpleParts[0], simpleParts[1]);
+      const [, after] = cssAffixInterpolation('color: ', 'px !important;');
 
       expect(after.variableSuffix).toEqual('px');
       expect(after.css).toEqual(' !important;');
     });
 
     it('should ignore a space as prefix', () => {
-      const simpleParts = ['padding: 0 ', ' 0'];
-
-      const [before] = cssAffixInterpolation(simpleParts[0], simpleParts[1]);
+      const [before] = cssAffixInterpolation('padding: 0 ', ' 0');
 
       expect(before.variablePrefix).toEqual('');
       expect(before.css).toEqual('padding: 0 ');
     });
 
     it('should ignore a space as suffix', () => {
-      const simpleParts = ['padding: 0 ', ' 0'];
-
-      const [, after] = cssAffixInterpolation(simpleParts[0], simpleParts[1]);
+      const [, after] = cssAffixInterpolation('padding: 0 ', ' 0');
 
       expect(after.variableSuffix).toEqual('');
       expect(after.css).toEqual(' 0');
     });
 
     it('should extract an interpolation that has a suffix', () => {
-      const simpleParts = ['padding: 0 ', 'px 0'];
-
-      const [, after] = cssAffixInterpolation(simpleParts[0], simpleParts[1]);
+      const [, after] = cssAffixInterpolation('padding: 0 ', 'px 0');
 
       expect(after.variableSuffix).toEqual('px');
       expect(after.css).toEqual(' 0');
     });
 
     it('should extract the prefix of a complex template literal', () => {
-      const complexParts = ['transform: translateX(', ');color:blue;'];
-
-      const [before] = cssAffixInterpolation(complexParts[0], complexParts[1]);
+      const [before] = cssAffixInterpolation('transform: translateX(', ');color:blue;');
 
       expect(before.variablePrefix).toEqual('');
       expect(before.css).toEqual('transform: translateX(');
     });
 
     it('should extract the suffix of a complex template literal', () => {
-      const complexParts = ['transform: translateX(', ');color:blue;'];
-
-      const [, after] = cssAffixInterpolation(complexParts[0], complexParts[1]);
+      const [, after] = cssAffixInterpolation('transform: translateX(', ');color:blue;');
 
       expect(after.variableSuffix).toEqual('');
       expect(after.css).toEqual(');color:blue;');
     });
 
     it('should extract first part of a three part value', () => {
-      const complexPartsNoPropertyName = ['transform: transform3d(', ', ', ')'];
-
-      const [before] = cssAffixInterpolation(
-        complexPartsNoPropertyName[0],
-        complexPartsNoPropertyName[1]
-      );
+      const [before] = cssAffixInterpolation('transform: transform3d(', ', ');
 
       expect(before.variablePrefix).toEqual('');
       expect(before.css).toEqual('transform: transform3d(');
     });
 
     it('should extract before second part of a three part value', () => {
-      const complexPartsNoPropertyName = ['transform: transform3d(', ', ', ')'];
-
-      const [before] = cssAffixInterpolation(
-        complexPartsNoPropertyName[1],
-        complexPartsNoPropertyName[2]
-      );
+      const [before] = cssAffixInterpolation(', ', ')');
 
       expect(before.variablePrefix).toEqual('');
       expect(before.css).toEqual(', ');
     });
 
     it('should extract after second part of a three part value', () => {
-      const complexPartsNoPropertyName = ['transform: transform3d(', ', ', ')'];
-
-      const [, after] = cssAffixInterpolation(
-        complexPartsNoPropertyName[0],
-        complexPartsNoPropertyName[1]
-      );
+      const [, after] = cssAffixInterpolation('transform: transform3d(', ', ');
 
       expect(after.variableSuffix).toEqual('');
       expect(after.css).toEqual(', ');
     });
 
     it('should extract second part of a three part value', () => {
-      const complexPartsNoPropertyName = ['transform: transform3d(', ', ', ')'];
-
-      const [, after] = cssAffixInterpolation(
-        complexPartsNoPropertyName[1],
-        complexPartsNoPropertyName[2]
-      );
+      const [, after] = cssAffixInterpolation(', ', ')');
 
       expect(after.variableSuffix).toEqual('');
       expect(after.css).toEqual(')');
     });
 
     it('should get the before and after for the first part of a transform interpolation', () => {
-      const css = [`transform: translate3d(`, `px, `, `, 0);`];
-
-      const [before, after] = cssAffixInterpolation(css[0], css[1]);
+      const [before, after] = cssAffixInterpolation(`transform: translate3d(`, `px, `);
 
       expect(before.variablePrefix).toEqual('');
-      expect(before.css).toEqual(css[0]);
+      expect(before.css).toEqual(`transform: translate3d(`);
       expect(after.variableSuffix).toEqual('px');
       expect(after.css).toEqual(', ');
     });
 
     it('should get the before and after for the second part of a transform interpolation', () => {
-      const css = [`\n            transform: translate3d(var(--_test), `, `, 0);`];
-
-      const [before, after] = cssAffixInterpolation(css[0], css[1]);
+      const [before, after] = cssAffixInterpolation(
+        `\n            transform: translate3d(var(--_test), `,
+        `, 0);`
+      );
 
       expect(before.variablePrefix).toEqual('');
       expect(before.css).toEqual('\n            transform: translate3d(var(--_test), ');
@@ -147,89 +110,68 @@ describe('template literal to css', () => {
 
   describe('interpolations with multiple groups', () => {
     it('should extract the first part of the first group', () => {
-      const parts = [
+      const [before, after] = cssAffixInterpolation(
         'background-image: linear-gradient(45deg, ',
-        ' 25%, transparent 25%),',
-        'linear-gradient(-45deg, ',
-        ' 25%, transparent 25%),',
-        'linear-gradient(45deg, transparent 75%, ',
-        ' 75%),',
-        'linear-gradient(-45deg, transparent 75%, ',
-        ' 75%);',
-      ];
+        ' 25%, transparent 25%),'
+      );
 
-      const [before, after] = cssAffixInterpolation(parts[0], parts[1]);
-
-      expect(before.css).toEqual(parts[0]);
+      expect(before.css).toEqual('background-image: linear-gradient(45deg, ');
       expect(before.variablePrefix).toEqual('');
       expect(after.variableSuffix).toEqual('');
-      expect(after.css).toEqual(parts[1]);
+      expect(after.css).toEqual(' 25%, transparent 25%),');
     });
 
     it('should extract the first part of the second group', () => {
-      const parts = [
+      const [before, after] = cssAffixInterpolation(
         'background-image: linear-gradient(45deg, var(--_test) 25%, transparent 25%),',
-        'linear-gradient(-45deg, ',
-        ' 25%, transparent 25%),',
-        'linear-gradient(45deg, transparent 75%, ',
-        ' 75%),',
-        'linear-gradient(-45deg, transparent 75%, ',
-        ' 75%);',
-      ];
+        'linear-gradient(-45deg, '
+      );
 
-      const [before, after] = cssAffixInterpolation(parts[0], parts[1]);
-
-      expect(before.css).toEqual(parts[0]);
+      expect(before.css).toEqual(
+        'background-image: linear-gradient(45deg, var(--_test) 25%, transparent 25%),'
+      );
       expect(before.variablePrefix).toEqual('');
-      expect(after.css).toEqual(parts[1]);
+      expect(after.css).toEqual('linear-gradient(-45deg, ');
       expect(after.variableSuffix).toEqual('');
     });
 
     it('should extract the first part of the third group', () => {
-      const parts = [
+      const [before, after] = cssAffixInterpolation(
         'background-image: linear-gradient(45deg, var(--_test) 25%, transparent 25%), linear-gradient(-45deg, var(--_test) 25%, transparent 25%),',
-        'linear-gradient(45deg, transparent 75%, ',
-        ' 75%),',
-        'linear-gradient(-45deg, transparent 75%, ',
-        ' 75%);',
-      ];
+        'linear-gradient(45deg, transparent 75%, '
+      );
 
-      const [before, after] = cssAffixInterpolation(parts[0], parts[1]);
-
-      expect(before.css).toEqual(parts[0]);
+      expect(before.css).toEqual(
+        'background-image: linear-gradient(45deg, var(--_test) 25%, transparent 25%), linear-gradient(-45deg, var(--_test) 25%, transparent 25%),'
+      );
       expect(before.variablePrefix).toEqual('');
-      expect(after.css).toEqual(parts[1]);
+      expect(after.css).toEqual('linear-gradient(45deg, transparent 75%, ');
       expect(after.variableSuffix).toEqual('');
     });
 
     it('should extract the first part of the fourth group', () => {
-      const parts = [
+      const [before, after] = cssAffixInterpolation(
         'background-image: linear-gradient(45deg, var(--_test) 25%, transparent 25%), linear-gradient(-45deg, var(--_test) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--_test) 75%),',
-        'linear-gradient(-45deg, transparent 75%, ',
-        ' 75%);',
-      ];
+        'linear-gradient(-45deg, transparent 75%, '
+      );
 
-      const [before, after] = cssAffixInterpolation(parts[0], parts[1]);
-
-      expect(before.css).toEqual(parts[0]);
+      expect(before.css).toEqual(
+        'background-image: linear-gradient(45deg, var(--_test) 25%, transparent 25%), linear-gradient(-45deg, var(--_test) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--_test) 75%),'
+      );
       expect(before.variablePrefix).toEqual('');
-      expect(after.css).toEqual(parts[1]);
+      expect(after.css).toEqual('linear-gradient(-45deg, transparent 75%, ');
       expect(after.variableSuffix).toEqual('');
     });
 
     it('should move only minus to the prefix', () => {
-      const simpleParts = ['margin: 0 -', ';'];
-
-      const [before] = cssAffixInterpolation(simpleParts[0], simpleParts[1]);
+      const [before] = cssAffixInterpolation('margin: 0 -', ';');
 
       expect(before.variablePrefix).toEqual('-');
       expect(before.css).toEqual('margin: 0 ');
     });
 
     it('should move whole prefix out', () => {
-      const simpleParts = ['font-size: "', 'big;'];
-
-      const [before] = cssAffixInterpolation(simpleParts[0], simpleParts[1]);
+      const [before] = cssAffixInterpolation('font-size: "', 'big;');
 
       expect(before.variablePrefix).toEqual('"');
       expect(before.css).toEqual('font-size: ');
@@ -238,117 +180,77 @@ describe('template literal to css', () => {
 
   describe('interpolations without surrounding css', () => {
     it('should extract the suffix with not prefix', () => {
-      const simpleParts = ['', 'px;'];
-
-      const [, after] = cssAffixInterpolation(simpleParts[0], simpleParts[1]);
+      const [, after] = cssAffixInterpolation('', 'px;');
 
       expect(after.variableSuffix).toEqual('px');
       expect(after.css).toEqual(';');
     });
 
     it('should extract the prefix of a simple template literal', () => {
-      const simpleParts = ['"', '"'];
-
-      const [before] = cssAffixInterpolation(simpleParts[0], simpleParts[1]);
+      const [before] = cssAffixInterpolation('"', '"');
 
       expect(before.variablePrefix).toEqual('"');
       expect(before.css).toEqual('');
     });
 
     it('should extract the suffix of a simple template literal', () => {
-      const simpleParts = ['"', '";'];
-
-      const [, after] = cssAffixInterpolation(simpleParts[0], simpleParts[1]);
+      const [, after] = cssAffixInterpolation('"', '";');
 
       expect(after.variableSuffix).toEqual('"');
       expect(after.css).toEqual(';');
     });
 
     it('should move whole prefix out', () => {
-      const simpleParts = ['"', 'big;'];
-
-      const [before] = cssAffixInterpolation(simpleParts[0], simpleParts[1]);
+      const [before] = cssAffixInterpolation('"', 'big;');
 
       expect(before.variablePrefix).toEqual('"');
       expect(before.css).toEqual('');
     });
 
     it('should extract prefix from css calc function', () => {
-      const complexPartsNoPropertyName = ['calc(100% - ', 'px)'];
-
-      const [before] = cssAffixInterpolation(
-        complexPartsNoPropertyName[0],
-        complexPartsNoPropertyName[1]
-      );
+      const [before] = cssAffixInterpolation('calc(100% - ', 'px)');
 
       expect(before.variablePrefix).toEqual('');
       expect(before.css).toEqual('calc(100% - ');
     });
 
     it('should extract suffix from css calc function', () => {
-      const complexPartsNoPropertyName = ['calc(100% - ', 'px)'];
-
-      const [, after] = cssAffixInterpolation(
-        complexPartsNoPropertyName[0],
-        complexPartsNoPropertyName[1]
-      );
+      const [, after] = cssAffixInterpolation('calc(100% - ', 'px)');
 
       expect(after.variableSuffix).toEqual('px');
       expect(after.css).toEqual(')');
     });
 
     it('should extract first part of a three part value', () => {
-      const complexPartsNoPropertyName = ['transform3d(', ', ', ')'];
-
-      const [before] = cssAffixInterpolation(
-        complexPartsNoPropertyName[0],
-        complexPartsNoPropertyName[1]
-      );
+      const [before] = cssAffixInterpolation('transform3d(', ', ');
 
       expect(before.variablePrefix).toEqual('');
       expect(before.css).toEqual('transform3d(');
     });
 
     it('should extract before second part of a three part value', () => {
-      const complexPartsNoPropertyName = ['transform3d(', ', ', ')'];
-
-      const [before] = cssAffixInterpolation(
-        complexPartsNoPropertyName[1],
-        complexPartsNoPropertyName[2]
-      );
+      const [before] = cssAffixInterpolation(', ', ')');
 
       expect(before.variablePrefix).toEqual('');
       expect(before.css).toEqual(', ');
     });
 
     it('should extract after second part of a three part value', () => {
-      const complexPartsNoPropertyName = ['transform3d(', ', ', ')'];
-
-      const [, after] = cssAffixInterpolation(
-        complexPartsNoPropertyName[0],
-        complexPartsNoPropertyName[1]
-      );
+      const [, after] = cssAffixInterpolation('transform3d(', ', ');
 
       expect(after.variableSuffix).toEqual('');
       expect(after.css).toEqual(', ');
     });
 
     it('should extract second part of a three part value', () => {
-      const complexPartsNoPropertyName = ['transform3d(', ', ', ')'];
-
-      const [, after] = cssAffixInterpolation(
-        complexPartsNoPropertyName[1],
-        complexPartsNoPropertyName[2]
-      );
+      const [, after] = cssAffixInterpolation(', ', ')');
 
       expect(after.variableSuffix).toEqual('');
       expect(after.css).toEqual(')');
     });
 
     it('should move only minus to the prefix', () => {
-      const simpleParts = ['0 -', ';'];
-
-      const [before] = cssAffixInterpolation(simpleParts[0], simpleParts[1]);
+      const [before] = cssAffixInterpolation('0 -', ';');
 
       expect(before.variablePrefix).toEqual('-');
       expect(before.css).toEqual('0 ');
@@ -357,9 +259,7 @@ describe('template literal to css', () => {
 
   describe('interpolations with url', () => {
     it('should handle single url', () => {
-      const parts = ['background-image: url(', ')'];
-
-      const [before, after] = cssAffixInterpolation(parts[0], parts[1]);
+      const [before, after] = cssAffixInterpolation('background-image: url(', ')');
 
       expect(before.css).toEqual('background-image: ');
       expect(before.variablePrefix).toEqual('url(');
@@ -368,14 +268,16 @@ describe('template literal to css', () => {
     });
 
     it('should handle multiple urls', () => {
-      const parts = ['background-image: url(', '), url(', ');'];
+      const [before, after] = cssAffixInterpolation('background-image: url(', '), url(');
 
-      const [before, after] = cssAffixInterpolation(parts[0], parts[1]);
-
-      expect(before.css).toEqual('background-image: ');
-      expect(before.variablePrefix).toEqual('url(');
-      expect(after.variableSuffix).toEqual(')');
-      expect(after.css).toEqual(', url(');
+      expect(before).toMatchObject({
+        css: 'background-image: ',
+        variablePrefix: 'url(',
+      });
+      expect(after).toMatchObject({
+        css: ', url(',
+        variablePrefix: ')',
+      });
     });
   });
 });
