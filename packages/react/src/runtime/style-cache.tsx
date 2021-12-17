@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { createContext, useContext } from 'react';
 
+import { isCacheDisabled } from './cache';
 import { isNodeEnvironment } from './is-node';
 import type { ProviderComponent, UseCacheHook } from './types';
 
@@ -27,6 +28,10 @@ if (!isNodeEnvironment()) {
  * Hook using the cache created on the server or client.
  */
 export const useCache: UseCacheHook = () => {
+  if (isCacheDisabled()) {
+    return {};
+  }
+
   if (isNodeEnvironment()) {
     // On the server we use React Context to we don't leak the cache between SSR calls.
     // During runtime this hook isn't conditionally called - it is at build time that the flow gets decided.

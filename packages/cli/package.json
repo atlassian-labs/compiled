@@ -27,7 +27,7 @@
   "dependencies": {
     "@compiled/codemods": ">=0.3.3",
     "app-root-path": "^3.0.0",
-    "chalk": "^4.1.2",
+    "chalk": "^5.0.0",
     "enquirer": "^2.3.6",
     "exec-sh": "^0.4.0",
     "glob": "^7.2.0",

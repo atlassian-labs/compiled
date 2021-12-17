@@ -7,15 +7,27 @@ import defaultFadeOut, { namedFadeOut, fadeOut as shadowedFadeOut } from '../__f
 const getOpacity = (str: string | number) => str;
 
 const getKeyframe = (name: string) => {
-  const styles = Array.from(
-    document.body.querySelectorAll('style'),
-    (style) => style.innerHTML
-  ).join('\n');
+  const searchStr = `@keyframes ${name}`;
 
-  return styles.substring(styles.indexOf(`@keyframes ${name}`));
+  return Array.from(document.head.querySelectorAll('style'), (style) => style.innerHTML)
+    .filter((style) => style.indexOf(searchStr) >= 0)
+    .map((style) => style.substring(style.indexOf(searchStr)))
+    .join('\n');
 };
 
 describe('keyframes', () => {
+  beforeAll(() => {
+    process.env.CACHE = 'false';
+  });
+
+  afterAll(() => {
+    delete process.env.CACHE;
+  });
+
+  afterEach(() => {
+    document.head.innerHTML = '';
+  });
+
   describe('referenced through a css prop', () => {
     describe('render an animation', () => {
       it('given an object call expression argument', () => {

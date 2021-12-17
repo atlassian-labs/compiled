@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.options.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "plugins": [
+      {
+        "transform": "ts-transform-define",
+        "replace": {
+          "isCacheDisabled()": "false"
+        }
+      }
+    ]
+  }
+}

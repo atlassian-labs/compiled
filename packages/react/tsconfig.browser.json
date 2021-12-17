@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.options.json",
+  "extends": "./tsconfig.options.json",
   "compilerOptions": {
     "outDir": "dist/browser",
     "plugins": [
@@ -10,7 +10,6 @@
         }
       }
     ],
-    "rootDir": "src",
     "tsBuildInfoFile": "tsconfig.browser.tsbuildinfo"
   },
   "references": [{ "path": "../benchmark" }, { "path": "../jest" }]
