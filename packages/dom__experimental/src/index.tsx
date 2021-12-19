@@ -9,11 +9,27 @@ type ClassNames = string | false | undefined | ClassNames[];
  * e.g. `"_1s4A"` would be a valid atomic group hash.
  */
 const ATOMIC_GROUP_LENGTH = 5;
+const UNDERSCORE_UNICODE = 95;
 
 /**
  * Unique cache not yet shared with @compiled/react pkg.
  */
 const STYLE_INSERT_CACHE: Record<string, true> = {};
+
+function collectDecls(classNames: ClassNames[], outDecls: Record<string, string>): void {
+  for (let i = 0; i < classNames.length; i++) {
+    const className = classNames[i];
+
+    if (Array.isArray(className)) {
+      collectDecls(className, outDecls);
+    } else if (className) {
+      const endPosition = className.charCodeAt(0) === UNDERSCORE_UNICODE ? ATOMIC_GROUP_LENGTH : -1;
+      const atomicGroupName = className.slice(0, endPosition);
+
+      outDecls[atomicGroupName] = className;
+    }
+  }
+}
 
 /**
  * Concatenates strings together into a class name ensuring uniqueness across Compiled atomic declarations with the last taking precedence.
@@ -44,29 +60,14 @@ const STYLE_INSERT_CACHE: Record<string, true> = {};
  * ```
  */
 export const cstyle = (classNames: ClassNames[]): string | undefined => {
-  const atomicDecls: Record<string, string> = {};
+  const decls: Record<string, string> = {};
 
-  for (let i = 0; i < classNames.length; i++) {
-    const maybeClassName = classNames[i];
-    const className = Array.isArray(maybeClassName) ? cstyle(maybeClassName) : maybeClassName;
-    if (!className) {
-      continue;
-    }
-
-    const classNameParts = className.split(' ');
-
-    for (let x = 0; x < classNameParts.length; x++) {
-      const classNamePart = classNameParts[x];
-      const atomicGroupName = classNamePart.slice(0, ATOMIC_GROUP_LENGTH);
-
-      atomicDecls[atomicGroupName] = classNamePart;
-    }
-  }
+  collectDecls(classNames, decls);
 
   const str = [];
 
-  for (const key in atomicDecls) {
-    const value = atomicDecls[key];
+  for (const key in decls) {
+    const value = decls[key];
     str.push(value);
   }
 
@@ -95,7 +96,7 @@ cstyle.create = <TKeys extends string>(
     throw createSetupError();
   }
 
-  throw 'cmpld';
+  throw 'cpld';
 };
 
 export const insertStyles = (styles: string[]): void => {

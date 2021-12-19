@@ -78,6 +78,12 @@ describe('dom__experimental browser', () => {
     );
   });
 
+  it('should not throw away non-compiled class names', () => {
+    const actual = cstyle(['ds_button_click', 'ds_button_press']);
+
+    expect(actual).toEqual('ds_button_click ds_button_press');
+  });
+
   it('should weave in hard coded class', () => {
     const styles = cstyle.create({
       red: {
