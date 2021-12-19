@@ -1,4 +1,7 @@
 {
   "files": [],
-  "references": [{ "path": "react/tsconfig.browser.json" }]
+  "references": [
+    { "path": "dom__experimental/tsconfig.browser.json" },
+    { "path": "react/tsconfig.browser.json" }
+  ]
 }

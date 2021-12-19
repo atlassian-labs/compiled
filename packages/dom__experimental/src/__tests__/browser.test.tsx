@@ -1,10 +1,10 @@
-import { Style } from '@compiled/react/unstable-static';
+import { Style } from '@compiled/dom__experimental';
 import { render } from '@testing-library/react';
 import React from 'react';
 
-import { Style as untransformed_Style } from '../unstable-static';
+import { Style as untransformed_Style } from '../index';
 
-describe('unstable-static', () => {
+describe('dom__experimental browser', () => {
   it('should build styles', () => {
     const styles = Style.create({
       red: {

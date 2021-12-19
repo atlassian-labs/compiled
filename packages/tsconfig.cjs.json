@@ -1,4 +1,7 @@
 {
   "files": [],
-  "references": [{ "path": "react/tsconfig.cjs.json" }]
+  "references": [
+    { "path": "dom__experimental/tsconfig.cjs.json" },
+    { "path": "react/tsconfig.cjs.json" }
+  ]
 }

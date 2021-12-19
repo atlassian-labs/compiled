@@ -69,6 +69,7 @@
     "@babel/preset-react": "^7.16.5",
     "@babel/preset-typescript": "^7.16.5",
     "@changesets/cli": "^2.19.0",
+    "@compiled/dom__experimental": "*",
     "@compiled/jest": "*",
     "@compiled/react": "*",
     "@size-limit/preset-big-lib": "^7.0.4",

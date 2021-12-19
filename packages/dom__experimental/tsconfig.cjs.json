@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.options.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "dist/cjs",
+    "rootDir": "src",
+    "tsBuildInfoFile": "tsconfig.cjs.tsbuildinfo"
+  },
+  "references": [{ "path": "../benchmark" }, { "path": "../jest" }]
+}

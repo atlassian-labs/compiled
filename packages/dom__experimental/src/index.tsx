@@ -1,6 +1,6 @@
-import insertRule from './runtime/sheet';
+import { createSetupError } from './error';
+import insertRule from './sheet';
 import type { AnyKeyCssProps, CSSProps } from './types';
-import { createSetupError } from './utils/error';
 
 type ClassNames = string | false | undefined | ClassNames[];
 
@@ -9,6 +9,10 @@ type ClassNames = string | false | undefined | ClassNames[];
  * e.g. `"_1s4A"` would be a valid atomic group hash.
  */
 const ATOMIC_GROUP_LENGTH = 5;
+
+/**
+ * Unique cache not yet shared with @compiled/react pkg.
+ */
 const STYLE_INSERT_CACHE: Record<string, true> = {};
 
 export const Style = (classNames: ClassNames[]): string | undefined => {
@@ -59,7 +63,7 @@ export const insertStyles = (styles: string[]): void => {
   for (let i = 0; i < styles.length; i++) {
     if (!STYLE_INSERT_CACHE[styles[i]]) {
       STYLE_INSERT_CACHE[styles[i]] = true;
-      insertRule(styles[i], {});
+      insertRule(styles[i]);
     }
   }
 };

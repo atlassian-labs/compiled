@@ -1,9 +1,9 @@
 /**
  * @jest-environment node
  */
-import { Style } from '@compiled/react/unstable-static';
+import { Style } from '@compiled/dom__experimental';
 
-describe('unstable-static-ssr', () => {
+describe('dom__experimental ssr', () => {
   it('should noop on the server', () => {
     expect(() => {
       Style.create({

@@ -4,9 +4,9 @@
     "paths": {
       "@compiled/benchmark": ["packages/benchmark/src/index.tsx"],
       "@compiled/css": ["packages/css/src/index.tsx"],
+      "@compiled/dom__experimental": ["packages/dom__experimental/src/index.tsx"],
       "@compiled/jest": ["packages/jest/src/index.tsx"],
       "@compiled/react": ["packages/react/src/index.tsx"],
-      "@compiled/react/unstable-static": ["packages/react/src/unstable-static.tsx"],
       "@compiled/react/jsx-dev-runtime": ["packages/react/src/jsx/jsx-dev-runtime.tsx"],
       "@compiled/react/jsx-runtime": ["packages/react/src/jsx/jsx-runtime.tsx"],
       "@compiled/react/runtime": ["packages/react/src/runtime.tsx"],
