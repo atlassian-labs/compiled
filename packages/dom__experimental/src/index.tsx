@@ -15,6 +15,34 @@ const ATOMIC_GROUP_LENGTH = 5;
  */
 const STYLE_INSERT_CACHE: Record<string, true> = {};
 
+/**
+ * Concatenates strings together into a class name ensuring uniqueness across Compiled atomic declarations with the last taking precedence.
+ *
+ * @example
+ *
+ * ```
+ * const styles = cstyle.create({
+ *  red: { color: 'red' },
+ *  blue: { color: 'blue' },
+ * });
+ *
+ * cstyle([styles.red, styles.blue]); // _syaz13q2
+ * ```
+ *
+ * Nested arrays can be used to conditionally apply multiple styles at once.
+ *
+ * @example
+ *
+ * ```
+ * const styles = cstyle.create({
+ *  base: { fontWeight: 500 },
+ *  blue: { color: 'blue' },
+ *  interactive: { cursor: 'pointer' },
+ * });
+ *
+ * cstyle([styles.base, false && [styles.blue, styles.interactive]]); // _k48pbfng
+ * ```
+ */
 export const cstyle = (classNames: ClassNames[]): string | undefined => {
   const atomicDecls: Record<string, string> = {};
 
@@ -45,6 +73,21 @@ export const cstyle = (classNames: ClassNames[]): string | undefined => {
   return str.join(' ');
 };
 
+/**
+ * Create multiple style declarations using object notation.
+ *
+ * @example
+ *
+ * ```
+ * const styles = cstyle.create({
+ *  base: { fontWeight: 500 },
+ *  blue: { color: 'blue' },
+ *  interactive: { cursor: 'pointer' },
+ * });
+ *
+ * styles.base // _k48pbfng
+ * ```
+ */
 cstyle.create = <TKeys extends string>(
   _styles: Record<TKeys, AnyKeyCssProps<void> | CSSProps>
 ): Record<TKeys, string> => {
