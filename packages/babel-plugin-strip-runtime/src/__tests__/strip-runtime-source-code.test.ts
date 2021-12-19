@@ -2,7 +2,6 @@ import { join } from 'path';
 
 import { transformSync } from '@babel/core';
 import compiledBabelPlugin from '@compiled/babel-plugin';
-
 import { format } from 'prettier';
 
 import stripRuntimeBabelPlugin from '../index';
