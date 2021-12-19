@@ -36,7 +36,7 @@ function Text({ children }) {
 }
 ```
 
-Use the `Style` function to apply styles conditionally.
+Use `cstyle` as a function to apply styles conditionally.
 
 ```jsx
 import { cstyle } from '@compiled/dom__experimental';
@@ -46,8 +46,8 @@ const styles = cstyle.create({
   blue: { color: 'blue' },
 });
 
-function Text({ isRed, children }) {
-  return <span className={cstyle([isRed ? styles.red : styles.blue])}>{children}</span>;
+function Text({ isRed, children, className }) {
+  return <span className={cstyle([isRed ? styles.red : styles.blue, className])}>{children}</span>;
 }
 ```
 
