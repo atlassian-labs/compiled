@@ -21,7 +21,7 @@ const transform =
         ],
       });
 
-      return pass.code || '';
+      return pass?.code || '';
     } else {
       const firstPass = transformSync(code[0], {
         babelrc: false,
@@ -30,14 +30,14 @@ const transform =
         plugins: [[compiledBabelPlugin, { onFoundStyleRules }]],
       });
 
-      const secondPass = transformSync(firstPass.code, {
+      const secondPass = transformSync(firstPass?.code || '', {
         babelrc: false,
         configFile: false,
         filename: join(__dirname, 'app.tsx'),
         plugins: [[stripRuntimeBabelPlugin, { onFoundStyleRules }]],
       });
 
-      return secondPass.code || '';
+      return secondPass?.code || '';
     }
   };
 

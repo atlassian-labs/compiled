@@ -2,6 +2,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@compiled/babel-plugin": ["packages/babel-plugin/src/index.tsx"],
+      "@compiled/babel-plugin/dom__experimental": [
+        "packages/babel-plugin/src/dom__experimental.tsx"
+      ],
       "@compiled/benchmark": ["packages/benchmark/src/index.tsx"],
       "@compiled/css": ["packages/css/src/index.tsx"],
       "@compiled/dom__experimental": ["packages/dom__experimental/src/index.tsx"],
