@@ -3,7 +3,7 @@ import '@compiled/react';
 import { Suspense, lazy } from 'react';
 
 import { primary } from './common/constants';
-import { CustomFileExtension } from './ui/custom-file-extension.customjsx';
+import { CustomFileExtensionStyled, CustomFileExtensionCss } from './ui/custom-file-extension.customjsx';
 import { TypeScript } from './ui/typescript';
 
 const AsyncComponent = lazy(() => import('./ui/async'));
@@ -16,6 +16,7 @@ export const App = () => (
     <Suspense fallback="Loading...">
       <AsyncComponent>I was loaded async</AsyncComponent>
     </Suspense>
-    <CustomFileExtension>Custom File Extension</CustomFileExtension>
+    <CustomFileExtensionStyled>Custom File Extension Styled</CustomFileExtensionStyled>
+    <div css={CustomFileExtensionCss}>Custom File Extension CSS</div>
   </>
 );

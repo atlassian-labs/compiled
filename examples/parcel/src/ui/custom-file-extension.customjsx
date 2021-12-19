@@ -1,6 +1,6 @@
 import { styled } from '@compiled/react';
 
-const HelloWorld = styled.div({
+export const CustomFileExtensionStyled = styled.div({
   color: 'orange',
   fontWeight: 500,
 
@@ -13,4 +13,15 @@ const HelloWorld = styled.div({
   },
 });
 
-export const CustomFileExtension = ({ children }) => <HelloWorld>{children}</HelloWorld>;
+export const CustomFileExtensionCss = {
+  color: 'orange',
+  fontWeight: 500,
+
+  ':hover': {
+    color: 'red',
+  },
+
+  ':focus': {
+    color: 'blue',
+  },
+};
