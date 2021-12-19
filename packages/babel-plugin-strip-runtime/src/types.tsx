@@ -10,4 +10,9 @@ export interface PluginPass {
    * Stores all found style rules during the file pass.
    */
   styleRules: string[];
+
+  /**
+   * When true the dom__experimental import declaration was found.
+   */
+  dom__experimental?: boolean;
 }

@@ -11,28 +11,6 @@
   },
   "license": "Apache-2.0",
   "author": "Michael Dougall",
-  "exports": {
-    ".": {
-      "import": [
-        "./dist/esm/index.js",
-        "./src/index.tsx"
-      ],
-      "require": [
-        "./dist/cjs/index.js",
-        "./src/index.tsx"
-      ]
-    },
-    "./dom__experimental": {
-      "import": [
-        "./dist/esm/dom__experimental.js",
-        "./src/dom__experimental.tsx"
-      ],
-      "require": [
-        "./dist/cjs/dom__experimental.js",
-        "./src/dom__experimental.tsx"
-      ]
-    }
-  },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

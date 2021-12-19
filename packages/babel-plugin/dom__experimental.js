@@ -15,4 +15,4 @@ tsPaths.register();
  * This is an unfortunate hack if you're reading this and have a spare
  * eng health week please find a better way to not have to do this.
  */
-module.exports = require('./src/babel-plugin-dom');
+module.exports = require('./src/dom__experimental');

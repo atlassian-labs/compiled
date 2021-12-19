@@ -8,6 +8,9 @@ import { isCCComponent } from './utils/is-cc-component';
 import { isCreateElement } from './utils/is-create-element';
 import { removeStyleDeclarations } from './utils/remove-style-declarations';
 
+const DOM_IMPORT_SOURCE = '@compiled/dom__experimental';
+const DOM_RUNTIME_CALL = 'insertStyles';
+
 export default declare<PluginPass>((api) => {
   api.assertVersion(7);
 
@@ -27,6 +30,14 @@ export default declare<PluginPass>((api) => {
       ImportSpecifier(path) {
         if (t.isIdentifier(path.node.imported) && ['CC', 'CS'].includes(path.node.imported.name)) {
           path.remove();
+        }
+      },
+      ImportDeclaration(path) {
+        if (path.node.source.value === DOM_IMPORT_SOURCE) {
+          this.dom__experimental = true;
+
+          // Remove first import "insertStyles" as the runtime isn't needed anymore.
+          path.get('specifiers')[0].remove();
         }
       },
       JSXElement(path, pass) {
@@ -58,6 +69,22 @@ export default declare<PluginPass>((api) => {
       },
       CallExpression(path, pass) {
         const callee = path.node.callee;
+
+        if (
+          this.dom__experimental &&
+          t.isIdentifier(callee) &&
+          callee.name === DOM_RUNTIME_CALL &&
+          t.isArrayExpression(path.node.arguments[0])
+        ) {
+          path.node.arguments[0].elements.forEach((arg) => {
+            if (t.isStringLiteral(arg)) {
+              this.styleRules.push(arg.value);
+            }
+          });
+
+          path.remove();
+        }
+
         if (isCreateElement(callee)) {
           // We've found something that looks like React.createElement(...)
           // Now we want to check if it's from the Compiled Runtime and if it is - replace with its children.
