@@ -6,8 +6,10 @@ import { kebabCase, unique } from '@compiled/utils';
 import { buildCodeFrameError } from './utils/ast';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const packageJson = require('../package.json');
+const PKG_JSON = require('../package.json');
 const COMPILED_MODULE_EXPERIMENT = '@compiled/dom__experimental';
+const COMPILED_INSERT_STYLES_CALL = 'insertStyles';
+const COMPILED_STYLE_CALL = ['cstyle', 'create'];
 
 const objToCss = (obj: Record<string, any>): string => {
   let css = '';
@@ -47,7 +49,7 @@ export default declare<{ sheets: string[] }>((api) => {
   api.assertVersion(7);
 
   return {
-    name: packageJson.name,
+    name: PKG_JSON.name,
     pre() {
       this.sheets = [];
     },
@@ -60,7 +62,7 @@ export default declare<{ sheets: string[] }>((api) => {
 
           path.pushContainer(
             'body',
-            t.callExpression(t.identifier('insertStyles'), [
+            t.callExpression(t.identifier(COMPILED_INSERT_STYLES_CALL), [
               t.arrayExpression(unique(this.sheets.map((sheet) => t.stringLiteral(sheet)))),
             ])
           );
@@ -74,7 +76,10 @@ export default declare<{ sheets: string[] }>((api) => {
         path
           .get('specifiers')[0]
           .insertBefore(
-            t.importSpecifier(t.identifier('insertStyles'), t.identifier('insertStyles'))
+            t.importSpecifier(
+              t.identifier(COMPILED_INSERT_STYLES_CALL),
+              t.identifier(COMPILED_INSERT_STYLES_CALL)
+            )
           );
       },
       CallExpression(path) {
@@ -83,8 +88,8 @@ export default declare<{ sheets: string[] }>((api) => {
             t.isMemberExpression(path.node.callee) &&
             t.isIdentifier(path.node.callee.object) &&
             t.isIdentifier(path.node.callee.property) &&
-            path.node.callee.object.name === 'Style' &&
-            path.node.callee.property.name === 'create'
+            path.node.callee.object.name === COMPILED_STYLE_CALL[0] &&
+            path.node.callee.property.name === COMPILED_STYLE_CALL[1]
           )
         ) {
           return;

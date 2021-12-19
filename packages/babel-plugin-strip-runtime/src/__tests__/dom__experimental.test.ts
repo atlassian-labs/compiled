@@ -44,13 +44,13 @@ const transform =
 describe('strip dom__experimental', () => {
   it('should strip away runtime in a single pass', () => {
     const actual = transform({ pass: 'single' })`
-      import { Style } from '@compiled/dom__experimental';
+      import { cstyle } from '@compiled/dom__experimental';
 
-      const classNames = Style.create({ blue: { color: 'blue' } });
+      const classNames = cstyle.create({ blue: { color: 'blue' } });
     `;
 
     expect(actual).toMatchInlineSnapshot(`
-      "import { Style } from '@compiled/dom__experimental';
+      "import { cstyle } from '@compiled/dom__experimental';
       const classNames = {
         \\"blue\\": \\"_syaz13q2\\"
       };"
@@ -61,9 +61,9 @@ describe('strip dom__experimental', () => {
     const onFoundStyleRules = jest.fn();
 
     transform({ pass: 'single', onFoundStyleRules })`
-      import { Style } from '@compiled/dom__experimental';
+      import { cstyle } from '@compiled/dom__experimental';
 
-      const classNames = Style.create({ blue: { color: 'blue' }, red: { color: 'red' } });
+      const classNames = cstyle.create({ blue: { color: 'blue' }, red: { color: 'red' } });
     `;
 
     expect(onFoundStyleRules).toHaveBeenNthCalledWith(1, [
@@ -74,13 +74,13 @@ describe('strip dom__experimental', () => {
 
   it('should strip away runtime in multiple passes', () => {
     const actual = transform({ pass: 'multi' })`
-      import { Style } from '@compiled/dom__experimental';
+      import { cstyle } from '@compiled/dom__experimental';
 
-      const classNames = Style.create({ blue: { color: 'blue' } });
+      const classNames = cstyle.create({ blue: { color: 'blue' } });
     `;
 
     expect(actual).toMatchInlineSnapshot(`
-      "import { Style } from '@compiled/dom__experimental';
+      "import { cstyle } from '@compiled/dom__experimental';
       const classNames = {
         \\"blue\\": \\"_syaz13q2\\"
       };"
@@ -91,9 +91,9 @@ describe('strip dom__experimental', () => {
     const onFoundStyleRules = jest.fn();
 
     transform({ pass: 'multi', onFoundStyleRules })`
-      import { Style } from '@compiled/dom__experimental';
+      import { cstyle } from '@compiled/dom__experimental';
 
-      const classNames = Style.create({ blue: { color: 'blue' }, red: { color: 'red' } });
+      const classNames = cstyle.create({ blue: { color: 'blue' }, red: { color: 'red' } });
     `;
 
     expect(onFoundStyleRules).toHaveBeenNthCalledWith(1, [

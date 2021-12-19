@@ -24,30 +24,30 @@ Turn on the Babel plugin:
 Import and use in your code:
 
 ```jsx
-import { Style } from '@compiled/dom__experimental';
+import { cstyle } from '@compiled/dom__experimental';
 
-const styles = Style.create({
+const styles = cstyle.create({
   red: { color: 'red' },
   blue: { color: 'blue' },
 });
 
 function Text({ children }) {
-  return <span className={style.red}>{children}</span>;
+  return <span className={styles.red}>{children}</span>;
 }
 ```
 
 Use the `Style` function to apply styles conditionally.
 
 ```jsx
-import { Style } from '@compiled/dom__experimental';
+import { cstyle } from '@compiled/dom__experimental';
 
-const styles = Style.create({
+const styles = cstyle.create({
   red: { color: 'red' },
   blue: { color: 'blue' },
 });
 
 function Text({ isRed, children }) {
-  return <span className={Style([isRed ? styles.red : styles.blue])}>{children}</span>;
+  return <span className={cstyle([isRed ? styles.red : styles.blue])}>{children}</span>;
 }
 ```
 

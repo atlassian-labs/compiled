@@ -1,10 +1,10 @@
-import { Style } from '@compiled/dom__experimental';
+import { cstyle } from '@compiled/dom__experimental';
 
 export default {
   title: 'dom__experimental',
 };
 
-const styles = Style.create({
+const styles = cstyle.create({
   red: {
     color: 'red',
   },
@@ -31,9 +31,9 @@ const styles = Style.create({
 
 export const Styles = (): JSX.Element => (
   <>
-    <div className={Style([styles.blue, styles.red])}>Red text</div>
-    <div className={Style([styles.red, styles.blue])}>Blue text</div>
-    <div className={Style([false && styles.blue])}>Black text</div>
+    <div className={cstyle([styles.blue, styles.red])}>Red text</div>
+    <div className={cstyle([styles.red, styles.blue])}>Blue text</div>
+    <div className={cstyle([false && styles.blue])}>Black text</div>
     <div tabIndex={-1} className={styles.interactive}>
       I am interactive!
     </div>

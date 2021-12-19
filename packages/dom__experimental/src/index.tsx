@@ -15,12 +15,12 @@ const ATOMIC_GROUP_LENGTH = 5;
  */
 const STYLE_INSERT_CACHE: Record<string, true> = {};
 
-export const Style = (classNames: ClassNames[]): string | undefined => {
+export const cstyle = (classNames: ClassNames[]): string | undefined => {
   const atomicDecls: Record<string, string> = {};
 
   for (let i = 0; i < classNames.length; i++) {
     const maybeClassName = classNames[i];
-    const className = Array.isArray(maybeClassName) ? Style(maybeClassName) : maybeClassName;
+    const className = Array.isArray(maybeClassName) ? cstyle(maybeClassName) : maybeClassName;
     if (!className) {
       continue;
     }
@@ -45,7 +45,7 @@ export const Style = (classNames: ClassNames[]): string | undefined => {
   return str.join(' ');
 };
 
-Style.create = <TKeys extends string>(
+cstyle.create = <TKeys extends string>(
   _styles: Record<TKeys, AnyKeyCssProps<void> | CSSProps>
 ): Record<TKeys, string> => {
   if (process.env.NODE_ENV !== 'production') {

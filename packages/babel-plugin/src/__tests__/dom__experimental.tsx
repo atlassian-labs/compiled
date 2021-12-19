@@ -13,14 +13,14 @@ const transform = (code: TemplateStringsArray) => {
 describe('babel plugin dom', () => {
   it('should transform css call', () => {
     const actual = transform`
-      import { Style } from '@compiled/dom__experimental';
+      import { cstyle } from '@compiled/dom__experimental';
 
-      const styles = Style.create({
+      const styles = cstyle.create({
         red: { color: 'red', fontWeight: 500 },
         blue: { color: 'blue', fontWeight: 400 },
       });
 
-      Style([styles.red, styles.blue]);
+      cstyle([styles.red, styles.blue]);
     `;
 
     expect(actual).toMatchInlineSnapshot(`
@@ -29,7 +29,7 @@ describe('babel plugin dom', () => {
         \\"red\\": \\"_syaz5scu _k48pbfng\\",
         \\"blue\\": \\"_syaz13q2 _k48p1nn1\\"
       };
-      Style([styles.red, styles.blue]);
+      cstyle([styles.red, styles.blue]);
       insertStyles([\\"._syaz5scu{color:red}\\", \\"._k48pbfng{font-weight:500}\\", \\"._syaz13q2{color:blue}\\", \\"._k48p1nn1{font-weight:400}\\"])"
     `);
   });
@@ -38,9 +38,9 @@ describe('babel plugin dom', () => {
     expect(() => {
       transform`
         import gridSize from './theme';
-        import { Style } from '@compiled/dom__experimental';
+        import { cstyle } from '@compiled/dom__experimental';
 
-        const styles = Style.create({
+        const styles = cstyle.create({
           red: { color: gridSize },
           blue: { color: 'blue' },
         });
