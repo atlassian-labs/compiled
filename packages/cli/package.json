@@ -33,7 +33,7 @@
     "glob": "^7.2.0",
     "jscodeshift": "^0.13.0",
     "meow": "^9.0.0",
-    "ts-node": "^9.1.1"
+    "ts-node": "^10.4.0"
   },
   "devDependencies": {
     "@types/app-root-path": "^1.2.4"
