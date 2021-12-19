@@ -13,5 +13,5 @@
     "rootDir": "src",
     "tsBuildInfoFile": "tsconfig.browser.tsbuildinfo"
   },
-  "references": [{ "path": "../benchmark" }, { "path": "../jest" }]
+  "references": [{ "path": "../benchmark" }, { "path": "../jest" }, { "path": "../react" }]
 }
