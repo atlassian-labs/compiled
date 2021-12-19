@@ -106,7 +106,7 @@
     "storybook-addon-pseudo-states": "^1.0.0",
     "ts-node": "^10.4.0",
     "ts-transform-define": "^0.1.10",
-    "tsconfig-paths": "^3.11.0",
+    "tsconfig-paths": "^3.12.0",
     "ttypescript": "^1.5.13",
     "typescript": "^4.2.4"
   },
