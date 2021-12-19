@@ -1,6 +1,5 @@
 {
-  "main": "../dist/cjs/dom__experimental.js",
-  "module": "../dist/esm/dom__experimental.js",
-  "browser": "../dist/browser/dom__experimental.js",
-  "types": "../dist/esm/dom__experimental.d.ts"
+  "main": "../dist/dom__experimental.js",
+  "module": "../dist/dom__experimental.js",
+  "types": "../dist/dom__experimental.d.ts"
 }
