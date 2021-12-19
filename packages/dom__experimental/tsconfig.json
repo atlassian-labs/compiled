@@ -5,5 +5,5 @@
     "rootDir": "src",
     "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo"
   },
-  "references": [{ "path": "../benchmark" }, { "path": "../jest" }]
+  "references": [{ "path": "../benchmark" }, { "path": "../jest" }, { "path": "../react" }]
 }
