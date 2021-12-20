@@ -13,7 +13,7 @@ export const CustomFileExtensionStyled = styled.div({
   },
 });
 
-export const CustomFileExtensionCss = {
+export const customFileExtensionCss = {
   color: 'orange',
   fontWeight: 500,
 
