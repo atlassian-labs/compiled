@@ -40,6 +40,11 @@ export interface PluginOptions {
    * A custom resolver used to statically evaluate import declarations
    */
   resolver?: Resolver;
+
+  /**
+   * List of file extensions to traverse as code
+   */
+  extensions?: string[];
 }
 
 export interface State extends PluginPass {

@@ -7,6 +7,7 @@ import traverse from '@babel/traverse';
 import * as t from '@babel/types';
 import resolve from 'resolve';
 
+import { DEFAULT_CODE_EXTENSIONS } from '../constants';
 import type { Metadata } from '../types';
 
 import { getDefaultExport, getNamedExport } from './traversers';
@@ -156,7 +157,7 @@ const getDestructuredObjectPatternKey = (node: t.ObjectPattern, referenceName: s
   return result;
 };
 
-const resolveRequest = (request: string, meta: Metadata) => {
+const resolveRequest = (request: string, extensions: string[], meta: Metadata) => {
   const { filename, opts } = meta.state;
   const { resolver } = opts;
   if (!filename) {
@@ -167,7 +168,7 @@ const resolveRequest = (request: string, meta: Metadata) => {
     const id = request.charAt(0) === '.' ? join(dirname(filename), request) : request;
 
     return resolve.sync(id, {
-      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      extensions,
     });
   }
 
@@ -233,7 +234,14 @@ export const resolveBinding = (
       return;
     }
 
-    const modulePath = resolveRequest(moduleImportSource, meta);
+    const extensions = meta.state.opts.extensions ?? DEFAULT_CODE_EXTENSIONS;
+    const modulePath = resolveRequest(moduleImportSource, extensions, meta);
+
+    if (!extensions.some((extension) => modulePath.endsWith(extension))) {
+      // Don't attempt to parse any files that are not configured as code
+      return;
+    }
+
     const moduleCode = meta.state.cache.load({
       namespace: 'read-file',
       cacheKey: modulePath,

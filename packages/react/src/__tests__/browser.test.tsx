@@ -2,12 +2,6 @@ import { styled } from '@compiled/react';
 import { render } from '@testing-library/react';
 import React from 'react';
 
-// TODO: When we move back to browser checking (window vs. process) we can remove
-// this and replace with the "jest-environment node" pragma.
-jest.mock('../../src/runtime/is-node', () => ({
-  isNodeEnvironment: () => false,
-}));
-
 describe('browser', () => {
   beforeEach(() => {
     // Reset style tags in head before each test so that it will remove styles

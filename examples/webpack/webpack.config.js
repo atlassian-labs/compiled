@@ -15,7 +15,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.[jt]sx?$/,
+        test: /\.(custom)?[jt]sx?$/,
         exclude: /node_modules/,
         use: [
           {
@@ -35,6 +35,13 @@ module.exports = {
             options: {
               extract: extractCSS,
               importReact: false,
+              extensions: [
+                '.js',
+                '.jsx',
+                '.ts',
+                '.tsx',
+                '.customjsx'
+              ]
             },
           },
         ],

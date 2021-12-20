@@ -20,7 +20,7 @@
     "src"
   ],
   "dependencies": {
-    "@babel/core": "^7.16.0",
+    "@babel/core": "^7.16.5",
     "@compiled/babel-plugin": "^0.11.3",
     "@compiled/babel-plugin-strip-runtime": "^0.11.2",
     "@compiled/css": "^0.8.0",
@@ -32,8 +32,8 @@
   "devDependencies": {
     "babel-loader": "^8.2.3",
     "css-loader": "^5.2.7",
-    "memfs": "^3.2.4",
-    "mini-css-extract-plugin": "^1.5.0",
+    "memfs": "^3.4.0",
+    "mini-css-extract-plugin": "^1.6.2",
     "webpack": "^5.61.0"
   },
   "peerDependencies": {
