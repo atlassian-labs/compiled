@@ -8,7 +8,7 @@ jest.disableAutomock();
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const defineInlineTest = require('jscodeshift/dist/testUtils').defineInlineTest;
 
-describe('styled-components-to-compiled transformer', () => {
+describe('styled-components-to-compiled imports transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     { plugins: [] },
