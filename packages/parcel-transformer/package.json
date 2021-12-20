@@ -21,8 +21,8 @@
     "README.md"
   ],
   "dependencies": {
-    "@babel/core": "^7.16.0",
-    "@babel/generator": "^7.16.0",
+    "@babel/core": "^7.16.5",
+    "@babel/generator": "^7.16.5",
     "@compiled/babel-plugin": "^0.11.2",
     "@compiled/utils": "^0.6.13",
     "@parcel/plugin": "^2.0.0-nightly.657"
