@@ -60,7 +60,7 @@
     "jest": "^26.6.3",
     "nth-check": "^2.0.1",
     "react": "^17.0.2",
-    "typescript": "^4.2.4"
+    "typescript": "^4.5.4"
   },
   "devDependencies": {
     "@babel/plugin-transform-react-jsx-self": "^7.16.5",
@@ -108,7 +108,7 @@
     "ts-transform-define": "^0.1.10",
     "tsconfig-paths": "^3.12.0",
     "ttypescript": "^1.5.13",
-    "typescript": "^4.2.4"
+    "typescript": "^4.5.4"
   },
   "engines": {
     "node": "^v16.13.1"
