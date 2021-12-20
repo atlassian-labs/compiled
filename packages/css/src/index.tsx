@@ -1,9 +1,8 @@
 export { addUnitIfNeeded } from './utils/css-property';
 export { transformCss } from './transform';
 export {
-  cssAfterInterpolation,
-  cssBeforeInterpolation,
+  cssAffixInterpolation,
   AfterInterpolation,
   BeforeInterpolation,
-} from './utils/string-interpolations';
+} from './utils/css-affix-interpolation';
 export { sort } from './sort';

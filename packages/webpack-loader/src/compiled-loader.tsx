@@ -26,6 +26,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     importReact = undefined,
     nonce = undefined,
     resolve = {},
+    extensions = undefined,
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -48,6 +49,9 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           resolve: {
             type: 'object',
           },
+          extensions: {
+            type: 'array',
+          },
         },
       });
 
@@ -57,6 +61,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     importReact,
     nonce,
     resolve,
+    extensions,
   };
 }
 

@@ -1,0 +1,27 @@
+import { styled } from '@compiled/react';
+
+export const CustomFileExtensionStyled = styled.div({
+  color: 'orange',
+  fontWeight: 500,
+
+  ':hover': {
+    color: 'red',
+  },
+
+  ':focus': {
+    color: 'blue',
+  },
+});
+
+export const customFileExtensionCss = {
+  color: 'orange',
+  fontWeight: 500,
+
+  ':hover': {
+    color: 'red',
+  },
+
+  ':focus': {
+    color: 'blue',
+  },
+};

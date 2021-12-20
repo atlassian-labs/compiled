@@ -1,9 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "rootDir": "src",
     "noEmit": true
   },
+  "include": ["**/*.tsx", "**/*.ts"],
   "references": [
     { "path": "../../fixtures/parcel-resolver-alias/tsconfig.json" },
     { "path": "../../packages/parcel-transformer/tsconfig.json" },

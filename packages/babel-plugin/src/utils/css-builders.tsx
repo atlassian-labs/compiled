@@ -1,6 +1,6 @@
 import generate from '@babel/generator';
 import * as t from '@babel/types';
-import { addUnitIfNeeded, cssAfterInterpolation, cssBeforeInterpolation } from '@compiled/css';
+import { addUnitIfNeeded, cssAffixInterpolation } from '@compiled/css';
 import { hash, kebabCase } from '@compiled/utils';
 
 import type { Metadata } from '../types';
@@ -596,8 +596,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     // style={{ '--_font-size': fontSize + 'px' }}
     const name = `--_${hash(variableName)}`;
     const nextQuasis = node.quasis[index + 1];
-    const before = cssBeforeInterpolation(quasi.value.raw);
-    const after = cssAfterInterpolation(nextQuasis.value.raw);
+    const [before, after] = cssAffixInterpolation(quasi.value.raw, nextQuasis.value.raw);
 
     // Removes any suffixes from the next quasis.
     nextQuasis.value.raw = after.css;

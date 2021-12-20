@@ -8,6 +8,7 @@ import '@compiled/react';
 // import { parcelResolverAliasStyles } from 'alias!../lib/parcel-resolver-alias.tsx';
 
 import { primary } from './constants';
+import { CustomFileExtensionStyled, customFileExtensionCss } from './ui/custom-file-extension.customjsx';
 import { TypeScript } from './ui/typescript';
 
 export const App = () => (
@@ -16,5 +17,7 @@ export const App = () => (
     <TypeScript color="blue" />
     {/*<div css={parcelAliasStyles}>custom alias</div>*/}
     {/*<div css={parcelResolverAliasStyles}>custom resolver</div>*/}
+    <CustomFileExtensionStyled>Custom File Extension Styled</CustomFileExtensionStyled>
+    <div css={customFileExtensionCss}>Custom File Extension CSS</div>
   </>
 );

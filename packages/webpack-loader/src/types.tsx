@@ -31,6 +31,11 @@ export interface CompiledLoaderOptions {
    * Override the default `resolve` passed into webpack, which is used to statically evaluate import declarations
    */
   resolve?: ResolveOptions;
+
+  /**
+   * List of file extensions to traverse as code
+   */
+  extensions?: string[];
 }
 
 export interface CompiledExtractPluginOptions {
