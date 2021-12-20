@@ -27,82 +27,8 @@ describe('dom__experimental browser', () => {
     expect(getByText('foo')).toHaveCompiledCss('color', 'red');
   });
 
-  it('should conditionally return blue color', () => {
-    const styles = cstyle.create({
-      red: {
-        color: 'red',
-      },
-      blue: {
-        color: 'blue',
-      },
-    });
-
-    expect(cstyle([styles.red, styles.blue])).toEqual(styles.blue);
-  });
-
   it('should throw when not transformed', () => {
     expect(() => untransformed_cstyle.create({})).toThrow();
-  });
-
-  it('should conditionally apply arrays', () => {
-    const styles = cstyle.create({
-      red: {
-        color: 'red',
-      },
-      blue: {
-        color: 'blue',
-      },
-    });
-
-    expect(cstyle([true && [styles.red, styles.blue]])).toEqual(styles.blue);
-  });
-
-  it('should conditionally apply arrays', () => {
-    const styles = cstyle.create({
-      red: {
-        color: 'red',
-      },
-      blue: {
-        color: 'blue',
-      },
-      green: {
-        color: 'green',
-      },
-      purple: {
-        color: 'purple',
-      },
-    });
-
-    expect(cstyle([styles.red, [styles.blue], [[styles.green]], [[[styles.purple]]]])).toEqual(
-      styles.purple
-    );
-  });
-
-  it('should not throw away non-compiled class names', () => {
-    const actual = cstyle(['ds_button_click', 'ds_button_press']);
-
-    expect(actual).toEqual('ds_button_click ds_button_press');
-  });
-
-  it('should weave in hard coded class', () => {
-    const styles = cstyle.create({
-      red: {
-        color: 'red',
-      },
-      blue: {
-        color: 'blue',
-      },
-      green: {
-        color: 'green',
-      },
-      purple: {
-        color: 'purple',
-      },
-    });
-
-    expect(
-      cstyle([styles.red, [styles.blue], 'foo', [[styles.green]], [[[styles.purple]]]])
-    ).toEqual(styles.purple + ' foo');
   });
 
   it('should only insert once', () => {

@@ -23,16 +23,22 @@ function collectDecls(classNames: ClassNames[], outDecls: Record<string, string>
     if (Array.isArray(className)) {
       collectDecls(className, outDecls);
     } else if (className) {
-      const endPosition = className.charCodeAt(0) === UNDERSCORE_UNICODE ? ATOMIC_GROUP_LENGTH : -1;
-      const atomicGroupName = className.slice(0, endPosition);
+      const parts = className.split(' ');
 
-      outDecls[atomicGroupName] = className;
+      for (let x = 0; x < parts.length; x++) {
+        const part = parts[x];
+        const endPosition = part.charCodeAt(0) === UNDERSCORE_UNICODE ? ATOMIC_GROUP_LENGTH : -1;
+        const atomicGroupName = part.slice(0, endPosition);
+
+        outDecls[atomicGroupName] = part;
+      }
     }
   }
 }
 
 /**
- * Concatenates strings together into a class name ensuring uniqueness across Compiled atomic declarations with the last taking precedence.
+ * Concatenates strings together into a class name ensuring uniqueness across Compiled atomic declarations with the last taking precedence,
+ * order of class names is not guaranteed.
  *
  * @example
  *

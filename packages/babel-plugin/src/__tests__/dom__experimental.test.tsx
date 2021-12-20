@@ -24,7 +24,7 @@ describe('babel plugin dom', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(`
-      "import { insertStyles, Style } from '@compiled/dom__experimental';
+      "import { insertStyles, cstyle } from '@compiled/dom__experimental';
       const styles = {
         \\"red\\": \\"_syaz5scu _k48pbfng\\",
         \\"blue\\": \\"_syaz13q2 _k48p1nn1\\"
