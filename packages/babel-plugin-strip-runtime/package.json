@@ -19,9 +19,9 @@
     "src"
   ],
   "dependencies": {
-    "@babel/core": "^7.16.0",
-    "@babel/helper-plugin-utils": "^7.14.5",
-    "@babel/traverse": "^7.16.3",
+    "@babel/core": "^7.16.5",
+    "@babel/helper-plugin-utils": "^7.16.5",
+    "@babel/traverse": "^7.16.5",
     "@babel/types": "^7.16.0"
   },
   "devDependencies": {
