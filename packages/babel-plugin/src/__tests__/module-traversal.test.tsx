@@ -100,7 +100,7 @@ describe('module traversal', () => {
       `
       import '@compiled/react';
       import React from 'react';
-      import { colors } from 'module-a';
+      import { colors } from '@compiled-private/module-a';
 
       <div css={{ color: colors.primary }} />
     `
