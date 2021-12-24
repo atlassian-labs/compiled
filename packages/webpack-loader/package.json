@@ -30,6 +30,8 @@
     "webpack-sources": "^1.4.3"
   },
   "devDependencies": {
+    "@compiled/dom__experimental": "*",
+    "@compiled/react": "*",
     "babel-loader": "^8.2.3",
     "css-loader": "^5.2.7",
     "memfs": "^3.4.0",

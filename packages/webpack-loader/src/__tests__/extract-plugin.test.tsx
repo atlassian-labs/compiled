@@ -118,6 +118,12 @@ describe('CompiledExtractPlugin', () => {
       `);
   }, 10000);
 
+  it('should extract dom styles', async () => {
+    const actual = await bundle(join(fixturesPath, 'dom__experimental-styles.tsx'));
+
+    expect(actual[assetName]).toBeDefined();
+  }, 10000);
+
   it('should find bindings', async () => {
     const actual = await bundle(join(fixturesPath, 'binding-not-found.tsx'));
 

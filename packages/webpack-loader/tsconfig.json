@@ -9,6 +9,7 @@
   "references": [
     { "path": "../babel-plugin" },
     { "path": "../babel-plugin-strip-runtime" },
+    { "path": "../dom__experimental" },
     { "path": "../css" },
     { "path": "../react" },
     { "path": "../utils" }
