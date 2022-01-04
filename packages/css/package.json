@@ -36,6 +36,6 @@
   },
   "devDependencies": {
     "@types/autoprefixer": "^10.2.0",
-    "@types/cssnano": "^4.0.1"
+    "@types/cssnano": "^5.0.0"
   }
 }
