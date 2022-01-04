@@ -1,8 +1,8 @@
 import type {
   API,
-  ASTPath,
   Collection,
   CommentBlock,
+  CommentLine,
   FileInfo,
   ObjectPattern,
   Options,
@@ -42,11 +42,15 @@ const imports = {
 };
 
 const removeEmotionJSXPragma = (j: core.JSCodeshift, collection: Collection) => {
-  const commentCollection = collection.find(j.Comment);
+  // ast-types are incorrect and can't handle both line and block types
+  // Cast to the correct type so we get safety
+  const commentCollection: Collection<CommentLine | CommentBlock> = collection.find(
+    j.Comment as any
+  );
 
   commentCollection.forEach((commentPath) => {
-    const commentBlockCollection = j(commentPath as unknown as ASTPath<CommentBlock>).filter(
-      (commentBlockPath) => commentBlockPath.value.value.includes(imports.emotionJSXPragma)
+    const commentBlockCollection = j(commentPath).filter((commentBlockPath) =>
+      commentBlockPath.value.value.includes(imports.emotionJSXPragma)
     );
 
     commentBlockCollection.forEach((commentBlockPath) => {

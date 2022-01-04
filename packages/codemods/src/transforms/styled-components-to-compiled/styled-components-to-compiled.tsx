@@ -56,7 +56,12 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
   const taggedTemplateExpressions = collection.find(
     j.TaggedTemplateExpression,
     ({ tag: expression }) =>
+      expression.type === 'CallExpression' &&
+      expression.callee.type === 'MemberExpression' &&
+      expression.callee.object.type === 'MemberExpression' &&
+      expression.callee.object.object.type === 'Identifier' &&
       expression.callee.object.object.name === 'styled' &&
+      expression.callee.property.type === 'Identifier' &&
       expression.callee.property.name === 'attrs'
   );
 
