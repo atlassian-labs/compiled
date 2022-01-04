@@ -52,6 +52,10 @@
     {
       "extends": ["packages:eslint", "schedule:monthly"],
       "groupName": "eslint packages"
+    },
+    {
+      "packagePatterns": ["^@?size-limit"],
+      "groupName": "size-limit packages"
     }
   ]
 }
