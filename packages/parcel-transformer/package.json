@@ -21,14 +21,14 @@
     "README.md"
   ],
   "dependencies": {
-    "@babel/core": "^7.16.0",
-    "@babel/generator": "^7.16.0",
+    "@babel/core": "^7.16.5",
+    "@babel/generator": "^7.16.5",
     "@compiled/babel-plugin": "^0.11.2",
     "@compiled/utils": "^0.6.13",
     "@parcel/plugin": "^2.0.0-nightly.657"
   },
   "devDependencies": {
-    "@types/babel__core": "^7.1.16"
+    "@types/babel__core": "^7.1.17"
   },
   "engines": {
     "parcel": "^2.0.0 || ^2.0.0-beta.1"
