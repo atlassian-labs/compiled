@@ -1,4 +1,4 @@
-import type { API, FileInfo, Options, Program } from 'jscodeshift';
+import type { API, FileInfo, Options, Program, TaggedTemplateExpression } from 'jscodeshift';
 
 import defaultCodemodPlugin from '../../plugins/default';
 import type { CodemodPluginInstance } from '../../plugins/types';
@@ -53,23 +53,31 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
     allowedImportSpecifierNames: imports.styledComponentsSupportedImportNames,
   });
 
-  const taggedTemplateExpressions = collection.find(
+  const taggedTemplateExpressionsWithAttrs = collection.find(
     j.TaggedTemplateExpression,
-    ({ tag: expression }) =>
-      expression.type === 'CallExpression' &&
-      expression.callee.type === 'MemberExpression' &&
-      expression.callee.object.type === 'MemberExpression' &&
-      expression.callee.object.object.type === 'Identifier' &&
-      expression.callee.object.object.name === 'styled' &&
-      expression.callee.property.type === 'Identifier' &&
-      expression.callee.property.name === 'attrs'
+    ({ tag }: TaggedTemplateExpression) => {
+      if (tag.type === 'CallExpression') {
+        const { callee } = tag;
+
+        return (
+          callee.type === 'MemberExpression' &&
+          callee.object.type === 'MemberExpression' &&
+          callee.object.object.type === 'Identifier' &&
+          callee.object.object.name === 'styled' &&
+          callee.property.type === 'Identifier' &&
+          callee.property.name === 'attrs'
+        );
+      }
+
+      return false;
+    }
   );
 
-  if (taggedTemplateExpressions.length) {
+  if (taggedTemplateExpressionsWithAttrs.length) {
     convertStyledAttrsToComponent({
       j,
       plugins,
-      expressions: taggedTemplateExpressions,
+      expressions: taggedTemplateExpressionsWithAttrs,
     });
   }
 
