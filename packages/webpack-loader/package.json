@@ -34,7 +34,7 @@
     "css-loader": "^5.2.7",
     "memfs": "^3.4.1",
     "mini-css-extract-plugin": "^1.6.2",
-    "webpack": "^5.61.0"
+    "webpack": "^5.65.0"
   },
   "peerDependencies": {
     "webpack": ">= 4.46.0"
