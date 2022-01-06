@@ -38,6 +38,10 @@
       "groupName": "postcss packages"
     },
     {
+      "packagePatterns": ["^@storybook"],
+      "groupName": "storybook packages"
+    },
+    {
       "packagePatterns": ["webpack", "-loader", "webpack-plugin"],
       "groupName": "webpack packages"
     },
