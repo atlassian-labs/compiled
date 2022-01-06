@@ -25,13 +25,13 @@
   },
   "dependencies": {
     "@compiled/utils": "^0.6.14",
-    "autoprefixer": "^10.4.0",
+    "autoprefixer": "^10.4.1",
     "convert-source-map": "^1.8.0",
     "cssnano-preset-default": "^5.1.9",
     "postcss": "^8.4.5",
     "postcss-nested": "^5.0.6",
     "postcss-normalize-whitespace": "^5.0.1",
-    "postcss-selector-parser": "^6.0.7",
+    "postcss-selector-parser": "^6.0.8",
     "postcss-values-parser": "^6.0.1"
   },
   "devDependencies": {
