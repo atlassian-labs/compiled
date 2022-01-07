@@ -24,6 +24,7 @@
     "@compiled/babel-plugin": "^0.11.3",
     "@compiled/babel-plugin-strip-runtime": "^0.11.2",
     "@compiled/css": "^0.8.0",
+    "@compiled/react": "0.10.1",
     "@compiled/utils": "^0.6.14",
     "enhanced-resolve": "^5.8.3",
     "loader-utils": "^2.0.2",
@@ -34,6 +35,9 @@
     "css-loader": "^5.2.7",
     "memfs": "^3.4.1",
     "mini-css-extract-plugin": "^1.6.2",
+    "react": "^17.0.2",
+    "ts-node": "^10.4.0",
+    "tsconfig-paths": "^3.12.0",
     "webpack": "^5.65.0"
   },
   "peerDependencies": {

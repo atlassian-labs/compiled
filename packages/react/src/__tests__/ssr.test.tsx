@@ -1,7 +1,9 @@
 /**
  * @jest-environment node
  */
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { styled } from '@compiled/react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { CC as CompiledRoot } from '@compiled/react/runtime';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';

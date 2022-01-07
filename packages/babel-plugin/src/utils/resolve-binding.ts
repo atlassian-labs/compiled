@@ -229,7 +229,12 @@ export const resolveBinding = (
     }
 
     const moduleImportSource = binding.path.parentPath.node.source.value;
-    if (moduleImportSource.startsWith('@compiled')) {
+
+    // Babel Plugin cannot differentiate between a variable and reserved keywords (e.g keyframes)
+    // It will therefore try to parse and resolve both.
+    // This workaround shortcircuits when we call `resolveBinding` on a Compiled module.
+    // Documented in Issue ##1010: https://github.com/atlassian-labs/compiled/issues/1010
+    if (moduleImportSource.startsWith('@compiled/')) {
       // Ignore @compiled modules.
       return;
     }

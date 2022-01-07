@@ -1,4 +1,6 @@
 /** @jsxImportSource @compiled/react */
+// This test belongs in @compiled/jest - but can't be placed there due to a circular dependency.
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { styled } from '@compiled/react';
 import { render } from '@testing-library/react';
 

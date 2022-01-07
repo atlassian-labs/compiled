@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { keyframes } from '@compiled/react';
 
 export const fadeOut = keyframes({
