@@ -1,5 +1,18 @@
 # @compiled/webpack-app
 
+## 1.0.12
+
+### Patch Changes
+
+- 63148ec: Support file importing in babel plugin and add configuration in loaders
+- Updated dependencies [254a6f6]
+- Updated dependencies [c757259]
+- Updated dependencies [6649528]
+- Updated dependencies [63148ec]
+  - @compiled/react@0.10.2
+  - @compiled/webpack-loader@0.7.6
+  - @compiled/babel-component-fixture@0.0.11
+
 ## 1.0.11
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @compiled/ssr-app
 
+## 1.0.10
+
+### Patch Changes
+
+- Updated dependencies [254a6f6]
+- Updated dependencies [c757259]
+- Updated dependencies [6649528]
+  - @compiled/react@0.10.2
+
 ## 1.0.9
 
 ### Patch Changes
