@@ -1,5 +1,16 @@
 # @compiled/parcel-app
 
+## 1.0.10
+
+### Patch Changes
+
+- 63148ec: Support file importing in babel plugin and add configuration in loaders
+- 68f2f51: Update parcel example to use type checking
+- Updated dependencies [254a6f6]
+- Updated dependencies [c757259]
+- Updated dependencies [6649528]
+  - @compiled/react@0.10.2
+
 ## 1.0.9
 
 ### Patch Changes
