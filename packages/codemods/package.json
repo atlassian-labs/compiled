@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "@compiled/utils": "^0.6.14",
-    "chalk": "^5.0.0",
+    "chalk": "^4.1.2",
     "jscodeshift": "^0.13.0"
   },
   "devDependencies": {
