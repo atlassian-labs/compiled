@@ -1,5 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { jsx } from '@compiled/react';
 import { render } from '@testing-library/react';
 

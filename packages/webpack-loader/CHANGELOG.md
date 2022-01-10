@@ -1,5 +1,20 @@
 # @compiled/webpack-loader
 
+## 0.7.6
+
+### Patch Changes
+
+- 254a6f6: Added ESLint rule to prevent use of extraneous packages, and added these usages of these packages as dependencies. Added new namespace `@compiled-private` to prevent name clashes with existing npm packages.
+- 63148ec: Support file importing in babel plugin and add configuration in loaders
+- Updated dependencies [254a6f6]
+- Updated dependencies [c757259]
+- Updated dependencies [6649528]
+- Updated dependencies [63148ec]
+  - @compiled/babel-plugin@0.11.4
+  - @compiled/react@0.10.2
+  - @compiled/babel-plugin-strip-runtime@0.11.4
+  - @compiled/css@0.8.1
+
 ## 0.7.5
 
 ### Patch Changes

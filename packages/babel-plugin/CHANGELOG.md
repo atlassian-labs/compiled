@@ -1,5 +1,16 @@
 # @compiled/babel-plugin
 
+## 0.11.4
+
+### Patch Changes
+
+- 254a6f6: Added ESLint rule to prevent use of extraneous packages, and added these usages of these packages as dependencies. Added new namespace `@compiled-private` to prevent name clashes with existing npm packages.
+- c757259: Update type definition dependencies
+- 63148ec: Support file importing in babel plugin and add configuration in loaders
+- Updated dependencies [c757259]
+- Updated dependencies [63148ec]
+  - @compiled/css@0.8.1
+
 ## 0.11.3
 
 ### Patch Changes

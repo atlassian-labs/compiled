@@ -1,5 +1,15 @@
 # @compiled/parcel-transformer
 
+## 0.6.20
+
+### Patch Changes
+
+- c757259: Update type definition dependencies
+- Updated dependencies [254a6f6]
+- Updated dependencies [c757259]
+- Updated dependencies [63148ec]
+  - @compiled/babel-plugin@0.11.4
+
 ## 0.6.19
 
 ### Patch Changes

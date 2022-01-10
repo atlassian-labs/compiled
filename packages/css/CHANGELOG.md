@@ -1,5 +1,12 @@
 # @compiled/css
 
+## 0.8.1
+
+### Patch Changes
+
+- c757259: Update type definition dependencies
+- 63148ec: Support file importing in babel plugin and add configuration in loaders
+
 ## 0.8.0
 
 ### Minor Changes

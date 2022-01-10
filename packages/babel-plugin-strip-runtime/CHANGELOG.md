@@ -1,5 +1,11 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.11.4
+
+### Patch Changes
+
+- c757259: Update type definition dependencies
+
 ## 0.11.2
 
 ### Patch Changes

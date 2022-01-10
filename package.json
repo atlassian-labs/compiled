@@ -55,7 +55,7 @@
     }
   },
   "resolutions": {
-    "@babel/core": "^7.16.5",
+    "@babel/core": "^7.16.7",
     "css-what": "^5.1.0",
     "jest": "^26.6.3",
     "nth-check": "^2.0.1",
@@ -63,12 +63,14 @@
     "typescript": "^4.5.4"
   },
   "devDependencies": {
-    "@babel/plugin-transform-react-jsx-self": "^7.16.5",
-    "@babel/plugin-transform-react-jsx-source": "^7.16.5",
-    "@babel/preset-env": "^7.16.5",
-    "@babel/preset-react": "^7.16.5",
-    "@babel/preset-typescript": "^7.16.5",
+    "@babel/plugin-transform-react-jsx-self": "^7.16.7",
+    "@babel/plugin-transform-react-jsx-source": "^7.16.7",
+    "@babel/preset-env": "^7.16.7",
+    "@babel/preset-react": "^7.16.7",
+    "@babel/preset-typescript": "^7.16.7",
     "@changesets/cli": "^2.19.0",
+    "@compiled-private/module-a": "*",
+    "@compiled/babel-plugin": "*",
     "@compiled/jest": "*",
     "@compiled/react": "*",
     "@size-limit/preset-big-lib": "^7.0.5",

@@ -1,5 +1,13 @@
 # @compiled/react
 
+## 0.10.2
+
+### Patch Changes
+
+- 254a6f6: Added ESLint rule to prevent use of extraneous packages, and added these usages of these packages as dependencies. Added new namespace `@compiled-private` to prevent name clashes with existing npm packages.
+- c757259: Update type definition dependencies
+- 6649528: Changed the SSR check to be based on the presence of `document` instead of looking for Node processes.
+
 ## 0.10.1
 
 ### Patch Changes

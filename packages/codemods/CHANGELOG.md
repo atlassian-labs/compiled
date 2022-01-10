@@ -1,5 +1,12 @@
 # @compiled/codemods
 
+## 0.3.4
+
+### Patch Changes
+
+- 254a6f6: Added ESLint rule to prevent use of extraneous packages, and added these usages of these packages as dependencies. Added new namespace `@compiled-private` to prevent name clashes with existing npm packages.
+- c757259: Update type definition dependencies
+
 ## 0.3.3
 
 ### Patch Changes
