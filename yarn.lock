@@ -8694,18 +8694,18 @@ flow-parser@0.*:
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.149.0.tgz#6e5749ad832ba211968429accdb6a3858706e4f8"
   integrity sha512-ruUVkZuM9oFQjhSsLO/OJYRYpGnuXJpTnIZmgzna6DyLFb3CLpeO27oJbWyeXaa830hmKf0JRzpcdFsFS8lmpg==
 
-flowgen@^1.15.0:
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/flowgen/-/flowgen-1.15.0.tgz#6c72116c63fe6f9806872adea23f9f28aeaee2f8"
-  integrity sha512-ym/kL2RGolCHArTAPRTPJa95CC0ZDWSh69KTCLIunc6wsXMT5MGpRFT/UhOVv205a2JHekm5booya1XHOqEi9Q==
+flowgen@^1.16.2:
+  version "1.16.2"
+  resolved "https://registry.yarnpkg.com/flowgen/-/flowgen-1.16.2.tgz#b198357f1169ed86c4cab2eb95119bdbda580c2c"
+  integrity sha512-7sh6eU94hI+NO+5pbBIbpgC6T1YfIeYVt27B5XtQR/sJ53l8/nfmU2spTHaDqSsn8+486pXK4p3isNbq2Kzz3g==
   dependencies:
     "@babel/code-frame" "^7.10.4"
     "@babel/highlight" "^7.10.4"
     commander "^6.1.0"
     lodash "^4.17.20"
-    prettier "^2.1.1"
+    prettier "^2.5.1"
     shelljs "^0.8.4"
-    typescript "^4.0.2"
+    typescript "~4.4.4"
     typescript-compiler "^1.4.1-2"
 
 flush-write-stream@^1.0.0:
@@ -14495,7 +14495,7 @@ prettier@^1.19.1:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.19.1.tgz#f7d7f5ff8a9cd872a7be4ca142095956a60797cb"
   integrity sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew==
 
-prettier@^2.1.1, prettier@^2.2.1, prettier@^2.5.1:
+prettier@^2.2.1, prettier@^2.5.1:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.5.1.tgz#fff75fa9d519c54cf0fce328c1017d94546bc56a"
   integrity sha1-//dfqdUZxUzw/OMowQF9lFRrxWo=
@@ -17484,7 +17484,7 @@ typescript-compiler@^1.4.1-2:
   resolved "https://registry.yarnpkg.com/typescript-compiler/-/typescript-compiler-1.4.1-2.tgz#ba4f7db22d91534a1929d90009dce161eb72fd3f"
   integrity sha1-uk99si2RU0oZKdkACdzhYety/T8=
 
-typescript@4.5.4, typescript@^3.7.0, typescript@^4.0.2, typescript@^4.5.4:
+typescript@4.5.4, typescript@^3.7.0, typescript@^4.5.4, typescript@~4.4.4:
   version "4.5.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.4.tgz#a17d3a0263bf5c8723b9c52f43c5084edf13c2e8"
   integrity sha512-VgYs2A2QIRuGphtzFV7aQJduJ2gyfTljngLzjpfW9FoYZF6xuw1W0vW9ghCKLfcWrCFxK81CSGRAvS1pn4fIUg==
