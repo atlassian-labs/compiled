@@ -9,6 +9,26 @@ jest.disableAutomock();
 const defineInlineTest = require('jscodeshift/dist/testUtils').defineInlineTest;
 
 describe.only('test inline comments', () => {
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+      // top comment
+      import styled,
+      // after comment
+      { // bracket comment
+        css,
+        idonotexist,
+        // above comment
+        keyframes,
+      } from 'styled-components';
+      // end comment
+    `,
+    `
+    `,
+    'it preserves weird comments'
+  );
+
   // TODO: Look into comments for other nodes other than ImportDeclaration
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
@@ -35,6 +55,7 @@ describe.only('test inline comments', () => {
     { default: transformer, parser: 'tsx' },
     { plugins: [] },
     `
+      // normal comment
       import styled, // some comment
       // another comment
     /* test */  { // second comment

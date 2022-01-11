@@ -3,8 +3,12 @@ import type { CommentBlock, CommentLine, JSXAttribute, ImportDeclaration } from 
 import type { CodemodPlugin } from './types';
 
 // This is required since the imported ImportDeclaration is incorrectly typed (does not have an innerComments property.)
-export interface ImportDeclarationWithInnerComments extends ImportDeclaration {
+// ? Although improperly typed, it doesn't seem to have any tangible impact on code structure.
+// ? Maybe good to copy over for semantic reasons?
+export interface ImportDeclarationWithExtraProperties extends ImportDeclaration {
   innerComments?: (CommentLine | CommentBlock)[];
+  leadingComments?: (CommentLine | CommentBlock)[];
+  trailingComments?: (CommentLine | CommentBlock)[];
 }
 
 const defaultCodemodPlugin: CodemodPlugin = {
@@ -12,7 +16,7 @@ const defaultCodemodPlugin: CodemodPlugin = {
   create: (_, { jscodeshift: j }) => ({
     transform: {
       buildImport({ compiledImportPath, currentNode, specifiers }) {
-        const newImport: ImportDeclarationWithInnerComments = j.importDeclaration(
+        const newImport: ImportDeclarationWithExtraProperties = j.importDeclaration(
           specifiers,
           j.literal(compiledImportPath)
         );
@@ -25,30 +29,12 @@ const defaultCodemodPlugin: CodemodPlugin = {
         // ? Named to Default Specifier
         // ? Make comments consistent - formatted (maybe copy over source? idk)
 
-        // TODO: Copy over innerComments.
-        (currentNode as ImportDeclarationWithInnerComments)?.innerComments?.forEach(
-          (innerComment) => {
-            if (!newImport.innerComments) {
-              newImport.innerComments = [];
-            }
+        // Copy the comments from the previous import to the new one
+        newImport.comments = currentNode.comments;
 
-            innerComment.type == 'CommentLine'
-              ? newImport.innerComments.push(
-                  // j.commentLine(innerComment.value, innerComment.leading, innerComment.trailing)
-                  j.commentLine(innerComment.value, true, false)
-                )
-              : newImport.innerComments.push(
-                  // j.commentBlock(innerComment.value, innerComment.leading, innerComment.trailing)
-                  j.commentBlock(innerComment.value, true, false)
-                );
-          }
-        );
-
-        // TODO: Copy over comments that live in specifiers.
+        // Copy over inline comments from the previous import to the new one
         currentNode.specifiers?.forEach((specifier, idx) => {
           specifier.comments?.forEach((comment) => {
-            // if (!newImport?.specifiers?.[idx]?.comments) {
-
             if (!newImport?.specifiers?.[idx]) return;
 
             if (!newImport.specifiers[idx].comments) {
@@ -69,14 +55,60 @@ const defaultCodemodPlugin: CodemodPlugin = {
           });
         });
 
-        // ! Copy the comments from the previous import to the new one
-        newImport.comments = currentNode.comments;
-        // const originalSource = j(currentNode).toSource();
-        // const newProgramPath = j(originalSource).paths()[0];
-        // const newPath = j(newProgramPath.value.program.body[0]).paths()[0];
+        // Copy over inner, leading and trailing comments from previous import to the new one
+        (currentNode as ImportDeclarationWithExtraProperties)?.innerComments?.forEach(
+          (innerComment) => {
+            if (!newImport.innerComments) {
+              newImport.innerComments = [];
+            }
 
-        // j(newPath.value.source).replaceWith(j.literal(compiledImportPath));
-        // newPath.value.source = j.stringLiteral(compiledImportPath);
+            innerComment.type == 'CommentLine'
+              ? newImport.innerComments.push(
+                  // j.commentLine(innerComment.value, innerComment.leading, innerComment.trailing)
+                  j.commentLine(innerComment.value, true, false)
+                )
+              : newImport.innerComments.push(
+                  // j.commentBlock(innerComment.value, innerComment.leading, innerComment.trailing)
+                  j.commentBlock(innerComment.value, true, false)
+                );
+          }
+        );
+
+        (currentNode as ImportDeclarationWithExtraProperties)?.leadingComments?.forEach(
+          (leadingComment) => {
+            if (!newImport.leadingComments) {
+              newImport.leadingComments = [];
+            }
+
+            leadingComment.type == 'CommentLine'
+              ? newImport.leadingComments.push(
+                  // j.commentLine(innerComment.value, innerComment.leading, innerComment.trailing)
+                  j.commentLine(leadingComment.value, true, false)
+                )
+              : newImport.leadingComments.push(
+                  // j.commentBlock(innerComment.value, innerComment.leading, innerComment.trailing)
+                  j.commentBlock(leadingComment.value, true, false)
+                );
+          }
+        );
+
+        (currentNode as ImportDeclarationWithExtraProperties)?.trailingComments?.forEach(
+          (trailingComment) => {
+            if (!newImport.trailingComments) {
+              newImport.trailingComments = [];
+            }
+
+            trailingComment.type == 'CommentLine'
+              ? newImport.trailingComments.push(
+                  // j.commentLine(innerComment.value, innerComment.leading, innerComment.trailing)
+                  j.commentLine(trailingComment.value, true, false)
+                )
+              : newImport.trailingComments.push(
+                  // j.commentBlock(innerComment.value, innerComment.leading, innerComment.trailing)
+                  j.commentBlock(trailingComment.value, true, false)
+                );
+          }
+        );
 
         return newImport;
       },
