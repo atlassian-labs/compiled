@@ -26,10 +26,26 @@ describe.only('test inline comments', () => {
     `,
     `
     `,
-    'it preserves weird comments'
+    'it preserves leading and trailing comments'
   );
 
-  // TODO: Look into comments for other nodes other than ImportDeclaration
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+      // top comment
+      import { // bracket comment
+        css,
+        // idonotexist,
+        // above comment
+        keyframes,
+      } from 'styled-components';
+    `,
+    `
+    `,
+    'it preserves named import comments'
+  );
+
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     { plugins: [] },
