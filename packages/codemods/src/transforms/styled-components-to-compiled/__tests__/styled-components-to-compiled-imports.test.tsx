@@ -8,6 +8,85 @@ jest.disableAutomock();
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const defineInlineTest = require('jscodeshift/dist/testUtils').defineInlineTest;
 
+describe.only('test inline comments', () => {
+  // TODO: Look into comments for other nodes other than ImportDeclaration
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import {
+        css, // css comment
+        // keyframes comment
+        keyframes
+    } from 'styled-components';
+        `,
+    ``,
+    // `
+    // import {
+    //   css, // css comment
+    //   // keyframes comment
+    //   keyframes,
+    // } from '@compiled/react';
+    // `,
+    'it preserves inline comments for import declarations'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+      import styled, // some comment
+      // another comment
+    /* test */  { // second comment
+    /* hi */ css, // css comment
+        // keyframes comment
+        idonotexist,
+        keyframes,
+      } from 'styled-components';
+    `,
+    ``,
+    // `
+    //   import { styled }, // some comment
+    //   // another comment
+    // /* test */  { // second comment
+    // /* hi */ css, // css comment
+    //     // keyframes comment
+    //     idonotexist,
+    //     keyframes,
+    //   } from '@compiled/react';
+    // `,
+    'it preserves edge case inline comments for imports'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    "console.log('hi') // hello",
+    "console.log('hi') // hello",
+    'it preserves inline comments for vanilla code'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    // comment 1
+    import styled from 'styled-components';
+    import * as React from 'react'; // react comment 1
+    
+    console.log("testing") // another inline comment
+    `,
+    `
+    // comment 1
+    import { styled } from '@compiled/react';
+    import * as React from 'react'; // react comment 1
+    
+    console.log("testing") // another inline comment
+    `,
+    'it preserves inline comments for compound code'
+  );
+});
+
 describe('styled-components-to-compiled imports transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
