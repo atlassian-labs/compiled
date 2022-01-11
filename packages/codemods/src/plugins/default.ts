@@ -2,7 +2,7 @@ import type { CommentBlock, CommentLine, JSXAttribute, ImportDeclaration } from 
 
 import type { CodemodPlugin } from './types';
 
-// This is required since the imported ImportDeclaration is incorrectly typed (does not have an innerComments property.)
+// This is required since the imported ImportDeclaration is incorrectly typed.
 // ? Although improperly typed, it doesn't seem to have any tangible impact on code structure.
 // ? Maybe good to copy over for semantic reasons?
 export interface ImportDeclarationWithExtraProperties extends ImportDeclaration {
@@ -29,7 +29,7 @@ const defaultCodemodPlugin: CodemodPlugin = {
         // ? Named to Default Specifier
         // ? Make comments consistent - formatted (maybe copy over source? idk)
 
-        // Copy the comments from the previous import to the new one
+        // Copy the comments from the previous import to the new one.
         newImport.comments = currentNode.comments;
 
         // Copy over inline comments from the previous import to the new one
@@ -44,13 +44,13 @@ const defaultCodemodPlugin: CodemodPlugin = {
             comment.type == 'CommentLine'
               ? newImport?.specifiers?.[idx]?.comments?.push(
                   // Handle Inline Comment Case
-                  // j.commentLine(comment.value, comment.leading, comment.trailing)
-                  j.commentLine(comment.value, true, false)
+                  j.commentLine(comment.value, comment.leading, comment.trailing)
+                  // j.commentLine(comment.value, false, false)
                 )
               : newImport?.specifiers?.[idx]?.comments?.push(
                   // Handle Inline Comment Case
-                  // j.commentBlock(comment.value, comment.leading, comment.trailing)
-                  j.commentBlock(comment.value, true, false)
+                  j.commentBlock(comment.value, comment.leading, comment.trailing)
+                  // j.commentBlock(comment.value, false, false)
                 );
           });
         });
@@ -64,12 +64,10 @@ const defaultCodemodPlugin: CodemodPlugin = {
 
             innerComment.type == 'CommentLine'
               ? newImport.innerComments.push(
-                  // j.commentLine(innerComment.value, innerComment.leading, innerComment.trailing)
-                  j.commentLine(innerComment.value, true, false)
+                  j.commentLine(innerComment.value, innerComment.leading, innerComment.trailing)
                 )
               : newImport.innerComments.push(
-                  // j.commentBlock(innerComment.value, innerComment.leading, innerComment.trailing)
-                  j.commentBlock(innerComment.value, true, false)
+                  j.commentBlock(innerComment.value, innerComment.leading, innerComment.trailing)
                 );
           }
         );
@@ -82,12 +80,18 @@ const defaultCodemodPlugin: CodemodPlugin = {
 
             leadingComment.type == 'CommentLine'
               ? newImport.leadingComments.push(
-                  // j.commentLine(innerComment.value, innerComment.leading, innerComment.trailing)
-                  j.commentLine(leadingComment.value, true, false)
+                  j.commentLine(
+                    leadingComment.value,
+                    leadingComment.leading,
+                    leadingComment.trailing
+                  )
                 )
               : newImport.leadingComments.push(
-                  // j.commentBlock(innerComment.value, innerComment.leading, innerComment.trailing)
-                  j.commentBlock(leadingComment.value, true, false)
+                  j.commentBlock(
+                    leadingComment.value,
+                    leadingComment.leading,
+                    leadingComment.trailing
+                  )
                 );
           }
         );
@@ -100,12 +104,18 @@ const defaultCodemodPlugin: CodemodPlugin = {
 
             trailingComment.type == 'CommentLine'
               ? newImport.trailingComments.push(
-                  // j.commentLine(innerComment.value, innerComment.leading, innerComment.trailing)
-                  j.commentLine(trailingComment.value, true, false)
+                  j.commentLine(
+                    trailingComment.value,
+                    trailingComment.leading,
+                    trailingComment.trailing
+                  )
                 )
               : newImport.trailingComments.push(
-                  // j.commentBlock(innerComment.value, innerComment.leading, innerComment.trailing)
-                  j.commentBlock(trailingComment.value, true, false)
+                  j.commentBlock(
+                    trailingComment.value,
+                    trailingComment.leading,
+                    trailingComment.trailing
+                  )
                 );
           }
         );
