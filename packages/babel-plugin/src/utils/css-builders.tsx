@@ -708,7 +708,10 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
         );
       }
 
-      const result = buildCss(element, meta);
+      const result = t.isConditionalExpression(element)
+        ? extractConditionalExpression(element, meta)
+        : buildCss(element, meta);
+
       css.push(...result.css);
       variables.push(...result.variables);
     });
