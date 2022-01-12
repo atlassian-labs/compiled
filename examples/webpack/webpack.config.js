@@ -41,7 +41,8 @@ module.exports = {
                 '.ts',
                 '.tsx',
                 '.customjsx'
-              ]
+              ],
+              babelPlugins: ['typescript'],
             },
           },
         ],

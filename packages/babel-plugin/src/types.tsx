@@ -1,4 +1,5 @@
 import type { PluginPass } from '@babel/core';
+import type { ParserPlugin } from '@babel/parser';
 import type { NodePath } from '@babel/traverse';
 import type * as t from '@babel/types';
 
@@ -45,6 +46,11 @@ export interface PluginOptions {
    * List of file extensions to traverse as code
    */
   extensions?: string[];
+
+  /**
+   * List of babel plugins to be applied to evaluated files
+   */
+  babelPlugins?: ParserPlugin[];
 }
 
 export interface State extends PluginPass {
