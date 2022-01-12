@@ -798,14 +798,11 @@ describe('styled tagged template expression', () => {
       \`;
     `);
 
-    expect(actual).not.toIncludeMultiple([
-      'l?colors.N50:colors.N10',
-      'propz.loading?colors.N100:colors.N200',
-    ]);
+    expect(actual).not.toInclude('propz.loading?colors.N100:colors.N200');
 
     expect(actual).toIncludeMultiple([
       'isLoading ? colors.N20 : colors.N40',
-      'loading ? colors.N50 : colors.N10',
+      'l ? colors.N50 : colors.N10',
       'props.loading ? colors.N100 : colors.N200',
     ]);
   });
@@ -822,7 +819,7 @@ describe('styled tagged template expression', () => {
       \`;
     `);
 
-    expect(actual).toInclude('{ as: C = "span", style, isLoading, loading, ...props }');
+    expect(actual).toInclude('{ as: C = "span", style, isLoading, loading: l, ...props }');
   });
 
   it('should place classes in given order when static styles precede expression', () => {

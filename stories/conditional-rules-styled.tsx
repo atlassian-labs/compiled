@@ -93,6 +93,14 @@ const NoValuePath = styled.div<TextProps>`
   ${(props) => (props.isPrimary ? undefined : 'color: red')}
 `;
 
+const DeconstructedPropsValues = styled.div<TextProps>`
+  color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};
+`;
+
+const DeconstructedPropsKeyValueString = styled.div<TextProps>`
+  ${({ isPrimary: primary }) => (primary ? 'color: green' : 'color: red')};
+`;
+
 export const PrimaryTextWithTemplateLiteral = (): JSX.Element => {
   return <TextWithTemplateLiteral isPrimary>Hello primary</TextWithTemplateLiteral>;
 };
@@ -306,6 +314,24 @@ export const ConditionWithNoValuePath = (): JSX.Element => {
     <div>
       <NoValuePath isPrimary>Primary path with no given CSS</NoValuePath>
       <NoValuePath>Secondary path with CSS</NoValuePath>
+    </div>
+  );
+};
+
+export const ConditionWithDeconstructedValues = (): JSX.Element => {
+  return (
+    <div>
+      <DeconstructedPropsValues isPrimary>color: green</DeconstructedPropsValues>
+      <DeconstructedPropsValues>color: red</DeconstructedPropsValues>
+    </div>
+  );
+};
+
+export const ConditionWithDeconstructedPropsKeyValueString = (): JSX.Element => {
+  return (
+    <div>
+      <DeconstructedPropsKeyValueString isPrimary>color: green</DeconstructedPropsKeyValueString>
+      <DeconstructedPropsKeyValueString>color: red</DeconstructedPropsKeyValueString>
     </div>
   );
 };
