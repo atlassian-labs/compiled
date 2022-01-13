@@ -9,98 +9,52 @@ jest.disableAutomock();
 const defineInlineTest = require('jscodeshift/dist/testUtils').defineInlineTest;
 
 describe.only('test inline comments', () => {
+  // ! duplicate test
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     { plugins: [] },
+    // ! what about comments deleted?
     `
-      // top comment
-      import styled,
-      // after comment
-      { // bracket comment
-        css,
+      // leading comment
+      import styled, // styled comment 1
+      // styled comment 2
+    /* styled comment 3 */  { // styled comment 4
+    /* css comment 1 */ css, // css comment 2
+        // idonotexist comment 1
         idonotexist,
-        // above comment
-        keyframes,
-      } from 'styled-components';
-      // end comment
-    `,
-    `
-    `,
-    'it preserves leading and trailing comments'
-  );
-
-  defineInlineTest(
-    { default: transformer, parser: 'tsx' },
-    { plugins: [] },
-    `
-      // top comment
-      import { // bracket comment
-        css,
-        // idonotexist,
-        // above comment
-        keyframes,
+        keyframes, // keyframes comment 1
       } from 'styled-components';
     `,
     `
-    `,
-    'it preserves named import comments'
-  );
-
-  defineInlineTest(
-    { default: transformer, parser: 'tsx' },
-    { plugins: [] },
-    `
+    // leading comment
     import {
-        css, // css comment
-        // keyframes comment
-        keyframes
-    } from 'styled-components';
-        `,
-    ``,
-    // `
-    // import {
-    //   css, // css comment
-    //   // keyframes comment
-    //   keyframes,
-    // } from '@compiled/react';
-    // `,
-    'it preserves inline comments for import declarations'
+      /* css comment 1 */
+      // css comment 2
+      css, // keyframes comment 1
+      keyframes, // styled comment 1
+      // styled comment 2,
+      // styled comment 3,
+      // styled comment 4,
+      styled
+    } from '@compiled/react'
+    `,
+    'it inline comments for all cases'
   );
 
+  // TODO: Make this work!
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     { plugins: [] },
     `
-      // normal comment
-      import styled, // some comment
-      // another comment
-    /* test */  { // second comment
-    /* hi */ css, // css comment
-        // keyframes comment
-        idonotexist,
-        keyframes,
-      } from 'styled-components';
+      // leading comment
+      import * as styled from 'styled-components';
     `,
-    ``,
-    // `
-    //   import { styled }, // some comment
-    //   // another comment
-    // /* test */  { // second comment
-    // /* hi */ css, // css comment
-    //     // keyframes comment
-    //     idonotexist,
-    //     keyframes,
-    //   } from '@compiled/react';
-    // `,
-    'it preserves edge case inline comments for imports'
-  );
-
-  defineInlineTest(
-    { default: transformer, parser: 'tsx' },
-    { plugins: [] },
-    "console.log('hi') // hello",
-    "console.log('hi') // hello",
-    'it preserves inline comments for vanilla code'
+    `
+      /* // TODO(@compiled/react codemod): Namespace Imports are not supported at the moment. Please find an alternative for it */
+      // leading comment
+      import '@compiled/react';
+    `,
+    'it preserves namespace specifier imports and comments'
   );
 
   defineInlineTest(
