@@ -57,14 +57,14 @@ We use [Loki](https://github.com/oblador/loki) for visual regression tests.
 Start a [storybook](https://storybook.js.org/) in another terminal (`yarn start`)
 
 ```bash
-yarn vr:test
+yarn test:vr
 ```
 
 If there are expected changes, you can accept them with the command in the test or use the approve command.
 
 ```bash
 yarn test:vr update --storiesFilter="^...\$"
-yarn vr:test approve
+yarn test:vr approve
 ```
 
 ### Helpful links
