@@ -607,7 +607,7 @@ describe('css prop behaviour', () => {
     ]);
   });
 
-  it('should apply array prop ternary-based conditional css from variables with the css() helper', () => {
+  it('should apply array prop ternary-based conditional css that reference css variable declarations', () => {
     const actual = transform(`
       import { css } from '@compiled/react';
       import React from 'react';
