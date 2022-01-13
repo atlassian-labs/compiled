@@ -6,5 +6,8 @@
     ".ts",
     ".tsx",
     ".customjsx"
-  ]
+  ],
+  "babelPlugins": [
+    "typescript"
+  ] 
 }

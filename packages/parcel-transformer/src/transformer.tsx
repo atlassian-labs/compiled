@@ -2,6 +2,7 @@ import { parseAsync, transformFromAstAsync } from '@babel/core';
 import generate from '@babel/generator';
 import type { PluginOptions } from '@compiled/babel-plugin';
 import { Transformer } from '@parcel/plugin';
+import SourceMap from '@parcel/source-map';
 
 type UserlandOpts = Omit<PluginOptions, 'cache' | 'onIncludedFiles'>;
 
@@ -24,12 +25,11 @@ export default new Transformer<UserlandOpts>({
     const contents: UserlandOpts = {};
 
     if (conf) {
-      config.shouldInvalidateOnStartup();
+      config.invalidateOnStartup();
       Object.assign(contents, conf.contents);
     }
 
-    // We always set a result so it's only evaluated once.
-    config.setResult(contents);
+    return contents;
   },
 
   canReuseAST() {
@@ -49,13 +49,17 @@ export default new Transformer<UserlandOpts>({
       return undefined;
     }
 
-    const ast = await parseAsync(code, {
+    const program = await parseAsync(code, {
       filename: asset.filePath,
       caller: { name: 'compiled' },
       rootMode: 'upward-optional',
     });
 
-    return ast;
+    return {
+      type: 'babel',
+      version: '7.0.0',
+      program,
+    };
   },
 
   async transform({ asset, config }) {
@@ -95,7 +99,7 @@ export default new Transformer<UserlandOpts>({
       // Included files are those which have been statically evaluated into this asset.
       // This tells parcel that if any of those files change this asset should be transformed
       // again.
-      asset.addIncludedFile(file);
+      asset.invalidateOnFileChange(file);
     });
 
     if (result?.ast) {
@@ -111,14 +115,19 @@ export default new Transformer<UserlandOpts>({
     return [asset];
   },
 
-  generate({ ast, asset }) {
+  async generate({ asset, ast }) {
     // TODO: We're using babels standard generator. Internally parcel does some hacks in
     // the official Babel transformer to make it faster - using ASTree directly.
     // Perhaps we should do the same thing.
-    const { code, map } = generate(ast.program, {
+    const { code, map: babelMap } = generate(ast.program, {
       filename: asset.filePath,
+      sourceMaps: true,
+      sourceFileName: asset.filePath,
     });
 
-    return { content: code, map };
+    return {
+      content: code,
+      map: babelMap ? new SourceMap().addVLQMap(babelMap) : null,
+    };
   },
 });
