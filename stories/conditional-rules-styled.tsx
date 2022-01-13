@@ -93,11 +93,11 @@ const NoValuePath = styled.div<TextProps>`
   ${(props) => (props.isPrimary ? undefined : 'color: red')}
 `;
 
-const DeconstructedPropsValues = styled.div<TextProps>`
+const DestructurededPropsValues = styled.div<TextProps>`
   color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};
 `;
 
-const DeconstructedPropsKeyValueString = styled.div<TextProps>`
+const DestructuredPropsKeyValueString = styled.div<TextProps>`
   ${({ isPrimary: primary }) => (primary ? 'color: green' : 'color: red')};
 `;
 
@@ -318,20 +318,16 @@ export const ConditionWithNoValuePath = (): JSX.Element => {
   );
 };
 
-export const ConditionWithDeconstructedValues = (): JSX.Element => {
-  return (
-    <div>
-      <DeconstructedPropsValues isPrimary>color: green</DeconstructedPropsValues>
-      <DeconstructedPropsValues>color: red</DeconstructedPropsValues>
-    </div>
-  );
-};
+export const ConditionWithDeconstructedValues = (): JSX.Element => (
+  <div>
+    <DestructurededPropsValues isPrimary>color: green</DestructurededPropsValues>
+    <DestructurededPropsValues>color: red</DestructurededPropsValues>
+  </div>
+);
 
-export const ConditionWithDeconstructedPropsKeyValueString = (): JSX.Element => {
-  return (
-    <div>
-      <DeconstructedPropsKeyValueString isPrimary>color: green</DeconstructedPropsKeyValueString>
-      <DeconstructedPropsKeyValueString>color: red</DeconstructedPropsKeyValueString>
-    </div>
-  );
-};
+export const ConditionWithDestructuredPropsKeyValueString = (): JSX.Element => (
+  <div>
+    <DestructuredPropsKeyValueString isPrimary>color: green</DestructuredPropsKeyValueString>
+    <DestructuredPropsKeyValueString>color: red</DestructuredPropsKeyValueString>
+  </div>
+);

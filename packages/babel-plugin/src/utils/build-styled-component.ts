@@ -118,39 +118,24 @@ const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor:
 const getDestructuredProps = (node: t.Node): string[] => {
   const destructuredProps: string[] = [];
 
-  const appendDestructuredPropsVisitor = {
+  traverse(node, {
     noScope: true,
-    ObjectPattern(path: NodePath<t.ObjectPattern>) {
-      const { listKey, key } = path;
+    ArrowFunctionExpression(path: NodePath<t.ArrowFunctionExpression>) {
+      const propsParam = path.get('params')[0];
 
-      if (listKey === 'params' && key === 0) {
+      // Is the param for props being destructured
+      if (propsParam && t.isObjectPattern(propsParam.node)) {
         // Uses the destructure ObjectPattern path to get all the prop references, i.e.
         // { width } becomes width
         // { width, height } becomes width,height
         // { size: { width } } becomes size:{width}
         // { width: alias } becomes width:alias
-        const propsUsed = path.toString().replace(/\s/g, '').slice(1, -1).split(',');
+        const propsUsed = propsParam.toString().replace(/\s/g, '').slice(1, -1).split(',');
 
         destructuredProps.push(...propsUsed);
-        path.stop();
       }
     },
-  };
-
-  const arrowFunctionVisitor = {
-    noScope: true,
-    ArrowFunctionExpression(path: NodePath<t.ArrowFunctionExpression>) {
-      const {
-        params: [propsParam],
-      } = path.node;
-      // Is the param for props being destructured
-      if (t.isObjectPattern(propsParam)) {
-        path.traverse(appendDestructuredPropsVisitor);
-      }
-    },
-  };
-
-  traverse(node, arrowFunctionVisitor);
+  });
 
   return destructuredProps;
 };
