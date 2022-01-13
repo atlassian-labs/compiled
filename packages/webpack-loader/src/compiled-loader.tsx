@@ -27,6 +27,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     nonce = undefined,
     resolve = {},
     extensions = undefined,
+    babelPlugins = [],
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -52,6 +53,9 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           extensions: {
             type: 'array',
           },
+          babelPlugins: {
+            type: 'array',
+          },
         },
       });
 
@@ -62,6 +66,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     nonce,
     resolve,
     extensions,
+    babelPlugins,
   };
 }
 
