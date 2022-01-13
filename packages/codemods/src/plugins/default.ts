@@ -1,4 +1,12 @@
-import type { CommentBlock, CommentLine, JSXAttribute, ImportDeclaration } from 'jscodeshift';
+import type {
+  CommentBlock,
+  CommentLine,
+  JSXAttribute,
+  ImportDeclaration,
+  ImportSpecifier,
+  ImportDefaultSpecifier,
+  ImportNamespaceSpecifier,
+} from 'jscodeshift';
 
 import type { CodemodPlugin } from './types';
 
@@ -10,6 +18,12 @@ export interface ImportDeclarationWithExtraProperties extends ImportDeclaration 
   leadingComments?: (CommentLine | CommentBlock)[];
   trailingComments?: (CommentLine | CommentBlock)[];
 }
+
+const isImportSpecifier = (
+  specifier: ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier
+): specifier is ImportSpecifier => {
+  return (specifier as ImportSpecifier).imported !== undefined;
+};
 
 const defaultCodemodPlugin: CodemodPlugin = {
   name: 'default-plugin',
@@ -26,31 +40,43 @@ const defaultCodemodPlugin: CodemodPlugin = {
         // Also, jscodeshift does not accept location information for comments.
         // Expect inline comments to be bumped up one row.
 
-        // ? Named to Default Specifier
-        // ? Make comments consistent - formatted (maybe copy over source? idk)
-
         // Copy the comments from the previous import to the new one.
         newImport.comments = currentNode.comments;
 
         // Copy over inline comments from the previous import to the new one
-        currentNode.specifiers?.forEach((specifier, idx) => {
-          specifier.comments?.forEach((comment) => {
-            if (!newImport?.specifiers?.[idx]) return;
+        currentNode.specifiers?.forEach((specifier) => {
+          // Find correct specifier index
+          const matchingSpecifierIndex = newImport.specifiers
+            ? newImport.specifiers?.findIndex(
+                // identity check based on imported if normal import specifier
+                (newSpecifier) => {
+                  if (isImportSpecifier(newSpecifier) && isImportSpecifier(specifier)) {
+                    return newSpecifier.imported.name == specifier.imported.name;
+                  }
 
-            if (!newImport.specifiers[idx].comments) {
-              newImport.specifiers[idx].comments = [];
+                  // if newSpecifier is ImportSpecifier, check imported && local
+                  return newSpecifier?.local?.name === specifier?.local?.name;
+                }
+              )
+            : -1;
+          if (matchingSpecifierIndex === -1) {
+            return;
+          }
+
+          specifier.comments?.forEach((comment) => {
+            if (!newImport?.specifiers?.[matchingSpecifierIndex]) return;
+
+            if (!newImport.specifiers[matchingSpecifierIndex].comments) {
+              newImport.specifiers[matchingSpecifierIndex].comments = [];
             }
 
-            comment.type == 'CommentLine'
-              ? newImport?.specifiers?.[idx]?.comments?.push(
-                  // Handle Inline Comment Case
-                  j.commentLine(comment.value, comment.leading, comment.trailing)
-                  // j.commentLine(comment.value, false, false)
+            comment.type === 'CommentLine'
+              ? newImport?.specifiers?.[matchingSpecifierIndex]?.comments?.push(
+                  // ? Replace this with a constant?
+                  j.commentLine(comment.value, true, false)
                 )
-              : newImport?.specifiers?.[idx]?.comments?.push(
-                  // Handle Inline Comment Case
-                  j.commentBlock(comment.value, comment.leading, comment.trailing)
-                  // j.commentBlock(comment.value, false, false)
+              : newImport?.specifiers?.[matchingSpecifierIndex]?.comments?.push(
+                  j.commentBlock(comment.value, true, false)
                 );
           });
         });
@@ -62,7 +88,7 @@ const defaultCodemodPlugin: CodemodPlugin = {
               newImport.innerComments = [];
             }
 
-            innerComment.type == 'CommentLine'
+            innerComment.type === 'CommentLine'
               ? newImport.innerComments.push(
                   j.commentLine(innerComment.value, innerComment.leading, innerComment.trailing)
                 )
@@ -78,7 +104,7 @@ const defaultCodemodPlugin: CodemodPlugin = {
               newImport.leadingComments = [];
             }
 
-            leadingComment.type == 'CommentLine'
+            leadingComment.type === 'CommentLine'
               ? newImport.leadingComments.push(
                   j.commentLine(
                     leadingComment.value,
@@ -102,7 +128,7 @@ const defaultCodemodPlugin: CodemodPlugin = {
               newImport.trailingComments = [];
             }
 
-            trailingComment.type == 'CommentLine'
+            trailingComment.type === 'CommentLine'
               ? newImport.trailingComments.push(
                   j.commentLine(
                     trailingComment.value,
