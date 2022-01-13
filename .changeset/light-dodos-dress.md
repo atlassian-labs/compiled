@@ -4,4 +4,4 @@
 '@compiled/parcel-transformer': minor
 ---
 
-Upgrade parcel transformer to support Parcel v2.1.1
+Upgrade parcel transformer to support Parcel v2.2.0
