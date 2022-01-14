@@ -318,7 +318,7 @@ export const ConditionWithNoValuePath = (): JSX.Element => {
   );
 };
 
-export const ConditionWithDeconstructedValues = (): JSX.Element => (
+export const ConditionWithDestructedValues = (): JSX.Element => (
   <div>
     <DestructurededPropsValues isPrimary>color: green</DestructurededPropsValues>
     <DestructurededPropsValues>color: red</DestructurededPropsValues>
