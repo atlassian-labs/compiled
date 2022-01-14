@@ -65,7 +65,7 @@
   "devDependencies": {
     "@babel/plugin-transform-react-jsx-self": "^7.16.7",
     "@babel/plugin-transform-react-jsx-source": "^7.16.7",
-    "@babel/preset-env": "^7.16.7",
+    "@babel/preset-env": "^7.16.8",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
     "@changesets/cli": "^2.19.0",
