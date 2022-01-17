@@ -22,15 +22,16 @@
   ],
   "dependencies": {
     "@babel/core": "^7.16.7",
-    "@babel/generator": "^7.16.7",
+    "@babel/generator": "^7.16.8",
     "@compiled/babel-plugin": "^0.11.4",
     "@compiled/utils": "^0.6.13",
-    "@parcel/plugin": "^2.0.0-nightly.657"
+    "@parcel/plugin": "^2.2.0",
+    "@parcel/source-map": "^2.0.0"
   },
   "devDependencies": {
     "@types/babel__core": "^7.1.18"
   },
   "engines": {
-    "parcel": "^2.0.0 || ^2.0.0-beta.1"
+    "parcel": "^2.0.0"
   }
 }

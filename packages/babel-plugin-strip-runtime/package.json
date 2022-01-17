@@ -21,8 +21,8 @@
   "dependencies": {
     "@babel/core": "^7.16.7",
     "@babel/helper-plugin-utils": "^7.16.7",
-    "@babel/traverse": "^7.16.7",
-    "@babel/types": "^7.16.7"
+    "@babel/traverse": "^7.16.8",
+    "@babel/types": "^7.16.8"
   },
   "devDependencies": {
     "@compiled/babel-plugin": "*",

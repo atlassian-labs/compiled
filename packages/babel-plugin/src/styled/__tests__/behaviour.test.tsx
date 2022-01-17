@@ -1055,10 +1055,10 @@ describe('styled component behaviour', () => {
         color: white;
       \`;
 
-      const light = css\`
-        background-color: white;
-        color: black;
-      \`;
+      const light = css({
+        'background-color': 'white',
+        color: 'black',
+      });
 
       const Component = styled.div\`
         \${(props) => (props.isDark ? dark : light)};

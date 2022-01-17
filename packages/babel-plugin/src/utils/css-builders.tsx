@@ -14,7 +14,13 @@ import {
   isCompiledKeyframesTaggedTemplateExpression,
 } from './is-compiled';
 import { resolveBinding } from './resolve-binding';
-import type { CSSOutput, CssItem, LogicalCssItem, SheetCssItem } from './types';
+import type {
+  CSSOutput,
+  CssItem,
+  LogicalCssItem,
+  SheetCssItem,
+  PartialBindingWithMeta,
+} from './types';
 
 /**
  * Will normalize the value of a `content` CSS property to ensure it has quotations around it.
@@ -271,6 +277,29 @@ const callbackIfFileIncluded = (meta: Metadata, next: Metadata) => {
 };
 
 /**
+ * Check if an imported binding resulted in CSS variables after processing.
+ *
+ * Currently we throw if the found CSS has any variables found from an import
+ * This is because we'd need to ensure all identifiers are added to the owning
+ * file - if not done they would just error at runtime. Because this isn't a
+ * required feature at the moment we're deprioritizing support for this.
+ */
+const assertNoImportedCssVariables = (
+  referenceNode: t.Node,
+  meta: Metadata,
+  resolvedBinding: PartialBindingWithMeta,
+  buildCssResult: CSSOutput
+) => {
+  if (resolvedBinding.source === 'import' && buildCssResult.variables.length > 0) {
+    throw buildCodeFrameError(
+      "Identifier contains values that can't be statically evaluated",
+      referenceNode,
+      meta.parentPath
+    );
+  }
+};
+
+/**
  * Extracts CSS data from a conditional expression node.
  * Eg. props.isPrimary && props.isBolded ? ({ color: 'blue' }) : ({ color: 'red'})
  *
@@ -298,13 +327,16 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
     ) {
       cssOutput = buildCss(pathNode, meta);
     } else if (t.isIdentifier(pathNode)) {
-      const { value: interpolation, meta: updatedMeta } = evaluateExpression(pathNode, meta);
+      const resolved = resolveBinding(pathNode.name, meta);
 
       if (
-        isCompiledCSSTaggedTemplateExpression(interpolation, updatedMeta.state) ||
-        isCompiledCSSCallExpression(interpolation, updatedMeta.state)
+        resolved &&
+        t.isExpression(resolved.node) &&
+        (isCompiledCSSTaggedTemplateExpression(resolved.node, resolved.meta.state) ||
+          isCompiledCSSCallExpression(resolved.node, resolved.meta.state))
       ) {
-        cssOutput = buildCss(interpolation, updatedMeta);
+        cssOutput = buildCss(resolved.node, resolved.meta);
+        assertNoImportedCssVariables(pathNode, meta, resolved, cssOutput);
       }
     } else if (t.isConditionalExpression(pathNode)) {
       cssOutput = extractConditionalExpression(pathNode, meta);
@@ -497,18 +529,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 
       callbackIfFileIncluded(meta, updatedMeta);
 
-      if (resolvedBinding?.source === 'import' && result.variables.length > 0) {
-        // NOTE: Currently we throw if the found CSS has any variables found from an
-        // import. This is because we'd need to ensure all identifiers are added to
-        // the owning file - if not done they would just error at runtime. Because
-        // this isn't a required feature at the moment we're deprioritizing support
-        // for this.
-        throw buildCodeFrameError(
-          "Identifier contains values that can't be statically evaluated",
-          prop.argument,
-          meta.parentPath
-        );
-      }
+      resolvedBinding && assertNoImportedCssVariables(prop.argument, meta, resolvedBinding, result);
 
       css.push(...result.css);
       variables.push(...result.variables);
@@ -678,18 +699,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
 
     const result = buildCss(resolvedBinding.node, resolvedBinding.meta);
 
-    if (resolvedBinding.source === 'import' && result.variables.length > 0) {
-      // NOTE: Currently we throw if the found CSS has any variables found from an
-      // import. This is because we'd need to ensure all identifiers are added to
-      // the owning file - if not done they would just error at runtime. Because
-      // this isn't a required feature at the moment we're deprioritizing support
-      // for this.
-      throw buildCodeFrameError(
-        "Identifier contains values that can't be statically evaluated",
-        node,
-        meta.parentPath
-      );
-    }
+    assertNoImportedCssVariables(node, meta, resolvedBinding, result);
 
     return result;
   }
@@ -708,7 +718,10 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
         );
       }
 
-      const result = buildCss(element, meta);
+      const result = t.isConditionalExpression(element)
+        ? extractConditionalExpression(element, meta)
+        : buildCss(element, meta);
+
       css.push(...result.css);
       variables.push(...result.variables);
     });
