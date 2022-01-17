@@ -8,73 +8,163 @@ jest.disableAutomock();
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const defineInlineTest = require('jscodeshift/dist/testUtils').defineInlineTest;
 
-describe.only('test inline comments', () => {
-  // ! duplicate test
+describe.only('replace me! test inline comments', () => {
+  // * All comments are transformed into leading comments.
+
+  // single line
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     { plugins: [] },
-    // ! what about comments deleted?
     `
-      // leading comment
-      import styled, // styled comment 1
-      // styled comment 2
-    /* styled comment 3 */  { // styled comment 4
-    /* css comment 1 */ css, // css comment 2
-        // idonotexist comment 1
-        idonotexist,
-        keyframes, // keyframes comment 1
-      } from 'styled-components';
-    `,
-    `
-    // leading comment
     import {
-      /* css comment 1 */
-      // css comment 2
-      css, // keyframes comment 1
-      keyframes, // styled comment 1
-      // styled comment 2,
-      // styled comment 3,
-      // styled comment 4,
-      styled
-    } from '@compiled/react'
+      css // a single comment line
+    } from 'styled-components';
     `,
-    'it inline comments for all cases'
+    `
+    import {
+      // a single comment line
+      css 
+    } from '@compiled/react';
+    `,
+    'it transforms inline comment lines for named imports'
   );
 
-  // TODO: Make this work!
+  // single block
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     { plugins: [] },
     `
-      // leading comment
-      import * as styled from 'styled-components';
+    import {
+      css /* a single comment block */
+    } from 'styled-components';
     `,
     `
-      /* // TODO(@compiled/react codemod): Namespace Imports are not supported at the moment. Please find an alternative for it */
-      // leading comment
-      import '@compiled/react';
+    import {
+      /* a single comment block */
+      css
+    } from '@compiled/react';
     `,
-    'it preserves namespace specifier imports and comments'
+    'it transforms inline comment blocks for named imports'
+  );
+
+  // leading and trailing comments default to leading
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import {
+      /* a single comment block */ css 
+    } from 'styled-components';
+    `,
+    `
+    import {
+      /* a single comment block */
+      css
+    } from '@compiled/react';
+    `,
+    'it transforms leading inline comment blocks'
   );
 
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     { plugins: [] },
     `
-    // comment 1
-    import styled from 'styled-components';
-    import * as React from 'react'; // react comment 1
-    
-    console.log("testing") // another inline comment
+    import {
+      css 
+      // a single comment block
+    } from 'styled-components';
     `,
     `
-    // comment 1
-    import { styled } from '@compiled/react';
-    import * as React from 'react'; // react comment 1
-    
-    console.log("testing") // another inline comment
+    import {
+      // a single comment block
+      css
+    } from '@compiled/react';
     `,
-    'it preserves inline comments for compound code'
+    'it transforms trailing comment lines'
+  );
+  // TODO: Another PR - More recast digging! Figure out how recast does this on a low level.
+
+  // multiple inline imports
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import {
+      css,
+      keyframes
+      // keyframes comment
+    } from 'styled-components';
+    `,
+    `
+    import {
+      css, // keyframes comment
+      keyframes
+    } from '@compiled/react';
+    `,
+    'it transforms trailing comment lines with multiple named imports'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import {
+      css,
+      // keyframes comment
+      keyframes
+    } from 'styled-components';
+    `,
+    `
+    import {
+      css, // keyframes comment
+      keyframes
+    } from '@compiled/react';
+    `,
+    'it transforms leading comment lines with multiple named imports'
+  );
+
+  // with default import
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import styled, // styled comment
+    {
+      css,
+      // keyframes comment
+      keyframes
+    } from 'styled-components';
+    `,
+    `
+    import {
+      css, // keyframes comment
+      keyframes, // styled comment
+      styled,
+    } from '@compiled/react';
+    `,
+    'it transforms inline comments for default imports'
+  );
+
+  // complex inline comment case
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import /* leading styled comment */ styled,
+    {
+      css,
+      // keyframes comment
+      keyframes
+    } from 'styled-components';
+    `,
+    `
+    import {
+      css, // keyframes comment
+      keyframes, /* leading styled comment */
+      styled,
+    } from '@compiled/react';
+    `,
+    'it transforms leading inline comment blocks for default imports'
   );
 });
 

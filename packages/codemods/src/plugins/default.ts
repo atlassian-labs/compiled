@@ -70,9 +70,9 @@ const defaultCodemodPlugin: CodemodPlugin = {
               newImport.specifiers[matchingSpecifierIndex].comments = [];
             }
 
+            // Here we set every comment to leading for consistency.
             comment.type === 'CommentLine'
               ? newImport?.specifiers?.[matchingSpecifierIndex]?.comments?.push(
-                  // ? Replace this with a constant?
                   j.commentLine(comment.value, true, false)
                 )
               : newImport?.specifiers?.[matchingSpecifierIndex]?.comments?.push(
