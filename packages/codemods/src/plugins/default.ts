@@ -9,7 +9,7 @@ const defaultCodemodPlugin: CodemodPlugin = {
       buildImport({ compiledImportPath, currentNode, specifiers }) {
         const newImport = j.importDeclaration(specifiers, j.literal(compiledImportPath));
 
-        // Copy the comments from the previous import to the new one.
+        // Copy the comments from the previous import to the new one
         newImport.comments = currentNode.comments;
 
         return newImport;
