@@ -1,4 +1,4 @@
-import type { JSXAttribute, ImportDeclaration } from 'jscodeshift';
+import type { JSXAttribute } from 'jscodeshift';
 
 import type { CodemodPlugin } from './types';
 
@@ -7,10 +7,7 @@ const defaultCodemodPlugin: CodemodPlugin = {
   create: (_, { jscodeshift: j }) => ({
     transform: {
       buildImport({ compiledImportPath, currentNode, specifiers }) {
-        const newImport: ImportDeclaration = j.importDeclaration(
-          specifiers,
-          j.literal(compiledImportPath)
-        );
+        const newImport = j.importDeclaration(specifiers, j.literal(compiledImportPath));
 
         // Copy the comments from the previous import to the new one.
         newImport.comments = currentNode.comments;
