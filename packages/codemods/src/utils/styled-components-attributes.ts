@@ -37,7 +37,7 @@ const getRestAttributeExpressions = (expression: ObjectExpression) =>
     ? (expression.properties.filter((property) => !isStyleProperty(property)) as ObjectProperty[])
     : null;
 
-const getAlternativeComponentName = (name: string) => `Compiled${name}`;
+const getAlternativeComponentName = (name: string) => `${name}WithAttrs`;
 
 /**
  * Extracts used arguments for property value calculation and returns arrow function expression that will be used as a tagged template expression.
@@ -242,9 +242,11 @@ const getAttributesExpression = (expression: ASTPath<TaggedTemplateExpression>) 
 const createNewTemplateExpression = ({
   j,
   expression,
+  compiledLocalStyledName,
 }: {
   j: JSCodeshift;
   expression: ASTPath<TaggedTemplateExpression>;
+  compiledLocalStyledName: string;
 }) => {
   const expressionCall = expression.value.tag as CallExpression;
   const styledTagName = (
@@ -252,7 +254,7 @@ const createNewTemplateExpression = ({
   ).name;
 
   return j.taggedTemplateExpression(
-    j.memberExpression(j.identifier('styled'), j.identifier(styledTagName)),
+    j.memberExpression(j.identifier(compiledLocalStyledName), j.identifier(styledTagName)),
     expression.value.quasi
   );
 };
@@ -297,10 +299,12 @@ export const convertStyledAttrsToComponent = ({
   j,
   plugins,
   expressions,
+  compiledLocalStyledName,
 }: {
   j: JSCodeshift;
   plugins: CodemodPluginInstance[];
   expressions: Collection<TaggedTemplateExpression>;
+  compiledLocalStyledName: string;
 }): void => {
   expressions.forEach((expression) => {
     let transformedNode = null;
@@ -308,7 +312,11 @@ export const convertStyledAttrsToComponent = ({
 
     const attributesExpression = getAttributesExpression(expression);
     const styleAttributeExpression = getStyleAttributeExpression(attributesExpression);
-    const newTemplateExpressions = createNewTemplateExpression({ j, expression });
+    const newTemplateExpressions = createNewTemplateExpression({
+      j,
+      expression,
+      compiledLocalStyledName,
+    });
 
     if (styleAttributeExpression) {
       // extract new template data from arrow function
