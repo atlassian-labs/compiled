@@ -224,7 +224,7 @@ left: $\{(
     `
     import { styled } from '@compiled/react';
 
-    const InputWithAttrs = styled.input\`
+    const InputStyles = styled.input\`
 left: $\{(
   {
     left
@@ -233,7 +233,7 @@ left: $\{(
   position: absolute;
 \`;
 
-    export const Input = props => <InputWithAttrs id={'test-id'} onClick={this.onClick} {...props} />;
+    export const Input = props => <InputStyles id={'test-id'} onClick={this.onClick} {...props} />;
     `,
     'default attributes behaviour'
   );
@@ -259,7 +259,7 @@ left: $\{(
     `
     import { styled } from '@compiled/react';
 
-    const InputWithAttrs = styled.input\`
+    const InputStyles = styled.input\`
 left: $\{(
   {
     left
@@ -268,7 +268,7 @@ left: $\{(
   position: absolute;
 \`;
 
-    const Input = props => <InputWithAttrs id={'test-id'} onClick={this.onClick} {...props} />;
+    const Input = props => <InputStyles id={'test-id'} onClick={this.onClick} {...props} />;
     `,
     'component without export'
   );
@@ -296,7 +296,7 @@ left: $\{(
     `
     import { styled } from '@compiled/react';
 
-    const InputWithAttrs = styled.input\`
+    const InputStyles = styled.input\`
 left: $\{(
   {
     left
@@ -305,7 +305,7 @@ left: $\{(
   position: absolute;
 \`;
 
-    const Input = props => <InputWithAttrs id={'test-id'} onClick={this.onClick} {...props} />;
+    const Input = props => <InputStyles id={'test-id'} onClick={this.onClick} {...props} />;
 
     export default Input;
     `,
@@ -330,11 +330,11 @@ left: $\{(
     `
     import { styled } from '@compiled/react';
 
-    const InputWithAttrs = styled.input\`
+    const InputStyles = styled.input\`
       position: absolute;
     \`;
 
-    export const Input = props => <InputWithAttrs id={'test-id'} onClick={props.onClick} {...props} />;
+    export const Input = props => <InputStyles id={'test-id'} onClick={props.onClick} {...props} />;
     `,
     'attrs without style attribute'
   );
@@ -360,12 +360,12 @@ left: $\{(
     `
     import { styled } from '@compiled/react';
 
-    const InputWithAttrs = styled.input\`
+    const InputStyles = styled.input\`
 left: $\{props => props.left};
   position: absolute;
 \`;
 
-    export const Input = props => <InputWithAttrs id={'test-id'} onClick={this.onClick} {...props} />;
+    export const Input = props => <InputStyles id={'test-id'} onClick={this.onClick} {...props} />;
     `,
     'attrs with object expression as an argument'
   );
@@ -418,12 +418,12 @@ left: $\{props => props.left};
     `
     import { styled } from '@compiled/react';
 
-    const ComposedComponentWithAttrs = styled.input\`
+    const ComposedComponentStyles = styled.input\`
 left: $\{props => props.left};
   position: absolute;
 \`;
 
-    export default props => <ComposedComponentWithAttrs id={'test-id'} onClick={this.onClick} {...props} />;
+    export default props => <ComposedComponentStyles id={'test-id'} onClick={this.onClick} {...props} />;
     `,
     'should export default component wrapper'
   );
@@ -449,12 +449,12 @@ left: $\{props => props.left};
     `
     import { styled } from '@compiled/react';
 
-    const ComposedComponentWithAttrs = styled.input\`
+    const ComposedComponentStyles = styled.input\`
 left: $\{props => props.left};
   position: absolute;
 \`;
 
-    export default () => props => <ComposedComponentWithAttrs id={'test-id'} onClick={this.onClick} {...props} />;
+    export default () => props => <ComposedComponentStyles id={'test-id'} onClick={this.onClick} {...props} />;
     `,
     'should export default wrapped component with a wrapper'
   );
@@ -501,12 +501,12 @@ left: $\{props => props.left};
     `
     import { styled } from '@compiled/react';
 
-    const InputWithAttrs = styled.input\`
+    const InputStyles = styled.input\`
 left: $\{props => props.left};
   position: absolute;
 \`;
 
-    export const Input = props => isFeatureFlagEnabled() ? <InputWithAttrs id={'test-id'} onClick={this.onClick} {...props} /> : null;
+    export const Input = props => isFeatureFlagEnabled() ? <InputStyles id={'test-id'} onClick={this.onClick} {...props} /> : null;
     `,
     'it should use the buildAttributes from the plugin'
   );

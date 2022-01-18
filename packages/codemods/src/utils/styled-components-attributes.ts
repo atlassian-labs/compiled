@@ -37,7 +37,7 @@ const getRestAttributeExpressions = (expression: ObjectExpression) =>
     ? (expression.properties.filter((property) => !isStyleProperty(property)) as ObjectProperty[])
     : null;
 
-const getAlternativeComponentName = (name: string) => `${name}WithAttrs`;
+const getAlternativeComponentName = (name: string) => `${name}Styles`;
 
 /**
  * Extracts used arguments for property value calculation and returns arrow function expression that will be used as a tagged template expression.
