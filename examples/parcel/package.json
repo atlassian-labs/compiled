@@ -13,11 +13,11 @@
   },
   "devDependencies": {
     "@compiled/parcel-transformer": "*",
-    "@parcel/optimizer-htmlnano": "^2.2.0",
-    "@parcel/packager-html": "^2.2.0",
-    "@parcel/transformer-html": "^2.2.0",
-    "@parcel/transformer-posthtml": "^2.2.0",
-    "parcel": "^2.2.0"
+    "@parcel/optimizer-htmlnano": "^2.2.1",
+    "@parcel/packager-html": "^2.2.1",
+    "@parcel/transformer-html": "^2.2.1",
+    "@parcel/transformer-posthtml": "^2.2.1",
+    "parcel": "^2.2.1"
   },
   "alias": {
     "parcel-alias": "./lib/parcel-alias.tsx"
