@@ -502,13 +502,11 @@ describe('styled object call expression', () => {
       });
     `);
 
-    // not.toIncludeMultiple does not work as expected
-    expect(actual).not.toInclude('l ? colors.N50 : colors.N10');
     expect(actual).not.toInclude('propz.loading ? colors.N100 : colors.N200');
 
     expect(actual).toIncludeMultiple([
       'isLoading ? colors.N20 : colors.N40',
-      'loading ? colors.N50 : colors.N10',
+      'l ? colors.N50 : colors.N10',
       'props.loading ? colors.N100 : colors.N200',
     ]);
   });
@@ -525,6 +523,6 @@ describe('styled object call expression', () => {
       });
     `);
 
-    expect(actual).toInclude('{ as: C = "span", style, isLoading, loading, ...props }');
+    expect(actual).toInclude('{ as: C = "span", style, isLoading, loading: l, ...props }');
   });
 });
