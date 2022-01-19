@@ -10,7 +10,7 @@ import resolve from 'resolve';
 import { DEFAULT_CODE_EXTENSIONS } from '../constants';
 import type { Metadata } from '../types';
 
-import { evaluateExpression } from './evaluate-expression';
+import { traverseMemberExpression } from './evaluate-expression';
 import { getDefaultExport, getNamedExport } from './traversers';
 import type { PartialBindingWithMeta } from './types';
 
@@ -98,7 +98,7 @@ const resolveObjectPatternValueNode = (
       },
     });
   } else if (t.isMemberExpression(expression) && t.isMemberExpression(expression.object)) {
-    const { value: node, meta: updatedMeta } = evaluateExpression(expression, meta);
+    const { value: node, meta: updatedMeta } = traverseMemberExpression(expression, meta);
 
     objectPatternValueNode = resolveObjectPatternValueNode(node, updatedMeta, referenceName);
   } else if (

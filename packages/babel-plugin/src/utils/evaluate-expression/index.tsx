@@ -106,7 +106,7 @@ const getMemberExpressionMeta = (
  * @param expression Expression we want to interrogate.
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
-const traverseMemberExpression = (
+export const traverseMemberExpression = (
   expression: t.MemberExpression,
   meta: Metadata
 ): ReturnType<typeof createResultPair> => {
