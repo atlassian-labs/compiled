@@ -60,14 +60,14 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
     currentProgram: collection.find(j.Program).get(),
   });
 
-  const styledImport = collection.find(
+  const styledImports = collection.find(
     j.ImportSpecifier,
     (specifier) => specifier.imported.name === 'styled'
   );
 
-  styledImport.forEach((styledImport) => {
+  styledImports.forEach((styledImport) => {
     const isCompiledImport =
-      styledImport.parentPath.parentPath.value.source.value === COMPILED_IMPORT_PATH;
+      styledImport?.parentPath?.parentPath.value.source.value === COMPILED_IMPORT_PATH;
 
     if (isCompiledImport) {
       const compiledLocalStyledName = styledImport.value.local?.name || 'styled';
