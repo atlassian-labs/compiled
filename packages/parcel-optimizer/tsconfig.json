@@ -6,10 +6,5 @@
     "module": "commonjs",
     "target": "es2017"
   },
-  "references": [
-    { "path": "../babel-plugin-strip-runtime" },
-    { "path": "../babel-plugin" },
-    { "path": "../jest" },
-    { "path": "../utils" }
-  ]
+  "references": [{ "path": "../css" }, { "path": "../jest" }]
 }

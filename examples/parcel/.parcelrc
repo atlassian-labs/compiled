@@ -1,7 +1,7 @@
 {
-  "extends": "@parcel/config-default",
+  "extends": ["@parcel/config-default", "@compiled/parcel-config"],
   "transformers": {
-    "*.{js,jsx,ts,tsx,customjsx}": [
+    "*.{customjsx}": [
       "@compiled/parcel-transformer",
       "..."
     ],

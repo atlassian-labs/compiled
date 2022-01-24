@@ -79,12 +79,18 @@ See [installation](https://compiledcssinjs.com/docs/installation#webpack) for mo
 
 ### Parcel
 
-> **Note** <br /> Parcel v2 is currently in pre-release which makes this transformer experimental, it may break when updating Parcel. Use with caution.
-
-Install the [Parcel v2](https://v2.parceljs.org/) transformer.
+Install the [Parcel v2](https://v2.parceljs.org/) configuration.
 
 ```bash
-npm install @compiled/parcel-transformer --save-dev
+npm install @compiled/parcel-config --save-dev
+```
+
+Extend from the configuration:
+
+```bash
+{
+  "extends":  ["...", "@compiled/parcel-config"],
+}
 ```
 
 See [installation](https://compiledcssinjs.com/docs/installation#parcel) for more information.
