@@ -1,5 +1,19 @@
 # @compiled/parcel-transformer
 
+## 0.7.0
+
+### Minor Changes
+
+- 024ac88: Upgrade parcel transformer to support Parcel v2.2.0
+
+### Patch Changes
+
+- Updated dependencies [b0adb8a]
+- Updated dependencies [f139218]
+- Updated dependencies [858146c]
+- Updated dependencies [b0adb8a]
+  - @compiled/babel-plugin@0.12.0
+
 ## 0.6.20
 
 ### Patch Changes

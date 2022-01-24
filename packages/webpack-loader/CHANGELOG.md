@@ -1,5 +1,19 @@
 # @compiled/webpack-loader
 
+## 0.8.0
+
+### Minor Changes
+
+- 858146c: Add babel plugins support
+
+### Patch Changes
+
+- Updated dependencies [b0adb8a]
+- Updated dependencies [f139218]
+- Updated dependencies [858146c]
+- Updated dependencies [b0adb8a]
+  - @compiled/babel-plugin@0.12.0
+
 ## 0.7.6
 
 ### Patch Changes

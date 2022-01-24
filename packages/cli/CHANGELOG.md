@@ -1,5 +1,13 @@
 # @compiled/cli
 
+## 2.1.5
+
+### Patch Changes
+
+- 0db4774: Bump jscodeshift to v0.13.1
+- Updated dependencies [9a1a74d]
+  - @compiled/codemods@0.4.0
+
 ## 2.1.4
 
 ### Patch Changes
