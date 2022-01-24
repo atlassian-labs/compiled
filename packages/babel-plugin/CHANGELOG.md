@@ -1,5 +1,17 @@
 # @compiled/babel-plugin
 
+## 0.12.0
+
+### Minor Changes
+
+- f139218: Handle destructuring `property: value` pairs returned from arrow functions, and add support for nested and alias destructuring.
+- 858146c: Add babel plugins support
+- b0adb8a: Added support for conditional expressions when passing an array to the `css` prop of an element
+
+### Patch Changes
+
+- b0adb8a: Fix support for CSS helper call expressions when used in conditional expressions (i.e. the `css(...)` function provided by compiled)
+
 ## 0.11.4
 
 ### Patch Changes
