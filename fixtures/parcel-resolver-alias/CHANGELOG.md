@@ -1,5 +1,11 @@
 # @compiled/parcel-resolver-alias
 
+## 0.1.0
+
+### Minor Changes
+
+- 024ac88: Upgrade parcel transformer to support Parcel v2.2.0
+
 ## 0.0.5
 
 ### Patch Changes
