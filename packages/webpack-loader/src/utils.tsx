@@ -44,31 +44,6 @@ export const setPluginConfiguredOption = (
 };
 
 /**
- * Gets the normal module hook for webpack 4 & webpack 5.
- *
- * @returns
- */
-export const getNormalModuleHook = (
-  compiler: Compiler,
-  compilation: CompilationType
-): CompilationType['hooks']['normalModuleLoader'] => {
-  const { NormalModule } =
-    // Webpack 5 flow
-    compiler.webpack ||
-    // Webpack 4 flow
-    require('webpack');
-
-  const normalModuleHook =
-    NormalModule && typeof NormalModule.getCompilationHooks !== 'undefined'
-      ? // Webpack 5 flow
-        NormalModule.getCompilationHooks(compilation).loader
-      : // Webpack 4 flow
-        compilation.hooks.normalModuleLoader;
-
-  return normalModuleHook;
-};
-
-/**
  * Returns the string representation of an assets source.
  *
  * @param source

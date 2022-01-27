@@ -5,7 +5,6 @@ import type { Compilation, Compiler } from 'webpack';
 import type { CompiledExtractPluginOptions } from './types';
 import {
   getAssetSourceContents,
-  getNormalModuleHook,
   getOptimizeAssetsHook,
   getSources,
   setPluginConfiguredOption,
@@ -115,12 +114,6 @@ export class CompiledExtractPlugin {
 
     compiler.hooks.compilation.tap(pluginName, (compilation) => {
       setPluginConfiguredOption(compilation.options.module.rules, pluginName);
-
-      getNormalModuleHook(compiler, compilation).tap(pluginName, (loaderContext) => {
-        // We add some information here to tell loaders that the plugin has been configured.
-        // Bundling will throw if this is missing (i.e. consumers did not setup correctly).
-        (loaderContext as any)[pluginName] = true;
-      });
 
       getOptimizeAssetsHook(compiler, compilation).tap(pluginName, (assets) => {
         const cssAssets = getCSSAssets(assets);
