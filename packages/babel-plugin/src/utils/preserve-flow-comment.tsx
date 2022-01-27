@@ -2,7 +2,7 @@ import type { NodePath } from '@babel/traverse';
 import type * as t from '@babel/types';
 
 /**
- * Ensure that any @flow comment is preserved at the top of the processed file before any additional imports are 
+ * Ensure that any flow comment is preserved at the top of the processed file before additional imports are 
  * dynamically inserted during the build. 
  *
  * @param path
