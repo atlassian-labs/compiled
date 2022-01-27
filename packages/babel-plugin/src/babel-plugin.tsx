@@ -20,6 +20,7 @@ import {
   isCompiledStyledCallExpression,
   isCompiledStyledTaggedTemplateExpression,
 } from './utils/is-compiled';
+import { preserveFlowComment } from './utils/preserve-flow-comment';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -84,6 +85,8 @@ export default declare<State>((api) => {
             pragma,
             opts: { importReact: shouldImportReact = true },
           } = state;
+
+          preserveFlowComment(path);
 
           appendRuntimeImports(path);
 
