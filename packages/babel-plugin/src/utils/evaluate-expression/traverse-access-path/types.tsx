@@ -1,7 +1,7 @@
 import type * as t from '@babel/types';
 
 import type { Metadata } from '../../../types';
-import type { createResultPair } from '../common';
+import type { createResultPair } from '../../create-result-pair';
 
 export type TraverseHandlers = {
   callExpression: (

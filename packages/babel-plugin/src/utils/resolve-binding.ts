@@ -10,7 +10,7 @@ import resolve from 'resolve';
 import { DEFAULT_CODE_EXTENSIONS } from '../constants';
 import type { Metadata } from '../types';
 
-import { traverseMemberExpression } from './evaluate-expression';
+import { traverseMemberExpression } from './traverse-expression';
 import { getDefaultExport, getNamedExport } from './traversers';
 import type { PartialBindingWithMeta } from './types';
 

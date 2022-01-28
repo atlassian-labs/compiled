@@ -1,7 +1,7 @@
 import type * as t from '@babel/types';
 
 import type { Metadata } from '../../../types';
-import { createResultPair } from '../common';
+import { createResultPair } from '../../create-result-pair';
 
 import { evaluatePath } from './evaluate-path';
 import { resolveExpressionInMember } from './resolve-expression';
