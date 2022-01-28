@@ -67,6 +67,36 @@ yarn test:vr update --storiesFilter="^...\$"
 yarn test:vr approve
 ```
 
+### Testing with Webpack 4
+
+We want to support both Webpack 4 and 5.
+`yarn start:webpack` will use Webpack 5 but to test Webpack 4 you just need to make
+a few small changes to the examples/webpack folder.
+
+1. In examples/webpack/webpack.config.js, remove the `'...'` in the `optimization.minimizer` property.
+   So
+
+   ```
+   optimization: {
+     minimizer: ['...', new CssMinimizerPlugin()],
+     usedExports: false,
+   }
+   ```
+
+   becomes
+
+   ```
+   optimization: {
+     minimizer: [new CssMinimizerPlugin()],
+     usedExports: false,
+   }
+   ```
+
+2. Update the examples/webpack/package.json dependency versions for the following packages:
+
+- `"webpack": "^4"`
+- `"html-webpack-plugin": "^4"`
+
 ### Helpful links
 
 - [astexplorer.net](astexplorer.net) — When working on the Babel Plugin make sure to utilise this,
