@@ -2,4 +2,4 @@
 '@compiled/babel-plugin': patch
 ---
 
-Ensure that any @flow comment is preserved at the top of the processed file
+Ensure that any leading comment is preserved at the top of the processed file before inserting additional imports
