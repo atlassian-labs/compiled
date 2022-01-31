@@ -6,7 +6,7 @@ const resolver = new Resolver({
   async resolve({ dependency }) {
     const { specifier, resolveFrom } = dependency;
 
-    const cssPrefix = 'compiled-css:';
+    const cssPrefix = 'compiled-css!';
     if (specifier.startsWith(cssPrefix)) {
       const code = decodeURIComponent(specifier.slice(cssPrefix.length));
       return {

@@ -18,7 +18,6 @@
     "README.md"
   ],
   "dependencies": {
-    "@compiled/css": "^0.8.1",
     "@compiled/parcel-optimizer": "^0.1.0",
     "@compiled/parcel-resolver": "^0.1.0",
     "@compiled/parcel-transformer": "^0.7.0",
