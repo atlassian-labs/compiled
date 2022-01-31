@@ -1,17 +1,17 @@
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 
-import type { Metadata } from '../../types';
-import { getPathOfNode } from '../ast';
-import { createResultPair } from '../create-result-pair';
-import { isCompiledKeyframesCallExpression } from '../is-compiled';
+import type { Metadata } from '../types';
 
+import { getPathOfNode } from './ast';
+import { createResultPair } from './create-result-pair';
+import { isCompiledKeyframesCallExpression } from './is-compiled';
 import {
   traverseCallExpression,
   traverseFunction,
   traverseIdentifier,
   traverseMemberExpression,
-} from './../traverse-expression';
+} from './traverse-expression';
 
 /**
  * Returns `true` if an identifier or any paths that reference the identifier are mutated.

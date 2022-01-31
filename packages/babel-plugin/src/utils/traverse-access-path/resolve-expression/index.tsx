@@ -1,7 +1,7 @@
 import * as t from '@babel/types';
 
-import type { Metadata } from '../../../../types';
-import { createResultPair } from '../../../create-result-pair';
+import type { Metadata } from '../../../types';
+import { createResultPair } from '../../create-result-pair';
 import type { TraverseHandlers } from '../types';
 
 import { getFunctionArgs } from './function-args';

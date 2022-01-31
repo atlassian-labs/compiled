@@ -1,7 +1,7 @@
 import * as t from '@babel/types';
 
-import type { Metadata } from '../../../../types';
-import { createResultPair } from '../../../create-result-pair';
+import type { Metadata } from '../../../types';
+import { createResultPair } from '../../create-result-pair';
 
 import { evaluateNamespaceImportPath } from './namespace-import';
 import { evaluateObjectPath } from './object';

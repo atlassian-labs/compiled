@@ -3,9 +3,7 @@ import * as t from '@babel/types';
 
 import type { Metadata } from '../../types';
 import { createResultPair } from '../create-result-pair';
-import { traverseMemberAccessPath } from '../evaluate-expression/traverse-access-path';
-
-import { traverseCallExpression } from './traverse-call-expression';
+import { traverseMemberAccessPath } from '../traverse-access-path';
 
 /**
  * Returns the binding identifier for a member expression.
@@ -90,7 +88,7 @@ export const traverseMemberExpression = (
       bindingIdentifier.name,
       accessPath,
       expression,
-      { callExpression: traverseCallExpression, memberExpression: traverseMemberExpression }
+      traverseMemberExpression
     );
   }
 
