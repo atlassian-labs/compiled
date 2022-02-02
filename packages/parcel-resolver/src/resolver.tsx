@@ -6,6 +6,7 @@ const resolver = new Resolver({
   async resolve({ dependency }) {
     const { specifier, resolveFrom } = dependency;
 
+    // Resolve the imports inserted by `@compiled/parcel-transformer`
     const cssPrefix = 'compiled-css!';
     if (specifier.startsWith(cssPrefix)) {
       const code = decodeURIComponent(specifier.slice(cssPrefix.length));

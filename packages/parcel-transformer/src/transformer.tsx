@@ -116,6 +116,7 @@ export default new Transformer<ParcelTransformerOpts>({
 
     if (config.extract && foundCSSRules.length) {
       foundCSSRules.forEach((rule) => {
+        // Build imports with css to be resolved into CSS by `@compiled/parcel-resolver`
         const params = encodeURIComponent(rule);
         output = `\nimport 'compiled-css!${params}';\n${output}`;
       });
