@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "@compiled/css": "^0.8.1",
-    "@parcel/plugin": "^2.2.0"
+    "@parcel/plugin": "^2.2.1"
   },
   "devDependencies": {},
   "engines": {
