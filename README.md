@@ -85,11 +85,11 @@ Install the [Parcel v2](https://v2.parceljs.org/) configuration.
 npm install @compiled/parcel-config --save-dev
 ```
 
-Extend from the configuration:
+Extend from the `.parcelrc` configuration:
 
-```bash
+```json
 {
-  "extends":  ["...", "@compiled/parcel-config"],
+  "extends": ["...", "@compiled/parcel-config"]
 }
 ```
 

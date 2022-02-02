@@ -17,8 +17,7 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "src",
-    "README.md"
+    "src"
   ],
   "dependencies": {
     "@parcel/plugin": "^2.2.1"

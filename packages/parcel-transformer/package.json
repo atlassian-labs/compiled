@@ -17,8 +17,7 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "src",
-    "README.md"
+    "src"
   ],
   "dependencies": {
     "@babel/core": "^7.16.12",

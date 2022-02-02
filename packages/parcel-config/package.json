@@ -14,8 +14,7 @@
   "main": "./config.json",
   "files": [
     "dist",
-    "src",
-    "README.md"
+    "src"
   ],
   "dependencies": {
     "@compiled/parcel-optimizer": "^0.1.0",
