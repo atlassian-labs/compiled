@@ -400,6 +400,63 @@ const extractLogicalExpression = (node: t.ArrowFunctionExpression, meta: Metadat
   return { css: mergeSubsequentUnconditionalCssItems(css), variables };
 };
 
+/**
+ * Manipulates the AST to ensure that CSS variables are generated correctly for negative values
+ *
+ * consider we have the following:
+ *
+ * const gridSize = 8;
+ *
+ * const LayoutRight = styled.aside`
+ *   margin-right: -${gridSize * 5}px; // A
+ *   margin-left: ${gridSize * 5}px; // B
+ *   top: -${gridSize * 5}px; // A
+ *   left: -${gridSize * 8}px; // C
+ *   right: ${gridSize * 8}px;  // D
+ *   color: red;
+ * `;
+ *
+ * In order to calculate the correct CSS custom properties, items labeled A & C need to be converted to UnaryExpressions
+ * This essentially changes these to ${-gridSize * 5}px; & ${-gridSize * 8}px respectively - resulting in correct CCS
+ * generation for these negative values.
+ *
+ * With out this manipulation you would end up with:
+ * -40px for A & B
+ * -64px for C & D
+ *
+ * With this manipulation you end up with
+ * -40px for A
+ * 40px for B
+ * -64px for C
+ * 64px for D
+ *
+ * @param nodeExpression Node we're interested in manipulating
+ * @param quasi quasi information about the current node
+ */
+const convertNegativeCssValuesToUnaryExpression = (
+  nodeExpression: t.Expression,
+  quasi: t.TemplateLiteral
+): void => {
+  if (quasi.value.raw.endsWith('-')) {
+    if (nodeExpression?.left) {
+      const { name, start, end } = nodeExpression.left;
+      nodeExpression.left = {
+        type: 'UnaryExpression',
+        start: nodeExpression.left.start,
+        end: nodeExpression.left.end,
+        operator: '-',
+        prefix: true,
+        argument: {
+          type: 'Identifier',
+          start: start,
+          end: end,
+          name: name,
+        },
+      };
+    }
+  }
+};
+
 /*
  * Extracts the keyframes CSS from the `@compiled/react` keyframes usage.
  *
@@ -550,87 +607,97 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   const variables: CSSOutput['variables'] = [];
 
   // Quasis are the string pieces of the template literal - the parts around the interpolations
-  const literalResult = node.quasis.reduce<string>((acc, quasi, index): string => {
-    const nodeExpression = node.expressions[index] as t.Expression | undefined;
+  const literalResult = node.quasis.reduce<string>(
+    (acc: string, quasi: t.TemplateLitteral, index: number): string => {
+      const nodeExpression = node.expressions[index] as t.Expression | undefined;
 
-    if (
-      !nodeExpression ||
-      (t.isArrowFunctionExpression(nodeExpression) && t.isLogicalExpression(nodeExpression.body))
-    ) {
-      const suffix = meta.context === 'keyframes' ? '' : ';';
-      return acc + quasi.value.raw + suffix;
-    }
+      // Deal with any negative values such as:
+      // margin: -${gridSize}, top: -${gridSize} etc.
+      convertNegativeCssValuesToUnaryExpression(nodeExpression, quasi);
 
-    const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
-
-    callbackIfFileIncluded(meta, updatedMeta);
-
-    if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
-      // Simple case - we can immediately inline the value.
-      return acc + quasi.value.raw + interpolation.value;
-    }
-
-    if (
-      t.isObjectExpression(interpolation) ||
-      isCompiledCSSTaggedTemplateExpression(interpolation, meta.state) ||
-      isCompiledCSSCallExpression(interpolation, meta.state) ||
-      (t.isArrowFunctionExpression(nodeExpression) &&
-        t.isConditionalExpression(nodeExpression.body))
-    ) {
-      // We found something that looks like CSS.
-      const result = buildCss(interpolation, updatedMeta);
-
-      if (result.css.length) {
-        // Add previous accumulative CSS first before CSS from expressions
-        css.push({ type: 'unconditional', css: acc + quasi.value.raw }, ...result.css);
-        variables.push(...result.variables);
-        // Reset acc as we just added them
-        return '';
+      if (
+        !nodeExpression ||
+        (t.isArrowFunctionExpression(nodeExpression) && t.isLogicalExpression(nodeExpression.body))
+      ) {
+        const suffix = meta.context === 'keyframes' ? '' : ';';
+        return acc + quasi.value.raw + suffix;
       }
-    }
 
-    if (
-      isCompiledKeyframesCallExpression(interpolation, updatedMeta.state) ||
-      isCompiledKeyframesTaggedTemplateExpression(interpolation, updatedMeta.state)
-    ) {
-      const {
-        css: [keyframesSheet, unconditionalKeyframesItem],
-        variables: keyframeVariables,
-      } = extractKeyframes(interpolation, {
-        ...updatedMeta,
-        prefix: quasi.value.raw,
-        suffix: '',
+      const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
+
+      callbackIfFileIncluded(meta, updatedMeta);
+
+      if (t.isStringLiteral(interpolation) || t.isNumericLiteral(interpolation)) {
+        // Simple case - we can immediately inline the value.
+        return acc + quasi.value.raw + interpolation.value;
+      }
+
+      if (
+        t.isObjectExpression(interpolation) ||
+        isCompiledCSSTaggedTemplateExpression(interpolation, meta.state) ||
+        isCompiledCSSCallExpression(interpolation, meta.state) ||
+        (t.isArrowFunctionExpression(nodeExpression) &&
+          t.isConditionalExpression(nodeExpression.body))
+      ) {
+        // We found something that looks like CSS.
+        const result = buildCss(interpolation, updatedMeta);
+
+        if (result.css.length) {
+          // Add previous accumulative CSS first before CSS from expressions
+          css.push({ type: 'unconditional', css: acc + quasi.value.raw }, ...result.css);
+          variables.push(...result.variables);
+          // Reset acc as we just added them
+          return '';
+        }
+      }
+
+      if (
+        isCompiledKeyframesCallExpression(interpolation, updatedMeta.state) ||
+        isCompiledKeyframesTaggedTemplateExpression(interpolation, updatedMeta.state)
+      ) {
+        const {
+          css: [keyframesSheet, unconditionalKeyframesItem],
+          variables: keyframeVariables,
+        } = extractKeyframes(interpolation, {
+          ...updatedMeta,
+          prefix: quasi.value.raw,
+          suffix: '',
+        });
+
+        css.push(keyframesSheet);
+        variables.push(...keyframeVariables);
+        return acc + getItemCss(unconditionalKeyframesItem);
+      }
+
+      const { expression, variableName } = getVariableDeclaratorValueForOwnPath(
+        nodeExpression,
+        meta
+      );
+
+      // Everything else is considered a catch all expression.
+      // The only difficulty here is what we do around prefixes and suffixes.
+      // CSS variables can't have them! So we need to move them to the inline style.
+      // E.g. `font-size: ${fontSize}px` will end up needing to look like:
+      // `font-size: var(--_font-size)`, with the suffix moved to inline styles
+      // style={{ '--_font-size': fontSize + 'px' }}
+      const name = `--_${hash(variableName)}`;
+      const nextQuasis = node.quasis[index + 1];
+      const [before, after] = cssAffixInterpolation(quasi.value.raw, nextQuasis.value.raw);
+
+      // Removes any suffixes from the next quasis.
+      nextQuasis.value.raw = after.css;
+
+      variables.push({
+        name,
+        expression,
+        prefix: before.variablePrefix,
+        suffix: after.variableSuffix,
       });
 
-      css.push(keyframesSheet);
-      variables.push(...keyframeVariables);
-      return acc + getItemCss(unconditionalKeyframesItem);
-    }
-
-    const { expression, variableName } = getVariableDeclaratorValueForOwnPath(nodeExpression, meta);
-
-    // Everything else is considered a catch all expression.
-    // The only difficulty here is what we do around prefixes and suffixes.
-    // CSS variables can't have them! So we need to move them to the inline style.
-    // E.g. `font-size: ${fontSize}px` will end up needing to look like:
-    // `font-size: var(--_font-size)`, with the suffix moved to inline styles
-    // style={{ '--_font-size': fontSize + 'px' }}
-    const name = `--_${hash(variableName)}`;
-    const nextQuasis = node.quasis[index + 1];
-    const [before, after] = cssAffixInterpolation(quasi.value.raw, nextQuasis.value.raw);
-
-    // Removes any suffixes from the next quasis.
-    nextQuasis.value.raw = after.css;
-
-    variables.push({
-      name,
-      expression,
-      prefix: before.variablePrefix,
-      suffix: after.variableSuffix,
-    });
-
-    return acc + before.css + `var(${name})`;
-  }, '');
+      return acc + before.css + `var(${name})`;
+    },
+    ''
+  );
 
   css.push({ type: 'unconditional', css: literalResult });
 
