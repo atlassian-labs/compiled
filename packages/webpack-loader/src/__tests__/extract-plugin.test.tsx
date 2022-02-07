@@ -128,6 +128,7 @@ describe('CompiledExtractPlugin', () => {
       ._4bfu1r31{-webkit-text-decoration-color:currentColor;text-decoration-color:currentColor}
       ._n7zl17qw{border-bottom:1px solid transparent}
       ._n7zl1l01{border-bottom:1px solid rgba(135,119,217,0.2)}
+      ._syaz14aq{color:var(--_1p69eoh)}
       ._p12f1us4{max-width:140rem}
       ._18u01wug{margin-left:auto}
       ._otyridpf{margin-bottom:0}
@@ -144,7 +145,6 @@ describe('CompiledExtractPlugin', () => {
       ._ca0qidpf{padding-top:0}
       ._4cvr1h6o{align-items:center}
       ._1e0c1txw{display:flex}
-      ._syaz14aq{color:var(--_1p69eoh)}
       ._4t3i1jdh{height:9rem}
       "
     `);

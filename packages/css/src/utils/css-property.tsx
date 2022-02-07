@@ -137,15 +137,8 @@ export function addUnitIfNeeded(
  * @param node
  */
 export const isCssPropertyInTemplateElement = (node: t.TemplateElement): boolean => {
-  const re = /(\s.[A-Za-z]*?\:)/; // `property:`
+  const re = /(\s.[a-z.\-_]*?\:)/; // `property:`
   const value = node.value.raw;
-
-  // Css property within pseudo elements or pseudo classes (eg ':hover { color:' )
-  // will not be considered
-  // TODO raise new issue
-  if (value.includes('{')) {
-    return false;
-  }
 
   return re.test(value);
 };

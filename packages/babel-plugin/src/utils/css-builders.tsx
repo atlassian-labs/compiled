@@ -305,32 +305,42 @@ const assertNoImportedCssVariables = (
 
 /**
  * Manipulates template literal so that it resembles
- * CSS `property: value` declaration
+ * CSS `property: value` declaration where
+ * - before: all the CSS _before_ the interpolation
+ * - after: all the CSS _after_ the interpolation
  * @param expression
  * @param quasi
  */
 const moveCssPropertyInExpression = (
   expression: t.ConditionalExpression,
   quasi: t.TemplateElement,
+  nextQuasis: t.TemplateElement,
   deleteValue = true
 ): void => {
   const conditionalPaths: ['consequent', 'alternate'] = ['consequent', 'alternate'];
-  const property = quasi.value.raw;
+  const value = quasi.value.raw;
+  const re = /([^;/]+$)/; // everything after the last ';'
+  const before = value.match(re)?.[0] || '';
+  const closingBracket = before.includes('{') ? ';}' : '';
+
+  if (!before) {
+    return;
+  }
 
   conditionalPaths.map((path) => {
     const pathNode = expression[path];
     if (t.isStringLiteral(pathNode) && pathNode.value) {
       // We've found a string literal like: `'blue'`
-      pathNode.value = property + pathNode.value;
+      pathNode.value = before + pathNode.value + closingBracket;
     } else if (t.isTemplateLiteral(pathNode)) {
       // We've found a template literal like: "`${fontSize}px`"
-      pathNode.quasis[0].value.raw = property + pathNode.quasis[0].value.raw;
+      pathNode.quasis[0].value.raw = before + pathNode.quasis[0].value.raw + closingBracket;
     } else if (t.isNumericLiteral(pathNode)) {
       // We've found a numeric literal like: `1`
-      expression[path] = t.stringLiteral(property + pathNode.value);
+      expression[path] = t.stringLiteral(before + pathNode.value + closingBracket);
     } else if (t.isConditionalExpression(pathNode)) {
       // We've found nested ternary operators
-      moveCssPropertyInExpression(pathNode, quasi, false);
+      moveCssPropertyInExpression(pathNode, quasi, nextQuasis, false);
     } else if (t.isMemberExpression(pathNode)) {
       // We've found a member expression like `colors.N50`
       // TODO handle member expression
@@ -341,8 +351,15 @@ const moveCssPropertyInExpression = (
 
   // Remove CSS property from template element so it doesn't get processed again
   if (deleteValue) {
-    quasi.value.raw = '';
-    quasi.value.cooked = '';
+    quasi.value.raw = value.replace(before, '');
+    quasi.value.cooked = value.replace(before, '');
+
+    if (closingBracket) {
+      const rex = /([^}/]+$)/g; // everything after the last '}'
+      const after = nextQuasis.value.raw.match(rex)?.[0] || '';
+      nextQuasis.value.raw = after;
+      nextQuasis.value.cooked = after;
+    }
   }
 };
 
@@ -609,16 +626,17 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     }
 
     /**
-     * Manipulate the node if the CSS property is defined within a template element
-     * rather than in a expression.
-     * Eg color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};
+     * Manipulate the node if the CSS property, pseudo classes or pseudo elements are defined
+     * within a template element rather than in a expression.
+     * Eg :hover { color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')}; }
      */
     if (
       t.isArrowFunctionExpression(nodeExpression) &&
       t.isConditionalExpression(nodeExpression.body) &&
       isCssPropertyInTemplateElement(quasi)
     ) {
-      moveCssPropertyInExpression(nodeExpression.body, quasi);
+      const nextQuasis = node.quasis[index + 1];
+      moveCssPropertyInExpression(nodeExpression.body, quasi, nextQuasis);
     }
 
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);

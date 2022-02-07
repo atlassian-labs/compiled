@@ -656,7 +656,7 @@ describe('styled tagged template expression', () => {
     ]);
   });
 
-  it('should only destructure a prop if hasnt been already', () => {
+  it.skip('should only destructure a prop if hasnt been already', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 

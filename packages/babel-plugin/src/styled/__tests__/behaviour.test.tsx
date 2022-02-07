@@ -1084,4 +1084,44 @@ describe('styled component behaviour', () => {
       'className={ax(["_1wyb1ul9",props.isDark?"_bfhk11x8 _syaz1x77":"_bfhk1x77 _syaz11x8",props.className])}',
     ]);
   });
+
+  it('should apply conditional CSS to the related pseudo class or pseudo element', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        background: \${({ isTrue }) => isTrue ? 'white' : 'black'};
+        color: 'black';
+        display: block;
+        :hover {
+          color: \${({ isTrue }) => isTrue ? 'blue' : 'yellow'};
+        }
+        :focus {
+          \${({ isTrue }) => isTrue ? 'color: purple' : 'color: orange'};
+        }
+        :before {
+          content: '';
+          display:  \${({ isTrue }) => isTrue ? 'inherit' : 'inline'};
+        }
+        > :first-child {
+          color: 'black';
+        }\`;
+      `);
+
+    expect(actual).toIncludeMultiple([
+      '._1e0c1nu9{display:inline}',
+      '._1e0c1kw7{display:inherit}',
+      '._f8pjruxl:focus{color:orange}',
+      '._f8pj1cnh:focus{color:purple}',
+      '._30l31gy6:hover{color:yellow}',
+      '._30l313q2:hover{color:blue}',
+      '._bfhk11x8{background-color:black}',
+      '._bfhk1x77{background-color:white}',
+      "._129w1nk7 >:first-child{color:'black'}",
+      "._1kt91yyf:before{content:''}",
+      '._1e0c1ule{display:block}',
+      "_syaz1nk7{color:'black'}",
+      'ax(["_syaz1nk7 _1e0c1ule _1kt91yyf _129w1nk7",isTrue?"_bfhk1x77":"_bfhk11x8",isTrue?"_30l313q2":"_30l31gy6",isTrue?"_f8pj1cnh":"_f8pjruxl",isTrue?"_1e0c1kw7":"_1e0c1nu9",props.className])',
+    ]);
+  });
 });
