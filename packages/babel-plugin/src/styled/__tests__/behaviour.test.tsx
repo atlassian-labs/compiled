@@ -396,17 +396,18 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
+      '._syaz5scu{color:red}',
+      '._syaz13q2{color:blue}',
       '._19bvftgi{padding-left:8px}',
       '._n3tdftgi{padding-bottom:8px}',
       '._u5f3ftgi{padding-right:8px}',
       '._ca0qftgi{padding-top:8px}',
       '._19itlf8h{border:2px solid blue}',
       '._1wyb1ul9{font-size:30px}',
-      '._syazmuvv{color:var(--_b3bzwz)}',
     ]);
 
     expect(actual).toInclude(
-      `<C{...props}style={{...style,"--_b3bzwz":ix(isPrimary?'blue':'red')}}ref={ref}className={ax(["_syazmuvv _1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.className])}/>`
+      `ax([\"_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi\",props.isPrimary?\"_syaz13q2\":\"_syaz5scu\",props.className])`
     );
   });
 
@@ -420,8 +421,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syazcoia{color:var(--_1k1hsek)',
-      `<C{...props}style={{...style,"--_1k1hsek":ix(isPrimary?\`blue\`:\`red\`)}}ref={ref}className={ax(["_syazcoia",props.className])}/>`,
+      '._syaz5scu{color:red}',
+      '._syaz13q2{color:blue}',
+      `ax([\"\",props.isPrimary?\"_syaz13q2\":\"_syaz5scu\",props.className])`,
     ]);
   });
 
@@ -436,8 +438,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsbbw21{width:var(--_191xoi2)}',
-      `<C{...props}style={{...style,\"--_191xoi2\":ix(useCustomWidth?\`\${CUSTOM_WIDTH}px\`:'100%')}}ref={ref}className={ax([\"_1bsbbw21\",props.className])}/>`,
+      '._1bsb1osq{width:100%}',
+      '._1bsby2bc{width:var(--_znisgh)}',
+      'style={{...style,"--_znisgh":ix(CUSTOM_WIDTH,"px")}}',
+      `ax([\"\",props.useCustomWidth?\"_1bsby2bc\":\"_1bsb1osq\",props.className])`,
     ]);
   });
 
@@ -452,8 +456,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsb2988{width:var(--_1b6y63z)}',
-      `<C{...props}style={{...style,\"--_1b6y63z\":ix(useCustomWidth?\`\${CUSTOM_WIDTH}px\`:'100%')}}ref={ref}className={ax([\"_1bsb2988\",props.className])}/>`,
+      '._1bsb1osq{width:100%}',
+      '._1bsby2bc{width:var(--_znisgh)}',
+      'style={{...style,"--_znisgh":ix(CUSTOM_WIDTH,"px")}}',
+      `ax([\"\",useCustomWidth?\"_1bsby2bc\":\"_1bsb1osq\",props.className])`,
     ]);
   });
 
@@ -467,10 +473,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '{as:C="div",style,size:{width},...props}',
-      '._1bsbnoe6{width:var(--_e4qzcj)}',
-      `"--_e4qzcj":ix(width?\`\${width}px\`:'100%')`,
-      'className={ax(["_1bsbnoe6",props.className])}',
+      '._1bsb1osq{width:100%}',
+      '._1bsb9tg7{width:var(--_1ea5ebz)}',
+      '--_1ea5ebz":ix(width,"px"',
+      'ax(["",width?"_1bsb9tg7":"_1bsb1osq",props.className]',
     ]);
   });
 
@@ -484,10 +490,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '{as:C="div",style,elementWidth:width,...props}',
-      '._1bsb1rbs{width:var(--_wv4l67)}',
-      `"--_wv4l67":ix(width?\`\${width}px\`:'100%')`,
-      'className={ax(["_1bsb1rbs",props.className])}',
+      '._1bsb1osq{width:100%}',
+      '"._1bsb9tg7{width:var(--_1ea5ebz)}',
+      '--_1ea5ebz":ix(width,"px")',
+      'ax(["",width?"_1bsb9tg7":"_1bsb1osq",props.className])',
     ]);
   });
 
@@ -501,10 +507,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '{as:C="div",style,width,offsetWidth,...props}',
-      '._1bsbqrw8{width:var(--_imruc3)}',
-      `"--_imruc3":ix(width&&offsetWidth?\`\${width+offsetWidth}px\`:'100%')`,
-      'className={ax(["_1bsbqrw8",props.className])}',
+      '._1bsb1osq{width:100%}',
+      '._1bsb6mgu{width:var(--_1j1yxek)}',
+      '--_1j1yxek":ix(width+offsetWidth,"px")',
+      'ax(["",width&&offsetWidth?"_1bsb6mgu":"_1bsb1osq",props.className])',
     ]);
   });
 
@@ -597,17 +603,19 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
+      '._19it107e{border:1px solid red}',
+      '._19it1nsd{border:1px solid blue}',
+      '._syaz5scu{color:red}',
+      '._syaz13q2{color:blue}',
       '._1wyb1ul9{font-size:30px}',
-      '._19it1hus{border:var(--_ubmxli)}',
-      '._syazmuvv{color:var(--_b3bzwz)}',
     ]);
 
     expect(actual).toInclude(
-      `<C{...props}style={{...style,\"--_b3bzwz\":ix(isPrimary?'blue':'red'),\"--_ubmxli\":ix(isPrimary?'1px solid blue':'1px solid red')}}ref={ref}className={ax([\"_syazmuvv _19it1hus _1wyb1ul9\",props.className])}/>`
+      `ax([\"_1wyb1ul9\",props.isPrimary?\"_syaz13q2\":\"_syaz5scu\",props.isPrimary?\"_19it1nsd\":\"_19it107e\",props.className]`
     );
   });
 
-  it('should apply conditional CSS with nested ternary operators', () => {
+  it.only('should apply conditional CSS with nested ternary operators', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 
@@ -626,8 +634,10 @@ describe('styled component behaviour', () => {
       '._ca0qftgi{padding-top:8px}',
       '._19itlf8h{border:2px solid blue}',
       '._1wyb1ul9{font-size:30px}',
-      '._syaz1xo0{color:var(--_13kr4bd)}',
-      `<C{...props}style={{...style,"--_13kr4bd":ix(isPrimary?isDisabled?'black':'blue':'red')}}ref={ref}className={ax(["_syaz1xo0 _1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.className])}/>`,
+      '._syaz5scu{color:red}',
+      '._syaz13q2{color:blue}',
+      '._syaz11x8{color:black}',
+      `ax([\"_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi\",props.isPrimary?props.isDisabled?\"_syaz11x8\":\"_syaz13q2\":\"_syaz5scu\",props.className])`,
     ]);
   });
 
@@ -670,7 +680,6 @@ describe('styled component behaviour', () => {
       '._syaz11x8{color:black}',
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
-      'className={ax(["_bfhk1x77",props.isPrimary?props.isDisabled?"_syaz11x8":"_syaz13q2":"_syaz5scu",props.className])}',
     ]);
   });
 

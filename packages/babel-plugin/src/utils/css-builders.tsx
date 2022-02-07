@@ -1,6 +1,10 @@
 import generate from '@babel/generator';
 import * as t from '@babel/types';
-import { addUnitIfNeeded, cssAffixInterpolation } from '@compiled/css';
+import {
+  addUnitIfNeeded,
+  cssAffixInterpolation,
+  isCssPropertyInTemplateElement,
+} from '@compiled/css';
 import { hash, kebabCase } from '@compiled/utils';
 
 import type { Metadata } from '../types';
@@ -300,6 +304,49 @@ const assertNoImportedCssVariables = (
 };
 
 /**
+ * Manipulates template literal so that it resembles
+ * CSS `property: value` declaration
+ * @param expression
+ * @param quasi
+ */
+const moveCssPropertyInExpression = (
+  expression: t.ConditionalExpression,
+  quasi: t.TemplateElement,
+  deleteValue = true
+): void => {
+  const conditionalPaths: ['consequent', 'alternate'] = ['consequent', 'alternate'];
+  const property = quasi.value.raw;
+
+  conditionalPaths.map((path) => {
+    const pathNode = expression[path];
+    if (t.isStringLiteral(pathNode) && pathNode.value) {
+      // We've found a string literal like: `'blue'`
+      pathNode.value = property + pathNode.value;
+    } else if (t.isTemplateLiteral(pathNode)) {
+      // We've found a template literal like: "`${fontSize}px`"
+      pathNode.quasis[0].value.raw = property + pathNode.quasis[0].value.raw;
+    } else if (t.isNumericLiteral(pathNode)) {
+      // We've found a numeric literal like: `1`
+      expression[path] = t.stringLiteral(property + pathNode.value);
+    } else if (t.isConditionalExpression(pathNode)) {
+      // We've found nested ternary operators
+      moveCssPropertyInExpression(pathNode, quasi, false);
+    } else if (t.isMemberExpression(pathNode)) {
+      // We've found a member expression like `colors.N50`
+      // TODO handle member expression
+      deleteValue = false;
+      return;
+    }
+  });
+
+  // Remove CSS property from template element so it doesn't get processed again
+  if (deleteValue) {
+    quasi.value.raw = '';
+    quasi.value.cooked = '';
+  }
+};
+
+/**
  * Extracts CSS data from a conditional expression node.
  * Eg. props.isPrimary && props.isBolded ? ({ color: 'blue' }) : ({ color: 'red'})
  *
@@ -559,6 +606,19 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     ) {
       const suffix = meta.context === 'keyframes' ? '' : ';';
       return acc + quasi.value.raw + suffix;
+    }
+
+    /**
+     * Manipulate the node if the CSS property is defined within a template element
+     * rather than in a expression.
+     * Eg color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};
+     */
+    if (
+      t.isArrowFunctionExpression(nodeExpression) &&
+      t.isConditionalExpression(nodeExpression.body) &&
+      isCssPropertyInTemplateElement(quasi)
+    ) {
+      moveCssPropertyInExpression(nodeExpression.body, quasi);
     }
 
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);

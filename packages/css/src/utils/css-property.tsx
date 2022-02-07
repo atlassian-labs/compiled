@@ -1,3 +1,5 @@
+import type * as t from '@babel/types';
+
 const unitless = {
   animationIterationCount: true,
   borderImageOutset: true,
@@ -126,3 +128,24 @@ export function addUnitIfNeeded(
 
   return String(value).trim();
 }
+
+/**
+ * Returns `true` if the CSS property is defined within a template element
+ * (the string pieces of the template literal)
+ * rather than in the expression.
+ * Eg color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};
+ * @param node
+ */
+export const isCssPropertyInTemplateElement = (node: t.TemplateElement): boolean => {
+  const re = /(\s.[A-Za-z]*?\:)/; // `property:`
+  const value = node.value.raw;
+
+  // Css property within pseudo elements or pseudo classes (eg ':hover { color:' )
+  // will not be considered
+  // TODO raise new issue
+  if (value.includes('{')) {
+    return false;
+  }
+
+  return re.test(value);
+};
