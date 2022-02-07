@@ -8,10 +8,10 @@ import type * as t from '@babel/types';
  * @param path
  */
 export const preserveLeadingComments = (path: NodePath<t.Program>): void => {
-  const leadingComments = path.node.body?.[0]?.leadingComments as any;
+  const leadingComments = path.node.body?.[0]?.leadingComments;
 
   if (leadingComments) {
-    path.addComments('leading', leadingComments);
+    path.addComments('leading', leadingComments as any);
 
     path.node.body[0].leadingComments = null;
   }
