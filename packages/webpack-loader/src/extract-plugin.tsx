@@ -5,9 +5,9 @@ import type { Compilation, Compiler } from 'webpack';
 import type { CompiledExtractPluginOptions } from './types';
 import {
   getAssetSourceContents,
-  getNormalModuleHook,
   getOptimizeAssetsHook,
   getSources,
+  setPluginConfiguredOption,
 } from './utils';
 
 export const pluginName = 'CompiledExtractPlugin';
@@ -88,6 +88,7 @@ const pushNodeModulesExtractLoader = (
         // We turn off baking as we're only interested in extracting from node modules (they're already baked)!
         bake: false,
         extract: true,
+        [pluginName]: true,
       },
     },
   });
@@ -112,11 +113,7 @@ export class CompiledExtractPlugin {
     forceCSSIntoOneStyleSheet(compiler);
 
     compiler.hooks.compilation.tap(pluginName, (compilation) => {
-      getNormalModuleHook(compiler, compilation).tap(pluginName, (loaderContext) => {
-        // We add some information here to tell loaders that the plugin has been configured.
-        // Bundling will throw if this is missing (i.e. consumers did not setup correctly).
-        (loaderContext as any)[pluginName] = true;
-      });
+      setPluginConfiguredOption(compilation.options.module.rules, pluginName);
 
       getOptimizeAssetsHook(compiler, compilation).tap(pluginName, (assets) => {
         const cssAssets = getCSSAssets(assets);

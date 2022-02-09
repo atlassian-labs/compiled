@@ -1,28 +1,46 @@
-import type { Compilation as CompilationType, Compiler, sources } from 'webpack';
+import type { Compilation as CompilationType, Compiler, sources, RuleSetRule } from 'webpack';
 
 /**
- * Gets the normal module hook for webpack 4 & webpack 5.
+ * Sets an option on the plugin config to tell loaders that the plugin has been configured.
+ * Bundling will throw if this option is missing (i.e. consumers did not setup correctly).
  *
+ * @param rules
+ * @param pluginName
  * @returns
  */
-export const getNormalModuleHook = (
-  compiler: Compiler,
-  compilation: CompilationType
-): CompilationType['hooks']['normalModuleLoader'] => {
-  const { NormalModule } =
-    // Webpack 5 flow
-    compiler.webpack ||
-    // Webpack 4 flow
-    require('webpack');
-
-  const normalModuleHook =
-    NormalModule && typeof NormalModule.getCompilationHooks !== 'undefined'
-      ? // Webpack 5 flow
-        NormalModule.getCompilationHooks(compilation).loader
-      : // Webpack 4 flow
-        compilation.hooks.normalModuleLoader;
-
-  return normalModuleHook;
+export const setPluginConfiguredOption = (
+  rules: (RuleSetRule | '...')[],
+  pluginName: string
+): void => {
+  for (const rule of rules) {
+    const use = (rule as RuleSetRule).use;
+    if (!use || typeof use === 'string') {
+      continue;
+    }
+    if (Array.isArray(use)) {
+      if (!use.length) {
+        continue;
+      }
+      for (const nestedUse of use) {
+        if (typeof nestedUse !== 'object' || nestedUse.loader !== '@compiled/webpack-loader') {
+          continue;
+        }
+        const { options } = nestedUse;
+        if (!options || typeof options !== 'object' || !options.extract) {
+          continue;
+        }
+        options[pluginName] = true;
+      }
+    } else {
+      if (typeof use === 'object' && use.loader === '@compiled/webpack-loader') {
+        const { options } = use;
+        if (!options || typeof options !== 'object' || !options.extract) {
+          continue;
+        }
+        options[pluginName] = true;
+      }
+    }
+  }
 };
 
 /**

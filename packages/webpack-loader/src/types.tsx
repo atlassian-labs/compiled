@@ -1,6 +1,8 @@
 import type { ParserPlugin } from '@babel/parser';
 import type { ResolveOptions, RuleSetCondition } from 'webpack';
 
+import type { pluginName } from './extract-plugin';
+
 export type { ResolveOptions };
 
 export interface CompiledLoaderOptions {
@@ -42,6 +44,11 @@ export interface CompiledLoaderOptions {
    * List of babel plugins to be applied to evaluated files
    */
   babelPlugins?: ParserPlugin[];
+
+  /**
+   * Set to true if CompiledExtractPlugin has been set up correctly
+   */
+  [pluginName]?: boolean;
 }
 
 export interface CompiledExtractPluginOptions {
