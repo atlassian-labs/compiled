@@ -434,27 +434,27 @@ const extractLogicalExpression = (node: t.ArrowFunctionExpression, meta: Metadat
  * @param quasi quasi information about the current node
  */
 const convertNegativeCssValuesToUnaryExpression = (
-  nodeExpression: t.Expression,
+  expression: t.Expression,
   quasi: t.TemplateLiteral
 ): void => {
-  if (quasi.value.raw.endsWith('-')) {
-    if (nodeExpression?.left) {
-      const { name, start, end } = nodeExpression.left;
-      nodeExpression.left = {
-        type: 'UnaryExpression',
-        start: nodeExpression.left.start,
-        end: nodeExpression.left.end,
-        operator: '-',
-        prefix: true,
-        argument: {
-          type: 'Identifier',
-          start: start,
-          end: end,
-          name: name,
-        },
-      };
-    }
+  const nodeExpression = { ...expression };
+  if (nodeExpression?.left) {
+    const { name, start, end } = nodeExpression.left;
+    nodeExpression.left = {
+      type: 'UnaryExpression',
+      start: start,
+      end: end,
+      operator: '-',
+      prefix: true,
+      argument: {
+        type: 'Identifier',
+        start: start + 1,
+        end: end,
+        name: name,
+      },
+    };
   }
+  return nodeExpression;
 };
 
 /*
@@ -609,11 +609,15 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   // Quasis are the string pieces of the template literal - the parts around the interpolations
   const literalResult = node.quasis.reduce<string>(
     (acc: string, quasi: t.TemplateLitteral, index: number): string => {
-      const nodeExpression = node.expressions[index] as t.Expression | undefined;
+      let nodeExpression = node.expressions[index] as t.Expression | undefined;
 
       // Deal with any negative values such as:
       // margin: -${gridSize}, top: -${gridSize} etc.
-      convertNegativeCssValuesToUnaryExpression(nodeExpression, quasi);
+      if (quasi.value.raw.endsWith('-')) {
+        quasi.value.raw = quasi.value.raw.substring(0, quasi.value.raw.length - 1);
+        quasi.value.cooked = quasi.value.cooked.substring(0, quasi.value.cooked.length - 1);
+        nodeExpression = convertNegativeCssValuesToUnaryExpression(nodeExpression, quasi);
+      }
 
       if (
         !nodeExpression ||

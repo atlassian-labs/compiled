@@ -4,7 +4,8 @@ export default {
   title: 'styled/negative margins',
 };
 
-const gridSize = 8;
+const si = () => 8;
+const gridSize = si();
 
 const LayoutRight = styled.aside`
   margin-right: -${gridSize * 5}px;
