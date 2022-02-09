@@ -48,7 +48,7 @@ jobs:
 
       - name: Archive screenshots
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: visual-regression-screenshots
           path: .loki

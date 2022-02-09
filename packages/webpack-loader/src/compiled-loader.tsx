@@ -27,6 +27,8 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     nonce = undefined,
     resolve = {},
     extensions = undefined,
+    babelPlugins = [],
+    [pluginName]: isPluginEnabled = false,
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -52,6 +54,12 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           extensions: {
             type: 'array',
           },
+          babelPlugins: {
+            type: 'array',
+          },
+          [pluginName]: {
+            type: 'boolean',
+          },
         },
       });
 
@@ -62,6 +70,8 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     nonce,
     resolve,
     extensions,
+    babelPlugins,
+    [pluginName]: isPluginEnabled,
   };
 }
 
@@ -165,9 +175,7 @@ export default async function compiledLoader(
 
 export function pitch(this: LoaderContext<CompiledLoaderOptions>): void {
   const options = getLoaderOptions(this);
-
-  // @ts-expect-error No definitions for this[pluginName]
-  if (!hasErrored && options.extract && !this[pluginName]) {
+  if (!hasErrored && options.extract && !options[pluginName]) {
     this.emitError(
       createError('webpack-loader')(
         `You forgot to add the 'CompiledExtractPlugin' plugin (i.e \`{ plugins: [new CompiledExtractPlugin()] }\`), please read https://compiledcssinjs.com/docs/css-extraction-webpack`

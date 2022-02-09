@@ -1,5 +1,11 @@
 # @compiled/codemods
 
+## 0.4.0
+
+### Minor Changes
+
+- 9a1a74d: Move attrs transformation after applyVisitor
+
 ## 0.3.4
 
 ### Patch Changes

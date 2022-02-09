@@ -184,7 +184,31 @@ describe('css prop behaviour', () => {
       <div css={[base, top]}>hello world</div>
     `);
 
-    expect(actual).toInclude('{color:red}');
+    expect(actual).toIncludeMultiple([
+      '._syaz5scu{color:red}',
+      '._syaz11x8{color:black}',
+      '<div className={ax(["_syaz11x8","_syaz5scu"])}>hello world</div>',
+    ]);
+  });
+
+  it('should pick up complex array composition', () => {
+    const actual = transform(`
+      import { css } from '@compiled/react';
+      import React from 'react';
+
+      const base = { display: 'inline-block', color: 'black' };
+      const top = css({ 'font-size': '12px', width: '50px' });
+
+      <div css={[base, top]}>hello world</div>
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._1bsb12am{width:50px}',
+      '._1wyb1fwx{font-size:12px}',
+      '._syaz11x8{color:black}',
+      '._1e0c1o8l{display:inline-block}',
+      '<div className={ax(["_1e0c1o8l _syaz11x8","_1wyb1fwx _1bsb12am"])}>hello world</div>',
+    ]);
   });
 
   it('should persist static style prop', () => {
@@ -537,7 +561,7 @@ describe('css prop behaviour', () => {
     expect(actual).toInclude('ax([(props.isPrimary||props.isMaybe)&&"_syaz13q2 _1wybgktf"])');
   });
 
-  it('should apply array conditional css', () => {
+  it('should apply array logical-based conditional css', () => {
     const actual = transform(`
       import '@compiled/react';
       import React from 'react';
@@ -558,7 +582,61 @@ describe('css prop behaviour', () => {
     );
   });
 
-  it('should apply partial  conditional css rule', () => {
+  it('should apply array prop ternary-based inline conditional css', () => {
+    const actual = transform(`
+      import { css } from '@compiled/react';
+      import React from 'react';
+
+      const Component = ({ isPrimary }) => {
+        return (
+          <div css={[
+            isPrimary ? { background: 'white', color: 'black' } : css({ background: 'green', color: 'red' }),
+            css({ 'font-size': '12px' })
+          ]}>hello world</div>
+        );
+      };
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._bfhk1x77{background-color:white}',
+      '._syaz11x8{color:black}',
+      '._bfhkbf54{background-color:green}',
+      '._syaz5scu{color:red}',
+      '._1wyb1fwx{font-size:12px}',
+      '<div className={ax([isPrimary?"_bfhk1x77 _syaz11x8":"_bfhkbf54 _syaz5scu","_1wyb1fwx"])}>hello world</div>',
+    ]);
+  });
+
+  it('should apply array prop ternary-based conditional css that reference css variable declarations', () => {
+    const actual = transform(`
+      import { css } from '@compiled/react';
+      import React from 'react';
+
+      const positive = css({ background: 'white', color: 'black' });
+      const negative = css\`
+        background: green;
+        color: red;
+      \`;
+
+      const Component = ({ isPrimary }) => (
+        <div css={[
+          isPrimary ? positive : negative,
+          css({ 'font-size': '12px' })
+        ]}>hello world</div>
+      );
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._bfhk1x77{background-color:white}',
+      '._syaz11x8{color:black}',
+      '._bfhkbf54{background-color:green}',
+      '._syaz5scu{color:red}',
+      '._1wyb1fwx{font-size:12px}',
+      '<div className={ax([isPrimary?"_bfhk1x77 _syaz11x8":"_bfhkbf54 _syaz5scu","_1wyb1fwx"])}>hello world</div>',
+    ]);
+  });
+
+  it('should apply partial logical-based conditional css rule', () => {
     const actual = transform(`
       import '@compiled/react';
       import React from 'react';

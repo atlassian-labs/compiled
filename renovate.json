@@ -14,10 +14,6 @@
   "lockFileMaintenance": {
     "enabled": true
   },
-  "postUpgradeTasks": {
-    "commands": ["yarn changeset --empty"],
-    "fileFilters": [".changeset/*", "yarn.lock"]
-  },
   "packageRules": [
     {
       "managers": ["npm"],

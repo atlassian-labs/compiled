@@ -268,7 +268,12 @@ export const resolveBinding = (
     const ast = meta.state.cache.load({
       namespace: 'parse-module',
       cacheKey: modulePath,
-      value: () => parse(moduleCode, { sourceType: 'module', sourceFilename: modulePath }),
+      value: () =>
+        parse(moduleCode, {
+          sourceType: 'module',
+          sourceFilename: modulePath,
+          plugins: meta.state.opts.babelPlugins || [],
+        }),
     });
 
     let foundNode: t.Node | undefined = undefined;
