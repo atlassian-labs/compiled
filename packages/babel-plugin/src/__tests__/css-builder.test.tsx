@@ -68,7 +68,7 @@ describe('css builder', () => {
       'margin-right:var(--_1cakqv5)',
       'margin-left:var(--_1l3fmvo)',
       '"--_1l3fmvo": ix(gridSize * 5, "px")',
-      '"--_1cakqv5": ix(-gridSize * 5, "px", "-"',
+      '"--_1cakqv5": ix(-gridSize * 5, "px"',
     ]);
 
     expect(actual).toMatchInlineSnapshot(`
@@ -85,7 +85,7 @@ describe('css builder', () => {
             {...props}
             style={{
               ...style,
-              \\"--_1cakqv5\\": ix(-gridSize * 5, \\"px\\", \\"-\\"),
+              \\"--_1cakqv5\\": ix(-gridSize * 5, \\"px\\"),
               \\"--_1l3fmvo\\": ix(gridSize * 5, \\"px\\"),
             }}
             ref={ref}

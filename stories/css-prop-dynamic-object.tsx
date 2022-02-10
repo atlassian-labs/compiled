@@ -5,6 +5,10 @@ export default {
   title: 'css prop/dynamic object',
 };
 
+// No idea why I need to add this - but storybook crashes for this stroy if it's not here
+// after adding stories/css-negative-margins.tsx
+const gridSize = 8;
+
 export const DynamicCssProp = (): JSX.Element => {
   const [color, setColor] = useState('red');
 

@@ -4,8 +4,7 @@ export default {
   title: 'styled/negative margins',
 };
 
-const si = () => 8;
-const gridSize = si();
+const gridSize = 8;
 
 const LayoutRight = styled.aside`
   margin-right: -${gridSize * 5}px;
@@ -13,7 +12,7 @@ const LayoutRight = styled.aside`
   top: -${gridSize * 5}px;
   left: -${gridSize * 8}px;
   right: ${gridSize * 8}px;
-  color: red;
+  color: blue;
 `;
 
 export const Styled = (): JSX.Element => <LayoutRight>Layout Right</LayoutRight>;
