@@ -268,18 +268,33 @@ export const convertMixedImportToNamedImport = ({
   importDeclarationCollection.forEach((importDeclarationPath) => {
     const newSpecifiers = (importDeclarationPath.node.specifiers || [])
       .map((specifier) => {
-        if (specifier.type === 'ImportDefaultSpecifier') {
-          return j.importSpecifier(
-            j.identifier(defaultSourceSpecifierName),
-            j.identifier(specifier.local?.name || '')
-          );
-        } else if (specifier.type === 'ImportSpecifier') {
-          return j.importSpecifier(
-            j.identifier(specifier.imported.name),
-            j.identifier(specifier.local?.name || '')
-          );
-        }
-        return undefined;
+        if (
+          !(specifier.type === 'ImportDefaultSpecifier') &&
+          !(specifier.type === 'ImportSpecifier')
+        )
+          return undefined;
+
+        const newSpecifier =
+          specifier.type === 'ImportDefaultSpecifier'
+            ? j.importSpecifier(
+                j.identifier(defaultSourceSpecifierName),
+                j.identifier(specifier.local?.name || '')
+              )
+            : j.importSpecifier(
+                j.identifier(specifier.imported.name),
+                j.identifier(specifier.local?.name || '')
+              );
+
+        // Since we already have the previous and new specifier here, we copy over inline comments.
+        // Due to open recast Issue #191, for inline comment lines, trailing comments are being turned into leading comments.
+        // To avoid this and to preserve location information, we copy over all inline comments as block comments.
+        // Link: https://github.com/benjamn/recast/issues/191
+        newSpecifier.comments =
+          specifier.comments?.map((comment) =>
+            j.commentBlock(comment.value, comment.leading, comment.trailing)
+          ) || [];
+
+        return newSpecifier;
       })
       .filter((specifier): specifier is ImportSpecifier =>
         Boolean(
