@@ -61,7 +61,8 @@
     "mini-css-extract-plugin": "^1.6.2",
     "nth-check": "^2.0.1",
     "react": "^17.0.2",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "webpack-dev-server": "^4.7.4"
   },
   "devDependencies": {
     "@babel/plugin-transform-react-jsx-self": "^7.16.7",
