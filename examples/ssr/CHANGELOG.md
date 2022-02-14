@@ -1,5 +1,11 @@
 # @compiled/ssr-app
 
+## 1.0.11
+
+### Patch Changes
+
+- 6233199: resolve Razzle peer dependency to solve node-forge vulnerability
+
 ## 1.0.10
 
 ### Patch Changes
