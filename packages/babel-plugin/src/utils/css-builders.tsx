@@ -15,7 +15,7 @@ import {
 } from './is-compiled';
 import {
   isCssPropertyInTemplateElement,
-  hasNestedTemplateLiteralsWithConditionalExpressions,
+  hasNestedTemplateLiteralsWithConditionalRules,
   moveCssPropertyInExpression,
 } from './manipulate-template-literal';
 import { resolveBinding } from './resolve-binding';
@@ -575,7 +575,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       t.isArrowFunctionExpression(nodeExpression) &&
       t.isConditionalExpression(nodeExpression.body) &&
       isCssPropertyInTemplateElement(quasi) &&
-      !hasNestedTemplateLiteralsWithConditionalExpressions(node, meta)
+      !hasNestedTemplateLiteralsWithConditionalRules(node, meta)
     ) {
       const nextQuasis = node.quasis[index + 1];
       moveCssPropertyInExpression(nodeExpression.body, quasi, nextQuasis);

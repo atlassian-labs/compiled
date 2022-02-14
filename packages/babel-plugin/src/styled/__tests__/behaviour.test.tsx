@@ -1090,7 +1090,8 @@ describe('styled component behaviour', () => {
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
-        background: \${({ isTrue }) => isTrue ? 'white' : 'black'};
+        background: url('data:image/svg+xml; ... ');
+        border: \${({ isTrue }) => isTrue ? '1px solid white' : '2px solid black'};
         color: 'black';
         display: block;
         :hover {
@@ -1115,13 +1116,14 @@ describe('styled component behaviour', () => {
       '._f8pj1cnh:focus{color:purple}',
       '._30l31gy6:hover{color:yellow}',
       '._30l313q2:hover{color:blue}',
-      '._bfhk11x8{background-color:black}',
-      '._bfhk1x77{background-color:white}',
+      '._19itl468{border:2px solid black}',
+      '._19it1j9v{border:1px solid white}',
+      "._11q7qm1v{background:url('data:image/svg+xml; ... ')}",
       "._129w1nk7 >:first-child{color:'black'}",
       "._1kt91yyf:before{content:''}",
       '._1e0c1ule{display:block}',
       "_syaz1nk7{color:'black'}",
-      'ax(["_syaz1nk7 _1e0c1ule _1kt91yyf _129w1nk7",isTrue?"_bfhk1x77":"_bfhk11x8",isTrue?"_30l313q2":"_30l31gy6",isTrue?"_f8pj1cnh":"_f8pjruxl",isTrue?"_1e0c1kw7":"_1e0c1nu9",props.className])',
+      'ax(["_11q7qm1v _syaz1nk7 _1e0c1ule _1kt91yyf _129w1nk7",isTrue?"_19it1j9v":"_19itl468",isTrue?"_30l313q2":"_30l31gy6",isTrue?"_f8pj1cnh":"_f8pjruxl",isTrue?"_1e0c1kw7":"_1e0c1nu9",props.className])',
     ]);
   });
 });

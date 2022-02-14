@@ -8,30 +8,31 @@ import { getPathOfNode } from './ast';
 const conditionalPaths: ['consequent', 'alternate'] = ['consequent', 'alternate'];
 
 /**
- * Returns `true` if the CSS property is defined within a template element
- * (the string pieces of the template literal)
+ * Returns `true` if the CSS property or pseudo classes/pseudo elements
+ * are defined within a template element (the string pieces of the template literal)
  * rather than in the expression.
  * Eg color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};
  * @param node
  */
 export const isCssPropertyInTemplateElement = (node: t.TemplateElement): boolean => {
-  const re = /(\s.[a-z.\-_]*?\:)/; // `property:`
   const value = node.value.raw;
 
-  return re.test(value);
+  return value.includes(':');
 };
 
 /**
  * TODO: this is a temporary workaround so that we don't evaluate expressions that may throw an error.
  * It should be removed after addressing https://github.com/atlassian-labs/compiled/issues/1081
  *
- * Returns `true` if there is another conditional expression
- * at the root of the current template literal with a conditional expression to evaluate
+ * Returns `true` if
+ * - there is another conditional expression at the root of the current template literal
+ *   with a conditional expression to evaluate OR
+ * - there is a nested logical expression within the current template literal
  *
  * @param node
  * @param meta {Metadata} The current metadata to use to find the parent node
  */
-export const hasNestedTemplateLiteralsWithConditionalExpressions = (
+export const hasNestedTemplateLiteralsWithConditionalRules = (
   node: t.TemplateLiteral,
   meta: Metadata
 ): boolean => {
@@ -74,8 +75,8 @@ export const moveCssPropertyInExpression = (
   deleteValue = true
 ): void => {
   const value = quasi.value.raw;
-  const re = /([^;/]+$)/; // everything after the last ';'
-  const before = value.match(re)?.[0] || '';
+  const parts = value.split(';');
+  const before = parts[parts.length - 1];
   const closingBracket = before.includes('{') ? ';}' : '';
 
   if (!before) {
