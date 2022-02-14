@@ -1,7 +1,7 @@
 import type { API, FileInfo } from 'jscodeshift';
 
 import type { ProgramVisitorContext } from '../../../plugins/types';
-import transformer from '../styled-components-to-compiled';
+import transformer from '../index';
 
 jest.disableAutomock();
 
@@ -335,7 +335,7 @@ describe('styled-components-to-compiled imports transformer inline comments', ()
     { plugins: [] },
     `
     import {
-      /* a single comment block */ css 
+      /* a single comment block */ css
     } from 'styled-components';
     `,
     `
@@ -353,7 +353,7 @@ describe('styled-components-to-compiled imports transformer inline comments', ()
     `
     import {
       // a single comment block
-      css 
+      css
     } from 'styled-components';
     `,
     `

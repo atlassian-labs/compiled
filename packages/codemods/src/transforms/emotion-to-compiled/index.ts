@@ -16,16 +16,15 @@ import type { CodemodPluginInstance } from '../../plugins/types';
 import {
   addCommentBefore,
   addCommentForUnresolvedImportSpecifiers,
-  addReactIdentifier,
   applyVisitor,
   convertDefaultImportToNamedImport,
   convertMixedImportToNamedImport,
-  findImportSpecifierName,
   getImportDeclarationCollection,
   hasImportDeclaration,
-  mergeImportSpecifiersAlongWithTheirComments,
   withPlugin,
-} from '../../utils/main';
+} from '../../utils';
+
+import { addReactIdentifier, findImportSpecifierName, mergeImportSpecifiers } from './utils';
 
 const imports = {
   compiledStyledImportName: 'styled',
@@ -208,7 +207,7 @@ const mergeCompiledImportSpecifiers = (j: core.JSCodeshift, collection: Collecti
     ...Object.values(imports.emotionCoreReactImportNames),
   ].filter((name) => ![imports.emotionCoreReactImportNames.jsx].includes(name));
 
-  mergeImportSpecifiersAlongWithTheirComments({
+  mergeImportSpecifiers({
     j,
     collection,
     filter: (name) => !!(name && allowedCompiledNames.includes(name)),

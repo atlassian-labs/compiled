@@ -1,4 +1,4 @@
-import transformer from '../styled-components-to-compiled';
+import transformer from '../index';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const defineInlineTest = require('jscodeshift/dist/testUtils').defineInlineTest;

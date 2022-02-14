@@ -9,8 +9,9 @@ import {
   convertMixedImportToNamedImport,
   hasImportDeclaration,
   withPlugin,
-} from '../../utils/main';
-import { convertStyledAttrsToComponent } from '../../utils/styled-components-attributes';
+} from '../../utils';
+
+import { convertStyledAttrsToComponent } from './utils';
 
 const imports = {
   compiledStyledImportName: 'styled',
