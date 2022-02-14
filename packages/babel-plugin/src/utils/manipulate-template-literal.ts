@@ -45,11 +45,12 @@ export const hasNestedTemplateLiteralsWithConditionalExpressions = (
       conditionalPaths.map((c) => {
         const expression = path.node[c];
 
-        if (t.isTaggedTemplateExpression(expression)) {
-          if (expression.quasi === node) {
-            isNested = true;
-            path.stop();
-          }
+        if (
+          (t.isTaggedTemplateExpression(expression) && expression.quasi === node) ||
+          t.isLogicalExpression(expression)
+        ) {
+          isNested = true;
+          path.stop();
         }
       });
     },
