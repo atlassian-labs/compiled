@@ -615,7 +615,7 @@ describe('styled component behaviour', () => {
     );
   });
 
-  it.only('should apply conditional CSS with nested ternary operators', () => {
+  it('should apply conditional CSS with nested ternary operators', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 

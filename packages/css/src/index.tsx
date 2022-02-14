@@ -1,4 +1,4 @@
-export { addUnitIfNeeded, isCssPropertyInTemplateElement } from './utils/css-property';
+export { addUnitIfNeeded } from './utils/css-property';
 export { transformCss } from './transform';
 export {
   cssAffixInterpolation,

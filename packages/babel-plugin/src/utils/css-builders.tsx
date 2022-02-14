@@ -1,10 +1,6 @@
 import generate from '@babel/generator';
 import * as t from '@babel/types';
-import {
-  addUnitIfNeeded,
-  cssAffixInterpolation,
-  isCssPropertyInTemplateElement,
-} from '@compiled/css';
+import { addUnitIfNeeded, cssAffixInterpolation } from '@compiled/css';
 import { hash, kebabCase } from '@compiled/utils';
 
 import type { Metadata } from '../types';
@@ -17,6 +13,11 @@ import {
   isCompiledKeyframesCallExpression,
   isCompiledKeyframesTaggedTemplateExpression,
 } from './is-compiled';
+import {
+  isCssPropertyInTemplateElement,
+  hasNestedTemplateLiteralsWithConditionalExpressions,
+  moveCssPropertyInExpression,
+} from './manipulate-template-literal';
 import { resolveBinding } from './resolve-binding';
 import type {
   CSSOutput,
@@ -304,66 +305,6 @@ const assertNoImportedCssVariables = (
 };
 
 /**
- * Manipulates template literal so that it resembles
- * CSS `property: value` declaration where
- * - before: all the CSS _before_ the interpolation
- * - after: all the CSS _after_ the interpolation
- * @param expression
- * @param quasi
- */
-const moveCssPropertyInExpression = (
-  expression: t.ConditionalExpression,
-  quasi: t.TemplateElement,
-  nextQuasis: t.TemplateElement,
-  deleteValue = true
-): void => {
-  const conditionalPaths: ['consequent', 'alternate'] = ['consequent', 'alternate'];
-  const value = quasi.value.raw;
-  const re = /([^;/]+$)/; // everything after the last ';'
-  const before = value.match(re)?.[0] || '';
-  const closingBracket = before.includes('{') ? ';}' : '';
-
-  if (!before) {
-    return;
-  }
-
-  conditionalPaths.map((path) => {
-    const pathNode = expression[path];
-    if (t.isStringLiteral(pathNode) && pathNode.value) {
-      // We've found a string literal like: `'blue'`
-      pathNode.value = before + pathNode.value + closingBracket;
-    } else if (t.isTemplateLiteral(pathNode)) {
-      // We've found a template literal like: "`${fontSize}px`"
-      pathNode.quasis[0].value.raw = before + pathNode.quasis[0].value.raw + closingBracket;
-    } else if (t.isNumericLiteral(pathNode)) {
-      // We've found a numeric literal like: `1`
-      expression[path] = t.stringLiteral(before + pathNode.value + closingBracket);
-    } else if (t.isConditionalExpression(pathNode)) {
-      // We've found nested ternary operators
-      moveCssPropertyInExpression(pathNode, quasi, nextQuasis, false);
-    } else if (t.isMemberExpression(pathNode)) {
-      // We've found a member expression like `colors.N50`
-      // TODO handle member expression
-      deleteValue = false;
-      return;
-    }
-  });
-
-  // Remove CSS property from template element so it doesn't get processed again
-  if (deleteValue) {
-    quasi.value.raw = value.replace(before, '');
-    quasi.value.cooked = value.replace(before, '');
-
-    if (closingBracket) {
-      const rex = /([^}/]+$)/g; // everything after the last '}'
-      const after = nextQuasis.value.raw.match(rex)?.[0] || '';
-      nextQuasis.value.raw = after;
-      nextQuasis.value.cooked = after;
-    }
-  }
-};
-
-/**
  * Extracts CSS data from a conditional expression node.
  * Eg. props.isPrimary && props.isBolded ? ({ color: 'blue' }) : ({ color: 'red'})
  *
@@ -633,7 +574,8 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     if (
       t.isArrowFunctionExpression(nodeExpression) &&
       t.isConditionalExpression(nodeExpression.body) &&
-      isCssPropertyInTemplateElement(quasi)
+      isCssPropertyInTemplateElement(quasi) &&
+      !hasNestedTemplateLiteralsWithConditionalExpressions(node, meta)
     ) {
       const nextQuasis = node.quasis[index + 1];
       moveCssPropertyInExpression(nodeExpression.body, quasi, nextQuasis);
