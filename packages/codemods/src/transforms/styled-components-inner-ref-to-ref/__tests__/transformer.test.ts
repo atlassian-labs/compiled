@@ -1,7 +1,7 @@
 import type { API, FileInfo } from 'jscodeshift';
 
 import type { ProgramVisitorContext } from '../../../plugins/types';
-import transformer from '../styled-components-inner-ref-to-ref';
+import transformer from '../index';
 
 jest.disableAutomock();
 

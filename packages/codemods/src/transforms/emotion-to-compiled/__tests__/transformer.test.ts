@@ -1,7 +1,7 @@
 import type { API, FileInfo } from 'jscodeshift';
 
 import type { ProgramVisitorContext } from '../../../plugins/types';
-import transformer from '../emotion-to-compiled';
+import transformer from '../index';
 
 jest.disableAutomock();
 
