@@ -1,5 +1,12 @@
 # @compiled/babel-plugin
 
+## 0.12.1
+
+### Patch Changes
+
+- 63e14bd: Ensure that any leading comment is preserved at the top of the processed file before inserting additional imports
+- f2cd347: Added a fix to statically evaluate deconstructed values from deeply nested objects
+
 ## 0.12.0
 
 ### Minor Changes

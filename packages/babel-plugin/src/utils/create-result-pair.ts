@@ -1,6 +1,6 @@
 import type * as t from '@babel/types';
 
-import type { Metadata } from '../../types';
+import type { Metadata } from '../types';
 
 export const createResultPair = (
   value: t.Expression,
