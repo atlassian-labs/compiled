@@ -606,20 +606,20 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     (acc: string, quasi: t.TemplateLitteral, index: number): string => {
       const nodeExpression = node.expressions[index] as t.Expression | undefined;
 
-      // Deal with any negative values such as:
-      // margin: -${gridSize}, top: -${gridSize} etc.
-      if (quasi.value.raw.endsWith('-') && !t.isArrowFunctionExpression(nodeExpression)) {
-        quasi.value.raw = quasi.value.raw.substring(0, quasi.value.raw.length - 1);
-        quasi.value.cooked = quasi.value.cooked.substring(0, quasi.value.cooked.length - 1);
-        convertNegativeCssValuesToUnaryExpression(nodeExpression);
-      }
-
       if (
         !nodeExpression ||
         (t.isArrowFunctionExpression(nodeExpression) && t.isLogicalExpression(nodeExpression.body))
       ) {
         const suffix = meta.context === 'keyframes' ? '' : ';';
         return acc + quasi.value.raw + suffix;
+      }
+
+      // Deal with any negative values such as:
+      // margin: -${gridSize}, top: -${gridSize} etc.
+      if (quasi.value.raw.endsWith('-') && !t.isArrowFunctionExpression(nodeExpression)) {
+        quasi.value.raw = quasi.value.raw.substring(0, quasi.value.raw.length - 1);
+        quasi.value.cooked = quasi.value.cooked.substring(0, quasi.value.cooked.length - 1);
+        convertNegativeCssValuesToUnaryExpression(nodeExpression);
       }
 
       const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
