@@ -1,7 +1,7 @@
 import type { API, FileInfo } from 'jscodeshift';
 
 import type { ProgramVisitorContext } from '../../../plugins/types';
-import transformer from '../styled-components-to-compiled';
+import transformer from '../index';
 
 jest.disableAutomock();
 
@@ -298,5 +298,144 @@ describe('styled-components-to-compiled imports transformer', () => {
     "import styled from 'styled-components';",
     "console.log('Bring back Netscape');\nimport { styled } from '@compiled/react';",
     'it should use the program visitor from the plugin'
+  );
+});
+
+describe('styled-components-to-compiled imports transformer inline comments', () => {
+  // Due to open recast Issue #191, for inline comment lines, trailing comments are being turned into leading comments.
+  // To avoid this and to preserve location information, we copy over all inline comments as block comments.
+  // Link: https://github.com/benjamn/recast/issues/191
+  // The following tests reflect this behaviour.
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import {
+      css // a single comment line
+    } from 'styled-components';
+    `,
+    `import { css/* a single comment line*/ } from '@compiled/react';`,
+    'it preserves trailing comment lines as comment blocks when comments are inline'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import {
+      css /* a single comment block */
+    } from 'styled-components';
+    `,
+    `import { css/* a single comment block */ } from '@compiled/react';`,
+    'it preserves trailing comment blocks when comments are inline'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import {
+      /* a single comment block */ css
+    } from 'styled-components';
+    `,
+    `
+    import {
+    /* a single comment block */
+    css
+    } from '@compiled/react';
+    `,
+    'it preserves leading comment blocks when comments are inline'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import {
+      // a single comment block
+      css
+    } from 'styled-components';
+    `,
+    `
+    import {
+    /* a single comment block*/
+    css
+    } from '@compiled/react';
+    `,
+    'it preserves leading comment lines as comment blocks when comments are inline'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import {
+      css,
+      keyframes
+      // keyframes comment
+    } from 'styled-components';
+    `,
+    `import { css, keyframes/* keyframes comment*/ } from '@compiled/react';`,
+    'it preserves trailing comment lines as comment blocks with multiple named imports when comments are inline'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import {
+      css,
+      // keyframes comment
+      keyframes
+    } from 'styled-components';
+    `,
+    `
+    import {
+    css, /* keyframes comment*/
+    keyframes
+    } from '@compiled/react';
+    `,
+    'it preserves leading comment lines as comment blocks with multiple named imports when comments are inline'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import styled, // styled comment
+    {
+      css,
+      // keyframes comment
+      keyframes
+    } from 'styled-components';
+    `,
+    `
+    import {
+    css, /* keyframes comment*/
+    keyframes, styled/* styled comment*/
+    } from '@compiled/react';
+    `,
+    'it preserves comments for default imports when comments are inline'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import /* leading styled comment */ styled,
+    {
+      css,
+      // keyframes comment
+      keyframes
+    } from 'styled-components';
+    `,
+    `
+    import {
+    css, /* keyframes comment*/
+    keyframes, /* leading styled comment */
+    styled
+    } from '@compiled/react';
+    `,
+    'it preserves leading comment blocks for default imports when comments are inline'
   );
 });

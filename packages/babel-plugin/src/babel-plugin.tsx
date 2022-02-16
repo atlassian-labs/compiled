@@ -20,6 +20,7 @@ import {
   isCompiledStyledCallExpression,
   isCompiledStyledTaggedTemplateExpression,
 } from './utils/is-compiled';
+import { preserveLeadingComments } from './utils/preserve-leading-comments';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -84,6 +85,8 @@ export default declare<State>((api) => {
             pragma,
             opts: { importReact: shouldImportReact = true },
           } = state;
+
+          preserveLeadingComments(path);
 
           appendRuntimeImports(path);
 

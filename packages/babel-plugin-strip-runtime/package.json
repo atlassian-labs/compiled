@@ -19,10 +19,10 @@
     "src"
   ],
   "dependencies": {
-    "@babel/core": "^7.16.12",
+    "@babel/core": "^7.17.2",
     "@babel/helper-plugin-utils": "^7.16.7",
-    "@babel/traverse": "^7.16.10",
-    "@babel/types": "^7.16.8"
+    "@babel/traverse": "^7.17.0",
+    "@babel/types": "^7.17.0"
   },
   "devDependencies": {
     "@compiled/babel-plugin": "*",
