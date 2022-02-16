@@ -1,5 +1,14 @@
 # @compiled/webpack-loader
 
+## 0.8.1
+
+### Patch Changes
+
+- 530b52d: Add property to loader options when CompiledExtractPlugin has been set up correctly.
+- Updated dependencies [63e14bd]
+- Updated dependencies [f2cd347]
+  - @compiled/babel-plugin@0.12.1
+
 ## 0.8.0
 
 ### Minor Changes

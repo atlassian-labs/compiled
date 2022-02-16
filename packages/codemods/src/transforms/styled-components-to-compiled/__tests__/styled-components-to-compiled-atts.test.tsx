@@ -8,14 +8,14 @@ import type {
 } from 'jscodeshift';
 
 import type { Transform } from '../../../plugins/types';
-import transformer from '../styled-components-to-compiled';
+import transformer from '../index';
 
 jest.disableAutomock();
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const defineInlineTest = require('jscodeshift/dist/testUtils').defineInlineTest;
 
-describe('styled-components attributes normalize', () => {
+describe('styled-components-to-compiled attrs transformer', () => {
   defineInlineTest(
     { default: transformer, parser: 'tsx' },
     {

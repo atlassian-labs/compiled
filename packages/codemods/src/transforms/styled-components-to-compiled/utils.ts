@@ -18,7 +18,7 @@ import type {
   ASTPath,
 } from 'jscodeshift';
 
-import type { CodemodPluginInstance } from '../plugins/types';
+import type { CodemodPluginInstance } from '../../plugins/types';
 
 type StyledAttributesDeclarationNode = ASTPath<VariableDeclaration | TaggedTemplateExpression>;
 
