@@ -1,5 +1,6 @@
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
+import { cssAfterInterpolation } from '@compiled/css';
 
 import type { Metadata } from '../types';
 
@@ -48,6 +49,10 @@ export const hasNestedTemplateLiteralsWithConditionalRules = (
 
         if (
           (t.isTaggedTemplateExpression(expression) && expression.quasi === node) ||
+          (t.isTemplateLiteral(expression) &&
+            expression.expressions.some((expressionNode) =>
+              t.isArrowFunctionExpression(expressionNode)
+            )) ||
           t.isLogicalExpression(expression)
         ) {
           isNested = true;
@@ -76,8 +81,10 @@ export const moveCssPropertyInExpression = (
 ): void => {
   const value = quasi.value.raw;
   const parts = value.split(';');
-  const before = parts[parts.length - 1];
+  const before = parts[parts.length - 1]; // everything after the last ';'. Hence, after the last CSS declaration
+  const nextQuasisExtractedCss = cssAfterInterpolation(nextQuasis.value.raw);
   const closingBracket = before.includes('{') ? ';}' : '';
+  const after = nextQuasisExtractedCss.variableSuffix + closingBracket;
 
   if (!before) {
     return;
@@ -87,13 +94,13 @@ export const moveCssPropertyInExpression = (
     const pathNode = expression[path];
     if (t.isStringLiteral(pathNode) && pathNode.value) {
       // We've found a string literal like: `'blue'`
-      pathNode.value = before + pathNode.value + closingBracket;
+      pathNode.value = before + pathNode.value + after;
     } else if (t.isTemplateLiteral(pathNode)) {
       // We've found a template literal like: "`${fontSize}px`"
-      pathNode.quasis[0].value.raw = before + pathNode.quasis[0].value.raw + closingBracket;
+      pathNode.quasis[0].value.raw = before + pathNode.quasis[0].value.raw + after;
     } else if (t.isNumericLiteral(pathNode)) {
       // We've found a numeric literal like: `1`
-      expression[path] = t.stringLiteral(before + pathNode.value + closingBracket);
+      expression[path] = t.stringLiteral(before + pathNode.value + after);
     } else if (t.isIdentifier(pathNode)) {
       const identifierExpression = [pathNode];
       const identifierQuasis = [
@@ -101,12 +108,18 @@ export const moveCssPropertyInExpression = (
         t.templateElement({ raw: '', cooked: '' }),
       ];
       expression[path] = t.templateLiteral(identifierQuasis, identifierExpression);
+    } else if (t.isMemberExpression(pathNode)) {
+      // We've found a member expression like `colors.N50`
+      const memberExpression = [pathNode];
+      const memberQuasis = [
+        t.templateElement({ raw: before, cooked: before }),
+        t.templateElement({ raw: '', cooked: '' }),
+      ];
+      expression[path] = t.templateLiteral(memberQuasis, memberExpression);
     } else if (t.isConditionalExpression(pathNode)) {
       // We've found nested ternary operators
       moveCssPropertyInExpression(pathNode, quasi, nextQuasis, false);
-    } else if (t.isMemberExpression(pathNode)) {
-      // We've found a member expression like `colors.N50`
-      // TODO handle member expression
+    } else {
       deleteValue = false;
       return;
     }
@@ -114,14 +127,17 @@ export const moveCssPropertyInExpression = (
 
   // Remove CSS property so it doesn't get processed again
   if (deleteValue) {
+    let nextQuasisNewCSS = nextQuasisExtractedCss.css;
+
     quasi.value.raw = value.replace(before, '');
     quasi.value.cooked = value.replace(before, '');
 
     if (closingBracket) {
       const rex = /([^}/]+$)/g; // everything after the last '}'
-      const after = nextQuasis.value.raw.match(rex)?.[0] || '';
-      nextQuasis.value.raw = after;
-      nextQuasis.value.cooked = after;
+      nextQuasisNewCSS = nextQuasis.value.raw.match(rex)?.[0] || '';
     }
+
+    nextQuasis.value.raw = nextQuasisNewCSS;
+    nextQuasis.value.cooked = nextQuasisNewCSS;
   }
 };

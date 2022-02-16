@@ -656,19 +656,25 @@ describe('styled tagged template expression', () => {
     ]);
   });
 
-  it.skip('should only destructure a prop if hasnt been already', () => {
+  it('should only destructure a prop if hasnt been already', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div\`
-        > :first-child {
-          display: $\{(props) => (props.isShown ? 'none' : 'block')};
-        }
-
-        > :last-child {
-          opacity: $\{(props) => (props.isShown ? 1 : 0)};
-        }
-      \`;
+        \${(props) =>
+          props.isPrimary
+            ? \`
+              color: green;
+              > :first-child {
+                display: \${(props) => (props.isShown ? 'none' : 'block')};
+              }
+      
+              > :last-child {
+                opacity: \${(props) => (props.isShown ? 1 : 0)};
+              }
+            \`
+          : 'color: red'};
+      \`
     `);
 
     // `isShown` should be destructured only once.
@@ -792,9 +798,14 @@ describe('styled tagged template expression', () => {
       import colors from 'colors';
 
       export const BadgeSkeleton = styled.span\`
-        background-color: \${({ isLoading }) => (isLoading ? colors.N20 : colors.N40)};
-        color: \${({ loading: l }) => (l ? colors.N50 : colors.N10)};
-        border-color: \${(propz) => (propz.loading ? colors.N100 : colors.N200)};
+      \${(props) =>
+        props.isPrimary
+          ? \`
+            background-color: \${({ isLoading }) => (isLoading ? colors.N20 : colors.N40)};
+            color: \${({ loading: l }) => (l ? colors.N50 : colors.N10)};
+            border-color: \${(propz) => (propz.loading ? colors.N100 : colors.N200)};
+          \` : 'color: black'
+        };
       \`;
     `);
 

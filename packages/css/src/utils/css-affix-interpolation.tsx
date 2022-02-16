@@ -16,7 +16,7 @@ export interface BeforeInterpolation {
  *
  * @param css all the CSS after the interpolation
  */
-const cssAfterInterpolation = (css: string): AfterInterpolation => {
+export const cssAfterInterpolation = (css: string): AfterInterpolation => {
   const regex = new RegExp(`^(${units.join('|')}|"|')(;|,|\n| |\\))?`);
   const result = regex.exec(css);
 
