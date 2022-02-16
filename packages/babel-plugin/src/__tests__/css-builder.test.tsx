@@ -50,7 +50,7 @@ describe('css builder', () => {
     `);
   });
 
-  it('Calculates a negative varable seperatly from a positive variable of the same value', () => {
+  it('Calculates a negative variable separately from a positive variable of the same value', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';      
       const size = () => 8
