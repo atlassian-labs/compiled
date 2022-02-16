@@ -72,6 +72,7 @@ export const hasNestedTemplateLiteralsWithConditionalRules = (
  * - after: all the CSS _after_ the interpolation
  * @param expression
  * @param quasi
+ * @param nextQuasis
  */
 export const moveCssPropertyInExpression = (
   expression: t.ConditionalExpression,
@@ -105,7 +106,7 @@ export const moveCssPropertyInExpression = (
       const identifierExpression = [pathNode];
       const identifierQuasis = [
         t.templateElement({ raw: before, cooked: before }),
-        t.templateElement({ raw: '', cooked: '' }),
+        t.templateElement({ raw: after, cooked: after }),
       ];
       expression[path] = t.templateLiteral(identifierQuasis, identifierExpression);
     } else if (t.isMemberExpression(pathNode)) {
@@ -113,7 +114,7 @@ export const moveCssPropertyInExpression = (
       const memberExpression = [pathNode];
       const memberQuasis = [
         t.templateElement({ raw: before, cooked: before }),
-        t.templateElement({ raw: '', cooked: '' }),
+        t.templateElement({ raw: after, cooked: after }),
       ];
       expression[path] = t.templateLiteral(memberQuasis, memberExpression);
     } else if (t.isConditionalExpression(pathNode)) {
