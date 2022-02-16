@@ -1,0 +1,10 @@
+{
+  "extends": "../../packages/tsconfig.options.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "module": "commonjs"
+  },
+  "exclude": ["dist"],
+  "references": [{ "path": "../../packages/jest" }]
+}

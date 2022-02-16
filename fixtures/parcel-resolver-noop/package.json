@@ -1,5 +1,5 @@
 {
-  "name": "@compiled/parcel-resolver-alias",
+  "name": "@compiled/parcel-resolver-noop",
   "version": "0.1.0",
   "private": true,
   "main": "dist/index.js",

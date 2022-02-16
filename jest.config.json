@@ -8,6 +8,7 @@
   "testEnvironment": "jsdom",
   "testMatch": ["**/src/**/*.test.{ts,tsx}"],
   "testPathIgnorePatterns": ["__perf__"],
-  "transformIgnorePatterns": ["node_modules/(?!@compiled)"],
+  "watchPathIgnorePatterns": ["dist/"],
+  "transformIgnorePatterns": ["node_modules/(?!(@compiled|@parcel|ordered-binary))"],
   "watchPlugins": ["jest-watch-typeahead/filename", "jest-watch-typeahead/testname"]
 }
