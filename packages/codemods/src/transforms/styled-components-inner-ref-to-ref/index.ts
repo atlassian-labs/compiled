@@ -9,7 +9,7 @@ import type {
 
 import defaultCodemodPlugin from '../../plugins/default';
 import type { CodemodPluginInstance } from '../../plugins/types';
-import { withPlugin, applyVisitor } from '../../utils/main';
+import { withPlugin, applyVisitor } from '../../utils';
 
 const applyInnerRefPlugin = (plugins: CodemodPluginInstance[], originalNode: JSXAttribute) =>
   plugins.reduce((currentNode, plugin) => {

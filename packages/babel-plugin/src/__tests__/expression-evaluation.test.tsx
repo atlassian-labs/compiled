@@ -210,6 +210,56 @@ describe('import specifiers', () => {
     ]);
   });
 
+  it('statically evaluates deconstructed values from deeply nested objects', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+      import React from 'react';
+
+      const theme = {
+        borders: '1px solid black',
+        colors: {
+          light: {
+            primary: '#fff',
+          },
+          dark: {
+            primary: '#000',
+          }
+        },
+        fonts: {
+          small: '12px',
+          weight: {
+            bold: {
+              headings: '700',
+              body: '600'
+            }
+          }
+        }
+      };
+
+      const { borders } = theme;
+      const { small } = theme.fonts;
+      const { primary } = theme.colors.dark;
+      const { headings } = theme.fonts.weight.bold;
+
+      function Component() {
+        return (
+          <span css={{ border: borders,
+            color: primary,
+            fontSize: small,
+            fontWeight: headings,
+          }} />
+        );
+      };
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '{border:1px solid black}',
+      '{color:#000}',
+      '{font-size:12px}',
+      '{font-weight:700}',
+    ]);
+  });
+
   it('handles the destructuring coming from an identifier', () => {
     const actual = transform(`
       import '@compiled/react';

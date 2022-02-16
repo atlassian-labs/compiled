@@ -1,5 +1,11 @@
 # @compiled/codemods
 
+## 0.4.1
+
+### Patch Changes
+
+- 8aff883: Add codemod support for inline comments.
+
 ## 0.4.0
 
 ### Minor Changes
