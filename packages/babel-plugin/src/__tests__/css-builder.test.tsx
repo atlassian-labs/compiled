@@ -69,6 +69,7 @@ describe('css builder', () => {
       'margin-left:var(--_1l3fmvo)',
       '"--_1l3fmvo": ix(gridSize * 5, "px")',
       '"--_1cakqv5": ix(-gridSize * 5, "px"',
+      'ax([\\"_2hwxsxb8 _18u01xn1\\", props.className])',
     ]);
 
     expect(actual).toMatchInlineSnapshot(`
