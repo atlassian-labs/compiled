@@ -2,8 +2,8 @@
   "name": "@compiled/parcel-resolver-test-app",
   "version": "0.0.1",
   "private": true,
-  "dependencies": {
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+  "devDependencies": {
+    "@compiled/parcel-resolver": "*",
+    "@parcel/config-default": "^2.3.1"
   }
 }

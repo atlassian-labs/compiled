@@ -66,3 +66,6 @@ jobs:
 
       - name: Run import test
         run: yarn test:imports
+
+      - name: Run parcel tests
+        run: yarn test:parcel

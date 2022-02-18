@@ -1,0 +1,14 @@
+{
+  "moduleNameMapper": {
+    "^@compiled/react/runtime$": "<rootDir>/packages/react/src/runtime.tsx",
+    "^@compiled/react/(.*)$": "<rootDir>/packages/react/src/jsx/$1.tsx",
+    "^@compiled/(.*)$": "<rootDir>/packages/$1/src/index.tsx"
+  },
+  "setupFilesAfterEnv": ["jest-extended", "./test/setup.tsx"],
+  "testEnvironment": "jsdom",
+  "testMatch": ["**/src/**/*.parceltest.{ts,tsx}"],
+  "testPathIgnorePatterns": ["__perf__"],
+  "watchPathIgnorePatterns": ["dist/"],
+  "transformIgnorePatterns": ["node_modules/(?!(@compiled|@parcel|ordered-binary))"],
+  "watchPlugins": ["jest-watch-typeahead/filename", "jest-watch-typeahead/testname"]
+}
