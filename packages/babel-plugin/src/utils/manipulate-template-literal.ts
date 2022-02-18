@@ -12,7 +12,11 @@ const conditionalPaths: ['consequent', 'alternate'] = ['consequent', 'alternate'
  * Returns `true` if the CSS property or pseudo classes/pseudo elements
  * are defined within a template element (the string pieces of the template literal)
  * rather than in the expression.
- * Eg color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};
+ *
+ * For example
+ * - CSS property: `color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};`
+ * - Pseudo class: `hover: ${({ isPrimary }) => (isPrimary ? 'color:green' : 'color:red')};`
+ * - Pseudo element: `:before {${({ isPrimary }) => (isPrimary ? 'color: green' : 'color:red')}};`
  * @param node
  */
 export const isCssPropertyInTemplateElement = (node: t.TemplateElement): boolean => {
@@ -38,7 +42,7 @@ export const hasNestedTemplateLiteralsWithConditionalRules = (
   meta: Metadata
 ): boolean => {
   const expressionPath = getPathOfNode(node, meta.parentPath);
-  const parent = expressionPath.parent;
+  const { parent } = expressionPath;
   let isNested = false;
 
   traverse(parent, {

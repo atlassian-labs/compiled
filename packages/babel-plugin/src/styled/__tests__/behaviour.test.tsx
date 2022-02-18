@@ -1103,7 +1103,7 @@ describe('styled component behaviour', () => {
           \${({ isTrue }) => isTrue ? 'color: purple' : 'color: orange'};
         }
         :before {
-          content: '';
+          content: ';';
           display:  \${({ isTrue }) => isTrue ? 'inherit' : 'inline'};
         }
         > :first-child {
@@ -1124,10 +1124,10 @@ describe('styled component behaviour', () => {
       '._19it1j9v{border:1px solid white}',
       "._11q7qm1v{background:url('data:image/svg+xml; ... ')}",
       "._129w1nk7 >:first-child{color:'black'}",
-      "._1kt91yyf:before{content:''}",
+      "._1kt9otde:before{content:';'}",
       '._1e0c1ule{display:block}',
       "_syaz1nk7{color:'black'}",
-      'ax(["_11q7qm1v _syaz1nk7 _1e0c1ule _1kt91yyf _129w1nk7",isTrue?"_19it1j9v":"_19itl468",props.isPrimary?"_1bsb12am":"_1bsb1osq",isTrue?"_30l313q2":"_30l31gy6",isTrue?"_f8pj1cnh":"_f8pjruxl",isTrue?"_1e0c1kw7":"_1e0c1nu9",props.className])}',
+      'ax(["_11q7qm1v _syaz1nk7 _1e0c1ule _1kt9otde _129w1nk7",isTrue?"_19it1j9v":"_19itl468",props.isPrimary?"_1bsb12am":"_1bsb1osq",isTrue?"_30l313q2":"_30l31gy6",isTrue?"_f8pj1cnh":"_f8pjruxl",isTrue?"_1e0c1kw7":"_1e0c1nu9",props.className])}',
     ]);
   });
 });
