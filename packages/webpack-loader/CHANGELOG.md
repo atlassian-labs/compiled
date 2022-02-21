@@ -1,5 +1,11 @@
 # @compiled/webpack-loader
 
+## 0.8.2
+
+### Patch Changes
+
+- cb53d88: Update extract.css to be named compiled-css.css
+
 ## 0.8.1
 
 ### Patch Changes
