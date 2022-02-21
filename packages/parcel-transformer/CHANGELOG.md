@@ -1,5 +1,11 @@
 # @compiled/parcel-transformer
 
+## 0.7.1
+
+### Patch Changes
+
+- 597687c: Bump Parcel to v2.3.2
+
 ## 0.7.0
 
 ### Minor Changes
