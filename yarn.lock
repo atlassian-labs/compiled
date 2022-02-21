@@ -5744,10 +5744,10 @@ babel-preset-jest@^26.6.2:
     babel-plugin-jest-hoist "^26.6.2"
     babel-preset-current-node-syntax "^1.0.0"
 
-babel-preset-razzle@^4.2.14:
-  version "4.2.14"
-  resolved "https://registry.yarnpkg.com/babel-preset-razzle/-/babel-preset-razzle-4.2.14.tgz#9ac4cf60ee3a3c697330a3f0be585b97b2e9dc78"
-  integrity sha512-RVJyXdBcojM/F6mpithtFTCetrbVjTLyeUcyBRuLT9vRRdFKK+AFLts4re/rD6VW6ennOrmd7wlm/CakvDdwtw==
+babel-preset-razzle@^4.2.15:
+  version "4.2.15"
+  resolved "https://registry.yarnpkg.com/babel-preset-razzle/-/babel-preset-razzle-4.2.15.tgz#d23524ecde54a25f5c103d7f7bc375058e365747"
+  integrity sha512-LNwccqHVdHSdM/J/A+wmGyhS2uvj1VUh7Is4L+mHoUqhOMmT1+lrbW10478ciMtoZjyYSJyP/fbmdb/2WrXh6g==
   dependencies:
     "@babel/core" "^7.11.1"
     "@babel/plugin-proposal-class-properties" "^7.8.3"
