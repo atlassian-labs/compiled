@@ -71,30 +71,5 @@ describe('css builder', () => {
       '"--_1cakqv5": ix(-gridSize * 5, "px"',
       'ax([\\"_2hwxsxb8 _18u01xn1\\", props.className])',
     ]);
-
-    expect(actual).toMatchInlineSnapshot(`
-      "const _2 = \\"._18u01xn1{margin-left:var(--_1l3fmvo)}\\";
-      const _ = \\"._2hwxsxb8{margin-right:var(--_1cakqv5)}\\";
-
-      const size = () => 8;
-
-      const gridSize = size();
-      const LayoutRight = forwardRef(({ as: C = \\"aside\\", style, ...props }, ref) => (
-        <CC>
-          <CS>{[_, _2]}</CS>
-          <C
-            {...props}
-            style={{
-              ...style,
-              \\"--_1cakqv5\\": ix(-gridSize * 5, \\"px\\"),
-              \\"--_1l3fmvo\\": ix(gridSize * 5, \\"px\\"),
-            }}
-            ref={ref}
-            className={ax([\\"_2hwxsxb8 _18u01xn1\\", props.className])}
-          />
-        </CC>
-      ));
-      "
-    `);
   });
 });

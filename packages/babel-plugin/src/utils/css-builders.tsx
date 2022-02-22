@@ -431,12 +431,27 @@ const extractLogicalExpression = (node: t.ArrowFunctionExpression, meta: Metadat
  * 64px for D
  *
  * @param nodeExpression Node we're interested in manipulating
- * @param quasi quasi information about the current node
  */
-const convertNegativeCssValuesToUnaryExpression = (nodeExpression: t.Expression): void => {
-  if (nodeExpression?.left) {
-    const { name, start, end } = nodeExpression.left;
-    nodeExpression.left = {
+const convertNegativeCssValuesToUnaryExpression = (nodeExpression: t.Expression): t.Expression => {
+  let newNodeExpression: any = { ...nodeExpression } as t.Expression;
+  if (newNodeExpression?.left) {
+    const { name, start, end } = newNodeExpression.left;
+    newNodeExpression.left = {
+      type: 'UnaryExpression',
+      start: start,
+      end: end,
+      operator: '-',
+      prefix: true,
+      argument: {
+        type: 'Identifier',
+        start: start + 1,
+        end: end,
+        name: name,
+      },
+    };
+  } else if (newNodeExpression.type === 'Identifier') {
+    const { name, start, end } = newNodeExpression;
+    newNodeExpression = {
       type: 'UnaryExpression',
       start: start,
       end: end,
@@ -450,6 +465,13 @@ const convertNegativeCssValuesToUnaryExpression = (nodeExpression: t.Expression)
       },
     };
   }
+  return newNodeExpression;
+};
+
+// Remove '-' from quasi strings
+// @see convertNegativeCssValuesToUnaryExpression
+const trimUnaryOperator = (value: string): string => {
+  return value.slice(0, -1).trim();
 };
 
 /*
@@ -603,8 +625,8 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   // Quasis are the string pieces of the template literal - the parts around the interpolations
   const literalResult = node.quasis.reduce<string>(
-    (acc: string, quasi: t.TemplateLitteral, index: number): string => {
-      const nodeExpression = node.expressions[index] as t.Expression | undefined;
+    (acc: string, quasi: t.TemplateElement, index: number): string => {
+      let nodeExpression = node.expressions[index] as t.Expression | undefined;
 
       if (
         !nodeExpression ||
@@ -617,9 +639,8 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       // Deal with any negative values such as:
       // margin: -${gridSize}, top: -${gridSize} etc.
       if (quasi.value.raw.endsWith('-') && !t.isArrowFunctionExpression(nodeExpression)) {
-        quasi.value.raw = quasi.value.raw.substring(0, quasi.value.raw.length - 1);
-        quasi.value.cooked = quasi.value.cooked.substring(0, quasi.value.cooked.length - 1);
-        convertNegativeCssValuesToUnaryExpression(nodeExpression);
+        quasi.value.raw = trimUnaryOperator(quasi.value.raw);
+        nodeExpression = convertNegativeCssValuesToUnaryExpression(nodeExpression);
       }
 
       const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
