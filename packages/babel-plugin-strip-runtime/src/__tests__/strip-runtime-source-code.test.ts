@@ -6,15 +6,19 @@ import { format } from 'prettier';
 
 import stripRuntimeBabelPlugin from '../index';
 
+const testStyleSheetName = 'compiled-css';
+const regexToFindRequireStatements =
+  /(require\('@compiled\/webpack-loader\/css-loader!@compiled\/webpack-loader\/css-loader\/compiled-css\.css\?style=.*;)/g;
+
 const transform = (
   code: string,
   opts: {
-    onFoundStyleRules?: (style: string[]) => void;
+    styleSheetName?: string;
     run: 'both' | 'bake' | 'extract';
     runtime: 'automatic' | 'classic';
   }
 ): string => {
-  const { onFoundStyleRules, run, runtime } = opts;
+  const { styleSheetName, run, runtime } = opts;
   const bake = run === 'both' || run === 'bake';
   const extract = run === 'both' || run === 'extract';
 
@@ -24,7 +28,7 @@ const transform = (
     filename: join(__dirname, 'app.tsx'),
     plugins: [
       ...(bake ? [[compiledBabelPlugin, { importReact: runtime === 'classic' }]] : []),
-      ...(extract ? [[stripRuntimeBabelPlugin, { onFoundStyleRules }]] : []),
+      ...(extract ? [[stripRuntimeBabelPlugin, { styleSheetName }]] : []),
     ],
     presets: [['@babel/preset-react', { runtime }]],
   });
@@ -74,15 +78,16 @@ describe('babel-plugin-strip-runtime using source code', () => {
         `);
       });
 
-      it('calls onFoundStyleRules for every found style', () => {
-        const onFoundStyleRules = jest.fn();
+      it('adds require statement for every found style', () => {
+        const actual = transform(code, {
+          styleSheetName: testStyleSheetName,
+          run: 'both',
+          runtime,
+        });
 
-        transform(code, { onFoundStyleRules, run: 'both', runtime });
-
-        expect(onFoundStyleRules).toHaveBeenCalledTimes(1);
-        expect(onFoundStyleRules).toHaveBeenCalledWith([
-          '._1wyb1fwx{font-size:12px}',
-          '._syaz13q2{color:blue}',
+        expect(actual.match(regexToFindRequireStatements)).toEqual([
+          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
         ]);
       });
     });
@@ -111,15 +116,16 @@ describe('babel-plugin-strip-runtime using source code', () => {
         `);
       });
 
-      it('calls onFoundStyleRules for every found style', () => {
-        const onFoundStyleRules = jest.fn();
+      it('adds require statement for every found style', () => {
+        const actual = transform(code, {
+          styleSheetName: testStyleSheetName,
+          run: 'both',
+          runtime,
+        });
 
-        transform(code, { onFoundStyleRules, run: 'both', runtime });
-
-        expect(onFoundStyleRules).toHaveBeenCalledTimes(1);
-        expect(onFoundStyleRules).toHaveBeenCalledWith([
-          '._1wyb1fwx{font-size:12px}',
-          '._syaz13q2{color:blue}',
+        expect(actual.match(regexToFindRequireStatements)).toEqual([
+          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
         ]);
       });
     });
@@ -149,16 +155,17 @@ describe('babel-plugin-strip-runtime using source code', () => {
         `);
       });
 
-      it('calls onFoundStyleRules for every found style', () => {
-        const onFoundStyleRules = jest.fn();
+      it('adds require statement for every found style', () => {
         const baked = transform(code, { run: 'bake', runtime });
+        const actual = transform(baked, {
+          styleSheetName: testStyleSheetName,
+          run: 'extract',
+          runtime,
+        });
 
-        transform(baked, { onFoundStyleRules, run: 'both', runtime });
-
-        expect(onFoundStyleRules).toHaveBeenCalledTimes(1);
-        expect(onFoundStyleRules).toHaveBeenCalledWith([
-          '._1wyb1fwx{font-size:12px}',
-          '._syaz13q2{color:blue}',
+        expect(actual.match(regexToFindRequireStatements)).toEqual([
+          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
         ]);
       });
     });
@@ -187,16 +194,17 @@ describe('babel-plugin-strip-runtime using source code', () => {
         `);
       });
 
-      it('calls onFoundStyleRules for every found style', () => {
-        const onFoundStyleRules = jest.fn();
+      it('adds require statement for every found style', () => {
         const baked = transform(code, { run: 'bake', runtime });
+        const actual = transform(baked, {
+          styleSheetName: testStyleSheetName,
+          run: 'extract',
+          runtime,
+        });
 
-        transform(baked, { onFoundStyleRules, run: 'both', runtime });
-
-        expect(onFoundStyleRules).toHaveBeenCalledTimes(1);
-        expect(onFoundStyleRules).toHaveBeenCalledWith([
-          '._1wyb1fwx{font-size:12px}',
-          '._syaz13q2{color:blue}',
+        expect(actual.match(regexToFindRequireStatements)).toEqual([
+          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
         ]);
       });
     });
