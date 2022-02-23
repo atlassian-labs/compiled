@@ -42,6 +42,7 @@ export default new Transformer<ParcelTransformerOpts>({
 
   async parse({ asset, config }) {
     if (!asset.isSource && !config.extract) {
+      // Only parse source (pre-built code should already have been baked) or if stylesheet extraction is enabled
       return undefined;
     }
 
@@ -115,11 +116,11 @@ export default new Transformer<ParcelTransformerOpts>({
     });
 
     if (config.extract && foundCSSRules.length) {
-      foundCSSRules.forEach((rule) => {
+      for (const rule of foundCSSRules) {
         // Build imports with css to be resolved into CSS by `@compiled/parcel-resolver`
         const params = encodeURIComponent(rule);
         output = `\nimport 'compiled-css!${params}';\n${output}`;
-      });
+      }
     }
 
     asset.setCode(output);

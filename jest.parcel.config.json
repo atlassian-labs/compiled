@@ -4,11 +4,11 @@
     "^@compiled/react/(.*)$": "<rootDir>/packages/react/src/jsx/$1.tsx",
     "^@compiled/(.*)$": "<rootDir>/packages/$1/src/index.tsx"
   },
-  "setupFilesAfterEnv": ["jest-extended", "./test/setup.tsx"],
+  "setupFilesAfterEnv": ["jest-extended", "./test/setup.tsx", "./test/parcel.tsx"],
   "testEnvironment": "jsdom",
   "testMatch": ["**/src/**/*.parceltest.{ts,tsx}"],
   "testPathIgnorePatterns": ["__perf__"],
-  "watchPathIgnorePatterns": ["dist/"],
   "transformIgnorePatterns": ["node_modules/(?!(@compiled|@parcel|ordered-binary))"],
+  "watchPathIgnorePatterns": ["dist/"],
   "watchPlugins": ["jest-watch-typeahead/filename", "jest-watch-typeahead/testname"]
 }

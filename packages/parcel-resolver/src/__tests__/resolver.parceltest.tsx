@@ -25,14 +25,13 @@ const parcel = new Parcel({
   },
 });
 
-it('transforms assets with babel plugin', async () => {
-  const { changedAssets, bundleGraph } = await parcel.run();
+describe('resolver', () => {
+  it('compiled inline css imports are resolved', async () => {
+    const { changedAssets } = await parcel.run();
 
-  const asset = Array.from(changedAssets.values()).find((asset) => asset.type === 'css');
-  expect(asset).toBeDefined();
-  const outputCss = await outputFS.readFile(
-    bundleGraph.getBundlesWithAsset(asset!)[0].filePath,
-    'utf8'
-  );
-  expect(outputCss).toInclude('._syaz5scu{color:red}');
-}, 30000);
+    const asset = Array.from(changedAssets.values()).find((asset) => asset.type === 'css');
+    expect(asset).toBeDefined();
+    const code = await asset?.getCode();
+    expect(code).toMatchInlineSnapshot(`"._syaz5scu{color:red}"`);
+  });
+});

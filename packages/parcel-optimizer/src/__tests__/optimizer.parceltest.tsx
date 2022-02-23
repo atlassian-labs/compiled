@@ -36,6 +36,7 @@ describe('optimizer', () => {
       (asset) => asset.filePath === join(fixtureRoot, '/src/optimizer-test.css')
     );
     expect(asset).toBeDefined();
+
     const outputCss = await outputFS.readFile(
       bundleGraph.getBundlesWithAsset(asset!)[0].filePath,
       'utf8'
@@ -58,5 +59,5 @@ describe('optimizer', () => {
       }
       "
     `);
-  }, 30000);
+  });
 });
