@@ -1,5 +1,19 @@
 # @compiled/parcel-transformer
 
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies [307bb83]
+- Updated dependencies [18dcdf8]
+  - @compiled/babel-plugin@0.13.0
+
+## 0.7.1
+
+### Patch Changes
+
+- 597687c: Bump Parcel to v2.3.2
+
 ## 0.7.0
 
 ### Minor Changes
