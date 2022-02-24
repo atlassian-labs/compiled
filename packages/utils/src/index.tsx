@@ -4,3 +4,4 @@ export { kebabCase } from './kebab-case';
 export { buildSourceMap } from './source-maps';
 export { toBoolean } from './to-boolean';
 export { createError } from './error';
+export { preserveLeadingComments } from './preserve-leading-comments';
