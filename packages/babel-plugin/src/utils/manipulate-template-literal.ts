@@ -1,6 +1,6 @@
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
-import { cssAfterInterpolation } from '@compiled/css';
+import { cssAffixInterpolation } from '@compiled/css';
 
 import type { Metadata } from '../types';
 
@@ -87,7 +87,7 @@ export const moveCssPropertyInExpression = (
   const value = quasi.value.raw;
   const parts = value.split(';');
   const before = parts[parts.length - 1]; // everything after the last ';'. Hence, after the last CSS declaration
-  const nextQuasisExtractedCss = cssAfterInterpolation(nextQuasis.value.raw);
+  const [, nextQuasisExtractedCss] = cssAffixInterpolation('', nextQuasis.value.raw);
   const closingBracket = before.includes('{') ? ';}' : '';
   const after = nextQuasisExtractedCss.variableSuffix + closingBracket;
 
