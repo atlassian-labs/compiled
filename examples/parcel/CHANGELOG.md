@@ -1,5 +1,11 @@
 # @compiled/parcel-app
 
+## 1.1.1
+
+### Patch Changes
+
+- 597687c: Bump Parcel to v2.3.2
+
 ## 1.1.0
 
 ### Minor Changes

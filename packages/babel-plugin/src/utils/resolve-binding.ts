@@ -2,7 +2,7 @@ import fs from 'fs';
 import { dirname, join } from 'path';
 
 import { parse } from '@babel/parser';
-import type { NodePath } from '@babel/traverse';
+import type { NodePath, Binding } from '@babel/traverse';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
 import resolve from 'resolve';
@@ -187,6 +187,47 @@ const resolveRequest = (request: string, extensions: string[], meta: Metadata) =
   return resolver.resolveSync(filename, request);
 };
 
+const getBinding = (referenceName: string, meta: Metadata): Binding | undefined => {
+  const { ownPath, parentPath } = meta;
+  // Check binding in own scope first so that manually created scopes can be
+  // evaluated first then parent scopes or scopes coming from different module.
+  const scopedBinding =
+    ownPath?.scope.getOwnBinding(referenceName) || parentPath.scope.getBinding(referenceName);
+
+  if (scopedBinding) {
+    return scopedBinding;
+  }
+
+  // Is re-exported directly from another module i.e. `export { foo } from 'bar'`
+  if (parentPath.isExportNamedDeclaration() && parentPath.node.source) {
+    return {
+      identifier: t.identifier(referenceName),
+      scope: parentPath.scope,
+      path: parentPath,
+      kind: 'const',
+      referenced: false,
+      references: 0,
+      referencePaths: [],
+      constant: true,
+      constantViolations: [],
+    } as Binding;
+  }
+
+  return undefined;
+};
+
+const getModuleImportSource = (path: Binding['path']): string => {
+  if (path.parentPath?.isImportDeclaration()) {
+    return path.parentPath.node.source.value;
+  }
+
+  if (path.isExportNamedDeclaration()) {
+    return path.node.source?.value || '';
+  }
+
+  return '';
+};
+
 /**
  * Will return the `node` of the a binding.
  * This function will follow import specifiers to return the actual `node`.
@@ -201,11 +242,7 @@ export const resolveBinding = (
   referenceName: string,
   meta: Metadata
 ): PartialBindingWithMeta | undefined => {
-  // Check binding in own scope first so that manually created scopes can be
-  // evaluated first then parent scopes or scopes coming from different module.
-  const binding =
-    meta.ownPath?.scope.getOwnBinding(referenceName) ||
-    meta.parentPath.scope.getBinding(referenceName);
+  const binding = getBinding(referenceName, meta);
 
   if (!binding || binding.path.isObjectPattern()) {
     // Bail early if there is no binding or its a node that we don't want to resolve
@@ -233,14 +270,14 @@ export const resolveBinding = (
     };
   }
 
-  if (binding.path.parentPath?.isImportDeclaration()) {
+  if (binding.path.parentPath?.isImportDeclaration() || binding.path.isExportNamedDeclaration()) {
     // NOTE: We're skipping traversal when file name is not resolved. Imported identifier
     // will end up as a dynamic variable instead.
     if (!meta.state.filename) {
       return;
     }
 
-    const moduleImportSource = binding.path.parentPath.node.source.value;
+    const moduleImportSource = getModuleImportSource(binding.path);
 
     // Babel Plugin cannot differentiate between a variable and reserved keywords (e.g keyframes)
     // It will therefore try to parse and resolve both.
@@ -316,6 +353,34 @@ export const resolveBinding = (
 
       foundNode = path.node;
       foundParentPath = path.parentPath;
+    } else if (binding.path.isExportNamedDeclaration()) {
+      // Find the export specifier NodePath so we can check aliases
+      const exportedSpecifier = binding.path.get('specifiers').find(({ node }) => {
+        return t.isIdentifier(node.exported, { name: referenceName });
+      });
+      // Get the non alias name of the export
+      const exportName =
+        exportedSpecifier && t.isExportSpecifier(exportedSpecifier.node)
+          ? exportedSpecifier.node.local.name
+          : referenceName;
+      const isDefaultExport = exportName === 'default';
+
+      ({ foundNode, foundParentPath } = meta.state.cache.load({
+        namespace: isDefaultExport
+          ? 'find-default-export-module-node'
+          : 'find-named-export-module-node',
+        cacheKey: isDefaultExport
+          ? modulePath
+          : `modulePath=${modulePath}&exportName=${exportName}`,
+        value: () => {
+          const result = isDefaultExport ? getDefaultExport(ast) : getNamedExport(ast, exportName);
+
+          return {
+            foundNode: result?.node,
+            foundParentPath: result?.path,
+          };
+        },
+      }));
     }
 
     if (!foundNode || !foundParentPath) {

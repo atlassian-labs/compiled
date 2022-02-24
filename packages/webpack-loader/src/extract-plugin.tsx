@@ -42,7 +42,7 @@ const forceCSSIntoOneStyleSheet = (compiler: Compiler) => {
       type: 'css/mini-extract',
       chunks: 'all',
       // We merge only CSS from Compiled.
-      test: /css-loader\/extract\.css$/,
+      test: /css-loader\/compiled-css\.css$/,
       enforce: true,
     },
   };
