@@ -2,12 +2,12 @@ import { declare } from '@babel/helper-plugin-utils';
 import template from '@babel/template';
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
+import { preserveLeadingComments } from '@compiled/utils';
 
 import type { PluginPass } from './types';
 import { isAutomaticRuntime } from './utils/is-automatic-runtime';
 import { isCCComponent } from './utils/is-cc-component';
 import { isCreateElement } from './utils/is-create-element';
-import { preserveLeadingComments } from './utils/preserve-leading-comments';
 import { removeStyleDeclarations } from './utils/remove-style-declarations';
 import { toURIComponent } from './utils/to-uri-component';
 

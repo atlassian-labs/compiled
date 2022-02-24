@@ -23,7 +23,8 @@
     "@babel/helper-plugin-utils": "^7.16.7",
     "@babel/template": "^7.16.7",
     "@babel/traverse": "^7.17.3",
-    "@babel/types": "^7.17.0"
+    "@babel/types": "^7.17.0",
+    "@compiled/utils": "^0.6.15"
   },
   "devDependencies": {
     "@compiled/babel-plugin": "*",
