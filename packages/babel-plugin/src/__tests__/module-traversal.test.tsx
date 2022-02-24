@@ -593,4 +593,39 @@ describe('module traversal', () => {
       expect(result).toInclude(':hover{padding-top:10px}');
     });
   });
+
+  describe('Direct re-exports', () => {
+    it('should resolve identifier when re-exported as a named export', () => {
+      const result = transform(`
+        import '@compiled/react';
+        import { secondary } from '../__fixtures__/mixins/reexport';
+
+        <div css={{ color: secondary }} />
+      `);
+
+      expect(result).toInclude('{color:pink}');
+    });
+
+    it('should resolve identifier when re-exported as default export', () => {
+      const result = transform(`
+        import '@compiled/react';
+        import defaultColor from '../__fixtures__/mixins/reexport';
+
+        <div css={{ color: defaultColor }} />
+      `);
+
+      expect(result).toInclude('{color:red}');
+    });
+
+    it('should resolve identifier when re-exported default has an alias', () => {
+      const result = transform(`
+        import '@compiled/react';
+        import { reexportedDefault } from '../__fixtures__/mixins/reexport';
+
+        <div css={{ color: reexportedDefault }} />
+      `);
+
+      expect(result).toInclude('{color:red}');
+    });
+  });
 });

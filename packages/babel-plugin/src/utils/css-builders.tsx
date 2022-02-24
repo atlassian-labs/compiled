@@ -13,6 +13,11 @@ import {
   isCompiledKeyframesCallExpression,
   isCompiledKeyframesTaggedTemplateExpression,
 } from './is-compiled';
+import {
+  isCssPropertyInTemplateElement,
+  hasNestedTemplateLiteralsWithConditionalRules,
+  moveCssPropertyInExpression,
+} from './manipulate-template-literal';
 import { resolveBinding } from './resolve-binding';
 import type {
   CSSOutput,
@@ -559,6 +564,21 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     ) {
       const suffix = meta.context === 'keyframes' ? '' : ';';
       return acc + quasi.value.raw + suffix;
+    }
+
+    /**
+     * Manipulate the node if the CSS property, pseudo classes or pseudo elements are defined
+     * within a template element rather than in a expression.
+     * Eg :hover { color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')}; }
+     */
+    if (
+      t.isArrowFunctionExpression(nodeExpression) &&
+      t.isConditionalExpression(nodeExpression.body) &&
+      isCssPropertyInTemplateElement(quasi) &&
+      !hasNestedTemplateLiteralsWithConditionalRules(node, meta)
+    ) {
+      const nextQuasis = node.quasis[index + 1];
+      moveCssPropertyInExpression(nodeExpression.body, quasi, nextQuasis);
     }
 
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);

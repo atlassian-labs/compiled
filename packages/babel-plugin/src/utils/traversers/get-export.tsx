@@ -22,6 +22,15 @@ export const getDefaultExport = (ast: t.File): Result<t.ExportDefaultDeclaration
       result = { path, node: path.node.declaration };
       path.stop();
     },
+    // Handle `export {alias as default}`
+    ExportNamedDeclaration(path) {
+      path.get('specifiers')?.forEach(({ node }) => {
+        if (t.isExportSpecifier(node) && t.isIdentifier(node.exported, { name: 'default' })) {
+          result = { path, node: node.local };
+          path.stop();
+        }
+      });
+    },
   });
 
   return result;
