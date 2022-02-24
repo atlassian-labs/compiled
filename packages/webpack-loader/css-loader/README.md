@@ -1,6 +1,6 @@
 # @compiled/webpack-loader/css-loader
 
-## What's `extract.css`
+## What's `compiled-css.css`
 
 It's a placeholder CSS file we use for style extraction,
 used for two reasons:

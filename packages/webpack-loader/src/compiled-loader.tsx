@@ -7,7 +7,7 @@ import { CachedInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 import { getOptions } from 'loader-utils';
 import type { LoaderContext } from 'webpack';
 
-import { pluginName } from './extract-plugin';
+import { pluginName, styleSheetName } from './extract-plugin';
 import type { CompiledLoaderOptions } from './types';
 import { toURIComponent } from './utils';
 
@@ -160,7 +160,7 @@ export default async function compiledLoader(
         // We use require instead of import so it works with both ESM and CJS source.
         // If we used ESM it would blow up with CJS source, unfortunately.
         output = `
-  require("@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/extract.css?style=${params}");
+  require("@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${styleSheetName}.css?style=${params}");
   ${output}`;
       });
     }
