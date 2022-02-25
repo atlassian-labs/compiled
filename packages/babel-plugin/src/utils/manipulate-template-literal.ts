@@ -133,9 +133,10 @@ export const moveCssPropertyInExpression = (
   // Remove CSS property so it doesn't get processed again
   if (deleteValue) {
     let nextQuasisNewCSS = nextQuasisExtractedCss.css;
+    const newValue = value.substring(0, value.lastIndexOf(before));
 
-    quasi.value.raw = value.replace(before, '');
-    quasi.value.cooked = value.replace(before, '');
+    quasi.value.raw = newValue;
+    quasi.value.cooked = newValue;
 
     if (closingBracket) {
       const rex = /([^}/]+$)/g; // everything after the last '}'
