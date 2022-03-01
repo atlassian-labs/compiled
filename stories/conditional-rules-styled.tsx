@@ -26,6 +26,11 @@ const TextWithTernaryOperatorTemplateLiteral = styled.span<TextProps>`
     props.isPrimary && props.isMaybe ? (props.isBolded && 'bold') || 'normal' : 'light'};
 `;
 
+const TextWithNestedTernary = styled.span<TextProps>`
+  font-weight: initial;
+  font-weight: ${(props) => (props.isBolded ? 'bold' : props.isPrimary ? 'normal' : 'light')};
+`;
+
 const TextWithNestedTernaryOperatorTemplateLiteralCssVariable = styled.span<TextProps>`
   color: ${(props) => (props.isPrimary ? (props.isMaybe ? 'orange' : 'blue') : 'red')};
 `;
@@ -129,6 +134,22 @@ export const NotPrimaryTextWithTernaryOperatorTemplateLiteral = (): JSX.Element 
   return (
     <TextWithTernaryOperatorTemplateLiteral>Hello secondary</TextWithTernaryOperatorTemplateLiteral>
   );
+};
+
+export const PrimaryTextWithNestedTernary = (): JSX.Element => {
+  return <TextWithNestedTernary isPrimary>Hello primary</TextWithNestedTernary>;
+};
+
+export const BoldedPrimaryTextWithNestedTernary = (): JSX.Element => {
+  return (
+    <TextWithNestedTernary isPrimary isBolded>
+      Hello bolded primary
+    </TextWithNestedTernary>
+  );
+};
+
+export const NotPrimaryTextWithNestedTernary = (): JSX.Element => {
+  return <TextWithNestedTernary>Hello secondary</TextWithNestedTernary>;
 };
 
 export const PrimaryTextWithNestedTernaryOperatorTemplateLiteralCssVariable = (): JSX.Element => {
