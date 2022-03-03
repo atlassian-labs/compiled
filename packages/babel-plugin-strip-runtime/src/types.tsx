@@ -1,9 +1,9 @@
 export interface PluginPass {
   opts: {
     /**
-     * Specifies the styleSheetName used for requiring atomic styles.
+     * Specifies the styleSheetPath used for requiring atomic styles.
      */
-    styleSheetName?: string;
+    styleSheetPath?: string;
   };
 
   /**

@@ -123,7 +123,9 @@ export default async function compiledLoader(
       plugins: [
         options.extract && [
           '@compiled/babel-plugin-strip-runtime',
-          { styleSheetName: styleSheetName },
+          {
+            styleSheetPath: `@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${styleSheetName}.css`,
+          },
         ],
         options.bake && [
           '@compiled/babel-plugin',

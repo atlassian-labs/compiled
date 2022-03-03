@@ -22,19 +22,17 @@ export default declare<PluginPass>((api) => {
     visitor: {
       Program: {
         exit(path) {
-          if (this.opts.styleSheetName) {
+          if (this.opts.styleSheetPath) {
             preserveLeadingComments(path);
             this.styleRules.forEach((rule) => {
-              // Each found atomic rule will create a new import that uses `@compiled/webpack-loader/css-loader`.
+              // Each found atomic rule will create a new import that uses the styleSheetPath provided.
               // The benefit is two fold:
               // (1) thread safe collection of styles
               // (2) caching -- resulting in faster builds (one import per rule!)
               const params = toURIComponent(rule);
               path.unshiftContainer(
                 'body',
-                template.ast(
-                  `require("@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${this.opts.styleSheetName}.css?style=${params}");`
-                )
+                template.ast(`require("${this.opts.styleSheetPath}?style=${params}");`)
               );
               // We use require instead of import so it works with both ESM and CJS source.
               // If we used ESM it would blow up with CJS source, unfortunately.

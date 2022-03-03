@@ -6,19 +6,20 @@ import { format } from 'prettier';
 
 import stripRuntimeBabelPlugin from '../index';
 
-const testStyleSheetName = 'compiled-css';
+const testStyleSheetPath =
+  '@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/compiled-css.css';
 const regexToFindRequireStatements =
   /(require\('@compiled\/webpack-loader\/css-loader!@compiled\/webpack-loader\/css-loader\/compiled-css\.css\?style=.*;)/g;
 
 const transform = (
   code: string,
   opts: {
-    styleSheetName?: string;
+    styleSheetPath?: string;
     run: 'both' | 'bake' | 'extract';
     runtime: 'automatic' | 'classic';
   }
 ): string => {
-  const { styleSheetName, run, runtime } = opts;
+  const { styleSheetPath, run, runtime } = opts;
   const bake = run === 'both' || run === 'bake';
   const extract = run === 'both' || run === 'extract';
 
@@ -28,7 +29,7 @@ const transform = (
     filename: join(__dirname, 'app.tsx'),
     plugins: [
       ...(bake ? [[compiledBabelPlugin, { importReact: runtime === 'classic' }]] : []),
-      ...(extract ? [[stripRuntimeBabelPlugin, { styleSheetName }]] : []),
+      ...(extract ? [[stripRuntimeBabelPlugin, { styleSheetPath }]] : []),
     ],
     presets: [['@babel/preset-react', { runtime }]],
   });
@@ -80,14 +81,14 @@ describe('babel-plugin-strip-runtime using source code', () => {
 
       it('adds require statement for every found style', () => {
         const actual = transform(code, {
-          styleSheetName: testStyleSheetName,
+          styleSheetPath: testStyleSheetPath,
           run: 'both',
           runtime,
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual([
-          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
-          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
+          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+          `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
         ]);
       });
     });
@@ -118,14 +119,14 @@ describe('babel-plugin-strip-runtime using source code', () => {
 
       it('adds require statement for every found style', () => {
         const actual = transform(code, {
-          styleSheetName: testStyleSheetName,
+          styleSheetPath: testStyleSheetPath,
           run: 'both',
           runtime,
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual([
-          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
-          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
+          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+          `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
         ]);
       });
     });
@@ -158,14 +159,14 @@ describe('babel-plugin-strip-runtime using source code', () => {
       it('adds require statement for every found style', () => {
         const baked = transform(code, { run: 'bake', runtime });
         const actual = transform(baked, {
-          styleSheetName: testStyleSheetName,
+          styleSheetPath: testStyleSheetPath,
           run: 'extract',
           runtime,
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual([
-          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
-          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
+          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+          `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
         ]);
       });
     });
@@ -197,14 +198,14 @@ describe('babel-plugin-strip-runtime using source code', () => {
       it('adds require statement for every found style', () => {
         const baked = transform(code, { run: 'bake', runtime });
         const actual = transform(baked, {
-          styleSheetName: testStyleSheetName,
+          styleSheetPath: testStyleSheetPath,
           run: 'extract',
           runtime,
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual([
-          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
-          `require('@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${testStyleSheetName}.css?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
+          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+          `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
         ]);
       });
     });
