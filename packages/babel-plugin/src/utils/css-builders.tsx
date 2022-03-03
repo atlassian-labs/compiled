@@ -422,7 +422,7 @@ const createNegativeUnaryExpression = (node: t.Identifier) => ({
 /**
  * Manipulates the AST to ensure that CSS variables are generated correctly for negative values
  *
- * consider we have the following:
+ * Consider we have the following:
  *
  * const gridSize = 8;
  *
