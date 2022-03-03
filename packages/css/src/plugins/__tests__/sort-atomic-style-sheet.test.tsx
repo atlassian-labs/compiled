@@ -13,8 +13,8 @@ const transform = (css: TemplateStringsArray) => {
 describe('sort atomic style sheet plugin', () => {
   it('should move at rules to the bottom', () => {
     const actual = transform`
-      .media-screen-color-red {
-        @media screen {
+      @media screen {
+        .media-screen-color-red {
           color: red;
         }
       }
@@ -30,8 +30,8 @@ describe('sort atomic style sheet plugin', () => {
             .color-blue {
               color: blue;
             }
-            .media-screen-color-red {
-              @media screen {
+            @media screen {
+              .media-screen-color-red {
                 color: red;
               }
             }

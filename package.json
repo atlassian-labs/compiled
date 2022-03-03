@@ -47,7 +47,7 @@
     "test": "jest --no-cache",
     "test:cover": "yarn test --collectCoverage",
     "test:imports": "node test/test-imports",
-    "test:parcel": "jest --config jest.parcel.config.json",
+    "test:parcel": "jest --testMatch '**/src/**/*.parceltest.{ts,tsx}'",
     "test:vr": "yarn loki",
     "test:watch": "jest --no-cache --watch"
   },

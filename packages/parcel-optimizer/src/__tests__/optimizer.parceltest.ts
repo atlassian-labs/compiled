@@ -16,13 +16,13 @@ const outputFS = new MemoryFS(workerFarm);
 const parcel = new Parcel({
   config: join(fixtureRoot, '.parcelrc'),
   entries: [join(fixtureRoot, 'src', 'index.html')],
-  workerFarm,
   outputFS,
   targets: {
     default: {
       distDir: join(fixtureRoot, 'dist'),
     },
   },
+  workerFarm,
 });
 
 afterAll(() => {
@@ -33,7 +33,7 @@ describe('optimizer', () => {
   it('sorts css rules', async () => {
     const { changedAssets, bundleGraph } = await parcel.run();
     const asset = Array.from(changedAssets.values()).find(
-      (asset) => asset.filePath === join(fixtureRoot, '/src/optimizer-test.css')
+      (asset) => asset.filePath === join(fixtureRoot, '/src/styles.css')
     );
     expect(asset).toBeDefined();
 
@@ -46,18 +46,31 @@ describe('optimizer', () => {
 
       .color-blue {
         color: blue;
-      }.media-screen-color-red {
-      }@media screen {
+      }
+
+      .color-blue:focus {
+        color: orange;
+      }
+
+      .color-blue:hover {
+        color: green;
+      }
+
+      @media screen {
+        .media-screen-color-red {
           color: red;
-        }@media (min-width: 500px) {
-        ._171dak0l {
+        }
+      }
+
+      @media (min-width: 500px) {
+        .media-min-width-border {
           border: 2px solid red;
         }
-        ._1swkri7e:before {
+        .media-min-width-border:before {
           content: 'large screen';
         }
       }
       "
     `);
-  });
+  }, 30000);
 });

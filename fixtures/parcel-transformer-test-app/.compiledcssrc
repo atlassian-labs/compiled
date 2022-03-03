@@ -1,4 +1,4 @@
 {
   "importReact": false,
-  "extract": true
+  "extract": false
 }

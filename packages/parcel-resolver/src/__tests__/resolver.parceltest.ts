@@ -16,13 +16,13 @@ const outputFS = new MemoryFS(workerFarm);
 const parcel = new Parcel({
   config: join(fixtureRoot, '.parcelrc'),
   entries: [join(fixtureRoot, 'src', 'index.html')],
-  workerFarm,
   outputFS,
   targets: {
     default: {
       distDir: join(fixtureRoot, 'dist'),
     },
   },
+  workerFarm,
 });
 
 describe('resolver', () => {
@@ -33,5 +33,5 @@ describe('resolver', () => {
     expect(asset).toBeDefined();
     const code = await asset?.getCode();
     expect(code).toMatchInlineSnapshot(`"._syaz5scu{color:red}"`);
-  });
+  }, 30000);
 });

@@ -5,6 +5,5 @@
     "outDir": "dist",
     "module": "commonjs"
   },
-  "exclude": ["dist"],
   "references": [{ "path": "../../packages/jest" }]
 }
