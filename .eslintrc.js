@@ -42,6 +42,7 @@ module.exports = {
           },
           'newlines-between': 'always'
         }],
+        'sort-keys': 'error'
       },
     },
     {
