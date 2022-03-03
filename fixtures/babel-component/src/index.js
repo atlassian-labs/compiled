@@ -1,6 +1,6 @@
 import { styled } from '@compiled/react';
 
-const Button = styled.button`
+export const Button = styled.button`
   color: blue;
   font-size: 30px;
   border: 2px solid blue;
