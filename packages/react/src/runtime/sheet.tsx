@@ -39,20 +39,26 @@ const styleBucketsInHead: Partial<Record<Bucket, HTMLStyleElement>> = {};
  * Thankfully there aren't any overlaps, see: https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes.
  */
 const pseudosMap: Record<string, Bucket | undefined> = {
-  // link
-  k: 'l',
-  // visited
-  ited: 'v',
-  // focus-within
-  'us-within': 'w',
-  // focus
-  us: 'f',
-  // focus-visible
-  'us-visible': 'i',
   // hover
   er: 'h',
+
+  // visited
+  ited: 'v',
+
   // active
   ive: 'a',
+
+  // link
+  k: 'l',
+
+  // focus
+  us: 'f',
+
+  // focus-visible
+  'us-visible': 'i',
+
+  // focus-within
+  'us-within': 'w',
 };
 
 /**

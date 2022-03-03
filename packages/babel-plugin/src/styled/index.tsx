@@ -21,11 +21,11 @@ const createStyledDataPair = ({
   tagType: Tag['type'];
   cssNode: t.Expression | t.Expression[];
 }) => ({
+  cssNode,
   tag: {
     name: tagName,
     type: tagType,
   },
-  cssNode,
 });
 
 const extractStyledDataFromTemplateLiteral = (
@@ -41,7 +41,7 @@ const extractStyledDataFromTemplateLiteral = (
     const tagName = node.tag.property.name;
     const cssNode = node.quasi;
 
-    return createStyledDataPair({ tagName, tagType: 'InBuiltComponent', cssNode });
+    return createStyledDataPair({ cssNode, tagName, tagType: 'InBuiltComponent' });
   }
 
   if (
@@ -53,7 +53,7 @@ const extractStyledDataFromTemplateLiteral = (
     const tagName = node.tag.arguments[0].name;
     const cssNode = node.quasi;
 
-    return createStyledDataPair({ tagName, tagType: 'UserDefinedComponent', cssNode });
+    return createStyledDataPair({ cssNode, tagName, tagType: 'UserDefinedComponent' });
   }
 
   return undefined;
@@ -73,7 +73,7 @@ const extractStyledDataFromObjectLiteral = (
     const tagName = node.callee.property.name;
     const cssNode = node.arguments as t.Expression[];
 
-    return createStyledDataPair({ tagName, tagType: 'InBuiltComponent', cssNode });
+    return createStyledDataPair({ cssNode, tagName, tagType: 'InBuiltComponent' });
   }
 
   if (
@@ -86,7 +86,7 @@ const extractStyledDataFromObjectLiteral = (
     const tagName = node.callee.arguments[0].name;
     const cssNode = node.arguments as t.Expression[];
 
-    return createStyledDataPair({ tagName, tagType: 'UserDefinedComponent', cssNode });
+    return createStyledDataPair({ cssNode, tagName, tagType: 'UserDefinedComponent' });
   }
 
   return undefined;

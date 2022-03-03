@@ -23,7 +23,7 @@ const transform = (
     filename,
     plugins: [compiledBabelPlugin],
     presets: [
-      ['@babel/preset-env', { targets: { esmodules: true }, modules: modules ?? 'auto' }],
+      ['@babel/preset-env', { modules: modules ?? 'auto', targets: { esmodules: true } }],
       '@babel/preset-typescript',
       ['@babel/preset-react', { runtime, useBuiltIns: true }],
     ],

@@ -7,18 +7,18 @@ export default {
 const Lozenge = (props: { isPrimary?: boolean; children: any }) => (
   <div
     css={{
-      fontWeight: 500,
-      fontSize: 12,
-      display: 'inline-block',
       borderRadius: 3,
+      display: 'inline-block',
+      fontSize: 12,
+      fontWeight: 500,
       padding: '2px 4px',
       ...(props.isPrimary && {
-        color: 'blue',
         border: '1px solid blue',
+        color: 'blue',
       }),
       ...(!props.isPrimary && {
-        color: 'red',
         border: '1px solid red',
+        color: 'red',
       }),
     }}>
     {props.children}
@@ -37,20 +37,20 @@ const LozengeWithArray = (props: { isPrimary?: boolean; children: any }) => (
   <div
     css={[
       {
-        fontWeight: 500,
-        fontSize: 12,
-        display: 'inline-block',
         borderRadius: 3,
+        display: 'inline-block',
+        fontSize: 12,
+        fontWeight: 500,
         padding: '2px 4px',
       },
       props.isPrimary && {
-        color: 'blue',
         border: '1px solid blue',
+        color: 'blue',
       },
 
       !props.isPrimary && {
-        color: 'red',
         border: '1px solid red',
+        color: 'red',
       },
     ]}>
     {props.children}

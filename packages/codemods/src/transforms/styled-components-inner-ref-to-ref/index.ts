@@ -18,7 +18,7 @@ const applyInnerRefPlugin = (plugins: CodemodPluginInstance[], originalNode: JSX
       return currentNode;
     }
 
-    return buildRefAttributeImpl({ originalNode, currentNode });
+    return buildRefAttributeImpl({ currentNode, originalNode });
   }, originalNode as JSXAttribute | JSXSpreadAttribute);
 
 const transformer = (fileInfo: FileInfo, api: API, options: Options): string => {
@@ -40,9 +40,9 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
     });
 
   applyVisitor({
-    plugins,
-    originalProgram,
     currentProgram: collection.find(j.Program).get(),
+    originalProgram,
+    plugins,
   });
 
   return collection.toSource(options.printOptions || { quote: 'single' });

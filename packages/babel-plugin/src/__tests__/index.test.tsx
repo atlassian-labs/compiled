@@ -4,8 +4,8 @@ import { transformSync } from '@babel/core';
 import babelNext from '../index';
 
 const babelOpts: TransformOptions = {
-  configFile: false,
   babelrc: false,
+  configFile: false,
   plugins: [babelNext],
 };
 

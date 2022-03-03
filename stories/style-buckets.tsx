@@ -12,22 +12,22 @@ export const Example = (): JSX.Element => {
       href="https://atlassian.design"
       css={[
         {
-          display: 'flex',
-          fontSize: '50px',
-          color: 'purple',
-          ':hover': hoverObjectLiteral,
           ':active': {
             color: 'blue',
-          },
-          ':link': {
-            color: 'red',
           },
           ':focus': {
             color: 'green',
           },
+          ':hover': hoverObjectLiteral,
+          ':link': {
+            color: 'red',
+          },
           ':visited': {
             color: 'pink',
           },
+          color: 'purple',
+          display: 'flex',
+          fontSize: '50px',
         },
         `
         @media (max-width: 800px) {

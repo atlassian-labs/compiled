@@ -45,19 +45,19 @@ describe('module traversal cache benchmark', () => {
     const minSamples = 75;
     const benchmark = await runBenchmark('module traversal cache', [
       {
-        name: 'initial run',
         fn: () => transform(),
         minSamples,
+        name: 'initial run',
       },
       {
-        name: 'cache',
         fn: () => transform({ cache: true }),
         minSamples,
+        name: 'cache',
       },
       {
-        name: 'no-cache',
         fn: () => transform({ cache: false }),
         minSamples,
+        name: 'no-cache',
       },
     ]);
 

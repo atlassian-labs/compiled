@@ -10,7 +10,7 @@ const AsyncComponent = lazy(() => import('./ui/async'));
 
 export const App = () => (
   <>
-    <div css={{ fontSize: 50, color: primary }}>hello from webpack</div>
+    <div css={{ color: primary, fontSize: 50 }}>hello from webpack</div>
     <TypeScript>TypeScript component</TypeScript>
     <BabelComponent>Component from NPM</BabelComponent>
     <Suspense fallback="Loading...">

@@ -6,18 +6,18 @@ const Footer = () => <footer css={{ background: 'purple', padding: 8 * 4 }}>foot
 const Header = () => (
   <header
     css={{
-      padding: `0 ${8 * 4}px`,
-      background: 'red',
-      height: 56,
-      display: 'flex',
       alignItems: 'center',
+      background: 'red',
+      display: 'flex',
+      height: 56,
+      padding: `0 ${8 * 4}px`,
     }}>
     server side rendering
   </header>
 );
 
 const Content = () => (
-  <main css={{ padding: 8 * 4, height: '200vh', background: 'blue' }}>content</main>
+  <main css={{ background: 'blue', height: '200vh', padding: 8 * 4 }}>content</main>
 );
 
 export default function Home() {

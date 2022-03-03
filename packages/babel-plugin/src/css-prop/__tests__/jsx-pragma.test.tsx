@@ -4,8 +4,8 @@ import babelPlugin from '../../index';
 
 const transform = (code: string) => {
   return transformSync(code, {
-    configFile: false,
     babelrc: false,
+    configFile: false,
     plugins: [babelPlugin],
   })?.code;
 };

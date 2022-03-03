@@ -144,10 +144,10 @@ const getLogicalItemFromConditionalExpression = (
     const alternateExpression = t.unaryExpression('!', expression);
 
     const logicalItem: LogicalCssItem = {
-      type: 'logical',
       css: getItemCss(item),
       expression: type === 'consequent' ? expression : alternateExpression,
       operator: '&&',
+      type: 'logical',
     };
 
     return logicalItem;
@@ -164,8 +164,8 @@ const toCSSRuleInternal = (selector: string, item: CssItem): CssItem =>
   item.type === 'conditional'
     ? {
         ...item,
-        consequent: toCSSRuleInternal(selector, item.consequent),
         alternate: toCSSRuleInternal(selector, item.alternate),
+        consequent: toCSSRuleInternal(selector, item.consequent),
       }
     : { ...item, css: `${selector} { ${getItemCss(item)} }` };
 
@@ -194,8 +194,8 @@ const toCSSDeclarationInternal = (key: string, item: CssItem): CssItem => {
     // Handle conditional branches
     return {
       ...item,
-      consequent: toCSSDeclarationInternal(key, item.consequent),
       alternate: toCSSDeclarationInternal(key, item.alternate),
+      consequent: toCSSDeclarationInternal(key, item.consequent),
     };
   } else {
     return { ...item, css: `${kebabCase(key)}: ${getItemCss(item)};` };
@@ -367,10 +367,10 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
 
   if (consequentCss && alternateCss) {
     css.push({
-      type: 'conditional',
-      test: node.test,
-      consequent: consequentCss,
       alternate: alternateCss,
+      consequent: consequentCss,
+      test: node.test,
+      type: 'conditional',
     });
   } else if (consequentCss) {
     // convert single-sided conditional into logical statements
@@ -436,9 +436,9 @@ const extractKeyframes = (
 
   return {
     css: [
-      { type: 'sheet', css: css.map((item) => getItemCss(item)).join('') },
+      { css: css.map((item) => getItemCss(item)).join(''), type: 'sheet' },
       // Use the name of the keyframe instead of the identifier
-      { type: 'unconditional', css: prefix + name + suffix },
+      { css: prefix + name + suffix, type: 'unconditional' },
     ],
     variables,
   };
@@ -509,15 +509,15 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         // We don't want to explicitly handle each expression node differently if we can avoid it!
         const name = `--_${hash(variableName)}`;
         variables.push({
-          name,
           expression,
+          name,
         });
 
         value = `var(${name})`;
       }
 
       // Time to add this key+value to the CSS string we're building up.
-      css.push({ type: 'unconditional', css: `${kebabCase(key)}: ${value};` });
+      css.push({ css: `${kebabCase(key)}: ${value};`, type: 'unconditional' });
     } else if (t.isSpreadElement(prop)) {
       let resolvedBinding = undefined;
 
@@ -602,7 +602,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
       if (result.css.length) {
         // Add previous accumulative CSS first before CSS from expressions
-        css.push({ type: 'unconditional', css: acc + quasi.value.raw }, ...result.css);
+        css.push({ css: acc + quasi.value.raw, type: 'unconditional' }, ...result.css);
         variables.push(...result.variables);
         // Reset acc as we just added them
         return '';
@@ -643,8 +643,8 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     nextQuasis.value.raw = after.css;
 
     variables.push({
-      name,
       expression,
+      name,
       prefix: before.variablePrefix,
       suffix: after.variableSuffix,
     });
@@ -652,7 +652,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     return acc + before.css + `var(${name})`;
   }, '');
 
-  css.push({ type: 'unconditional', css: literalResult });
+  css.push({ css: literalResult, type: 'unconditional' });
 
   // Deals with Conditional CSS Rules from Logical Expressions
   node.expressions.forEach((prop) => {
@@ -683,7 +683,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
  */
 export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): CSSOutput => {
   if (t.isStringLiteral(node)) {
-    return { css: [{ type: 'unconditional', css: node.value }], variables: [] };
+    return { css: [{ css: node.value, type: 'unconditional' }], variables: [] };
   }
 
   if (t.isTemplateLiteral(node)) {
@@ -764,10 +764,10 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
       }
 
       const logicalItem: LogicalCssItem = {
-        type: 'logical',
         css: getItemCss(item),
         expression,
         operator: node.operator,
+        type: 'logical',
       };
 
       return logicalItem;

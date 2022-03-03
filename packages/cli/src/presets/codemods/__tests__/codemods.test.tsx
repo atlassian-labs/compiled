@@ -86,13 +86,13 @@ describe('main', () => {
 
     expect(AutoComplete).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: 'Select which codemod would you like to run? 🤔',
-        limit: 18,
         choices: [
           'emotion-to-compiled',
           'styled-components-inner-ref-to-ref',
           'styled-components-to-compiled',
         ],
+        limit: 18,
+        message: 'Select which codemod would you like to run? 🤔',
       })
     );
   });
@@ -104,35 +104,35 @@ describe('main', () => {
 
     expect(Form).toHaveBeenCalledWith(
       expect.objectContaining({
-        name: 'jscodeshift',
-        message: `Please provide the following jscodeshift cli options ${chalk.cyan(
-          '<https://github.com/facebook/jscodeshift#usage-cli>'
-        )}`,
+        choices: [
+          {
+            message: 'PATH',
+            name: 'path',
+          },
+          {
+            hint: `default: ${chalk.cyan('babel')}`,
+            message: '--parser',
+            name: 'parser',
+          },
+          {
+            hint: `default: ${chalk.cyan('js')}`,
+            message: '--extensions',
+            name: 'extensions',
+          },
+          {
+            message: '--ignore-pattern',
+            name: 'ignorePattern',
+          },
+        ],
         hint: chalk.bold(
           chalk.red(
             '**NOTE**: [PATH] is mandatory option. It is the source code directory eg. /project/src'
           )
         ),
-        choices: [
-          {
-            name: 'path',
-            message: 'PATH',
-          },
-          {
-            name: 'parser',
-            message: '--parser',
-            hint: `default: ${chalk.cyan('babel')}`,
-          },
-          {
-            name: 'extensions',
-            message: '--extensions',
-            hint: `default: ${chalk.cyan('js')}`,
-          },
-          {
-            name: 'ignorePattern',
-            message: '--ignore-pattern',
-          },
-        ],
+        message: `Please provide the following jscodeshift cli options ${chalk.cyan(
+          '<https://github.com/facebook/jscodeshift#usage-cli>'
+        )}`,
+        name: 'jscodeshift',
       })
     );
   });
@@ -176,12 +176,12 @@ describe('main', () => {
     const path = 'src/components/**/*.tsx';
     setupCliRunner({
       choice: 0,
-      runPath: path,
       codemodOpts: {
-        parser: 'tsx',
         extensions: 'tsx',
         ignorePattern: '**/*utils*',
+        parser: 'tsx',
       },
+      runPath: path,
     });
 
     await codemods();
@@ -194,7 +194,7 @@ describe('main', () => {
 
   it('should run codemod with plugins', async () => {
     const path = 'src/components/Button.tsx';
-    setupCliRunner({ choice: 0, runPath: path, pluginPaths: ['path1', 'path2'] });
+    setupCliRunner({ choice: 0, pluginPaths: ['path1', 'path2'], runPath: path });
 
     await codemods();
 

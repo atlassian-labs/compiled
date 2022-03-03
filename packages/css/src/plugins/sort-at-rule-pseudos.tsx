@@ -46,7 +46,6 @@ const sortPseudoClasses = (atRule: AtRule) => {
  */
 export const sortAtRulePseudos = (): Plugin => {
   return {
-    postcssPlugin: 'sort-at-rule-pseudos',
     Once(root) {
       root.each((node) => {
         switch (node.type) {
@@ -59,6 +58,7 @@ export const sortAtRulePseudos = (): Plugin => {
         }
       });
     },
+    postcssPlugin: 'sort-at-rule-pseudos',
   };
 };
 

@@ -10,53 +10,53 @@ import { getTransformPath, getTransforms } from './utils/transforms';
 
 const getTransformPrompt = async (transforms: ParsedPath[]): Promise<ParsedPath> => {
   return await new AutoComplete({
-    message: 'Select which codemod would you like to run? 🤔',
-    limit: 18,
     choices: transforms.map(({ dir }) => path.basename(dir)),
+    limit: 18,
+    message: 'Select which codemod would you like to run? 🤔',
     result: (choice: string) => transforms.find(({ dir }) => dir.includes(choice)),
   }).run();
 };
 
 const codemodChoice: Choice<keyof CodemodOptions>[] = [
   {
-    name: 'path',
     message: 'PATH',
+    name: 'path',
   },
   {
-    name: 'parser',
-    message: '--parser',
     hint: `default: ${chalk.cyan('babel')}`,
+    message: '--parser',
+    name: 'parser',
   },
   {
-    name: 'extensions',
-    message: '--extensions',
     hint: `default: ${chalk.cyan('js')}`,
+    message: '--extensions',
+    name: 'extensions',
   },
   {
-    name: 'ignorePattern',
     message: '--ignore-pattern',
+    name: 'ignorePattern',
   },
 ];
 
 const getTransformForm = async () => {
   return await new Form({
-    name: 'jscodeshift',
-    message: `Please provide the following jscodeshift cli options ${chalk.cyan(
-      '<https://github.com/facebook/jscodeshift#usage-cli>'
-    )}`,
+    choices: codemodChoice,
     hint: chalk.bold(
       chalk.red(
         '**NOTE**: [PATH] is mandatory option. It is the source code directory eg. /project/src'
       )
     ),
-    choices: codemodChoice,
+    message: `Please provide the following jscodeshift cli options ${chalk.cyan(
+      '<https://github.com/facebook/jscodeshift#usage-cli>'
+    )}`,
+    name: 'jscodeshift',
   }).run();
 };
 
 const getPluginsForm = async (): Promise<string[]> => {
   const result = await new List({
-    name: 'plugins',
     message: 'Specify any plugins you which to use (multiple can be specified separated with `,`)',
+    name: 'plugins',
   }).run();
 
   return result;

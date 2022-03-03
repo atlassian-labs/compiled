@@ -100,8 +100,8 @@ export function toHaveCompiledCss(
 
   if (!styleElements) {
     return {
-      pass: false,
       message: () => 'pairing style element was not found',
+      pass: false,
     };
   }
 
@@ -139,15 +139,15 @@ export function toHaveCompiledCss(
 
   if (foundStyles.length > 0 && notFoundStyles.length === 0) {
     return {
-      pass: true,
       message: !this.isNot
         ? () => ''
         : () => `Found "${foundFormatted}" on ${element.outerHTML} element.`,
+      pass: true,
     };
   }
 
   return {
-    pass: false,
     message: () => `Could not find "${notFoundFormatted}" on ${element.outerHTML} element.`,
+    pass: false,
   };
 }

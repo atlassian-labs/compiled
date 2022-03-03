@@ -7,7 +7,7 @@ export default {
 const ClassNamesObject = ({ color }: { color: string }) => (
   <ClassNames>
     {({ css, style }) => (
-      <div style={style} className={css({ fontSize: 20, color })}>
+      <div style={style} className={css({ color, fontSize: 20 })}>
         hello world
       </div>
     )}

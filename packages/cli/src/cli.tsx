@@ -21,8 +21,8 @@ const cli = meow(
   {
     flags: {
       preset: {
-        type: 'string',
         alias: 'p',
+        type: 'string',
       },
     },
   }

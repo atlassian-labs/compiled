@@ -9,6 +9,6 @@ export const createResultPair = (
   value: t.Expression;
   meta: Metadata;
 } => ({
-  value,
   meta,
+  value,
 });

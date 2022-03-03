@@ -25,37 +25,8 @@ const getCompiledNode = (context: Rule.RuleContext) => {
 };
 
 const rule: Rule.RuleModule = {
-  meta: {
-    fixable: 'code',
-    type: 'problem',
-    docs: {
-      url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-emotion-css',
-    },
-    messages: {
-      noEmotionCSS: `{{ version }} should not be used use ${COMPILED_IMPORT} instead.`,
-    },
-  },
   create(context) {
     return {
-      Program() {
-        const pragma = context
-          .getSourceCode()
-          .getAllComments()
-          .find((n) => n.value.includes('@jsxImportSource @emotion/react'));
-
-        if (pragma) {
-          return context.report({
-            messageId: 'noEmotionCSS',
-            data: {
-              version: '@emotion/react',
-            },
-            loc: pragma.loc!,
-            fix(fixer) {
-              return fixer.replaceText(pragma as any, '/** @jsxImportSource @compiled/react */');
-            },
-          });
-        }
-      },
       ImportDeclaration(node) {
         if (node.specifiers[0].type === 'ImportNamespaceSpecifier') {
           return;
@@ -66,11 +37,9 @@ const rule: Rule.RuleModule = {
 
         if (hasStyled) {
           context.report({
-            messageId: 'noEmotionCSS',
             data: {
               version: node.source.value as string,
             },
-            node: node.source,
             *fix(fixer) {
               const compiledNode = getCompiledNode(context);
               const specifiers =
@@ -92,16 +61,16 @@ const rule: Rule.RuleModule = {
                 yield fixer.replaceText(node, buildImportDeclaration(specifiers, COMPILED_IMPORT));
               }
             },
+            messageId: 'noEmotionCSS',
+            node: node.source,
           });
         }
 
         if (hasCore) {
           context.report({
-            messageId: 'noEmotionCSS',
             data: {
               version: node.source.value as string,
             },
-            node: node.source,
             *fix(fixer) {
               const compiledNode = getCompiledNode(context);
               const specifiers = node.specifiers
@@ -134,10 +103,41 @@ const rule: Rule.RuleModule = {
                 );
               }
             },
+            messageId: 'noEmotionCSS',
+            node: node.source,
+          });
+        }
+      },
+      Program() {
+        const pragma = context
+          .getSourceCode()
+          .getAllComments()
+          .find((n) => n.value.includes('@jsxImportSource @emotion/react'));
+
+        if (pragma) {
+          return context.report({
+            data: {
+              version: '@emotion/react',
+            },
+            fix(fixer) {
+              return fixer.replaceText(pragma as any, '/** @jsxImportSource @compiled/react */');
+            },
+            loc: pragma.loc!,
+            messageId: 'noEmotionCSS',
           });
         }
       },
     };
+  },
+  meta: {
+    docs: {
+      url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-emotion-css',
+    },
+    fixable: 'code',
+    messages: {
+      noEmotionCSS: `{{ version }} should not be used use ${COMPILED_IMPORT} instead.`,
+    },
+    type: 'problem',
   },
 };
 

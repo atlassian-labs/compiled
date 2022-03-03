@@ -4,9 +4,9 @@ import babelPlugin from '../../index';
 
 const transform = (code: string) => {
   return transformSync(code, {
-    configFile: false,
     babelrc: false,
     compact: true,
+    configFile: false,
     plugins: [babelPlugin],
   })?.code;
 };
@@ -388,9 +388,9 @@ describe('css prop behaviour', () => {
     <div data-testid="yo" css={{ color: color }} style={{ display: "block" }}>hello world</div>
   `,
       {
-        configFile: false,
         babelrc: false,
         compact: true,
+        configFile: false,
         plugins: [[babelPlugin, { nonce: '__webpack_nonce__' }]],
       }
     )?.code;

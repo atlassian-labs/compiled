@@ -90,12 +90,12 @@ const traverseStyledArrowFunctionExpression = (
  */
 const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor: Visitor) => {
   traverse(node, {
-    noScope: true,
     ArrowFunctionExpression(path) {
       path.traverse(nestedVisitor);
       path.replaceWith(pickFunctionBody(path.node));
       path.stop();
     },
+    noScope: true,
   });
 
   return node;
@@ -119,7 +119,6 @@ const getDestructuredProps = (node: t.Node): string[] => {
   const destructuredProps: string[] = [];
 
   traverse(node, {
-    noScope: true,
     ArrowFunctionExpression(path: NodePath<t.ArrowFunctionExpression>) {
       const propsParam = path.get('params')[0];
 
@@ -135,6 +134,7 @@ const getDestructuredProps = (node: t.Node): string[] => {
         destructuredProps.push(...propsUsed);
       }
     },
+    noScope: true,
   });
 
   return destructuredProps;
@@ -208,13 +208,13 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   const styleProp = opts.variables.length
     ? styledStyleProp(opts.variables, (node) => {
         const nestedArrowFunctionExpressionVisitor = {
-          noScope: true,
           MemberExpression(path: NodePath<t.MemberExpression>) {
             const propsToDestructureFromMemberExpression =
               handleMemberExpressionInStyledInterpolation(path);
 
             propsToDestructure.push(...propsToDestructureFromMemberExpression);
           },
+          noScope: true,
         };
 
         if (t.isArrowFunctionExpression(node)) {
@@ -267,8 +267,8 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
       plugins: ['jsx'],
     }
   )({
-    styleProp,
     cssNode: t.arrayExpression(unique(opts.sheets).map((sheet: string) => hoistSheet(sheet, meta))),
+    styleProp,
   }) as t.Node;
 };
 
@@ -306,8 +306,8 @@ export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metad
   return styledTemplate(
     {
       classNames,
-      tag,
       sheets,
+      tag,
       variables: cssOutput.variables,
     },
     meta

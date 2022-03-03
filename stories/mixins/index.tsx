@@ -1,8 +1,8 @@
 import { css } from '@compiled/react';
 
 export const hoverObjectLiteral = {
-  color: 'purple',
   backgroundColor: 'red',
+  color: 'purple',
 };
 
 export const primaryTaggedTemplateExpression = css`
@@ -17,8 +17,8 @@ export const secondaryTaggedTemplateExpression = css`
 `;
 
 export const primaryCallExpression = css({
+  color: 'purple',
   fontSize: '32px',
   fontWeight: 'bold',
-  color: 'purple',
   textDecoration: 'underline',
 });

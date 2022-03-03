@@ -14,7 +14,6 @@ export const getFunctionArgs = (
   let args: t.CallExpression['arguments'] = [];
 
   traverse(memberExpression, {
-    noScope: true,
     CallExpression(path) {
       const { node } = path;
       const { callee } = node;
@@ -27,6 +26,7 @@ export const getFunctionArgs = (
         path.stop();
       }
     },
+    noScope: true,
   });
 
   return args;

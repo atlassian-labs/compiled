@@ -6,12 +6,12 @@ export default {
 };
 
 const Highlight = styled.div<{ primary: string }>({
-  fontSize: '20px',
-  color: (props) => props.primary,
-  margin: '20px',
   ':hover': {
     color: 'red',
   },
+  color: (props) => props.primary,
+  fontSize: '20px',
+  margin: '20px',
 });
 
 export const ObjectLiteral = (): JSX.Element => {

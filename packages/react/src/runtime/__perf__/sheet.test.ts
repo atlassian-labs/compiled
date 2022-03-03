@@ -6,15 +6,17 @@ import { createStyleSheet } from './utils/sheet';
 
 global.document = {
   // @ts-expect-error
+  createElement: () => ({
+    appendChild: () => {},
+  }),
+
+  // @ts-expect-error
   createTextNode: () => {},
+
   head: {
     // @ts-expect-error
     insertBefore: () => {},
   },
-  // @ts-expect-error
-  createElement: () => ({
-    appendChild: () => {},
-  }),
 };
 
 describe('sheet benchmark', () => {
@@ -35,15 +37,14 @@ describe('sheet benchmark', () => {
 
     const benchmark = await runBenchmark('sheet', [
       {
-        name: 'insertRule',
         fn: () => {
           for (const rule of rules) {
             insertRule(rule, {});
           }
         },
+        name: 'insertRule',
       },
       {
-        name: 'createStyleSheet',
         fn: () => {
           const sheet = createStyleSheet({});
 
@@ -51,6 +52,7 @@ describe('sheet benchmark', () => {
             sheet(rule);
           }
         },
+        name: 'createStyleSheet',
       },
     ]);
 

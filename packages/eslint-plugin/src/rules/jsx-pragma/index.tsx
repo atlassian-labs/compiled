@@ -28,33 +28,6 @@ const findReactDeclarationWithDefaultImport = (
 };
 
 const rule: Rule.RuleModule = {
-  meta: {
-    fixable: 'code',
-    type: 'problem',
-    docs: {
-      recommended: true,
-      url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/jsx-pragma',
-    },
-    messages: {
-      missingPragma: 'To use the `css` prop you must set the {{ pragma }} pragma.',
-      preferJsxImportSource:
-        'Use of the jsxImportSource pragma (automatic runtime) is preferred over the jsx pragma (classic runtime).',
-      preferJsx:
-        'Use of the jsx pragma (classic runtime) is preferred over the jsx pragma (automatic runtime).',
-    },
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          runtime: {
-            type: 'string',
-            pattern: '^(classic|automatic)$',
-          },
-        },
-        additionalProperties: false,
-      },
-    ],
-  },
   create(context) {
     const options: Options = context.options[0] || { runtime: 'automatic' };
     const source = context.getSourceCode();
@@ -65,63 +38,6 @@ const rule: Rule.RuleModule = {
     );
 
     return {
-      Program() {
-        if (jsxPragma && options.runtime === 'automatic') {
-          return context.report({
-            messageId: 'preferJsxImportSource',
-            loc: jsxPragma.loc!,
-            *fix(fixer) {
-              yield fixer.replaceText(jsxPragma as any, '/** @jsxImportSource @compiled/react */');
-
-              const compiledImports = findCompiledImportDeclarations(context);
-              const jsxImport = findDeclarationWithImport(compiledImports, 'jsx');
-              if (!jsxImport) {
-                return;
-              }
-
-              if (jsxImport.specifiers.length) {
-                const specifiersString = removeImportFromDeclaration(jsxImport, ['jsx']);
-                if (specifiersString.length === 0) {
-                  yield fixer.remove(jsxImport);
-                } else {
-                  yield fixer.replaceText(jsxImport, specifiersString);
-                }
-              } else {
-                yield fixer.remove(jsxImport);
-              }
-            },
-          });
-        }
-
-        if (jsxImportSourcePragma && options.runtime === 'classic') {
-          return context.report({
-            messageId: 'preferJsx',
-            loc: jsxImportSourcePragma.loc!,
-            *fix(fixer) {
-              yield fixer.replaceText(jsxImportSourcePragma as any, '/** @jsx jsx */');
-
-              const compiledImports = findCompiledImportDeclarations(context);
-              const jsxImport = findDeclarationWithImport(compiledImports, 'jsx');
-              if (jsxImport) {
-                return;
-              }
-
-              if (compiledImports.length) {
-                const [firstCompiledImport] = compiledImports;
-                const specifiersString = addImportToDeclaration(firstCompiledImport, ['jsx']);
-
-                yield fixer.replaceText(firstCompiledImport, specifiersString);
-              } else {
-                yield fixer.insertTextBefore(
-                  source.ast.body[0],
-                  "import { jsx } from '@compiled/react';\n"
-                );
-              }
-            },
-          });
-        }
-      },
-
       JSXAttribute(node: any) {
         if (jsxPragma || jsxImportSourcePragma || node.name.name !== 'css') {
           return;
@@ -131,11 +47,9 @@ const rule: Rule.RuleModule = {
           options.runtime === 'classic' ? '@jsx jsx' : '@jsxImportSource @compiled/react';
 
         context.report({
-          messageId: 'missingPragma',
           data: {
             pragma: options.runtime === 'classic' ? 'jsx' : 'jsxImportSource',
           },
-          node,
           *fix(fixer) {
             const reactImport = findReactDeclarationWithDefaultImport(source);
             if (reactImport) {
@@ -182,9 +96,95 @@ const rule: Rule.RuleModule = {
               }
             }
           },
+          messageId: 'missingPragma',
+          node,
         });
       },
+
+      Program() {
+        if (jsxPragma && options.runtime === 'automatic') {
+          return context.report({
+            *fix(fixer) {
+              yield fixer.replaceText(jsxPragma as any, '/** @jsxImportSource @compiled/react */');
+
+              const compiledImports = findCompiledImportDeclarations(context);
+              const jsxImport = findDeclarationWithImport(compiledImports, 'jsx');
+              if (!jsxImport) {
+                return;
+              }
+
+              if (jsxImport.specifiers.length) {
+                const specifiersString = removeImportFromDeclaration(jsxImport, ['jsx']);
+                if (specifiersString.length === 0) {
+                  yield fixer.remove(jsxImport);
+                } else {
+                  yield fixer.replaceText(jsxImport, specifiersString);
+                }
+              } else {
+                yield fixer.remove(jsxImport);
+              }
+            },
+            loc: jsxPragma.loc!,
+            messageId: 'preferJsxImportSource',
+          });
+        }
+
+        if (jsxImportSourcePragma && options.runtime === 'classic') {
+          return context.report({
+            *fix(fixer) {
+              yield fixer.replaceText(jsxImportSourcePragma as any, '/** @jsx jsx */');
+
+              const compiledImports = findCompiledImportDeclarations(context);
+              const jsxImport = findDeclarationWithImport(compiledImports, 'jsx');
+              if (jsxImport) {
+                return;
+              }
+
+              if (compiledImports.length) {
+                const [firstCompiledImport] = compiledImports;
+                const specifiersString = addImportToDeclaration(firstCompiledImport, ['jsx']);
+
+                yield fixer.replaceText(firstCompiledImport, specifiersString);
+              } else {
+                yield fixer.insertTextBefore(
+                  source.ast.body[0],
+                  "import { jsx } from '@compiled/react';\n"
+                );
+              }
+            },
+            loc: jsxImportSourcePragma.loc!,
+            messageId: 'preferJsx',
+          });
+        }
+      },
     };
+  },
+  meta: {
+    docs: {
+      recommended: true,
+      url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/jsx-pragma',
+    },
+    fixable: 'code',
+    messages: {
+      missingPragma: 'To use the `css` prop you must set the {{ pragma }} pragma.',
+      preferJsx:
+        'Use of the jsx pragma (classic runtime) is preferred over the jsx pragma (automatic runtime).',
+      preferJsxImportSource:
+        'Use of the jsxImportSource pragma (automatic runtime) is preferred over the jsx pragma (classic runtime).',
+    },
+    schema: [
+      {
+        additionalProperties: false,
+        properties: {
+          runtime: {
+            pattern: '^(classic|automatic)$',
+            type: 'string',
+          },
+        },
+        type: 'object',
+      },
+    ],
+    type: 'problem',
   },
 };
 

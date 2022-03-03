@@ -34,8 +34,8 @@ export default declare<State>((api) => {
   api.assertVersion(7);
 
   return {
-    name: packageJson.name,
     inherits: jsxSyntax,
+    name: packageJson.name,
     pre() {
       this.sheets = {};
       let cache: Cache;
@@ -55,6 +55,66 @@ export default declare<State>((api) => {
       this.pragma = {};
     },
     visitor: {
+      CallExpression(path, state) {
+        if (
+          isCompiledCSSCallExpression(path.node, state) ||
+          isCompiledKeyframesCallExpression(path.node, state)
+        ) {
+          state.pathsToCleanup.push({ action: 'replace', path });
+          return;
+        }
+
+        if (isCompiledStyledCallExpression(path.node, state)) {
+          visitStyledPath(path, { context: 'root', parentPath: path, state });
+          return;
+        }
+      },
+      ImportDeclaration(path, state) {
+        if (path.node.source.value !== COMPILED_MODULE) {
+          return;
+        }
+
+        // The presence of the module enables CSS prop
+        state.compiledImports = state.compiledImports || {};
+
+        // Go through each import and enable each found API
+        path.get('specifiers').forEach((specifier) => {
+          if (!state.compiledImports || !specifier.isImportSpecifier()) {
+            // Bail out early
+            return;
+          }
+
+          (['styled', 'ClassNames', 'css', 'keyframes'] as const).forEach((apiName) => {
+            if (
+              state.compiledImports &&
+              t.isIdentifier(specifier.node?.imported) &&
+              specifier.node?.imported.name === apiName
+            ) {
+              // Enable the API with the local name
+              state.compiledImports[apiName] = specifier.node.local.name;
+              specifier.remove();
+            }
+          });
+        });
+
+        if (path.node.specifiers.length === 0) {
+          path.remove();
+        }
+      },
+      JSXElement(path, state) {
+        if (!state.compiledImports?.ClassNames) {
+          return;
+        }
+
+        visitClassNamesPath(path, { context: 'root', parentPath: path, state });
+      },
+      JSXOpeningElement(path, state) {
+        if (!state.compiledImports) {
+          return;
+        }
+
+        visitCssPropPath(path, { context: 'root', parentPath: path, state });
+      },
       Program: {
         enter(_, state) {
           const { file } = state;
@@ -134,79 +194,19 @@ export default declare<State>((api) => {
           });
         },
       },
-      ImportDeclaration(path, state) {
-        if (path.node.source.value !== COMPILED_MODULE) {
-          return;
-        }
-
-        // The presence of the module enables CSS prop
-        state.compiledImports = state.compiledImports || {};
-
-        // Go through each import and enable each found API
-        path.get('specifiers').forEach((specifier) => {
-          if (!state.compiledImports || !specifier.isImportSpecifier()) {
-            // Bail out early
-            return;
-          }
-
-          (['styled', 'ClassNames', 'css', 'keyframes'] as const).forEach((apiName) => {
-            if (
-              state.compiledImports &&
-              t.isIdentifier(specifier.node?.imported) &&
-              specifier.node?.imported.name === apiName
-            ) {
-              // Enable the API with the local name
-              state.compiledImports[apiName] = specifier.node.local.name;
-              specifier.remove();
-            }
-          });
-        });
-
-        if (path.node.specifiers.length === 0) {
-          path.remove();
-        }
-      },
       TaggedTemplateExpression(path, state) {
         if (
           isCompiledCSSTaggedTemplateExpression(path.node, state) ||
           isCompiledKeyframesTaggedTemplateExpression(path.node, state)
         ) {
-          state.pathsToCleanup.push({ path, action: 'replace' });
+          state.pathsToCleanup.push({ action: 'replace', path });
           return;
         }
 
         if (isCompiledStyledTaggedTemplateExpression(path.node, state)) {
-          visitStyledPath(path, { context: 'root', state, parentPath: path });
+          visitStyledPath(path, { context: 'root', parentPath: path, state });
           return;
         }
-      },
-      CallExpression(path, state) {
-        if (
-          isCompiledCSSCallExpression(path.node, state) ||
-          isCompiledKeyframesCallExpression(path.node, state)
-        ) {
-          state.pathsToCleanup.push({ path, action: 'replace' });
-          return;
-        }
-
-        if (isCompiledStyledCallExpression(path.node, state)) {
-          visitStyledPath(path, { context: 'root', state, parentPath: path });
-          return;
-        }
-      },
-      JSXElement(path, state) {
-        if (!state.compiledImports?.ClassNames) {
-          return;
-        }
-
-        visitClassNamesPath(path, { context: 'root', state, parentPath: path });
-      },
-      JSXOpeningElement(path, state) {
-        if (!state.compiledImports) {
-          return;
-        }
-
-        visitCssPropPath(path, { context: 'root', state, parentPath: path });
       },
     },
   };

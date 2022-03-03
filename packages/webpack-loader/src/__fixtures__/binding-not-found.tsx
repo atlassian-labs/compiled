@@ -38,7 +38,7 @@ export const Header = ({ children, variant = 'default', ...props }: HeaderProps)
 
   return (
     <StyledHeader variant={variant} color={color} {...props}>
-      <a href="/" css={{ textDecoration: 'none', color: 'currentColor' }}>
+      <a href="/" css={{ color: 'currentColor', textDecoration: 'none' }}>
         Compiled
       </a>
       {children}

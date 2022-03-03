@@ -22,14 +22,14 @@ export const Static = (): JSX.Element => (
     }}>
     <span
       css={{
-        display: 'inline-block',
-        verticalAlign: 'top',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
         boxSizing: 'border-box',
-        padding: `0 4px`,
+        display: 'inline-block',
         maxWidth: 100,
+        overflow: 'hidden',
+        padding: `0 4px`,
+        textOverflow: 'ellipsis',
+        verticalAlign: 'top',
+        whiteSpace: 'nowrap',
         width: '100%',
       }}>
       Lozenge
@@ -55,14 +55,14 @@ const Lozenge = (props: { bg: string; color: string }) => (
     }}>
     <span
       css={{
-        display: 'inline-block',
-        verticalAlign: 'top',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
         boxSizing: 'border-box',
-        padding: `0 4px`,
+        display: 'inline-block',
         maxWidth: 100,
+        overflow: 'hidden',
+        padding: `0 4px`,
+        textOverflow: 'ellipsis',
+        verticalAlign: 'top',
+        whiteSpace: 'nowrap',
         width: '100%',
       }}>
       Lozenge

@@ -8,11 +8,11 @@ jest.mock('../utils/cache');
 const transform = (code: string, opts: PluginOptions = {}) => {
   try {
     return transformSync(code, {
-      configFile: false,
       babelrc: false,
       compact: true,
-      highlightCode: false,
+      configFile: false,
       filename: process.cwd() + '/packages/babel-plugin/src/__tests__/module-traversal.test.js',
+      highlightCode: false,
       plugins: [[babelPlugin, opts]],
     })?.code;
   } catch (e: unknown) {

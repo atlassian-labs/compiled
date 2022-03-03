@@ -32,12 +32,12 @@ describe('main', () => {
       flags: {
         preset,
       },
-      input: [],
-      unnormalizedFlags: { preset },
-      pkg: {},
       help: '',
+      input: [],
+      pkg: {},
       showHelp: jest.fn(),
       showVersion: jest.fn(),
+      unnormalizedFlags: { preset },
     };
 
     await main(cli);
@@ -72,9 +72,9 @@ describe('main', () => {
     const { cli } = await setup('');
 
     expect(AutoComplete).toHaveBeenCalledWith({
-      message: 'Select which preset would you like to run? 🤔',
-      limit: 18,
       choices: ['mockedPreset'],
+      limit: 18,
+      message: 'Select which preset would you like to run? 🤔',
     });
 
     expect(global.console.warn).toHaveBeenCalledWith(
@@ -109,9 +109,9 @@ describe('main', () => {
     const { cli } = await setup('');
 
     expect(AutoComplete).toHaveBeenCalledWith({
-      message: 'Select which preset would you like to run? 🤔',
-      limit: 18,
       choices: ['mockedPreset'],
+      limit: 18,
+      message: 'Select which preset would you like to run? 🤔',
     });
 
     expect(presets.mockedPreset).toHaveBeenCalledWith(cli);

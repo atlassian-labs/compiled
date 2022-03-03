@@ -46,7 +46,6 @@ export const hasNestedTemplateLiteralsWithConditionalRules = (
   let isNested = false;
 
   traverse(parent, {
-    noScope: true,
     ConditionalExpression(path) {
       conditionalPaths.map((c) => {
         const expression = path.node[c];
@@ -64,6 +63,7 @@ export const hasNestedTemplateLiteralsWithConditionalRules = (
         }
       });
     },
+    noScope: true,
   });
 
   return isNested;
@@ -109,16 +109,16 @@ export const moveCssPropertyInExpression = (
     } else if (t.isIdentifier(pathNode)) {
       const identifierExpression = [pathNode];
       const identifierQuasis = [
-        t.templateElement({ raw: before, cooked: before }),
-        t.templateElement({ raw: after, cooked: after }),
+        t.templateElement({ cooked: before, raw: before }),
+        t.templateElement({ cooked: after, raw: after }),
       ];
       expression[path] = t.templateLiteral(identifierQuasis, identifierExpression);
     } else if (t.isMemberExpression(pathNode)) {
       // We've found a member expression like `colors.N50`
       const memberExpression = [pathNode];
       const memberQuasis = [
-        t.templateElement({ raw: before, cooked: before }),
-        t.templateElement({ raw: after, cooked: after }),
+        t.templateElement({ cooked: before, raw: before }),
+        t.templateElement({ cooked: after, raw: after }),
       ];
       expression[path] = t.templateLiteral(memberQuasis, memberExpression);
     } else if (t.isConditionalExpression(pathNode)) {

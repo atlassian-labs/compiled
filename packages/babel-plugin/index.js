@@ -4,8 +4,8 @@ const tsNode = require('ts-node');
 const tsPaths = require('tsconfig-paths');
 
 tsNode.register({
-  transpileOnly: true,
   project: __dirname + '/tsconfig.json',
+  transpileOnly: true,
 });
 
 tsPaths.register();

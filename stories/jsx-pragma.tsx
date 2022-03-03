@@ -24,7 +24,7 @@ const DivWithoutClassName = ({ children }: { children: JSX.Element }) => {
 };
 
 export const LocalJSXNamespace = (): JSX.Element => (
-  <div css={{ fontSize: 30, color: 'blue' }}>Sourced from local JSX Namespace</div>
+  <div css={{ color: 'blue', fontSize: 30 }}>Sourced from local JSX Namespace</div>
 );
 
 export const WithClassName = (): JSX.Element => (

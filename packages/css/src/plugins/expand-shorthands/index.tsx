@@ -15,20 +15,29 @@ import { textDecoration } from './text-decoration';
 import type { ConversionFunction } from './types';
 
 const shorthands: Record<string, ConversionFunction> = {
-  // These properties are fully expanded
-  margin,
-  padding,
-  'place-content': placeContent,
-  'place-items': placeItems,
-  'place-self': placeSelf,
-  overflow,
-  flex,
-  'flex-flow': flexFlow,
-  outline,
-  'text-decoration': textDecoration,
-
   // These properties are partially expanded
   background,
+
+  flex,
+
+  'flex-flow': flexFlow,
+
+  // These properties are fully expanded
+  margin,
+
+  outline,
+
+  overflow,
+
+  padding,
+
+  'place-content': placeContent,
+
+  'place-items': placeItems,
+
+  'place-self': placeSelf,
+
+  'text-decoration': textDecoration,
 
   // These properties are excluded for now but will be ordered when building production.
   /**
@@ -61,7 +70,6 @@ const shorthands: Record<string, ConversionFunction> = {
  */
 export const expandShorthands = (): Plugin => {
   return {
-    postcssPlugin: 'expand-shorthands',
     Declaration(decl) {
       const expand = shorthands[decl.prop];
       /** Return early if no matching property to expand */
@@ -90,6 +98,7 @@ export const expandShorthands = (): Plugin => {
 
       decl.replaceWith(nodes);
     },
+    postcssPlugin: 'expand-shorthands',
   };
 };
 

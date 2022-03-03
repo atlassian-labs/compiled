@@ -5,8 +5,8 @@ export default {
 };
 
 const Thing = styled.div({
-  fontSize: '20px',
   color: 'red',
+  fontSize: '20px',
 });
 
 const Box = styled.div({ fontSize: 20 }, `color: blue;`, [{ padding: 20 }], {

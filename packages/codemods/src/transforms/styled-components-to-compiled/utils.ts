@@ -119,7 +119,7 @@ const extractTemplateData = ({
         }
         return acc;
       },
-      { keys: [], expressions: [] } as {
+      { expressions: [], keys: [] } as {
         keys: string[];
         expressions: (Identifier | ArrowFunctionExpression | MemberExpression)[];
       }
@@ -136,10 +136,10 @@ const extractTemplateData = ({
       return quasis;
     }, [] as TemplateElement[]);
 
-    return { quasis, expressions };
+    return { expressions, quasis };
   }
 
-  return { quasis: [], expressions: [] };
+  return { expressions: [], quasis: [] };
 };
 
 /**
@@ -207,15 +207,15 @@ const getDeclarationData = (expression: ASTPath) => {
     parentDeclaration.value.id.type === 'Identifier'
   ) {
     return {
-      name: parentDeclaration.value.id.name as string,
       declaration: findParent(expression, 'VariableDeclaration') as StyledAttributesDeclarationNode,
+      name: parentDeclaration.value.id.name as string,
     };
   }
 
   return {
-    name: `ComposedComponent`,
     declaration: expression as StyledAttributesDeclarationNode,
     isAnonymous: true,
+    name: `ComposedComponent`,
   };
 };
 
@@ -277,10 +277,10 @@ const applyBuildAttributes = ({
     }
 
     return buildAttributesImpl({
+      composedNode,
+      currentNode,
       originalNode,
       transformedNode,
-      currentNode,
-      composedNode,
     });
   }, originalNode as StyledAttributesDeclarationNode);
 };
@@ -313,9 +313,9 @@ export const convertStyledAttrsToComponent = ({
     const attributesExpression = getAttributesExpression(expression);
     const styleAttributeExpression = getStyleAttributeExpression(attributesExpression);
     const newTemplateExpressions = createNewTemplateExpression({
-      j,
-      expression,
       compiledLocalStyledName,
+      expression,
+      j,
     });
 
     if (styleAttributeExpression) {
@@ -344,16 +344,16 @@ export const convertStyledAttrsToComponent = ({
 
     if (restAttributes && restAttributes.length > 0) {
       composedNode = createComposedNode({
-        j,
         expression: newTemplateExpressions,
+        j,
         name: getAlternativeComponentName(componentName),
       });
       transformedNode = createWrapperNode({
-        j,
-        expression: attributesExpression,
         attrs: restAttributes,
-        name: componentName,
+        expression: attributesExpression,
         isAnonymous,
+        j,
+        name: componentName,
       });
     } else {
       transformedNode = isAnonymous
@@ -366,10 +366,10 @@ export const convertStyledAttrsToComponent = ({
     // sanity check that we actually have a new node to replace with
     transformedNode &&
       applyBuildAttributes({
-        plugins,
-        originalNode: expressionDeclarator,
-        transformedNode,
         composedNode,
+        originalNode: expressionDeclarator,
+        plugins,
+        transformedNode,
       });
   });
 };

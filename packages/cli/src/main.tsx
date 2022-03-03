@@ -6,9 +6,9 @@ import presets from './presets';
 
 const getPresetPrompt = async (): Promise<string> =>
   await new AutoComplete({
-    message: 'Select which preset would you like to run? 🤔',
-    limit: 18,
     choices: Object.keys(presets),
+    limit: 18,
+    message: 'Select which preset would you like to run? 🤔',
   }).run();
 
 const executePreset = async (cli: Result) => {

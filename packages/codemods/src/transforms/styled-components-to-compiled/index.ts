@@ -15,8 +15,8 @@ import { convertStyledAttrsToComponent } from './utils';
 
 const imports = {
   compiledStyledImportName: 'styled',
-  styledComponentsSupportedImportNames: ['css', 'keyframes'],
   styledComponentsPackageName: 'styled-components',
+  styledComponentsSupportedImportNames: ['css', 'keyframes'],
 };
 
 const transformer = (fileInfo: FileInfo, api: API, options: Options): string => {
@@ -30,9 +30,9 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
   const originalProgram: Program = j(source).find(j.Program).get();
 
   const hasStyledComponentsImportDeclaration = hasImportDeclaration({
-    j,
     collection,
     importPath: imports.styledComponentsPackageName,
+    j,
   });
 
   if (!hasStyledComponentsImportDeclaration) {
@@ -40,25 +40,25 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
   }
 
   addCommentForUnresolvedImportSpecifiers({
-    j,
+    allowedImportSpecifierNames: imports.styledComponentsSupportedImportNames,
     collection,
     importPath: imports.styledComponentsPackageName,
-    allowedImportSpecifierNames: imports.styledComponentsSupportedImportNames,
+    j,
   });
 
   convertMixedImportToNamedImport({
+    allowedImportSpecifierNames: imports.styledComponentsSupportedImportNames,
+    collection,
+    defaultSourceSpecifierName: imports.compiledStyledImportName,
+    importPath: imports.styledComponentsPackageName,
     j,
     plugins,
-    collection,
-    importPath: imports.styledComponentsPackageName,
-    defaultSourceSpecifierName: imports.compiledStyledImportName,
-    allowedImportSpecifierNames: imports.styledComponentsSupportedImportNames,
   });
 
   applyVisitor({
-    plugins,
-    originalProgram,
     currentProgram: collection.find(j.Program).get(),
+    originalProgram,
+    plugins,
   });
 
   const styledImports = collection.find(
@@ -95,10 +95,10 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
 
       if (taggedTemplateExpressionsWithAttrs.length) {
         convertStyledAttrsToComponent({
+          compiledLocalStyledName,
+          expressions: taggedTemplateExpressionsWithAttrs,
           j,
           plugins,
-          expressions: taggedTemplateExpressionsWithAttrs,
-          compiledLocalStyledName,
         });
       }
     }

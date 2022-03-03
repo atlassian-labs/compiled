@@ -17,45 +17,6 @@ export default declare<PluginPass>((api) => {
       this.styleRules = [];
     },
     visitor: {
-      Program: {
-        exit() {
-          if (this.opts.onFoundStyleRules) {
-            this.opts.onFoundStyleRules(this.styleRules);
-          }
-        },
-      },
-      ImportSpecifier(path) {
-        if (t.isIdentifier(path.node.imported) && ['CC', 'CS'].includes(path.node.imported.name)) {
-          path.remove();
-        }
-      },
-      JSXElement(path, pass) {
-        if (!t.isJSXIdentifier(path.node.openingElement.name)) {
-          return;
-        }
-
-        const componentName = path.node.openingElement.name.name;
-        if (componentName !== 'CC') {
-          return;
-        }
-
-        const [, compiledStyles, , nodeToReplace] = path.get('children');
-
-        // Before we replace this node with its children we need to go through and remove all the
-        // style declarations from the CS call.
-        removeStyleDeclarations(compiledStyles.node, path, pass);
-
-        if (t.isJSXExpressionContainer(nodeToReplace.node)) {
-          const container = nodeToReplace as NodePath<t.JSXExpressionContainer>;
-          path.replaceWith(container.node.expression);
-        } else {
-          path.replaceWith(nodeToReplace);
-        }
-
-        // All done! Let's replace this node with the user land child.
-        path.node.leadingComments = null;
-        return;
-      },
       CallExpression(path, pass) {
         const callee = path.node.callee;
         if (isCreateElement(callee)) {
@@ -115,6 +76,45 @@ export default declare<PluginPass>((api) => {
           path.node.leadingComments = null;
           return;
         }
+      },
+      ImportSpecifier(path) {
+        if (t.isIdentifier(path.node.imported) && ['CC', 'CS'].includes(path.node.imported.name)) {
+          path.remove();
+        }
+      },
+      JSXElement(path, pass) {
+        if (!t.isJSXIdentifier(path.node.openingElement.name)) {
+          return;
+        }
+
+        const componentName = path.node.openingElement.name.name;
+        if (componentName !== 'CC') {
+          return;
+        }
+
+        const [, compiledStyles, , nodeToReplace] = path.get('children');
+
+        // Before we replace this node with its children we need to go through and remove all the
+        // style declarations from the CS call.
+        removeStyleDeclarations(compiledStyles.node, path, pass);
+
+        if (t.isJSXExpressionContainer(nodeToReplace.node)) {
+          const container = nodeToReplace as NodePath<t.JSXExpressionContainer>;
+          path.replaceWith(container.node.expression);
+        } else {
+          path.replaceWith(nodeToReplace);
+        }
+
+        // All done! Let's replace this node with the user land child.
+        path.node.leadingComments = null;
+        return;
+      },
+      Program: {
+        exit() {
+          if (this.opts.onFoundStyleRules) {
+            this.opts.onFoundStyleRules(this.styleRules);
+          }
+        },
       },
     },
   };

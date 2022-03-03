@@ -4,12 +4,13 @@ import babelPlugin from '../index';
 
 const transform = (code: string) => {
   return transformSync(code, {
-    configFile: false,
     babelrc: false,
     compact: true,
-    plugins: [babelPlugin],
+    configFile: false,
     // Turn off code highlighting so snapshots are human readable.
     highlightCode: false,
+
+    plugins: [babelPlugin],
   })?.code;
 };
 

@@ -55,21 +55,21 @@ describe('class names component', () => {
       {({ css }) => (
         <div
           className={css({
-            color: 'currentColor',
-            textDecoration: 'none',
-            position: 'relative',
             ':before': {
-              opacity: 0,
               content: '⚓',
-              position: 'absolute',
-              left: '-5rem',
               fontSize: '3rem',
+              left: '-5rem',
+              opacity: 0,
+              position: 'absolute',
             },
             ':hover': {
               ':before': {
                 opacity: 1,
               },
             },
+            color: 'currentColor',
+            position: 'relative',
+            textDecoration: 'none',
           })}>
           hello world
         </div>
@@ -131,9 +131,9 @@ describe('class names component', () => {
     );
 
     expect(getByText('hello world')).toHaveCompiledCss({
-      fontSize: '15px',
       color: 'red',
       display: 'none',
+      fontSize: '15px',
     });
   });
 });

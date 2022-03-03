@@ -17,6 +17,27 @@ const configFiles = [
  * Compiled parcel transformer.
  */
 export default new Transformer<UserlandOpts>({
+  canReuseAST() {
+    // Compiled should run before any other JS transformer.
+    return false;
+  },
+
+  async generate({ asset, ast }) {
+    // TODO: We're using babels standard generator. Internally parcel does some hacks in
+    // the official Babel transformer to make it faster - using ASTree directly.
+    // Perhaps we should do the same thing.
+    const { code, map: babelMap } = generate(ast.program, {
+      filename: asset.filePath,
+      sourceFileName: asset.filePath,
+      sourceMaps: true,
+    });
+
+    return {
+      content: code,
+      map: babelMap ? new SourceMap().addVLQMap(babelMap) : null,
+    };
+  },
+
   async loadConfig({ config }) {
     const conf = await config.getConfig(configFiles, {
       packageKey: '@compiled/parcel-transformer',
@@ -32,11 +53,6 @@ export default new Transformer<UserlandOpts>({
     return contents;
   },
 
-  canReuseAST() {
-    // Compiled should run before any other JS transformer.
-    return false;
-  },
-
   async parse({ asset }) {
     if (!asset.isSource) {
       return undefined;
@@ -50,15 +66,15 @@ export default new Transformer<UserlandOpts>({
     }
 
     const program = await parseAsync(code, {
-      filename: asset.filePath,
       caller: { name: 'compiled' },
+      filename: asset.filePath,
       rootMode: 'upward-optional',
     });
 
     return {
+      program,
       type: 'babel',
       version: '7.0.0',
-      program,
     };
   },
 
@@ -74,25 +90,25 @@ export default new Transformer<UserlandOpts>({
     const code = asset.isASTDirty() ? undefined : await asset.getCode();
 
     const result = await transformFromAstAsync(ast.program, code, {
-      code: false,
       ast: true,
-      filename: asset.filePath,
       babelrc: false,
+      caller: {
+        name: 'compiled',
+      },
+      code: false,
       configFile: false,
-      sourceMaps: true,
+      filename: asset.filePath,
       plugins: [
         [
           '@compiled/babel-plugin',
           {
             ...config,
-            onIncludedFiles: (files: string[]) => includedFiles.push(...files),
             cache: 'single-pass',
+            onIncludedFiles: (files: string[]) => includedFiles.push(...files),
           },
         ],
       ],
-      caller: {
-        name: 'compiled',
-      },
+      sourceMaps: true,
     });
 
     includedFiles.forEach((file) => {
@@ -104,30 +120,14 @@ export default new Transformer<UserlandOpts>({
 
     if (result?.ast) {
       asset.setAST({
+        program: result.ast,
         // TODO: Currently if we set this as `'babel'` the babel transformer blows up.
         // Let's figure out what we can do to reuse it.
         type: 'compiled',
         version: '0.0.0',
-        program: result.ast,
       });
     }
 
     return [asset];
-  },
-
-  async generate({ asset, ast }) {
-    // TODO: We're using babels standard generator. Internally parcel does some hacks in
-    // the official Babel transformer to make it faster - using ASTree directly.
-    // Perhaps we should do the same thing.
-    const { code, map: babelMap } = generate(ast.program, {
-      filename: asset.filePath,
-      sourceMaps: true,
-      sourceFileName: asset.filePath,
-    });
-
-    return {
-      content: code,
-      map: babelMap ? new SourceMap().addVLQMap(babelMap) : null,
-    };
   },
 });

@@ -4,11 +4,11 @@ import babelPlugin from '../index';
 
 const transform = (code: TemplateStringsArray) => {
   return transformSync(code[0], {
-    configFile: false,
     babelrc: false,
+    configFile: false,
     filename: 'jsx-automatic.test.tsx',
-    presets: [['@babel/preset-react', { runtime: 'automatic' }]],
     plugins: [[babelPlugin, { importReact: false }]],
+    presets: [['@babel/preset-react', { runtime: 'automatic' }]],
   })?.code;
 };
 

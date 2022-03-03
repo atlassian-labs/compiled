@@ -23,24 +23,24 @@ const transformCssItem = (
       const defaultExpression = t.identifier('undefined');
 
       return {
-        sheets: [...consequent.sheets, ...alternate.sheets],
         classExpression: t.conditionalExpression(
           item.test,
           consequent.classExpression || defaultExpression,
           alternate.classExpression || defaultExpression
         ),
+        sheets: [...consequent.sheets, ...alternate.sheets],
       };
 
     case 'logical':
       const logicalCss = transformCss(getItemCss(item));
 
       return {
-        sheets: logicalCss.sheets,
         classExpression: t.logicalExpression(
           item.operator,
           item.expression,
           t.stringLiteral(logicalCss.classNames.join(' '))
         ),
+        sheets: logicalCss.sheets,
       };
 
     default:
@@ -48,8 +48,8 @@ const transformCssItem = (
       const className = css.classNames.join(' ');
 
       return {
-        sheets: css.sheets,
         classExpression: className.trim() ? t.stringLiteral(className) : undefined,
+        sheets: css.sheets,
       };
   }
 };
@@ -75,5 +75,5 @@ export const transformCssItems = (
     }
   });
 
-  return { sheets, classNames };
+  return { classNames, sheets };
 };

@@ -24,7 +24,6 @@ export const traverseFunction = (
 
   if (t.isBlockStatement(expression.body)) {
     traverse(expression.body, {
-      noScope: true,
       ReturnStatement(path) {
         const { argument } = path.node;
 
@@ -34,6 +33,7 @@ export const traverseFunction = (
 
         path.stop();
       },
+      noScope: true,
     });
   } else {
     ({ value, meta: updatedMeta } = evaluateExpression(expression.body, meta));

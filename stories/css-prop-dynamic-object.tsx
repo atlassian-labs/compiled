@@ -11,12 +11,12 @@ export const DynamicCssProp = (): JSX.Element => {
   return (
     <div
       css={{
-        padding: '20px',
         ':hover': {
           backgroundColor: 'purple',
         },
+        padding: '20px',
       }}>
-      <div css={{ display: 'flex', fontSize: '20px', color }}>{color} text</div>
+      <div css={{ color, display: 'flex', fontSize: '20px' }}>{color} text</div>
 
       <div
         css={{
@@ -51,22 +51,22 @@ export const ImportantChild = (): JSX.Element => <NestedColor color="red" />;
 const FlushChild = ({ spacing }: { spacing: number }) => (
   <div
     css={{
-      height: 200,
+      alignItems: 'center',
+      backgroundColor: 'blue',
       color: 'white',
       display: 'flex',
-      alignItems: 'center',
+      height: 200,
       justifyContent: 'center',
-      width: 200,
-      backgroundColor: 'blue',
-      textAlign: 'center',
       margin: `-${spacing * 2}px -${spacing * 3}px`,
+      textAlign: 'center',
+      width: 200,
     }}>
     SHOULD BE FLUSH AGAINST PARENT
   </div>
 );
 
 export const InterpolationsWithMinus = (): JSX.Element => (
-  <div css={{ padding: '16px 24px', backgroundColor: 'red' }}>
+  <div css={{ backgroundColor: 'red', padding: '16px 24px' }}>
     <FlushChild spacing={8} />
   </div>
 );
@@ -74,22 +74,22 @@ export const InterpolationsWithMinus = (): JSX.Element => (
 const AnotherFlushChild = ({ spacing }: { spacing: number }) => (
   <div
     css={{
-      height: 200,
+      alignItems: 'center',
+      backgroundColor: 'blue',
       color: 'white',
       display: 'flex',
-      alignItems: 'center',
+      height: 200,
       justifyContent: 'center',
-      width: 200,
-      backgroundColor: 'blue',
-      textAlign: 'center',
       margin: `0 -${spacing * 2}px -${spacing * 3}px`,
+      textAlign: 'center',
+      width: 200,
     }}>
     SHOULD BE FLUSH AGAINST PARENT
   </div>
 );
 
 export const InterpolationsWithZeroAndMinus = (): JSX.Element => (
-  <div css={{ padding: '0 16px 24px', backgroundColor: 'red' }}>
+  <div css={{ backgroundColor: 'red', padding: '0 16px 24px' }}>
     <AnotherFlushChild spacing={8} />
   </div>
 );

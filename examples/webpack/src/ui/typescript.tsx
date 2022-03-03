@@ -38,10 +38,10 @@ export const TypeScript = (props: { children: string }): JSX.Element => (
     <div
       css={{
         span: {
-          color: '#ccc',
           ':hover': {
             color: 'red',
           },
+          color: '#ccc',
         },
       }}>
       <span>nested span</span>

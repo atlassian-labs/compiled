@@ -27,10 +27,10 @@ const applyBuildImport = ({
     }
 
     return buildImportImpl({
-      originalNode,
-      currentNode,
-      specifiers,
       compiledImportPath: COMPILED_IMPORT_PATH,
+      currentNode,
+      originalNode,
+      specifiers,
     });
   }, originalNode);
 
@@ -60,9 +60,9 @@ export const convertDefaultImportToNamedImport = ({
 }): void => {
   const importDeclarationCollection: Collection<ImportDeclaration> = getImportDeclarationCollection(
     {
-      j,
       collection,
       importPath,
+      j,
     }
   );
 
@@ -73,8 +73,8 @@ export const convertDefaultImportToNamedImport = ({
 
     if (importDefaultSpecifierCollection.length > 0) {
       const newImport = applyBuildImport({
-        plugins,
         originalNode: importDeclarationPath.node,
+        plugins,
         specifiers: [
           j.importSpecifier(
             j.identifier(namedImport),
@@ -105,9 +105,9 @@ export const convertMixedImportToNamedImport = ({
 }): void => {
   const importDeclarationCollection: Collection<ImportDeclaration> = getImportDeclarationCollection(
     {
-      j,
       collection,
       importPath,
+      j,
     }
   );
 
@@ -156,8 +156,8 @@ export const convertMixedImportToNamedImport = ({
     );
 
     const newImport = applyBuildImport({
-      plugins,
       originalNode: importDeclarationPath.node,
+      plugins,
       specifiers: newSpecifiers,
     });
 

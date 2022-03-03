@@ -5,7 +5,6 @@ import type { Plugin, Declaration } from 'postcss';
  */
 export const discardDuplicates = (): Plugin => {
   return {
-    postcssPlugin: 'discard-duplicates',
     Once(root) {
       const decls: Record<string, Declaration[]> = {};
 
@@ -23,6 +22,7 @@ export const discardDuplicates = (): Plugin => {
         }
       }
     },
+    postcssPlugin: 'discard-duplicates',
   };
 };
 

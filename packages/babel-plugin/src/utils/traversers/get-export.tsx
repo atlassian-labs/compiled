@@ -19,14 +19,14 @@ export const getDefaultExport = (ast: t.File): Result<t.ExportDefaultDeclaration
 
   traverse(ast, {
     ExportDefaultDeclaration(path) {
-      result = { path, node: path.node.declaration };
+      result = { node: path.node.declaration, path };
       path.stop();
     },
     // Handle `export {alias as default}`
     ExportNamedDeclaration(path) {
       path.get('specifiers')?.forEach(({ node }) => {
         if (t.isExportSpecifier(node) && t.isIdentifier(node.exported, { name: 'default' })) {
-          result = { path, node: node.local };
+          result = { node: node.local, path };
           path.stop();
         }
       });
@@ -75,8 +75,8 @@ export const getNamedExport = (
 
         if (t.isIdentifier(identifier, { name: exportName })) {
           result = {
-            path,
             node: t.isVariableDeclarator(declaration) ? declaration.init : identifier,
+            path,
           };
 
           path.stop();

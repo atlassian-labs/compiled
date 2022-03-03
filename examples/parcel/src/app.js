@@ -13,7 +13,7 @@ import { TypeScript } from './ui/typescript';
 
 export const App = () => (
   <>
-    <div css={{ fontSize: 50, color: primary }}>hello from parcel 2</div>
+    <div css={{ color: primary, fontSize: 50 }}>hello from parcel 2</div>
     <TypeScript color="blue" />
     {/*<div css={parcelAliasStyles}>custom alias</div>*/}
     {/*<div css={parcelResolverAliasStyles}>custom resolver</div>*/}

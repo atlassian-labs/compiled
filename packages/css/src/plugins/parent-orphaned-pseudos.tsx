@@ -20,7 +20,6 @@ const prependNestingTypeToSelector = (selector: selectorParser.Node) => {
  */
 export const parentOrphanedPseudos = (): Plugin => {
   return {
-    postcssPlugin: 'parent-orphened-pseudos',
     Once(root) {
       root.walkRules((rule) => {
         const { selectors } = rule;
@@ -40,6 +39,7 @@ export const parentOrphanedPseudos = (): Plugin => {
         });
       });
     },
+    postcssPlugin: 'parent-orphened-pseudos',
   };
 };
 

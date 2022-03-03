@@ -26,12 +26,12 @@ describe('ax benchmark', () => {
 
     const benchmark = await runBenchmark('ax', [
       {
-        name: 'ax() array',
         fn: () => ax(arr),
+        name: 'ax() array',
       },
       {
-        name: 'ax() string',
         fn: () => ax([str, undefined]),
+        name: 'ax() string',
       },
     ]);
 

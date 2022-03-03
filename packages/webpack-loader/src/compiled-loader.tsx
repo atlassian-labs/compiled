@@ -34,10 +34,15 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
       getOptions(context)
     : // Webpack v5 flow
       context.getOptions({
-        type: 'object',
         properties: {
+          babelPlugins: {
+            type: 'array',
+          },
           bake: {
             type: 'boolean',
+          },
+          extensions: {
+            type: 'array',
           },
           extract: {
             type: 'boolean',
@@ -48,30 +53,25 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           nonce: {
             type: 'string',
           },
-          resolve: {
-            type: 'object',
-          },
-          extensions: {
-            type: 'array',
-          },
-          babelPlugins: {
-            type: 'array',
-          },
           [pluginName]: {
             type: 'boolean',
           },
+          resolve: {
+            type: 'object',
+          },
         },
+        type: 'object',
       });
 
   return {
+    babelPlugins,
     bake,
+    extensions,
     extract,
     importReact,
     nonce,
-    resolve,
-    extensions,
-    babelPlugins,
     [pluginName]: isPluginEnabled,
+    resolve,
   };
 }
 
@@ -99,8 +99,8 @@ export default async function compiledLoader(
 
     // Transform to an AST using the local babel config.
     const ast = await parseAsync(code, {
-      filename: this.resourcePath,
       caller: { name: 'compiled' },
+      filename: this.resourcePath,
       rootMode: 'upward-optional',
     });
 
@@ -120,7 +120,6 @@ export default async function compiledLoader(
     const result = await transformFromAstAsync(ast!, code, {
       babelrc: false,
       configFile: false,
-      sourceMaps: true,
       filename: this.resourcePath,
       plugins: [
         options.extract && [
@@ -141,6 +140,7 @@ export default async function compiledLoader(
           },
         ],
       ].filter(toBoolean),
+      sourceMaps: true,
     });
 
     includedFiles.forEach((file) => {

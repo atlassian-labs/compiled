@@ -5,13 +5,13 @@ import type { Plugin } from 'postcss';
  */
 export const normalizeCurrentColor = (): Plugin => {
   return {
-    postcssPlugin: 'normalize-current-color',
     Declaration(declaration) {
       const lowerValue = declaration.value.toLowerCase();
       if (lowerValue === 'currentcolor' || lowerValue === 'current-color') {
         declaration.value = 'currentColor';
       }
     },
+    postcssPlugin: 'normalize-current-color',
   };
 };
 

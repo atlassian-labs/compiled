@@ -26,14 +26,14 @@ export function buildSourceMap(
   generator.setSourceContent(fileName, code);
   generator.addMapping({
     generated: {
-      line: 1,
       column: 0,
+      line: 1,
+    },
+    original: {
+      column: offset.character,
+      line: offset.line + 1,
     },
     source: fileName,
-    original: {
-      line: offset.line + 1,
-      column: offset.character,
-    },
   });
 
   return convert.fromObject(generator).toComment({ multiline: true });

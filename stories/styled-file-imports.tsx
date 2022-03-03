@@ -11,8 +11,8 @@ const CallExpressionBackgroundImage = styled.div({
   backgroundColor: 'cyan',
   backgroundImage: `url(${caratDown})`,
   backgroundSize: '64px 64px',
-  width: '64px',
   height: '64px',
+  width: '64px',
 });
 
 export const CallExpressionUrl = (): JSX.Element => <CallExpressionBackgroundImage />;
@@ -21,8 +21,8 @@ const CallExpressionMultipleBackgroundImage = styled.div({
   backgroundColor: 'cyan',
   backgroundImage: `url(${caratDown}), url(${caratUp})`,
   backgroundSize: '64px 64px',
-  width: '64px',
   height: '64px',
+  width: '64px',
 });
 
 export const CallExpressionMultipleUrl = (): JSX.Element => (

@@ -26,10 +26,10 @@ export const ObjectLiteral = (): JSX.Element => (
     <StyledObjectLiteral>Hello styled component</StyledObjectLiteral>
     <div
       css={{
+        ':hover': colorMixin(2),
+        border: `1px solid ${objectStyles.backgroundColor(colors.danger)}`,
         margin: '4px 0',
         padding: 4,
-        border: `1px solid ${objectStyles.backgroundColor(colors.danger)}`,
-        ':hover': colorMixin(2),
       }}>
       <Children color="red" />
     </div>

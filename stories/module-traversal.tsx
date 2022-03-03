@@ -10,11 +10,11 @@ export default {
 const { backgroundColor: borderColor } = objectStyles;
 
 const Thing = styled.div<{ bg: 'blue' }>({
-  fontSize: '20px',
-  color: colors.primary,
   ':hover': hoverObjectLiteral,
   backgroundColor: (props) => props.bg,
   border: `5px dashed ${borderColor()}`,
+  color: colors.primary,
+  fontSize: '20px',
 });
 
 export const Example = (): JSX.Element => <Thing bg="blue">hello world</Thing>;

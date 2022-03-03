@@ -14,16 +14,16 @@ export default {
 };
 
 export const ObjectLiteral = (): JSX.Element => {
-  return <div css={{ display: 'flex', fontSize: '50px', color: 'blue' }}>blue text</div>;
+  return <div css={{ color: 'blue', display: 'flex', fontSize: '50px' }}>blue text</div>;
 };
 
 export const ObjectLiteralSpreadFromFunc = (): JSX.Element => {
   return (
     <div
       css={{
+        color: 'blue',
         display: 'flex',
         fontSize: '50px',
-        color: 'blue',
         ...inlineMixinFunc(),
       }}>
       red text
@@ -35,9 +35,9 @@ export const ObjectLiteralSpreadFromObj = (): JSX.Element => {
   return (
     <div
       css={{
+        color: 'blue',
         display: 'flex',
         fontSize: '50px',
-        color: 'blue',
         ...inlineMixinObj,
       }}>
       green text
@@ -49,10 +49,10 @@ export const ObjectLiteralLocalObj = (): JSX.Element => {
   return (
     <div
       css={{
+        ':hover': inlineMixinObj,
+        color: 'blue',
         display: 'flex',
         fontSize: '50px',
-        color: 'blue',
-        ':hover': inlineMixinObj,
       }}>
       blue text
     </div>
@@ -63,10 +63,10 @@ export const ObjectLiteralImportedObj = (): JSX.Element => {
   return (
     <div
       css={{
+        ':hover': hoverObjectLiteral,
+        color: 'purple',
         display: 'flex',
         fontSize: '50px',
-        color: 'purple',
-        ':hover': hoverObjectLiteral,
       }}>
       purple text
     </div>

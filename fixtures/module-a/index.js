@@ -1,18 +1,18 @@
 export const colors = {
-  primary: 'purple',
   danger: 'orange',
+  primary: 'purple',
 };
 
 const fontSize = (() => 12)();
 
 export const objectStyles = {
-  fontSize,
-  color: colors.danger,
   backgroundColor: (bgColor) => bgColor,
+  color: colors.danger,
+  fontSize,
 };
 
 export const colorMixin = (radius) => ({
-  color: colors.primary,
   backgroundColor: colors.danger,
   borderRadius: radius,
+  color: colors.primary,
 });

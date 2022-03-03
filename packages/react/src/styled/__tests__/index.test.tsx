@@ -111,21 +111,21 @@ describe('styled component', () => {
   it('should not type error with nested selectors', () => {
     expect(() => {
       styled.div({
-        color: 'currentColor',
-        textDecoration: 'none',
-        position: 'relative',
         ':before': {
-          opacity: 0,
           content: '⚓',
-          position: 'absolute',
-          left: '-5rem',
           fontSize: '3rem',
+          left: '-5rem',
+          opacity: 0,
+          position: 'absolute',
         },
         ':hover': {
           ':before': {
             opacity: 1,
           },
         },
+        color: 'currentColor',
+        position: 'relative',
+        textDecoration: 'none',
       });
     }).not.toThrow();
   });
@@ -153,24 +153,24 @@ describe('styled component', () => {
   it('should not type error with nested arrow funcs', () => {
     expect(() => {
       styled.div<{ fontSize: string }>({
-        color: 'currentColor',
-        textDecoration: 'none',
-        position: 'relative',
-        fontSize: (props) => props.fontSize,
         ':before': {
-          fontSize: (props) => props.fontSize,
-          opacity: 0,
           content: '⚓',
-          position: 'absolute',
+          fontSize: (props) => props.fontSize,
           left: '-5rem',
+          opacity: 0,
+          position: 'absolute',
         },
         ':hover': {
-          fontSize: (props) => props.fontSize,
           ':before': {
             fontSize: (props) => props.fontSize,
             opacity: 1,
           },
+          fontSize: (props) => props.fontSize,
         },
+        color: 'currentColor',
+        fontSize: (props) => props.fontSize,
+        position: 'relative',
+        textDecoration: 'none',
       });
     }).not.toThrow();
   });
@@ -268,12 +268,12 @@ describe('styled component', () => {
   it('should not type error', () => {
     expect(() => {
       styled.div<{ primary: string }>({
-        fontSize: '20px',
-        color: (props) => props.primary,
-        margin: '20px',
         ':hover': {
           color: 'red',
         },
+        color: (props) => props.primary,
+        fontSize: '20px',
+        margin: '20px',
       });
     }).not.toThrow();
   });
@@ -315,9 +315,9 @@ describe('styled component', () => {
     const { getByText } = render(<StyledDiv>hello world</StyledDiv>);
 
     expect(getByText('hello world')).toHaveCompiledCss({
-      fontSize: '15px',
       color: 'red',
       display: 'none',
+      fontSize: '15px',
     });
   });
 });

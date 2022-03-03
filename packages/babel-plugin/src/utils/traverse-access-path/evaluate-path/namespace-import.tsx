@@ -15,7 +15,7 @@ export const evaluateNamespaceImportPath = (
 
   if (result) {
     const { node, path } = result;
-    const updatedMeta = { ...meta, parentPath: path, ownPath: meta.parentPath };
+    const updatedMeta = { ...meta, ownPath: meta.parentPath, parentPath: path };
     const { parentPath } = updatedMeta;
 
     if (exportName === 'default' && !parentPath.scope.getOwnBinding('default')) {

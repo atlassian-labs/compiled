@@ -35,8 +35,8 @@ export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Met
       plugins: ['jsx'],
     }
   )({
-    jsxNode: node,
     cssNode: t.arrayExpression(unique(sheets).map((sheet: string) => hoistSheet(sheet, meta))),
+    jsxNode: node,
   }) as t.Node;
 };
 

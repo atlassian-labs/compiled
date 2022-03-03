@@ -51,7 +51,6 @@ describe('CS benchmark', () => {
 
     const benchmark = await runBenchmark('CS', [
       {
-        name: 'CS (1 array element)',
         fn: () => {
           renderToString(
             <CC>
@@ -62,9 +61,9 @@ describe('CS benchmark', () => {
             </CC>
           );
         },
+        name: 'CS (1 array element)',
       },
       {
-        name: 'CS (n array elements)',
         fn: () => {
           renderToString(
             <CC>
@@ -75,9 +74,9 @@ describe('CS benchmark', () => {
             </CC>
           );
         },
+        name: 'CS (n array elements)',
       },
       {
-        name: 'StyleArr',
         fn: () => {
           renderToString(
             <CC>
@@ -88,9 +87,9 @@ describe('CS benchmark', () => {
             </CC>
           );
         },
+        name: 'StyleArr',
       },
       {
-        name: 'StyleStr',
         fn: () => {
           renderToString(
             <CC>
@@ -101,6 +100,7 @@ describe('CS benchmark', () => {
             </CC>
           );
         },
+        name: 'StyleStr',
       },
     ]);
 

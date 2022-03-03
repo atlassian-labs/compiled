@@ -38,21 +38,21 @@ describe('css prop', () => {
   it('should not type error with nested selectors', () => {
     <div
       css={{
-        color: 'currentColor',
-        textDecoration: 'none',
-        position: 'relative',
         ':before': {
-          opacity: 0,
           content: '⚓',
-          position: 'absolute',
-          left: '-5rem',
           fontSize: '3rem',
+          left: '-5rem',
+          opacity: 0,
+          position: 'absolute',
         },
         ':hover': {
           ':before': {
             opacity: 1,
           },
         },
+        color: 'currentColor',
+        position: 'relative',
+        textDecoration: 'none',
       }}>
       hello world
     </div>;

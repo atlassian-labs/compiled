@@ -6,8 +6,8 @@ export default {
 
 const fontSize = 12;
 const colors = {
-  primary: 'blue',
   danger: 'red',
+  primary: 'blue',
 };
 
 const Block = styled.div`
@@ -18,5 +18,5 @@ const Block = styled.div`
 export const Styled = (): JSX.Element => <Block>hello primary</Block>;
 
 export const CssProp = (): JSX.Element => (
-  <div css={{ fontSize: fontSize * 3, color: colors.danger }}>hello danger</div>
+  <div css={{ color: colors.danger, fontSize: fontSize * 3 }}>hello danger</div>
 );

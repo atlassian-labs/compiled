@@ -21,7 +21,6 @@ const pseudoSelectorScore = (selector: string) => {
  */
 export const sortAtomicStyleSheet = (): Plugin => {
   return {
-    postcssPlugin: 'sort-atomic-style-sheet',
     Once(root) {
       const catchAll: Node[] = [];
       const rules: Rule[] = [];
@@ -58,6 +57,7 @@ export const sortAtomicStyleSheet = (): Plugin => {
 
       root.nodes = [...catchAll, ...rules, ...atRules] as ChildNode[];
     },
+    postcssPlugin: 'sort-atomic-style-sheet',
   };
 };
 

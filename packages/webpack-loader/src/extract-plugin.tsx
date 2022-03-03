@@ -25,7 +25,7 @@ const getCSSAssets = (assets: Compilation['assets']) => {
     .filter((assetName) => {
       return assetName.endsWith(`${styleSheetName}.css`);
     })
-    .map((assetName) => ({ name: assetName, source: assets[assetName], info: {} }));
+    .map((assetName) => ({ info: {}, name: assetName, source: assets[assetName] }));
 };
 
 /**
@@ -38,12 +38,14 @@ const getCSSAssets = (assets: Compilation['assets']) => {
 const forceCSSIntoOneStyleSheet = (compiler: Compiler) => {
   const cacheGroup = {
     compiledCSS: {
-      name: styleSheetName,
-      type: 'css/mini-extract',
       chunks: 'all',
+      enforce: true,
+      name: styleSheetName,
+
       // We merge only CSS from Compiled.
       test: /css-loader\/compiled-css\.css$/,
-      enforce: true,
+
+      type: 'css/mini-extract',
     },
   };
 
@@ -79,9 +81,9 @@ const pushNodeModulesExtractLoader = (
   }
 
   compiler.options.module.rules.push({
-    test: { and: [/node_modules.+\.js$/, options.nodeModulesTest].filter(toBoolean) },
-    include: options.nodeModulesInclude,
     exclude: options.nodeModulesExclude,
+    include: options.nodeModulesInclude,
+    test: { and: [/node_modules.+\.js$/, options.nodeModulesTest].filter(toBoolean) },
     use: {
       loader: '@compiled/webpack-loader',
       options: {

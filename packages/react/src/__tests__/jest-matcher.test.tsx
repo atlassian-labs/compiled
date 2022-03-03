@@ -25,16 +25,16 @@ describe('toHaveCompliedCss', () => {
   });
 
   it('should detect multiple styles', () => {
-    const { getByText } = render(<div css={{ fontSize: '12px', color: 'blue' }}>hello world</div>);
+    const { getByText } = render(<div css={{ color: 'blue', fontSize: '12px' }}>hello world</div>);
 
     expect(getByText('hello world')).toHaveCompiledCss({
-      fontSize: '12px',
       color: 'blue',
+      fontSize: '12px',
     });
   });
 
   it('should detect single missing styles', () => {
-    const { getByText } = render(<div css={{ fontSize: '12px', color: 'blue' }}>hello world</div>);
+    const { getByText } = render(<div css={{ color: 'blue', fontSize: '12px' }}>hello world</div>);
 
     expect(getByText('hello world')).not.toHaveCompiledCss({
       zindex: '9999',
@@ -42,7 +42,7 @@ describe('toHaveCompliedCss', () => {
   });
 
   it('should detect multiple missing styles', () => {
-    const { getByText } = render(<div css={{ fontSize: '12px', color: 'blue' }}>hello world</div>);
+    const { getByText } = render(<div css={{ color: 'blue', fontSize: '12px' }}>hello world</div>);
 
     expect(getByText('hello world')).not.toHaveCompiledCss({
       backgroundColor: 'yellow',
@@ -88,10 +88,10 @@ describe('toHaveCompliedCss', () => {
     const { getByText } = render(
       <div
         css={{
-          fontSize: '12px',
           ':hover': {
             transform: 'scale(2)',
           },
+          fontSize: '12px',
         }}>
         hello world
       </div>
@@ -105,13 +105,13 @@ describe('toHaveCompliedCss', () => {
     const { getByText } = render(
       <div
         css={{
-          fontSize: '12px',
-          ':hover': {
-            transform: 'scale(2)',
-          },
           ':active': {
             color: 'blue',
           },
+          ':hover': {
+            transform: 'scale(2)',
+          },
+          fontSize: '12px',
         }}>
         hello world
       </div>
@@ -128,10 +128,10 @@ describe('toHaveCompliedCss', () => {
     const { getByText } = render(
       <div
         css={{
-          color: 'green',
           '@media screen': {
             color: 'yellow',
           },
+          color: 'green',
         }}>
         hello world
       </div>
@@ -147,13 +147,13 @@ describe('toHaveCompliedCss', () => {
     const { getByText } = render(
       <div
         css={{
-          color: 'green',
           '@media screen': {
-            color: 'yellow',
             ':hover': {
               background: 'red',
             },
+            color: 'yellow',
           },
+          color: 'green',
         }}>
         hello world
       </div>
@@ -167,10 +167,10 @@ describe('toHaveCompliedCss', () => {
       <div
         css={{
           '@media (min-width: 2px)': {
-            color: 'blue',
             '@media (min-width: 1px)': {
               color: 'red',
             },
+            color: 'blue',
           },
         }}>
         hello world

@@ -27,8 +27,8 @@ export const mergeDuplicateAtRules = (): Plugin => {
           const name = atRule.name + atRule.params;
           if (!atRuleStore[name]) {
             atRuleStore[name] = {
-              node: atRule,
               children: {},
+              node: atRule,
             };
           }
 

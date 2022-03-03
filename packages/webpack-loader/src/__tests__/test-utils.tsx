@@ -25,8 +25,8 @@ export function bundle(
     module: {
       rules: [
         {
-          test: /\.[jt]sx?$/,
           exclude: /node_modules/,
+          test: /\.[jt]sx?$/,
           use: [
             {
               loader: 'babel-loader',
@@ -47,8 +47,8 @@ export function bundle(
           ],
         },
         {
-          test: /\.css$/i,
           sideEffects: true,
+          test: /\.css$/i,
           use: [MiniCssExtractPlugin.loader, 'css-loader'],
         },
       ],

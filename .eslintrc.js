@@ -1,5 +1,4 @@
 module.exports = {
-  root: true,
   ignorePatterns: [
     'dist',
     'flow-typed',
@@ -10,11 +9,11 @@ module.exports = {
   ],
   overrides: [
     {
-      files: ['*.{js,jsx,ts,tsx}'],
       extends: [
         'plugin:import/recommended',
         'plugin:react/recommended',
       ],
+      files: ['*.{js,jsx,ts,tsx}'],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         ecmaFeatures: {
@@ -25,11 +24,6 @@ module.exports = {
       },
       plugins: ['react-hooks'],
       rules: {
-        'react/display-name': 'off',
-        'react/prop-types': 'off',
-        'react/react-in-jsx-scope': 'off',
-        'react-hooks/exhaustive-deps': 'warn',
-        'react-hooks/rules-of-hooks': 'error',
         // This case is covered by the use of TypeScript so we can safely turn it off.
         'import/export': 'off',
         // We will let TypeScript handle this for tsx? files, and ignore it on jsx? files to enable linting without
@@ -42,12 +36,17 @@ module.exports = {
           },
           'newlines-between': 'always'
         }],
+        'react-hooks/exhaustive-deps': 'warn',
+        'react-hooks/rules-of-hooks': 'error',
+        'react/display-name': 'off',
+        'react/prop-types': 'off',
+        'react/react-in-jsx-scope': 'off',
         'sort-keys': 'error'
       },
     },
     {
-      files: ['*.{ts,tsx}'],
       extends: ['plugin:@typescript-eslint/recommended'],
+      files: ['*.{ts,tsx}'],
       rules: {
         '@typescript-eslint/array-type': 'error',
         '@typescript-eslint/ban-ts-comment': 'off',
@@ -73,8 +72,8 @@ module.exports = {
       },
     },
     {
-      files: ['*.js.flow'],
       extends: ['plugin:flowtype/recommended'],
+      files: ['*.js.flow'],
       plugins: ['flowtype'],
       rules: {
         'flowtype/generic-spacing': 'off',
@@ -88,6 +87,7 @@ module.exports = {
       },
     },
   ],
+  root: true,
   settings: {
     react: {
       version: 'detect',

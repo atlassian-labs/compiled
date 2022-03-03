@@ -16,7 +16,7 @@ describe('#Cache', () => {
     const cache = setup();
     const lazyValue = jest.fn().mockReturnValue(10);
 
-    const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: lazyValue };
+    const data = { cacheKey: 'cacheKey', namespace: 'namespace', value: lazyValue };
     const value = cache.load(data);
 
     expect(cache.getSize()).toBe(1);
@@ -28,7 +28,7 @@ describe('#Cache', () => {
     const cache = setup({ cache: true });
     const lazyValue = jest.fn().mockReturnValue(10);
 
-    const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: lazyValue };
+    const data = { cacheKey: 'cacheKey', namespace: 'namespace', value: lazyValue };
     const value = cache.load(data);
 
     expect(cache.getSize()).toBe(1);
@@ -40,7 +40,7 @@ describe('#Cache', () => {
     const cache = setup({ cache: false });
     const lazyValue = jest.fn().mockReturnValue(10);
 
-    const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: lazyValue };
+    const data = { cacheKey: 'cacheKey', namespace: 'namespace', value: lazyValue };
     const value = cache.load(data);
 
     expect(cache.getSize()).toBe(0);
@@ -52,7 +52,7 @@ describe('#Cache', () => {
     const cache = setup();
     const lazyValue = jest.fn().mockReturnValue(10);
 
-    const data = { namespace: 'namespace', cacheKey: 'cacheKey', value: lazyValue };
+    const data = { cacheKey: 'cacheKey', namespace: 'namespace', value: lazyValue };
 
     cache.load(data);
     cache.load(data);
@@ -65,9 +65,9 @@ describe('#Cache', () => {
   it('should move frequently used keys in last position of queue', () => {
     const cache = setup();
 
-    const data1 = { namespace: 'namespace1', cacheKey: 'cacheKey1', value: () => 10 };
+    const data1 = { cacheKey: 'cacheKey1', namespace: 'namespace1', value: () => 10 };
     const data2 = { cacheKey: 'cacheKey2', value: () => 20 };
-    const data3 = { namespace: 'namespace3', cacheKey: 'cacheKey3', value: () => 30 };
+    const data3 = { cacheKey: 'cacheKey3', namespace: 'namespace3', value: () => 30 };
 
     cache.load(data1);
     cache.load(data2);
@@ -92,8 +92,8 @@ describe('#Cache', () => {
   it('should should delete first key value pair from queue when exceeds max size', () => {
     const cache = setup({ maxSize: 3 });
 
-    const data1 = { namespace: 'namespace1', cacheKey: 'cacheKey1', value: () => 10 };
-    const data2 = { namespace: 'namespace2', cacheKey: 'cacheKey2', value: () => 20 };
+    const data1 = { cacheKey: 'cacheKey1', namespace: 'namespace1', value: () => 10 };
+    const data2 = { cacheKey: 'cacheKey2', namespace: 'namespace2', value: () => 20 };
     const data3 = { cacheKey: 'cacheKey3', value: () => 30 };
 
     cache.load(data1);
@@ -108,7 +108,7 @@ describe('#Cache', () => {
       'namespace2----cacheKey2',
     ]);
 
-    const data4 = { namespace: 'namespace4', cacheKey: 'cacheKey4', value: () => 40 };
+    const data4 = { cacheKey: 'cacheKey4', namespace: 'namespace4', value: () => 40 };
     const value = cache.load(data4);
 
     expect(Array.from(cache.getKeys())).toEqual([

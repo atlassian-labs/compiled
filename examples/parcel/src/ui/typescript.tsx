@@ -8,11 +8,11 @@ interface TypeScriptProps {
 export const TypeScript = ({ color }: TypeScriptProps): JSX.Element => (
   <div
     css={{
-      display: 'inline-block',
-      padding: 8,
       border: `2px solid ${primary}`,
       borderRadius: 3,
       color,
+      display: 'inline-block',
+      padding: 8,
       textTransform: 'uppercase',
     }}>
     hello from typescript file

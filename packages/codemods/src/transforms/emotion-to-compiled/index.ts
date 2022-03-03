@@ -28,16 +28,16 @@ import { addReactIdentifier, findImportSpecifierName, mergeImportSpecifiers } fr
 
 const imports = {
   compiledStyledImportName: 'styled',
-  emotionStyledPackageName: '@emotion/styled',
-  emotionJSXPragma: '@jsx jsx',
+  emotionCorePackageName: '@emotion/core',
   emotionCoreReactImportNames: {
-    jsx: 'jsx',
-    css: 'css',
     ClassNames: 'ClassNames',
+    css: 'css',
+    jsx: 'jsx',
     keyframes: 'keyframes',
   },
-  emotionCorePackageName: '@emotion/core',
+  emotionJSXPragma: '@jsx jsx',
   emotionReactPackageName: '@emotion/react',
+  emotionStyledPackageName: '@emotion/styled',
 };
 
 const removeEmotionJSXPragma = (j: core.JSCodeshift, collection: Collection) => {
@@ -55,7 +55,7 @@ const removeEmotionJSXPragma = (j: core.JSCodeshift, collection: Collection) => 
     commentBlockCollection.forEach((commentBlockPath) => {
       j(commentBlockPath).remove();
 
-      addReactIdentifier({ j, collection });
+      addReactIdentifier({ collection, j });
     });
   });
 };
@@ -66,14 +66,14 @@ const replaceEmotionCoreCSSTaggedTemplateExpression = (
   importPath: string
 ) => {
   const importDeclarationCollection = getImportDeclarationCollection({
-    j,
     collection,
     importPath,
+    j,
   });
   const name = findImportSpecifierName({
-    j,
     importDeclarationCollection,
     importName: imports.emotionCoreReactImportNames.css,
+    j,
   });
 
   if (name == null) {
@@ -111,8 +111,8 @@ const handleClassNamesCXBehavior = (j: core.JSCodeshift, objectPattern: ObjectPa
 
   cxObjectPropertyCollection.forEach((cxObjectPropertyPath) => {
     addCommentBefore({
-      j,
       collection: j(cxObjectPropertyPath.node),
+      j,
       message: `Please replace "${cxIdentifierName}" with "${axIdentifierName}" from "${compiledRuntimePackageName}".
       Usage: import { ${axIdentifierName} } from '${compiledRuntimePackageName}';
 
@@ -146,8 +146,8 @@ const handleClassNamesStyleBehavior = (j: core.JSCodeshift, objectPattern: Objec
     objectPattern.properties.push(styleObjectProperty);
 
     addCommentBefore({
-      j,
       collection: j(styleObjectProperty),
+      j,
       message: `We have exported "${styleIdentifierName}" from "${imports.emotionCoreReactImportNames.ClassNames}" props.
       If you are using dynamic declarations, make sure to set the "${styleIdentifierName}"
       prop otherwise remove it.`,
@@ -161,14 +161,14 @@ const handleClassNamesBehavior = (
   importPath: string
 ) => {
   const importDeclarationCollection = getImportDeclarationCollection({
-    j,
     collection,
     importPath,
+    j,
   });
   const name = findImportSpecifierName({
-    j,
     importDeclarationCollection,
     importName: imports.emotionCoreReactImportNames.ClassNames,
+    j,
   });
 
   if (name == null) {
@@ -208,9 +208,9 @@ const mergeCompiledImportSpecifiers = (j: core.JSCodeshift, collection: Collecti
   ].filter((name) => ![imports.emotionCoreReactImportNames.jsx].includes(name));
 
   mergeImportSpecifiers({
-    j,
     collection,
     filter: (name) => !!(name && allowedCompiledNames.includes(name)),
+    j,
   });
 };
 
@@ -225,21 +225,21 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
   const originalProgram: Program = j(source).find(j.Program).get();
 
   const hasEmotionCoreImportDeclaration = hasImportDeclaration({
-    j,
     collection,
     importPath: imports.emotionCorePackageName,
+    j,
   });
 
   const hasEmotionReactImportDeclaration = hasImportDeclaration({
-    j,
     collection,
     importPath: imports.emotionReactPackageName,
+    j,
   });
 
   const hasEmotionStyledImportDeclaration = hasImportDeclaration({
-    j,
     collection,
     importPath: imports.emotionStyledPackageName,
+    j,
   });
 
   if (
@@ -252,11 +252,11 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
 
   if (hasEmotionStyledImportDeclaration) {
     convertDefaultImportToNamedImport({
-      j,
-      plugins,
       collection,
       importPath: imports.emotionStyledPackageName,
+      j,
       namedImport: imports.compiledStyledImportName,
+      plugins,
     });
   }
 
@@ -266,48 +266,48 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
 
   if (hasEmotionCoreImportDeclaration) {
     addCommentForUnresolvedImportSpecifiers({
-      j,
+      allowedImportSpecifierNames: Object.values(imports.emotionCoreReactImportNames),
       collection,
       importPath: imports.emotionCorePackageName,
-      allowedImportSpecifierNames: Object.values(imports.emotionCoreReactImportNames),
+      j,
     });
     replaceEmotionCoreCSSTaggedTemplateExpression(j, collection, imports.emotionCorePackageName);
     handleClassNamesBehavior(j, collection, imports.emotionCorePackageName);
     convertMixedImportToNamedImport({
+      allowedImportSpecifierNames: Object.values(imports.emotionCoreReactImportNames),
+      collection,
+      defaultSourceSpecifierName: imports.compiledStyledImportName,
+      importPath: imports.emotionCorePackageName,
       j,
       plugins,
-      collection,
-      importPath: imports.emotionCorePackageName,
-      defaultSourceSpecifierName: imports.compiledStyledImportName,
-      allowedImportSpecifierNames: Object.values(imports.emotionCoreReactImportNames),
     });
   }
 
   if (hasEmotionReactImportDeclaration) {
     addCommentForUnresolvedImportSpecifiers({
-      j,
+      allowedImportSpecifierNames: Object.values(imports.emotionCoreReactImportNames),
       collection,
       importPath: imports.emotionReactPackageName,
-      allowedImportSpecifierNames: Object.values(imports.emotionCoreReactImportNames),
+      j,
     });
     replaceEmotionCoreCSSTaggedTemplateExpression(j, collection, imports.emotionReactPackageName);
     handleClassNamesBehavior(j, collection, imports.emotionReactPackageName);
     convertMixedImportToNamedImport({
+      allowedImportSpecifierNames: Object.values(imports.emotionCoreReactImportNames),
+      collection,
+      defaultSourceSpecifierName: imports.compiledStyledImportName,
+      importPath: imports.emotionReactPackageName,
       j,
       plugins,
-      collection,
-      importPath: imports.emotionReactPackageName,
-      defaultSourceSpecifierName: imports.compiledStyledImportName,
-      allowedImportSpecifierNames: Object.values(imports.emotionCoreReactImportNames),
     });
   }
 
   mergeCompiledImportSpecifiers(j, collection);
 
   applyVisitor({
-    plugins,
-    originalProgram,
     currentProgram: collection.find(j.Program).get(),
+    originalProgram,
+    plugins,
   });
 
   return collection.toSource(options.printOptions || { quote: 'single' });

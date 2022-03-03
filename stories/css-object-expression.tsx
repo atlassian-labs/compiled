@@ -8,9 +8,9 @@ export default {
 
 export const Static = (): JSX.Element => {
   const styles = css({
+    color: 'purple',
     display: 'flex',
     fontSize: '30px',
-    color: 'purple',
   });
 
   return <div css={styles}>purple text</div>;
@@ -19,9 +19,9 @@ export const Static = (): JSX.Element => {
 export const Inline = (): JSX.Element => (
   <div
     css={css({
+      color: 'purple',
       display: 'flex',
       fontSize: '30px',
-      color: 'purple',
     })}>
     purple text
   </div>
@@ -30,9 +30,9 @@ export const Inline = (): JSX.Element => (
 export const LocalVariable = (): JSX.Element => {
   const variableColor = 'orange';
   const styles = css({
+    color: variableColor,
     display: 'flex',
     fontSize: '30px',
-    color: variableColor,
   });
 
   return <div css={styles}>orange text</div>;

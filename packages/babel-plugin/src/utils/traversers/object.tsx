@@ -10,13 +10,13 @@ export const getObjectPropertyValue = (
   let result;
 
   traverse(object, {
-    noScope: true,
     ObjectProperty(path) {
       if (t.isIdentifier(path.node.key, { name: propertyName })) {
-        result = { path, node: path.node.value };
+        result = { node: path.node.value, path };
         path.stop();
       }
     },
+    noScope: true,
   });
 
   return result;

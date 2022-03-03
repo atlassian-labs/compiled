@@ -29,7 +29,6 @@ const getMemberExpressionMeta = (
   let originalBindingType: t.Expression['type'] = 'Identifier';
 
   traverse(t.expressionStatement(expression), {
-    noScope: true,
     MemberExpression(path) {
       // Skip if member comes from call expression arguments
       if (path.listKey === 'arguments') {
@@ -56,6 +55,7 @@ const getMemberExpressionMeta = (
         accessPath.push(path.node.property.callee);
       }
     },
+    noScope: true,
   });
 
   return {

@@ -5,12 +5,12 @@ export default {
 };
 
 const ResponsiveStyledObjectLiteral = styled.div({
-  color: 'blue',
-  fontSize: 50,
   '@media screen and (min-width: 800px)': {
     color: 'red',
     fontSize: 30,
   },
+  color: 'blue',
+  fontSize: 50,
 });
 
 const ResponsiveStyledTemplateLiteral = styled.div`

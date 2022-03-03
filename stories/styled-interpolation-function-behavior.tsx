@@ -13,12 +13,12 @@ interface Props {
 }
 
 const FunctionStyledObjectLiteral = styled.div<Props>({
-  color: ({ color }) => color,
-  fontSize: (props) => `${props.textSize}px`,
   backgroundColor: (props) => {
     return props.bgColor;
   },
   border: `5px ${({ borderStyle: bs }: Props) => bs} black`,
+  color: ({ color }) => color,
+  fontSize: (props) => `${props.textSize}px`,
   padding: `${(propz: Props) => {
     return propz.padding;
   }}px`,
@@ -78,9 +78,9 @@ export const Stacking = (): JSX.Element => (
   <>
     <div css={{ display: 'inline-block' }}>before</div>
     <HorizontalStack gap={2} spacing={4}>
-      <div css={{ display: 'inline-block', backgroundColor: 'red' }}>one</div>
-      <div css={{ display: 'inline-block', backgroundColor: 'blue' }}>two</div>
-      <div css={{ display: 'inline-block', backgroundColor: 'purple' }}>three</div>
+      <div css={{ backgroundColor: 'red', display: 'inline-block' }}>one</div>
+      <div css={{ backgroundColor: 'blue', display: 'inline-block' }}>two</div>
+      <div css={{ backgroundColor: 'purple', display: 'inline-block' }}>three</div>
     </HorizontalStack>
     <div css={{ display: 'inline-block' }}>after</div>
   </>

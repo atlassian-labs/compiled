@@ -22,14 +22,14 @@ const cssAfterInterpolation = (css: string): AfterInterpolation => {
 
   if (result) {
     return {
-      variableSuffix: result[1],
       css: css.replace(result[1], ''),
+      variableSuffix: result[1],
     };
   }
 
   return {
-    variableSuffix: '',
     css,
+    variableSuffix: '',
   };
 };
 
@@ -44,14 +44,14 @@ const cssBeforeInterpolation = (css: string): BeforeInterpolation => {
 
   if (['"', "'", '-'].includes(lastCharacter)) {
     return {
-      variablePrefix: lastCharacter,
       css: css.slice(0, -1),
+      variablePrefix: lastCharacter,
     };
   }
 
   return {
-    variablePrefix: '',
     css,
+    variablePrefix: '',
   };
 };
 
@@ -82,8 +82,8 @@ export const cssAffixInterpolation = (
     // Interpolation does not work for `url()` per https://stackoverflow.com/a/42331003
     // Workaround by handling this case explicitly, as we want to interpolate other functions
     return [
-      { variablePrefix: 'url(', css: before.slice(0, -'url('.length) },
-      { variableSuffix: ')', css: after.slice(')'.length) },
+      { css: before.slice(0, -'url('.length), variablePrefix: 'url(' },
+      { css: after.slice(')'.length), variableSuffix: ')' },
     ];
   }
   return [cssBeforeInterpolation(before), cssAfterInterpolation(after)];

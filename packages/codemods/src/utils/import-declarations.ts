@@ -26,9 +26,9 @@ export const hasImportDeclaration = ({
   importPath: string;
 }): boolean => {
   const result: Collection<ImportDeclaration> = getImportDeclarationCollection({
-    j,
     collection,
     importPath,
+    j,
   });
 
   return result.length > 0;

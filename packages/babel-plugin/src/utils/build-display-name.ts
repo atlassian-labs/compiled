@@ -19,7 +19,7 @@ if (process.env.NODE_ENV !== 'production') {
  */
 export const buildDisplayName = (identifier: string, displayName: string = identifier): t.Node => {
   return displayNameTemplate({
-    identifier,
     displayName: `'${displayName}'`,
+    identifier,
   }) as t.Node;
 };

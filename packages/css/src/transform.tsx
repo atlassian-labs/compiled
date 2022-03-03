@@ -42,8 +42,8 @@ export const transformCss = (css: string): { sheets: string[]; classNames: strin
     result.css;
 
     return {
-      sheets,
       classNames: unique(classNames),
+      sheets,
     };
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : e;

@@ -15,8 +15,8 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(custom)?[jt]sx?$/,
         exclude: /node_modules/,
+        test: /\.(custom)?[jt]sx?$/,
         use: [
           {
             loader: 'babel-loader',
@@ -33,8 +33,7 @@ module.exports = {
           {
             loader: '@compiled/webpack-loader',
             options: {
-              extract: extractCSS,
-              importReact: false,
+              babelPlugins: ['typescript'],
               extensions: [
                 '.js',
                 '.jsx',
@@ -42,7 +41,8 @@ module.exports = {
                 '.tsx',
                 '.customjsx'
               ],
-              babelPlugins: ['typescript'],
+              extract: extractCSS,
+              importReact: false,
             },
           },
         ],

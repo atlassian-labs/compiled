@@ -6,7 +6,7 @@ export default {
 
 export const ObjectCSS = (): JSX.Element => (
   <ClassNames>
-    {({ css }) => <div className={css({ fontSize: 20, color: 'blue' })}>hello world</div>}
+    {({ css }) => <div className={css({ color: 'blue', fontSize: 20 })}>hello world</div>}
   </ClassNames>
 );
 

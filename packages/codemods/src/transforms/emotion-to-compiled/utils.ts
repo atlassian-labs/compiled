@@ -19,9 +19,9 @@ export const addReactIdentifier = ({
   collection: Collection<Node>;
 }): void => {
   const hasReactImportDeclaration: boolean = hasImportDeclaration({
-    j,
     collection,
     importPath: REACT_IMPORT_PATH,
+    j,
   });
 
   if (!hasReactImportDeclaration) {
@@ -36,9 +36,9 @@ export const addReactIdentifier = ({
   } else {
     const importDeclarationCollection: Collection<ImportDeclaration> =
       getImportDeclarationCollection({
-        j,
         collection,
         importPath: REACT_IMPORT_PATH,
+        j,
       });
 
     importDeclarationCollection.forEach((importDeclarationPath) => {
@@ -100,9 +100,9 @@ export const mergeImportSpecifiers = ({
 }): void => {
   const importDeclarationCollection: Collection<ImportDeclaration> = getImportDeclarationCollection(
     {
-      j,
       collection,
       importPath: COMPILED_IMPORT_PATH,
+      j,
     }
   );
 

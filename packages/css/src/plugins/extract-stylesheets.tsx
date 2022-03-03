@@ -5,12 +5,12 @@ import type { Plugin } from 'postcss';
  */
 export const extractStyleSheets = (opts?: { callback: (sheet: string) => void }): Plugin => {
   return {
-    postcssPlugin: 'extract-style-sheets',
     OnceExit(root) {
       root.each((node) => {
         opts?.callback(node.toString());
       });
     },
+    postcssPlugin: 'extract-style-sheets',
   };
 };
 

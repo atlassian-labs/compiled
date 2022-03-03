@@ -105,11 +105,11 @@ const buildAtomicSelector = (node: Declaration, opts: AtomicifyOpts) => {
 const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
   const selector = buildAtomicSelector(node, opts);
   const newDecl = node.clone({
-    raws: { before: '', value: { value: '', raw: '' }, between: '' },
+    raws: { before: '', between: '', value: { raw: '', value: '' } },
   });
   const newRule = rule({
-    raws: { before: '', after: '', between: '', selector: { raw: '', value: '' } },
     nodes: [newDecl],
+    raws: { after: '', before: '', between: '', selector: { raw: '', value: '' } },
     selector,
   });
 
@@ -160,19 +160,19 @@ const atomicifyRule = (node: Rule, opts: AtomicifyOpts): Rule[] => {
 const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
   const children: ChildNode[] = [];
   const newNode = node.clone({
+    nodes: children,
     raws: {
       before: '',
       between: '',
-      semicolon: false,
       params: { raw: '', value: '' },
+      semicolon: false,
     },
-    nodes: children,
   });
   const atRuleLabel = `${opts.atRule || ''}${node.name}${node.params}`;
   const atRuleOpts = {
     ...opts,
-    parentNode: newNode,
     atRule: atRuleLabel,
+    parentNode: newNode,
   };
 
   newNode.parent = opts.parentNode!;
@@ -211,7 +211,6 @@ const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
  */
 export const atomicifyRules = (opts = {}): Plugin => {
   return {
-    postcssPlugin: 'atomicify-rules',
     OnceExit(root) {
       root.each((node) => {
         switch (node.type) {
@@ -240,6 +239,7 @@ export const atomicifyRules = (opts = {}): Plugin => {
         }
       });
     },
+    postcssPlugin: 'atomicify-rules',
   };
 };
 

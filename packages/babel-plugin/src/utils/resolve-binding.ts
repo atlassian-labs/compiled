@@ -86,7 +86,6 @@ const resolveObjectPatternValueNode = (
 
   if (t.isObjectExpression(expression)) {
     traverse(expression, {
-      noScope: true,
       ObjectProperty: {
         exit(path) {
           if (t.isIdentifier(path.node.key, { name: referenceName })) {
@@ -96,6 +95,7 @@ const resolveObjectPatternValueNode = (
           }
         },
       },
+      noScope: true,
     });
   } else if (t.isMemberExpression(expression) && t.isMemberExpression(expression.object)) {
     const { value: node, meta: updatedMeta } = traverseMemberExpression(expression, meta);
@@ -201,15 +201,15 @@ const getBinding = (referenceName: string, meta: Metadata): Binding | undefined 
   // Is re-exported directly from another module i.e. `export { foo } from 'bar'`
   if (parentPath.isExportNamedDeclaration() && parentPath.node.source) {
     return {
-      identifier: t.identifier(referenceName),
-      scope: parentPath.scope,
-      path: parentPath,
-      kind: 'const',
-      referenced: false,
-      references: 0,
-      referencePaths: [],
       constant: true,
       constantViolations: [],
+      identifier: t.identifier(referenceName),
+      kind: 'const',
+      path: parentPath,
+      referencePaths: [],
+      referenced: false,
+      references: 0,
+      scope: parentPath.scope,
     } as Binding;
   }
 
@@ -262,10 +262,10 @@ export const resolveBinding = (
     }
 
     return {
+      constant: binding.constant,
       meta,
       node,
       path: binding.path,
-      constant: binding.constant,
       source: 'module',
     };
   }
@@ -297,19 +297,19 @@ export const resolveBinding = (
     }
 
     const moduleCode = meta.state.cache.load({
-      namespace: 'read-file',
       cacheKey: modulePath,
+      namespace: 'read-file',
       value: () => fs.readFileSync(modulePath, 'utf-8'),
     });
 
     const ast = meta.state.cache.load({
-      namespace: 'parse-module',
       cacheKey: modulePath,
+      namespace: 'parse-module',
       value: () =>
         parse(moduleCode, {
-          sourceType: 'module',
-          sourceFilename: modulePath,
           plugins: meta.state.opts.babelPlugins || [],
+          sourceFilename: modulePath,
+          sourceType: 'module',
         }),
     });
 
@@ -318,8 +318,8 @@ export const resolveBinding = (
 
     if (binding.path.isImportDefaultSpecifier()) {
       ({ foundNode, foundParentPath } = meta.state.cache.load({
-        namespace: 'find-default-export-module-node',
         cacheKey: modulePath,
+        namespace: 'find-default-export-module-node',
         value: () => {
           const result = getDefaultExport(ast);
 
@@ -334,8 +334,8 @@ export const resolveBinding = (
       const exportName = t.isIdentifier(imported) ? imported.name : imported.value;
 
       ({ foundNode, foundParentPath } = meta.state.cache.load({
-        namespace: 'find-named-export-module-node',
         cacheKey: `modulePath=${modulePath}&exportName=${exportName}`,
+        namespace: 'find-named-export-module-node',
         value: () => {
           const result = getNamedExport(ast, exportName);
 
@@ -366,12 +366,12 @@ export const resolveBinding = (
       const isDefaultExport = exportName === 'default';
 
       ({ foundNode, foundParentPath } = meta.state.cache.load({
-        namespace: isDefaultExport
-          ? 'find-default-export-module-node'
-          : 'find-named-export-module-node',
         cacheKey: isDefaultExport
           ? modulePath
           : `modulePath=${modulePath}&exportName=${exportName}`,
+        namespace: isDefaultExport
+          ? 'find-default-export-module-node'
+          : 'find-named-export-module-node',
         value: () => {
           const result = isDefaultExport ? getDefaultExport(ast) : getNamedExport(ast, exportName);
 
@@ -389,9 +389,6 @@ export const resolveBinding = (
 
     return {
       constant: binding.constant,
-      node: foundNode,
-      path: foundParentPath,
-      source: 'import',
       meta: {
         ...meta,
         parentPath: foundParentPath,
@@ -401,14 +398,17 @@ export const resolveBinding = (
           filename: modulePath,
         },
       },
+      node: foundNode,
+      path: foundParentPath,
+      source: 'import',
     };
   }
 
   return {
+    constant: binding.constant,
+    meta,
     node: binding.path.node as t.Node,
     path: binding.path,
-    constant: binding.constant,
     source: 'module',
-    meta,
   };
 };

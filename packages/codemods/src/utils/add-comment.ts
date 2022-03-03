@@ -80,8 +80,8 @@ const addCommentToStartOfFile = ({
   message: string;
 }): void => {
   addCommentBefore({
-    j,
     collection: collection.find(j.Program),
+    j,
     message,
   });
 };
@@ -99,22 +99,22 @@ export const addCommentForUnresolvedImportSpecifiers = ({
 }): void => {
   const importDeclarationCollection: Collection<ImportDeclaration> = getImportDeclarationCollection(
     {
-      j,
       collection,
       importPath,
+      j,
     }
   );
   const importSpecifiers: Identifiers = getAllImportSpecifiers({
-    j,
     importDeclarationCollection,
+    j,
   });
 
   importSpecifiers
     .filter((identifierPath) => !allowedImportSpecifierNames.includes(identifierPath.name))
     .forEach((importSpecifierPath) => {
       addCommentToStartOfFile({
-        j,
         collection,
+        j,
         message: `"${importSpecifierPath.name}" is not exported from "${COMPILED_IMPORT_PATH}" at the moment. Please find an alternative for it.`,
       });
     });
