@@ -26,11 +26,10 @@ const parcel = new Parcel({
 });
 
 describe('resolver', () => {
-  it('compiled inline css imports are resolved', async () => {
+  it('resolves inline !compiled-css imports', async () => {
     const { changedAssets } = await parcel.run();
 
     const asset = Array.from(changedAssets.values()).find((asset) => asset.type === 'css');
-    expect(asset).toBeDefined();
     const code = await asset?.getCode();
     expect(code).toMatchInlineSnapshot(`"._syaz5scu{color:red}"`);
   }, 30000);

@@ -35,7 +35,6 @@ describe('optimizer', () => {
     const asset = Array.from(changedAssets.values()).find(
       (asset) => asset.filePath === join(fixtureRoot, '/src/styles.css')
     );
-    expect(asset).toBeDefined();
 
     const outputCss = await outputFS.readFile(
       bundleGraph.getBundlesWithAsset(asset!)[0].filePath,
