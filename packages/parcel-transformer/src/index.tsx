@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import generate from '@babel/generator';
 import { toBoolean } from '@compiled/utils';
@@ -17,8 +19,8 @@ const configFiles = [
  * Compiled parcel transformer.
  */
 export default new Transformer<ParcelTransformerOpts>({
-  async loadConfig({ config }) {
-    const conf = await config.getConfig(configFiles, {
+  async loadConfig({ config, options }) {
+    const conf = await config.getConfigFrom(join(options.projectRoot, 'index'), configFiles, {
       packageKey: '@compiled/parcel-transformer',
     });
 
