@@ -6,15 +6,12 @@ module.exports = {
     '*.d.ts',
     'babel-cjs.js',
     'babel-esm.js',
-    'storybook-static'
+    'storybook-static',
   ],
   overrides: [
     {
       files: ['*.{js,jsx,ts,tsx}'],
-      extends: [
-        'plugin:import/recommended',
-        'plugin:react/recommended',
-      ],
+      extends: ['plugin:import/recommended', 'plugin:react/recommended'],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         ecmaFeatures: {
@@ -36,12 +33,15 @@ module.exports = {
         // building packages
         'import/no-extraneous-dependencies': 'error',
         'import/no-unresolved': 'off',
-        'import/order': ['error', {
-          alphabetize: {
-            order: 'asc'
+        'import/order': [
+          'error',
+          {
+            alphabetize: {
+              order: 'asc',
+            },
+            'newlines-between': 'always',
           },
-          'newlines-between': 'always'
-        }],
+        ],
       },
     },
     {

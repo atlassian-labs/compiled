@@ -1,5 +1,5 @@
 module.exports = {
-    options: {
-      verbose: true
-    },
-  }
+  options: {
+    verbose: true,
+  },
+};

@@ -8,7 +8,10 @@ import '@compiled/react';
 // import { parcelResolverAliasStyles } from 'alias!../lib/parcel-resolver-alias.tsx';
 
 import { primary } from './constants';
-import { CustomFileExtensionStyled, customFileExtensionCss } from './ui/custom-file-extension.customjsx';
+import {
+  CustomFileExtensionStyled,
+  customFileExtensionCss,
+} from './ui/custom-file-extension.customjsx';
 import { TypeScript } from './ui/typescript';
 
 export const App = () => (
