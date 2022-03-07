@@ -1,5 +1,12 @@
 # @compiled/webpack-loader
 
+## 0.8.4
+
+### Patch Changes
+
+- Updated dependencies [47050f4]
+  - @compiled/react@0.10.3
+
 ## 0.8.3
 
 ### Patch Changes
