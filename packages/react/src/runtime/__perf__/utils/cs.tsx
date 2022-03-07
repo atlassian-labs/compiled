@@ -2,20 +2,17 @@ import React, { createContext, useContext } from 'react';
 
 const Cache = createContext<Record<string, true> | null>(null);
 
-export const useCache = (): Record<string, true> => {
-  return useContext(Cache) || {};
-};
-
-export type StyleStrProps = {
-  children: string;
+export type StyleBucketFromArrayProps = {
+  children: string[];
   nonce: string;
 };
 
-export function StyleStr({ children, nonce }: StyleStrProps): JSX.Element | null {
-  const inserted = useCache();
+export function StyleBucketFromArray({
+  children: sheets,
+  nonce,
+}: StyleBucketFromArrayProps): JSX.Element | null {
+  const inserted = useContext(Cache) || {};
 
-  // The following code will not exist in the browser bundle.
-  const sheets = children.split('.');
   let toInsert = '';
 
   for (let i = 0; i < sheets.length; i++) {
@@ -33,15 +30,18 @@ export function StyleStr({ children, nonce }: StyleStrProps): JSX.Element | null
   return <style nonce={nonce}>{toInsert}</style>;
 }
 
-export type StyleArrProps = {
-  children: string[];
+export type StyleBucketFromStringProps = {
+  children: string;
   nonce: string;
 };
 
-export function StyleArr({ children: sheets, nonce }: StyleArrProps): JSX.Element | null {
-  const inserted = useCache();
+export function StyleBucketFromString({
+  children,
+  nonce,
+}: StyleBucketFromStringProps): JSX.Element | null {
+  const inserted = useContext(Cache) || {};
 
-  // The following code will not exist in the browser bundle.
+  const sheets = children.split('.');
   let toInsert = '';
 
   for (let i = 0; i < sheets.length; i++) {
