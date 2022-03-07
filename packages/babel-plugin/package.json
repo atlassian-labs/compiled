@@ -42,6 +42,6 @@
     "benchmark": "^2.1.4",
     "prettier": "^2.5.1",
     "ts-node": "^10.7.0",
-    "tsconfig-paths": "^3.12.0"
+    "tsconfig-paths": "^3.13.0"
   }
 }
