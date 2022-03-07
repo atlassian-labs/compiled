@@ -24,6 +24,9 @@
   "scripts": {
     "start": "ts-node --files src/index.tsx"
   },
+  "resolutions": {
+    "unset-value": "^2.0.0"
+  },
   "dependencies": {
     "@compiled/codemods": ">=0.4.0",
     "app-root-path": "^3.0.0",
