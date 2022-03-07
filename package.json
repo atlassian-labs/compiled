@@ -71,7 +71,7 @@
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
-    "@changesets/cli": "^2.19.0",
+    "@changesets/cli": "^2.21.1",
     "@compiled-private/module-a": "*",
     "@compiled/babel-plugin": "*",
     "@compiled/jest": "*",
