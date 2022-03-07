@@ -1,9 +1,9 @@
 export interface PluginPass {
   opts: {
     /**
-     * Will callback at the end of the file pass with all found style rules.
+     * Specifies the styleSheetPath used for requiring atomic styles.
      */
-    onFoundStyleRules?: (rules: string[]) => void;
+    styleSheetPath?: string;
   };
 
   /**
