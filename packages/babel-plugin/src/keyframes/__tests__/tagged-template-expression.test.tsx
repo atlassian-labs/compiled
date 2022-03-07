@@ -79,7 +79,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const _3 = \\"._j7hqa2t1{animation-name:k1a3bdtb}\\";
           const _2 = \\"._5sagymdr{animation-duration:2s}\\";
           const _ =
-            \\"@keyframes k1a3bdtb{25%,0%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
           const fadeOut = null;
           <CC>
             <CS>{[_, _2, _3, _4]}</CS>
@@ -97,7 +97,7 @@ describe('keyframes transforms a tagged template expression', () => {
         expect(actual).toMatchInlineSnapshot(`
           "const _2 = \\"._y44v1e4p{animation:k1a3bdtb 2s ease-in-out}\\";
           const _ =
-            \\"@keyframes k1a3bdtb{25%,0%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
@@ -143,7 +143,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const _3 = \\"._j7hqa2t1{animation-name:k1a3bdtb}\\";
           const _2 = \\"._5sagymdr{animation-duration:2s}\\";
           const _ =
-            \\"@keyframes k1a3bdtb{25%,0%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
           const fadeOut = null;
           <CC>
             <CS>{[_, _2, _3, _4]}</CS>
@@ -161,7 +161,7 @@ describe('keyframes transforms a tagged template expression', () => {
         expect(actual).toMatchInlineSnapshot(`
           "const _2 = \\"._y44v1e4p{animation:k1a3bdtb 2s ease-in-out}\\";
           const _ =
-            \\"@keyframes k1a3bdtb{25%,0%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
@@ -826,7 +826,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const _3 = \\"._j7hqa2t1{animation-name:k1a3bdtb}\\";
           const _2 = \\"._5sagymdr{animation-duration:2s}\\";
           const _ =
-            \\"@keyframes k1a3bdtb{25%,0%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
           const fadeOut = null;
           const StyledComponent = forwardRef(
             ({ as: C = \\"div\\", style, ...props }, ref) => (
@@ -853,7 +853,7 @@ describe('keyframes transforms a tagged template expression', () => {
         expect(actual).toMatchInlineSnapshot(`
           "const _2 = \\"._y44v1e4p{animation:k1a3bdtb 2s ease-in-out}\\";
           const _ =
-            \\"@keyframes k1a3bdtb{25%,0%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
           const fadeOut = null;
           const StyledComponent = forwardRef(
             ({ as: C = \\"div\\", style, ...props }, ref) => (
@@ -921,7 +921,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const _3 = \\"._j7hqa2t1{animation-name:k1a3bdtb}\\";
           const _2 = \\"._5sagymdr{animation-duration:2s}\\";
           const _ =
-            \\"@keyframes k1a3bdtb{25%,0%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
           const fadeOut = null;
           const StyledComponent = forwardRef(
             ({ as: C = \\"div\\", style, ...props }, ref) => (
@@ -948,7 +948,7 @@ describe('keyframes transforms a tagged template expression', () => {
         expect(actual).toMatchInlineSnapshot(`
           "const _2 = \\"._y44v1e4p{animation:k1a3bdtb 2s ease-in-out}\\";
           const _ =
-            \\"@keyframes k1a3bdtb{25%,0%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
           const fadeOut = null;
           const StyledComponent = forwardRef(
             ({ as: C = \\"div\\", style, ...props }, ref) => (
