@@ -12,7 +12,7 @@
     "@compiled/webpack-loader": "*",
     "babel-loader": "^8.2.3",
     "css-loader": "^5.2.7",
-    "css-minimizer-webpack-plugin": "^1.3.0",
+    "css-minimizer-webpack-plugin": "^3.4.1",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^1.6.2",
     "react": "^17.0.2",
