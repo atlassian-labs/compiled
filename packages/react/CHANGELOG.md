@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.10.3
+
+### Patch Changes
+
+- 47050f4: Add client CS benchmark
+
 ## 0.10.2
 
 ### Patch Changes

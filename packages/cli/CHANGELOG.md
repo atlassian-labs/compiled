@@ -1,5 +1,15 @@
 # @compiled/cli
 
+## 2.1.6
+
+### Patch Changes
+
+- d42e1a0: Resolve unset-values to ^2.0.0 to mitigate vulnerability
+- e2199fa: Bump trim-newlines to v3.0.1
+- Updated dependencies [d42e1a0]
+- Updated dependencies [e2199fa]
+  - @compiled/codemods@0.4.2
+
 ## 2.1.5
 
 ### Patch Changes

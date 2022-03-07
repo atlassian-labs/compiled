@@ -1,5 +1,12 @@
 # @compiled/codemods
 
+## 0.4.2
+
+### Patch Changes
+
+- d42e1a0: Resolve unset-values to ^2.0.0 to mitigate vulnerability
+- e2199fa: Bump trim-newlines to v3.0.1
+
 ## 0.4.1
 
 ### Patch Changes
