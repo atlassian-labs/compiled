@@ -20,6 +20,6 @@
     "parcel": "^2.3.2"
   },
   "alias": {
-    "parcel-alias": "./lib/parcel-alias.tsx"
+    "parcel-alias": "./lib/parcel-alias.ts"
   }
 }

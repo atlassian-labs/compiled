@@ -22,41 +22,41 @@
     ".": {
       "import": [
         "./dist/esm/index.js",
-        "./src/index.tsx"
+        "./src/index.ts"
       ],
       "require": [
         "./dist/cjs/index.js",
-        "./src/index.tsx"
+        "./src/index.ts"
       ]
     },
     "./runtime": {
       "import": [
         "./dist/esm/runtime.js",
-        "./src/runtime.tsx"
+        "./src/runtime.ts"
       ],
       "require": [
         "./dist/cjs/runtime.js",
-        "./src/runtime.tsx"
+        "./src/runtime.ts"
       ]
     },
     "./jsx-runtime": {
       "import": [
         "./dist/esm/jsx/jsx-runtime.js",
-        "./src/jsx/jsx-runtime.tsx"
+        "./src/jsx/jsx-runtime.ts"
       ],
       "require": [
         "./dist/cjs/jsx/jsx-runtime.js",
-        "./src/jsx/jsx-runtime.tsx"
+        "./src/jsx/jsx-runtime.ts"
       ]
     },
     "./jsx-dev-runtime": {
       "import": [
         "./dist/esm/jsx/jsx-dev-runtime.js",
-        "./src/jsx/jsx-dev-runtime.tsx"
+        "./src/jsx/jsx-dev-runtime.ts"
       ],
       "require": [
         "./dist/cjs/jsx/jsx-dev-runtime.js",
-        "./src/jsx/jsx-dev-runtime.tsx"
+        "./src/jsx/jsx-dev-runtime.ts"
       ]
     }
   },

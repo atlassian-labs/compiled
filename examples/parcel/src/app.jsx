@@ -5,10 +5,13 @@ import '@compiled/react';
 // Eventually, the static evaluation (i.e. resolveBindingNode) should be replaced or removed so that these aliases
 // and resolvers can work correctly.
 // import { parcelAliasStyles } from 'parcel-alias';
-// import { parcelResolverAliasStyles } from 'alias!../lib/parcel-resolver-alias.tsx';
+// import { parcelResolverAliasStyles } from 'alias!../lib/parcel-resolver-alias.ts';
 
 import { primary } from './constants';
-import { CustomFileExtensionStyled, customFileExtensionCss } from './ui/custom-file-extension.customjsx';
+import {
+  CustomFileExtensionStyled,
+  customFileExtensionCss,
+} from './ui/custom-file-extension.customjsx';
 import { TypeScript } from './ui/typescript';
 
 export const App = () => (

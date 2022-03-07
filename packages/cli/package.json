@@ -22,7 +22,7 @@
     "src"
   ],
   "scripts": {
-    "start": "ts-node --files src/index.tsx"
+    "start": "ts-node --files src/index.ts"
   },
   "resolutions": {
     "unset-value": "^2.0.0"
