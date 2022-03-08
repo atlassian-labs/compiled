@@ -3,7 +3,10 @@ import '@compiled/react';
 import { Suspense, lazy } from 'react';
 
 import { primary } from './common/constants';
-import { CustomFileExtensionStyled, customFileExtensionCss } from './ui/custom-file-extension.customjsx';
+import {
+  CustomFileExtensionStyled,
+  customFileExtensionCss,
+} from './ui/custom-file-extension.customjsx';
 import { TypeScript } from './ui/typescript';
 
 const AsyncComponent = lazy(() => import('./ui/async'));

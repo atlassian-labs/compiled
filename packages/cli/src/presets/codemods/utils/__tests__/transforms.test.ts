@@ -8,44 +8,44 @@ jest.mock('glob', () => ({
 }));
 
 describe('transforms', () => {
-  describe('#getTransformPath', () => {
+  describe('getTransformPath', () => {
     it('should build transform path', () => {
       const parsedPath = {
-        base: 'index.tsx',
+        base: 'index.ts',
         dir: 'node_modules/@compiled/codemods/dist/transforms/styled-components-to-compiled',
-        ext: '.tsx',
+        ext: '.ts',
         name: 'index',
         root: '',
       };
 
       expect(getTransformPath(parsedPath)).toEqual(
-        'node_modules/@compiled/codemods/dist/transforms/styled-components-to-compiled/index.tsx'
+        'node_modules/@compiled/codemods/dist/transforms/styled-components-to-compiled/index.ts'
       );
     });
   });
 
-  describe('#getTransforms', () => {
+  describe('getTransforms', () => {
     it('should get available transforms in alphabetical directory sorted order', () => {
       castToJestMock(globSync).mockImplementationOnce(
         () =>
           [
-            'node_modules/@compiled/codemods/dist/transforms/styled-components-to-compiled/index.tsx',
-            'node_modules/@compiled/codemods/dist/transforms/emotion-to-compiled/index.tsx',
+            'node_modules/@compiled/codemods/dist/transforms/styled-components-to-compiled/index.ts',
+            'node_modules/@compiled/codemods/dist/transforms/emotion-to-compiled/index.ts',
           ] as any
       );
 
       expect(getTransforms()).toEqual([
         {
-          base: 'index.tsx',
+          base: 'index.ts',
           dir: 'node_modules/@compiled/codemods/dist/transforms/emotion-to-compiled',
-          ext: '.tsx',
+          ext: '.ts',
           name: 'index',
           root: '',
         },
         {
-          base: 'index.tsx',
+          base: 'index.ts',
           dir: 'node_modules/@compiled/codemods/dist/transforms/styled-components-to-compiled',
-          ext: '.tsx',
+          ext: '.ts',
           name: 'index',
           root: '',
         },
