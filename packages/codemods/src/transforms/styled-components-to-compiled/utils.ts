@@ -18,6 +18,7 @@ import type {
   ASTPath,
 } from 'jscodeshift';
 
+import { COMPILED_IMPORT_PATH } from '../../constants';
 import type { CodemodPluginInstance } from '../../plugins/types';
 
 type StyledAttributesDeclarationNode = ASTPath<VariableDeclaration | TaggedTemplateExpression>;
@@ -372,4 +373,86 @@ export const convertStyledAttrsToComponent = ({
         composedNode,
       });
   });
+};
+export const getCompiledLocalStyledName = (
+  j: JSCodeshift,
+  collection: Collection<any>
+): string | null => {
+  let compiledLocalStyledName = null;
+
+  const styledImports = collection.find(
+    j.ImportSpecifier,
+    (specifier) => specifier.imported.name === 'styled'
+  );
+
+  styledImports.forEach((styledImport) => {
+    const isCompiledImport =
+      styledImport?.parentPath?.parentPath.value.source.value === COMPILED_IMPORT_PATH;
+
+    if (isCompiledImport) {
+      compiledLocalStyledName = styledImport.value.local?.name || 'styled';
+    }
+  });
+
+  return compiledLocalStyledName;
+};
+
+export const convertTaggedTemplates = ({
+  j,
+  plugins,
+  collection,
+  compiledLocalStyledName,
+}: {
+  j: JSCodeshift;
+  plugins: CodemodPluginInstance[];
+  collection: Collection<any>;
+  compiledLocalStyledName: string;
+}): void => {
+  const templateExpressions = collection.find(
+    j.TaggedTemplateExpression,
+    ({ tag }: TaggedTemplateExpression) => {
+      if (tag.type === 'MemberExpression') {
+        const { object } = tag;
+
+        return object.type === 'Identifier' && object.name === compiledLocalStyledName;
+      }
+
+      if (tag.type === 'CallExpression') {
+        const { callee } = tag;
+
+        return (
+          callee.type === 'MemberExpression' &&
+          callee.object.type === 'MemberExpression' &&
+          callee.object.object.type === 'Identifier' &&
+          callee.object.object.name === compiledLocalStyledName
+        );
+      }
+
+      return false;
+    }
+  );
+
+  templateExpressions.forEach((expression) =>
+    applyBuildTemplateExpression({ plugins, originalNode: expression.value })
+  );
+};
+
+const applyBuildTemplateExpression = ({
+  plugins,
+  originalNode,
+}: {
+  plugins: CodemodPluginInstance[];
+  originalNode: TaggedTemplateExpression;
+}) => {
+  plugins.reduce((currentNode, plugin) => {
+    const buildTemplateExpressionImpl = plugin.transform?.buildTemplateExpression;
+    if (!buildTemplateExpressionImpl) {
+      return currentNode;
+    }
+
+    return buildTemplateExpressionImpl({
+      originalNode,
+      currentNode,
+    });
+  }, originalNode);
 };

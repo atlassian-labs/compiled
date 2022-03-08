@@ -58,6 +58,16 @@ export type BuildAttributesContext<T> = ValidateConfig<
   }
 >;
 
+export type BuildTemplateExpressionContext<T> = ValidateConfig<
+  T,
+  {
+    // The original tagged teamplate
+    originalNode: TaggedTemplateExpression;
+    // The existing tagged teamplate
+    currentNode: TaggedTemplateExpression;
+  }
+>;
+
 /**
  * Interface for codemods that handle migration from CSS-in-JS libraries to Compiled
  */
@@ -79,6 +89,14 @@ export interface Transform {
   buildAttributes?<T>(
     context: BuildAttributesContext<T>
   ): ASTPath<VariableDeclaration | TaggedTemplateExpression>;
+
+  /**
+   * Build template expression with normalized syntax
+   *
+   * @param context {BuildTemplateExpressionContext} The context applied to the build template expression
+   * @returns {TaggedTemplateExpression} The expression to replace config.currentNode
+   */
+  buildTemplateExpression?<T>(context: BuildTemplateExpressionContext<T>): TaggedTemplateExpression;
 
   /**
    * Build the compiled ref attribute replacing innerRef attributes

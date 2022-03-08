@@ -1,6 +1,5 @@
 import type { API, FileInfo, Options, Program, TaggedTemplateExpression } from 'jscodeshift';
 
-import { COMPILED_IMPORT_PATH } from '../../constants';
 import defaultCodemodPlugin from '../../plugins/default';
 import type { CodemodPluginInstance } from '../../plugins/types';
 import {
@@ -11,7 +10,11 @@ import {
   withPlugin,
 } from '../../utils';
 
-import { convertStyledAttrsToComponent } from './utils';
+import {
+  getCompiledLocalStyledName,
+  convertStyledAttrsToComponent,
+  convertTaggedTemplates,
+} from './utils';
 
 const imports = {
   compiledStyledImportName: 'styled',
@@ -55,54 +58,51 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
     allowedImportSpecifierNames: imports.styledComponentsSupportedImportNames,
   });
 
+  const compiledLocalStyledName = getCompiledLocalStyledName(j, collection);
+
+  if (compiledLocalStyledName) {
+    convertTaggedTemplates({ j, plugins, collection, compiledLocalStyledName });
+  }
+
   applyVisitor({
     plugins,
     originalProgram,
     currentProgram: collection.find(j.Program).get(),
   });
 
-  const styledImports = collection.find(
-    j.ImportSpecifier,
-    (specifier) => specifier.imported.name === 'styled'
-  );
+  // compiled styled object might've been renamed, we need to find it again
+  const compiledLocalStyledNameAfterVisitor = getCompiledLocalStyledName(j, collection);
 
-  styledImports.forEach((styledImport) => {
-    const isCompiledImport =
-      styledImport?.parentPath?.parentPath.value.source.value === COMPILED_IMPORT_PATH;
+  if (compiledLocalStyledNameAfterVisitor) {
+    const taggedTemplateExpressionsWithAttrs = collection.find(
+      j.TaggedTemplateExpression,
+      ({ tag }: TaggedTemplateExpression) => {
+        if (tag.type === 'CallExpression') {
+          const { callee } = tag;
 
-    if (isCompiledImport) {
-      const compiledLocalStyledName = styledImport.value.local?.name || 'styled';
-
-      const taggedTemplateExpressionsWithAttrs = collection.find(
-        j.TaggedTemplateExpression,
-        ({ tag }: TaggedTemplateExpression) => {
-          if (tag.type === 'CallExpression') {
-            const { callee } = tag;
-
-            return (
-              callee.type === 'MemberExpression' &&
-              callee.object.type === 'MemberExpression' &&
-              callee.object.object.type === 'Identifier' &&
-              callee.object.object.name === compiledLocalStyledName &&
-              callee.property.type === 'Identifier' &&
-              callee.property.name === 'attrs'
-            );
-          }
-
-          return false;
+          return (
+            callee.type === 'MemberExpression' &&
+            callee.object.type === 'MemberExpression' &&
+            callee.object.object.type === 'Identifier' &&
+            callee.object.object.name === compiledLocalStyledNameAfterVisitor &&
+            callee.property.type === 'Identifier' &&
+            callee.property.name === 'attrs'
+          );
         }
-      );
 
-      if (taggedTemplateExpressionsWithAttrs.length) {
-        convertStyledAttrsToComponent({
-          j,
-          plugins,
-          expressions: taggedTemplateExpressionsWithAttrs,
-          compiledLocalStyledName,
-        });
+        return false;
       }
+    );
+
+    if (taggedTemplateExpressionsWithAttrs.length) {
+      convertStyledAttrsToComponent({
+        j,
+        plugins,
+        expressions: taggedTemplateExpressionsWithAttrs,
+        compiledLocalStyledName: compiledLocalStyledNameAfterVisitor,
+      });
     }
-  });
+  }
 
   return collection.toSource(options.printOptions || { quote: 'single' });
 };
