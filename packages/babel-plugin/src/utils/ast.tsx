@@ -7,7 +7,7 @@ import * as t from '@babel/types';
  * @param node
  * @param parentPath
  */
-export const getPathOfNode = <TNode extends unknown>(
+export const getPathOfNode = <TNode,>(
   node: TNode,
   parentPath: NodePath
 ): NodePath<TNode> => {

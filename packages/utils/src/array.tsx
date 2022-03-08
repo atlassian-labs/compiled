@@ -5,7 +5,7 @@
  * @param arr
  * @param getId
  */
-export const unique = <TArrItem extends unknown>(
+export const unique = <TArrItem,>(
   arr: TArrItem[],
   getId: (item: TArrItem) => any = (item) => item
 ): TArrItem[] => {
