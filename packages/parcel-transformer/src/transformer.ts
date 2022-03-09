@@ -53,6 +53,7 @@ export default new Transformer<UserlandOpts>({
       filename: asset.filePath,
       caller: { name: 'compiled' },
       rootMode: 'upward-optional',
+      envName: 'compiledcss',
     });
 
     return {
@@ -73,6 +74,7 @@ export default new Transformer<UserlandOpts>({
     const includedFiles: string[] = [];
     const code = asset.isASTDirty() ? undefined : await asset.getCode();
 
+    console.log(`Transforming ${asset.filePath}`);
     const result = await transformFromAstAsync(ast.program, code, {
       code: false,
       ast: true,
@@ -94,6 +96,7 @@ export default new Transformer<UserlandOpts>({
         name: 'compiled',
       },
     });
+    console.log(`Transformed ${asset.filePath}`);
 
     includedFiles.forEach((file) => {
       // Included files are those which have been statically evaluated into this asset.

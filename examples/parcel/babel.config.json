@@ -1,0 +1,7 @@
+{
+  "env": {
+    "compiledcss": {
+      "presets": ["@babel/preset-typescript", "@babel/preset-react"]
+    }
+  }
+}

@@ -12,6 +12,8 @@
     "react-dom": "17.0.2"
   },
   "devDependencies": {
+    "@babel/preset-react": "^7.16.7",
+    "@babel/preset-typescript": "^7.16.7",
     "@compiled/parcel-transformer": "*",
     "@parcel/optimizer-htmlnano": "^2.3.2",
     "@parcel/packager-html": "^2.3.2",
