@@ -5,19 +5,34 @@ import babelPlugin from './babel-plugin';
 import type { PluginOptions } from './types';
 
 export type TransformOptions = PluginOptions & {
+  comments?: boolean;
+  highlightCode?: boolean;
   filename?: string;
   pretty?: boolean;
+  snippet?: boolean;
 };
 
 export const transform = (code: string, options: TransformOptions = {}): string => {
-  const { filename, pretty = true, ...pluginOptions } = options;
+  const {
+    comments = false,
+    filename,
+    highlightCode,
+    pretty = true,
+    snippet,
+    ...pluginOptions
+  } = options;
   const fileResult = transformSync(code, {
     babelrc: false,
-    comments: false,
+    comments,
     compact: !pretty,
     configFile: false,
     filename,
+    highlightCode,
     plugins: [[babelPlugin, pluginOptions]],
+    presets:
+      pluginOptions.importReact === false
+        ? [['@babel/preset-react', { runtime: 'automatic' }]]
+        : [],
   });
 
   if (!fileResult || !fileResult.code) {
@@ -25,17 +40,17 @@ export const transform = (code: string, options: TransformOptions = {}): string 
   }
 
   const { code: babelCode } = fileResult;
-  if (!pretty) {
-    return babelCode;
+  let codeSnippet;
+
+  if (snippet) {
+    const ifIndex = babelCode.indexOf('if (process.env.NODE_ENV');
+    // Remove the imports from the code, and the styled components display name
+    codeSnippet = babelCode
+      .substring(babelCode.indexOf('const'), ifIndex === -1 ? babelCode.length : ifIndex)
+      .trim();
+  } else {
+    codeSnippet = babelCode;
   }
 
-  const ifIndex = babelCode.indexOf('if (process.env.NODE_ENV');
-  // Remove the imports from the code, and the styled components display name
-  const snippet = babelCode
-    .substring(babelCode.indexOf('const'), ifIndex === -1 ? babelCode.length : ifIndex)
-    .trim();
-
-  return format(snippet, {
-    parser: 'babel',
-  });
+  return pretty ? format(codeSnippet, { parser: 'babel' }) : codeSnippet;
 };

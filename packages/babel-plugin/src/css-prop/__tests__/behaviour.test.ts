@@ -1,15 +1,5 @@
-import { transformSync } from '@babel/core';
-
-import babelPlugin from '../../index';
-
-const transform = (code: string) => {
-  return transformSync(code, {
-    configFile: false,
-    babelrc: false,
-    compact: true,
-    plugins: [babelPlugin],
-  })?.code;
-};
+import type { TransformOptions } from '../../test-utils';
+import { transform as transformCode } from '../../test-utils';
 
 describe('css prop behaviour', () => {
   beforeAll(() => {
@@ -20,10 +10,12 @@ describe('css prop behaviour', () => {
     delete process.env.AUTOPREFIXER;
   });
 
+  const transform = (code: string, opts: TransformOptions = {}) =>
+    transformCode(code, { pretty: false, ...opts });
+
   it('should not apply class name when no styles are present', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       <div css={{}} />
     `);
@@ -34,7 +26,6 @@ describe('css prop behaviour', () => {
   it('should replace css prop with class name', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       <div css={{}}>hello world</div>
     `);
@@ -45,9 +36,12 @@ describe('css prop behaviour', () => {
   it('should pass through style identifier when there is no dynamic styles in the css', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
-      const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize: 12 }}>hello world</div>;
+      const Component = ({ className, style }) => (
+        <div className={className} style={style} css={{ fontSize: 12 }}>
+          hello world
+        </div>
+      );
     `);
 
     expect(actual).toInclude('style={style}');
@@ -56,9 +50,12 @@ describe('css prop behaviour', () => {
   it('should pass through style property access when there is no dynamic styles in the css', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
-      const Component = ({ className, ...props }) => <div className={className} style={props.style} css={{ fontSize: 12 }}>hello world</div>;
+      const Component = ({ className, ...props }) => (
+        <div className={className} style={props.style} css={{ fontSize: 12 }}>
+          hello world
+        </div>
+      );
     `);
 
     expect(actual).toInclude('style={props.style}');
@@ -67,11 +64,15 @@ describe('css prop behaviour', () => {
   it('should spread style identifier when there is dynamic styles in the css', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
+
       const [fontSize] = React.useState('10px');
       const red = 'red';
 
-      const Component = ({ className, style }) => <div className={className} style={style} css={{ fontSize, color: red }}>hello world</div>;
+      const Component = ({ className, style }) => (
+        <div className={className} style={style} css={{ fontSize, color: red }}>
+          hello world
+        </div>
+      );
     `);
 
     expect(actual).toInclude('style={{...style,"--_1j2e0s2":ix(fontSize)}}');
@@ -80,10 +81,15 @@ describe('css prop behaviour', () => {
   it('should spread style property access when there is dynamic styles in the css', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
+
       const [background] = React.useState("violet");
       const red = 'red';
-      const Component = ({ className, ...props }) => <div className={className} style={props.style} css={{ fontSize: 12, color: red, background }}>hello world</div>;
+
+      const Component = ({ className, ...props }) => (
+        <div className={className} style={props.style} css={{ fontSize: 12, color: red, background }}>
+          hello world
+        </div>
+      );
     `);
 
     expect(actual).toInclude('style={{...props.style,"--_1k9t07z":ix(background)}}');
@@ -92,9 +98,12 @@ describe('css prop behaviour', () => {
   it('should spread style identifier when there is styles already set', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
-      const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12 }}>hello world</div>;
+      const Component = ({ className, style }) => (
+        <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12 }}>
+          hello world
+        </div>
+      );
     `);
 
     expect(actual).toInclude(`style={{...style,display:'block'}}`);
@@ -103,11 +112,19 @@ describe('css prop behaviour', () => {
   it('should spread style identifier when there is styles already set and using dynamic css', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const [background] = React.useState('yellow');
       const red = 'red';
-      const Component = ({ className, style }) => <div className={className} style={{ ...style, display: 'block' }} css={{ fontSize: 12, color: red, background }}>hello world</div>;
+
+      const Component = ({ className, style }) => (
+        <div
+          className={className}
+          css={{ fontSize: 12, color: red, background }}
+          style={{ ...style, display: 'block' }}
+        >
+          hello world
+        </div>
+      );
     `);
 
     expect(actual).toIncludeMultiple([
@@ -119,7 +136,6 @@ describe('css prop behaviour', () => {
   it('should concat explicit use of class name prop on an element', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       <div className="foobar" css={{ display: 'block' }}>hello world</div>
     `);
@@ -130,16 +146,10 @@ describe('css prop behaviour', () => {
   it('should pass through spread props', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const props = {};
 
-      <div
-        css={{
-          fontSize: 20,
-        }}
-        {...props}
-      />
+      <div css={{ fontSize: 20 }} {...props} />
     `);
 
     expect(actual).toInclude('<div{...props}className={ax(["_1wybgktf"])}/>');
@@ -148,14 +158,8 @@ describe('css prop behaviour', () => {
   it('should pass through static props', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
-      <div
-        css={{
-          fontSize: 20,
-        }}
-        role="menu"
-      />
+      <div css={{ fontSize: 20 }} role="menu" />
     `);
 
     expect(actual).toInclude('<div role="menu"className={ax(["_1wybgktf"])}/>');
@@ -164,10 +168,10 @@ describe('css prop behaviour', () => {
   it('should concat explicit use of class name prop from an identifier on an element', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const className = "foobar";
-      <div className={className} css={{ display: 'block' }}>hello world</div>
+
+      <div className={className} css={{ display: 'block' }} />
     `);
 
     expect(actual).toInclude('className={ax(["_1e0c1ule",className])}');
@@ -176,7 +180,6 @@ describe('css prop behaviour', () => {
   it('should pick up array composition', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const base = { color: 'black' };
       const top = \` color: red; \`;
@@ -194,7 +197,6 @@ describe('css prop behaviour', () => {
   it('should pick up complex array composition', () => {
     const actual = transform(`
       import { css } from '@compiled/react';
-      import React from 'react';
 
       const base = { display: 'inline-block', color: 'black' };
       const top = css({ 'font-size': '12px', width: '50px' });
@@ -214,7 +216,6 @@ describe('css prop behaviour', () => {
   it('should persist static style prop', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       <div style={{ display: 'block' }} css={{ color: 'blue' }}>hello world</div>
     `);
@@ -228,7 +229,6 @@ describe('css prop behaviour', () => {
   it('should concat explicit use of style prop on an element when destructured template', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const [color] = ['blue'];
       <div style={{ display: 'block' }} css={{ color: \`\${color}\` }}>hello world</div>
@@ -253,7 +253,6 @@ describe('css prop behaviour', () => {
   it('should concat implicit use of class name prop where class name is a jsx expression', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const getFoo = () => 'foobar';
 
@@ -302,7 +301,6 @@ describe('css prop behaviour', () => {
     // See: https://codesandbox.io/s/dank-star-443ps?file=/src/index.js
     const actual = transform(`
       import '@compiled/react';
-      import {useState} from 'react';
 
       let N30 = 'gray';
       N30 = 'blue';
@@ -354,7 +352,6 @@ describe('css prop behaviour', () => {
   it('should remove css prop', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const color = 'blue';
 
@@ -367,7 +364,6 @@ describe('css prop behaviour', () => {
   it('should keep other props around', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const color = 'blue';
 
@@ -378,60 +374,53 @@ describe('css prop behaviour', () => {
   });
 
   it('should add an identifier nonce to the style element', () => {
-    const actual = transformSync(
-      `
-    import '@compiled/react';
-    import React from 'react';
+    const code = `
+      import '@compiled/react';
 
-    const color = 'blue';
+      <div css={{ color: 'blue' }} />
+    `;
 
-    <div data-testid="yo" css={{ color: color }} style={{ display: "block" }}>hello world</div>
-  `,
-      {
-        configFile: false,
-        babelrc: false,
-        compact: true,
-        plugins: [[babelPlugin, { nonce: '__webpack_nonce__' }]],
-      }
-    )?.code;
+    const actual = transform(code, { nonce: '__webpack_nonce__' });
 
     expect(actual).toInclude('<CS nonce={__webpack_nonce__}');
   });
 
   it('should bubble up top level pseudo inside a media atrule', () => {
     const actual = transform(`
-    import '@compiled/react';
-    import React from 'react';
+      import '@compiled/react';
 
-    const fontSize = 20;
+      const fontSize = 20;
 
-    <div css={\`
-      @media screen {
-        :hover {
-          color: red;
-        }
-      }
-    \`}>hello world</div>
-  `);
+      <div
+        css={\`
+          @media screen {
+            :hover {
+              color: red;
+            }
+          }
+        \`}
+      />
+    `);
 
     expect(actual).toInclude(':hover{color:red}');
   });
 
   it('should bubble up top level pseduo inside a support atrule', () => {
     const actual = transform(`
-    import '@compiled/react';
-    import React from 'react';
+      import '@compiled/react';
 
-    const fontSize = 20;
+      const fontSize = 20;
 
-    <div css={\`
-      @supports (display: grid) {
-        :hover {
-          color: red;
-        }
-      }
-    \`}>hello world</div>
-  `);
+      <div
+        css={\`
+          @supports (display: grid) {
+            :hover {
+              color: red;
+            }
+          }
+        \`}
+      />
+    `);
 
     expect(actual).toInclude(':hover{color:red}');
   });
@@ -440,7 +429,7 @@ describe('css prop behaviour', () => {
     const actual = transform(`
       import { css } from '@compiled/react';
 
-      const helloWorld = css\`
+      const styles = css\`
         @keyframes fadeOut {
           from {
             opacity: 1;
@@ -456,7 +445,7 @@ describe('css prop behaviour', () => {
         animation: fadeOut 2s ease-in-out;
       \`;
 
-      <div css={helloWorld}>hello world</div>
+      <div css={styles}>hello world</div>
     `);
 
     expect(actual).toIncludeMultiple([
@@ -470,15 +459,16 @@ describe('css prop behaviour', () => {
   it('should apply conditional logical expression object spread styles', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const Component = props => (
-        <div css={{
-          ...props.isPrimary && {
-            color: 'blue',
-            fontSize: 20,
-          }
-        }}>hello world</div>
+        <div
+          css={{
+            ...props.isPrimary && {
+              color: 'blue',
+              fontSize: 20
+            }
+          }}
+        />
       );
     `);
 
@@ -488,15 +478,16 @@ describe('css prop behaviour', () => {
   it('should apply inverse conditional logical expression object spread', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const Component = props => (
-        <div css={{
-          ...props.isPrimary || {
-            color: 'blue',
-            fontSize: 20,
-          }
-        }}>hello world</div>
+        <div
+          css={{
+            ...props.isPrimary || {
+              color: 'blue',
+              fontSize: 20
+            }
+          }}
+        />
       );
     `);
 
@@ -506,15 +497,16 @@ describe('css prop behaviour', () => {
   it('should apply conditional logical expression object styles', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const Component = props => (
-        <div css={{
-          ':hover': props.isPrimary && {
-            color: 'blue',
-            fontSize: 20,
-          }
-        }}>hello world</div>
+        <div
+          css={{
+            ':hover': props.isPrimary && {
+              color: 'blue',
+              fontSize: 20
+            }
+          }}
+        />
       );
     `);
 
@@ -524,17 +516,18 @@ describe('css prop behaviour', () => {
   it('should combine conditional logical expressions', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const Component = props => (
-        <div css={{
-          ':hover': props.isPrimary && {
-            color: 'blue',
-            ...props.isBold && {
-              fontWeight: 700,
-            },
-          }
-        }}>hello world</div>
+        <div
+          css={{
+            ':hover': props.isPrimary && {
+              color: 'blue',
+              ...props.isBold && {
+                fontWeight: 700
+              }
+            }
+          }}
+        />
       );
     `);
 
@@ -546,15 +539,16 @@ describe('css prop behaviour', () => {
   it('should apply multi conditional logical expression', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const Component = props => (
-        <div css={{
-          ...(props.isPrimary || props.isMaybe) && {
-            color: 'blue',
-            fontSize: 20,
-          }
-        }}>hello world</div>
+        <div
+          css={{
+            ...(props.isPrimary || props.isMaybe) && {
+              color: 'blue',
+              fontSize: 20,
+            }
+          }}
+        />
       );
     `);
 
@@ -564,16 +558,17 @@ describe('css prop behaviour', () => {
   it('should apply array logical-based conditional css', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const Component = props => (
-        <div css={[
-          { fontSize: 40, },
-          (props.isPrimary || props.isMaybe) && {
-            color: 'blue',
-            fontSize: 20,
-          },
-        ]}>hello world</div>
+        <div
+          css={[
+            { fontSize: 40, },
+            (props.isPrimary || props.isMaybe) && {
+              color: 'blue',
+              fontSize: 20,
+            },
+          ]}
+        />
       );
     `);
 
@@ -585,44 +580,16 @@ describe('css prop behaviour', () => {
   it('should apply array prop ternary-based inline conditional css', () => {
     const actual = transform(`
       import { css } from '@compiled/react';
-      import React from 'react';
-
-      const Component = ({ isPrimary }) => {
-        return (
-          <div css={[
-            isPrimary ? { background: 'white', color: 'black' } : css({ background: 'green', color: 'red' }),
-            css({ 'font-size': '12px' })
-          ]}>hello world</div>
-        );
-      };
-    `);
-
-    expect(actual).toIncludeMultiple([
-      '._bfhk1x77{background-color:white}',
-      '._syaz11x8{color:black}',
-      '._bfhkbf54{background-color:green}',
-      '._syaz5scu{color:red}',
-      '._1wyb1fwx{font-size:12px}',
-      '<div className={ax([isPrimary?"_bfhk1x77 _syaz11x8":"_bfhkbf54 _syaz5scu","_1wyb1fwx"])}>hello world</div>',
-    ]);
-  });
-
-  it('should apply array prop ternary-based conditional css that reference css variable declarations', () => {
-    const actual = transform(`
-      import { css } from '@compiled/react';
-      import React from 'react';
-
-      const positive = css({ background: 'white', color: 'black' });
-      const negative = css\`
-        background: green;
-        color: red;
-      \`;
 
       const Component = ({ isPrimary }) => (
-        <div css={[
-          isPrimary ? positive : negative,
-          css({ 'font-size': '12px' })
-        ]}>hello world</div>
+        <div
+          css={[
+            isPrimary
+              ? { background: 'white', color: 'black' }
+              : css({ background: 'green', color: 'red' }),
+            css({ 'font-size': '12px' })
+          ]}
+        />
       );
     `);
 
@@ -632,23 +599,56 @@ describe('css prop behaviour', () => {
       '._bfhkbf54{background-color:green}',
       '._syaz5scu{color:red}',
       '._1wyb1fwx{font-size:12px}',
-      '<div className={ax([isPrimary?"_bfhk1x77 _syaz11x8":"_bfhkbf54 _syaz5scu","_1wyb1fwx"])}>hello world</div>',
+      '<div className={ax([isPrimary?"_bfhk1x77 _syaz11x8":"_bfhkbf54 _syaz5scu","_1wyb1fwx"])}/>',
+    ]);
+  });
+
+  it('should apply array prop ternary-based conditional css that reference css variable declarations', () => {
+    const actual = transform(`
+      import { css } from '@compiled/react';
+
+      const positive = css({ background: 'white', color: 'black' });
+      const negative = css\`
+        background: green;
+        color: red;
+      \`;
+
+      const Component = ({ isPrimary }) => (
+        <div
+          css={[
+            isPrimary ? positive : negative,
+            css({ 'font-size': '12px' })
+          ]}
+        />
+      );
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._bfhk1x77{background-color:white}',
+      '._syaz11x8{color:black}',
+      '._bfhkbf54{background-color:green}',
+      '._syaz5scu{color:red}',
+      '._1wyb1fwx{font-size:12px}',
+      '<div className={ax([isPrimary?"_bfhk1x77 _syaz11x8":"_bfhkbf54 _syaz5scu","_1wyb1fwx"])}/>',
     ]);
   });
 
   it('should apply partial logical-based conditional css rule', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const Component = props => (
-        <div css={{
-          ...props.isPrimary && {
-            color: 'blue',
-            fontSize: 20,
-          },
-          border: '1px solid black',
-        }}>hello world</div>
+        <div
+          css={{
+            ...props.isPrimary && {
+              color: 'blue',
+              fontSize: 20,
+            },
+            border: '1px solid black',
+          }}
+        >
+          hello world
+        </div>
       );
     `);
 
@@ -658,10 +658,10 @@ describe('css prop behaviour', () => {
   it('should apply unconditional before and after a conditional css rule', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const Component = props => (
-        <div css={{
+        <div
+          css={{
           fontSize: 15,
           ...props.isPrimary && {
             color: 'blue',
@@ -680,15 +680,16 @@ describe('css prop behaviour', () => {
   it('should use destructured props in conditional css rule', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const Component = ({ isPrimary }) => (
-        <div css={{
-          ...isPrimary && {
-            color: 'blue',
-            fontSize: 20,
-          },
-        }}>hello world</div>
+        <div
+          css={{
+            ...isPrimary && {
+              color: 'blue',
+              fontSize: 20
+            }
+          }}
+        />
       );
     `);
 
@@ -698,7 +699,6 @@ describe('css prop behaviour', () => {
   it('should retain keys for mapped react components', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       ['foo', 'bar'].map((str) => (
         <div key={str} css={{ backgroundColor: 'blue' }}>
