@@ -6,15 +6,20 @@ import { format } from 'prettier';
 
 import stripRuntimeBabelPlugin from '../index';
 
+const testStyleSheetPath =
+  '@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/compiled-css.css';
+const regexToFindRequireStatements =
+  /(require\('@compiled\/webpack-loader\/css-loader!@compiled\/webpack-loader\/css-loader\/compiled-css\.css\?style=.*;)/g;
+
 const transform = (
   code: string,
   opts: {
     modules?: boolean;
-    onFoundStyleRules?: (style: string[]) => void;
+    styleSheetPath?: string;
     runtime: 'automatic' | 'classic';
   }
 ): string => {
-  const { modules, onFoundStyleRules, runtime } = opts;
+  const { modules, styleSheetPath, runtime } = opts;
   const filename = join(__dirname, 'app.tsx');
 
   const initialFileResult = transformSync(code, {
@@ -37,7 +42,7 @@ const transform = (
     babelrc: false,
     configFile: false,
     filename,
-    plugins: [[stripRuntimeBabelPlugin, { onFoundStyleRules }]],
+    plugins: [[stripRuntimeBabelPlugin, { styleSheetPath }]],
   });
 
   if (!fileResult || !fileResult.code) {
@@ -65,15 +70,12 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
   describe('with the automatic runtime', () => {
     const runtime = 'automatic';
 
-    it('calls onFoundStyleRules for every found style', () => {
-      const onFoundStyleRules = jest.fn();
+    it('adds require statement for every found style', () => {
+      const actual = transform(code, { styleSheetPath: testStyleSheetPath, runtime });
 
-      transform(code, { onFoundStyleRules, runtime });
-
-      expect(onFoundStyleRules).toHaveBeenCalledTimes(1);
-      expect(onFoundStyleRules).toHaveBeenCalledWith([
-        '._1wyb1fwx{font-size:12px}',
-        '._syaz13q2{color:blue}',
+      expect(actual.match(regexToFindRequireStatements)).toEqual([
+        `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+        `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
       ]);
     });
 
@@ -113,15 +115,12 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
   describe('with the classic runtime', () => {
     const runtime = 'classic';
 
-    it('calls onFoundStyleRules for every found style', () => {
-      const onFoundStyleRules = jest.fn();
+    it('adds require statement for every found style', () => {
+      const actual = transform(code, { styleSheetPath: testStyleSheetPath, runtime });
 
-      transform(code, { onFoundStyleRules, runtime });
-
-      expect(onFoundStyleRules).toHaveBeenCalledTimes(1);
-      expect(onFoundStyleRules).toHaveBeenCalledWith([
-        '._1wyb1fwx{font-size:12px}',
-        '._syaz13q2{color:blue}',
+      expect(actual.match(regexToFindRequireStatements)).toEqual([
+        `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+        `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
       ]);
     });
 

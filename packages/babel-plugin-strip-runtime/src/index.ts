@@ -1,12 +1,15 @@
 import { declare } from '@babel/helper-plugin-utils';
+import template from '@babel/template';
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
+import { preserveLeadingComments } from '@compiled/utils';
 
 import type { PluginPass } from './types';
 import { isAutomaticRuntime } from './utils/is-automatic-runtime';
 import { isCCComponent } from './utils/is-cc-component';
 import { isCreateElement } from './utils/is-create-element';
 import { removeStyleDeclarations } from './utils/remove-style-declarations';
+import { toURIComponent } from './utils/to-uri-component';
 
 export default declare<PluginPass>((api) => {
   api.assertVersion(7);
@@ -18,9 +21,22 @@ export default declare<PluginPass>((api) => {
     },
     visitor: {
       Program: {
-        exit() {
-          if (this.opts.onFoundStyleRules) {
-            this.opts.onFoundStyleRules(this.styleRules);
+        exit(path) {
+          if (this.opts.styleSheetPath) {
+            preserveLeadingComments(path);
+            this.styleRules.forEach((rule) => {
+              // Each found atomic rule will create a new import that uses the styleSheetPath provided.
+              // The benefit is two fold:
+              // (1) thread safe collection of styles
+              // (2) caching -- resulting in faster builds (one import per rule!)
+              const params = toURIComponent(rule);
+              path.unshiftContainer(
+                'body',
+                template.ast(`require("${this.opts.styleSheetPath}?style=${params}");`)
+              );
+              // We use require instead of import so it works with both ESM and CJS source.
+              // If we used ESM it would blow up with CJS source, unfortunately.
+            });
           }
         },
       },

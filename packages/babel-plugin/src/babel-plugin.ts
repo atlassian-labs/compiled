@@ -4,7 +4,7 @@ import { declare } from '@babel/helper-plugin-utils';
 import jsxSyntax from '@babel/plugin-syntax-jsx';
 import template from '@babel/template';
 import * as t from '@babel/types';
-import { unique } from '@compiled/utils';
+import { unique, preserveLeadingComments } from '@compiled/utils';
 
 import { visitClassNamesPath } from './class-names';
 import { visitCssPropPath } from './css-prop';
@@ -20,7 +20,6 @@ import {
   isCompiledStyledCallExpression,
   isCompiledStyledTaggedTemplateExpression,
 } from './utils/is-compiled';
-import { preserveLeadingComments } from './utils/preserve-leading-comments';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
