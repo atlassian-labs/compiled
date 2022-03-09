@@ -1,9 +1,11 @@
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
 
-import type { Metadata } from '../../types';
-import { createResultPair } from '../create-result-pair';
-import { traverseMemberAccessPath } from '../traverse-access-path';
+import type { Metadata } from '../../../types';
+import { createResultPair } from '../../create-result-pair';
+import type { EvaluateExpression } from '../../types';
+
+import { traverseMemberAccessPath } from './traverse-access-path';
 
 /**
  * Returns the binding identifier for a member expression.
@@ -77,7 +79,8 @@ const getMemberExpressionMeta = (
  */
 export const traverseMemberExpression = (
   expression: t.MemberExpression,
-  meta: Metadata
+  meta: Metadata,
+  evaluateExpression: EvaluateExpression
 ): ReturnType<typeof createResultPair> => {
   const { accessPath, bindingIdentifier } = getMemberExpressionMeta(expression);
 
@@ -88,7 +91,7 @@ export const traverseMemberExpression = (
       bindingIdentifier.name,
       accessPath,
       expression,
-      traverseMemberExpression
+      evaluateExpression
     );
   }
 

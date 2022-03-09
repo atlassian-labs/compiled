@@ -10,9 +10,8 @@ import resolve from 'resolve';
 import { DEFAULT_CODE_EXTENSIONS } from '../constants';
 import type { Metadata } from '../types';
 
-import { traverseMemberExpression } from './traverse-expression';
 import { getDefaultExport, getNamedExport } from './traversers';
-import type { PartialBindingWithMeta } from './types';
+import type { PartialBindingWithMeta, EvaluateExpression } from './types';
 
 /**
  * Will recursively checks if identifier name is coming from destructuring. If yes,
@@ -80,7 +79,8 @@ export const resolveIdentifierComingFromDestructuring = ({
 const resolveObjectPatternValueNode = (
   expression: t.Expression,
   meta: Metadata,
-  referenceName: string
+  referenceName: string,
+  evaluateExpression: EvaluateExpression
 ): t.Node | undefined => {
   let objectPatternValueNode: t.Node | undefined = undefined;
 
@@ -98,9 +98,14 @@ const resolveObjectPatternValueNode = (
       },
     });
   } else if (t.isMemberExpression(expression) && t.isMemberExpression(expression.object)) {
-    const { value: node, meta: updatedMeta } = traverseMemberExpression(expression, meta);
+    const { value: node, meta: updatedMeta } = evaluateExpression(expression, meta);
 
-    objectPatternValueNode = resolveObjectPatternValueNode(node, updatedMeta, referenceName);
+    objectPatternValueNode = resolveObjectPatternValueNode(
+      node,
+      updatedMeta,
+      referenceName,
+      evaluateExpression
+    );
   } else if (
     t.isIdentifier(expression) ||
     (t.isMemberExpression(expression) && t.isIdentifier(expression.object))
@@ -109,7 +114,7 @@ const resolveObjectPatternValueNode = (
       ? expression.name
       : (expression.object as t.Identifier).name;
 
-    const resolvedBinding = resolveBinding(name, meta);
+    const resolvedBinding = resolveBinding(name, meta, evaluateExpression);
 
     if (resolvedBinding) {
       const isResolvedToSameNode = resolvedBinding.path.node === expression;
@@ -122,7 +127,8 @@ const resolveObjectPatternValueNode = (
         objectPatternValueNode = resolveObjectPatternValueNode(
           resolvedBinding.node,
           meta,
-          referenceName
+          referenceName,
+          evaluateExpression
         );
       }
     }
@@ -240,7 +246,8 @@ const getModuleImportSource = (path: Binding['path']): string => {
  */
 export const resolveBinding = (
   referenceName: string,
-  meta: Metadata
+  meta: Metadata,
+  evaluateExpression: EvaluateExpression
 ): PartialBindingWithMeta | undefined => {
   const binding = getBinding(referenceName, meta);
 
@@ -257,7 +264,8 @@ export const resolveBinding = (
       node = resolveObjectPatternValueNode(
         node,
         meta,
-        getDestructuredObjectPatternKey(binding.path.node.id, referenceName)
+        getDestructuredObjectPatternKey(binding.path.node.id, referenceName),
+        evaluateExpression
       ) as t.Node;
     }
 
