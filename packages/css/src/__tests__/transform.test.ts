@@ -164,18 +164,18 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n').split(',').join(',\n')).toMatchInlineSnapshot(`
-        "._1sbr1q9v .bar div:first-child,
-         ._15h31q9v .bar div:last-child,
-         ._kq2v1q9v .bar div div,
+        "._kq2v1q9v .bar div div,
          ._11eb1q9v .bar div span,
-         ._t7rc1q9v .foo:first-child,
-         ._1pdx1q9v .foo:last-child,
+         ._1sbr1q9v .bar div:first-child,
+         ._15h31q9v .bar div:last-child,
          ._ppxs1q9v .foo div,
          ._1fa31q9v .foo span,
-         ._1g8a1q9v .qwe:first-child,
-         ._1j9g1q9v .qwe:last-child,
+         ._t7rc1q9v .foo:first-child,
+         ._1pdx1q9v .foo:last-child,
          ._1z9o1q9v .qwe div,
-         ._1qid1q9v .qwe span{color:hotpink}"
+         ._1qid1q9v .qwe span,
+         ._1g8a1q9v .qwe:first-child,
+         ._1j9g1q9v .qwe:last-child{color:hotpink}"
       `);
     });
 

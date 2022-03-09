@@ -376,4 +376,22 @@ describe('import specifiers', () => {
 
     expect(actual).toInclude('@media screen{._434713q2{color:blue}}');
   });
+
+  it('uses fallback node when evaluating a non expression returning a non static value', () => {
+    const actual = transform(`
+      import '@compiled/react';
+
+      function getLineHeight() {
+        return Math.random();
+      } 
+
+      <span css={{lineHeight: getLineHeight()}} />
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._vwz41rme{line-height:var(--_12w6gfj)',
+      'ax(["_vwz41rme"])',
+      '"--_12w6gfj":ix(getLineHeight())',
+    ]);
+  });
 });

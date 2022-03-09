@@ -82,23 +82,27 @@ const babelEvaluateExpression = (
   meta: Metadata,
   fallbackNode: t.Expression = node
 ): t.Expression => {
-  const path = getPathOfNode(node, meta.parentPath);
-  if (isPathReferencingAnyMutatedIdentifiers(path)) {
+  try {
+    const path = getPathOfNode(node, meta.parentPath);
+    if (isPathReferencingAnyMutatedIdentifiers(path)) {
+      return fallbackNode;
+    }
+
+    const result = path.evaluate();
+    if (result.value) {
+      switch (typeof result.value) {
+        case 'string':
+          return t.stringLiteral(result.value);
+
+        case 'number':
+          return t.numericLiteral(result.value);
+      }
+    }
+
+    return fallbackNode;
+  } catch {
     return fallbackNode;
   }
-
-  const result = path.evaluate();
-  if (result.value) {
-    switch (typeof result.value) {
-      case 'string':
-        return t.stringLiteral(result.value);
-
-      case 'number':
-        return t.numericLiteral(result.value);
-    }
-  }
-
-  return fallbackNode;
 };
 
 /**

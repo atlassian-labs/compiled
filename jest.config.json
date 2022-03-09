@@ -1,10 +1,10 @@
 {
   "moduleNameMapper": {
-    "^@compiled/react/runtime$": "<rootDir>/packages/react/src/runtime.tsx",
-    "^@compiled/react/(.*)$": "<rootDir>/packages/react/src/jsx/$1.tsx",
-    "^@compiled/(.*)$": "<rootDir>/packages/$1/src/index.tsx"
+    "^@compiled/react/runtime$": "<rootDir>/packages/react/src/runtime.ts",
+    "^@compiled/react/(.*)$": "<rootDir>/packages/react/src/jsx/$1.ts",
+    "^@compiled/(.*)$": "<rootDir>/packages/$1/src/index.ts"
   },
-  "setupFilesAfterEnv": ["jest-extended", "./test/setup.tsx"],
+  "setupFilesAfterEnv": ["jest-extended", "./test/setup.ts"],
   "testEnvironment": "jsdom",
   "testMatch": ["**/src/**/*.test.{ts,tsx}"],
   "testPathIgnorePatterns": ["__perf__"],
