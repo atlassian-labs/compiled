@@ -5,31 +5,39 @@ This plugin contains rules that should be used when working with `@compiled/reac
 ## Installation
 
 ```sh
-npm i @compiled/eslint-plugin --save-dev
+npm install @compiled/eslint-plugin --save-dev
 ```
 
 ## Usage
 
-Add the plugin to your `.eslintrc.js` file.
+Add `@compiled` to the plugins section of your `.eslintrc` configuration file, then configure the rules you want to use under the rules section.
 
-```diff
-module.exports = {
-  plugins: [
-+    '@compiled',
-  ],
-};
+```json
+{
+  "plugins": ["@compiled"],
+  "rules": {
+    "@compiled/rule-name": "error"
+  }
+}
 ```
 
-Turn on the rules.
+You can also enable the recommended rules for compiled by adding `plugin:@compiled/recommended` in extends:
 
 ```diff
-module.exports = {
-  extends: [
-+    'plugin:@compiled/eslint-plugin/recommended',
-  ],
-};
+{
++  "extends": ["plugin:@compiled/recommended"],
+-  "plugins": ["@compiled"]
+}
 ```
 
-Rules will where possible come with fixers. For individual rules see the [`rules`](./src/rules) folder,
-however it's strongly recommended to use the rules as above.
-You can read more about configuring eslint in their [documentation](https://eslint.org/docs/user-guide/configuring).
+## Supported rules
+
+:white_check_mark: = recommended, :wrench: = fixable
+
+| Name                                                                                                     | Description                                          | :white_check_mark: | :wrench: |
+| -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------ | -------- |
+| [@compiled/jsx-pragma](./src/rules/jsx-pragma)                                                           | Enforces a jsx pragma when using the `css` prop      |                    | :wrench: |
+| [@compiled/no-css-tagged-template-expression](./src/rules/no-css-tagged-template-expression)             | Disallows tagged template expressions in `css`       | :white_check_mark: | :wrench: |
+| [@compiled/no-emotion-css](./src/rules/no-emotion-css)                                                   | Disallows `@emotion` usages                          |                    | :wrench: |
+| [@compiled/no-keyframes-tagged-template-expression](./src/rules/no-keyframes-tagged-template-expression) | Disallows tagged template expressions in `keyframes` | :white_check_mark: | :wrench: |
+| [@compiled/no-styled-tagged-template-expression](./src/rules/no-styled-tagged-template-expression)       | Disallows tagged template expressions in `styled`    | :white_check_mark: | :wrench: |
