@@ -1,7 +1,7 @@
-import { tester } from '../../__tests__/test-utils';
-import rule from '../index';
+import { tester } from '../../../test-utils';
+import { jsxPragmaRule } from '../index';
 
-tester.run('jsx-pragma', rule, {
+tester.run('jsx-pragma', jsxPragmaRule, {
   valid: [
     `
       /** @jsxImportSource @compiled/react */
