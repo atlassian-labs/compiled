@@ -2,6 +2,8 @@
 
 Ensures usage of the `@compiled/react` library over `@emotion/core` or `@emotion/styled`.
 
+---
+
 The `--fix` option on the command line automatically fixes problems reported by this rule.
 
 ## Rule details
