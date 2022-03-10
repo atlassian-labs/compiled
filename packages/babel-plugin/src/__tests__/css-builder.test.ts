@@ -49,4 +49,25 @@ describe('css builder', () => {
       "
     `);
   });
+
+  it('calculates a negative variable separately from a positive variable of the same value', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';      
+      const size = () => 8
+      const gridSize = size();
+      const LayoutRight = styled.aside\`
+        margin-right: -\${gridSize * 5}px;
+        margin-left: \${gridSize * 5}px;
+      \`;
+      <LayoutRight>Layout Right</LayoutRight>;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      'margin-left:var(--_1l3fmvo)',
+      'margin-right:var(--_1cakqv5)',
+      '"--_1cakqv5": ix(-gridSize * 5, "px")',
+      '"--_1l3fmvo": ix(gridSize * 5, "px")',
+      'ax(["_2hwxsxb8 _18u01xn1", props.className]',
+    ]);
+  });
 });
