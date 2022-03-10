@@ -1,6 +1,10 @@
 # `no-css-tagged-template-expression`
 
-Disallows tagged template expressions used with `css` from `@compiled/react`.
+Disallows any `css` tagged template expressions that originate from `@compiled/react`.
+
+Tagged template expressions are difficult to parse correctly (which can lead to more frequent build failures or invalid CSS generation), have limited type safety, and lack syntax highlighting. These problems can be avoided by using the preferred call expression syntax instead.
+
+---
 
 The `--fix` option on the command line automatically fixes problems reported by this rule.
 

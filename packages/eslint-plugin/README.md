@@ -37,7 +37,7 @@ You can also enable the recommended rules for compiled by adding `plugin:@compil
 | Name                                                                                                     | Description                                          | :white_check_mark: | :wrench: |
 | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------ | -------- |
 | [@compiled/jsx-pragma](./src/rules/jsx-pragma)                                                           | Enforces a jsx pragma when using the `css` prop      |                    | :wrench: |
-| [@compiled/no-css-tagged-template-expression](./src/rules/no-css-tagged-template-expression)             | Disallows tagged template expressions in `css`       | :white_check_mark: | :wrench: |
+| [@compiled/no-css-tagged-template-expression](./src/rules/no-css-tagged-template-expression)             | Disallows the `css` tagged template expression       | :white_check_mark: | :wrench: |
 | [@compiled/no-emotion-css](./src/rules/no-emotion-css)                                                   | Disallows `@emotion` usages                          |                    | :wrench: |
-| [@compiled/no-keyframes-tagged-template-expression](./src/rules/no-keyframes-tagged-template-expression) | Disallows tagged template expressions in `keyframes` | :white_check_mark: | :wrench: |
-| [@compiled/no-styled-tagged-template-expression](./src/rules/no-styled-tagged-template-expression)       | Disallows tagged template expressions in `styled`    | :white_check_mark: | :wrench: |
+| [@compiled/no-keyframes-tagged-template-expression](./src/rules/no-keyframes-tagged-template-expression) | Disallows the `keyframes` tagged template expression | :white_check_mark: | :wrench: |
+| [@compiled/no-styled-tagged-template-expression](./src/rules/no-styled-tagged-template-expression)       | Disallows the `styled` tagged template expression    | :white_check_mark: | :wrench: |
