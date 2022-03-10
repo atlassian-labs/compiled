@@ -395,32 +395,32 @@ describe('import specifiers', () => {
     ]);
   });
 
-  describe('Binary expresssions', () => {
-    it('statically evaluates calcuated value with identifier', () => {
+  describe('binary expresssions', () => {
+    it('statically evaluates calculated value with identifier', () => {
       const actual = transform(`
         import '@compiled/react';
 
         const spacing = 8;
 
-        <div css={{marginTop: spacing * 2}} />
+        <div css={{ marginTop: spacing * 2 }} />
       `);
 
       expect(actual).toIncludeMultiple(['._19pkexct{margin-top:16px}', 'ax(["_19pkexct"])']);
     });
 
-    it('statically evaluates calcuated value with nested binary', () => {
+    it('statically evaluates calculated value with nested binary', () => {
       const actual = transform(`
         import '@compiled/react';
 
         const spacing = 8;
 
-        <div css={{marginTop: spacing * 2 / 2}} />
+        <div css={{ marginTop: spacing * 2 / 2 }} />
       `);
 
       expect(actual).toIncludeMultiple(['._19pkftgi{margin-top:8px}', 'ax(["_19pkftgi"])']);
     });
 
-    it('statically evaluates calcuated value with multiple identifiers', () => {
+    it('statically evaluates calculated value with multiple identifiers', () => {
       const actual = transform(`
         import '@compiled/react';
 
@@ -428,19 +428,19 @@ describe('import specifiers', () => {
         const two = 2;
         const three = 3;
 
-        <div css={{marginTop: one + two - three}} />
+        <div css={{ marginTop: one + two - three }} />
       `);
 
       expect(actual).toIncludeMultiple(['._19pkidpf{margin-top:0}', 'ax(["_19pkidpf"])']);
     });
 
-    it('statically evaluates calcuated value within calc utility', () => {
+    it('statically evaluates calculated value within calc utility', () => {
       const actual = transform(`
         import '@compiled/react';
 
         const spacing = 8;
 
-        <div css={{width: \`calc(100% - \${spacing * 2}px)\`}} />
+        <div css={{ width: \`calc(100% - \${spacing * 2}px)\` }} />
       `);
 
       expect(actual).toIncludeMultiple([
@@ -449,13 +449,13 @@ describe('import specifiers', () => {
       ]);
     });
 
-    it('statically evaluates calcuated value with string literal containing numeric value', () => {
+    it('statically evaluates calculated value with string literal containing numeric value', () => {
       const actual = transform(`
         import '@compiled/react';
 
         const stringSpacing = '8';
 
-        <div css={{marginTop: stringSpacing * 2}} />
+        <div css={{ marginTop: stringSpacing * 2 }} />
       `);
 
       expect(actual).toIncludeMultiple(['._19pkexct{margin-top:16px}', 'ax(["_19pkexct"])']);
