@@ -467,7 +467,7 @@ describe('import specifiers', () => {
 
         const getSpacing = () => Math.random();
 
-        <div css={{marginTop: getSpacing() * 2}} />
+        <div css={{ marginTop: getSpacing() * 2 }} />
       `);
 
       expect(actual).toIncludeMultiple([
