@@ -58,6 +58,16 @@
         "./dist/cjs/jsx/jsx-dev-runtime.js",
         "./src/jsx/jsx-dev-runtime.tsx"
       ]
+    },
+    "./server": {
+      "import": [
+        "./dist/esm/server.js",
+        "./src/server.ts"
+      ],
+      "require": [
+        "./dist/cjs/server.js",
+        "./src/server.ts"
+      ]
     }
   },
   "main": "./dist/cjs/index.js",
@@ -69,7 +79,8 @@
     "src",
     "runtime",
     "jsx-runtime",
-    "jsx-dev-runtime"
+    "jsx-dev-runtime",
+    "server"
   ],
   "dependencies": {
     "csstype": "^3.0.10"

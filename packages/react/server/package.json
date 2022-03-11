@@ -1,0 +1,6 @@
+{
+  "main": "../dist/cjs/server.js",
+  "module": "../dist/esm/server.js",
+  "browser": "../dist/browser/server.js",
+  "types": "../dist/esm/server.d.ts"
+}
