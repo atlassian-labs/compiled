@@ -1,5 +1,24 @@
 # @compiled/webpack-app
 
+## 1.1.0
+
+### Minor Changes
+
+- d8e3e96: Upgrade css-minimizer-webpack-plugin to ^3.4.1 to resolve vulnerabilities
+
+### Patch Changes
+
+- Updated dependencies [47050f4]
+  - @compiled/react@0.10.3
+  - @compiled/babel-component-fixture@0.0.12
+  - @compiled/webpack-loader@0.8.4
+
+## 1.0.16
+
+### Patch Changes
+
+- @compiled/webpack-loader@0.8.3
+
 ## 1.0.15
 
 ### Patch Changes

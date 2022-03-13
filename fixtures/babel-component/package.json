@@ -1,6 +1,6 @@
 {
   "name": "@compiled/babel-component-fixture",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "@compiled/react": "*"
   },
   "devDependencies": {
-    "@babel/cli": "^7.17.3",
+    "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.5",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-react": "^7.16.7",

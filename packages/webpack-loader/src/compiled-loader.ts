@@ -9,7 +9,6 @@ import type { LoaderContext } from 'webpack';
 
 import { pluginName, styleSheetName } from './extract-plugin';
 import type { CompiledLoaderOptions } from './types';
-import { toURIComponent } from './utils';
 
 let hasErrored = false;
 
@@ -94,7 +93,6 @@ export default async function compiledLoader(
 
   try {
     const includedFiles: string[] = [];
-    const foundCSSRules: string[] = [];
     const { resolve, ...options } = getLoaderOptions(this);
 
     // Transform to an AST using the local babel config.
@@ -125,7 +123,9 @@ export default async function compiledLoader(
       plugins: [
         options.extract && [
           '@compiled/babel-plugin-strip-runtime',
-          { onFoundStyleRules: (rules: string[]) => foundCSSRules.push(...rules) },
+          {
+            styleSheetPath: `@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${styleSheetName}.css`,
+          },
         ],
         options.bake && [
           '@compiled/babel-plugin',
@@ -147,25 +147,7 @@ export default async function compiledLoader(
       this.addDependency(normalize(file));
     });
 
-    let output: string = result?.code || '';
-
-    if (options.extract && foundCSSRules.length) {
-      foundCSSRules.forEach((rule) => {
-        // Each found atomic rule will create a new import that uses `@compiled/webpack-loader/css-loader`.
-        // The benefit is two fold:
-        // (1) thread safe collection of styles
-        // (2) caching -- resulting in faster builds (one import per rule!)
-        const params = toURIComponent(rule);
-
-        // We use require instead of import so it works with both ESM and CJS source.
-        // If we used ESM it would blow up with CJS source, unfortunately.
-        output = `
-  require("@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${styleSheetName}.css?style=${params}");
-  ${output}`;
-      });
-    }
-
-    callback(null, output, result?.map ?? undefined);
+    callback(null, result?.code || '', result?.map ?? undefined);
   } catch (e: unknown) {
     // @ts-expect-error Not checking for error type
     const error = createError('compiled-loader', 'Unhandled exception')(e.stack);

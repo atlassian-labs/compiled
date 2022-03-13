@@ -1,6 +1,6 @@
 {
   "name": "@compiled/webpack-loader",
-  "version": "0.8.2",
+  "version": "0.8.4",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-webpack-loader",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -21,24 +21,24 @@
   ],
   "dependencies": {
     "@babel/core": "^7.17.5",
-    "@compiled/babel-plugin": "^0.12.1",
+    "@compiled/babel-plugin": "^0.13.0",
     "@compiled/babel-plugin-strip-runtime": "^0.11.4",
     "@compiled/css": "^0.8.1",
-    "@compiled/react": "0.10.2",
+    "@compiled/react": "0.10.3",
     "@compiled/utils": "^0.6.14",
     "enhanced-resolve": "^5.8.3",
     "loader-utils": "^2.0.2",
-    "webpack-sources": "^1.4.3"
+    "webpack-sources": "^3.2.3"
   },
   "devDependencies": {
     "babel-loader": "^8.2.3",
-    "css-loader": "^5.2.7",
+    "css-loader": "^6.7.0",
     "memfs": "^3.4.1",
     "mini-css-extract-plugin": "^1.6.2",
     "react": "^17.0.2",
-    "ts-node": "^10.4.0",
-    "tsconfig-paths": "^3.12.0",
-    "webpack": "^5.66.0"
+    "ts-node": "^10.7.0",
+    "tsconfig-paths": "^3.13.0",
+    "webpack": "^5.69.1"
   },
   "peerDependencies": {
     "webpack": ">= 4.46.0"

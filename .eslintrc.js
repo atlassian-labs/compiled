@@ -23,6 +23,13 @@ module.exports = {
       plugins: ['react-hooks'],
       rules: {
         'react/display-name': 'off',
+        'react/jsx-filename-extension': [
+          'error',
+          {
+            allow: 'as-needed',
+            extensions: ['.tsx', '.jsx'],
+          },
+        ],
         'react/prop-types': 'off',
         'react/react-in-jsx-scope': 'off',
         'react-hooks/exhaustive-deps': 'warn',

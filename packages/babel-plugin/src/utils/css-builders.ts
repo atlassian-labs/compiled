@@ -13,6 +13,11 @@ import {
   isCompiledKeyframesCallExpression,
   isCompiledKeyframesTaggedTemplateExpression,
 } from './is-compiled';
+import {
+  isCssPropertyInTemplateElement,
+  hasNestedTemplateLiteralsWithConditionalRules,
+  moveCssPropertyInExpression,
+} from './manipulate-template-literal';
 import { resolveBinding } from './resolve-binding';
 import type {
   CSSOutput,
@@ -400,6 +405,64 @@ const extractLogicalExpression = (node: t.ArrowFunctionExpression, meta: Metadat
   return { css: mergeSubsequentUnconditionalCssItems(css), variables };
 };
 
+const createNegativeUnaryExpression = (node: t.Identifier) => ({
+  type: 'UnaryExpression',
+  start: node.start,
+  end: node.end,
+  operator: '-',
+  prefix: true,
+  argument: {
+    type: 'Identifier',
+    start: node.start,
+    end: node.end,
+    name: node.name,
+  },
+});
+
+/**
+ * Manipulates the AST to ensure that CSS variables are generated correctly for negative values
+ *
+ * Consider we have the following:
+ *
+ * const gridSize = 8;
+ *
+ * const LayoutRight = styled.aside`
+ *   margin-right: -${gridSize * 5}px; // A
+ *   margin-left: ${gridSize * 5}px; // B
+ *   top: -${gridSize * 5}px; // A
+ *   left: -${gridSize * 8}px; // C
+ *   right: ${gridSize * 8}px;  // D
+ *   color: red;
+ * `;
+ *
+ * In order to calculate the correct CSS custom properties, items labeled A & C need to be converted to UnaryExpressions
+ * This essentially changes these to ${-gridSize * 5}px; & ${-gridSize * 8}px respectively - resulting in correct CSS
+ * generation for these negative values.
+ *
+ * Without this manipulation you would end up with:
+ * -40px for A & B
+ * -64px for C & D
+ *
+ * With this manipulation you end up with:
+ * -40px for A
+ * 40px for B
+ * -64px for C
+ * 64px for D
+ *
+ * @param nodeExpression Node we're interested in manipulating
+ */
+const convertNegativeCssValuesToUnaryExpression = (nodeExpression: t.Expression): t.Expression => {
+  if (t.isBinaryExpression(nodeExpression)) {
+    return {
+      ...nodeExpression,
+      left: createNegativeUnaryExpression(nodeExpression.left as t.Identifier),
+    } as t.Expression;
+  } else if (t.isIdentifier(nodeExpression)) {
+    return createNegativeUnaryExpression(nodeExpression) as t.Expression;
+  }
+  return nodeExpression;
+};
+
 /*
  * Extracts the keyframes CSS from the `@compiled/react` keyframes usage.
  *
@@ -551,7 +614,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   // Quasis are the string pieces of the template literal - the parts around the interpolations
   const literalResult = node.quasis.reduce<string>((acc, quasi, index): string => {
-    const nodeExpression = node.expressions[index] as t.Expression | undefined;
+    let nodeExpression = node.expressions[index] as t.Expression | undefined;
 
     if (
       !nodeExpression ||
@@ -559,6 +622,29 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     ) {
       const suffix = meta.context === 'keyframes' ? '' : ';';
       return acc + quasi.value.raw + suffix;
+    }
+
+    // Deal with any negative values such as:
+    // margin: -${gridSize}, top: -${gridSize} etc.
+    if (quasi.value.raw.endsWith('-') && !t.isArrowFunctionExpression(nodeExpression)) {
+      // Remove the '-' from the quasi, as it will soon be moved to a unary expression
+      quasi.value.raw = quasi.value.raw.slice(0, -1);
+      nodeExpression = convertNegativeCssValuesToUnaryExpression(nodeExpression);
+    }
+
+    /**
+     * Manipulate the node if the CSS property, pseudo classes or pseudo elements are defined
+     * within a template element rather than in a expression.
+     * Eg :hover { color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')}; }
+     */
+    if (
+      t.isArrowFunctionExpression(nodeExpression) &&
+      t.isConditionalExpression(nodeExpression.body) &&
+      isCssPropertyInTemplateElement(quasi) &&
+      !hasNestedTemplateLiteralsWithConditionalRules(node, meta)
+    ) {
+      const nextQuasis = node.quasis[index + 1];
+      moveCssPropertyInExpression(nodeExpression.body, quasi, nextQuasis);
     }
 
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);

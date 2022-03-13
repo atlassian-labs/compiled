@@ -2,17 +2,17 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@compiled/benchmark": ["packages/benchmark/src/index.tsx"],
-      "@compiled/css": ["packages/css/src/index.tsx"],
-      "@compiled/jest": ["packages/jest/src/index.tsx"],
+      "@compiled/benchmark": ["packages/benchmark/src/index.ts"],
+      "@compiled/css": ["packages/css/src/index.ts"],
+      "@compiled/jest": ["packages/jest/src/index.ts"],
       "@compiled/parcel-optimizer": ["packages/parcel-optimizer/src/index.tsx"],
       "@compiled/parcel-resolver": ["packages/parcel-resolver/src/index.tsx"],
       "@compiled/parcel-transformer": ["packages/parcel-transformer/src/index.tsx"],
-      "@compiled/react": ["packages/react/src/index.tsx"],
-      "@compiled/react/jsx-dev-runtime": ["packages/react/src/jsx/jsx-dev-runtime.tsx"],
-      "@compiled/react/jsx-runtime": ["packages/react/src/jsx/jsx-runtime.tsx"],
-      "@compiled/react/runtime": ["packages/react/src/runtime.tsx"],
-      "@compiled/utils": ["packages/utils/src/index.tsx"]
+      "@compiled/react": ["packages/react/src/index.ts"],
+      "@compiled/react/jsx-dev-runtime": ["packages/react/src/jsx/jsx-dev-runtime.ts"],
+      "@compiled/react/jsx-runtime": ["packages/react/src/jsx/jsx-runtime.ts"],
+      "@compiled/react/runtime": ["packages/react/src/runtime.ts"],
+      "@compiled/utils": ["packages/utils/src/index.ts"]
     }
   }
 }

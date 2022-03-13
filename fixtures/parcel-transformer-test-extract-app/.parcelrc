@@ -1,7 +1,7 @@
 {
   "extends": "@parcel/config-default",
   "transformers": {
-    "*.js": ["@compiled/parcel-transformer", "..."]
+    "*.{js,jsx}": ["@compiled/parcel-transformer", "..."]
   },
   "resolvers": ["@compiled/parcel-resolver-noop", "..."]
 }

@@ -1,5 +1,18 @@
 # @compiled/babel-plugin
 
+## 0.13.0
+
+### Minor Changes
+
+- 307bb83: Handle export named declarations with source when resolving modules
+
+### Patch Changes
+
+- 18dcdf8: Fix conditional rules not generating the expected output:
+
+  - classes should be generated instead of CSS variables
+  - style inside a pseudo class ( eg : hover) or pseudo element ( eg :before) should be applied to related element
+
 ## 0.12.1
 
 ### Patch Changes
