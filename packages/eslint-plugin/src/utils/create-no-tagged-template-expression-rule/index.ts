@@ -27,6 +27,18 @@ export const createNoTaggedTemplateExpressionRule =
         *fix(fixer: RuleFixer) {
           const { quasi, tag } = node;
           const source = context.getSourceCode();
+
+          // TODO Eventually handle comments instead of skipping them
+          // Skip auto-fixing comments
+          if (
+            quasi.quasis
+              .map((q) => q.value.raw)
+              .join('')
+              .match(/\/\*[\s\S]*\*\//g)
+          ) {
+            return;
+          }
+
           yield fixer.insertTextBefore(
             node,
             source.getText(tag) +

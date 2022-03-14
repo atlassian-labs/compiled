@@ -23,7 +23,11 @@ const createInvalidTestCases = (tests: InvalidTestCase[]) =>
         t,
         'styles',
         (code, prefix) => code.replace('css`', prefix + 'css`'),
-        (output, prefix) => output.replace(lastCssCallExpressionRe, prefix + 'css(')
+        (output, prefix) =>
+          // TODO remove this once comments are handled
+          t.filename?.includes('comments')
+            ? output.replace('css`', prefix + 'css`')
+            : output.replace(lastCssCallExpressionRe, prefix + 'css(')
       ),
     ])
     .flatMap((t) => [
@@ -35,11 +39,15 @@ const createInvalidTestCases = (tests: InvalidTestCase[]) =>
             .replace('{ css }', '{ css as css2 }')
             .replace('css`', 'css2`')
             .replace(/css\(/g, 'css2('),
-        (output) => output.replace('{ css }', '{ css as css2 }').replace(/css\(/g, 'css2(')
+        (output) =>
+          output
+            .replace('{ css }', '{ css as css2 }')
+            .replace(/css\(/g, 'css2(')
+            // TODO remove this once comments are handled
+            .replace(/css`/g, 'css2`')
       ),
     ]);
 
-// TODO Handle comments
 tester.run('no-css-tagged-template-expression', noCssTaggedTemplateExpressionRule, {
   valid: [
     `
@@ -67,6 +75,19 @@ tester.run('no-css-tagged-template-expression', noCssTaggedTemplateExpressionRul
         css({
           color: "blue"
         });
+      `,
+    },
+    {
+      filename: 'single-line-static-rule-comments.ts',
+      code: `
+        import { css } from '@compiled/react';
+
+        css\`/* before */ color: /* inline */ blue /* after */\`;
+      `,
+      output: `
+        import { css } from '@compiled/react';
+
+        css\`/* before */ color: /* inline */ blue /* after */\`;
       `,
     },
     {
@@ -150,6 +171,89 @@ tester.run('no-css-tagged-template-expression', noCssTaggedTemplateExpressionRul
       `,
     },
     {
+      filename: 'multiline-static-rules-comments.ts',
+      code: `
+        import { css } from '@compiled/react';
+
+        css\`
+          /* before declaration 1 */
+          color: /* inline declaration 1 */ blue;
+          /* after declaration 1 */
+          /*
+           * before declaration 2
+           */
+          font-weight:
+            /*
+             * inline declaration 2
+             */
+             500;
+          /*
+           * after declaration 2
+           */
+          /* before declaration 3 */
+          opacity: /*
+           * inline declaration 3
+           */ 0.8;
+          /* after declaration 3 */
+          :hover { opacity: 1; text-decoration: underline; }
+          :visited { color: indigo; }
+          :focus {
+            /* before declaration 4 */
+            color: /* inline declaration 4 */ darkblue;
+            /* after declaration 4 */
+            /* before declaration 5 */
+            opacity: /* inline declaration 5 */ 1;
+            /*
+             * after declaration 5
+             */
+          }
+          /* before declaration 6 */
+          display: /* inline declaration 6 */ block;
+          /* after declaration 6 */
+        \`;
+      `,
+      output: `
+        import { css } from '@compiled/react';
+
+        css\`
+          /* before declaration 1 */
+          color: /* inline declaration 1 */ blue;
+          /* after declaration 1 */
+          /*
+           * before declaration 2
+           */
+          font-weight:
+            /*
+             * inline declaration 2
+             */
+             500;
+          /*
+           * after declaration 2
+           */
+          /* before declaration 3 */
+          opacity: /*
+           * inline declaration 3
+           */ 0.8;
+          /* after declaration 3 */
+          :hover { opacity: 1; text-decoration: underline; }
+          :visited { color: indigo; }
+          :focus {
+            /* before declaration 4 */
+            color: /* inline declaration 4 */ darkblue;
+            /* after declaration 4 */
+            /* before declaration 5 */
+            opacity: /* inline declaration 5 */ 1;
+            /*
+             * after declaration 5
+             */
+          }
+          /* before declaration 6 */
+          display: /* inline declaration 6 */ block;
+          /* after declaration 6 */
+        \`;
+      `,
+    },
+    {
       filename: 'nested-selectors.ts',
       code: `
         import { css } from '@compiled/react';
@@ -199,6 +303,79 @@ tester.run('no-css-tagged-template-expression', noCssTaggedTemplateExpressionRul
       `,
     },
     {
+      filename: 'nested-selectors-comments.ts',
+      code: `
+        import { css } from '@compiled/react';
+
+        css\`
+          color: blue;
+          /* before selector 1 */
+          #foo {
+            /*
+             * before selector 2
+             */
+            .bar {
+              /* before selector 3 */
+              [data-testid="baz"] {
+                :hover {
+                  text-decoration: underline;
+                }
+              }
+              /* after selector 3 */
+            }
+            /*
+             * after selector 2
+             */
+          }
+          /* after selector 1 */
+          /* before media query */
+          @media screen and (max-width: 600px) {
+            #foo {
+              .bar {
+                opacity: 0;
+              }
+            }
+          }
+          /* after media query */
+        \`;
+      `,
+      output: `
+        import { css } from '@compiled/react';
+
+        css\`
+          color: blue;
+          /* before selector 1 */
+          #foo {
+            /*
+             * before selector 2
+             */
+            .bar {
+              /* before selector 3 */
+              [data-testid="baz"] {
+                :hover {
+                  text-decoration: underline;
+                }
+              }
+              /* after selector 3 */
+            }
+            /*
+             * after selector 2
+             */
+          }
+          /* after selector 1 */
+          /* before media query */
+          @media screen and (max-width: 600px) {
+            #foo {
+              .bar {
+                opacity: 0;
+              }
+            }
+          }
+          /* after media query */
+        \`;
+      `,
+    },
+    {
       filename: 'interpolated-declaration-values.ts',
       code: `
         import { css } from '@compiled/react';
@@ -221,6 +398,45 @@ tester.run('no-css-tagged-template-expression', noCssTaggedTemplateExpressionRul
           color: color,
           opacity: opacity
         });
+      `,
+    },
+    {
+      filename: 'interpolated-declaration-values-comments.ts',
+      code: `
+        import { css } from '@compiled/react';
+
+        const color = 'blue';
+        const opacity = 1;
+
+        css\`
+          color: /* before interpolation 1 */ \${color} /* after interpolation 1 */;
+          opacity:
+            /*
+             * before interpolation 2
+             */
+             \${opacity};
+            /*
+             * after interpolation 2
+             */
+        \`;
+      `,
+      output: `
+        import { css } from '@compiled/react';
+
+        const color = 'blue';
+        const opacity = 1;
+
+        css\`
+          color: /* before interpolation 1 */ \${color} /* after interpolation 1 */;
+          opacity:
+            /*
+             * before interpolation 2
+             */
+             \${opacity};
+            /*
+             * after interpolation 2
+             */
+        \`;
       `,
     },
     {
@@ -318,6 +534,55 @@ tester.run('no-css-tagged-template-expression', noCssTaggedTemplateExpressionRul
             ]
           }
         );
+      `,
+    },
+    {
+      filename: 'mixins-comments.ts',
+      code: `
+        import { css } from '@compiled/react';
+
+        const primary = css({ color: 'blue' });
+        const hover = css({ textDecoration: 'underline' });
+
+        css\`
+          /* before mixin 1 */
+          \${primary};
+          /* after mixin 1 */
+          opacity: 0.8;
+          :hover {
+            /*
+             * before mixin 2
+             */
+            \${hover};
+            /*
+             * after mixin 2
+             */
+            opacity: 1;
+          }
+        \`;
+      `,
+      output: `
+        import { css } from '@compiled/react';
+
+        const primary = css({ color: 'blue' });
+        const hover = css({ textDecoration: 'underline' });
+
+        css\`
+          /* before mixin 1 */
+          \${primary};
+          /* after mixin 1 */
+          opacity: 0.8;
+          :hover {
+            /*
+             * before mixin 2
+             */
+            \${hover};
+            /*
+             * after mixin 2
+             */
+            opacity: 1;
+          }
+        \`;
       `,
     },
   ]),

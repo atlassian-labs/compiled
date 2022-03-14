@@ -27,12 +27,15 @@ const createInvalidTestCases = (tests: InvalidTestCase[]) =>
         t,
         'fadeOut',
         (code, prefix) => code.replace('keyframes`', prefix + 'keyframes`'),
-        (output, prefix) => output.replace('keyframes(', prefix + 'keyframes(')
+        (output, prefix) =>
+          output
+            .replace('keyframes(', prefix + 'keyframes(')
+            // TODO Remove this once comments are handled
+            .replace('keyframes`', prefix + 'keyframes`')
       ),
     ])
     .flatMap((t) => [t, createAliasedInvalidTestCase(t, replaceAlias, replaceAlias)]);
 
-// TODO Handle comments
 tester.run('no-keyframes-tagged-template-expression', noKeyframesTaggedTemplateExpressionRule, {
   valid: [
     `
@@ -162,6 +165,101 @@ tester.run('no-keyframes-tagged-template-expression', noKeyframesTaggedTemplateE
       `,
     },
     {
+      filename: 'multiline-static-rules-comments.ts',
+      code: `
+        import { keyframes } from '@compiled/react';
+
+        keyframes\`
+          /* before selector 1 */
+          from, 25% {
+            /* before declaration 1 */
+            color: /* inline declaration 1 */ darkblue;
+            /* after declaration 1 */
+            /* before declaration 2 */
+            opacity: /* inline declaration 2 */ 1;
+            /* after declaration 2 */
+          }
+          /* after selector 1 */
+          /*
+           * before selector 2
+           */
+          25% {
+            /*
+             * before declaration 3
+             */
+            color: darkblue;
+            /*
+             * after declaration 3
+             */
+            opacity: 0.75;
+            /*
+             * after declaration 4
+             */
+          }
+          /*
+           * after selector 2
+           */
+          /* before selector 3 */
+          50% {
+            color: blue;
+            opacity: 0.5;
+          }
+          /* after selector 3 */
+          to {
+            color: blue;
+            opacity: 0;
+          }
+          /* after selector 4 */
+        \`;
+      `,
+      output: `
+        import { keyframes } from '@compiled/react';
+
+        keyframes\`
+          /* before selector 1 */
+          from, 25% {
+            /* before declaration 1 */
+            color: /* inline declaration 1 */ darkblue;
+            /* after declaration 1 */
+            /* before declaration 2 */
+            opacity: /* inline declaration 2 */ 1;
+            /* after declaration 2 */
+          }
+          /* after selector 1 */
+          /*
+           * before selector 2
+           */
+          25% {
+            /*
+             * before declaration 3
+             */
+            color: darkblue;
+            /*
+             * after declaration 3
+             */
+            opacity: 0.75;
+            /*
+             * after declaration 4
+             */
+          }
+          /*
+           * after selector 2
+           */
+          /* before selector 3 */
+          50% {
+            color: blue;
+            opacity: 0.5;
+          }
+          /* after selector 3 */
+          to {
+            color: blue;
+            opacity: 0;
+          }
+          /* after selector 4 */
+        \`;
+      `,
+    },
+    {
       filename: 'interpolated-declaration-values.ts',
       code: `
         import { keyframes } from '@compiled/react';
@@ -206,6 +304,67 @@ tester.run('no-keyframes-tagged-template-expression', noKeyframesTaggedTemplateE
             opacity: toOpacity
           }
         });
+      `,
+    },
+    {
+      filename: 'interpolated-declaration-values-comments.ts',
+      code: `
+        import { keyframes } from '@compiled/react';
+
+        const from = {
+          color: 'darkblue',
+          opacity: 1
+        };
+
+        const toColor = 'blue';
+        const toOpacity = 0;
+
+        keyframes\`
+          from {
+            color: /* before interpolation 1 */ \${from.color} /* after interpolation 1 */;
+            opacity:
+              /*
+               * before interpolation 2
+               */
+              \${from.opacity};
+              /*
+               * after interpolation 2
+               */
+          }
+          to {
+            color: \${toColor};
+            opacity: \${toOpacity};
+          }
+        \`;
+      `,
+      output: `
+        import { keyframes } from '@compiled/react';
+
+        const from = {
+          color: 'darkblue',
+          opacity: 1
+        };
+
+        const toColor = 'blue';
+        const toOpacity = 0;
+
+        keyframes\`
+          from {
+            color: /* before interpolation 1 */ \${from.color} /* after interpolation 1 */;
+            opacity:
+              /*
+               * before interpolation 2
+               */
+              \${from.opacity};
+              /*
+               * after interpolation 2
+               */
+          }
+          to {
+            color: \${toColor};
+            opacity: \${toOpacity};
+          }
+        \`;
       `,
     },
     {
