@@ -4,7 +4,7 @@ import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { preserveLeadingComments } from '@compiled/utils';
 
-import type { PluginPass } from './types';
+import type { PluginPass, PluginOptions } from './types';
 import { isAutomaticRuntime } from './utils/is-automatic-runtime';
 import { isCCComponent } from './utils/is-cc-component';
 import { isCreateElement } from './utils/is-create-element';
@@ -135,3 +135,5 @@ export default declare<PluginPass>((api) => {
     },
   };
 });
+
+export { PluginOptions };

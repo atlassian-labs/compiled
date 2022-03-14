@@ -4,7 +4,7 @@
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
-    "build": "babel ./src --out-dir=./dist"
+    "build": "TEST_PKG_VERSION='0.0.0' babel ./src --out-dir=./dist"
   },
   "dependencies": {
     "@compiled/react": "*"

@@ -4,4 +4,5 @@ type BabelPluginOpts = Omit<PluginOptions, 'cache' | 'onIncludedFiles'>;
 
 export interface ParcelTransformerOpts extends BabelPluginOpts {
   extract?: boolean;
+  stylesheetPath?: string;
 }

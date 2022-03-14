@@ -2,6 +2,8 @@ import { join } from 'path';
 
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import generate from '@babel/generator';
+import type { PluginOptions as BabelPluginOptions } from '@compiled/babel-plugin';
+import type { PluginOptions as BabelStripRuntimePluginOptions } from '@compiled/babel-plugin-strip-runtime';
 import { toBoolean } from '@compiled/utils';
 import { Transformer } from '@parcel/plugin';
 import SourceMap from '@parcel/source-map';
@@ -77,7 +79,6 @@ export default new Transformer<ParcelTransformerOpts>({
     }
 
     const includedFiles: string[] = [];
-    const foundCSSRules: string[] = [];
     const code = asset.isASTDirty() ? undefined : await asset.getCode();
 
     const result = await transformFromAstAsync(ast.program, code, {
@@ -93,14 +94,14 @@ export default new Transformer<ParcelTransformerOpts>({
           {
             ...config,
             onIncludedFiles: (files: string[]) => includedFiles.push(...files),
-            cache: 'single-pass',
-          },
+            cache: false,
+          } as BabelPluginOptions,
         ],
         config.extract && [
           '@compiled/babel-plugin-strip-runtime',
           {
-            onFoundStyleRules: (styles: string[]) => foundCSSRules.push(...styles),
-          },
+            styleSheetPath: 'compiled-css!',
+          } as BabelStripRuntimePluginOptions,
         ],
       ].filter(toBoolean),
       caller: {
@@ -108,7 +109,7 @@ export default new Transformer<ParcelTransformerOpts>({
       },
     });
 
-    let output = result?.code || '';
+    const output = result?.code || '';
 
     includedFiles.forEach((file) => {
       // Included files are those which have been statically evaluated into this asset.
@@ -116,14 +117,6 @@ export default new Transformer<ParcelTransformerOpts>({
       // again.
       asset.invalidateOnFileChange(file);
     });
-
-    if (config.extract && foundCSSRules.length) {
-      for (const rule of foundCSSRules) {
-        // Build imports with css to be resolved into CSS by `@compiled/parcel-resolver`
-        const params = encodeURIComponent(rule);
-        output = `\nimport 'compiled-css!${params}';\n${output}`;
-      }
-    }
 
     asset.setCode(output);
 

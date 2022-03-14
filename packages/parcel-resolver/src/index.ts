@@ -6,8 +6,8 @@ const resolver = new Resolver({
   async resolve({ dependency }) {
     const { specifier, resolveFrom } = dependency;
 
-    // Resolve the imports inserted by `@compiled/parcel-transformer`
-    const cssPrefix = 'compiled-css!';
+    // Resolve the imports inserted by `@compiled/babel-plugin-strip-runtime`
+    const cssPrefix = 'compiled-css!?style=';
     if (specifier.startsWith(cssPrefix)) {
       const code = decodeURIComponent(specifier.slice(cssPrefix.length));
       return {
