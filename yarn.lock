@@ -13832,10 +13832,10 @@ raw-loader@^4.0.2:
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
 
-razzle-dev-utils@^4.2.14:
-  version "4.2.14"
-  resolved "https://registry.yarnpkg.com/razzle-dev-utils/-/razzle-dev-utils-4.2.14.tgz#7fb03a9a602cd05ffa1f34c264b649c4c5c7bec8"
-  integrity sha512-3jArnKbRtIt/p3Jh+dZaoudsNvh5KsDX3c0autlyWOOgp/afBPt5wP5dcG761TuwVQ2HcIRmVOWDESnVh9XJMQ==
+razzle-dev-utils@^4.2.16:
+  version "4.2.16"
+  resolved "https://registry.yarnpkg.com/razzle-dev-utils/-/razzle-dev-utils-4.2.16.tgz#cb8972fe63ba0b42a6817d19e68db697e1e78c17"
+  integrity sha512-QlGffE+kNzoC87/NBf7/rq59XobQ86KTVCNsktjThH9NaDgFtSLVDAY2wAf7qkhFfhArppHJ7gGTZ4opzHNGIw==
   dependencies:
     "@babel/code-frame" "^7.8.3"
     chalk "^4.1.0"
