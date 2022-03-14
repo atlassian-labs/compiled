@@ -1,11 +1,10 @@
 import { transform as transformCode } from '../../test-utils';
 import type { TransformOptions } from '../../test-utils';
 
-const transform = (code: string, options: TransformOptions = {}) => {
-  return transformCode(code, options);
-};
-
 describe('styled tagged template expression', () => {
+  const transform = (code: string, opts: TransformOptions = {}) =>
+    transformCode(code, { snippet: true, ...opts });
+
   it('only transforms @compiled/react usages', () => {
     const actual = transform(`
       import { styled as styled2 } from '@compiled/react';
@@ -668,7 +667,7 @@ describe('styled tagged template expression', () => {
               > :first-child {
                 display: \${(props) => (props.isShown ? 'none' : 'block')};
               }
-      
+
               > :last-child {
                 opacity: \${(props) => (props.isShown ? 1 : 0)};
               }
@@ -761,7 +760,6 @@ describe('styled tagged template expression', () => {
   it('should transform function returning an object', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
-      import React from 'react';
 
       const color = 'red';
       const mixin = () => ({ color });
@@ -777,7 +775,6 @@ describe('styled tagged template expression', () => {
   it('should transform member expression referencing a function which returns an object', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
-      import React from 'react';
 
       const color = 'red';
       const mixin = () => ({ color });

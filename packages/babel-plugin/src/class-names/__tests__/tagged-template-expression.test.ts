@@ -13,17 +13,10 @@ describe('ClassNames used with a css tagged template expression', () => {
         );
       `);
 
-      expect(actual).toMatchInlineSnapshot(`
-        "const _ = \\"._1wybgktf{font-size:20px}\\";
-
-        const ListItem = () => (
-          <CC>
-            <CS>{[_]}</CS>
-            {<div className={\\"_1wybgktf\\"}>hello, world!</div>}
-          </CC>
-        );
-        "
-      `);
+      expect(actual).toIncludeMultiple([
+        'const _ = "._1wybgktf{font-size:20px}"',
+        'className={"_1wybgktf"}',
+      ]);
     });
 
     it('a declared string literal expression', () => {

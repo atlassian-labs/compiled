@@ -1,4 +1,5 @@
-import { transform } from '../../test-utils';
+import type { TransformOptions } from '../../test-utils';
+import { transform as transformCode } from '../../test-utils';
 
 describe('class names behaviour', () => {
   beforeAll(() => {
@@ -8,6 +9,9 @@ describe('class names behaviour', () => {
   afterAll(() => {
     delete process.env.AUTOPREFIXRER;
   });
+
+  const transform = (code: string, opts: TransformOptions = {}) =>
+    transformCode(code, { snippet: true, ...opts });
 
   it('should transform class names single usage', () => {
     const actual = transform(`
