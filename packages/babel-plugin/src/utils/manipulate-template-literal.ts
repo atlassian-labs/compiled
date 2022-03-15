@@ -1,29 +1,10 @@
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
-import { cssAffixInterpolation } from '@compiled/css';
 
 import type { Metadata } from '../types';
 
 import { getPathOfNode } from './ast';
-
-const conditionalPaths: ['consequent', 'alternate'] = ['consequent', 'alternate'];
-
-/**
- * Returns `true` if the CSS property or pseudo classes/pseudo elements
- * are defined within a template element (the string pieces of the template literal)
- * rather than in the expression.
- *
- * For example
- * - CSS property: `color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};`
- * - Pseudo class: `hover: ${({ isPrimary }) => (isPrimary ? 'color:green' : 'color:red')};`
- * - Pseudo element: `:before {${({ isPrimary }) => (isPrimary ? 'color: green' : 'color:red')}};`
- * @param node
- */
-export const isCssPropertyInTemplateElement = (node: t.TemplateElement): boolean => {
-  const value = node.value.raw;
-
-  return value.includes(':');
-};
+import { CONDITIONAL_PATHS } from './constants';
 
 /**
  * TODO: this is a temporary workaround so that we don't evaluate expressions that may throw an error.
@@ -48,7 +29,7 @@ export const hasNestedTemplateLiteralsWithConditionalRules = (
   traverse(parent, {
     noScope: true,
     ConditionalExpression(path) {
-      conditionalPaths.map((c) => {
+      CONDITIONAL_PATHS.map((c) => {
         const expression = path.node[c];
 
         if (
@@ -70,79 +51,121 @@ export const hasNestedTemplateLiteralsWithConditionalRules = (
 };
 
 /**
- * Manipulates template literal so that it resembles
- * CSS `property: value` declaration where
- * - before: all the CSS _before_ the interpolation
- * - after: all the CSS _after_ the interpolation
- * @param expression
- * @param quasi
- * @param nextQuasis
+ * Tries to convert a conditional expression of values into `property: value`
+ * to allow CSS classes to be built on each conditional branch
+ * @param prefix {string}
+ * @param suffix {string}
+ * @param expression {t.ConditionalExpression}
  */
-export const moveCssPropertyInExpression = (
-  expression: t.ConditionalExpression,
+const optimizeConditionalExpression = (
+  prefix: string,
+  suffix: string,
+  expression: t.ConditionalExpression
+): t.ConditionalExpression => {
+  const [styleProperty] = prefix.split(':');
+  const isValidCssProperty = styleProperty.match(/^\w+-?\w+$/);
+  const isNotPartOfString = !prefix.endsWith("'") && !prefix.endsWith('"');
+  // This will skip statements like
+  // height: calc(100% - ${identifier} - ${conditionalExpression});
+  // content: 'I contain code ${conditionalExpression});';
+  // as the same technique can't applied to these scenarios
+  // or their content is unpredictable
+  if (isValidCssProperty && isNotPartOfString) {
+    const branches = CONDITIONAL_PATHS.map((path) => {
+      const branchNode = expression[path];
+
+      if (t.isNumericLiteral(branchNode) || t.isStringLiteral(branchNode)) {
+        return t.stringLiteral(`${prefix}${branchNode.value}${suffix}`);
+      } else if (t.isTemplateLiteral(branchNode)) {
+        const { quasis } = branchNode;
+        const [leadQuasi] = quasis;
+        const tailQuasi = quasis[quasis.length - 1];
+
+        leadQuasi.value = {
+          raw: `${prefix}${leadQuasi.value.raw}`,
+          cooked: `${prefix}${leadQuasi.value.cooked}`,
+        };
+
+        tailQuasi.value = {
+          raw: `${tailQuasi.value.raw}${suffix}`,
+          cooked: `${tailQuasi.value.cooked}${suffix}`,
+        };
+
+        return branchNode;
+      } else if (t.isConditionalExpression(branchNode)) {
+        return optimizeConditionalExpression(prefix, suffix, branchNode);
+      } else {
+        return t.templateLiteral(
+          [
+            t.templateElement({ raw: prefix, cooked: prefix }),
+            t.templateElement({ raw: suffix, cooked: suffix }),
+          ],
+          [branchNode]
+        );
+      }
+    });
+
+    return t.conditionalExpression(expression.test, branches[0], branches[1]);
+  }
+
+  return expression;
+};
+
+/**
+ * Tries to modify a CSS statement in a template literal containing conditional values to
+ * output separate CSS classes for each value
+ * @param quasi {t.TemplateElement}
+ * @param nextQuasi {t.TemplateElement}
+ * @param expression {t.ArrowFunctionExpression}
+ */
+export const optimizeConditionalStatement = (
   quasi: t.TemplateElement,
-  nextQuasis: t.TemplateElement,
-  deleteValue = true
+  nextQuasi: t.TemplateElement,
+  expression: t.ArrowFunctionExpression
 ): void => {
-  const value = quasi.value.raw;
-  const parts = value.split(';');
-  const before = parts[parts.length - 1]; // everything after the last ';'. Hence, after the last CSS declaration
-  const [, nextQuasisExtractedCss] = cssAffixInterpolation('', nextQuasis.value.raw);
-  const closingBracket = before.includes('{') ? ';}' : '';
-  const after = nextQuasisExtractedCss.variableSuffix + closingBracket;
+  const quasiValue = quasi.value.raw;
+  // Breaks down quasi into individual statements
+  const quasiStatements = quasiValue.split(/[;|{|}]/g);
+  // Any string that is mid statement should be the last item
+  // as it should be interupted by an expression
+  const prefix = quasiStatements[quasiStatements.length - 1].trim();
+  const nextQuasiValue = nextQuasi?.value.raw ?? '';
+  const endOfStatementIndex = nextQuasiValue.indexOf(';');
+  const nextQuasiEndsStatement = endOfStatementIndex !== -1;
 
-  if (!before) {
-    return;
-  }
+  if (t.isConditionalExpression(expression.body) && prefix && nextQuasiEndsStatement) {
+    const suffix = nextQuasiValue.substring(0, endOfStatementIndex);
+    const optimizedConditional = optimizeConditionalExpression(prefix, suffix, expression.body);
 
-  conditionalPaths.map((path) => {
-    const pathNode = expression[path];
-    if (t.isStringLiteral(pathNode) && pathNode.value) {
-      // We've found a string literal like: `'blue'`
-      pathNode.value = before + pathNode.value + after;
-    } else if (t.isTemplateLiteral(pathNode)) {
-      // We've found a template literal like: "`${fontSize}px`"
-      pathNode.quasis[0].value.raw = before + pathNode.quasis[0].value.raw + after;
-    } else if (t.isNumericLiteral(pathNode)) {
-      // We've found a numeric literal like: `1`
-      expression[path] = t.stringLiteral(before + pathNode.value + after);
-    } else if (t.isIdentifier(pathNode)) {
-      const identifierExpression = [pathNode];
-      const identifierQuasis = [
-        t.templateElement({ raw: before, cooked: before }),
-        t.templateElement({ raw: after, cooked: after }),
-      ];
-      expression[path] = t.templateLiteral(identifierQuasis, identifierExpression);
-    } else if (t.isMemberExpression(pathNode)) {
-      // We've found a member expression like `colors.N50`
-      const memberExpression = [pathNode];
-      const memberQuasis = [
-        t.templateElement({ raw: before, cooked: before }),
-        t.templateElement({ raw: after, cooked: after }),
-      ];
-      expression[path] = t.templateLiteral(memberQuasis, memberExpression);
-    } else if (t.isConditionalExpression(pathNode)) {
-      // We've found nested ternary operators
-      moveCssPropertyInExpression(pathNode, quasi, nextQuasis, false);
-    } else {
-      deleteValue = false;
-      return;
+    if (optimizedConditional !== expression.body) {
+      const quasiValueWithoutPrefix = quasiValue.substring(0, quasiValue.lastIndexOf(prefix));
+
+      expression.body = optimizedConditional;
+      quasi.value = { raw: quasiValueWithoutPrefix, cooked: quasiValueWithoutPrefix };
+
+      if (nextQuasi) {
+        const quasiValueWithoutSuffix = nextQuasiValue.substring(endOfStatementIndex + 1);
+        nextQuasi.value = { raw: quasiValueWithoutSuffix, cooked: quasiValueWithoutSuffix };
+      }
     }
-  });
-
-  // Remove CSS property so it doesn't get processed again
-  if (deleteValue) {
-    let nextQuasisNewCSS = nextQuasisExtractedCss.css;
-
-    quasi.value.raw = value.replace(before, '');
-    quasi.value.cooked = value.replace(before, '');
-
-    if (closingBracket) {
-      const rex = /([^}/]+$)/g; // everything after the last '}'
-      nextQuasisNewCSS = nextQuasis.value.raw.match(rex)?.[0] || '';
-    }
-
-    nextQuasis.value.raw = nextQuasisNewCSS;
-    nextQuasis.value.cooked = nextQuasisNewCSS;
   }
+};
+
+/**
+ * Checks if quasi ends in an incomplete statement
+ * @param quasi {t.TemplateElement}
+ */
+export const isQuasiMidStatement = (quasi: t.TemplateElement): boolean => {
+  const {
+    value: { raw },
+  } = quasi;
+  // Remove any comments (/* ... */) then trim
+  const stringValue = raw.replace(/\/\*(.|\n)*?\*\//g, '').trimEnd();
+
+  return (
+    Boolean(stringValue) &&
+    !stringValue.endsWith(';') &&
+    !stringValue.endsWith('{') &&
+    !stringValue.endsWith('}')
+  );
 };

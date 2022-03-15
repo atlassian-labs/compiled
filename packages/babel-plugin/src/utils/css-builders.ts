@@ -6,6 +6,7 @@ import { hash, kebabCase } from '@compiled/utils';
 import type { Metadata } from '../types';
 
 import { buildCodeFrameError, getKey } from './ast';
+import { CONDITIONAL_PATHS } from './constants';
 import { evaluateExpression } from './evaluate-expression';
 import {
   isCompiledCSSCallExpression,
@@ -14,9 +15,9 @@ import {
   isCompiledKeyframesTaggedTemplateExpression,
 } from './is-compiled';
 import {
-  isCssPropertyInTemplateElement,
+  isQuasiMidStatement,
   hasNestedTemplateLiteralsWithConditionalRules,
-  moveCssPropertyInExpression,
+  optimizeConditionalStatement,
 } from './manipulate-template-literal';
 import { resolveBinding } from './resolve-binding';
 import type {
@@ -312,11 +313,10 @@ const assertNoImportedCssVariables = (
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metadata): CSSOutput => {
-  const conditionalPaths: ['consequent', 'alternate'] = ['consequent', 'alternate'];
   const css: CSSOutput['css'] = [];
   const variables: CSSOutput['variables'] = [];
 
-  const [consequentCss, alternateCss] = conditionalPaths.map((path) => {
+  const [consequentCss, alternateCss] = CONDITIONAL_PATHS.map((path) => {
     const pathNode = node[path];
     let cssOutput: CSSOutput | void;
 
@@ -632,19 +632,22 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       nodeExpression = convertNegativeCssValuesToUnaryExpression(nodeExpression);
     }
 
-    /**
-     * Manipulate the node if the CSS property, pseudo classes or pseudo elements are defined
-     * within a template element rather than in a expression.
-     * Eg :hover { color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')}; }
-     */
+    // If quasi is ending at a point where it's expecting a value from an expression
+    // i.e color:
+    const isMidStatement = isQuasiMidStatement(quasi);
+    const doesExpressionHaveConditionalCss =
+      t.isArrowFunctionExpression(nodeExpression) && t.isConditionalExpression(nodeExpression.body);
+
     if (
-      t.isArrowFunctionExpression(nodeExpression) &&
-      t.isConditionalExpression(nodeExpression.body) &&
-      isCssPropertyInTemplateElement(quasi) &&
+      isMidStatement &&
+      doesExpressionHaveConditionalCss &&
       !hasNestedTemplateLiteralsWithConditionalRules(node, meta)
     ) {
-      const nextQuasis = node.quasis[index + 1];
-      moveCssPropertyInExpression(nodeExpression.body, quasi, nextQuasis);
+      optimizeConditionalStatement(
+        quasi,
+        node.quasis[index + 1],
+        nodeExpression as t.ArrowFunctionExpression
+      );
     }
 
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
@@ -656,13 +659,12 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       return acc + quasi.value.raw + interpolation.value;
     }
 
-    if (
+    const doesExpressionContainCssBlock =
       t.isObjectExpression(interpolation) ||
       isCompiledCSSTaggedTemplateExpression(interpolation, meta.state) ||
-      isCompiledCSSCallExpression(interpolation, meta.state) ||
-      (t.isArrowFunctionExpression(nodeExpression) &&
-        t.isConditionalExpression(nodeExpression.body))
-    ) {
+      isCompiledCSSCallExpression(interpolation, meta.state);
+
+    if ((!isMidStatement && doesExpressionContainCssBlock) || doesExpressionHaveConditionalCss) {
       // We found something that looks like CSS.
       const result = buildCss(interpolation, updatedMeta);
 
