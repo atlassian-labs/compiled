@@ -166,7 +166,27 @@ describe('styled component behaviour', () => {
       \`;
     `);
 
-    expect(actual).toInclude('"--_1p69eoh":ix(props.color,"px","-")');
+    expect(actual).toInclude('"--_1p69eoh-":ix(props.color,"px","-")');
+  });
+
+  it('creates a separate var name for positive and negative values of the same interpolation', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';      
+      const random = Math.random;
+      
+      const LayoutRight = styled.aside\`
+        margin-right: -\${random() * 5}px;
+        margin-left: \${random() * 5}px;
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._2hwxjtuq{margin-right:var(--_1hnpmp1-)}',
+      '._18u01s7m{margin-left:var(--_1hnpmp1)}',
+      '"--_1hnpmp1-":ix(random()*5,"px","-")',
+      '"--_1hnpmp1":ix(random()*5,"px")',
+      'ax(["_2hwxjtuq _18u01s7m",props.className]',
+    ]);
   });
 
   it('should spread down props to element', () => {
