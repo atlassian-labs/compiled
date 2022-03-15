@@ -1,6 +1,8 @@
-import { transform } from '../../test-utils';
+import { transform as transformCode } from '../../test-utils';
 
 describe('styled object call expression', () => {
+  const transform = (code: string) => transformCode(code, { snippet: true });
+
   it('only transforms @compiled/react usages', () => {
     const actual = transform(`
       import { styled as styled2 } from '@compiled/react';
@@ -459,7 +461,6 @@ describe('styled object call expression', () => {
   it('should transform function returning an object', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
-      import React from 'react';
 
       const color = 'red';
       const mixin = () => ({ color });
@@ -475,7 +476,6 @@ describe('styled object call expression', () => {
   it('should transform member expression referencing a function which returns an object', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
-      import React from 'react';
 
       const color = 'red';
       const mixin = () => ({ color });
