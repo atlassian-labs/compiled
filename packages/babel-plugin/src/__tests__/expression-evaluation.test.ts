@@ -438,7 +438,7 @@ describe('import specifiers', () => {
 
       expect(actual).toIncludeMultiple([
         '._19pk19vg{margin-top:var(--_lb6tu)}',
-        '"--_lb6tu":ix(getSpacing()*2)',
+        '"--_lb6tu": ix(getSpacing() * 2)',
         'ax(["_19pk19vg"])',
       ]);
     });
