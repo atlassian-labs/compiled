@@ -24,7 +24,7 @@ const getCompiledNode = (context: Rule.RuleContext) => {
     .find((node) => node.source.value === COMPILED_IMPORT);
 };
 
-const rule: Rule.RuleModule = {
+export const noEmotionCssRule: Rule.RuleModule = {
   meta: {
     fixable: 'code',
     type: 'problem',
@@ -140,5 +140,3 @@ const rule: Rule.RuleModule = {
     };
   },
 };
-
-export default rule;

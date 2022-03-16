@@ -1,4 +1,3 @@
 owner: jbrown2@atlassian.com
 paths:
   - 'packages/**'
-fileAllSnykTicketsNow: true

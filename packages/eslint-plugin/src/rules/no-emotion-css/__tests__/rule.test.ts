@@ -1,12 +1,7 @@
-import type { RuleTester } from 'eslint';
+import { tester } from '../../../test-utils';
+import { noEmotionCssRule } from '../index';
 
-import { tester } from '../../__tests__/test-utils';
-import rule from '../index';
-
-const tests: {
-  valid?: (string | RuleTester.ValidTestCase)[];
-  invalid?: RuleTester.InvalidTestCase[];
-} = {
+tester.run('no-emotion-css', noEmotionCssRule, {
   valid: [
     `import { styled } from '@compiled/react';`,
     `import { css } from '@compiled/react';`,
@@ -116,6 +111,4 @@ const tests: {
       errors: [{ messageId: 'noEmotionCSS' }],
     },
   ],
-};
-
-tester.run('use-compiled-over-emotion', rule, tests);
+});

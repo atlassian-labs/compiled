@@ -64,3 +64,24 @@ export const CalcUtility = (): JSX.Element => {
 
   return <Component>calc() utility - width: calc(100% - spacing * 2)</Component>;
 };
+
+export const NonStaticValues = (): JSX.Element => {
+  const random = Math.random;
+  const Component = styled.div`
+    ${commonStyles};
+    /* 
+      Using these properties so randomness does not cause
+      visual difference for tests
+    */
+    left: -${random() * 10}px;
+    right: ${random() * 10}px;
+  `;
+
+  return (
+    <Component>
+      <div>Non static values</div>
+      <div>left: -random() * 10</div>
+      <div>right: random() * 10</div>
+    </Component>
+  );
+};
