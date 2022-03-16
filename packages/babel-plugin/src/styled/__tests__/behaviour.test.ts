@@ -442,6 +442,22 @@ describe('styled component behaviour', () => {
     );
   });
 
+  it('should apply conditional CSS with ternary operators and suffix', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const ListItem = styled.div\`
+        border-radius: \${(props) => props.isRounded ? 10 : 1}px !important;
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._2rko19el{border-radius:10px!important}',
+      '._2rko1aa3{border-radius:1px!important}',
+      `ax([\"\",props.isRounded?\"_2rko19el\":\"_2rko1aa3\",props.className])`,
+    ]);
+  });
+
   it('should apply conditional CSS with ternary operator and tagged templates branches', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
@@ -1116,49 +1132,195 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS to the related pseudo class or pseudo element', () => {
+  it('falls back to using CSS variable when conditional is not sole expression in statement', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+      const gutter = 10;
+
+      const Component = styled.div\`
+        width: calc(\${gutter}px + \${({ isLarge }) => isLarge ? 100 : 50}px);
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._1bsb60qm{width:calc(10px + var(--_15nkcot))}',
+      '"--_15nkcot":ix(isLarge?100:50,"px")',
+      '{ax(["_1bsb60qm",props.className])}',
+    ]);
+  });
+
+  it('falls back to using CSS variable when conditional followed by another expression in statement', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+      const gutter = 10;
+
+      const Component = styled.div\`
+        width: calc(\${({ isLarge }) => isLarge ? 100 : 50}px - \${gutter}px);
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._1bsb1j3u{width:calc(var(--_15nkcot) - 10px)}',
+      '"--_15nkcot":ix(isLarge?100:50,"px")',
+      '{ax(["_1bsb1j3u",props.className])}',
+    ]);
+  });
+
+  it('falls back to using CSS variable when conditional is inside quotes', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 
-      const CUSTOM_WIDTH= 50;
       const Component = styled.div\`
-        background: url('data:image/svg+xml; ... ');
-        border: \${({ isTrue }) => isTrue ? '1px solid white' : '2px solid black'};
-        color: 'black';
-        display: block;
-        width: \${(props) => props.isPrimary ? \`\${CUSTOM_WIDTH}px\` : '100%'};
-        :hover {
-          color: \${({ isTrue }) => isTrue ? 'blue' : 'yellow'};
-        }
-        :focus {
-          \${({ isTrue }) => isTrue ? 'color: purple' : 'color: orange'};
-        }
         :before {
-          content: ';';
-          display:  \${({ isTrue }) => isTrue ? 'inherit' : 'inline'};
+          content: '\${({ isOpen }) => isOpen ? 'show less' : 'show more'}';
         }
-        > :first-child {
-          color: 'black';
-        }\`;
-      `);
+      \`;
+    `);
 
     expect(actual).toIncludeMultiple([
-      '._1e0c1nu9{display:inline}',
-      '._1e0c1kw7{display:inherit}',
-      '._f8pjruxl:focus{color:orange}',
-      '._f8pj1cnh:focus{color:purple}',
-      '._30l31gy6:hover{color:yellow}',
-      '._30l313q2:hover{color:blue}',
-      '._1bsb1osq{width:100%}',
-      '._1bsb12am{width:50px}',
-      '._19itl468{border:2px solid black}',
-      '._19it1j9v{border:1px solid white}',
+      '._1kt9x4xj:before{content:var(--_1boodpz)}',
+      '"--_1boodpz":ix(isOpen?\'show less\':\'show more\',"\'","\'")',
+      '{ax(["_1kt9x4xj",props.className])}',
+    ]);
+  });
+
+  it('should apply conditional CSS to related selector', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        background: url('data:image/svg+xml; ... ');
+        color: \${({ isSelected }) => isSelected ? 'blue' : 'yellow'};
+
+        :hover {
+          border: \${({ isHover }) => isHover ? '1px solid white' : '2px solid black'};
+        }
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
       "._11q7qm1v{background:url('data:image/svg+xml; ... ')}",
-      "._129w1nk7 >:first-child{color:'black'}",
-      "._1kt9otde:before{content:';'}",
-      '._1e0c1ule{display:block}',
-      "_syaz1nk7{color:'black'}",
-      'ax(["_11q7qm1v _syaz1nk7 _1e0c1ule _1kt9otde _129w1nk7",isTrue?"_19it1j9v":"_19itl468",props.isPrimary?"_1bsb12am":"_1bsb1osq",isTrue?"_30l313q2":"_30l31gy6",isTrue?"_f8pj1cnh":"_f8pjruxl",isTrue?"_1e0c1kw7":"_1e0c1nu9",props.className])}',
+      '._syaz13q2{color:blue}',
+      '._syaz1gy6{color:yellow}',
+      '._bfw71j9v:hover{border:1px solid white}',
+      '_bfw7l468:hover{border:2px solid black}',
+      '{ax(["_11q7qm1v",isSelected?"_syaz13q2":"_syaz1gy6",isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
+    ]);
+  });
+
+  it('should apply conditional CSS to related nested selector', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        color: \${({ isSelected }) => isSelected ? 'blue' : 'yellow'};
+
+        :hover {
+          border: \${({ isHover }) => isHover ? '1px solid white' : '2px solid black'};
+          background-color: cyan;
+
+          :before {
+            content: "Don't break closure parsing }";
+            display:  \${({ isBefore }) => isBefore ? 'inherit' : 'inline'};
+          }
+        }
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syaz13q2{color:blue}',
+      '._syaz1gy6{color:yellow}',
+      '._bfw71j9v:hover{border:1px solid white}',
+      '_bfw7l468:hover{border:2px solid black}',
+      '._irr31i1c:hover{background-color:cyan}',
+      '._vw871qok:hover:before{content:\\"Don\'t break closure parsing }\\"}',
+      '._1jly1kw7:hover:before{display:inherit}',
+      '._1jly1nu9:hover:before{display:inline}',
+      '{ax(["_irr31i1c _vw871qok",isSelected?"_syaz13q2":"_syaz1gy6",isHover?"_bfw71j9v":"_bfw7l468",isBefore?"_1jly1kw7":"_1jly1nu9",props.className])}',
+    ]);
+  });
+
+  it('does not conflict conditional CSS with above selectors', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        > span:first-type-of {
+          color: red;
+        }
+
+        :hover {
+          background-color: cyan;
+        }
+
+        :focus {
+          border-radius: \${({ isFocus }) => isFocus ? 3 : 2}px;
+        }
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._1oey5scu >span:first-type-of{color:red}',
+      '._irr31i1c:hover{background-color:cyan}',
+      '._vn891l7b:focus{border-radius:3px}',
+      '._vn89yh40:focus{border-radius:2px}',
+      '{ax(["_1oey5scu _irr31i1c",isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
+    ]);
+  });
+
+  it('does not conflict conditional CSS with below selectors', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        :focus {
+          border-radius: \${({ isFocus }) => isFocus ? 3 : 2}px;
+        }
+
+        > span:first-type-of {
+          color: red;
+        }
+
+        :hover {
+          background-color: cyan;
+        }
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._1oey5scu >span:first-type-of{color:red}',
+      '._irr31i1c:hover{background-color:cyan}',
+      '._vn891l7b:focus{border-radius:3px}',
+      '._vn89yh40:focus{border-radius:2px}',
+      '{ax(["_1oey5scu _irr31i1c",isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
+    ]);
+  });
+
+  it('does not conflict conditional CSS with surrounding selectors', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        > span:first-type-of {
+          color: red;
+        }
+
+        :focus {
+          border-radius: \${({ isFocus }) => isFocus ? 3 : 2}px;
+        }
+
+        :hover {
+          background-color: cyan;
+        }
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._1oey5scu >span:first-type-of{color:red}',
+      '._irr31i1c:hover{background-color:cyan}',
+      '._vn891l7b:focus{border-radius:3px}',
+      '._vn89yh40:focus{border-radius:2px}',
+      '{ax(["_1oey5scu _irr31i1c",isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
     ]);
   });
 });

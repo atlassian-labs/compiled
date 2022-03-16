@@ -15,7 +15,7 @@ import { pickFunctionBody } from './ast';
 import { buildCssVariables } from './build-css-variables';
 import { getItemCss } from './css-builders';
 import { hoistSheet } from './hoist-sheet';
-import { transformCssItems } from './transform-css-items';
+import { applySelectors, transformCssItems } from './transform-css-items';
 
 export interface StyledTemplateOpts {
   /**
@@ -273,6 +273,25 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
 };
 
 /**
+ * Find CSS selectors that are apart of incomplete closures
+ * i.e. `:hover {`
+ *
+ * @param css {string} Template options
+ */
+const findOpenSelectors = (css: string): string[] | null => {
+  // Remove any occurrence of { or } inside quotes to stop them
+  // interfering with closure matches
+  let searchArea = css.replace(/['|"].*[{|}].*['|"]/g, '');
+  // Skip over complete closures
+  searchArea = searchArea.substring(searchArea.lastIndexOf('}') + 1);
+
+  // Regex for CSS selector
+  //[^;\s] Don't match ; or whitespace
+  // .+\n?{ Match anything (the selector itself) followed by any newlines then {
+  return searchArea.match(/[^;\s].+\n?{/g);
+};
+
+/**
  * Returns a Styled Component AST.
  *
  * @param tag {Tag} Styled tag either an inbuilt or user define
@@ -280,22 +299,30 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
-  const unconditionalCss: string[] = [];
-  const conditionalCss: CssItem[] = [];
+  let unconditionalCss = '';
+  const conditionalCssItems: CssItem[] = [];
 
   cssOutput.css.forEach((item) => {
     if (item.type === 'logical' || item.type === 'conditional') {
-      conditionalCss.push(item);
+      // TODO: Optimize this to only run if there is a
+      // potential selector scope change
+      const selectors = findOpenSelectors(unconditionalCss);
+
+      if (selectors) {
+        applySelectors(item, selectors);
+      }
+
+      conditionalCssItems.push(item);
     } else {
-      unconditionalCss.push(getItemCss(item));
+      unconditionalCss += getItemCss(item);
     }
   });
 
   // Rely on transformCss to remove duplicates and return only the last unconditional CSS for each property
-  const uniqueUnconditionalCssOutput = transformCss(unconditionalCss.join(''));
+  const uniqueUnconditionalCssOutput = transformCss(unconditionalCss);
 
   // Rely on transformItemCss to build expressions for conditional & logical CSS
-  const conditionalCssOutput = transformCssItems(conditionalCss);
+  const conditionalCssOutput = transformCssItems(conditionalCssItems);
 
   const sheets = [...uniqueUnconditionalCssOutput.sheets, ...conditionalCssOutput.sheets];
   const classNames = [
