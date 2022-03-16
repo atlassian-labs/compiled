@@ -22,3 +22,5 @@ export const primaryCallExpression = css({
   color: 'purple',
   textDecoration: 'underline',
 });
+
+export const spacing = 8;

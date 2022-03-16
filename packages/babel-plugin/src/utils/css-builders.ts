@@ -405,64 +405,6 @@ const extractLogicalExpression = (node: t.ArrowFunctionExpression, meta: Metadat
   return { css: mergeSubsequentUnconditionalCssItems(css), variables };
 };
 
-const createNegativeUnaryExpression = (node: t.Identifier) => ({
-  type: 'UnaryExpression',
-  start: node.start,
-  end: node.end,
-  operator: '-',
-  prefix: true,
-  argument: {
-    type: 'Identifier',
-    start: node.start,
-    end: node.end,
-    name: node.name,
-  },
-});
-
-/**
- * Manipulates the AST to ensure that CSS variables are generated correctly for negative values
- *
- * Consider we have the following:
- *
- * const gridSize = 8;
- *
- * const LayoutRight = styled.aside`
- *   margin-right: -${gridSize * 5}px; // A
- *   margin-left: ${gridSize * 5}px; // B
- *   top: -${gridSize * 5}px; // A
- *   left: -${gridSize * 8}px; // C
- *   right: ${gridSize * 8}px;  // D
- *   color: red;
- * `;
- *
- * In order to calculate the correct CSS custom properties, items labeled A & C need to be converted to UnaryExpressions
- * This essentially changes these to ${-gridSize * 5}px; & ${-gridSize * 8}px respectively - resulting in correct CSS
- * generation for these negative values.
- *
- * Without this manipulation you would end up with:
- * -40px for A & B
- * -64px for C & D
- *
- * With this manipulation you end up with:
- * -40px for A
- * 40px for B
- * -64px for C
- * 64px for D
- *
- * @param nodeExpression Node we're interested in manipulating
- */
-const convertNegativeCssValuesToUnaryExpression = (nodeExpression: t.Expression): t.Expression => {
-  if (t.isBinaryExpression(nodeExpression)) {
-    return {
-      ...nodeExpression,
-      left: createNegativeUnaryExpression(nodeExpression.left as t.Identifier),
-    } as t.Expression;
-  } else if (t.isIdentifier(nodeExpression)) {
-    return createNegativeUnaryExpression(nodeExpression) as t.Expression;
-  }
-  return nodeExpression;
-};
-
 /*
  * Extracts the keyframes CSS from the `@compiled/react` keyframes usage.
  *
@@ -614,7 +556,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   // Quasis are the string pieces of the template literal - the parts around the interpolations
   const literalResult = node.quasis.reduce<string>((acc, quasi, index): string => {
-    let nodeExpression = node.expressions[index] as t.Expression | undefined;
+    const nodeExpression = node.expressions[index] as t.Expression | undefined;
 
     if (
       !nodeExpression ||
@@ -622,14 +564,6 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     ) {
       const suffix = meta.context === 'keyframes' ? '' : ';';
       return acc + quasi.value.raw + suffix;
-    }
-
-    // Deal with any negative values such as:
-    // margin: -${gridSize}, top: -${gridSize} etc.
-    if (quasi.value.raw.endsWith('-') && !t.isArrowFunctionExpression(nodeExpression)) {
-      // Remove the '-' from the quasi, as it will soon be moved to a unary expression
-      quasi.value.raw = quasi.value.raw.slice(0, -1);
-      nodeExpression = convertNegativeCssValuesToUnaryExpression(nodeExpression);
     }
 
     // If quasi is ending at a point where it's expecting a value from an expression
@@ -703,9 +637,12 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     // E.g. `font-size: ${fontSize}px` will end up needing to look like:
     // `font-size: var(--_font-size)`, with the suffix moved to inline styles
     // style={{ '--_font-size': fontSize + 'px' }}
-    const name = `--_${hash(variableName)}`;
     const nextQuasis = node.quasis[index + 1];
     const [before, after] = cssAffixInterpolation(quasi.value.raw, nextQuasis.value.raw);
+    // Create a different CSS var name for negative value version
+    const name = `--_${hash(variableName)}${
+      before.variablePrefix === '-' ? before.variablePrefix : ''
+    }`;
 
     // Removes any suffixes from the next quasis.
     nextQuasis.value.raw = after.css;

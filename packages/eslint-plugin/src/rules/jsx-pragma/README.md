@@ -1,12 +1,16 @@
-# @compiled/eslint-plugin/jsx-pragma
+# `jsx-pragma`
 
 Enforce a jsx pragma is set when using the `css` prop.
-The `--fix` option [on the command line] automatically fixes problems reported by this rule.
 
-## Fail
+The `--fix` option on the command line automatically fixes problems reported by this rule.
+
+## Rule details
+
+👎 Examples of **incorrect** code for this rule:
 
 ```js
 // [{ "pragma": "jsx" }]
+
 /** @jsx jsx */
     ^^^^^^^^ should use jsxImportSource pragma
 import { jsx } from '@compiled/react';
@@ -14,6 +18,7 @@ import { jsx } from '@compiled/react';
 
 ```js
 // [{ "pragma": "jsxImportSource" }]
+
 /** @jsxImportSource @compiled/react */
     ^^^^^^^^^^^^^^^^ should use jsx pragma
 import { jsx } from '@compiled/react';
@@ -21,13 +26,14 @@ import { jsx } from '@compiled/react';
 
 ```js
 // [{ "pragma": "jsxImportSource" }]
+
 import '@compiled/react';
 
 <div css={{ display: 'block' }} />;
      ^^^ missing pragma
 ```
 
-## Pass
+👍 Examples of **correct** code for this rule:
 
 ```js
 // [{ "pragma": "jsx" }]

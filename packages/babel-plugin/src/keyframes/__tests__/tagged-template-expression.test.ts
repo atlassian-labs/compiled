@@ -1,4 +1,4 @@
-import { transform } from '../../test-utils';
+import { transform as transformCode } from '../../test-utils';
 import {
   longhandCssPropObjectCallExpression,
   longhandCssPropTaggedTemplateExpression,
@@ -18,6 +18,8 @@ describe('keyframes transforms a tagged template expression', () => {
   afterAll(() => {
     delete process.env.AUTOPREFIXRER;
   });
+
+  const transform = (code: string) => transformCode(code, { snippet: true });
 
   const createSingleAnimationSmokeTest = (usage: string) => `
     import { css, keyframes, styled } from '@compiled/react';

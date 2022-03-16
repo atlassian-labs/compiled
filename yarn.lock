@@ -3504,10 +3504,10 @@
     lodash "^4.17.15"
     redent "^3.0.0"
 
-"@testing-library/react@^12.1.3":
-  version "12.1.3"
-  resolved "https://registry.yarnpkg.com/@testing-library/react/-/react-12.1.3.tgz#ef26c5f122661ea9b6f672b23dc6b328cadbbf26"
-  integrity sha512-oCULRXWRrBtC9m6G/WohPo1GLcLesH7T4fuKzRAKn1CWVu9BzXtqLXDDTA6KhFNNtRwLtfSMr20HFl+Qrdrvmg==
+"@testing-library/react@^12.1.4":
+  version "12.1.4"
+  resolved "https://registry.yarnpkg.com/@testing-library/react/-/react-12.1.4.tgz#09674b117e550af713db3f4ec4c0942aa8bbf2c0"
+  integrity sha512-jiPKOm7vyUw311Hn/HlNQ9P8/lHNtArAx0PisXyFixDDvfl8DbD6EUdbshK5eqauvBSvzZd19itqQ9j3nferJA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@testing-library/dom" "^8.0.0"
@@ -3929,10 +3929,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^17.0.39":
-  version "17.0.39"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.39.tgz#d0f4cde092502a6db00a1cded6e6bf2abb7633ce"
-  integrity sha512-UVavlfAxDd/AgAacMa60Azl7ygyQNRwC/DsHZmKgNvPmRR5p70AJ5Q9EAmL2NWOJmeV+vVUI4IAP7GZrN8h8Ug==
+"@types/react@*", "@types/react@^17.0.40":
+  version "17.0.40"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.40.tgz#dc010cee6254d5239a138083f3799a16638e6bad"
+  integrity sha512-UrXhD/JyLH+W70nNSufXqMZNuUD2cXHu6UjCllC6pmOQgBX4SGXOH8fjRka0O0Ee0HrFxapDD8Bwn81Kmiz6jQ==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -6955,10 +6955,10 @@ csstype@^2.5.7:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.6.17.tgz#4cf30eb87e1d1a005d8b6510f95292413f6a1c0e"
   integrity sha512-u1wmTI1jJGzCJzWndZo8mk4wnPTZd1eOIYTYvuEyOQGfmDl3TrabCCfKnOC86FZwW/9djqTl933UF/cS425i9A==
 
-csstype@^3.0.10, csstype@^3.0.2:
-  version "3.0.10"
-  resolved "https://registry.npmjs.org/csstype/-/csstype-3.0.10.tgz#2ad3a7bed70f35b965707c092e5f30b327c290e5"
-  integrity sha512-2u44ZG2OcNUO9HDp/Jl8C07x6pU/eTR3ncV91SiK3dhG9TWvRVsCoJw14Ckx5DgWkzGA3waZWO3d7pgqpUI/XA==
+csstype@^3.0.11, csstype@^3.0.2:
+  version "3.0.11"
+  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.0.11.tgz#d66700c5eacfac1940deb4e3ee5642792d85cd33"
+  integrity sha512-sa6P2wJ+CAbgyy4KFssIb/JNMLxFvKF1pCYCSXS8ZMuqZnMsrxqI2E5sPyoTpxoPU/gVZMzr2zjOfg8GIZOMsw==
 
 csv-generate@^3.4.0:
   version "3.4.0"
@@ -13832,10 +13832,10 @@ raw-loader@^4.0.2:
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
 
-razzle-dev-utils@^4.2.14:
-  version "4.2.14"
-  resolved "https://registry.yarnpkg.com/razzle-dev-utils/-/razzle-dev-utils-4.2.14.tgz#7fb03a9a602cd05ffa1f34c264b649c4c5c7bec8"
-  integrity sha512-3jArnKbRtIt/p3Jh+dZaoudsNvh5KsDX3c0autlyWOOgp/afBPt5wP5dcG761TuwVQ2HcIRmVOWDESnVh9XJMQ==
+razzle-dev-utils@^4.2.16:
+  version "4.2.16"
+  resolved "https://registry.yarnpkg.com/razzle-dev-utils/-/razzle-dev-utils-4.2.16.tgz#cb8972fe63ba0b42a6817d19e68db697e1e78c17"
+  integrity sha512-QlGffE+kNzoC87/NBf7/rq59XobQ86KTVCNsktjThH9NaDgFtSLVDAY2wAf7qkhFfhArppHJ7gGTZ4opzHNGIw==
   dependencies:
     "@babel/code-frame" "^7.8.3"
     chalk "^4.1.0"
@@ -13849,15 +13849,15 @@ razzle-dev-utils@^4.2.14:
     sockjs-client "~1.4.0"
     strip-ansi "^6.0.0"
 
-razzle-start-server-webpack-plugin@4.2.15:
-  version "4.2.15"
-  resolved "https://registry.yarnpkg.com/razzle-start-server-webpack-plugin/-/razzle-start-server-webpack-plugin-4.2.15.tgz#b0c1c0f2937c7b1c42d2f55c89b7e5704ac3e6dd"
-  integrity sha512-a0o6FtJUchIbCYUjo3bTM7H+eRHCOeGMuWNDKwaRMVZFoAzGfLFtz64G/UBACJfbubHIVUolqaRXpAtkRp1WKQ==
+razzle-start-server-webpack-plugin@4.2.16:
+  version "4.2.16"
+  resolved "https://registry.yarnpkg.com/razzle-start-server-webpack-plugin/-/razzle-start-server-webpack-plugin-4.2.16.tgz#0f6c55f7410bd7ca93a48d0187ce99ca4e5fc71d"
+  integrity sha512-zH3EJ5P8kUZ1rYc+RDNXo+CzHy7Hn/vv1uPUvORhKiyRypAJmytDZGNXlC0kO/AUKyvmf5zWYOeKEICVhbAluw==
 
-razzle@^4.2.15:
-  version "4.2.15"
-  resolved "https://registry.yarnpkg.com/razzle/-/razzle-4.2.15.tgz#69794580dcbd34f425b88f46ee3f044f963fd328"
-  integrity sha512-xi7MVsQlTSU7YKFDQWH4WY4YEJ03E3I7o30X6SvxJg8eht+yHZwhP5njUY6h7memSBLAn7OfXp87EFtx8HlMlQ==
+razzle@^4.2.16:
+  version "4.2.16"
+  resolved "https://registry.yarnpkg.com/razzle/-/razzle-4.2.16.tgz#0c9fd462edb3314ef926cb4208bee294b8474a76"
+  integrity sha512-xcaCxeisBv4pc5vADSpTIe86Amda7YwAPC0YHNb6TGdFhhGDigvPk0JJDCSLgS8n0Zxg3Pm9Pyr/8qB+PY85xA==
   dependencies:
     "@babel/plugin-transform-modules-commonjs" "^7.12.1"
     "@pmmmwh/react-refresh-webpack-plugin" "^0.4.3"
@@ -13885,7 +13885,7 @@ razzle@^4.2.15:
     postcss-load-config "^3.0.0"
     postcss-loader "^4.2.0"
     process "^0.11.10"
-    razzle-start-server-webpack-plugin "4.2.15"
+    razzle-start-server-webpack-plugin "4.2.16"
     react-dev-utils "^11.0.4"
     react-refresh "^0.9.0"
     resolve "^1.17.0"
@@ -16271,7 +16271,7 @@ typescript-compiler@^1.4.1-2:
   resolved "https://registry.yarnpkg.com/typescript-compiler/-/typescript-compiler-1.4.1-2.tgz#ba4f7db22d91534a1929d90009dce161eb72fd3f"
   integrity sha1-uk99si2RU0oZKdkACdzhYety/T8=
 
-typescript@4.6.2, typescript@^3.7.0, typescript@^4.0.2, typescript@^4.6.2:
+typescript@^3.7.0, typescript@^4.0.2, typescript@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.2.tgz#fe12d2727b708f4eef40f51598b3398baa9611d4"
   integrity sha512-HM/hFigTBHZhLXshn9sN37H085+hQGeJHJ/X7LpBWLID/fbc2acUMfU+lGD98X81sKP+pFa9f0DZmCwB9GnbAg==

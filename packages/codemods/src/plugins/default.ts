@@ -34,6 +34,25 @@ const defaultCodemodPlugin: CodemodPlugin = {
       buildRefAttribute({ currentNode }) {
         return j.jsxAttribute(j.jsxIdentifier('ref'), (currentNode as JSXAttribute).value);
       },
+
+      buildTemplateExpression({ currentNode }) {
+        // replace single line comments
+        const quasi = currentNode.quasi;
+
+        const replaceRegex = /(?<!:)\/\/(.+?)(\n|$)/g;
+        const replacer = '/*$1 */$2';
+
+        j(quasi)
+          .find(j.TemplateElement)
+          .forEach((templateElement) => {
+            const val = templateElement.value.value;
+
+            val.cooked = val.cooked ? val.cooked.replace(replaceRegex, replacer) : null;
+            val.raw = val.raw?.replace(replaceRegex, replacer);
+          });
+
+        return currentNode;
+      },
     },
   }),
 };
