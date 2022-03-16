@@ -62,7 +62,7 @@ const optimizeConditionalExpression = (
   suffix: string,
   expression: t.ConditionalExpression
 ): t.ConditionalExpression => {
-  const [styleProperty] = prefix.split(':');
+  const [styleProperty] = prefix.trim().split(':');
   const isValidCssProperty = styleProperty.match(/^\w+-?\w+$/);
   const isNotPartOfString = !prefix.endsWith("'") && !prefix.endsWith('"');
   // This will skip statements like
@@ -128,7 +128,7 @@ export const optimizeConditionalStatement = (
   const quasiStatements = quasiValue.split(/[;|{|}]/g);
   // Any string that is mid statement should be the last item
   // as it should be interupted by an expression
-  const prefix = quasiStatements[quasiStatements.length - 1].trim();
+  const prefix = quasiStatements[quasiStatements.length - 1];
   const nextQuasiValue = nextQuasi?.value.raw ?? '';
   const endOfStatementIndex = nextQuasiValue.indexOf(';');
   const nextQuasiEndsStatement = endOfStatementIndex !== -1;
