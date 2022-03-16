@@ -1,5 +1,13 @@
 # @compiled/parcel-app
 
+## 1.1.3
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- Updated dependencies [356b120]
+  - @compiled/react@0.10.4
+
 ## 1.1.2
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @compiled/eslint-plugin
 
+## 0.3.0
+
+### Minor Changes
+
+- 5d699ed: Add no-tagged-template-expression rules for each API
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+
 ## 0.2.2
 
 ### Patch Changes

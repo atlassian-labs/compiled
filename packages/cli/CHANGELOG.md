@@ -1,5 +1,14 @@
 # @compiled/cli
 
+## 2.1.7
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- Updated dependencies [c3f4ad2]
+- Updated dependencies [356b120]
+  - @compiled/codemods@0.5.0
+
 ## 2.1.6
 
 ### Patch Changes

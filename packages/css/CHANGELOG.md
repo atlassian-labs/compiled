@@ -1,5 +1,13 @@
 # @compiled/css
 
+## 0.8.2
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- Updated dependencies [356b120]
+  - @compiled/utils@0.6.16
+
 ## 0.8.1
 
 ### Patch Changes
