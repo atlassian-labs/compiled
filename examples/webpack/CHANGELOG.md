@@ -1,5 +1,16 @@
 # @compiled/webpack-app
 
+## 1.1.1
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- Updated dependencies [356b120]
+- Updated dependencies [588cd4f]
+  - @compiled/babel-component-fixture@0.0.13
+  - @compiled/react@0.10.4
+  - @compiled/webpack-loader@0.8.5
+
 ## 1.1.0
 
 ### Minor Changes

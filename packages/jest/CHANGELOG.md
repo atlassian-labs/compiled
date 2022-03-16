@@ -1,5 +1,11 @@
 # @compiled/jest
 
+## 0.7.2
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+
 ## 0.7.1
 
 ### Patch Changes

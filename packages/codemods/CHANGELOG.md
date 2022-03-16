@@ -1,5 +1,17 @@
 # @compiled/codemods
 
+## 0.5.0
+
+### Minor Changes
+
+- c3f4ad2: Add a plugin for tagged template expressions
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- Updated dependencies [356b120]
+  - @compiled/utils@0.6.16
+
 ## 0.4.2
 
 ### Patch Changes

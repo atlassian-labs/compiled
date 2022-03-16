@@ -1,5 +1,14 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.14.0
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- 588cd4f: Adding require statements for atomic css now occurs inside the babel-plugin-strip-runtime plugin
+- Updated dependencies [356b120]
+  - @compiled/utils@0.6.16
+
 ## 0.11.4
 
 ### Patch Changes

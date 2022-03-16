@@ -1,5 +1,22 @@
 # @compiled/babel-plugin
 
+## 0.14.0
+
+### Minor Changes
+
+- 2ad385c: Optimize conditional expressions to create CSS classes per conditional branch where possible
+- c96c562: Use fallback if babel evaluate throws error during evaluation
+- 73821f2: Statically evaluate mathematical binary expressions
+
+### Patch Changes
+
+- 5e3ad5e: Fixed bug where negative and positive values were getting evaluated as the same
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- 588cd4f: Use preserveLeadingComments util from @compiled/utils
+- Updated dependencies [356b120]
+  - @compiled/css@0.8.2
+  - @compiled/utils@0.6.16
+
 ## 0.13.0
 
 ### Minor Changes

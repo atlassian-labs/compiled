@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.10.4
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+
 ## 0.10.3
 
 ### Patch Changes
