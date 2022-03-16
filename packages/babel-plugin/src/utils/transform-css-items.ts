@@ -77,3 +77,19 @@ export const transformCssItems = (
 
   return { sheets, classNames };
 };
+
+/**
+ * Wraps CSS within a CssItem around selector closures. Each subsequent selector
+ * in the selectors array represents a nested selector.
+ *
+ * @param item {CssItem}
+ * @param selectors {string[]}
+ */
+export const applySelectors = (item: CssItem, selectors: string[]): void => {
+  if (item.type === 'conditional') {
+    applySelectors(item.consequent, selectors);
+    applySelectors(item.alternate, selectors);
+  } else {
+    item.css = `${selectors.join('')}${item.css}${''.padEnd(selectors.length, '}')}`;
+  }
+};
