@@ -48,3 +48,8 @@ export interface PartialBindingWithMeta {
   meta: Metadata;
   source: 'import' | 'module';
 }
+
+export type EvaluateExpression = (
+  expression: t.Expression,
+  meta: Metadata
+) => { value: t.Expression; meta: Metadata };

@@ -3,10 +3,8 @@ import * as t from '@babel/types';
 import type { Metadata } from '../../types';
 import { getPathOfNode, wrapNodeInIIFE } from '../ast';
 import { createResultPair } from '../create-result-pair';
-import { evaluateExpression } from '../evaluate-expression';
 import { resolveBinding } from '../resolve-binding';
-
-import { traverseMemberExpression } from './traverse-member-expression';
+import type { EvaluateExpression } from '../types';
 
 /**
  * Will find the function node for the call expression and wrap an IIFE around it (to avoid name collision)
@@ -19,7 +17,8 @@ import { traverseMemberExpression } from './traverse-member-expression';
  */
 export const traverseCallExpression = (
   expression: t.CallExpression,
-  meta: Metadata
+  meta: Metadata,
+  evaluateExpression: EvaluateExpression
 ): ReturnType<typeof createResultPair> => {
   const callee = expression.callee;
   let value: t.Node | undefined | null = undefined;
@@ -51,7 +50,7 @@ export const traverseCallExpression = (
       // Right now we are only supported these 2 flavors. If we have complex case like `func('arg').fn().variable`,
       // it will not get evaluated.
       if (t.isIdentifier(callee)) {
-        const resolvedBinding = resolveBinding(callee.name, updatedMeta);
+        const resolvedBinding = resolveBinding(callee.name, updatedMeta, evaluateExpression);
 
         if (resolvedBinding && resolvedBinding.constant) {
           functionNode = resolvedBinding.node;
@@ -61,7 +60,7 @@ export const traverseCallExpression = (
         // the functions arguments
         callee.property = t.callExpression(callee.property, expression.arguments);
 
-        return traverseMemberExpression(callee, updatedMeta);
+        return evaluateExpression(callee, updatedMeta);
       }
     }
 

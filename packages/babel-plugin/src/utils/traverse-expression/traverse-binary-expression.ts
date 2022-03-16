@@ -2,11 +2,7 @@ import * as t from '@babel/types';
 
 import type { Metadata } from '../../types';
 import { createResultPair } from '../create-result-pair';
-
-type EvaluateExpression = (
-  expression: t.Expression,
-  meta: Metadata
-) => ReturnType<typeof createResultPair>;
+import type { EvaluateExpression } from '../types';
 
 const hasNumericValue = (expression: t.Expression): boolean =>
   t.isNumericLiteral(expression) ||

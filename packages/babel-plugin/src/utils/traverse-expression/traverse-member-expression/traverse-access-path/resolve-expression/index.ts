@@ -1,8 +1,8 @@
 import * as t from '@babel/types';
 
-import type { Metadata } from '../../../types';
-import { createResultPair } from '../../create-result-pair';
-import type { TraverseHandlers } from '../types';
+import type { Metadata } from '../../../../../types';
+import { createResultPair } from '../../../../create-result-pair';
+import type { EvaluateExpression } from '../../../../types';
 
 import { getFunctionArgs } from './function-args';
 import { evaluateIdentifier } from './identifier';
@@ -12,12 +12,12 @@ export const resolveExpressionInMember = (
   meta: Metadata,
   expressionName: string,
   memberExpression: t.MemberExpression,
-  traversers: TraverseHandlers
+  evaluateExpression: EvaluateExpression
 ): ReturnType<typeof createResultPair> => {
   let result = createResultPair(expression, meta);
 
   if (t.isIdentifier(expression)) {
-    result = evaluateIdentifier(expression, meta);
+    result = evaluateIdentifier(expression, meta, evaluateExpression);
   } else if (t.isFunction(expression)) {
     // Function expressions are the declaration and not the function call
     // itself, the arguments are stored in the member expression
@@ -25,11 +25,9 @@ export const resolveExpressionInMember = (
       expression,
       getFunctionArgs(expressionName, memberExpression)
     );
-    result = traversers.callExpression(callExpression, meta);
-  } else if (t.isCallExpression(expression)) {
-    result = traversers.callExpression(expression, meta);
-  } else if (t.isMemberExpression(expression)) {
-    result = traversers.memberExpression(expression, meta);
+    result = evaluateExpression(callExpression, meta);
+  } else if (t.isCallExpression(expression) || t.isMemberExpression(expression)) {
+    result = evaluateExpression(expression, meta);
   }
 
   // Recursively resolve expression until we extracted its value node or
@@ -40,7 +38,7 @@ export const resolveExpressionInMember = (
       result.meta,
       expressionName,
       memberExpression,
-      traversers
+      evaluateExpression
     );
   }
 

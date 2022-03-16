@@ -332,7 +332,7 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
     ) {
       cssOutput = buildCss(pathNode, meta);
     } else if (t.isIdentifier(pathNode)) {
-      const resolved = resolveBinding(pathNode.name, meta);
+      const resolved = resolveBinding(pathNode.name, meta, evaluateExpression);
 
       if (
         resolved &&
@@ -522,7 +522,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       let resolvedBinding = undefined;
 
       if (t.isIdentifier(prop.argument)) {
-        resolvedBinding = resolveBinding(prop.argument.name, meta);
+        resolvedBinding = resolveBinding(prop.argument.name, meta, evaluateExpression);
 
         if (!resolvedBinding) {
           throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
@@ -708,7 +708,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
   }
 
   if (t.isIdentifier(node)) {
-    const resolvedBinding = resolveBinding(node.name, meta);
+    const resolvedBinding = resolveBinding(node.name, meta, evaluateExpression);
 
     if (!resolvedBinding) {
       throw buildCodeFrameError('Variable could not be found', node, meta.parentPath);
