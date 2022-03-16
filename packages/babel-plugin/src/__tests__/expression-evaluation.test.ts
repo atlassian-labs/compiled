@@ -360,4 +360,87 @@ describe('import specifiers', () => {
       '"--_12w6gfj": ix(getLineHeight())',
     ]);
   });
+
+  describe('binary expresssions', () => {
+    it('statically evaluates calculated value with identifier', () => {
+      const actual = transform(`
+        import '@compiled/react';
+
+        const spacing = 8;
+
+        <div css={{ marginTop: spacing * 2 }} />
+      `);
+
+      expect(actual).toIncludeMultiple(['._19pkexct{margin-top:16px}', 'ax(["_19pkexct"])']);
+    });
+
+    it('statically evaluates calculated value with nested binary', () => {
+      const actual = transform(`
+        import '@compiled/react';
+
+        const spacing = 8;
+
+        <div css={{ marginTop: spacing * 2 / 2 }} />
+      `);
+
+      expect(actual).toIncludeMultiple(['._19pkftgi{margin-top:8px}', 'ax(["_19pkftgi"])']);
+    });
+
+    it('statically evaluates calculated value with multiple identifiers', () => {
+      const actual = transform(`
+        import '@compiled/react';
+
+        const one = 1;
+        const two = 2;
+        const three = 3;
+
+        <div css={{ marginTop: one + two - three }} />
+      `);
+
+      expect(actual).toIncludeMultiple(['._19pkidpf{margin-top:0}', 'ax(["_19pkidpf"])']);
+    });
+
+    it('statically evaluates calculated value within calc utility', () => {
+      const actual = transform(`
+        import '@compiled/react';
+
+        const spacing = 8;
+
+        <div css={{ width: \`calc(100% - \${spacing * 2}px)\` }} />
+      `);
+
+      expect(actual).toIncludeMultiple([
+        '._1bsbj0q6{width:calc(100% - 16px)}',
+        'ax(["_1bsbj0q6"])',
+      ]);
+    });
+
+    it('statically evaluates calculated value with string literal containing numeric value', () => {
+      const actual = transform(`
+        import '@compiled/react';
+
+        const stringSpacing = '8';
+
+        <div css={{ marginTop: stringSpacing * 2 }} />
+      `);
+
+      expect(actual).toIncludeMultiple(['._19pkexct{margin-top:16px}', 'ax(["_19pkexct"])']);
+    });
+
+    it('falls back to dynamic evaluation when non static value used', () => {
+      const actual = transform(`
+        import '@compiled/react';
+
+        const getSpacing = () => Math.random();
+
+        <div css={{ marginTop: getSpacing() * 2 }} />
+      `);
+
+      expect(actual).toIncludeMultiple([
+        '._19pk19vg{margin-top:var(--_lb6tu)}',
+        '"--_lb6tu": ix(getSpacing() * 2)',
+        'ax(["_19pk19vg"])',
+      ]);
+    });
+  });
 });

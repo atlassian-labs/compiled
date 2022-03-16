@@ -7,6 +7,7 @@ import { getPathOfNode } from './ast';
 import { createResultPair } from './create-result-pair';
 import { isCompiledKeyframesCallExpression } from './is-compiled';
 import {
+  traverseBinaryExpression,
   traverseCallExpression,
   traverseFunction,
   traverseIdentifier,
@@ -89,7 +90,7 @@ const babelEvaluateExpression = (
     }
 
     const result = path.evaluate();
-    if (result.value) {
+    if (result.value != null) {
       switch (typeof result.value) {
         case 'string':
           return t.stringLiteral(result.value);
@@ -140,6 +141,12 @@ export const evaluateExpression = (
     ({ value, meta: updatedMeta } = traverseFunction(expression, updatedMeta));
   } else if (t.isCallExpression(expression)) {
     ({ value, meta: updatedMeta } = traverseCallExpression(expression, updatedMeta));
+  } else if (t.isBinaryExpression(expression)) {
+    ({ value, meta: updatedMeta } = traverseBinaryExpression(
+      expression,
+      updatedMeta,
+      evaluateExpression
+    ));
   }
 
   if (
