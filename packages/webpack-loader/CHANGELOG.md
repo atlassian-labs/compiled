@@ -1,5 +1,68 @@
 # @compiled/webpack-loader
 
+## 0.8.5
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- 588cd4f: Adding require statements for atomic css now occurs inside the babel-plugin-strip-runtime plugin
+- Updated dependencies [2ad385c]
+- Updated dependencies [5e3ad5e]
+- Updated dependencies [c96c562]
+- Updated dependencies [73821f2]
+- Updated dependencies [356b120]
+- Updated dependencies [588cd4f]
+- Updated dependencies [588cd4f]
+  - @compiled/babel-plugin@0.14.0
+  - @compiled/babel-plugin-strip-runtime@0.14.0
+  - @compiled/css@0.8.2
+  - @compiled/react@0.10.4
+  - @compiled/utils@0.6.16
+
+## 0.8.4
+
+### Patch Changes
+
+- Updated dependencies [47050f4]
+  - @compiled/react@0.10.3
+
+## 0.8.3
+
+### Patch Changes
+
+- Updated dependencies [307bb83]
+- Updated dependencies [18dcdf8]
+  - @compiled/babel-plugin@0.13.0
+
+## 0.8.2
+
+### Patch Changes
+
+- cb53d88: Update extract.css to be named compiled-css.css
+
+## 0.8.1
+
+### Patch Changes
+
+- 530b52d: Add property to loader options when CompiledExtractPlugin has been set up correctly.
+- Updated dependencies [63e14bd]
+- Updated dependencies [f2cd347]
+  - @compiled/babel-plugin@0.12.1
+
+## 0.8.0
+
+### Minor Changes
+
+- 858146c: Add babel plugins support
+
+### Patch Changes
+
+- Updated dependencies [b0adb8a]
+- Updated dependencies [f139218]
+- Updated dependencies [858146c]
+- Updated dependencies [b0adb8a]
+  - @compiled/babel-plugin@0.12.0
+
 ## 0.7.6
 
 ### Patch Changes

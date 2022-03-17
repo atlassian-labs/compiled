@@ -1,5 +1,24 @@
 # @compiled/parcel-resolver-alias
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [47050f4]
+  - @compiled/react@0.10.3
+
+## 0.1.1
+
+### Patch Changes
+
+- 597687c: Bump Parcel to v2.3.2
+
+## 0.1.0
+
+### Minor Changes
+
+- 024ac88: Upgrade parcel transformer to support Parcel v2.2.0
+
 ## 0.0.5
 
 ### Patch Changes

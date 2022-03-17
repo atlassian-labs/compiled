@@ -1,5 +1,36 @@
 # @compiled/codemods
 
+## 0.5.0
+
+### Minor Changes
+
+- c3f4ad2: Add a plugin for tagged template expressions
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- Updated dependencies [356b120]
+  - @compiled/utils@0.6.16
+
+## 0.4.2
+
+### Patch Changes
+
+- d42e1a0: Resolve unset-values to ^2.0.0 to mitigate vulnerability
+- e2199fa: Bump trim-newlines to v3.0.1
+
+## 0.4.1
+
+### Patch Changes
+
+- 8aff883: Add codemod support for inline comments.
+
+## 0.4.0
+
+### Minor Changes
+
+- 9a1a74d: Move attrs transformation after applyVisitor
+
 ## 0.3.4
 
 ### Patch Changes

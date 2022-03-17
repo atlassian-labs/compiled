@@ -1,6 +1,6 @@
 {
   "name": "@compiled/jest",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-jest",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -24,6 +24,6 @@
   },
   "devDependencies": {
     "@types/css": "^0.0.33",
-    "csstype": "^3.0.10"
+    "csstype": "^3.0.11"
   }
 }

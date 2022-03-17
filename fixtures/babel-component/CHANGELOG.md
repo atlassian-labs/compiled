@@ -1,5 +1,20 @@
 # @compiled/babel-component-fixture
 
+## 0.0.13
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- Updated dependencies [356b120]
+  - @compiled/react@0.10.4
+
+## 0.0.12
+
+### Patch Changes
+
+- Updated dependencies [47050f4]
+  - @compiled/react@0.10.3
+
 ## 0.0.11
 
 ### Patch Changes

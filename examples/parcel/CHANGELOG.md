@@ -1,5 +1,32 @@
 # @compiled/parcel-app
 
+## 1.1.3
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- Updated dependencies [356b120]
+  - @compiled/react@0.10.4
+
+## 1.1.2
+
+### Patch Changes
+
+- Updated dependencies [47050f4]
+  - @compiled/react@0.10.3
+
+## 1.1.1
+
+### Patch Changes
+
+- 597687c: Bump Parcel to v2.3.2
+
+## 1.1.0
+
+### Minor Changes
+
+- 024ac88: Upgrade parcel transformer to support Parcel v2.2.0
+
 ## 1.0.10
 
 ### Patch Changes

@@ -1,5 +1,54 @@
 # @compiled/babel-plugin
 
+## 0.14.0
+
+### Minor Changes
+
+- 2ad385c: Optimize conditional expressions to create CSS classes per conditional branch where possible
+- c96c562: Use fallback if babel evaluate throws error during evaluation
+- 73821f2: Statically evaluate mathematical binary expressions
+
+### Patch Changes
+
+- 5e3ad5e: Fixed bug where negative and positive values were getting evaluated as the same
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- 588cd4f: Use preserveLeadingComments util from @compiled/utils
+- Updated dependencies [356b120]
+  - @compiled/css@0.8.2
+  - @compiled/utils@0.6.16
+
+## 0.13.0
+
+### Minor Changes
+
+- 307bb83: Handle export named declarations with source when resolving modules
+
+### Patch Changes
+
+- 18dcdf8: Fix conditional rules not generating the expected output:
+
+  - classes should be generated instead of CSS variables
+  - style inside a pseudo class ( eg : hover) or pseudo element ( eg :before) should be applied to related element
+
+## 0.12.1
+
+### Patch Changes
+
+- 63e14bd: Ensure that any leading comment is preserved at the top of the processed file before inserting additional imports
+- f2cd347: Added a fix to statically evaluate deconstructed values from deeply nested objects
+
+## 0.12.0
+
+### Minor Changes
+
+- f139218: Handle destructuring `property: value` pairs returned from arrow functions, and add support for nested and alias destructuring.
+- 858146c: Add babel plugins support
+- b0adb8a: Added support for conditional expressions when passing an array to the `css` prop of an element
+
+### Patch Changes
+
+- b0adb8a: Fix support for CSS helper call expressions when used in conditional expressions (i.e. the `css(...)` function provided by compiled)
+
 ## 0.11.4
 
 ### Patch Changes

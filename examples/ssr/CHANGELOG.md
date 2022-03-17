@@ -1,5 +1,26 @@
 # @compiled/ssr-app
 
+## 1.0.13
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- Updated dependencies [356b120]
+  - @compiled/react@0.10.4
+
+## 1.0.12
+
+### Patch Changes
+
+- Updated dependencies [47050f4]
+  - @compiled/react@0.10.3
+
+## 1.0.11
+
+### Patch Changes
+
+- 6233199: resolve Razzle peer dependency to solve node-forge vulnerability
+
 ## 1.0.10
 
 ### Patch Changes

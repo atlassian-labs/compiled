@@ -10,7 +10,7 @@ const webpack = require('webpack');
 const extractCSS = process.env.EXTRACT_TO_CSS === 'true';
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/index.jsx',
   mode: 'development',
   module: {
     rules: [
@@ -41,7 +41,8 @@ module.exports = {
                 '.ts',
                 '.tsx',
                 '.customjsx'
-              ]
+              ],
+              babelPlugins: ['typescript'],
             },
           },
         ],

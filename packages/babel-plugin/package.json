@@ -1,6 +1,6 @@
 {
   "name": "@compiled/babel-plugin",
-  "version": "0.11.4",
+  "version": "0.14.0",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-babel-plugin",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -19,19 +19,19 @@
     "src"
   ],
   "dependencies": {
-    "@babel/core": "^7.16.5",
-    "@babel/generator": "^7.16.5",
-    "@babel/helper-plugin-utils": "^7.16.5",
-    "@babel/parser": "^7.16.3",
-    "@babel/plugin-syntax-jsx": "^7.16.5",
-    "@babel/plugin-transform-flow-strip-types": "^7.16.5",
-    "@babel/template": "^7.16.0",
-    "@babel/traverse": "^7.16.5",
-    "@babel/types": "^7.16.0",
-    "@compiled/css": "^0.8.1",
-    "@compiled/utils": "^0.6.14",
-    "@emotion/is-prop-valid": "^1.1.1",
-    "resolve": "^1.21.0"
+    "@babel/core": "^7.17.5",
+    "@babel/generator": "^7.17.3",
+    "@babel/helper-plugin-utils": "^7.16.7",
+    "@babel/parser": "^7.17.3",
+    "@babel/plugin-syntax-jsx": "^7.16.7",
+    "@babel/plugin-transform-flow-strip-types": "^7.16.7",
+    "@babel/template": "^7.16.7",
+    "@babel/traverse": "^7.17.3",
+    "@babel/types": "^7.17.0",
+    "@compiled/css": "^0.8.2",
+    "@compiled/utils": "^0.6.16",
+    "@emotion/is-prop-valid": "^1.1.2",
+    "resolve": "^1.22.0"
   },
   "devDependencies": {
     "@compiled-private/module-a": "^0.0.2",
@@ -41,7 +41,7 @@
     "@types/resolve": "^1.20.1",
     "benchmark": "^2.1.4",
     "prettier": "^2.5.1",
-    "ts-node": "^10.4.0",
-    "tsconfig-paths": "^3.12.0"
+    "ts-node": "^10.7.0",
+    "tsconfig-paths": "^3.13.0"
   }
 }

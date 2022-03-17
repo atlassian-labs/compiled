@@ -1,5 +1,17 @@
 # @compiled/react
 
+## 0.10.4
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+
+## 0.10.3
+
+### Patch Changes
+
+- 47050f4: Add client CS benchmark
+
 ## 0.10.2
 
 ### Patch Changes

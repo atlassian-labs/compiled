@@ -1,5 +1,56 @@
 # @compiled/webpack-app
 
+## 1.1.1
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- Updated dependencies [356b120]
+- Updated dependencies [588cd4f]
+  - @compiled/babel-component-fixture@0.0.13
+  - @compiled/react@0.10.4
+  - @compiled/webpack-loader@0.8.5
+
+## 1.1.0
+
+### Minor Changes
+
+- d8e3e96: Upgrade css-minimizer-webpack-plugin to ^3.4.1 to resolve vulnerabilities
+
+### Patch Changes
+
+- Updated dependencies [47050f4]
+  - @compiled/react@0.10.3
+  - @compiled/babel-component-fixture@0.0.12
+  - @compiled/webpack-loader@0.8.4
+
+## 1.0.16
+
+### Patch Changes
+
+- @compiled/webpack-loader@0.8.3
+
+## 1.0.15
+
+### Patch Changes
+
+- Updated dependencies [cb53d88]
+  - @compiled/webpack-loader@0.8.2
+
+## 1.0.14
+
+### Patch Changes
+
+- Updated dependencies [530b52d]
+  - @compiled/webpack-loader@0.8.1
+
+## 1.0.13
+
+### Patch Changes
+
+- Updated dependencies [858146c]
+  - @compiled/webpack-loader@0.8.0
+
 ## 1.0.12
 
 ### Patch Changes

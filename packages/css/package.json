@@ -1,6 +1,6 @@
 {
   "name": "@compiled/css",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-css",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -20,19 +20,19 @@
   ],
   "resolutions": {
     "css-what": "^5.1.0",
-    "cssnano-preset-default": "^5.1.9",
+    "cssnano-preset-default": "^5.2.0",
     "nth-check": "^2.0.1"
   },
   "dependencies": {
-    "@compiled/utils": "^0.6.14",
-    "autoprefixer": "^10.4.1",
+    "@compiled/utils": "^0.6.16",
+    "autoprefixer": "^10.4.2",
     "convert-source-map": "^1.8.0",
-    "cssnano-preset-default": "^5.1.9",
-    "postcss": "^8.4.5",
+    "cssnano-preset-default": "^5.2.0",
+    "postcss": "^8.4.8",
     "postcss-nested": "^5.0.6",
-    "postcss-normalize-whitespace": "^5.0.1",
-    "postcss-selector-parser": "^6.0.8",
-    "postcss-values-parser": "^6.0.1"
+    "postcss-normalize-whitespace": "^5.1.0",
+    "postcss-selector-parser": "^6.0.9",
+    "postcss-values-parser": "^6.0.2"
   },
   "devDependencies": {
     "@types/autoprefixer": "^10.2.0",

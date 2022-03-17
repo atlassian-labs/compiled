@@ -1,5 +1,47 @@
 # @compiled/parcel-transformer
 
+## 0.7.3
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- Updated dependencies [2ad385c]
+- Updated dependencies [5e3ad5e]
+- Updated dependencies [c96c562]
+- Updated dependencies [73821f2]
+- Updated dependencies [356b120]
+- Updated dependencies [588cd4f]
+  - @compiled/babel-plugin@0.14.0
+  - @compiled/utils@0.6.16
+
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies [307bb83]
+- Updated dependencies [18dcdf8]
+  - @compiled/babel-plugin@0.13.0
+
+## 0.7.1
+
+### Patch Changes
+
+- 597687c: Bump Parcel to v2.3.2
+
+## 0.7.0
+
+### Minor Changes
+
+- 024ac88: Upgrade parcel transformer to support Parcel v2.2.0
+
+### Patch Changes
+
+- Updated dependencies [b0adb8a]
+- Updated dependencies [f139218]
+- Updated dependencies [858146c]
+- Updated dependencies [b0adb8a]
+  - @compiled/babel-plugin@0.12.0
+
 ## 0.6.20
 
 ### Patch Changes

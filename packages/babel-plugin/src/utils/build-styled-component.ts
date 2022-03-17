@@ -15,8 +15,7 @@ import { pickFunctionBody } from './ast';
 import { buildCssVariables } from './build-css-variables';
 import { getItemCss } from './css-builders';
 import { hoistSheet } from './hoist-sheet';
-import { resolveIdentifierComingFromDestructuring } from './resolve-binding';
-import { transformCssItems } from './transform-css-items';
+import { applySelectors, transformCssItems } from './transform-css-items';
 
 export interface StyledTemplateOpts {
   /**
@@ -103,6 +102,45 @@ const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor:
 };
 
 /**
+ * Returns a list of destructured props used in expressions of a styled component
+ *
+ * For example:
+ * ```
+ * const Component = styled.div`
+ *  width: $({ width }) => `${width}px`;
+ *  height: $({ height }) => `${height}px`;
+ * `;
+ * ```
+ * Returns list of [width, height]
+ *
+ * @param node {t.Node} Node of the styled component
+ */
+const getDestructuredProps = (node: t.Node): string[] => {
+  const destructuredProps: string[] = [];
+
+  traverse(node, {
+    noScope: true,
+    ArrowFunctionExpression(path: NodePath<t.ArrowFunctionExpression>) {
+      const propsParam = path.get('params')[0];
+
+      // Is the param for props being destructured
+      if (propsParam && t.isObjectPattern(propsParam.node)) {
+        // Uses the destructure ObjectPattern path to get all the prop references, i.e.
+        // { width } becomes width
+        // { width, height } becomes width,height
+        // { size: { width } } becomes size:{width}
+        // { width: alias } becomes width:alias
+        const propsUsed = propsParam.toString().replace(/\s/g, '').slice(1, -1).split(',');
+
+        destructuredProps.push(...propsUsed);
+      }
+    },
+  });
+
+  return destructuredProps;
+};
+
+/**
  * Handles cases like:
  * 1. `propz.loading` in `border-color: \${(propz) => (propz.loading ? colors.N100 : colors.N200)};`
  * Outcome: It will replace `propz.loading` with `props.loading`.
@@ -157,56 +195,6 @@ const handleMemberExpressionInStyledInterpolation = (path: NodePath<t.MemberExpr
 };
 
 /**
- * Handles cases like:
- * 1. `isLoading` in `background-color: \${({ isLoading }) => (isLoading ? colors.N20 : colors.N40)};`
- * Outcome: It will move `isLoading` under `propsToDestructure`.
- *
- * 2. `l` in `color: \${({ loading: l }) => (l ? colors.N50 : colors.N10)};`
- * Outcome: It will move `loading` under `propsToDestructure` and replaces `l` with `loading`.
- *
- * @param path Identifier path
- */
-const handleDestructuringInStyledInterpolation = (path: NodePath<t.Identifier>) => {
-  const propsToDestructure: string[] = [];
-
-  // We are not interested in parent object property like `({ loading: load }) => load`.
-  // Both `: load` and `=> load` are identifiers and function is parent for both.
-  // We are not interested in modifying `: load`. We just need to modify `=> load` to `=> loading`.
-  // If we don't skip, `=> load` will not be modified because we have modified `: load` earlier and
-  // second identifier is nowhere to be found inside function params.
-  if (path.parentPath && !t.isObjectProperty(path.parentPath.node)) {
-    const traversedUpFunctionPath: NodePath<t.Node> | null = path.find((parentPath) =>
-      parentPath.isFunction()
-    );
-
-    const firstFunctionParam =
-      traversedUpFunctionPath &&
-      t.isFunction(traversedUpFunctionPath.node) &&
-      traversedUpFunctionPath.node.params[0];
-
-    const resolvedDestructuringIdentifier = resolveIdentifierComingFromDestructuring({
-      name: path.node.name,
-      node: firstFunctionParam as t.Expression,
-      resolveFor: 'value',
-    });
-
-    if (resolvedDestructuringIdentifier && t.isIdentifier(resolvedDestructuringIdentifier.key)) {
-      const resolvedDestructuringIdentifierKey = resolvedDestructuringIdentifier.key;
-      const resolvedDestructuringIdentifierKeyName = resolvedDestructuringIdentifierKey.name;
-
-      propsToDestructure.push(resolvedDestructuringIdentifierKeyName);
-
-      // We are only interested in cases when names are different otherwise this will go in infinite recursion.
-      if (resolvedDestructuringIdentifierKeyName !== path.node.name) {
-        path.replaceWith(t.identifier(resolvedDestructuringIdentifierKeyName));
-      }
-    }
-  }
-
-  return propsToDestructure;
-};
-
-/**
  * Will return a generated AST for a Styled Component.
  *
  * @param opts {StyledTemplateOpts} Template options
@@ -214,7 +202,9 @@ const handleDestructuringInStyledInterpolation = (path: NodePath<t.Identifier>) 
  */
 const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
-  const propsToDestructure: string[] = [];
+  // This completely depends on meta.parentPath.node to be the styled component.
+  // If this changes please pass the component in another way
+  const propsToDestructure: string[] = getDestructuredProps(meta.parentPath.node);
   const styleProp = opts.variables.length
     ? styledStyleProp(opts.variables, (node) => {
         const nestedArrowFunctionExpressionVisitor = {
@@ -224,11 +214,6 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
               handleMemberExpressionInStyledInterpolation(path);
 
             propsToDestructure.push(...propsToDestructureFromMemberExpression);
-          },
-          Identifier(path: NodePath<t.Identifier>) {
-            const propsToDestructureFromIdentifier = handleDestructuringInStyledInterpolation(path);
-
-            propsToDestructure.push(...propsToDestructureFromIdentifier);
           },
         };
 
@@ -288,6 +273,25 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
 };
 
 /**
+ * Find CSS selectors that are apart of incomplete closures
+ * i.e. `:hover {`
+ *
+ * @param css {string} Template options
+ */
+const findOpenSelectors = (css: string): string[] | null => {
+  // Remove any occurrence of { or } inside quotes to stop them
+  // interfering with closure matches
+  let searchArea = css.replace(/['|"].*[{|}].*['|"]/g, '');
+  // Skip over complete closures
+  searchArea = searchArea.substring(searchArea.lastIndexOf('}') + 1);
+
+  // Regex for CSS selector
+  //[^;\s] Don't match ; or whitespace
+  // .+\n?{ Match anything (the selector itself) followed by any newlines then {
+  return searchArea.match(/[^;\s].+\n?{/g);
+};
+
+/**
  * Returns a Styled Component AST.
  *
  * @param tag {Tag} Styled tag either an inbuilt or user define
@@ -295,22 +299,30 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metadata): t.Node => {
-  const unconditionalCss: string[] = [];
-  const conditionalCss: CssItem[] = [];
+  let unconditionalCss = '';
+  const conditionalCssItems: CssItem[] = [];
 
   cssOutput.css.forEach((item) => {
     if (item.type === 'logical' || item.type === 'conditional') {
-      conditionalCss.push(item);
+      // TODO: Optimize this to only run if there is a
+      // potential selector scope change
+      const selectors = findOpenSelectors(unconditionalCss);
+
+      if (selectors) {
+        applySelectors(item, selectors);
+      }
+
+      conditionalCssItems.push(item);
     } else {
-      unconditionalCss.push(getItemCss(item));
+      unconditionalCss += getItemCss(item);
     }
   });
 
   // Rely on transformCss to remove duplicates and return only the last unconditional CSS for each property
-  const uniqueUnconditionalCssOutput = transformCss(unconditionalCss.join(''));
+  const uniqueUnconditionalCssOutput = transformCss(unconditionalCss);
 
   // Rely on transformItemCss to build expressions for conditional & logical CSS
-  const conditionalCssOutput = transformCssItems(conditionalCss);
+  const conditionalCssOutput = transformCssItems(conditionalCssItems);
 
   const sheets = [...uniqueUnconditionalCssOutput.sheets, ...conditionalCssOutput.sheets];
   const classNames = [

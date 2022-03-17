@@ -1,5 +1,32 @@
 # @compiled/cli
 
+## 2.1.7
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- Updated dependencies [c3f4ad2]
+- Updated dependencies [356b120]
+  - @compiled/codemods@0.5.0
+
+## 2.1.6
+
+### Patch Changes
+
+- d42e1a0: Resolve unset-values to ^2.0.0 to mitigate vulnerability
+- e2199fa: Bump trim-newlines to v3.0.1
+- Updated dependencies [d42e1a0]
+- Updated dependencies [e2199fa]
+  - @compiled/codemods@0.4.2
+
+## 2.1.5
+
+### Patch Changes
+
+- 0db4774: Bump jscodeshift to v0.13.1
+- Updated dependencies [9a1a74d]
+  - @compiled/codemods@0.4.0
+
 ## 2.1.4
 
 ### Patch Changes
