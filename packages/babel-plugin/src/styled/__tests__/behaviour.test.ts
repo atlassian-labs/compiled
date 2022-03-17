@@ -420,6 +420,8 @@ describe('styled component behaviour', () => {
 
       const Component = styled.button\`
         color: \${(props) => (props.isPrimary ? 'blue' : 'red')};
+        /* annoying-comment */ text-decoration-line: \${({ isDone }) => isDone ? 'line-through' : 'none'};
+        -webkit-line-clamp: \${({ isClamped }) => isClamped ? 3 : 1};
         font-size: 30px;
         border: 2px solid blue;
         padding: 8px;
@@ -429,17 +431,18 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '._syaz5scu{color:red}',
       '._syaz13q2{color:blue}',
+      '._1hms1911{text-decoration-line:line-through}',
+      '._1hmsglyw{text-decoration-line:none}',
+      '._1yyj11wp{-webkit-line-clamp:3}',
+      '._1yyjkb7n{-webkit-line-clamp:1}',
       '._19bvftgi{padding-left:8px}',
       '._n3tdftgi{padding-bottom:8px}',
       '._u5f3ftgi{padding-right:8px}',
       '._ca0qftgi{padding-top:8px}',
       '._19itlf8h{border:2px solid blue}',
       '._1wyb1ul9{font-size:30px}',
+      'ax(["_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.isPrimary?"_syaz13q2":"_syaz5scu",isDone?"_1hms1911":"_1hmsglyw",isClamped?"_1yyj11wp":"_1yyjkb7n",props.className])',
     ]);
-
-    expect(actual).toInclude(
-      `ax([\"_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi\",props.isPrimary?\"_syaz13q2\":\"_syaz5scu\",props.className])`
-    );
   });
 
   it('should apply conditional CSS with ternary operators and suffix', () => {

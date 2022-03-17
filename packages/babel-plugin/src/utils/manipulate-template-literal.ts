@@ -63,7 +63,7 @@ const optimizeConditionalExpression = (
   expression: t.ConditionalExpression
 ): t.ConditionalExpression => {
   const [styleProperty] = prefix.trim().split(':');
-  const isValidCssProperty = styleProperty.match(/^\w+-?\w+$/);
+  const isValidCssProperty = styleProperty.trimEnd().match(/(-?[a-z]+)+$/);
   const isNotPartOfString = !prefix.endsWith("'") && !prefix.endsWith('"');
   // This will skip statements like
   // height: calc(100% - ${identifier} - ${conditionalExpression});
