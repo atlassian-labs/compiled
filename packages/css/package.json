@@ -20,17 +20,17 @@
   ],
   "resolutions": {
     "css-what": "^5.1.0",
-    "cssnano-preset-default": "^5.2.0",
+    "cssnano-preset-default": "^5.2.5",
     "nth-check": "^2.0.1"
   },
   "dependencies": {
     "@compiled/utils": "^0.6.16",
-    "autoprefixer": "^10.4.2",
+    "autoprefixer": "^10.4.4",
     "convert-source-map": "^1.8.0",
-    "cssnano-preset-default": "^5.2.0",
-    "postcss": "^8.4.8",
+    "cssnano-preset-default": "^5.2.5",
+    "postcss": "^8.4.12",
     "postcss-nested": "^5.0.6",
-    "postcss-normalize-whitespace": "^5.1.0",
+    "postcss-normalize-whitespace": "^5.1.1",
     "postcss-selector-parser": "^6.0.9",
     "postcss-values-parser": "^6.0.2"
   },
