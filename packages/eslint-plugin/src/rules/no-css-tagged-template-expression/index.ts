@@ -1,8 +1,6 @@
 import type { Rule } from 'eslint';
 
-import { createNoTaggedTemplateExpressionRule } from '../../utils';
-
-import { isCss } from './utils';
+import { createNoTaggedTemplateExpressionRule, isCss } from '../../utils';
 
 export const noCssTaggedTemplateExpressionRule: Rule.RuleModule = {
   meta: {
@@ -11,10 +9,9 @@ export const noCssTaggedTemplateExpressionRule: Rule.RuleModule = {
     },
     fixable: 'code',
     messages: {
-      noCssTaggedTemplateExpression:
-        'Encountered unexpected css tagged template expression from @compiled/react',
+      unexpected: 'Unexpected `css` tagged template expression from @compiled/react',
     },
     type: 'problem',
   },
-  create: createNoTaggedTemplateExpressionRule(isCss, 'noCssTaggedTemplateExpression'),
+  create: createNoTaggedTemplateExpressionRule(isCss, 'unexpected'),
 };

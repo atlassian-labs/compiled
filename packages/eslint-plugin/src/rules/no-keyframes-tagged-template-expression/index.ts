@@ -1,8 +1,6 @@
 import type { Rule } from 'eslint';
 
-import { createNoTaggedTemplateExpressionRule } from '../../utils';
-
-import { isKeyframes } from './utils';
+import { createNoTaggedTemplateExpressionRule, isKeyframes } from '../../utils';
 
 export const noKeyframesTaggedTemplateExpressionRule: Rule.RuleModule = {
   meta: {
@@ -11,10 +9,9 @@ export const noKeyframesTaggedTemplateExpressionRule: Rule.RuleModule = {
     },
     fixable: 'code',
     messages: {
-      noKeyframesTaggedTemplateExpression:
-        'Encountered unexpected keyframes tagged template expression from @compiled/react',
+      unexpected: 'Unexpected `keyframes` tagged template expression from @compiled/react',
     },
     type: 'problem',
   },
-  create: createNoTaggedTemplateExpressionRule(isKeyframes, 'noKeyframesTaggedTemplateExpression'),
+  create: createNoTaggedTemplateExpressionRule(isKeyframes, 'unexpected'),
 };
