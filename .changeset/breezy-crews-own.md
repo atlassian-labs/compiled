@@ -1,4 +1,5 @@
 ---
+'@compiled/babel-plugin-strip-runtime': patch
 '@compiled/parcel-transformer': minor
 '@compiled/parcel-app': patch
 '@compiled/parcel-resolver-alias': patch
