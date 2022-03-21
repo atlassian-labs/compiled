@@ -27,14 +27,12 @@ const findReactDeclarationWithDefaultImport = (
   return undefined;
 };
 
-const rule: Rule.RuleModule = {
+export const jsxPragmaRule: Rule.RuleModule = {
   meta: {
-    fixable: 'code',
-    type: 'problem',
     docs: {
-      recommended: true,
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/jsx-pragma',
     },
+    fixable: 'code',
     messages: {
       missingPragma: 'To use the `css` prop you must set the {{ pragma }} pragma.',
       preferJsxImportSource:
@@ -54,6 +52,7 @@ const rule: Rule.RuleModule = {
         additionalProperties: false,
       },
     ],
+    type: 'problem',
   },
   create(context) {
     const options: Options = context.options[0] || { runtime: 'automatic' };
@@ -187,5 +186,3 @@ const rule: Rule.RuleModule = {
     };
   },
 };
-
-export default rule;

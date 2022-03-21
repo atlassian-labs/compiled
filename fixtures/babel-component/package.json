@@ -1,6 +1,6 @@
 {
   "name": "@compiled/babel-component-fixture",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {

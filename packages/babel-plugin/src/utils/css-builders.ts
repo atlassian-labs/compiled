@@ -6,6 +6,7 @@ import { hash, kebabCase } from '@compiled/utils';
 import type { Metadata } from '../types';
 
 import { buildCodeFrameError, getKey } from './ast';
+import { CONDITIONAL_PATHS } from './constants';
 import { evaluateExpression } from './evaluate-expression';
 import {
   isCompiledCSSCallExpression,
@@ -14,9 +15,9 @@ import {
   isCompiledKeyframesTaggedTemplateExpression,
 } from './is-compiled';
 import {
-  isCssPropertyInTemplateElement,
+  isQuasiMidStatement,
   hasNestedTemplateLiteralsWithConditionalRules,
-  moveCssPropertyInExpression,
+  optimizeConditionalStatement,
 } from './manipulate-template-literal';
 import { resolveBinding } from './resolve-binding';
 import type {
@@ -312,11 +313,10 @@ const assertNoImportedCssVariables = (
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metadata): CSSOutput => {
-  const conditionalPaths: ['consequent', 'alternate'] = ['consequent', 'alternate'];
   const css: CSSOutput['css'] = [];
   const variables: CSSOutput['variables'] = [];
 
-  const [consequentCss, alternateCss] = conditionalPaths.map((path) => {
+  const [consequentCss, alternateCss] = CONDITIONAL_PATHS.map((path) => {
     const pathNode = node[path];
     let cssOutput: CSSOutput | void;
 
@@ -332,7 +332,7 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
     ) {
       cssOutput = buildCss(pathNode, meta);
     } else if (t.isIdentifier(pathNode)) {
-      const resolved = resolveBinding(pathNode.name, meta);
+      const resolved = resolveBinding(pathNode.name, meta, evaluateExpression);
 
       if (
         resolved &&
@@ -403,64 +403,6 @@ const extractLogicalExpression = (node: t.ArrowFunctionExpression, meta: Metadat
   }
 
   return { css: mergeSubsequentUnconditionalCssItems(css), variables };
-};
-
-const createNegativeUnaryExpression = (node: t.Identifier) => ({
-  type: 'UnaryExpression',
-  start: node.start,
-  end: node.end,
-  operator: '-',
-  prefix: true,
-  argument: {
-    type: 'Identifier',
-    start: node.start,
-    end: node.end,
-    name: node.name,
-  },
-});
-
-/**
- * Manipulates the AST to ensure that CSS variables are generated correctly for negative values
- *
- * Consider we have the following:
- *
- * const gridSize = 8;
- *
- * const LayoutRight = styled.aside`
- *   margin-right: -${gridSize * 5}px; // A
- *   margin-left: ${gridSize * 5}px; // B
- *   top: -${gridSize * 5}px; // A
- *   left: -${gridSize * 8}px; // C
- *   right: ${gridSize * 8}px;  // D
- *   color: red;
- * `;
- *
- * In order to calculate the correct CSS custom properties, items labeled A & C need to be converted to UnaryExpressions
- * This essentially changes these to ${-gridSize * 5}px; & ${-gridSize * 8}px respectively - resulting in correct CSS
- * generation for these negative values.
- *
- * Without this manipulation you would end up with:
- * -40px for A & B
- * -64px for C & D
- *
- * With this manipulation you end up with:
- * -40px for A
- * 40px for B
- * -64px for C
- * 64px for D
- *
- * @param nodeExpression Node we're interested in manipulating
- */
-const convertNegativeCssValuesToUnaryExpression = (nodeExpression: t.Expression): t.Expression => {
-  if (t.isBinaryExpression(nodeExpression)) {
-    return {
-      ...nodeExpression,
-      left: createNegativeUnaryExpression(nodeExpression.left as t.Identifier),
-    } as t.Expression;
-  } else if (t.isIdentifier(nodeExpression)) {
-    return createNegativeUnaryExpression(nodeExpression) as t.Expression;
-  }
-  return nodeExpression;
 };
 
 /*
@@ -580,7 +522,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       let resolvedBinding = undefined;
 
       if (t.isIdentifier(prop.argument)) {
-        resolvedBinding = resolveBinding(prop.argument.name, meta);
+        resolvedBinding = resolveBinding(prop.argument.name, meta, evaluateExpression);
 
         if (!resolvedBinding) {
           throw buildCodeFrameError('Variable could not be found', prop.argument, meta.parentPath);
@@ -614,7 +556,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 
   // Quasis are the string pieces of the template literal - the parts around the interpolations
   const literalResult = node.quasis.reduce<string>((acc, quasi, index): string => {
-    let nodeExpression = node.expressions[index] as t.Expression | undefined;
+    const nodeExpression = node.expressions[index] as t.Expression | undefined;
 
     if (
       !nodeExpression ||
@@ -624,27 +566,22 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       return acc + quasi.value.raw + suffix;
     }
 
-    // Deal with any negative values such as:
-    // margin: -${gridSize}, top: -${gridSize} etc.
-    if (quasi.value.raw.endsWith('-') && !t.isArrowFunctionExpression(nodeExpression)) {
-      // Remove the '-' from the quasi, as it will soon be moved to a unary expression
-      quasi.value.raw = quasi.value.raw.slice(0, -1);
-      nodeExpression = convertNegativeCssValuesToUnaryExpression(nodeExpression);
-    }
+    // If quasi is ending at a point where it's expecting a value from an expression
+    // i.e color:
+    const isMidStatement = isQuasiMidStatement(quasi);
+    const doesExpressionHaveConditionalCss =
+      t.isArrowFunctionExpression(nodeExpression) && t.isConditionalExpression(nodeExpression.body);
 
-    /**
-     * Manipulate the node if the CSS property, pseudo classes or pseudo elements are defined
-     * within a template element rather than in a expression.
-     * Eg :hover { color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')}; }
-     */
     if (
-      t.isArrowFunctionExpression(nodeExpression) &&
-      t.isConditionalExpression(nodeExpression.body) &&
-      isCssPropertyInTemplateElement(quasi) &&
+      isMidStatement &&
+      doesExpressionHaveConditionalCss &&
       !hasNestedTemplateLiteralsWithConditionalRules(node, meta)
     ) {
-      const nextQuasis = node.quasis[index + 1];
-      moveCssPropertyInExpression(nodeExpression.body, quasi, nextQuasis);
+      optimizeConditionalStatement(
+        quasi,
+        node.quasis[index + 1],
+        nodeExpression as t.ArrowFunctionExpression
+      );
     }
 
     const { value: interpolation, meta: updatedMeta } = evaluateExpression(nodeExpression, meta);
@@ -656,13 +593,12 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       return acc + quasi.value.raw + interpolation.value;
     }
 
-    if (
+    const doesExpressionContainCssBlock =
       t.isObjectExpression(interpolation) ||
       isCompiledCSSTaggedTemplateExpression(interpolation, meta.state) ||
-      isCompiledCSSCallExpression(interpolation, meta.state) ||
-      (t.isArrowFunctionExpression(nodeExpression) &&
-        t.isConditionalExpression(nodeExpression.body))
-    ) {
+      isCompiledCSSCallExpression(interpolation, meta.state);
+
+    if ((!isMidStatement && doesExpressionContainCssBlock) || doesExpressionHaveConditionalCss) {
       // We found something that looks like CSS.
       const result = buildCss(interpolation, updatedMeta);
 
@@ -701,9 +637,12 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     // E.g. `font-size: ${fontSize}px` will end up needing to look like:
     // `font-size: var(--_font-size)`, with the suffix moved to inline styles
     // style={{ '--_font-size': fontSize + 'px' }}
-    const name = `--_${hash(variableName)}`;
     const nextQuasis = node.quasis[index + 1];
     const [before, after] = cssAffixInterpolation(quasi.value.raw, nextQuasis.value.raw);
+    // Create a different CSS var name for negative value version
+    const name = `--_${hash(variableName)}${
+      before.variablePrefix === '-' ? before.variablePrefix : ''
+    }`;
 
     // Removes any suffixes from the next quasis.
     nextQuasis.value.raw = after.css;
@@ -769,7 +708,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
   }
 
   if (t.isIdentifier(node)) {
-    const resolvedBinding = resolveBinding(node.name, meta);
+    const resolvedBinding = resolveBinding(node.name, meta, evaluateExpression);
 
     if (!resolvedBinding) {
       throw buildCodeFrameError('Variable could not be found', node, meta.parentPath);

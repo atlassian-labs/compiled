@@ -1,27 +1,17 @@
-import { transformSync } from '@babel/core';
-
-import babelPlugin from '../../index';
-
-const transform = (code: string) => {
-  return transformSync(code, {
-    configFile: false,
-    babelrc: false,
-    compact: true,
-    plugins: [babelPlugin],
-  })?.code;
-};
+import { transform as transformCode } from '../../test-utils';
 
 describe('css prop string literal', () => {
+  const transform = (code: string) => transformCode(code, { pretty: false });
+
   it('should persist suffix of dynamic value into inline styles', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        let fontSize = 20;
-        fontSize = 19;
+      let fontSize = 20;
+      fontSize = 19;
 
-        <div css={\`font-size: \${fontSize}px;color:red;\`}>hello world</div>
-      `);
+      <div css={\`font-size: \${fontSize}px;color:red;\`}>hello world</div>
+    `);
 
     expect(actual).toInclude('{font-size:var(--_1j2e0s2)}');
     expect(actual).toInclude('style={{"--_1j2e0s2":ix(fontSize,"px")}}');
@@ -29,23 +19,21 @@ describe('css prop string literal', () => {
 
   it('should persist suffix of constant value', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const fontSize = 20;
+      const fontSize = 20;
 
-        <div css={\`font-size: \${fontSize}px;\`}>hello world</div>
-      `);
+      <div css={\`font-size: \${fontSize}px;\`}>hello world</div>
+    `);
 
     expect(actual).toInclude('{font-size:20px}');
   });
 
   it('should transform string literal', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        <div css="font-size: 20px;">hello world</div>
+      <div css="font-size: 20px;">hello world</div>
     `);
 
     expect(actual).toInclude('{font-size:20px}');
@@ -53,91 +41,88 @@ describe('css prop string literal', () => {
 
   it('should inline constant object property value', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const colors = { error: 'red' };
+      const colors = { error: 'red' };
 
-        <div
-          css={\`
-          color: \${colors.error};
-        \`}>
-          hello world
-        </div>
-      `);
+      <div
+        css={\`
+        color: \${colors.error};
+      \`}>
+        hello world
+      </div>
+    `);
 
     expect(actual).toInclude('{color:red}');
   });
 
   it('should evaluate deep member expression referencing an identifier', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const primaryColor = 'blue';
+      const primaryColor = 'blue';
 
-        const theme = {
-          colors: {
-            light: {
-              primary: primaryColor,
-            },
-            dark: {
-              primary: 'black',
-            },
-          }
-        };
+      const theme = {
+        colors: {
+          light: {
+            primary: primaryColor,
+          },
+          dark: {
+            primary: 'black',
+          },
+        }
+      };
 
-        <div
-          css={\`
-          color: \${theme.colors.light.primary};
-        \`}>
-          hello world
-        </div>
-      `);
+      <div
+        css={\`
+        color: \${theme.colors.light.primary};
+      \`}>
+        hello world
+      </div>
+    `);
 
     expect(actual).toInclude('{color:blue}');
   });
 
   it('should inline nested constant object property value', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const theme = {
-          colors: {
-            light: {
-              primary: '#fff',
-            },
-            dark: {
-              primary: 'black',
-            },
-          }
-        };
+      const theme = {
+        colors: {
+          light: {
+            primary: '#fff',
+          },
+          dark: {
+            primary: 'black',
+          },
+        }
+      };
 
-        <div
-          css={\`
-          color: \${theme.colors.light.primary};
-        \`}>
-          hello world
-        </div>
-      `);
+      <div
+        css={\`
+        color: \${theme.colors.light.primary};
+      \`}>
+        hello world
+      </div>
+    `);
 
     expect(actual).toInclude('{color:#fff}');
   });
 
   it('should transform binary expression', () => {
     const actual = transform(`
-        import '@compiled/react';
+      import '@compiled/react';
 
-        export const EmphasisText = (props) => (
-          <span
-            css={\`
-              color: $\{props.color};
-              text-transform: uppercase;
-              font-weight: 600;
-            \`}>{props.children}</span>
-        );
-      `);
+      export const EmphasisText = (props) => (
+        <span
+          css={\`
+            color: $\{props.color};
+            text-transform: uppercase;
+            font-weight: 600;
+          \`}>{props.children}</span>
+      );
+    `);
 
     expect(actual).toInclude('{color:var(--_kmurgp)');
     expect(actual).toInclude('{text-transform:uppercase}');
@@ -147,10 +132,9 @@ describe('css prop string literal', () => {
 
   it('should transform no template string literal', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        <div css={\`font-size: 20px;\`}>hello world</div>
+      <div css={\`font-size: 20px;\`}>hello world</div>
     `);
 
     expect(actual).toInclude('{font-size:20px}');
@@ -158,35 +142,33 @@ describe('css prop string literal', () => {
 
   it('should inline constant expression', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const color = 'blue';
-        <div css={\`color: \${color};\`}>hello world</div>
-      `);
+      const color = 'blue';
+      <div css={\`color: \${color};\`}>hello world</div>
+    `);
 
     expect(actual).toInclude('{color:blue}');
   });
 
   it('should transform an expression', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        let sidenav = true;
-        sidenav = false;
+      let sidenav = true;
+      sidenav = false;
 
-        <div
-          css={\`
-            display: grid;
-            grid-template-areas: $\{
-              sidenav ? "'header header' 'sidebar content'" : "'header header' 'content content'"
-            };
-          \`}
-        >
-          hello world
-        </div>
-      `);
+      <div
+        css={\`
+          display: grid;
+          grid-template-areas: $\{
+            sidenav ? "'header header' 'sidebar content'" : "'header header' 'content content'"
+          };
+        \`}
+      >
+        hello world
+      </div>
+    `);
 
     expect(actual).toInclude('{display:grid}');
     expect(actual).toInclude('{grid-template-areas:var(--_1o3snts)}');
@@ -197,12 +179,11 @@ describe('css prop string literal', () => {
 
   it('should transform template string literal with obj variable', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const style = { color: 'blue', fontSize: '30px' };
-        <div css={\`\${style};color: red;\`}>hello world</div>
-      `);
+      const style = { color: 'blue', fontSize: '30px' };
+      <div css={\`\${style};color: red;\`}>hello world</div>
+    `);
 
     expect(actual).toInclude('{color:red}');
     expect(actual).toInclude('{font-size:30px}');
@@ -211,7 +192,6 @@ describe('css prop string literal', () => {
   it('should be able to override properties in a mixin', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       const primary = () => ({
         fontSize: '32px',
@@ -244,17 +224,16 @@ describe('css prop string literal', () => {
 
   it('should transform template string with no argument arrow function variable', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const mixin = () => ({ color: 'blue', fontSize: '30px' });
-        <div css={\`
-          background: white;
-          border: 1px solid black;
-          \${mixin};
-          font-weight: bold;
-        \`}>hello world</div>
-      `);
+      const mixin = () => ({ color: 'blue', fontSize: '30px' });
+      <div css={\`
+        background: white;
+        border: 1px solid black;
+        \${mixin};
+        font-weight: bold;
+      \`}>hello world</div>
+    `);
 
     expect(actual).toIncludeMultiple([
       '{background-color:white}',
@@ -267,16 +246,15 @@ describe('css prop string literal', () => {
 
   it('should transform template string with no argument arrow function call variable', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const mixin = () => ({ color: 'blue', fontSize: '30px' });
-        <div css={\`
-          border: 1px solid black;
-          \${mixin()};
-          background: white;
-        \`}>hello world</div>
-      `);
+      const mixin = () => ({ color: 'blue', fontSize: '30px' });
+      <div css={\`
+        border: 1px solid black;
+        \${mixin()};
+        background: white;
+      \`}>hello world</div>
+    `);
 
     expect(actual).toIncludeMultiple([
       '{border:1px solid black}',
@@ -288,27 +266,26 @@ describe('css prop string literal', () => {
 
   it('should transform template string with no argument functions', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const color = () => 'blue';
-        const fontStyling = {
-          style: 'italic',
-          family: 'sans-serif',
-        };
+      const color = () => 'blue';
+      const fontStyling = {
+        style: 'italic',
+        family: 'sans-serif',
+      };
 
-        const mixin1 = function() { return fontStyling.style; };
-        function mixin2() { return fontStyling.family; };
+      const mixin1 = function() { return fontStyling.style; };
+      function mixin2() { return fontStyling.family; };
 
-        <div css={\`
-          color: blue;
-          font-style: \${mixin1()};
-          font-family: \${mixin2()};
-          :hover { background-color: \${color()} };
-        \`}>
-          hello world
-        </div>
-      `);
+      <div css={\`
+        color: blue;
+        font-style: \${mixin1()};
+        font-family: \${mixin2()};
+        :hover { background-color: \${color()} };
+      \`}>
+        hello world
+      </div>
+    `);
 
     expect(actual).toInclude(`{color:blue}`);
     expect(actual).toInclude(`{font-style:italic}`);
@@ -318,29 +295,28 @@ describe('css prop string literal', () => {
 
   it('should transform template string with no argument function properties belonging to a variable', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const fontSize = 12;
-        const fontStyling = {
-          weight: 500
-        };
+      const fontSize = 12;
+      const fontStyling = {
+        weight: 500
+      };
 
-        const sizes = {
-          mixin1: () => '1px solid black',
-          mixin2: () => fontSize,
-          mixin3: function() {return fontStyling.weight;}
-        };
+      const sizes = {
+        mixin1: () => '1px solid black',
+        mixin2: () => fontSize,
+        mixin3: function() {return fontStyling.weight;}
+      };
 
-        <div css={\`
-          color: blue;
-          border: \${sizes.mixin1()};
-          font-size: \${sizes.mixin2()}px;
-          font-weight: \${sizes.mixin3()};
-        \`}>
-          hello world
-        </div>
-      `);
+      <div css={\`
+        color: blue;
+        border: \${sizes.mixin1()};
+        font-size: \${sizes.mixin2()}px;
+        font-weight: \${sizes.mixin3()};
+      \`}>
+        hello world
+      </div>
+    `);
 
     expect(actual).toInclude(`{color:blue}`);
     expect(actual).toInclude(`{border:1px solid black}`);
@@ -350,19 +326,18 @@ describe('css prop string literal', () => {
 
   it('should transform template string with no argument function variable', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        function mixin() {
-          return { color: 'red' };
-        }
+      function mixin() {
+        return { color: 'red' };
+      }
 
-        <div css={\`
-          border: 1px solid black;
-          \${mixin()};
-          padding-top: 10px;
-        \`}>hello world</div>
-      `);
+      <div css={\`
+        border: 1px solid black;
+        \${mixin()};
+        padding-top: 10px;
+      \`}>hello world</div>
+    `);
 
     expect(actual).toIncludeMultiple([
       '{border:1px solid black}',
@@ -373,29 +348,28 @@ describe('css prop string literal', () => {
 
   it('should transform template string with argument arrow function variable', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const color1 = 'black';
-        const mixin = ({ color1, color2: c }, color3, radius) => ({
-          color: color1,
-          backgroundColor: c,
-          borderColor: color3 ,
-          borderRadius: radius,
-        });
+      const color1 = 'black';
+      const mixin = ({ color1, color2: c }, color3, radius) => ({
+        color: color1,
+        backgroundColor: c,
+        borderColor: color3 ,
+        borderRadius: radius,
+      });
 
-        const color = { red: 'red' };
-        const greenColor = 'green';
+      const color = { red: 'red' };
+      const greenColor = 'green';
 
-        const Component = (props) => {
-          const color2 = 'black';
+      const Component = (props) => {
+        const color2 = 'black';
 
-          return <div css={\`
-            padding-top: 10px;
-            \${mixin({ color1: color.red, color2: 'blue' }, greenColor, 10)};
-            font-weight: bold;
-          \`} />
-        };
+        return <div css={\`
+          padding-top: 10px;
+          \${mixin({ color1: color.red, color2: 'blue' }, greenColor, 10)};
+          font-weight: bold;
+        \`} />
+      };
     `);
 
     expect(actual).toIncludeMultiple([
@@ -410,23 +384,22 @@ describe('css prop string literal', () => {
 
   it('should transform template string with unresolved argument arrow function variable', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const radius = 10;
-        const mixin = (color1, radius, size, weight) => ({
-          color: color1,
-          borderRadius: radius,
-          fontSize: size,
-          fontWeight: weight
-        });
+      const radius = 10;
+      const mixin = (color1, radius, size, weight) => ({
+        color: color1,
+        borderRadius: radius,
+        fontSize: size,
+        fontWeight: weight
+      });
 
-        const Component = (props) => <div css={\`
-          border:1px solid black;
-          \${mixin(props.color1, radius)};
-          display:block;
-        \`} />
-      `);
+      const Component = (props) => <div css={\`
+        border:1px solid black;
+        \${mixin(props.color1, radius)};
+        display:block;
+      \`} />
+    `);
 
     expect(actual).toIncludeMultiple([
       '{border:1px solid black}',
@@ -443,25 +416,24 @@ describe('css prop string literal', () => {
 
   it('should transform template string with argument arrow function variable inside member expression', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const mixin = {
-          value: (color1, r, color2) => ({
-            color: color1,
-            borderRadius: r,
-            borderColor: color2
-          })
-        }
+      const mixin = {
+        value: (color1, r, color2) => ({
+          color: color1,
+          borderRadius: r,
+          borderColor: color2
+        })
+      }
 
-        const radius = 10;
+      const radius = 10;
 
-        const Component = (props) => <div css={\`
-          margin-top: 20px;
-          \${mixin.value(props.color1, radius, 'red')};
-          background: white;
-        \`} />
-      `);
+      const Component = (props) => <div css={\`
+        margin-top: 20px;
+        \${mixin.value(props.color1, radius, 'red')};
+        background: white;
+      \`} />
+    `);
 
     expect(actual).toIncludeMultiple([
       '{margin-top:20px}',
@@ -474,43 +446,42 @@ describe('css prop string literal', () => {
 
   it('should inline multiple constant interpolations', () => {
     const actual = transform(`
-        import React from 'react';
-        import '@compiled/react';
+      import '@compiled/react';
 
-        const x = 1;
-        const y = '2px';
+      const x = 1;
+      const y = '2px';
 
-        <div
-          css={\`
-            transform: translate3d(\${x}px, $\{y}, 0);
-            color: red;
-          \`}
-        >
-          hello world
-        </div>
-      `);
+      <div
+        css={\`
+          transform: translate3d(\${x}px, $\{y}, 0);
+          color: red;
+        \`}
+      >
+        hello world
+      </div>
+    `);
+
     expect(actual).toInclude('{transform:translate3d(1px,2px,0)');
   });
 
   it('should reference multiple interpolations in a group', () => {
     const actual = transform(`
-        import React from 'react';
-        import '@compiled/react';
+      import '@compiled/react';
 
-        let x = 1;
-        x = 1;
-        let y = '2px';
-        y = '2px';
+      let x = 1;
+      x = 1;
+      let y = '2px';
+      y = '2px';
 
-        <div
-          css={\`
-            transform: translate3d(\${x}px, $\{y}, 0);
-            color: red;
-          \`}
-        >
-          hello world
-        </div>
-      `);
+      <div
+        css={\`
+          transform: translate3d(\${x}px, $\{y}, 0);
+          color: red;
+        \`}
+      >
+        hello world
+      </div>
+    `);
 
     expect(actual).toIncludeMultiple([
       'style={{"--_65u76s":ix(x,"px"),"--_1ohot4b":ix(y)}}',
@@ -520,30 +491,28 @@ describe('css prop string literal', () => {
 
   it('should transform function returning an object', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const color = 'red';
-        const mixin = () => ({ color });
+      const color = 'red';
+      const mixin = () => ({ color });
 
-        <div css={\`color: \${mixin().color};\`}>hello world</div>
-      `);
+      <div css={\`color: \${mixin().color};\`}>hello world</div>
+    `);
 
     expect(actual).toInclude('{color:red}');
   });
 
   it('should transform member expression referencing a function which returns an object', () => {
     const actual = transform(`
-        import '@compiled/react';
-        import React from 'react';
+      import '@compiled/react';
 
-        const color = 'red';
-        const mixin = () => ({ color });
+      const color = 'red';
+      const mixin = () => ({ color });
 
-        const colors = mixin();
+      const colors = mixin();
 
-        <div css={\`color: \${colors.color};\`}>hello world</div>
-      `);
+      <div css={\`color: \${colors.color};\`}>hello world</div>
+    `);
 
     expect(actual).toInclude('{color:red}');
   });

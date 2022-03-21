@@ -7,6 +7,7 @@ import { getPathOfNode } from './ast';
 import { createResultPair } from './create-result-pair';
 import { isCompiledKeyframesCallExpression } from './is-compiled';
 import {
+  traverseBinaryExpression,
   traverseCallExpression,
   traverseFunction,
   traverseIdentifier,
@@ -89,7 +90,7 @@ const babelEvaluateExpression = (
     }
 
     const result = path.evaluate();
-    if (result.value) {
+    if (result.value != null) {
       switch (typeof result.value) {
         case 'string':
           return t.stringLiteral(result.value);
@@ -133,13 +134,31 @@ export const evaluateExpression = (
   // --------------
 
   if (t.isIdentifier(expression)) {
-    ({ value, meta: updatedMeta } = traverseIdentifier(expression, updatedMeta));
+    ({ value, meta: updatedMeta } = traverseIdentifier(
+      expression,
+      updatedMeta,
+      evaluateExpression
+    ));
   } else if (t.isMemberExpression(expression)) {
-    ({ value, meta: updatedMeta } = traverseMemberExpression(expression, updatedMeta));
+    ({ value, meta: updatedMeta } = traverseMemberExpression(
+      expression,
+      updatedMeta,
+      evaluateExpression
+    ));
   } else if (t.isFunction(expression)) {
-    ({ value, meta: updatedMeta } = traverseFunction(expression, updatedMeta));
+    ({ value, meta: updatedMeta } = traverseFunction(expression, updatedMeta, evaluateExpression));
   } else if (t.isCallExpression(expression)) {
-    ({ value, meta: updatedMeta } = traverseCallExpression(expression, updatedMeta));
+    ({ value, meta: updatedMeta } = traverseCallExpression(
+      expression,
+      updatedMeta,
+      evaluateExpression
+    ));
+  } else if (t.isBinaryExpression(expression)) {
+    ({ value, meta: updatedMeta } = traverseBinaryExpression(
+      expression,
+      updatedMeta,
+      evaluateExpression
+    ));
   }
 
   if (

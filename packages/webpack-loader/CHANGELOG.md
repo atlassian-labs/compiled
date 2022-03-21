@@ -1,5 +1,24 @@
 # @compiled/webpack-loader
 
+## 0.8.5
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- 588cd4f: Adding require statements for atomic css now occurs inside the babel-plugin-strip-runtime plugin
+- Updated dependencies [2ad385c]
+- Updated dependencies [5e3ad5e]
+- Updated dependencies [c96c562]
+- Updated dependencies [73821f2]
+- Updated dependencies [356b120]
+- Updated dependencies [588cd4f]
+- Updated dependencies [588cd4f]
+  - @compiled/babel-plugin@0.14.0
+  - @compiled/babel-plugin-strip-runtime@0.14.0
+  - @compiled/css@0.8.2
+  - @compiled/react@0.10.4
+  - @compiled/utils@0.6.16
+
 ## 0.8.4
 
 ### Patch Changes

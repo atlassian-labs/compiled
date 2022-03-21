@@ -3,7 +3,7 @@ import * as t from '@babel/types';
 
 import type { Metadata } from '../../types';
 import { createResultPair } from '../create-result-pair';
-import { evaluateExpression } from '../evaluate-expression';
+import type { EvaluateExpression } from '../types';
 
 /**
  * Will look in an expression and return the actual value along with updated metadata.
@@ -17,7 +17,8 @@ import { evaluateExpression } from '../evaluate-expression';
  */
 export const traverseFunction = (
   expression: t.Function,
-  meta: Metadata
+  meta: Metadata,
+  evaluateExpression: EvaluateExpression
 ): ReturnType<typeof createResultPair> => {
   let value: t.Node | undefined | null = undefined;
   let updatedMeta: Metadata = meta;

@@ -1,21 +1,9 @@
-import { transformSync } from '@babel/core';
-
-import babelPlugin from '../index';
-
-const transform = (code: string) => {
-  return transformSync(code, {
-    configFile: false,
-    babelrc: false,
-    compact: true,
-    plugins: [babelPlugin],
-  })?.code;
-};
+import { transform } from '../test-utils';
 
 describe('import specifiers', () => {
   it('should remove entrypoint if no imports found', () => {
     const actual = transform(`
       import '@compiled/react';
-      import React from 'react';
 
       <div css={{}} />
     `);
@@ -26,7 +14,6 @@ describe('import specifiers', () => {
   it('should remove react primary entrypoint if no named imports found', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
-      import React from 'react';
 
       <div css={{}} />
     `);
@@ -37,38 +24,41 @@ describe('import specifiers', () => {
   it('should add react import if missing', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
+
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
     `);
 
-    expect(actual).toInclude(`import*as React from'react'`);
+    expect(actual).toInclude('import * as React from "react"');
   });
 
   it('should do nothing if react default import is already defined', () => {
     const actual = transform(`
       import React from 'react';
       import { styled } from '@compiled/react';
+
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
     `);
 
-    expect(actual).toInclude("import React from'react';");
+    expect(actual).toInclude('import React from "react";');
   });
 
   it('should retain named imports from react when adding missing react import', () => {
     const actual = transform(`
       import { useState } from 'react';
       import { styled } from '@compiled/react';
+
       const ListItem = styled.div\`
         font-size: 20px;
       \`;
     `);
 
     expect(actual).toIncludeMultiple([
-      `import*as React from'react';`,
-      `import{useState}from'react';`,
+      `import * as React from "react";`,
+      `import { useState } from "react";`,
     ]);
   });
 
@@ -81,9 +71,28 @@ describe('import specifiers', () => {
       });
     `);
 
-    expect(actual).toInclude(
-      '<C{...props}style={style}ref={ref}className={ax(["_1wybgktf",props.className])}/>'
-    );
+    expect(actual).toMatchInlineSnapshot(`
+      "import { forwardRef } from \\"react\\";
+      import * as React from \\"react\\";
+      import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
+      const _ = \\"._1wybgktf{font-size:20px}\\";
+      const ListItem = forwardRef(({ as: C = \\"div\\", style, ...props }, ref) => (
+        <CC>
+          <CS>{[_]}</CS>
+          <C
+            {...props}
+            style={style}
+            ref={ref}
+            className={ax([\\"_1wybgktf\\", props.className])}
+          />
+        </CC>
+      ));
+
+      if (process.env.NODE_ENV !== \\"production\\") {
+        ListItem.displayName = \\"ListItem\\";
+      }
+      "
+    `);
   });
 
   it('should import runtime from the runtime entrypoint', () => {
@@ -95,6 +104,6 @@ describe('import specifiers', () => {
       });
     `);
 
-    expect(actual).toInclude('import{ax,ix,CC,CS}from"@compiled/react/runtime";');
+    expect(actual).toInclude('import { ax, ix, CC, CS } from "@compiled/react/runtime";');
   });
 });

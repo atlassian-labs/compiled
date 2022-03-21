@@ -1,5 +1,19 @@
 # @compiled/parcel-transformer
 
+## 0.7.3
+
+### Patch Changes
+
+- 356b120: Apply react/jsx-filename-extension rule as needed
+- Updated dependencies [2ad385c]
+- Updated dependencies [5e3ad5e]
+- Updated dependencies [c96c562]
+- Updated dependencies [73821f2]
+- Updated dependencies [356b120]
+- Updated dependencies [588cd4f]
+  - @compiled/babel-plugin@0.14.0
+  - @compiled/utils@0.6.16
+
 ## 0.7.2
 
 ### Patch Changes
