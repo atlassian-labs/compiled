@@ -29,7 +29,7 @@
     "@parcel/source-map": "^2.0.2"
   },
   "devDependencies": {
-    "@types/babel__core": "^7.1.18"
+    "@types/babel__core": "^7.1.19"
   },
   "engines": {
     "parcel": "^2.0.0"
