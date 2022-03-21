@@ -57,14 +57,14 @@
     }
   },
   "resolutions": {
-    "@babel/core": "^7.17.5",
+    "@babel/core": "^7.17.8",
     "css-what": "^5.1.0",
     "jest": "^26.6.3",
     "mini-css-extract-plugin": "^1.6.2",
     "nth-check": "^2.0.1",
     "react": "^17.0.2",
     "typescript": "^4.6.2",
-    "unset-value": "^2.0.0",
+    "unset-value": "^2.0.1",
     "webpack-dev-server": "^4.7.4"
   },
   "devDependencies": {
@@ -85,8 +85,8 @@
     "@storybook/react": "^6.4.19",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.21",
-    "@types/react": "^17.0.40",
-    "@types/react-dom": "^17.0.13",
+    "@types/react": "^17.0.41",
+    "@types/react-dom": "^17.0.14",
     "@types/svgo": "^2.6.2",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",

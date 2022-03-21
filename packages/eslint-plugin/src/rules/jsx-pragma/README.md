@@ -2,6 +2,8 @@
 
 Enforce a jsx pragma is set when using the `css` prop.
 
+---
+
 The `--fix` option on the command line automatically fixes problems reported by this rule.
 
 ## Rule details

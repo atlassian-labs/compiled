@@ -32,12 +32,14 @@ You can also enable the recommended rules for compiled by adding `plugin:@compil
 
 ## Supported rules
 
-:white_check_mark: = recommended, :wrench: = fixable
+:white_check_mark: = recommended, :wrench: = automatically fixable, :bulb: = manually fixable
 
-| Name                                                                                                     | Description                                          | :white_check_mark: | :wrench: |
-| -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------ | -------- |
+| Name                                                                                                     | Description                                          | :white_check_mark: | Fixable  |
+| -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | :----------------: | :------: |
 | [@compiled/jsx-pragma](./src/rules/jsx-pragma)                                                           | Enforces a jsx pragma when using the `css` prop      |                    | :wrench: |
 | [@compiled/no-css-tagged-template-expression](./src/rules/no-css-tagged-template-expression)             | Disallows the `css` tagged template expression       | :white_check_mark: | :wrench: |
 | [@compiled/no-emotion-css](./src/rules/no-emotion-css)                                                   | Disallows `@emotion` usages                          |                    | :wrench: |
+| [@compiled/no-exported-css](./src/rules/no-exported-css)                                                 | Disallows `css` usages from being exported           | :white_check_mark: |          |
+| [@compiled/no-exported-keyframes](./src/rules/no-exported-keyframes)                                     | Disallows `keyframes` usages from being exported     | :white_check_mark: |          |
 | [@compiled/no-keyframes-tagged-template-expression](./src/rules/no-keyframes-tagged-template-expression) | Disallows the `keyframes` tagged template expression | :white_check_mark: | :wrench: |
 | [@compiled/no-styled-tagged-template-expression](./src/rules/no-styled-tagged-template-expression)       | Disallows the `styled` tagged template expression    | :white_check_mark: | :wrench: |

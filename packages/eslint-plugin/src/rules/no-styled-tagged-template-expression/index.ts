@@ -11,10 +11,9 @@ export const noStyledTaggedTemplateExpressionRule: Rule.RuleModule = {
     },
     fixable: 'code',
     messages: {
-      noStyledTaggedTemplateExpression:
-        'Encountered unexpected styled tagged template expression from @compiled/react',
+      unexpected: 'Unexpected `styled` tagged template expression from @compiled/react',
     },
     type: 'problem',
   },
-  create: createNoTaggedTemplateExpressionRule(isStyled, 'noStyledTaggedTemplateExpression'),
+  create: createNoTaggedTemplateExpressionRule(isStyled, 'unexpected'),
 };

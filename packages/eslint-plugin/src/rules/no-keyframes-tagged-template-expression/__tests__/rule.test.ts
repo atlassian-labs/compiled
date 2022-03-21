@@ -19,7 +19,7 @@ const createInvalidTestCases = (tests: InvalidTestCase[]) =>
   tests
     .map((t) => ({
       ...t,
-      errors: [{ messageId: 'noKeyframesTaggedTemplateExpression' }],
+      errors: [{ messageId: 'unexpected' }],
     }))
     .flatMap((t) => [
       t,
