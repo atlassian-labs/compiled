@@ -19,7 +19,7 @@
     "src"
   ],
   "dependencies": {
-    "@babel/core": "^7.17.5",
+    "@babel/core": "^7.17.8",
     "@babel/helper-plugin-utils": "^7.16.7",
     "@babel/template": "^7.16.7",
     "@babel/traverse": "^7.17.3",
