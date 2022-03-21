@@ -38,29 +38,27 @@ const getStack = (node: Node) => {
   return stack;
 };
 
-const matches = (defNodes: Node[], refNodes: Node[]) => {
-  // When there are no defNodes, the definition is inlined. This must be a match as we know the refNodes contain the
-  // initial definition.
-  if (!defNodes.length) {
+const matches = (defs: Node[], refs: Node[]) => {
+  // When there are no defs, the definition is inlined. This must be a match as we know the refs contain the initial
+  // definition.
+  if (!defs.length) {
     return true;
   }
 
-  // When there are no refNodes, the reference refers to the entire definition and therefore must be a match.
-  if (!refNodes.length) {
+  // When there are no refs, the reference refers to the entire definition and therefore must be a match.
+  if (!refs.length) {
     return true;
   }
 
-  if (defNodes.length !== refNodes.length) {
+  // When both the references and definitions exist, they should match in length
+  if (defs.length !== refs.length) {
     return false;
   }
 
-  let doesMatch = true;
+  return defs.every((def, i) => {
+    const ref = refs[i];
 
-  for (let def = 0, call = 0; defNodes[def] && refNodes[call] && matches; def++, call++) {
-    const defNode = defNodes[def];
-    const callNode = refNodes[call];
-
-    if (defNode.type === 'Property') {
+    if (def.type === 'Property') {
       // There is a match between the def and the ref when both names match:
       //
       // const fooDef = { bar: '' };
@@ -69,18 +67,17 @@ const matches = (defNodes: Node[], refNodes: Node[]) => {
       // There is no match when the ref property does not match the definition key name:
       //
       // const barRef = fooDef.notFound
-      doesMatch =
-        defNode.key.type === 'Identifier' &&
-        callNode.type === 'MemberExpression' &&
-        callNode.property.type === 'Identifier' &&
-        callNode.property.name === defNode.key.name;
-    } else {
-      // Anything here is either unsupported or should not match...
-      doesMatch = false;
+      return (
+        def.key.type === 'Identifier' &&
+        ref.type === 'MemberExpression' &&
+        ref.property.type === 'Identifier' &&
+        ref.property.name === def.key.name
+      );
     }
-  }
 
-  return doesMatch;
+    // Anything here is either unsupported or should not match...
+    return false;
+  });
 };
 
 export type InvalidDefinition = {
@@ -133,9 +130,9 @@ export const validateDefinition = (context: RuleContext, node: Node): Validity =
       continue;
     }
 
-    const refStack = getStack((identifier as Rule.Node).parent);
+    const { nodes: refs } = getStack((identifier as Rule.Node).parent);
     // Only validate the resolved reference if it accesses the definition node
-    if (matches(nodes, refStack.nodes)) {
+    if (matches(nodes, refs.reverse())) {
       // Now validate the identifier reference as a definition
       const validity = validateDefinition(context, identifier as Rule.Node);
       if (validity.type === 'invalid') {

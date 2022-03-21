@@ -93,6 +93,36 @@ const createTestCases = (importSource: string) =>
         code: `
           import { css } from '${importSource}';
 
+          export const styles = {
+            primary: {
+              text: {
+                color: ${createStyle(level + 3)},
+              }
+            }
+          };
+        `,
+        errors: [{ messageId: 'unexpected' }],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const color = ${createStyle(level)};
+
+          export const styles = {
+            primary: {
+              text: {
+                color,
+              }
+            }
+          };
+        `,
+        errors: [{ messageId: 'unexpected' }],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
           const styles = {
             primary: ${createStyle(level + 1)},
           };
@@ -105,13 +135,47 @@ const createTestCases = (importSource: string) =>
         code: `
           import { css } from '${importSource}';
 
-          const primary = ${createStyle(level)};
+          const primaryStyle = ${createStyle(level)};
 
           const styles = {
-            primary,
+            primary: primaryStyle,
           };
 
-          export const style = styles.primary;
+          export const primary = styles.primary;
+        `,
+        errors: [{ messageId: 'unexpected' }],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const styles = {
+            primary: {
+              text: {
+                color: ${createStyle(level + 3)},
+              }
+            }
+          };
+
+          export const primary = styles.primary.text.color;
+        `,
+        errors: [{ messageId: 'unexpected' }],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const color = ${createStyle(level)};
+
+          const styles = {
+            primary: {
+              text: {
+                color,
+              }
+            }
+          };
+
+          export const primary = styles.primary.text.color;
         `,
         errors: [{ messageId: 'unexpected' }],
       },
@@ -140,6 +204,42 @@ const createTestCases = (importSource: string) =>
           };
 
           export const foo = styles.foo;
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const styles = {
+            primary: {
+              text: {
+                color: ${createStyle(level + 3)},
+                foo: '',
+              }
+            }
+          };
+
+          export const foo = styles.primary.text.foo;
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const color = ${createStyle(level)};
+
+          const styles = {
+            primary: {
+              text: {
+                color,
+                foo: '',
+              }
+            }
+          };
+
+          export const foo = styles.primary.text.foo;
         `,
         errors: [],
       },
@@ -205,10 +305,62 @@ const createTestCases = (importSource: string) =>
           import { css } from '${importSource}';
 
           const styles = {
+            primary: {
+              color: {
+                text: ${createStyle(level + 3)},
+              }
+            }
+          };
+
+          export { styles };
+        `,
+        errors: [{ messageId: 'unexpected' }],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const text = ${createStyle(level)};
+
+          const styles = {
+            primary: {
+              color: {
+                text,
+              }
+            }
+          };
+
+          export { styles };
+        `,
+        errors: [{ messageId: 'unexpected' }],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const styles = {
             primary: ${createStyle(level + 1)},
           };
 
           const primary = styles.primary;
+
+          export { primary };
+        `,
+        errors: [{ messageId: 'unexpected' }],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const styles = {
+            primary: {
+              text: {
+                color: ${createStyle(level + 3)},
+              }
+            }
+          };
+
+          const primary = styles.primary.text.color;
 
           export { primary };
         `,
@@ -233,7 +385,50 @@ const createTestCases = (importSource: string) =>
         code: `
           import { css } from '${importSource}';
 
+          const styles = {
+            primary: {
+              text: {
+                color: ${createStyle(level + 3)},
+                foo: '',
+              }
+            }
+          };
+
+          const foo = styles.primary.text.foo;
+
+          export { foo };
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
           export default ${createStyle(level)};
+        `,
+        errors: [{ messageId: 'unexpected' }],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          export default {
+            primary: ${createStyle(level)}
+          };
+        `,
+        errors: [{ messageId: 'unexpected' }],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          export default {
+            primary: {
+              text: {
+                color: ${createStyle(level)}
+              }
+            }
+          };
         `,
         errors: [{ messageId: 'unexpected' }],
       },
@@ -278,6 +473,40 @@ const createTestCases = (importSource: string) =>
           import { css } from '${importSource}';
 
           const styles = {
+            primary: {
+              text: {
+                color: ${createStyle(level + 3)},
+              }
+            }
+          };
+
+          export default styles;
+        `,
+        errors: [{ messageId: 'unexpected' }],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const color = ${createStyle(level)};
+
+          const styles = {
+            primary: {
+              text: {
+                color,
+              }
+            }
+          };
+
+          export default styles;
+        `,
+        errors: [{ messageId: 'unexpected' }],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const styles = {
             primary: ${createStyle(level + 1)},
           };
 
@@ -296,6 +525,40 @@ const createTestCases = (importSource: string) =>
           };
 
           export default styles.primary;
+        `,
+        errors: [{ messageId: 'unexpected' }],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const styles = {
+            primary: {
+              text: {
+                color: ${createStyle(level + 3)},
+              }
+            }
+          };
+
+          export default styles.primary.text.color;
+        `,
+        errors: [{ messageId: 'unexpected' }],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const color = ${createStyle(level)};
+
+          const styles = {
+            primary: {
+              text: {
+                color,
+              }
+            }
+          };
+
+          export default styles.primary.text.color;
         `,
         errors: [{ messageId: 'unexpected' }],
       },
@@ -324,6 +587,42 @@ const createTestCases = (importSource: string) =>
           };
 
           export default styles.foo;
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const styles = {
+            primary: {
+              text: {
+                color: ${createStyle(level + 3)},
+                foo: '',
+              }
+            }
+          };
+
+          export default styles.primary.text.foo;
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const color = ${createStyle(level)};
+
+          const styles = {
+            primary: {
+              text: {
+                color,
+                foo: '',
+              }
+            }
+          };
+
+          export default styles.primary.text.foo;
         `,
         errors: [],
       },
