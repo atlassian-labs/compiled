@@ -6,5 +6,11 @@
     "module": "commonjs",
     "target": "es2017"
   },
-  "references": [{ "path": "../babel-plugin" }, { "path": "../utils" }]
+  "references": [
+    { "path": "../../fixtures/parcel-resolver-noop/tsconfig.json" },
+    { "path": "../babel-plugin" },
+    { "path": "../babel-plugin-strip-runtime" },
+    { "path": "../jest" },
+    { "path": "../utils" }
+  ]
 }

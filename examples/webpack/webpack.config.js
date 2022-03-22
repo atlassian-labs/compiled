@@ -35,13 +35,7 @@ module.exports = {
             options: {
               extract: extractCSS,
               importReact: false,
-              extensions: [
-                '.js',
-                '.jsx',
-                '.ts',
-                '.tsx',
-                '.customjsx'
-              ],
+              extensions: ['.js', '.jsx', '.ts', '.tsx', '.customjsx'],
               babelPlugins: ['typescript'],
             },
           },

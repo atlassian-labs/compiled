@@ -12,7 +12,9 @@
     "react-dom": "17.0.2"
   },
   "devDependencies": {
+    "@compiled/parcel-config": "*",
     "@compiled/parcel-transformer": "*",
+    "@parcel/config-default": "^2.3.1",
     "@parcel/optimizer-htmlnano": "^2.3.2",
     "@parcel/packager-html": "^2.3.2",
     "@parcel/transformer-html": "^2.3.2",

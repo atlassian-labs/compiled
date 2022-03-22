@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.options.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "module": "commonjs",
+    "target": "es2017"
+  },
+  "references": [
+    { "path": "../babel-plugin" },
+    { "path": "../babel-plugin-strip-runtime" },
+    { "path": "../jest" },
+    { "path": "../utils" }
+  ]
+}

@@ -6,6 +6,8 @@
   "include": ["**/*.tsx", "**/*.ts"],
   "references": [
     { "path": "../../fixtures/parcel-resolver-alias/tsconfig.json" },
+    { "path": "../../packages/parcel-optimizer/tsconfig.json" },
+    { "path": "../../packages/parcel-resolver/tsconfig.json" },
     { "path": "../../packages/parcel-transformer/tsconfig.json" },
     { "path": "../../packages/react/tsconfig.browser.json" }
   ]

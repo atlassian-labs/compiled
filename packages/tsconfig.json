@@ -9,6 +9,8 @@
     { "path": "css/tsconfig.json" },
     { "path": "eslint-plugin/tsconfig.json" },
     { "path": "jest/tsconfig.json" },
+    { "path": "parcel-optimizer/tsconfig.json" },
+    { "path": "parcel-resolver/tsconfig.json" },
     { "path": "parcel-transformer/tsconfig.json" },
     { "path": "react/tsconfig.json" },
     { "path": "utils/tsconfig.json" },

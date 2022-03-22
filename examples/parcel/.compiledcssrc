@@ -9,5 +9,6 @@
   ],
   "babelPlugins": [
     "typescript"
-  ] 
+  ],
+  "extract": true
 }
