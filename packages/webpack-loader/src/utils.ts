@@ -1,6 +1,27 @@
 import type { Compilation as CompilationType, Compiler, sources, RuleSetRule } from 'webpack';
 
 /**
+ * Helper function to set plugin configured option on the @compiled/webpack-loader
+ *
+ * @param use
+ * @param pluginName
+ */
+const setOptionOnCompiledWebpackLoader = (use: RuleSetRule['use'], pluginName: string) => {
+  if (!use || !Array.isArray(use) || !use.length) {
+    return;
+  }
+
+  for (const nestedUse of use) {
+    if (typeof nestedUse === 'object' && nestedUse.loader === '@compiled/webpack-loader') {
+      const { options } = nestedUse;
+      if (options !== undefined && typeof options === 'object' && options.extract !== undefined) {
+        options[pluginName] = true;
+      }
+    }
+  }
+};
+
+/**
  * Sets an option on the plugin config to tell loaders that the plugin has been configured.
  * Bundling will throw if this option is missing (i.e. consumers did not setup correctly).
  *
@@ -12,33 +33,15 @@ export const setPluginConfiguredOption = (
   rules: (RuleSetRule | '...')[],
   pluginName: string
 ): void => {
-  for (const rule of rules) {
-    const use = (rule as RuleSetRule).use;
-    if (!use || typeof use === 'string') {
-      continue;
-    }
-    if (Array.isArray(use)) {
-      if (!use.length) {
-        continue;
-      }
-      for (const nestedUse of use) {
-        if (typeof nestedUse !== 'object' || nestedUse.loader !== '@compiled/webpack-loader') {
-          continue;
-        }
-        const { options } = nestedUse;
-        if (!options || typeof options !== 'object' || !options.extract) {
-          continue;
-        }
-        options[pluginName] = true;
+  for (const r of rules) {
+    const rule = r as RuleSetRule;
+    const nestedRules = rule.oneOf ?? rule.rules;
+    if (nestedRules) {
+      for (const nestedRule of nestedRules) {
+        setOptionOnCompiledWebpackLoader(nestedRule.use, pluginName);
       }
     } else {
-      if (typeof use === 'object' && use.loader === '@compiled/webpack-loader') {
-        const { options } = use;
-        if (!options || typeof options !== 'object' || !options.extract) {
-          continue;
-        }
-        options[pluginName] = true;
-      }
+      setOptionOnCompiledWebpackLoader(rule.use, pluginName);
     }
   }
 };
