@@ -461,6 +461,25 @@ describe('styled component behaviour', () => {
     ]);
   });
 
+  it('should apply conditional CSS with ternary operator for object styles', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.button({
+        color: (props) => (props.isPrimary ? 'blue' : 'red'),
+        marginLeft: \`\${({ isLast }) => isLast ? 5 : 10}px\`,
+      });
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syaz5scu{color:red}',
+      '._syaz13q2{color:blue}',
+      '._1v2x14y2{marginLeft:5px}',
+      '_1v2x19bv{marginLeft:10px}',
+      'ax(["",props.isPrimary?"_syaz13q2":"_syaz5scu",isLast?"_1v2x14y2":"_1v2x19bv",props.className])',
+    ]);
+  });
+
   it('should apply conditional CSS with ternary operator and tagged templates branches', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
@@ -1008,14 +1027,12 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._k48phkfe{font-weight:var(--_1aan5t)}',
+      '._zlrx8n31{fontWeight:bold}',
+      '._zlrx4jg8{fontWeight:normal}',
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
+      '<C{...props}style={style}ref={ref}className={ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.isBolded?"_zlrx8n31":"_zlrx4jg8",props.className])}/>',
     ]);
-
-    expect(actual).toInclude(
-      `<C{...props}style={{...style,\"--_1aan5t\":ix(isBolded?'bold':'normal')}}ref={ref}className={ax([\"_syaz5scu _k48phkfe\",props.isPrimary&&\"_syaz13q2\",props.className])}/>`
-    );
   });
 
   it('should apply the same CSS property with unconditional as default and multiple logical expressions', () => {
@@ -1208,6 +1225,27 @@ describe('styled component behaviour', () => {
       '._bfw71j9v:hover{border:1px solid white}',
       '_bfw7l468:hover{border:2px solid black}',
       '{ax(["_11q7qm1v",isSelected?"_syaz13q2":"_syaz1gy6",isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
+    ]);
+  });
+
+  it('should apply conditional CSS to related selector with object styles', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div({
+        color:({ isSelected }) => isSelected ? 'blue' : 'yellow',
+        ':hover': {
+          border: ({ isHover }) => isHover ? '1px solid white' : '2px solid black',
+        }
+      });
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syaz13q2{color:blue}',
+      '._syaz1gy6{color:yellow}',
+      '._bfw71j9v:hover{border:1px solid white}',
+      '_bfw7l468:hover{border:2px solid black}',
+      '{ax(["",isSelected?"_syaz13q2":"_syaz1gy6",isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
     ]);
   });
 

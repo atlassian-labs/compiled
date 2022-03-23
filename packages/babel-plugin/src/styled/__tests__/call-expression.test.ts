@@ -498,16 +498,14 @@ describe('styled object call expression', () => {
       export const BadgeSkeleton = styled.span({
         backgroundColor: ({ isLoading }) => isLoading ? colors.N20 : colors.N40,
         color: ({ loading: l }) => l ? colors.N50 : colors.N10,
-        borderColor: (propz) => propz.loading ? colors.N100 : colors.N200,
+        borderColor: (props) => props.loading ? colors.N100 : colors.N200,
       });
     `);
 
-    expect(actual).not.toInclude('propz.loading ? colors.N100 : colors.N200');
-
     expect(actual).toIncludeMultiple([
-      'isLoading ? colors.N20 : colors.N40',
-      'l ? colors.N50 : colors.N10',
-      'props.loading ? colors.N100 : colors.N200',
+      'isLoading ? "_ku44hk3l" : "_ku441lco"',
+      'l ? "_syaz1c44" : "_syazs2l2"',
+      'props.loading ? "_rlqt1c5w" : "_rlqt1qzc"',
     ]);
   });
 

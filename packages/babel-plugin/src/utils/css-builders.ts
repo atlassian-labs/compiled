@@ -481,10 +481,34 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         variables.push(...result.variables);
         return;
       } else if (t.isTemplateLiteral(propValue)) {
-        // We've found a template literal like: "fontSize: `${fontSize}px`"
-        const result = toCSSDeclaration(key, extractTemplateLiteral(propValue, updatedMeta));
-        css.push(...result.css);
-        variables.push(...result.variables);
+        const [firstExpression] = propValue.expressions;
+        let result;
+
+        // We've found a template literal like: "fontSize: `${(props) => props.isHeading ? 20 : 14}px`"
+        if (
+          propValue.expressions.length === 1 &&
+          t.isArrowFunctionExpression(firstExpression) &&
+          t.isConditionalExpression(firstExpression.body)
+        ) {
+          const [leadQuasi] = propValue.quasis;
+          const tailQuasi = propValue.quasis[propValue.quasis.length - 1];
+
+          leadQuasi.value = {
+            raw: `${key}:${leadQuasi.value.raw}`,
+            cooked: `${key}:${leadQuasi.value.cooked}`,
+          };
+          tailQuasi.value = {
+            raw: `${tailQuasi.value.raw};`,
+            cooked: `${tailQuasi.value.cooked};`,
+          };
+
+          result = extractTemplateLiteral(propValue, updatedMeta);
+        } else {
+          // We've found a template literal like: "fontSize: `${fontSize}px`"
+          result = toCSSDeclaration(key, extractTemplateLiteral(propValue, updatedMeta));
+        }
+        css.push(...(result?.css ?? []));
+        variables.push(...(result?.variables ?? []));
         return;
       } else if (
         isCompiledKeyframesCallExpression(propValue, updatedMeta.state) ||
@@ -498,6 +522,24 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         css.push(...result.css);
         variables.push(...result.variables);
 
+        return;
+      } else if (
+        t.isArrowFunctionExpression(propValue) &&
+        t.isConditionalExpression(propValue.body)
+      ) {
+        const result = extractTemplateLiteral(
+          t.templateLiteral(
+            [
+              t.templateElement({ raw: `${key}:`, cooked: `${key}:` }),
+              t.templateElement({ raw: ';', cooked: ';' }, true),
+            ],
+            [propValue]
+          ),
+          updatedMeta
+        );
+
+        css.push(...result.css);
+        variables.push(...result.variables);
         return;
       } else {
         const { expression, variableName } = getVariableDeclaratorValueForOwnPath(
