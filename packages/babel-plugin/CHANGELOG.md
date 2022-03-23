@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.14.1
+
+### Patch Changes
+
+- 6d6b579: Fixed CSS property matching for conditional expression optimization
+
 ## 0.14.0
 
 ### Minor Changes
