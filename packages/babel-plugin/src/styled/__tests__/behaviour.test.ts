@@ -468,15 +468,18 @@ describe('styled component behaviour', () => {
       const Component = styled.button({
         color: (props) => (props.isPrimary ? 'blue' : 'red'),
         marginLeft: \`\${({ isLast }) => isLast ? 5 : 10}px\`,
+        marginRight: ({ isLast }) => \`\${isLast ? 5 : 10}px\`,
       });
     `);
 
     expect(actual).toIncludeMultiple([
       '._syaz5scu{color:red}',
       '._syaz13q2{color:blue}',
-      '._1v2x14y2{marginLeft:5px}',
-      '._1v2x19bv{marginLeft:10px}',
-      'ax(["",props.isPrimary?"_syaz13q2":"_syaz5scu",isLast?"_1v2x14y2":"_1v2x19bv",props.className])',
+      '._18u014y2{margin-left:5px}',
+      '._18u019bv{margin-left:10px}',
+      '._2hwx14y2{margin-right:5px}',
+      '._2hwx19bv{margin-right:10px}',
+      'ax(["",props.isPrimary?"_syaz13q2":"_syaz5scu",isLast?"_18u014y2":"_18u019bv",isLast?"_2hwx14y2":"_2hwx19bv",props.className])',
     ]);
   });
 
@@ -1027,11 +1030,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._zlrx8n31{fontWeight:bold}',
-      '._zlrx4jg8{fontWeight:normal}',
+      '._k48p8n31{font-weight:bold}',
+      '._k48p4jg8{font-weight:normal}',
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
-      '<C{...props}style={style}ref={ref}className={ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.isBolded?"_zlrx8n31":"_zlrx4jg8",props.className])}/>',
+      '<C{...props}style={style}ref={ref}className={ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.isBolded?"_k48p8n31":"_k48p4jg8",props.className])}/>',
     ]);
   });
 

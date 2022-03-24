@@ -18,6 +18,7 @@ import {
   isQuasiMidStatement,
   hasNestedTemplateLiteralsWithConditionalRules,
   optimizeConditionalStatement,
+  recomposeTemplateLiteral,
 } from './manipulate-template-literal';
 import { resolveBinding } from './resolve-binding';
 import type {
@@ -456,6 +457,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 
   node.properties.forEach((prop) => {
     if (t.isObjectProperty(prop)) {
+      const key = getKey(prop.computed ? evaluateExpression(prop.key, meta).value : prop.key);
       // Don't use prop.value directly as it extracts constants from identifiers if needed.
       const { value: propValue, meta: updatedMeta } = evaluateExpression(
         prop.value as t.Expression,
@@ -464,23 +466,39 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 
       callbackIfFileIncluded(meta, updatedMeta);
 
-      const key = getKey(prop.computed ? evaluateExpression(prop.key, meta).value : prop.key);
-      let value = '';
-
       if (t.isStringLiteral(propValue)) {
         // We've found a string literal like: `color: 'blue'`
-        value = key === 'content' ? normalizeContentValue(propValue.value) : propValue.value;
-      } else if (t.isNumericLiteral(propValue)) {
+        css.push({
+          type: 'unconditional',
+          css: `${kebabCase(key)}: ${
+            key === 'content' ? normalizeContentValue(propValue.value) : propValue.value
+          };`,
+        });
+
+        return;
+      }
+
+      if (t.isNumericLiteral(propValue)) {
         // We've found a numeric literal like: `fontSize: 12`
-        value = addUnitIfNeeded(key, propValue.value);
-      } else if (t.isObjectExpression(propValue) || t.isLogicalExpression(propValue)) {
+        css.push({
+          type: 'unconditional',
+          css: `${kebabCase(key)}: ${addUnitIfNeeded(key, propValue.value)};`,
+        });
+
+        return;
+      }
+
+      if (t.isObjectExpression(propValue) || t.isLogicalExpression(propValue)) {
         // We've found either an object like `{}` or a logical expression `isPrimary && {}`.
         // We can handle both the same way as they end up resulting in a CSS rule.
         const result = toCSSRule(key, buildCss(propValue, updatedMeta));
         css.push(...result.css);
         variables.push(...result.variables);
+
         return;
-      } else if (t.isTemplateLiteral(propValue)) {
+      }
+
+      if (t.isTemplateLiteral(propValue)) {
         const [firstExpression] = propValue.expressions;
         let result;
 
@@ -490,27 +508,63 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
           t.isArrowFunctionExpression(firstExpression) &&
           t.isConditionalExpression(firstExpression.body)
         ) {
-          const [leadQuasi] = propValue.quasis;
-          const tailQuasi = propValue.quasis[propValue.quasis.length - 1];
-
-          leadQuasi.value = {
-            raw: `${key}:${leadQuasi.value.raw}`,
-            cooked: `${key}:${leadQuasi.value.cooked}`,
-          };
-          tailQuasi.value = {
-            raw: `${tailQuasi.value.raw};`,
-            cooked: `${tailQuasi.value.cooked};`,
-          };
-
+          recomposeTemplateLiteral(propValue, `${kebabCase(key)}:`, ';');
           result = extractTemplateLiteral(propValue, updatedMeta);
         } else {
           // We've found a template literal like: "fontSize: `${fontSize}px`"
           result = toCSSDeclaration(key, extractTemplateLiteral(propValue, updatedMeta));
         }
-        css.push(...(result?.css ?? []));
-        variables.push(...(result?.variables ?? []));
+
+        css.push(...result.css);
+        variables.push(...result.variables);
+
         return;
-      } else if (
+      }
+
+      if (t.isArrowFunctionExpression(propValue)) {
+        /*
+          Given a statments like:
+          fontWeight: (props) => props.isBold ? 'bold': 'normal',
+          marginTop: (props) => `${props.isLast ? 5 : 10}px`,
+           
+          Convert them to:
+
+          `font-weight: ${(props) => props.isBold ? 'bold': 'normal'};`
+          `margin-top: ${(props) => props.isLast ? 5 : 10}px;`,
+        */
+        const { body } = propValue;
+        let optimizedStatement: t.TemplateLiteral | undefined;
+
+        if (t.isConditionalExpression(body)) {
+          optimizedStatement = t.templateLiteral(
+            [
+              t.templateElement({ raw: '', cooked: '' }),
+              t.templateElement({ raw: '', cooked: '' }, true),
+            ],
+            [propValue]
+          );
+        } else if (t.isTemplateLiteral(body)) {
+          const [firstExpression] = body.expressions;
+
+          if (body.expressions.length === 1 && t.isConditionalExpression(firstExpression)) {
+            optimizedStatement = t.templateLiteral(body.quasis, [propValue]);
+            // Make conditional expression the body of the arrow function
+            propValue.body = firstExpression;
+          }
+        }
+
+        if (optimizedStatement) {
+          recomposeTemplateLiteral(optimizedStatement, `${kebabCase(key)}:`, ';');
+          const result = extractTemplateLiteral(optimizedStatement, updatedMeta);
+
+          css.push(...result.css);
+          variables.push(...result.variables);
+
+          return;
+        }
+      }
+
+      if (
         isCompiledKeyframesCallExpression(propValue, updatedMeta.state) ||
         isCompiledKeyframesTaggedTemplateExpression(propValue, updatedMeta.state)
       ) {
@@ -523,43 +577,22 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         variables.push(...result.variables);
 
         return;
-      } else if (
-        t.isArrowFunctionExpression(propValue) &&
-        t.isConditionalExpression(propValue.body)
-      ) {
-        const result = extractTemplateLiteral(
-          t.templateLiteral(
-            [
-              t.templateElement({ raw: `${key}:`, cooked: `${key}:` }),
-              t.templateElement({ raw: ';', cooked: ';' }, true),
-            ],
-            [propValue]
-          ),
-          updatedMeta
-        );
-
-        css.push(...result.css);
-        variables.push(...result.variables);
-        return;
-      } else {
-        const { expression, variableName } = getVariableDeclaratorValueForOwnPath(
-          propValue,
-          updatedMeta
-        );
-
-        // This is the catch all for any kind of expression.
-        // We don't want to explicitly handle each expression node differently if we can avoid it!
-        const name = `--_${hash(variableName)}`;
-        variables.push({
-          name,
-          expression,
-        });
-
-        value = `var(${name})`;
       }
 
-      // Time to add this key+value to the CSS string we're building up.
-      css.push({ type: 'unconditional', css: `${kebabCase(key)}: ${value};` });
+      const { expression, variableName } = getVariableDeclaratorValueForOwnPath(
+        propValue,
+        updatedMeta
+      );
+
+      // This is the catch all for any kind of expression.
+      // We don't want to explicitly handle each expression node differently if we can avoid it!
+      const name = `--_${hash(variableName)}`;
+      variables.push({
+        name,
+        expression,
+      });
+
+      css.push({ type: 'unconditional', css: `${kebabCase(key)}: var(${name});` });
     } else if (t.isSpreadElement(prop)) {
       let resolvedBinding = undefined;
 
