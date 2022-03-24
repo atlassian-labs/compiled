@@ -1,5 +1,18 @@
 # @compiled/parcel-transformer
 
+## 0.8.0
+
+### Minor Changes
+
+- 5f231e5: Support stylesheet extraction with Parcel
+
+### Patch Changes
+
+- Updated dependencies [5f231e5]
+- Updated dependencies [6d6b579]
+  - @compiled/babel-plugin-strip-runtime@0.14.1
+  - @compiled/babel-plugin@0.14.1
+
 ## 0.7.3
 
 ### Patch Changes

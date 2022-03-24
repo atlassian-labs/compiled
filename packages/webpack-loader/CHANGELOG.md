@@ -1,5 +1,15 @@
 # @compiled/webpack-loader
 
+## 0.8.6
+
+### Patch Changes
+
+- 8f263c2: Account for nested rules in webpack config when setting plugin configured option on compiled webpack loader
+- Updated dependencies [5f231e5]
+- Updated dependencies [6d6b579]
+  - @compiled/babel-plugin-strip-runtime@0.14.1
+  - @compiled/babel-plugin@0.14.1
+
 ## 0.8.5
 
 ### Patch Changes
