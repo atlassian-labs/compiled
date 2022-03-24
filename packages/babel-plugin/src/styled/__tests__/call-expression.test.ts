@@ -496,17 +496,15 @@ describe('styled object call expression', () => {
       import colors from 'colors';
 
       export const BadgeSkeleton = styled.span({
-        backgroundColor: ({ isLoading }) => isLoading ? colors.N20 : colors.N40,
-        color: ({ loading: l }) => l ? colors.N50 : colors.N10,
-        borderColor: (props) => props.loading ? colors.N100 : colors.N200,
+        width: ({ width }) => width ,
+        minWidth: ({ width: w }) => w,
+        maxWidth: (propz) => propz.width,
       });
     `);
 
-    expect(actual).toIncludeMultiple([
-      'isLoading ? "_ku44hk3l" : "_ku441lco"',
-      'l ? "_syaz1c44" : "_syazs2l2"',
-      'props.loading ? "_rlqt1c5w" : "_rlqt1qzc"',
-    ]);
+    expect(actual).not.toInclude('ix(propz.width)');
+
+    expect(actual).toIncludeMultiple(['ix(width)', 'ix(w)', 'ix(props.width)']);
   });
 
   it('should not use the destructured name to prevent naming collisions', () => {
