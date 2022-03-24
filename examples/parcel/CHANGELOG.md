@@ -1,5 +1,11 @@
 # @compiled/parcel-app
 
+## 1.1.4
+
+### Patch Changes
+
+- 5f231e5: Support stylesheet extraction with Parcel
+
 ## 1.1.3
 
 ### Patch Changes

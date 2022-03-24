@@ -1,5 +1,11 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.14.1
+
+### Patch Changes
+
+- 5f231e5: Support stylesheet extraction with Parcel
+
 ## 0.14.0
 
 ### Patch Changes
