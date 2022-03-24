@@ -475,7 +475,7 @@ describe('styled component behaviour', () => {
       '._syaz5scu{color:red}',
       '._syaz13q2{color:blue}',
       '._1v2x14y2{marginLeft:5px}',
-      '_1v2x19bv{marginLeft:10px}',
+      '._1v2x19bv{marginLeft:10px}',
       'ax(["",props.isPrimary?"_syaz13q2":"_syaz5scu",isLast?"_1v2x14y2":"_1v2x19bv",props.className])',
     ]);
   });
@@ -1233,7 +1233,7 @@ describe('styled component behaviour', () => {
       import { styled } from '@compiled/react';
 
       const Component = styled.div({
-        color:({ isSelected }) => isSelected ? 'blue' : 'yellow',
+        color: ({ isSelected }) => isSelected ? 'blue' : 'yellow',
         ':hover': {
           border: ({ isHover }) => isHover ? '1px solid white' : '2px solid black',
         }
