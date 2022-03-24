@@ -523,7 +523,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 
       if (t.isArrowFunctionExpression(propValue)) {
         /*
-          Given a statments like:
+          Given statments like:
           fontWeight: (props) => props.isBold ? 'bold': 'normal',
           marginTop: (props) => `${props.isLast ? 5 : 10}px`,
            
