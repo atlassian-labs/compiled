@@ -1,5 +1,11 @@
 # @compiled/parcel-resolver-alias
 
+## 0.1.3
+
+### Patch Changes
+
+- 5f231e5: Support stylesheet extraction with Parcel
+
 ## 0.1.2
 
 ### Patch Changes

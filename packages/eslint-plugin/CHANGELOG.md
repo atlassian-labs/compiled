@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.4.0
+
+### Minor Changes
+
+- a57d3be: Add no-exported-css and no-exported-keyframes rules
+
 ## 0.3.0
 
 ### Minor Changes
