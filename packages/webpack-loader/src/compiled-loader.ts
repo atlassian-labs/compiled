@@ -86,8 +86,11 @@ export default async function compiledLoader(
 ): Promise<void> {
   const callback = this.async();
 
-  // Bail early if Compiled isn't in the module.
-  if (code.indexOf('@compiled/react') === -1) {
+  // Bail early if Compiled isn't in the module or we're looking at compiled runtime code
+  if (
+    code.indexOf('@compiled/react') === -1 ||
+    this.resourcePath.includes('/node_modules/@compiled/react')
+  ) {
     return callback(null, code);
   }
 
