@@ -15,46 +15,34 @@ export interface StyledProps {
   as?: keyof JSX.IntrinsicElements;
 }
 
-export type Interpolations<TProps extends unknown> = (
+export type Interpolation<TProps extends unknown> =
   | BasicTemplateInterpolations
   | FunctionInterpolation<TProps>
   | CssObject<TProps>
-  | CssObject<TProps>[]
-)[];
+  | CssObject<TProps>[];
 
-/**
- * This allows us to take the generic `TTag` (that will be a valid `DOM` tag) and then use it to
- * define correct props based on it from `JSX.IntrinsicElements`, while also injecting our own
- * props from `StyledProps`.
- */
-export interface StyledFunctionFromTag<TTag extends keyof JSX.IntrinsicElements> {
+export interface StyledComponent<ComponentProps extends unknown> {
+  // ``
   <TProps extends unknown>(
-    // Allows either string or object (`` or ({}))
-    css: CssObject<TProps> | CssObject<TProps>[],
-    ...interpolations: Interpolations<TProps>
-  ): React.ComponentType<TProps & JSX.IntrinsicElements[TTag] & StyledProps>;
+    template: TemplateStringsArray,
+    ...interpolations: Interpolation<TProps>[]
+  ): React.ComponentType<TProps & ComponentProps & StyledProps>;
+  // {}
+  <TProps extends unknown>(...css: Interpolation<TProps>[]): React.ComponentType<
+    TProps & ComponentProps & StyledProps
+  >;
 }
 
-export interface StyledFunctionFromComponent<TInheritedProps extends unknown> {
-  <TProps extends unknown>(
-    // Allows either string or object (`` or ({}))
-    css: CssObject<TProps> | TemplateStringsArray,
-    ...interpolations: Interpolations<TProps>
-  ): React.ComponentType<TProps & StyledProps & TInheritedProps>;
-}
-
+// This creates the DOM element types for `styled.tag`, e.g. `span`, `div`, `h1`, etc.
 export type StyledComponentMap = {
-  // This creates the DOM element types for `styled.blah`, e.g. `span`, `div`, `h1`, etc.
-  [Tag in keyof JSX.IntrinsicElements]: StyledFunctionFromTag<Tag>;
+  [Tag in keyof JSX.IntrinsicElements]: StyledComponent<JSX.IntrinsicElements[Tag]>;
 };
 
-export interface StyledComponentInstantiator extends StyledComponentMap {
-  /**
-   * Typing to enable consumers to compose components, e.g: `styled(Component)`
-   */
+export interface CreateStyledComponent extends StyledComponentMap {
+  // Typing to enable consumers to compose components, e.g: `styled(Component)`
   <TInheritedProps extends unknown>(
     Component: ComponentType<TInheritedProps>
-  ): StyledFunctionFromComponent<TInheritedProps>;
+  ): StyledComponent<TInheritedProps>;
 }
 
 /**
@@ -98,7 +86,7 @@ export interface StyledComponentInstantiator extends StyledComponentMap {
  * );
  * ```
  */
-export const styled: StyledComponentInstantiator = new Proxy(
+export const styled: CreateStyledComponent = new Proxy(
   {},
   {
     get() {

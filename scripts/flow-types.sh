@@ -9,7 +9,6 @@ generate() {
     -not -path '*/__tests__/*' \
     -not -path '*/__perf__/*' \
     -not -path '*/__fixtures__/*' \
-    -not -path 'packages/react/*/index.*' \
     -not -path 'packages/react/*/jsx/jsx-local-namespace.*' \
     -not -path 'packages/react/*/jsx/jsx-runtime.*' \
     -not -path 'packages/react/*/jsx/jsx-dev-runtime.*' \
@@ -33,7 +32,6 @@ generate() {
     -not -path '*/__perf__/*' \
     -not -path '*/__fixtures__/*' \
     -not -path '*/node_modules/*' \
-    -not -path 'packages/react/*/index.*' \
     -not -path 'packages/react/*/jsx/jsx-local-namespace.*' \
     -not -path 'packages/react/*/jsx/jsx-runtime.*' \
     -not -path 'packages/react/*/jsx/jsx-dev-runtime.*' \
@@ -51,14 +49,24 @@ generate() {
     # Rename JSX.IntrinsicElements to existing flow type
     sed -i.bak -E 's/JSX.IntrinsicElements/$JSXIntrinsics/g' "$file" && rm "$file.bak"
 
-    # Rename $ElementType<$JSXIntrinsics, TTag> to exact flow typs
+    # Rename $ElementType<$JSXIntrinsics, TTag> to exact flow types
     sed -i.bak -E 's/\$ElementType<\$JSXIntrinsics, TTag>/$Exact<$ElementType<$JSXIntrinsics, TTag>>/g' "$file" && rm "$file.bak"
+
+    # Rename CSSProperties to matching flow type
+    sed -i.bak -E 's/, CSSProperties }/ }/g' "$file" && rm "$file.bak"
+    sed -i.bak -E 's/CSSProperties/$Shape<CSSStyleDeclaration>/g' "$file" && rm "$file.bak"
 
     # Rename jest.CustomMatcherResult type to existing flow type
     sed -i.bak -E 's/jest.CustomMatcherResult/JestMatcherResult/g' "$file" && rm "$file.bak"
 
     # Refactor interface to object type to allow spreading
     sed -i.bak -E 's/export interface StyledProps \{/export type StyledProps = \{/g' "$file" && rm "$file.bak"
+
+    # Remove any lines containing the jsx local namespace
+    sed -i.bak -E '/declare type jsx/d' "$file" && rm "$file.bak"
+    sed -i.bak -E '/declare export var jsx/d' "$file" && rm "$file.bak"
+    sed -i.bak -E '/CompiledJSX/d' "$file" && rm "$file.bak"
+    sed -i.bak -E '/import type { createElement }/d' "$file" && rm "$file.bak"
 
     # Refactor to flow style handling of default generic types
     awk -v RS='' '{gsub(/CssFunction[^\S|]*\|[^\S|]*CssFunction\[\]/, "CssFunction<> | CssFunction<>[]"); print}' "$file" >"$file.tmp" &&

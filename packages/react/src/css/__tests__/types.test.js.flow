@@ -15,3 +15,28 @@ import { css } from '@compiled/react';
   const styles = css({ color: 'red' });
   return <div css={styles}>red text</div>;
 };
+
+(): React$Element<'div'> => {
+  declare var layers: {
+    modal: () => number,
+  };
+  declare type Tokens = typeof tokens;
+  declare type CSSTokenMap = {
+    'elevation.surface': 'var(--ds-surface)',
+  };
+  declare var tokens: {
+    +'elevation.surface': '--ds-surface',
+  };
+  declare type CSSToken = $ElementType<CSSTokenMap, $Keys<CSSTokenMap>>;
+  declare var setGlobalTheme: (theme: 'dark' | 'light') => void;
+  declare function token<T: $Keys<Tokens>>(
+    path: T,
+    fallback?: string
+  ): $ElementType<CSSTokenMap, T>;
+
+  const styles = css({
+    backgroundColor: token('elevation.surface', 'white'),
+    zIndex: layers.modal(),
+  });
+  return <div css={styles}>red text</div>;
+};

@@ -28,3 +28,30 @@ import { styled, type CssObject, type CSSProps } from '@compiled/react';
   const StyledTaggedTemplateExpression = styled.div({ fontSize: 12 }, `font-size: 12px`);
   return <StyledTaggedTemplateExpression>red text</StyledTaggedTemplateExpression>;
 };
+
+// backgroundColor: token('elevation.surface', 'white'),
+
+() => {
+  declare var layers: {
+    modal: () => number,
+  };
+
+  declare type Tokens = typeof tokens;
+  declare type CSSTokenMap = {
+    'elevation.surface': 'var(--ds-surface)',
+  };
+  declare var tokens: {
+    +'elevation.surface': '--ds-surface',
+  };
+  declare type CSSToken = $ElementType<CSSTokenMap, $Keys<CSSTokenMap>>;
+  declare var setGlobalTheme: (theme: 'dark' | 'light') => void;
+  declare function token<T: $Keys<Tokens>>(
+    path: T,
+    fallback?: string
+  ): $ElementType<CSSTokenMap, T>;
+
+  const StyledComponent = styled.div({
+    backgroundColor: token('elevation.surface', 'white'),
+    // zIndex: layers.modal()
+  });
+};
