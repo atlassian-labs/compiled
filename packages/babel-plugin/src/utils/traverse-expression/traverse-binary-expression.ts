@@ -2,11 +2,8 @@ import * as t from '@babel/types';
 
 import type { Metadata } from '../../types';
 import { createResultPair } from '../create-result-pair';
+import { hasNumericValue } from '../has-numeric-value';
 import type { EvaluateExpression } from '../types';
-
-const hasNumericValue = (expression: t.Expression): boolean =>
-  t.isNumericLiteral(expression) ||
-  (t.isStringLiteral(expression) && !Number.isNaN(Number(expression.value)));
 
 export const traverseBinaryExpression = (
   expression: t.BinaryExpression,

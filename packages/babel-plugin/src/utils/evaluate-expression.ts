@@ -12,6 +12,7 @@ import {
   traverseFunction,
   traverseIdentifier,
   traverseMemberExpression,
+  traverseUnaryExpression,
 } from './traverse-expression';
 
 /**
@@ -155,6 +156,12 @@ export const evaluateExpression = (
     ));
   } else if (t.isBinaryExpression(expression)) {
     ({ value, meta: updatedMeta } = traverseBinaryExpression(
+      expression,
+      updatedMeta,
+      evaluateExpression
+    ));
+  } else if (t.isUnaryExpression(expression)) {
+    ({ value, meta: updatedMeta } = traverseUnaryExpression(
       expression,
       updatedMeta,
       evaluateExpression

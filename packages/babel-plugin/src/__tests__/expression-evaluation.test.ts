@@ -427,6 +427,18 @@ describe('import specifiers', () => {
       expect(actual).toIncludeMultiple(['._19pkexct{margin-top:16px}', 'ax(["_19pkexct"])']);
     });
 
+    it('statically evaluates calculated value with unary expression', () => {
+      const actual = transform(`
+        import '@compiled/react';
+
+        const getSpacing = () => 8;
+
+        <div css={{ marginTop: -getSpacing() * 2 }} />
+      `);
+
+      expect(actual).toIncludeMultiple(['._19pk4h84{margin-top:-16px}', 'ax(["_19pk4h84"])']);
+    });
+
     it('falls back to dynamic evaluation when non static value used', () => {
       const actual = transform(`
         import '@compiled/react';
