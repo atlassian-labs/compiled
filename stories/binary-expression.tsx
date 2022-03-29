@@ -38,6 +38,15 @@ export const Division = (): JSX.Element => {
   return <Component>Division - padding: spacing / 2</Component>;
 };
 
+export const NegativeValue = (): JSX.Element => {
+  const Component = styled.div`
+    ${commonStyles};
+    margin-top: ${-spacing / 2}px;
+  `;
+
+  return <Component>Negative value - margin-top: -spacing / 2</Component>;
+};
+
 export const NestedBinary = (): JSX.Element => {
   const Component = styled.div`
     ${commonStyles};
