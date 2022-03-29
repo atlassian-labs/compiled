@@ -461,6 +461,28 @@ describe('styled component behaviour', () => {
     ]);
   });
 
+  it('should apply conditional CSS with ternary operator for object styles', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.button({
+        color: (props) => (props.isPrimary ? 'blue' : 'red'),
+        marginLeft: \`\${({ isLast }) => isLast ? 5 : 10}px\`,
+        marginRight: ({ isLast }) => \`\${isLast ? 5 : 10}px\`,
+      });
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syaz5scu{color:red}',
+      '._syaz13q2{color:blue}',
+      '._18u014y2{margin-left:5px}',
+      '._18u019bv{margin-left:10px}',
+      '._2hwx14y2{margin-right:5px}',
+      '._2hwx19bv{margin-right:10px}',
+      'ax(["",props.isPrimary?"_syaz13q2":"_syaz5scu",isLast?"_18u014y2":"_18u019bv",isLast?"_2hwx14y2":"_2hwx19bv",props.className])',
+    ]);
+  });
+
   it('should apply conditional CSS with ternary operator and tagged templates branches', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
@@ -1008,14 +1030,12 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._k48phkfe{font-weight:var(--_1aan5t)}',
+      '._k48p8n31{font-weight:bold}',
+      '._k48p4jg8{font-weight:normal}',
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
+      '<C{...props}style={style}ref={ref}className={ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.isBolded?"_k48p8n31":"_k48p4jg8",props.className])}/>',
     ]);
-
-    expect(actual).toInclude(
-      `<C{...props}style={{...style,\"--_1aan5t\":ix(isBolded?'bold':'normal')}}ref={ref}className={ax([\"_syaz5scu _k48phkfe\",props.isPrimary&&\"_syaz13q2\",props.className])}/>`
-    );
   });
 
   it('should apply the same CSS property with unconditional as default and multiple logical expressions', () => {
@@ -1208,6 +1228,27 @@ describe('styled component behaviour', () => {
       '._bfw71j9v:hover{border:1px solid white}',
       '_bfw7l468:hover{border:2px solid black}',
       '{ax(["_11q7qm1v",isSelected?"_syaz13q2":"_syaz1gy6",isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
+    ]);
+  });
+
+  it('should apply conditional CSS to related selector with object styles', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div({
+        color: ({ isSelected }) => isSelected ? 'blue' : 'yellow',
+        ':hover': {
+          border: ({ isHover }) => isHover ? '1px solid white' : '2px solid black',
+        }
+      });
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syaz13q2{color:blue}',
+      '._syaz1gy6{color:yellow}',
+      '._bfw71j9v:hover{border:1px solid white}',
+      '_bfw7l468:hover{border:2px solid black}',
+      '{ax(["",isSelected?"_syaz13q2":"_syaz1gy6",isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
     ]);
   });
 
