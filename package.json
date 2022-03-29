@@ -63,7 +63,7 @@
     "mini-css-extract-plugin": "^1.6.2",
     "nth-check": "^2.0.1",
     "react": "^17.0.2",
-    "typescript": "^4.6.2",
+    "typescript": "^4.6.3",
     "unset-value": "^2.0.1",
     "webpack-dev-server": "^4.7.4"
   },
@@ -84,13 +84,13 @@
     "@storybook/manager-webpack5": "^6.4.19",
     "@storybook/react": "^6.4.19",
     "@types/jest": "^27.4.1",
-    "@types/node": "^17.0.21",
-    "@types/react": "^17.0.41",
+    "@types/node": "^17.0.23",
+    "@types/react": "^17.0.43",
     "@types/react-dom": "^17.0.14",
-    "@types/svgo": "^2.6.2",
+    "@types/svgo": "^2.6.3",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
-    "babel-loader": "^8.2.3",
+    "babel-loader": "^8.2.4",
     "eslint": "^7.32.0",
     "eslint-plugin-flowtype": "^6.1.1",
     "eslint-plugin-import": "^2.25.4",
@@ -116,7 +116,7 @@
     "ts-transform-define": "^0.1.10",
     "tsconfig-paths": "^3.13.0",
     "ttypescript": "^1.5.13",
-    "typescript": "^4.6.2"
+    "typescript": "^4.6.3"
   },
   "engines": {
     "node": "^v16.13.2"
