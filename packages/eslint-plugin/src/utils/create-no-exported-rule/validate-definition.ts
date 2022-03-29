@@ -148,11 +148,11 @@ export const validateDefinition = (
       continue;
     }
 
-    const { nodes: refs, scope } = getStack(context, (identifier as Rule.Node).parent);
+    const { nodes: refs, scope: nextScope } = getStack(context, (identifier as Rule.Node).parent);
     // Only validate the resolved reference if it accesses the definition node
     if (matches(nodes, refs.reverse())) {
       // Now validate the identifier reference as a definition
-      const validity = validateDefinition(context, identifier as Rule.Node, scope);
+      const validity = validateDefinition(context, identifier as Rule.Node, nextScope);
       if (validity.type === 'invalid') {
         return validity;
       }
