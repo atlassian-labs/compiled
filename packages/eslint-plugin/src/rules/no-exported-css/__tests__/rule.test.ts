@@ -53,6 +53,44 @@ const createTestCases = (importSource: string) =>
         code: `
           import { css } from '${importSource}';
 
+          const styles = ${createStyle(level)};
+
+          export const Component = () => (
+            <div css={styles} />
+          );
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          export default () => (
+            <div
+              css={
+                ${createStyle(level + 3)}
+              }
+            />
+          );
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
+          const styles = ${createStyle(level)};
+
+          export default () => (
+            <div css={styles} />
+          );
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { css } from '${importSource}';
+
           export const styles = ${createStyle(level)};
         `,
         errors: [{ messageId: 'unexpected' }],

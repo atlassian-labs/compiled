@@ -1,20 +1,32 @@
-import type { Rule } from 'eslint';
+import type { Rule, Scope as ScopeNamespace } from 'eslint';
 
 type Node = Rule.Node;
 type RuleContext = Rule.RuleContext;
+type Scope = ScopeNamespace.Scope;
 
 type Stack = {
   nodes: Node[];
   root: Node;
+  scope: Scope;
 };
 
-const getStack = (node: Node) => {
-  const stack: Stack = {
+const getStack = (context: RuleContext, node: Node) => {
+  const { scopeManager } = context.getSourceCode();
+  const stack: Omit<Stack, 'scope'> = {
     nodes: [],
     root: node,
   };
 
+  let scope: Scope | undefined = undefined;
+
   for (let current = node; current.type !== 'Program'; current = current.parent) {
+    if (!scope) {
+      const currentScope = scopeManager.acquire(current);
+      if (currentScope) {
+        scope = currentScope;
+      }
+    }
+
     switch (current.type) {
       case 'ExportDefaultDeclaration':
       case 'ExportNamedDeclaration':
@@ -35,7 +47,10 @@ const getStack = (node: Node) => {
     }
   }
 
-  return stack;
+  return {
+    ...stack,
+    scope: scope ?? context.getScope(),
+  };
 };
 
 const matches = (defs: Node[], refs: Node[]) => {
@@ -91,8 +106,11 @@ export type ValidDefinition = {
 
 export type Validity = InvalidDefinition | ValidDefinition;
 
-export const validateDefinition = (context: RuleContext, node: Node): Validity => {
-  const scope = context.getScope();
+export const validateDefinition = (
+  context: RuleContext,
+  node: Node,
+  scope: Scope = context.getScope()
+): Validity => {
   // Ignore any expression defined outside of the global or module scope as we have no way of statically analysing them
   if (scope.type !== 'global' && scope.type !== 'module') {
     return {
@@ -100,7 +118,7 @@ export const validateDefinition = (context: RuleContext, node: Node): Validity =
     };
   }
 
-  const { root, nodes } = getStack(node.parent);
+  const { root, nodes } = getStack(context, node.parent);
   if (root.type === 'ExportDefaultDeclaration' || root.type === 'ExportNamedDeclaration') {
     return {
       type: 'invalid',
@@ -130,11 +148,11 @@ export const validateDefinition = (context: RuleContext, node: Node): Validity =
       continue;
     }
 
-    const { nodes: refs } = getStack((identifier as Rule.Node).parent);
+    const { nodes: refs, scope: nextScope } = getStack(context, (identifier as Rule.Node).parent);
     // Only validate the resolved reference if it accesses the definition node
     if (matches(nodes, refs.reverse())) {
       // Now validate the identifier reference as a definition
-      const validity = validateDefinition(context, identifier as Rule.Node);
+      const validity = validateDefinition(context, identifier as Rule.Node, nextScope);
       if (validity.type === 'invalid') {
         return validity;
       }
