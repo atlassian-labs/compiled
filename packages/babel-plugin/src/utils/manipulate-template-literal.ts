@@ -50,6 +50,25 @@ export const hasNestedTemplateLiteralsWithConditionalRules = (
   return isNested;
 };
 
+export const recomposeTemplateLiteral = (
+  template: t.TemplateLiteral,
+  prefix: string,
+  suffix = ''
+): void => {
+  const { quasis } = template;
+  const [leadQuasi] = quasis;
+  const tailQuasi = quasis[quasis.length - 1];
+
+  leadQuasi.value = {
+    raw: `${prefix}${leadQuasi.value.raw}`,
+    cooked: `${prefix}${leadQuasi.value.cooked}`,
+  };
+
+  tailQuasi.value = {
+    raw: `${tailQuasi.value.raw}${suffix}`,
+    cooked: `${tailQuasi.value.cooked}${suffix}`,
+  };
+};
 /**
  * Tries to convert a conditional expression of values into `property: value`
  * to allow CSS classes to be built on each conditional branch
@@ -77,19 +96,7 @@ const optimizeConditionalExpression = (
       if (t.isNumericLiteral(branchNode) || t.isStringLiteral(branchNode)) {
         return t.stringLiteral(`${prefix}${branchNode.value}${suffix}`);
       } else if (t.isTemplateLiteral(branchNode)) {
-        const { quasis } = branchNode;
-        const [leadQuasi] = quasis;
-        const tailQuasi = quasis[quasis.length - 1];
-
-        leadQuasi.value = {
-          raw: `${prefix}${leadQuasi.value.raw}`,
-          cooked: `${prefix}${leadQuasi.value.cooked}`,
-        };
-
-        tailQuasi.value = {
-          raw: `${tailQuasi.value.raw}${suffix}`,
-          cooked: `${tailQuasi.value.cooked}${suffix}`,
-        };
+        recomposeTemplateLiteral(branchNode, prefix, suffix);
 
         return branchNode;
       } else if (t.isConditionalExpression(branchNode)) {

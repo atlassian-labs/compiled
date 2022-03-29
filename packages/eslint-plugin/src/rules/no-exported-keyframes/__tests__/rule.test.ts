@@ -66,6 +66,44 @@ const createTestCases = (importSource: string) =>
         code: `
           import { keyframes } from '${importSource}';
 
+          const animationName = ${createKeyframe(level)};
+
+          export const Component = () => (
+            <div css={{ animationName }} />
+          );
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { keyframes } from '${importSource}';
+
+          export default () => (
+            <div
+              css={{
+                animationName: ${createKeyframe(level + 3)}
+              }}
+            />
+          );
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { keyframes } from '${importSource}';
+
+          const animationName = ${createKeyframe(level)};
+
+          export default () => (
+            <div css={{ animationName }} />
+          );
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { keyframes } from '${importSource}';
+
           export const animation = ${createKeyframe(level)};
         `,
         errors: [{ messageId: 'unexpected' }],
