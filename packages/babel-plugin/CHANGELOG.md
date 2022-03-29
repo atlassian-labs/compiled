@@ -1,5 +1,12 @@
 # @compiled/babel-plugin
 
+## 0.15.0
+
+### Minor Changes
+
+- 0b38c11: Optimize condtional expressions with object styles
+- 2d24709: Statically evaluate unary expressions that convert to negative numbers
+
 ## 0.14.1
 
 ### Patch Changes

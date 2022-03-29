@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.4.1
+
+### Patch Changes
+
+- 6e92764: Fix no-exported-css and no-exported-keyframes errors within components
+
 ## 0.4.0
 
 ### Minor Changes
