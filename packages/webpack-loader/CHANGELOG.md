@@ -1,5 +1,14 @@
 # @compiled/webpack-loader
 
+## 0.8.7
+
+### Patch Changes
+
+- a59a14f: Fix build issue when webpack loader attempts to parse compiled runtime
+- Updated dependencies [0b38c11]
+- Updated dependencies [2d24709]
+  - @compiled/babel-plugin@0.15.0
+
 ## 0.8.6
 
 ### Patch Changes
