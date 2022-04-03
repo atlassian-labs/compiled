@@ -38,7 +38,7 @@
     "react": "^17.0.2",
     "ts-node": "^10.7.0",
     "tsconfig-paths": "^3.13.0",
-    "webpack": "^5.70.0"
+    "webpack": "^5.71.0"
   },
   "peerDependencies": {
     "webpack": ">= 4.46.0"
