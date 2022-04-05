@@ -3,11 +3,18 @@ import type { ReactNode, CSSProperties } from 'react';
 import type { BasicTemplateInterpolations, CssFunction } from '../types';
 import { createSetupError } from '../utils/error';
 
-export type Interpolations = (BasicTemplateInterpolations | CssFunction | CssFunction[])[];
+export type Interpolations = (
+  | BasicTemplateInterpolations
+  | CssFunction<unknown>
+  | CssFunction<unknown>[]
+)[];
 
 export interface ClassNamesProps {
   children: (opts: {
-    css: (css: CssFunction | CssFunction[], ...interpolations: Interpolations) => string;
+    css: (
+      css: TemplateStringsArray | CssFunction | CssFunction[],
+      ...interpolations: Interpolations
+    ) => string;
     style: CSSProperties;
   }) => ReactNode;
 }

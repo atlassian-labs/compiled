@@ -12,8 +12,7 @@ export { default as css } from './css';
 // Compiled currently doesn't define its own and uses this purely to enable a local jsx namespace.
 export const jsx = createElement;
 
-export type { CssFunction, CSSProps };
-export type { CssObject } from './styled';
+export type { CSSProps, CssFunction };
 
 export namespace jsx {
   export namespace JSX {

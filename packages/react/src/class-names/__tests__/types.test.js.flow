@@ -23,6 +23,13 @@ import { ClassNames, type CssFunction } from '@compiled/react';
 
 // Array
 ({ children }: { children: Node }): React$Element<typeof ClassNames> => {
-  const classes: CssFunction<>[] = [{ fontSize: 12 }, `font-size: 12px`];
-  return <ClassNames>{({ css }) => <span className={css(classes)}>{children}</span>}</ClassNames>;
+  return (
+    <ClassNames>
+      {({ css }) => (
+        <span className={css(([{ fontSize: 12 }, `font-size: 12px`]: CssFunction<>[]))}>
+          {children}
+        </span>
+      )}
+    </ClassNames>
+  );
 };

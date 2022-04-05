@@ -9,7 +9,6 @@ generate() {
     -not -path '*/__tests__/*' \
     -not -path '*/__perf__/*' \
     -not -path '*/__fixtures__/*' \
-    -not -path 'packages/react/*/index.*' \
     -not -path 'packages/react/*/jsx/jsx-local-namespace.*' \
     -not -path 'packages/react/*/jsx/jsx-runtime.*' \
     -not -path 'packages/react/*/jsx/jsx-dev-runtime.*' \
@@ -33,14 +32,13 @@ generate() {
     -not -path '*/__perf__/*' \
     -not -path '*/__fixtures__/*' \
     -not -path '*/node_modules/*' \
-    -not -path 'packages/react/*/index.*' \
     -not -path 'packages/react/*/jsx/jsx-local-namespace.*' \
     -not -path 'packages/react/*/jsx/jsx-runtime.*' \
     -not -path 'packages/react/*/jsx/jsx-dev-runtime.*' \
     -print0 | while read -rd $'\0' file; do
 
     # Change import to import type (bug in flowgen)
-    sed -i.bak -E 's/import {/import type {/g' "$file" && rm "$file.bak"
+    sed -i.bak -E 's/import \{/import type {/g' "$file" && rm "$file.bak"
 
     # Define TemplateStringsArray type
     sed -i.bak -E 's/TemplateStringsArray/$ReadOnlyArray<string>/g' "$file" && rm "$file.bak"
@@ -51,14 +49,31 @@ generate() {
     # Rename JSX.IntrinsicElements to existing flow type
     sed -i.bak -E 's/JSX.IntrinsicElements/$JSXIntrinsics/g' "$file" && rm "$file.bak"
 
-    # Rename $ElementType<$JSXIntrinsics, TTag> to exact flow typs
-    sed -i.bak -E 's/\$ElementType<\$JSXIntrinsics, TTag>/$Exact<$ElementType<$JSXIntrinsics, TTag>>/g' "$file" && rm "$file.bak"
+    # Change DOM type to mixed, as we don't get them in flow
+    sed -i.bak -E 's/\$ElementType<\$JSXIntrinsics, Tag>/mixed/g' "$file" && rm "$file.bak"
+
+    # Rename CSSProperties to matching flow type
+    sed -i.bak -E 's/, CSSProperties }/ }/g' "$file" && rm "$file.bak"
+    sed -i.bak -E 's/CSSProperties/$Shape<CSSStyleDeclaration>/g' "$file" && rm "$file.bak"
 
     # Rename jest.CustomMatcherResult type to existing flow type
     sed -i.bak -E 's/jest.CustomMatcherResult/JestMatcherResult/g' "$file" && rm "$file.bak"
 
     # Refactor interface to object type to allow spreading
     sed -i.bak -E 's/export interface StyledProps \{/export type StyledProps = \{/g' "$file" && rm "$file.bak"
+
+    # Fix records to object type
+    sed -i.bak -E 's/Record<(.+), (.+)>/{[key: \1]: \2}/g' "$file" && rm "$file.bak"
+
+    # Change spread to allow correct type matching in flow
+    sed -i.bak -E 's/\[key: string\]: CssFunction<TProps>,/...CSSProps<TProps>,\n[key: string]: CssFunction<TProps>,/g' "$file" && rm "$file.bak"
+    sed -i.bak -E '/\| CSSProps<TProps>/d' "$file" && rm "$file.bak"
+
+    # Remove any lines containing the jsx local namespace
+    sed -i.bak -E '/declare type jsx/d' "$file" && rm "$file.bak"
+    sed -i.bak -E '/declare export var jsx/d' "$file" && rm "$file.bak"
+    sed -i.bak -E '/CompiledJSX/d' "$file" && rm "$file.bak"
+    sed -i.bak -E '/import type \{ createElement }/d' "$file" && rm "$file.bak"
 
     # Refactor to flow style handling of default generic types
     awk -v RS='' '{gsub(/CssFunction[^\S|]*\|[^\S|]*CssFunction\[\]/, "CssFunction<> | CssFunction<>[]"); print}' "$file" >"$file.tmp" &&

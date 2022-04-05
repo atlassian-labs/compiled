@@ -188,7 +188,7 @@ describe('styled component', () => {
     expect(ref).toHaveProperty('tagName', 'A');
   });
 
-  it('should overide the underlying markup with a span', () => {
+  it('should override the underlying markup with a span', () => {
     const Heading = styled.h1`
       color: red;
     `;

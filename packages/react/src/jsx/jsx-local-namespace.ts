@@ -41,7 +41,7 @@ type WithConditionalCSSProp<TProps> = 'className' extends keyof TProps
          * />
          * ```
          */
-        css?: CssFunction | CssFunction[];
+        css?: CssFunction<void> | CssFunction<void>[];
       }
     : // eslint-disable-next-line @typescript-eslint/ban-types
       {}
@@ -69,7 +69,7 @@ export namespace CompiledJSX {
   export type IntrinsicClassAttributes<T> = ReactJSXIntrinsicClassAttributes<T>;
   export type IntrinsicElements = {
     [K in keyof ReactJSXIntrinsicElements]: ReactJSXIntrinsicElements[K] & {
-      css?: CssFunction | CssFunction[];
+      css?: CssFunction<void> | CssFunction<void>[];
     };
   };
 }

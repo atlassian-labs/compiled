@@ -12,6 +12,31 @@ import { css } from '@compiled/react';
 
 // Object call expression
 (): React$Element<'div'> => {
-  const styles = css({ color: 'red' });
+  const styles = css({ color: 'yellow' });
   return <div css={styles}>red text</div>;
 };
+
+// Object call with function call
+(): React$Element<'div'> => {
+  const styles = css({
+    backgroundColor: token('elevation.surface', 'white'),
+    zIndex: layers.modal(),
+  });
+  return <div css={styles}>red text</div>;
+};
+
+// Media query selector
+css({
+  /* Style only for Google Chrome */
+  '@media screen and (-webkit-min-device-pixel-ratio: 0)': {
+    wordBreak: 'break-word',
+  },
+  /* Style only for Safari */
+  '@media screen and (-webkit-transition)': {
+    wordBreak: 'break-word',
+  },
+  /* Style only for Mozilla Firefox */
+  '@-moz-document url-prefix()': {
+    overflowWrap: 'anywhere',
+  },
+});
