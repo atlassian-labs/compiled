@@ -634,6 +634,27 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
     const nodeExpression = node.expressions[index] as t.Expression | undefined;
 
     if (
+      t.isArrowFunctionExpression(nodeExpression) &&
+      t.isObjectPattern(nodeExpression.params[0])
+    ) {
+      const properties = nodeExpression.params[0].properties as t.ObjectProperty[];
+      const parameters = properties.map((po) => {
+        if (t.isObjectProperty(po)) {
+          return getKey(po.key);
+        }
+      });
+      console.log(parameters);
+      nodeExpression.params[0] = t.identifier('props');
+      const type = nodeExpression.body.type;
+      switch (type) {
+        case 'ConditionalExpression': {
+          const test = extractConditionalExpression(nodeExpression.body, meta);
+          console.log(test);
+        }
+      }
+    }
+
+    if (
       !nodeExpression ||
       (t.isArrowFunctionExpression(nodeExpression) && t.isLogicalExpression(nodeExpression.body))
     ) {
