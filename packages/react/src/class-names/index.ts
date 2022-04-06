@@ -3,17 +3,17 @@ import type { ReactNode, CSSProperties } from 'react';
 import type { BasicTemplateInterpolations, CssFunction } from '../types';
 import { createSetupError } from '../utils/error';
 
-export type Interpolations = (
+export type Interpolations<TProps> = (
   | BasicTemplateInterpolations
-  | CssFunction<unknown>
-  | CssFunction<unknown>[]
+  | CssFunction<TProps>
+  | CssFunction<TProps>[]
 )[];
 
-export interface ClassNamesProps {
+export interface ClassNamesProps<TProps> {
   children: (opts: {
     css: (
-      css: TemplateStringsArray | CssFunction | CssFunction[],
-      ...interpolations: Interpolations
+      css: TemplateStringsArray | CssFunction<TProps> | CssFunction<TProps>[],
+      ...interpolations: Interpolations<TProps>
     ) => string;
     style: CSSProperties;
   }) => ReactNode;
@@ -53,8 +53,8 @@ export interface ClassNamesProps {
  * </ClassNames>
  * ```
  */
-export function ClassNames({ children }: ClassNamesProps): JSX.Element;
+export function ClassNames<TProps = void>({ children }: ClassNamesProps<TProps>): JSX.Element;
 
-export function ClassNames(_props: ClassNamesProps): JSX.Element {
+export function ClassNames<TProps = void>(_props: ClassNamesProps<TProps>): JSX.Element {
   throw createSetupError();
 }

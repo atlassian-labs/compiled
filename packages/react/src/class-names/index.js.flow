@@ -6,16 +6,16 @@
  */
 import type { Node } from 'react';
 import type { BasicTemplateInterpolations, CssFunction } from '../types';
-export type Interpolations = (
+export type Interpolations<TProps> = (
   | BasicTemplateInterpolations
-  | CssFunction<mixed>
-  | CssFunction<mixed>[]
+  | CssFunction<TProps>
+  | CssFunction<TProps>[]
 )[];
-export interface ClassNamesProps {
+export interface ClassNamesProps<TProps> {
   children: (opts: {
     css: (
-      css: $ReadOnlyArray<string> | CssFunction<> | CssFunction<>[],
-      ...interpolations: Interpolations
+      css: $ReadOnlyArray<string> | CssFunction<TProps> | CssFunction<TProps>[],
+      ...interpolations: Interpolations<TProps>
     ) => string,
     style: $Shape<CSSStyleDeclaration>,
     ...
@@ -49,4 +49,4 @@ export interface ClassNamesProps {
  * </ClassNames>
  * ```
  */
-declare export function ClassNames(x: ClassNamesProps): React$Node;
+declare export function ClassNames<TProps>(x: ClassNamesProps<TProps>): React$Node;
