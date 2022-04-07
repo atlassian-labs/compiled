@@ -46,7 +46,7 @@ import { styled, type CssFunction } from '@compiled/react';
 // Dynamic function calls
 () => {
   const StyledComponent = styled.div({
-    backgroundColor: token('elevation.surface', 'white'),
+    backgroundColor: token('elevation.surface', 'black'),
     zIndex: layers.modal(),
   });
 };
