@@ -619,6 +619,16 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
   return { css: mergeSubsequentUnconditionalCssItems(css), variables };
 };
 
+const getMemberExpressionForOwnPath = (
+  node: t.Identifier,
+  parameters: (string | undefined)[]
+): t.MemberExpression | t.Identifier => {
+  if (parameters.some((p) => p === node.name)) {
+    return t.memberExpression(t.identifier('props'), t.identifier(node.name));
+  }
+  return node;
+};
+
 /**
  * Extracts CSS data from a template literal node.
  *
@@ -633,23 +643,27 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   const literalResult = node.quasis.reduce<string>((acc, quasi, index): string => {
     const nodeExpression = node.expressions[index] as t.Expression | undefined;
 
+    // Convert destructed props into structed props
+    // Babel was not able to differentiate between destrcuted prop and global variable if they have same name
     if (
       t.isArrowFunctionExpression(nodeExpression) &&
       t.isObjectPattern(nodeExpression.params[0])
     ) {
       const properties = nodeExpression.params[0].properties as t.ObjectProperty[];
       const parameters = properties.map((po) => {
-        if (t.isObjectProperty(po)) {
-          return getKey(po.key);
+        if (!t.isObjectProperty(po)) {
+          return;
         }
+        return getKey(po.key);
       });
-      console.log(parameters);
-      nodeExpression.params[0] = t.identifier('props');
-      const type = nodeExpression.body.type;
-      switch (type) {
-        case 'ConditionalExpression': {
-          const test = extractConditionalExpression(nodeExpression.body, meta);
-          console.log(test);
+
+      if (t.isConditionalExpression(nodeExpression.body)) {
+        if (t.isIdentifier(nodeExpression.body.test)) {
+          nodeExpression.params[0] = t.identifier('props');
+          nodeExpression.body.test = getMemberExpressionForOwnPath(
+            nodeExpression.body.test,
+            parameters
+          );
         }
       }
     }
