@@ -827,7 +827,7 @@ describe('styled tagged template expression', () => {
       \`;
     `);
 
-    expect(actual).toInclude('{ as: C = "span", style, isLoading, loading: l, ...props }');
+    expect(actual).toInclude('{ as: C = "span", style, ...props }');
   });
 
   it('should place classes in given order when static styles precede expression', () => {
