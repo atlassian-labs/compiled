@@ -40,12 +40,26 @@ import { styled, type CssType } from '@compiled/react';
 
 // Object call expression with conditional
 () => {
-  const StyledComponent = styled.div({
+  const StyledComponent = styled.div<{ big: number, children: Node }>({
     fontSize: ({ big }) => `${big ? 50 : 12}px`,
     width: ({ big }) => (big ? 500 : 120),
   });
 
-  return <StyledComponent>red text</StyledComponent>;
+  return <StyledComponent big={5}>red text</StyledComponent>;
+};
+
+// Object call expression with logical operator expression
+() => {
+  // Type defined as constant so we test the type without sketchy null check errors
+  const StyledComponent = styled.div<{ big?: 5000, children: Node }>(
+    {
+      fontSize: ({ big }) => `${big || 50}px`,
+      width: ({ big }) => big && 500,
+    },
+    ({ big }) => big && { height: '100px' }
+  );
+
+  return <StyledComponent big={5000}>red text</StyledComponent>;
 };
 
 // Array
