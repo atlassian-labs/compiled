@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react';
 
-import type { CssFunction } from '../types';
+import type { CssType, CssFunction } from '../types';
 import { createSetupError } from '../utils/error';
 
 /**
@@ -10,19 +10,20 @@ export interface StyledProps {
   as?: keyof JSX.IntrinsicElements;
 }
 
-export type Interpolation<TProps> = CssFunction<TProps> | CssFunction<TProps>[];
+export type ObjectInterpolation<TProps> = CssType<TProps> | CssType<TProps>[];
+export type TemplateStringsInterpolation<TProps> = CssFunction<TProps> | CssFunction<TProps>[];
 
 export interface StyledComponent<ComponentProps extends unknown> {
   // Allows either string or object (`` or ({}))
   // We disable the ban types rule here as we need to join the empty object default with other props
   // eslint-disable-next-line @typescript-eslint/ban-types
-  <TProps = {}>(...css: Interpolation<TProps>[]): React.ComponentType<
+  <TProps = {}>(...css: ObjectInterpolation<TProps>[]): React.ComponentType<
     TProps & ComponentProps & StyledProps
   >;
   // eslint-disable-next-line @typescript-eslint/ban-types
   <TProps = {}>(
     template: TemplateStringsArray,
-    ...interpolations: Interpolation<TProps>[]
+    ...interpolations: TemplateStringsInterpolation<TProps>[]
   ): React.ComponentType<TProps & ComponentProps & StyledProps>;
 }
 

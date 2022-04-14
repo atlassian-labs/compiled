@@ -1,6 +1,6 @@
 // @flow strict-local
 import React, { type Node, type Element } from 'react';
-import { styled, type CssFunction } from '@compiled/react';
+import { styled, type CssType } from '@compiled/react';
 
 // Tagged template expression
 () => {
@@ -8,6 +8,14 @@ import { styled, type CssFunction } from '@compiled/react';
     font-size: 12px;
   `;
   return <StyledComponent>red text</StyledComponent>;
+};
+
+// Tagged template expression with conditional
+() => {
+  const StyledComponent = styled.div`
+    font-size: ${({ big }) => (big ? big : 12)}px;
+  `;
+  return <StyledComponent big>red text</StyledComponent>;
 };
 
 // Object call expression
@@ -30,9 +38,19 @@ import { styled, type CssFunction } from '@compiled/react';
   return <StyledComponent>red text</StyledComponent>;
 };
 
+// Object call expression with conditional
+() => {
+  const StyledComponent = styled.div({
+    fontSize: ({ big }) => `${big ? 50 : 12}px`,
+    width: ({ big }) => (big ? 500 : 120),
+  });
+
+  return <StyledComponent>red text</StyledComponent>;
+};
+
 // Array
 () => {
-  const styles: CssFunction<{ fontSize: number, children: Node }>[] = [{ fontSize: '12px' }];
+  const styles: CssType<{ fontSize: number, children: Node }>[] = [{ fontSize: '12px' }];
   const StyledComponent = styled.div(styles);
   return <StyledComponent fontSize={50}>red text</StyledComponent>;
 };

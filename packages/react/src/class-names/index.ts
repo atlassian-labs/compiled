@@ -1,22 +1,21 @@
 import type { ReactNode, CSSProperties } from 'react';
 
-import type { BasicTemplateInterpolations, CssFunction } from '../types';
+import type { CssType, CssFunction } from '../types';
 import { createSetupError } from '../utils/error';
 
-export type Interpolations<TProps> = (
-  | BasicTemplateInterpolations
-  | CssFunction<TProps>
-  | CssFunction<TProps>[]
-)[];
+export type ObjectInterpolation<TProps> = CssType<TProps> | CssType<TProps>[];
+export type TemplateStringsInterpolation<TProps> = CssFunction<TProps> | CssFunction<TProps>[];
+
+interface CssSignature<TProps> {
+  (...interpolations: ObjectInterpolation<TProps>[]): string;
+  (
+    template: TemplateStringsArray,
+    ...interpolations: TemplateStringsInterpolation<TProps>[]
+  ): string;
+}
 
 export interface ClassNamesProps<TProps> {
-  children: (opts: {
-    css: (
-      css: TemplateStringsArray | CssFunction<TProps> | CssFunction<TProps>[],
-      ...interpolations: Interpolations<TProps>
-    ) => string;
-    style: CSSProperties;
-  }) => ReactNode;
+  children: (opts: { css: CssSignature<TProps>; style: CSSProperties }) => ReactNode;
 }
 
 /**

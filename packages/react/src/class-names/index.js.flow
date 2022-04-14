@@ -5,18 +5,19 @@
  * @flow
  */
 import type { Node } from 'react';
-import type { BasicTemplateInterpolations, CssFunction } from '../types';
-export type Interpolations<TProps> = (
-  | BasicTemplateInterpolations
-  | CssFunction<TProps>
-  | CssFunction<TProps>[]
-)[];
+import type { CssType, CssFunction } from '../types';
+export type ObjectInterpolation<TProps> = CssType<TProps> | CssType<TProps>[];
+export type TemplateStringsInterpolation<TProps> = CssFunction<TProps> | CssFunction<TProps>[];
+declare interface CssSignature<TProps> {
+  (...interpolations: ObjectInterpolation<TProps>[]): string;
+  (
+    template: $ReadOnlyArray<string>,
+    ...interpolations: TemplateStringsInterpolation<TProps>[]
+  ): string;
+}
 export interface ClassNamesProps<TProps> {
   children: (opts: {
-    css: (
-      css: $ReadOnlyArray<string> | CssFunction<TProps> | CssFunction<TProps>[],
-      ...interpolations: Interpolations<TProps>
-    ) => string,
+    css: CssSignature<TProps>,
     style: $Shape<CSSStyleDeclaration>,
     ...
   }) => Node;
@@ -50,3 +51,4 @@ export interface ClassNamesProps<TProps> {
  * ```
  */
 declare export function ClassNames<TProps>(x: ClassNamesProps<TProps>): React$Node;
+declare export {};

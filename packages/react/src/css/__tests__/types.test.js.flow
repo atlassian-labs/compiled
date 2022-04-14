@@ -12,7 +12,7 @@ import { css } from '@compiled/react';
 
 // Object call expression
 (): React$Element<'div'> => {
-  const styles = css({ color: 'yellow' });
+  const styles = css({ color: 'red' });
   return <div css={styles}>red text</div>;
 };
 
