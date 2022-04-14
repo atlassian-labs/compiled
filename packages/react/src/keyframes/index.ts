@@ -1,7 +1,7 @@
 import type { BasicTemplateInterpolations, CSSProps } from '../types';
 import { createSetupError } from '../utils/error';
 
-export type KeyframeSteps = string | Record<string, CSSProps>;
+export type KeyframeSteps = string | Record<string, CSSProps<void>>;
 
 /**
  * ## Keyframes

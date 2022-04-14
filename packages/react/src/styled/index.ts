@@ -1,12 +1,7 @@
 import type { ComponentType } from 'react';
 
-import type { BasicTemplateInterpolations, CssFunction, FunctionInterpolation } from '../types';
+import type { CssType, CssFunction } from '../types';
 import { createSetupError } from '../utils/error';
-
-/**
- * Typing for the CSS object.
- */
-export type CssObject<TProps> = CssFunction<FunctionInterpolation<TProps>>;
 
 /**
  * Extra props added to the output Styled Component.
@@ -15,46 +10,33 @@ export interface StyledProps {
   as?: keyof JSX.IntrinsicElements;
 }
 
-export type Interpolations<TProps extends unknown> = (
-  | BasicTemplateInterpolations
-  | FunctionInterpolation<TProps>
-  | CssObject<TProps>
-  | CssObject<TProps>[]
-)[];
+export type ObjectInterpolation<TProps> = CssType<TProps> | CssType<TProps>[];
+export type TemplateStringsInterpolation<TProps> = CssFunction<TProps> | CssFunction<TProps>[];
 
-/**
- * This allows us to take the generic `TTag` (that will be a valid `DOM` tag) and then use it to
- * define correct props based on it from `JSX.IntrinsicElements`, while also injecting our own
- * props from `StyledProps`.
- */
-export interface StyledFunctionFromTag<TTag extends keyof JSX.IntrinsicElements> {
-  <TProps extends unknown>(
-    // Allows either string or object (`` or ({}))
-    css: CssObject<TProps> | CssObject<TProps>[],
-    ...interpolations: Interpolations<TProps>
-  ): React.ComponentType<TProps & JSX.IntrinsicElements[TTag] & StyledProps>;
+export interface StyledComponent<ComponentProps extends unknown> {
+  // Allows either string or object (`` or ({}))
+  // We disable the ban types rule here as we need to join the empty object default with other props
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  <TProps = {}>(...css: ObjectInterpolation<TProps>[]): React.ComponentType<
+    TProps & ComponentProps & StyledProps
+  >;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  <TProps = {}>(
+    template: TemplateStringsArray,
+    ...interpolations: TemplateStringsInterpolation<TProps>[]
+  ): React.ComponentType<TProps & ComponentProps & StyledProps>;
 }
 
-export interface StyledFunctionFromComponent<TInheritedProps extends unknown> {
-  <TProps extends unknown>(
-    // Allows either string or object (`` or ({}))
-    css: CssObject<TProps> | TemplateStringsArray,
-    ...interpolations: Interpolations<TProps>
-  ): React.ComponentType<TProps & StyledProps & TInheritedProps>;
-}
-
+// This creates the DOM element types for `styled.tag`, e.g. `span`, `div`, `h1`, etc.
 export type StyledComponentMap = {
-  // This creates the DOM element types for `styled.blah`, e.g. `span`, `div`, `h1`, etc.
-  [Tag in keyof JSX.IntrinsicElements]: StyledFunctionFromTag<Tag>;
+  [Tag in keyof JSX.IntrinsicElements]: StyledComponent<JSX.IntrinsicElements[Tag]>;
 };
 
-export interface StyledComponentInstantiator extends StyledComponentMap {
-  /**
-   * Typing to enable consumers to compose components, e.g: `styled(Component)`
-   */
+export interface CreateStyledComponent extends StyledComponentMap {
+  // Typing to enable consumers to compose components, e.g: `styled(Component)`
   <TInheritedProps extends unknown>(
     Component: ComponentType<TInheritedProps>
-  ): StyledFunctionFromComponent<TInheritedProps>;
+  ): StyledComponent<TInheritedProps>;
 }
 
 /**
@@ -98,7 +80,7 @@ export interface StyledComponentInstantiator extends StyledComponentMap {
  * );
  * ```
  */
-export const styled: StyledComponentInstantiator = new Proxy(
+export const styled: CreateStyledComponent = new Proxy(
   {},
   {
     get() {

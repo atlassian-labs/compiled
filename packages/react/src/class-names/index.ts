@@ -1,15 +1,21 @@
 import type { ReactNode, CSSProperties } from 'react';
 
-import type { BasicTemplateInterpolations, CssFunction } from '../types';
+import type { CssType, CssFunction } from '../types';
 import { createSetupError } from '../utils/error';
 
-export type Interpolations = (BasicTemplateInterpolations | CssFunction | CssFunction[])[];
+export type ObjectInterpolation<TProps> = CssType<TProps> | CssType<TProps>[];
+export type TemplateStringsInterpolation<TProps> = CssFunction<TProps> | CssFunction<TProps>[];
 
-export interface ClassNamesProps {
-  children: (opts: {
-    css: (css: CssFunction | CssFunction[], ...interpolations: Interpolations) => string;
-    style: CSSProperties;
-  }) => ReactNode;
+interface CssSignature<TProps> {
+  (...interpolations: ObjectInterpolation<TProps>[]): string;
+  (
+    template: TemplateStringsArray,
+    ...interpolations: TemplateStringsInterpolation<TProps>[]
+  ): string;
+}
+
+export interface ClassNamesProps<TProps> {
+  children: (opts: { css: CssSignature<TProps>; style: CSSProperties }) => ReactNode;
 }
 
 /**
@@ -46,8 +52,8 @@ export interface ClassNamesProps {
  * </ClassNames>
  * ```
  */
-export function ClassNames({ children }: ClassNamesProps): JSX.Element;
+export function ClassNames<TProps = void>({ children }: ClassNamesProps<TProps>): JSX.Element;
 
-export function ClassNames(_props: ClassNamesProps): JSX.Element {
+export function ClassNames<TProps = void>(_props: ClassNamesProps<TProps>): JSX.Element {
   throw createSetupError();
 }

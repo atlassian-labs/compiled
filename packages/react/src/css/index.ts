@@ -1,11 +1,6 @@
 /* eslint-disable import/export */
 
-import type {
-  AnyKeyCssProps,
-  BasicTemplateInterpolations,
-  CSSProps,
-  FunctionInterpolation,
-} from '../types';
+import type { CSSProps, CssObject, CssFunction } from '../types';
 import { createSetupError } from '../utils/error';
 
 /**
@@ -36,16 +31,16 @@ import { createSetupError } from '../utils/error';
  * <div css={redText} />
  * ```
  */
-export default function css<T = void>(
+export default function css<TProps = void>(
   styles: TemplateStringsArray,
-  ...interpolations: (BasicTemplateInterpolations | FunctionInterpolation<T>)[]
-): CSSProps;
+  ...interpolations: CssFunction<TProps>[]
+): CSSProps<TProps>;
 
-export default function css(styles: AnyKeyCssProps<void> | CSSProps): CSSProps;
+export default function css<T = void>(styles: CssObject<T> | CssObject<T>[]): CSSProps<T>;
 
 export default function css<T = void>(
-  _styles: TemplateStringsArray | CSSProps,
-  ..._interpolations: (BasicTemplateInterpolations | FunctionInterpolation<T>)[]
-): CSSProps {
+  _styles: TemplateStringsArray | CssObject<T> | CssObject<T>[],
+  ..._interpolations: CssFunction[]
+): CSSProps<T> {
   throw createSetupError();
 }
