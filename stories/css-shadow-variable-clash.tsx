@@ -4,11 +4,16 @@ export default {
   title: 'css prop/variable clash',
 };
 
-const isPrimary = true;
-const Component1 = styled.p`
+const isPrimary = false;
+const Component = styled.p`
   color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};
 `;
+console.log(isPrimary);
 
-export const UsingComponent1 = (): JSX.Element => {
-  return <Component1 isPrimary={false}>Component1</Component1>;
+export const UsingComponentWithProps = (): JSX.Element => {
+  return <Component isPrimary={true}>This should be green</Component>;
+};
+
+export const UsingComponentWithoutProps = (): JSX.Element => {
+  return <Component>This should be red</Component>;
 };

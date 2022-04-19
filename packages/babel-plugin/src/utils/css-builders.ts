@@ -619,6 +619,13 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
   return { css: mergeSubsequentUnconditionalCssItems(css), variables };
 };
 
+/**
+ * Creates and return `props` object
+ *
+ * @param node Expression that has be converted into MemberExpression
+ * @param parameters Group of parameters of a function
+ * @returns MemberExpression of `props`
+ */
 const getMemberExpressionForOwnPath = (
   node: t.Identifier,
   parameters: (string | undefined)[]
@@ -627,6 +634,28 @@ const getMemberExpressionForOwnPath = (
     return t.memberExpression(t.identifier('props'), t.identifier(node.name));
   }
   return node;
+};
+
+/**
+ * Generates array of parameters from deconstructed `props`
+ *
+ * @param node ArrowFunction that has deconstructed `props` as parameters
+ * @returns Array of parameters
+ */
+const getParametersFromDestructuredProps = (node: t.Expression): (string | undefined)[] => {
+  let parameters: (string | undefined)[] = [];
+  if (t.isArrowFunctionExpression(node) && t.isObjectPattern(node.params[0])) {
+    const properties = node.params[0].properties;
+    parameters = properties
+      .map((po) => {
+        if (!t.isObjectProperty(po)) {
+          return;
+        }
+        return getKey(po.key);
+      })
+      .filter(Boolean);
+  }
+  return parameters;
 };
 
 /**
@@ -649,13 +678,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       t.isArrowFunctionExpression(nodeExpression) &&
       t.isObjectPattern(nodeExpression.params[0])
     ) {
-      const properties = nodeExpression.params[0].properties as t.ObjectProperty[];
-      const parameters = properties.map((po) => {
-        if (!t.isObjectProperty(po)) {
-          return;
-        }
-        return getKey(po.key);
-      });
+      const parameters = getParametersFromDestructuredProps(nodeExpression);
 
       if (t.isConditionalExpression(nodeExpression.body)) {
         if (t.isIdentifier(nodeExpression.body.test)) {
