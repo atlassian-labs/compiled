@@ -6,22 +6,30 @@ import type * as CSS from 'csstype';
 export type BasicTemplateInterpolations = string | number;
 
 export interface FunctionInterpolation<TProps> {
-  (props: TProps): CSSProps | BasicTemplateInterpolations | boolean | undefined;
+  (props: TProps): CssFunction<TProps>;
 }
+
+/**
+ * Possible types for a CSS value
+ */
+export type CssType<TProps> =
+  | CSSProps<TProps> // Typed CSS properties
+  | CssObject<TProps> // CSS object
+  | FunctionInterpolation<TProps> // Props provider usage
+  | string; // Plain css string
 
 /**
  * These are all the CSS props that will exist.
  */
-export type CSSProps = CSS.Properties<BasicTemplateInterpolations>;
+export type CSSProps<TProps> = CSS.Properties<CssFunction<TProps>>;
 
-export type AnyKeyCssProps<TValue> = {
-  [key: string]: AnyKeyCssProps<TValue> | CSSProps | BasicTemplateInterpolations | TValue;
+export type CssObject<TProps> = {
+  [key: string]: CssFunction<TProps>;
 };
 
-export type CssFunction<TValue = void> =
-  | CSSProps
-  | AnyKeyCssProps<TValue>
-  | TemplateStringsArray
-  | string
-  | boolean
-  | undefined;
+// CSS inside of a CSS expression
+export type CssFunction<TProps = unknown> =
+  | CssType<TProps>
+  | BasicTemplateInterpolations // CSS values in tagged template expression
+  | boolean // Something like `false && styles`
+  | undefined; // Something like `undefined && styles`

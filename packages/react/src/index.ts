@@ -1,7 +1,9 @@
 import { createElement } from 'react';
 
 import type { CompiledJSX } from './jsx/jsx-local-namespace';
-import type { CssFunction, CSSProps } from './types';
+import type { CssFunction, CSSProps, CssType } from './types';
+
+export type { CSSProps, CssFunction, CssType };
 
 export { keyframes } from './keyframes';
 export { styled } from './styled';
@@ -11,9 +13,6 @@ export { default as css } from './css';
 // Pass through the (classic) jsx runtime.
 // Compiled currently doesn't define its own and uses this purely to enable a local jsx namespace.
 export const jsx = createElement;
-
-export type { CssFunction, CSSProps };
-export type { CssObject } from './styled';
 
 export namespace jsx {
   export namespace JSX {
