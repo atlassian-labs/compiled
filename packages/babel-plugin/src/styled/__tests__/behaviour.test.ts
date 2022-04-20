@@ -1165,9 +1165,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsb60qm{width:calc(10px + var(--_15nkcot))}',
-      '"--_15nkcot":ix(isLarge?100:50,"px")',
-      '{ax(["_1bsb60qm",props.className])}',
+      '_1bsb16om{width:calc(10px + var(--_13fw46q))}',
+      '"--_13fw46q":ix(isLarge?100:50,"px")',
+      '{ax(["_1bsb16om",props.className])}',
     ]);
   });
 
@@ -1182,9 +1182,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsb1j3u{width:calc(var(--_15nkcot) - 10px)}',
-      '"--_15nkcot":ix(isLarge?100:50,"px")',
-      '{ax(["_1bsb1j3u",props.className])}',
+      '._1bsb1k9r{width:calc(var(--_13fw46q) - 10px)}',
+      '"--_13fw46q":ix(isLarge?100:50,"px")',
+      '{ax(["_1bsb1k9r",props.className])}',
     ]);
   });
 
@@ -1194,15 +1194,15 @@ describe('styled component behaviour', () => {
 
       const Component = styled.div\`
         :before {
-          content: '\${({ isOpen }) => isOpen ? 'show less' : 'show more'}';
+          content: \${({ isOpen }) => isOpen ? 'show less' : 'show more'};
         }
       \`;
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1kt9x4xj:before{content:var(--_1boodpz)}',
-      '"--_1boodpz":ix(isOpen?\'show less\':\'show more\',"\'","\'")',
-      '{ax(["_1kt9x4xj",props.className])}',
+      '._1kt91q2u:before{content:show more}',
+      '._1kt911mf:before{content:show less}',
+      '{ax(["",props.isOpen?"_1kt911mf":"_1kt91q2u",props.className])}',
     ]);
   });
 
