@@ -57,7 +57,7 @@
     }
   },
   "resolutions": {
-    "@babel/core": "^7.17.8",
+    "@babel/core": "^7.17.9",
     "css-what": "^5.1.0",
     "jest": "^26.6.3",
     "mini-css-extract-plugin": "^1.6.2",
@@ -84,9 +84,9 @@
     "@storybook/manager-webpack5": "^6.4.20",
     "@storybook/react": "^6.4.20",
     "@types/jest": "^27.4.1",
-    "@types/node": "^17.0.23",
-    "@types/react": "^17.0.43",
-    "@types/react-dom": "^17.0.14",
+    "@types/node": "^17.0.24",
+    "@types/react": "^17.0.44",
+    "@types/react-dom": "^17.0.15",
     "@types/svgo": "^2.6.3",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
