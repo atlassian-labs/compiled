@@ -1,7 +1,5 @@
 import type { Rule } from 'eslint';
-import type {
-  ImportSpecifier,
-  ImportDeclaration} from 'eslint-codemod-utils';
+import type { ImportSpecifier, ImportDeclaration } from 'eslint-codemod-utils';
 import {
   importDeclaration,
   isNodeOfType,
@@ -9,7 +7,7 @@ import {
   importSpecifier,
   literal,
   identifier,
-  hasImportDeclaration
+  hasImportDeclaration,
 } from 'eslint-codemod-utils';
 
 const COMPILED_IMPORT = '@compiled/react';
@@ -66,7 +64,9 @@ export const noEmotionCssRule: Rule.RuleModule = {
         }
 
         const hasStyled = hasImportDeclaration(node, '@emotion/styled');
-        const hasCore = hasImportDeclaration(node,'@emotion/core') || hasImportDeclaration(node, '@emotion/react');
+        const hasCore =
+          hasImportDeclaration(node, '@emotion/core') ||
+          hasImportDeclaration(node, '@emotion/react');
 
         if (hasStyled) {
           context.report({
@@ -88,14 +88,15 @@ export const noEmotionCssRule: Rule.RuleModule = {
                       ? node.specifiers[0].local.name
                       : undefined
                   )};`
-
                 );
               } else {
                 yield fixer.replaceText(
                   node,
                   `${importDeclaration({
                     source: literal(COMPILED_IMPORT),
-                    specifiers: [importSpecifier({ ...node.specifiers[0], imported: identifier('styled') })],
+                    specifiers: [
+                      importSpecifier({ ...node.specifiers[0], imported: identifier('styled') }),
+                    ],
                   })};`
                 );
               }
@@ -127,10 +128,9 @@ export const noEmotionCssRule: Rule.RuleModule = {
                 yield fixer.remove(node);
                 yield fixer.replaceText(
                   compiledNode,
-                  `${
-                  importDeclaration({
+                  `${importDeclaration({
                     ...compiledNode,
-                    specifiers: compiledNode.specifiers.concat(specifiers)
+                    specifiers: compiledNode.specifiers.concat(specifiers),
                   })};`
                 );
               } else {
@@ -138,7 +138,7 @@ export const noEmotionCssRule: Rule.RuleModule = {
                   node,
                   `${importDeclaration({
                     specifiers,
-                    source: literal(COMPILED_IMPORT)
+                    source: literal(COMPILED_IMPORT),
                   })};`
                 );
               }

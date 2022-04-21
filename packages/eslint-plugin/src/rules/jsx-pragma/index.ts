@@ -1,5 +1,10 @@
 import type { Rule, SourceCode } from 'eslint';
-import type {  ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifier, RuleListener} from 'eslint-codemod-utils';
+import type {
+  ImportDeclaration,
+  ImportDefaultSpecifier,
+  ImportNamespaceSpecifier,
+  RuleListener,
+} from 'eslint-codemod-utils';
 import { insertImportSpecifier, removeImportSpecifier } from 'eslint-codemod-utils';
 
 import { findCompiledImportDeclarations, findDeclarationWithImport } from '../../utils/ast';
@@ -108,7 +113,10 @@ export const jsxPragmaRule: Rule.RuleModule = {
 
               if (compiledImports.length) {
                 const [firstCompiledImport] = compiledImports;
-                yield fixer.replaceText(firstCompiledImport, `${insertImportSpecifier(firstCompiledImport, 'jsx')};`);
+                yield fixer.replaceText(
+                  firstCompiledImport,
+                  `${insertImportSpecifier(firstCompiledImport, 'jsx')};`
+                );
               } else {
                 yield fixer.insertTextBefore(
                   source.ast.body[0],
