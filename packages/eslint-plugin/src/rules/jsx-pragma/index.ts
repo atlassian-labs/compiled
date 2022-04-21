@@ -1,8 +1,8 @@
 import type { Rule, SourceCode } from 'eslint';
-import type { ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifier } from 'estree';
+import type {  ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifier, RuleListener} from 'eslint-codemod-utils';
+import { insertImportSpecifier, removeImportSpecifier } from 'eslint-codemod-utils';
 
 import { findCompiledImportDeclarations, findDeclarationWithImport } from '../../utils/ast';
-import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-to-string';
 
 type Options = {
   runtime: 'classic' | 'automatic';
@@ -54,6 +54,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
     ],
     type: 'problem',
   },
+  // @ts-ignore
   create(context) {
     const options: Options = context.options[0] || { runtime: 'automatic' };
     const source = context.getSourceCode();
@@ -79,11 +80,11 @@ export const jsxPragmaRule: Rule.RuleModule = {
               }
 
               if (jsxImport.specifiers.length) {
-                const specifiersString = removeImportFromDeclaration(jsxImport, ['jsx']);
-                if (specifiersString.length === 0) {
+                const amendedImport = removeImportSpecifier(jsxImport, 'jsx');
+                if (amendedImport.specifiers.length === 0) {
                   yield fixer.remove(jsxImport);
                 } else {
-                  yield fixer.replaceText(jsxImport, specifiersString);
+                  yield fixer.replaceText(jsxImport, `${amendedImport};`);
                 }
               } else {
                 yield fixer.remove(jsxImport);
@@ -107,9 +108,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
 
               if (compiledImports.length) {
                 const [firstCompiledImport] = compiledImports;
-                const specifiersString = addImportToDeclaration(firstCompiledImport, ['jsx']);
-
-                yield fixer.replaceText(firstCompiledImport, specifiersString);
+                yield fixer.replaceText(firstCompiledImport, `${insertImportSpecifier(firstCompiledImport, 'jsx')};`);
               } else {
                 yield fixer.insertTextBefore(
                   source.ast.body[0],
@@ -121,7 +120,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
         }
       },
 
-      JSXAttribute(node: any) {
+      JSXAttribute(node) {
         if (jsxPragma || jsxImportSourcePragma || node.name.name !== 'css') {
           return;
         }
@@ -134,6 +133,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
           data: {
             pragma: options.runtime === 'classic' ? 'jsx' : 'jsxImportSource',
           },
+          // @ts-ignore
           node,
           *fix(fixer) {
             const reactImport = findReactDeclarationWithDefaultImport(source);
@@ -149,7 +149,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
                   // Multiple specifiers exist but the default one isn't used - remove the default specifier!
                   yield fixer.replaceText(
                     declaration,
-                    removeImportFromDeclaration(declaration, [])
+                    `${removeImportSpecifier(declaration, 'default')};`
                   );
                 }
               }
@@ -176,13 +176,13 @@ export const jsxPragmaRule: Rule.RuleModule = {
 
                 yield fixer.replaceText(
                   firstCompiledImport,
-                  addImportToDeclaration(firstCompiledImport, ['jsx'])
+                  `${insertImportSpecifier(firstCompiledImport, 'jsx')};`
                 );
               }
             }
           },
         });
       },
-    };
+    } as RuleListener;
   },
 };

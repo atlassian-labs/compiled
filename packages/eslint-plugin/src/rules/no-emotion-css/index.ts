@@ -1,15 +1,19 @@
 import type { Rule } from 'eslint';
-import type { ImportSpecifier, ImportDeclaration } from 'estree';
-
-import { buildImportDeclaration, buildNamedImport } from '../../utils/ast-to-string';
+import type {
+  ImportSpecifier,
+  ImportDeclaration} from 'eslint-codemod-utils';
+import {
+  importDeclaration,
+  isNodeOfType,
+  insertImportSpecifier,
+  importSpecifier,
+  literal,
+  identifier,
+  hasImportDeclaration
+} from 'eslint-codemod-utils';
 
 const COMPILED_IMPORT = '@compiled/react';
 const ALLOWED_EMOTION_IMPORTS = ['css', 'keyframes', 'ClassNames', 'jsx'];
-
-const isEmotionStyledImport = (node: ImportDeclaration) => node.source.value === '@emotion/styled';
-
-const isEmotionImport = (node: ImportDeclaration) =>
-  ['@emotion/core', '@emotion/react'].includes(node.source.value as string);
 
 /**
  * Given a rule, return any `@compiled/react` nodes in the source being parsed.
@@ -57,12 +61,12 @@ export const noEmotionCssRule: Rule.RuleModule = {
         }
       },
       ImportDeclaration(node) {
-        if (node.specifiers[0].type === 'ImportNamespaceSpecifier') {
+        if (node.specifiers[0] && isNodeOfType(node.specifiers[0], 'ImportNamespaceSpecifier')) {
           return;
         }
 
-        const hasStyled = isEmotionStyledImport(node);
-        const hasCore = isEmotionImport(node);
+        const hasStyled = hasImportDeclaration(node, '@emotion/styled');
+        const hasCore = hasImportDeclaration(node,'@emotion/core') || hasImportDeclaration(node, '@emotion/react');
 
         if (hasStyled) {
           context.report({
@@ -73,23 +77,27 @@ export const noEmotionCssRule: Rule.RuleModule = {
             node: node.source,
             *fix(fixer) {
               const compiledNode = getCompiledNode(context);
-              const specifiers =
-                node.specifiers[0].local.name === 'styled'
-                  ? 'styled'
-                  : `styled as ${node.specifiers[0].local.name}`;
-
               if (compiledNode) {
                 yield fixer.remove(node);
-                const allSpecifiers = compiledNode.specifiers
-                  .map(buildNamedImport)
-                  .concat(specifiers)
-                  .join(', ');
                 yield fixer.replaceText(
                   compiledNode,
-                  buildImportDeclaration(allSpecifiers, COMPILED_IMPORT)
+                  `${insertImportSpecifier(
+                    compiledNode,
+                    'styled',
+                    node.specifiers[0].local.name !== 'styled'
+                      ? node.specifiers[0].local.name
+                      : undefined
+                  )};`
+
                 );
               } else {
-                yield fixer.replaceText(node, buildImportDeclaration(specifiers, COMPILED_IMPORT));
+                yield fixer.replaceText(
+                  node,
+                  `${importDeclaration({
+                    source: literal(COMPILED_IMPORT),
+                    specifiers: [importSpecifier({ ...node.specifiers[0], imported: identifier('styled') })],
+                  })};`
+                );
               }
             },
           });
@@ -119,18 +127,19 @@ export const noEmotionCssRule: Rule.RuleModule = {
                 yield fixer.remove(node);
                 yield fixer.replaceText(
                   compiledNode,
-                  buildImportDeclaration(
-                    compiledNode.specifiers.concat(specifiers).map(buildNamedImport).join(', '),
-                    COMPILED_IMPORT
-                  )
+                  `${
+                  importDeclaration({
+                    ...compiledNode,
+                    specifiers: compiledNode.specifiers.concat(specifiers)
+                  })};`
                 );
               } else {
                 yield fixer.replaceText(
                   node,
-                  buildImportDeclaration(
-                    specifiers.map(buildNamedImport).join(', '),
-                    COMPILED_IMPORT
-                  )
+                  `${importDeclaration({
+                    specifiers,
+                    source: literal(COMPILED_IMPORT)
+                  })};`
                 );
               }
             },
