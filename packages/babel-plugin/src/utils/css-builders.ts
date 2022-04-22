@@ -628,10 +628,11 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
  */
 const getMemberExpressionForOwnPath = (
   node: t.Identifier,
-  parameters: (string | undefined)[]
+  parameters: ({ key: string; value: string } | undefined)[]
 ): t.MemberExpression | t.Identifier => {
-  if (parameters.some((p) => p === node.name)) {
-    return t.memberExpression(t.identifier('props'), t.identifier(node.name));
+  const parameter = parameters.find((p) => p?.value === node.name);
+  if (parameter) {
+    return t.memberExpression(t.identifier('props'), t.identifier(parameter.key));
   }
   return node;
 };
@@ -642,8 +643,10 @@ const getMemberExpressionForOwnPath = (
  * @param node ArrowFunction that has deconstructed `props` as parameters
  * @returns Array of parameters
  */
-const getParametersFromDestructuredProps = (node: t.Expression): (string | undefined)[] => {
-  let parameters: (string | undefined)[] = [];
+const getParametersFromDestructuredProps = (
+  node: t.Expression
+): ({ key: string; value: string } | undefined)[] => {
+  let parameters: ({ key: string; value: string } | undefined)[] = [];
   if (t.isArrowFunctionExpression(node) && t.isObjectPattern(node.params[0])) {
     const properties = node.params[0].properties;
     parameters = properties
@@ -651,7 +654,10 @@ const getParametersFromDestructuredProps = (node: t.Expression): (string | undef
         if (!t.isObjectProperty(po)) {
           return;
         }
-        return getKey(po.key);
+        return {
+          key: getKey(po.key),
+          value: getKey(po.value as t.Expression),
+        };
       })
       .filter(Boolean);
   }

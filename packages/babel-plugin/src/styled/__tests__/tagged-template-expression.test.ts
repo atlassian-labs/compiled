@@ -810,7 +810,7 @@ describe('styled tagged template expression', () => {
 
     expect(actual).toIncludeMultiple([
       'isLoading ? colors.N20 : colors.N40',
-      'l ? colors.N50 : colors.N10',
+      'props.loading ? colors.N50 : colors.N10',
       'props.loading ? colors.N100 : colors.N200',
     ]);
   });

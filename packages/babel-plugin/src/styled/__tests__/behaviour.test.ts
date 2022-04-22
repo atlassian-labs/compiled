@@ -357,7 +357,7 @@ describe('styled component behaviour', () => {
               className={ax([
                 \\"\\",
                 props.isLoading ? \\"_bfhkhk3l\\" : \\"_bfhk1lco\\",
-                l ? \\"_syaz1c44\\" : \\"_syazs2l2\\",
+                props.loading ? \\"_syaz1c44\\" : \\"_syazs2l2\\",
                 propz.loading ? \\"_1h6d1c5w\\" : \\"_1h6d1qzc\\",
                 props.className,
               ])}
@@ -564,7 +564,7 @@ describe('styled component behaviour', () => {
       '._1bsb1osq{width:100%}',
       '"._1bsb9tg7{width:var(--_1ea5ebz)}',
       '--_1ea5ebz":ix(width,"px")',
-      'ax(["",width?"_1bsb9tg7":"_1bsb1osq",props.className])',
+      'ax(["",props.elementWidth?"_1bsb9tg7":"_1bsb1osq",props.className])',
     ]);
   });
 
