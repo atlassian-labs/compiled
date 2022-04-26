@@ -27,6 +27,7 @@ import type {
   LogicalCssItem,
   SheetCssItem,
   PartialBindingWithMeta,
+  FunctionParameters,
 } from './types';
 
 /**
@@ -628,39 +629,45 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
  */
 const getMemberExpressionForOwnPath = (
   node: t.Identifier,
-  parameters: ({ key: string; value: string } | undefined)[]
+  parameters: FunctionParameters[]
 ): t.MemberExpression | t.Identifier => {
-  const parameter = parameters.find((p) => p?.value === node.name);
-  if (parameter) {
-    return t.memberExpression(t.identifier('props'), t.identifier(parameter.key));
-  }
-  return node;
-};
+  parameters.forEach((param) => {
+    if (Array.isArray(param.value)) {
+      getMemberExpressionForOwnPath(node, param.value);
+    }
 
+    const parameter = parameters.find((x) => x.value == node.name);
+    if (parameter) {
+      return t.identifier(parameter.key);
+    }
+  });
+  return t.memberExpression(t.identifier('props'), t.identifier(node.name));
+};
 /**
  * Generates array of parameters from deconstructed `props`
  *
  * @param node ArrowFunction that has deconstructed `props` as parameters
  * @returns Array of parameters
  */
-const getParametersFromDestructuredProps = (
-  node: t.Expression
-): ({ key: string; value: string } | undefined)[] => {
-  let parameters: ({ key: string; value: string } | undefined)[] = [];
-  if (t.isArrowFunctionExpression(node) && t.isObjectPattern(node.params[0])) {
-    const properties = node.params[0].properties;
-    parameters = properties
-      .map((po) => {
-        if (!t.isObjectProperty(po)) {
-          return;
-        }
-        return {
+const getParametersFromDestructuredProps = (node: t.ObjectPattern): FunctionParameters[] => {
+  let parameters: FunctionParameters[] = [];
+  const properties = node.properties;
+  parameters = properties
+    .map((po) => {
+      if (t.isObjectProperty(po)) {
+        //return;
+
+        const params: FunctionParameters = {
           key: getKey(po.key),
-          value: getKey(po.value as t.Expression),
+          value: t.isObjectPattern(po.value)
+            ? getParametersFromDestructuredProps(po.value)
+            : getKey(po.value as t.Expression),
         };
-      })
-      .filter(Boolean);
-  }
+        return params;
+      }
+      return;
+    })
+    .filter(Boolean) as FunctionParameters[];
   return parameters;
 };
 
@@ -684,7 +691,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       t.isArrowFunctionExpression(nodeExpression) &&
       t.isObjectPattern(nodeExpression.params[0])
     ) {
-      const parameters = getParametersFromDestructuredProps(nodeExpression);
+      const parameters = getParametersFromDestructuredProps(nodeExpression.params[0]);
 
       if (t.isConditionalExpression(nodeExpression.body)) {
         if (t.isIdentifier(nodeExpression.body.test)) {

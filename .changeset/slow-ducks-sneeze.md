@@ -1,5 +1,5 @@
 ---
-'@compiled/babel-plugin': minor
+'@compiled/babel-plugin': patch
 ---
 
-Changes helps to reconstruct the destructed props in the Arrow function.
+Fixed shadow variables clashing with destructured props
