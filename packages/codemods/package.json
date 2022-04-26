@@ -23,7 +23,7 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "src"
+    "src",
     "codeshift.config.js"
   ],
   "resolutions": {
