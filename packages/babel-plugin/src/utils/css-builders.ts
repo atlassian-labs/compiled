@@ -527,7 +527,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
           Given statments like:
           fontWeight: (props) => props.isBold ? 'bold': 'normal',
           marginTop: (props) => `${props.isLast ? 5 : 10}px`,
-           
+
           Convert them to:
 
           `font-weight: ${(props) => props.isBold ? 'bold': 'normal'};`
@@ -621,27 +621,30 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 };
 
 /**
- * Creates and return `props` object
+ * Creates and returns `props` object
  *
- * @param node Expression that has be converted into MemberExpression
- * @param parameters Group of parameters of a function
- * @returns MemberExpression of `props`
+ * @param node Expression containing deconstructed props
+ * @param parameters Group of parameters from deconstructed props
+ * @param prevKey to store keys of nested deconstructed props
  */
-const getMemberExpressionForOwnPath = (
+const getPropsNotDestructured = (
   node: t.Identifier,
-  parameters: FunctionParameters[]
-): t.MemberExpression | t.Identifier => {
-  parameters.forEach((param) => {
+  parameters: FunctionParameters[],
+  prevKey?: string
+): string => {
+  for (const param of parameters) {
     if (Array.isArray(param.value)) {
-      getMemberExpressionForOwnPath(node, param.value);
+      prevKey = param.key + '.';
+      getPropsNotDestructured(node, param.value, prevKey);
     }
 
     const parameter = parameters.find((x) => x.value == node.name);
     if (parameter) {
-      return t.identifier(parameter.key);
+      return prevKey ? prevKey + parameter.key : parameter.key;
     }
-  });
-  return t.memberExpression(t.identifier('props'), t.identifier(node.name));
+  }
+
+  return prevKey ? prevKey + node.name : node.name;
 };
 /**
  * Generates array of parameters from deconstructed `props`
@@ -655,8 +658,6 @@ const getParametersFromDestructuredProps = (node: t.ObjectPattern): FunctionPara
   parameters = properties
     .map((po) => {
       if (t.isObjectProperty(po)) {
-        //return;
-
         const params: FunctionParameters = {
           key: getKey(po.key),
           value: t.isObjectPattern(po.value)
@@ -669,6 +670,45 @@ const getParametersFromDestructuredProps = (node: t.ObjectPattern): FunctionPara
     })
     .filter(Boolean) as FunctionParameters[];
   return parameters;
+};
+
+/**
+ * Babel was not able to differentiate between destructed prop and global variable if they have same name,
+ * resulting in global variable being applied instead.
+ * Prevent shadow variables to clash with destructured props by reconstructing props.
+ *
+ * For example, given:
+ * ```
+ * const isPrimary = true;
+ * const Component = styled.div`
+ *  color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};
+ * `;
+ *```
+ * it will be converted to
+ * ```
+ * const Component = styled.div`
+ *  color: ${(props) => (props.isPrimary ? 'green' : 'red')};
+ *  * `;
+ * ```
+ * to avoid name clash
+ *
+ * @param node Node we're interested in extracting props from.
+ */
+const reconstructDestructedProps = (node: t.ArrowFunctionExpression) => {
+  const parameters = getParametersFromDestructuredProps(node.params[0] as t.ObjectPattern);
+
+  if (t.isConditionalExpression(node.body)) {
+    if (t.isIdentifier(node.body.test)) {
+      const notDestructuredProps = getPropsNotDestructured(node.body.test, parameters);
+      node.params[0] = t.identifier('props');
+      node.body.test = t.memberExpression(
+        t.identifier('props'),
+        t.identifier(notDestructuredProps)
+      );
+
+      // TODO consequent & alternate
+    }
+  }
 };
 
 /**
@@ -685,23 +725,11 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   const literalResult = node.quasis.reduce<string>((acc, quasi, index): string => {
     const nodeExpression = node.expressions[index] as t.Expression | undefined;
 
-    // Convert destructed props into structed props
-    // Babel was not able to differentiate between destrcuted prop and global variable if they have same name
     if (
       t.isArrowFunctionExpression(nodeExpression) &&
       t.isObjectPattern(nodeExpression.params[0])
     ) {
-      const parameters = getParametersFromDestructuredProps(nodeExpression.params[0]);
-
-      if (t.isConditionalExpression(nodeExpression.body)) {
-        if (t.isIdentifier(nodeExpression.body.test)) {
-          nodeExpression.params[0] = t.identifier('props');
-          nodeExpression.body.test = getMemberExpressionForOwnPath(
-            nodeExpression.body.test,
-            parameters
-          );
-        }
-      }
+      reconstructDestructedProps(nodeExpression);
     }
 
     if (
