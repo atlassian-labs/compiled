@@ -528,9 +528,9 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       '._1bsb1osq{width:100%}',
-      '._1bsby2bc{width:var(--_znisgh)}',
-      'style={{...style,"--_znisgh":ix(CUSTOM_WIDTH,"px")}}',
-      `ax([\"\",props.useCustomWidth?\"_1bsby2bc\":\"_1bsb1osq\",props.className])`,
+      '._1bsb18ks{width:var(--_1w7p4it)}',
+      'style={{...style,"--_1w7p4it":ix(props.CUSTOM_WIDTH,"px")}}',
+      `ax(["",props.useCustomWidth?"_1bsb18ks":"_1bsb1osq",props.className])`,
     ]);
   });
 
@@ -545,9 +545,9 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       '._1bsb1osq{width:100%}',
-      '._1bsb9tg7{width:var(--_1ea5ebz)}',
-      '--_1ea5ebz":ix(width,"px"',
-      'ax(["",width?"_1bsb9tg7":"_1bsb1osq",props.className]',
+      '._1bsb1exv{width:var(--_jvf4nj)}',
+      '--_jvf4nj":ix(props.size.width,"px"',
+      'ax(["",props.size.width?"_1bsb1exv":"_1bsb1osq",props.className]',
     ]);
   });
 
@@ -562,9 +562,9 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       '._1bsb1osq{width:100%}',
-      '"._1bsb9tg7{width:var(--_1ea5ebz)}',
-      '--_1ea5ebz":ix(width,"px")',
-      'ax(["",props.elementWidth?"_1bsb9tg7":"_1bsb1osq",props.className])',
+      '"._1bsbvfya{width:var(--_4qc1aa)}',
+      '--_4qc1aa":ix(props.elementWidth,"px")',
+      'ax(["",props.elementWidth?"_1bsbvfya":"_1bsb1osq",props.className])',
     ]);
   });
 
@@ -637,11 +637,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '{as:C="div",style,...props}',
+      '{as:C="div",style,...props},ref)',
       '._1bsb1osq{width:100%}',
-      '._1bsb9tg7{width:var(--_1ea5ebz)}',
-      '"--_1ea5ebz":ix(width,"px")',
-      'className={ax(["",props.width?"_1bsb9tg7":"_1bsb1osq",props.className])}',
+      '._1bsb17ei{width:var(--_1fymg38)}',
+      '"--_1fymg38":ix(props.width,"px")',
+      'className={ax(["",props.width?"_1bsb17ei":"_1bsb1osq",props.className])}',
     ]);
   });
 
@@ -655,10 +655,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '{as:C="div",style,...props}',
-      '._1bsb1r3a{width:var(--_1ea5ebz))}',
-      '"--_1ea5ebz":ix(width,"px")',
-      'className={ax(["",props.width&&"_1bsb1r3a",props.className])}',
+      '{as:C="div",style,...props},ref)',
+      '_1bsbwitj{width:var(--_1fymg38))}',
+      '"--_1fymg38":ix(props.width,"px")',
+      'className={ax(["",props.width&&"_1bsbwitj",props.className])}',
     ]);
   });
 

@@ -628,23 +628,23 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
  * @param prevKey to store keys of nested deconstructed props
  */
 const getPropsNotDestructured = (
-  node: t.Identifier,
+  deconstructedProp: string,
   parameters: FunctionParameters[],
   prevKey?: string
 ): string => {
   for (const param of parameters) {
     if (Array.isArray(param.value)) {
       prevKey = param.key + '.';
-      getPropsNotDestructured(node, param.value, prevKey);
+      getPropsNotDestructured(deconstructedProp, param.value, prevKey);
     }
 
-    const parameter = parameters.find((x) => x.value == node.name);
+    const parameter = parameters.find((x) => x.value == deconstructedProp);
     if (parameter) {
       return prevKey ? prevKey + parameter.key : parameter.key;
     }
   }
 
-  return prevKey ? prevKey + node.name : node.name;
+  return prevKey ? prevKey + deconstructedProp : deconstructedProp;
 };
 /**
  * Generates array of parameters from deconstructed `props`
@@ -699,7 +699,7 @@ const reconstructDestructedProps = (node: t.ArrowFunctionExpression) => {
 
   if (t.isConditionalExpression(node.body)) {
     if (t.isIdentifier(node.body.test)) {
-      const notDestructuredProps = getPropsNotDestructured(node.body.test, parameters);
+      const notDestructuredProps = getPropsNotDestructured(node.body.test.name, parameters);
       node.params[0] = t.identifier('props');
       node.body.test = t.memberExpression(
         t.identifier('props'),
@@ -707,6 +707,33 @@ const reconstructDestructedProps = (node: t.ArrowFunctionExpression) => {
       );
 
       // TODO consequent & alternate
+    }
+    if (t.isTemplateLiteral(node.body.consequent)) {
+      let count = -1;
+      for (const exp of node.body.consequent.expressions) {
+        count++;
+        if (t.isIdentifier(exp)) {
+          const notDestructuredProps = getPropsNotDestructured(exp.name, parameters);
+          node.body.consequent.expressions[count] = t.memberExpression(
+            t.identifier('props'),
+            t.identifier(notDestructuredProps)
+          );
+        }
+      }
+    }
+
+    if (t.isTemplateLiteral(node.body.alternate)) {
+      let count = -1;
+      for (const exp of node.body.alternate.expressions) {
+        count++;
+        if (t.isIdentifier(exp)) {
+          const notDestructuredProps = getPropsNotDestructured(exp.name, parameters);
+          node.body.alternate.expressions[count] = t.memberExpression(
+            t.identifier('props'),
+            t.identifier(notDestructuredProps)
+          );
+        }
+      }
     }
   }
 };

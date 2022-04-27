@@ -6,15 +6,14 @@ export default {
 
 const isPrimary = false;
 const Component = styled.div`
-  width: ${({ size: { width } }) => (width ? `${width}px` : '100%')};
+  color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};
 `;
 console.log(isPrimary);
 
 export const UsingComponentWithProps = (): JSX.Element => {
-  const obj = { width: 600 };
-  return <Component size={obj}>This should be green</Component>;
+  return <Component isPrimary>This should be green</Component>;
 };
 
-// export const UsingComponentWithoutProps = (): JSX.Element => {
-//   return <Component>This should be red</Component>;
-// };
+export const UsingComponentWithoutProps = (): JSX.Element => {
+  return <Component>This should be red</Component>;
+};
