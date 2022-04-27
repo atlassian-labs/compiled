@@ -623,7 +623,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 /**
  * Creates and returns `props` object
  *
- * @param node Expression containing deconstructed props
+ * @param deconstructedProp deconstructed prop
  * @param parameters Group of parameters from deconstructed props
  * @param prevKey to store keys of nested deconstructed props
  */
@@ -673,6 +673,27 @@ const getParametersFromDestructuredProps = (node: t.ObjectPattern): FunctionPara
 };
 
 /**
+ * Convert `consequent` and `alternate` of Conditional expressions into Member Expression
+ * @param node Expression which has to be converted into Member Expression
+ * @param parameters Deconstructored props
+ */
+const modifyTemplateLiterals = (node: t.Expression, parameters: FunctionParameters[]) => {
+  if (t.isTemplateLiteral(node)) {
+    let count = -1;
+    for (const exp of node.expressions) {
+      count++;
+      if (t.isIdentifier(exp)) {
+        const notDestructuredProps = getPropsNotDestructured(exp.name, parameters);
+        node.expressions[count] = t.memberExpression(
+          t.identifier('props'),
+          t.identifier(notDestructuredProps)
+        );
+      }
+    }
+  }
+};
+
+/**
  * Babel was not able to differentiate between destructed prop and global variable if they have same name,
  * resulting in global variable being applied instead.
  * Prevent shadow variables to clash with destructured props by reconstructing props.
@@ -705,36 +726,9 @@ const reconstructDestructedProps = (node: t.ArrowFunctionExpression) => {
         t.identifier('props'),
         t.identifier(notDestructuredProps)
       );
-
-      // TODO consequent & alternate
     }
-    if (t.isTemplateLiteral(node.body.consequent)) {
-      let count = -1;
-      for (const exp of node.body.consequent.expressions) {
-        count++;
-        if (t.isIdentifier(exp)) {
-          const notDestructuredProps = getPropsNotDestructured(exp.name, parameters);
-          node.body.consequent.expressions[count] = t.memberExpression(
-            t.identifier('props'),
-            t.identifier(notDestructuredProps)
-          );
-        }
-      }
-    }
-
-    if (t.isTemplateLiteral(node.body.alternate)) {
-      let count = -1;
-      for (const exp of node.body.alternate.expressions) {
-        count++;
-        if (t.isIdentifier(exp)) {
-          const notDestructuredProps = getPropsNotDestructured(exp.name, parameters);
-          node.body.alternate.expressions[count] = t.memberExpression(
-            t.identifier('props'),
-            t.identifier(notDestructuredProps)
-          );
-        }
-      }
-    }
+    modifyTemplateLiterals(node.body.consequent, parameters);
+    modifyTemplateLiterals(node.body.alternate, parameters);
   }
 };
 
