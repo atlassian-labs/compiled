@@ -8,7 +8,6 @@ const isPrimary = false;
 const Component = styled.div`
   color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};
 `;
-console.log(isPrimary);
 
 export const UsingComponentWithProps = (): JSX.Element => {
   return <Component isPrimary>This should be green</Component>;
