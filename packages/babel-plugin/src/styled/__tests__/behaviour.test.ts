@@ -1194,15 +1194,15 @@ describe('styled component behaviour', () => {
 
       const Component = styled.div\`
         :before {
-          content: \${({ isOpen }) => isOpen ? 'show less' : 'show more'};
+          content: '\${({ isOpen }) => isOpen ? 'show less' : 'show more'}';
         }
       \`;
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1kt91q2u:before{content:show more}',
-      '._1kt911mf:before{content:show less}',
-      '{ax(["",props.isOpen?"_1kt911mf":"_1kt91q2u",props.className])}',
+      '._1kt914bl:before{content:var(--_5jcge)}',
+      "--_5jcge\":ix(isOpen?'show less':'show more'",
+      'ax(["_1kt914bl",props.className])}',
     ]);
   });
 

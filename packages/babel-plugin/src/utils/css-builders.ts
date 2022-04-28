@@ -638,6 +638,17 @@ const getPropsNotDestructured = (
       getPropsNotDestructured(deconstructedProp, param.value, prevKey);
     }
 
+    /**
+     * Deconstructed props may have alias and alias is used throughout the function.
+     * Prop is treated as `key` and alias as `value`.
+     * So we have to find the `value` and replace it with `key`.
+     *
+     * For eg:
+     * ({isPrimary: primary}) => primary ? 'green' : 'red'
+     *
+     * The above code has to be converted into:
+     * (props) => props.isPrimary ? 'green' : 'red'
+     */
     const parameter = parameters.find((x) => x.value == deconstructedProp);
     if (parameter) {
       return prevKey ? prevKey + parameter.key : parameter.key;
@@ -678,18 +689,12 @@ const getParametersFromDestructuredProps = (node: t.ObjectPattern): FunctionPara
  * @param parameters Deconstructored props
  */
 const modifyTemplateLiterals = (node: t.Expression, parameters: FunctionParameters[]) => {
-  if (t.isTemplateLiteral(node)) {
-    let count = -1;
-    for (const exp of node.expressions) {
-      count++;
-      if (t.isIdentifier(exp)) {
-        const notDestructuredProps = getPropsNotDestructured(exp.name, parameters);
-        node.expressions[count] = t.memberExpression(
-          t.identifier('props'),
-          t.identifier(notDestructuredProps)
-        );
-      }
-    }
+  if (t.isTemplateLiteral(node) && t.isIdentifier(node.expressions[0])) {
+    const notDestructuredProps = getPropsNotDestructured(node.expressions[0].name, parameters);
+    node.expressions[0] = t.memberExpression(
+      t.identifier('props'),
+      t.identifier(notDestructuredProps)
+    );
   }
 };
 
