@@ -1,93 +1,79 @@
+import type { ChildNode, Numeric, Word, Func } from 'postcss-values-parser';
+
 import type { ConversionFunction } from './types';
 import { getWidth, isWidth } from './utils';
 
+const isFlexNumber = (node: ChildNode): node is Numeric => node.type === 'numeric' && !node.unit;
+const isFlexBasis = (node: ChildNode): node is Numeric | Word | Func =>
+  (node.type === 'word' && node.value === 'content') || isWidth(node);
+
 /**
- * https://developer.mozilla.org/en-US/docs/Web/CSS/flex
+ * https://drafts.csswg.org/css-flexbox-1/#flex-property
  */
 export const flex: ConversionFunction = (value) => {
   const [left, middle, right] = value.nodes;
-  let grow: number | string = 'auto';
-  let shrink: number | string = 'initial';
-  let basis: number | string = 'none';
 
   switch (value.nodes.length) {
     case 1: {
-      if (left.type === 'numeric' && !left.unit) {
-        grow = left.value;
-        shrink = 1;
-        basis = 0;
+      if (left.type === 'word' && left.value == 'none') {
+        // none is equivalent to 0 0 auto
+        return [
+          { prop: 'flex-grow', value: 0 },
+          { prop: 'flex-shrink', value: 0 },
+          { prop: 'flex-basis', value: 'auto' },
+        ];
+      } else if (isFlexNumber(left)) {
+        // flex grow
+        return [
+          { prop: 'flex-grow', value: left.value },
+          { prop: 'flex-shrink', value: 1 },
+          { prop: 'flex-basis', value: 0 },
+        ];
+      } else if (isFlexBasis(left)) {
+        // flex basis
+        return [
+          { prop: 'flex-grow', value: 1 },
+          { prop: 'flex-shrink', value: 1 },
+          { prop: 'flex-basis', value: getWidth(left) },
+        ];
       }
-      if (left.type === 'word' && left.value !== 'none') {
-        // Invalid
-        return [];
-      }
-
       break;
     }
 
     case 2: {
-      if (left.type === 'numeric' && !left.unit) {
-        grow = left.value;
-      } else {
-        return [];
-      }
-
-      if (middle.type === 'numeric' && !middle.unit) {
-        shrink = middle.value;
-        basis = 0;
-      } else if (isWidth(middle)) {
-        shrink = 1;
-        const value = getWidth(middle);
-        if (value) {
-          basis = value;
-        } else {
-          // Invalid
-          return [];
+      if (isFlexNumber(left)) {
+        if (isFlexNumber(middle)) {
+          // flex grow and flex shrink
+          return [
+            { prop: 'flex-grow', value: left.value },
+            { prop: 'flex-shrink', value: middle.value },
+            { prop: 'flex-basis', value: 0 },
+          ];
+        } else if (isFlexBasis(middle)) {
+          // flex grow and flex basis
+          return [
+            { prop: 'flex-grow', value: left.value },
+            { prop: 'flex-shrink', value: 1 },
+            { prop: 'flex-basis', value: getWidth(middle) },
+          ];
         }
-      } else {
-        // Invalid
-        return [];
       }
-
       break;
     }
 
     case 3: {
-      if (left.type === 'numeric' && !left.unit) {
-        grow = left.value;
-      } else {
-        return [];
+      if (isFlexNumber(left) && isFlexNumber(middle) && isFlexBasis(right)) {
+        // flex grow, flex shrink, and flex basis
+        return [
+          { prop: 'flex-grow', value: left.value },
+          { prop: 'flex-shrink', value: middle.value },
+          { prop: 'flex-basis', value: getWidth(right) },
+        ];
       }
-
-      if (middle.type === 'numeric' && !middle.unit) {
-        shrink = middle.value;
-        basis = 0;
-      }
-
-      if (isWidth(right)) {
-        const value = getWidth(right);
-        if (value) {
-          basis = value;
-        } else {
-          // Invalid
-          return [];
-        }
-      } else {
-        // Invalid
-        return [];
-      }
-
       break;
     }
-
-    default:
-      // Invalid
-      return [];
   }
 
-  return [
-    { prop: 'flex-grow', value: grow },
-    { prop: 'flex-shrink', value: shrink },
-    { prop: 'flex-basis', value: basis },
-  ];
+  // Invalid CSS
+  return [];
 };

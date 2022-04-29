@@ -18,9 +18,9 @@ describe('flex property expander', () => {
 
     expect(result).toMatchInlineSnapshot(`
       "
-            flex-grow: auto;
-            flex-shrink: initial;
-            flex-basis: none;
+            flex-grow: 0;
+            flex-shrink: 0;
+            flex-basis: auto;
           "
     `);
   });
@@ -81,6 +81,34 @@ describe('flex property expander', () => {
     `);
   });
 
+  it('should expand flex auto', () => {
+    const result = transform`
+      flex: 3 2 auto;
+    `;
+
+    expect(result).toMatchInlineSnapshot(`
+      "
+            flex-grow: 3;
+            flex-shrink: 2;
+            flex-basis: auto;
+          "
+    `);
+  });
+
+  it('should expand flex function call', () => {
+    const result = transform`
+      flex: 3 2 calc(50px + 50px);
+    `;
+
+    expect(result).toMatchInlineSnapshot(`
+      "
+            flex-grow: 3;
+            flex-shrink: 2;
+            flex-basis: calc(50px + 50px);
+          "
+    `);
+  });
+
   it('should remove decls for invalid single', () => {
     const result = transform`
       flex: asd;
@@ -131,8 +159,8 @@ describe('flex property expander', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(`
-    "
-        "
-  `);
+          "
+              "
+      `);
   });
 });

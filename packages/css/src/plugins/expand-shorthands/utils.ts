@@ -1,9 +1,9 @@
-import type { Node } from 'postcss-values-parser';
+import type { Node, Numeric, Word, Func } from 'postcss-values-parser';
 
 /**
  * Common global values
  */
-export const globalValues = ['inherit', 'initial', 'unset'];
+export const globalValues = ['inherit', 'initial', 'unset', 'revert', 'revert-layer'];
 
 /**
  * Returns `true` if the node is a color,
@@ -15,6 +15,27 @@ export const isColor = (node: Node): boolean => {
   return (node.type === 'word' || node.type === 'func') && node.isColor;
 };
 
+const widthUnits = new Set([
+  'px',
+  'rem',
+  'em',
+  '%',
+  'pt',
+  'cm',
+  'mm',
+  'Q',
+  'in',
+  'pc',
+  'ex',
+  'ch',
+  'lh',
+  'vw',
+  'vh',
+  'vmin',
+  'vmax',
+  'fr',
+]);
+
 /**
  * Returns `true` if the node is a width,
  * else `false`.
@@ -22,31 +43,20 @@ export const isColor = (node: Node): boolean => {
  * @param node
  */
 export const isWidth = (node: Node): boolean => {
-  if (node.type === 'numeric') {
-    if (
-      [
-        'px',
-        'rem',
-        'em',
-        '%',
-        'pt',
-        'cm',
-        'mm',
-        'Q',
-        'in',
-        'pc',
-        'ex',
-        'ch',
-        'lh',
-        'vw',
-        'vh',
-        'vmin',
-        'vmax',
-        'fr',
-      ].includes(node.unit)
-    ) {
-      return true;
-    }
+  if (node.type === 'numeric' && widthUnits.has(node.unit)) {
+    return true;
+  }
+
+  if (
+    node.type === 'word' &&
+    [...globalValues, 'auto', 'min-content', 'max-content', 'fit-content'].includes(node.value)
+  ) {
+    return true;
+  }
+
+  if (node.type === 'func') {
+    // We don't want to be strict about functions, as we don't know the return type
+    return true;
   }
 
   return false;
@@ -57,14 +67,14 @@ export const isWidth = (node: Node): boolean => {
  *
  * @param node
  */
-export const getWidth = (node: Node): string | undefined => {
+export const getWidth = (node: Numeric | Word | Func): string => {
   if (node.type === 'numeric') {
     return `${node.value}${node.unit}`;
   }
 
-  if (node.type === 'word') {
-    return node.value;
+  if (node.type === 'func') {
+    return `${node.name}${node.params}`;
   }
 
-  return undefined;
+  return node.value;
 };
