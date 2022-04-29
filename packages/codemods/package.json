@@ -23,7 +23,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "src"
+    "src",
+    "codeshift.config.js"
   ],
   "resolutions": {
     "unset-value": "^2.0.1"
