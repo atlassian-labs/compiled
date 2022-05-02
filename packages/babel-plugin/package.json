@@ -38,7 +38,7 @@
     "@compiled/benchmark": "1.0.1",
     "@types/babel__core": "^7.1.19",
     "@types/benchmark": "^2.1.1",
-    "@types/resolve": "^1.20.1",
+    "@types/resolve": "^1.20.2",
     "benchmark": "^2.1.4",
     "prettier": "^2.5.1",
     "ts-node": "^10.7.0",

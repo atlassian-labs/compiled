@@ -35,6 +35,6 @@
     "jscodeshift": "^0.13.1"
   },
   "devDependencies": {
-    "@types/jscodeshift": "^0.11.4"
+    "@types/jscodeshift": "^0.11.5"
   }
 }
