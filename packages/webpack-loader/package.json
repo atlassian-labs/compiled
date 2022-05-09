@@ -20,13 +20,13 @@
     "src"
   ],
   "dependencies": {
-    "@babel/core": "^7.17.9",
+    "@babel/core": "^7.17.10",
     "@compiled/babel-plugin": "^0.15.0",
     "@compiled/babel-plugin-strip-runtime": "^0.14.1",
     "@compiled/css": "^0.8.2",
     "@compiled/react": "0.10.4",
     "@compiled/utils": "^0.6.16",
-    "enhanced-resolve": "^5.9.2",
+    "enhanced-resolve": "^5.9.3",
     "loader-utils": "^2.0.2",
     "webpack-sources": "^3.2.3"
   },
@@ -37,7 +37,7 @@
     "mini-css-extract-plugin": "^1.6.2",
     "react": "^17.0.2",
     "ts-node": "^10.7.0",
-    "tsconfig-paths": "^3.13.0",
+    "tsconfig-paths": "^3.14.1",
     "webpack": "^5.71.0"
   },
   "peerDependencies": {
