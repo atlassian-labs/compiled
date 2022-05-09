@@ -339,7 +339,7 @@ describe('styled component behaviour', () => {
       const _2 = \\"._bfhk1lco{background-color:var(--_kcgnsd)}\\";
       const _ = \\"._bfhkhk3l{background-color:var(--_16ldrz5)}\\";
       export const BadgeSkeleton = forwardRef(
-        ({ as: C = \\"span\\", style, isLoading, loading: l, ...props }, ref) => (
+        ({ as: C = \\"span\\", style, ...props }, ref) => (
           <CC>
             <CS>{[_, _2, _3, _4, _5, _6]}</CS>
             <C
@@ -356,8 +356,8 @@ describe('styled component behaviour', () => {
               ref={ref}
               className={ax([
                 \\"\\",
-                isLoading ? \\"_bfhkhk3l\\" : \\"_bfhk1lco\\",
-                l ? \\"_syaz1c44\\" : \\"_syazs2l2\\",
+                props.isLoading ? \\"_bfhkhk3l\\" : \\"_bfhk1lco\\",
+                props.loading ? \\"_syaz1c44\\" : \\"_syazs2l2\\",
                 propz.loading ? \\"_1h6d1c5w\\" : \\"_1h6d1qzc\\",
                 props.className,
               ])}
@@ -427,7 +427,6 @@ describe('styled component behaviour', () => {
         padding: 8px;
       \`;
     `);
-
     expect(actual).toIncludeMultiple([
       '._syaz5scu{color:red}',
       '._syaz13q2{color:blue}',
@@ -441,7 +440,7 @@ describe('styled component behaviour', () => {
       '._ca0qftgi{padding-top:8px}',
       '._19itlf8h{border:2px solid blue}',
       '._1wyb1ul9{font-size:30px}',
-      'ax(["_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.isPrimary?"_syaz13q2":"_syaz5scu",isDone?"_1hms1911":"_1hmsglyw",isClamped?"_1yyj11wp":"_1yyjkb7n",props.className])',
+      'ax(["_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.isPrimary?"_syaz13q2":"_syaz5scu",props.isDone?"_1hms1911":"_1hmsglyw",props.isClamped?"_1yyj11wp":"_1yyjkb7n",props.className])',
     ]);
   });
 
@@ -479,7 +478,7 @@ describe('styled component behaviour', () => {
       '._18u019bv{margin-left:10px}',
       '._2hwx14y2{margin-right:5px}',
       '._2hwx19bv{margin-right:10px}',
-      'ax(["",props.isPrimary?"_syaz13q2":"_syaz5scu",isLast?"_18u014y2":"_18u019bv",isLast?"_2hwx14y2":"_2hwx19bv",props.className])',
+      'ax(["",props.isPrimary?"_syaz13q2":"_syaz5scu",props.isLast?"_18u014y2":"_18u019bv",props.isLast?"_2hwx14y2":"_2hwx19bv",props.className])',
     ]);
   });
 
@@ -529,9 +528,9 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       '._1bsb1osq{width:100%}',
-      '._1bsby2bc{width:var(--_znisgh)}',
-      'style={{...style,"--_znisgh":ix(CUSTOM_WIDTH,"px")}}',
-      `ax([\"\",useCustomWidth?\"_1bsby2bc\":\"_1bsb1osq\",props.className])`,
+      '._1bsb18ks{width:var(--_1w7p4it)}',
+      'style={{...style,"--_1w7p4it":ix(props.CUSTOM_WIDTH,"px")}}',
+      `ax(["",props.useCustomWidth?"_1bsb18ks":"_1bsb1osq",props.className])`,
     ]);
   });
 
@@ -546,9 +545,9 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       '._1bsb1osq{width:100%}',
-      '._1bsb9tg7{width:var(--_1ea5ebz)}',
-      '--_1ea5ebz":ix(width,"px"',
-      'ax(["",width?"_1bsb9tg7":"_1bsb1osq",props.className]',
+      '._1bsb1exv{width:var(--_jvf4nj)}',
+      '--_jvf4nj":ix(props.size.width,"px"',
+      'ax(["",props.size.width?"_1bsb1exv":"_1bsb1osq",props.className]',
     ]);
   });
 
@@ -563,9 +562,9 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       '._1bsb1osq{width:100%}',
-      '"._1bsb9tg7{width:var(--_1ea5ebz)}',
-      '--_1ea5ebz":ix(width,"px")',
-      'ax(["",width?"_1bsb9tg7":"_1bsb1osq",props.className])',
+      '"._1bsbvfya{width:var(--_4qc1aa)}',
+      '--_4qc1aa":ix(props.elementWidth,"px")',
+      'ax(["",props.elementWidth?"_1bsbvfya":"_1bsb1osq",props.className])',
     ]);
   });
 
@@ -638,11 +637,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '{as:C="div",style,width,...props}',
+      '{as:C="div",style,...props},ref)',
       '._1bsb1osq{width:100%}',
-      '._1bsb9tg7{width:var(--_1ea5ebz)}',
-      '"--_1ea5ebz":ix(width,"px")',
-      'className={ax(["",width?"_1bsb9tg7":"_1bsb1osq",props.className])}',
+      '._1bsb17ei{width:var(--_1fymg38)}',
+      '"--_1fymg38":ix(props.width,"px")',
+      'className={ax(["",props.width?"_1bsb17ei":"_1bsb1osq",props.className])}',
     ]);
   });
 
@@ -656,10 +655,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '{as:C="div",style,width,...props}',
-      '._1bsb1r3a{width:var(--_1ea5ebz))}',
-      '"--_1ea5ebz":ix(width,"px")',
-      'className={ax(["",width&&"_1bsb1r3a",props.className])}',
+      '{as:C="div",style,...props},ref)',
+      '_1bsbwitj{width:var(--_1fymg38))}',
+      '"--_1fymg38":ix(props.width,"px")',
+      'className={ax(["",props.width&&"_1bsbwitj",props.className])}',
     ]);
   });
 
@@ -1166,9 +1165,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsb60qm{width:calc(10px + var(--_15nkcot))}',
-      '"--_15nkcot":ix(isLarge?100:50,"px")',
-      '{ax(["_1bsb60qm",props.className])}',
+      '_1bsb16om{width:calc(10px + var(--_13fw46q))}',
+      '"--_13fw46q":ix(isLarge?100:50,"px")',
+      '{ax(["_1bsb16om",props.className])}',
     ]);
   });
 
@@ -1183,9 +1182,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsb1j3u{width:calc(var(--_15nkcot) - 10px)}',
-      '"--_15nkcot":ix(isLarge?100:50,"px")',
-      '{ax(["_1bsb1j3u",props.className])}',
+      '._1bsb1k9r{width:calc(var(--_13fw46q) - 10px)}',
+      '"--_13fw46q":ix(isLarge?100:50,"px")',
+      '{ax(["_1bsb1k9r",props.className])}',
     ]);
   });
 
@@ -1201,9 +1200,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1kt9x4xj:before{content:var(--_1boodpz)}',
-      '"--_1boodpz":ix(isOpen?\'show less\':\'show more\',"\'","\'")',
-      '{ax(["_1kt9x4xj",props.className])}',
+      '._1kt914bl:before{content:var(--_5jcge)}',
+      "--_5jcge\":ix(isOpen?'show less':'show more'",
+      'ax(["_1kt914bl",props.className])}',
     ]);
   });
 
@@ -1227,7 +1226,7 @@ describe('styled component behaviour', () => {
       '._syaz1gy6{color:yellow}',
       '._bfw71j9v:hover{border:1px solid white}',
       '_bfw7l468:hover{border:2px solid black}',
-      '{ax(["_11q7qm1v",isSelected?"_syaz13q2":"_syaz1gy6",isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
+      '{ax(["_11q7qm1v",props.isSelected?"_syaz13q2":"_syaz1gy6",props.isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
     ]);
   });
 
@@ -1248,7 +1247,7 @@ describe('styled component behaviour', () => {
       '._syaz1gy6{color:yellow}',
       '._bfw71j9v:hover{border:1px solid white}',
       '_bfw7l468:hover{border:2px solid black}',
-      '{ax(["",isSelected?"_syaz13q2":"_syaz1gy6",isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
+      '{ax(["",props.isSelected?"_syaz13q2":"_syaz1gy6",props.isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
     ]);
   });
 
@@ -1280,7 +1279,7 @@ describe('styled component behaviour', () => {
       '._vw871qok:hover:before{content:\\"Don\'t break closure parsing }\\"}',
       '._1jly1kw7:hover:before{display:inherit}',
       '._1jly1nu9:hover:before{display:inline}',
-      '{ax(["_irr31i1c _vw871qok",isSelected?"_syaz13q2":"_syaz1gy6",isHover?"_bfw71j9v":"_bfw7l468",isBefore?"_1jly1kw7":"_1jly1nu9",props.className])}',
+      '{ax(["_irr31i1c _vw871qok",props.isSelected?"_syaz13q2":"_syaz1gy6",props.isHover?"_bfw71j9v":"_bfw7l468",props.isBefore?"_1jly1kw7":"_1jly1nu9",props.className])}',
     ]);
   });
 
@@ -1308,7 +1307,7 @@ describe('styled component behaviour', () => {
       '._irr31i1c:hover{background-color:cyan}',
       '._vn891l7b:focus{border-radius:3px}',
       '._vn89yh40:focus{border-radius:2px}',
-      '{ax(["_1oey5scu _irr31i1c",isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
+      '{ax(["_1oey5scu _irr31i1c",props.isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
     ]);
   });
 
@@ -1336,7 +1335,7 @@ describe('styled component behaviour', () => {
       '._irr31i1c:hover{background-color:cyan}',
       '._vn891l7b:focus{border-radius:3px}',
       '._vn89yh40:focus{border-radius:2px}',
-      '{ax(["_1oey5scu _irr31i1c",isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
+      '{ax(["_1oey5scu _irr31i1c",props.isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
     ]);
   });
 
@@ -1364,7 +1363,7 @@ describe('styled component behaviour', () => {
       '._irr31i1c:hover{background-color:cyan}',
       '._vn891l7b:focus{border-radius:3px}',
       '._vn89yh40:focus{border-radius:2px}',
-      '{ax(["_1oey5scu _irr31i1c",isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
+      '{ax(["_1oey5scu _irr31i1c",props.isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
     ]);
   });
 });
