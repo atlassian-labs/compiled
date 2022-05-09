@@ -16124,7 +16124,7 @@ ts-transform-define@^0.1.10:
   dependencies:
     typescript "^3.7.0"
 
-tsconfig-paths@^3.12.0, tsconfig-paths@^3.13.0, tsconfig-paths@^3.14.1:
+tsconfig-paths@^3.14.1:
   version "3.14.1"
   resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.14.1.tgz#ba0734599e8ea36c862798e920bcf163277b137a"
   integrity sha512-fxDhWnFSLt3VuTwtvJt5fpwxBHg5AdKWMsgcPOOIilyjymcYVZoCQF8fvFRezCNfblEXmi+PcM1eYHeOAgXCOQ==
