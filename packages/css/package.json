@@ -25,10 +25,10 @@
   },
   "dependencies": {
     "@compiled/utils": "^0.6.16",
-    "autoprefixer": "^10.4.4",
+    "autoprefixer": "^10.4.7",
     "convert-source-map": "^1.8.0",
     "cssnano-preset-default": "^5.2.7",
-    "postcss": "^8.4.12",
+    "postcss": "^8.4.13",
     "postcss-nested": "^5.0.6",
     "postcss-normalize-whitespace": "^5.1.1",
     "postcss-selector-parser": "^6.0.10",
