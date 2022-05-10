@@ -4,8 +4,9 @@ export default {
   title: 'css prop/variable clash',
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isPrimary = false;
-const Component = styled.div`
+const Component = styled.div<{ isPrimary?: boolean }>`
   color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};
 `;
 
