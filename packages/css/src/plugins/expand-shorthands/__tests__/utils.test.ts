@@ -48,6 +48,22 @@ describe('expand utils', () => {
     expect(actual).toBe(false);
   });
 
+  it('should return true for fit-content', () => {
+    const value = parse(`fit-content`);
+
+    const actual = isWidth(value.nodes[0]);
+
+    expect(actual).toBe(true);
+  });
+
+  it('should return true for fit-content(5em)', () => {
+    const value = parse(`fit-content(5em)`);
+
+    const actual = isWidth(value.nodes[0]);
+
+    expect(actual).toBe(true);
+  });
+
   it('should return true for a valid color word', () => {
     const value = parse('red');
 
@@ -82,6 +98,14 @@ describe('expand utils', () => {
 
   it('should return true for a valid color hsl', () => {
     const value = parse('hsl(188, 97%, 28%)');
+
+    const actual = isColor(value.nodes[0]);
+
+    expect(actual).toBe(true);
+  });
+
+  it('should return true for a valid color hsla', () => {
+    const value = parse('hsla(188, 97%, 28%, .3)');
 
     const actual = isColor(value.nodes[0]);
 
