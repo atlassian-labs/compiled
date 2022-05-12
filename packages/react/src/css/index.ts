@@ -31,14 +31,14 @@ import { createSetupError } from '../utils/error';
  * <div css={redText} />
  * ```
  */
-export default function css<TProps = void>(
+export default function css<TProps = unknown>(
   styles: TemplateStringsArray,
   ...interpolations: CssFunction<TProps>[]
 ): CSSProps<TProps>;
 
-export default function css<T = void>(styles: CssObject<T> | CssObject<T>[]): CSSProps<T>;
+export default function css<T = unknown>(styles: CssObject<T> | CssObject<T>[]): CSSProps<T>;
 
-export default function css<T = void>(
+export default function css<T = unknown>(
   _styles: TemplateStringsArray | CssObject<T> | CssObject<T>[],
   ..._interpolations: CssFunction[]
 ): CSSProps<T> {
