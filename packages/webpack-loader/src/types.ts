@@ -49,6 +49,12 @@ export interface CompiledLoaderOptions {
    * Set to true if CompiledExtractPlugin has been set up correctly
    */
   [pluginName]?: boolean;
+
+  /**
+   * Build in a node environment.
+   * Defaults to `false`.
+   */
+  ssr?: boolean;
 }
 
 export interface CompiledExtractPluginOptions {
