@@ -35,7 +35,7 @@ const getCSSAssets = (assets: Compilation['assets']) => {
  *
  * @param compiler
  */
-const forceCSSIntoOneStyleSheet = (compiler: Compiler) => {
+const forceCSSIntoOneStyleSheet = (compiler: Compiler, options: CompiledExtractPluginOptions) => {
   const cacheGroup = {
     compiledCSS: {
       name: styleSheetName,
@@ -61,7 +61,10 @@ const forceCSSIntoOneStyleSheet = (compiler: Compiler) => {
     compiler.options.optimization.splitChunks.cacheGroups = {};
   }
 
-  Object.assign(compiler.options.optimization.splitChunks.cacheGroups, cacheGroup);
+  Object.assign(
+    compiler.options.optimization.splitChunks.cacheGroups,
+    options.cacheGroupExclude ? {} : cacheGroup
+  );
 };
 
 /**
@@ -110,7 +113,7 @@ export class CompiledExtractPlugin {
     const { RawSource } = getSources(compiler);
 
     pushNodeModulesExtractLoader(compiler, this.#options);
-    forceCSSIntoOneStyleSheet(compiler);
+    forceCSSIntoOneStyleSheet(compiler, this.#options);
 
     compiler.hooks.compilation.tap(pluginName, (compilation) => {
       setPluginConfiguredOption(compilation.options.module.rules, pluginName);

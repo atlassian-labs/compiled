@@ -26,6 +26,14 @@ describe('CompiledExtractPlugin', () => {
     ]);
   }, 10000);
 
+  it('should not generate a single style sheet if cacheGroup is disabled', async () => {
+    const actual = await bundle(join(fixturesPath, 'local-styles.tsx'), {
+      disableCacheGroup: true,
+    });
+
+    expect(actual[assetName]).toBe(undefined);
+  }, 10000);
+
   it('extracts local styles', async () => {
     const actual = await bundle(join(fixturesPath, 'local-styles.tsx'));
 
