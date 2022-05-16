@@ -2,6 +2,10 @@ import { render } from '@testing-library/react';
 import React from 'react';
 import type { ComponentType } from 'react';
 
+jest.mock('../is-server-environment', () => ({
+  isServerEnvironment: () => false,
+}));
+
 describe('<Style />', () => {
   let consoleErrorSpy: jest.SpyInstance;
 

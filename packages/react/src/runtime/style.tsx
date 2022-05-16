@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { analyzeCssInDev } from './dev-warnings';
-import { isNodeEnvironment } from './is-node';
+import { isServerEnvironment } from './is-server-environment';
 import insertRule, { getStyleBucketName, styleBucketOrdering } from './sheet';
 import { useCache } from './style-cache';
 import type { Bucket, StyleSheetOpts } from './types';
@@ -22,7 +22,7 @@ export default function Style(props: StyleProps): JSX.Element | null {
   }
 
   if (props.children.length) {
-    if (isNodeEnvironment()) {
+    if (isServerEnvironment()) {
       const bucketedSheets: Partial<Record<Bucket, string>> = {};
       let hasSheets = false;
 
