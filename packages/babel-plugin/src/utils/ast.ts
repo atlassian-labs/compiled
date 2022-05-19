@@ -2,6 +2,10 @@ import type { NodePath } from '@babel/traverse';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
 
+import type { Metadata } from '../types';
+
+import { evaluateExpression } from './evaluate-expression';
+
 /**
  * Returns the nodes path including the scope of a parent.
  * @param node
@@ -63,13 +67,31 @@ export const buildCodeFrameError = (
  *
  * @param node
  */
-export const getKey = (node: t.Expression): string => {
+export const getKey = (node: t.Expression, meta: Metadata): string => {
   if (t.isIdentifier(node)) {
     return node.name;
   }
 
   if (t.isStringLiteral(node)) {
     return node.value;
+  }
+  if (t.isTemplateLiteral(node)) {
+    let key = '';
+    for (let i = 0; i < node.quasis.length; i += 1) {
+      key += node.quasis[i].value.raw;
+
+      if (i < node.expressions.length) {
+        const expression = node.expressions[i];
+        if (t.isTSType(expression)) {
+          throw new Error(`${node.type} has a type instead of a value`);
+        }
+        const evaluatedExpression = evaluateExpression(expression, meta);
+        meta = evaluatedExpression.meta;
+        key += getKey(evaluatedExpression.value, meta);
+      }
+    }
+
+    return key;
   }
 
   throw new Error(`${node.type} has no name.'`);

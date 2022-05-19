@@ -458,7 +458,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 
   node.properties.forEach((prop) => {
     if (t.isObjectProperty(prop)) {
-      const key = getKey(prop.computed ? evaluateExpression(prop.key, meta).value : prop.key);
+      const key = getKey(prop.computed ? evaluateExpression(prop.key, meta).value : prop.key, meta);
       // Don't use prop.value directly as it extracts constants from identifiers if needed.
       const { value: propValue, meta: updatedMeta } = evaluateExpression(
         prop.value as t.Expression,
@@ -663,17 +663,20 @@ const getPropsNotDestructured = (
  * @param node ArrowFunction that has deconstructed `props` as parameters
  * @returns Array of parameters
  */
-const getParametersFromDestructuredProps = (node: t.ObjectPattern): FunctionParameters[] => {
+const getParametersFromDestructuredProps = (
+  node: t.ObjectPattern,
+  meta: Metadata
+): FunctionParameters[] => {
   let parameters: FunctionParameters[] = [];
   const properties = node.properties;
   parameters = properties
     .map((po) => {
       if (t.isObjectProperty(po)) {
         const params: FunctionParameters = {
-          key: getKey(po.key),
+          key: getKey(po.key, meta),
           value: t.isObjectPattern(po.value)
-            ? getParametersFromDestructuredProps(po.value)
-            : getKey(po.value as t.Expression),
+            ? getParametersFromDestructuredProps(po.value, meta)
+            : getKey(po.value as t.Expression, meta),
         };
         return params;
       }
@@ -686,7 +689,7 @@ const getParametersFromDestructuredProps = (node: t.ObjectPattern): FunctionPara
 /**
  * Convert `consequent` and `alternate` of Conditional expressions into Member Expression
  * @param node Expression which has to be converted into Member Expression
- * @param parameters Deconstructored props
+ * @param parameters Deconstructed props
  */
 const modifyTemplateLiterals = (node: t.Expression, parameters: FunctionParameters[]) => {
   if (t.isTemplateLiteral(node) && t.isIdentifier(node.expressions[0])) {
@@ -720,8 +723,8 @@ const modifyTemplateLiterals = (node: t.Expression, parameters: FunctionParamete
  *
  * @param node Node we're interested in extracting props from.
  */
-const reconstructDestructedProps = (node: t.ArrowFunctionExpression) => {
-  const parameters = getParametersFromDestructuredProps(node.params[0] as t.ObjectPattern);
+const reconstructDestructedProps = (node: t.ArrowFunctionExpression, meta: Metadata) => {
+  const parameters = getParametersFromDestructuredProps(node.params[0] as t.ObjectPattern, meta);
 
   if (t.isConditionalExpression(node.body)) {
     if (t.isIdentifier(node.body.test)) {
@@ -755,7 +758,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       t.isArrowFunctionExpression(nodeExpression) &&
       t.isObjectPattern(nodeExpression.params[0])
     ) {
-      reconstructDestructedProps(nodeExpression);
+      reconstructDestructedProps(nodeExpression, meta);
     }
 
     if (
