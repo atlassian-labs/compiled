@@ -83,6 +83,8 @@ export const getKey = (node: t.Expression, meta: Metadata): string => {
       if (i < node.expressions.length) {
         const expression = node.expressions[i];
         if (t.isTSType(expression)) {
+          // Passed a type instead of a value
+          // e.g. `${any}`
           throw new Error(`${node.type} has a type instead of a value`);
         }
         const evaluatedExpression = evaluateExpression(expression, meta);

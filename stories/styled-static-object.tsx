@@ -41,7 +41,7 @@ export const ObjectLiteralMapWithKeys = (): JSX.Element => (
 export const ObjectLiteralWithSelector = (): JSX.Element => {
   return (
     <BackgroundWithSelector>
-      <div id="id-selector">Green text in selector div</div>
+      <div id="id-selector">Green box in selector div</div>
     </BackgroundWithSelector>
   );
 };

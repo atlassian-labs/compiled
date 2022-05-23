@@ -328,7 +328,7 @@ describe('module traversal', () => {
     expect(actual).toIncludeMultiple(['{color:red}', '{background-color:blue}']);
   });
 
-  it('handles template literal imported from external modules', () => {
+  it('handles template literal with imported selectors from external modules', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 
@@ -341,14 +341,14 @@ describe('module traversal', () => {
       });
 
       <BackgroundWithSelector>
-        <div id="id-selector">Green text in selector div</div>
+        <div id="id-selector">Green box in selector div</div>
       </BackgroundWithSelector>;
     `);
 
     expect(actual).toInclude('._tcqlbf54 #id-selector{background-color:green}');
   });
 
-  it('handles template literal imported from external modules with substitution', () => {
+  it('handles template literal with imported selectors from external modules with substitution', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 
@@ -361,7 +361,7 @@ describe('module traversal', () => {
       });
 
       <BackgroundWithSelector>
-        <div id="id-selector">Green text in selector div</div>
+        <div id="id-selector">Green box in selector div</div>
       </BackgroundWithSelector>;
     `);
 
