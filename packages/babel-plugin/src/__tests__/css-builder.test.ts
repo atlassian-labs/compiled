@@ -1,6 +1,24 @@
 import { transform } from '../test-utils';
 
 describe('css builder', () => {
+  it.only('foo', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      const ContentContainerExperiment = styled.div({
+          background: 'purple',
+      });
+
+        const wrapper = mount(
+          <ContentContainerExperiment
+              onClick={() => {
+                  console.log('=========');
+              }}
+          />,
+      );
+      wrapper.simulate('click');
+    `);
+  });
+
   it('should keep nested unconditional css together', () => {
     const actual = transform(`
       import '@compiled/react';

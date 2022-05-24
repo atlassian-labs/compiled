@@ -44,6 +44,7 @@ const forceCSSIntoOneStyleSheet = (compiler: Compiler, options: CompiledExtractP
       // We merge only CSS from Compiled.
       test: /css-loader\/compiled-css\.css$/,
       enforce: true,
+      priority: Infinity,
     },
   };
 
