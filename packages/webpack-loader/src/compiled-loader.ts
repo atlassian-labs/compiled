@@ -26,7 +26,8 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     nonce = undefined,
     resolve = {},
     extensions = undefined,
-    babelPlugins = [],
+    parserBabelPlugins = [],
+    transformerBabelPlugins = [],
     [pluginName]: isPluginEnabled = false,
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
@@ -53,7 +54,10 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           extensions: {
             type: 'array',
           },
-          babelPlugins: {
+          parserBabelPlugins: {
+            type: 'array',
+          },
+          transformerBabelPlugins: {
             type: 'array',
           },
           [pluginName]: {
@@ -69,7 +73,8 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     nonce,
     resolve,
     extensions,
-    babelPlugins,
+    parserBabelPlugins,
+    transformerBabelPlugins,
     [pluginName]: isPluginEnabled,
   };
 }
@@ -103,6 +108,7 @@ export default async function compiledLoader(
       filename: this.resourcePath,
       caller: { name: 'compiled' },
       rootMode: 'upward-optional',
+      plugins: options.transformerBabelPlugins ?? undefined,
     });
 
     // Setup the default resolver, where webpack will merge any passed in options with the default
@@ -124,6 +130,7 @@ export default async function compiledLoader(
       sourceMaps: true,
       filename: this.resourcePath,
       plugins: [
+        ...(options.transformerBabelPlugins ?? []),
         options.extract && [
           '@compiled/babel-plugin-strip-runtime',
           {

@@ -289,7 +289,7 @@ export const resolveBinding = (
 
     // Babel Plugin cannot differentiate between a variable and reserved keywords (e.g keyframes)
     // It will therefore try to parse and resolve both.
-    // This workaround shortcircuits when we call `resolveBinding` on a Compiled module.
+    // This workaround short circuits when we call `resolveBinding` on a Compiled module.
     // Documented in Issue ##1010: https://github.com/atlassian-labs/compiled/issues/1010
     if (moduleImportSource.startsWith('@compiled/')) {
       // Ignore @compiled modules.
@@ -317,7 +317,7 @@ export const resolveBinding = (
         parse(moduleCode, {
           sourceType: 'module',
           sourceFilename: modulePath,
-          plugins: meta.state.opts.babelPlugins || [],
+          plugins: meta.state.opts.parserBabelPlugins || [],
         }),
     });
 

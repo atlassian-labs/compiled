@@ -48,9 +48,11 @@ export interface PluginOptions {
   extensions?: string[];
 
   /**
-   * List of babel plugins to be applied to evaluated files
+   * List of the parse babel plugins to be applied to evaluated files
+   *
+   * See the [babel docs](https://babeljs.io/docs/en/plugins/#syntax-plugins)
    */
-  babelPlugins?: ParserPlugin[];
+  parserBabelPlugins?: ParserPlugin[];
 }
 
 export interface State extends PluginPass {

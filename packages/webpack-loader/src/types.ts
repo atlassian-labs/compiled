@@ -1,3 +1,4 @@
+import type { PluginItem } from '@babel/core';
 import type { ParserPlugin } from '@babel/parser';
 import type { ResolveOptions, RuleSetCondition } from 'webpack';
 
@@ -41,9 +42,18 @@ export interface CompiledLoaderOptions {
   extensions?: string[];
 
   /**
-   * List of babel plugins to be applied to evaluated files
+   * List of transformer babel plugins to be applied to evaluated files
+   *
+   * See the [babel docs](https://babeljs.io/docs/en/plugins/#transform-plugins)
    */
-  babelPlugins?: ParserPlugin[];
+  transformerBabelPlugins?: PluginItem[];
+
+  /**
+   * List of parse babel plugins to be applied to evaluated files
+   *
+   * See the [babel docs](https://babeljs.io/docs/en/plugins/#syntax-plugins)
+   */
+  parserBabelPlugins?: ParserPlugin[];
 
   /**
    * Set to true if CompiledExtractPlugin has been set up correctly
