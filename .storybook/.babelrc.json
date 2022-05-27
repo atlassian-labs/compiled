@@ -1,4 +1,19 @@
 {
-  "plugins": [["@compiled/babel-plugin", { "importReact": false }]],
+  "plugins": [
+    [
+      "@compiled/babel-plugin",
+      {
+        "importReact": false,
+        "transformerBabelPlugins": [
+          [
+            "@babel/plugin-proposal-decorators",
+            {
+              "legacy": true
+            }
+          ]
+        ]
+      }
+    ]
+  ],
   "presets": ["@babel/preset-typescript", ["@babel/preset-react", { "runtime": "automatic" }]]
 }

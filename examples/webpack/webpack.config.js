@@ -28,6 +28,7 @@ module.exports = {
                 '@babel/preset-typescript',
                 ['@babel/preset-react', { runtime: 'automatic' }],
               ],
+              plugins: [['@babel/plugin-proposal-decorators', { legacy: true }]],
             },
           },
           {
@@ -36,7 +37,8 @@ module.exports = {
               extract: extractCSS,
               importReact: false,
               extensions: ['.js', '.jsx', '.ts', '.tsx', '.customjsx'],
-              babelPlugins: ['typescript'],
+              parserBabelPlugins: ['typescript'],
+              transformerBabelPlugins: [['@babel/plugin-proposal-decorators', { legacy: true }]],
             },
           },
         ],

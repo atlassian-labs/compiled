@@ -1,8 +1,9 @@
 {
   "plugins": [
+    ["@babel/plugin-proposal-decorators", { "legacy": true }],
     [
       "@compiled/babel-plugin",
-      { "nonce": "\"k0Mp1lEd\"", "importReact": false, "babelPlugins": ["typescript"] }
+      { "nonce": "\"k0Mp1lEd\"", "importReact": false, "parserBabelPlugins": ["typescript"] }
     ]
   ],
   "presets": [
