@@ -49,6 +49,12 @@ export interface CompiledLoaderOptions {
    * Set to true if CompiledExtractPlugin has been set up correctly
    */
   [pluginName]?: boolean;
+
+  /**
+   * Build in a node environment.
+   * Defaults to `false`.
+   */
+  ssr?: boolean;
 }
 
 export interface CompiledExtractPluginOptions {
@@ -69,4 +75,10 @@ export interface CompiledExtractPluginOptions {
    * See: https://webpack.js.org/configuration/module/#condition
    */
   nodeModulesExclude?: RuleSetCondition;
+
+  /**
+   * When set will prevent additional cacheGroup chunk to be created.
+   * Eg. This may be required in SSR to prevent side-effects
+   */
+  cacheGroupExclude?: boolean;
 }

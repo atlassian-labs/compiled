@@ -10,13 +10,20 @@ import type { ResolveOptions } from '../index';
 export interface BundleOptions {
   extract?: boolean;
   disableExtractPlugin?: boolean;
+  disableCacheGroup?: boolean;
   mode: 'development' | 'production';
   resolve?: ResolveOptions;
 }
 
 export function bundle(
   entry: string,
-  { extract = false, disableExtractPlugin = false, mode, resolve = {} }: BundleOptions
+  {
+    extract = false,
+    disableExtractPlugin = false,
+    disableCacheGroup = false,
+    mode,
+    resolve = {},
+  }: BundleOptions
 ): Promise<Record<string, string>> {
   const outputPath = join(__dirname, 'dist');
   const compiler = webpack({
@@ -62,7 +69,9 @@ export function bundle(
     },
     plugins: [
       new MiniCssExtractPlugin({ filename: 'static/[name].css' }),
-      ...(disableExtractPlugin ? [] : [new CompiledExtractPlugin()]),
+      ...(disableExtractPlugin
+        ? []
+        : [new CompiledExtractPlugin(disableCacheGroup ? { cacheGroupExclude: true } : {})]),
     ],
     resolve: {
       alias: {
