@@ -16,6 +16,10 @@ const getKeyframe = (name: string) => {
     .join('\n');
 };
 
+jest.mock('../../runtime/is-server-environment', () => ({
+  isServerEnvironment: () => false,
+}));
+
 describe('keyframes', () => {
   beforeAll(() => {
     process.env.CACHE = 'false';
