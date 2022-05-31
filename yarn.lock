@@ -3779,10 +3779,10 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/jest@*", "@types/jest@^27.4.1":
-  version "27.4.1"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-27.4.1.tgz#185cbe2926eaaf9662d340cc02e548ce9e11ab6d"
-  integrity sha512-23iPJADSmicDVrWk+HT58LMJtzLAnB2AgIzplQuq/bSrGaxCrlvRFjGbXmamnnk/mAmCdLStiGqggu28ocUyiw==
+"@types/jest@*", "@types/jest@^27.5.1":
+  version "27.5.1"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-27.5.1.tgz#2c8b6dc6ff85c33bcd07d0b62cb3d19ddfdb3ab9"
+  integrity sha512-fUy7YRpT+rHXto1YlL+J9rs0uLGyiqVt3ZOTQR+4ROc47yNl8WLdVLgUloBRhOxP1PZvguHl44T3H0wAWxahYQ==
   dependencies:
     jest-matcher-utils "^27.0.0"
     pretty-format "^27.0.0"
@@ -3844,10 +3844,10 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@^17.0.31":
-  version "17.0.31"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.31.tgz#a5bb84ecfa27eec5e1c802c6bbf8139bdb163a5d"
-  integrity sha512-AR0x5HbXGqkEx9CadRH3EBYx/VkiUgZIhP4wvPn/+5KIsgpNoyFaRlVe0Zlx9gRtg8fA06a9tskE2MSN7TcG4Q==
+"@types/node@*", "@types/node@^17.0.36":
+  version "17.0.36"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.36.tgz#c0d5f2fe76b47b63e0e0efc3d2049a9970d68794"
+  integrity sha512-V3orv+ggDsWVHP99K3JlwtH20R7J4IhI1Kksgc+64q5VxgfRkQG8Ws3MFm/FZOKDYGy9feGFlZ70/HpCNe9QaA==
 
 "@types/node@^12.7.1":
   version "12.20.37"
@@ -3919,10 +3919,10 @@
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.4.tgz#cd667bcfdd025213aafb7ca5915a932590acdcdc"
   integrity sha512-EEhsLsD6UsDM1yFhAvy0Cjr6VwmpMWqFBCb9w07wVugF7w9nfajxLuVmngTIpgS6svCnm6Vaw+MZhoDCKnOfsw==
 
-"@types/react-dom@<18.0.0", "@types/react-dom@^17.0.16":
-  version "17.0.16"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-17.0.16.tgz#7caba93cf2806c51e64d620d8dff4bae57e06cc4"
-  integrity sha512-DWcXf8EbMrO/gWnQU7Z88Ws/p16qxGpPyjTKTpmBSFKeE+HveVubqGO1CVK7FrwlWD5MuOcvh8gtd0/XO38NdQ==
+"@types/react-dom@<18.0.0", "@types/react-dom@^17.0.17":
+  version "17.0.17"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-17.0.17.tgz#2e3743277a793a96a99f1bf87614598289da68a1"
+  integrity sha512-VjnqEmqGnasQKV0CWLevqMTXBYG9GbwuE6x3VetERLh0cq2LTptFE73MrQi2S7GkKXCf2GgwItB/melLnxfnsg==
   dependencies:
     "@types/react" "^17"
 
@@ -3933,10 +3933,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^17", "@types/react@^17.0.44":
-  version "17.0.44"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.44.tgz#c3714bd34dd551ab20b8015d9d0dbec812a51ec7"
-  integrity sha512-Ye0nlw09GeMp2Suh8qoOv0odfgCoowfM/9MG6WeRD60Gq9wS90bdkdRtYbRkNhXOpG4H+YXGvj4wOWhAC0LJ1g==
+"@types/react@*", "@types/react@^17", "@types/react@^17.0.45":
+  version "17.0.45"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.45.tgz#9b3d5b661fd26365fefef0e766a1c6c30ccf7b3f"
+  integrity sha512-YfhQ22Lah2e3CHPsb93tRwIGNiSwkuz1/blk4e6QrWS0jQzCSNbGLtOEYhPg02W0yGTTmpajp7dCTbBAMN3qsg==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
