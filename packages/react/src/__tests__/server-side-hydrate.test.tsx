@@ -3,8 +3,8 @@ import { hydrate } from 'react-dom';
 
 import { CC, CS } from '../runtime';
 
-jest.mock('../runtime/is-node', () => ({
-  isNodeEnvironment: () => false,
+jest.mock('../runtime/is-server-environment', () => ({
+  isServerEnvironment: () => false,
 }));
 
 describe('server side hydrate', () => {

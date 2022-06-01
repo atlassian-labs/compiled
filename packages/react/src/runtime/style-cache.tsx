@@ -2,16 +2,16 @@ import * as React from 'react';
 import { createContext, useContext } from 'react';
 
 import { isCacheDisabled } from './cache';
-import { isNodeEnvironment } from './is-node';
+import { isServerEnvironment } from './is-server-environment';
 import type { ProviderComponent, UseCacheHook } from './types';
 
 /**
  * Cache to hold already used styles.
  * React Context on the server - singleton object on the client.
  */
-const Cache: any = isNodeEnvironment() ? createContext<Record<string, true> | null>(null) : {};
+const Cache: any = isServerEnvironment() ? createContext<Record<string, true> | null>(null) : {};
 
-if (!isNodeEnvironment()) {
+if (!isServerEnvironment()) {
   /**
    * Iterates through all found style elements generated when server side rendering.
    *
@@ -32,7 +32,7 @@ export const useCache: UseCacheHook = () => {
     return {};
   }
 
-  if (isNodeEnvironment()) {
+  if (isServerEnvironment()) {
     // On the server we use React Context to we don't leak the cache between SSR calls.
     // During runtime this hook isn't conditionally called - it is at build time that the flow gets decided.
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -50,7 +50,7 @@ export const useCache: UseCacheHook = () => {
  * On the browser this turns into a fragment with no React Context.
  */
 const StyleCacheProvider: ProviderComponent = (props) => {
-  if (isNodeEnvironment()) {
+  if (isServerEnvironment()) {
     // This code path isn't conditionally called at build time - safe to ignore.
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const inserted = useCache();

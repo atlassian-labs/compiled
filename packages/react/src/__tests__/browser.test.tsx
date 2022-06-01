@@ -3,6 +3,10 @@ import { styled } from '@compiled/react';
 import { render } from '@testing-library/react';
 import React from 'react';
 
+jest.mock('../runtime/is-server-environment', () => ({
+  isServerEnvironment: () => false,
+}));
+
 describe('browser', () => {
   beforeEach(() => {
     // Reset style tags in head before each test so that it will remove styles
