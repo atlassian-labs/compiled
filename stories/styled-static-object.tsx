@@ -1,5 +1,7 @@
 import { styled } from '@compiled/react';
 
+import { ID_SELECTOR } from './mixins';
+
 export default {
   title: 'styled/static object',
 };
@@ -17,6 +19,13 @@ const Background = styled.div({
   backgroundColor: 'blue',
 });
 
+const BackgroundWithSelector = styled.div({
+  backgroundColor: 'red',
+  [`${ID_SELECTOR}`]: {
+    backgroundColor: 'green',
+  },
+});
+
 export const ObjectLiteral = (): JSX.Element => <Thing>hello world</Thing>;
 
 export const StyledArgs = (): JSX.Element => <Box>HELLO WORLD</Box>;
@@ -28,3 +37,11 @@ export const ObjectLiteralMapWithKeys = (): JSX.Element => (
     ))}
   </div>
 );
+
+export const ObjectLiteralWithSelector = (): JSX.Element => {
+  return (
+    <BackgroundWithSelector>
+      <div id="id-selector">Green box in selector div</div>
+    </BackgroundWithSelector>
+  );
+};

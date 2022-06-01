@@ -24,3 +24,5 @@ export const primaryCallExpression = css({
 });
 
 export const spacing = 8;
+
+export const ID_SELECTOR = '#id-selector';

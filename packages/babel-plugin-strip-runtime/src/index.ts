@@ -22,7 +22,7 @@ export default declare<PluginPass>((api) => {
     visitor: {
       Program: {
         exit(path) {
-          if (this.opts.styleSheetPath) {
+          if (!this.opts.compiledRequireExclude && this.opts.styleSheetPath) {
             preserveLeadingComments(path);
             this.styleRules.forEach((rule) => {
               // Each found atomic rule will create a new import that uses the styleSheetPath provided.

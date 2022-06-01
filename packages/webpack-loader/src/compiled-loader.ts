@@ -29,6 +29,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     parserBabelPlugins = [],
     transformerBabelPlugins = [],
     [pluginName]: isPluginEnabled = false,
+    ssr = false,
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -63,6 +64,9 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           [pluginName]: {
             type: 'boolean',
           },
+          ssr: {
+            type: 'boolean',
+          },
         },
       });
 
@@ -76,6 +80,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     parserBabelPlugins,
     transformerBabelPlugins,
     [pluginName]: isPluginEnabled,
+    ssr,
   };
 }
 
@@ -135,6 +140,7 @@ export default async function compiledLoader(
           '@compiled/babel-plugin-strip-runtime',
           {
             styleSheetPath: `@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${styleSheetName}.css`,
+            compiledRequireExclude: options.ssr,
           },
         ],
         options.bake && [

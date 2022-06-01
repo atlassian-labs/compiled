@@ -13,4 +13,10 @@ export interface ParcelTransformerOpts extends BabelPluginOpts {
    * See the [babel docs](https://babeljs.io/docs/en/plugins/#transform-plugins)
    */
   transformerBabelPlugins?: PluginItem[];
+
+  /**
+   * Builds in a node environment.
+   * Defaults to `false`.
+   */
+  ssr?: boolean;
 }

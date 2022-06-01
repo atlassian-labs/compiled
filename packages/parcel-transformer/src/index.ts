@@ -29,6 +29,7 @@ export default new Transformer<ParcelTransformerOpts>({
     const contents = {
       extract: false,
       importReact: true,
+      ssr: false,
     };
 
     if (conf) {
@@ -103,6 +104,7 @@ export default new Transformer<ParcelTransformerOpts>({
           '@compiled/babel-plugin-strip-runtime',
           {
             styleSheetPath: 'compiled-css!',
+            compiledRequireExclude: config.ssr,
           } as BabelStripRuntimePluginOptions,
         ],
       ].filter(toBoolean),

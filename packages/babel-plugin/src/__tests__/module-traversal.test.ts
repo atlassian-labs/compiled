@@ -328,6 +328,46 @@ describe('module traversal', () => {
     expect(actual).toIncludeMultiple(['{color:red}', '{background-color:blue}']);
   });
 
+  it('handles template literal with imported selectors from external modules', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      import { ID_SELECTOR } from '../__fixtures__/mixins/strings';
+
+      const BackgroundWithSelector = styled.div({
+        [\`\${ID_SELECTOR}\`]: {
+          backgroundColor: 'green',
+        },
+      });
+
+      <BackgroundWithSelector>
+        <div id="id-selector">Green box in selector div</div>
+      </BackgroundWithSelector>;
+    `);
+
+    expect(actual).toInclude('._tcqlbf54 #id-selector{background-color:green}');
+  });
+
+  it('handles template literal with imported selectors from external modules with substitution', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      import { JOINED_SELECTOR } from '../__fixtures__/mixins/strings';
+
+      const BackgroundWithSelector = styled.div({
+        [\`\${JOINED_SELECTOR}\`]: {
+          backgroundColor: 'green',
+        },
+      });
+
+      <BackgroundWithSelector>
+        <div id="id-selector">Green box in selector div</div>
+      </BackgroundWithSelector>;
+    `);
+
+    expect(actual).toInclude('._15rzbf54 #joined-selector{background-color:green}');
+  });
+
   describe('should call onIncludedFiles with the filepath', () => {
     let onIncludedFiles: Mock;
 

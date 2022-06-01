@@ -10,16 +10,18 @@ const testStyleSheetPath =
   '@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/compiled-css.css';
 const regexToFindRequireStatements =
   /(require\('@compiled\/webpack-loader\/css-loader!@compiled\/webpack-loader\/css-loader\/compiled-css\.css\?style=.*;)/g;
+const testSSR = true;
 
 const transform = (
   code: string,
   opts: {
     styleSheetPath?: string;
+    compiledRequireExclude?: boolean;
     run: 'both' | 'bake' | 'extract';
     runtime: 'automatic' | 'classic';
   }
 ): string => {
-  const { styleSheetPath, run, runtime } = opts;
+  const { styleSheetPath, compiledRequireExclude, run, runtime } = opts;
   const bake = run === 'both' || run === 'bake';
   const extract = run === 'both' || run === 'extract';
 
@@ -29,7 +31,7 @@ const transform = (
     filename: join(__dirname, 'app.tsx'),
     plugins: [
       ...(bake ? [[compiledBabelPlugin, { importReact: runtime === 'classic' }]] : []),
-      ...(extract ? [[stripRuntimeBabelPlugin, { styleSheetPath }]] : []),
+      ...(extract ? [[stripRuntimeBabelPlugin, { styleSheetPath, compiledRequireExclude }]] : []),
     ],
     presets: [['@babel/preset-react', { runtime }]],
   });
@@ -91,6 +93,17 @@ describe('babel-plugin-strip-runtime using source code', () => {
           `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
         ]);
       });
+
+      it('does not add require statement in a node environment', () => {
+        const actual = transform(code, {
+          styleSheetPath: testStyleSheetPath,
+          compiledRequireExclude: testSSR,
+          run: 'both',
+          runtime,
+        });
+
+        expect(actual.match(regexToFindRequireStatements)).toEqual(null);
+      });
     });
 
     describe('with the classic runtime', () => {
@@ -128,6 +141,17 @@ describe('babel-plugin-strip-runtime using source code', () => {
           `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
           `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
         ]);
+      });
+
+      it('does not add require statement in a node environment', () => {
+        const actual = transform(code, {
+          styleSheetPath: testStyleSheetPath,
+          compiledRequireExclude: testSSR,
+          run: 'both',
+          runtime,
+        });
+
+        expect(actual.match(regexToFindRequireStatements)).toEqual(null);
       });
     });
   });
@@ -169,6 +193,18 @@ describe('babel-plugin-strip-runtime using source code', () => {
           `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
         ]);
       });
+
+      it('does not add require statement in a node environment', () => {
+        const baked = transform(code, { run: 'bake', runtime });
+        const actual = transform(baked, {
+          styleSheetPath: testStyleSheetPath,
+          compiledRequireExclude: testSSR,
+          run: 'extract',
+          runtime,
+        });
+
+        expect(actual.match(regexToFindRequireStatements)).toEqual(null);
+      });
     });
 
     describe('with the classic runtime', () => {
@@ -207,6 +243,18 @@ describe('babel-plugin-strip-runtime using source code', () => {
           `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
           `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
         ]);
+      });
+
+      it('does not add require statement in a node environment', () => {
+        const baked = transform(code, { run: 'bake', runtime });
+        const actual = transform(baked, {
+          styleSheetPath: testStyleSheetPath,
+          compiledRequireExclude: testSSR,
+          run: 'extract',
+          runtime,
+        });
+
+        expect(actual.match(regexToFindRequireStatements)).toEqual(null);
       });
     });
   });
