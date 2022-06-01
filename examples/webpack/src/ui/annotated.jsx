@@ -6,7 +6,6 @@ class Annotated extends React.Component {
   static annotated = false;
 
   render() {
-    debugger;
     return Annotated.annotated ? (
       <div css={{ backgroundColor: 'green' }}>Annotation class with green background div</div>
     ) : (
