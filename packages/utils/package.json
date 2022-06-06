@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "convert-source-map": "^1.8.0",
-    "source-map": "^0.7.3"
+    "source-map": "^0.7.4"
   },
   "devDependencies": {
     "@types/convert-source-map": "^1.5.2"
