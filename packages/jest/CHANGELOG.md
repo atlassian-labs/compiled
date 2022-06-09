@@ -1,5 +1,11 @@
 # @compiled/jest
 
+## 0.7.3
+
+### Patch Changes
+
+- ad4d257: Update TypeScript and Flow types to support function calls and resolve incorrect typing
+
 ## 0.7.2
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @compiled/parcel-transformer
 
+## 0.9.0
+
+### Minor Changes
+
+- e1ac2ed: Rename babelPlugins configuration option to parserBabelPlugins and add transformerBabelPlugins option
+- e93ed68: Added configurable options to prevent side effects in SSR
+
+### Patch Changes
+
+- Updated dependencies [e1ac2ed]
+- Updated dependencies [4f8f2aa]
+- Updated dependencies [d3b5fb9]
+- Updated dependencies [e93ed68]
+  - @compiled/babel-plugin@0.16.0
+  - @compiled/babel-plugin-strip-runtime@0.16.0
+
 ## 0.8.1
 
 ### Patch Changes

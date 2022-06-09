@@ -1,5 +1,15 @@
 # @compiled/react
 
+## 0.11.0
+
+### Minor Changes
+
+- 1cab89a: check node environment based on `process` instead of `window`
+
+### Patch Changes
+
+- ad4d257: Update TypeScript and Flow types to support function calls and resolve incorrect typing
+
 ## 0.10.4
 
 ### Patch Changes

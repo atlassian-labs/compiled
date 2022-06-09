@@ -1,5 +1,11 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.16.0
+
+### Minor Changes
+
+- e93ed68: Added configurable options to prevent side effects in SSR
+
 ## 0.14.1
 
 ### Patch Changes

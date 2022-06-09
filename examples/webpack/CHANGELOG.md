@@ -1,5 +1,17 @@
 # @compiled/webpack-app
 
+## 1.1.2
+
+### Patch Changes
+
+- e1ac2ed: Rename babelPlugins configuration option to parserBabelPlugins and add transformerBabelPlugins option
+- Updated dependencies [ad4d257]
+- Updated dependencies [e1ac2ed]
+- Updated dependencies [1cab89a]
+- Updated dependencies [e93ed68]
+  - @compiled/react@0.11.0
+  - @compiled/webpack-loader@0.9.0
+
 ## 1.1.1
 
 ### Patch Changes

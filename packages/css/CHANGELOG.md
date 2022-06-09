@@ -1,5 +1,12 @@
 # @compiled/css
 
+## 0.8.3
+
+### Patch Changes
+
+- ad4d257: Update TypeScript and Flow types to support function calls and resolve incorrect typing
+- 8384893: Fix flex shorthand expansion not following CSS specification
+
 ## 0.8.2
 
 ### Patch Changes

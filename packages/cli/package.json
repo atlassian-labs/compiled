@@ -1,6 +1,6 @@
 {
   "name": "@compiled/cli",
-  "version": "2.1.7",
+  "version": "2.1.8",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-cli",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -28,7 +28,7 @@
     "unset-value": "^2.0.1"
   },
   "dependencies": {
-    "@compiled/codemods": "^0.5.0",
+    "@compiled/codemods": "^0.6.0",
     "app-root-path": "^3.0.0",
     "chalk": "^4.1.2",
     "enquirer": "^2.3.6",
