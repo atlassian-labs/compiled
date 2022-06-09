@@ -1,5 +1,15 @@
 # @compiled/codemods
 
+## 0.6.0
+
+### Minor Changes
+
+- 16f4d45: Adds Codeshift configuration file as an alternate codemod runner.
+
+### Patch Changes
+
+- 1018a26: Adds codeshift.config.js to the NPM allow list so it is accessible by the @codeshift/cli at runtime
+
 ## 0.5.0
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @compiled/parcel-app
 
+## 1.1.5
+
+### Patch Changes
+
+- e1ac2ed: Rename babelPlugins configuration option to parserBabelPlugins and add transformerBabelPlugins option
+- Updated dependencies [ad4d257]
+- Updated dependencies [1cab89a]
+  - @compiled/react@0.11.0
+
 ## 1.1.4
 
 ### Patch Changes

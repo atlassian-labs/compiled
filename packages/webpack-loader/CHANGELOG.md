@@ -1,5 +1,27 @@
 # @compiled/webpack-loader
 
+## 0.9.0
+
+### Minor Changes
+
+- e1ac2ed: Rename babelPlugins configuration option to parserBabelPlugins and add transformerBabelPlugins option
+- e93ed68: Added configurable options to prevent side effects in SSR
+
+### Patch Changes
+
+- ad4d257: Update TypeScript and Flow types to support function calls and resolve incorrect typing
+- Updated dependencies [ad4d257]
+- Updated dependencies [8384893]
+- Updated dependencies [e1ac2ed]
+- Updated dependencies [4f8f2aa]
+- Updated dependencies [d3b5fb9]
+- Updated dependencies [1cab89a]
+- Updated dependencies [e93ed68]
+  - @compiled/css@0.8.3
+  - @compiled/react@0.11.0
+  - @compiled/babel-plugin@0.16.0
+  - @compiled/babel-plugin-strip-runtime@0.16.0
+
 ## 0.8.7
 
 ### Patch Changes

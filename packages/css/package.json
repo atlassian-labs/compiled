@@ -1,6 +1,6 @@
 {
   "name": "@compiled/css",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-css",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",

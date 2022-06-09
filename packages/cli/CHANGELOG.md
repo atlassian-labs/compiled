@@ -1,5 +1,13 @@
 # @compiled/cli
 
+## 2.1.8
+
+### Patch Changes
+
+- Updated dependencies [1018a26]
+- Updated dependencies [16f4d45]
+  - @compiled/codemods@0.6.0
+
 ## 2.1.7
 
 ### Patch Changes

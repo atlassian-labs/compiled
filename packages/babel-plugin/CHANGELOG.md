@@ -1,5 +1,19 @@
 # @compiled/babel-plugin
 
+## 0.16.0
+
+### Minor Changes
+
+- e1ac2ed: Rename babelPlugins configuration option to parserBabelPlugins and add transformerBabelPlugins option
+
+### Patch Changes
+
+- 4f8f2aa: Fixed shadow variables clashing with destructured props
+- d3b5fb9: Support template literals as a selector in an object
+- Updated dependencies [ad4d257]
+- Updated dependencies [8384893]
+  - @compiled/css@0.8.3
+
 ## 0.15.0
 
 ### Minor Changes
