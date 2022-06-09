@@ -3,6 +3,7 @@ import '@compiled/react';
 import { Suspense, lazy } from 'react';
 
 import { primary } from './common/constants';
+import Annotated from './ui/annotated';
 import {
   CustomFileExtensionStyled,
   customFileExtensionCss,
@@ -21,5 +22,6 @@ export const App = () => (
     </Suspense>
     <CustomFileExtensionStyled>Custom File Extension Styled</CustomFileExtensionStyled>
     <div css={customFileExtensionCss}>Custom File Extension CSS</div>
+    <Annotated />
   </>
 );

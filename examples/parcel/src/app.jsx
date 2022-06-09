@@ -8,6 +8,7 @@ import '@compiled/react';
 // import { parcelResolverAliasStyles } from 'alias!../lib/parcel-resolver-alias.ts';
 
 import { primary } from './constants';
+import Annotated from './ui/annotated';
 import {
   CustomFileExtensionStyled,
   customFileExtensionCss,
@@ -22,5 +23,6 @@ export const App = () => (
     {/*<div css={parcelResolverAliasStyles}>custom resolver</div>*/}
     <CustomFileExtensionStyled>Custom File Extension Styled</CustomFileExtensionStyled>
     <div css={customFileExtensionCss}>Custom File Extension CSS</div>
+    <Annotated />
   </>
 );

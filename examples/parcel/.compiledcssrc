@@ -7,8 +7,16 @@
     ".tsx",
     ".customjsx"
   ],
-  "babelPlugins": [
+  "parserBabelPlugins": [
     "typescript"
+  ],
+  "transformerBabelPlugins": [
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        "legacy": true
+      }
+    ]
   ],
   "extract": true
 }
