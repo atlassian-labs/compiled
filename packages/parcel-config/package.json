@@ -13,8 +13,7 @@
   "sideEffects": false,
   "main": "./config.json",
   "files": [
-    "dist",
-    "src"
+    "config.json"
   ],
   "dependencies": {
     "@compiled/parcel-optimizer": "^0.1.1",
