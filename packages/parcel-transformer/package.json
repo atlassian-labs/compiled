@@ -25,13 +25,13 @@
     "@compiled/babel-plugin": "^0.16.0",
     "@compiled/babel-plugin-strip-runtime": "^0.16.0",
     "@compiled/utils": "^0.6.16",
-    "@parcel/plugin": "^2.3.2",
-    "@parcel/source-map": "^2.0.2"
+    "@parcel/plugin": "^2.6.0",
+    "@parcel/source-map": "^2.0.5"
   },
   "devDependencies": {
-    "@parcel/core": "^2.3.1",
-    "@parcel/fs": "^2.3.1",
-    "@parcel/types": "^2.3.1",
+    "@parcel/core": "^2.6.0",
+    "@parcel/fs": "^2.6.0",
+    "@parcel/types": "^2.6.0",
     "@types/babel__core": "^7.1.19"
   },
   "engines": {

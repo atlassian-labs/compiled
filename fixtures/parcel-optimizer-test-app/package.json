@@ -8,6 +8,6 @@
   },
   "devDependencies": {
     "@compiled/parcel-optimizer": "*",
-    "@parcel/config-default": "^2.3.1"
+    "@parcel/config-default": "^2.6.0"
   }
 }
