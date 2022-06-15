@@ -1,9 +1,17 @@
 {
-  "extends": ["@parcel/config-default", "@compiled/parcel-config"],
+  "extends": [
+    "@parcel/config-default",
+    "@compiled/parcel-config"
+  ],
   "transformers": {
+    "*.{js,mjs,jsx,cjs,ts,tsx}": [
+      // Manually remove the babel transformer so we don't use the root babel config
+      "@compiled/parcel-transformer",
+      "@parcel/transformer-js",
+      "@parcel/transformer-react-refresh-wrap"
+    ],
     "*.customjsx": [
       "@compiled/parcel-transformer",
-      "@parcel/transformer-babel",
       "@parcel/transformer-js",
       "@parcel/transformer-react-refresh-wrap",
       "..."
