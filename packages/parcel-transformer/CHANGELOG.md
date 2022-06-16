@@ -1,5 +1,11 @@
 # @compiled/parcel-transformer
 
+## 0.9.1
+
+### Patch Changes
+
+- a7df222: Use parser babel plugins in parcel transformer
+
 ## 0.9.0
 
 ### Minor Changes
