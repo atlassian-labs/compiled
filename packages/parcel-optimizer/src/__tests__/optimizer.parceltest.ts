@@ -44,7 +44,7 @@ describe('optimizer', () => {
       "
 
       .color-blue {
-        color: blue;
+        color: #00f;
       }
 
       .color-blue:focus {
@@ -65,8 +65,9 @@ describe('optimizer', () => {
         .media-min-width-border {
           border: 2px solid red;
         }
+
         .media-min-width-border:before {
-          content: 'large screen';
+          content: \\"large screen\\";
         }
       }
       "

@@ -31,6 +31,11 @@ describe('resolver', () => {
 
     const asset = Array.from(changedAssets.values()).find((asset) => asset.type === 'css');
     const code = await asset?.getCode();
-    expect(code).toMatchInlineSnapshot(`"._syaz5scu{color:red}"`);
+    expect(code).toMatchInlineSnapshot(`
+      "._syaz5scu {
+        color: red;
+      }
+      "
+    `);
   }, 30000);
 });
