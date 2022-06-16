@@ -62,6 +62,9 @@ export default new Transformer<ParcelTransformerOpts>({
       filename: asset.filePath,
       caller: { name: 'compiled' },
       rootMode: 'upward-optional',
+      parserOpts: {
+        plugins: config.parserBabelPlugins ?? undefined,
+      },
       plugins: config.transformerBabelPlugins ?? undefined,
     });
 
@@ -90,6 +93,9 @@ export default new Transformer<ParcelTransformerOpts>({
       babelrc: false,
       configFile: false,
       sourceMaps: true,
+      parserOpts: {
+        plugins: config.parserBabelPlugins ?? undefined,
+      },
       plugins: [
         ...(config.transformerBabelPlugins ?? []),
         asset.isSource && [

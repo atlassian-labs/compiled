@@ -8,7 +8,8 @@
     ".customjsx"
   ],
   "parserBabelPlugins": [
-    "typescript"
+    "typescript",
+    "jsx"
   ],
   "transformerBabelPlugins": [
     [
