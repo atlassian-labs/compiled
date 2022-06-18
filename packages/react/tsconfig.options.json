@@ -1,5 +1,6 @@
 {
   "extends": "../tsconfig.options.json",
+  "exclude": ["dist"],
   "compilerOptions": {
     "rootDir": "src",
     "plugins": [
