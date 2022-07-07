@@ -33,6 +33,9 @@ export const transform = (code: string, options: TransformOptions = {}): string 
       pluginOptions.importReact === false
         ? [['@babel/preset-react', { runtime: 'automatic' }]]
         : [],
+    parserOpts: {
+      plugins: pluginOptions.parserBabelPlugins,
+    },
   });
 
   if (!fileResult || !fileResult.code) {
@@ -52,5 +55,5 @@ export const transform = (code: string, options: TransformOptions = {}): string 
     codeSnippet = babelCode;
   }
 
-  return pretty ? format(codeSnippet, { parser: 'babel' }) : codeSnippet;
+  return pretty ? format(codeSnippet, { parser: 'babel-ts' }) : codeSnippet;
 };
