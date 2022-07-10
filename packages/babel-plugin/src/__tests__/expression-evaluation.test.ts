@@ -454,5 +454,46 @@ describe('import specifiers', () => {
         'ax(["_19pk19vg"])',
       ]);
     });
+
+    it('statically evaluates a TS const expression', () => {
+      const actual = transform(
+        `
+        import '@compiled/react';
+
+        const styles = { color: 'red' } as const;
+
+        <div css={{ ...styles }} />;
+      `,
+        {
+          parserBabelPlugins: ['typescript', 'jsx'],
+        }
+      );
+
+      expect(actual).toIncludeMultiple(['._syaz5scu{color:red}', 'ax(["_syaz5scu"])']);
+    });
+
+    it('statically evaluates a TS const expression in a resolved binding', () => {
+      const actual = transform(
+        `
+        import { styled } from "@compiled/react";
+
+        const style = {
+          backgroundColor: 'red'
+        } as const;
+
+        const Component = styled.div({
+          "input": style,
+        });
+      `,
+        {
+          parserBabelPlugins: ['typescript', 'jsx'],
+        }
+      );
+
+      expect(actual).toIncludeMultiple([
+        '._1rwq5scu input{background-color:red}',
+        'ax(["_1rwq5scu", props.className]',
+      ]);
+    });
   });
 });

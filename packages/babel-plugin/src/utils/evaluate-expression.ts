@@ -128,41 +128,48 @@ export const evaluateExpression = (
   let value: t.Node | undefined | null = undefined;
   let updatedMeta: Metadata = meta;
 
+  // TypeScript AST nodes can be skipped as we don't care about types
+  const targetExpression = t.isTSAsExpression(expression) ? expression.expression : expression;
+
   // --------------
   // NOTE: We are recursively calling evaluateExpression() which is then going to try and evaluate it
   // multiple times. This may or may not be a performance problem - when looking for quick wins perhaps
   // there is something we could do better here.
   // --------------
 
-  if (t.isIdentifier(expression)) {
+  if (t.isIdentifier(targetExpression)) {
     ({ value, meta: updatedMeta } = traverseIdentifier(
-      expression,
+      targetExpression,
       updatedMeta,
       evaluateExpression
     ));
-  } else if (t.isMemberExpression(expression)) {
+  } else if (t.isMemberExpression(targetExpression)) {
     ({ value, meta: updatedMeta } = traverseMemberExpression(
-      expression,
+      targetExpression,
       updatedMeta,
       evaluateExpression
     ));
-  } else if (t.isFunction(expression)) {
-    ({ value, meta: updatedMeta } = traverseFunction(expression, updatedMeta, evaluateExpression));
-  } else if (t.isCallExpression(expression)) {
+  } else if (t.isFunction(targetExpression)) {
+    ({ value, meta: updatedMeta } = traverseFunction(
+      targetExpression,
+      updatedMeta,
+      evaluateExpression
+    ));
+  } else if (t.isCallExpression(targetExpression)) {
     ({ value, meta: updatedMeta } = traverseCallExpression(
-      expression,
+      targetExpression,
       updatedMeta,
       evaluateExpression
     ));
-  } else if (t.isBinaryExpression(expression)) {
+  } else if (t.isBinaryExpression(targetExpression)) {
     ({ value, meta: updatedMeta } = traverseBinaryExpression(
-      expression,
+      targetExpression,
       updatedMeta,
       evaluateExpression
     ));
-  } else if (t.isUnaryExpression(expression)) {
+  } else if (t.isUnaryExpression(targetExpression)) {
     ({ value, meta: updatedMeta } = traverseUnaryExpression(
-      expression,
+      targetExpression,
       updatedMeta,
       evaluateExpression
     ));
@@ -184,10 +191,10 @@ export const evaluateExpression = (
     // It's preferable to use the identifier than its result if it can't be statically evaluated.
     // E.g. say we got the result of an identifier `foo` as `bar()` -- its more preferable to return
     // `foo` instead of `bar()` for a single source of truth.
-    const babelEvaluatedNode = babelEvaluateExpression(value, updatedMeta, expression);
+    const babelEvaluatedNode = babelEvaluateExpression(value, updatedMeta, targetExpression);
     return createResultPair(babelEvaluatedNode, updatedMeta);
   }
 
-  const babelEvaluatedNode = babelEvaluateExpression(expression, updatedMeta);
+  const babelEvaluatedNode = babelEvaluateExpression(targetExpression, updatedMeta);
   return createResultPair(babelEvaluatedNode, updatedMeta);
 };
