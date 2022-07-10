@@ -129,10 +129,7 @@ export const evaluateExpression = (
   let updatedMeta: Metadata = meta;
 
   // TypeScript AST nodes can be skipped as we don't care about types
-  let targetExpression = expression;
-  if (t.isTSAsExpression(expression)) {
-    targetExpression = expression.expression;
-  }
+  const targetExpression = t.isTSAsExpression(expression) ? expression.expression : expression;
 
   // --------------
   // NOTE: We are recursively calling evaluateExpression() which is then going to try and evaluate it
