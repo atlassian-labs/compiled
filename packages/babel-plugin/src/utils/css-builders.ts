@@ -894,6 +894,10 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     return { css: [{ type: 'unconditional', css: node.value }], variables: [] };
   }
 
+  if (t.isTSAsExpression(node)) {
+    return buildCss(node.expression, meta);
+  }
+
   if (t.isTemplateLiteral(node)) {
     return extractTemplateLiteral(node, meta);
   }
