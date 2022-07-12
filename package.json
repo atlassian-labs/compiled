@@ -112,7 +112,7 @@
     "size-limit": "^7.0.8",
     "storybook-addon-performance": "^0.16.1",
     "storybook-addon-pseudo-states": "^1.0.0",
-    "ts-node": "^10.7.0",
+    "ts-node": "^10.8.2",
     "ts-transform-define": "^0.1.10",
     "tsconfig-paths": "^3.14.1",
     "ttypescript": "^1.5.13",
