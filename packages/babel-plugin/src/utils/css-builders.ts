@@ -27,7 +27,6 @@ import type {
   LogicalCssItem,
   SheetCssItem,
   PartialBindingWithMeta,
-  FunctionParameters,
 } from './types';
 
 /**
@@ -527,7 +526,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
           Given statments like:
           fontWeight: (props) => props.isBold ? 'bold': 'normal',
           marginTop: (props) => `${props.isLast ? 5 : 10}px`,
-
+           
           Convert them to:
 
           `font-weight: ${(props) => props.isBold ? 'bold': 'normal'};`
@@ -621,126 +620,6 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 };
 
 /**
- * Creates and returns `props` object
- *
- * @param deconstructedProp deconstructed prop
- * @param parameters Group of parameters from deconstructed props
- * @param prevKey to store keys of nested deconstructed props
- */
-const getPropsNotDestructured = (
-  deconstructedProp: string,
-  parameters: FunctionParameters[],
-  prevKey?: string
-): string => {
-  for (const param of parameters) {
-    if (Array.isArray(param.value)) {
-      prevKey = param.key + '.';
-      getPropsNotDestructured(deconstructedProp, param.value, prevKey);
-    }
-
-    /**
-     * Deconstructed props may have alias and alias is used throughout the function.
-     * Prop is treated as `key` and alias as `value`.
-     * So we have to find the `value` and replace it with `key`.
-     *
-     * For eg:
-     * ({isPrimary: primary}) => primary ? 'green' : 'red'
-     *
-     * The above code has to be converted into:
-     * (props) => props.isPrimary ? 'green' : 'red'
-     */
-    const parameter = parameters.find((x) => x.value == deconstructedProp);
-    if (parameter) {
-      return prevKey ? prevKey + parameter.key : parameter.key;
-    }
-  }
-
-  return prevKey ? prevKey + deconstructedProp : deconstructedProp;
-};
-/**
- * Generates array of parameters from deconstructed `props`
- *
- * @param node ArrowFunction that has deconstructed `props` as parameters
- * @returns Array of parameters
- */
-const getParametersFromDestructuredProps = (
-  node: t.ObjectPattern,
-  meta: Metadata
-): FunctionParameters[] => {
-  let parameters: FunctionParameters[] = [];
-  const properties = node.properties;
-  parameters = properties
-    .map((po) => {
-      if (t.isObjectProperty(po)) {
-        const params: FunctionParameters = {
-          key: getKey(po.key, meta),
-          value: t.isObjectPattern(po.value)
-            ? getParametersFromDestructuredProps(po.value, meta)
-            : getKey(po.value as t.Expression, meta),
-        };
-        return params;
-      }
-      return;
-    })
-    .filter(Boolean) as FunctionParameters[];
-  return parameters;
-};
-
-/**
- * Convert `consequent` and `alternate` of Conditional expressions into Member Expression
- * @param node Expression which has to be converted into Member Expression
- * @param parameters Deconstructed props
- */
-const modifyTemplateLiterals = (node: t.Expression, parameters: FunctionParameters[]) => {
-  if (t.isTemplateLiteral(node) && t.isIdentifier(node.expressions[0])) {
-    const notDestructuredProps = getPropsNotDestructured(node.expressions[0].name, parameters);
-    node.expressions[0] = t.memberExpression(
-      t.identifier('props'),
-      t.identifier(notDestructuredProps)
-    );
-  }
-};
-
-/**
- * Babel was not able to differentiate between destructed prop and global variable if they have same name,
- * resulting in global variable being applied instead.
- * Prevent shadow variables to clash with destructured props by reconstructing props.
- *
- * For example, given:
- * ```
- * const isPrimary = true;
- * const Component = styled.div`
- *  color: ${({ isPrimary }) => (isPrimary ? 'green' : 'red')};
- * `;
- *```
- * it will be converted to
- * ```
- * const Component = styled.div`
- *  color: ${(props) => (props.isPrimary ? 'green' : 'red')};
- *  * `;
- * ```
- * to avoid name clash
- *
- * @param node Node we're interested in extracting props from.
- */
-const reconstructDestructedProps = (node: t.ArrowFunctionExpression, meta: Metadata) => {
-  const parameters = getParametersFromDestructuredProps(node.params[0] as t.ObjectPattern, meta);
-
-  if (t.isConditionalExpression(node.body)) {
-    if (t.isIdentifier(node.body.test)) {
-      const notDestructuredProps = getPropsNotDestructured(node.body.test.name, parameters);
-      node.params[0] = t.identifier('props');
-      node.body.test = t.memberExpression(
-        t.identifier('props'),
-        t.identifier(notDestructuredProps)
-      );
-    }
-    modifyTemplateLiterals(node.body.consequent, parameters);
-    modifyTemplateLiterals(node.body.alternate, parameters);
-  }
-};
-
-/**
  * Extracts CSS data from a template literal node.
  *
  * @param node Node we're interested in extracting CSS from.
@@ -753,13 +632,6 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
   // Quasis are the string pieces of the template literal - the parts around the interpolations
   const literalResult = node.quasis.reduce<string>((acc, quasi, index): string => {
     const nodeExpression = node.expressions[index] as t.Expression | undefined;
-
-    if (
-      t.isArrowFunctionExpression(nodeExpression) &&
-      t.isObjectPattern(nodeExpression.params[0])
-    ) {
-      reconstructDestructedProps(nodeExpression, meta);
-    }
 
     if (
       !nodeExpression ||

@@ -519,6 +519,6 @@ describe('styled object call expression', () => {
       });
     `);
 
-    expect(actual).toInclude('{ as: C = "span", style, ...props }');
+    expect(actual).toInclude('{ as: C = "span", style, isLoading, loading: l, ...props }');
   });
 });
