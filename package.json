@@ -63,7 +63,7 @@
     "mini-css-extract-plugin": "^1.6.2",
     "nth-check": "^2.0.1",
     "react": "^17.0.2",
-    "typescript": "^4.6.4",
+    "typescript": "^4.7.4",
     "unset-value": "^2.0.1",
     "webpack-dev-server": "^4.7.4"
   },
@@ -73,7 +73,7 @@
     "@babel/preset-env": "^7.17.10",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
-    "@changesets/cli": "^2.22.0",
+    "@changesets/cli": "^2.23.1",
     "@compiled-private/module-a": "*",
     "@compiled/babel-plugin": "*",
     "@compiled/jest": "*",
@@ -112,11 +112,11 @@
     "size-limit": "^7.0.8",
     "storybook-addon-performance": "^0.16.1",
     "storybook-addon-pseudo-states": "^1.0.0",
-    "ts-node": "^10.7.0",
+    "ts-node": "^10.8.2",
     "ts-transform-define": "^0.1.10",
     "tsconfig-paths": "^3.14.1",
     "ttypescript": "^1.5.13",
-    "typescript": "^4.6.4"
+    "typescript": "^4.7.4"
   },
   "engines": {
     "node": "^v16.13.2"
