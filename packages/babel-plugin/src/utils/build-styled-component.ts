@@ -319,10 +319,10 @@ export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metad
   });
 
   // Rely on transformCss to remove duplicates and return only the last unconditional CSS for each property
-  const uniqueUnconditionalCssOutput = transformCss(unconditionalCss);
+  const uniqueUnconditionalCssOutput = transformCss(unconditionalCss, meta.state.opts);
 
   // Rely on transformItemCss to build expressions for conditional & logical CSS
-  const conditionalCssOutput = transformCssItems(conditionalCssItems);
+  const conditionalCssOutput = transformCssItems(conditionalCssItems, meta);
 
   const sheets = [...uniqueUnconditionalCssOutput.sheets, ...conditionalCssOutput.sheets];
   const classNames = [

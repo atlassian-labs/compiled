@@ -1,6 +1,8 @@
 import * as t from '@babel/types';
 import { transformCss } from '@compiled/css';
 
+import type { Metadata } from '../types';
+
 import { getItemCss } from './css-builders';
 import type { CssItem } from './types';
 
@@ -9,17 +11,19 @@ import type { CssItem } from './types';
  * className logic at runtime.
  *
  * @param item {CssItem}
+ * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 const transformCssItem = (
-  item: CssItem
+  item: CssItem,
+  meta: Metadata
 ): {
   sheets: string[];
   classExpression?: t.Expression;
 } => {
   switch (item.type) {
     case 'conditional':
-      const consequent = transformCssItem(item.consequent);
-      const alternate = transformCssItem(item.alternate);
+      const consequent = transformCssItem(item.consequent, meta);
+      const alternate = transformCssItem(item.alternate, meta);
       const defaultExpression = t.identifier('undefined');
 
       return {
@@ -32,7 +36,7 @@ const transformCssItem = (
       };
 
     case 'logical':
-      const logicalCss = transformCss(getItemCss(item));
+      const logicalCss = transformCss(getItemCss(item), meta.state.opts);
 
       return {
         sheets: logicalCss.sheets,
@@ -44,7 +48,7 @@ const transformCssItem = (
       };
 
     default:
-      const css = transformCss(getItemCss(item));
+      const css = transformCss(getItemCss(item), meta.state.opts);
       const className = css.classNames.join(' ');
 
       return {
@@ -61,13 +65,14 @@ const transformCssItem = (
  * @param cssItems {CssItem[]}
  */
 export const transformCssItems = (
-  cssItems: CssItem[]
+  cssItems: CssItem[],
+  meta: Metadata
 ): { sheets: string[]; classNames: t.Expression[] } => {
   const sheets: string[] = [];
   const classNames: t.Expression[] = [];
 
   cssItems.forEach((item) => {
-    const result = transformCssItem(item);
+    const result = transformCssItem(item, meta);
 
     sheets.push(...result.sheets);
     if (result.classExpression) {

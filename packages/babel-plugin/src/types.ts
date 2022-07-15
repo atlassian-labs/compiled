@@ -38,6 +38,13 @@ export interface PluginOptions {
   onIncludedFiles?: (files: string[]) => void;
 
   /**
+   * Will run additional cssnano plugins to normalize CSS during build.
+   *
+   * Default to `true`.
+   */
+  optimizeCss?: boolean;
+
+  /**
    * A custom resolver used to statically evaluate import declarations
    */
   resolver?: Resolver;
