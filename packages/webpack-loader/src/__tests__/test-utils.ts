@@ -68,7 +68,7 @@ export function bundle(
       path: outputPath,
     },
     plugins: [
-      new MiniCssExtractPlugin({ filename: 'static/[name].css' }),
+      new MiniCssExtractPlugin({ filename: 'static/[name].[contenthash].css' }),
       ...(disableExtractPlugin
         ? []
         : [new CompiledExtractPlugin(disableCacheGroup ? { cacheGroupExclude: true } : {})]),
