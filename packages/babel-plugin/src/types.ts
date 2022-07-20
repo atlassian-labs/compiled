@@ -2,11 +2,16 @@ import type { PluginPass } from '@babel/core';
 import type { ParserPlugin } from '@babel/parser';
 import type { NodePath } from '@babel/traverse';
 import type * as t from '@babel/types';
+import type { ResolveOptions } from 'enhanced-resolve';
 
 import type { Cache } from './utils/cache';
 
 export interface Resolver {
-  resolveSync(context: string, request: string): string;
+  resolveSync(context: string, request: string): string | false;
+}
+
+interface EnhancedResolveConfig extends ResolveOptions {
+  type: 'enhanced-resolver';
 }
 
 export interface PluginOptions {
@@ -41,6 +46,11 @@ export interface PluginOptions {
    * A custom resolver used to statically evaluate import declarations
    */
   resolver?: Resolver;
+
+  /**
+   * Configure a different resolver than default
+   */
+  resolverConfig?: EnhancedResolveConfig;
 
   /**
    * List of file extensions to traverse as code
@@ -115,6 +125,8 @@ export interface State extends PluginPass {
    * Files that have been included in this pass.
    */
   includedFiles: string[];
+
+  resolver: Resolver;
 }
 
 interface CommonMetadata {

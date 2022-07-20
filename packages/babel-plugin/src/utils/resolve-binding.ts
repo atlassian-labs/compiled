@@ -1,11 +1,9 @@
 import fs from 'fs';
-import { dirname, join } from 'path';
 
 import { parse } from '@babel/parser';
 import type { NodePath, Binding } from '@babel/traverse';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
-import resolve from 'resolve';
 
 import { DEFAULT_CODE_EXTENSIONS } from '../constants';
 import type { Metadata } from '../types';
@@ -175,19 +173,10 @@ const getDestructuredObjectPatternKey = (node: t.ObjectPattern, referenceName: s
   return result;
 };
 
-const resolveRequest = (request: string, extensions: string[], meta: Metadata) => {
-  const { filename, opts } = meta.state;
-  const { resolver } = opts;
+const resolveRequest = (request: string, meta: Metadata) => {
+  const { filename, resolver } = meta.state;
   if (!filename) {
     throw new Error('Unable to resolve request due to a missing filename, this is probably a bug!');
-  }
-
-  if (!resolver) {
-    const id = request.charAt(0) === '.' ? join(dirname(filename), request) : request;
-
-    return resolve.sync(id, {
-      extensions,
-    });
   }
 
   return resolver.resolveSync(filename, request);
@@ -297,9 +286,9 @@ export const resolveBinding = (
     }
 
     const extensions = meta.state.opts.extensions ?? DEFAULT_CODE_EXTENSIONS;
-    const modulePath = resolveRequest(moduleImportSource, extensions, meta);
+    const modulePath = resolveRequest(moduleImportSource, meta);
 
-    if (!extensions.some((extension) => modulePath.endsWith(extension))) {
+    if (!modulePath || !extensions.some((extension) => modulePath.endsWith(extension))) {
       // Don't attempt to parse any files that are not configured as code
       return;
     }

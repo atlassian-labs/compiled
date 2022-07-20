@@ -20,6 +20,7 @@ import {
   isCompiledStyledCallExpression,
   isCompiledStyledTaggedTemplateExpression,
 } from './utils/is-compiled';
+import { initializeResolver } from './utils/resolver';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -52,6 +53,7 @@ export default declare<State>((api) => {
       this.includedFiles = [];
       this.pathsToCleanup = [];
       this.pragma = {};
+      this.resolver = initializeResolver(this.opts);
     },
     visitor: {
       Program: {
