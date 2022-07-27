@@ -11,6 +11,9 @@ interface TextProps {
   isPrimary?: boolean;
   isBolded?: boolean;
   isMaybe?: boolean;
+  minHeight?: string;
+  minWidth?: string;
+  width?: string;
   children: React.ReactNode;
 }
 
@@ -100,6 +103,14 @@ const DestructurededPropsValues = styled.div<TextProps>`
 const DestructuredPropsKeyValueString = styled.div<TextProps>`
   ${({ isPrimary: primary }) => (primary ? 'color: green' : 'color: red')};
 `;
+
+const NotBooleanProps = styled.div<TextProps>({
+  backgroundColor: 'lightgrey',
+  display: 'block',
+  minHeight: (props) => (props.minHeight ? props.minHeight : '0'),
+  minWidth: (props) => (props.minWidth ? props.minWidth : '0'),
+  width: (props) => props.width,
+});
 
 export const PrimaryTextWithTemplateLiteral = (): JSX.Element => {
   return <TextWithTemplateLiteral isPrimary>Hello primary</TextWithTemplateLiteral>;
@@ -329,5 +340,17 @@ export const ConditionWithDestructuredPropsKeyValueString = (): JSX.Element => (
   <div>
     <DestructuredPropsKeyValueString isPrimary>color: green</DestructuredPropsKeyValueString>
     <DestructuredPropsKeyValueString>color: red</DestructuredPropsKeyValueString>
+  </div>
+);
+
+// A story to show the behavior of handleMemberExpressionInStyledInterpolation
+// Only `width` prop should be left through, being a valid html attribute
+export const HandleMemberExpressionInStyledInterpolation = (): JSX.Element => (
+  <div>
+    <NotBooleanProps minWidth="300px" minHeight="100px" width="320px">
+      {' '}
+      Has conditional rules
+    </NotBooleanProps>
+    <NotBooleanProps width="200px"> Does not have conditional rules</NotBooleanProps>
   </div>
 );

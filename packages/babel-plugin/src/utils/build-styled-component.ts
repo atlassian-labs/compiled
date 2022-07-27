@@ -9,13 +9,13 @@ import isPropValid from '@emotion/is-prop-valid';
 
 import { PROPS_IDENTIFIER_NAME } from '../constants';
 import type { Metadata, Tag } from '../types';
-import type { CSSOutput, CssItem } from '../utils/types';
 
 import { pickFunctionBody } from './ast';
 import { buildCssVariables } from './build-css-variables';
 import { getItemCss } from './css-builders';
 import { hoistSheet } from './hoist-sheet';
 import { applySelectors, transformCssItems } from './transform-css-items';
+import type { CSSOutput, CssItem } from './types';
 
 export interface StyledTemplateOpts {
   /**
@@ -38,6 +38,8 @@ export interface StyledTemplateOpts {
    */
   sheets: string[];
 }
+
+let isConditionalMemberExpressionNameTheSameAsFunctionFirstParam = false;
 
 /**
  * Builds up the inline style prop value for a Styled Component.
@@ -102,6 +104,36 @@ const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor:
 };
 
 /**
+ * Traverses a tagged template expression looking for any arrow functions,
+ * calls back with each arrow function node into the passed in `nestedVisitor`
+ * looking for a node matching the given member expression node,
+ * and then return the node or its property node.
+ *
+ * @param node Member expression node
+ * @param nestedVisitor Visitor callback function
+ * @param parentNode Tagged template literal node
+ */
+const traverseFromMemberExpressionToArrowFunctionExpression = (
+  node: t.MemberExpression,
+  nestedVisitor: Visitor,
+  parentNode: t.TaggedTemplateExpression
+) => {
+  traverse(parentNode, {
+    noScope: true,
+    ArrowFunctionExpression(path: NodePath<t.ArrowFunctionExpression>) {
+      const propertyName = (path.node.params[0] as t.Identifier).name;
+      path.traverse(nestedVisitor, { propertyName });
+    },
+  });
+
+  if (isConditionalMemberExpressionNameTheSameAsFunctionFirstParam) {
+    return node.property;
+  }
+
+  return node;
+};
+
+/**
  * Returns a list of destructured props used in expressions of a styled component
  *
  * For example:
@@ -150,21 +182,15 @@ const getDestructuredProps = (node: t.Node): string[] => {
  *
  * @param path MemberExpression path
  */
-const handleMemberExpressionInStyledInterpolation = (path: NodePath<t.MemberExpression>) => {
+const handleMemberExpressionInStyledInterpolation = (
+  path: NodePath<t.MemberExpression>,
+  isMemberExpressionNameTheSameAsFunctionFirstParam: boolean
+) => {
   const memberExpressionKey = path.node.object;
   const propsToDestructure: string[] = [];
 
   if (t.isIdentifier(memberExpressionKey)) {
-    const traversedUpFunctionPath: NodePath<t.Node> | null = path.find((parentPath) =>
-      parentPath.isFunction()
-    );
     const memberExpressionKeyName = memberExpressionKey.name;
-
-    const isMemberExpressionNameTheSameAsFunctionFirstParam: boolean | null =
-      traversedUpFunctionPath &&
-      t.isFunction(traversedUpFunctionPath.node) &&
-      t.isIdentifier(traversedUpFunctionPath.node.params[0]) &&
-      traversedUpFunctionPath.node.params[0].name === memberExpressionKeyName;
 
     if (isMemberExpressionNameTheSameAsFunctionFirstParam) {
       const memberExpressionValue = path.node.property;
@@ -210,12 +236,55 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
         const nestedArrowFunctionExpressionVisitor = {
           noScope: true,
           MemberExpression(path: NodePath<t.MemberExpression>) {
-            const propsToDestructureFromMemberExpression =
-              handleMemberExpressionInStyledInterpolation(path);
+            const traversedUpFunctionPath: NodePath<t.Node> | null = path.find((parentPath) =>
+              parentPath.isFunction()
+            );
+            const memberExpressionKey = path.node.object as t.Identifier;
+            const memberExpressionKeyName = memberExpressionKey.name;
 
-            propsToDestructure.push(...propsToDestructureFromMemberExpression);
+            if (traversedUpFunctionPath) {
+              const isMemberExpressionNameTheSameAsFunctionFirstParam =
+                t.isFunction(traversedUpFunctionPath.node) &&
+                t.isIdentifier(traversedUpFunctionPath.node.params[0]) &&
+                traversedUpFunctionPath.node.params[0].name === memberExpressionKeyName;
+
+              const propsToDestructureFromMemberExpression =
+                handleMemberExpressionInStyledInterpolation(
+                  path,
+                  isMemberExpressionNameTheSameAsFunctionFirstParam
+                );
+
+              propsToDestructure.push(...propsToDestructureFromMemberExpression);
+            }
           },
         };
+
+        const nestedMemberExpressionVisitor = {
+          MemberExpression(path: NodePath<t.MemberExpression>, state: { propertyName?: string }) {
+            if (path.node === node) {
+              isConditionalMemberExpressionNameTheSameAsFunctionFirstParam =
+                (path.node.object as t.Identifier).name === state.propertyName;
+
+              const propsToDestructureFromMemberExpression =
+                handleMemberExpressionInStyledInterpolation(
+                  path,
+                  isConditionalMemberExpressionNameTheSameAsFunctionFirstParam
+                );
+
+              propsToDestructure.push(...propsToDestructureFromMemberExpression);
+              path.stop();
+            }
+          },
+        };
+
+        // handles Conditional expressions
+        if (t.isMemberExpression(node) && t.isIdentifier(node.property)) {
+          return traverseFromMemberExpressionToArrowFunctionExpression(
+            node,
+            nestedMemberExpressionVisitor,
+            meta.parentPath.node
+          );
+        }
 
         if (t.isArrowFunctionExpression(node)) {
           return traverseStyledArrowFunctionExpression(node, nestedArrowFunctionExpressionVisitor);
@@ -239,6 +308,17 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
       conditionalClassNames += `${generate(item).code}, `;
     }
   });
+
+  if (isConditionalMemberExpressionNameTheSameAsFunctionFirstParam) {
+    propsToDestructure.forEach((propertyName) => {
+      if (conditionalClassNames.includes(propertyName)) {
+        conditionalClassNames = conditionalClassNames.replace(
+          `${PROPS_IDENTIFIER_NAME}.${propertyName}`,
+          propertyName
+        );
+      }
+    });
+  }
 
   const classNames = `"${unconditionalClassNames.trim()}", ${conditionalClassNames}`;
 
