@@ -39,6 +39,7 @@ export interface StyledTemplateOpts {
   sheets: string[];
 }
 
+let conditionalMemberExpressionNode: NodePath<t.MemberExpression>;
 let isConditionalMemberExpressionNameTheSameAsFunctionFirstParam = false;
 
 /**
@@ -127,7 +128,7 @@ const traverseFromMemberExpressionToArrowFunctionExpression = (
   });
 
   if (isConditionalMemberExpressionNameTheSameAsFunctionFirstParam) {
-    return node.property;
+    return conditionalMemberExpressionNode.node;
   }
 
   return node;
@@ -270,6 +271,8 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
                   path,
                   isConditionalMemberExpressionNameTheSameAsFunctionFirstParam
                 );
+
+              conditionalMemberExpressionNode = path;
 
               propsToDestructure.push(...propsToDestructureFromMemberExpression);
               path.stop();
