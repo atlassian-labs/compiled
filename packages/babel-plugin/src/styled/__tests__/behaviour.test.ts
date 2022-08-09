@@ -414,6 +414,66 @@ describe('styled component behaviour', () => {
     ).not.toThrow();
   });
 
+  it('should apply no classes when styles have no value in string literal', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        color: ;
+        background-color: undefined;
+        border-color: null;
+      \`;
+    `);
+
+    expect(actual).toInclude('className={ax(["",props.className])}');
+  });
+
+  it('should apply no classes when styles have no value in object', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div({
+        color: '',
+        backgroundColor: undefined,
+        borderColor: null,
+      });
+    `);
+
+    expect(actual).toInclude('className={ax(["",props.className])}');
+  });
+
+  it('should apply no classes when styles have no value inside selector', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div({
+        ':hover': {
+          fontSize: undefined,
+        }
+      });
+    `);
+
+    expect(actual).toInclude('className={ax(["",props.className])}');
+  });
+
+  it('should omit styles with no value inside selector', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div({
+        ':hover': {
+          color: 'red',
+          fontSize: undefined,
+        }
+      });
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._30l35scu:hover{color:red}',
+      'className={ax(["_30l35scu",props.className])}',
+    ]);
+  });
+
   it('should apply conditional CSS with ternary operator', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
@@ -1123,6 +1183,97 @@ describe('styled component behaviour', () => {
       '._bfhk11x8{background-color:black}',
       'className={ax(["",props.isPrimary&&"_syazbf54 _bfhk11x8",props.className])}',
     ]);
+  });
+
+  it('should apply logical test to class when a conditional branch contains undefined value', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div\`
+        color: \${props => props.isPrimary ? 'green' : undefined};
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syazbf54{color:green}',
+      'className={ax(["",props.isPrimary&&"_syazbf54",props.className])}',
+    ]);
+  });
+
+  it('should apply logical test to class when a conditional branch contains null value', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div({
+        color: props => props.isPrimary ? null : 'green',
+      });
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syazbf54{color:green}',
+      'className={ax(["",!props.isPrimary&&"_syazbf54",props.className])}',
+    ]);
+  });
+
+  it('should apply logical test to class when a conditional branch contains empty string value', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div({
+        color: props => props.isPrimary ? '' : 'green',
+      });
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syazbf54{color:green}',
+      'className={ax(["",!props.isPrimary&&"_syazbf54",props.className])}',
+    ]);
+  });
+
+  it('should apply logical test to class when a conditional branch contains empty value inside selector', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div({
+        ':hover': {
+          color: props => props.isPrimary ? 'green' : '',
+        }
+      });
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._30l3bf54:hover{color:green}',
+      'className={ax(["",props.isPrimary&&"_30l3bf54",props.className])}',
+    ]);
+  });
+
+  it('should apply logical test to class when a conditional branch contains empty value inside selector', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div({
+        ':hover': {
+          color: props => props.isPrimary ? 'green' : '',
+        }
+      });
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._30l3bf54:hover{color:green}',
+      'className={ax(["",props.isPrimary&&"_30l3bf54",props.className])}',
+    ]);
+  });
+
+  it('should apply no classes when both conditional branches contains empty values', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div({
+        color: props => props.isPrimary ? undefined : null,
+      });
+    `);
+
+    expect(actual).toInclude('className={ax(["",props.className])}');
   });
 
   it('should conditionally apply CSS mixins', () => {

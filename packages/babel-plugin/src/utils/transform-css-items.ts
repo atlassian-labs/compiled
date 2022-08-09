@@ -21,6 +21,27 @@ const transformCssItem = (
       const consequent = transformCssItem(item.consequent);
       const alternate = transformCssItem(item.alternate);
       const defaultExpression = t.identifier('undefined');
+      const hasConsequentSheets = Boolean(consequent.sheets.length);
+      const hasAlternateSheets = Boolean(alternate.sheets.length);
+
+      if (!hasConsequentSheets && !hasAlternateSheets) {
+        return { sheets: [], classExpression: undefined };
+      }
+
+      if (!hasConsequentSheets || !hasAlternateSheets) {
+        const classExpression = hasConsequentSheets
+          ? consequent.classExpression
+          : alternate.classExpression;
+
+        return {
+          sheets: hasConsequentSheets ? consequent.sheets : alternate.sheets,
+          classExpression: t.logicalExpression(
+            '&&',
+            hasConsequentSheets ? item.test : t.unaryExpression('!', item.test),
+            classExpression || defaultExpression
+          ),
+        };
+      }
 
       return {
         sheets: [...consequent.sheets, ...alternate.sheets],

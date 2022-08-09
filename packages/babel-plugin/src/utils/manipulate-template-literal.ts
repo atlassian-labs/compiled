@@ -5,6 +5,7 @@ import type { Metadata } from '../types';
 
 import { getPathOfNode } from './ast';
 import { CONDITIONAL_PATHS } from './constants';
+import { isEmptyValue } from './is-empty';
 
 /**
  * TODO: this is a temporary workaround so that we don't evaluate expressions that may throw an error.
@@ -102,12 +103,14 @@ const optimizeConditionalExpression = (
       } else if (t.isConditionalExpression(branchNode)) {
         return optimizeConditionalExpression(prefix, suffix, branchNode);
       } else {
+        const isValueEmpty = isEmptyValue(branchNode);
+
         return t.templateLiteral(
           [
             t.templateElement({ raw: prefix, cooked: prefix }),
             t.templateElement({ raw: suffix, cooked: suffix }),
           ],
-          [branchNode]
+          [isValueEmpty ? t.stringLiteral('') : branchNode]
         );
       }
     });
