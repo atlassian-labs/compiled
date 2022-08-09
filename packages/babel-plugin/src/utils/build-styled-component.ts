@@ -207,12 +207,12 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
             const memberExpressionKeyName = (path.node.object as t.Identifier).name;
 
             if (traversedUpFunctionPath) {
-              const isMemberExpressionNameTheSameAsFunctionFirstParam =
+              const isMemberNameMatchPropParam =
                 t.isFunction(traversedUpFunctionPath.node) &&
                 t.isIdentifier(traversedUpFunctionPath.node.params[0]) &&
                 traversedUpFunctionPath.node.params[0].name === memberExpressionKeyName;
 
-              if (isMemberExpressionNameTheSameAsFunctionFirstParam) {
+              if (isMemberNameMatchPropParam) {
                 const propsToDestructureFromMemberExpression =
                   handleMemberExpressionInStyledInterpolation(path);
 
