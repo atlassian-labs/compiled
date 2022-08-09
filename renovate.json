@@ -51,6 +51,7 @@
     },
     {
       "extends": ["packages:eslint", "schedule:monthly"],
+      "packagePatterns": ["^@typescript-eslint"],
       "groupName": "eslint packages"
     },
     {

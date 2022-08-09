@@ -11,10 +11,7 @@ import { evaluateExpression } from './evaluate-expression';
  * @param node
  * @param parentPath
  */
-export const getPathOfNode = <TNode extends unknown>(
-  node: TNode,
-  parentPath: NodePath
-): NodePath<TNode> => {
+export const getPathOfNode = <TNode>(node: TNode, parentPath: NodePath): NodePath<TNode> => {
   let foundPath: NodePath | null = null;
 
   traverse(
