@@ -53,8 +53,3 @@ export type EvaluateExpression = (
   expression: t.Expression,
   meta: Metadata
 ) => { value: t.Expression; meta: Metadata };
-
-export interface FunctionParameters {
-  key: string;
-  value: string | FunctionParameters[];
-}

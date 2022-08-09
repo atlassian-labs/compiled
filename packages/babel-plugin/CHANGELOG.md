@@ -1,5 +1,17 @@
 # @compiled/babel-plugin
 
+## 0.16.2
+
+### Patch Changes
+
+- 8912717: Revert "Bug - shadow variable clash with destructured props (#1193)"
+
+## 0.16.1
+
+### Patch Changes
+
+- 6c1ea7f: Support Compiled in files with TypeScript as expressions
+
 ## 0.16.0
 
 ### Minor Changes
