@@ -39,9 +39,6 @@ export interface StyledTemplateOpts {
   sheets: string[];
 }
 
-let conditionalMemberExpressionNode: NodePath<t.MemberExpression>;
-let isConditionalMemberExpressionNameTheSameAsFunctionFirstParam = false;
-
 /**
  * Builds up the inline style prop value for a Styled Component.
  *
@@ -105,36 +102,6 @@ const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor:
 };
 
 /**
- * Traverses a tagged template expression looking for any arrow functions,
- * calls back with each arrow function node into the passed in `nestedVisitor`
- * looking for a node matching the given member expression node,
- * and then return the node or its property node.
- *
- * @param node Member expression node
- * @param nestedVisitor Visitor callback function
- * @param parentNode Tagged template literal node
- */
-const traverseFromMemberExpressionToArrowFunctionExpression = (
-  node: t.MemberExpression,
-  nestedVisitor: Visitor,
-  parentNode: t.TaggedTemplateExpression
-) => {
-  traverse(parentNode, {
-    noScope: true,
-    ArrowFunctionExpression(path: NodePath<t.ArrowFunctionExpression>) {
-      const propertyName = (path.node.params[0] as t.Identifier).name;
-      path.traverse(nestedVisitor, { propertyName });
-    },
-  });
-
-  if (isConditionalMemberExpressionNameTheSameAsFunctionFirstParam) {
-    return conditionalMemberExpressionNode.node;
-  }
-
-  return node;
-};
-
-/**
  * Returns a list of destructured props used in expressions of a styled component
  *
  * For example:
@@ -183,37 +150,32 @@ const getDestructuredProps = (node: t.Node): string[] => {
  *
  * @param path MemberExpression path
  */
-const handleMemberExpressionInStyledInterpolation = (
-  path: NodePath<t.MemberExpression>,
-  isMemberExpressionNameTheSameAsFunctionFirstParam: boolean
-) => {
+const handleMemberExpressionInStyledInterpolation = (path: NodePath<t.MemberExpression>) => {
   const memberExpressionKey = path.node.object;
   const propsToDestructure: string[] = [];
 
   if (t.isIdentifier(memberExpressionKey)) {
     const memberExpressionKeyName = memberExpressionKey.name;
 
-    if (isMemberExpressionNameTheSameAsFunctionFirstParam) {
-      const memberExpressionValue = path.node.property;
+    const memberExpressionValue = path.node.property;
 
-      if (t.isIdentifier(memberExpressionValue)) {
-        const memberExpressionValueName = memberExpressionValue.name;
+    if (t.isIdentifier(memberExpressionValue)) {
+      const memberExpressionValueName = memberExpressionValue.name;
 
-        // if valid html attribute let it through - else destructure to prevent
-        if (isPropValid(memberExpressionValueName)) {
-          // Convert cases like propz.color to props.color
-          if (memberExpressionKeyName !== PROPS_IDENTIFIER_NAME) {
-            path.replaceWith(
-              t.memberExpression(
-                t.identifier(PROPS_IDENTIFIER_NAME),
-                t.identifier(memberExpressionValueName)
-              )
-            );
-          }
-        } else {
-          propsToDestructure.push(memberExpressionValueName);
-          path.replaceWith(memberExpressionValue);
+      // if valid html attribute let it through - else destructure to prevent
+      if (isPropValid(memberExpressionValueName)) {
+        // Convert cases like propz.color to props.color
+        if (memberExpressionKeyName !== PROPS_IDENTIFIER_NAME) {
+          path.replaceWith(
+            t.memberExpression(
+              t.identifier(PROPS_IDENTIFIER_NAME),
+              t.identifier(memberExpressionValueName)
+            )
+          );
         }
+      } else {
+        propsToDestructure.push(memberExpressionValueName);
+        path.replaceWith(memberExpressionValue);
       }
     }
   }
@@ -228,6 +190,7 @@ const handleMemberExpressionInStyledInterpolation = (
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
+  let isConditionalWithPropsInExpressions = false;
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
   // This completely depends on meta.parentPath.node to be the styled component.
   // If this changes please pass the component in another way
@@ -240,8 +203,8 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
             const traversedUpFunctionPath: NodePath<t.Node> | null = path.find((parentPath) =>
               parentPath.isFunction()
             );
-            const memberExpressionKey = path.node.object as t.Identifier;
-            const memberExpressionKeyName = memberExpressionKey.name;
+
+            const memberExpressionKeyName = (path.node.object as t.Identifier).name;
 
             if (traversedUpFunctionPath) {
               const isMemberExpressionNameTheSameAsFunctionFirstParam =
@@ -249,44 +212,59 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
                 t.isIdentifier(traversedUpFunctionPath.node.params[0]) &&
                 traversedUpFunctionPath.node.params[0].name === memberExpressionKeyName;
 
-              const propsToDestructureFromMemberExpression =
-                handleMemberExpressionInStyledInterpolation(
-                  path,
-                  isMemberExpressionNameTheSameAsFunctionFirstParam
-                );
+              if (isMemberExpressionNameTheSameAsFunctionFirstParam) {
+                const propsToDestructureFromMemberExpression =
+                  handleMemberExpressionInStyledInterpolation(path);
 
-              propsToDestructure.push(...propsToDestructureFromMemberExpression);
+                propsToDestructure.push(...propsToDestructureFromMemberExpression);
+              }
             }
           },
         };
 
-        const nestedMemberExpressionVisitor = {
-          MemberExpression(path: NodePath<t.MemberExpression>, state: { propertyName?: string }) {
-            if (path.node === node) {
-              isConditionalMemberExpressionNameTheSameAsFunctionFirstParam =
-                (path.node.object as t.Identifier).name === state.propertyName;
-
-              const propsToDestructureFromMemberExpression =
-                handleMemberExpressionInStyledInterpolation(
-                  path,
-                  isConditionalMemberExpressionNameTheSameAsFunctionFirstParam
-                );
-
-              conditionalMemberExpressionNode = path;
-
-              propsToDestructure.push(...propsToDestructureFromMemberExpression);
-              path.stop();
-            }
-          },
-        };
-
-        // handles Conditional expressions
+        /**
+         * Handles Conditional expressions.
+         * Traverses parent node looking for any arrow functions,
+         * calls back with each arrow function node into the passed in `nestedVisitor`
+         * looking for a node matching the given member expression node,
+         * and then return the node or its property node.
+         */
         if (t.isMemberExpression(node) && t.isIdentifier(node.property)) {
-          return traverseFromMemberExpressionToArrowFunctionExpression(
-            node,
-            nestedMemberExpressionVisitor,
-            meta.parentPath.node
-          );
+          let conditionalExpressionPath: NodePath<t.MemberExpression> | undefined;
+
+          const nestedMemberExpressionVisitor = {
+            MemberExpression(path: NodePath<t.MemberExpression>, state: { propertyName?: string }) {
+              if (path.node === node) {
+                isConditionalWithPropsInExpressions =
+                  (path.node.object as t.Identifier).name === state.propertyName;
+
+                if (isConditionalWithPropsInExpressions) {
+                  const propsToDestructureFromMemberExpression =
+                    handleMemberExpressionInStyledInterpolation(path);
+
+                  conditionalExpressionPath = path;
+
+                  propsToDestructure.push(...propsToDestructureFromMemberExpression);
+                }
+
+                path.stop();
+              }
+            },
+          };
+
+          traverse(meta.parentPath.node, {
+            noScope: true,
+            ArrowFunctionExpression(path: NodePath<t.ArrowFunctionExpression>) {
+              if (t.isConditionalExpression(path.get('body'))) {
+                const propertyName = (path.node.params[0] as t.Identifier).name;
+                path.traverse(nestedMemberExpressionVisitor, { propertyName });
+              }
+            },
+          });
+
+          return isConditionalWithPropsInExpressions && conditionalExpressionPath
+            ? conditionalExpressionPath.node
+            : node;
         }
 
         if (t.isArrowFunctionExpression(node)) {
@@ -312,7 +290,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     }
   });
 
-  if (isConditionalMemberExpressionNameTheSameAsFunctionFirstParam) {
+  if (isConditionalWithPropsInExpressions) {
     propsToDestructure.forEach((propertyName) => {
       if (conditionalClassNames.includes(propertyName)) {
         conditionalClassNames = conditionalClassNames.replace(

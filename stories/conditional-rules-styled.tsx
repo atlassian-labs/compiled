@@ -13,6 +13,7 @@ interface TextProps {
   isMaybe?: boolean;
   minHeight?: string;
   minWidth?: string;
+  border?: string;
   width?: string;
   children: React.ReactNode;
 }
@@ -105,11 +106,13 @@ const DestructuredPropsKeyValueString = styled.div<TextProps>`
 `;
 
 const NotBooleanProps = styled.div<TextProps>({
-  backgroundColor: 'lightgrey',
+  border: ({ border: b }) => (b ? b : '1px solid black'),
+  color: ({ isPrimary: primary }) => (primary ? 'green' : 'red'),
   display: 'block',
-  minHeight: (props) => (props.minHeight ? props.minHeight : '0'),
+  marginBottom: '1em',
+  minHeight: ({ minHeight }) => (minHeight ? minHeight : '0'),
   minWidth: (props) => (props.minWidth ? props.minWidth : '0'),
-  width: (props) => props.width,
+  width: (propz) => propz.width,
 });
 
 export const PrimaryTextWithTemplateLiteral = (): JSX.Element => {
@@ -347,7 +350,12 @@ export const ConditionWithDestructuredPropsKeyValueString = (): JSX.Element => (
 // Only `width` prop should be left through, being a valid html attribute
 export const HandleMemberExpressionInStyledInterpolation = (): JSX.Element => (
   <div>
-    <NotBooleanProps minWidth="300px" minHeight="100px" width="320px">
+    <NotBooleanProps
+      minWidth="300px"
+      minHeight="100px"
+      width="320px"
+      border="1px solid green"
+      isPrimary>
       {' '}
       Has conditional rules
     </NotBooleanProps>

@@ -2,4 +2,4 @@
 '@compiled/babel-plugin': patch
 ---
 
-fix props not filtering out in template
+Ensure props are not displayed as HTML attributes, unless they are valid attributes
