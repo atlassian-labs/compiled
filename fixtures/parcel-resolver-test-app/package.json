@@ -4,6 +4,6 @@
   "private": true,
   "devDependencies": {
     "@compiled/parcel-resolver": "*",
-    "@parcel/config-default": "^2.6.0"
+    "@parcel/config-default": "^2.7.0"
   }
 }

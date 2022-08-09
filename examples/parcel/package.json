@@ -14,12 +14,12 @@
   "devDependencies": {
     "@compiled/parcel-config": "*",
     "@compiled/parcel-transformer": "*",
-    "@parcel/config-default": "^2.6.0",
-    "@parcel/optimizer-htmlnano": "^2.6.0",
-    "@parcel/packager-html": "^2.6.0",
-    "@parcel/transformer-html": "^2.6.0",
-    "@parcel/transformer-posthtml": "^2.6.0",
-    "parcel": "^2.6.0"
+    "@parcel/config-default": "^2.7.0",
+    "@parcel/optimizer-htmlnano": "^2.7.0",
+    "@parcel/packager-html": "^2.7.0",
+    "@parcel/transformer-html": "^2.7.0",
+    "@parcel/transformer-posthtml": "^2.7.0",
+    "parcel": "^2.7.0"
   },
   "alias": {
     "parcel-alias": "./lib/parcel-alias.ts"

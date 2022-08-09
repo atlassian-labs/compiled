@@ -20,12 +20,12 @@
   ],
   "dependencies": {
     "@compiled/css": "^0.8.1",
-    "@parcel/plugin": "^2.6.0"
+    "@parcel/plugin": "^2.7.0"
   },
   "devDependencies": {
-    "@parcel/core": "^2.6.0",
-    "@parcel/fs": "^2.6.0",
-    "@parcel/types": "^2.6.0",
+    "@parcel/core": "^2.7.0",
+    "@parcel/fs": "^2.7.0",
+    "@parcel/types": "^2.7.0",
     "ts-node": "^10.8.2",
     "tsconfig-paths": "^3.14.1"
   },

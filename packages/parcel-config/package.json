@@ -19,7 +19,7 @@
     "@compiled/parcel-optimizer": "^0.1.1",
     "@compiled/parcel-resolver": "^0.1.1",
     "@compiled/parcel-transformer": "^0.9.0",
-    "@parcel/plugin": "^2.6.0"
+    "@parcel/plugin": "^2.7.0"
   },
   "devDependencies": {},
   "engines": {

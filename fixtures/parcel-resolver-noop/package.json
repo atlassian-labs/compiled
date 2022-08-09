@@ -4,7 +4,7 @@
   "private": true,
   "main": "dist/index.js",
   "dependencies": {
-    "@parcel/plugin": "^2.6.0"
+    "@parcel/plugin": "^2.7.0"
   },
   "engines": {
     "parcel": "^2.0.0"
