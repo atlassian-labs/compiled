@@ -4,7 +4,6 @@ import { bundle as bundleEntry } from './test-utils';
 import type { BundleOptions } from './test-utils';
 
 describe('CompiledExtractPlugin', () => {
-  const assetName = 'static/compiled-css.css';
   const fixturesPath = join(__dirname, '..', '__fixtures__');
 
   const bundle = (entry: string, options: Omit<BundleOptions, 'mode'> = {}) =>
@@ -12,6 +11,13 @@ describe('CompiledExtractPlugin', () => {
       ...options,
       extract: true,
       mode: 'production',
+    }).then((assets) => {
+      for (const assetName in assets) {
+        if (assetName.includes('compiled-css') && assetName.endsWith('.css')) {
+          return assets[assetName];
+        }
+      }
+      return undefined;
     });
 
   it('throws when the plugin is not configured', async () => {
@@ -31,13 +37,13 @@ describe('CompiledExtractPlugin', () => {
       disableCacheGroup: true,
     });
 
-    expect(actual[assetName]).toBe(undefined);
+    expect(actual).toBe(undefined);
   }, 10000);
 
   it('extracts local styles', async () => {
     const actual = await bundle(join(fixturesPath, 'local-styles.tsx'));
 
-    expect(actual[assetName]).toMatchInlineSnapshot(`
+    expect(actual).toMatchInlineSnapshot(`
       "._1wybdlk8{font-size:14px}
       ._syaz13q2{color:blue}
       "
@@ -49,7 +55,7 @@ describe('CompiledExtractPlugin', () => {
 
     // This should not contain any styles from the unused relative import ./common/css-prop, which includes
     // {color:coral} or {border:2px solid coral}
-    expect(actual[assetName]).toMatchInlineSnapshot(`
+    expect(actual).toMatchInlineSnapshot(`
       "
       ._syaz5scu{color:red}
       ._syazmu8g{color:blueviolet}
@@ -63,7 +69,7 @@ describe('CompiledExtractPlugin', () => {
   it('extracts styles imported through a webpack alias', async () => {
     const assets = await bundle(join(fixturesPath, 'webpack-alias.tsx'));
 
-    expect(assets[assetName]).toMatchInlineSnapshot(`
+    expect(assets).toMatchInlineSnapshot(`
       "._syaz13q2{color:blue}
       "
     `);
@@ -79,21 +85,24 @@ describe('CompiledExtractPlugin', () => {
       },
     });
 
-    expect(assets[assetName]).toMatchInlineSnapshot(`
+    expect(assets).toMatchInlineSnapshot(`
       "._syaz1if8{color:indigo}
       "
     `);
   }, 10000);
 
   it('extracts styles from an async chunk', async () => {
-    const actual = await bundle(join(fixturesPath, 'async-styles.ts'));
+    const assets = await bundleEntry(join(fixturesPath, 'async-styles.ts'), {
+      extract: true,
+      mode: 'production',
+    });
 
     // Only generate one CSS bundle
-    const cssFiles = Object.keys(actual).filter((key) => key.endsWith('.css'));
+    const cssFiles = Object.keys(assets).filter((key) => key.endsWith('.css'));
     expect(cssFiles).toHaveLength(1);
 
     // Extract the styles into said bundle
-    expect(actual[assetName]).toMatchInlineSnapshot(`
+    expect(assets[cssFiles[0]]).toMatchInlineSnapshot(`
       "._19it1e35{border:2px solid coral}
       ._syaz1vyr{color:coral}
       "
@@ -103,7 +112,7 @@ describe('CompiledExtractPlugin', () => {
   it('extracts styles from a pre-built babel files', async () => {
     const actual = await bundle(join(fixturesPath, 'babel.tsx'));
 
-    expect(actual[assetName]).toMatchInlineSnapshot(`
+    expect(actual).toMatchInlineSnapshot(`
       "._19pk1ul9{margin-top:30px}
       ._19bvftgi{padding-left:8px}
       ._n3tdftgi{padding-bottom:8px}
@@ -119,7 +128,7 @@ describe('CompiledExtractPlugin', () => {
   it('extracts important styles', async () => {
     const actual = await bundle(join(fixturesPath, 'important-styles.tsx'));
 
-    expect(actual[assetName]).toMatchInlineSnapshot(`
+    expect(actual).toMatchInlineSnapshot(`
         "._syaz13q2{color:blue}
         ._1wybc038{font-size:12!important}
         "
@@ -129,7 +138,7 @@ describe('CompiledExtractPlugin', () => {
   it('should find bindings', async () => {
     const actual = await bundle(join(fixturesPath, 'binding-not-found.tsx'));
 
-    expect(actual[assetName]).toMatchInlineSnapshot(`
+    expect(actual).toMatchInlineSnapshot(`
       "._syaz1r31{color:currentColor}
       ._ajmmnqa1{-webkit-text-decoration-style:solid;text-decoration-style:solid}
       ._1hmsglyw{-webkit-text-decoration-line:none;text-decoration-line:none}
