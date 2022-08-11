@@ -48,6 +48,7 @@ export function bundle(
               options: {
                 extract,
                 importReact: false,
+                optimizeCss: false,
                 resolve,
               },
             },

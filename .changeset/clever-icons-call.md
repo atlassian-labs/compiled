@@ -4,4 +4,4 @@
 '@compiled/webpack-loader': patch
 ---
 
-Added configurable options to optimize CSS
+Add configurable options to optimize CSS

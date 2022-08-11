@@ -4,6 +4,7 @@
       "@compiled/babel-plugin",
       {
         "importReact": false,
+        "optimizeCss": false,
         "transformerBabelPlugins": [
           [
             "@babel/plugin-proposal-decorators",

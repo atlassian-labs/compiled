@@ -19,6 +19,7 @@ export const transform = (code: string, options: TransformOptions = {}): string 
     highlightCode,
     pretty = true,
     snippet,
+    optimizeCss = false,
     ...pluginOptions
   } = options;
   const fileResult = transformSync(code, {
@@ -28,7 +29,7 @@ export const transform = (code: string, options: TransformOptions = {}): string 
     configFile: false,
     filename,
     highlightCode,
-    plugins: [[babelPlugin, pluginOptions]],
+    plugins: [[babelPlugin, { optimizeCss, ...pluginOptions }]],
     presets:
       pluginOptions.importReact === false
         ? [['@babel/preset-react', { runtime: 'automatic' }]]
