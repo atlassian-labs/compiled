@@ -77,7 +77,7 @@
   "devDependencies": {
     "@compiled/benchmark": "^1.0.1",
     "@testing-library/react": "^12.1.5",
-    "@types/jsdom": "^16.2.14",
+    "@types/jsdom": "^16.2.15",
     "@types/react-dom": "^17.0.17",
     "jsdom": "^19.0.0",
     "react": "^17.0.2",
