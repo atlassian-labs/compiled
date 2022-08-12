@@ -10,5 +10,19 @@
     ["@babel/preset-env", { "targets": { "node": "current" } }],
     "@babel/preset-typescript",
     ["@babel/preset-react", { "runtime": "automatic" }]
-  ]
+  ],
+  "env": {
+    "test": {
+      "plugins": [
+        [
+          "@compiled/babel-plugin",
+          {
+            "nonce": "\"k0Mp1lEd\"",
+            "importReact": false,
+            "optimizeCss": false
+          }
+        ]
+      ]
+    }
+  }
 }

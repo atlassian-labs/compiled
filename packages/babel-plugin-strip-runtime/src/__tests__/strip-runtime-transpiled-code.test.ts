@@ -28,7 +28,7 @@ const transform = (
     babelrc: false,
     configFile: false,
     filename,
-    plugins: [compiledBabelPlugin],
+    plugins: [[compiledBabelPlugin, { optimizeCss: false }]],
     presets: [
       ['@babel/preset-env', { targets: { esmodules: true }, modules: modules ?? 'auto' }],
       '@babel/preset-typescript',

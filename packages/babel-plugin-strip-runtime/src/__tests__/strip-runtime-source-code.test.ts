@@ -30,7 +30,9 @@ const transform = (
     configFile: false,
     filename: join(__dirname, 'app.tsx'),
     plugins: [
-      ...(bake ? [[compiledBabelPlugin, { importReact: runtime === 'classic' }]] : []),
+      ...(bake
+        ? [[compiledBabelPlugin, { importReact: runtime === 'classic', optimizeCss: false }]]
+        : []),
       ...(extract ? [[stripRuntimeBabelPlugin, { styleSheetPath, compiledRequireExclude }]] : []),
     ],
     presets: [['@babel/preset-react', { runtime }]],

@@ -4,7 +4,7 @@ const Button = styled.button`
   color: blue;
   font-size: 30px;
   border: 2px solid blue;
-  padding: 8px;
+  padding: 32px;
 `;
 
 export default function BabelComponent({ children }) {

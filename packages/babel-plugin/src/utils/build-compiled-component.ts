@@ -69,7 +69,7 @@ export const buildCompiledComponent = (
   cssOutput: CSSOutput,
   meta: Metadata
 ): t.Node => {
-  const { sheets, classNames } = transformCssItems(cssOutput.css);
+  const { sheets, classNames } = transformCssItems(cssOutput.css, meta);
 
   const [classNameAttribute] = getJSXAttribute(node, 'className');
 
