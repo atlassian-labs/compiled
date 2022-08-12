@@ -1,5 +1,11 @@
 # @compiled/webpack-loader
 
+## 0.9.1
+
+### Patch Changes
+
+- 6bd1708: Take hashed asset name into consideration when optimizating css asset
+
 ## 0.9.0
 
 ### Minor Changes
