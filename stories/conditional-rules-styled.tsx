@@ -105,6 +105,11 @@ const DestructuredPropsKeyValueString = styled.div<TextProps>`
   ${({ isPrimary: primary }) => (primary ? 'color: green' : 'color: red')};
 `;
 
+// TODO #1260
+// - example with same props destructuring / not destructuring -> Use same prop in 2 different way it should have the same value
+// minwidth: ({minwidth}) => minwidth px AND width: (props) => props.minwidth px
+// - example empty HTML tag - eg HR
+// Valid HTML attribute not showing if props is deconstructed eg  width: ({width}) => width . It never worked
 const NotBooleanProps = styled.div<TextProps>({
   border: ({ border: b }) => (b ? b : '1px solid black'),
   color: ({ isPrimary: primary }) => (primary ? 'green' : 'red'),

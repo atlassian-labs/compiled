@@ -45,6 +45,7 @@ export interface StyledTemplateOpts {
  * @param variables CSS variables that will be placed in the AST
  * @param transform Transform callback function that can be used to change the CSS variable expression
  */
+// TODO #1260 this should be removed/simplified depending on opts.variables
 const styledStyleProp = (
   variables: CSSOutput['variables'],
   transform?: (expression: t.Expression) => t.Expression
@@ -71,6 +72,7 @@ const buildComponentTag = ({ name, type }: Tag) => {
  * @param node Array function node
  * @param nestedVisitor Visitor callback function
  */
+// TODO #1260 this should be removed
 const traverseStyledArrowFunctionExpression = (
   node: t.ArrowFunctionExpression,
   nestedVisitor: Visitor
@@ -88,6 +90,7 @@ const traverseStyledArrowFunctionExpression = (
  * @param node Binary expression node
  * @param nestedVisitor Visitor callback function
  */
+// TODO #1260 this should be removed
 const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor: Visitor) => {
   traverse(node, {
     noScope: true,
@@ -115,6 +118,7 @@ const traverseStyledBinaryExpression = (node: t.BinaryExpression, nestedVisitor:
  *
  * @param node {t.Node} Node of the styled component
  */
+// TODO #1260 this should be removed if props can be be passed through meta/opts, otherwise review it
 const getDestructuredProps = (node: t.Node): string[] => {
   const destructuredProps: string[] = [];
 
@@ -122,7 +126,9 @@ const getDestructuredProps = (node: t.Node): string[] => {
     noScope: true,
     ArrowFunctionExpression(path: NodePath<t.ArrowFunctionExpression>) {
       const propsParam = path.get('params')[0];
+      const body = path.node.body;
 
+      // TODO #1260 this should be removed if you are traversing it again - there shouldn't be destructured props at this point
       // Is the param for props being destructured
       if (propsParam && t.isObjectPattern(propsParam.node)) {
         // Uses the destructure ObjectPattern path to get all the prop references, i.e.
@@ -134,10 +140,26 @@ const getDestructuredProps = (node: t.Node): string[] => {
 
         destructuredProps.push(...propsUsed);
       }
+      // TODO #1260 - use this logic to get all props
+      else if (t.isConditionalExpression(body) && t.isMemberExpression(body.test)) {
+        const propertyName = (body.test.property as t.Identifier).name;
+        destructuredProps.push(propertyName);
+      } else if (t.isMemberExpression(body)) {
+        const propertyName = (body.property as t.Identifier).name;
+        destructuredProps.push(propertyName);
+      }
     },
   });
 
   return destructuredProps;
+};
+
+// TODO #1260 comment
+const getValidHtmlAttributes = (propsList: string[]): string => {
+  return unique(propsList)
+    .filter((prop: string) => isPropValid(prop))
+    .map((prop: string) => `${prop}: ${PROPS_IDENTIFIER_NAME}.${prop},`)
+    .join('');
 };
 
 /**
@@ -150,6 +172,7 @@ const getDestructuredProps = (node: t.Node): string[] => {
  *
  * @param path MemberExpression path
  */
+// TODO #1260 this should be removed
 const handleMemberExpressionInStyledInterpolation = (path: NodePath<t.MemberExpression>) => {
   const memberExpressionKey = path.node.object;
   const propsToDestructure: string[] = [];
@@ -190,13 +213,13 @@ const handleMemberExpressionInStyledInterpolation = (path: NodePath<t.MemberExpr
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
-  let isConditionalWithPropsInExpressions = false;
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
   // This completely depends on meta.parentPath.node to be the styled component.
   // If this changes please pass the component in another way
   const propsToDestructure: string[] = getDestructuredProps(meta.parentPath.node);
   const styleProp = opts.variables.length
     ? styledStyleProp(opts.variables, (node) => {
+        // TODO #1260 all the logic in here should be removed - opts.variables should be enough to get inline style
         const nestedArrowFunctionExpressionVisitor = {
           noScope: true,
           MemberExpression(path: NodePath<t.MemberExpression>) {
@@ -222,51 +245,6 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
           },
         };
 
-        /**
-         * Handles Conditional expressions.
-         * Traverses parent node looking for any arrow functions,
-         * calls back with each arrow function node into the passed in `nestedVisitor`
-         * looking for a node matching the given member expression node,
-         * and then return the node or its property node.
-         */
-        if (t.isMemberExpression(node) && t.isIdentifier(node.property)) {
-          let conditionalExpressionPath: NodePath<t.MemberExpression> | undefined;
-
-          const nestedMemberExpressionVisitor = {
-            MemberExpression(path: NodePath<t.MemberExpression>, state: { propertyName?: string }) {
-              if (path.node === node) {
-                isConditionalWithPropsInExpressions =
-                  (path.node.object as t.Identifier).name === state.propertyName;
-
-                if (isConditionalWithPropsInExpressions) {
-                  const propsToDestructureFromMemberExpression =
-                    handleMemberExpressionInStyledInterpolation(path);
-
-                  conditionalExpressionPath = path;
-
-                  propsToDestructure.push(...propsToDestructureFromMemberExpression);
-                }
-
-                path.stop();
-              }
-            },
-          };
-
-          traverse(meta.parentPath.node, {
-            noScope: true,
-            ArrowFunctionExpression(path: NodePath<t.ArrowFunctionExpression>) {
-              if (t.isConditionalExpression(path.get('body'))) {
-                const propertyName = (path.node.params[0] as t.Identifier).name;
-                path.traverse(nestedMemberExpressionVisitor, { propertyName });
-              }
-            },
-          });
-
-          return isConditionalWithPropsInExpressions && conditionalExpressionPath
-            ? conditionalExpressionPath.node
-            : node;
-        }
-
         if (t.isArrowFunctionExpression(node)) {
           return traverseStyledArrowFunctionExpression(node, nestedArrowFunctionExpressionVisitor);
         }
@@ -290,33 +268,22 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     }
   });
 
-  if (isConditionalWithPropsInExpressions) {
-    propsToDestructure.forEach((propertyName) => {
-      if (conditionalClassNames.includes(propertyName)) {
-        conditionalClassNames = conditionalClassNames.replace(
-          `${PROPS_IDENTIFIER_NAME}.${propertyName}`,
-          propertyName
-        );
-      }
-    });
-  }
-
   const classNames = `"${unconditionalClassNames.trim()}", ${conditionalClassNames}`;
+
+  // const HTML_ATTRIBUTES = `{ height: ${PROPS_IDENTIFIER_NAME}.height, children: ${PROPS_IDENTIFIER_NAME}.children}`;
+  const HTML_ATTRIBUTES = getValidHtmlAttributes(propsToDestructure);
 
   return template(
     `
   forwardRef(({
     as: C = ${buildComponentTag(opts.tag)},
     style,
-    ${unique(propsToDestructure)
-      .map((prop: string) => prop + ',')
-      .join('')}
     ...${PROPS_IDENTIFIER_NAME}
   }, ref) => (
     <CC>
       <CS ${nonceAttribute}>{%%cssNode%%}</CS>
       <C
-        {...${PROPS_IDENTIFIER_NAME}}
+      {...{${HTML_ATTRIBUTES} children: ${PROPS_IDENTIFIER_NAME}.children}}
         style={%%styleProp%%}
         ref={ref}
         className={ax([${classNames} ${PROPS_IDENTIFIER_NAME}.className])}
