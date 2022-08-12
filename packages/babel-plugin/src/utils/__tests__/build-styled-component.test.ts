@@ -6,7 +6,7 @@ describe('styledTemplate', () => {
     transformCode(code, { comments: true, ...opts });
 
   describe('if prop is a valid html attribute', () => {
-    it('should not move prop under `propsToDestructure`', () => {
+    it('should move prop under `HTML_ATTRIBUTES`', () => {
       const actual = transform(`
           import { styled } from '@compiled/react';
 
@@ -23,32 +23,12 @@ describe('styledTemplate', () => {
           );
         `);
 
-      expect(actual).toInclude('({ as: C = "div", style, ...props }, ref)');
-    });
-
-    it('should not remove `props` identifier', () => {
-      const actual = transform(`
-          import { styled } from '@compiled/react';
-
-          const MyDiv = styled.div\`
-            font-size: 12px;
-            width: \${(props) => (props.width ? props.width : "0")};
-          \`;
-
-          export const Component = () => (
-            <div>
-              <MyDiv width="24px"> Cell 1 </MyDiv>
-              <MyDiv>  Cell 2 </MyDiv>
-            </div>
-          );
-        `);
-
-      expect(actual).toInclude('props.width ? "_1bsb17ei" : "_1bsbidpf"');
+      expect(actual).toInclude('width: props.width');
     });
   });
 
   describe('if prop is not a valid html attribute', () => {
-    it('should move props under `propsToDestructure`', () => {
+    it('should not move props under `HTML_ATTRIBUTES`', () => {
       const actual = transform(`
           import { styled } from '@compiled/react';
 
@@ -65,30 +45,11 @@ describe('styledTemplate', () => {
           );
         `);
 
-      expect(actual).toInclude('({ as: C = "div", style, minWidth, ...props }, ref)');
-    });
-
-    it('should remove `props` identifier', () => {
-      const actual = transform(`
-          import { styled } from '@compiled/react';
-
-          const MyDiv = styled.div\`
-            font-size: 12px;
-            min-width: \${(props) => (props.minWidth ? props.minWidth : "0")};
-          \`;
-
-          export const Component = () => (
-            <div>
-              <MyDiv minWidth="24px"> Cell 1 </MyDiv>
-              <MyDiv>  Cell 2 </MyDiv>
-            </div>
-          );
-        `);
-
-      expect(actual).toInclude('minWidth ? "_1ul91bgn" : "_1ul9idpf"');
+      expect(actual).not.toInclude('minWidth: props.minWidth');
     });
   });
 
+  // TODO #1260 - to update
   it('should match snapshot`', () => {
     const actual = transform(`
         import { styled } from '@compiled/react';

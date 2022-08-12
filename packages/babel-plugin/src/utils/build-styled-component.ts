@@ -270,7 +270,6 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
 
   const classNames = `"${unconditionalClassNames.trim()}", ${conditionalClassNames}`;
 
-  // const HTML_ATTRIBUTES = `{ height: ${PROPS_IDENTIFIER_NAME}.height, children: ${PROPS_IDENTIFIER_NAME}.children}`;
   const HTML_ATTRIBUTES = getValidHtmlAttributes(propsToDestructure);
 
   return template(

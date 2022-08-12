@@ -11,11 +11,11 @@ interface TextProps {
   isPrimary?: boolean;
   isBolded?: boolean;
   isMaybe?: boolean;
-  minHeight?: string;
+  height?: string;
   minWidth?: string;
   border?: string;
   width?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const TextWithTemplateLiteral = styled.span<TextProps>`
@@ -105,20 +105,37 @@ const DestructuredPropsKeyValueString = styled.div<TextProps>`
   ${({ isPrimary: primary }) => (primary ? 'color: green' : 'color: red')};
 `;
 
-// TODO #1260
-// - example with same props destructuring / not destructuring -> Use same prop in 2 different way it should have the same value
-// minwidth: ({minwidth}) => minwidth px AND width: (props) => props.minwidth px
-// - example empty HTML tag - eg HR
-// Valid HTML attribute not showing if props is deconstructed eg  width: ({width}) => width . It never worked
+// TODO #1260 - this won't work until we get the transformation done
+// const NotBooleanProps = styled.div<TextProps>({
+//   border: ({ border: b }) => (b ? b : '1px solid black'),
+//   color: ({ isPrimary: primary }) => (primary ? 'green' : 'red'),
+//   display: 'block',
+//   marginBottom: '1em',
+//   minHeight: (props) => ( props.height ? props.height : '0'),
+//   height: ({ height }) => (height ? height : 'auto'),
+//   minWidth: (propz) => (propz.minWidth ? props.minWidth : 'auto'),
+//   width: ({width}) => width,
+// });
+
+// TODO #1260 - use this for testing while we wait to get the transformation done
 const NotBooleanProps = styled.div<TextProps>({
-  border: ({ border: b }) => (b ? b : '1px solid black'),
-  color: ({ isPrimary: primary }) => (primary ? 'green' : 'red'),
+  border: (props) => (props.border ? props.border : '1px solid black'),
+  color: (props) => (props.isPrimary ? 'green' : 'red'),
   display: 'block',
   marginBottom: '1em',
-  minHeight: ({ minHeight }) => (minHeight ? minHeight : '0'),
+  height: (props) => (props.height ? props.height : 'auto'),
   minWidth: (props) => (props.minWidth ? props.minWidth : '0'),
   width: (propz) => propz.width,
 });
+
+// TODO #1260 - test empty HTML tag
+const HorizontalLine = styled.hr<TextProps>({
+  border: (props) => (props.border ? props.border : '1px solid black'),
+});
+
+export const EmptyHtmlTag = (): JSX.Element => {
+  return <HorizontalLine border="5px solid blue" />;
+};
 
 export const PrimaryTextWithTemplateLiteral = (): JSX.Element => {
   return <TextWithTemplateLiteral isPrimary>Hello primary</TextWithTemplateLiteral>;
@@ -352,12 +369,12 @@ export const ConditionWithDestructuredPropsKeyValueString = (): JSX.Element => (
 );
 
 // A story to show the behavior of handleMemberExpressionInStyledInterpolation
-// Only `width` prop should be left through, being a valid html attribute
+// Only `width` and `height` prop should be left through, being valid html attributes
 export const HandleMemberExpressionInStyledInterpolation = (): JSX.Element => (
   <div>
     <NotBooleanProps
       minWidth="300px"
-      minHeight="100px"
+      height="100px"
       width="320px"
       border="1px solid green"
       isPrimary>
