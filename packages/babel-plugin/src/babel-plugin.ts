@@ -20,6 +20,7 @@ import {
   isCompiledStyledCallExpression,
   isCompiledStyledTaggedTemplateExpression,
 } from './utils/is-compiled';
+import { normalizePropsUsage } from './utils/normalize-props-usage';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -168,6 +169,13 @@ export default declare<State>((api) => {
       TaggedTemplateExpression(path, state) {
         if (
           isCompiledCSSTaggedTemplateExpression(path.node, state) ||
+          isCompiledStyledTaggedTemplateExpression(path.node, state)
+        ) {
+          normalizePropsUsage(path);
+        }
+
+        if (
+          isCompiledCSSTaggedTemplateExpression(path.node, state) ||
           isCompiledKeyframesTaggedTemplateExpression(path.node, state)
         ) {
           state.pathsToCleanup.push({ path, action: 'replace' });
@@ -180,6 +188,13 @@ export default declare<State>((api) => {
         }
       },
       CallExpression(path, state) {
+        if (
+          isCompiledCSSCallExpression(path.node, state) ||
+          isCompiledStyledCallExpression(path.node, state)
+        ) {
+          normalizePropsUsage(path);
+        }
+
         if (
           isCompiledCSSCallExpression(path.node, state) ||
           isCompiledKeyframesCallExpression(path.node, state)
