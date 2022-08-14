@@ -11,11 +11,7 @@ interface TextProps {
   isPrimary?: boolean;
   isBolded?: boolean;
   isMaybe?: boolean;
-  height?: string;
-  minWidth?: string;
-  border?: string;
-  width?: string;
-  children?: React.ReactNode;
+  children: React.ReactNode;
 }
 
 const TextWithTemplateLiteral = styled.span<TextProps>`
@@ -104,38 +100,6 @@ const DestructurededPropsValues = styled.div<TextProps>`
 const DestructuredPropsKeyValueString = styled.div<TextProps>`
   ${({ isPrimary: primary }) => (primary ? 'color: green' : 'color: red')};
 `;
-
-// TODO #1260 - this won't work until we get the transformation done
-// const NotBooleanProps = styled.div<TextProps>({
-//   border: ({ border: b }) => (b ? b : '1px solid black'),
-//   color: ({ isPrimary: primary }) => (primary ? 'green' : 'red'),
-//   display: 'block',
-//   marginBottom: '1em',
-//   minHeight: (props) => ( props.height ? props.height : '0'),
-//   height: ({ height }) => (height ? height : 'auto'),
-//   minWidth: (propz) => (propz.minWidth ? props.minWidth : 'auto'),
-//   width: ({width}) => width,
-// });
-
-// TODO #1260 - use this for testing while we wait to get the transformation done
-const NotBooleanProps = styled.div<TextProps>({
-  border: (props) => (props.border ? props.border : '1px solid black'),
-  color: (props) => (props.isPrimary ? 'green' : 'red'),
-  display: 'block',
-  marginBottom: '1em',
-  height: (props) => (props.height ? props.height : 'auto'),
-  minWidth: (props) => (props.minWidth ? props.minWidth : '0'),
-  width: (propz) => propz.width,
-});
-
-// TODO #1260 - test empty HTML tag
-const HorizontalLine = styled.hr<TextProps>({
-  border: (props) => (props.border ? props.border : '1px solid black'),
-});
-
-export const EmptyHtmlTag = (): JSX.Element => {
-  return <HorizontalLine border="5px solid blue" />;
-};
 
 export const PrimaryTextWithTemplateLiteral = (): JSX.Element => {
   return <TextWithTemplateLiteral isPrimary>Hello primary</TextWithTemplateLiteral>;
@@ -365,22 +329,5 @@ export const ConditionWithDestructuredPropsKeyValueString = (): JSX.Element => (
   <div>
     <DestructuredPropsKeyValueString isPrimary>color: green</DestructuredPropsKeyValueString>
     <DestructuredPropsKeyValueString>color: red</DestructuredPropsKeyValueString>
-  </div>
-);
-
-// A story to show the behavior of handleMemberExpressionInStyledInterpolation
-// Only `width` and `height` prop should be left through, being valid html attributes
-export const HandleMemberExpressionInStyledInterpolation = (): JSX.Element => (
-  <div>
-    <NotBooleanProps
-      minWidth="300px"
-      height="100px"
-      width="320px"
-      border="1px solid green"
-      isPrimary>
-      {' '}
-      Has conditional rules
-    </NotBooleanProps>
-    <NotBooleanProps width="200px"> Does not have conditional rules</NotBooleanProps>
   </div>
 );
