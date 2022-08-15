@@ -22,6 +22,8 @@ const buildObjectChain = (path: NodePath<t.Node> | null, currentChain: string[] 
     return buildObjectChain(parentPath.parentPath, currentChain);
   }
 
+  currentChain.unshift(PROPS_IDENTIFIER_NAME);
+
   return currentChain;
 };
 
@@ -59,14 +61,13 @@ export const normalizePropsUsage = (
           // getBindingIdentifierPaths not in @babel/traverse types
           // But available since v6.20.0
           // https://github.com/babel/babel/pull/4876
-          const destructedValuePaths = propsParam.getBindingIdentifierPaths();
+          const destructedPaths = propsParam.getBindingIdentifierPaths();
 
-          for (const key in destructedValuePaths) {
+          for (const key in destructedPaths) {
             const binding = bindings[key];
 
             if (binding.references) {
-              const objectChain = buildObjectChain(destructedValuePaths[key]);
-              objectChain.unshift(PROPS_IDENTIFIER_NAME);
+              const objectChain = buildObjectChain(destructedPaths[key]);
 
               binding.referencePaths.forEach((reference) => {
                 reference.replaceWithSourceString(objectChain.join('.'));
