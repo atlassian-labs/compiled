@@ -490,12 +490,6 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
       }
 
       if (isEmptyValue(propValue)) {
-        css.push({
-          type: 'unconditional',
-          // Let postCSS strip out later
-          css: `${kebabCase(key)}: undefined;`,
-        });
-
         return;
       }
 
