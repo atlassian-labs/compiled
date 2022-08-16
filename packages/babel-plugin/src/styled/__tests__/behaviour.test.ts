@@ -414,7 +414,7 @@ describe('styled component behaviour', () => {
     ).not.toThrow();
   });
 
-  it('should apply no classes when styles have no value in string literal', () => {
+  it('should omit classes on rules with no value in string literal', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 
@@ -422,13 +422,20 @@ describe('styled component behaviour', () => {
         color: ;
         background-color: undefined;
         border-color: null;
+
+        ::after {
+          content: '';
+        }
       \`;
     `);
 
-    expect(actual).toInclude('className={ax(["",props.className])}');
+    expect(actual).toIncludeMultiple([
+      "_aetr1yyf:after{content:''}",
+      'className={ax(["_aetr1yyf",props.className])}',
+    ]);
   });
 
-  it('should apply no classes when styles have no value in object', () => {
+  it('should omit classes on rules with no value in object', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 
@@ -436,10 +443,16 @@ describe('styled component behaviour', () => {
         color: '',
         backgroundColor: undefined,
         borderColor: null,
+        '::after': {
+          content: '',
+        }
       });
     `);
 
-    expect(actual).toInclude('className={ax(["",props.className])}');
+    expect(actual).toIncludeMultiple([
+      '_aetrb3bt:after{content:\\"\\"}',
+      'className={ax(["_aetrb3bt",props.className])}',
+    ]);
   });
 
   it('should apply no classes when styles have no value inside selector', () => {
