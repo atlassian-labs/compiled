@@ -1,4 +1,5 @@
 {
   "importReact": false,
-  "extract": false
+  "extract": false,
+  "optimizeCss": false
 }

@@ -1,5 +1,14 @@
 # @compiled/webpack-loader
 
+## 0.9.2
+
+### Patch Changes
+
+- 5272281a: Add configurable options to optimize CSS
+- Updated dependencies [5272281a]
+  - @compiled/babel-plugin@0.16.3
+  - @compiled/css@0.8.4
+
 ## 0.9.1
 
 ### Patch Changes

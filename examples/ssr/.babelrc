@@ -1,4 +1,11 @@
 {
   "presets": ["razzle/babel"],
-  "plugins": ["@compiled/babel-plugin"]
+  "plugins": [
+    [
+      "@compiled/babel-plugin",
+      {
+        "optimizeCss": false
+      }
+    ]
+  ]
 }

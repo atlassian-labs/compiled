@@ -1,64 +1,13 @@
-import { transformCss } from '../transform';
+import { transformCss as transform } from '../transform';
+
+interface TransformOpts {
+  optimizeCss?: boolean;
+}
+
+const transformCss = (code: string, opts: TransformOpts = { optimizeCss: false }) =>
+  transform(code, opts);
 
 describe('#css-transform', () => {
-  beforeEach(() => {
-    delete process.env.NODE_ENV;
-  });
-
-  describe('production builds', () => {
-    it('should order values', () => {
-      process.env.NODE_ENV = 'production';
-
-      const { sheets: actualOne } = transformCss(`
-        border: green solid 2px;
-      `);
-      const { sheets: actualTwo } = transformCss(`
-        border: 2px solid green;
-      `);
-
-      expect(actualOne.join('\n')).toEqual(actualTwo.join('\n'));
-    });
-
-    it('should normalize values', () => {
-      process.env.NODE_ENV = 'production';
-
-      const { sheets: actual } = transformCss(`
-        margin-left: initial;
-        content: 'hello';
-        color: rebeccapurple;
-        border-color: currentColor;
-        background-color: currentcolor;
-        border-left-color: current-color;
-
-      `);
-
-      expect(actual.join('\n')).toMatchInlineSnapshot(`
-        "._18u0idpf{margin-left:0}
-        ._1sb21e8g{content:\\"hello\\"}
-        ._syaz15td{color:#639}
-        ._1h6d1r31{border-color:currentColor}
-        ._bfhk1r31{background-color:currentColor}
-        ._5wra1r31{border-left-color:currentColor}"
-      `);
-    });
-
-    it('should normalize empty values', () => {
-      process.env.NODE_ENV = 'production';
-
-      const { sheets: actual } = transformCss(`
-        margin-left: initial;
-        margin-top: 0px;
-        margin-bottom: 0;
-      `);
-
-      expect(actual.join('\n')).toMatchInlineSnapshot(`
-        "._18u0idpf{margin-left:0}
-        ._19pkidpf{margin-top:0}
-        ._otyridpf{margin-bottom:0}"
-      `);
-    });
-  });
-
   it('should generate the same selectors even if white space is different', () => {
     const { sheets: actualOne } = transformCss(`
       >   :first-child {
@@ -429,6 +378,66 @@ describe('#css-transform', () => {
       expect(actual.join('')).toMatchInlineSnapshot(
         `"._tkqh11p5 div{display:-ms-grid;display:grid}"`
       );
+    });
+  });
+
+  describe('should apply all the cssnano plugins', () => {
+    it('should order values', () => {
+      const { sheets: actualOne } = transformCss(
+        `
+        border: green solid 2px;
+      `,
+        { optimizeCss: true }
+      );
+      const { sheets: actualTwo } = transformCss(
+        `
+        border: 2px solid green;
+      `,
+        { optimizeCss: true }
+      );
+
+      expect(actualOne.join('\n')).toEqual(actualTwo.join('\n'));
+    });
+
+    it('should normalize values', () => {
+      const { sheets: actual } = transformCss(
+        `
+        margin-left: initial;
+        content: 'hello';
+        color: rebeccapurple;
+        border-color: currentColor;
+        background-color: currentcolor;
+        border-left-color: current-color;
+
+      `,
+        { optimizeCss: true }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._18u0idpf{margin-left:0}
+        ._1sb21e8g{content:\\"hello\\"}
+        ._syaz15td{color:#639}
+        ._1h6d1r31{border-color:currentColor}
+        ._bfhk1r31{background-color:currentColor}
+        ._5wra1r31{border-left-color:currentColor}"
+      `);
+    });
+
+    it('should normalize empty values', () => {
+      const { sheets: actual } = transformCss(
+        `
+        margin-left: initial;
+        margin-top: 0px;
+        margin-bottom: 0;
+      `,
+        { optimizeCss: true }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._18u0idpf{margin-left:0}
+        ._19pkidpf{margin-top:0}
+        ._otyridpf{margin-bottom:0}"
+      `);
     });
   });
 });

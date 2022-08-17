@@ -3,6 +3,10 @@ import type { Plugin } from 'postcss';
 
 import { normalizeCurrentColor } from './normalize-current-color';
 
+interface NormalizeOpts {
+  optimizeCss?: boolean;
+}
+
 /**
  * These plugins are ran on production builds to ensure the minimal amount of CSS is generated.
  */
@@ -46,13 +50,17 @@ const BASE_PLUGINS: string[] = [
 ];
 
 /**
- * This plugin runs a subset of the cssnao plugins to normalize CSS during build.
- * During a production build it will run more plugins.
+ * This plugin runs cssnao plugins to normalize CSS during build.
+ * If consumers opt out the default behaviour, it will run a subset of the plugins.
+ *
+ * @param opts Transformation options
  */
-export const normalizeCSS = (): Plugin[] => {
+export const normalizeCSS = (opts: NormalizeOpts): Plugin[] => {
+  const { optimizeCss = true } = opts;
+
   const preset = cssnano();
   // We exclude async because we need this to run synchronously as ts transformers aren't async!
-  const extraPlugins = process.env.NODE_ENV === 'production' ? PROD_PLUGINS : [];
+  const extraPlugins = optimizeCss ? PROD_PLUGINS : [];
   const pluginsToInclude = BASE_PLUGINS.concat(extraPlugins);
 
   const normalizePlugins = preset.plugins
@@ -65,7 +73,7 @@ export const normalizeCSS = (): Plugin[] => {
     });
 
   // These plugins are custom ones that gap functionality not provided by cssmin.
-  if (process.env.NODE_ENV === 'production') {
+  if (optimizeCss) {
     normalizePlugins.push(normalizeCurrentColor());
   }
 

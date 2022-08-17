@@ -30,6 +30,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     transformerBabelPlugins = [],
     [pluginName]: isPluginEnabled = false,
     ssr = false,
+    optimizeCss = true,
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -67,6 +68,9 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           ssr: {
             type: 'boolean',
           },
+          optimizeCss: {
+            type: 'boolean',
+          },
         },
       });
 
@@ -81,6 +85,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     transformerBabelPlugins,
     [pluginName]: isPluginEnabled,
     ssr,
+    optimizeCss,
   };
 }
 
