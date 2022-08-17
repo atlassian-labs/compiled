@@ -6,6 +6,7 @@ import whitespace from 'postcss-normalize-whitespace';
 
 import { atomicifyRules } from './plugins/atomicify-rules';
 import { discardDuplicates } from './plugins/discard-duplicates';
+import { discardEmptyRules } from './plugins/discard-empty-rules';
 import { expandShorthands } from './plugins/expand-shorthands';
 import { extractStyleSheets } from './plugins/extract-stylesheets';
 import { normalizeCSS } from './plugins/normalize-css';
@@ -32,6 +33,7 @@ export const transformCss = (
   try {
     const result = postcss([
       discardDuplicates(),
+      discardEmptyRules(),
       parentOrphanedPseudos(),
       nested(),
       ...normalizeCSS(opts),
