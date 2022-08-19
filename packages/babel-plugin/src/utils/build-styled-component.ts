@@ -98,7 +98,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     <CC>
       <CS ${nonceAttribute}>{%%cssNode%%}</CS>
       <C
-        {...hx(${PROPS_IDENTIFIER_NAME})}
+        {...${PROPS_IDENTIFIER_NAME}}
         children={${PROPS_IDENTIFIER_NAME}.children}
         style={%%styleProp%%}
         ref={ref}

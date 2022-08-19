@@ -13,7 +13,7 @@ const importSpecifier = (name: string, localName?: string): t.ImportSpecifier =>
   return t.importSpecifier(t.identifier(name), t.identifier(localName || name));
 };
 
-const COMPILED_RUNTIME_IMPORTS = ['ax', 'ix', 'hx', 'CC', 'CS'];
+const COMPILED_RUNTIME_IMPORTS = ['ax', 'ix', 'CC', 'CS'];
 const COMPILED_RUNTIME_MODULE = '@compiled/react/runtime';
 
 /**

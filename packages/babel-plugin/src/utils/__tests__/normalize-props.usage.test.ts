@@ -4,7 +4,7 @@ import traverse from '@babel/traverse';
 import type { Node } from '@babel/types';
 import { format } from 'prettier';
 
-import { PROPS_IDENTIFIER_NAME } from '../../constants';
+import { PROPS_IDENTIFIER_NAME as P_NAME } from '../../constants';
 import { normalizePropsUsage } from '../normalize-props-usage';
 
 describe('normalizePropsUsage', () => {
@@ -30,16 +30,14 @@ describe('normalizePropsUsage', () => {
       .replace(/\s+/g, ' ');
   };
 
-  const { a } = b;
-
-  it(`renames props param to ${PROPS_IDENTIFIER_NAME}`, () => {
+  it(`renames props param to ${P_NAME}`, () => {
     const actual = transform(`
         styled.div({
             color: (p) => p.color,
         });
     `);
 
-    expect(actual).toInclude('(props) => props.color');
+    expect(actual).toInclude(`(${P_NAME}) => ${P_NAME}.color`);
   });
 
   describe('destructured props', () => {
@@ -48,7 +46,7 @@ describe('normalizePropsUsage', () => {
         styled.div(({ width }) => width && { width });
     `);
 
-      expect(actual).toInclude('(props) => props.width && { width: props.width, }');
+      expect(actual).toInclude(`(${P_NAME}) => ${P_NAME}.width && { width: ${P_NAME}.width, }`);
     });
 
     it('reconstructs nested destructured props param', () => {
@@ -59,8 +57,30 @@ describe('normalizePropsUsage', () => {
     `);
 
       expect(actual).toInclude(
-        '(props) => props.theme.colors.dark ? props.theme.colors.dark.red : "black"'
+        `(${P_NAME}) => ${P_NAME}.theme.colors.dark ? ${P_NAME}.theme.colors.dark.red : "black"`
       );
+    });
+
+    describe('rest element', () => {
+      it('reconstructs destructured rest element', () => {
+        const actual = transform(`
+        styled.div({
+          height: ({ width, ...rest }) => rest.height,
+        });
+    `);
+
+        expect(actual).toInclude(`height: (${P_NAME}) => ${P_NAME}.height`);
+      });
+
+      it('reconstructs nested destructured rest element', () => {
+        const actual = transform(`
+        styled.div({
+          color: ({ theme: { colors: {dark, ...rest} } }) => rest.light,
+        });
+    `);
+
+        expect(actual).toInclude(`color: (${P_NAME}) => ${P_NAME}.theme.colors.light`);
+      });
     });
   });
 });
