@@ -26,6 +26,12 @@ export interface CompiledLoaderOptions {
   importReact?: boolean;
 
   /**
+   * Will run additional cssnano plugin to normalize CSS during build.
+   * Default to `true`.
+   */
+  optimizeCss?: boolean;
+
+  /**
    * Enables CSP support,
    * read [Security](https://compiledcssinjs.com/docs/security) for more information.
    */

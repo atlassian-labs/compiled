@@ -14,6 +14,7 @@ import {
   isCompiledKeyframesCallExpression,
   isCompiledKeyframesTaggedTemplateExpression,
 } from './is-compiled';
+import { isEmptyValue } from './is-empty';
 import {
   isQuasiMidStatement,
   hasNestedTemplateLiteralsWithConditionalRules,
@@ -485,6 +486,10 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
           css: `${kebabCase(key)}: ${addUnitIfNeeded(key, propValue.value)};`,
         });
 
+        return;
+      }
+
+      if (isEmptyValue(propValue)) {
         return;
       }
 

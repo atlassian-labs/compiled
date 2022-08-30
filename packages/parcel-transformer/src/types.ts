@@ -19,4 +19,11 @@ export interface ParcelTransformerOpts extends BabelPluginOpts {
    * Defaults to `false`.
    */
   ssr?: boolean;
+
+  /**
+   * Will run additional cssnano plugins to normalize CSS during build.
+   *
+   * Default to `true`.
+   */
+  optimizeCss?: boolean;
 }

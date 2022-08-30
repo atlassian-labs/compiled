@@ -39,6 +39,7 @@ module.exports = {
               extensions: ['.js', '.jsx', '.ts', '.tsx', '.customjsx'],
               parserBabelPlugins: ['typescript'],
               transformerBabelPlugins: [['@babel/plugin-proposal-decorators', { legacy: true }]],
+              optimizeCss: false,
             },
           },
         ],
