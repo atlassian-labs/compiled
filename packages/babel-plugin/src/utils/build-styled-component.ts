@@ -1,10 +1,12 @@
 import generate from '@babel/generator';
 import template from '@babel/template';
+import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { transformCss } from '@compiled/css';
 import { unique } from '@compiled/utils';
+import isPropValid from '@emotion/is-prop-valid';
 
-import { PROPS_IDENTIFIER_NAME } from '../constants';
+import { DOM_PROPS_IDENTIFIER_NAME, PROPS_IDENTIFIER_NAME } from '../constants';
 import type { Metadata, Tag } from '../types';
 
 import { pickFunctionBody } from './ast';
@@ -65,6 +67,36 @@ const buildComponentTag = ({ name, type }: Tag) => {
   return type === 'InBuiltComponent' ? `"${name}"` : name;
 };
 
+const invalidDomPropsVisitor = {
+  MemberExpression(this: { invalids: Set<string> }, path: NodePath<t.MemberExpression>) {
+    const {
+      node: { object, property },
+    } = path;
+
+    if (t.isIdentifier(object, { name: PROPS_IDENTIFIER_NAME }) && t.isIdentifier(property)) {
+      const { name } = property;
+
+      if (name !== 'children' && !isPropValid(name)) {
+        this.invalids.add(name);
+      }
+    }
+  },
+};
+
+/**
+ * Finds all prop usage in a component and returns a list
+ * of props that are not valid HTML attributes
+ *
+ * @param path Path of the styled component.
+ */
+const getInvalidDomProps = (path: NodePath<t.Node>): string[] => {
+  const state = { invalids: new Set<string>() };
+
+  path.traverse(invalidDomPropsVisitor, state);
+
+  return Array.from(state.invalids);
+};
+
 /**
  * Will return a generated AST for a Styled Component.
  *
@@ -74,6 +106,10 @@ const buildComponentTag = ({ name, type }: Tag) => {
 const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
   const styleProp = opts.variables.length ? styledStyleProp(opts.variables) : t.identifier('style');
+  // This completely depends on meta.parentPath to be the styled component.
+  // If this changes please pass the component in another way
+  const invalidDomProps = getInvalidDomProps(meta.parentPath);
+  const hasInvalidDomProps = Boolean(invalidDomProps.length);
 
   let unconditionalClassNames = '',
     conditionalClassNames = '';
@@ -94,18 +130,27 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     as: C = ${buildComponentTag(opts.tag)},
     style,
     ...${PROPS_IDENTIFIER_NAME}
-  }, ref) => (
-    <CC>
-      <CS ${nonceAttribute}>{%%cssNode%%}</CS>
-      <C
-        {...${PROPS_IDENTIFIER_NAME}}
-        children={${PROPS_IDENTIFIER_NAME}.children}
-        style={%%styleProp%%}
-        ref={ref}
-        className={ax([${classNames} ${PROPS_IDENTIFIER_NAME}.className])}
-      />
-    </CC>
-  ));
+  }, ref) => {
+    ${
+      hasInvalidDomProps
+        ? `const {${invalidDomProps.join(
+            ', '
+          )}, ...${DOM_PROPS_IDENTIFIER_NAME}} = ${PROPS_IDENTIFIER_NAME};`
+        : ''
+    }
+
+    return (
+      <CC>
+        <CS ${nonceAttribute}>{%%cssNode%%}</CS>
+        <C
+          {...${hasInvalidDomProps ? DOM_PROPS_IDENTIFIER_NAME : PROPS_IDENTIFIER_NAME}}
+          style={%%styleProp%%}
+          ref={ref}
+          className={ax([${classNames} ${PROPS_IDENTIFIER_NAME}.className])}
+        />
+      </CC>
+    );
+  });
 `,
     {
       plugins: ['jsx'],

@@ -64,17 +64,19 @@ describe('babel plugin', () => {
       import * as React from \\"react\\";
       import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._1wyb1fwx{font-size:12px}\\";
-      const MyDiv = forwardRef(({ as: C = \\"div\\", style, ...props }, ref) => (
-        <CC>
-          <CS>{[_]}</CS>
-          <C
-            {...props}
-            style={style}
-            ref={ref}
-            className={ax([\\"_1wyb1fwx\\", props.className])}
-          />
-        </CC>
-      ));
+      const MyDiv = forwardRef(({ as: C = \\"div\\", style, ...props }, ref) => {
+        return (
+          <CC>
+            <CS>{[_]}</CS>
+            <C
+              {...props}
+              style={style}
+              ref={ref}
+              className={ax([\\"_1wyb1fwx\\", props.className])}
+            />
+          </CC>
+        );
+      });
 
       if (process.env.NODE_ENV !== \\"production\\") {
         MyDiv.displayName = \\"MyDiv\\";

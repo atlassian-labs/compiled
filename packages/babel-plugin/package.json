@@ -30,6 +30,7 @@
     "@babel/types": "^7.17.10",
     "@compiled/css": "^0.8.3",
     "@compiled/utils": "^0.6.16",
+    "@emotion/is-prop-valid": "^1.2.0",
     "resolve": "^1.22.0"
   },
   "devDependencies": {

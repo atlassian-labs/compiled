@@ -27,6 +27,44 @@ const buildObjectChain = (path: NodePath<t.Node> | null, currentChain: string[] 
   return currentChain;
 };
 
+const arrowFunctionVisitor = {
+  ArrowFunctionExpression(path: NodePath<t.ArrowFunctionExpression>) {
+    const [propsParam] = path.get('params');
+
+    if (propsParam) {
+      const { node } = propsParam;
+
+      if (t.isIdentifier(node) && node.name !== PROPS_IDENTIFIER_NAME) {
+        path.scope.getBinding(node.name)?.referencePaths.forEach((reference) => {
+          reference.replaceWith(t.identifier(PROPS_IDENTIFIER_NAME));
+        });
+        // If destructuring
+      } else if (t.isObjectPattern(node)) {
+        const { bindings } = path.scope;
+        // @ts-expect-error
+        // getBindingIdentifierPaths not in @babel/traverse types
+        // But available since v6.20.0
+        // https://github.com/babel/babel/pull/4876
+        const destructedPaths = propsParam.getBindingIdentifierPaths();
+
+        for (const key in destructedPaths) {
+          const binding = bindings[key];
+
+          if (binding.references) {
+            const objectChain = buildObjectChain(destructedPaths[key]);
+
+            binding.referencePaths.forEach((reference) => {
+              reference.replaceWithSourceString(objectChain.join('.'));
+            });
+          }
+        }
+      }
+
+      propsParam.replaceWith(t.identifier(PROPS_IDENTIFIER_NAME));
+    }
+  },
+};
+
 /**
  * Converts all usage of props to a normalized format
  * For example:
@@ -41,43 +79,7 @@ const buildObjectChain = (path: NodePath<t.Node> | null, currentChain: string[] 
  * @param styledPath Path of the CSS source
  */
 export const normalizePropsUsage = (
-  styledPath: NodePath<t.TaggedTemplateExpression | t.CallExpression>
+  styledPath: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>
 ): void => {
-  styledPath.traverse({
-    ArrowFunctionExpression(path) {
-      const [propsParam] = path.get('params');
-
-      if (propsParam) {
-        const { node } = propsParam;
-
-        if (t.isIdentifier(node) && node.name !== PROPS_IDENTIFIER_NAME) {
-          path.scope.getBinding(node.name)?.referencePaths.forEach((reference) => {
-            reference.replaceWith(t.identifier(PROPS_IDENTIFIER_NAME));
-          });
-          // If destructuring
-        } else if (t.isObjectPattern(node)) {
-          const { bindings } = path.scope;
-          // @ts-expect-error
-          // getBindingIdentifierPaths not in @babel/traverse types
-          // But available since v6.20.0
-          // https://github.com/babel/babel/pull/4876
-          const destructedPaths = propsParam.getBindingIdentifierPaths();
-
-          for (const key in destructedPaths) {
-            const binding = bindings[key];
-
-            if (binding.references) {
-              const objectChain = buildObjectChain(destructedPaths[key]);
-
-              binding.referencePaths.forEach((reference) => {
-                reference.replaceWithSourceString(objectChain.join('.'));
-              });
-            }
-          }
-        }
-
-        propsParam.replaceWith(t.identifier(PROPS_IDENTIFIER_NAME));
-      }
-    },
-  });
+  styledPath.traverse(arrowFunctionVisitor);
 };

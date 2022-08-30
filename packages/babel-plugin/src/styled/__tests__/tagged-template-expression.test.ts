@@ -25,17 +25,19 @@ describe('styled tagged template expression', () => {
         color: blue;
       \`;
       const CompiledComponent = forwardRef(
-        ({ as: C = \\"div\\", style, ...props }, ref) => (
-          <CC>
-            <CS>{[_]}</CS>
-            <C
-              {...props}
-              style={style}
-              ref={ref}
-              className={ax([\\"_syaz13q2\\", props.className])}
-            />
-          </CC>
-        )
+        ({ as: C = \\"div\\", style, ...props }, ref) => {
+          return (
+            <CC>
+              <CS>{[_]}</CS>
+              <C
+                {...props}
+                style={style}
+                ref={ref}
+                className={ax([\\"_syaz13q2\\", props.className])}
+              />
+            </CC>
+          );
+        }
       );
       "
     `);
@@ -66,17 +68,19 @@ describe('styled tagged template expression', () => {
         \${({ isPrimary }) => isPrimary && \`color: blue;\`}
       \`;
       const CompiledComponent = forwardRef(
-        ({ as: C = \\"div\\", style, ...props }, ref) => (
-          <CC>
-            <CS>{[_]}</CS>
-            <C
-              {...props}
-              style={style}
-              ref={ref}
-              className={ax([\\"_1wybexct\\", props.className])}
-            />
-          </CC>
-        )
+        ({ as: C = \\"div\\", style, ...props }, ref) => {
+          return (
+            <CC>
+              <CS>{[_]}</CS>
+              <C
+                {...props}
+                style={style}
+                ref={ref}
+                className={ax([\\"_1wybexct\\", props.className])}
+              />
+            </CC>
+          );
+        }
       );
       "
     `);
@@ -105,8 +109,8 @@ describe('styled tagged template expression', () => {
 
     expect(actual).toIncludeMultiple([
       '{font-size:var(--_fb92co)}',
-      'textSize, ...props }',
-      '"--_fb92co": ix(textSize, "px")',
+      'const { textSize, ...__cmpldp } = props;',
+      '"--_fb92co": ix(props.textSize, "px")',
     ]);
   });
 
@@ -281,8 +285,8 @@ describe('styled tagged template expression', () => {
 
     expect(actual).toIncludeMultiple([
       '{font-size:var(--_1j0t240)}',
-      '({as:C="div",style,textSize,...props},ref)',
-      '"--_1j0t240":ix((()=>{return textSize;})())',
+      'const{textSize,...__cmpldp}=props;',
+      '"--_1j0t240":ix((()=>{return props.textSize;})())',
     ]);
   });
 
@@ -316,8 +320,8 @@ describe('styled tagged template expression', () => {
 
     expect(actual).toIncludeMultiple([
       '{content:var(--_1j0t240)}',
-      '({as:C="div",style,textSize,...props},ref)',
-      '"--_1j0t240":ix((()=>{return textSize;})(),"\\"","\\"")',
+      'const{textSize,...__cmpldp}=props;',
+      '"--_1j0t240":ix((()=>{return props.textSize;})(),"\\"","\\"")',
     ]);
   });
 
@@ -677,7 +681,7 @@ describe('styled tagged template expression', () => {
     `);
 
     // `isShown` should be destructured only once.
-    expect(actual).toInclude('{ as: C = "div", style, isShown, ...props }');
+    expect(actual).toInclude('const { isPrimary, isShown, ...__cmpldp } = props;');
   });
 
   it('should transform identifier referencing an expression with suffix', () => {
@@ -809,25 +813,10 @@ describe('styled tagged template expression', () => {
     expect(actual).not.toInclude('propz.loading?colors.N100:colors.N200');
 
     expect(actual).toIncludeMultiple([
-      'isLoading ? colors.N20 : colors.N40',
-      'l ? colors.N50 : colors.N10',
+      'props.isLoading ? colors.N20 : colors.N40',
+      'props.loading ? colors.N50 : colors.N10',
       'props.loading ? colors.N100 : colors.N200',
     ]);
-  });
-
-  it('should not use the destructured name to prevent naming collisions', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-      import colors from 'colors';
-
-      export const BadgeSkeleton = styled.span\`
-        background-color: \${({ isLoading }) => (isLoading ? colors.N20 : colors.N40)};
-        color: \${({ loading: l }) => (l ? colors.N50 : colors.N10)};
-        border-color: \${(propz) => (propz.loading ? colors.N100 : colors.N200)};
-      \`;
-    `);
-
-    expect(actual).toInclude('{ as: C = "span", style, isLoading, loading: l, ...props }');
   });
 
   it('should place classes in given order when static styles precede expression', () => {

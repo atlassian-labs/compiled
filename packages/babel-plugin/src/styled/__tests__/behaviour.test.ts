@@ -29,18 +29,19 @@ describe('styled component behaviour', () => {
       import * as React from \\"react\\";
       import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._1wybgktf{font-size:20px}\\";
-      const ListItem = forwardRef(({ as: C = \\"div\\", style, ...props }, ref) => (
-        <CC>
-          <CS>{[_]}</CS>
-          <C
-            {...props}
-            children={props.children}
-            style={style}
-            ref={ref}
-            className={ax([\\"_1wybgktf\\", props.className])}
-          />
-        </CC>
-      ));
+      const ListItem = forwardRef(({ as: C = \\"div\\", style, ...props }, ref) => {
+        return (
+          <CC>
+            <CS>{[_]}</CS>
+            <C
+              {...props}
+              style={style}
+              ref={ref}
+              className={ax([\\"_1wybgktf\\", props.className])}
+            />
+          </CC>
+        );
+      });
 
       if (process.env.NODE_ENV !== \\"production\\") {
         ListItem.displayName = \\"ListItem\\";
@@ -65,17 +66,19 @@ describe('styled component behaviour', () => {
       import * as React from \\"react\\";
       import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._1wybgktf{font-size:20px}\\";
-      const ListItem = forwardRef(({ as: C = \\"div\\", style, ...props }, ref) => (
-        <CC>
-          <CS>{[_]}</CS>
-          <C
-            children={props.children}
-            style={style}
-            ref={ref}
-            className={ax([\\"_1wybgktf\\", props.className])}
-          />
-        </CC>
-      ));
+      const ListItem = forwardRef(({ as: C = \\"div\\", style, ...props }, ref) => {
+        return (
+          <CC>
+            <CS>{[_]}</CS>
+            <C
+              {...props}
+              style={style}
+              ref={ref}
+              className={ax([\\"_1wybgktf\\", props.className])}
+            />
+          </CC>
+        );
+      });
 
       if (process.env.NODE_ENV !== \\"production\\") {
         ListItem.displayName = \\"ListItem\\";
@@ -125,10 +128,8 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toIncludeMultiple([
-      '{as:C="font",style,...props}',
-      '"--_1p69eoh":ix(props.color)',
-    ]);
+    expect(actual).toIncludeMultiple(['"--_1p69eoh":ix(props.color)', '<C{...props}']);
+    expect(actual).not.toInclude('const{color, ...__cmpldp}=props;');
   });
 
   it('should destructure invalid html attributes from props', () => {
@@ -137,11 +138,15 @@ describe('styled component behaviour', () => {
 
       const ListItem = styled.div({
         fontSize: props => props.textSize,
+        color: props => props.color,
       });
     `);
 
-    expect(actual).toInclude('textSize,...props');
-    expect(actual).toInclude('"--_fb92co":ix(textSize)');
+    expect(actual).toIncludeMultiple([
+      'const{textSize,...__cmpldp}=props;',
+      '"--_fb92co":ix(props.textSize)',
+      '<C{...__cmpldp}',
+    ]);
   });
 
   it('should shortcircuit props with suffix to a empty string to avoid undefined in css', () => {
@@ -253,8 +258,8 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toInclude('{font-size:var(--_1j0t240)}');
-    expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--_1j0t240":ix((()=>{return textSize;})())');
+    expect(actual).toInclude('const{textSize,...__cmpldp}=props;');
+    expect(actual).toInclude('"--_1j0t240":ix((()=>{return props.textSize;})())');
   });
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE', () => {
@@ -268,20 +273,6 @@ describe('styled component behaviour', () => {
 
     expect(actual).toInclude('{content:var(--_1poneq5)}');
     expect(actual).toInclude('"--_1poneq5":ix((()=>{return props.color;})(),"\\"","\\"")');
-  });
-
-  it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-
-      const ListItem = styled.div({
-        content: \`"$\{props => { return props.textSize; }}"\`
-      });
-    `);
-
-    expect(actual).toInclude('{content:var(--_1j0t240)}');
-    expect(actual).toInclude('({as:C="div",style,textSize,...props},ref)');
-    expect(actual).toInclude('"--_1j0t240":ix((()=>{return textSize;})(),"\\"","\\"")');
   });
 
   it('should collect args as styles', () => {
@@ -323,6 +314,8 @@ describe('styled component behaviour', () => {
         background-color: \${({ isLoading }) => (isLoading ? colors.N20 : colors.N40)};
         color: \${({ loading: l }) => (l ? colors.N50 : colors.N10)};
         border-color: \${(propz) => (propz.loading ? colors.N100 : colors.N200)};
+        display: \${({ state: { loading } }) => loading ? 'none' : 'inherit'};
+        opacity: \${({ width, ...rest }) => rest.isLoading ? 0 : 1};
       \`;
     `;
 
@@ -333,6 +326,10 @@ describe('styled component behaviour', () => {
       import * as React from \\"react\\";
       import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
       import colors from \\"colors\\";
+      const _10 = \\"._tzy4kb7n{opacity:1}\\";
+      const _9 = \\"._tzy4idpf{opacity:0}\\";
+      const _8 = \\"._1e0c1kw7{display:inherit}\\";
+      const _7 = \\"._1e0cglyw{display:none}\\";
       const _6 = \\"._1h6d1qzc{border-color:var(--_96ptk)}\\";
       const _5 = \\"._1h6d1c5w{border-color:var(--_5rpikm)}\\";
       const _4 = \\"._syazs2l2{color:var(--_1oii75x)}\\";
@@ -340,31 +337,36 @@ describe('styled component behaviour', () => {
       const _2 = \\"._bfhk1lco{background-color:var(--_kcgnsd)}\\";
       const _ = \\"._bfhkhk3l{background-color:var(--_16ldrz5)}\\";
       export const BadgeSkeleton = forwardRef(
-        ({ as: C = \\"span\\", style, isLoading, loading: l, ...props }, ref) => (
-          <CC>
-            <CS>{[_, _2, _3, _4, _5, _6]}</CS>
-            <C
-              {...props}
-              style={{
-                ...style,
-                \\"--_16ldrz5\\": ix(colors.N20),
-                \\"--_kcgnsd\\": ix(colors.N40),
-                \\"--_1ytezyk\\": ix(colors.N50),
-                \\"--_1oii75x\\": ix(colors.N10),
-                \\"--_5rpikm\\": ix(colors.N100),
-                \\"--_96ptk\\": ix(colors.N200),
-              }}
-              ref={ref}
-              className={ax([
-                \\"\\",
-                isLoading ? \\"_bfhkhk3l\\" : \\"_bfhk1lco\\",
-                l ? \\"_syaz1c44\\" : \\"_syazs2l2\\",
-                propz.loading ? \\"_1h6d1c5w\\" : \\"_1h6d1qzc\\",
-                props.className,
-              ])}
-            />
-          </CC>
-        )
+        ({ as: C = \\"span\\", style, ...props }, ref) => {
+          const { isLoading, state, ...__cmpldp } = props;
+          return (
+            <CC>
+              <CS>{[_, _2, _3, _4, _5, _6, _7, _8, _9, _10]}</CS>
+              <C
+                {...__cmpldp}
+                style={{
+                  ...style,
+                  \\"--_16ldrz5\\": ix(colors.N20),
+                  \\"--_kcgnsd\\": ix(colors.N40),
+                  \\"--_1ytezyk\\": ix(colors.N50),
+                  \\"--_1oii75x\\": ix(colors.N10),
+                  \\"--_5rpikm\\": ix(colors.N100),
+                  \\"--_96ptk\\": ix(colors.N200),
+                }}
+                ref={ref}
+                className={ax([
+                  \\"\\",
+                  props.isLoading ? \\"_bfhkhk3l\\" : \\"_bfhk1lco\\",
+                  props.loading ? \\"_syaz1c44\\" : \\"_syazs2l2\\",
+                  props.loading ? \\"_1h6d1c5w\\" : \\"_1h6d1qzc\\",
+                  props.state.loading ? \\"_1e0cglyw\\" : \\"_1e0c1kw7\\",
+                  props.isLoading ? \\"_tzy4idpf\\" : \\"_tzy4kb7n\\",
+                  props.className,
+                ])}
+              />
+            </CC>
+          );
+        }
       );
 
       if (process.env.NODE_ENV !== \\"production\\") {
@@ -442,7 +444,7 @@ describe('styled component behaviour', () => {
       '._ca0qftgi{padding-top:8px}',
       '._19itlf8h{border:2px solid blue}',
       '._1wyb1ul9{font-size:30px}',
-      'ax(["_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.isPrimary?"_syaz13q2":"_syaz5scu",isDone?"_1hms1911":"_1hmsglyw",isClamped?"_1yyj11wp":"_1yyjkb7n",props.className])',
+      'ax(["_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.isPrimary?"_syaz13q2":"_syaz5scu",props.isDone?"_1hms1911":"_1hmsglyw",props.isClamped?"_1yyj11wp":"_1yyjkb7n",props.className])',
     ]);
   });
 
@@ -480,7 +482,7 @@ describe('styled component behaviour', () => {
       '._18u019bv{margin-left:10px}',
       '._2hwx14y2{margin-right:5px}',
       '._2hwx19bv{margin-right:10px}',
-      'ax(["",props.isPrimary?"_syaz13q2":"_syaz5scu",isLast?"_18u014y2":"_18u019bv",isLast?"_2hwx14y2":"_2hwx19bv",props.className])',
+      'ax(["",props.isPrimary?"_syaz13q2":"_syaz5scu",props.isLast?"_18u014y2":"_18u019bv",props.isLast?"_2hwx14y2":"_2hwx19bv",props.className])',
     ]);
   });
 
@@ -515,152 +517,6 @@ describe('styled component behaviour', () => {
       '._1bsby2bc{width:var(--_znisgh)}',
       'style={{...style,"--_znisgh":ix(CUSTOM_WIDTH,"px")}}',
       `ax([\"\",props.useCustomWidth?\"_1bsby2bc\":\"_1bsb1osq\",props.className])`,
-    ]);
-  });
-
-  it('should apply conditional CSS with ternary operators, template literal branches containing destructured props', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-      import { CUSTOM_WIDTH } from './constants';
-
-      const ListItem = styled.div\`
-        width: \${({ useCustomWidth }) => useCustomWidth ? \`\${CUSTOM_WIDTH}px\` : '100%'};
-      \`;
-    `);
-
-    expect(actual).toIncludeMultiple([
-      '._1bsb1osq{width:100%}',
-      '._1bsby2bc{width:var(--_znisgh)}',
-      'style={{...style,"--_znisgh":ix(CUSTOM_WIDTH,"px")}}',
-      `ax([\"\",useCustomWidth?\"_1bsby2bc\":\"_1bsb1osq\",props.className])`,
-    ]);
-  });
-
-  it('should apply conditional CSS with ternary operators, template literal branches containing nested destructured props', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-
-      const ListItem = styled.div\`
-        width: \${({ size: { width } }) => width ? \`\${width}px\` : '100%'};
-      \`;
-    `);
-
-    expect(actual).toIncludeMultiple([
-      '._1bsb1osq{width:100%}',
-      '._1bsb9tg7{width:var(--_1ea5ebz)}',
-      '--_1ea5ebz":ix(width,"px"',
-      'ax(["",width?"_1bsb9tg7":"_1bsb1osq",props.className]',
-    ]);
-  });
-
-  it('should apply conditional CSS with ternary operators, template literal branches containing aliased destructured props', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-
-      const ListItem = styled.div\`
-        width: \${({ elementWidth: width }) => width ? \`\${width}px\` : '100%'};
-      \`;
-    `);
-
-    expect(actual).toIncludeMultiple([
-      '._1bsb1osq{width:100%}',
-      '"._1bsb9tg7{width:var(--_1ea5ebz)}',
-      '--_1ea5ebz":ix(width,"px")',
-      'ax(["",width?"_1bsb9tg7":"_1bsb1osq",props.className])',
-    ]);
-  });
-
-  it('should apply conditional CSS with ternary operators, template literal branches containing multiple destructured props', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-
-      const ListItem = styled.div\`
-        width: \${({ width, offsetWidth }) => width && offsetWidth ? \`\${width + offsetWidth}px\` : '100%'};
-      \`;
-    `);
-
-    expect(actual).toIncludeMultiple([
-      '._1bsb1osq{width:100%}',
-      '._1bsb6mgu{width:var(--_1j1yxek)}',
-      '--_1j1yxek":ix(width+offsetWidth,"px")',
-      'ax(["",width&&offsetWidth?"_1bsb6mgu":"_1bsb1osq",props.className])',
-    ]);
-  });
-
-  it('should add all props to component scope when using multiple destructures', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-
-      const ListItem = styled.div\`
-        width: \${({ width }) => \`\${width}px\`};
-        height: \${({ height }) => \`\${height}px\`};
-        border: \${({ borderWidth: bw, borderStyle  }) => \`\${bw}px \${borderStyle}\`};
-      \`;
-    `);
-
-    expect(actual).toIncludeMultiple([
-      '{as:C="div",style,width,height,borderWidth:bw,borderStyle,...props}',
-      '._1bsbvy8x{width:var(--_1qh7pvv)}',
-      '._4t3i9q9r{height:var(--_gkul86)}',
-      '._19it153k{border:var(--_nq5zie)}',
-      `"--_1qh7pvv":ix(\`\${width}px\`)`,
-      `"--_gkul86":ix(\`\${height}px\`)`,
-      `"--_nq5zie":ix(\`\${bw}px \${borderStyle}\`)`,
-      'className={ax(["_1bsbvy8x _4t3i9q9r _19it153k",props.className])}',
-    ]);
-  });
-
-  it('should not add prop more than once to component scope when prop used in multiple destructures', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-
-      const ListItem = styled.div\`
-        width: \${({ width }) => \`\${width}px\`};
-        height: \${({ width }) => \`\${width}px\`};
-      \`;
-    `);
-
-    expect(actual).toIncludeMultiple([
-      '{as:C="div",style,width,...props}',
-      '._1bsbvy8x{width:var(--_1qh7pvv)}',
-      '._4t3ivy8x{height:var(--_1qh7pvv)}',
-      `"--_1qh7pvv":ix(\`\${width}px\`)`,
-      'className={ax(["_1bsbvy8x _4t3ivy8x",props.className])}',
-    ]);
-  });
-
-  it('should apply conditional CSS with ternary operators, using "key: value" string branches containing destructured prop', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-
-      const ListItem = styled.div\`
-        \${({ width }) => width ? \`width: \${width}px\` : 'width: 100%'};
-      \`;
-    `);
-
-    expect(actual).toIncludeMultiple([
-      '{as:C="div",style,width,...props}',
-      '._1bsb1osq{width:100%}',
-      '._1bsb9tg7{width:var(--_1ea5ebz)}',
-      '"--_1ea5ebz":ix(width,"px")',
-      'className={ax(["",width?"_1bsb9tg7":"_1bsb1osq",props.className])}',
-    ]);
-  });
-
-  it('should apply logical CSS with ternary operators, using "key: value" string containing destructured props', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-
-      const ListItem = styled.div\`
-        \${({ width }) => width ? \`width: \${width}px)\` : undefined};
-      \`;
-    `);
-
-    expect(actual).toIncludeMultiple([
-      '{as:C="div",style,width,...props}',
-      '._1bsb1r3a{width:var(--_1ea5ebz))}',
-      '"--_1ea5ebz":ix(width,"px")',
-      'className={ax(["",width&&"_1bsb1r3a",props.className])}',
     ]);
   });
 
@@ -1035,7 +891,7 @@ describe('styled component behaviour', () => {
       '._k48p4jg8{font-weight:normal}',
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
-      '<C{...props}style={style}ref={ref}className={ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.isBolded?"_k48p8n31":"_k48p4jg8",props.className])}/>',
+      '{ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.isBolded?"_k48p8n31":"_k48p4jg8",props.className])}/>',
     ]);
   });
 
@@ -1167,9 +1023,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsb60qm{width:calc(10px + var(--_15nkcot))}',
-      '"--_15nkcot":ix(isLarge?100:50,"px")',
-      '{ax(["_1bsb60qm",props.className])}',
+      '._1bsb16om{width:calc(10px + var(--_13fw46q))}',
+      '"--_13fw46q":ix(props.isLarge?100:50,"px")',
+      '{ax(["_1bsb16om",props.className])}',
     ]);
   });
 
@@ -1184,9 +1040,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsb1j3u{width:calc(var(--_15nkcot) - 10px)}',
-      '"--_15nkcot":ix(isLarge?100:50,"px")',
-      '{ax(["_1bsb1j3u",props.className])}',
+      '._1bsb1k9r{width:calc(var(--_13fw46q) - 10px)}',
+      '"--_13fw46q":ix(props.isLarge?100:50,"px")',
+      '{ax(["_1bsb1k9r",props.className])}',
     ]);
   });
 
@@ -1202,9 +1058,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1kt9x4xj:before{content:var(--_1boodpz)}',
-      '"--_1boodpz":ix(isOpen?\'show less\':\'show more\',"\'","\'")',
-      '{ax(["_1kt9x4xj",props.className])}',
+      '._1kt914bl:before{content:var(--_5jcge)}',
+      '"--_5jcge":ix(props.isOpen?\'show less\':\'show more\',"\'","\'")',
+      '{ax(["_1kt914bl",props.className])}',
     ]);
   });
 
@@ -1228,7 +1084,7 @@ describe('styled component behaviour', () => {
       '._syaz1gy6{color:yellow}',
       '._bfw71j9v:hover{border:1px solid white}',
       '_bfw7l468:hover{border:2px solid black}',
-      '{ax(["_11q7qm1v",isSelected?"_syaz13q2":"_syaz1gy6",isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
+      '{ax(["_11q7qm1v",props.isSelected?"_syaz13q2":"_syaz1gy6",props.isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
     ]);
   });
 
@@ -1249,7 +1105,7 @@ describe('styled component behaviour', () => {
       '._syaz1gy6{color:yellow}',
       '._bfw71j9v:hover{border:1px solid white}',
       '_bfw7l468:hover{border:2px solid black}',
-      '{ax(["",isSelected?"_syaz13q2":"_syaz1gy6",isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
+      '{ax(["",props.isSelected?"_syaz13q2":"_syaz1gy6",props.isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
     ]);
   });
 
@@ -1281,7 +1137,7 @@ describe('styled component behaviour', () => {
       '._vw871qok:hover:before{content:\\"Don\'t break closure parsing }\\"}',
       '._1jly1kw7:hover:before{display:inherit}',
       '._1jly1nu9:hover:before{display:inline}',
-      '{ax(["_irr31i1c _vw871qok",isSelected?"_syaz13q2":"_syaz1gy6",isHover?"_bfw71j9v":"_bfw7l468",isBefore?"_1jly1kw7":"_1jly1nu9",props.className])}',
+      '{ax(["_irr31i1c _vw871qok",props.isSelected?"_syaz13q2":"_syaz1gy6",props.isHover?"_bfw71j9v":"_bfw7l468",props.isBefore?"_1jly1kw7":"_1jly1nu9",props.className])}',
     ]);
   });
 
@@ -1309,7 +1165,7 @@ describe('styled component behaviour', () => {
       '._irr31i1c:hover{background-color:cyan}',
       '._vn891l7b:focus{border-radius:3px}',
       '._vn89yh40:focus{border-radius:2px}',
-      '{ax(["_1oey5scu _irr31i1c",isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
+      '{ax(["_1oey5scu _irr31i1c",props.isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
     ]);
   });
 
@@ -1337,7 +1193,7 @@ describe('styled component behaviour', () => {
       '._irr31i1c:hover{background-color:cyan}',
       '._vn891l7b:focus{border-radius:3px}',
       '._vn89yh40:focus{border-radius:2px}',
-      '{ax(["_1oey5scu _irr31i1c",isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
+      '{ax(["_1oey5scu _irr31i1c",props.isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
     ]);
   });
 
@@ -1365,7 +1221,7 @@ describe('styled component behaviour', () => {
       '._irr31i1c:hover{background-color:cyan}',
       '._vn891l7b:focus{border-radius:3px}',
       '._vn89yh40:focus{border-radius:2px}',
-      '{ax(["_1oey5scu _irr31i1c",isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
+      '{ax(["_1oey5scu _irr31i1c",props.isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
     ]);
   });
 });

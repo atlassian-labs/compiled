@@ -1,31 +1,31 @@
 import { parse } from '@babel/parser';
-import type { NodePath } from '@babel/traverse';
+import type { NodePath, TraverseOptions } from '@babel/traverse';
 import traverse from '@babel/traverse';
-import type { Node } from '@babel/types';
+import type * as t from '@babel/types';
 import { format } from 'prettier';
 
 import { PROPS_IDENTIFIER_NAME as P_NAME } from '../../constants';
 import { normalizePropsUsage } from '../normalize-props-usage';
 
+type ComponentPath = NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>;
+type TraverseState = { result: ComponentPath | undefined };
+
 describe('normalizePropsUsage', () => {
+  const testSetupVisitor = {
+    'CallExpression|TaggedTemplateExpression'(this: TraverseState, path: ComponentPath) {
+      normalizePropsUsage(path);
+      this.result = path;
+      path.stop();
+    },
+  };
+
   const transform = (code: string) => {
     const ast = parse(code);
-    let result: NodePath<Node> | undefined;
+    const state: TraverseState = { result: undefined };
 
-    traverse(ast, {
-      CallExpression(path) {
-        normalizePropsUsage(path);
-        result = path;
-        path.stop();
-      },
-      TaggedTemplateExpression(path) {
-        normalizePropsUsage(path);
-        result = path;
-        path.stop();
-      },
-    });
+    traverse(ast, testSetupVisitor as TraverseOptions, undefined, state);
 
-    return format(result?.toString() || '', { parser: 'babel-ts' })
+    return format(state.result?.toString() || '', { parser: 'babel-ts' })
       .replace(/\n/g, '')
       .replace(/\s+/g, ' ');
   };
