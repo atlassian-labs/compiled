@@ -74,8 +74,8 @@ describe('jsx automatic', () => {
       import { jsx as _jsx } from \\"react/jsx-runtime\\";
       import { jsxs as _jsxs } from \\"react/jsx-runtime\\";
       const _ = \\"._syaz13q2{color:blue}\\";
-      forwardRef(({ as: C = \\"div\\", style, ...props }, ref) =>
-        _jsxs(CC, {
+      forwardRef(({ as: C = \\"div\\", style, ...props }, ref) => {
+        return _jsxs(CC, {
           children: [
             _jsx(CS, {
               children: [_],
@@ -87,8 +87,8 @@ describe('jsx automatic', () => {
               className: ax([\\"_syaz13q2\\", props.className]),
             }),
           ],
-        })
-      );
+        });
+      });
       "
     `);
   });

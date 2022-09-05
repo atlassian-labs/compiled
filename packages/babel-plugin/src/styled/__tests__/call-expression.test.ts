@@ -23,17 +23,19 @@ describe('styled object call expression', () => {
         color: \\"blue\\",
       });
       const CompiledComponent = forwardRef(
-        ({ as: C = \\"div\\", style, ...props }, ref) => (
-          <CC>
-            <CS>{[_]}</CS>
-            <C
-              {...props}
-              style={style}
-              ref={ref}
-              className={ax([\\"_syaz13q2\\", props.className])}
-            />
-          </CC>
-        )
+        ({ as: C = \\"div\\", style, ...props }, ref) => {
+          return (
+            <CC>
+              <CS>{[_]}</CS>
+              <C
+                {...props}
+                style={style}
+                ref={ref}
+                className={ax([\\"_syaz13q2\\", props.className])}
+              />
+            </CC>
+          );
+        }
       );
       "
     `);
@@ -135,8 +137,8 @@ describe('styled object call expression', () => {
 
     expect(actual).toIncludeMultiple([
       '{font-size:var(--_7wpnv5)}',
-      '{ as: C = "div", style, textSize, ...props }',
-      '"--_7wpnv5": ix(`${textSize}px`)',
+      'const { textSize, ...__cmpldp } = props;',
+      '"--_7wpnv5": ix(`${props.textSize}px`)',
     ]);
   });
 
@@ -150,8 +152,8 @@ describe('styled object call expression', () => {
 
     expect(actual).toIncludeMultiple([
       '{font-size:var(--_fb92co)}',
-      '{ as: C = "div", style, textSize, ...props }',
-      '"--_fb92co": ix(textSize, "px")',
+      'const { textSize, ...__cmpldp } = props;',
+      '"--_fb92co": ix(props.textSize, "px")',
     ]);
   });
 
@@ -502,23 +504,7 @@ describe('styled object call expression', () => {
       });
     `);
 
-    expect(actual).not.toInclude('ix(propz.width)');
-
-    expect(actual).toIncludeMultiple(['ix(width)', 'ix(w)', 'ix(props.width)']);
-  });
-
-  it('should not use the destructured name to prevent naming collisions', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-      import colors from 'colors';
-
-      export const BadgeSkeleton = styled.span({
-        backgroundColor: ({ isLoading }) => isLoading ? colors.N20 : colors.N40,
-        color: ({ loading: l }) => l ? colors.N50 : colors.N10,
-        borderColor: (propz) => propz.loading ? colors.N100 : colors.N200,
-      });
-    `);
-
-    expect(actual).toInclude('{ as: C = "span", style, isLoading, loading: l, ...props }');
+    expect(actual).toInclude('ix(props.width)');
+    expect(actual).not.toIncludeMultiple(['ix(propz.width)', 'ix(w)']);
   });
 });

@@ -76,17 +76,19 @@ describe('import specifiers', () => {
       import * as React from \\"react\\";
       import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._1wybgktf{font-size:20px}\\";
-      const ListItem = forwardRef(({ as: C = \\"div\\", style, ...props }, ref) => (
-        <CC>
-          <CS>{[_]}</CS>
-          <C
-            {...props}
-            style={style}
-            ref={ref}
-            className={ax([\\"_1wybgktf\\", props.className])}
-          />
-        </CC>
-      ));
+      const ListItem = forwardRef(({ as: C = \\"div\\", style, ...props }, ref) => {
+        return (
+          <CC>
+            <CS>{[_]}</CS>
+            <C
+              {...props}
+              style={style}
+              ref={ref}
+              className={ax([\\"_1wybgktf\\", props.className])}
+            />
+          </CC>
+        );
+      });
 
       if (process.env.NODE_ENV !== \\"production\\") {
         ListItem.displayName = \\"ListItem\\";

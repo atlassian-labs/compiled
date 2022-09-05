@@ -1,4 +1,5 @@
 export const PROPS_IDENTIFIER_NAME = 'props';
+export const DOM_PROPS_IDENTIFIER_NAME = '__cmpldp';
 
 export const COMPILED_DIRECTIVE_DISABLE_LINE = '@compiled-disable-line';
 export const COMPILED_DIRECTIVE_DISABLE_NEXT_LINE = '@compiled-disable-next-line';
