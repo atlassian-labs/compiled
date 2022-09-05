@@ -1,5 +1,16 @@
 # @compiled/babel-plugin
 
+## 0.16.4
+
+### Patch Changes
+
+- d2bd6305: - Normalize prop usage in styled API to make it easier to avoid name clashing
+  - Fix bug in styled API where destructuring can remove values out of props
+  - Ensure props are not displayed as HTML attributes, unless they are valid attributes
+- 17de9d1f: Omit rules with empty values from stylesheet
+- Updated dependencies [17de9d1f]
+  - @compiled/css@0.8.5
+
 ## 0.16.3
 
 ### Patch Changes
