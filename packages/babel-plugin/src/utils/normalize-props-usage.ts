@@ -71,6 +71,7 @@ const arrowFunctionVisitor = {
  *
  * `(p) => p.width`
  * `({ width }) => width`
+ * `({ width: w }) => w`
  * `({height, ...rest}) => rest.width`
  *
  * All become

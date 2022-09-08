@@ -23,15 +23,15 @@ describe('styled object call expression', () => {
         color: \\"blue\\",
       });
       const CompiledComponent = forwardRef(
-        ({ as: C = \\"div\\", style, ...props }, ref) => {
+        ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
           return (
             <CC>
               <CS>{[_]}</CS>
               <C
-                {...props}
-                style={style}
-                ref={ref}
-                className={ax([\\"_syaz13q2\\", props.className])}
+                {...__cmplp}
+                style={__cmpls}
+                ref={__cmplr}
+                className={ax([\\"_syaz13q2\\", __cmplp.className])}
               />
             </CC>
           );
@@ -136,9 +136,9 @@ describe('styled object call expression', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '{font-size:var(--_7wpnv5)}',
-      'const { textSize, ...__cmpldp } = props;',
-      '"--_7wpnv5": ix(`${props.textSize}px`)',
+      '{font-size:var(--_450x70)}',
+      'const { textSize, ...__cmpldp } = __cmplp;',
+      '"--_450x70": ix(`${__cmplp.textSize}px`)',
     ]);
   });
 
@@ -151,9 +151,9 @@ describe('styled object call expression', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '{font-size:var(--_fb92co)}',
-      'const { textSize, ...__cmpldp } = props;',
-      '"--_fb92co": ix(props.textSize, "px")',
+      '{font-size:var(--_8t6091)}',
+      'const { textSize, ...__cmpldp } = __cmplp;',
+      '"--_8t6091": ix(__cmplp.textSize, "px")',
     ]);
   });
 
@@ -237,7 +237,7 @@ describe('styled object call expression', () => {
       });
     `);
 
-    expect(actual).toIncludeMultiple(['{color:var(--_1p69eoh)}', '"--_1p69eoh": ix(props.color)']);
+    expect(actual).toIncludeMultiple(['{color:var(--_xexnhp)}', '"--_xexnhp": ix(__cmplp.color)']);
   });
 
   it('should transform object spread from variable', () => {
@@ -504,7 +504,7 @@ describe('styled object call expression', () => {
       });
     `);
 
-    expect(actual).toInclude('ix(props.width)');
+    expect(actual).toInclude('ix(__cmplp.width)');
     expect(actual).not.toIncludeMultiple(['ix(propz.width)', 'ix(w)']);
   });
 });

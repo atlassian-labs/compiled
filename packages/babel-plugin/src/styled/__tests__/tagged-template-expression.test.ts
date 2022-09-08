@@ -25,15 +25,15 @@ describe('styled tagged template expression', () => {
         color: blue;
       \`;
       const CompiledComponent = forwardRef(
-        ({ as: C = \\"div\\", style, ...props }, ref) => {
+        ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
           return (
             <CC>
               <CS>{[_]}</CS>
               <C
-                {...props}
-                style={style}
-                ref={ref}
-                className={ax([\\"_syaz13q2\\", props.className])}
+                {...__cmplp}
+                style={__cmpls}
+                ref={__cmplr}
+                className={ax([\\"_syaz13q2\\", __cmplp.className])}
               />
             </CC>
           );
@@ -68,15 +68,15 @@ describe('styled tagged template expression', () => {
         \${({ isPrimary }) => isPrimary && \`color: blue;\`}
       \`;
       const CompiledComponent = forwardRef(
-        ({ as: C = \\"div\\", style, ...props }, ref) => {
+        ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
           return (
             <CC>
               <CS>{[_]}</CS>
               <C
-                {...props}
-                style={style}
-                ref={ref}
-                className={ax([\\"_1wybexct\\", props.className])}
+                {...__cmplp}
+                style={__cmpls}
+                ref={__cmplr}
+                className={ax([\\"_1wybexct\\", __cmplp.className])}
               />
             </CC>
           );
@@ -108,9 +108,9 @@ describe('styled tagged template expression', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '{font-size:var(--_fb92co)}',
-      'const { textSize, ...__cmpldp } = props;',
-      '"--_fb92co": ix(props.textSize, "px")',
+      '{font-size:var(--_8t6091)}',
+      'const { textSize, ...__cmpldp } = __cmplp;',
+      '"--_8t6091": ix(__cmplp.textSize, "px")',
     ]);
   });
 
@@ -252,7 +252,7 @@ describe('styled tagged template expression', () => {
       \`;
     `);
 
-    expect(actual).toIncludeMultiple(['{color:var(--_1p69eoh)', '"--_1p69eoh": ix(props.color)']);
+    expect(actual).toIncludeMultiple(['{color:var(--_xexnhp)', '"--_xexnhp": ix(__cmplp.color)']);
   });
 
   it('should transform an arrow function with a body into an IIFE', () => {
@@ -267,8 +267,8 @@ describe('styled tagged template expression', () => {
     const actual = transform(code, { pretty: false });
 
     expect(actual).toIncludeMultiple([
-      '{color:var(--_1poneq5)}',
-      '"--_1poneq5":ix((()=>{return props.color;})())',
+      '{color:var(--_63bh2t)}',
+      '"--_63bh2t":ix((()=>{return __cmplp.color;})())',
     ]);
   });
 
@@ -284,9 +284,9 @@ describe('styled tagged template expression', () => {
     const actual = transform(code, { pretty: false });
 
     expect(actual).toIncludeMultiple([
-      '{font-size:var(--_1j0t240)}',
-      'const{textSize,...__cmpldp}=props;',
-      '"--_1j0t240":ix((()=>{return props.textSize;})())',
+      '{font-size:var(--_1eiw442)}',
+      'const{textSize,...__cmpldp}=__cmplp;',
+      '"--_1eiw442":ix((()=>{return __cmplp.textSize;})())',
     ]);
   });
 
@@ -302,8 +302,8 @@ describe('styled tagged template expression', () => {
     const actual = transform(code, { pretty: false });
 
     expect(actual).toIncludeMultiple([
-      '{content:var(--_1poneq5)}',
-      '"--_1poneq5":ix((()=>{return props.color;})(),"\\"","\\"")',
+      '{content:var(--_63bh2t)}',
+      '"--_63bh2t":ix((()=>{return __cmplp.color;})(),"\\"","\\"")',
     ]);
   });
 
@@ -319,9 +319,9 @@ describe('styled tagged template expression', () => {
     const actual = transform(code, { pretty: false });
 
     expect(actual).toIncludeMultiple([
-      '{content:var(--_1j0t240)}',
-      'const{textSize,...__cmpldp}=props;',
-      '"--_1j0t240":ix((()=>{return props.textSize;})(),"\\"","\\"")',
+      '{content:var(--_1eiw442)}',
+      'const{textSize,...__cmpldp}=__cmplp;',
+      '"--_1eiw442":ix((()=>{return __cmplp.textSize;})(),"\\"","\\"")',
     ]);
   });
 
@@ -483,7 +483,7 @@ describe('styled tagged template expression', () => {
       \`;
     `);
 
-    expect(actual).toInclude('"--_1p69eoh": ix(props.color, \'"\', \'"\')');
+    expect(actual).toInclude('"--_xexnhp": ix(__cmplp.color, \'"\', \'"\')');
   });
 
   it('should move any prefix of a dynamic arrow func property into the style property', () => {
@@ -495,7 +495,7 @@ describe('styled tagged template expression', () => {
       \`;
     `);
 
-    expect(actual).toInclude('"--_1p69eoh": ix(props.color, \'"\', \'"\')');
+    expect(actual).toInclude('"--_xexnhp": ix(__cmplp.color, \'"\', \'"\')');
   });
 
   it('should move any suffix of a dynamic arrow func property into the style property', () => {
@@ -507,7 +507,7 @@ describe('styled tagged template expression', () => {
       \`;
     `);
 
-    expect(actual).toInclude('"--_1p69eoh": ix(props.color, "px")');
+    expect(actual).toInclude('"--_xexnhp": ix(__cmplp.color, "px")');
   });
 
   it('should move suffix and prefix of a dynamic property into the style property', () => {
@@ -681,7 +681,7 @@ describe('styled tagged template expression', () => {
     `);
 
     // `isShown` should be destructured only once.
-    expect(actual).toInclude('const { isPrimary, isShown, ...__cmpldp } = props;');
+    expect(actual).toInclude('const { isPrimary, isShown, ...__cmpldp } = __cmplp;');
   });
 
   it('should transform identifier referencing an expression with suffix', () => {
@@ -813,9 +813,9 @@ describe('styled tagged template expression', () => {
     expect(actual).not.toInclude('propz.loading?colors.N100:colors.N200');
 
     expect(actual).toIncludeMultiple([
-      'props.isLoading ? colors.N20 : colors.N40',
-      'props.loading ? colors.N50 : colors.N10',
-      'props.loading ? colors.N100 : colors.N200',
+      '__cmplp.isLoading ? colors.N20 : colors.N40',
+      '__cmplp.loading ? colors.N50 : colors.N10',
+      '__cmplp.loading ? colors.N100 : colors.N200',
     ]);
   });
 
@@ -837,7 +837,7 @@ describe('styled tagged template expression', () => {
       '._1wybgktf{font-size:20px}',
       '._2rko1l7b{border-radius:3px}',
       '._syaz1qjj{color:var(--_pvyxdf)}',
-      '{ax(["_1wybgktf _2rko1l7b _syaz1qjj", props.className])}',
+      '{ax(["_1wybgktf _2rko1l7b _syaz1qjj", __cmplp.className])}',
     ]);
   });
 
@@ -859,7 +859,7 @@ describe('styled tagged template expression', () => {
       '._syaz1qjj{color:var(--_pvyxdf)}',
       '._1wybgktf{font-size:20px}',
       '._2rko1l7b{border-radius:3px}',
-      '{ax(["_syaz1qjj _1wybgktf _2rko1l7b", props.className])}',
+      '{ax(["_syaz1qjj _1wybgktf _2rko1l7b", __cmplp.className])}',
     ]);
   });
 });

@@ -831,15 +831,15 @@ describe('keyframes transforms a tagged template expression', () => {
             \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
           const fadeOut = null;
           const StyledComponent = forwardRef(
-            ({ as: C = \\"div\\", style, ...props }, ref) => {
+            ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
               return (
                 <CC>
                   <CS>{[_, _2, _3, _4]}</CS>
                   <C
-                    {...props}
-                    style={style}
-                    ref={ref}
-                    className={ax([\\"_5sagymdr _j7hqa2t1 _1pgl1ytf\\", props.className])}
+                    {...__cmplp}
+                    style={__cmpls}
+                    ref={__cmplr}
+                    className={ax([\\"_5sagymdr _j7hqa2t1 _1pgl1ytf\\", __cmplp.className])}
                   />
                 </CC>
               );
@@ -860,15 +860,15 @@ describe('keyframes transforms a tagged template expression', () => {
             \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
           const fadeOut = null;
           const StyledComponent = forwardRef(
-            ({ as: C = \\"div\\", style, ...props }, ref) => {
+            ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
               return (
                 <CC>
                   <CS>{[_, _2]}</CS>
                   <C
-                    {...props}
-                    style={style}
-                    ref={ref}
-                    className={ax([\\"_y44v1e4p\\", props.className])}
+                    {...__cmplp}
+                    style={__cmpls}
+                    ref={__cmplr}
+                    className={ax([\\"_y44v1e4p\\", __cmplp.className])}
                   />
                 </CC>
               );
@@ -897,15 +897,15 @@ describe('keyframes transforms a tagged template expression', () => {
           const fadeOut = null;
           const darken = null;
           const StyledComponent = forwardRef(
-            ({ as: C = \\"div\\", style, ...props }, ref) => {
+            ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
               return (
                 <CC>
                   <CS>{[_, _2, _3]}</CS>
                   <C
-                    {...props}
-                    style={style}
-                    ref={ref}
-                    className={ax([\\"_y44vt6c7\\", props.className])}
+                    {...__cmplp}
+                    style={__cmpls}
+                    ref={__cmplr}
+                    className={ax([\\"_y44vt6c7\\", __cmplp.className])}
                   />
                 </CC>
               );
@@ -932,15 +932,15 @@ describe('keyframes transforms a tagged template expression', () => {
             \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
           const fadeOut = null;
           const StyledComponent = forwardRef(
-            ({ as: C = \\"div\\", style, ...props }, ref) => {
+            ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
               return (
                 <CC>
                   <CS>{[_, _2, _3, _4]}</CS>
                   <C
-                    {...props}
-                    style={style}
-                    ref={ref}
-                    className={ax([\\"_5sagymdr _j7hqa2t1 _1pgl1ytf\\", props.className])}
+                    {...__cmplp}
+                    style={__cmpls}
+                    ref={__cmplr}
+                    className={ax([\\"_5sagymdr _j7hqa2t1 _1pgl1ytf\\", __cmplp.className])}
                   />
                 </CC>
               );
@@ -961,15 +961,15 @@ describe('keyframes transforms a tagged template expression', () => {
             \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
           const fadeOut = null;
           const StyledComponent = forwardRef(
-            ({ as: C = \\"div\\", style, ...props }, ref) => {
+            ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
               return (
                 <CC>
                   <CS>{[_, _2]}</CS>
                   <C
-                    {...props}
-                    style={style}
-                    ref={ref}
-                    className={ax([\\"_y44v1e4p\\", props.className])}
+                    {...__cmplp}
+                    style={__cmpls}
+                    ref={__cmplr}
+                    className={ax([\\"_y44v1e4p\\", __cmplp.className])}
                   />
                 </CC>
               );
@@ -998,15 +998,15 @@ describe('keyframes transforms a tagged template expression', () => {
           const fadeOut = null;
           const darken = null;
           const StyledComponent = forwardRef(
-            ({ as: C = \\"div\\", style, ...props }, ref) => {
+            ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
               return (
                 <CC>
                   <CS>{[_, _2, _3]}</CS>
                   <C
-                    {...props}
-                    style={style}
-                    ref={ref}
-                    className={ax([\\"_y44vt6c7\\", props.className])}
+                    {...__cmplp}
+                    style={__cmpls}
+                    ref={__cmplr}
+                    className={ax([\\"_y44vt6c7\\", __cmplp.className])}
                   />
                 </CC>
               );

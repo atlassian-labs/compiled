@@ -949,15 +949,15 @@ describe('keyframes', () => {
               \\"@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style, ...props }, ref) => {
+              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3, _4]}</CS>
                     <C
-                      {...props}
-                      style={style}
-                      ref={ref}
-                      className={ax([\\"_5sagymdr _j7hqb4f3 _1pgl1ytf\\", props.className])}
+                      {...__cmplp}
+                      style={__cmpls}
+                      ref={__cmplr}
+                      className={ax([\\"_5sagymdr _j7hqb4f3 _1pgl1ytf\\", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -978,15 +978,15 @@ describe('keyframes', () => {
               \\"@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style, ...props }, ref) => {
+              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2]}</CS>
                     <C
-                      {...props}
-                      style={style}
-                      ref={ref}
-                      className={ax([\\"_y44vjvcp\\", props.className])}
+                      {...__cmplp}
+                      style={__cmpls}
+                      ref={__cmplr}
+                      className={ax([\\"_y44vjvcp\\", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1015,15 +1015,15 @@ describe('keyframes', () => {
             const fadeOut = null;
             const darken = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style, ...props }, ref) => {
+              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3]}</CS>
                     <C
-                      {...props}
-                      style={style}
-                      ref={ref}
-                      className={ax([\\"_y44vwtez\\", props.className])}
+                      {...__cmplp}
+                      style={__cmpls}
+                      ref={__cmplr}
+                      className={ax([\\"_y44vwtez\\", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1050,15 +1050,15 @@ describe('keyframes', () => {
               \\"@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style, ...props }, ref) => {
+              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3, _4]}</CS>
                     <C
-                      {...props}
-                      style={style}
-                      ref={ref}
-                      className={ax([\\"_5sagymdr _j7hqb4f3 _1pgl1ytf\\", props.className])}
+                      {...__cmplp}
+                      style={__cmpls}
+                      ref={__cmplr}
+                      className={ax([\\"_5sagymdr _j7hqb4f3 _1pgl1ytf\\", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1079,15 +1079,15 @@ describe('keyframes', () => {
               \\"@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style, ...props }, ref) => {
+              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2]}</CS>
                     <C
-                      {...props}
-                      style={style}
-                      ref={ref}
-                      className={ax([\\"_y44vjvcp\\", props.className])}
+                      {...__cmplp}
+                      style={__cmpls}
+                      ref={__cmplr}
+                      className={ax([\\"_y44vjvcp\\", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1116,15 +1116,15 @@ describe('keyframes', () => {
             const fadeOut = null;
             const darken = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style, ...props }, ref) => {
+              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3]}</CS>
                     <C
-                      {...props}
-                      style={style}
-                      ref={ref}
-                      className={ax([\\"_y44vwtez\\", props.className])}
+                      {...__cmplp}
+                      style={__cmpls}
+                      ref={__cmplr}
+                      className={ax([\\"_y44vwtez\\", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1329,15 +1329,15 @@ describe('keyframes', () => {
               \\"@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style, ...props }, ref) => {
+              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3, _4]}</CS>
                     <C
-                      {...props}
-                      style={style}
-                      ref={ref}
-                      className={ax([\\"_5sagymdr _j7hq1c6j _1pgl1ytf\\", props.className])}
+                      {...__cmplp}
+                      style={__cmpls}
+                      ref={__cmplr}
+                      className={ax([\\"_5sagymdr _j7hq1c6j _1pgl1ytf\\", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1358,15 +1358,15 @@ describe('keyframes', () => {
               \\"@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style, ...props }, ref) => {
+              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2]}</CS>
                     <C
-                      {...props}
-                      style={style}
-                      ref={ref}
-                      className={ax([\\"_y44v1go4\\", props.className])}
+                      {...__cmplp}
+                      style={__cmpls}
+                      ref={__cmplr}
+                      className={ax([\\"_y44v1go4\\", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1395,15 +1395,15 @@ describe('keyframes', () => {
             const fadeOut = null;
             const darken = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style, ...props }, ref) => {
+              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3]}</CS>
                     <C
-                      {...props}
-                      style={style}
-                      ref={ref}
-                      className={ax([\\"_y44vheiy\\", props.className])}
+                      {...__cmplp}
+                      style={__cmpls}
+                      ref={__cmplr}
+                      className={ax([\\"_y44vheiy\\", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1430,15 +1430,15 @@ describe('keyframes', () => {
               \\"@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style, ...props }, ref) => {
+              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3, _4]}</CS>
                     <C
-                      {...props}
-                      style={style}
-                      ref={ref}
-                      className={ax([\\"_5sagymdr _j7hq1c6j _1pgl1ytf\\", props.className])}
+                      {...__cmplp}
+                      style={__cmpls}
+                      ref={__cmplr}
+                      className={ax([\\"_5sagymdr _j7hq1c6j _1pgl1ytf\\", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1459,15 +1459,15 @@ describe('keyframes', () => {
               \\"@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style, ...props }, ref) => {
+              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2]}</CS>
                     <C
-                      {...props}
-                      style={style}
-                      ref={ref}
-                      className={ax([\\"_y44v1go4\\", props.className])}
+                      {...__cmplp}
+                      style={__cmpls}
+                      ref={__cmplr}
+                      className={ax([\\"_y44v1go4\\", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1496,15 +1496,15 @@ describe('keyframes', () => {
             const fadeOut = null;
             const darken = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style, ...props }, ref) => {
+              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3]}</CS>
                     <C
-                      {...props}
-                      style={style}
-                      ref={ref}
-                      className={ax([\\"_y44vheiy\\", props.className])}
+                      {...__cmplp}
+                      style={__cmpls}
+                      ref={__cmplr}
+                      className={ax([\\"_y44vheiy\\", __cmplp.className])}
                     />
                   </CC>
                 );
