@@ -137,16 +137,16 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
     ?.slice(babelComponentCode.indexOf('var Button'))
     .trim();
   expect(extractedComponent).toMatchInlineSnapshot(`
-    "var Button = (0, _react.forwardRef)(function(_ref, ref) {
-        var _ref$as = _ref.as, C = _ref$as === void 0 ? \\"button\\" : _ref$as, style = _ref.style, props = _objectWithoutProperties(_ref, _excluded);
+    "var Button = (0, _react.forwardRef)(function(_ref, __cmplr) {
+        var _ref$as = _ref.as, C = _ref$as === void 0 ? \\"button\\" : _ref$as, __cmpls = _ref.style, __cmplp = _objectWithoutProperties(_ref, _excluded);
         return (0, _jsxRuntime.jsx)(C, _objectSpread(_objectSpread({
-        }, props), {
+        }, __cmplp), {
         }, {
-            style: style,
-            ref: ref,
+            style: __cmpls,
+            ref: __cmplr,
             className: (0, _runtime.ax)([
                 \\"_syaz13q2 _1wyb1ul9 _19itlf8h _ca0q1vi7 _u5f31vi7 _n3td1vi7 _19bv1vi7\\",
-                props.className
+                __cmplp.className
             ])
         }));
     });
