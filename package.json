@@ -135,7 +135,7 @@
   "size-limit": [
     {
       "path": "./packages/react/dist/browser/runtime.js",
-      "limit": "48B",
+      "limit": "50B",
       "import": "{ ix }",
       "ignore": [
         "react"

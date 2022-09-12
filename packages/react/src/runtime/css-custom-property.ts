@@ -27,5 +27,5 @@ export default function cssCustomPropertyValue(
   // Currently React trims these values so we can't use a space " " to block the value.
   // Instead we use a CSS variable that doesn't exist which falls back to " ".
   // Bug raised here: https://github.com/facebook/react/issues/20497
-  return 'var(--cmpl, )';
+  return 'var(--c-, )';
 }
