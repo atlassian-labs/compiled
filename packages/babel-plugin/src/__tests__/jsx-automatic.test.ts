@@ -74,17 +74,17 @@ describe('jsx automatic', () => {
       import { jsx as _jsx } from \\"react/jsx-runtime\\";
       import { jsxs as _jsxs } from \\"react/jsx-runtime\\";
       const _ = \\"._syaz13q2{color:blue}\\";
-      forwardRef(({ as: C = \\"div\\", style, ...props }, ref) => {
+      forwardRef(({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
         return _jsxs(CC, {
           children: [
             _jsx(CS, {
               children: [_],
             }),
             _jsx(C, {
-              ...props,
-              style: style,
-              ref: ref,
-              className: ax([\\"_syaz13q2\\", props.className]),
+              ...__cmplp,
+              style: __cmpls,
+              ref: __cmplr,
+              className: ax([\\"_syaz13q2\\", __cmplp.className]),
             }),
           ],
         });

@@ -29,19 +29,21 @@ describe('styled component behaviour', () => {
       import * as React from \\"react\\";
       import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._1wybgktf{font-size:20px}\\";
-      const ListItem = forwardRef(({ as: C = \\"div\\", style, ...props }, ref) => {
-        return (
-          <CC>
-            <CS>{[_]}</CS>
-            <C
-              {...props}
-              style={style}
-              ref={ref}
-              className={ax([\\"_1wybgktf\\", props.className])}
-            />
-          </CC>
-        );
-      });
+      const ListItem = forwardRef(
+        ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+          return (
+            <CC>
+              <CS>{[_]}</CS>
+              <C
+                {...__cmplp}
+                style={__cmpls}
+                ref={__cmplr}
+                className={ax([\\"_1wybgktf\\", __cmplp.className])}
+              />
+            </CC>
+          );
+        }
+      );
 
       if (process.env.NODE_ENV !== \\"production\\") {
         ListItem.displayName = \\"ListItem\\";
@@ -66,19 +68,21 @@ describe('styled component behaviour', () => {
       import * as React from \\"react\\";
       import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\"._1wybgktf{font-size:20px}\\";
-      const ListItem = forwardRef(({ as: C = \\"div\\", style, ...props }, ref) => {
-        return (
-          <CC>
-            <CS>{[_]}</CS>
-            <C
-              {...props}
-              style={style}
-              ref={ref}
-              className={ax([\\"_1wybgktf\\", props.className])}
-            />
-          </CC>
-        );
-      });
+      const ListItem = forwardRef(
+        ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+          return (
+            <CC>
+              <CS>{[_]}</CS>
+              <C
+                {...__cmplp}
+                style={__cmpls}
+                ref={__cmplr}
+                className={ax([\\"_1wybgktf\\", __cmplp.className])}
+              />
+            </CC>
+          );
+        }
+      );
 
       if (process.env.NODE_ENV !== \\"production\\") {
         ListItem.displayName = \\"ListItem\\";
@@ -128,8 +132,8 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toIncludeMultiple(['"--_1p69eoh":ix(props.color)', '<C{...props}']);
-    expect(actual).not.toInclude('const{color, ...__cmpldp}=props;');
+    expect(actual).toIncludeMultiple(['"--_xexnhp":ix(__cmplp.color)', '<C{...__cmplp}']);
+    expect(actual).not.toInclude('const{color, ...__cmpldp}=__cmplp;');
   });
 
   it('should destructure invalid html attributes from props', () => {
@@ -143,8 +147,8 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      'const{textSize,...__cmpldp}=props;',
-      '"--_fb92co":ix(props.textSize)',
+      'const{textSize,...__cmpldp}=__cmplp;',
+      '"--_8t6091":ix(__cmplp.textSize)',
       '<C{...__cmpldp}',
     ]);
   });
@@ -154,11 +158,11 @@ describe('styled component behaviour', () => {
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div\`
-        font-size: \${props => props.color}px;
+        font-size: \${props => props.textSize}px;
       \`;
     `);
 
-    expect(actual).toInclude('"--_1p69eoh":ix(props.color,"px")');
+    expect(actual).toInclude('"--_8t6091":ix(__cmplp.textSize,"px")');
   });
 
   it('should prefix interpolation', () => {
@@ -166,11 +170,11 @@ describe('styled component behaviour', () => {
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div\`
-        font-size: -\${props => props.color}px;
+        font-size: -\${props => props.textSize}px;
       \`;
     `);
 
-    expect(actual).toInclude('"--_1p69eoh-":ix(props.color,"px","-")');
+    expect(actual).toInclude('"--_8t6091-":ix(__cmplp.textSize,"px","-")');
   });
 
   it('creates a separate var name for positive and negative values of the same interpolation', () => {
@@ -189,7 +193,7 @@ describe('styled component behaviour', () => {
       '._18u01s7m{margin-left:var(--_1hnpmp1)}',
       '"--_1hnpmp1-":ix(random()*5,"px","-")',
       '"--_1hnpmp1":ix(random()*5,"px")',
-      'ax(["_2hwxjtuq _18u01s7m",props.className]',
+      'ax(["_2hwxjtuq _18u01s7m",__cmplp.className]',
     ]);
   });
 
@@ -244,8 +248,8 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('{color:var(--_1poneq5)}');
-    expect(actual).toInclude('"--_1poneq5":ix((()=>{return props.color;})())');
+    expect(actual).toInclude('{color:var(--_63bh2t)}');
+    expect(actual).toInclude('"--_63bh2t":ix((()=>{return __cmplp.color;})())');
   });
 
   it('should transform an arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
@@ -257,9 +261,9 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('{font-size:var(--_1j0t240)}');
-    expect(actual).toInclude('const{textSize,...__cmpldp}=props;');
-    expect(actual).toInclude('"--_1j0t240":ix((()=>{return props.textSize;})())');
+    expect(actual).toInclude('{font-size:var(--_1eiw442)}');
+    expect(actual).toInclude('const{textSize,...__cmpldp}=__cmplp;');
+    expect(actual).toInclude('"--_1eiw442":ix((()=>{return __cmplp.textSize;})())');
   });
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE', () => {
@@ -271,8 +275,8 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('{content:var(--_1poneq5)}');
-    expect(actual).toInclude('"--_1poneq5":ix((()=>{return props.color;})(),"\\"","\\"")');
+    expect(actual).toInclude('{content:var(--_63bh2t)}');
+    expect(actual).toInclude('"--_63bh2t":ix((()=>{return __cmplp.color;})(),"\\"","\\"")');
   });
 
   it('should collect args as styles', () => {
@@ -288,7 +292,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '{color:darkorchid}',
       '{font-size:12px}',
-      'ax(["_syaz1paq _1wyb1fwx",props.className])',
+      'ax(["_syaz1paq _1wyb1fwx",__cmplp.className])',
     ]);
   });
 
@@ -337,15 +341,15 @@ describe('styled component behaviour', () => {
       const _2 = \\"._bfhk1lco{background-color:var(--_kcgnsd)}\\";
       const _ = \\"._bfhkhk3l{background-color:var(--_16ldrz5)}\\";
       export const BadgeSkeleton = forwardRef(
-        ({ as: C = \\"span\\", style, ...props }, ref) => {
-          const { isLoading, state, ...__cmpldp } = props;
+        ({ as: C = \\"span\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+          const { isLoading, state, ...__cmpldp } = __cmplp;
           return (
             <CC>
               <CS>{[_, _2, _3, _4, _5, _6, _7, _8, _9, _10]}</CS>
               <C
                 {...__cmpldp}
                 style={{
-                  ...style,
+                  ...__cmpls,
                   \\"--_16ldrz5\\": ix(colors.N20),
                   \\"--_kcgnsd\\": ix(colors.N40),
                   \\"--_1ytezyk\\": ix(colors.N50),
@@ -353,15 +357,15 @@ describe('styled component behaviour', () => {
                   \\"--_5rpikm\\": ix(colors.N100),
                   \\"--_96ptk\\": ix(colors.N200),
                 }}
-                ref={ref}
+                ref={__cmplr}
                 className={ax([
                   \\"\\",
-                  props.isLoading ? \\"_bfhkhk3l\\" : \\"_bfhk1lco\\",
-                  props.loading ? \\"_syaz1c44\\" : \\"_syazs2l2\\",
-                  props.loading ? \\"_1h6d1c5w\\" : \\"_1h6d1qzc\\",
-                  props.state.loading ? \\"_1e0cglyw\\" : \\"_1e0c1kw7\\",
-                  props.isLoading ? \\"_tzy4idpf\\" : \\"_tzy4kb7n\\",
-                  props.className,
+                  __cmplp.isLoading ? \\"_bfhkhk3l\\" : \\"_bfhk1lco\\",
+                  __cmplp.loading ? \\"_syaz1c44\\" : \\"_syazs2l2\\",
+                  __cmplp.loading ? \\"_1h6d1c5w\\" : \\"_1h6d1qzc\\",
+                  __cmplp.state.loading ? \\"_1e0cglyw\\" : \\"_1e0c1kw7\\",
+                  __cmplp.isLoading ? \\"_tzy4idpf\\" : \\"_tzy4kb7n\\",
+                  __cmplp.className,
                 ])}
               />
             </CC>
@@ -401,7 +405,7 @@ describe('styled component behaviour', () => {
       'const _2="._y44vk4ag{animation:fadeOut 2s ease-in-out}"',
       'const _="@keyframes fadeOut{0%{opacity:1}50%{opacity:0.5}to{opacity:0}}"',
       '<CS>{[_,_2]}</CS>',
-      'className={ax(["_y44vk4ag",props.className])}',
+      'className={ax(["_y44vk4ag",__cmplp.className])}',
     ]);
   });
 
@@ -434,7 +438,7 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       "_aetr1yyf:after{content:''}",
-      'className={ax(["_aetr1yyf",props.className])}',
+      'className={ax(["_aetr1yyf",__cmplp.className])}',
     ]);
   });
 
@@ -454,7 +458,7 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       '_aetrb3bt:after{content:\\"\\"}',
-      'className={ax(["_aetrb3bt",props.className])}',
+      'className={ax(["_aetrb3bt",__cmplp.className])}',
     ]);
   });
 
@@ -469,7 +473,7 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('className={ax(["",props.className])}');
+    expect(actual).toInclude('className={ax(["",__cmplp.className])}');
   });
 
   it('should omit styles with no value inside selector', () => {
@@ -486,7 +490,7 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       '._30l35scu:hover{color:red}',
-      'className={ax(["_30l35scu",props.className])}',
+      'className={ax(["_30l35scu",__cmplp.className])}',
     ]);
   });
 
@@ -517,7 +521,7 @@ describe('styled component behaviour', () => {
       '._ca0qftgi{padding-top:8px}',
       '._19itlf8h{border:2px solid blue}',
       '._1wyb1ul9{font-size:30px}',
-      'ax(["_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",props.isPrimary?"_syaz13q2":"_syaz5scu",props.isDone?"_1hms1911":"_1hmsglyw",props.isClamped?"_1yyj11wp":"_1yyjkb7n",props.className])',
+      'ax(["_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",__cmplp.isPrimary?"_syaz13q2":"_syaz5scu",__cmplp.isDone?"_1hms1911":"_1hmsglyw",__cmplp.isClamped?"_1yyj11wp":"_1yyjkb7n",__cmplp.className])',
     ]);
   });
 
@@ -533,7 +537,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '._2rko19el{border-radius:10px!important}',
       '._2rko1aa3{border-radius:1px!important}',
-      `ax([\"\",props.isRounded?\"_2rko19el\":\"_2rko1aa3\",props.className])`,
+      `ax([\"\",__cmplp.isRounded?\"_2rko19el\":\"_2rko1aa3\",__cmplp.className])`,
     ]);
   });
 
@@ -555,7 +559,7 @@ describe('styled component behaviour', () => {
       '._18u019bv{margin-left:10px}',
       '._2hwx14y2{margin-right:5px}',
       '._2hwx19bv{margin-right:10px}',
-      'ax(["",props.isPrimary?"_syaz13q2":"_syaz5scu",props.isLast?"_18u014y2":"_18u019bv",props.isLast?"_2hwx14y2":"_2hwx19bv",props.className])',
+      'ax(["",__cmplp.isPrimary?"_syaz13q2":"_syaz5scu",__cmplp.isLast?"_18u014y2":"_18u019bv",__cmplp.isLast?"_2hwx14y2":"_2hwx19bv",__cmplp.className])',
     ]);
   });
 
@@ -571,7 +575,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '._syaz5scu{color:red}',
       '._syaz13q2{color:blue}',
-      `ax([\"\",props.isPrimary?\"_syaz13q2\":\"_syaz5scu\",props.className])`,
+      `ax([\"\",__cmplp.isPrimary?\"_syaz13q2\":\"_syaz5scu\",__cmplp.className])`,
     ]);
   });
 
@@ -588,8 +592,8 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '._1bsb1osq{width:100%}',
       '._1bsby2bc{width:var(--_znisgh)}',
-      'style={{...style,"--_znisgh":ix(CUSTOM_WIDTH,"px")}}',
-      `ax([\"\",props.useCustomWidth?\"_1bsby2bc\":\"_1bsb1osq\",props.className])`,
+      'style={{...__cmpls,"--_znisgh":ix(CUSTOM_WIDTH,"px")}}',
+      `ax([\"\",__cmplp.useCustomWidth?\"_1bsby2bc\":\"_1bsb1osq\",__cmplp.className])`,
     ]);
   });
 
@@ -613,7 +617,7 @@ describe('styled component behaviour', () => {
     ]);
 
     expect(actual).toInclude(
-      `ax([\"_1wyb1ul9\",props.isPrimary?\"_syaz13q2\":\"_syaz5scu\",props.isPrimary?\"_19it1nsd\":\"_19it107e\",props.className]`
+      `ax([\"_1wyb1ul9\",__cmplp.isPrimary?\"_syaz13q2\":\"_syaz5scu\",__cmplp.isPrimary?\"_19it1nsd\":\"_19it107e\",__cmplp.className]`
     );
   });
 
@@ -639,7 +643,7 @@ describe('styled component behaviour', () => {
       '._syaz5scu{color:red}',
       '._syaz13q2{color:blue}',
       '._syaz11x8{color:black}',
-      `ax([\"_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi\",props.isPrimary?props.isDisabled?\"_syaz11x8\":\"_syaz13q2\":\"_syaz5scu\",props.className])`,
+      `ax([\"_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi\",__cmplp.isPrimary?__cmplp.isDisabled?\"_syaz11x8\":\"_syaz13q2\":\"_syaz5scu\",__cmplp.className])`,
     ]);
   });
 
@@ -663,7 +667,7 @@ describe('styled component behaviour', () => {
     ]);
 
     expect(actual).toInclude(
-      'className={ax(["_syaz5scu _bfhk1x77 _19it7fe6",props.isPrimary&&"_syaz13q2",props.className])}'
+      'className={ax(["_syaz5scu _bfhk1x77 _19it7fe6",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}'
     );
   });
 
@@ -700,7 +704,7 @@ describe('styled component behaviour', () => {
       '._syaz11x8{color:black}',
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
-      'className={ax(["_bfhk1x77",props.isPrimary?props.isDisabled?"_syaz11x8":"_syaz13q2":"_syaz5scu",props.className])}',
+      'className={ax(["_bfhk1x77",__cmplp.isPrimary?__cmplp.isDisabled?"_syaz11x8":"_syaz13q2":"_syaz5scu",__cmplp.className])}',
     ]);
   });
 
@@ -722,7 +726,7 @@ describe('styled component behaviour', () => {
     ]);
 
     expect(actual).toInclude(
-      'className={ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.isBolded&&"_k48p8n31",props.className])}'
+      'className={ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.isBolded&&"_k48p8n31",__cmplp.className])}'
     );
   });
 
@@ -750,7 +754,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '._syazbf54{color:green}',
       '._syaz5scu{color:red}',
-      'className={ax(["",props.isPrimary?"_syazbf54":"_syaz5scu",props.className])}',
+      'className={ax(["",__cmplp.isPrimary?"_syazbf54":"_syaz5scu",__cmplp.className])}',
     ]);
   });
 
@@ -767,7 +771,7 @@ describe('styled component behaviour', () => {
       '._syazbf54{color:green}',
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
-      'className={ax(["",props.isPrimary?"_syaz13q2":props.isGreen?"_syazbf54":"_syaz5scu",props.className])}',
+      'className={ax(["",__cmplp.isPrimary?"_syaz13q2":__cmplp.isGreen?"_syazbf54":"_syaz5scu",__cmplp.className])}',
     ]);
   });
 
@@ -785,7 +789,7 @@ describe('styled component behaviour', () => {
       '._syaz5scu{color:red}',
       '._1wyb1fwx{font-size:12px}',
       '._1wybexct{font-size:16px}',
-      'className={ax(["",props.isPrimary?"_syazbf54 _1wyb1fwx":"_syaz5scu _1wybexct",props.className])}',
+      'className={ax(["",__cmplp.isPrimary?"_syazbf54 _1wyb1fwx":"_syaz5scu _1wybexct",__cmplp.className])}',
     ]);
   });
 
@@ -801,7 +805,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '._syazbf54{color:green}',
       '._syaz5scu{color:red}',
-      'className={ax(["",props.isPrimary?"_syazbf54":"_syaz5scu",props.className])}',
+      'className={ax(["",__cmplp.isPrimary?"_syazbf54":"_syaz5scu",__cmplp.className])}',
     ]);
   });
 
@@ -825,7 +829,7 @@ describe('styled component behaviour', () => {
     ]);
 
     expect(actual).toInclude(
-      '{ax(["_syaz5scu _bfhk1x77 _19it7fe6",props.isPrimary&&"_syaz13q2",props.className])}'
+      '{ax(["_syaz5scu _bfhk1x77 _19it7fe6",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}'
     );
   });
 
@@ -849,7 +853,7 @@ describe('styled component behaviour', () => {
     ]);
 
     expect(actual).toInclude(
-      '{ax(["_19it7fe6 _syaz5scu _bfhk1x77",props.isPrimary&&"_syaz13q2",props.className])}'
+      '{ax(["_19it7fe6 _syaz5scu _bfhk1x77",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}'
     );
   });
 
@@ -866,7 +870,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple(['._syaz13q2{color:blue}', '._syaz5scu{color:red}']);
 
     expect(actual).toInclude(
-      'className={ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.className])}'
+      'className={ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}'
     );
   });
 
@@ -888,7 +892,7 @@ describe('styled component behaviour', () => {
     ]);
 
     expect(actual).toInclude(
-      'className={ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.isBolded&&"_k48p8n31",props.className])}'
+      'className={ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.isBolded&&"_k48p8n31",__cmplp.className])}'
     );
   });
 
@@ -910,7 +914,7 @@ describe('styled component behaviour', () => {
     ]);
 
     expect(actual).toInclude(
-      '{ax(["_syaz5scu _19it97hw",props.isPrimary&&"_syaz13q2",props.className])}'
+      '{ax(["_syaz5scu _19it97hw",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}'
     );
   });
 
@@ -927,7 +931,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple(['._syaz5scu{color:red}', '._syaz13q2{color:blue}']);
 
     expect(actual).toInclude(
-      'className={ax(["_syaz13q2",props.isPrimary&&"_syaz5scu",props.className])}'
+      'className={ax(["_syaz13q2",__cmplp.isPrimary&&"_syaz5scu",__cmplp.className])}'
     );
   });
 
@@ -944,7 +948,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple(['._syaz13q2{color:blue}', '._syaz5scu{color:red}']);
 
     expect(actual).toInclude(
-      '{ax(["_syaz5scu",(props.isPrimary||props.isMaybe)&&"_syaz13q2",props.className])}'
+      '{ax(["_syaz5scu",(__cmplp.isPrimary||__cmplp.isMaybe)&&"_syaz13q2",__cmplp.className])}'
     );
   });
 
@@ -964,7 +968,7 @@ describe('styled component behaviour', () => {
       '._k48p4jg8{font-weight:normal}',
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
-      '{ax(["_syaz5scu",props.isPrimary&&"_syaz13q2",props.isBolded?"_k48p8n31":"_k48p4jg8",props.className])}/>',
+      '{ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.isBolded?"_k48p8n31":"_k48p4jg8",__cmplp.className])}/>',
     ]);
   });
 
@@ -981,7 +985,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple(['._syaz13q2{color:blue}', '._syaz5scu{color:red}']);
 
     expect(actual).toInclude(
-      '{ax(["_syaz5scu",props.isPrimary&&(props.isBolded||props.isFoo)&&"_syaz13q2",props.className])}'
+      '{ax(["_syaz5scu",__cmplp.isPrimary&&(__cmplp.isBolded||__cmplp.isFoo)&&"_syaz13q2",__cmplp.className])}'
     );
   });
 
@@ -999,7 +1003,7 @@ describe('styled component behaviour', () => {
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
       '._1wybgktf{font-size:20px}',
-      'className={ax(["_1wybgktf",props.isPrimary&&props.isBolded?"_syaz13q2":"_syaz5scu",props.className])}/',
+      'className={ax(["_1wybgktf",__cmplp.isPrimary&&__cmplp.isBolded?"_syaz13q2":"_syaz5scu",__cmplp.className])}/',
     ]);
   });
 
@@ -1020,7 +1024,7 @@ describe('styled component behaviour', () => {
       '._syazruxl{color:orange}',
     ]);
 
-    expect(actual).toInclude('className={ax(["_syazruxl _bfhk1x77",props.className])}');
+    expect(actual).toInclude('className={ax(["_syazruxl _bfhk1x77",__cmplp.className])}');
   });
 
   it('should only add falsy condition when truthy condition has no value', () => {
@@ -1035,7 +1039,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '._syazbf54{color:green}',
       '._bfhk11x8{background-color:black}',
-      'className={ax(["",!props.isPrimary&&"_syazbf54 _bfhk11x8",props.className])}',
+      'className={ax(["",!__cmplp.isPrimary&&"_syazbf54 _bfhk11x8",__cmplp.className])}',
     ]);
   });
 
@@ -1051,7 +1055,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '._syazbf54{color:green}',
       '._bfhk11x8{background-color:black}',
-      'className={ax(["",props.isPrimary&&"_syazbf54 _bfhk11x8",props.className])}',
+      'className={ax(["",__cmplp.isPrimary&&"_syazbf54 _bfhk11x8",__cmplp.className])}',
     ]);
   });
 
@@ -1066,7 +1070,7 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       '._syazbf54{color:green}',
-      'className={ax(["",props.isPrimary&&"_syazbf54",props.className])}',
+      'className={ax(["",__cmplp.isPrimary&&"_syazbf54",__cmplp.className])}',
     ]);
   });
 
@@ -1081,7 +1085,7 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       '._syazbf54{color:green}',
-      'className={ax(["",!props.isPrimary&&"_syazbf54",props.className])}',
+      'className={ax(["",!__cmplp.isPrimary&&"_syazbf54",__cmplp.className])}',
     ]);
   });
 
@@ -1096,7 +1100,7 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       '._syazbf54{color:green}',
-      'className={ax(["",!props.isPrimary&&"_syazbf54",props.className])}',
+      'className={ax(["",!__cmplp.isPrimary&&"_syazbf54",__cmplp.className])}',
     ]);
   });
 
@@ -1113,7 +1117,7 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       '._30l3bf54:hover{color:green}',
-      'className={ax(["",props.isPrimary&&"_30l3bf54",props.className])}',
+      'className={ax(["",__cmplp.isPrimary&&"_30l3bf54",__cmplp.className])}',
     ]);
   });
 
@@ -1130,7 +1134,7 @@ describe('styled component behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       '._30l3bf54:hover{color:green}',
-      'className={ax(["",props.isPrimary&&"_30l3bf54",props.className])}',
+      'className={ax(["",__cmplp.isPrimary&&"_30l3bf54",__cmplp.className])}',
     ]);
   });
 
@@ -1143,7 +1147,7 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('className={ax(["",props.className])}');
+    expect(actual).toInclude('className={ax(["",__cmplp.className])}');
   });
 
   it('should conditionally apply CSS mixins', () => {
@@ -1172,7 +1176,7 @@ describe('styled component behaviour', () => {
       '._syaz1x77{color:white}',
       '_bfhk11x8{background-color:black}',
       '_1wyb1ul9{font-size:30px}',
-      'className={ax(["_1wyb1ul9",props.isDark?"_bfhk11x8 _syaz1x77":"_bfhk1x77 _syaz11x8",props.className])}',
+      'className={ax(["_1wyb1ul9",__cmplp.isDark?"_bfhk11x8 _syaz1x77":"_bfhk1x77 _syaz11x8",__cmplp.className])}',
     ]);
   });
 
@@ -1187,9 +1191,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsb16om{width:calc(10px + var(--_13fw46q))}',
-      '"--_13fw46q":ix(props.isLarge?100:50,"px")',
-      '{ax(["_1bsb16om",props.className])}',
+      '._1bsb1dlf{width:calc(10px + var(--_1e9pbah))}',
+      '"--_1e9pbah":ix(__cmplp.isLarge?100:50,"px")',
+      '{ax(["_1bsb1dlf",__cmplp.className])}',
     ]);
   });
 
@@ -1204,9 +1208,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsb1k9r{width:calc(var(--_13fw46q) - 10px)}',
-      '"--_13fw46q":ix(props.isLarge?100:50,"px")',
-      '{ax(["_1bsb1k9r",props.className])}',
+      '._1bsb5cma{width:calc(var(--_1e9pbah) - 10px)}',
+      '"--_1e9pbah":ix(__cmplp.isLarge?100:50,"px")',
+      '{ax(["_1bsb5cma",__cmplp.className])}',
     ]);
   });
 
@@ -1222,9 +1226,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1kt914bl:before{content:var(--_5jcge)}',
-      '"--_5jcge":ix(props.isOpen?\'show less\':\'show more\',"\'","\'")',
-      '{ax(["_1kt914bl",props.className])}',
+      '._1kt91xca:before{content:var(--_8txsa8)}',
+      '"--_8txsa8":ix(__cmplp.isOpen?\'show less\':\'show more\',"\'","\'")',
+      '{ax(["_1kt91xca",__cmplp.className])}',
     ]);
   });
 
@@ -1248,7 +1252,7 @@ describe('styled component behaviour', () => {
       '._syaz1gy6{color:yellow}',
       '._bfw71j9v:hover{border:1px solid white}',
       '_bfw7l468:hover{border:2px solid black}',
-      '{ax(["_11q7qm1v",props.isSelected?"_syaz13q2":"_syaz1gy6",props.isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
+      '{ax(["_11q7qm1v",__cmplp.isSelected?"_syaz13q2":"_syaz1gy6",__cmplp.isHover?"_bfw71j9v":"_bfw7l468",__cmplp.className])}',
     ]);
   });
 
@@ -1269,7 +1273,7 @@ describe('styled component behaviour', () => {
       '._syaz1gy6{color:yellow}',
       '._bfw71j9v:hover{border:1px solid white}',
       '_bfw7l468:hover{border:2px solid black}',
-      '{ax(["",props.isSelected?"_syaz13q2":"_syaz1gy6",props.isHover?"_bfw71j9v":"_bfw7l468",props.className])}',
+      '{ax(["",__cmplp.isSelected?"_syaz13q2":"_syaz1gy6",__cmplp.isHover?"_bfw71j9v":"_bfw7l468",__cmplp.className])}',
     ]);
   });
 
@@ -1301,7 +1305,7 @@ describe('styled component behaviour', () => {
       '._vw871qok:hover:before{content:\\"Don\'t break closure parsing }\\"}',
       '._1jly1kw7:hover:before{display:inherit}',
       '._1jly1nu9:hover:before{display:inline}',
-      '{ax(["_irr31i1c _vw871qok",props.isSelected?"_syaz13q2":"_syaz1gy6",props.isHover?"_bfw71j9v":"_bfw7l468",props.isBefore?"_1jly1kw7":"_1jly1nu9",props.className])}',
+      '{ax(["_irr31i1c _vw871qok",__cmplp.isSelected?"_syaz13q2":"_syaz1gy6",__cmplp.isHover?"_bfw71j9v":"_bfw7l468",__cmplp.isBefore?"_1jly1kw7":"_1jly1nu9",__cmplp.className])}',
     ]);
   });
 
@@ -1329,7 +1333,7 @@ describe('styled component behaviour', () => {
       '._irr31i1c:hover{background-color:cyan}',
       '._vn891l7b:focus{border-radius:3px}',
       '._vn89yh40:focus{border-radius:2px}',
-      '{ax(["_1oey5scu _irr31i1c",props.isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
+      '{ax(["_1oey5scu _irr31i1c",__cmplp.isFocus?"_vn891l7b":"_vn89yh40",__cmplp.className])}',
     ]);
   });
 
@@ -1357,7 +1361,7 @@ describe('styled component behaviour', () => {
       '._irr31i1c:hover{background-color:cyan}',
       '._vn891l7b:focus{border-radius:3px}',
       '._vn89yh40:focus{border-radius:2px}',
-      '{ax(["_1oey5scu _irr31i1c",props.isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
+      '{ax(["_1oey5scu _irr31i1c",__cmplp.isFocus?"_vn891l7b":"_vn89yh40",__cmplp.className])}',
     ]);
   });
 
@@ -1385,7 +1389,7 @@ describe('styled component behaviour', () => {
       '._irr31i1c:hover{background-color:cyan}',
       '._vn891l7b:focus{border-radius:3px}',
       '._vn89yh40:focus{border-radius:2px}',
-      '{ax(["_1oey5scu _irr31i1c",props.isFocus?"_vn891l7b":"_vn89yh40",props.className])}',
+      '{ax(["_1oey5scu _irr31i1c",__cmplp.isFocus?"_vn891l7b":"_vn89yh40",__cmplp.className])}',
     ]);
   });
 });
