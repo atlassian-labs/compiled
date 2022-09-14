@@ -353,9 +353,10 @@ describe('module traversal', () => {
       import { styled } from '@compiled/react';
 
       import { JOINED_SELECTOR } from '../__fixtures__/mixins/strings';
+      import { primary } from '../__fixtures__/mixins/simple';
 
       const BackgroundWithSelector = styled.div({
-        [\`\${JOINED_SELECTOR}\`]: {
+        [\`\${JOINED_SELECTOR}, .\${primary}\`]: {
           backgroundColor: 'green',
         },
       });
@@ -365,7 +366,9 @@ describe('module traversal', () => {
       </BackgroundWithSelector>;
     `);
 
-    expect(actual).toInclude('._15rzbf54 #joined-selector{background-color:green}');
+    expect(actual).toInclude(
+      '._15rzbf54 #joined-selector, ._1khrbf54 .red{background-color:green}'
+    );
   });
 
   describe('should call onIncludedFiles with the filepath', () => {

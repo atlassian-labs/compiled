@@ -2,10 +2,6 @@ import type { NodePath } from '@babel/traverse';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
 
-import type { Metadata } from '../types';
-
-import { evaluateExpression } from './evaluate-expression';
-
 /**
  * Returns the nodes path including the scope of a parent.
  * @param node
@@ -56,47 +52,6 @@ export const buildCodeFrameError = (
   const startLoc = node.loc ? ` (${node.loc.start.line}:${node.loc.start.column})` : '';
 
   return getPathOfNode(node, parentPath).buildCodeFrameError(`${error}${startLoc}.`);
-};
-
-/**
- * Will return either the name of an identifier or the value of a string literal.
- *
- * E.g:
- * - `foo` identifier node will return `"foo"`,
- * - `"bar"` string literal node will return `"bar"`.
- *
- * @param node
- */
-export const getKey = (node: t.Expression, meta: Metadata): string => {
-  if (t.isIdentifier(node)) {
-    return node.name;
-  }
-
-  if (t.isStringLiteral(node)) {
-    return node.value;
-  }
-  if (t.isTemplateLiteral(node)) {
-    let key = '';
-    for (let i = 0; i < node.quasis.length; i += 1) {
-      key += node.quasis[i].value.raw;
-
-      if (i < node.expressions.length) {
-        const expression = node.expressions[i];
-        if (t.isTSType(expression)) {
-          // Passed a type instead of a value
-          // e.g. `${any}`
-          throw new Error(`${node.type} has a type instead of a value`);
-        }
-        const evaluatedExpression = evaluateExpression(expression, meta);
-        meta = evaluatedExpression.meta;
-        key += getKey(evaluatedExpression.value, meta);
-      }
-    }
-
-    return key;
-  }
-
-  throw new Error(`${node.type} has no name.'`);
 };
 
 /**
