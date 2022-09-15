@@ -6,7 +6,12 @@ import { transformCss } from '@compiled/css';
 import { unique } from '@compiled/utils';
 import isPropValid from '@emotion/is-prop-valid';
 
-import { DOM_PROPS_IDENTIFIER_NAME, PROPS_IDENTIFIER_NAME } from '../constants';
+import {
+  DOM_PROPS_IDENTIFIER_NAME,
+  PROPS_IDENTIFIER_NAME,
+  REF_IDENTIFIER_NAME,
+  STYLE_IDENTIFIER_NAME,
+} from '../constants';
 import type { Metadata, Tag } from '../types';
 
 import { pickFunctionBody } from './ast';
@@ -44,7 +49,9 @@ export interface StyledTemplateOpts {
  * @param variables CSS variables that will be placed in the AST
  */
 const styledStyleProp = (variables: CSSOutput['variables']) => {
-  const props: (t.ObjectProperty | t.SpreadElement)[] = [t.spreadElement(t.identifier('style'))];
+  const props: (t.ObjectProperty | t.SpreadElement)[] = [
+    t.spreadElement(t.identifier(STYLE_IDENTIFIER_NAME)),
+  ];
   return t.objectExpression(
     props.concat(
       buildCssVariables(variables, (node) =>
@@ -105,7 +112,9 @@ const getInvalidDomProps = (path: NodePath<t.Node>): string[] => {
  */
 const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
-  const styleProp = opts.variables.length ? styledStyleProp(opts.variables) : t.identifier('style');
+  const styleProp = opts.variables.length
+    ? styledStyleProp(opts.variables)
+    : t.identifier(STYLE_IDENTIFIER_NAME);
   // This completely depends on meta.parentPath to be the styled component.
   // If this changes please pass the component in another way
   const invalidDomProps = getInvalidDomProps(meta.parentPath);
@@ -128,9 +137,9 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     `
   forwardRef(({
     as: C = ${buildComponentTag(opts.tag)},
-    style,
+    style: ${STYLE_IDENTIFIER_NAME},
     ...${PROPS_IDENTIFIER_NAME}
-  }, ref) => {
+  }, ${REF_IDENTIFIER_NAME}) => {
     ${
       hasInvalidDomProps
         ? `const {${invalidDomProps.join(
@@ -145,7 +154,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
         <C
           {...${hasInvalidDomProps ? DOM_PROPS_IDENTIFIER_NAME : PROPS_IDENTIFIER_NAME}}
           style={%%styleProp%%}
-          ref={ref}
+          ref={${REF_IDENTIFIER_NAME}}
           className={ax([${classNames} ${PROPS_IDENTIFIER_NAME}.className])}
         />
       </CC>
