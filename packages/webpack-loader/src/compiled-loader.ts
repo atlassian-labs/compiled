@@ -118,6 +118,9 @@ export default async function compiledLoader(
       filename: this.resourcePath,
       caller: { name: 'compiled' },
       rootMode: 'upward-optional',
+      parserOpts: {
+        plugins: options.parserBabelPlugins ?? undefined,
+      },
       plugins: options.transformerBabelPlugins ?? undefined,
     });
 
@@ -139,6 +142,9 @@ export default async function compiledLoader(
       configFile: false,
       sourceMaps: true,
       filename: this.resourcePath,
+      parserOpts: {
+        plugins: options.parserBabelPlugins ?? undefined,
+      },
       plugins: [
         ...(options.transformerBabelPlugins ?? []),
         options.extract && [
