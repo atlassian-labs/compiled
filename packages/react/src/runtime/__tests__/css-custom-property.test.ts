@@ -4,13 +4,13 @@ describe('interpolation', () => {
   it('should return an empty CSS comment when undefined', () => {
     const actual = interpolation(undefined, undefined, undefined);
 
-    expect(actual).toEqual('var(--, )');
+    expect(actual).toEqual('var(--c-, )');
   });
 
   it('should return an empty CSS comment when null', () => {
     const actual = interpolation(null, undefined, undefined);
 
-    expect(actual).toEqual('var(--, )');
+    expect(actual).toEqual('var(--c-, )');
   });
 
   it('should pass through the value if there are no suffix prefix', () => {
