@@ -201,28 +201,32 @@ describe('styled component behaviour', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 
-      const Component = () => null;
+      const Component = styled.div\`
+        color: red;
+      \`;
 
       const ListItem = styled(Component)\`
         font-size: 20px;
       \`;
     `);
 
-    expect(actual).toInclude('as:C=Component');
+    expect(actual).toIncludeMultiple(['as:C=Component', '<C{...__cmplp}']);
   });
 
   it('should compose a component using object call expression', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 
-      const Component = () => null;
+      const Component = styled.div({
+        color: 'red',
+      });
 
       const ListItem = styled(Component)({
         fontSize: 20
       });
     `);
 
-    expect(actual).toInclude('as:C=Component');
+    expect(actual).toIncludeMultiple(['as:C=Component', '<C{...__cmplp}']);
   });
 
   it('should inline constant identifier string literal', () => {
