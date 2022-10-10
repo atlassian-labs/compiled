@@ -29,7 +29,7 @@ export interface ParcelTransformerOpts extends BabelPluginOpts {
   optimizeCss?: boolean;
 
   /**
-   * Override the default `resolve` passed into webpack, which is used to statically evaluate import declarations
+   * Override the default `resolve` used by @compiled/babel-plugin, which is used to statically evaluate import declarations
    */
   resolve?: ResolveOptions;
 }
