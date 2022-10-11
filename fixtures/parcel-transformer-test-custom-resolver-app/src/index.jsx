@@ -3,6 +3,6 @@ import { color } from '~/src/foo.js';
 
 const App = () => (
   <>
-    <div css={{ fontSize: 50, color }}>CSS prop</div>
+    <div css={{ color }}>CSS prop</div>
   </>
 );

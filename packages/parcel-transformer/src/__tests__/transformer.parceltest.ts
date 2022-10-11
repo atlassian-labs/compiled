@@ -72,7 +72,7 @@ it('transforms assets with babel plugin', async () => {
   `);
 }, 50000);
 
-it('transforms assets with custom resolver and statically evulates imports', async () => {
+it('transforms assets with custom resolver and statically evaluates imports', async () => {
   const parcel = getParcelInstance(customResolverFixtureRoot);
   const { changedAssets } = await parcel.run();
 
