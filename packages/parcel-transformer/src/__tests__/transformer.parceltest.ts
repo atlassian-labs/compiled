@@ -6,6 +6,10 @@ import { MemoryFS } from '@parcel/fs';
 const rootPath = join(__dirname, '..', '..', '..', '..');
 const fixtureRoot = join(rootPath, 'fixtures/parcel-transformer-test-app');
 const extractionFixtureRoot = join(rootPath, 'fixtures/parcel-transformer-test-extract-app');
+const customResolverFixtureRoot = join(
+  rootPath,
+  'fixtures/parcel-transformer-test-custom-resolver-app'
+);
 const babelComponentFixture = join(rootPath, 'fixtures/babel-component');
 
 const workerFarm = createWorkerFarm();
@@ -66,6 +70,19 @@ it('transforms assets with babel plugin', async () => {
     };
     "
   `);
+}, 50000);
+
+it('transforms assets with custom resolver and statically evaluates imports', async () => {
+  const parcel = getParcelInstance(customResolverFixtureRoot);
+  const { changedAssets } = await parcel.run();
+
+  const asset = Array.from(changedAssets.values()).find(
+    (asset) => asset.filePath === join(customResolverFixtureRoot, 'src/index.jsx')
+  );
+
+  const code = await asset?.getCode();
+
+  expect(code).toInclude('color:red');
 }, 50000);
 
 it('transforms assets with compiled and extraction babel plugins', async () => {
