@@ -26,7 +26,8 @@
     "@compiled/babel-plugin-strip-runtime": "^0.16.0",
     "@compiled/utils": "^0.6.16",
     "@parcel/plugin": "^2.3.2",
-    "@parcel/source-map": "^2.0.2"
+    "@parcel/source-map": "^2.0.2",
+    "enhanced-resolve": "^5.10.0"
   },
   "devDependencies": {
     "@parcel/core": "^2.3.1",
