@@ -1,5 +1,18 @@
 # @compiled/webpack-loader
 
+## 0.9.3
+
+### Patch Changes
+
+- dcb333a2: Use less likely to clash variable names in styled template
+- 44d8c58f: Add missing parserBabelPlugins options to webpack loader
+- Updated dependencies [fcda0097]
+- Updated dependencies [13b71dfb]
+- Updated dependencies [dcb333a2]
+- Updated dependencies [5ee1a866]
+  - @compiled/babel-plugin@0.16.5
+  - @compiled/react@0.11.1
+
 ## 0.9.2
 
 ### Patch Changes

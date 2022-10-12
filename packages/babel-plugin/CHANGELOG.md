@@ -1,5 +1,14 @@
 # @compiled/babel-plugin
 
+## 0.16.5
+
+### Patch Changes
+
+- fcda0097: Fix bug where props are not forwarded when composing components in the styled API
+- dcb333a2: Use less likely to clash variable names in styled template
+- 5ee1a866: - Fixes bug where more than one import cannot be used in template literal object property key
+  - Support string binary operation in object property keys
+
 ## 0.16.4
 
 ### Patch Changes
