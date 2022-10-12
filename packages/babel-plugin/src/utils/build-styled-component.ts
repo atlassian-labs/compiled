@@ -115,9 +115,10 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   const styleProp = opts.variables.length
     ? styledStyleProp(opts.variables)
     : t.identifier(STYLE_IDENTIFIER_NAME);
+  const isInBuiltComponent = opts.tag.type === 'InBuiltComponent';
   // This completely depends on meta.parentPath to be the styled component.
   // If this changes please pass the component in another way
-  const invalidDomProps = getInvalidDomProps(meta.parentPath);
+  const invalidDomProps = isInBuiltComponent ? getInvalidDomProps(meta.parentPath) : [];
   const hasInvalidDomProps = Boolean(invalidDomProps.length);
 
   let unconditionalClassNames = '',
