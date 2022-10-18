@@ -21,23 +21,33 @@ export default declare<PluginPass>((api) => {
     },
     visitor: {
       Program: {
-        exit(path) {
-          if (!this.opts.compiledRequireExclude && this.opts.styleSheetPath) {
-            preserveLeadingComments(path);
+        exit(path, { file } ) {
+
+          if (this.opts.compiledRequireExclude) {
+            // Rather than inserting styleRules to the code, inserting them to matadata in the case like SSR
+            if (!file.metadata?.styleRules) file.metadata.styleRules = [];
             this.styleRules.forEach((rule) => {
-              // Each found atomic rule will create a new import that uses the styleSheetPath provided.
-              // The benefit is two fold:
-              // (1) thread safe collection of styles
-              // (2) caching -- resulting in faster builds (one import per rule!)
-              const params = toURIComponent(rule);
-              path.unshiftContainer(
-                'body',
-                template.ast(`require("${this.opts.styleSheetPath}?style=${params}");`)
-              );
-              // We use require instead of import so it works with both ESM and CJS source.
-              // If we used ESM it would blow up with CJS source, unfortunately.
+              file.metadata.styleRules.push(rule);
             });
+            return;
           }
+
+          if (this.opts.styleSheetPath) {
+              preserveLeadingComments(path);
+              this.styleRules.forEach((rule) => {
+                // Each found atomic rule will create a new import that uses the styleSheetPath provided.
+                // The benefit is two fold:
+                // (1) thread safe collection of styles
+                // (2) caching -- resulting in faster builds (one import per rule!)
+                const params = toURIComponent(rule);
+                path.unshiftContainer(
+                  'body',
+                  template.ast(`require("${this.opts.styleSheetPath}?style=${params}");`)
+                );
+                // We use require instead of import so it works with both ESM and CJS source.
+                // If we used ESM it would blow up with CJS source, unfortunately.
+              });
+            }
         },
       },
       ImportSpecifier(path) {

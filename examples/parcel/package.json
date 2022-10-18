@@ -3,7 +3,7 @@
   "version": "1.1.5",
   "private": true,
   "scripts": {
-    "build": "parcel build ./src/index.html",
+    "build": "PARCEL_WORKERS=0 node --inspect-brk ./node_modules/.bin/parcel build ./src/index.html",
     "start": "parcel serve ./src/index.html --open --no-cache"
   },
   "dependencies": {
@@ -14,6 +14,7 @@
   "devDependencies": {
     "@compiled/parcel-config": "*",
     "@compiled/parcel-transformer": "*",
+    "@compiled/parcel-optimizer-html-inline-css": "*",
     "@parcel/config-default": "^2.3.1",
     "@parcel/optimizer-htmlnano": "^2.3.2",
     "@parcel/packager-html": "^2.3.2",

@@ -1,0 +1,37 @@
+{
+  "name": "@compiled/parcel-optimizer-html-inline-css",
+  "version": "0.0.1",
+  "description": "A familiar and performant compile time CSS-in-JS library for React.",
+  "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlassian-labs/compiled.git",
+    "directory": "packages/parcel-optimizer-html-inline-css"
+  },
+  "license": "Apache-2.0",
+  "author": "Michael Dougall",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "dependencies": {
+    "@compiled/css": "^0.8.1",
+    "@parcel/plugin": "^2.3.1",
+    "posthtml": "^0.16.6",
+    "posthtml-insert-at": "^0.2.7"
+  },
+  "devDependencies": {
+    "@parcel/core": "^2.3.1",
+    "@parcel/fs": "^2.3.1",
+    "@parcel/types": "^2.3.1",
+    "ts-node": "^10.8.2",
+    "tsconfig-paths": "^3.14.1"
+  },
+  "engines": {
+    "parcel": "^2.0.0"
+  }
+}

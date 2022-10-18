@@ -17,8 +17,10 @@
       "..."
     ]
   },
-  "resolvers": [
-    "@compiled/parcel-resolver-alias",
-    "..."
-  ]
+  "optimizers": { 
+    "*.html": [
+      "@compiled/parcel-optimizer-html-inline-css",
+      "..."
+    ]
+  }
 }

@@ -2,6 +2,7 @@ import fs from 'fs';
 import { join, dirname } from 'path';
 
 import { parseAsync, transformFromAstAsync } from '@babel/core';
+import type {  BabelFileMetadata } from '@babel/core';
 import generate from '@babel/generator';
 import type { PluginOptions as BabelPluginOptions } from '@compiled/babel-plugin';
 import type { PluginOptions as BabelStripRuntimePluginOptions } from '@compiled/babel-plugin-strip-runtime';
@@ -18,6 +19,10 @@ const configFiles = [
   'compiledcss.js',
   'compiledcss.config.js',
 ];
+
+interface CustomBabelFileMetadata extends BabelFileMetadata {
+  styleRules?: string[];
+}
 
 /**
  * Compiled parcel transformer.
@@ -127,8 +132,7 @@ export default new Transformer<ParcelTransformerOpts>({
         config.extract && [
           '@compiled/babel-plugin-strip-runtime',
           {
-            styleSheetPath: 'compiled-css!',
-            compiledRequireExclude: config.ssr,
+            compiledRequireExclude: true,
           } as BabelStripRuntimePluginOptions,
         ],
       ].filter(toBoolean),
@@ -147,6 +151,11 @@ export default new Transformer<ParcelTransformerOpts>({
     });
 
     asset.setCode(output);
+
+    if (!config.ssr) {
+      const metadata = result?.metadata as CustomBabelFileMetadata;
+      asset.meta.styleRules = metadata.styleRules;
+    }
 
     return [asset];
   },

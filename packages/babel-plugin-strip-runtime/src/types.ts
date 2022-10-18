@@ -17,4 +17,14 @@ export interface PluginPass {
    * Stores all found style rules during the file pass.
    */
   styleRules: string[];
+
+
+  /**
+   * Data of the current file being transformed.
+   */
+  file: {
+    metadata: {
+      styleRules: string[];
+    };
+  };
 }
