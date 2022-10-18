@@ -13,8 +13,8 @@
   },
   "devDependencies": {
     "@compiled/parcel-config": "*",
-    "@compiled/parcel-transformer": "*",
     "@compiled/parcel-optimizer-html-inline-css": "*",
+    "@compiled/parcel-transformer": "*",
     "@parcel/config-default": "^2.3.1",
     "@parcel/optimizer-htmlnano": "^2.3.2",
     "@parcel/packager-html": "^2.3.2",
