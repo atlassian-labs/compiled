@@ -3,7 +3,7 @@
   "version": "1.1.5",
   "private": true,
   "scripts": {
-    "build": "PARCEL_WORKERS=0 node --inspect-brk ./node_modules/.bin/parcel build ./src/index.html",
+    "build": "parcel build ./src/index.html",
     "start": "parcel serve ./src/index.html --open --no-cache"
   },
   "dependencies": {
