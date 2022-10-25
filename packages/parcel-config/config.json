@@ -3,7 +3,6 @@
     "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}": ["@compiled/parcel-transformer", "..."]
   },
   "optimizers": {
-    "*.css": ["@compiled/parcel-optimizer", "..."]
-  },
-  "resolvers": ["@compiled/parcel-resolver", "..."]
+    "*.html": ["@compiled/parcel-optimizer", "..."]
+  }
 }

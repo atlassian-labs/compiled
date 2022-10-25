@@ -1,10 +1,12 @@
 import { join } from 'path';
 
-import { transformSync } from '@babel/core';
+import { transformSync as babelTransformSync } from '@babel/core';
+import type { BabelFileResult } from '@babel/core';
 import compiledBabelPlugin from '@compiled/babel-plugin';
 import { format } from 'prettier';
 
 import stripRuntimeBabelPlugin from '../index';
+import type { BabelFileMetadata } from '../types';
 
 const testStyleSheetPath =
   '@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/compiled-css.css';
@@ -12,7 +14,7 @@ const regexToFindRequireStatements =
   /(require\('@compiled\/webpack-loader\/css-loader!@compiled\/webpack-loader\/css-loader\/compiled-css\.css\?style=.*;)/g;
 const testSSR = true;
 
-const transform = (
+const transformSync = (
   code: string,
   opts: {
     styleSheetPath?: string;
@@ -20,12 +22,12 @@ const transform = (
     run: 'both' | 'bake' | 'extract';
     runtime: 'automatic' | 'classic';
   }
-): string => {
+): BabelFileResult | null => {
   const { styleSheetPath, compiledRequireExclude, run, runtime } = opts;
   const bake = run === 'both' || run === 'bake';
   const extract = run === 'both' || run === 'extract';
 
-  const fileResult = transformSync(code, {
+  return babelTransformSync(code, {
     babelrc: false,
     configFile: false,
     filename: join(__dirname, 'app.tsx'),
@@ -37,6 +39,18 @@ const transform = (
     ],
     presets: [['@babel/preset-react', { runtime }]],
   });
+};
+
+const transform = (
+  c: string,
+  opts: {
+    styleSheetPath?: string;
+    compiledRequireExclude?: boolean;
+    run: 'both' | 'bake' | 'extract';
+    runtime: 'automatic' | 'classic';
+  }
+): string => {
+  const fileResult = transformSync(c, opts);
 
   if (!fileResult || !fileResult.code) {
     throw new Error(`Missing fileResult: ${fileResult}`);
@@ -106,6 +120,21 @@ describe('babel-plugin-strip-runtime using source code', () => {
 
         expect(actual.match(regexToFindRequireStatements)).toEqual(null);
       });
+
+      it('adds styleRules to metadata in a node environment', () => {
+        const actual = transformSync(code, {
+          styleSheetPath: testStyleSheetPath,
+          compiledRequireExclude: testSSR,
+          run: 'both',
+          runtime,
+        });
+
+        const metadata = actual?.metadata as BabelFileMetadata;
+
+        expect(metadata).toEqual({
+          styleRules: ['._1wyb1fwx{font-size:12px}', '._syaz13q2{color:blue}'],
+        });
+      });
     });
 
     describe('with the classic runtime', () => {
@@ -154,6 +183,21 @@ describe('babel-plugin-strip-runtime using source code', () => {
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual(null);
+      });
+
+      it('adds styleRules to metadata in a node environment', () => {
+        const actual = transformSync(code, {
+          styleSheetPath: testStyleSheetPath,
+          compiledRequireExclude: testSSR,
+          run: 'both',
+          runtime,
+        });
+
+        const metadata = actual?.metadata as BabelFileMetadata;
+
+        expect(metadata).toEqual({
+          styleRules: ['._1wyb1fwx{font-size:12px}', '._syaz13q2{color:blue}'],
+        });
       });
     });
   });
@@ -207,6 +251,22 @@ describe('babel-plugin-strip-runtime using source code', () => {
 
         expect(actual.match(regexToFindRequireStatements)).toEqual(null);
       });
+
+      it('adds styleRules to metadata in a node environment', () => {
+        const baked = transform(code, { run: 'bake', runtime });
+        const actual = transformSync(baked, {
+          styleSheetPath: testStyleSheetPath,
+          compiledRequireExclude: testSSR,
+          run: 'extract',
+          runtime,
+        });
+
+        const metadata = actual?.metadata as BabelFileMetadata;
+
+        expect(metadata).toEqual({
+          styleRules: ['._1wyb1fwx{font-size:12px}', '._syaz13q2{color:blue}'],
+        });
+      });
     });
 
     describe('with the classic runtime', () => {
@@ -257,6 +317,22 @@ describe('babel-plugin-strip-runtime using source code', () => {
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual(null);
+      });
+
+      it('adds styleRules to metadata in a node environment', () => {
+        const baked = transform(code, { run: 'bake', runtime });
+        const actual = transformSync(baked, {
+          styleSheetPath: testStyleSheetPath,
+          compiledRequireExclude: testSSR,
+          run: 'extract',
+          runtime,
+        });
+
+        const metadata = actual?.metadata as BabelFileMetadata;
+
+        expect(metadata).toEqual({
+          styleRules: ['._1wyb1fwx{font-size:12px}', '._syaz13q2{color:blue}'],
+        });
       });
     });
   });

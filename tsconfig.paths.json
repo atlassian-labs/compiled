@@ -8,7 +8,6 @@
       "@compiled/parcel-optimizer": ["packages/parcel-optimizer/src/index.tsx"],
       "@compiled/parcel-resolver": ["packages/parcel-resolver/src/index.tsx"],
       "@compiled/parcel-transformer": ["packages/parcel-transformer/src/index.tsx"],
-      "@compiled/parcel-optimizer-html-inline-css": ["packages/parcel-optimizer-html-inline-css/src/index.tsx"],
       "@compiled/react": ["packages/react/src/index.ts"],
       "@compiled/react/jsx-dev-runtime": ["packages/react/src/jsx/jsx-dev-runtime.ts"],
       "@compiled/react/jsx-runtime": ["packages/react/src/jsx/jsx-runtime.ts"],

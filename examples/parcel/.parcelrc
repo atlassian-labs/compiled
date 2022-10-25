@@ -16,11 +16,5 @@
       "@parcel/transformer-react-refresh-wrap",
       "..."
     ]
-  },
-  "optimizers": { 
-    "*.html": [
-      "@compiled/parcel-optimizer-html-inline-css",
-      "..."
-    ]
   }
 }

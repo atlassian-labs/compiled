@@ -2,10 +2,12 @@ import fs from 'fs';
 import { join, dirname } from 'path';
 
 import { parseAsync, transformFromAstAsync } from '@babel/core';
-import type {  BabelFileMetadata } from '@babel/core';
 import generate from '@babel/generator';
 import type { PluginOptions as BabelPluginOptions } from '@compiled/babel-plugin';
-import type { PluginOptions as BabelStripRuntimePluginOptions } from '@compiled/babel-plugin-strip-runtime';
+import type {
+  PluginOptions as BabelStripRuntimePluginOptions,
+  BabelFileMetadata,
+} from '@compiled/babel-plugin-strip-runtime';
 import { toBoolean } from '@compiled/utils';
 import { Transformer } from '@parcel/plugin';
 import SourceMap from '@parcel/source-map';
@@ -19,10 +21,6 @@ const configFiles = [
   'compiledcss.js',
   'compiledcss.config.js',
 ];
-
-interface CustomBabelFileMetadata extends BabelFileMetadata {
-  styleRules?: string[];
-}
 
 /**
  * Compiled parcel transformer.
@@ -152,8 +150,8 @@ export default new Transformer<ParcelTransformerOpts>({
 
     asset.setCode(output);
 
-    if (!config.ssr) {
-      const metadata = result?.metadata as CustomBabelFileMetadata;
+    if (config.extract) {
+      const metadata = result?.metadata as BabelFileMetadata;
       asset.meta.styleRules = metadata.styleRules;
     }
 

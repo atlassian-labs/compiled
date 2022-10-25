@@ -1,3 +1,5 @@
+import type { BabelFileMetadata as OriginalBabelFileMetadata } from '@babel/core';
+
 export interface PluginOptions {
   /**
    * Specifies the styleSheetPath used for requiring atomic styles.
@@ -18,7 +20,6 @@ export interface PluginPass {
    */
   styleRules: string[];
 
-
   /**
    * Data of the current file being transformed.
    */
@@ -27,4 +28,8 @@ export interface PluginPass {
       styleRules: string[];
     };
   };
+}
+
+export interface BabelFileMetadata extends OriginalBabelFileMetadata {
+  styleRules?: string[];
 }
