@@ -6,6 +6,7 @@ import { join } from 'path';
 
 import Parcel, { createWorkerFarm } from '@parcel/core';
 import { MemoryFS } from '@parcel/fs';
+import { format } from 'prettier';
 
 const rootPath = join(__dirname, '..', '..', '..', '..');
 const fixtureRoot = join(rootPath, 'fixtures/parcel-optimizer-test-app');
@@ -32,40 +33,44 @@ afterAll(() => {
 describe('optimizer', () => {
   it('sorts css rules', async () => {
     const { changedAssets, bundleGraph } = await parcel.run();
+
     const asset = Array.from(changedAssets.values()).find(
-      (asset) => asset.filePath === join(fixtureRoot, '/src/styles.css')
+      (asset) => asset.filePath === join(fixtureRoot, '/src/index.html')
     );
 
-    const outputCss = await outputFS.readFile(
+    const outputHtml = await outputFS.readFile(
       bundleGraph.getBundlesWithAsset(asset!)[0].filePath,
       'utf8'
     );
-    expect(outputCss).toMatchInlineSnapshot(`
-      "
 
-      .color-blue {
-        color: blue;
+    const css = /<style>(.*?)<\/style>/.exec(outputHtml)?.pop();
+
+    if (!css) throw new Error('No CSS is found.');
+
+    expect(
+      format(css, {
+        parser: 'css',
+      })
+    ).toMatchInlineSnapshot(`
+      "._syaz5scu {
+        color: red;
       }
-
-      .color-blue:focus {
+      ._f8pjruxl:focus {
         color: orange;
       }
-
-      .color-blue:hover {
+      ._30l3bf54:hover {
         color: green;
       }
-
       @media screen {
-        .media-screen-color-red {
+        ._43475scu {
           color: red;
         }
       }
-
       @media (min-width: 500px) {
-        .media-min-width-border {
+        ._171dak0l {
           border: 2px solid red;
         }
-        .media-min-width-border:before {
+        ._14yn1439 {
           content: 'large screen';
         }
       }
