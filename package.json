@@ -37,7 +37,6 @@
     "prettier:fix": "prettier ./ --write",
     "release": "yarn clean && yarn build && yarn changeset publish",
     "start": "npx nodemon --exec \"start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
-    "start:cli": "yarn workspace @compiled/cli start",
     "start:inspect": "npx nodemon --exec \"node --inspect-brk node_modules/.bin/start-storybook -p 6006 --ci\" --watch packages/babel-plugin/ -e tsx",
     "start:parcel": "ttsc --build examples/parcel/tsconfig.json && yarn workspace @compiled/parcel-app start",
     "start:prod": "NODE_ENV=production yarn start",
@@ -68,8 +67,6 @@
     "webpack-dev-server": "^4.7.4"
   },
   "devDependencies": {
-    "@babel/plugin-transform-react-jsx-self": "^7.16.7",
-    "@babel/plugin-transform-react-jsx-source": "^7.16.7",
     "@babel/preset-env": "^7.17.10",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
@@ -99,7 +96,6 @@
     "eslint-plugin-react-hooks": "^4.5.0",
     "flow-bin": "^0.183.0",
     "flowgen": "^1.17.0",
-    "git-branch-is": "^4.0.0",
     "husky": "^4.3.8",
     "jest": "^26.6.3",
     "jest-extended": "^0.11.5",

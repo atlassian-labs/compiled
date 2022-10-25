@@ -2,10 +2,23 @@
 
 > Codemods for easy migration from [styled components](https://styled-components.com/) and [emotion](https://emotion.sh/docs/introduction).
 
+## Usage
+
+Codemods in this repository can be run with the [CodeshiftCommunity](https://www.codeshiftcommunity.com/docs/) tooling.
+
+```bash
+# Transform single file
+npx @codeshift/cli --packages @compiled/codemods /Project/path/to/file
+
+# Transform multiple files
+npx @codeshift/cli --packages @compiled/codemods /Project/**/*.tsx
+```
+
 ## Available codemods
 
 1. [styled-components-to-compiled](./src/transforms/styled-components-to-compiled)
 2. [emotion-to-compiled](./src/transforms/emotion-to-compiled)
+3. [styled-components-inner-ref-to-ref](./src/transforms/styled-components-inner-ref-to-ref)
 
 ## Plugins
 

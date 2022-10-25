@@ -4,9 +4,14 @@
 
 ## Usage
 
+Codemods in this repository can be run with the [CodeshiftCommunity](https://www.codeshiftcommunity.com/docs/) tooling.
+
 ```bash
-npx @compiled/cli --preset codemods
-# and follow the instructions
+# Transform single file
+npx @codeshift/cli --packages "@compiled/codemods#emotion-to-compiled" /Project/path/to/file
+
+# Transform multiple files
+npx @codeshift/cli --packages "@compiled/codemods#emotion-to-compiled" /Project/**/*.tsx
 ```
 
 **Will modify files in place, so make sure you can recover if it goes wrong!**
@@ -55,17 +60,4 @@ const Component = (props) => (
     />
   </>
 );
-```
-
-## Updating Instructions
-
-When wanting to update to a later version make sure `@compiled/cli` is being ran with the same version.
-
-> Watch out for it being cached!
-
-For example when upgrading `@compiled/react` to `v0.6.0` where you've already used the CLI,
-on your next run explicitly set the version number:
-
-```bash
-npx @compiled/cli@0.6.0 --preset codemods
 ```
