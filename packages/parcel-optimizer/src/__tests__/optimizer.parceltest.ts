@@ -50,6 +50,7 @@ describe('optimizer', () => {
     expect(
       format(css, {
         parser: 'css',
+        singleQuote: true,
       })
     ).toMatchInlineSnapshot(`
       "._syaz5scu {
