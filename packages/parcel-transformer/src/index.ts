@@ -1,4 +1,5 @@
-import { join } from 'path';
+import fs from 'fs';
+import { join, dirname } from 'path';
 
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import generate from '@babel/generator';
@@ -7,6 +8,7 @@ import type { PluginOptions as BabelStripRuntimePluginOptions } from '@compiled/
 import { toBoolean } from '@compiled/utils';
 import { Transformer } from '@parcel/plugin';
 import SourceMap from '@parcel/source-map';
+import { CachedInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
 import type { ParcelTransformerOpts } from './types';
 
@@ -86,6 +88,16 @@ export default new Transformer<ParcelTransformerOpts>({
     const includedFiles: string[] = [];
     const code = asset.isASTDirty() ? undefined : await asset.getCode();
 
+    const resolver = ResolverFactory.createResolver({
+      fileSystem: new CachedInputFileSystem(fs, 4000),
+      ...(config.extensions && {
+        extensions: config.extensions,
+      }),
+      ...(config.resolve ?? {}),
+      // This makes the resolver invoke the callback synchronously
+      useSyncFileSystemCalls: true,
+    });
+
     const result = await transformFromAstAsync(ast.program, code, {
       code: true,
       ast: false,
@@ -103,6 +115,12 @@ export default new Transformer<ParcelTransformerOpts>({
           {
             ...config,
             onIncludedFiles: (files: string[]) => includedFiles.push(...files),
+            resolver: {
+              // The resolver needs to be synchronous, as babel plugins must be synchronous
+              resolveSync: (context: string, request: string) => {
+                return resolver.resolveSync({}, dirname(context), request);
+              },
+            },
             cache: false,
           } as BabelPluginOptions,
         ],

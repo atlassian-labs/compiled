@@ -1,5 +1,12 @@
 # @compiled/react
 
+## 0.11.1
+
+### Patch Changes
+
+- 13b71dfb: - Give a name to CSS var used for empty values
+  - Update loki to 0.30.3
+
 ## 0.11.0
 
 ### Minor Changes

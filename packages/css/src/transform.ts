@@ -6,11 +6,16 @@ import whitespace from 'postcss-normalize-whitespace';
 
 import { atomicifyRules } from './plugins/atomicify-rules';
 import { discardDuplicates } from './plugins/discard-duplicates';
+import { discardEmptyRules } from './plugins/discard-empty-rules';
 import { expandShorthands } from './plugins/expand-shorthands';
 import { extractStyleSheets } from './plugins/extract-stylesheets';
 import { normalizeCSS } from './plugins/normalize-css';
 import { parentOrphanedPseudos } from './plugins/parent-orphaned-pseudos';
 import { sortAtRulePseudos } from './plugins/sort-at-rule-pseudos';
+
+interface TransformOpts {
+  optimizeCss?: boolean;
+}
 
 /**
  * Will transform CSS into multiple CSS sheets.
@@ -18,16 +23,20 @@ import { sortAtRulePseudos } from './plugins/sort-at-rule-pseudos';
  * @param css CSS string
  * @param opts Transformation options
  */
-export const transformCss = (css: string): { sheets: string[]; classNames: string[] } => {
+export const transformCss = (
+  css: string,
+  opts: TransformOpts
+): { sheets: string[]; classNames: string[] } => {
   const sheets: string[] = [];
   const classNames: string[] = [];
 
   try {
     const result = postcss([
       discardDuplicates(),
+      discardEmptyRules(),
       parentOrphanedPseudos(),
       nested(),
-      ...normalizeCSS(),
+      ...normalizeCSS(opts),
       expandShorthands(),
       atomicifyRules({ callback: (className: string) => classNames.push(className) }),
       sortAtRulePseudos(),

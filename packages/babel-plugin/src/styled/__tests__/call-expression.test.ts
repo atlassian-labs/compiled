@@ -23,17 +23,19 @@ describe('styled object call expression', () => {
         color: \\"blue\\",
       });
       const CompiledComponent = forwardRef(
-        ({ as: C = \\"div\\", style, ...props }, ref) => (
-          <CC>
-            <CS>{[_]}</CS>
-            <C
-              {...props}
-              style={style}
-              ref={ref}
-              className={ax([\\"_syaz13q2\\", props.className])}
-            />
-          </CC>
-        )
+        ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+          return (
+            <CC>
+              <CS>{[_]}</CS>
+              <C
+                {...__cmplp}
+                style={__cmpls}
+                ref={__cmplr}
+                className={ax([\\"_syaz13q2\\", __cmplp.className])}
+              />
+            </CC>
+          );
+        }
       );
       "
     `);
@@ -134,9 +136,9 @@ describe('styled object call expression', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '{font-size:var(--_7wpnv5)}',
-      '{ as: C = "div", style, textSize, ...props }',
-      '"--_7wpnv5": ix(`${textSize}px`)',
+      '{font-size:var(--_450x70)}',
+      'const { textSize, ...__cmpldp } = __cmplp;',
+      '"--_450x70": ix(`${__cmplp.textSize}px`)',
     ]);
   });
 
@@ -149,9 +151,9 @@ describe('styled object call expression', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '{font-size:var(--_fb92co)}',
-      '{ as: C = "div", style, textSize, ...props }',
-      '"--_fb92co": ix(textSize, "px")',
+      '{font-size:var(--_8t6091)}',
+      'const { textSize, ...__cmpldp } = __cmplp;',
+      '"--_8t6091": ix(__cmplp.textSize, "px")',
     ]);
   });
 
@@ -235,7 +237,7 @@ describe('styled object call expression', () => {
       });
     `);
 
-    expect(actual).toIncludeMultiple(['{color:var(--_1p69eoh)}', '"--_1p69eoh": ix(props.color)']);
+    expect(actual).toIncludeMultiple(['{color:var(--_xexnhp)}', '"--_xexnhp": ix(__cmplp.color)']);
   });
 
   it('should transform object spread from variable', () => {
@@ -502,23 +504,7 @@ describe('styled object call expression', () => {
       });
     `);
 
-    expect(actual).not.toInclude('ix(propz.width)');
-
-    expect(actual).toIncludeMultiple(['ix(width)', 'ix(w)', 'ix(props.width)']);
-  });
-
-  it('should not use the destructured name to prevent naming collisions', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-      import colors from 'colors';
-
-      export const BadgeSkeleton = styled.span({
-        backgroundColor: ({ isLoading }) => isLoading ? colors.N20 : colors.N40,
-        color: ({ loading: l }) => l ? colors.N50 : colors.N10,
-        borderColor: (propz) => propz.loading ? colors.N100 : colors.N200,
-      });
-    `);
-
-    expect(actual).toInclude('{ as: C = "span", style, isLoading, loading: l, ...props }');
+    expect(actual).toInclude('ix(__cmplp.width)');
+    expect(actual).not.toIncludeMultiple(['ix(propz.width)', 'ix(w)']);
   });
 });

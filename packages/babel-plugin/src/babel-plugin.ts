@@ -3,6 +3,7 @@ import { basename } from 'path';
 import { declare } from '@babel/helper-plugin-utils';
 import jsxSyntax from '@babel/plugin-syntax-jsx';
 import template from '@babel/template';
+import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { unique, preserveLeadingComments } from '@compiled/utils';
 
@@ -20,6 +21,7 @@ import {
   isCompiledStyledCallExpression,
   isCompiledStyledTaggedTemplateExpression,
 } from './utils/is-compiled';
+import { normalizePropsUsage } from './utils/normalize-props-usage';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -165,30 +167,36 @@ export default declare<State>((api) => {
           path.remove();
         }
       },
-      TaggedTemplateExpression(path, state) {
-        if (
+      'TaggedTemplateExpression|CallExpression'(
+        path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
+        state: State
+      ) {
+        const hasStyles =
           isCompiledCSSTaggedTemplateExpression(path.node, state) ||
-          isCompiledKeyframesTaggedTemplateExpression(path.node, state)
-        ) {
-          state.pathsToCleanup.push({ path, action: 'replace' });
-          return;
-        }
-
-        if (isCompiledStyledTaggedTemplateExpression(path.node, state)) {
-          visitStyledPath(path, { context: 'root', state, parentPath: path });
-          return;
-        }
-      },
-      CallExpression(path, state) {
-        if (
+          isCompiledStyledTaggedTemplateExpression(path.node, state) ||
           isCompiledCSSCallExpression(path.node, state) ||
-          isCompiledKeyframesCallExpression(path.node, state)
-        ) {
+          isCompiledStyledCallExpression(path.node, state);
+
+        if (hasStyles) {
+          normalizePropsUsage(path);
+        }
+
+        const isCompiledUtil =
+          isCompiledCSSTaggedTemplateExpression(path.node, state) ||
+          isCompiledKeyframesTaggedTemplateExpression(path.node, state) ||
+          isCompiledCSSCallExpression(path.node, state) ||
+          isCompiledKeyframesCallExpression(path.node, state);
+
+        if (isCompiledUtil) {
           state.pathsToCleanup.push({ path, action: 'replace' });
           return;
         }
 
-        if (isCompiledStyledCallExpression(path.node, state)) {
+        const isCompiledComponent =
+          isCompiledStyledTaggedTemplateExpression(path.node, state) ||
+          isCompiledStyledCallExpression(path.node, state);
+
+        if (isCompiledComponent) {
           visitStyledPath(path, { context: 'root', state, parentPath: path });
           return;
         }

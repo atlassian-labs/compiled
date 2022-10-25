@@ -19,5 +19,6 @@
       }
     ]
   ],
-  "extract": true
+  "extract": true,
+  "optimizeCss": false
 }

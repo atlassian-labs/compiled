@@ -1,7 +1,8 @@
 import type { PluginItem } from '@babel/core';
 import type { PluginOptions } from '@compiled/babel-plugin';
+import type { ResolveOptions } from 'enhanced-resolve';
 
-type BabelPluginOpts = Omit<PluginOptions, 'cache' | 'onIncludedFiles'>;
+type BabelPluginOpts = Omit<PluginOptions, 'cache' | 'onIncludedFiles' | 'resolver'>;
 
 export interface ParcelTransformerOpts extends BabelPluginOpts {
   extract?: boolean;
@@ -19,4 +20,16 @@ export interface ParcelTransformerOpts extends BabelPluginOpts {
    * Defaults to `false`.
    */
   ssr?: boolean;
+
+  /**
+   * Will run additional cssnano plugins to normalize CSS during build.
+   *
+   * Default to `true`.
+   */
+  optimizeCss?: boolean;
+
+  /**
+   * Override the default `resolve` used by @compiled/babel-plugin, which is used to statically evaluate import declarations
+   */
+  resolve?: ResolveOptions;
 }

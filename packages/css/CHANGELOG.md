@@ -1,5 +1,17 @@
 # @compiled/css
 
+## 0.8.5
+
+### Patch Changes
+
+- 17de9d1f: Omit rules with empty values from stylesheet
+
+## 0.8.4
+
+### Patch Changes
+
+- 5272281a: Add configurable options to optimize CSS
+
 ## 0.8.3
 
 ### Patch Changes

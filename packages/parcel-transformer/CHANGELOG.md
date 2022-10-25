@@ -1,5 +1,18 @@
 # @compiled/parcel-transformer
 
+## 0.10.0
+
+### Minor Changes
+
+- 100f5d5e: Pass a custom resolver from parcel-transformer to babel plugin
+
+### Patch Changes
+
+- Updated dependencies [fcda0097]
+- Updated dependencies [dcb333a2]
+- Updated dependencies [5ee1a866]
+  - @compiled/babel-plugin@0.16.5
+
 ## 0.9.1
 
 ### Patch Changes

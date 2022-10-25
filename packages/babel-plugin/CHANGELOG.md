@@ -1,5 +1,33 @@
 # @compiled/babel-plugin
 
+## 0.16.5
+
+### Patch Changes
+
+- fcda0097: Fix bug where props are not forwarded when composing components in the styled API
+- dcb333a2: Use less likely to clash variable names in styled template
+- 5ee1a866: - Fixes bug where more than one import cannot be used in template literal object property key
+  - Support string binary operation in object property keys
+
+## 0.16.4
+
+### Patch Changes
+
+- d2bd6305: - Normalize prop usage in styled API to make it easier to avoid name clashing
+  - Fix bug in styled API where destructuring can remove values out of props
+  - Ensure props are not displayed as HTML attributes, unless they are valid attributes
+- 17de9d1f: Omit rules with empty values from stylesheet
+- Updated dependencies [17de9d1f]
+  - @compiled/css@0.8.5
+
+## 0.16.3
+
+### Patch Changes
+
+- 5272281a: Add configurable options to optimize CSS
+- Updated dependencies [5272281a]
+  - @compiled/css@0.8.4
+
 ## 0.16.2
 
 ### Patch Changes

@@ -492,7 +492,7 @@ describe('import specifiers', () => {
 
       expect(actual).toIncludeMultiple([
         '._1rwq5scu input{background-color:red}',
-        'ax(["_1rwq5scu", props.className]',
+        'ax(["_1rwq5scu", __cmplp.className]',
       ]);
     });
   });

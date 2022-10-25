@@ -5,7 +5,7 @@ import { hash, kebabCase } from '@compiled/utils';
 
 import type { Metadata } from '../types';
 
-import { buildCodeFrameError, getKey } from './ast';
+import { buildCodeFrameError } from './ast';
 import { CONDITIONAL_PATHS } from './constants';
 import { evaluateExpression } from './evaluate-expression';
 import {
@@ -14,12 +14,14 @@ import {
   isCompiledKeyframesCallExpression,
   isCompiledKeyframesTaggedTemplateExpression,
 } from './is-compiled';
+import { isEmptyValue } from './is-empty';
 import {
   isQuasiMidStatement,
   hasNestedTemplateLiteralsWithConditionalRules,
   optimizeConditionalStatement,
   recomposeTemplateLiteral,
 } from './manipulate-template-literal';
+import { objectPropertyToString } from './object-property-to-string';
 import { resolveBinding } from './resolve-binding';
 import type {
   CSSOutput,
@@ -457,7 +459,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 
   node.properties.forEach((prop) => {
     if (t.isObjectProperty(prop)) {
-      const key = getKey(prop.computed ? evaluateExpression(prop.key, meta).value : prop.key, meta);
+      const key = objectPropertyToString(prop, meta);
       // Don't use prop.value directly as it extracts constants from identifiers if needed.
       const { value: propValue, meta: updatedMeta } = evaluateExpression(
         prop.value as t.Expression,
@@ -485,6 +487,10 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
           css: `${kebabCase(key)}: ${addUnitIfNeeded(key, propValue.value)};`,
         });
 
+        return;
+      }
+
+      if (isEmptyValue(propValue)) {
         return;
       }
 
