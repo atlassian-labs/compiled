@@ -151,6 +151,7 @@ export default new Transformer<ParcelTransformerOpts>({
     asset.setCode(output);
 
     if (config.extract) {
+      // Store styleRules to asset.meta to be used by @compiled/parcel-optimizer
       const metadata = result?.metadata as BabelFileMetadata;
       asset.meta.styleRules = metadata.styleRules;
     }

@@ -1,3 +1,4 @@
 {
-  "extract": true
+  "extract": true,
+  "inlineCSS": true
 }

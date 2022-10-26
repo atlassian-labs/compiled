@@ -20,6 +20,7 @@
   ],
   "dependencies": {
     "@compiled/css": "^0.8.1",
+    "@compiled/utils": "^0.6.16",
     "@parcel/plugin": "^2.3.1",
     "posthtml": "^0.16.6",
     "posthtml-insert-at": "^0.2.7"
