@@ -11,5 +11,5 @@
 Changed the approach of stylesheet extraction on Parcel
 
 - @compiled/parcel-resolver is no longer used
-- Use metadata to pass styleRules to optimizer
-- Optimizer then collects styleRules, and insert it to output HTML
+- Pass styleRules to optimizer via metadata
+- Optimizer then collects styleRules, and inserts it to output HTML
