@@ -1,5 +1,15 @@
 # @compiled/parcel-app
 
+## 1.1.6
+
+### Patch Changes
+
+- 966a1080: Changed the approach of stylesheet extraction on Parcel
+
+  - @compiled/parcel-resolver is no longer used
+  - Pass styleRules to optimizer via metadata
+  - Optimizer then collects styleRules, and inserts it to output HTML
+
 ## 1.1.5
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @compiled/webpack-loader
 
+## 0.9.4
+
+### Patch Changes
+
+- Updated dependencies [966a1080]
+  - @compiled/babel-plugin-strip-runtime@0.17.0
+
 ## 0.9.3
 
 ### Patch Changes
