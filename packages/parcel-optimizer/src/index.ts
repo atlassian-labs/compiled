@@ -23,7 +23,7 @@ export default new Optimizer<ParcelOptimizerOpts>({
     });
 
     const contents = {
-      inlineCSS: false,
+      inlineCss: false,
     };
 
     if (conf) {
@@ -62,7 +62,7 @@ export default new Optimizer<ParcelOptimizerOpts>({
 
     let newContents = '';
 
-    if (config.inlineCSS) {
+    if (config.inlineCss) {
       newContents = (
         await posthtml()
           .use(

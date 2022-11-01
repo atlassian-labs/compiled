@@ -2,5 +2,5 @@
   "importReact": false,
   "extract": true,
   "optimizeCss": false,
-  "inlineCSS": true
+  "inlineCss": true
 }
