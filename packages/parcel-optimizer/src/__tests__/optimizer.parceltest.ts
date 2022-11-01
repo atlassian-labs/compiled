@@ -24,6 +24,7 @@ const parcel = new Parcel({
     },
   },
   workerFarm,
+  mode: 'production',
 });
 
 afterAll(() => {
