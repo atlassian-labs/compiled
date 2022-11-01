@@ -1,6 +1,6 @@
 {
   "name": "@compiled/parcel-transformer-test-extract-app",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "dependencies": {
     "@compiled/react": "^0.11.0",

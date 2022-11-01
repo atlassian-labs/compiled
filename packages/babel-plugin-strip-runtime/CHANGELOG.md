@@ -1,5 +1,15 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.17.0
+
+### Minor Changes
+
+- 966a1080: Changed the approach of stylesheet extraction on Parcel
+
+  - @compiled/parcel-resolver is no longer used
+  - Pass styleRules to optimizer via metadata
+  - Optimizer then collects styleRules, and inserts it to output HTML
+
 ## 0.16.0
 
 ### Minor Changes
