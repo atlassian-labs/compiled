@@ -53,7 +53,7 @@ export default new Transformer<ParcelTransformerOpts>({
   async parse({ asset, config, options }) {
     // Disable stylesheet extraction locally due to https://github.com/atlassian-labs/compiled/issues/1306
     const extract = config.extract && options.mode !== 'development';
-    if (!asset.isSource && extract) {
+    if (!asset.isSource && !extract) {
       // Only parse source (pre-built code should already have been baked) or if stylesheet extraction is enabled
       return undefined;
     }
