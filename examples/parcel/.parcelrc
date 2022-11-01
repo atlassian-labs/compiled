@@ -16,9 +16,5 @@
       "@parcel/transformer-react-refresh-wrap",
       "..."
     ]
-  },
-  "resolvers": [
-    "@compiled/parcel-resolver-alias",
-    "..."
-  ]
+  }
 }

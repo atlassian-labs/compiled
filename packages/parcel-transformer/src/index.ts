@@ -4,7 +4,10 @@ import { join, dirname } from 'path';
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import generate from '@babel/generator';
 import type { PluginOptions as BabelPluginOptions } from '@compiled/babel-plugin';
-import type { PluginOptions as BabelStripRuntimePluginOptions } from '@compiled/babel-plugin-strip-runtime';
+import type {
+  PluginOptions as BabelStripRuntimePluginOptions,
+  BabelFileMetadata,
+} from '@compiled/babel-plugin-strip-runtime';
 import { toBoolean } from '@compiled/utils';
 import { Transformer } from '@parcel/plugin';
 import SourceMap from '@parcel/source-map';
@@ -47,8 +50,10 @@ export default new Transformer<ParcelTransformerOpts>({
     return false;
   },
 
-  async parse({ asset, config }) {
-    if (!asset.isSource && !config.extract) {
+  async parse({ asset, config, options }) {
+    // Disable stylesheet extraction locally due to https://github.com/atlassian-labs/compiled/issues/1306
+    const extract = config.extract && options.mode !== 'development';
+    if (!asset.isSource && !extract) {
       // Only parse source (pre-built code should already have been baked) or if stylesheet extraction is enabled
       return undefined;
     }
@@ -77,7 +82,7 @@ export default new Transformer<ParcelTransformerOpts>({
     };
   },
 
-  async transform({ asset, config }) {
+  async transform({ asset, config, options }) {
     const ast = await asset.getAST();
     if (!ast) {
       // We will only receive ASTs for assets we're interested in.
@@ -85,6 +90,8 @@ export default new Transformer<ParcelTransformerOpts>({
       return [asset];
     }
 
+    // Disable stylesheet extraction locally due to https://github.com/atlassian-labs/compiled/issues/1306
+    const extract = config.extract && options.mode !== 'development';
     const includedFiles: string[] = [];
     const code = asset.isASTDirty() ? undefined : await asset.getCode();
 
@@ -124,11 +131,10 @@ export default new Transformer<ParcelTransformerOpts>({
             cache: false,
           } as BabelPluginOptions,
         ],
-        config.extract && [
+        extract && [
           '@compiled/babel-plugin-strip-runtime',
           {
-            styleSheetPath: 'compiled-css!',
-            compiledRequireExclude: config.ssr,
+            compiledRequireExclude: true,
           } as BabelStripRuntimePluginOptions,
         ],
       ].filter(toBoolean),
@@ -147,6 +153,12 @@ export default new Transformer<ParcelTransformerOpts>({
     });
 
     asset.setCode(output);
+
+    if (extract) {
+      // Store styleRules to asset.meta to be used by @compiled/parcel-optimizer
+      const metadata = result?.metadata as BabelFileMetadata;
+      asset.meta.styleRules = metadata.styleRules;
+    }
 
     return [asset];
   },

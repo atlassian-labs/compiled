@@ -1,9 +1,0 @@
-{
-  "name": "@compiled/parcel-resolver-test-app",
-  "version": "0.0.1",
-  "private": true,
-  "devDependencies": {
-    "@compiled/parcel-resolver": "*",
-    "@parcel/config-default": "^2.3.1"
-  }
-}

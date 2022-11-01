@@ -15,6 +15,8 @@ import {
 } from './ui/custom-file-extension.customjsx';
 import { TypeScript } from './ui/typescript';
 
+const AsyncComponent = React.lazy(() => import('./async'));
+
 export const App = () => (
   <>
     <div css={{ fontSize: 50, color: primary }}>hello from parcel 2</div>
@@ -24,5 +26,8 @@ export const App = () => (
     <CustomFileExtensionStyled>Custom File Extension Styled</CustomFileExtensionStyled>
     <div css={customFileExtensionCss}>Custom File Extension CSS</div>
     <Annotated />
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <AsyncComponent />
+    </React.Suspense>
   </>
 );

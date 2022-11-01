@@ -20,12 +20,16 @@
   ],
   "dependencies": {
     "@compiled/css": "^0.8.1",
-    "@parcel/plugin": "^2.3.1"
+    "@compiled/utils": "^0.6.16",
+    "@parcel/plugin": "^2.3.1",
+    "posthtml": "^0.16.6",
+    "posthtml-insert-at": "^0.2.7"
   },
   "devDependencies": {
     "@parcel/core": "^2.3.1",
     "@parcel/fs": "^2.3.1",
     "@parcel/types": "^2.3.1",
+    "prettier": "^2.7.1",
     "ts-node": "^10.8.2",
     "tsconfig-paths": "^3.14.1"
   },
