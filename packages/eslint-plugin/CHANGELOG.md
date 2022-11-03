@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.4.2
+
+### Patch Changes
+
+- c8371532: Handle whole module imports
+
 ## 0.4.1
 
 ### Patch Changes
