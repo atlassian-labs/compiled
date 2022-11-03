@@ -1,7 +1,0 @@
-{
-  "extends": "@parcel/config-default",
-  "resolvers": [
-    "@compiled/parcel-resolver",
-    "..."
-  ]
-}

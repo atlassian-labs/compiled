@@ -7,7 +7,6 @@
     "target": "es2017"
   },
   "references": [
-    { "path": "../../fixtures/parcel-resolver-noop/tsconfig.json" },
     { "path": "../babel-plugin" },
     { "path": "../babel-plugin-strip-runtime" },
     { "path": "../jest" },

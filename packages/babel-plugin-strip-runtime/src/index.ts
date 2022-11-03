@@ -4,7 +4,7 @@ import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { preserveLeadingComments } from '@compiled/utils';
 
-import type { PluginPass, PluginOptions } from './types';
+import type { PluginPass, PluginOptions, BabelFileMetadata } from './types';
 import { isAutomaticRuntime } from './utils/is-automatic-runtime';
 import { isCCComponent } from './utils/is-cc-component';
 import { isCreateElement } from './utils/is-create-element';
@@ -21,8 +21,17 @@ export default declare<PluginPass>((api) => {
     },
     visitor: {
       Program: {
-        exit(path) {
-          if (!this.opts.compiledRequireExclude && this.opts.styleSheetPath) {
+        exit(path, { file }) {
+          if (this.opts.compiledRequireExclude) {
+            // Rather than inserting styleRules to the code, inserting them to matadata in the case like SSR
+            if (!file.metadata?.styleRules) file.metadata.styleRules = [];
+            this.styleRules.forEach((rule) => {
+              file.metadata.styleRules.push(rule);
+            });
+            return;
+          }
+
+          if (this.opts.styleSheetPath) {
             preserveLeadingComments(path);
             this.styleRules.forEach((rule) => {
               // Each found atomic rule will create a new import that uses the styleSheetPath provided.
@@ -136,4 +145,4 @@ export default declare<PluginPass>((api) => {
   };
 });
 
-export { PluginOptions };
+export { PluginOptions, BabelFileMetadata };

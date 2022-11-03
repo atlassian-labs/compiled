@@ -3,5 +3,7 @@
   "transformers": {
     "*.{js,jsx}": ["@compiled/parcel-transformer", "..."]
   },
-  "resolvers": ["@compiled/parcel-resolver-noop", "..."]
+  "optimizers": {
+    "*.html": ["@compiled/parcel-optimizer", "..."]
+  }
 }

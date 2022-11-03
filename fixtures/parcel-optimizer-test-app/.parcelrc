@@ -1,6 +1,11 @@
 {
-  "extends": "@parcel/config-default",
+  "extends": [
+    "@parcel/config-default"
+  ],
+  "transformers": {
+    "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}": ["@compiled/parcel-transformer", "..."]
+  },
   "optimizers": {
-    "*.css": ["@compiled/parcel-optimizer", "..."]
+    "*.html": ["@compiled/parcel-optimizer", "..."]
   }
 }
