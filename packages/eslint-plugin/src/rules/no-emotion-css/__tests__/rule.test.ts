@@ -7,6 +7,7 @@ tester.run('no-emotion-css', noEmotionCssRule, {
     `import { css } from '@compiled/react';`,
     `import { ClassNames } from '@compiled/react';`,
     `import { css, ClassNames, styled } from '@compiled/react';`,
+    `import '@compiled/react'`,
     `/** @jsx jsx */`,
     `/** @jsxImportSource @compiled/react */`,
   ],

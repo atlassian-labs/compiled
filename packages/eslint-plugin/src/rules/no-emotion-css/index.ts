@@ -57,7 +57,7 @@ export const noEmotionCssRule: Rule.RuleModule = {
         }
       },
       ImportDeclaration(node) {
-        if (node.specifiers[0].type === 'ImportNamespaceSpecifier') {
+        if (node.specifiers[0]?.type === 'ImportNamespaceSpecifier') {
           return;
         }
 
