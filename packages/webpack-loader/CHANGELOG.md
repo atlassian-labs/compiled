@@ -1,5 +1,11 @@
 # @compiled/webpack-loader
 
+## 0.9.5
+
+### Patch Changes
+
+- 3cb750ab: Bump loader-utils to 2.0.3
+
 ## 0.9.4
 
 ### Patch Changes
