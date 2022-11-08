@@ -139,21 +139,20 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   forwardRef(({
     as: C = ${buildComponentTag(opts.tag)},
     style: ${STYLE_IDENTIFIER_NAME},
-    innerRef,
     ...${PROPS_IDENTIFIER_NAME}
   }, ${REF_IDENTIFIER_NAME}) => {
+    if (process.env.NODE_ENV !== "production") {
+      if (${PROPS_IDENTIFIER_NAME}.innerRef) {
+        throw new Error("Use 'ref' instead of 'innerRef'")
+      }
+    }
+
     ${
       hasInvalidDomProps
         ? `const {${invalidDomProps.join(
             ', '
           )}, ...${DOM_PROPS_IDENTIFIER_NAME}} = ${PROPS_IDENTIFIER_NAME};`
         : ''
-    }
-
-    if (process.env.NODE_ENV !== "production") {
-      if (innerRef) {
-        throw new Error("Use 'ref' instead of 'innerRef'")
-      }
     }
 
     return (
