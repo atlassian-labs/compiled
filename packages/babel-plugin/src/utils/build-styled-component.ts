@@ -134,6 +134,11 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
 
   const classNames = `"${unconditionalClassNames.trim()}", ${conditionalClassNames}`;
 
+  const isDevelopmentEnv =
+    (!process.env.BABEL_ENV && !process.env.NODE_ENV) ||
+    ['development', 'test'].includes(process.env.BABEL_ENV || '') ||
+    ['development', 'test'].includes(process.env.NODE_ENV || '');
+
   return template(
     `
   forwardRef(({
@@ -141,10 +146,14 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     style: ${STYLE_IDENTIFIER_NAME},
     ...${PROPS_IDENTIFIER_NAME}
   }, ${REF_IDENTIFIER_NAME}) => {
-    if (process.env.NODE_ENV !== "production") {
-      if (${PROPS_IDENTIFIER_NAME}.innerRef) {
-        throw new Error("Use 'ref' instead of 'innerRef'")
-      }
+    ${
+      isDevelopmentEnv
+        ? `
+        if (${PROPS_IDENTIFIER_NAME}.innerRef) {
+          throw new Error("Use 'ref' instead of 'innerRef'")
+        }
+    `
+        : ''
     }
 
     ${
