@@ -899,5 +899,84 @@ tester.run('no-styled-tagged-template-expression', noStyledTaggedTemplateExpress
         );
       `,
     },
+    {
+      filename: 'multiple-selectors-across-lines.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          color: blue;
+          &:hover,
+          &:focus,
+          &:active {
+            text-decoration: inherit;
+          }
+          ul,
+          li {
+            color: red;
+          }
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          color: "blue",
+          "&:hover, &:focus, &:active": {
+            textDecoration: "inherit"
+          },
+          "ul, li": {
+            color: "red"
+          }
+        });
+      `,
+    },
+    {
+      filename: 'multiple-selectors-on-same-line.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          color: blue;
+          &:hover, &:focus,
+          &:active {
+            text-decoration: inherit;
+          }
+          ul, li {
+            color: red;
+          }
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          color: "blue",
+          "&:hover, &:focus, &:active": {
+            textDecoration: "inherit"
+          },
+          "ul, li": {
+            color: "red"
+          }
+        });
+      `,
+    },
+    {
+      filename: 'do-not-handle-invalid-css.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          color blue;
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          color blue;
+        \`;
+      `,
+    },
   ]),
 });

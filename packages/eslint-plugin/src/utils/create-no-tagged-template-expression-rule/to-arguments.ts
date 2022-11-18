@@ -20,6 +20,11 @@ const getArguments = (
   }
 
   const args: (Expression | Block)[] = [];
+
+  if (!chars.includes(':')) {
+    return args;
+  }
+
   const [property, value] = chars.split(':');
 
   // Extract any expressions listed before the property that were not delimited by a ;
@@ -130,7 +135,10 @@ export const toArguments = (source: SourceCode, template: ESTree.TemplateLiteral
   };
 
   for (const [i, quasi] of template.quasis.entries()) {
-    for (const char of quasi.value.raw) {
+    // Deal with multi selectors
+    const styleTemplateElement = quasi.value.raw.replace(/\n/g, '').replace(/\s+/g, ' ');
+
+    for (const char of styleTemplateElement) {
       switch (char) {
         case '{': {
           const declarations: Argument[] = [];

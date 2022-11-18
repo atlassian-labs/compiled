@@ -39,11 +39,18 @@ export const createNoTaggedTemplateExpressionRule =
             return;
           }
 
+          const args = toArguments(source, quasi);
+
+          // Skip invalid CSS
+          if (args.length < 1) {
+            return;
+          }
+
           yield fixer.insertTextBefore(
             node,
             source.getText(tag) +
               // Indent the arguments after the tagged template expression range
-              generate(toArguments(source, quasi), getTaggedTemplateExpressionOffset(node))
+              generate(args, getTaggedTemplateExpressionOffset(node))
           );
           yield fixer.remove(node);
         },
