@@ -6,7 +6,7 @@ import {
   createAliasedInvalidTestCase,
   createDeclarationInvalidTestCases,
   createTypedInvalidTestCase,
-  typeScriptTester as tester
+  typeScriptTester as tester,
 } from '../../../test-utils';
 import { noStyledTaggedTemplateExpressionRule } from '../index';
 
@@ -32,8 +32,7 @@ const replaceAlias = (str: string) =>
     .replace('styled.div', 'styled2.div')
     .replace('styled(Base)', 'styled2(Base)');
 
-const replaceType = (str: string) =>
-  str.replace('styled.div', 'styled.div<{color: string}>');
+const replaceType = (str: string) => str.replace('styled.div', 'styled.div<{color: string}>');
 
 const createInvalidTestCases = (tests: InvalidTestCase[]) =>
   tests

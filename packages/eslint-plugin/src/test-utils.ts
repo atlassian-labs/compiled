@@ -27,7 +27,10 @@ const baseTesterConfig = {
 
 export const tester = new RuleTester(baseTesterConfig);
 
-export const typeScriptTester = new RuleTester({ ...baseTesterConfig, parser: require.resolve('@typescript-eslint/parser')});
+export const typeScriptTester = new RuleTester({
+  ...baseTesterConfig,
+  parser: require.resolve('@typescript-eslint/parser'),
+});
 
 export const createAliasedInvalidTestCase = (
   test: RuleTester.InvalidTestCase,

@@ -47,18 +47,16 @@ export const createNoTaggedTemplateExpressionRule =
           // becomes
           // styled.div<Props>
           const withoutQuasi = oldCode.replace(source.getText(quasi), '');
-          const newCode = withoutQuasi + 
+          const newCode =
+            withoutQuasi +
             // Indent the arguments after the tagged template expression range
-            generate(toArguments(source, quasi), getTaggedTemplateExpressionOffset(node))
+            generate(toArguments(source, quasi), getTaggedTemplateExpressionOffset(node));
 
           if (oldCode === newCode) {
             return;
           }
 
-          yield fixer.insertTextBefore(
-            node,
-            newCode
-          );
+          yield fixer.insertTextBefore(node, newCode);
           yield fixer.remove(node);
         },
       });
