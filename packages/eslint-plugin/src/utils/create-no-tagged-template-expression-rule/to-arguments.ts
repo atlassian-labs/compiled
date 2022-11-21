@@ -135,8 +135,10 @@ export const toArguments = (source: SourceCode, template: ESTree.TemplateLiteral
   };
 
   for (const [i, quasi] of template.quasis.entries()) {
-    // Deal with multi selectors
-    const styleTemplateElement = quasi.value.raw.replace(/\n/g, '').replace(/\s+/g, ' ');
+    // Deal with selectors across multiple lines
+    const styleTemplateElement = quasi.value.raw
+      .replace(/(\r\n|\n|\r)/gm, ' ')
+      .replace(/\s+/g, ' ');
 
     for (const char of styleTemplateElement) {
       switch (char) {

@@ -962,6 +962,75 @@ tester.run('no-styled-tagged-template-expression', noStyledTaggedTemplateExpress
       `,
     },
     {
+      filename: 'nested-selectors-across-multiple-lines.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          color: blue;
+          h1
+          span {
+            color: inherit;
+          }
+          h2
+          div
+          span {
+            margin-top: 32px;
+          }
+
+          h3 span,
+          h4 span {
+            margin-top: 16px;
+          }
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          color: "blue",
+          "h1 span": {
+            color: "inherit"
+          },
+          "h2 div span": {
+            marginTop: "32px"
+          },
+          "h3 span, h4 span": {
+            marginTop: "16px"
+          }
+        });
+      `,
+    },
+    {
+      filename: 'nested-selectors-on-same-line.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          color: blue;
+          h1 span {
+            color: inherit;
+          }
+          h2 div span {
+            margin-top: 32px;
+          }
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          color: "blue",
+          "h1 span": {
+            color: "inherit"
+          },
+          "h2 div span": {
+            marginTop: "32px"
+          }
+        });
+      `,
+    },
+    {
       filename: 'do-not-handle-invalid-css.ts',
       code: `
         import { styled } from '@compiled/react';
