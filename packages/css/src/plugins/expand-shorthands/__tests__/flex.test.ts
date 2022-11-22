@@ -19,10 +19,10 @@ describe('flex property expander', () => {
 
       expect(result).toMatchInlineSnapshot(`
         "
-              flex-grow: 0;
-              flex-shrink: 0;
-              flex-basis: auto;
-            "
+                flex-grow: 0;
+                flex-shrink: 0;
+                flex-basis: auto;
+              "
       `);
     });
 
@@ -33,10 +33,10 @@ describe('flex property expander', () => {
 
       expect(result).toMatchInlineSnapshot(`
         "
-              flex-grow: 2;
-              flex-shrink: 1;
-              flex-basis: 0%;
-            "
+                flex-grow: 2;
+                flex-shrink: 1;
+                flex-basis: 0%;
+              "
       `);
     });
 
@@ -47,10 +47,10 @@ describe('flex property expander', () => {
 
       expect(result).toMatchInlineSnapshot(`
         "
-              flex-grow: 1;
-              flex-shrink: 1;
-              flex-basis: auto;
-            "
+                flex-grow: 1;
+                flex-shrink: 1;
+                flex-basis: auto;
+              "
       `);
     });
   });
@@ -63,10 +63,10 @@ describe('flex property expander', () => {
 
       expect(result).toMatchInlineSnapshot(`
         "
-              flex-grow: 3;
-              flex-shrink: 2;
-              flex-basis: 0%;
-            "
+                flex-grow: 3;
+                flex-shrink: 2;
+                flex-basis: 0%;
+              "
       `);
     });
 
@@ -77,10 +77,10 @@ describe('flex property expander', () => {
 
       expect(result).toMatchInlineSnapshot(`
         "
-              flex-grow: 3;
-              flex-shrink: 1;
-              flex-basis: 20%;
-            "
+                flex-grow: 3;
+                flex-shrink: 1;
+                flex-basis: 20%;
+              "
       `);
     });
   });
@@ -92,12 +92,12 @@ describe('flex property expander', () => {
     `;
 
       expect(result).toMatchInlineSnapshot(`
-      "
-            flex-grow: 3;
-            flex-shrink: 2;
-            flex-basis: 20%;
-          "
-    `);
+              "
+                    flex-grow: 3;
+                    flex-shrink: 2;
+                    flex-basis: 20%;
+                  "
+          `);
     });
 
     it('should expand flex auto', () => {
@@ -106,12 +106,12 @@ describe('flex property expander', () => {
     `;
 
       expect(result).toMatchInlineSnapshot(`
-      "
-            flex-grow: 3;
-            flex-shrink: 2;
-            flex-basis: auto;
-          "
-    `);
+              "
+                    flex-grow: 3;
+                    flex-shrink: 2;
+                    flex-basis: auto;
+                  "
+          `);
     });
 
     it('should expand flex function call', () => {
@@ -120,12 +120,12 @@ describe('flex property expander', () => {
     `;
 
       expect(result).toMatchInlineSnapshot(`
-      "
-            flex-grow: 3;
-            flex-shrink: 2;
-            flex-basis: calc(50px + 50px);
-          "
-    `);
+              "
+                    flex-grow: 3;
+                    flex-shrink: 2;
+                    flex-basis: calc(50px + 50px);
+                  "
+          `);
     });
   });
 
@@ -136,9 +136,9 @@ describe('flex property expander', () => {
     `;
 
       expect(result).toMatchInlineSnapshot(`
-      "
-          "
-    `);
+              "
+                  "
+          `);
     });
 
     it('should remove decls for invalid double', () => {
@@ -147,9 +147,9 @@ describe('flex property expander', () => {
     `;
 
       expect(result).toMatchInlineSnapshot(`
-      "
-          "
-    `);
+              "
+                  "
+          `);
     });
 
     it('should remove decls for invalid triple', () => {
@@ -158,9 +158,9 @@ describe('flex property expander', () => {
     `;
 
       expect(result).toMatchInlineSnapshot(`
-      "
-          "
-    `);
+              "
+                  "
+          `);
     });
 
     it('should remove decls for invalid triple again', () => {
@@ -169,9 +169,9 @@ describe('flex property expander', () => {
     `;
 
       expect(result).toMatchInlineSnapshot(`
-      "
-          "
-    `);
+              "
+                  "
+          `);
     });
 
     it('should remove invalid usage of triple', () => {
