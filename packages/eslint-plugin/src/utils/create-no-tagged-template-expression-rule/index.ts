@@ -39,6 +39,13 @@ export const createNoTaggedTemplateExpressionRule =
             return;
           }
 
+          const args = toArguments(source, quasi);
+
+          // Skip invalid CSS
+          if (args.length < 1) {
+            return;
+          }
+
           const oldCode = source.getText(node);
           // Remove quasi:
           // styled.div<Props>`
@@ -50,7 +57,7 @@ export const createNoTaggedTemplateExpressionRule =
           const newCode =
             withoutQuasi +
             // Indent the arguments after the tagged template expression range
-            generate(toArguments(source, quasi), getTaggedTemplateExpressionOffset(node));
+            generate(args, getTaggedTemplateExpressionOffset(node));
 
           if (oldCode === newCode) {
             return;
