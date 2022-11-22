@@ -310,7 +310,7 @@ describe('#css-transform', () => {
     `);
 
     expect(actual.sheets.join('')).toMatchInlineSnapshot(
-      `"._16jlkb7n{flex-grow:1}._1o9zkb7n{flex-shrink:1}._i0dlidpf{flex-basis:0}"`
+      `"._16jlkb7n{flex-grow:1}._1o9zkb7n{flex-shrink:1}._i0dlf1ug{flex-basis:0%}"`
     );
   });
 
