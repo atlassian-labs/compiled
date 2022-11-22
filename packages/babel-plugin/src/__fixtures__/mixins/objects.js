@@ -40,3 +40,15 @@ export const spacingMixin = {
 };
 
 export const colorMixin2 = (bgColor) => ({ color: colors.primary, backgroundColor: bgColor });
+
+export const styles = {
+  default: {
+    color: 'black',
+  },
+  success: {
+    color: 'green',
+  },
+  fail: {
+    color: 'red',
+  },
+};

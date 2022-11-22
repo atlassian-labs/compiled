@@ -589,5 +589,16 @@ describe('module traversal', () => {
 
       expect(actual).toInclude('{color:red}');
     });
+
+    it('should resolve member expression in CSS prop', () => {
+      const actual = transform(`
+        import '@compiled/react';
+        import { styles } from '../__fixtures__/mixins/objects';
+
+        <div css={styles.fail}>hello world</div>
+      `);
+
+      expect(actual).toInclude(`{color:red}`);
+    });
   });
 });
