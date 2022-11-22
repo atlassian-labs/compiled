@@ -25,7 +25,7 @@ export const createNoTaggedTemplateExpressionRule =
         messageId,
         node,
         *fix(fixer: RuleFixer) {
-          const { quasi, tag } = node;
+          const { quasi } = node;
           const source = context.getSourceCode();
 
           // TODO Eventually handle comments instead of skipping them
@@ -46,12 +46,24 @@ export const createNoTaggedTemplateExpressionRule =
             return;
           }
 
-          yield fixer.insertTextBefore(
-            node,
-            source.getText(tag) +
-              // Indent the arguments after the tagged template expression range
-              generate(args, getTaggedTemplateExpressionOffset(node))
-          );
+          const oldCode = source.getText(node);
+          // Remove quasi:
+          // styled.div<Props>`
+          //    color: red;
+          // `
+          // becomes
+          // styled.div<Props>
+          const withoutQuasi = oldCode.replace(source.getText(quasi), '');
+          const newCode =
+            withoutQuasi +
+            // Indent the arguments after the tagged template expression range
+            generate(args, getTaggedTemplateExpressionOffset(node));
+
+          if (oldCode === newCode) {
+            return;
+          }
+
+          yield fixer.insertTextBefore(node, newCode);
           yield fixer.remove(node);
         },
       });
