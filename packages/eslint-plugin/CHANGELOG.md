@@ -1,5 +1,17 @@
 # @compiled/eslint-plugin
 
+## 0.4.4
+
+### Patch Changes
+
+- 62987200: Fix eslint rule breaking when having multiple selectors across lines
+
+## 0.4.3
+
+### Patch Changes
+
+- 10533c7f: Add Type support to no-styled-tagged-template-expression ESLint rule
+
 ## 0.4.2
 
 ### Patch Changes

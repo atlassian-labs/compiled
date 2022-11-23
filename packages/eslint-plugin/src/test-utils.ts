@@ -17,12 +17,19 @@ import { RuleTester } from 'eslint';
   });
 };
 
-export const tester = new RuleTester({
+const baseTesterConfig = {
   parser: require.resolve('babel-eslint'),
   parserOptions: {
     ecmaVersion: 6,
     sourceType: 'module',
   },
+};
+
+export const tester = new RuleTester(baseTesterConfig);
+
+export const typeScriptTester = new RuleTester({
+  ...baseTesterConfig,
+  parser: require.resolve('@typescript-eslint/parser'),
 });
 
 export const createAliasedInvalidTestCase = (
@@ -68,3 +75,14 @@ export const createDeclarationInvalidTestCases = (
     },
   ];
 };
+
+export const createTypedInvalidTestCase = (
+  test: RuleTester.InvalidTestCase,
+  replaceCode: (code: string) => string,
+  replaceOutput: (output: string) => string
+): RuleTester.InvalidTestCase => ({
+  ...test,
+  filename: `typed-${basename(test.filename!)}.ts`,
+  code: replaceCode(test.code),
+  output: replaceOutput(test.output!),
+});
