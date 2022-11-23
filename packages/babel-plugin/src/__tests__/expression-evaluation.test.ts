@@ -495,5 +495,15 @@ describe('import specifiers', () => {
         'ax(["_1rwq5scu", __cmplp.className]',
       ]);
     });
+
+    it('should bail out evaluating non-exist call expression, which has member expression', () => {
+      const actual = transform(`
+      import '@compiled/react';
+
+      <div css={{ marginTop: foo.bar() }} />
+    `);
+
+      expect(actual).toInclude('ix(foo.bar())');
+    });
   });
 });
