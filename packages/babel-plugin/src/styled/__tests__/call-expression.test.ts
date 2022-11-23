@@ -507,4 +507,35 @@ describe('styled object call expression', () => {
     expect(actual).toInclude('ix(__cmplp.width)');
     expect(actual).not.toIncludeMultiple(['ix(propz.width)', 'ix(w)']);
   });
+
+  it('should handle member expression pointing to a CSS call expression', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const styles = {
+        default: css({
+          color: 'black',
+          fontWeight: 400
+        }),
+        success: css({
+          color: 'green',
+          fontWeight: 600
+        }),
+        fail: css({
+          color: 'red',
+          fontWeight: 600
+        }),
+        bg: css({
+          background: 'white'
+        }),
+      };
+
+      const Component = styled.div({
+        ...styles.default,
+        ...styles.bg
+      });
+    `);
+
+    expect(actual).toIncludeMultiple(['color:black', 'font-weight:400', 'background-color:white']);
+  });
 });

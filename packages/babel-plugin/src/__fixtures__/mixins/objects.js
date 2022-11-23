@@ -41,7 +41,7 @@ export const spacingMixin = {
 
 export const colorMixin2 = (bgColor) => ({ color: colors.primary, backgroundColor: bgColor });
 
-export const styles = {
+export const plainObjectMixin = {
   default: {
     color: 'black',
   },
@@ -51,4 +51,16 @@ export const styles = {
   fail: {
     color: 'red',
   },
+};
+
+export const cssCallExpressionMixin = {
+  default: css({
+    color: 'black',
+  }),
+  success: css({
+    color: 'green',
+  }),
+  fail: css({
+    color: 'red',
+  }),
 };

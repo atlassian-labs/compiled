@@ -50,6 +50,10 @@ export const traverseCallExpression = (
       // Right now we are only supported these 2 flavors. If we have complex case like `func('arg').fn().variable`,
       // it will not get evaluated.
       if (t.isIdentifier(callee)) {
+        if (callee.name === 'css' && t.isObjectExpression(expression.arguments[0])) {
+          return evaluateExpression(expression.arguments[0], updatedMeta);
+        }
+
         const resolvedBinding = resolveBinding(callee.name, updatedMeta, evaluateExpression);
 
         if (resolvedBinding && resolvedBinding.constant) {

@@ -762,4 +762,26 @@ describe('css prop object literal', () => {
 
     expect(actual).toIncludeMultiple(['{color:purple}', '{background-color:green}']);
   });
+
+  it('should transform the CSS call expression from member expression', () => {
+    const actual = transform(`
+      import { css } from '@compiled/react';
+
+      const styles = {
+        layout: {
+          grid: {
+            item: css({
+              display: 'grid'
+            })
+          }
+        }
+      };
+
+      const gridItem = styles.layout.grid.item;
+
+      <div css={gridItem}>hello world</div>
+    `);
+
+    expect(actual).toInclude('{display:grid}');
+  });
 });
