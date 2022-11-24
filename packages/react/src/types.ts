@@ -5,6 +5,7 @@ import type * as CSS from 'csstype';
  */
 export type BasicTemplateInterpolations = string | number;
 
+export type ArrayInterpolation<TProps> = (boolean | CssObject<TProps> | undefined)[];
 export interface FunctionInterpolation<TProps> {
   (props: TProps): CssFunction<TProps>;
 }
@@ -30,6 +31,8 @@ export type CssObject<TProps> = {
 // CSS inside of a CSS expression
 export type CssFunction<TProps = unknown> =
   | CssType<TProps>
+  | CSSProps<TProps>[] // Something like `css={[ identifier, identifier]}`
   | BasicTemplateInterpolations // CSS values in tagged template expression
+  | ArrayInterpolation<TProps> // Something like [ false && styles ]
   | boolean // Something like `false && styles`
   | undefined; // Something like `undefined && styles`
