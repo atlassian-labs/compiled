@@ -5,7 +5,8 @@ import type { RuleTester } from 'eslint';
 import {
   createAliasedInvalidTestCase,
   createDeclarationInvalidTestCases,
-  tester,
+  createTypedInvalidTestCase,
+  typeScriptTester as tester,
 } from '../../../test-utils';
 import { noStyledTaggedTemplateExpressionRule } from '../index';
 
@@ -31,6 +32,8 @@ const replaceAlias = (str: string) =>
     .replace('styled.div', 'styled2.div')
     .replace('styled(Base)', 'styled2(Base)');
 
+const replaceType = (str: string) => str.replace('styled.div', 'styled.div<{color: string}>');
+
 const createInvalidTestCases = (tests: InvalidTestCase[]) =>
   tests
     .map((t) => ({
@@ -42,7 +45,8 @@ const createInvalidTestCases = (tests: InvalidTestCase[]) =>
       ...createDeclarationInvalidTestCases(t, 'Component', replaceDeclaration, replaceDeclaration),
     ])
     .flatMap((t) => [t, createComposedComponentTestCase(t)])
-    .flatMap((t) => [t, createAliasedInvalidTestCase(t, replaceAlias, replaceAlias)]);
+    .flatMap((t) => [t, createAliasedInvalidTestCase(t, replaceAlias, replaceAlias)])
+    .flatMap((t) => [t, createTypedInvalidTestCase(t, replaceType, replaceType)]);
 
 tester.run('no-styled-tagged-template-expression', noStyledTaggedTemplateExpressionRule, {
   valid: [
@@ -897,6 +901,154 @@ tester.run('no-styled-tagged-template-expression', noStyledTaggedTemplateExpress
             ]
           }
         );
+      `,
+    },
+    {
+      filename: 'multiple-selectors-across-lines.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          color: blue;
+          &:hover,
+          &:focus,
+          &:active {
+            text-decoration: inherit;
+          }
+          ul,
+          li {
+            color: red;
+          }
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          color: "blue",
+          "&:hover, &:focus, &:active": {
+            textDecoration: "inherit"
+          },
+          "ul, li": {
+            color: "red"
+          }
+        });
+      `,
+    },
+    {
+      filename: 'multiple-selectors-on-same-line.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          color: blue;
+          &:hover, &:focus,
+          &:active {
+            text-decoration: inherit;
+          }
+          ul, li {
+            color: red;
+          }
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          color: "blue",
+          "&:hover, &:focus, &:active": {
+            textDecoration: "inherit"
+          },
+          "ul, li": {
+            color: "red"
+          }
+        });
+      `,
+    },
+    {
+      filename: 'nested-selectors-across-multiple-lines.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          color: blue;
+          h1
+          span {
+            color: inherit;
+          }
+          h2
+          div
+          span {
+            margin-top: 32px;
+          }
+
+          h3 span,
+          h4 span {
+            margin-top: 16px;
+          }
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          color: "blue",
+          "h1 span": {
+            color: "inherit"
+          },
+          "h2 div span": {
+            marginTop: "32px"
+          },
+          "h3 span, h4 span": {
+            marginTop: "16px"
+          }
+        });
+      `,
+    },
+    {
+      filename: 'nested-selectors-on-same-line.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          color: blue;
+          h1 span {
+            color: inherit;
+          }
+          h2 div span {
+            margin-top: 32px;
+          }
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          color: "blue",
+          "h1 span": {
+            color: "inherit"
+          },
+          "h2 div span": {
+            marginTop: "32px"
+          }
+        });
+      `,
+    },
+    {
+      filename: 'do-not-handle-invalid-css.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          color blue;
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          color blue;
+        \`;
       `,
     },
   ]),
