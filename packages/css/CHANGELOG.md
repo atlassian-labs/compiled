@@ -1,5 +1,11 @@
 # @compiled/css
 
+## 0.8.6
+
+### Patch Changes
+
+- 8a74fcd7: Default flex-basis to 0% when expanding flex
+
 ## 0.8.5
 
 ### Patch Changes
