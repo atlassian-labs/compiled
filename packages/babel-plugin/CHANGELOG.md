@@ -1,5 +1,13 @@
 # @compiled/babel-plugin
 
+## 0.17.1
+
+### Patch Changes
+
+- 99af4aa0: Fix babel-plugin adding a unwanted call expression in traverseCallExpression
+- Updated dependencies [8a74fcd7]
+  - @compiled/css@0.8.6
+
 ## 0.16.5
 
 ### Patch Changes
