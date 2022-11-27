@@ -7,6 +7,11 @@ const isFlexNumber = (node: ChildNode): node is Numeric => node.type === 'numeri
 const isFlexBasis = (node: ChildNode): node is Numeric | Word | Func =>
   (node.type === 'word' && node.value === 'content') || isWidth(node);
 
+// According to the spec, the default value of flex-basis is 0.
+// However, '0%' is used by major browsers due to compatibility issues
+// https://github.com/w3c/csswg-drafts/issues/5742
+const flexBasisDefaultValue = '0%';
+
 /**
  * https://drafts.csswg.org/css-flexbox-1/#flex-property
  */
@@ -27,7 +32,7 @@ export const flex: ConversionFunction = (value) => {
         return [
           { prop: 'flex-grow', value: left.value },
           { prop: 'flex-shrink', value: 1 },
-          { prop: 'flex-basis', value: 0 },
+          { prop: 'flex-basis', value: flexBasisDefaultValue },
         ];
       } else if (isFlexBasis(left)) {
         // flex basis
@@ -47,7 +52,7 @@ export const flex: ConversionFunction = (value) => {
           return [
             { prop: 'flex-grow', value: left.value },
             { prop: 'flex-shrink', value: middle.value },
-            { prop: 'flex-basis', value: 0 },
+            { prop: 'flex-basis', value: flexBasisDefaultValue },
           ];
         } else if (isFlexBasis(middle)) {
           // flex grow and flex basis
