@@ -611,5 +611,28 @@ describe('module traversal', () => {
 
       expect(actual).toInclude(`{color:red}`);
     });
+
+    it('should resolve member expression when mixin has aliased CSS call expression ', () => {
+      const actual = transform(`
+        import { css } from '@compiled/react';
+        import { stylesWithAlias } from '../__fixtures__/mixins/alias';
+
+        const styles = {
+          layout: css({
+            display: 'flex'
+          }),
+          item: css({
+            flexDirection: 'row'
+          })
+        };
+
+        <div css={styles.layout}>
+          <div css={stylesWithAlias.fail}>hello world</div>
+          <div css={styles.item}> This is a row </div>
+        </div>
+      `);
+
+      expect(actual).toIncludeMultiple(['{color:red}', '{display:flex}', '{flex-direction:row}']);
+    });
   });
 });

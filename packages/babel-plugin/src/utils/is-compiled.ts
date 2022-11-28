@@ -15,7 +15,7 @@ export const isCompiledCSSCallExpression = (
 ): node is t.CallExpression =>
   t.isCallExpression(node) &&
   t.isIdentifier(node.callee) &&
-  node.callee.name === state.compiledImports?.css;
+  [state.compiledImports?.css, state.importedCompiledImports?.css].includes(node.callee.name);
 
 /**
  * Returns `true` if the node is using `css` from `@compiled/react` as a tagged template expression

@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { css } from '@compiled/react';
+
 import { secondary } from './simple';
 
 export const colors = {

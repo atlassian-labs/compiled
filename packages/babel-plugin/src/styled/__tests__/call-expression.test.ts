@@ -510,7 +510,7 @@ describe('styled object call expression', () => {
 
   it('should handle member expression pointing to a CSS call expression', () => {
     const actual = transform(`
-      import { styled } from '@compiled/react';
+      import { styled, css } from '@compiled/react';
 
       const styles = {
         default: css({

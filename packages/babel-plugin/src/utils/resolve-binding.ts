@@ -10,7 +10,7 @@ import resolve from 'resolve';
 import { DEFAULT_CODE_EXTENSIONS } from '../constants';
 import type { Metadata } from '../types';
 
-import { getDefaultExport, getNamedExport } from './traversers';
+import { getDefaultExport, getNamedExport, setImportedCompiledImports } from './traversers';
 import type { PartialBindingWithMeta, EvaluateExpression } from './types';
 
 /**
@@ -346,6 +346,9 @@ export const resolveBinding = (
         cacheKey: `modulePath=${modulePath}&exportName=${exportName}`,
         value: () => {
           const result = getNamedExport(ast, exportName);
+
+          // Check for imported mixins
+          setImportedCompiledImports(ast, meta.state);
 
           return {
             foundNode: result?.node,
