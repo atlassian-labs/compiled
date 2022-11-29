@@ -56,11 +56,24 @@ export const traverseCallExpression = (
           functionNode = resolvedBinding.node;
         }
       } else if (t.isMemberExpression(callee) && t.isIdentifier(callee.property)) {
+        // Keep a reference of old property because we need to change it back if `callee` cannot be evaluated.
+        const oldProperty = callee.property;
+
         // Convert the last property of the member to a call expression so we attach
         // the functions arguments
-        callee.property = t.callExpression(callee.property, expression.arguments);
+        // i.e. change `foo.bar` to `foo.bar('arg')`
+        const newProperty = t.callExpression(callee.property, expression.arguments);
+        callee.property = newProperty;
 
-        return evaluateExpression(callee, updatedMeta);
+        const evaluated = evaluateExpression(callee, updatedMeta);
+
+        // If callee cannot be evulated, `expression` has double call expression. i.e. `x.func('arg')('arg')`
+        // So we need to change `callee.property` back to Identifier
+        if (evaluated.value === callee) {
+          callee.property = oldProperty;
+        }
+
+        return evaluated;
       }
     }
 
