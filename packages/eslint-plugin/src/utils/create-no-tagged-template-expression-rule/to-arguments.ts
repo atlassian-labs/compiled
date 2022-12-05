@@ -85,6 +85,31 @@ const getArguments = (
   return args;
 };
 
+const getSelectorValue = (
+  chars: string,
+  expressions: { pos: number; expression: string }[]
+): string => {
+
+  // If no variable, returns chars immediately.
+  // i.e. `.foo { color: red }` returns '.foo'
+  if (expressions.length === 0) {
+    return chars.trim();
+  }
+
+  let val = chars;
+  let offset = 1;
+
+  for (const { expression, pos } of expressions) {
+    const interpolation = '${' + expression + '}';
+    val = val.substring(0, pos + offset) + interpolation + val.substring(pos + offset);
+    offset += interpolation.length;
+  }
+
+  // For simplicity, use template literals even if the whole selector is a variable
+  // i.e. the output of `${VAR} { color: red }` is { [`${VAR}`]: { color: "red" } }
+  return '`' + val.trim() + '`';
+};
+
 type Current = {
   parent: Current | undefined;
   args: Argument[];
@@ -147,7 +172,7 @@ export const toArguments = (source: SourceCode, template: ESTree.TemplateLiteral
 
           addArgument({
             type: 'rule',
-            selector: state.chars.trim(),
+            selector: getSelectorValue(state.chars, state.expressions),
             declarations,
           });
 

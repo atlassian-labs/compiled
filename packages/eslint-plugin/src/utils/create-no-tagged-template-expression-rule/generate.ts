@@ -5,6 +5,11 @@ const createKey = (key: string) => {
     return key;
   }
 
+  // Wrap the key in square brickets if the key includes variable. i.e.`.foo ${VARIABLE_NAME} .bar`
+  if (key.charAt(0) === '`' && key.charAt(key.length - 1) === '`') {
+    return `[${key}]`;
+  }
+
   // Wrap the key in quotes if it uses unsafe characters
   if (!key.includes('"')) {
     return `"${key}"`;
