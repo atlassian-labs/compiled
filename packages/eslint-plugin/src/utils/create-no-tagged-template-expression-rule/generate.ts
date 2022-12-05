@@ -5,7 +5,7 @@ const createKey = (key: string) => {
     return key;
   }
 
-  // Wrap the key in square brickets if the key includes variable. i.e.`.foo ${VARIABLE_NAME} .bar`
+  // Wrap the key in square brackets if the key includes a binding. i.e.`.foo ${BINDING_NAME} .bar`
   if (key.charAt(0) === '`' && key.charAt(key.length - 1) === '`') {
     return `[${key}]`;
   }
