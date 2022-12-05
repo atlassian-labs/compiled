@@ -89,7 +89,6 @@ const getSelectorValue = (
   chars: string,
   expressions: { pos: number; expression: string }[]
 ): string => {
-
   // If no variable, returns chars immediately.
   // i.e. `.foo { color: red }` returns '.foo'
   if (expressions.length === 0) {
