@@ -30,7 +30,7 @@
     "clean:parcel-cache": "rm -rf .parcel-cache/",
     "clean:ts-cache": "find . -name \"*.tsbuildinfo\" -type f -delete",
     "flow-types": "scripts/flow-types.sh",
-    "postinstall": "npx yarn-deduplicate && yarn --ignore-scripts",
+    "postinstall": "scripts/postinstall.sh",
     "lint": "eslint --config .eslintrc.js --ext js,json,jsx,ts,tsx .",
     "lint:fix": "yarn lint -- --fix",
     "prettier:check": "prettier ./ --check",
