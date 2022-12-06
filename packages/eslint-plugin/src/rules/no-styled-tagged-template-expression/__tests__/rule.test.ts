@@ -1118,12 +1118,14 @@ tester.run('no-styled-tagged-template-expression', noStyledTaggedTemplateExpress
       filename: 'space-wrapped-by-double-quotes-as-value',
       code: `
         import { styled } from '@compiled/react';
+
         styled.div\`
           content: " ";
         \`;
       `,
       output: `
         import { styled } from '@compiled/react';
+
         styled.div({
           content: " "
         });
@@ -1133,12 +1135,14 @@ tester.run('no-styled-tagged-template-expression', noStyledTaggedTemplateExpress
       filename: 'space-wrapped-by-single-quotes-as-value',
       code: `
         import { styled } from '@compiled/react';
+
         styled.div\`
           content: ' ';
         \`;
       `,
       output: `
         import { styled } from '@compiled/react';
+
         styled.div({
           content: ' '
         });
