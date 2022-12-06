@@ -12,7 +12,11 @@ const setOptionOnCompiledWebpackLoader = (use: RuleSetRule['use'], pluginName: s
   }
 
   for (const nestedUse of use) {
-    if (typeof nestedUse === 'object' && nestedUse.loader === '@compiled/webpack-loader') {
+    if (
+      typeof nestedUse === 'object' &&
+      (nestedUse.loader === '@compiled/webpack-loader' ||
+        nestedUse.loader?.includes('/node_modules/@compiled/webpack-loader'))
+    ) {
       const { options } = nestedUse;
       if (options !== undefined && typeof options === 'object' && options.extract !== undefined) {
         options[pluginName] = true;
