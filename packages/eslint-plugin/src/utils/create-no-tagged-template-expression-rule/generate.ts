@@ -20,7 +20,9 @@ const createValue = (value: DeclarationValue) => {
   }
 
   const literal = value.value;
-  return typeof literal === 'string' && literal[0] !== '`' ? '"' + literal + '"' : literal;
+  return typeof literal === 'string' && !['`', '"', "'"].includes(literal[0])
+    ? '"' + literal + '"'
+    : literal;
 };
 
 const indent = (offset: number, level: number) => ' '.repeat(offset + level * 2);
