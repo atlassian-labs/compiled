@@ -1051,5 +1051,102 @@ tester.run('no-styled-tagged-template-expression', noStyledTaggedTemplateExpress
         \`;
       `,
     },
+    {
+      filename: 'single-variable-as-selector.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          \${Variable_Name} {
+            color: blue;
+          }
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          [\`\${Variable_Name}\`]: {
+            color: "blue"
+          }
+        });
+      `,
+    },
+    {
+      filename: 'multiple-variables-as-selector.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          \${Variable_Name_1} \${Variable_Name_2} {
+            color: blue;
+          }
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          [\`\${Variable_Name_1} \${Variable_Name_2}\`]: {
+            color: "blue"
+          }
+        });
+      `,
+    },
+    {
+      filename: 'variables-as-selector-have-surrounding-text.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          .foo \${Variable_Name_1} .bar \${Variable_Name_2} & {
+            color: blue;
+          }
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          [\`.foo \${Variable_Name_1} .bar \${Variable_Name_2} &\`]: {
+            color: "blue"
+          }
+        });
+      `,
+    },
+    {
+      filename: 'space-wrapped-by-double-quotes-as-value',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          content: " ";
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          content: " "
+        });
+      `,
+    },
+    {
+      filename: 'space-wrapped-by-single-quotes-as-value',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          content: ' ';
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          content: ' '
+        });
+      `,
+    },
   ]),
 });

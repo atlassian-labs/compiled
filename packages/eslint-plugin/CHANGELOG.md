@@ -1,5 +1,12 @@
 # @compiled/eslint-plugin
 
+## 0.4.5
+
+### Patch Changes
+
+- de283788: Fix: double quotes when autofixing no-\*-tagged-template-expression
+- 72187dc1: Fix: selector disappears when autofixing no-\*-tagged-template-expression linting errors
+
 ## 0.4.4
 
 ### Patch Changes

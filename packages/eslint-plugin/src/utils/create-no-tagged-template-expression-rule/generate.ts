@@ -5,6 +5,11 @@ const createKey = (key: string) => {
     return key;
   }
 
+  // Wrap the key in square brackets if the key includes a binding. i.e.`.foo ${BINDING_NAME} .bar`
+  if (key.charAt(0) === '`' && key.charAt(key.length - 1) === '`') {
+    return `[${key}]`;
+  }
+
   // Wrap the key in quotes if it uses unsafe characters
   if (!key.includes('"')) {
     return `"${key}"`;
@@ -20,7 +25,9 @@ const createValue = (value: DeclarationValue) => {
   }
 
   const literal = value.value;
-  return typeof literal === 'string' && literal[0] !== '`' ? '"' + literal + '"' : literal;
+  return typeof literal === 'string' && !['`', '"', "'"].includes(literal[0])
+    ? '"' + literal + '"'
+    : literal;
 };
 
 const indent = (offset: number, level: number) => ' '.repeat(offset + level * 2);

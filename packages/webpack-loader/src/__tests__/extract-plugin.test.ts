@@ -32,6 +32,14 @@ describe('CompiledExtractPlugin', () => {
     ]);
   }, 10000);
 
+  it('works when the loader is configured with a path instead of a package name', async () => {
+    const result = await bundle(join(fixturesPath, 'local-styles.tsx'), {
+      requireResolveLoaderSyntax: true,
+    });
+
+    expect(result).toBeDefined();
+  }, 10000);
+
   it('should not generate a single style sheet if cacheGroup is disabled', async () => {
     const actual = await bundle(join(fixturesPath, 'local-styles.tsx'), {
       disableCacheGroup: true,
