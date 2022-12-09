@@ -508,6 +508,48 @@ describe('css prop object literal', () => {
     expect(actual).toInclude(`{color:red}`);
   });
 
+  it('should extract collocated mixin from member expression', () => {
+    const actual = transform(`
+      import '@compiled/react';
+
+      const styles = {
+        default: {
+          color: 'black'
+        },
+        success: {
+          color: 'green'
+        },
+        fail: {
+          color: 'red'
+        }
+      };
+
+      <div css={styles.success}>hello world</div>
+    `);
+
+    expect(actual).toInclude(`{color:green}`);
+  });
+
+  it('should extract collocated mixin from deeply nested member expression', () => {
+    const actual = transform(`
+      import '@compiled/react';
+
+      const styles = {
+        list: {
+          item: {
+            layout: {
+              display: 'flex'
+            }
+          }
+        }
+      };
+
+      <div css={styles.list.item.layout}>hello world</div>
+    `);
+
+    expect(actual).toInclude(`{display:flex}`);
+  });
+
   it('should transform identifier referencing an template literal', () => {
     const actual = transform(`
       import '@compiled/react';
@@ -719,5 +761,27 @@ describe('css prop object literal', () => {
     `);
 
     expect(actual).toIncludeMultiple(['{color:purple}', '{background-color:green}']);
+  });
+
+  it('should transform the CSS call expression from member expression', () => {
+    const actual = transform(`
+      import { css } from '@compiled/react';
+
+      const styles = {
+        layout: {
+          grid: {
+            item: css({
+              display: 'grid'
+            })
+          }
+        }
+      };
+
+      const gridItem = styles.layout.grid.item;
+
+      <div css={gridItem}>hello world</div>
+    `);
+
+    expect(actual).toInclude('{display:grid}');
   });
 });
