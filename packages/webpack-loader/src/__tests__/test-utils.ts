@@ -7,9 +7,12 @@ import webpack from 'webpack';
 import { CompiledExtractPlugin } from '../index';
 import type { ResolveOptions } from '../index';
 
+const nodeModulesPath = join(__dirname, '..', '..', '..', '..', 'node_modules');
+
 export interface BundleOptions {
   extract?: boolean;
   disableExtractPlugin?: boolean;
+  requireResolveLoaderSyntax?: boolean;
   disableCacheGroup?: boolean;
   mode: 'development' | 'production';
   resolve?: ResolveOptions;
@@ -20,6 +23,7 @@ export function bundle(
   {
     extract = false,
     disableExtractPlugin = false,
+    requireResolveLoaderSyntax = false,
     disableCacheGroup = false,
     mode,
     resolve = {},
@@ -44,7 +48,9 @@ export function bundle(
               },
             },
             {
-              loader: '@compiled/webpack-loader',
+              loader: requireResolveLoaderSyntax
+                ? join(nodeModulesPath, '@compiled', 'webpack-loader')
+                : '@compiled/webpack-loader',
               options: {
                 extract,
                 importReact: false,
