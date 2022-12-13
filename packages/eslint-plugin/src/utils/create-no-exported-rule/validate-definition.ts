@@ -121,6 +121,13 @@ export const validateDefinition = (
   }
 
   const { root, nodes } = getStack(context, node.parent);
+  // Exporting a component with a css reference should be allowed
+  if (isStyledComponent(nodes, context)) {
+    return {
+      type: 'valid',
+    };
+  }
+
   if (root.type === 'ExportDefaultDeclaration' || root.type === 'ExportNamedDeclaration') {
     return {
       type: 'invalid',
@@ -151,13 +158,6 @@ export const validateDefinition = (
     }
 
     const { nodes: refs, scope: nextScope } = getStack(context, (identifier as Rule.Node).parent);
-
-    // Exporting a component with a css reference should be allowed
-    if (isStyledComponent(refs, context)) {
-      return {
-        type: 'valid',
-      };
-    }
 
     // Only validate the resolved reference if it accesses the definition node
     if (matches(nodes, refs.reverse())) {

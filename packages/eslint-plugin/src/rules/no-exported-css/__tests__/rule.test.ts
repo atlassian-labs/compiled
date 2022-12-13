@@ -728,6 +728,15 @@ const createTestCases = (importSource: string) =>
           `,
         errors: [],
       },
+      {
+        code: `
+          import { css, styled } from '${importSource}';
+
+          const Button = styled.div({ color: 'red' });
+          export const Component = styled(Button)(css({ width: '100px' }));
+          `,
+        errors: [],
+      },
     ])
     .flatMap((test) => [
       test,

@@ -1,5 +1,5 @@
 import type { Rule } from 'eslint';
-import type { MemberExpression } from 'estree';
+import type { MemberExpression, Identifier } from 'estree';
 
 import { findCompiledImportDeclarations } from '../ast';
 
@@ -7,23 +7,34 @@ type Node = Rule.Node;
 type RuleContext = Rule.RuleContext;
 
 /**
- * Returns the MemberExpression node that could define a Compiled component
+ * Returns the node that could define a Compiled component
  *
  * @param nodes
  * @returns
  */
-const findMemberExpressionNode = (nodes: Node[]): MemberExpression | undefined => {
+const findNode = (nodes: Node[]): MemberExpression | Identifier | undefined => {
   const node = nodes.find(
     (n) => n.type === 'TaggedTemplateExpression' || n.type === 'CallExpression'
   );
 
-  // Eg. const Component = styled.button(style)
-  if (node && node.type === 'CallExpression' && node.callee.type === 'MemberExpression') {
-    return node.callee;
+  if (!node) {
+    return;
+  }
+
+  if (node.type === 'CallExpression') {
+    // Eg. const Component = styled.button(style)
+    if (node.callee.type === 'MemberExpression') {
+      return node.callee;
+    }
+
+    // Eg. const Component = styled(button)(style)
+    if (node.callee.type === 'CallExpression' && node.callee.callee.type === 'Identifier') {
+      return node.callee.callee;
+    }
   }
 
   // Eg. const Component = styled.div`${styles}`;
-  if (node && node.type === 'TaggedTemplateExpression' && node.tag.type === 'MemberExpression') {
+  if (node.type === 'TaggedTemplateExpression' && node.tag.type === 'MemberExpression') {
     return node.tag;
   }
 
@@ -45,12 +56,18 @@ const getStyledImportSpecifierName = (context: RuleContext): string | undefined 
 };
 
 export const isStyledComponent = (nodes: Node[], context: RuleContext): boolean => {
-  const node = findMemberExpressionNode(nodes);
+  const node = findNode(nodes);
 
-  if (node) {
-    const styledImportSpecifierName = getStyledImportSpecifierName(context);
+  if (!node) {
+    return false;
+  }
 
-    if (styledImportSpecifierName) {
+  const styledImportSpecifierName = getStyledImportSpecifierName(context);
+
+  if (styledImportSpecifierName) {
+    if (node.type === 'Identifier') {
+      return node.name === styledImportSpecifierName;
+    } else {
       return node.object.type === 'Identifier' && node.object.name === styledImportSpecifierName;
     }
   }
