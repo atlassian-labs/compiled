@@ -718,6 +718,16 @@ const createTestCases = (importSource: string) =>
         `,
         errors: [],
       },
+      {
+        code: `
+          import { css, styled } from '${importSource}';
+
+          export const Foo = styled.div\`
+            color: black;
+            \${({ isXEnabled }) => isXEnabled ? css\`width: 100px\` : undefined }\`
+          `,
+        errors: [],
+      },
     ])
     .flatMap((test) => [
       test,
