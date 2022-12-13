@@ -3,7 +3,7 @@ import template from '@babel/template';
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { transformCss } from '@compiled/css';
-import { unique } from '@compiled/utils';
+import { unique, toBoolean } from '@compiled/utils';
 import isPropValid from '@emotion/is-prop-valid';
 
 import {
@@ -132,7 +132,15 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     }
   });
 
-  const classNames = `"${unconditionalClassNames.trim()}", ${conditionalClassNames}`;
+  // Extract the component name from declaration
+  // i.e. componentName is `FooBar` given `const FooBar = styled.div(...)`
+  const componentName = ((meta.parentPath.parent as t.VariableDeclarator)?.id as t.Identifier)?.name;
+
+  const classNames = [
+    `"${unconditionalClassNames.trim()}"`,
+    conditionalClassNames,
+    componentName && `"c_${componentName}"`,
+  ].filter(c => toBoolean(c)).join(',');
 
   return template(
     `
@@ -156,7 +164,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
           {...${hasInvalidDomProps ? DOM_PROPS_IDENTIFIER_NAME : PROPS_IDENTIFIER_NAME}}
           style={%%styleProp%%}
           ref={${REF_IDENTIFIER_NAME}}
-          className={ax([${classNames} ${PROPS_IDENTIFIER_NAME}.className])}
+          className={ax([${classNames}, ${PROPS_IDENTIFIER_NAME}.className])}
         />
       </CC>
     );
