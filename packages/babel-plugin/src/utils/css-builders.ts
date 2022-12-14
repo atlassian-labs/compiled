@@ -532,7 +532,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
           Given statments like:
           fontWeight: (props) => props.isBold ? 'bold': 'normal',
           marginTop: (props) => `${props.isLast ? 5 : 10}px`,
-           
+
           Convert them to:
 
           `font-weight: ${(props) => props.isBold ? 'bold': 'normal'};`
@@ -782,6 +782,11 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
 
   if (t.isObjectExpression(node)) {
     return extractObjectExpression(node, meta);
+  }
+
+  if (t.isMemberExpression(node)) {
+    const { value, meta: updatedMeta } = evaluateExpression(node, meta);
+    return buildCss(value, updatedMeta);
   }
 
   if (t.isArrowFunctionExpression(node) && t.isLogicalExpression(node.body)) {

@@ -2,6 +2,7 @@ import * as t from '@babel/types';
 
 import type { Metadata } from '../../../../../types';
 import { createResultPair } from '../../../../create-result-pair';
+import { isCompiledCSSCallExpression } from '../../../../is-compiled';
 import type { EvaluateExpression } from '../../../../types';
 
 import { getFunctionArgs } from './function-args';
@@ -26,6 +27,11 @@ export const resolveExpressionInMember = (
       getFunctionArgs(expressionName, memberExpression)
     );
     result = evaluateExpression(callExpression, meta);
+  } else if (
+    isCompiledCSSCallExpression(expression, meta.state) &&
+    t.isExpression(expression.arguments[0])
+  ) {
+    result = evaluateExpression(expression.arguments[0], meta);
   } else if (t.isCallExpression(expression) || t.isMemberExpression(expression)) {
     result = evaluateExpression(expression, meta);
   }

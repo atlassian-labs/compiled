@@ -589,5 +589,50 @@ describe('module traversal', () => {
 
       expect(actual).toInclude('{color:red}');
     });
+
+    it('should resolve member expression in CSS prop', () => {
+      const actual = transform(`
+        import '@compiled/react';
+        import { plainObjectMixin as styles } from '../__fixtures__/mixins/objects';
+
+        <div css={styles.fail}>hello world</div>
+      `);
+
+      expect(actual).toInclude(`{color:red}`);
+    });
+
+    it('should resolve member expression when mixin has CSS call expression ', () => {
+      const actual = transform(`
+        import '@compiled/react';
+        import { cssCallExpressionMixin as styles } from '../__fixtures__/mixins/objects';
+
+        <div css={styles.fail}>hello world</div>
+      `);
+
+      expect(actual).toInclude(`{color:red}`);
+    });
+
+    it('should resolve member expression when mixin has aliased CSS call expression ', () => {
+      const actual = transform(`
+        import { css } from '@compiled/react';
+        import { stylesWithAlias } from '../__fixtures__/mixins/alias';
+
+        const styles = {
+          layout: css({
+            display: 'flex'
+          }),
+          item: css({
+            flexDirection: 'row'
+          })
+        };
+
+        <div css={styles.layout}>
+          <div css={stylesWithAlias.fail}>hello world</div>
+          <div css={styles.item}> This is a row </div>
+        </div>
+      `);
+
+      expect(actual).toIncludeMultiple(['{color:red}', '{display:flex}', '{flex-direction:row}']);
+    });
   });
 });

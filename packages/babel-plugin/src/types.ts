@@ -92,6 +92,10 @@ export interface State extends PluginPass {
     styled?: string;
   };
 
+  importedCompiledImports?: {
+    css?: string;
+  };
+
   /**
    * Details of pragmas that are currently enabled in the pass.
    */

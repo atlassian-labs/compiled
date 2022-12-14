@@ -7427,7 +7427,7 @@ domexception@^4.0.0:
 
 domhandler@^2.3.0:
   version "2.4.2"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/domhandler/-/domhandler-2.4.2.tgz#8805097e933d65e85546f726d60f5eb88b44f803"
+  resolved "https://registry.yarnpkg.com/domhandler/-/domhandler-2.4.2.tgz#8805097e933d65e85546f726d60f5eb88b44f803"
   integrity sha512-JiK04h0Ht5u/80fdLMCEmV4zkNh2BcoMFBmZ/91WtYZ8qVXSKjiw7fXMgFPnHcSZgOo3XdinHvmnDUeMf5R4wA==
   dependencies:
     domelementtype "1"
@@ -8528,10 +8528,10 @@ flow-parser@0.*:
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.149.0.tgz#6e5749ad832ba211968429accdb6a3858706e4f8"
   integrity sha512-ruUVkZuM9oFQjhSsLO/OJYRYpGnuXJpTnIZmgzna6DyLFb3CLpeO27oJbWyeXaa830hmKf0JRzpcdFsFS8lmpg==
 
-flowgen@^1.17.0:
-  version "1.17.0"
-  resolved "https://registry.yarnpkg.com/flowgen/-/flowgen-1.17.0.tgz#5086a26edeb325351922d01d0f432c002330a4fd"
-  integrity sha512-cV0ASM71xDIDlEmejjNlVXmXtGOPsbzCm9dtmd4Kbn5y2+onax1W9s1NFZH0c18PuGSfbWjkQdSzbWcHjX/poQ==
+flowgen@^1.20.1:
+  version "1.20.1"
+  resolved "https://registry.yarnpkg.com/flowgen/-/flowgen-1.20.1.tgz#336871d59a36980fbe2c3de553bd558f06a46e24"
+  integrity sha512-Wus3KAhsOF7CiZGkBKZawf0AJXe06Wot6UGQt7h9QS6MBtBkFgG30wTAgpy1byA3FKYb059vO341XtN8LUhenQ==
   dependencies:
     "@babel/code-frame" "^7.16.7"
     "@babel/highlight" "^7.16.7"
@@ -9453,7 +9453,7 @@ htmlnano@^2.0.0:
 
 htmlparser2@^3.9.2:
   version "3.10.1"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/htmlparser2/-/htmlparser2-3.10.1.tgz#bd679dc3f59897b6a34bb10749c855bb53a9392f"
+  resolved "https://registry.yarnpkg.com/htmlparser2/-/htmlparser2-3.10.1.tgz#bd679dc3f59897b6a34bb10749c855bb53a9392f"
   integrity sha512-IgieNijUMbkDovyoKObU1DUhm1iwNYE/fuifEoEHfd1oZKZDaONBSkal7Y01shxsM49R4XaMdGez3WnF9UfiCQ==
   dependencies:
     domelementtype "^1.3.1"
@@ -13452,7 +13452,7 @@ postcss@^8, postcss@^8.2.15, postcss@^8.2.4, postcss@^8.3.5, postcss@^8.4.14, po
 
 posthtml-insert-at@^0.2.7:
   version "0.2.7"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/posthtml-insert-at/-/posthtml-insert-at-0.2.7.tgz#08962723a96540833438b6b321fb3956f35f5632"
+  resolved "https://registry.yarnpkg.com/posthtml-insert-at/-/posthtml-insert-at-0.2.7.tgz#08962723a96540833438b6b321fb3956f35f5632"
   integrity sha512-IfxhEQdLvqP5obkBfCtAe2Gqs9rsDGR9yIpoDjpKYVKt7J5UVpxemEi8Zv5fXudbIRXC4f/gd009VCE8ixNeXQ==
   dependencies:
     posthtml "^0.12.0"
@@ -13461,7 +13461,7 @@ posthtml-insert-at@^0.2.7:
 
 posthtml-match-helper@^1.0.1:
   version "1.0.3"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/posthtml-match-helper/-/posthtml-match-helper-1.0.3.tgz#9308f0bdc66398735f7117441feca64f131956d5"
+  resolved "https://registry.yarnpkg.com/posthtml-match-helper/-/posthtml-match-helper-1.0.3.tgz#9308f0bdc66398735f7117441feca64f131956d5"
   integrity sha512-aeRAPvok2Fs6uzSm85665jdAk5UOd8US2QCkWtGU6yLPlKSwzWTSgZZuABc3UeNy3K1lVk/HV9bRkWJYN05Ymw==
 
 posthtml-parser@^0.10.1:
@@ -13473,21 +13473,21 @@ posthtml-parser@^0.10.1:
 
 posthtml-parser@^0.11.0:
   version "0.11.0"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/posthtml-parser/-/posthtml-parser-0.11.0.tgz#25d1c7bf811ea83559bc4c21c189a29747a24b7a"
+  resolved "https://registry.yarnpkg.com/posthtml-parser/-/posthtml-parser-0.11.0.tgz#25d1c7bf811ea83559bc4c21c189a29747a24b7a"
   integrity sha512-QecJtfLekJbWVo/dMAA+OSwY79wpRmbqS5TeXvXSX+f0c6pW4/SE6inzZ2qkU7oAMCPqIDkZDvd/bQsSFUnKyw==
   dependencies:
     htmlparser2 "^7.1.1"
 
 posthtml-parser@^0.4.1, posthtml-parser@^0.4.2:
   version "0.4.2"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/posthtml-parser/-/posthtml-parser-0.4.2.tgz#a132bbdf0cd4bc199d34f322f5c1599385d7c6c1"
+  resolved "https://registry.yarnpkg.com/posthtml-parser/-/posthtml-parser-0.4.2.tgz#a132bbdf0cd4bc199d34f322f5c1599385d7c6c1"
   integrity sha512-BUIorsYJTvS9UhXxPTzupIztOMVNPa/HtAm9KHni9z6qEfiJ1bpOBL5DfUOL9XAc3XkLIEzBzpph+Zbm4AdRAg==
   dependencies:
     htmlparser2 "^3.9.2"
 
 posthtml-render@^1.2.2:
   version "1.4.0"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/posthtml-render/-/posthtml-render-1.4.0.tgz#40114070c45881cacb93347dae3eff53afbcff13"
+  resolved "https://registry.yarnpkg.com/posthtml-render/-/posthtml-render-1.4.0.tgz#40114070c45881cacb93347dae3eff53afbcff13"
   integrity sha512-W1779iVHGfq0Fvh2PROhCe2QhB8mEErgqzo1wpIt36tCgChafP+hbXIhLDOM8ePJrZcFs0vkNEtdibEWVqChqw==
 
 posthtml-render@^3.0.0:
@@ -13499,7 +13499,7 @@ posthtml-render@^3.0.0:
 
 posthtml@^0.12.0:
   version "0.12.3"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/posthtml/-/posthtml-0.12.3.tgz#8fa5b903907e9c10ba5b883863cc550189a309d5"
+  resolved "https://registry.yarnpkg.com/posthtml/-/posthtml-0.12.3.tgz#8fa5b903907e9c10ba5b883863cc550189a309d5"
   integrity sha512-Fbpi95+JJyR0tqU7pUy1zTSQFjAsluuwB9pJ1h0jtnGk7n/O2TBtP5nDl9rV0JVACjQ1Lm5wSp4ppChr8u3MhA==
   dependencies:
     posthtml-parser "^0.4.2"
@@ -13507,7 +13507,7 @@ posthtml@^0.12.0:
 
 posthtml@^0.16.4, posthtml@^0.16.5, posthtml@^0.16.6:
   version "0.16.6"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/posthtml/-/posthtml-0.16.6.tgz#e2fc407f67a64d2fa3567afe770409ffdadafe59"
+  resolved "https://registry.yarnpkg.com/posthtml/-/posthtml-0.16.6.tgz#e2fc407f67a64d2fa3567afe770409ffdadafe59"
   integrity sha512-JcEmHlyLK/o0uGAlj65vgg+7LIms0xKXe60lcDOTU7oVX/3LuEuLwrQpW3VJ7de5TaFKiW4kWkaIpJL42FEgxQ==
   dependencies:
     posthtml-parser "^0.11.0"
@@ -13538,10 +13538,10 @@ prelude-ls@~1.1.2:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.3.0.tgz#b6a5bf1284026ae640f17f7ff5658a7567fc0d18"
   integrity sha512-kXtO4s0Lz/DW/IJ9QdWhAf7/NmPWQXkFr/r/WkR3vyI+0v8amTDxiaQSLzs8NBlytfLWX/7uQUMIW677yLKl4w==
 
-prettier@^2.5.1, prettier@^2.7.1:
-  version "2.7.1"
-  resolved "https://packages.atlassian.com/api/npm/npm-remote/prettier/-/prettier-2.7.1.tgz#e235806850d057f97bb08368a4f7d899f7760c64"
-  integrity sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==
+prettier@^2.5.1, prettier@^2.7.1, prettier@^2.8.1:
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.1.tgz#4e1fd11c34e2421bc1da9aea9bd8127cd0a35efc"
+  integrity sha512-lqGoSJBQNJidqCHE80vqZJHWHRFoNYsSpP9AjFhlhi9ODCJA541svILes/+/1GM3VaL/abZi7cpFzOpdR9UPKg==
 
 pretty-error@^2.1.1:
   version "2.1.2"
@@ -15411,10 +15411,10 @@ storybook-addon-performance@^0.16.1:
     tiny-invariant "^1.1.0"
     xstate "^4.22.0"
 
-storybook-addon-pseudo-states@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/storybook-addon-pseudo-states/-/storybook-addon-pseudo-states-1.0.0.tgz#21f4f954d734e531812e04207f9ac431b2c6bbc7"
-  integrity sha512-pRbPB/L2IB5jFX2snE3qS+/Fhsb9vej/s30opUgD+vrUTShvatUHJpajI5cDOxT6Gape6YWKg06/L75OW2vu/g==
+storybook-addon-pseudo-states@^1.15.1:
+  version "1.15.1"
+  resolved "https://registry.yarnpkg.com/storybook-addon-pseudo-states/-/storybook-addon-pseudo-states-1.15.1.tgz#2a03b8a7c307be63ec10595c490b6c76673caa0e"
+  integrity sha512-GRBf63wRHoFwN65hRTdTaIcE7jn2Yj2B/dNyj03o8TRBevnmOL80NfLAGsmDYP4a7Ye3kBkILX952aUkK4P+ZA==
 
 stream-browserify@^2.0.1:
   version "2.0.2"
