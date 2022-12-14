@@ -63,6 +63,19 @@ tester.run('no-css-tagged-template-expression', noCssTaggedTemplateExpressionRul
   ],
   invalid: createInvalidTestCases([
     {
+      filename: 'single-line-empty.ts',
+      code: `
+        import { css } from '@compiled/react';
+
+        css\`\`;
+      `,
+      output: `
+        import { css } from '@compiled/react';
+
+        css({});
+      `,
+    },
+    {
       filename: 'single-line-static-rule.ts',
       code: `
         import { css } from '@compiled/react';
@@ -88,6 +101,20 @@ tester.run('no-css-tagged-template-expression', noCssTaggedTemplateExpressionRul
         import { css } from '@compiled/react';
 
         css\`/* before */ color: /* inline */ blue /* after */\`;
+      `,
+    },
+    {
+      filename: 'multiline-empty.ts',
+      code: `
+        import { css } from '@compiled/react';
+
+        css\`
+        \`;
+      `,
+      output: `
+        import { css } from '@compiled/react';
+
+        css({});
       `,
     },
     {
