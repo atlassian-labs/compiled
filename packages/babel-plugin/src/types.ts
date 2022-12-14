@@ -62,7 +62,7 @@ export interface PluginOptions {
   parserBabelPlugins?: ParserPlugin[];
 
   /**
-   * Add component name as a class name to DOM in non-production environment if styled is used
+   * Add the component name as class name to DOM in non-production environment if styled is used
    * 
    * Default to `false`
    */
