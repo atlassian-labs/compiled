@@ -63,7 +63,7 @@ export interface PluginOptions {
 
   /**
    * Add the component name as class name to DOM in non-production environment if styled is used
-   * 
+   *
    * Default to `false`
    */
   addComponentName?: boolean;

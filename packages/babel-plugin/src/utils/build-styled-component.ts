@@ -134,9 +134,15 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
 
   // Extract the component name from declaration
   // i.e. componentName is `FooBar` given `const FooBar = styled.div(...)`
-  const componentName = ((meta.parentPath.parent as t.VariableDeclarator)?.id as t.Identifier)?.name;
+  const componentName = ((meta.parentPath.parent as t.VariableDeclarator)?.id as t.Identifier)
+    ?.name;
   // Add componentClassName if `addComponentName` is enabled and on non-production environment
-  const componentClassName = toBoolean(meta.state.opts.addComponentName) && process.env.NODE_ENV !== 'production' && componentName ? `"c_${componentName}", ` : '';
+  const componentClassName =
+    toBoolean(meta.state.opts.addComponentName) &&
+    process.env.NODE_ENV !== 'production' &&
+    componentName
+      ? `"c_${componentName}", `
+      : '';
 
   const classNames = `${componentClassName}"${unconditionalClassNames.trim()}", ${conditionalClassNames}`;
 

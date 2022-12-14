@@ -195,14 +195,17 @@ describe('babel plugin', () => {
   });
 
   it('should add component name if addComponentName is true', () => {
-    const actual = transform(`
+    const actual = transform(
+      `
       import { styled } from '@compiled/react';
 
       const MyDiv = styled.div\`
         font-size: 12px;
       \`;
-    `, { addComponentName: true });
+    `,
+      { addComponentName: true }
+    );
 
-    expect(actual).toInclude('c_MyDiv')
+    expect(actual).toInclude('c_MyDiv');
   });
 });
