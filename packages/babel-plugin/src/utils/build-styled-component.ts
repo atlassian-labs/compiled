@@ -139,7 +139,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   const classNames = [
     `"${unconditionalClassNames.trim()}"`,
     conditionalClassNames,
-    componentName && `"c_${componentName}"`,
+    toBoolean(meta.state.opts.addComponentName) && process.env.NODE_ENV !== 'production' && componentName && `"c_${componentName}"`,
   ].filter(c => toBoolean(c)).join(',');
 
   return template(

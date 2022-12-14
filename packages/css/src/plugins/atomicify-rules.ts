@@ -1,4 +1,4 @@
-import { toBoolean } from '@compiled/utils';
+import { hash } from '@compiled/utils';
 import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
 import { rule } from 'postcss';
 
@@ -24,25 +24,13 @@ interface AtomicifyOpts extends PluginOpts {
  * @param node CSS declaration
  * @param opts AtomicifyOpts
  */
-
- const nonCssSafeCharacters = /[!"#$%&'()*+,./:;<=>?@[\\\]^`{|}~\s]/;
-
-const devHash = (str: string | undefined) => {
-  if (typeof str !== 'string') {
-    return ''
-  }
-
-  return str.trim().replace(
-    new RegExp(nonCssSafeCharacters, 'g'),
-    '-'
-  )
-}
-
 const atomicClassName = (node: Declaration, opts: AtomicifyOpts) => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
-  const hashed = [devHash(opts.atRule), devHash(selectors), devHash(node.prop), devHash(node.value), node.important && 'important'].filter(g => toBoolean(g) && g != '-').join('-');
+  const group = hash(`${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
+  const value = node.important ? node.value + node.important : node.value;
+  const valueHash = hash(value).slice(0, 4);
 
-  return `c_${hashed}`;
+  return `_${group}${valueHash}`;
 };
 
 /**
