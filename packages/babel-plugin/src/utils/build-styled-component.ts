@@ -135,12 +135,9 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   // Extract the component name from declaration
   // i.e. componentName is `FooBar` given `const FooBar = styled.div(...)`
   const componentName = ((meta.parentPath.parent as t.VariableDeclarator)?.id as t.Identifier)?.name;
+  const componentClassName = toBoolean(meta.state.opts.addComponentName) && process.env.NODE_ENV !== 'production' && componentName ? `"c_${componentName}", ` : '';
 
-  const classNames = [
-    `"${unconditionalClassNames.trim()}"`,
-    conditionalClassNames,
-    toBoolean(meta.state.opts.addComponentName) && process.env.NODE_ENV !== 'production' && componentName && `"c_${componentName}"`,
-  ].filter(c => toBoolean(c)).join(',');
+  const classNames = `${componentClassName}"${unconditionalClassNames.trim()}", ${conditionalClassNames}`;
 
   return template(
     `
@@ -164,7 +161,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
           {...${hasInvalidDomProps ? DOM_PROPS_IDENTIFIER_NAME : PROPS_IDENTIFIER_NAME}}
           style={%%styleProp%%}
           ref={${REF_IDENTIFIER_NAME}}
-          className={ax([${classNames}, ${PROPS_IDENTIFIER_NAME}.className])}
+          className={ax([${classNames} ${PROPS_IDENTIFIER_NAME}.className])}
         />
       </CC>
     );
