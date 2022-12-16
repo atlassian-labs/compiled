@@ -31,6 +31,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     [pluginName]: isPluginEnabled = false,
     ssr = false,
     optimizeCss = true,
+    addComponentName = false,
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -71,6 +72,9 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           optimizeCss: {
             type: 'boolean',
           },
+          addComponentName: {
+            type: 'boolean',
+          },
         },
       });
 
@@ -86,6 +90,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     [pluginName]: isPluginEnabled,
     ssr,
     optimizeCss,
+    addComponentName,
   };
 }
 

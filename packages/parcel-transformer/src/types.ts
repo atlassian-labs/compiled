@@ -32,4 +32,12 @@ export interface ParcelTransformerOpts extends BabelPluginOpts {
    * Override the default `resolve` used by @compiled/babel-plugin, which is used to statically evaluate import declarations
    */
   resolve?: ResolveOptions;
+
+
+  /**
+   * Add the component name as class name to DOM in non-production environment if styled is used
+   *
+   * Default to `false`
+   */
+  addComponentName?: boolean;
 }
