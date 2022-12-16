@@ -33,7 +33,6 @@ export interface ParcelTransformerOpts extends BabelPluginOpts {
    */
   resolve?: ResolveOptions;
 
-
   /**
    * Add the component name as class name to DOM in non-production environment if styled is used
    *
