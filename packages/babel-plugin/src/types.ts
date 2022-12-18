@@ -60,6 +60,13 @@ export interface PluginOptions {
    * See the [babel docs](https://babeljs.io/docs/en/plugins/#syntax-plugins)
    */
   parserBabelPlugins?: ParserPlugin[];
+
+  /**
+   * Add the component name as class name to DOM in non-production environment if styled is used
+   *
+   * Default to `false`
+   */
+  addComponentName?: boolean;
 }
 
 export interface State extends PluginPass {
