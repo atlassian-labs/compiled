@@ -1,5 +1,7 @@
 import type { Rule, Scope } from 'eslint';
 
+import { COMPILED_IMPORT } from '../constants';
+
 import { validateDefinition } from './validate-definition';
 
 type Node = Rule.Node;
@@ -13,7 +15,7 @@ export const createNoExportedRule =
   ): RuleModule['create'] =>
   (context) => {
     const { text } = context.getSourceCode();
-    if (!text.includes('@compiled/react')) {
+    if (!text.includes(COMPILED_IMPORT)) {
       return {};
     }
 

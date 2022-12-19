@@ -1,7 +1,7 @@
 import type { Rule } from 'eslint';
 import type { ImportDeclaration, ImportSpecifier } from 'estree';
 
-const COMPILED_IMPORT = '@compiled/react';
+import { COMPILED_IMPORT } from './constants';
 
 /**
  * Given a rule, return any `@compiled/react` nodes in the source being parsed.

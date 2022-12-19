@@ -2,8 +2,8 @@ import type { Rule } from 'eslint';
 import type { ImportSpecifier, ImportDeclaration } from 'estree';
 
 import { buildImportDeclaration, buildNamedImport } from '../../utils/ast-to-string';
+import { COMPILED_IMPORT } from '../../utils/constants';
 
-const COMPILED_IMPORT = '@compiled/react';
 const ALLOWED_EMOTION_IMPORTS = ['css', 'keyframes', 'ClassNames', 'jsx'];
 
 const isEmotionStyledImport = (node: ImportDeclaration) => node.source.value === '@emotion/styled';

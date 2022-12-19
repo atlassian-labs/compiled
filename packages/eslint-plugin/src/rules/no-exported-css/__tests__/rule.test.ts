@@ -685,6 +685,58 @@ const createTestCases = (importSource: string) =>
         `,
         errors: [],
       },
+      {
+        code: `
+          import { css, styled } from '${importSource}';
+
+          const styles = ${createStyle(level)};
+
+          export const Component = styled.div\`\${styles}\`;
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { css, styled as styled2 } from '${importSource}';
+
+          const styles = ${createStyle(level)};
+
+          export const Component = styled2.div\`\${styles}\`;
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { css, styled } from '${importSource}';
+
+          const buttonStyle = css\`
+            display: flex;
+            align-items: center;
+            justify-content: center;\`;
+
+          export const Component = styled.button(buttonStyle);
+        `,
+        errors: [],
+      },
+      {
+        code: `
+          import { css, styled } from '${importSource}';
+
+          export const Foo = styled.div\`
+            color: black;
+            \${({ isXEnabled }) => isXEnabled ? css\`width: 100px\` : undefined }\`
+          `,
+        errors: [],
+      },
+      {
+        code: `
+          import { css, styled } from '${importSource}';
+
+          const Button = styled.div({ color: 'red' });
+          export const Component = styled(Button)(css({ width: '100px' }));
+          `,
+        errors: [],
+      },
     ])
     .flatMap((test) => [
       test,

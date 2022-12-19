@@ -1,5 +1,7 @@
 import type { Rule, Scope as ScopeNamespace } from 'eslint';
 
+import { isStyledComponent } from './is-styled-component';
+
 type Node = Rule.Node;
 type RuleContext = Rule.RuleContext;
 type Scope = ScopeNamespace.Scope;
@@ -119,6 +121,13 @@ export const validateDefinition = (
   }
 
   const { root, nodes } = getStack(context, node.parent);
+  // Exporting a component with a css reference should be allowed
+  if (isStyledComponent(nodes, context)) {
+    return {
+      type: 'valid',
+    };
+  }
+
   if (root.type === 'ExportDefaultDeclaration' || root.type === 'ExportNamedDeclaration') {
     return {
       type: 'invalid',
@@ -149,6 +158,7 @@ export const validateDefinition = (
     }
 
     const { nodes: refs, scope: nextScope } = getStack(context, (identifier as Rule.Node).parent);
+
     // Only validate the resolved reference if it accesses the definition node
     if (matches(nodes, refs.reverse())) {
       // Now validate the identifier reference as a definition
