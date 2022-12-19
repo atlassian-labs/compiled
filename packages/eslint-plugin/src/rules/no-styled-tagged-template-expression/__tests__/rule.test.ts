@@ -63,6 +63,19 @@ tester.run('no-styled-tagged-template-expression', noStyledTaggedTemplateExpress
   ],
   invalid: createInvalidTestCases([
     {
+      filename: 'single-line-empty.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`\`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({});
+      `,
+    },
+    {
       filename: 'single-line-static-rule.ts',
       code: `
         import { styled } from '@compiled/react';
@@ -88,6 +101,20 @@ tester.run('no-styled-tagged-template-expression', noStyledTaggedTemplateExpress
         import { styled } from '@compiled/react';
 
         styled.div\`/* before */ color: /* inline */ blue /* after */\`;
+      `,
+    },
+    {
+      filename: 'multiline-empty.ts',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({});
       `,
     },
     {

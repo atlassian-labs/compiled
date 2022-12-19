@@ -51,6 +51,19 @@ tester.run('no-keyframes-tagged-template-expression', noKeyframesTaggedTemplateE
   ],
   invalid: createInvalidTestCases([
     {
+      filename: 'single-line-empty.ts',
+      code: `
+        import { keyframes } from '@compiled/react';
+
+        keyframes\`\`;
+      `,
+      output: `
+        import { keyframes } from '@compiled/react';
+
+        keyframes({});
+      `,
+    },
+    {
       filename: 'single-line-static-rule.ts',
       code: `
         import { keyframes } from '@compiled/react';
@@ -68,6 +81,20 @@ tester.run('no-keyframes-tagged-template-expression', noKeyframesTaggedTemplateE
             opacity: 0
           }
         });
+      `,
+    },
+    {
+      filename: 'multiline-empty.ts',
+      code: `
+        import { keyframes } from '@compiled/react';
+
+        keyframes\`
+        \`;
+      `,
+      output: `
+        import { keyframes } from '@compiled/react';
+
+        keyframes({});
       `,
     },
     {
