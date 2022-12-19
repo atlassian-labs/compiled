@@ -39,6 +39,16 @@ export const createNoTaggedTemplateExpressionRule =
             return;
           }
 
+          // Replace empty tagged template expression with the equivalent object call expression
+          if (
+            !quasi.expressions.length &&
+            quasi.quasis.length === 1 &&
+            !quasi.quasis[0].value.raw.trim()
+          ) {
+            yield fixer.replaceText(quasi, '({})');
+            return;
+          }
+
           const args = toArguments(source, quasi);
 
           // Skip invalid CSS
