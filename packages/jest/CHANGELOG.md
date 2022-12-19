@@ -1,5 +1,11 @@
 # @compiled/jest
 
+## 0.7.4
+
+### Patch Changes
+
+- 08a963fc: Bump flowgen types
+
 ## 0.7.3
 
 ### Patch Changes

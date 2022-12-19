@@ -1,5 +1,16 @@
 # @compiled/parcel-transformer
 
+## 0.11.2
+
+### Patch Changes
+
+- 08a963fc: Bump flowgen types
+- Updated dependencies [14f2091b]
+- Updated dependencies [50b51724]
+- Updated dependencies [08a963fc]
+  - @compiled/babel-plugin@0.17.2
+  - @compiled/babel-plugin-strip-runtime@0.17.2
+
 ## 0.11.1
 
 ### Patch Changes
