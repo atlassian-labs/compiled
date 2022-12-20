@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.11.2
+
+### Patch Changes
+
+- 08a963fc: Bump flowgen types
+
 ## 0.11.1
 
 ### Patch Changes
@@ -153,8 +159,7 @@
       display: flex;
       font-size: 50px;
       color: blue;
-    `}
-  >
+    `}>
     blue text
   </div>;
   ```

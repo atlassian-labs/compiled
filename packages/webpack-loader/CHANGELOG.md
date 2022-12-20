@@ -1,5 +1,17 @@
 # @compiled/webpack-loader
 
+## 0.9.7
+
+### Patch Changes
+
+- 33d6621a: Fix error when using @compiled/webpack-loader via a path and with extraction enabled
+- Updated dependencies [14f2091b]
+- Updated dependencies [50b51724]
+- Updated dependencies [08a963fc]
+  - @compiled/babel-plugin@0.17.2
+  - @compiled/babel-plugin-strip-runtime@0.17.2
+  - @compiled/react@0.11.2
+
 ## 0.9.6
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @compiled/eslint-plugin
 
+## 0.4.6
+
+### Patch Changes
+
+- 8acf1e21: Allow exporting components with references to css({})
+- 5e856e8c: Autofix empty tagged template expressions
+- 08a963fc: Bump flowgen types
+
 ## 0.4.5
 
 ### Patch Changes

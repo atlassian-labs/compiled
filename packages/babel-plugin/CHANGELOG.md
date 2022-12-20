@@ -1,5 +1,13 @@
 # @compiled/babel-plugin
 
+## 0.17.2
+
+### Patch Changes
+
+- 14f2091b: Handle member expression with css props
+- 50b51724: Added option "addComponentName" to display styled component name on HTML on non-production environment
+- 08a963fc: Bump flowgen types
+
 ## 0.17.1
 
 ### Patch Changes
@@ -239,8 +247,7 @@
       display: flex;
       font-size: 50px;
       color: blue;
-    `}
-  >
+    `}>
     blue text
   </div>;
   ```

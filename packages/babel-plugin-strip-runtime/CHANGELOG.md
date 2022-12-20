@@ -1,5 +1,11 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.17.2
+
+### Patch Changes
+
+- 08a963fc: Bump flowgen types
+
 ## 0.17.0
 
 ### Minor Changes
