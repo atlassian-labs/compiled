@@ -17,7 +17,7 @@ const applyBuildImport = ({
   specifiers,
 }: {
   plugins: CodemodPluginInstance[];
-  originalNode: ImportDeclaration;
+  originalNode: ImportDeclaration | null;
   specifiers: ImportSpecifier[];
 }) =>
   plugins.reduce((currentNode, plugin) => {

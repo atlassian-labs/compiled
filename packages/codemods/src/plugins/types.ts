@@ -24,9 +24,9 @@ export type BuildImportContext<T> = ValidateConfig<
   T,
   {
     // The original import node in the source code
-    originalNode: ImportDeclaration;
+    originalNode: ImportDeclaration | null;
     // The existing import node that will be replaced
-    currentNode: ImportDeclaration;
+    currentNode: ImportDeclaration | null;
     // The specifiers to include in the new import declaration
     specifiers: ImportSpecifier[];
     // The import path for Compiled
@@ -78,7 +78,7 @@ export interface Transform {
    * @param context {BuildImportContext} The context applied to the build import
    * @returns {ImportDeclaration} The import to replace config.currentNode
    */
-  buildImport?<T>(context: BuildImportContext<T>): ImportDeclaration;
+  buildImport?<T>(context: BuildImportContext<T>): ImportDeclaration | null;
 
   /**
    * Build the compiled import replacing the existing import
