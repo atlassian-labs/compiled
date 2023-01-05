@@ -139,28 +139,11 @@ describe('styled-components-to-compiled imports transformer', () => {
     import * as React from 'react';
     `,
     `
-    /* TODO(@compiled/react codemod): "createGlobalStyle" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
-    /* TODO(@compiled/react codemod): "ThemeProvider" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
-    /* TODO(@compiled/react codemod): "withTheme" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    import { createGlobalStyle, ThemeProvider, withTheme } from 'styled-components';
     import { css, keyframes, styled } from '@compiled/react';
     import * as React from 'react';
     `,
-    'it adds TODO comment for imports which are not resolved'
-  );
-
-  defineInlineTest(
-    { default: transformer, parser: 'tsx' },
-    { plugins: [] },
-    `
-    import { multiple, unsupported, imports } from 'styled-components';
-    `,
-    `
-    /* TODO(@compiled/react codemod): "multiple" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
-    /* TODO(@compiled/react codemod): "unsupported" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
-    /* TODO(@compiled/react codemod): "imports" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
-    import '@compiled/react';
-    `,
-    'it properly handles import statements with no supported imports'
+    'it leaves imports alone which are not resolved'
   );
 
   defineInlineTest(

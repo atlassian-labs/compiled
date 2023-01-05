@@ -15,7 +15,6 @@ import defaultCodemodPlugin from '../../plugins/default';
 import type { CodemodPluginInstance } from '../../plugins/types';
 import {
   addCommentBefore,
-  addCommentForUnresolvedImportSpecifiers,
   applyVisitor,
   convertDefaultImportToNamedImport,
   convertMixedImportToNamedImport,
@@ -265,12 +264,6 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
   }
 
   if (hasEmotionCoreImportDeclaration) {
-    addCommentForUnresolvedImportSpecifiers({
-      j,
-      collection,
-      importPath: imports.emotionCorePackageName,
-      allowedImportSpecifierNames: Object.values(imports.emotionCoreReactImportNames),
-    });
     replaceEmotionCoreCSSTaggedTemplateExpression(j, collection, imports.emotionCorePackageName);
     handleClassNamesBehavior(j, collection, imports.emotionCorePackageName);
     convertMixedImportToNamedImport({
@@ -284,12 +277,6 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
   }
 
   if (hasEmotionReactImportDeclaration) {
-    addCommentForUnresolvedImportSpecifiers({
-      j,
-      collection,
-      importPath: imports.emotionReactPackageName,
-      allowedImportSpecifierNames: Object.values(imports.emotionCoreReactImportNames),
-    });
     replaceEmotionCoreCSSTaggedTemplateExpression(j, collection, imports.emotionReactPackageName);
     handleClassNamesBehavior(j, collection, imports.emotionReactPackageName);
     convertMixedImportToNamedImport({

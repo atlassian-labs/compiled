@@ -1,4 +1,4 @@
-export { addCommentBefore, addCommentForUnresolvedImportSpecifiers } from './add-comment';
+export { addCommentBefore } from './add-comment';
 export { applyVisitor } from './apply-visitor';
 export {
   convertDefaultImportToNamedImport,
