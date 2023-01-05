@@ -17,7 +17,7 @@ const applyBuildImport = ({
   specifiers,
 }: {
   plugins: CodemodPluginInstance[];
-  originalNode: ImportDeclaration;
+  originalNode: ImportDeclaration | null;
   specifiers: ImportSpecifier[];
 }) =>
   plugins.reduce((currentNode, plugin) => {
@@ -161,6 +161,18 @@ export const convertMixedImportToNamedImport = ({
       specifiers: newSpecifiers,
     });
 
-    j(importDeclarationPath).replaceWith(newImport);
+    // Remove all moved import specifiers from the original import
+    importDeclarationPath.node.specifiers = importDeclarationPath.node.specifiers?.filter(
+      (specifier) =>
+        specifier.type !== 'ImportDefaultSpecifier' &&
+        !(
+          specifier.type === 'ImportSpecifier' &&
+          allowedImportSpecifierNames.includes(specifier?.imported?.name)
+        )
+    );
+
+    j(importDeclarationPath).insertAfter(newImport);
+
+    if (importDeclarationPath.node.specifiers?.length === 0) j(importDeclarationPath).remove();
   });
 };

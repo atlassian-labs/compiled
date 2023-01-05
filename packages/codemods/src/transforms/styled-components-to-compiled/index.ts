@@ -3,7 +3,6 @@ import type { API, FileInfo, Options, Program, TaggedTemplateExpression } from '
 import defaultCodemodPlugin from '../../plugins/default';
 import type { CodemodPluginInstance } from '../../plugins/types';
 import {
-  addCommentForUnresolvedImportSpecifiers,
   applyVisitor,
   convertMixedImportToNamedImport,
   hasImportDeclaration,
@@ -41,13 +40,6 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
   if (!hasStyledComponentsImportDeclaration) {
     return source;
   }
-
-  addCommentForUnresolvedImportSpecifiers({
-    j,
-    collection,
-    importPath: imports.styledComponentsPackageName,
-    allowedImportSpecifierNames: imports.styledComponentsSupportedImportNames,
-  });
 
   convertMixedImportToNamedImport({
     j,

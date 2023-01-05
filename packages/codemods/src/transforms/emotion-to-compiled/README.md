@@ -61,3 +61,19 @@ const Component = (props) => (
   </>
 );
 ```
+
+## Gotchas
+
+Some imports from Emotion are unsupported in Compiled. These imports will not be migrated by the codemod and will need to be manually removed.
+
+Example:
+
+```javascript
+// Before
+import { ClassNames, CSSObject, css as c, jsx } from '@emotion/core';
+
+// After
+import { CSSObject } from '@emotion/core';
+
+import { ClassNames, css as c } from '@compiled/react';
+```

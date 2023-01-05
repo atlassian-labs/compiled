@@ -395,8 +395,9 @@ describe('emotion-to-compiled transformer', () => {
     );
     `,
     `
-    /* TODO(@compiled/react codemod): "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     import * as React from 'react';
+    import { CSSObject } from '@emotion/core';
+
     import { ClassNames, css as c } from '@compiled/react';
 
     let cssObject: CSSObject = {};
@@ -424,7 +425,7 @@ describe('emotion-to-compiled transformer', () => {
       </ClassNames>
     );
     `,
-    'it adds TODO comment for imports which are not resolved'
+    'it preserves imports which are not resolved'
   );
 
   defineInlineTest(
@@ -439,7 +440,10 @@ describe('emotion-to-compiled transformer', () => {
     import * as React from 'react';
     `,
     `
-    /* TODO(@compiled/react codemod): "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
+    // @top-level comment
+
+    import { CSSObject } from '@emotion/core';
+
     // @top-level comment
 
     import { ClassNames, css as c } from '@compiled/react';
@@ -462,10 +466,11 @@ describe('emotion-to-compiled transformer', () => {
     import { ClassNames, CSSObject, css as c, jsx } from '@emotion/core';
     `,
     `
-    /* TODO(@compiled/react codemod): "CSSObject" is not exported from "@compiled/react" at the moment. Please find an alternative for it. */
     // @top-level comment
 
     import * as React from 'react';
+    // comment 1
+    import { CSSObject } from '@emotion/core';
 
     // comment 1
     import { ClassNames, css as c } from '@compiled/react';
