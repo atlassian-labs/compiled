@@ -115,7 +115,7 @@
     "typescript": "^4.7.4"
   },
   "engines": {
-    "node": "^v16.13.2"
+    "node": "^v16.19.0"
   },
   "loki": {
     "configurations": {
