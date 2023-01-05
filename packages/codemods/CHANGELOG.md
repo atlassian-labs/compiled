@@ -1,5 +1,11 @@
 # @compiled/codemods
 
+## 0.7.0
+
+### Minor Changes
+
+- 9673582b: Preserve unresolved imports in codemods instead of removing and adding a comment
+
 ## 0.6.0
 
 ### Minor Changes
