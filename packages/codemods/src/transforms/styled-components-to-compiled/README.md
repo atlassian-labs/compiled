@@ -30,11 +30,30 @@ import { styled } from '@compiled/react';
 
 ## Gotchas
 
+### Unresolved imports
+
+Some imports from styled components are unsupported in Compiled. These imports will not be migrated by the codemod and will need to be manually removed.
+
+```javascript
+// Before
+import styled, {
+  css,
+  keyframes,
+  createGlobalStyle,
+  ThemeProvider,
+  withTheme,
+} from 'styled-components';
+
+// After
+import { createGlobalStyle, ThemeProvider, withTheme } from 'styled-components';
+import { css, keyframes, styled } from '@compiled/react';
+```
+
+### Spread properties
+
 `styled.div.attrs` spread properties are not supported.
 
-_Example_
-
-```
+```javascript
 styled.div.attrs({
     style: ({ left, ...props }) => {
         left: left,
