@@ -139,8 +139,8 @@ describe('styled-components-to-compiled imports transformer', () => {
     import * as React from 'react';
     `,
     `
-    import { createGlobalStyle, ThemeProvider, withTheme } from 'styled-components';
     import { css, keyframes, styled } from '@compiled/react';
+    import { createGlobalStyle, ThemeProvider, withTheme } from 'styled-components';
     import * as React from 'react';
     `,
     'it leaves imports alone which are not resolved'

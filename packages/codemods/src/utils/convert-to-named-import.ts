@@ -155,14 +155,8 @@ export const convertMixedImportToNamedImport = ({
       nameA.localeCompare(nameB)
     );
 
-    const newImport = applyBuildImport({
-      plugins,
-      originalNode: importDeclarationPath.node,
-      specifiers: newSpecifiers,
-    });
-
-    // Remove all moved import specifiers from the original import
-    importDeclarationPath.node.specifiers = importDeclarationPath.node.specifiers?.filter(
+    const originalNode = importDeclarationPath.node;
+    const unresolvedSpecifiers = originalNode.specifiers?.filter(
       (specifier) =>
         specifier.type !== 'ImportDefaultSpecifier' &&
         !(
@@ -170,9 +164,19 @@ export const convertMixedImportToNamedImport = ({
           allowedImportSpecifierNames.includes(specifier?.imported?.name)
         )
     );
+    if (unresolvedSpecifiers?.length && unresolvedSpecifiers.length > 0) {
+      // Create a new declaration with the unresolved imports
+      j(importDeclarationPath).insertAfter(
+        j.importDeclaration(unresolvedSpecifiers, originalNode.source)
+      );
+    }
 
-    j(importDeclarationPath).insertAfter(newImport);
+    const newImport = applyBuildImport({
+      plugins,
+      originalNode: originalNode,
+      specifiers: newSpecifiers,
+    });
 
-    if (importDeclarationPath.node.specifiers?.length === 0) j(importDeclarationPath).remove();
+    j(importDeclarationPath).replaceWith(newImport);
   });
 };
