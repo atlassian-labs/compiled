@@ -1,5 +1,11 @@
 # @compiled/codemods
 
+## 0.7.1
+
+### Patch Changes
+
+- dbf4262f: Preserve original node in build import API for codemods
+
 ## 0.7.0
 
 ### Minor Changes
