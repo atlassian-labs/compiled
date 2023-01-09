@@ -396,9 +396,8 @@ describe('emotion-to-compiled transformer', () => {
     `,
     `
     import * as React from 'react';
-    import { CSSObject } from '@emotion/core';
-
     import { ClassNames, css as c } from '@compiled/react';
+    import { CSSObject } from '@emotion/core';
 
     let cssObject: CSSObject = {};
 
@@ -442,12 +441,9 @@ describe('emotion-to-compiled transformer', () => {
     `
     // @top-level comment
 
-    import { CSSObject } from '@emotion/core';
-
-    // @top-level comment
-
     import { ClassNames, css as c } from '@compiled/react';
 
+    import { CSSObject } from '@emotion/core';
     // comment 1
     import * as React from 'react';
     `,
@@ -469,11 +465,11 @@ describe('emotion-to-compiled transformer', () => {
     // @top-level comment
 
     import * as React from 'react';
-    // comment 1
-    import { CSSObject } from '@emotion/core';
 
     // comment 1
     import { ClassNames, css as c } from '@compiled/react';
+
+    import { CSSObject } from '@emotion/core';
     `,
     'it should not remove comments before transformed statement when not on top'
   );
