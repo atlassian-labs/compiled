@@ -127,6 +127,20 @@ describe('flex property expander', () => {
                   "
           `);
     });
+
+    it('should expand flex 0 basis', () => {
+      const result = transform`
+      flex: 1 1 0;
+    `;
+
+      expect(result).toMatchInlineSnapshot(`
+              "
+                    flex-grow: 1;
+                    flex-shrink: 1;
+                    flex-basis: 0px;
+                  "
+          `);
+    });
   });
 
   describe('is invalid', () => {

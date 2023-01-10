@@ -48,8 +48,12 @@ const widthUnits = new Set([
  * @param node
  */
 export const isWidth = (node: Node): boolean => {
-  if (node.type === 'numeric' && widthUnits.has(node.unit)) {
-    return true;
+  if (node.type === 'numeric') {
+    if (widthUnits.has(node.unit)) {
+      return true;
+    } else if (node.unit === '' && node.value === '0') {
+      return true;
+    }
   }
 
   if (
@@ -74,6 +78,9 @@ export const isWidth = (node: Node): boolean => {
  */
 export const getWidth = (node: Numeric | Word | Func): string => {
   if (node.type === 'numeric') {
+    if (node.value === '0' && node.unit === '') {
+      return `0px`;
+    }
     return `${node.value}${node.unit}`;
   }
 
