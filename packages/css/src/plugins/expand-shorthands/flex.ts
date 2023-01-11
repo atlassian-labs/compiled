@@ -1,11 +1,23 @@
 import type { ChildNode, Numeric, Word, Func } from 'postcss-values-parser';
 
 import type { ConversionFunction } from './types';
-import { flexBasisDefaultValue, getWidth, isWidth } from './utils';
+import { getWidth, isWidth } from './utils';
+
+// According to the spec, the default value of flex-basis is 0.
+// However, '0%' is used by major browsers due to compatibility issues
+// https://github.com/w3c/csswg-drafts/issues/5742
+const flexBasisDefaultValue = '0%';
 
 const isFlexNumber = (node: ChildNode): node is Numeric => node.type === 'numeric' && !node.unit;
 const isFlexBasis = (node: ChildNode): node is Numeric | Word | Func =>
-  (node.type === 'word' && node.value === 'content') || isWidth(node);
+  (node.type === 'word' && node.value === 'content') ||
+  (node.type === 'numeric' && node.unit === '' && node.value === '0') ||
+  isWidth(node);
+
+const getBasisWidth = (node: Numeric | Word | Func) =>
+  node.type === 'numeric' && node.value === '0' && node.unit === ''
+    ? flexBasisDefaultValue
+    : getWidth(node);
 
 /**
  * https://drafts.csswg.org/css-flexbox-1/#flex-property
@@ -67,7 +79,7 @@ export const flex: ConversionFunction = (value) => {
         return [
           { prop: 'flex-grow', value: left.value },
           { prop: 'flex-shrink', value: middle.value },
-          { prop: 'flex-basis', value: getWidth(right) },
+          { prop: 'flex-basis', value: getBasisWidth(right) },
         ];
       }
       break;
