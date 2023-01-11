@@ -1,16 +1,11 @@
 import type { ChildNode, Numeric, Word, Func } from 'postcss-values-parser';
 
 import type { ConversionFunction } from './types';
-import { getWidth, isWidth } from './utils';
+import { flexBasisDefaultValue, getWidth, isWidth } from './utils';
 
 const isFlexNumber = (node: ChildNode): node is Numeric => node.type === 'numeric' && !node.unit;
 const isFlexBasis = (node: ChildNode): node is Numeric | Word | Func =>
   (node.type === 'word' && node.value === 'content') || isWidth(node);
-
-// According to the spec, the default value of flex-basis is 0.
-// However, '0%' is used by major browsers due to compatibility issues
-// https://github.com/w3c/csswg-drafts/issues/5742
-const flexBasisDefaultValue = '0%';
 
 /**
  * https://drafts.csswg.org/css-flexbox-1/#flex-property

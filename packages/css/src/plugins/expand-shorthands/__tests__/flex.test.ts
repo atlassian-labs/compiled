@@ -137,7 +137,7 @@ describe('flex property expander', () => {
               "
                     flex-grow: 1;
                     flex-shrink: 1;
-                    flex-basis: 0px;
+                    flex-basis: 0%;
                   "
           `);
     });
