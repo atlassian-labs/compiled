@@ -1176,19 +1176,19 @@ tester.run('no-styled-tagged-template-expression', noStyledTaggedTemplateExpress
       `,
     },
     {
-      filename: 'space-wrapped-by-single-quotes-as-value',
+      filename: 'single-quote-strings',
       code: `
         import { styled } from '@compiled/react';
 
         styled.div\`
-          grid-template-areas: 'a b c';
+          grid-template-areas: 'vote' 'comment';
         \`;
       `,
       output: `
         import { styled } from '@compiled/react';
 
         styled.div({
-          gridTemplateAreas: "'a b c'"
+          gridTemplateAreas: "'vote' 'comment'"
         });
       `,
     },
