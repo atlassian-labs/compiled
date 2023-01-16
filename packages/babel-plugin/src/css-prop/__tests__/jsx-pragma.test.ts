@@ -13,7 +13,7 @@ describe('local jsx namespace', () => {
       const _ = \\"._syaz5scu{color:red}\\";
       <CC>
         <CS>{[_]}</CS>
-        {<div className={ax([\\"_syaz5scu\\"])}>hello</div>}
+        {<div className=\\"_syaz5scu\\">hello</div>}
       </CC>;
       "
     `);
@@ -34,7 +34,7 @@ describe('local jsx namespace', () => {
       const _ = \\"._syaz5scu{color:red}\\";
       <CC>
         <CS>{[_]}</CS>
-        {<div className={ax([\\"_syaz5scu\\"])}>hello</div>}
+        {<div className=\\"_syaz5scu\\">hello</div>}
       </CC>;
       "
     `);

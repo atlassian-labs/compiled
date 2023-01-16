@@ -90,7 +90,7 @@ describe('babel-plugin-strip-runtime using source code', () => {
 
           const Component = () =>
             /*#__PURE__*/ _jsx('div', {
-              className: ax(['_1wyb1fwx _syaz13q2']),
+              className: '_1wyb1fwx _syaz13q2',
               children: 'hello world',
             });
           "
@@ -153,7 +153,7 @@ describe('babel-plugin-strip-runtime using source code', () => {
             /*#__PURE__*/ React.createElement(
               'div',
               {
-                className: ax(['_1wyb1fwx _syaz13q2']),
+                className: '_1wyb1fwx _syaz13q2',
               },
               'hello world'
             );
@@ -219,7 +219,7 @@ describe('babel-plugin-strip-runtime using source code', () => {
 
           const Component = () =>
             _jsx('div', {
-              className: ax(['_1wyb1fwx _syaz13q2']),
+              className: '_1wyb1fwx _syaz13q2',
               children: 'hello world',
             });
           "
@@ -285,7 +285,7 @@ describe('babel-plugin-strip-runtime using source code', () => {
             /*#__PURE__*/ React.createElement(
               'div',
               {
-                className: ax(['_1wyb1fwx _syaz13q2']),
+                className: '_1wyb1fwx _syaz13q2',
               },
               'hello world'
             );

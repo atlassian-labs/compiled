@@ -86,7 +86,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
-              {<div className={ax([\\"_5sagymdr _j7hqb4f3 _1pgl1ytf\\"])} />}
+              {<div className=\\"_5sagymdr _j7hqb4f3 _1pgl1ytf\\" />}
             </CC>;
             "
           `);
@@ -104,7 +104,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_y44vjvcp\\"])} />}
+              {<div className=\\"_y44vjvcp\\" />}
             </CC>;
             "
           `);
@@ -126,7 +126,7 @@ describe('keyframes', () => {
             const darken = null;
             <CC>
               <CS>{[_, _2, _3]}</CS>
-              {<div className={ax([\\"_y44vwtez\\"])} />}
+              {<div className=\\"_y44vwtez\\" />}
             </CC>;
             "
           `);
@@ -168,7 +168,7 @@ describe('keyframes', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hq1bo5\\"])} />}
+            {<div className=\\"_j7hq1bo5\\" />}
           </CC>;
           "
         `);
@@ -198,7 +198,7 @@ describe('keyframes', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqocb1\\"])} />}
+            {<div className=\\"_j7hqocb1\\" />}
           </CC>;
           "
         `);
@@ -240,7 +240,7 @@ describe('keyframes', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqgafb\\"])} />}
+            {<div className=\\"_j7hqgafb\\" />}
           </CC>;
           "
         `);
@@ -297,7 +297,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_j7hq1kkh\\"])} />}
+              {<div className=\\"_j7hq1kkh\\" />}
             </CC>;
             "
           `);
@@ -363,7 +363,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_j7hq1kkh\\"])} />}
+              {<div className=\\"_j7hq1kkh\\" />}
             </CC>;
             "
           `);
@@ -400,7 +400,7 @@ describe('keyframes', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hq1rje\\"])} />}
+            {<div className=\\"_j7hq1rje\\" />}
           </CC>;
           "
         `);
@@ -446,7 +446,7 @@ describe('keyframes', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hq1bo5\\"])} />}
+            {<div className=\\"_j7hq1bo5\\" />}
           </CC>;
           "
         `);
@@ -485,7 +485,7 @@ describe('keyframes', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqjcah\\"])} />}
+            {<div className=\\"_j7hqjcah\\" />}
           </CC>;
           "
         `);
@@ -533,7 +533,7 @@ describe('keyframes', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqjcah\\"])} />}
+            {<div className=\\"_j7hqjcah\\" />}
           </CC>;
           "
         `);
@@ -579,7 +579,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_j7hqwahf\\"])} />}
+              {<div className=\\"_j7hqwahf\\" />}
             </CC>;
             "
           `);
@@ -629,7 +629,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_j7hqgafb\\"])} />}
+              {<div className=\\"_j7hqgafb\\" />}
             </CC>;
             "
           `);
@@ -664,7 +664,7 @@ describe('keyframes', () => {
             const enlargeFont = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_j7hq1mki\\"])} />}
+              {<div className=\\"_j7hq1mki\\" />}
             </CC>;
             "
           `);
@@ -700,7 +700,7 @@ describe('keyframes', () => {
             const enlargeFont = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_j7hq67nm\\"])} />}
+              {<div className=\\"_j7hq67nm\\" />}
             </CC>;
             "
           `);
@@ -740,7 +740,7 @@ describe('keyframes', () => {
               <CS>{[_, _2]}</CS>
               {
                 <div
-                  className={ax([\\"_j7hq1vu4\\"])}
+                  className=\\"_j7hq1vu4\\"
                   style={{
                     \\"--_1b1u9h2\\": ix(runtime.colors.blue),
                     \\"--_19i50d6\\": ix(getOpacity(0)),
@@ -802,7 +802,7 @@ describe('keyframes', () => {
                 <CS>{[_, _2, _3, _4]}</CS>
                 {
                   <div
-                    className={ax([\\"_j7hq1lmr _bfhk1220 _syaz115e\\"])}
+                    className=\\"_j7hq1lmr _bfhk1220 _syaz115e\\"
                     style={{
                       \\"--_113bsv7\\": ix(runtime[0].from),
                       \\"--_k85g0d\\": ix(runtime[0].to),
@@ -837,7 +837,7 @@ describe('keyframes', () => {
                   <CS>{[_, _2, _3, _4]}</CS>
                   {
                     <div
-                      className={ax([\\"_j7hq1lmr _bfhk1220 _syaz115e\\"])}
+                      className=\\"_j7hq1lmr _bfhk1220 _syaz115e\\"
                       style={{
                         \\"--_113bsv7\\": ix(runtime[0].from),
                         \\"--_k85g0d\\": ix(runtime[0].to),
@@ -852,7 +852,7 @@ describe('keyframes', () => {
                   <CS>{[_, _2, _3, _5]}</CS>
                   {
                     <div
-                      className={ax([\\"_j7hq1lmr _bfhk1220 _syazjq9z\\"])}
+                      className=\\"_j7hq1lmr _bfhk1220 _syazjq9z\\"
                       style={{
                         \\"--_113bsv7\\": ix(runtime[1].from),
                         \\"--_k85g0d\\": ix(runtime[1].to),
@@ -886,7 +886,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
-              {<div className={ax([\\"_5sagymdr _j7hqb4f3 _1pgl1ytf\\"])} />}
+              {<div className=\\"_5sagymdr _j7hqb4f3 _1pgl1ytf\\" />}
             </CC>;
             "
           `);
@@ -904,7 +904,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_y44vjvcp\\"])} />}
+              {<div className=\\"_y44vjvcp\\" />}
             </CC>;
             "
           `);
@@ -926,7 +926,7 @@ describe('keyframes', () => {
             const darken = null;
             <CC>
               <CS>{[_, _2, _3]}</CS>
-              {<div className={ax([\\"_y44vwtez\\"])} />}
+              {<div className=\\"_y44vwtez\\" />}
             </CC>;
             "
           `);
@@ -1202,7 +1202,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
-              {<div className={ax([\\"_5sagymdr _j7hq1c6j _1pgl1ytf\\"])} />}
+              {<div className=\\"_5sagymdr _j7hq1c6j _1pgl1ytf\\" />}
             </CC>;
             "
           `);
@@ -1220,7 +1220,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_y44v1go4\\"])} />}
+              {<div className=\\"_y44v1go4\\" />}
             </CC>;
             "
           `);
@@ -1242,7 +1242,7 @@ describe('keyframes', () => {
             const darken = null;
             <CC>
               <CS>{[_, _2, _3]}</CS>
-              {<div className={ax([\\"_y44vheiy\\"])} />}
+              {<div className=\\"_y44vheiy\\" />}
             </CC>;
             "
           `);
@@ -1266,7 +1266,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
-              {<div className={ax([\\"_5sagymdr _j7hq1c6j _1pgl1ytf\\"])} />}
+              {<div className=\\"_5sagymdr _j7hq1c6j _1pgl1ytf\\" />}
             </CC>;
             "
           `);
@@ -1284,7 +1284,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_y44v1go4\\"])} />}
+              {<div className=\\"_y44v1go4\\" />}
             </CC>;
             "
           `);
@@ -1306,7 +1306,7 @@ describe('keyframes', () => {
             const darken = null;
             <CC>
               <CS>{[_, _2, _3]}</CS>
-              {<div className={ax([\\"_y44vheiy\\"])} />}
+              {<div className=\\"_y44vheiy\\" />}
             </CC>;
             "
           `);

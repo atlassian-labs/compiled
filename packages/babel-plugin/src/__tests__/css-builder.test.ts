@@ -40,7 +40,7 @@ describe('css builder', () => {
         <CS>{[_, _2]}</CS>
         {
           <div
-            className={ax([\\"_bfhk8ruw _syaz1aj3\\"])}
+            className=\\"_bfhk8ruw _syaz1aj3\\"
             style={{
               \\"--_agotg1\\": ix(getBackgroundColor(customBackgroundColor)),
               \\"--_1ylxx6h\\": ix(color),

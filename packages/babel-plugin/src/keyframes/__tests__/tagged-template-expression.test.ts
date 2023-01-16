@@ -85,7 +85,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2, _3, _4]}</CS>
-            {<div className={ax([\\"_5sagymdr _j7hqa2t1 _1pgl1ytf\\"])} />}
+            {<div className=\\"_5sagymdr _j7hqa2t1 _1pgl1ytf\\" />}
           </CC>;
           "
         `);
@@ -103,7 +103,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_y44v1e4p\\"])} />}
+            {<div className=\\"_y44v1e4p\\" />}
           </CC>;
           "
         `);
@@ -125,7 +125,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const darken = null;
           <CC>
             <CS>{[_, _2, _3]}</CS>
-            {<div className={ax([\\"_y44vt6c7\\"])} />}
+            {<div className=\\"_y44vt6c7\\" />}
           </CC>;
           "
         `);
@@ -149,7 +149,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2, _3, _4]}</CS>
-            {<div className={ax([\\"_5sagymdr _j7hqa2t1 _1pgl1ytf\\"])} />}
+            {<div className=\\"_5sagymdr _j7hqa2t1 _1pgl1ytf\\" />}
           </CC>;
           "
         `);
@@ -167,7 +167,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_y44v1e4p\\"])} />}
+            {<div className=\\"_y44v1e4p\\" />}
           </CC>;
           "
         `);
@@ -189,7 +189,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const darken = null;
           <CC>
             <CS>{[_, _2, _3]}</CS>
-            {<div className={ax([\\"_y44vt6c7\\"])} />}
+            {<div className=\\"_y44vt6c7\\" />}
           </CC>;
           "
         `);
@@ -231,7 +231,7 @@ describe('keyframes transforms a tagged template expression', () => {
         const fadeOut = null;
         <CC>
           <CS>{[_, _2]}</CS>
-          {<div className={ax([\\"_j7hqkl5x\\"])} />}
+          {<div className=\\"_j7hqkl5x\\" />}
         </CC>;
         "
       `);
@@ -273,7 +273,7 @@ describe('keyframes transforms a tagged template expression', () => {
         const fadeOut = null;
         <CC>
           <CS>{[_, _2]}</CS>
-          {<div className={ax([\\"_j7hq6mn5\\"])} />}
+          {<div className=\\"_j7hq6mn5\\" />}
         </CC>;
         "
       `);
@@ -330,7 +330,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqzznm\\"])} />}
+            {<div className=\\"_j7hqzznm\\" />}
           </CC>;
           "
         `);
@@ -396,7 +396,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqzznm\\"])} />}
+            {<div className=\\"_j7hqzznm\\" />}
           </CC>;
           "
         `);
@@ -433,7 +433,7 @@ describe('keyframes transforms a tagged template expression', () => {
         const fadeOut = null;
         <CC>
           <CS>{[_, _2]}</CS>
-          {<div className={ax([\\"_j7hqi8pm\\"])} />}
+          {<div className=\\"_j7hqi8pm\\" />}
         </CC>;
         "
       `);
@@ -479,7 +479,7 @@ describe('keyframes transforms a tagged template expression', () => {
         const fadeOut = null;
         <CC>
           <CS>{[_, _2]}</CS>
-          {<div className={ax([\\"_j7hqkl5x\\"])} />}
+          {<div className=\\"_j7hqkl5x\\" />}
         </CC>;
         "
       `);
@@ -525,7 +525,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqy222\\"])} />}
+            {<div className=\\"_j7hqy222\\" />}
           </CC>;
           "
         `);
@@ -575,7 +575,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqdjmv\\"])} />}
+            {<div className=\\"_j7hqdjmv\\" />}
           </CC>;
           "
         `);
@@ -610,7 +610,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const enlargeFont = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqrsut\\"])} />}
+            {<div className=\\"_j7hqrsut\\" />}
           </CC>;
           "
         `);
@@ -646,7 +646,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const enlargeFont = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hq1emf\\"])} />}
+            {<div className=\\"_j7hq1emf\\" />}
           </CC>;
           "
         `);
@@ -686,7 +686,7 @@ describe('keyframes transforms a tagged template expression', () => {
             <CS>{[_, _2]}</CS>
             {
               <div
-                className={ax([\\"_j7hq17yp\\"])}
+                className=\\"_j7hq17yp\\"
                 style={{
                   \\"--_1b1u9h2\\": ix(runtime.colors.blue),
                   \\"--_19i50d6\\": ix(getOpacity(0)),
@@ -748,7 +748,7 @@ describe('keyframes transforms a tagged template expression', () => {
               <CS>{[_, _2, _3, _4]}</CS>
               {
                 <div
-                  className={ax([\\"_j7hq1vlm _bfhk1220 _syaz115e\\"])}
+                  className=\\"_j7hq1vlm _bfhk1220 _syaz115e\\"
                   style={{
                     \\"--_1tdwvvr\\": ix(runtime[0].from),
                     \\"--_151ky4\\": ix(runtime[0].to),
@@ -783,7 +783,7 @@ describe('keyframes transforms a tagged template expression', () => {
                 <CS>{[_, _2, _3, _4]}</CS>
                 {
                   <div
-                    className={ax([\\"_j7hq1vlm _bfhk1220 _syaz115e\\"])}
+                    className=\\"_j7hq1vlm _bfhk1220 _syaz115e\\"
                     style={{
                       \\"--_1tdwvvr\\": ix(runtime[0].from),
                       \\"--_151ky4\\": ix(runtime[0].to),
@@ -798,7 +798,7 @@ describe('keyframes transforms a tagged template expression', () => {
                 <CS>{[_, _2, _3, _5]}</CS>
                 {
                   <div
-                    className={ax([\\"_j7hq1vlm _bfhk1220 _syazjq9z\\"])}
+                    className=\\"_j7hq1vlm _bfhk1220 _syazjq9z\\"
                     style={{
                       \\"--_1tdwvvr\\": ix(runtime[1].from),
                       \\"--_151ky4\\": ix(runtime[1].to),

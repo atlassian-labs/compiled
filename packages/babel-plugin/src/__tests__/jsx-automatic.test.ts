@@ -22,7 +22,7 @@ describe('jsx automatic', () => {
             children: [_],
           }),
           _jsx(\\"div\\", {
-            className: ax([\\"_syaz13q2\\"]),
+            className: \\"_syaz13q2\\",
           }),
         ],
       });

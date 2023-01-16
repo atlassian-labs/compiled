@@ -107,7 +107,7 @@ describe('babel plugin', () => {
         return (
           <CC>
             <CS>{[_]}</CS>
-            {<div className={ax([\\"_1wyb1fwx\\"])}>hello</div>}
+            {<div className=\\"_1wyb1fwx\\">hello</div>}
           </CC>
         );
       };
@@ -139,7 +139,7 @@ describe('babel plugin', () => {
         return (
           <CC>
             <CS>{[_]}</CS>
-            {<div className={ax([\\"_1wyb1fwx\\"])}>hello</div>}
+            {<div className=\\"_1wyb1fwx\\">hello</div>}
           </CC>
         );
       };
@@ -187,7 +187,7 @@ describe('babel plugin', () => {
       <CompiledRoot>
         <CC>
           <CS>{[_]}</CS>
-          {<div className={ax([\\"_1e0c1ule\\"])} />}
+          {<div className=\\"_1e0c1ule\\" />}
         </CC>
       </CompiledRoot>;
       "

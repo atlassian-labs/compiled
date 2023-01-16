@@ -23,11 +23,11 @@ describe('rule hoisting', () => {
         <>
           <CC>
             <CS>{[_]}</CS>
-            {<div className={ax([\\"_1wyb1fwx\\"])}>hello world</div>}
+            {<div className=\\"_1wyb1fwx\\">hello world</div>}
           </CC>
           <CC>
             <CS>{[_2]}</CS>
-            {<div className={ax([\\"_1wyb1tcg\\"])}>hello world</div>}
+            {<div className=\\"_1wyb1tcg\\">hello world</div>}
           </CC>
         </>
       );
@@ -56,11 +56,11 @@ describe('rule hoisting', () => {
         <>
           <CC>
             <CS>{[_]}</CS>
-            {<div className={ax([\\"_1wyb1fwx\\"])}>hello world</div>}
+            {<div className=\\"_1wyb1fwx\\">hello world</div>}
           </CC>
           <CC>
             <CS>{[_]}</CS>
-            {<div className={ax([\\"_1wyb1fwx\\"])}>hello world</div>}
+            {<div className=\\"_1wyb1fwx\\">hello world</div>}
           </CC>
         </>
       );

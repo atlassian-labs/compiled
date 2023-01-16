@@ -97,7 +97,7 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
       expect(actual.split('var Component = ')[1]).toMatchInlineSnapshot(`
         "() =>
           (0, _jsxRuntime.jsx)('div', {
-            className: (0, _runtime.ax)(['_1wyb1fwx _syaz13q2']),
+            className: '_1wyb1fwx _syaz13q2',
             children: 'hello world',
           });
         "
@@ -116,7 +116,7 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
 
         var Component = () =>
           _jsx('div', {
-            className: ax(['_1wyb1fwx _syaz13q2']),
+            className: '_1wyb1fwx _syaz13q2',
             children: 'hello world',
           });
         "
@@ -154,7 +154,7 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
           React.createElement(
             'div',
             {
-              className: (0, _runtime.ax)(['_1wyb1fwx _syaz13q2']),
+              className: '_1wyb1fwx _syaz13q2',
             },
             'hello world'
           );
@@ -174,7 +174,7 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
           React.createElement(
             'div',
             {
-              className: ax(['_1wyb1fwx _syaz13q2']),
+              className: '_1wyb1fwx _syaz13q2',
             },
             'hello world'
           );

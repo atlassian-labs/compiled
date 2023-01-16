@@ -356,7 +356,7 @@ describe('import specifiers', () => {
 
     expect(actual).toIncludeMultiple([
       '._vwz41rme{line-height:var(--_12w6gfj)',
-      'ax(["_vwz41rme"])',
+      '"_vwz41rme"',
       '"--_12w6gfj": ix(getLineHeight())',
     ]);
   });
@@ -371,7 +371,7 @@ describe('import specifiers', () => {
         <div css={{ marginTop: spacing * 2 }} />
       `);
 
-      expect(actual).toIncludeMultiple(['._19pkexct{margin-top:16px}', 'ax(["_19pkexct"])']);
+      expect(actual).toIncludeMultiple(['._19pkexct{margin-top:16px}', '"_19pkexct"']);
     });
 
     it('statically evaluates calculated value with nested binary', () => {
@@ -383,7 +383,7 @@ describe('import specifiers', () => {
         <div css={{ marginTop: spacing * 2 / 2 }} />
       `);
 
-      expect(actual).toIncludeMultiple(['._19pkftgi{margin-top:8px}', 'ax(["_19pkftgi"])']);
+      expect(actual).toIncludeMultiple(['._19pkftgi{margin-top:8px}', '"_19pkftgi"']);
     });
 
     it('statically evaluates calculated value with multiple identifiers', () => {
@@ -397,7 +397,7 @@ describe('import specifiers', () => {
         <div css={{ marginTop: one + two - three }} />
       `);
 
-      expect(actual).toIncludeMultiple(['._19pkidpf{margin-top:0}', 'ax(["_19pkidpf"])']);
+      expect(actual).toIncludeMultiple(['._19pkidpf{margin-top:0}', '"_19pkidpf"']);
     });
 
     it('statically evaluates calculated value within calc utility', () => {
@@ -409,10 +409,7 @@ describe('import specifiers', () => {
         <div css={{ width: \`calc(100% - \${spacing * 2}px)\` }} />
       `);
 
-      expect(actual).toIncludeMultiple([
-        '._1bsbj0q6{width:calc(100% - 16px)}',
-        'ax(["_1bsbj0q6"])',
-      ]);
+      expect(actual).toIncludeMultiple(['._1bsbj0q6{width:calc(100% - 16px)}', '"_1bsbj0q6"']);
     });
 
     it('statically evaluates calculated value with string literal containing numeric value', () => {
@@ -424,7 +421,7 @@ describe('import specifiers', () => {
         <div css={{ marginTop: stringSpacing * 2 }} />
       `);
 
-      expect(actual).toIncludeMultiple(['._19pkexct{margin-top:16px}', 'ax(["_19pkexct"])']);
+      expect(actual).toIncludeMultiple(['._19pkexct{margin-top:16px}', '"_19pkexct"']);
     });
 
     it('statically evaluates calculated value with unary expression', () => {
@@ -436,7 +433,7 @@ describe('import specifiers', () => {
         <div css={{ marginTop: -getSpacing() * 2 }} />
       `);
 
-      expect(actual).toIncludeMultiple(['._19pk4h84{margin-top:-16px}', 'ax(["_19pk4h84"])']);
+      expect(actual).toIncludeMultiple(['._19pk4h84{margin-top:-16px}', '"_19pk4h84"']);
     });
 
     it('falls back to dynamic evaluation when non static value used', () => {
@@ -451,7 +448,7 @@ describe('import specifiers', () => {
       expect(actual).toIncludeMultiple([
         '._19pk19vg{margin-top:var(--_lb6tu)}',
         '"--_lb6tu": ix(getSpacing() * 2)',
-        'ax(["_19pk19vg"])',
+        '"_19pk19vg"',
       ]);
     });
 
@@ -469,7 +466,7 @@ describe('import specifiers', () => {
         }
       );
 
-      expect(actual).toIncludeMultiple(['._syaz5scu{color:red}', 'ax(["_syaz5scu"])']);
+      expect(actual).toIncludeMultiple(['._syaz5scu{color:red}', '"_syaz5scu"']);
     });
 
     it('statically evaluates a TS const expression in a resolved binding', () => {

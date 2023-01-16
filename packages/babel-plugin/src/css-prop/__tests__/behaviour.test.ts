@@ -152,7 +152,7 @@ describe('css prop behaviour', () => {
       <div css={{ fontSize: 20 }} {...props} />
     `);
 
-    expect(actual).toInclude('<div{...props}className={ax(["_1wybgktf"])}/>');
+    expect(actual).toInclude('<div{...props}className="_1wybgktf"/>');
   });
 
   it('should pass through static props', () => {
@@ -162,7 +162,7 @@ describe('css prop behaviour', () => {
       <div css={{ fontSize: 20 }} role="menu" />
     `);
 
-    expect(actual).toInclude('<div role="menu"className={ax(["_1wybgktf"])}/>');
+    expect(actual).toInclude('<div role="menu"className="_1wybgktf"/>');
   });
 
   it('should concat explicit use of class name prop from an identifier on an element', () => {
@@ -182,15 +182,15 @@ describe('css prop behaviour', () => {
       import '@compiled/react';
 
       const base = { color: 'black' };
-      const top = \` color: red; \`;
+      const top = \` marginTop: 10px; \`;
 
       <div css={[base, top]}>hello world</div>
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz5scu{color:red}',
       '._syaz11x8{color:black}',
-      '<div className={ax(["_syaz11x8","_syaz5scu"])}>hello world</div>',
+      '._16f719bv{marginTop:10px}',
+      '<div className="_syaz11x8 _16f719bv">hello world</div>',
     ]);
   });
 
@@ -209,7 +209,7 @@ describe('css prop behaviour', () => {
       '._1wyb1fwx{font-size:12px}',
       '._syaz11x8{color:black}',
       '._1e0c1o8l{display:inline-block}',
-      '<div className={ax(["_1e0c1o8l _syaz11x8","_1wyb1fwx _1bsb12am"])}>hello world</div>',
+      '<div className="_1e0c1o8l _syaz11x8 _1wyb1fwx _1bsb12am">hello world</div>',
     ]);
   });
 
@@ -222,7 +222,7 @@ describe('css prop behaviour', () => {
 
     expect(actual).toInclude(`{color:blue}`);
     expect(actual).toInclude(
-      `<div style={{display:'block'}}className={ax([\"_syaz13q2\"])}>hello world</div>`
+      `<div style={{display:'block'}}className=\"_syaz13q2\">hello world</div>`
     );
   });
 
@@ -452,7 +452,7 @@ describe('css prop behaviour', () => {
       'const _2="._y44vk4ag{animation:fadeOut 2s ease-in-out}"',
       'const _="@keyframes fadeOut{0%{opacity:1}50%{opacity:0.5}to{opacity:0}}"',
       '<CS>{[_,_2]}</CS>',
-      'className={ax(["_y44vk4ag"])}',
+      'className="_y44vk4ag"',
     ]);
   });
 
@@ -732,5 +732,20 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple(["css={{color:'red'}}", 'css={null}', "css={{color:'blue'}}"]);
+  });
+
+  it('should deduplicate atomic declarations', () => {
+    const actual = transform(`
+      import '@compiled/react';
+
+      <div css={[{ fontSize: 20, color: 'red', marginTop: '20px' }, { fontSize: 30, color: 'black' }]} />
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._1wyb1ul9{font-size:30px}',
+      '._syaz11x8{color:black}',
+      '._19pkgktf{margin-top:20px}',
+      '<div className="_1wyb1ul9 _syaz11x8 _19pkgktf"/>',
+    ]);
   });
 });

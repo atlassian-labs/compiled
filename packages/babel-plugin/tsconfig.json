@@ -5,5 +5,10 @@
     "outDir": "dist",
     "rootDir": "src"
   },
-  "references": [{ "path": "../benchmark" }, { "path": "../css" }, { "path": "../utils" }]
+  "references": [
+    { "path": "../benchmark" },
+    { "path": "../css" },
+    { "path": "../utils" },
+    { "path": "../react" }
+  ]
 }

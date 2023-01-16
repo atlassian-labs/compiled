@@ -1,6 +1,7 @@
 import generate from '@babel/generator';
 import template from '@babel/template';
 import * as t from '@babel/types';
+import { ax } from '@compiled/react/runtime';
 import { unique } from '@compiled/utils';
 
 import type { Metadata } from '../types';
@@ -58,6 +59,49 @@ const getExpression = (
 };
 
 /**
+ * Check if 'node' is a 'inBuiltComponent'.
+ * We assume it's a 'inBuiltComponent' if it starts with a lowercase letter (i.e. div).
+ *
+ * @param node Originating node
+ */
+const isInBuiltComponent = (node: t.JSXElement): boolean => {
+  let tagName;
+
+  // Get the tag name (i.e. td) from node <td />
+  if (
+    t.isJSXIdentifier(node.openingElement.name) ||
+    t.isJSXNamespacedName(node.openingElement.name)
+  ) {
+    tagName = node.openingElement.name.name;
+  } else {
+    tagName = node.openingElement.name.property.name;
+  }
+
+  if (typeof tagName !== 'string') return false;
+
+  // Check if the first letter is lower case
+  return tagName.charCodeAt(0) >= 97 && tagName.charCodeAt(0) <= 122;
+};
+
+/**
+ * Check if the `ax` runtime utility is required.
+ * We assume it's required if
+ * - there is a class name prop statically defined
+ * - there is conditional css
+ * - 'node' is a 'UserDefinedComponent'
+ *
+ * @param node Originating node
+ * @param classNames The classNames for a component at runtime
+ *
+ */
+const isAxRequired = (node: t.JSXElement, classNames: t.Expression[]) => {
+  return (
+    isInBuiltComponent(node) &&
+    classNames.filter((className) => !t.isStringLiteral(className)).length === 0
+  );
+};
+
+/**
  * Returns a Compiled Component AST.
  *
  * @param node Originating node
@@ -84,14 +128,27 @@ export const buildCompiledComponent = (
     );
   } else {
     // No class name - just push our own one.
-    node.openingElement.attributes.push(
-      t.jsxAttribute(
-        t.jsxIdentifier('className'),
-        t.jsxExpressionContainer(
-          t.callExpression(t.identifier('ax'), [t.arrayExpression(classNames)])
-        )
-      )
-    );
+    let classNameNode;
+
+    // We'll remove duplicated atomic declaration group if possible.
+    // Otherwise add a runtime utility `ax` to ensure atomic declarations of one single group exist.
+    if (isAxRequired(node, classNames)) {
+      const str = ax(classNames.map((className) => (className as t.StringLiteral).value));
+
+      if (str) {
+        classNameNode = t.stringLiteral(str);
+      }
+    } else {
+      classNameNode = t.jsxExpressionContainer(
+        t.callExpression(t.identifier('ax'), [t.arrayExpression(classNames)])
+      );
+    }
+
+    if (classNameNode) {
+      node.openingElement.attributes.push(
+        t.jsxAttribute(t.jsxIdentifier('className'), classNameNode)
+      );
+    }
   }
 
   if (cssOutput.variables.length) {
