@@ -734,7 +734,7 @@ describe('css prop behaviour', () => {
     expect(actual).toIncludeMultiple(["css={{color:'red'}}", 'css={null}', "css={{color:'blue'}}"]);
   });
 
-  it('should deduplicate atomic declarations', () => {
+  it('should ensure atomic declarations of a single group exist', () => {
     const actual = transform(`
       import '@compiled/react';
 
@@ -747,5 +747,15 @@ describe('css prop behaviour', () => {
       '._19pkgktf{margin-top:20px}',
       '<div className="_1wyb1ul9 _syaz11x8 _19pkgktf"/>',
     ]);
+  });
+
+  it('should add `ax` if `UserDefinedComponent`', () => {
+    const actual = transform(`
+      import '@compiled/react';
+
+      <Div css={{ color: 'red' }} />
+    `);
+
+    expect(actual).toInclude('ax(["_syaz5scu"])');
   });
 });

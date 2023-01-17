@@ -62,9 +62,7 @@ it('transforms assets with babel plugin', async () => {
                         ]
                     }),
                     /*#__PURE__*/ (0, _jsxRuntime.jsx)(\\"div\\", {
-                        className: (0, _runtime.ax)([
-                            \\"_1wyb12am _syaz5scu\\"
-                        ]),
+                        className: \\"_1wyb12am _syaz5scu\\",
                         children: \\"hello from parcel\\"
                     })
                 ]
@@ -106,9 +104,7 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
         /*#__PURE__*/ return _jsxRuntime.jsxs(_jsxRuntime.Fragment, {
             children: [
                 /*#__PURE__*/ _jsxRuntime.jsx(\\"div\\", {
-                    className: _runtime.ax([
-                        \\"_1wyb12am _syaz5scu\\"
-                    ]),
+                    className: \\"_1wyb12am _syaz5scu\\",
                     children: \\"CSS prop\\"
                 }),
                 /*#__PURE__*/ _jsxRuntime.jsx(_babelComponentFixtureDefault.default, {
@@ -197,9 +193,7 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
     function BabelComponent(_ref2) {
         var children = _ref2.children;
         return (0, _jsxRuntime.jsx)(\\"div\\", {
-            className: (0, _runtime.ax)([
-                \\"_19pk1ul9\\"
-            ]),
+            className: \\"_19pk1ul9\\",
             children: /*#__PURE__*/ (0, _jsxRuntime.jsx)(Button, {
                 children: children
             })
