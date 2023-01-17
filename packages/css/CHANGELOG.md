@@ -1,5 +1,11 @@
 # @compiled/css
 
+## 0.8.7
+
+### Patch Changes
+
+- fd9c9be9: Fix flex shorthand expansion when flex basis is 0
+
 ## 0.8.6
 
 ### Patch Changes
