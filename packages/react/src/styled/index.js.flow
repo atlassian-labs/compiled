@@ -14,7 +14,7 @@ export type StyledProps = {
 };
 export type ObjectInterpolation<TProps> = CssType<TProps> | CssType<TProps>[];
 export type TemplateStringsInterpolation<TProps> = CssFunction<TProps> | CssFunction<TProps>[];
-export interface StyledComponent<ComponentProps: mixed> {
+export interface StyledComponent<ComponentProps> {
   <TProps>(
     ...css: ObjectInterpolation<TProps>[]
   ): React$ComponentType<{ ...TProps, ...ComponentProps, ...StyledProps }>;
@@ -25,9 +25,7 @@ export interface StyledComponent<ComponentProps: mixed> {
 }
 export type StyledComponentMap = $ObjMapi<$JSXIntrinsics, <Tag>(Tag) => StyledComponent<mixed>>;
 export type CreateStyledComponent = {
-  <TInheritedProps: mixed>(
-    Component: ComponentType<TInheritedProps>
-  ): StyledComponent<TInheritedProps>,
+  <TInheritedProps>(Component: ComponentType<TInheritedProps>): StyledComponent<TInheritedProps>,
   ...
 } & StyledComponentMap;
 /**

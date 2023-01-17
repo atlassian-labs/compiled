@@ -42,6 +42,7 @@ jobs:
         run: yarn
 
       - name: Validate
+        if: matrix.node-version == 'v16'
         run: yarn lint
 
       - name: Run tests
