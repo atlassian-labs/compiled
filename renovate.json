@@ -60,6 +60,10 @@
     {
       "matchPackageNames": ["node", "@types/node"],
       "groupName": "node packages"
+    },
+    {
+      "packagePatterns": ["^typescript", "^ttypescript", "^ts-"],
+      "groupName": "typescript packages"
     }
   ]
 }
