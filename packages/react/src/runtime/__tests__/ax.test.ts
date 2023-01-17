@@ -25,10 +25,22 @@ describe('ax', () => {
     expect(result).toEqual('_aaaacccc');
   });
 
-  it('should ensure the last atomic declaration of a multi group wins', () => {
-    const result = ax(['_aaaabbbb _aaaacccc', 'foo']);
+  it('should ensure the last atomic declaration of many single groups wins', () => {
+    const result = ax(['_aaaabbbb', '_aaaacccc', '_aaaadddd', '_aaaaeeee']);
 
-    expect(result).toEqual('_aaaacccc foo');
+    expect(result).toEqual('_aaaaeeee');
+  });
+
+  it('should ensure the last atomic declaration of a multi group wins', () => {
+    const result = ax(['_aaaabbbb _aaaacccc']);
+
+    expect(result).toEqual('_aaaacccc');
+  });
+
+  it('should ensure the last atomic declaration of many multi groups wins', () => {
+    const result = ax(['_aaaabbbb _aaaacccc _aaaadddd _aaaaeeee']);
+
+    expect(result).toEqual('_aaaaeeee');
   });
 
   it('should not remove any atomic declarations if there are no duplicate groups', () => {
@@ -48,5 +60,11 @@ describe('ax', () => {
     const result = ax(['hello_there', 'hello_world']);
 
     expect(result).toEqual('hello_there hello_world');
+  });
+
+  it('should ignore non atomic declarations when atomic declarations exist', () => {
+    const result = ax(['hello_there', 'hello_world', '_aaaabbbb']);
+
+    expect(result).toEqual('hello_there hello_world _aaaabbbb');
   });
 });
