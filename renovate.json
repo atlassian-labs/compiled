@@ -56,6 +56,14 @@
     {
       "packagePatterns": ["^@?size-limit"],
       "groupName": "size-limit packages"
+    },
+    {
+      "matchPackageNames": ["node", "@types/node"],
+      "groupName": "node packages"
+    },
+    {
+      "packagePatterns": ["^typescript", "^ttypescript", "^ts-"],
+      "groupName": "typescript packages"
     }
   ]
 }
