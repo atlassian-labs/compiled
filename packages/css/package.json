@@ -18,11 +18,6 @@
     "dist",
     "src"
   ],
-  "resolutions": {
-    "css-what": "^5.1.0",
-    "cssnano-preset-default": "^5.2.12",
-    "nth-check": "^2.0.1"
-  },
   "dependencies": {
     "@compiled/utils": "^0.6.16",
     "autoprefixer": "^10.4.7",

@@ -10,7 +10,7 @@
     "@compiled/react": "*"
   },
   "devDependencies": {
-    "@babel/cli": "^7.17.10",
+    "@babel/cli": "^7.20.7",
     "@babel/core": "^7.17.10",
     "@babel/preset-env": "^7.17.10",
     "@babel/preset-react": "^7.16.7",
