@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.4.7
+
+### Patch Changes
+
+- 7fc17211: Wrap strings with quotes when auto-fixing tagged template expressions in ESLint rule
+
 ## 0.4.6
 
 ### Patch Changes
