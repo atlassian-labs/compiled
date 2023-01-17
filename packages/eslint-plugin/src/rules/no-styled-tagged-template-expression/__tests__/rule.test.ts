@@ -1154,7 +1154,7 @@ tester.run('no-styled-tagged-template-expression', noStyledTaggedTemplateExpress
         import { styled } from '@compiled/react';
 
         styled.div({
-          content: " "
+          content: '" "'
         });
       `,
     },
@@ -1171,7 +1171,24 @@ tester.run('no-styled-tagged-template-expression', noStyledTaggedTemplateExpress
         import { styled } from '@compiled/react';
 
         styled.div({
-          content: ' '
+          content: "' '"
+        });
+      `,
+    },
+    {
+      filename: 'single-quote-strings',
+      code: `
+        import { styled } from '@compiled/react';
+
+        styled.div\`
+          grid-template-areas: 'vote' 'comment';
+        \`;
+      `,
+      output: `
+        import { styled } from '@compiled/react';
+
+        styled.div({
+          gridTemplateAreas: "'vote' 'comment'"
         });
       `,
     },

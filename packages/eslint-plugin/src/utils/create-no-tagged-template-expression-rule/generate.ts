@@ -18,6 +18,9 @@ const createKey = (key: string) => {
   return `[\`${key}\`]`;
 };
 
+const addQuotes = (literal: string): string =>
+  literal[0] === `"` ? `'${literal}'` : `"${literal}"`;
+
 const createValue = (value: DeclarationValue) => {
   const { type } = value;
   if (type === 'expression') {
@@ -25,9 +28,7 @@ const createValue = (value: DeclarationValue) => {
   }
 
   const literal = value.value;
-  return typeof literal === 'string' && !['`', '"', "'"].includes(literal[0])
-    ? '"' + literal + '"'
-    : literal;
+  return typeof literal === 'string' && literal[0] !== '`' ? addQuotes(literal) : literal;
 };
 
 const indent = (offset: number, level: number) => ' '.repeat(offset + level * 2);
