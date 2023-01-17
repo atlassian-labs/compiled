@@ -13,7 +13,7 @@ export interface StyledProps {
 export type ObjectInterpolation<TProps> = CssType<TProps> | CssType<TProps>[];
 export type TemplateStringsInterpolation<TProps> = CssFunction<TProps> | CssFunction<TProps>[];
 
-export interface StyledComponent<ComponentProps extends unknown> {
+export interface StyledComponent<ComponentProps> {
   // Allows either string or object (`` or ({}))
   // We disable the ban types rule here as we need to join the empty object default with other props
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -34,9 +34,7 @@ export type StyledComponentMap = {
 
 export interface CreateStyledComponent extends StyledComponentMap {
   // Typing to enable consumers to compose components, e.g: `styled(Component)`
-  <TInheritedProps extends unknown>(
-    Component: ComponentType<TInheritedProps>
-  ): StyledComponent<TInheritedProps>;
+  <TInheritedProps>(Component: ComponentType<TInheritedProps>): StyledComponent<TInheritedProps>;
 }
 
 /**
