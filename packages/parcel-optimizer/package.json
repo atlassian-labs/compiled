@@ -26,12 +26,11 @@
     "posthtml-insert-at": "^0.2.7"
   },
   "devDependencies": {
+    "@babel/types": "^7.17.10",
     "@parcel/core": "^2.3.1",
     "@parcel/fs": "^2.3.1",
     "@parcel/types": "^2.3.1",
-    "prettier": "^2.8.1",
-    "ts-node": "^10.8.2",
-    "tsconfig-paths": "^3.14.1"
+    "prettier": "^2.8.1"
   },
   "engines": {
     "parcel": "^2.0.0"
