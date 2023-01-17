@@ -50,6 +50,7 @@ module.exports = {
           },
         ],
         'no-debugger': 'error',
+        'react/no-unknown-property': ['error', { ignore: ['css'] }],
       },
     },
     {
