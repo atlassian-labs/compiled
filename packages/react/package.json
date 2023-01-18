@@ -72,7 +72,7 @@
     "jsx-dev-runtime"
   ],
   "dependencies": {
-    "csstype": "^3.1.0"
+    "csstype": "^3.1.1"
   },
   "devDependencies": {
     "@compiled/benchmark": "^1.0.1",
