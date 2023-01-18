@@ -107,7 +107,7 @@
     "react-dom": "^17.0.2",
     "size-limit": "^8.1.1",
     "storybook-addon-performance": "^0.16.1",
-    "storybook-addon-pseudo-states": "^1.15.1",
+    "storybook-addon-pseudo-states": "^1.15.2",
     "ts-node": "^10.8.2",
     "ts-transform-define": "^0.1.10",
     "tsconfig-paths": "^3.14.1",
