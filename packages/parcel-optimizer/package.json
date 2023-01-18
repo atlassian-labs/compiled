@@ -30,7 +30,7 @@
     "@parcel/fs": "^2.3.1",
     "@parcel/types": "^2.3.1",
     "prettier": "^2.8.3",
-    "ts-node": "^10.8.2",
+    "ts-node": "^10.9.1",
     "tsconfig-paths": "^3.14.1"
   },
   "engines": {

@@ -41,7 +41,7 @@
     "@types/resolve": "^1.20.2",
     "benchmark": "^2.1.4",
     "prettier": "^2.8.3",
-    "ts-node": "^10.8.2",
+    "ts-node": "^10.9.1",
     "tsconfig-paths": "^3.14.1"
   }
 }
