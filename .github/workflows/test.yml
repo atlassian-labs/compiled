@@ -31,7 +31,7 @@ jobs:
       - name: Set ignore engines
         run: yarn config set ignore-engines true
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
