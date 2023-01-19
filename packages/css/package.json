@@ -26,7 +26,6 @@
   "dependencies": {
     "@compiled/utils": "^0.6.16",
     "autoprefixer": "^10.4.7",
-    "convert-source-map": "^1.9.0",
     "cssnano-preset-default": "^5.2.12",
     "postcss": "^8.4.14",
     "postcss-nested": "^5.0.6",
