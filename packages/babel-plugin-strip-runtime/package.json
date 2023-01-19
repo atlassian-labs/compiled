@@ -19,11 +19,11 @@
     "src"
   ],
   "dependencies": {
-    "@babel/core": "^7.17.10",
-    "@babel/helper-plugin-utils": "^7.16.7",
-    "@babel/template": "^7.16.7",
-    "@babel/traverse": "^7.17.10",
-    "@babel/types": "^7.17.10",
+    "@babel/core": "^7.20.12",
+    "@babel/helper-plugin-utils": "^7.20.2",
+    "@babel/template": "^7.20.7",
+    "@babel/traverse": "^7.20.12",
+    "@babel/types": "^7.20.7",
     "@compiled/utils": "^0.6.16"
   },
   "devDependencies": {
