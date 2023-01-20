@@ -33,10 +33,10 @@ export const getNodeComments = (
   return {
     before: commentLines.filter(
       (comment) =>
-        comment.loc.start.line === lineNumber - 1 && comment.loc.end.line === lineNumber - 1
+        comment.loc?.start.line === lineNumber - 1 && comment.loc.end.line === lineNumber - 1
     ),
     current: commentLines.filter(
-      (comment) => comment.loc.start.line === lineNumber && comment.loc.end.line === lineNumber
+      (comment) => comment.loc?.start.line === lineNumber && comment.loc.end.line === lineNumber
     ),
   };
 };

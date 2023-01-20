@@ -20,7 +20,7 @@ describe('Keyframes', () => {
     expect(actual).toIncludeMultiple([
       '._1wybgktf{font-size:20px}',
       '._2rko1l7b{border-radius:3px}',
-      '._y44v1bcx{-webkit-animation:kfwl3rt;animation:kfwl3rt}',
+      '._y44v1bcx{animation:kfwl3rt}',
       '{ax(["_1wybgktf _2rko1l7b _y44v1bcx", __cmplp.className])}',
     ]);
   });
@@ -42,7 +42,7 @@ describe('Keyframes', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._y44v178k{-webkit-animation:kvif0b9;animation:kvif0b9}',
+      '._y44v178k{animation:kvif0b9}',
       '._1wybgktf{font-size:20px}',
       '._2rko1l7b{border-radius:3px}',
       '{ax(["_y44v178k _1wybgktf _2rko1l7b", __cmplp.className])}',
@@ -68,7 +68,7 @@ describe('Keyframes', () => {
 
     expect(actual).toIncludeMultiple([
       '._syaz5scu{color:red}',
-      '._y44v1bcx{-webkit-animation:kfwl3rt;animation:kfwl3rt}',
+      '._y44v1bcx{animation:kfwl3rt}',
       '{ax(["_syaz5scu _y44v1bcx", __cmplp.className])}',
     ]);
   });
@@ -91,7 +91,7 @@ describe('Keyframes', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._y44v1bcx{-webkit-animation:kfwl3rt;animation:kfwl3rt}',
+      '._y44v1bcx{animation:kfwl3rt}',
       '._syaz5scu{color:red}',
       '{ax(["_y44v1bcx _syaz5scu", __cmplp.className])}',
     ]);

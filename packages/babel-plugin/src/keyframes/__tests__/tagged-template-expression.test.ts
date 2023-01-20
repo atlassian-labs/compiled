@@ -427,9 +427,7 @@ describe('keyframes transforms a tagged template expression', () => {
         "const _2 = \\"._j7hqi8pm{animation-name:krmwxos}\\";
         const _ =
           \\"@keyframes krmwxos{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
-
         const identity = (x) => x;
-
         const fadeOut = null;
         <CC>
           <CS>{[_, _2]}</CS>
@@ -469,9 +467,7 @@ describe('keyframes transforms a tagged template expression', () => {
         "const _2 = \\"._j7hqkl5x{animation-name:k1nhciry}\\";
         const _ =
           \\"@keyframes k1nhciry{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
-
         const identity = (x) => x;
-
         const fromColor = identity(\\"blue\\");
         const fromOpacity = identity(1);
         const toColor = identity(\\"indigo\\");
@@ -511,17 +507,14 @@ describe('keyframes transforms a tagged template expression', () => {
           "const _2 = \\"._j7hqy222{animation-name:ks8zti8}\\";
           const _ =
             \\"@keyframes ks8zti8{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
-
           const from = () => ({
             color: \\"blue\\",
             opacity: 1,
           });
-
           const to = () => ({
             color: \\"indigo\\",
             opacity: 0,
           });
-
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
@@ -559,17 +552,14 @@ describe('keyframes transforms a tagged template expression', () => {
           "const _2 = \\"._j7hqdjmv{animation-name:k1o01d59}\\";
           const _ =
             \\"@keyframes k1o01d59{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
-
           const getFrom = () => ({
             color: \\"blue\\",
             opacity: 1,
           });
-
           const getTo = () => ({
             color: \\"indigo\\",
             opacity: 0,
           });
-
           const from = getFrom();
           const to = getTo();
           const fadeOut = null;
@@ -638,11 +628,8 @@ describe('keyframes transforms a tagged template expression', () => {
         expect(actual).toMatchInlineSnapshot(`
           "const _2 = \\"._j7hq1emf{animation-name:k14ysykh}\\";
           const _ = \\"@keyframes k14ysykh{0%{fontSize:14px}to{fontSize:18px}}\\";
-
           const fromFontSize = () => 14;
-
           const toFontSize = () => 18;
-
           const enlargeFont = null;
           <CC>
             <CS>{[_, _2]}</CS>
@@ -678,9 +665,7 @@ describe('keyframes transforms a tagged template expression', () => {
           "const _2 = \\"._j7hq17yp{animation-name:kuadg5o}\\";
           const _ =
             \\"@keyframes kuadg5o{0%{color:var(--_1b1u9h2);opacity:var(--_19i50d6)}to{color:var(--_1q3t0o);opacity:var(--_1mdpi68)}}\\";
-
           const getOpacity = (x) => (runtime.enabled ? x : 1);
-
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
@@ -741,9 +726,7 @@ describe('keyframes transforms a tagged template expression', () => {
             const _2 = \\"._j7hq1vlm{animation-name:kr3p4uw}\\";
             const _ =
               \\"@keyframes kr3p4uw{0%{color:var(--_1tdwvvr);opacity:1}to{color:var(--_151ky4);opacity:0}}\\";
-
             const generateKeyframes = (fromColor, toColor) => null;
-
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
               {
@@ -775,9 +758,7 @@ describe('keyframes transforms a tagged template expression', () => {
             const _2 = \\"._j7hq1vlm{animation-name:kr3p4uw}\\";
             const _ =
               \\"@keyframes kr3p4uw{0%{color:var(--_1tdwvvr);opacity:1}to{color:var(--_151ky4);opacity:0}}\\";
-
             const generateKeyframes = (fromColor, toColor) => null;
-
             <>
               <CC>
                 <CS>{[_, _2, _3, _4]}</CS>
