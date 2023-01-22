@@ -32,9 +32,7 @@ describe('css builder', () => {
       import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
       const _2 = \\"._syaz1aj3{color:var(--_1ylxx6h)}\\";
       const _ = \\"._bfhk8ruw{background-color:var(--_agotg1)}\\";
-
       const getBackgroundColor = (color) => color;
-
       const color = baseColor;
       <CC>
         <CS>{[_, _2]}</CS>

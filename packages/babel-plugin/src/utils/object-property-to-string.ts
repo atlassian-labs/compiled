@@ -4,7 +4,7 @@ import type { Metadata } from '../types';
 
 import { evaluateExpression } from './evaluate-expression';
 
-type ExpressionToString = (expression: t.Expression, meta: Metadata) => string;
+type ExpressionToString = (expression: t.Expression | t.PrivateName, meta: Metadata) => string;
 
 const templateLiteralToString = (
   template: t.TemplateLiteral,

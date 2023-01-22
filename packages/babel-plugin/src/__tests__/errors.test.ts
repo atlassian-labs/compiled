@@ -15,7 +15,7 @@ describe('error handling', () => {
         <div css={() => {}} />
       `);
     }).toThrowErrorMatchingInlineSnapshot(`
-      "unknown: ArrowFunctionExpression isn't a supported CSS type - try using an object or string (4:18).
+      "unknown file: ArrowFunctionExpression isn't a supported CSS type - try using an object or string (4:18).
         2 |         import '@compiled/react';
         3 |
       > 4 |         <div css={() => {}} />
@@ -32,7 +32,7 @@ describe('error handling', () => {
         <div css={{ ...dontexist }} />
       `);
     }).toThrowErrorMatchingInlineSnapshot(`
-      "unknown: Variable could not be found (4:23).
+      "unknown file: Variable could not be found (4:23).
         2 |         import '@compiled/react';
         3 |
       > 4 |         <div css={{ ...dontexist }} />
@@ -49,7 +49,7 @@ describe('error handling', () => {
         <div css={dontexist} />
       `);
     }).toThrowErrorMatchingInlineSnapshot(`
-      "unknown: Variable could not be found (4:18).
+      "unknown file: Variable could not be found (4:18).
         2 |         import '@compiled/react';
         3 |
       > 4 |         <div css={dontexist} />
@@ -68,7 +68,7 @@ describe('error handling', () => {
         <div css={HelloWorld} />
       `);
     }).toThrowErrorMatchingInlineSnapshot(`
-      "unknown: ClassDeclaration isn't a supported CSS type - try using an object or string (6:18).
+      "unknown file: ClassDeclaration isn't a supported CSS type - try using an object or string (6:18).
         4 |         class HelloWorld {}
         5 |
       > 6 |         <div css={HelloWorld} />
@@ -85,7 +85,7 @@ describe('error handling', () => {
         <div css={[...hello]} />
       `);
     }).toThrowErrorMatchingInlineSnapshot(`
-      "unknown: SpreadElement isn't a supported CSS type - try using an object or string (4:18).
+      "unknown file: SpreadElement isn't a supported CSS type - try using an object or string (4:18).
         2 |         import '@compiled/react';
         3 |
       > 4 |         <div css={[...hello]} />

@@ -15,7 +15,6 @@ describe('jsx automatic', () => {
       import { jsxs as _jsxs } from \\"react/jsx-runtime\\";
       import { jsx as _jsx } from \\"react/jsx-runtime\\";
       const _ = \\"._syaz13q2{color:blue}\\";
-
       _jsxs(CC, {
         children: [
           _jsx(CS, {
@@ -44,7 +43,6 @@ describe('jsx automatic', () => {
       import { jsx as _jsx } from \\"react/jsx-runtime\\";
       import { jsxs as _jsxs } from \\"react/jsx-runtime\\";
       const _ = \\"._syaz13q2{color:blue}\\";
-
       _jsxs(CC, {
         children: [
           _jsx(CS, {

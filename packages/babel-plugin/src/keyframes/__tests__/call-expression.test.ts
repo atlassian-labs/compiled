@@ -394,9 +394,7 @@ describe('keyframes', () => {
           "const _2 = \\"._j7hq1rje{animation-name:kykophz}\\";
           const _ =
             \\"@keyframes kykophz{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
-
           const identity = (x) => x;
-
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
@@ -436,9 +434,7 @@ describe('keyframes', () => {
           "const _2 = \\"._j7hq1bo5{animation-name:kej80vs}\\";
           const _ =
             \\"@keyframes kej80vs{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
-
           const identity = (x) => x;
-
           const fromColor = identity(\\"blue\\");
           const fromOpacity = identity(1);
           const toColor = identity(\\"indigo\\");
@@ -471,17 +467,14 @@ describe('keyframes', () => {
           "const _2 = \\"._j7hqjcah{animation-name:k1e4zivv}\\";
           const _ =
             \\"@keyframes k1e4zivv{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
-
           const from = () => ({
             color: \\"blue\\",
             opacity: 1,
           });
-
           const to = () => ({
             color: \\"indigo\\",
             opacity: 0,
           });
-
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
@@ -515,21 +508,18 @@ describe('keyframes', () => {
           "const _2 = \\"._j7hqjcah{animation-name:k1e4zivv}\\";
           const _ =
             \\"@keyframes k1e4zivv{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
-
           function from() {
             return {
               color: \\"blue\\",
               opacity: 1,
             };
           }
-
           function to() {
             return {
               color: \\"indigo\\",
               opacity: 0,
             };
           }
-
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
@@ -565,17 +555,14 @@ describe('keyframes', () => {
             "const _2 = \\"._j7hqwahf{animation-name:k1fh39u1}\\";
             const _ =
               \\"@keyframes k1fh39u1{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
-
             const from = () => ({
               color: \\"blue\\",
               opacity: 1,
             });
-
             const to = () => ({
               color: \\"indigo\\",
               opacity: 0,
             });
-
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
@@ -613,17 +600,14 @@ describe('keyframes', () => {
             "const _2 = \\"._j7hqgafb{animation-name:k1qk0qiq}\\";
             const _ =
               \\"@keyframes k1qk0qiq{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
-
             const getFrom = () => ({
               color: \\"blue\\",
               opacity: 1,
             });
-
             const getTo = () => ({
               color: \\"indigo\\",
               opacity: 0,
             });
-
             const from = getFrom();
             const to = getTo();
             const fadeOut = null;
@@ -692,11 +676,8 @@ describe('keyframes', () => {
           expect(actual).toMatchInlineSnapshot(`
             "const _2 = \\"._j7hq67nm{animation-name:k1m0lkgc}\\";
             const _ = \\"@keyframes k1m0lkgc{0%{font-size:14px}to{font-size:18px}}\\";
-
             const fromFontSize = () => 14;
-
             const toFontSize = () => 18;
-
             const enlargeFont = null;
             <CC>
               <CS>{[_, _2]}</CS>
@@ -732,9 +713,7 @@ describe('keyframes', () => {
             "const _2 = \\"._j7hq1vu4{animation-name:ka6olon}\\";
             const _ =
               \\"@keyframes ka6olon{0%{color:var(--_1b1u9h2);opacity:var(--_19i50d6)}to{color:var(--_1q3t0o);opacity:var(--_1mdpi68)}}\\";
-
             const getOpacity = (x) => (runtime.enabled ? x : 1);
-
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
@@ -795,9 +774,7 @@ describe('keyframes', () => {
               const _2 = \\"._j7hq1lmr{animation-name:kt18xj8}\\";
               const _ =
                 \\"@keyframes kt18xj8{0%{color:var(--_113bsv7);opacity:1}to{color:var(--_k85g0d);opacity:0}}\\";
-
               const generateKeyframes = (fromColor, toColor) => null;
-
               <CC>
                 <CS>{[_, _2, _3, _4]}</CS>
                 {
@@ -829,9 +806,7 @@ describe('keyframes', () => {
               const _2 = \\"._j7hq1lmr{animation-name:kt18xj8}\\";
               const _ =
                 \\"@keyframes kt18xj8{0%{color:var(--_113bsv7);opacity:1}to{color:var(--_k85g0d);opacity:0}}\\";
-
               const generateKeyframes = (fromColor, toColor) => null;
-
               <>
                 <CC>
                   <CS>{[_, _2, _3, _4]}</CS>
