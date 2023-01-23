@@ -20,12 +20,12 @@ describe('styled tagged template expression', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = \\"._syaz13q2{color:blue}\\";
+      "const _ = "._syaz13q2{color:blue}";
       const StyledComponent = styled.div\`
         color: blue;
       \`;
       const CompiledComponent = forwardRef(
-        ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+        ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           return (
             <CC>
               <CS>{[_]}</CS>
@@ -33,7 +33,7 @@ describe('styled tagged template expression', () => {
                 {...__cmplp}
                 style={__cmpls}
                 ref={__cmplr}
-                className={ax([\\"_syaz13q2\\", __cmplp.className])}
+                className={ax(["_syaz13q2", __cmplp.className])}
               />
             </CC>
           );
@@ -61,14 +61,14 @@ describe('styled tagged template expression', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = \\"._1wybexct{font-size:16px}\\";
+      "const _ = "._1wybexct{font-size:16px}";
       const fontSize = 16;
       const StyledComponent = styled.div\`
         font-size: \${fontSize}px;
         \${({ isPrimary }) => isPrimary && \`color: blue;\`}
       \`;
       const CompiledComponent = forwardRef(
-        ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+        ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           return (
             <CC>
               <CS>{[_]}</CS>
@@ -76,7 +76,7 @@ describe('styled tagged template expression', () => {
                 {...__cmplp}
                 style={__cmpls}
                 ref={__cmplr}
-                className={ax([\\"_1wybexct\\", __cmplp.className])}
+                className={ax(["_1wybexct", __cmplp.className])}
               />
             </CC>
           );

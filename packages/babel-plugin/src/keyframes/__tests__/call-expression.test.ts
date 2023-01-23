@@ -78,15 +78,15 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-            const _3 = \\"._j7hqb4f3{animation-name:k1wmcptp}\\";
-            const _2 = \\"._5sagymdr{animation-duration:2s}\\";
+            "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+            const _3 = "._j7hqb4f3{animation-name:k1wmcptp}";
+            const _2 = "._5sagymdr{animation-duration:2s}";
             const _ =
-              \\"@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
-              {<div className={ax([\\"_5sagymdr _j7hqb4f3 _1pgl1ytf\\"])} />}
+              {<div className={ax(["_5sagymdr _j7hqb4f3 _1pgl1ytf"])} />}
             </CC>;
             "
           `);
@@ -98,13 +98,13 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._y44vjvcp{animation:k1wmcptp 2s ease-in-out}\\";
+            "const _2 = "._y44vjvcp{animation:k1wmcptp 2s ease-in-out}";
             const _ =
-              \\"@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_y44vjvcp\\"])} />}
+              {<div className={ax(["_y44vjvcp"])} />}
             </CC>;
             "
           `);
@@ -119,14 +119,14 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _3 =
-              \\"._y44vwtez{animation:k1m8j3od 2s ease-in-out,k1mcm2lv 2s ease-in-out}\\";
-            const _2 = \\"@keyframes k1mcm2lv{0%{color:blue}to{color:indigo}}\\";
-            const _ = \\"@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}\\";
+              "._y44vwtez{animation:k1m8j3od 2s ease-in-out,k1mcm2lv 2s ease-in-out}";
+            const _2 = "@keyframes k1mcm2lv{0%{color:blue}to{color:indigo}}";
+            const _ = "@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}";
             const fadeOut = null;
             const darken = null;
             <CC>
               <CS>{[_, _2, _3]}</CS>
-              {<div className={ax([\\"_y44vwtez\\"])} />}
+              {<div className={ax(["_y44vwtez"])} />}
             </CC>;
             "
           `);
@@ -158,17 +158,17 @@ describe('keyframes', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hq1bo5{animation-name:kej80vs}\\";
+          "const _2 = "._j7hq1bo5{animation-name:kej80vs}";
           const _ =
-            \\"@keyframes kej80vs{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
-          const fromColor = \\"blue\\";
+            "@keyframes kej80vs{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
+          const fromColor = "blue";
           const fromOpacity = 1;
-          const toColor = \\"indigo\\";
+          const toColor = "indigo";
           const toOpacity = 0;
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hq1bo5\\"])} />}
+            {<div className={ax(["_j7hq1bo5"])} />}
           </CC>;
           "
         `);
@@ -187,8 +187,8 @@ describe('keyframes', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hqocb1{animation-name:k1mv9s16}\\";
-          const _ = \\"@keyframes k1mv9s16{0%{opacity:1}to{opacity:0}}\\";
+          "const _2 = "._j7hqocb1{animation-name:k1mv9s16}";
+          const _ = "@keyframes k1mv9s16{0%{opacity:1}to{opacity:0}}";
           const from = {
             opacity: 1,
           };
@@ -198,7 +198,7 @@ describe('keyframes', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqocb1\\"])} />}
+            {<div className={ax(["_j7hqocb1"])} />}
           </CC>;
           "
         `);
@@ -226,21 +226,21 @@ describe('keyframes', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hqgafb{animation-name:k1qk0qiq}\\";
+          "const _2 = "._j7hqgafb{animation-name:k1qk0qiq}";
           const _ =
-            \\"@keyframes k1qk0qiq{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+            "@keyframes k1qk0qiq{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
           const from = {
-            color: \\"blue\\",
+            color: "blue",
             opacity: 1,
           };
           const to = {
-            color: \\"indigo\\",
+            color: "indigo",
             opacity: 0,
           };
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqgafb\\"])} />}
+            {<div className={ax(["_j7hqgafb"])} />}
           </CC>;
           "
         `);
@@ -279,14 +279,14 @@ describe('keyframes', () => {
           `);
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._j7hq1kkh{animation-name:k1tvirpx}\\";
+            "const _2 = "._j7hq1kkh{animation-name:k1tvirpx}";
             const _ =
-              \\"@keyframes k1tvirpx{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+              "@keyframes k1tvirpx{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
             const animation = {
               colors: {
                 light: {
-                  from: \\"blue\\",
-                  to: \\"indigo\\",
+                  from: "blue",
+                  to: "indigo",
                 },
               },
               opacities: {
@@ -297,7 +297,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_j7hq1kkh\\"])} />}
+              {<div className={ax(["_j7hq1kkh"])} />}
             </CC>;
             "
           `);
@@ -341,13 +341,13 @@ describe('keyframes', () => {
           `);
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._j7hq1kkh{animation-name:k1tvirpx}\\";
+            "const _2 = "._j7hq1kkh{animation-name:k1tvirpx}";
             const _ =
-              \\"@keyframes k1tvirpx{0%{color:blue;opacity:1}to{color:indigo;opacity:1}}\\";
+              "@keyframes k1tvirpx{0%{color:blue;opacity:1}to{color:indigo;opacity:1}}";
             const fromOpacity = 1;
             const toOpacity = 1;
-            const primary = \\"blue\\";
-            const secondary = \\"indigo\\";
+            const primary = "blue";
+            const secondary = "indigo";
             const animation = {
               colors: {
                 light: {
@@ -363,7 +363,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_j7hq1kkh\\"])} />}
+              {<div className={ax(["_j7hq1kkh"])} />}
             </CC>;
             "
           `);
@@ -391,14 +391,14 @@ describe('keyframes', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hq1rje{animation-name:kykophz}\\";
+          "const _2 = "._j7hq1rje{animation-name:kykophz}";
           const _ =
-            \\"@keyframes kykophz{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+            "@keyframes kykophz{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
           const identity = (x) => x;
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hq1rje\\"])} />}
+            {<div className={ax(["_j7hq1rje"])} />}
           </CC>;
           "
         `);
@@ -431,18 +431,18 @@ describe('keyframes', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hq1bo5{animation-name:kej80vs}\\";
+          "const _2 = "._j7hq1bo5{animation-name:kej80vs}";
           const _ =
-            \\"@keyframes kej80vs{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+            "@keyframes kej80vs{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
           const identity = (x) => x;
-          const fromColor = identity(\\"blue\\");
+          const fromColor = identity("blue");
           const fromOpacity = identity(1);
-          const toColor = identity(\\"indigo\\");
+          const toColor = identity("indigo");
           const toOpacity = identity(0);
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hq1bo5\\"])} />}
+            {<div className={ax(["_j7hq1bo5"])} />}
           </CC>;
           "
         `);
@@ -464,21 +464,21 @@ describe('keyframes', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hqjcah{animation-name:k1e4zivv}\\";
+          "const _2 = "._j7hqjcah{animation-name:k1e4zivv}";
           const _ =
-            \\"@keyframes k1e4zivv{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+            "@keyframes k1e4zivv{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
           const from = () => ({
-            color: \\"blue\\",
+            color: "blue",
             opacity: 1,
           });
           const to = () => ({
-            color: \\"indigo\\",
+            color: "indigo",
             opacity: 0,
           });
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqjcah\\"])} />}
+            {<div className={ax(["_j7hqjcah"])} />}
           </CC>;
           "
         `);
@@ -505,25 +505,25 @@ describe('keyframes', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hqjcah{animation-name:k1e4zivv}\\";
+          "const _2 = "._j7hqjcah{animation-name:k1e4zivv}";
           const _ =
-            \\"@keyframes k1e4zivv{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+            "@keyframes k1e4zivv{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
           function from() {
             return {
-              color: \\"blue\\",
+              color: "blue",
               opacity: 1,
             };
           }
           function to() {
             return {
-              color: \\"indigo\\",
+              color: "indigo",
               opacity: 0,
             };
           }
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqjcah\\"])} />}
+            {<div className={ax(["_j7hqjcah"])} />}
           </CC>;
           "
         `);
@@ -552,21 +552,21 @@ describe('keyframes', () => {
           `);
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._j7hqwahf{animation-name:k1fh39u1}\\";
+            "const _2 = "._j7hqwahf{animation-name:k1fh39u1}";
             const _ =
-              \\"@keyframes k1fh39u1{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+              "@keyframes k1fh39u1{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
             const from = () => ({
-              color: \\"blue\\",
+              color: "blue",
               opacity: 1,
             });
             const to = () => ({
-              color: \\"indigo\\",
+              color: "indigo",
               opacity: 0,
             });
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_j7hqwahf\\"])} />}
+              {<div className={ax(["_j7hqwahf"])} />}
             </CC>;
             "
           `);
@@ -597,15 +597,15 @@ describe('keyframes', () => {
           `);
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._j7hqgafb{animation-name:k1qk0qiq}\\";
+            "const _2 = "._j7hqgafb{animation-name:k1qk0qiq}";
             const _ =
-              \\"@keyframes k1qk0qiq{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+              "@keyframes k1qk0qiq{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
             const getFrom = () => ({
-              color: \\"blue\\",
+              color: "blue",
               opacity: 1,
             });
             const getTo = () => ({
-              color: \\"indigo\\",
+              color: "indigo",
               opacity: 0,
             });
             const from = getFrom();
@@ -613,7 +613,7 @@ describe('keyframes', () => {
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_j7hqgafb\\"])} />}
+              {<div className={ax(["_j7hqgafb"])} />}
             </CC>;
             "
           `);
@@ -641,14 +641,14 @@ describe('keyframes', () => {
           `);
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._j7hq1mki{animation-name:k1o8zrgy}\\";
-            const _ = \\"@keyframes k1o8zrgy{0%{font-size:14px}to{font-size:18px}}\\";
+            "const _2 = "._j7hq1mki{animation-name:k1o8zrgy}";
+            const _ = "@keyframes k1o8zrgy{0%{font-size:14px}to{font-size:18px}}";
             const fromFontSize = 14;
             const toFontSize = 18;
             const enlargeFont = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_j7hq1mki\\"])} />}
+              {<div className={ax(["_j7hq1mki"])} />}
             </CC>;
             "
           `);
@@ -674,14 +674,14 @@ describe('keyframes', () => {
           `);
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._j7hq67nm{animation-name:k1m0lkgc}\\";
-            const _ = \\"@keyframes k1m0lkgc{0%{font-size:14px}to{font-size:18px}}\\";
+            "const _2 = "._j7hq67nm{animation-name:k1m0lkgc}";
+            const _ = "@keyframes k1m0lkgc{0%{font-size:14px}to{font-size:18px}}";
             const fromFontSize = () => 14;
             const toFontSize = () => 18;
             const enlargeFont = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_j7hq67nm\\"])} />}
+              {<div className={ax(["_j7hq67nm"])} />}
             </CC>;
             "
           `);
@@ -710,21 +710,21 @@ describe('keyframes', () => {
           `);
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._j7hq1vu4{animation-name:ka6olon}\\";
+            "const _2 = "._j7hq1vu4{animation-name:ka6olon}";
             const _ =
-              \\"@keyframes ka6olon{0%{color:var(--_1b1u9h2);opacity:var(--_19i50d6)}to{color:var(--_1q3t0o);opacity:var(--_1mdpi68)}}\\";
+              "@keyframes ka6olon{0%{color:var(--_1b1u9h2);opacity:var(--_19i50d6)}to{color:var(--_1q3t0o);opacity:var(--_1mdpi68)}}";
             const getOpacity = (x) => (runtime.enabled ? x : 1);
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
               {
                 <div
-                  className={ax([\\"_j7hq1vu4\\"])}
+                  className={ax(["_j7hq1vu4"])}
                   style={{
-                    \\"--_1b1u9h2\\": ix(runtime.colors.blue),
-                    \\"--_19i50d6\\": ix(getOpacity(0)),
-                    \\"--_1q3t0o\\": ix(runtime.colors.indigo),
-                    \\"--_1mdpi68\\": ix(getOpacity(1)),
+                    "--_1b1u9h2": ix(runtime.colors.blue),
+                    "--_19i50d6": ix(getOpacity(0)),
+                    "--_1q3t0o": ix(runtime.colors.indigo),
+                    "--_1mdpi68": ix(getOpacity(1)),
                   }}
                 />
               }
@@ -769,22 +769,22 @@ describe('keyframes', () => {
             const actual = transform(createDynamicAnimations(1));
 
             expect(actual).toMatchInlineSnapshot(`
-              "const _4 = \\"._syaz115e{color:var(--_nfiion)}\\";
-              const _3 = \\"._bfhk1220{background-color:var(--_1ud0qzp)}\\";
-              const _2 = \\"._j7hq1lmr{animation-name:kt18xj8}\\";
+              "const _4 = "._syaz115e{color:var(--_nfiion)}";
+              const _3 = "._bfhk1220{background-color:var(--_1ud0qzp)}";
+              const _2 = "._j7hq1lmr{animation-name:kt18xj8}";
               const _ =
-                \\"@keyframes kt18xj8{0%{color:var(--_113bsv7);opacity:1}to{color:var(--_k85g0d);opacity:0}}\\";
+                "@keyframes kt18xj8{0%{color:var(--_113bsv7);opacity:1}to{color:var(--_k85g0d);opacity:0}}";
               const generateKeyframes = (fromColor, toColor) => null;
               <CC>
                 <CS>{[_, _2, _3, _4]}</CS>
                 {
                   <div
-                    className={ax([\\"_j7hq1lmr _bfhk1220 _syaz115e\\"])}
+                    className={ax(["_j7hq1lmr _bfhk1220 _syaz115e"])}
                     style={{
-                      \\"--_113bsv7\\": ix(runtime[0].from),
-                      \\"--_k85g0d\\": ix(runtime[0].to),
-                      \\"--_1ud0qzp\\": ix(fromColor),
-                      \\"--_nfiion\\": ix(runtime[0].from),
+                      "--_113bsv7": ix(runtime[0].from),
+                      "--_k85g0d": ix(runtime[0].to),
+                      "--_1ud0qzp": ix(fromColor),
+                      "--_nfiion": ix(runtime[0].from),
                     }}
                   />
                 }
@@ -800,24 +800,24 @@ describe('keyframes', () => {
             expect(actual.match(/@keyframes/g)).toHaveLength(1);
 
             expect(actual).toMatchInlineSnapshot(`
-              "const _5 = \\"._syazjq9z{color:var(--_we82k3)}\\";
-              const _4 = \\"._syaz115e{color:var(--_nfiion)}\\";
-              const _3 = \\"._bfhk1220{background-color:var(--_1ud0qzp)}\\";
-              const _2 = \\"._j7hq1lmr{animation-name:kt18xj8}\\";
+              "const _5 = "._syazjq9z{color:var(--_we82k3)}";
+              const _4 = "._syaz115e{color:var(--_nfiion)}";
+              const _3 = "._bfhk1220{background-color:var(--_1ud0qzp)}";
+              const _2 = "._j7hq1lmr{animation-name:kt18xj8}";
               const _ =
-                \\"@keyframes kt18xj8{0%{color:var(--_113bsv7);opacity:1}to{color:var(--_k85g0d);opacity:0}}\\";
+                "@keyframes kt18xj8{0%{color:var(--_113bsv7);opacity:1}to{color:var(--_k85g0d);opacity:0}}";
               const generateKeyframes = (fromColor, toColor) => null;
               <>
                 <CC>
                   <CS>{[_, _2, _3, _4]}</CS>
                   {
                     <div
-                      className={ax([\\"_j7hq1lmr _bfhk1220 _syaz115e\\"])}
+                      className={ax(["_j7hq1lmr _bfhk1220 _syaz115e"])}
                       style={{
-                        \\"--_113bsv7\\": ix(runtime[0].from),
-                        \\"--_k85g0d\\": ix(runtime[0].to),
-                        \\"--_1ud0qzp\\": ix(fromColor),
-                        \\"--_nfiion\\": ix(runtime[0].from),
+                        "--_113bsv7": ix(runtime[0].from),
+                        "--_k85g0d": ix(runtime[0].to),
+                        "--_1ud0qzp": ix(fromColor),
+                        "--_nfiion": ix(runtime[0].from),
                       }}
                     />
                   }
@@ -827,12 +827,12 @@ describe('keyframes', () => {
                   <CS>{[_, _2, _3, _5]}</CS>
                   {
                     <div
-                      className={ax([\\"_j7hq1lmr _bfhk1220 _syazjq9z\\"])}
+                      className={ax(["_j7hq1lmr _bfhk1220 _syazjq9z"])}
                       style={{
-                        \\"--_113bsv7\\": ix(runtime[1].from),
-                        \\"--_k85g0d\\": ix(runtime[1].to),
-                        \\"--_1ud0qzp\\": ix(fromColor),
-                        \\"--_we82k3\\": ix(runtime[1].from),
+                        "--_113bsv7": ix(runtime[1].from),
+                        "--_k85g0d": ix(runtime[1].to),
+                        "--_1ud0qzp": ix(fromColor),
+                        "--_we82k3": ix(runtime[1].from),
                       }}
                     />
                   }
@@ -853,15 +853,15 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-            const _3 = \\"._j7hqb4f3{animation-name:k1wmcptp}\\";
-            const _2 = \\"._5sagymdr{animation-duration:2s}\\";
+            "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+            const _3 = "._j7hqb4f3{animation-name:k1wmcptp}";
+            const _2 = "._5sagymdr{animation-duration:2s}";
             const _ =
-              \\"@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
-              {<div className={ax([\\"_5sagymdr _j7hqb4f3 _1pgl1ytf\\"])} />}
+              {<div className={ax(["_5sagymdr _j7hqb4f3 _1pgl1ytf"])} />}
             </CC>;
             "
           `);
@@ -873,13 +873,13 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._y44vjvcp{animation:k1wmcptp 2s ease-in-out}\\";
+            "const _2 = "._y44vjvcp{animation:k1wmcptp 2s ease-in-out}";
             const _ =
-              \\"@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_y44vjvcp\\"])} />}
+              {<div className={ax(["_y44vjvcp"])} />}
             </CC>;
             "
           `);
@@ -894,14 +894,14 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _3 =
-              \\"._y44vwtez{animation:k1m8j3od 2s ease-in-out,k1mcm2lv 2s ease-in-out}\\";
-            const _2 = \\"@keyframes k1mcm2lv{0%{color:blue}to{color:indigo}}\\";
-            const _ = \\"@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}\\";
+              "._y44vwtez{animation:k1m8j3od 2s ease-in-out,k1mcm2lv 2s ease-in-out}";
+            const _2 = "@keyframes k1mcm2lv{0%{color:blue}to{color:indigo}}";
+            const _ = "@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}";
             const fadeOut = null;
             const darken = null;
             <CC>
               <CS>{[_, _2, _3]}</CS>
-              {<div className={ax([\\"_y44vwtez\\"])} />}
+              {<div className={ax(["_y44vwtez"])} />}
             </CC>;
             "
           `);
@@ -917,14 +917,14 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-            const _3 = \\"._j7hqb4f3{animation-name:k1wmcptp}\\";
-            const _2 = \\"._5sagymdr{animation-duration:2s}\\";
+            "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+            const _3 = "._j7hqb4f3{animation-name:k1wmcptp}";
+            const _2 = "._5sagymdr{animation-duration:2s}";
             const _ =
-              \\"@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+              ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3, _4]}</CS>
@@ -932,7 +932,7 @@ describe('keyframes', () => {
                       {...__cmplp}
                       style={__cmpls}
                       ref={__cmplr}
-                      className={ax([\\"_5sagymdr _j7hqb4f3 _1pgl1ytf\\", __cmplp.className])}
+                      className={ax(["_5sagymdr _j7hqb4f3 _1pgl1ytf", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -948,12 +948,12 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._y44vjvcp{animation:k1wmcptp 2s ease-in-out}\\";
+            "const _2 = "._y44vjvcp{animation:k1wmcptp 2s ease-in-out}";
             const _ =
-              \\"@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+              ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2]}</CS>
@@ -961,7 +961,7 @@ describe('keyframes', () => {
                       {...__cmplp}
                       style={__cmpls}
                       ref={__cmplr}
-                      className={ax([\\"_y44vjvcp\\", __cmplp.className])}
+                      className={ax(["_y44vjvcp", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -984,13 +984,13 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _3 =
-              \\"._y44vwtez{animation:k1m8j3od 2s ease-in-out,k1mcm2lv 2s ease-in-out}\\";
-            const _2 = \\"@keyframes k1mcm2lv{0%{color:blue}to{color:indigo}}\\";
-            const _ = \\"@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}\\";
+              "._y44vwtez{animation:k1m8j3od 2s ease-in-out,k1mcm2lv 2s ease-in-out}";
+            const _2 = "@keyframes k1mcm2lv{0%{color:blue}to{color:indigo}}";
+            const _ = "@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}";
             const fadeOut = null;
             const darken = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+              ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3]}</CS>
@@ -998,7 +998,7 @@ describe('keyframes', () => {
                       {...__cmplp}
                       style={__cmpls}
                       ref={__cmplr}
-                      className={ax([\\"_y44vwtez\\", __cmplp.className])}
+                      className={ax(["_y44vwtez", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1018,14 +1018,14 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-            const _3 = \\"._j7hqb4f3{animation-name:k1wmcptp}\\";
-            const _2 = \\"._5sagymdr{animation-duration:2s}\\";
+            "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+            const _3 = "._j7hqb4f3{animation-name:k1wmcptp}";
+            const _2 = "._5sagymdr{animation-duration:2s}";
             const _ =
-              \\"@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+              ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3, _4]}</CS>
@@ -1033,7 +1033,7 @@ describe('keyframes', () => {
                       {...__cmplp}
                       style={__cmpls}
                       ref={__cmplr}
-                      className={ax([\\"_5sagymdr _j7hqb4f3 _1pgl1ytf\\", __cmplp.className])}
+                      className={ax(["_5sagymdr _j7hqb4f3 _1pgl1ytf", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1049,12 +1049,12 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._y44vjvcp{animation:k1wmcptp 2s ease-in-out}\\";
+            "const _2 = "._y44vjvcp{animation:k1wmcptp 2s ease-in-out}";
             const _ =
-              \\"@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+              ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2]}</CS>
@@ -1062,7 +1062,7 @@ describe('keyframes', () => {
                       {...__cmplp}
                       style={__cmpls}
                       ref={__cmplr}
-                      className={ax([\\"_y44vjvcp\\", __cmplp.className])}
+                      className={ax(["_y44vjvcp", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1085,13 +1085,13 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _3 =
-              \\"._y44vwtez{animation:k1m8j3od 2s ease-in-out,k1mcm2lv 2s ease-in-out}\\";
-            const _2 = \\"@keyframes k1mcm2lv{0%{color:blue}to{color:indigo}}\\";
-            const _ = \\"@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}\\";
+              "._y44vwtez{animation:k1m8j3od 2s ease-in-out,k1mcm2lv 2s ease-in-out}";
+            const _2 = "@keyframes k1mcm2lv{0%{color:blue}to{color:indigo}}";
+            const _ = "@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}";
             const fadeOut = null;
             const darken = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+              ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3]}</CS>
@@ -1099,7 +1099,7 @@ describe('keyframes', () => {
                       {...__cmplp}
                       style={__cmpls}
                       ref={__cmplr}
-                      className={ax([\\"_y44vwtez\\", __cmplp.className])}
+                      className={ax(["_y44vwtez", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1169,15 +1169,15 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-            const _3 = \\"._j7hq1c6j{animation-name:khheuil}\\";
-            const _2 = \\"._5sagymdr{animation-duration:2s}\\";
+            "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+            const _3 = "._j7hq1c6j{animation-name:khheuil}";
+            const _2 = "._5sagymdr{animation-duration:2s}";
             const _ =
-              \\"@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
-              {<div className={ax([\\"_5sagymdr _j7hq1c6j _1pgl1ytf\\"])} />}
+              {<div className={ax(["_5sagymdr _j7hq1c6j _1pgl1ytf"])} />}
             </CC>;
             "
           `);
@@ -1189,13 +1189,13 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._y44v1go4{animation:khheuil 2s ease-in-out}\\";
+            "const _2 = "._y44v1go4{animation:khheuil 2s ease-in-out}";
             const _ =
-              \\"@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_y44v1go4\\"])} />}
+              {<div className={ax(["_y44v1go4"])} />}
             </CC>;
             "
           `);
@@ -1210,14 +1210,14 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _3 =
-              \\"._y44vheiy{animation:k15szqvw 2s ease-in-out,k164f01r 2s ease-in-out}\\";
-            const _2 = \\"@keyframes k164f01r{0%{color:blue}to{color:indigo}}\\";
-            const _ = \\"@keyframes k15szqvw{0%{opacity:1}to{opacity:0}}\\";
+              "._y44vheiy{animation:k15szqvw 2s ease-in-out,k164f01r 2s ease-in-out}";
+            const _2 = "@keyframes k164f01r{0%{color:blue}to{color:indigo}}";
+            const _ = "@keyframes k15szqvw{0%{opacity:1}to{opacity:0}}";
             const fadeOut = null;
             const darken = null;
             <CC>
               <CS>{[_, _2, _3]}</CS>
-              {<div className={ax([\\"_y44vheiy\\"])} />}
+              {<div className={ax(["_y44vheiy"])} />}
             </CC>;
             "
           `);
@@ -1233,15 +1233,15 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-            const _3 = \\"._j7hq1c6j{animation-name:khheuil}\\";
-            const _2 = \\"._5sagymdr{animation-duration:2s}\\";
+            "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+            const _3 = "._j7hq1c6j{animation-name:khheuil}";
+            const _2 = "._5sagymdr{animation-duration:2s}";
             const _ =
-              \\"@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
-              {<div className={ax([\\"_5sagymdr _j7hq1c6j _1pgl1ytf\\"])} />}
+              {<div className={ax(["_5sagymdr _j7hq1c6j _1pgl1ytf"])} />}
             </CC>;
             "
           `);
@@ -1253,13 +1253,13 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._y44v1go4{animation:khheuil 2s ease-in-out}\\";
+            "const _2 = "._y44v1go4{animation:khheuil 2s ease-in-out}";
             const _ =
-              \\"@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
-              {<div className={ax([\\"_y44v1go4\\"])} />}
+              {<div className={ax(["_y44v1go4"])} />}
             </CC>;
             "
           `);
@@ -1274,14 +1274,14 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _3 =
-              \\"._y44vheiy{animation:k15szqvw 2s ease-in-out,k164f01r 2s ease-in-out}\\";
-            const _2 = \\"@keyframes k164f01r{0%{color:blue}to{color:indigo}}\\";
-            const _ = \\"@keyframes k15szqvw{0%{opacity:1}to{opacity:0}}\\";
+              "._y44vheiy{animation:k15szqvw 2s ease-in-out,k164f01r 2s ease-in-out}";
+            const _2 = "@keyframes k164f01r{0%{color:blue}to{color:indigo}}";
+            const _ = "@keyframes k15szqvw{0%{opacity:1}to{opacity:0}}";
             const fadeOut = null;
             const darken = null;
             <CC>
               <CS>{[_, _2, _3]}</CS>
-              {<div className={ax([\\"_y44vheiy\\"])} />}
+              {<div className={ax(["_y44vheiy"])} />}
             </CC>;
             "
           `);
@@ -1297,14 +1297,14 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-            const _3 = \\"._j7hq1c6j{animation-name:khheuil}\\";
-            const _2 = \\"._5sagymdr{animation-duration:2s}\\";
+            "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+            const _3 = "._j7hq1c6j{animation-name:khheuil}";
+            const _2 = "._5sagymdr{animation-duration:2s}";
             const _ =
-              \\"@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+              ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3, _4]}</CS>
@@ -1312,7 +1312,7 @@ describe('keyframes', () => {
                       {...__cmplp}
                       style={__cmpls}
                       ref={__cmplr}
-                      className={ax([\\"_5sagymdr _j7hq1c6j _1pgl1ytf\\", __cmplp.className])}
+                      className={ax(["_5sagymdr _j7hq1c6j _1pgl1ytf", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1328,12 +1328,12 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._y44v1go4{animation:khheuil 2s ease-in-out}\\";
+            "const _2 = "._y44v1go4{animation:khheuil 2s ease-in-out}";
             const _ =
-              \\"@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+              ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2]}</CS>
@@ -1341,7 +1341,7 @@ describe('keyframes', () => {
                       {...__cmplp}
                       style={__cmpls}
                       ref={__cmplr}
-                      className={ax([\\"_y44v1go4\\", __cmplp.className])}
+                      className={ax(["_y44v1go4", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1364,13 +1364,13 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _3 =
-              \\"._y44vheiy{animation:k15szqvw 2s ease-in-out,k164f01r 2s ease-in-out}\\";
-            const _2 = \\"@keyframes k164f01r{0%{color:blue}to{color:indigo}}\\";
-            const _ = \\"@keyframes k15szqvw{0%{opacity:1}to{opacity:0}}\\";
+              "._y44vheiy{animation:k15szqvw 2s ease-in-out,k164f01r 2s ease-in-out}";
+            const _2 = "@keyframes k164f01r{0%{color:blue}to{color:indigo}}";
+            const _ = "@keyframes k15szqvw{0%{opacity:1}to{opacity:0}}";
             const fadeOut = null;
             const darken = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+              ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3]}</CS>
@@ -1378,7 +1378,7 @@ describe('keyframes', () => {
                       {...__cmplp}
                       style={__cmpls}
                       ref={__cmplr}
-                      className={ax([\\"_y44vheiy\\", __cmplp.className])}
+                      className={ax(["_y44vheiy", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1398,14 +1398,14 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-            const _3 = \\"._j7hq1c6j{animation-name:khheuil}\\";
-            const _2 = \\"._5sagymdr{animation-duration:2s}\\";
+            "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+            const _3 = "._j7hq1c6j{animation-name:khheuil}";
+            const _2 = "._5sagymdr{animation-duration:2s}";
             const _ =
-              \\"@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+              ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3, _4]}</CS>
@@ -1413,7 +1413,7 @@ describe('keyframes', () => {
                       {...__cmplp}
                       style={__cmpls}
                       ref={__cmplr}
-                      className={ax([\\"_5sagymdr _j7hq1c6j _1pgl1ytf\\", __cmplp.className])}
+                      className={ax(["_5sagymdr _j7hq1c6j _1pgl1ytf", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1429,12 +1429,12 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = \\"._y44v1go4{animation:khheuil 2s ease-in-out}\\";
+            "const _2 = "._y44v1go4{animation:khheuil 2s ease-in-out}";
             const _ =
-              \\"@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+              ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2]}</CS>
@@ -1442,7 +1442,7 @@ describe('keyframes', () => {
                       {...__cmplp}
                       style={__cmpls}
                       ref={__cmplr}
-                      className={ax([\\"_y44v1go4\\", __cmplp.className])}
+                      className={ax(["_y44v1go4", __cmplp.className])}
                     />
                   </CC>
                 );
@@ -1465,13 +1465,13 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _3 =
-              \\"._y44vheiy{animation:k15szqvw 2s ease-in-out,k164f01r 2s ease-in-out}\\";
-            const _2 = \\"@keyframes k164f01r{0%{color:blue}to{color:indigo}}\\";
-            const _ = \\"@keyframes k15szqvw{0%{opacity:1}to{opacity:0}}\\";
+              "._y44vheiy{animation:k15szqvw 2s ease-in-out,k164f01r 2s ease-in-out}";
+            const _2 = "@keyframes k164f01r{0%{color:blue}to{color:indigo}}";
+            const _ = "@keyframes k15szqvw{0%{opacity:1}to{opacity:0}}";
             const fadeOut = null;
             const darken = null;
             const StyledComponent = forwardRef(
-              ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+              ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
                 return (
                   <CC>
                     <CS>{[_, _2, _3]}</CS>
@@ -1479,7 +1479,7 @@ describe('keyframes', () => {
                       {...__cmplp}
                       style={__cmpls}
                       ref={__cmplr}
-                      className={ax([\\"_y44vheiy\\", __cmplp.className])}
+                      className={ax(["_y44vheiy", __cmplp.className])}
                     />
                   </CC>
                 );

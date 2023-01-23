@@ -11,17 +11,17 @@ describe('jsx automatic', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
-      import { jsxs as _jsxs } from \\"react/jsx-runtime\\";
-      import { jsx as _jsx } from \\"react/jsx-runtime\\";
-      const _ = \\"._syaz13q2{color:blue}\\";
+      "import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      import { jsxs as _jsxs } from "react/jsx-runtime";
+      import { jsx as _jsx } from "react/jsx-runtime";
+      const _ = "._syaz13q2{color:blue}";
       _jsxs(CC, {
         children: [
           _jsx(CS, {
             children: [_],
           }),
-          _jsx(\\"div\\", {
-            className: ax([\\"_syaz13q2\\"]),
+          _jsx("div", {
+            className: ax(["_syaz13q2"]),
           }),
         ],
       });
@@ -39,17 +39,17 @@ describe('jsx automatic', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
-      import { jsx as _jsx } from \\"react/jsx-runtime\\";
-      import { jsxs as _jsxs } from \\"react/jsx-runtime\\";
-      const _ = \\"._syaz13q2{color:blue}\\";
+      "import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      import { jsx as _jsx } from "react/jsx-runtime";
+      import { jsxs as _jsxs } from "react/jsx-runtime";
+      const _ = "._syaz13q2{color:blue}";
       _jsxs(CC, {
         children: [
           _jsx(CS, {
             children: [_],
           }),
-          _jsx(\\"div\\", {
-            className: \\"_syaz13q2\\",
+          _jsx("div", {
+            className: "_syaz13q2",
           }),
         ],
       });
@@ -67,12 +67,12 @@ describe('jsx automatic', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import { forwardRef } from \\"react\\";
-      import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
-      import { jsx as _jsx } from \\"react/jsx-runtime\\";
-      import { jsxs as _jsxs } from \\"react/jsx-runtime\\";
-      const _ = \\"._syaz13q2{color:blue}\\";
-      forwardRef(({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+      "import { forwardRef } from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      import { jsx as _jsx } from "react/jsx-runtime";
+      import { jsxs as _jsxs } from "react/jsx-runtime";
+      const _ = "._syaz13q2{color:blue}";
+      forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
         return _jsxs(CC, {
           children: [
             _jsx(CS, {
@@ -82,7 +82,7 @@ describe('jsx automatic', () => {
               ...__cmplp,
               style: __cmpls,
               ref: __cmplr,
-              className: ax([\\"_syaz13q2\\", __cmplp.className]),
+              className: ax(["_syaz13q2", __cmplp.className]),
             }),
           ],
         });

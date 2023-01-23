@@ -151,7 +151,7 @@ describe('atomicify rules', () => {
     result.css;
 
     expect(classes).toMatchInlineSnapshot(`
-      Array [
+      [
         "_1e0c1ule",
         "_y3gn1h6o",
         "_uf5eglyw",
@@ -409,7 +409,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@charset 'utf-8';@import 'custom.css';@namespace 'XML-namespace-URL';@-webkit-keyframes hello-world{from:{opacity:0}to{opacity:1}}@keyframes hello-world{from:{opacity:0}to{opacity:1}}@font-face{font-family:\\"Open Sans\\"}"`
+      `"@charset 'utf-8';@import 'custom.css';@namespace 'XML-namespace-URL';@-webkit-keyframes hello-world{from:{opacity:0}to{opacity:1}}@keyframes hello-world{from:{opacity:0}to{opacity:1}}@font-face{font-family:"Open Sans"}"`
     );
   });
 

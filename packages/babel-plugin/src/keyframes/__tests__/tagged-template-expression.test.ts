@@ -77,15 +77,15 @@ describe('keyframes transforms a tagged template expression', () => {
         );
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-          const _3 = \\"._j7hqa2t1{animation-name:k1a3bdtb}\\";
-          const _2 = \\"._5sagymdr{animation-duration:2s}\\";
+          "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+          const _3 = "._j7hqa2t1{animation-name:k1a3bdtb}";
+          const _2 = "._5sagymdr{animation-duration:2s}";
           const _ =
-            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            "@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
           const fadeOut = null;
           <CC>
             <CS>{[_, _2, _3, _4]}</CS>
-            {<div className={ax([\\"_5sagymdr _j7hqa2t1 _1pgl1ytf\\"])} />}
+            {<div className={ax(["_5sagymdr _j7hqa2t1 _1pgl1ytf"])} />}
           </CC>;
           "
         `);
@@ -97,13 +97,13 @@ describe('keyframes transforms a tagged template expression', () => {
         );
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._y44v1e4p{animation:k1a3bdtb 2s ease-in-out}\\";
+          "const _2 = "._y44v1e4p{animation:k1a3bdtb 2s ease-in-out}";
           const _ =
-            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            "@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_y44v1e4p\\"])} />}
+            {<div className={ax(["_y44v1e4p"])} />}
           </CC>;
           "
         `);
@@ -118,14 +118,14 @@ describe('keyframes transforms a tagged template expression', () => {
 
         expect(actual).toMatchInlineSnapshot(`
           "const _3 =
-            \\"._y44vt6c7{animation:k1i6i4z9 2s ease-in-out,k1tsdnyk 2s ease-in-out}\\";
-          const _2 = \\"@keyframes k1tsdnyk{0%{color:blue}to{color:indigo}}\\";
-          const _ = \\"@keyframes k1i6i4z9{0%{opacity:1}to{opacity:0}}\\";
+            "._y44vt6c7{animation:k1i6i4z9 2s ease-in-out,k1tsdnyk 2s ease-in-out}";
+          const _2 = "@keyframes k1tsdnyk{0%{color:blue}to{color:indigo}}";
+          const _ = "@keyframes k1i6i4z9{0%{opacity:1}to{opacity:0}}";
           const fadeOut = null;
           const darken = null;
           <CC>
             <CS>{[_, _2, _3]}</CS>
-            {<div className={ax([\\"_y44vt6c7\\"])} />}
+            {<div className={ax(["_y44vt6c7"])} />}
           </CC>;
           "
         `);
@@ -141,15 +141,15 @@ describe('keyframes transforms a tagged template expression', () => {
         );
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-          const _3 = \\"._j7hqa2t1{animation-name:k1a3bdtb}\\";
-          const _2 = \\"._5sagymdr{animation-duration:2s}\\";
+          "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+          const _3 = "._j7hqa2t1{animation-name:k1a3bdtb}";
+          const _2 = "._5sagymdr{animation-duration:2s}";
           const _ =
-            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            "@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
           const fadeOut = null;
           <CC>
             <CS>{[_, _2, _3, _4]}</CS>
-            {<div className={ax([\\"_5sagymdr _j7hqa2t1 _1pgl1ytf\\"])} />}
+            {<div className={ax(["_5sagymdr _j7hqa2t1 _1pgl1ytf"])} />}
           </CC>;
           "
         `);
@@ -161,13 +161,13 @@ describe('keyframes transforms a tagged template expression', () => {
         );
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._y44v1e4p{animation:k1a3bdtb 2s ease-in-out}\\";
+          "const _2 = "._y44v1e4p{animation:k1a3bdtb 2s ease-in-out}";
           const _ =
-            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            "@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_y44v1e4p\\"])} />}
+            {<div className={ax(["_y44v1e4p"])} />}
           </CC>;
           "
         `);
@@ -182,14 +182,14 @@ describe('keyframes transforms a tagged template expression', () => {
 
         expect(actual).toMatchInlineSnapshot(`
           "const _3 =
-            \\"._y44vt6c7{animation:k1i6i4z9 2s ease-in-out,k1tsdnyk 2s ease-in-out}\\";
-          const _2 = \\"@keyframes k1tsdnyk{0%{color:blue}to{color:indigo}}\\";
-          const _ = \\"@keyframes k1i6i4z9{0%{opacity:1}to{opacity:0}}\\";
+            "._y44vt6c7{animation:k1i6i4z9 2s ease-in-out,k1tsdnyk 2s ease-in-out}";
+          const _2 = "@keyframes k1tsdnyk{0%{color:blue}to{color:indigo}}";
+          const _ = "@keyframes k1i6i4z9{0%{opacity:1}to{opacity:0}}";
           const fadeOut = null;
           const darken = null;
           <CC>
             <CS>{[_, _2, _3]}</CS>
-            {<div className={ax([\\"_y44vt6c7\\"])} />}
+            {<div className={ax(["_y44vt6c7"])} />}
           </CC>;
           "
         `);
@@ -221,17 +221,17 @@ describe('keyframes transforms a tagged template expression', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "const _2 = \\"._j7hqkl5x{animation-name:k1nhciry}\\";
+        "const _2 = "._j7hqkl5x{animation-name:k1nhciry}";
         const _ =
-          \\"@keyframes k1nhciry{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
-        const fromColor = \\"blue\\";
+          "@keyframes k1nhciry{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
+        const fromColor = "blue";
         const fromOpacity = 1;
-        const toColor = \\"indigo\\";
+        const toColor = "indigo";
         const toOpacity = 0;
         const fadeOut = null;
         <CC>
           <CS>{[_, _2]}</CS>
-          {<div className={ax([\\"_j7hqkl5x\\"])} />}
+          {<div className={ax(["_j7hqkl5x"])} />}
         </CC>;
         "
       `);
@@ -259,21 +259,21 @@ describe('keyframes transforms a tagged template expression', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "const _2 = \\"._j7hq6mn5{animation-name:k1qntra6}\\";
+        "const _2 = "._j7hq6mn5{animation-name:k1qntra6}";
         const _ =
-          \\"@keyframes k1qntra6{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+          "@keyframes k1qntra6{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
         const from = {
-          color: \\"blue\\",
+          color: "blue",
           opacity: 1,
         };
         const to = {
-          color: \\"indigo\\",
+          color: "indigo",
           opacity: 0,
         };
         const fadeOut = null;
         <CC>
           <CS>{[_, _2]}</CS>
-          {<div className={ax([\\"_j7hq6mn5\\"])} />}
+          {<div className={ax(["_j7hq6mn5"])} />}
         </CC>;
         "
       `);
@@ -312,14 +312,14 @@ describe('keyframes transforms a tagged template expression', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hqzznm{animation-name:k1m6gmtw}\\";
+          "const _2 = "._j7hqzznm{animation-name:k1m6gmtw}";
           const _ =
-            \\"@keyframes k1m6gmtw{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+            "@keyframes k1m6gmtw{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
           const animation = {
             colors: {
               light: {
-                from: \\"blue\\",
-                to: \\"indigo\\",
+                from: "blue",
+                to: "indigo",
               },
             },
             opacities: {
@@ -330,7 +330,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqzznm\\"])} />}
+            {<div className={ax(["_j7hqzznm"])} />}
           </CC>;
           "
         `);
@@ -374,13 +374,13 @@ describe('keyframes transforms a tagged template expression', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hqzznm{animation-name:k1m6gmtw}\\";
+          "const _2 = "._j7hqzznm{animation-name:k1m6gmtw}";
           const _ =
-            \\"@keyframes k1m6gmtw{0%{color:blue;opacity:1}to{color:indigo;opacity:1}}\\";
+            "@keyframes k1m6gmtw{0%{color:blue;opacity:1}to{color:indigo;opacity:1}}";
           const fromOpacity = 1;
           const toOpacity = 1;
-          const primary = \\"blue\\";
-          const secondary = \\"indigo\\";
+          const primary = "blue";
+          const secondary = "indigo";
           const animation = {
             colors: {
               light: {
@@ -396,7 +396,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqzznm\\"])} />}
+            {<div className={ax(["_j7hqzznm"])} />}
           </CC>;
           "
         `);
@@ -424,14 +424,14 @@ describe('keyframes transforms a tagged template expression', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "const _2 = \\"._j7hqi8pm{animation-name:krmwxos}\\";
+        "const _2 = "._j7hqi8pm{animation-name:krmwxos}";
         const _ =
-          \\"@keyframes krmwxos{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+          "@keyframes krmwxos{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
         const identity = (x) => x;
         const fadeOut = null;
         <CC>
           <CS>{[_, _2]}</CS>
-          {<div className={ax([\\"_j7hqi8pm\\"])} />}
+          {<div className={ax(["_j7hqi8pm"])} />}
         </CC>;
         "
       `);
@@ -464,18 +464,18 @@ describe('keyframes transforms a tagged template expression', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "const _2 = \\"._j7hqkl5x{animation-name:k1nhciry}\\";
+        "const _2 = "._j7hqkl5x{animation-name:k1nhciry}";
         const _ =
-          \\"@keyframes k1nhciry{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+          "@keyframes k1nhciry{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
         const identity = (x) => x;
-        const fromColor = identity(\\"blue\\");
+        const fromColor = identity("blue");
         const fromOpacity = identity(1);
-        const toColor = identity(\\"indigo\\");
+        const toColor = identity("indigo");
         const toOpacity = identity(0);
         const fadeOut = null;
         <CC>
           <CS>{[_, _2]}</CS>
-          {<div className={ax([\\"_j7hqkl5x\\"])} />}
+          {<div className={ax(["_j7hqkl5x"])} />}
         </CC>;
         "
       `);
@@ -504,21 +504,21 @@ describe('keyframes transforms a tagged template expression', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hqy222{animation-name:ks8zti8}\\";
+          "const _2 = "._j7hqy222{animation-name:ks8zti8}";
           const _ =
-            \\"@keyframes ks8zti8{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+            "@keyframes ks8zti8{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
           const from = () => ({
-            color: \\"blue\\",
+            color: "blue",
             opacity: 1,
           });
           const to = () => ({
-            color: \\"indigo\\",
+            color: "indigo",
             opacity: 0,
           });
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqy222\\"])} />}
+            {<div className={ax(["_j7hqy222"])} />}
           </CC>;
           "
         `);
@@ -549,15 +549,15 @@ describe('keyframes transforms a tagged template expression', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hqdjmv{animation-name:k1o01d59}\\";
+          "const _2 = "._j7hqdjmv{animation-name:k1o01d59}";
           const _ =
-            \\"@keyframes k1o01d59{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}\\";
+            "@keyframes k1o01d59{0%{color:blue;opacity:1}to{color:indigo;opacity:0}}";
           const getFrom = () => ({
-            color: \\"blue\\",
+            color: "blue",
             opacity: 1,
           });
           const getTo = () => ({
-            color: \\"indigo\\",
+            color: "indigo",
             opacity: 0,
           });
           const from = getFrom();
@@ -565,7 +565,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqdjmv\\"])} />}
+            {<div className={ax(["_j7hqdjmv"])} />}
           </CC>;
           "
         `);
@@ -593,14 +593,14 @@ describe('keyframes transforms a tagged template expression', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hqrsut{animation-name:k1e6gzsx}\\";
-          const _ = \\"@keyframes k1e6gzsx{0%{fontSize:14px}to{fontSize:18px}}\\";
+          "const _2 = "._j7hqrsut{animation-name:k1e6gzsx}";
+          const _ = "@keyframes k1e6gzsx{0%{fontSize:14px}to{fontSize:18px}}";
           const fromFontSize = 14;
           const toFontSize = 18;
           const enlargeFont = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hqrsut\\"])} />}
+            {<div className={ax(["_j7hqrsut"])} />}
           </CC>;
           "
         `);
@@ -626,14 +626,14 @@ describe('keyframes transforms a tagged template expression', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hq1emf{animation-name:k14ysykh}\\";
-          const _ = \\"@keyframes k14ysykh{0%{fontSize:14px}to{fontSize:18px}}\\";
+          "const _2 = "._j7hq1emf{animation-name:k14ysykh}";
+          const _ = "@keyframes k14ysykh{0%{fontSize:14px}to{fontSize:18px}}";
           const fromFontSize = () => 14;
           const toFontSize = () => 18;
           const enlargeFont = null;
           <CC>
             <CS>{[_, _2]}</CS>
-            {<div className={ax([\\"_j7hq1emf\\"])} />}
+            {<div className={ax(["_j7hq1emf"])} />}
           </CC>;
           "
         `);
@@ -662,21 +662,21 @@ describe('keyframes transforms a tagged template expression', () => {
         `);
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._j7hq17yp{animation-name:kuadg5o}\\";
+          "const _2 = "._j7hq17yp{animation-name:kuadg5o}";
           const _ =
-            \\"@keyframes kuadg5o{0%{color:var(--_1b1u9h2);opacity:var(--_19i50d6)}to{color:var(--_1q3t0o);opacity:var(--_1mdpi68)}}\\";
+            "@keyframes kuadg5o{0%{color:var(--_1b1u9h2);opacity:var(--_19i50d6)}to{color:var(--_1q3t0o);opacity:var(--_1mdpi68)}}";
           const getOpacity = (x) => (runtime.enabled ? x : 1);
           const fadeOut = null;
           <CC>
             <CS>{[_, _2]}</CS>
             {
               <div
-                className={ax([\\"_j7hq17yp\\"])}
+                className={ax(["_j7hq17yp"])}
                 style={{
-                  \\"--_1b1u9h2\\": ix(runtime.colors.blue),
-                  \\"--_19i50d6\\": ix(getOpacity(0)),
-                  \\"--_1q3t0o\\": ix(runtime.colors.indigo),
-                  \\"--_1mdpi68\\": ix(getOpacity(1)),
+                  "--_1b1u9h2": ix(runtime.colors.blue),
+                  "--_19i50d6": ix(getOpacity(0)),
+                  "--_1q3t0o": ix(runtime.colors.indigo),
+                  "--_1mdpi68": ix(getOpacity(1)),
                 }}
               />
             }
@@ -721,22 +721,22 @@ describe('keyframes transforms a tagged template expression', () => {
           const actual = transform(createDynamicAnimations(1));
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = \\"._syaz115e{color:var(--_nfiion)}\\";
-            const _3 = \\"._bfhk1220{background-color:var(--_1ud0qzp)}\\";
-            const _2 = \\"._j7hq1vlm{animation-name:kr3p4uw}\\";
+            "const _4 = "._syaz115e{color:var(--_nfiion)}";
+            const _3 = "._bfhk1220{background-color:var(--_1ud0qzp)}";
+            const _2 = "._j7hq1vlm{animation-name:kr3p4uw}";
             const _ =
-              \\"@keyframes kr3p4uw{0%{color:var(--_1tdwvvr);opacity:1}to{color:var(--_151ky4);opacity:0}}\\";
+              "@keyframes kr3p4uw{0%{color:var(--_1tdwvvr);opacity:1}to{color:var(--_151ky4);opacity:0}}";
             const generateKeyframes = (fromColor, toColor) => null;
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
               {
                 <div
-                  className={ax([\\"_j7hq1vlm _bfhk1220 _syaz115e\\"])}
+                  className={ax(["_j7hq1vlm _bfhk1220 _syaz115e"])}
                   style={{
-                    \\"--_1tdwvvr\\": ix(runtime[0].from),
-                    \\"--_151ky4\\": ix(runtime[0].to),
-                    \\"--_1ud0qzp\\": ix(fromColor),
-                    \\"--_nfiion\\": ix(runtime[0].from),
+                    "--_1tdwvvr": ix(runtime[0].from),
+                    "--_151ky4": ix(runtime[0].to),
+                    "--_1ud0qzp": ix(fromColor),
+                    "--_nfiion": ix(runtime[0].from),
                   }}
                 />
               }
@@ -752,24 +752,24 @@ describe('keyframes transforms a tagged template expression', () => {
           expect(actual.match(/@keyframes/g)).toHaveLength(1);
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _5 = \\"._syazjq9z{color:var(--_we82k3)}\\";
-            const _4 = \\"._syaz115e{color:var(--_nfiion)}\\";
-            const _3 = \\"._bfhk1220{background-color:var(--_1ud0qzp)}\\";
-            const _2 = \\"._j7hq1vlm{animation-name:kr3p4uw}\\";
+            "const _5 = "._syazjq9z{color:var(--_we82k3)}";
+            const _4 = "._syaz115e{color:var(--_nfiion)}";
+            const _3 = "._bfhk1220{background-color:var(--_1ud0qzp)}";
+            const _2 = "._j7hq1vlm{animation-name:kr3p4uw}";
             const _ =
-              \\"@keyframes kr3p4uw{0%{color:var(--_1tdwvvr);opacity:1}to{color:var(--_151ky4);opacity:0}}\\";
+              "@keyframes kr3p4uw{0%{color:var(--_1tdwvvr);opacity:1}to{color:var(--_151ky4);opacity:0}}";
             const generateKeyframes = (fromColor, toColor) => null;
             <>
               <CC>
                 <CS>{[_, _2, _3, _4]}</CS>
                 {
                   <div
-                    className={ax([\\"_j7hq1vlm _bfhk1220 _syaz115e\\"])}
+                    className={ax(["_j7hq1vlm _bfhk1220 _syaz115e"])}
                     style={{
-                      \\"--_1tdwvvr\\": ix(runtime[0].from),
-                      \\"--_151ky4\\": ix(runtime[0].to),
-                      \\"--_1ud0qzp\\": ix(fromColor),
-                      \\"--_nfiion\\": ix(runtime[0].from),
+                      "--_1tdwvvr": ix(runtime[0].from),
+                      "--_151ky4": ix(runtime[0].to),
+                      "--_1ud0qzp": ix(fromColor),
+                      "--_nfiion": ix(runtime[0].from),
                     }}
                   />
                 }
@@ -779,12 +779,12 @@ describe('keyframes transforms a tagged template expression', () => {
                 <CS>{[_, _2, _3, _5]}</CS>
                 {
                   <div
-                    className={ax([\\"_j7hq1vlm _bfhk1220 _syazjq9z\\"])}
+                    className={ax(["_j7hq1vlm _bfhk1220 _syazjq9z"])}
                     style={{
-                      \\"--_1tdwvvr\\": ix(runtime[1].from),
-                      \\"--_151ky4\\": ix(runtime[1].to),
-                      \\"--_1ud0qzp\\": ix(fromColor),
-                      \\"--_we82k3\\": ix(runtime[1].from),
+                      "--_1tdwvvr": ix(runtime[1].from),
+                      "--_151ky4": ix(runtime[1].to),
+                      "--_1ud0qzp": ix(fromColor),
+                      "--_we82k3": ix(runtime[1].from),
                     }}
                   />
                 }
@@ -805,14 +805,14 @@ describe('keyframes transforms a tagged template expression', () => {
         );
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-          const _3 = \\"._j7hqa2t1{animation-name:k1a3bdtb}\\";
-          const _2 = \\"._5sagymdr{animation-duration:2s}\\";
+          "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+          const _3 = "._j7hqa2t1{animation-name:k1a3bdtb}";
+          const _2 = "._5sagymdr{animation-duration:2s}";
           const _ =
-            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            "@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
           const fadeOut = null;
           const StyledComponent = forwardRef(
-            ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+            ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
               return (
                 <CC>
                   <CS>{[_, _2, _3, _4]}</CS>
@@ -820,7 +820,7 @@ describe('keyframes transforms a tagged template expression', () => {
                     {...__cmplp}
                     style={__cmpls}
                     ref={__cmplr}
-                    className={ax([\\"_5sagymdr _j7hqa2t1 _1pgl1ytf\\", __cmplp.className])}
+                    className={ax(["_5sagymdr _j7hqa2t1 _1pgl1ytf", __cmplp.className])}
                   />
                 </CC>
               );
@@ -836,12 +836,12 @@ describe('keyframes transforms a tagged template expression', () => {
         );
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._y44v1e4p{animation:k1a3bdtb 2s ease-in-out}\\";
+          "const _2 = "._y44v1e4p{animation:k1a3bdtb 2s ease-in-out}";
           const _ =
-            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            "@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
           const fadeOut = null;
           const StyledComponent = forwardRef(
-            ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+            ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
               return (
                 <CC>
                   <CS>{[_, _2]}</CS>
@@ -849,7 +849,7 @@ describe('keyframes transforms a tagged template expression', () => {
                     {...__cmplp}
                     style={__cmpls}
                     ref={__cmplr}
-                    className={ax([\\"_y44v1e4p\\", __cmplp.className])}
+                    className={ax(["_y44v1e4p", __cmplp.className])}
                   />
                 </CC>
               );
@@ -872,13 +872,13 @@ describe('keyframes transforms a tagged template expression', () => {
 
         expect(actual).toMatchInlineSnapshot(`
           "const _3 =
-            \\"._y44vt6c7{animation:k1i6i4z9 2s ease-in-out,k1tsdnyk 2s ease-in-out}\\";
-          const _2 = \\"@keyframes k1tsdnyk{0%{color:blue}to{color:indigo}}\\";
-          const _ = \\"@keyframes k1i6i4z9{0%{opacity:1}to{opacity:0}}\\";
+            "._y44vt6c7{animation:k1i6i4z9 2s ease-in-out,k1tsdnyk 2s ease-in-out}";
+          const _2 = "@keyframes k1tsdnyk{0%{color:blue}to{color:indigo}}";
+          const _ = "@keyframes k1i6i4z9{0%{opacity:1}to{opacity:0}}";
           const fadeOut = null;
           const darken = null;
           const StyledComponent = forwardRef(
-            ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+            ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
               return (
                 <CC>
                   <CS>{[_, _2, _3]}</CS>
@@ -886,7 +886,7 @@ describe('keyframes transforms a tagged template expression', () => {
                     {...__cmplp}
                     style={__cmpls}
                     ref={__cmplr}
-                    className={ax([\\"_y44vt6c7\\", __cmplp.className])}
+                    className={ax(["_y44vt6c7", __cmplp.className])}
                   />
                 </CC>
               );
@@ -906,14 +906,14 @@ describe('keyframes transforms a tagged template expression', () => {
         );
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-          const _3 = \\"._j7hqa2t1{animation-name:k1a3bdtb}\\";
-          const _2 = \\"._5sagymdr{animation-duration:2s}\\";
+          "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+          const _3 = "._j7hqa2t1{animation-name:k1a3bdtb}";
+          const _2 = "._5sagymdr{animation-duration:2s}";
           const _ =
-            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            "@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
           const fadeOut = null;
           const StyledComponent = forwardRef(
-            ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+            ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
               return (
                 <CC>
                   <CS>{[_, _2, _3, _4]}</CS>
@@ -921,7 +921,7 @@ describe('keyframes transforms a tagged template expression', () => {
                     {...__cmplp}
                     style={__cmpls}
                     ref={__cmplr}
-                    className={ax([\\"_5sagymdr _j7hqa2t1 _1pgl1ytf\\", __cmplp.className])}
+                    className={ax(["_5sagymdr _j7hqa2t1 _1pgl1ytf", __cmplp.className])}
                   />
                 </CC>
               );
@@ -937,12 +937,12 @@ describe('keyframes transforms a tagged template expression', () => {
         );
 
         expect(actual).toMatchInlineSnapshot(`
-          "const _2 = \\"._y44v1e4p{animation:k1a3bdtb 2s ease-in-out}\\";
+          "const _2 = "._y44v1e4p{animation:k1a3bdtb 2s ease-in-out}";
           const _ =
-            \\"@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}\\";
+            "@keyframes k1a3bdtb{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
           const fadeOut = null;
           const StyledComponent = forwardRef(
-            ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+            ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
               return (
                 <CC>
                   <CS>{[_, _2]}</CS>
@@ -950,7 +950,7 @@ describe('keyframes transforms a tagged template expression', () => {
                     {...__cmplp}
                     style={__cmpls}
                     ref={__cmplr}
-                    className={ax([\\"_y44v1e4p\\", __cmplp.className])}
+                    className={ax(["_y44v1e4p", __cmplp.className])}
                   />
                 </CC>
               );
@@ -973,13 +973,13 @@ describe('keyframes transforms a tagged template expression', () => {
 
         expect(actual).toMatchInlineSnapshot(`
           "const _3 =
-            \\"._y44vt6c7{animation:k1i6i4z9 2s ease-in-out,k1tsdnyk 2s ease-in-out}\\";
-          const _2 = \\"@keyframes k1tsdnyk{0%{color:blue}to{color:indigo}}\\";
-          const _ = \\"@keyframes k1i6i4z9{0%{opacity:1}to{opacity:0}}\\";
+            "._y44vt6c7{animation:k1i6i4z9 2s ease-in-out,k1tsdnyk 2s ease-in-out}";
+          const _2 = "@keyframes k1tsdnyk{0%{color:blue}to{color:indigo}}";
+          const _ = "@keyframes k1i6i4z9{0%{opacity:1}to{opacity:0}}";
           const fadeOut = null;
           const darken = null;
           const StyledComponent = forwardRef(
-            ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+            ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
               return (
                 <CC>
                   <CS>{[_, _2, _3]}</CS>
@@ -987,7 +987,7 @@ describe('keyframes transforms a tagged template expression', () => {
                     {...__cmplp}
                     style={__cmpls}
                     ref={__cmplr}
-                    className={ax([\\"_y44vt6c7\\", __cmplp.className])}
+                    className={ax(["_y44vt6c7", __cmplp.className])}
                   />
                 </CC>
               );

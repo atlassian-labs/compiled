@@ -14,19 +14,19 @@ describe('rule hoisting', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import * as React from \\"react\\";
-      import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
-      const _2 = \\"._1wyb1tcg{font-size:24px}\\";
-      const _ = \\"._1wyb1fwx{font-size:12px}\\";
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _2 = "._1wyb1tcg{font-size:24px}";
+      const _ = "._1wyb1fwx{font-size:12px}";
       const Component = () => (
         <>
           <CC>
             <CS>{[_]}</CS>
-            {<div className={ax([\\"_1wyb1fwx\\"])}>hello world</div>}
+            {<div className={ax(["_1wyb1fwx"])}>hello world</div>}
           </CC>
           <CC>
             <CS>{[_2]}</CS>
-            {<div className={ax([\\"_1wyb1tcg\\"])}>hello world</div>}
+            {<div className={ax(["_1wyb1tcg"])}>hello world</div>}
           </CC>
         </>
       );
@@ -47,18 +47,18 @@ describe('rule hoisting', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import * as React from \\"react\\";
-      import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
-      const _ = \\"._1wyb1fwx{font-size:12px}\\";
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _ = "._1wyb1fwx{font-size:12px}";
       const Component = () => (
         <>
           <CC>
             <CS>{[_]}</CS>
-            {<div className={ax([\\"_1wyb1fwx\\"])}>hello world</div>}
+            {<div className={ax(["_1wyb1fwx"])}>hello world</div>}
           </CC>
           <CC>
             <CS>{[_]}</CS>
-            {<div className={ax([\\"_1wyb1fwx\\"])}>hello world</div>}
+            {<div className={ax(["_1wyb1fwx"])}>hello world</div>}
           </CC>
         </>
       );

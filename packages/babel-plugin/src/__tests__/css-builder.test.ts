@@ -28,20 +28,20 @@ describe('css builder', () => {
     expect(actual).toIncludeMultiple(['{color:var(--_1ylxx6h)}', '"--_1ylxx6h": ix(color)']);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import * as React from \\"react\\";
-      import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
-      const _2 = \\"._syaz1aj3{color:var(--_1ylxx6h)}\\";
-      const _ = \\"._bfhk8ruw{background-color:var(--_agotg1)}\\";
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _2 = "._syaz1aj3{color:var(--_1ylxx6h)}";
+      const _ = "._bfhk8ruw{background-color:var(--_agotg1)}";
       const getBackgroundColor = (color) => color;
       const color = baseColor;
       <CC>
         <CS>{[_, _2]}</CS>
         {
           <div
-            className={ax([\\"_bfhk8ruw _syaz1aj3\\"])}
+            className={ax(["_bfhk8ruw _syaz1aj3"])}
             style={{
-              \\"--_agotg1\\": ix(getBackgroundColor(customBackgroundColor)),
-              \\"--_1ylxx6h\\": ix(color),
+              "--_agotg1": ix(getBackgroundColor(customBackgroundColor)),
+              "--_1ylxx6h": ix(color),
             }}
           />
         }
