@@ -20,6 +20,10 @@ describe('CompiledExtractPlugin', () => {
       return undefined;
     });
 
+  beforeEach(() => {
+    process.env.AUTOPREFIXER = 'off';
+  });
+
   it('throws when the plugin is not configured', async () => {
     const errors = await bundle(join(fixturesPath, 'local-styles.tsx'), {
       disableExtractPlugin: true,
@@ -148,9 +152,9 @@ describe('CompiledExtractPlugin', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "._syaz1r31{color:currentColor}
-      ._ajmmnqa1{-webkit-text-decoration-style:solid;text-decoration-style:solid}
-      ._1hmsglyw{-webkit-text-decoration-line:none;text-decoration-line:none}
-      ._4bfu1r31{-webkit-text-decoration-color:currentColor;text-decoration-color:currentColor}
+      ._ajmmnqa1{text-decoration-style:solid}
+      ._1hmsglyw{text-decoration-line:none}
+      ._4bfu1r31{text-decoration-color:currentColor}
       ._n7zl17qw{border-bottom:1px solid transparent}
       ._n7zl1l01{border-bottom:1px solid rgba(135,119,217,0.2)}
       ._syaz1cj8{color:var(--_xexnhp)}
