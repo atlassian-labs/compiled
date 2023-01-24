@@ -99,7 +99,7 @@
     "husky": "^4.3.8",
     "jest": "^26.6.3",
     "jest-extended": "^0.11.5",
-    "jest-watch-typeahead": "^2.2.1",
+    "jest-watch-typeahead": "^0.6.5",
     "loki": "^0.31.0",
     "prettier": "^2.8.3",
     "pretty-quick": "^3.1.3",
