@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.11.3
+
+### Patch Changes
+
+- acd89969: Fix react runtime ax function returning incorrect result for selectors
+
 ## 0.11.2
 
 ### Patch Changes

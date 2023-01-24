@@ -1,5 +1,16 @@
 # @compiled/parcel-optimizer
 
+## 0.2.2
+
+### Patch Changes
+
+- e887c2b5: Clean up dependencies of packages
+- 4877ec38: Bump babel versions
+- Updated dependencies [e887c2b5]
+- Updated dependencies [4877ec38]
+  - @compiled/css@0.8.8
+  - @compiled/utils@0.6.17
+
 ## 0.2.1
 
 ### Patch Changes
