@@ -27,10 +27,14 @@ const ATOMIC_GROUP_LENGTH = 5;
  *
  * @param classes
  */
-export default function ax(classNames: (string | undefined | false)[]): string | undefined {
+export default function ax(
+  classNames: (string | undefined | false | string[])[]
+): string | undefined {
   if (classNames.length <= 1 && (!classNames[0] || classNames[0].indexOf(' ') === -1)) {
     // short circuit if there's no custom class names.
-    return classNames[0] || undefined;
+    if (!classNames[0]) return undefined;
+    if (Array.isArray(classNames[0])) return classNames[0][1];
+    if (classNames[0].indexOf(' ') === -1) return classNames[0];
   }
 
   const atomicGroups: Record<string, string> = {};
@@ -41,15 +45,21 @@ export default function ax(classNames: (string | undefined | false)[]): string |
       continue;
     }
 
-    const groups = cls.split(' ');
+    const groups = Array.isArray(cls) ? [cls] : cls.split(' ');
 
     for (let x = 0; x < groups.length; x++) {
       const atomic = groups[x];
-      const atomicGroupName = atomic.slice(
-        0,
-        atomic.charCodeAt(0) === UNDERSCORE_UNICODE ? ATOMIC_GROUP_LENGTH : undefined
-      );
-      atomicGroups[atomicGroupName] = atomic;
+
+      if (Array.isArray(atomic)) {
+        const atomicGroupName = atomic[0];
+        atomicGroups[`_${atomicGroupName}`] = atomic[1];
+      } else {
+        const atomicGroupName = atomic.slice(
+          0,
+          atomic.charCodeAt(0) === UNDERSCORE_UNICODE ? ATOMIC_GROUP_LENGTH : undefined
+        );
+        atomicGroups[atomicGroupName] = atomic;
+      }
     }
   }
 
