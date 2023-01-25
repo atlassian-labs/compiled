@@ -24,4 +24,4 @@
  * ```
  * @param classes
  */
-declare export default function ax(classNames: (string | void | false)[]): string | void;
+declare export default function ax(classNames: (string | void | false | string[])[]): string | void;
