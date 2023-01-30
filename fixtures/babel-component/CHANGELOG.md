@@ -1,5 +1,13 @@
 # @compiled/babel-component-fixture
 
+## 0.0.14
+
+### Patch Changes
+
+- 4877ec38: Bump babel versions
+- Updated dependencies [acd89969]
+  - @compiled/react@0.11.3
+
 ## 0.0.13
 
 ### Patch Changes
