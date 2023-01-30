@@ -22,7 +22,7 @@
     "@babel/core": "^7.20.12",
     "@babel/helper-plugin-utils": "^7.20.2",
     "@babel/template": "^7.20.7",
-    "@babel/traverse": "^7.20.12",
+    "@babel/traverse": "^7.20.13",
     "@babel/types": "^7.20.7",
     "@compiled/utils": "^0.6.17"
   },
