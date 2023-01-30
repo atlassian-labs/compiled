@@ -82,7 +82,7 @@
     "@storybook/react": "^6.4.20",
     "@types/jest": "^27.5.2",
     "@types/node": "^18.11.18",
-    "@types/react": "^17.0.52",
+    "@types/react": "^17.0.53",
     "@types/react-dom": "^17.0.18",
     "@types/svgo": "^2.6.4",
     "@typescript-eslint/eslint-plugin": "^5.49.0",

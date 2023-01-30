@@ -36,7 +36,7 @@
   "devDependencies": {
     "@compiled-private/module-a": "^0.0.2",
     "@compiled/benchmark": "1.0.1",
-    "@types/babel__core": "^7.1.20",
+    "@types/babel__core": "^7.20.0",
     "@types/benchmark": "^2.1.2",
     "@types/resolve": "^1.20.2",
     "benchmark": "^2.1.4",
