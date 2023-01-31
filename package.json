@@ -58,7 +58,7 @@
   "resolutions": {
     "css-what": ">=5.0.1",
     "nth-check": ">=2.0.1",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.20.2",
@@ -106,7 +106,7 @@
     "ts-transform-define": "^0.1.10",
     "tsconfig-paths": "^4.1.2",
     "ttypescript": "^1.5.15",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.5"
   },
   "engines": {
     "node": "^v16.19.0"
