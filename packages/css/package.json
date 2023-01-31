@@ -19,9 +19,8 @@
     "src"
   ],
   "resolutions": {
-    "css-what": "^5.1.0",
-    "cssnano-preset-default": "^5.2.13",
-    "nth-check": "^2.1.1"
+    "css-what": ">=5.0.1",
+    "nth-check": ">=2.0.1"
   },
   "dependencies": {
     "@compiled/utils": "^0.6.17",
