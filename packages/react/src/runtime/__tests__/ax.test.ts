@@ -4,6 +4,8 @@ describe('ax', () => {
   const isEnabled: boolean = (() => false)();
 
   it.each([
+    ['should handle empty array', [], undefined],
+    ['should handle array with undefined', [undefined], undefined],
     ['should join single classes together', ['foo', 'bar'], 'foo bar'],
     ['should join multi classes together', ['foo baz', 'bar'], 'foo baz bar'],
     ['should remove undefined', ['foo', 'bar', undefined], 'foo bar'],
@@ -14,7 +16,7 @@ describe('ax', () => {
     ],
     [
       'should ensure the last atomic declaration of a single group with short class name wins',
-      ['_aaaabbbb', '_aaaacccc', ['aaaa', 'a']],
+      ['_aaaabbbb', '_aaaacccc', '_aaaa_a'],
       'a',
     ],
     [
@@ -24,7 +26,7 @@ describe('ax', () => {
     ],
     [
       'should ensure the last atomic declaration of many single groups with short class name wins',
-      ['_aaaabbbb', '_aaaacccc', ['aaaa', 'a'], ['aaaa', 'b']],
+      ['_aaaabbbb', '_aaaacccc', '_aaaa_a', '_aaaa_b'],
       'b',
     ],
     [
@@ -34,7 +36,7 @@ describe('ax', () => {
     ],
     [
       'should ensure the last atomic declaration of a multi group with short class name wins',
-      [['aaaa', 'e'], '_aaaabbbb _aaaacccc'],
+      ['_aaaa_e', '_aaaabbbb _aaaacccc'],
       '_aaaacccc',
     ],
     [
@@ -44,7 +46,7 @@ describe('ax', () => {
     ],
     [
       'should ensure the last atomic declaration of many multi groups with short class name wins',
-      ['_aaaabbbb', ['aaaa', 'a'], ['bbbb', 'b'], '_ddddcccc'],
+      ['_aaaabbbb', '_aaaa_a', '_bbbb_b', '_ddddcccc'],
       'a b _ddddcccc',
     ],
     [
@@ -54,7 +56,7 @@ describe('ax', () => {
     ],
     [
       'should not remove any atomic declarations if there are short class name and no duplicate groups',
-      [['eeee', 'e'], '_aaaabbbb', '_bbbbcccc'],
+      ['_eeee_e', '_aaaabbbb', '_bbbbcccc'],
       'e _aaaabbbb _bbbbcccc',
     ],
     ['should not apply conditional class', [isEnabled && 'foo', 'bar'], 'bar'],
@@ -70,7 +72,7 @@ describe('ax', () => {
     ],
     [
       'should ignore non atomic declarations when atomic declarations with short class name exist',
-      ['hello_there', 'hello_world', ['aaaa', 'a']],
+      ['hello_there', 'hello_world', '_aaaa_a'],
       'hello_there hello_world a',
     ],
   ])('%s', (_, params, result) => {

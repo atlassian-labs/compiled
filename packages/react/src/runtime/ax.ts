@@ -27,15 +27,9 @@ const ATOMIC_GROUP_LENGTH = 5;
  *
  * @param classes
  */
-export default function ax(
-  classNames: (string | undefined | false | string[])[]
-): string | undefined {
-  if (classNames.length <= 1 && (!classNames[0] || classNames[0].indexOf(' ') === -1)) {
-    // short circuit if there's no custom class names.
-    if (!classNames[0]) return undefined;
-    if (Array.isArray(classNames[0])) return classNames[0][1];
-    if (classNames[0].indexOf(' ') === -1) return classNames[0];
-  }
+export default function ax(classNames: (string | undefined | false)[]): string | undefined {
+  // short circuit if there's no class names.
+  if (classNames.length <= 1 && !classNames[0]) return undefined;
 
   const atomicGroups: Record<string, string> = {};
 
@@ -45,21 +39,15 @@ export default function ax(
       continue;
     }
 
-    const groups = Array.isArray(cls) ? [cls] : cls.split(' ');
+    const groups = cls.split(' ');
 
     for (let x = 0; x < groups.length; x++) {
       const atomic = groups[x];
+      const isAtomic = atomic.charCodeAt(0) === UNDERSCORE_UNICODE;
+      const isCompressed = isAtomic && atomic.charCodeAt(5) === UNDERSCORE_UNICODE;
 
-      if (Array.isArray(atomic)) {
-        const atomicGroupName = atomic[0];
-        atomicGroups[`_${atomicGroupName}`] = atomic[1];
-      } else {
-        const atomicGroupName = atomic.slice(
-          0,
-          atomic.charCodeAt(0) === UNDERSCORE_UNICODE ? ATOMIC_GROUP_LENGTH : undefined
-        );
-        atomicGroups[atomicGroupName] = atomic;
-      }
+      const atomicGroupName = isAtomic ? atomic.slice(0, ATOMIC_GROUP_LENGTH) : atomic;
+      atomicGroups[atomicGroupName] = isCompressed ? atomic.slice(ATOMIC_GROUP_LENGTH + 1) : atomic;
     }
   }
 

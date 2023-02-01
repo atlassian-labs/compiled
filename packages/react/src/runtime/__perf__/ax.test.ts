@@ -42,7 +42,7 @@ describe('ax benchmark', () => {
 
   it('completes with ax() non-compresssed class names as the fastest', async () => {
     const arrWithCompressedClassNames = arr.map((item) =>
-      item ? [item.slice(1, 4), item.slice(8, undefined)] : item
+      item ? `${item.slice(0, 4)}_${item.slice(8)}` : item
     );
     const benchmark = await runBenchmark('ax', [
       {
@@ -56,7 +56,7 @@ describe('ax benchmark', () => {
     ]);
 
     expect(benchmark).toMatchObject({
-      fastest: ['ax() array with compressed class names'],
+      fastest: ['ax() array'],
     });
   }, 30000);
 });
