@@ -4,8 +4,8 @@
  */
 const isJsDomEnvironment = () =>
   window.name === 'nodejs' ||
-  navigator.userAgent.includes('Node.js') ||
-  navigator.userAgent.includes('jsdom');
+  navigator?.userAgent.includes('Node.js') ||
+  navigator?.userAgent.includes('jsdom');
 /**
  * Returns `true` when inside a node environment,
  * else `false`.
@@ -19,7 +19,10 @@ const isJsDomEnvironment = () =>
  * ```
  */
 export const isServerEnvironment = (): boolean => {
-  if (typeof process !== 'undefined' && process.versions != null && process.versions.node != null) {
+  if (
+    typeof window === 'undefined' ||
+    (typeof process !== 'undefined' && process.versions != null && process.versions.node != null)
+  ) {
     return true;
   }
   if (isJsDomEnvironment()) {
