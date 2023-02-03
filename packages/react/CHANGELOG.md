@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.11.4
+
+### Patch Changes
+
+- 6df1976c: Update isServerEnvironment to support different SSR environment
+
 ## 0.11.3
 
 ### Patch Changes
