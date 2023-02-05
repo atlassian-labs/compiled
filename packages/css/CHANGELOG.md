@@ -1,5 +1,20 @@
 # @compiled/css
 
+## 0.8.9
+
+### Patch Changes
+
+- b696cd24: Bumping postcss packages
+
+## 0.8.8
+
+### Patch Changes
+
+- e887c2b5: Clean up dependencies of packages
+- Updated dependencies [e887c2b5]
+- Updated dependencies [4877ec38]
+  - @compiled/utils@0.6.17
+
 ## 0.8.7
 
 ### Patch Changes

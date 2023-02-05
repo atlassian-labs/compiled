@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.4.8
+
+### Patch Changes
+
+- e887c2b5: Clean up dependencies of packages
+
 ## 0.4.7
 
 ### Patch Changes

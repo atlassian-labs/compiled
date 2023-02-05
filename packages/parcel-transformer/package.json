@@ -1,6 +1,6 @@
 {
   "name": "@compiled/parcel-transformer",
-  "version": "0.11.2",
+  "version": "0.11.3",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-parcel-transformer",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -20,11 +20,11 @@
     "src"
   ],
   "dependencies": {
-    "@babel/core": "^7.17.10",
-    "@babel/generator": "^7.17.10",
-    "@compiled/babel-plugin": "^0.17.2",
-    "@compiled/babel-plugin-strip-runtime": "^0.17.2",
-    "@compiled/utils": "^0.6.16",
+    "@babel/core": "^7.20.12",
+    "@babel/generator": "^7.20.14",
+    "@compiled/babel-plugin": "^0.17.3",
+    "@compiled/babel-plugin-strip-runtime": "^0.17.3",
+    "@compiled/utils": "^0.6.17",
     "@parcel/plugin": "^2.3.2",
     "@parcel/source-map": "^2.0.2",
     "enhanced-resolve": "^5.12.0"
@@ -33,7 +33,7 @@
     "@parcel/core": "^2.3.1",
     "@parcel/fs": "^2.3.1",
     "@parcel/types": "^2.3.1",
-    "@types/babel__core": "^7.1.20",
+    "@types/babel__core": "^7.20.0",
     "prettier": "^2.8.3"
   },
   "engines": {

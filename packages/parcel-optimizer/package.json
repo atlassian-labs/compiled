@@ -1,6 +1,6 @@
 {
   "name": "@compiled/parcel-optimizer",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
@@ -19,14 +19,14 @@
     "src"
   ],
   "dependencies": {
-    "@compiled/css": "^0.8.1",
-    "@compiled/utils": "^0.6.16",
+    "@compiled/css": "^0.8.8",
+    "@compiled/utils": "^0.6.17",
     "@parcel/plugin": "^2.3.1",
     "posthtml": "^0.16.6",
     "posthtml-insert-at": "^0.2.7"
   },
   "devDependencies": {
-    "@babel/types": "^7.17.10",
+    "@babel/types": "^7.20.7",
     "@parcel/core": "^2.3.1",
     "@parcel/fs": "^2.3.1",
     "@parcel/types": "^2.3.1",

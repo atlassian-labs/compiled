@@ -44,7 +44,6 @@ describe('styled component behaviour', () => {
           );
         }
       );
-
       if (process.env.NODE_ENV !== \\"production\\") {
         ListItem.displayName = \\"ListItem\\";
       }
@@ -83,7 +82,6 @@ describe('styled component behaviour', () => {
           );
         }
       );
-
       if (process.env.NODE_ENV !== \\"production\\") {
         ListItem.displayName = \\"ListItem\\";
       }
@@ -376,7 +374,6 @@ describe('styled component behaviour', () => {
           );
         }
       );
-
       if (process.env.NODE_ENV !== \\"production\\") {
         BadgeSkeleton.displayName = \\"BadgeSkeleton\\";
       }

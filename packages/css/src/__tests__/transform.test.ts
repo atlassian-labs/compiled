@@ -38,7 +38,7 @@ describe('#css-transform', () => {
     expect(actualOne.join('\n')).toEqual(actualTwo.join('\n'));
   });
 
-  describe('leading pseduos in css', () => {
+  describe('leading pseudo in css', () => {
     it('should parent a single pseudo', () => {
       const { sheets: actual } = transformCss(
         `
@@ -330,7 +330,7 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('')).toMatchInlineSnapshot(
-        `"._2a8pglyw div{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}"`
+        `"._2a8pglyw div{-webkit-user-select:none;-moz-user-select:none;user-select:none}"`
       );
     });
 
@@ -365,6 +365,7 @@ describe('#css-transform', () => {
     });
 
     it('should generate ms prefixes for grid', () => {
+      process.env.BROWSERSLIST = 'IE 10';
       process.env.AUTOPREFIXER_GRID = 'autoplace';
 
       const { sheets: actual } = transformCss(

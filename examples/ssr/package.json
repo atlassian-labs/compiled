@@ -1,18 +1,14 @@
 {
   "name": "@compiled/ssr-app",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "private": true,
   "scripts": {
     "build": "razzle build",
     "start": "razzle start",
     "start:prod": "NODE_ENV=production node build/server.js"
   },
-  "resolutions": {
-    "mini-css-extract-plugin": "^1.6.2",
-    "webpack-dev-server": "^4.7.4"
-  },
   "dependencies": {
-    "@babel/helper-builder-react-jsx": "^7.16.7",
+    "@babel/helper-builder-react-jsx": "^7.19.0",
     "@babel/helper-builder-react-jsx-experimental": "^7.12.11",
     "@compiled/react": "*",
     "express": "4.18.2",
@@ -23,7 +19,7 @@
     "babel-preset-razzle": "^4.2.18",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^0.9.0",
-    "postcss": "^8.4.14",
+    "postcss": "^8.4.21",
     "razzle": "^4.2.18",
     "razzle-dev-utils": "^4.2.18",
     "webpack": "^5.71.0",
