@@ -27,7 +27,7 @@
     "codeshift.config.js"
   ],
   "resolutions": {
-    "unset-value": "^2.0.1"
+    "unset-value": ">=2.0.1"
   },
   "dependencies": {
     "@compiled/utils": "^0.6.16",

@@ -1,5 +1,12 @@
 # @compiled/utils
 
+## 0.6.17
+
+### Patch Changes
+
+- e887c2b5: Clean up dependencies of packages
+- 4877ec38: Bump babel versions
+
 ## 0.6.16
 
 ### Patch Changes

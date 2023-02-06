@@ -43,3 +43,4 @@ You can also enable the recommended rules for compiled by adding `plugin:@compil
 | [@compiled/no-exported-keyframes](./src/rules/no-exported-keyframes)                                     | Disallows `keyframes` usages from being exported     | :white_check_mark: |          |
 | [@compiled/no-keyframes-tagged-template-expression](./src/rules/no-keyframes-tagged-template-expression) | Disallows the `keyframes` tagged template expression | :white_check_mark: | :wrench: |
 | [@compiled/no-styled-tagged-template-expression](./src/rules/no-styled-tagged-template-expression)       | Disallows the `styled` tagged template expression    | :white_check_mark: | :wrench: |
+| [@compiled/no-css-prop-without-css-function](./src/rules/no-css-prop-without-css-function)               | Disallows css prop without the css function          | :white_check_mark: | :wrench: |
