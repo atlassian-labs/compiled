@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.5.0
+
+### Minor Changes
+
+- 1dc17bce: Add new ESLint rule for CSS prop without css function
+
 ## 0.4.8
 
 ### Patch Changes
