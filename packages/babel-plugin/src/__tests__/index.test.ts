@@ -329,14 +329,17 @@ describe('babel plugin', () => {
     `,
       {
         classNameCompressionMap: {
-          '1jkf1fwx': 'a',
+          '1wyb19ub': 'a',
+          '1wyb1fwx': 'b',
         },
       }
     );
 
     expect(actual).toIncludeMultiple([
-      '._1jkf1fwx >div div div:hover, .a >div div div:hover{font-size:12px}',
-      'ax(["_1jkf_a"]',
+      '._1wyb19ub, .a{font-size:16}',
+      '._1wyb1fwx, .b{font-size:12px}',
+      'bar ? "_1wyb1o8a" : "_1wyb_a"',
+      'foo && "_1wyb_b"',
     ]);
   });
 
