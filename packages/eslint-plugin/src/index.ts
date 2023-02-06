@@ -1,5 +1,6 @@
 import { recommended } from './configs/recommended';
 import { jsxPragmaRule } from './rules/jsx-pragma';
+import { noCssPropWithoutCssFunctionRule } from './rules/no-css-prop-without-css-function';
 import { noCssTaggedTemplateExpressionRule } from './rules/no-css-tagged-template-expression';
 import { noEmotionCssRule } from './rules/no-emotion-css';
 import { noExportedCssRule } from './rules/no-exported-css';
@@ -15,6 +16,7 @@ export const rules = {
   'no-emotion-css': noEmotionCssRule,
   'no-keyframes-tagged-template-expression': noKeyframesTaggedTemplateExpressionRule,
   'no-styled-tagged-template-expression': noStyledTaggedTemplateExpressionRule,
+  'no-css-prop-without-css-function': noCssPropWithoutCssFunctionRule,
 };
 
 export const configs = {
