@@ -1,6 +1,6 @@
 {
   "name": "@compiled/utils",
-  "version": "0.6.16",
+  "version": "0.6.17",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -23,7 +23,7 @@
     "source-map": "^0.7.4"
   },
   "devDependencies": {
-    "@babel/traverse": "^7.20.12",
+    "@babel/traverse": "^7.20.13",
     "@types/convert-source-map": "^1.5.2"
   }
 }

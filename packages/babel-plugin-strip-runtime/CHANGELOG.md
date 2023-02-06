@@ -1,5 +1,14 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.17.3
+
+### Patch Changes
+
+- 4877ec38: Bump babel versions
+- Updated dependencies [e887c2b5]
+- Updated dependencies [4877ec38]
+  - @compiled/utils@0.6.17
+
 ## 0.17.2
 
 ### Patch Changes

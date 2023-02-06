@@ -1,6 +1,6 @@
 {
   "name": "@compiled/css",
-  "version": "0.8.7",
+  "version": "0.8.9",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-css",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -19,18 +19,17 @@
     "src"
   ],
   "resolutions": {
-    "css-what": "^5.1.0",
-    "cssnano-preset-default": "^5.2.12",
-    "nth-check": "^2.1.1"
+    "css-what": ">=5.0.1",
+    "nth-check": ">=2.0.1"
   },
   "dependencies": {
-    "@compiled/utils": "^0.6.16",
-    "autoprefixer": "^10.4.7",
-    "cssnano-preset-default": "^5.2.12",
-    "postcss": "^8.4.14",
+    "@compiled/utils": "^0.6.17",
+    "autoprefixer": "^10.4.13",
+    "cssnano-preset-default": "^5.2.13",
+    "postcss": "^8.4.21",
     "postcss-nested": "^5.0.6",
     "postcss-normalize-whitespace": "^5.1.1",
-    "postcss-selector-parser": "^6.0.10",
+    "postcss-selector-parser": "^6.0.11",
     "postcss-values-parser": "^6.0.2"
   },
   "devDependencies": {

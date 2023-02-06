@@ -6,5 +6,6 @@ export const recommended = {
     '@compiled/no-exported-keyframes': 'error',
     '@compiled/no-keyframes-tagged-template-expression': 'error',
     '@compiled/no-styled-tagged-template-expression': 'error',
+    '@compiled/no-css-prop-without-css-function': 'error',
   },
 };

@@ -1,5 +1,18 @@
 # @compiled/webpack-loader
 
+## 0.9.8
+
+### Patch Changes
+
+- e887c2b5: Clean up dependencies of packages
+- 4877ec38: Bump babel versions
+- Updated dependencies [e887c2b5]
+- Updated dependencies [4877ec38]
+  - @compiled/babel-plugin@0.17.3
+  - @compiled/css@0.8.8
+  - @compiled/utils@0.6.17
+  - @compiled/babel-plugin-strip-runtime@0.17.3
+
 ## 0.9.7
 
 ### Patch Changes
