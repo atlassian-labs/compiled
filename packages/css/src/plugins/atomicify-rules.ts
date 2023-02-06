@@ -3,6 +3,7 @@ import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'po
 import { rule } from 'postcss';
 
 interface PluginOpts {
+  classNameCompressionMap?: { [index: string]: string };
   callback?: (className: string) => void;
 }
 
@@ -76,20 +77,29 @@ const replaceNestingSelector = (selector: string, parentClassName: string) => {
  * @param node
  */
 const buildAtomicSelector = (node: Declaration, opts: AtomicifyOpts) => {
+  const { classNameCompressionMap } = opts;
   const selectors: string[] = [];
 
   (opts.selectors || ['']).forEach((selector) => {
     const normalizedSelector = normalizeSelector(selector);
-    const className = atomicClassName(node, {
+    const fullClassName = atomicClassName(node, {
       ...opts,
       selectors: [normalizedSelector],
     });
-    const replacedSelector = replaceNestingSelector(normalizedSelector, className);
 
-    selectors.push(replacedSelector);
+    const compressedClassName =
+      classNameCompressionMap && classNameCompressionMap[fullClassName.slice(1)];
+
+    selectors.push(replaceNestingSelector(normalizedSelector, fullClassName));
+
+    if (compressedClassName) {
+      // Add compressed class name to selectors
+      // An example of selectors: ".aaaabbbb:hover, .a:hover"
+      selectors.push(replaceNestingSelector(normalizedSelector, compressedClassName));
+    }
 
     if (opts.callback) {
-      opts.callback(className);
+      opts.callback(fullClassName);
     }
   });
 

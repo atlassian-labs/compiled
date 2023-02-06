@@ -67,6 +67,14 @@ export interface PluginOptions {
    * Default to `false`
    */
   addComponentName?: boolean;
+
+  /**
+   * A map holds the key-value pairs between full Atomic class names and the compressed ones
+   * i.e. { '_aaaabbbb': 'a' }
+   *
+   * Default to `undefined`
+   */
+  classNameCompressionMap?: { [index: string]: string };
 }
 
 export interface State extends PluginPass {
