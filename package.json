@@ -56,7 +56,7 @@
     }
   },
   "resolutions": {
-    "css-what": ">=5.0.1",
+    "css-what": ">=5.1.0",
     "nth-check": ">=2.0.1",
     "typescript": "^4.9.5"
   },
