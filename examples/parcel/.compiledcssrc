@@ -20,5 +20,6 @@
     ]
   ],
   "extract": true,
-  "optimizeCss": false
+  "optimizeCss": false,
+  "classNameCompressionMap": {"1wyb12am":"a","syaz5scu":"b","syazruxl":"c","k48pbfng":"d","30l35scu":"e","f8pj13q2":"f","1e0c1o8l":"g","ca0qftgi":"h","u5f3ftgi":"i","n3tdftgi":"j","19bvftgi":"k","19itak0l":"l","2rko1l7b":"m","syaz1aj3":"n","1p1dangw":"o","bfhkbf54":"p"}
 }
