@@ -168,6 +168,8 @@ export default async function compiledLoader(
           '@compiled/babel-plugin',
           {
             ...options,
+            // Turn off compressing class names if stylesheet extraction is off
+            classNameCompressionMap: options.extract && options.classNameCompressionMap,
             onIncludedFiles: (files: string[]) => includedFiles.push(...files),
             resolver: {
               // The resolver needs to be synchronous, as babel plugins must be synchronous
