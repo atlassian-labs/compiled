@@ -29,7 +29,7 @@ describe('class names behaviour', () => {
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
-          {<div className={ax([\\"_1wybgktf\\"])}>hello, world!</div>}
+          {<div className={ax(["_1wybgktf"])}>hello, world!</div>}
         </CC>
       );
       "
@@ -55,7 +55,7 @@ describe('class names behaviour', () => {
         <CC>
           <CS>{[_]}</CS>
           {(() => {
-            return <div className={ax([\\"_1wybgktf\\"])}>hello, world!</div>;
+            return <div className={ax(["_1wybgktf"])}>hello, world!</div>;
           })()}
         </CC>
       );
@@ -101,7 +101,7 @@ describe('class names behaviour', () => {
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
-          {<div className={ax([\\"_1wybgktf\\"])}>hello, world!</div>}
+          {<div className={ax(["_1wybgktf"])}>hello, world!</div>}
         </CC>
       );
       "
@@ -165,16 +165,16 @@ describe('class names behaviour', () => {
           <CS>{[_, _2, _3, _4, _5]}</CS>
           {
             <>
-              <div className={ax([\\"_5sagymdr _j7hq1sbx _1pgl1ytf\\"])}>
+              <div className={ax(["_5sagymdr _j7hq1sbx _1pgl1ytf"])}>
                 longhand object call expression
               </div>
-              <div className={ax([\\"_y44vonb9\\"])}>
+              <div className={ax(["_y44vonb9"])}>
                 shorthand object call expression
               </div>
-              <div className={ax([\\"_5sagymdr _j7hq1sbx _1pgl1ytf\\"])}>
+              <div className={ax(["_5sagymdr _j7hq1sbx _1pgl1ytf"])}>
                 longhand tagged template expression
               </div>
-              <div className={ax([\\"_y44vonb9\\"])}>
+              <div className={ax(["_y44vonb9"])}>
                 shorthand tagged template expression
               </div>
             </>
@@ -245,7 +245,7 @@ describe('class names behaviour', () => {
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
-          {<div className={ax([\\"_1wybgktf\\"])}>hello, world!</div>}
+          {<div className={ax(["_1wybgktf"])}>hello, world!</div>}
         </CC>
       );
       "
@@ -279,8 +279,8 @@ describe('class names behaviour', () => {
           {
             <div
               className={{
-                button: ax([\\"_syaz5scu _1wybgktf\\"]),
-                container: ax([\\"_syaz13q2 _1wybgktf\\"]),
+                button: ax(["_syaz5scu _1wybgktf"]),
+                container: ax(["_syaz13q2 _1wybgktf"]),
               }}
             >
               hello, world!
@@ -308,7 +308,7 @@ describe('class names behaviour', () => {
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
-          {<div className={ax([\\"_1wybgktf\\"])}>hello, world!</div>}
+          {<div className={ax(["_1wybgktf"])}>hello, world!</div>}
         </CC>
       );
       "
@@ -347,7 +347,7 @@ describe('class names behaviour', () => {
       const ListItem = ({ children }) => (
         <CC>
           <CS>{[_]}</CS>
-          {children(ax([\\"_1wybgktf\\"]))}
+          {children(ax(["_1wybgktf"]))}
         </CC>
       );
       "
@@ -403,7 +403,7 @@ describe('class names behaviour', () => {
               style={{
                 "--_1ylxx6h": ix(color),
               }}
-              className={ax([\\"_syaz1aj3\\"])}
+              className={ax(["_syaz1aj3"])}
             />
           }
         </CC>
@@ -470,7 +470,7 @@ describe('class names behaviour', () => {
           {(() => {
             const { css: c, style: styl } = arg;
             return (
-              <div style={undefined} className={ax([\\"_1wyb19bv _syaz5scu\\"])}>
+              <div style={undefined} className={ax(["_1wyb19bv _syaz5scu"])}>
                 hello world
               </div>
             );

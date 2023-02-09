@@ -48,8 +48,8 @@ describe('jsx automatic', () => {
           _jsx(CS, {
             children: [_],
           }),
-          _jsx(\\"div\\", {
-            className: ax([\\"_syaz13q2\\"]),
+          _jsx("div", {
+            className: ax(["_syaz13q2"]),
           }),
         ],
       });
