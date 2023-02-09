@@ -12,7 +12,10 @@ export const globalValues = ['inherit', 'initial', 'unset', 'revert', 'revert-la
  * @param node
  */
 export const isColor = (node: Node): boolean => {
-  return (node.type === 'word' || node.type === 'func') && node.isColor;
+  if ((node.type === 'word' || node.type === 'func') && node.isColor) return true;
+
+  // https://drafts.csswg.org/css-color/#named-colors two special words aren't included in `isColor`
+  return node.type === 'word' && ['transparent', 'currentcolor'].includes(node.value);
 };
 
 const widthUnits = new Set([
