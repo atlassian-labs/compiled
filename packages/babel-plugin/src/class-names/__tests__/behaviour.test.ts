@@ -29,7 +29,7 @@ describe('class names behaviour', () => {
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
-          {<div className={\\"_1wybgktf\\"}>hello, world!</div>}
+          {<div className={ax([\\"_1wybgktf\\"])}>hello, world!</div>}
         </CC>
       );
       "
@@ -55,7 +55,7 @@ describe('class names behaviour', () => {
         <CC>
           <CS>{[_]}</CS>
           {(() => {
-            return <div className={\\"_1wybgktf\\"}>hello, world!</div>;
+            return <div className={ax([\\"_1wybgktf\\"])}>hello, world!</div>;
           })()}
         </CC>
       );
@@ -101,7 +101,7 @@ describe('class names behaviour', () => {
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
-          {<div className={\\"_1wybgktf\\"}>hello, world!</div>}
+          {<div className={ax([\\"_1wybgktf\\"])}>hello, world!</div>}
         </CC>
       );
       "
@@ -165,14 +165,18 @@ describe('class names behaviour', () => {
           <CS>{[_, _2, _3, _4, _5]}</CS>
           {
             <>
-              <div className={\\"_5sagymdr _j7hq1sbx _1pgl1ytf\\"}>
+              <div className={ax([\\"_5sagymdr _j7hq1sbx _1pgl1ytf\\"])}>
                 longhand object call expression
               </div>
-              <div className={\\"_y44vonb9\\"}>shorthand object call expression</div>
-              <div className={\\"_5sagymdr _j7hq1sbx _1pgl1ytf\\"}>
+              <div className={ax([\\"_y44vonb9\\"])}>
+                shorthand object call expression
+              </div>
+              <div className={ax([\\"_5sagymdr _j7hq1sbx _1pgl1ytf\\"])}>
                 longhand tagged template expression
               </div>
-              <div className={\\"_y44vonb9\\"}>shorthand tagged template expression</div>
+              <div className={ax([\\"_y44vonb9\\"])}>
+                shorthand tagged template expression
+              </div>
             </>
           }
         </CC>
@@ -241,7 +245,7 @@ describe('class names behaviour', () => {
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
-          {<div className={\\"_1wybgktf\\"}>hello, world!</div>}
+          {<div className={ax([\\"_1wybgktf\\"])}>hello, world!</div>}
         </CC>
       );
       "
@@ -275,8 +279,8 @@ describe('class names behaviour', () => {
           {
             <div
               className={{
-                button: \\"_syaz5scu _1wybgktf\\",
-                container: \\"_syaz13q2 _1wybgktf\\",
+                button: ax([\\"_syaz5scu _1wybgktf\\"]),
+                container: ax([\\"_syaz13q2 _1wybgktf\\"]),
               }}
             >
               hello, world!
@@ -304,7 +308,7 @@ describe('class names behaviour', () => {
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
-          {<div className={\\"_1wybgktf\\"}>hello, world!</div>}
+          {<div className={ax([\\"_1wybgktf\\"])}>hello, world!</div>}
         </CC>
       );
       "
@@ -343,7 +347,7 @@ describe('class names behaviour', () => {
       const ListItem = ({ children }) => (
         <CC>
           <CS>{[_]}</CS>
-          {children(\\"_1wybgktf\\")}
+          {children(ax([\\"_1wybgktf\\"]))}
         </CC>
       );
       "
@@ -361,7 +365,7 @@ describe('class names behaviour', () => {
     );
   `);
 
-    expect(actual).toInclude(`<div className={\"_1wyb1fwx\"} /`);
+    expect(actual).toInclude(`<div className={ax([\"_1wyb1fwx\"])} /`);
   });
 
   it('should replace style identifier with undefined', () => {
@@ -399,7 +403,7 @@ describe('class names behaviour', () => {
               style={{
                 \\"--_1ylxx6h\\": ix(color),
               }}
-              className={\\"_syaz1aj3\\"}
+              className={ax([\\"_syaz1aj3\\"])}
             />
           }
         </CC>
@@ -466,7 +470,7 @@ describe('class names behaviour', () => {
           {(() => {
             const { css: c, style: styl } = arg;
             return (
-              <div style={undefined} className={\\"_1wyb19bv _syaz5scu\\"}>
+              <div style={undefined} className={ax([\\"_1wyb19bv _syaz5scu\\"])}>
                 hello world
               </div>
             );
@@ -475,5 +479,72 @@ describe('class names behaviour', () => {
       );
       "
     `);
+  });
+
+  it('should apply conditional logical expression object spread styles', () => {
+    const actual = transform(`
+      import { ClassNames } from '@compiled/react';
+
+      const ListItem = (props) => (
+        <ClassNames>
+          {({ css }) => (<div className={css({ 
+            ...props.isPrimary && {
+            color: 'blue',
+            fontSize: 20
+          }})}>hello, world!</div>)}
+        </ClassNames>
+      );
+    `);
+
+    expect(actual).toInclude('className={ax([props.isPrimary && "_syaz13q2 _1wybgktf"])}');
+  });
+
+  it('should apply array logical-based conditional css', () => {
+    const actual = transform(
+      `
+      import { ClassNames } from '@compiled/react';
+
+      const ListItem = (props) => (
+        <ClassNames>
+          {({ css }) => (<div className={css([
+            { fontSize: 40, },
+            (props.isPrimary || props.isMaybe) && {
+              color: 'blue',
+              fontSize: 20,
+            },
+          ])}>hello, world!</div>)}
+        </ClassNames>
+      );
+    `,
+      { pretty: false }
+    );
+
+    expect(actual).toInclude(
+      'className={ax(["_1wyb1ylp",(props.isPrimary||props.isMaybe)&&"_syaz13q2 _1wybgktf"])}'
+    );
+  });
+
+  it('should apply array prop ternary-based inline conditional css', () => {
+    const actual = transform(
+      `
+      import { ClassNames } from '@compiled/react';
+
+      const ListItem = (props) => (
+        <ClassNames>
+          {({ css }) => (<div className={css([
+            props.isPrimary
+              ? { background: 'white', color: 'black' }
+              : { background: 'green', color: 'red' },
+            { 'font-size': '12px' }
+          ])}>hello, world!</div>)}
+        </ClassNames>
+      );
+    `,
+      { pretty: false }
+    );
+
+    expect(actual).toInclude(
+      'className={ax([props.isPrimary?"_bfhk1x77 _syaz11x8":"_bfhkbf54 _syaz5scu","_1wyb1fwx"])}'
+    );
   });
 });

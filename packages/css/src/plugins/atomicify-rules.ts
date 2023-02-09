@@ -90,12 +90,11 @@ const buildAtomicSelector = (node: Declaration, opts: AtomicifyOpts) => {
     const compressedClassName =
       classNameCompressionMap && classNameCompressionMap[fullClassName.slice(1)];
 
-    selectors.push(replaceNestingSelector(normalizedSelector, fullClassName));
-
     if (compressedClassName) {
-      // Add compressed class name to selectors
-      // An example of selectors: ".aaaabbbb:hover, .a:hover"
+      // Use compressed class name if compressedClassName is available
       selectors.push(replaceNestingSelector(normalizedSelector, compressedClassName));
+    } else {
+      selectors.push(replaceNestingSelector(normalizedSelector, fullClassName));
     }
 
     if (opts.callback) {

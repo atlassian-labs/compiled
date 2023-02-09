@@ -218,10 +218,7 @@ describe('babel plugin', () => {
       }
     );
 
-    expect(actual).toIncludeMultiple([
-      '._1wyb1fwx, .a{font-size:12px}',
-      'ax(["_1wyb_a", __cmplp.className])',
-    ]);
+    expect(actual).toIncludeMultiple(['.a{font-size:12px}', 'ax(["_1wyb_a", __cmplp.className])']);
   });
 
   it('should compress class name for css props', () => {
@@ -238,10 +235,10 @@ describe('babel plugin', () => {
       }
     );
 
-    expect(actual).toIncludeMultiple(['._1wyb1fwx, .a{font-size:12px}', 'ax(["_1wyb_a"])']);
+    expect(actual).toIncludeMultiple(['.a{font-size:12px}', 'ax(["_1wyb_a"])']);
   });
 
-  it('should not compress class name for ClassNames', () => {
+  it('should compress class name for ClassNames', () => {
     const actual = transform(
       `
       import { ClassNames } from '@compiled/react';
@@ -259,7 +256,7 @@ describe('babel plugin', () => {
       }
     );
 
-    expect(actual).toIncludeMultiple(['._1wyb1fwx, .a{font-size:12px}', 'className={"_1wyb1fwx"}']);
+    expect(actual).toIncludeMultiple(['.a{font-size:12px}', 'className={ax(["_1wyb_a"])']);
   });
 
   it('should compress class names with atrules', () => {
@@ -276,7 +273,7 @@ describe('babel plugin', () => {
     );
 
     expect(actual).toIncludeMultiple([
-      '@media (max-width:1250px){._pz521fwx, .a{font-size:12px}}',
+      '@media (max-width:1250px){.a{font-size:12px}}',
       'ax(["_pz52_a"])',
     ]);
   });
@@ -296,8 +293,8 @@ describe('babel plugin', () => {
     );
 
     expect(actual).toIncludeMultiple([
-      '._9h8h5scu:active, .a:active{color:red}',
-      '._e9151fwx:hover, .b:hover{font-size:12px}',
+      '.a:active{color:red}',
+      '.b:hover{font-size:12px}',
       'ax(["_e915_b _9h8h_a"])',
     ]);
   });
@@ -315,10 +312,7 @@ describe('babel plugin', () => {
       }
     );
 
-    expect(actual).toIncludeMultiple([
-      '._1jkf1fwx >div div div:hover, .a >div div div:hover{font-size:12px}',
-      'ax(["_1jkf_a"]',
-    ]);
+    expect(actual).toIncludeMultiple(['.a >div div div:hover{font-size:12px}', 'ax(["_1jkf_a"]']);
   });
 
   it('should compress conditional class names', () => {
@@ -336,8 +330,8 @@ describe('babel plugin', () => {
     );
 
     expect(actual).toIncludeMultiple([
-      '._1wyb19ub, .a{font-size:16}',
-      '._1wyb1fwx, .b{font-size:12px}',
+      '.a{font-size:16}',
+      '.b{font-size:12px}',
       'bar ? "_1wyb1o8a" : "_1wyb_a"',
       'foo && "_1wyb_b"',
     ]);
@@ -358,7 +352,7 @@ describe('babel plugin', () => {
 
     expect(actual).toIncludeMultiple([
       '._19pk19bv{margin-top:10px}',
-      '._syaz5scu, .a{color:red}',
+      '.a{color:red}',
       '._1wyb1fwx{font-size:12px}',
       'ax(["_1wyb1fwx _syaz_a _19pk19bv"]',
     ]);
