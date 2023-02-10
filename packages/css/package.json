@@ -19,7 +19,7 @@
     "src"
   ],
   "resolutions": {
-    "css-what": ">=5.1.0",
+    "css-what": ">=6.1.0",
     "nth-check": ">=2.0.1"
   },
   "dependencies": {
