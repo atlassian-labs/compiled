@@ -32,14 +32,14 @@
   },
   "devDependencies": {
     "@compiled/react": "^0.11.3",
-    "babel-loader": "^8.2.4",
-    "css-loader": "^6.7.1",
+    "babel-loader": "^8.3.0",
+    "css-loader": "^6.7.3",
     "memfs": "^3.4.13",
     "mini-css-extract-plugin": "^1.6.2",
     "react": "^17.0.2",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.2",
-    "webpack": "^5.71.0"
+    "webpack": "^5.75.0"
   },
   "peerDependencies": {
     "webpack": ">= 4.46.0"

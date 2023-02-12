@@ -119,4 +119,12 @@ describe('expand utils', () => {
 
     expect(actual).toBe(true);
   });
+
+  it('should return true for special color words', () => {
+    const value = parse('transparent');
+
+    const actual = isColor(value.nodes[0]);
+
+    expect(actual).toBe(true);
+  });
 });

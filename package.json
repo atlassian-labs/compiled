@@ -56,7 +56,7 @@
     }
   },
   "resolutions": {
-    "css-what": ">=5.0.1",
+    "css-what": ">=6.1.0",
     "nth-check": ">=2.0.1",
     "typescript": "^4.9.5"
   },
@@ -71,8 +71,8 @@
     "@compiled/react": "*",
     "@size-limit/preset-big-lib": "^8.1.2",
     "@storybook/addons": "^6.5.16",
-    "@storybook/builder-webpack5": "^6.4.20",
-    "@storybook/manager-webpack5": "^6.4.20",
+    "@storybook/builder-webpack5": "^6.5.16",
+    "@storybook/manager-webpack5": "^6.5.16",
     "@storybook/react": "^6.5.16",
     "@types/jest": "^27.5.2",
     "@types/node": "^18.11.19",
@@ -81,7 +81,7 @@
     "@types/svgo": "^2.6.4",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.50.0",
-    "babel-loader": "^8.2.4",
+    "babel-loader": "^8.3.0",
     "eslint": "^8.33.0",
     "eslint-plugin-flowtype": "^8.0.3",
     "eslint-plugin-import": "^2.27.5",
