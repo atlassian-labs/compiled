@@ -75,7 +75,7 @@
     "@storybook/manager-webpack5": "^6.5.16",
     "@storybook/react": "^6.5.16",
     "@types/jest": "^27.5.2",
-    "@types/node": "^18.11.19",
+    "@types/node": "^18.13.0",
     "@types/react": "^17.0.53",
     "@types/react-dom": "^17.0.18",
     "@types/svgo": "^2.6.4",
