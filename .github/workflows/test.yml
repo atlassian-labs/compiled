@@ -13,8 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        # Test LTS and v12.15 for ensuring support for exports in package.json
-        node-version: [v12.15, v16]
+        node-version: [14.x, 16.x, 18.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -42,7 +41,6 @@ jobs:
         run: yarn
 
       - name: Validate
-        if: matrix.node-version == 'v16'
         run: yarn lint
 
       - name: Run tests
