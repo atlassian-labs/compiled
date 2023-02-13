@@ -1,5 +1,11 @@
 # @compiled/css
 
+## 0.8.10
+
+### Patch Changes
+
+- ba68bc7f: Fix transparent and currentcolor not being treated as a color
+
 ## 0.8.9
 
 ### Patch Changes
