@@ -18,7 +18,7 @@
   "dependencies": {
     "@compiled/parcel-optimizer": "^0.2.0",
     "@compiled/parcel-transformer": "^0.11.0",
-    "@parcel/plugin": "^2.3.1"
+    "@parcel/plugin": "^2.8.3"
   },
   "devDependencies": {},
   "engines": {

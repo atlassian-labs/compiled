@@ -16,7 +16,7 @@ const configFiles = [
   'compiledcss.config.js',
 ];
 
-export default new Optimizer<ParcelOptimizerOpts>({
+export default new Optimizer<ParcelOptimizerOpts, unknown>({
   async loadConfig({ config, options }) {
     const conf = await config.getConfigFrom(join(options.projectRoot, 'index'), configFiles, {
       packageKey: '@compiled/parcel-optimizer',
