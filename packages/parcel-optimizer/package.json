@@ -30,7 +30,7 @@
     "@parcel/core": "^2.8.3",
     "@parcel/fs": "^2.8.3",
     "@parcel/types": "^2.8.3",
-    "prettier": "^2.8.3"
+    "prettier": "^2.8.4"
   },
   "engines": {
     "parcel": "^2.0.0"
