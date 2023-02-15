@@ -40,7 +40,7 @@ describe('ax benchmark', () => {
     });
   }, 30000);
 
-  it('completes with ax() non-compresssed class names as the fastest', async () => {
+  it('completes with ax() non-compressed class names as the fastest', async () => {
     const arrWithCompressedClassNames = arr.map((item) =>
       item ? `${item.slice(0, 4)}_${item.slice(8)}` : item
     );
