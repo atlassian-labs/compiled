@@ -72,12 +72,12 @@ describe('import specifiers', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "import { forwardRef } from \\"react\\";
-      import * as React from \\"react\\";
-      import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
-      const _ = \\"._1wybgktf{font-size:20px}\\";
+      "import { forwardRef } from "react";
+      import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _ = "._1wybgktf{font-size:20px}";
       const ListItem = forwardRef(
-        ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+        ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           return (
             <CC>
               <CS>{[_]}</CS>
@@ -85,14 +85,14 @@ describe('import specifiers', () => {
                 {...__cmplp}
                 style={__cmpls}
                 ref={__cmplr}
-                className={ax([\\"_1wybgktf\\", __cmplp.className])}
+                className={ax(["_1wybgktf", __cmplp.className])}
               />
             </CC>
           );
         }
       );
-      if (process.env.NODE_ENV !== \\"production\\") {
-        ListItem.displayName = \\"ListItem\\";
+      if (process.env.NODE_ENV !== "production") {
+        ListItem.displayName = "ListItem";
       }
       "
     `);

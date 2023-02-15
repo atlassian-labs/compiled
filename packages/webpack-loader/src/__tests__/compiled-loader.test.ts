@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { join } from 'path';
 
 import { bundle as bundleEntry } from './test-utils';
@@ -22,7 +26,7 @@ describe.each<'development' | 'production'>(['development', 'production'])(
       if (mode === 'development') {
         expect(assets['main.js']).toInclude("console.log('Hello world!');");
       } else {
-        expect(assets['main.js']).toMatchInlineSnapshot(`"console.log(\\"Hello world!\\");"`);
+        expect(assets['main.js']).toMatchInlineSnapshot(`"console.log("Hello world!");"`);
       }
     });
 

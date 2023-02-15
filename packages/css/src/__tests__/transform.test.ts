@@ -225,9 +225,7 @@ describe('#css-transform', () => {
     `
     );
 
-    expect(actual.join('\n')).toMatchInlineSnapshot(
-      `"._qofj1q9v [data-foo=\\",\\"]{color:hotpink}"`
-    );
+    expect(actual.join('\n')).toMatchInlineSnapshot(`"._qofj1q9v [data-foo=","]{color:hotpink}"`);
   });
 
   it('should not build charset rules when minifying', () => {
@@ -247,7 +245,7 @@ describe('#css-transform', () => {
     expect(actual.join('\n')).toMatchInlineSnapshot(`
       "._kqswh2mm{position:relative}
       ._1p1d1dk0{text-transform:capitalize}
-      ._aetr16l8:after{content:\\"›\\"}
+      ._aetr16l8:after{content:"›"}
       ._18postnw:after{position:absolute}
       ._32rxlgv5:after{right:-2rem}"
     `);
@@ -268,7 +266,7 @@ describe('#css-transform', () => {
     );
 
     expect(classNames).toMatchInlineSnapshot(`
-      Array [
+      [
         "_kqswh2mm",
         "_1p1d1dk0",
         "_aetr16l8",
@@ -416,7 +414,7 @@ describe('#css-transform', () => {
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
         "._18u0idpf{margin-left:0}
-        ._1sb21e8g{content:\\"hello\\"}
+        ._1sb21e8g{content:"hello"}
         ._syaz15td{color:#639}
         ._1h6d1r31{border-color:currentColor}
         ._bfhk1r31{background-color:currentColor}
