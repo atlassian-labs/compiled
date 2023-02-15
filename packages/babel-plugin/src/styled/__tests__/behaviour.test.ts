@@ -25,12 +25,12 @@ describe('styled component behaviour', () => {
     const actual = transform(code, { pretty: true });
 
     expect(actual).toMatchInlineSnapshot(`
-      "import { forwardRef } from \\"react\\";
-      import * as React from \\"react\\";
-      import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
-      const _ = \\"._1wybgktf{font-size:20px}\\";
+      "import { forwardRef } from "react";
+      import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _ = "._1wybgktf{font-size:20px}";
       const ListItem = forwardRef(
-        ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+        ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           return (
             <CC>
               <CS>{[_]}</CS>
@@ -38,14 +38,14 @@ describe('styled component behaviour', () => {
                 {...__cmplp}
                 style={__cmpls}
                 ref={__cmplr}
-                className={ax([\\"_1wybgktf\\", __cmplp.className])}
+                className={ax(["_1wybgktf", __cmplp.className])}
               />
             </CC>
           );
         }
       );
-      if (process.env.NODE_ENV !== \\"production\\") {
-        ListItem.displayName = \\"ListItem\\";
+      if (process.env.NODE_ENV !== "production") {
+        ListItem.displayName = "ListItem";
       }
       "
     `);
@@ -63,12 +63,12 @@ describe('styled component behaviour', () => {
     const actual = transform(code, { pretty: true });
 
     expect(actual).toMatchInlineSnapshot(`
-      "import { forwardRef } from \\"react\\";
-      import * as React from \\"react\\";
-      import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
-      const _ = \\"._1wybgktf{font-size:20px}\\";
+      "import { forwardRef } from "react";
+      import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _ = "._1wybgktf{font-size:20px}";
       const ListItem = forwardRef(
-        ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+        ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           return (
             <CC>
               <CS>{[_]}</CS>
@@ -76,14 +76,14 @@ describe('styled component behaviour', () => {
                 {...__cmplp}
                 style={__cmpls}
                 ref={__cmplr}
-                className={ax([\\"_1wybgktf\\", __cmplp.className])}
+                className={ax(["_1wybgktf", __cmplp.className])}
               />
             </CC>
           );
         }
       );
-      if (process.env.NODE_ENV !== \\"production\\") {
-        ListItem.displayName = \\"ListItem\\";
+      if (process.env.NODE_ENV !== "production") {
+        ListItem.displayName = "ListItem";
       }
       "
     `);
@@ -328,22 +328,22 @@ describe('styled component behaviour', () => {
     const actual = transform(code, { pretty: true });
 
     expect(actual).toMatchInlineSnapshot(`
-      "import { forwardRef } from \\"react\\";
-      import * as React from \\"react\\";
-      import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
-      import colors from \\"colors\\";
-      const _10 = \\"._tzy4kb7n{opacity:1}\\";
-      const _9 = \\"._tzy4idpf{opacity:0}\\";
-      const _8 = \\"._1e0c1kw7{display:inherit}\\";
-      const _7 = \\"._1e0cglyw{display:none}\\";
-      const _6 = \\"._1h6d1qzc{border-color:var(--_96ptk)}\\";
-      const _5 = \\"._1h6d1c5w{border-color:var(--_5rpikm)}\\";
-      const _4 = \\"._syazs2l2{color:var(--_1oii75x)}\\";
-      const _3 = \\"._syaz1c44{color:var(--_1ytezyk)}\\";
-      const _2 = \\"._bfhk1lco{background-color:var(--_kcgnsd)}\\";
-      const _ = \\"._bfhkhk3l{background-color:var(--_16ldrz5)}\\";
+      "import { forwardRef } from "react";
+      import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      import colors from "colors";
+      const _10 = "._tzy4kb7n{opacity:1}";
+      const _9 = "._tzy4idpf{opacity:0}";
+      const _8 = "._1e0c1kw7{display:inherit}";
+      const _7 = "._1e0cglyw{display:none}";
+      const _6 = "._1h6d1qzc{border-color:var(--_96ptk)}";
+      const _5 = "._1h6d1c5w{border-color:var(--_5rpikm)}";
+      const _4 = "._syazs2l2{color:var(--_1oii75x)}";
+      const _3 = "._syaz1c44{color:var(--_1ytezyk)}";
+      const _2 = "._bfhk1lco{background-color:var(--_kcgnsd)}";
+      const _ = "._bfhkhk3l{background-color:var(--_16ldrz5)}";
       export const BadgeSkeleton = forwardRef(
-        ({ as: C = \\"span\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+        ({ as: C = "span", style: __cmpls, ...__cmplp }, __cmplr) => {
           const { isLoading, state, ...__cmpldp } = __cmplp;
           return (
             <CC>
@@ -352,21 +352,21 @@ describe('styled component behaviour', () => {
                 {...__cmpldp}
                 style={{
                   ...__cmpls,
-                  \\"--_16ldrz5\\": ix(colors.N20),
-                  \\"--_kcgnsd\\": ix(colors.N40),
-                  \\"--_1ytezyk\\": ix(colors.N50),
-                  \\"--_1oii75x\\": ix(colors.N10),
-                  \\"--_5rpikm\\": ix(colors.N100),
-                  \\"--_96ptk\\": ix(colors.N200),
+                  "--_16ldrz5": ix(colors.N20),
+                  "--_kcgnsd": ix(colors.N40),
+                  "--_1ytezyk": ix(colors.N50),
+                  "--_1oii75x": ix(colors.N10),
+                  "--_5rpikm": ix(colors.N100),
+                  "--_96ptk": ix(colors.N200),
                 }}
                 ref={__cmplr}
                 className={ax([
-                  \\"\\",
-                  __cmplp.isLoading ? \\"_bfhkhk3l\\" : \\"_bfhk1lco\\",
-                  __cmplp.loading ? \\"_syaz1c44\\" : \\"_syazs2l2\\",
-                  __cmplp.loading ? \\"_1h6d1c5w\\" : \\"_1h6d1qzc\\",
-                  __cmplp.state.loading ? \\"_1e0cglyw\\" : \\"_1e0c1kw7\\",
-                  __cmplp.isLoading ? \\"_tzy4idpf\\" : \\"_tzy4kb7n\\",
+                  "",
+                  __cmplp.isLoading ? "_bfhkhk3l" : "_bfhk1lco",
+                  __cmplp.loading ? "_syaz1c44" : "_syazs2l2",
+                  __cmplp.loading ? "_1h6d1c5w" : "_1h6d1qzc",
+                  __cmplp.state.loading ? "_1e0cglyw" : "_1e0c1kw7",
+                  __cmplp.isLoading ? "_tzy4idpf" : "_tzy4kb7n",
                   __cmplp.className,
                 ])}
               />
@@ -374,8 +374,8 @@ describe('styled component behaviour', () => {
           );
         }
       );
-      if (process.env.NODE_ENV !== \\"production\\") {
-        BadgeSkeleton.displayName = \\"BadgeSkeleton\\";
+      if (process.env.NODE_ENV !== "production") {
+        BadgeSkeleton.displayName = "BadgeSkeleton";
       }
       "
     `);

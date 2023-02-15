@@ -18,12 +18,12 @@ describe('styled object call expression', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = \\"._syaz13q2{color:blue}\\";
+      "const _ = "._syaz13q2{color:blue}";
       const StyledComponent = styled.div({
-        color: \\"blue\\",
+        color: "blue",
       });
       const CompiledComponent = forwardRef(
-        ({ as: C = \\"div\\", style: __cmpls, ...__cmplp }, __cmplr) => {
+        ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           return (
             <CC>
               <CS>{[_]}</CS>
@@ -31,7 +31,7 @@ describe('styled object call expression', () => {
                 {...__cmplp}
                 style={__cmpls}
                 ref={__cmplr}
-                className={ax([\\"_syaz13q2\\", __cmplp.className])}
+                className={ax(["_syaz13q2", __cmplp.className])}
               />
             </CC>
           );
