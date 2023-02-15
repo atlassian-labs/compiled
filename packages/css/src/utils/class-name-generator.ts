@@ -1,5 +1,10 @@
-const acceptPrefix = 'abcdefghijklmnopqrstuvwxyz_'.split('');
-const acceptChars = 'abcdefghijklmnopqrstuvwxyz_-0123456789'.split('');
+// CSS classes are case sensitive in non-quirk mode
+// Spec: https://html.spec.whatwg.org/multipage/semantics-other.html#case-sensitivity-of-selectors
+// CSS classes can contain only the characters [a-zA-Z0-9] and ISO 10646 characters U+00A0 and higher, plus the hyphen (-) and the underscore (_); they cannot start with a digit, two hyphens, or a hyphen followed by a digit.
+// Spec: https://www.w3.org/TR/CSS21/syndata.html#characters
+const acceptPrefixBase = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_';
+const acceptPrefix = acceptPrefixBase.split('');
+const acceptChars = `${acceptPrefixBase}-0123456789`.split('');
 
 export class ClassNameGenerator {
   newClassSize: number;

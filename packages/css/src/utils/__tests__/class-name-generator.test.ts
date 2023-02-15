@@ -15,7 +15,7 @@ describe('ClassNameGenerator', () => {
     expect(className).toBe('d');
   });
 
-  it('should generate class names starting with a number', () => {
+  it('should not generate class names starting with a number', () => {
     const generator = new ClassNameGenerator();
     Array.from(Array(30).keys()).forEach(() => {
       const className = generator.generateClassName('foo');
