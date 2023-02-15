@@ -25,7 +25,7 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = \\"._1wybgktf{font-size:20px}\\";
+      "const _ = "._1wybgktf{font-size:20px}";
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
@@ -50,7 +50,7 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = \\"._1wybgktf{font-size:20px}\\";
+      "const _ = "._1wybgktf{font-size:20px}";
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
@@ -97,7 +97,7 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = \\"._1wybgktf{font-size:20px}\\";
+      "const _ = "._1wybgktf{font-size:20px}";
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
@@ -154,11 +154,11 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _5 = \\"._y44vonb9{animation:k1m8j3od 2s ease-in-out}\\";
-      const _4 = \\"._1pgl1ytf{animation-timing-function:ease-in-out}\\";
-      const _3 = \\"._j7hq1sbx{animation-name:k1m8j3od}\\";
-      const _2 = \\"._5sagymdr{animation-duration:2s}\\";
-      const _ = \\"@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}\\";
+      "const _5 = "._y44vonb9{animation:k1m8j3od 2s ease-in-out}";
+      const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+      const _3 = "._j7hq1sbx{animation-name:k1m8j3od}";
+      const _2 = "._5sagymdr{animation-duration:2s}";
+      const _ = "@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}";
       const fadeOut = null;
       const Component = () => (
         <CC>
@@ -241,7 +241,7 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = \\"._1wybgktf{font-size:20px}\\";
+      "const _ = "._1wybgktf{font-size:20px}";
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
@@ -270,9 +270,9 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _3 = \\"._syaz13q2{color:blue}\\";
-      const _2 = \\"._1wybgktf{font-size:20px}\\";
-      const _ = \\"._syaz5scu{color:red}\\";
+      "const _3 = "._syaz13q2{color:blue}";
+      const _2 = "._1wybgktf{font-size:20px}";
+      const _ = "._syaz5scu{color:red}";
       const ListItem = () => (
         <CC>
           <CS>{[_, _2, _3]}</CS>
@@ -304,7 +304,7 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = \\"._1wybgktf{font-size:20px}\\";
+      "const _ = "._1wybgktf{font-size:20px}";
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
@@ -343,7 +343,7 @@ describe('class names behaviour', () => {
    `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = \\"._1wybgktf{font-size:20px}\\";
+      "const _ = "._1wybgktf{font-size:20px}";
       const ListItem = ({ children }) => (
         <CC>
           <CS>{[_]}</CS>
@@ -394,14 +394,14 @@ describe('class names behaviour', () => {
   `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = \\"._syaz1aj3{color:var(--_1ylxx6h)}\\";
+      "const _ = "._syaz1aj3{color:var(--_1ylxx6h)}";
       const Component = ({ children, color }) => (
         <CC>
           <CS>{[_]}</CS>
           {
             <div
               style={{
-                \\"--_1ylxx6h\\": ix(color),
+                "--_1ylxx6h": ix(color),
               }}
               className={ax([\\"_syaz1aj3\\"])}
             />
@@ -462,8 +462,8 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _2 = \\"._syaz5scu{color:red}\\";
-      const _ = \\"._1wyb19bv{font-size:10px}\\";
+      "const _2 = "._syaz5scu{color:red}";
+      const _ = "._1wyb19bv{font-size:10px}";
       const ListItem = () => (
         <CC>
           <CS>{[_, _2]}</CS>
