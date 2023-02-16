@@ -17,6 +17,8 @@ describe('ax benchmark', () => {
     '_1wybdlk8',
     '_irr3mlcl',
     '_1di6vctu',
+    // `undefined` is an acceptable parameter so we want to include it in the test case.
+    // Example: ax(['aaaabbbb', foo() && "aaaacccc"])
     undefined,
   ];
 
