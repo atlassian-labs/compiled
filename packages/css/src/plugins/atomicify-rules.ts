@@ -216,7 +216,7 @@ export const atomicifyRules = (opts = {}): Plugin => {
       root.each((node) => {
         switch (node.type) {
           case 'atrule':
-            const supported = ['media', 'supports', 'document'];
+            const supported = ['media', 'supports', 'document', '-moz-document'];
             if (supported.includes(node.name)) {
               node.replaceWith(atomicifyAtRule(node, opts));
             }

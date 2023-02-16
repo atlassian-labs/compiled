@@ -432,4 +432,16 @@ describe('atomicify rules', () => {
 
     expect(actual).toMatchInlineSnapshot(`"._syaz1qpq{color:red!important}._syaz5scu{color:red}"`);
   });
+
+  // Used for detecting that the current browser is Firefox
+  // https://css-tricks.com/snippets/css/css-hacks-targeting-firefox/
+  it('should support @-moz-document', () => {
+    const actual = transform`
+      @-moz-document url-prefix() {
+        & { color: blue; }
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`"@-moz-document url-prefix(){._qral13q2{color:blue}}"`);
+  });
 });
