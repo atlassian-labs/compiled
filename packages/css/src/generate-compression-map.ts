@@ -21,7 +21,7 @@ export const generateCompressionMap = (
 
   let classNamesToCompress: string[] = [];
   const classNameCompressionMap: { [index: string]: string } = {};
-  const reservedClassNames = ['ad', 'ads']; // Prevent AdBlocker from removing the class names
+  const reservedClassNames: string[] = [];
 
   const selectorProcessor = selectorParser((selectors) => {
     selectors.walkClasses((node: selectorParser.ClassName | selectorParser.Identifier) => {
