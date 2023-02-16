@@ -23,7 +23,7 @@ describe('#css-transform', () => {
     expect(actualOne.join('\n')).toEqual(actualTwo.join('\n'));
   });
 
-  it('should generate the same at rules even if white space is different', () => {
+  it('should generate the same at-rules even if white space is different', () => {
     const { sheets: actualOne } = transformCss(`
       @media (max-width:   400px)  and    (min-width: 10px) {
         color: red;

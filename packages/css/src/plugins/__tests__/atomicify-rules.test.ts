@@ -339,7 +339,7 @@ describe('atomicify rules', () => {
     expect(result.css).toMatchInlineSnapshot(`"._73mn1fwx div div{font-size:12px}"`);
   });
 
-  it('should atomicify at rule styles', () => {
+  it('should atomicify at-rule styles', () => {
     const actual = transform`
       @media (min-width: 30rem) {
         display: block;
@@ -352,7 +352,7 @@ describe('atomicify rules', () => {
     );
   });
 
-  it('should atomicify nested at rule styles', () => {
+  it('should atomicify nested at-rule styles', () => {
     const actual = transform`
       @media (min-width: 30rem) {
         @media (min-width: 20rem) {
@@ -366,7 +366,7 @@ describe('atomicify rules', () => {
     );
   });
 
-  it('should atomicify at rule nested styles', () => {
+  it('should atomicify at-rule nested styles', () => {
     const actual = transform`
       @media (min-width: 30rem) {
         div {
@@ -380,7 +380,7 @@ describe('atomicify rules', () => {
     );
   });
 
-  it('should atomicify double nested at rule nested styles', () => {
+  it('should atomicify double nested at-rule nested styles', () => {
     const actual = transform`
       @media (min-width: 30rem) {
         @media (min-width: 20rem) {
@@ -396,7 +396,7 @@ describe('atomicify rules', () => {
     );
   });
 
-  it('should ignore unhanded at rules', () => {
+  it('should ignore unhandled at-rules', () => {
     const actual = transform`
       @charset 'utf-8';
       @import 'custom.css';

@@ -1,8 +1,8 @@
 import type { AtRule, ChildNode, Plugin } from 'postcss';
 
 /**
- * Plugin to remove duplicate children found in at rules.
- * Currently does not handle nested at rules.
+ * Plugin to remove duplicate children found in at-rules.
+ * Currently does not handle nested at-rules.
  *
  * Before:
  *

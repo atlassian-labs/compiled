@@ -45,7 +45,7 @@ const BASE_PLUGINS: string[] = [
   // This ensures all selectors are the same even with different white space
   'postcss-minify-selectors',
 
-  // This ensures all at rules are the same even with different white space
+  // This ensures all at-rules are the same even with different white space
   'postcss-minify-params',
 ];
 
