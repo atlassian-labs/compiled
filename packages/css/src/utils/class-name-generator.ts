@@ -9,14 +9,21 @@ const acceptChars = `${acceptPrefixBase}-0123456789`.split('');
 export class ClassNameGenerator {
   newClassSize: number;
   reservedClassNames: string[];
-  constructor(opts: { reservedClassNames?: string[] } = {}) {
+  prefix?: string;
+  constructor(opts: { reservedClassNames?: string[]; prefix?: string } = {}) {
     this.newClassSize = 0;
     this.reservedClassNames = opts.reservedClassNames || [];
+    this.prefix = opts.prefix;
+
+    if (this.prefix && !acceptPrefix.includes(this.prefix)) {
+      throw new Error(`'${this.prefix}' is an invalid prefix. The allowed prefix is [a-zA-Z_]`);
+    }
   }
-  generateClassName(original: string): string {
+  generateClassName(): string {
     const chars = [];
-    let rest =
-      (this.newClassSize - (this.newClassSize % acceptPrefix.length)) / acceptPrefix.length;
+    let rest = this.prefix
+      ? this.newClassSize + 1
+      : (this.newClassSize - (this.newClassSize % acceptPrefix.length)) / acceptPrefix.length;
     if (rest > 0) {
       while (true) {
         rest -= 1;
@@ -30,12 +37,19 @@ export class ClassNameGenerator {
         rest /= acceptChars.length;
       }
     }
-    const prefixIndex = this.newClassSize % acceptPrefix.length;
-    const newClassName = `${acceptPrefix[prefixIndex]}${chars.join('')}`;
+    const newClassName = `${
+      this.prefix ? this.prefix : acceptPrefix[this.newClassSize % acceptPrefix.length]
+    }${chars.join('')}`;
 
     if (this.reservedClassNames && this.reservedClassNames.includes(newClassName)) {
       this.newClassSize++;
-      return this.generateClassName(original);
+      return this.generateClassName();
+    }
+
+    // Avoid any class name which includes the word 'ad' to please adblocker
+    if (newClassName.toLowerCase().includes('ad')) {
+      this.newClassSize++;
+      return this.generateClassName();
     }
 
     this.newClassSize++;

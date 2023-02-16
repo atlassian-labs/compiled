@@ -120,7 +120,7 @@ describe('generate compression map', () => {
     '1vdp1hna': 'ya',
     '17gjpfqs': 'za',
   };
-  it('should generate class names without the old compression map', () => {
+  it('should generate class names as expected', () => {
     const result = generate(baseCSS);
     expect(result).toStrictEqual(baseResult);
   });
@@ -131,9 +131,94 @@ describe('generate compression map', () => {
       '1vdp1hna': 'b',
       '14fy1hna': 'c',
     };
-    const result = generate(baseCSS, oldCompressionMap);
+    const result = generate(baseCSS, { oldClassNameCompressionMap: oldCompressionMap });
     for (const property in oldCompressionMap) {
       expect(result).toHaveProperty(property, oldCompressionMap[property]);
     }
+  });
+
+  it('should generate class names with prefix', () => {
+    const result = generate(baseCSS, { prefix: '_' });
+    expect(result).toStrictEqual({
+      '154i14e6': '_a',
+      '14tk72c6': '_b',
+      '14n4stnw': '_c',
+      '13h81y44': '_d',
+      '1di6k6hx': '_e',
+      irr3k6hx: '_f',
+      jomrk6hx: '_g',
+      '10j7k6hx': '_h',
+      '1gg2glyw': '_i',
+      '1o3iglyw': '_j',
+      '1iohnqa1': '_k',
+      '5goinqa1': '_l',
+      jf4cnqa1: '_m',
+      xatrnqa1: '_n',
+      '1726nqa1': '_o',
+      '1iqunqa1': '_p',
+      '1ejunqa1': '_q',
+      '1lwpnqa1': '_r',
+      '6xf7nqa1': '_s',
+      '1mb818uv': '_t',
+      oga118uv: '_u',
+      '1n2onqa1': '_v',
+      '1k4fnqa1': '_w',
+      '1nrm18uv': '_x',
+      '1a3b18uv': '_y',
+      '9oik18uv': '_z',
+      '5bd618uv': '_A',
+      '1ydc18uv': '_B',
+      '1ohyglyw': '_C',
+      '49pcglyw': '_D',
+      ra3xglyw: '_E',
+      ksodglyw: '_F',
+      q4asglyw: '_G',
+      tpgfglyw: '_H',
+      '1oxgru3m': '_I',
+      '9h8h1e9r': '_J',
+      f8pj1e9r: '_K',
+      '30l31e9r': '_L',
+      '10531e9r': '_M',
+      '1jhpoyl8': '_N',
+      '11usglyw': '_O',
+      '11y7oza4': '_P',
+      '11y7uu9g': '_Q',
+      l82t7vkz: '_R',
+      j7o07vkz: '_S',
+      '1od57vkz': '_T',
+      l82tgktf: '_U',
+      j7o0gktf: '_V',
+      yksp1ssb: '_W',
+      '1b421ssb': '_X',
+      s8ks18ws: '_Y',
+      u1wz1nty: '_Z',
+      hnu8tcjq: '__',
+      jvpg11p5: '_-',
+      '1nwdwxkt': '_0',
+      '1vlxckbl': '_1',
+      kz8c16xz: '_2',
+      '1jyu16xz': '_3',
+      '11et16xz': '_4',
+      fgkv16xz: '_5',
+      szna1wug: '_6',
+      '13on1wug': '_7',
+      '1f3k1wug': '_8',
+      inid1wug: '_9',
+      '12wp9ac1': '_aa',
+      jvpgglyw: '_ba',
+      pbi4tcjq: '_ca',
+      '16b9tcjq': '_da',
+      jmaqtcjq: '_ea',
+      '1q5htcjq': '_fa',
+      '11x1tcjq': '_ga',
+      '121jagmp': '_ha',
+      '1bumglyw': '_ia',
+      sedtglyw: '_ja',
+      '14kw1hna': '_ka',
+      mc2h1hna: '_la',
+      '14fy1hna': '_ma',
+      '1vdp1hna': '_na',
+      '17gjpfqs': '_oa',
+    });
   });
 });

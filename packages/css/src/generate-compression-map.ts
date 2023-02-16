@@ -15,8 +15,10 @@ const UNDERSCORE_UNICODE = 95;
  */
 export const generateCompressionMap = (
   css: string,
-  oldClassNameCompressionMap?: { [index: string]: string }
+  opts?: { oldClassNameCompressionMap?: { [index: string]: string }; prefix?: string }
 ): undefined | { [index: string]: string } => {
+  const { oldClassNameCompressionMap, prefix } = opts || {};
+
   let classNamesToCompress: string[] = [];
   const classNameCompressionMap: { [index: string]: string } = {};
   const reservedClassNames = ['ad', 'ads']; // Prevent AdBlocker from removing the class names
@@ -58,9 +60,9 @@ export const generateCompressionMap = (
     });
   }
 
-  const classNameGenerator = new ClassNameGenerator({ reservedClassNames });
+  const classNameGenerator = new ClassNameGenerator({ reservedClassNames, prefix });
   classNamesToCompress.forEach((className) => {
-    const newClassName = classNameGenerator.generateClassName(className);
+    const newClassName = classNameGenerator.generateClassName();
     classNameCompressionMap[className] = newClassName;
   });
 
