@@ -46,7 +46,7 @@ export class ClassNameGenerator {
       return this.generateClassName();
     }
 
-    // Avoid any class name which includes the word 'ad' to please adblocker
+    // Avoid any class name which includes the word 'ad' to prevent adblocker from blocking the HTML element
     if (newClassName.toLowerCase().includes('ad')) {
       this.newClassSize++;
       return this.generateClassName();
