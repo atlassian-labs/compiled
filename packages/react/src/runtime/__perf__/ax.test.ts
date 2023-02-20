@@ -3,24 +3,26 @@ import { runBenchmark } from '@compiled/benchmark';
 import { ax } from '../index';
 
 describe('ax benchmark', () => {
-  it('completes with ax() string as the fastest', async () => {
-    const arr = [
-      '_19itglyw',
-      '_2rko1l7b',
-      '_ca0qftgi',
-      '_u5f319bv',
-      '_n3tdftgi',
-      '_19bv19bv',
-      '_bfhk1mzw',
-      '_syazu67f',
-      '_k48p1nn1',
-      '_ect41kw7',
-      '_1wybdlk8',
-      '_irr3mlcl',
-      '_1di6vctu',
-      undefined,
-    ];
+  const arr = [
+    '_19itglyw',
+    '_2rko1l7b',
+    '_ca0qftgi',
+    '_u5f319bv',
+    '_n3tdftgi',
+    '_19bv19bv',
+    '_bfhk1mzw',
+    '_syazu67f',
+    '_k48p1nn1',
+    '_ect41kw7',
+    '_1wybdlk8',
+    '_irr3mlcl',
+    '_1di6vctu',
+    // `undefined` is an acceptable parameter so we want to include it in the test case.
+    // Example: ax(['aaaabbbb', foo() && "aaaacccc"])
+    undefined,
+  ];
 
+  it('completes with ax() string as the fastest', async () => {
     // Remove undefined and join the strings
     const str = arr.slice(0, -1).join(' ');
 
@@ -37,6 +39,26 @@ describe('ax benchmark', () => {
 
     expect(benchmark).toMatchObject({
       fastest: ['ax() string'],
+    });
+  }, 30000);
+
+  it('completes with ax() non-compressed class names as the fastest', async () => {
+    const arrWithCompressedClassNames = arr.map((item) =>
+      item ? `${item.slice(0, 4)}_${item.slice(8)}` : item
+    );
+    const benchmark = await runBenchmark('ax', [
+      {
+        name: 'ax() array',
+        fn: () => ax(arr),
+      },
+      {
+        name: 'ax() array with compressed class names',
+        fn: () => ax(arrWithCompressedClassNames),
+      },
+    ]);
+
+    expect(benchmark).toMatchObject({
+      fastest: ['ax() array'],
     });
   }, 30000);
 });

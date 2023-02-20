@@ -121,6 +121,7 @@ export default new Transformer<ParcelTransformerOpts>({
           '@compiled/babel-plugin',
           {
             ...config,
+            classNameCompressionMap: config.extract && config.classNameCompressionMap,
             onIncludedFiles: (files: string[]) => includedFiles.push(...files),
             resolver: {
               // The resolver needs to be synchronous, as babel plugins must be synchronous

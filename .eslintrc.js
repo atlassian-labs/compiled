@@ -2,6 +2,7 @@ module.exports = {
   root: true,
   ignorePatterns: [
     'dist',
+    'build',
     'flow-typed',
     '*.d.ts',
     'babel-cjs.js',
