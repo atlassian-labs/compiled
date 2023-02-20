@@ -1,5 +1,11 @@
 # @compiled/utils
 
+## 0.7.0
+
+### Minor Changes
+
+- a41e41e6: Update monorepo node version to v18, and drop support for node v12
+
 ## 0.6.17
 
 ### Patch Changes
