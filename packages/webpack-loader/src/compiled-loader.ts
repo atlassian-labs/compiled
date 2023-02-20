@@ -32,6 +32,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     ssr = false,
     optimizeCss = true,
     addComponentName = false,
+    classNameCompressionMap = undefined,
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -75,6 +76,9 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           addComponentName: {
             type: 'boolean',
           },
+          classNameCompressionMap: {
+            type: 'object',
+          },
         },
       });
 
@@ -91,6 +95,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     ssr,
     optimizeCss,
     addComponentName,
+    classNameCompressionMap,
   };
 }
 
@@ -163,6 +168,8 @@ export default async function compiledLoader(
           '@compiled/babel-plugin',
           {
             ...options,
+            // Turn off compressing class names if stylesheet extraction is off
+            classNameCompressionMap: options.extract && options.classNameCompressionMap,
             onIncludedFiles: (files: string[]) => includedFiles.push(...files),
             resolver: {
               // The resolver needs to be synchronous, as babel plugins must be synchronous

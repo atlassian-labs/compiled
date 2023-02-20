@@ -28,10 +28,8 @@ const ATOMIC_GROUP_LENGTH = 5;
  * @param classes
  */
 export default function ax(classNames: (string | undefined | false)[]): string | undefined {
-  if (classNames.length <= 1 && (!classNames[0] || classNames[0].indexOf(' ') === -1)) {
-    // short circuit if there's no custom class names.
-    return classNames[0] || undefined;
-  }
+  // short circuit if there's no class names.
+  if (classNames.length <= 1 && !classNames[0]) return undefined;
 
   const atomicGroups: Record<string, string> = {};
 
@@ -45,11 +43,11 @@ export default function ax(classNames: (string | undefined | false)[]): string |
 
     for (let x = 0; x < groups.length; x++) {
       const atomic = groups[x];
-      const atomicGroupName = atomic.slice(
-        0,
-        atomic.charCodeAt(0) === UNDERSCORE_UNICODE ? ATOMIC_GROUP_LENGTH : undefined
-      );
-      atomicGroups[atomicGroupName] = atomic;
+      const isAtomic = atomic.charCodeAt(0) === UNDERSCORE_UNICODE;
+      const isCompressed = isAtomic && atomic.charCodeAt(5) === UNDERSCORE_UNICODE;
+
+      const atomicGroupName = isAtomic ? atomic.slice(0, ATOMIC_GROUP_LENGTH) : atomic;
+      atomicGroups[atomicGroupName] = isCompressed ? atomic.slice(ATOMIC_GROUP_LENGTH + 1) : atomic;
     }
   }
 

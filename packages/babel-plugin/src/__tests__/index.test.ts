@@ -201,4 +201,160 @@ describe('babel plugin', () => {
 
     expect(actual).toInclude('c_MyDiv');
   });
+
+  it('should compress class name for styled component', () => {
+    const actual = transform(
+      `
+      import { styled } from '@compiled/react';
+
+      const MyDiv = styled.div\`
+        font-size: 12px;
+      \`;
+    `,
+      {
+        classNameCompressionMap: {
+          '1wyb1fwx': 'a',
+        },
+      }
+    );
+
+    expect(actual).toIncludeMultiple(['.a{font-size:12px}', 'ax(["_1wyb_a", __cmplp.className])']);
+  });
+
+  it('should compress class name for css props', () => {
+    const actual = transform(
+      `
+      import '@compiled/react';
+
+      <div css={{ fontSize: 12 }} />
+    `,
+      {
+        classNameCompressionMap: {
+          '1wyb1fwx': 'a',
+        },
+      }
+    );
+
+    expect(actual).toIncludeMultiple(['.a{font-size:12px}', 'ax(["_1wyb_a"])']);
+  });
+
+  it('should compress class name for ClassNames', () => {
+    const actual = transform(
+      `
+      import { ClassNames } from '@compiled/react';
+
+      <ClassNames>
+        {({ css }) => (
+          <div className={css({ fontSize: 12 })} />
+        )}
+      </ClassNames>
+    `,
+      {
+        classNameCompressionMap: {
+          '1wyb1fwx': 'a',
+        },
+      }
+    );
+
+    expect(actual).toIncludeMultiple(['.a{font-size:12px}', 'className={ax(["_1wyb_a"])']);
+  });
+
+  it('should compress class names with atrules', () => {
+    const actual = transform(
+      `
+      import '@compiled/react';
+      <div css={{ "@media (max-width: 1250px) ": { fontSize: 12 } }} />
+    `,
+      {
+        classNameCompressionMap: {
+          pz521fwx: 'a',
+        },
+      }
+    );
+
+    expect(actual).toIncludeMultiple([
+      '@media (max-width:1250px){.a{font-size:12px}}',
+      'ax(["_pz52_a"])',
+    ]);
+  });
+
+  it('should compress pseudo classes', () => {
+    const actual = transform(
+      `
+      import '@compiled/react';
+      <div css={{ "&:hover": { fontSize: 12 }, "&:active": { color: 'red' } }} />
+    `,
+      {
+        classNameCompressionMap: {
+          '9h8h5scu': 'a',
+          e9151fwx: 'b',
+        },
+      }
+    );
+
+    expect(actual).toIncludeMultiple([
+      '.a:active{color:red}',
+      '.b:hover{font-size:12px}',
+      'ax(["_e915_b _9h8h_a"])',
+    ]);
+  });
+
+  it('should compress nested selector', () => {
+    const actual = transform(
+      `
+      import '@compiled/react';
+      <div css={{ '>div': { 'div div:hover': { fontSize: 12 } } }} />
+    `,
+      {
+        classNameCompressionMap: {
+          '1jkf1fwx': 'a',
+        },
+      }
+    );
+
+    expect(actual).toIncludeMultiple(['.a >div div div:hover{font-size:12px}', 'ax(["_1jkf_a"]']);
+  });
+
+  it('should compress conditional class names', () => {
+    const actual = transform(
+      `
+      import '@compiled/react';
+      <div css={[{ fontSize: ({ bar }) => bar ? 14 : 16 }, () => foo ? { fontSize: 12 } : {}, baz && { fontSize: 20 }]} />
+    `,
+      {
+        classNameCompressionMap: {
+          '1wyb19ub': 'a',
+          '1wyb1fwx': 'b',
+        },
+      }
+    );
+
+    expect(actual).toIncludeMultiple([
+      '.a{font-size:16}',
+      '.b{font-size:12px}',
+      'bar ? "_1wyb1o8a" : "_1wyb_a"',
+      'foo && "_1wyb_b"',
+    ]);
+  });
+
+  it('should compress class names according to the map', () => {
+    const actual = transform(
+      `
+      import '@compiled/react';
+      <div css={{ fontSize: 12, color: 'red', marginTop: 10 }} />
+    `,
+      {
+        classNameCompressionMap: {
+          syaz5scu: 'a',
+        },
+      }
+    );
+
+    expect(actual).toIncludeMultiple([
+      '._19pk19bv{margin-top:10px}',
+      '.a{color:red}',
+      '._1wyb1fwx{font-size:12px}',
+      'ax(["_1wyb1fwx _syaz_a _19pk19bv"]',
+    ]);
+  });
 });
