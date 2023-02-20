@@ -1,5 +1,19 @@
 # @compiled/webpack-app
 
+## 1.2.0
+
+### Minor Changes
+
+- a41e41e6: Update monorepo node version to v18, and drop support for node v12
+
+### Patch Changes
+
+- Updated dependencies [a41e41e6]
+- Updated dependencies [f9c957ef]
+  - @compiled/babel-component-fixture@0.1.0
+  - @compiled/react@0.12.0
+  - @compiled/webpack-loader@0.10.0
+
 ## 1.1.2
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @compiled/css
 
+## 0.9.0
+
+### Minor Changes
+
+- a41e41e6: Update monorepo node version to v18, and drop support for node v12
+- f9c957ef: Add an option to compress class names based on "classNameCompressionMap", which is provided by library consumers.
+  Add a script to generate compressed class names.
+
+### Patch Changes
+
+- Updated dependencies [a41e41e6]
+  - @compiled/utils@0.7.0
+
 ## 0.8.10
 
 ### Patch Changes
