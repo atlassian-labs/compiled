@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.6.0
+
+### Minor Changes
+
+- a41e41e6: Update monorepo node version to v18, and drop support for node v12
+
 ## 0.5.0
 
 ### Minor Changes

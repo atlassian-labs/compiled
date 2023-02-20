@@ -1,5 +1,11 @@
 # @compiled/jest
 
+## 0.8.0
+
+### Minor Changes
+
+- a41e41e6: Update monorepo node version to v18, and drop support for node v12
+
 ## 0.7.4
 
 ### Patch Changes

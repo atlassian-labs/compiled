@@ -1,5 +1,16 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.18.0
+
+### Minor Changes
+
+- a41e41e6: Update monorepo node version to v18, and drop support for node v12
+
+### Patch Changes
+
+- Updated dependencies [a41e41e6]
+  - @compiled/utils@0.7.0
+
 ## 0.17.3
 
 ### Patch Changes
