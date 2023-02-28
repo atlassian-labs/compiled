@@ -16,6 +16,7 @@ import type { Metadata, Tag } from '../types';
 
 import { pickFunctionBody } from './ast';
 import { buildCssVariables } from './build-css-variables';
+import { compressClassNamesForAx } from './compress-class-names-for-ax';
 import { getItemCss } from './css-builders';
 import { hoistSheet } from './hoist-sheet';
 import { applySelectors, transformCssItems } from './transform-css-items';
@@ -237,7 +238,14 @@ export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metad
 
   const sheets = [...uniqueUnconditionalCssOutput.sheets, ...conditionalCssOutput.sheets];
   const classNames = [
-    ...[t.stringLiteral(uniqueUnconditionalCssOutput.classNames.join(' '))],
+    ...[
+      t.stringLiteral(
+        compressClassNamesForAx(
+          uniqueUnconditionalCssOutput.classNames,
+          meta.state.opts.classNameCompressionMap
+        ).join(' ')
+      ),
+    ],
     ...conditionalCssOutput.classNames,
   ];
 

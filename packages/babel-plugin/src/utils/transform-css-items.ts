@@ -3,6 +3,7 @@ import { transformCss } from '@compiled/css';
 
 import type { Metadata } from '../types';
 
+import { compressClassNamesForAx } from './compress-class-names-for-ax';
 import { getItemCss } from './css-builders';
 import type { CssItem } from './types';
 
@@ -64,13 +65,21 @@ const transformCssItem = (
         classExpression: t.logicalExpression(
           item.operator,
           item.expression,
-          t.stringLiteral(logicalCss.classNames.join(' '))
+          t.stringLiteral(
+            compressClassNamesForAx(
+              logicalCss.classNames,
+              meta.state.opts.classNameCompressionMap
+            ).join(' ')
+          )
         ),
       };
 
     default:
       const css = transformCss(getItemCss(item), meta.state.opts);
-      const className = css.classNames.join(' ');
+      const className = compressClassNamesForAx(
+        css.classNames,
+        meta.state.opts.classNameCompressionMap
+      ).join(' ');
 
       return {
         sheets: css.sheets,

@@ -1,6 +1,6 @@
 {
   "name": "@compiled/babel-plugin",
-  "version": "0.17.3",
+  "version": "0.18.0",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-babel-plugin",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -28,14 +28,14 @@
     "@babel/template": "^7.20.7",
     "@babel/traverse": "^7.20.13",
     "@babel/types": "^7.20.7",
-    "@compiled/css": "^0.8.8",
-    "@compiled/utils": "^0.6.17",
+    "@compiled/css": "^0.9.0",
+    "@compiled/utils": "^0.7.0",
     "@emotion/is-prop-valid": "^1.2.0",
     "resolve": "^1.22.0"
   },
   "devDependencies": {
-    "@compiled-private/module-a": "^0.0.2",
-    "@compiled/benchmark": "1.0.1",
+    "@compiled-private/module-a": "^0.1.0",
+    "@compiled/benchmark": "1.1.0",
     "@types/babel__core": "^7.20.0",
     "@types/benchmark": "^2.1.2",
     "@types/resolve": "^1.20.2",

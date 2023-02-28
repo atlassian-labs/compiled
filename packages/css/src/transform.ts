@@ -15,6 +15,7 @@ import { sortAtRulePseudos } from './plugins/sort-at-rule-pseudos';
 
 interface TransformOpts {
   optimizeCss?: boolean;
+  classNameCompressionMap?: object;
 }
 
 /**
@@ -41,7 +42,10 @@ export const transformCss = (
       }),
       ...normalizeCSS(opts),
       expandShorthands(),
-      atomicifyRules({ callback: (className: string) => classNames.push(className) }),
+      atomicifyRules({
+        classNameCompressionMap: opts.classNameCompressionMap,
+        callback: (className: string) => classNames.push(className),
+      }),
       sortAtRulePseudos(),
       ...(process.env.AUTOPREFIXER === 'off' ? [] : [autoprefixer()]),
       whitespace(),
