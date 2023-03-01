@@ -36,7 +36,10 @@ export const transformCss = (
       discardDuplicates(),
       discardEmptyRules(),
       parentOrphanedPseudos(),
-      nested(),
+      nested({
+        bubble: ['container', '-moz-document', 'layer', 'else', 'when'],
+        unwrap: ['color-profile', 'counter-style', 'font-palette-values', 'page', 'property'],
+      }),
       ...normalizeCSS(opts),
       expandShorthands(),
       atomicifyRules({

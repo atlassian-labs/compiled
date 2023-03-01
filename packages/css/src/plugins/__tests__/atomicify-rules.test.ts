@@ -110,7 +110,7 @@ describe('atomicify rules', () => {
   it('should autoprefix nested atrule atomic rules', () => {
     process.env.BROWSERSLIST = 'Edge 16';
 
-    const result = transform`
+    const result1 = transform`
       @media (min-width: 30rem) {
         @media (min-width: 20rem) {
           user-select: none;
@@ -118,8 +118,21 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(result).toMatchInlineSnapshot(
+    expect(result1).toMatchInlineSnapshot(
       `"@media (min-width: 30rem){@media (min-width: 20rem){._uf5eglyw{-ms-user-select:none;user-select:none}}}"`
+    );
+
+    const result2 = transform`
+      @media (min-width: 30rem) {
+        @media (min-width: 20rem) {
+          @font-face { font-family: Arial; src: url(arial.woff); }
+          user-select: none;
+        }
+      }
+    `;
+
+    expect(result2).toMatchInlineSnapshot(
+      `"@media (min-width: 30rem){@media (min-width: 20rem){@font-face{font-family:Arial;src:url(arial.woff)}._uf5eglyw{-ms-user-select:none;user-select:none}}}"`
     );
   });
 
@@ -339,20 +352,46 @@ describe('atomicify rules', () => {
     expect(result.css).toMatchInlineSnapshot(`"._73mn1fwx div div{font-size:12px}"`);
   });
 
-  it('should atomicify at rule styles', () => {
+  it('should atomicify at-rule styles', () => {
     const actual = transform`
+      @container (width > 300px) {
+        h2 { color: red; }
+      }
+
+      @when font-tech(color-COLRv1) and font-tech(variations) {
+        @font-face { font-family: test; src: url(test.woff2); }
+      }
+      @else font-tech(color-SVG) {
+        @font-face { font-family: test; src: url(test2.woff2); }
+      }
+      @else {
+        @font-face { font-family: test; src: url(test3.woff2); }
+      }
+
+      @-moz-document url-prefix() {
+        color: blue;
+      }
+
+      @layer state {
+        background-color: brown;
+      }
+
       @media (min-width: 30rem) {
         display: block;
         font-size: 20px;
       }
+
+      @supports selector(h2 > p) {
+        color: pink;
+      }
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._hi7c1ule{display:block}._1l5zgktf{font-size:20px}}"`
+      `"@container (width > 300px){._eq985scu h2{color:red}}@when font-tech(color-COLRv1) and font-tech(variations){@font-face{font-family:test;src:url(test.woff2)}}@else font-tech(color-SVG){@font-face{font-family:test;src:url(test2.woff2)}}@else{@font-face{font-family:test;src:url(test3.woff2)}}@-moz-document url-prefix(){._qral13q2{color:blue}}@layer state{._8tgm6x50{background-color:brown}}@media (min-width: 30rem){._hi7c1ule{display:block}._1l5zgktf{font-size:20px}}@supports selector(h2 > p){._1ll732ev{color:pink}}"`
     );
   });
 
-  it('should atomicify nested at rule styles', () => {
+  it('should atomicify nested at-rule styles', () => {
     const actual = transform`
       @media (min-width: 30rem) {
         @media (min-width: 20rem) {
@@ -366,7 +405,7 @@ describe('atomicify rules', () => {
     );
   });
 
-  it('should atomicify at rule nested styles', () => {
+  it('should atomicify at-rule nested styles', () => {
     const actual = transform`
       @media (min-width: 30rem) {
         div {
@@ -380,7 +419,7 @@ describe('atomicify rules', () => {
     );
   });
 
-  it('should atomicify double nested at rule nested styles', () => {
+  it('should atomicify double nested at-rule nested styles', () => {
     const actual = transform`
       @media (min-width: 30rem) {
         @media (min-width: 20rem) {
@@ -396,20 +435,52 @@ describe('atomicify rules', () => {
     );
   });
 
-  it('should ignore unhanded at rules', () => {
+  it("should raise an error for at-rules that cannot be atomicized and don't make sense to be used", () => {
+    expect(() => transform`@charset 'utf-8';`).toThrow(
+      "At-rule '@charset' cannot be used in CSS rules."
+    );
+
+    expect(() => transform`@import 'custom.css';`).toThrow(
+      "At-rule '@import' cannot be used in CSS rules."
+    );
+
+    expect(() => transform`@namespace 'XML-namespace-URL';`).toThrow(
+      "At-rule '@namespace' cannot be used in CSS rules."
+    );
+  });
+
+  it('should ignore at-rules that cannot be atomicized but do make sense to be used', () => {
     const actual = transform`
-      @charset 'utf-8';
-      @import 'custom.css';
-      @namespace 'XML-namespace-URL';
+      @color-profile --swop5c {
+        src: url('https://example.org/SWOP2006_Coated5v2.icc');
+      }
+
+      @counter-style triangle {
+        system: cyclic;
+        symbols: ‣;
+        suffix: " ";
+      }
+
+      @font-face { font-family: "Open Sans"; }
+
+      @font-palette-values --FontPalette {
+        font-family: "Open Sans";
+        base-palette: 1;
+      }
 
       @keyframes hello-world { from: { opacity: 0 } to { opacity: 1 } }
-      @font-face {
-        font-family: "Open Sans";
+
+      @page :left { margin-top: 4in; }
+
+      @property --radius {
+        syntax: "<length>";
+        inherits: false;
+        initial-value: 0px;
       }
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@charset 'utf-8';@import 'custom.css';@namespace 'XML-namespace-URL';@-webkit-keyframes hello-world{from:{opacity:0}to{opacity:1}}@keyframes hello-world{from:{opacity:0}to{opacity:1}}@font-face{font-family:"Open Sans"}"`
+      `"@color-profile --swop5c{src:url('https://example.org/SWOP2006_Coated5v2.icc')}@counter-style triangle{system:cyclic;symbols:‣;suffix:" "}@font-face{font-family:"Open Sans"}@font-palette-values --FontPalette{font-family:"Open Sans";base-palette:1}@-webkit-keyframes hello-world{from:{opacity:0}to{opacity:1}}@keyframes hello-world{from:{opacity:0}to{opacity:1}}@page :left{margin-top:4in}@property --radius{syntax:"<length>";inherits:false;initial-value:0px}"`
     );
   });
 
@@ -431,5 +502,25 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(`"._syaz1qpq{color:red!important}._syaz5scu{color:red}"`);
+  });
+
+  it('should throw an error for unknown at-rules', () => {
+    expect(
+      () => transform`
+      @asdfghjkl state {
+        div { color: blue; }
+        .hello { font-size: 1px; }
+      }
+    `
+    ).toThrow("Unknown at-rule '@asdfghjkl'.");
+
+    expect(
+      () => transform`
+      @media screen {
+        @asdfghjkl { color: blue; }
+        .hello { font-size: 1px; }
+      }
+    `
+    ).toThrow("Unknown at-rule '@asdfghjkl'.");
   });
 });

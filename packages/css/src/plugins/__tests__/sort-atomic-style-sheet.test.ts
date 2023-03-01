@@ -11,7 +11,7 @@ const transform = (css: TemplateStringsArray) => {
 };
 
 describe('sort atomic style sheet plugin', () => {
-  it('should move at rules to the bottom', () => {
+  it('should move at-rules to the bottom', () => {
     const actual = transform`
       @media screen {
         .media-screen-color-red {

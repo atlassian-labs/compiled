@@ -161,6 +161,47 @@ const atomicifyRule = (node: Rule, opts: AtomicifyOpts): Rule[] => {
 };
 
 /**
+ * Checks whether the given at-rule node can be
+ * atomicified (transformed into atomic rules).
+ *
+ * Throws an error for unknown at-rules, as well as
+ * at-rules that should not be used in the stylesheet.
+ *
+ * @param node
+ */
+const canAtomicifyAtRule = (node: AtRule): boolean => {
+  const canBeAtomificied = [
+    'container',
+    '-moz-document',
+    'else',
+    'layer',
+    'media',
+    'supports',
+    'when',
+  ];
+  const forbidden = ['charset', 'import', 'namespace'];
+  const ignored = [
+    'color-profile',
+    'counter-style',
+    'font-face',
+    'font-palette-values',
+    'keyframes',
+    'page',
+    'property',
+  ];
+
+  if (canBeAtomificied.includes(node.name)) {
+    return true;
+  } else if (forbidden.includes(node.name)) {
+    throw new Error(`At-rule '@${node.name}' cannot be used in CSS rules.`);
+  } else if (!ignored.includes(node.name)) {
+    throw new Error(`Unknown at-rule '@${node.name}'.`);
+  }
+
+  return false;
+};
+
+/**
  * Transforms an atrule into atomic rules.
  *
  * @param node
@@ -189,7 +230,12 @@ const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
   node.each((childNode) => {
     switch (childNode.type) {
       case 'atrule':
-        newNode.nodes.push(atomicifyAtRule(childNode, atRuleOpts));
+        if (canAtomicifyAtRule(childNode)) {
+          newNode.nodes.push(atomicifyAtRule(childNode, atRuleOpts));
+        } else {
+          newNode.nodes.push(childNode);
+        }
+
         break;
 
       case 'rule':
@@ -225,11 +271,9 @@ export const atomicifyRules = (opts = {}): Plugin => {
       root.each((node) => {
         switch (node.type) {
           case 'atrule':
-            const supported = ['media', 'supports', 'document'];
-            if (supported.includes(node.name)) {
+            if (canAtomicifyAtRule(node)) {
               node.replaceWith(atomicifyAtRule(node, opts));
             }
-
             break;
 
           case 'rule':

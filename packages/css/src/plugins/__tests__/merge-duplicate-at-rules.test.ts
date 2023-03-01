@@ -10,7 +10,7 @@ const transform = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-describe('discard duplicate at rule children plugin', () => {
+describe('discard duplicate at-rule children plugin', () => {
   it('should remove duplicate children', () => {
     const actual = transform`
       @media (min-width:500px){._171dak0l{border:2px solid red}}
