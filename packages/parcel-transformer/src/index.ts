@@ -38,7 +38,10 @@ export default new Transformer<ParcelTransformerOpts>({
     };
 
     if (conf) {
-      config.invalidateOnStartup();
+      if (conf.filePath.endsWith('.js')) {
+        config.invalidateOnStartup();
+      }
+
       Object.assign(contents, conf.contents);
     }
 

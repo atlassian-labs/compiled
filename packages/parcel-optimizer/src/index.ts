@@ -27,7 +27,10 @@ export default new Optimizer<ParcelOptimizerOpts, unknown>({
     };
 
     if (conf) {
-      config.invalidateOnStartup();
+      if (conf.filePath.endsWith('.js')) {
+        config.invalidateOnStartup();
+      }
+
       Object.assign(contents, conf.contents);
     }
 
