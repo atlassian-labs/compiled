@@ -2141,18 +2141,18 @@
   dependencies:
     "@loki/browser" "^0.31.0"
 
-"@loki/runner@^0.31.0":
-  version "0.31.0"
-  resolved "https://registry.yarnpkg.com/@loki/runner/-/runner-0.31.0.tgz#c7843589f76296353e0413c7bb5bb9e6c828a656"
-  integrity sha512-BL1k+q0zsoLaYnBRP1YqTekW2p7XnQElFEw57u1HVDM5ljokw8C8NjBU3+t0aW+asfhLic9HCWBNrVW6LUM+vg==
+"@loki/runner@^0.31.1":
+  version "0.31.1"
+  resolved "https://registry.yarnpkg.com/@loki/runner/-/runner-0.31.1.tgz#691a1449ee3e5b0cf84eb1616dc6538e3eda696c"
+  integrity sha512-z2HA+uWjFnzQtUTwieiCHouO9RL5+3nmucA02shfeBff6X4PMguS5618mpnnsBGhnYS7c8q7n8CBfliQBIQ+1w==
   dependencies:
     "@loki/core" "^0.31.0"
     "@loki/diff-graphics-magick" "^0.31.0"
     "@loki/diff-looks-same" "^0.31.0"
     "@loki/diff-pixelmatch" "^0.31.0"
-    "@loki/target-chrome-app" "^0.31.0"
+    "@loki/target-chrome-app" "^0.31.1"
     "@loki/target-chrome-aws-lambda" "^0.31.0"
-    "@loki/target-chrome-docker" "^0.31.0"
+    "@loki/target-chrome-docker" "^0.31.1"
     "@loki/target-native-android-emulator" "^0.31.0"
     "@loki/target-native-ios-simulator" "^0.31.0"
     async "^3.2.0"
@@ -2167,14 +2167,14 @@
     react "^17.0.2"
     transliteration "^2.2.0"
 
-"@loki/target-chrome-app@^0.31.0":
-  version "0.31.0"
-  resolved "https://registry.yarnpkg.com/@loki/target-chrome-app/-/target-chrome-app-0.31.0.tgz#c728830146d4739d0b29b8216c3c97025ab5c217"
-  integrity sha512-VxLcR9ux4+46imyMFmxwV0gT3JPnYG9O1/h783I63gqaTw4pZFJ0dTyxHiWTRXhOI5i4DQYKXPxcfNM5rSyPfA==
+"@loki/target-chrome-app@^0.31.1":
+  version "0.31.1"
+  resolved "https://registry.yarnpkg.com/@loki/target-chrome-app/-/target-chrome-app-0.31.1.tgz#3ea88f43f21955ef32a73bb350b51c8ec442b26c"
+  integrity sha512-zkw6bp755WFZz7A9soHn2B1f5J4qAuUACmuRo1y3ok0fOPkl3+5wNIACscchsol1tw4I0tbEipKRuz5pb7LdGA==
   dependencies:
     "@loki/target-chrome-core" "^0.31.0"
     chrome-launcher "^0.14.1"
-    chrome-remote-interface "^0.31.3"
+    chrome-remote-interface "^0.32.1"
     debug "^4.1.1"
 
 "@loki/target-chrome-aws-lambda@^0.31.0":
@@ -2196,14 +2196,14 @@
     "@loki/integration-core" "^0.31.0"
     debug "^4.1.1"
 
-"@loki/target-chrome-docker@^0.31.0":
-  version "0.31.0"
-  resolved "https://registry.yarnpkg.com/@loki/target-chrome-docker/-/target-chrome-docker-0.31.0.tgz#a66f0ef2970d31e09316de343ffa52029e0aaefd"
-  integrity sha512-rS2eZcyn7H/+nna9b3v5OR6/jxHNnUwg6oXflyJsTaxKqL2DOWWuPpyktgxBZsjdPQChQ7fZRK7ozEYn+IwJBA==
+"@loki/target-chrome-docker@^0.31.1":
+  version "0.31.1"
+  resolved "https://registry.yarnpkg.com/@loki/target-chrome-docker/-/target-chrome-docker-0.31.1.tgz#55a12fbca637df7de4afb08426f72c2b828a3ae4"
+  integrity sha512-cX5xNGkR9s/jLRBONcse8CILHloQuCUpWZnPjJ2DFpGfwYuSPtbdIlKmQyJQn1XrVKZRhzDtkKxTFLKSzOB5tA==
   dependencies:
     "@loki/core" "^0.31.0"
     "@loki/target-chrome-core" "^0.31.0"
-    chrome-remote-interface "^0.31.3"
+    chrome-remote-interface "^0.32.1"
     debug "^4.1.1"
     execa "^5.0.0"
     fs-extra "^9.1.0"
@@ -6342,10 +6342,10 @@ chrome-launcher@^0.14.1:
     is-wsl "^2.2.0"
     lighthouse-logger "^1.0.0"
 
-chrome-remote-interface@^0.31.3:
-  version "0.31.3"
-  resolved "https://registry.yarnpkg.com/chrome-remote-interface/-/chrome-remote-interface-0.31.3.tgz#bd01b89f5f0e968f7eeb37b8b7c5ac20e6e1f4d0"
-  integrity sha512-NTwb1YNPHXLTus1RjqsLxJmdViKwKJg/lrFEcM6pbyQy04Ow2QKWHXyPpxzwE+dFsJghWuvSAdTy4W0trluz1g==
+chrome-remote-interface@^0.32.1:
+  version "0.32.1"
+  resolved "https://registry.yarnpkg.com/chrome-remote-interface/-/chrome-remote-interface-0.32.1.tgz#e3478ca712223e51c4df7294cbc536f868ca0aa6"
+  integrity sha512-CU3/K/8YlU2H0DjsLRbxPsG4piiSGUcIy6GkGXF11SqOYoIeuUBivOsGXScaZnTyC1p4wFSR+GNmAM434/ALWw==
   dependencies:
     commander "2.11.x"
     ws "^7.2.0"
@@ -12275,17 +12275,17 @@ lodash@^4.17.11, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
-loki@^0.31.0:
-  version "0.31.0"
-  resolved "https://registry.yarnpkg.com/loki/-/loki-0.31.0.tgz#7e4c2da8b7f739a6ab424dc05f384f2c400dd451"
-  integrity sha512-jKf/mo39Jjz8dAmg9rbHzl/XiaDtQkW35gTfG3vONVZ+dtY7W5lP3iMzXOIiZ1FoHVy0xzackOa2xsgpASzhYQ==
+loki@^0.31.1:
+  version "0.31.1"
+  resolved "https://registry.yarnpkg.com/loki/-/loki-0.31.1.tgz#5a2798f29e1c8409080f8bb512f4a467df9cb076"
+  integrity sha512-hvsw8Xs14g/QpK6aT+ur2TOdN5TvQHWx6/0AkfoMYimHHw5rzj361jV/TVorGbhJVFtLPtnMCvw06VHX63d3eg==
   dependencies:
     "@loki/integration-react" "^0.31.0"
     "@loki/integration-react-native" "^0.31.0"
     "@loki/integration-vue" "^0.31.0"
-    "@loki/runner" "^0.31.0"
-    "@loki/target-chrome-app" "^0.31.0"
-    "@loki/target-chrome-docker" "^0.31.0"
+    "@loki/runner" "^0.31.1"
+    "@loki/target-chrome-app" "^0.31.1"
+    "@loki/target-chrome-docker" "^0.31.1"
     "@loki/target-native-android-emulator" "^0.31.0"
     "@loki/target-native-ios-simulator" "^0.31.0"
 
