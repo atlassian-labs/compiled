@@ -52,7 +52,7 @@ describe('ac vs ax benchmark', () => {
     });
   }, 30000);
 
-  it('compares chaining ax with chaining ac', async () => {
+  it('compares ax string with ac string', async () => {
     // Remove undefined and join the strings
     const benchmark = await runBenchmark('ax', [
       {
@@ -70,7 +70,7 @@ describe('ac vs ax benchmark', () => {
     });
   }, 30000);
 
-  it('compares ax string with ac string', async () => {
+  it('compares chaining ax with chaining ac', async () => {
     // Remove undefined and join the strings
     const benchmark = await runBenchmark('ax', [
       {
