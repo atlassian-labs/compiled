@@ -1,5 +1,12 @@
 # @compiled/parcel-transformer
 
+## 0.12.1
+
+### Patch Changes
+
+- f9c47524: Only invalidate cache on startup when using `.js` config files
+  - @compiled/babel-plugin@0.18.1
+
 ## 0.12.0
 
 ### Minor Changes
