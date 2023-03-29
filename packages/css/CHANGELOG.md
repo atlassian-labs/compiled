@@ -1,5 +1,15 @@
 # @compiled/css
 
+## 0.10.0
+
+### Minor Changes
+
+- f9005e2b: Add support for all CSS at-rules, and forbid at-rules for which atomic CSS wouldn't make sense (@charset, @import, @namespace)
+
+### Patch Changes
+
+- 488deaa6: Add support for unitless values for base-palette, font-size-adjust, and -webkit-line-clamp properties
+
 ## 0.9.0
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @compiled/parcel-optimizer
 
+## 0.3.1
+
+### Patch Changes
+
+- f9c47524: Only invalidate cache on startup when using `.js` config files
+- Updated dependencies [f9005e2b]
+- Updated dependencies [488deaa6]
+  - @compiled/css@0.10.0
+
 ## 0.3.0
 
 ### Minor Changes
