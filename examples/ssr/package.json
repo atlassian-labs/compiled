@@ -22,7 +22,7 @@
     "postcss": "^8.4.21",
     "razzle": "^4.2.18",
     "razzle-dev-utils": "^4.2.18",
-    "webpack": "^5.75.0",
+    "webpack": "^5.76.1",
     "webpack-dev-server": "^4.11.1"
   }
 }
