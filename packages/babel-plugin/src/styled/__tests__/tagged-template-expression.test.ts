@@ -793,6 +793,128 @@ describe('styled tagged template expression', () => {
     expect(actual).toInclude('{color:red}');
   });
 
+  // This may seem unusual, but this occurs when @atlaskit/tokens (as of
+  // writing - v1.0.0) runs before @compiled/babel-plugin. @atlaskit/tokens'
+  // babel plugin will convert something like
+  //     ${token('color.background.accent.gray.subtler', colors.N20A)}
+  // to
+  //     ${`var(--ds-background-accent-gray-subtler, ${colors.N20A})`}
+  it('should transform variable within a nested template literal', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const color = 'red';
+
+      const ListItem = styled.div\`
+        color: \${\`var(--my-variable, \${color})\`};
+      \`;
+    `);
+
+    expect(actual).toInclude('{color:var(--my-variable,red)}');
+  });
+
+  it('should transform variable within a nested template literal in hover selector', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const color = 'red';
+
+      const ListItem = styled.div\`
+        &:hover {
+          background-color: \${\`var(--my-variable, \${color})\`};
+        }
+      \`;
+    `);
+
+    expect(actual).toInclude(':hover{background-color:var(--my-variable,red)}');
+  });
+
+  it('should transform variables within nested template literals in two properties', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const color = 'red';
+      const color2 = 'blue';
+      const gridSize = 50;
+
+      const ListItem = styled.div\`
+        top: 5px;
+        right: \${gridSize}px;
+        color: \${\`var(--my-variable, \${color})\`};
+        border: 1px solid ${`var(--ds-border, \${color2})`};
+      \`;
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '{top:5px}',
+      '{right:50px}',
+      '{color:var(--my-variable,red)}',
+      '{border:1px solid var(--ds-border,blue)}',
+    ]);
+  });
+
+  it('should transform variables within nested template literals within the same property', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const color = 'red';
+      const color2 = 'blue';
+      
+      const ListItem = styled.div\`
+        background: linear-gradient(
+            \${\`var(--my-variable, \${color})\`},
+            \${\`var(--my-other-variable, \${color2})\`}
+        );
+      \`;
+    `);
+
+    expect(actual).toInclude(
+      '{background:linear-gradient(var(--my-variable,red),var(--my-other-variable,blue))}'
+    );
+  });
+
+  it('should transform variable within a heavily nested template literal', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const color = 'red';
+      const interpolation = \`1px solid \${\`var(--my-variable, \${color})\`}\`;
+      
+      const ListItem = styled.div\`
+        border: \${interpolation};
+      \`;
+    `);
+
+    expect(actual).toInclude('{border:1px solid var(--my-variable,red)}');
+  });
+
+  it('should transform variable within a template literal within an interpolation function', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const color = 'red';
+      const color2 = 'blue';
+
+      const ListItem = styled.div<{ ruleEnabled: boolean }>\`
+        color: \${({ ruleEnabled }) =>
+          (ruleEnabled ? color : \`var(--my-variable, \${color2})\`)};
+      \`;
+    `);
+
+    // We currently don't statically evaluate color and color2 here
+    expect(actual).toMatchInlineSnapshot(`
+      "const color = "red";
+      const color2 = "blue";
+      const ListItem = styled.div<{
+        ruleEnabled: boolean;
+      }>\`
+        color: \${({ ruleEnabled }) =>
+          ruleEnabled ? color : \`var(--my-variable, \${color2})\`};
+      \`;
+      "
+    `);
+  });
+
   it('should handle destructuring in interpolation functions', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
@@ -817,6 +939,53 @@ describe('styled tagged template expression', () => {
       '__cmplp.loading ? colors.N50 : colors.N10',
       '__cmplp.loading ? colors.N100 : colors.N200',
     ]);
+  });
+
+  it('should transform variables within nested template literals that are all in an interpolation function', () => {
+    // this aims to represent the following use case:
+    //     background-color: ${({ isActive }) =>
+    //         `${
+    //             isActive
+    //                 ? `${token('some.token', color)}`
+    //                 : `${token('some.other.token', color2)}`
+    //         }`
+    //     };
+    //
+    // after token(...) has been processed by the babel plugin in
+    // @atlaskit/tokens (as of @atlaskit/tokens v1.0.0)
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const color = 'red';
+      const color2 = 'blue';
+
+      const ListItem = styled.div<{ isActive: boolean }>\`
+        background-color: \${({ isActive }) =>
+          \`\${
+            isActive
+              ? \`\${\`var(--my-variable, color)\`}\`
+              : \`\${\`var(--my-other-variable, color2)\`}\`
+          }\`
+        };
+      \`;
+    `);
+
+    // We currently don't do any static evaluation here
+    expect(actual).toMatchInlineSnapshot(`
+      "const color = "red";
+      const color2 = "blue";
+      const ListItem = styled.div<{
+        isActive: boolean;
+      }>\`
+        background-color: \${({ isActive }) =>
+          \`\${
+            isActive
+              ? \`\${\`var(--my-variable, color)\`}\`
+              : \`\${\`var(--my-other-variable, color2)\`}\`
+          }\`};
+      \`;
+      "
+    `);
   });
 
   it('should place classes in given order when static styles precede expression', () => {
