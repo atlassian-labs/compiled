@@ -5,6 +5,10 @@ describe('styled tagged template expression', () => {
   const transform = (code: string, opts: TransformOptions = {}) =>
     transformCode(code, { snippet: true, ...opts });
 
+  const enableTypescript: TransformOptions = {
+    parserBabelPlugins: ['typescript', 'jsx'],
+  };
+
   it('only transforms @compiled/react usages', () => {
     const actual = transform(`
       import { styled as styled2 } from '@compiled/react';
@@ -888,33 +892,6 @@ describe('styled tagged template expression', () => {
     expect(actual).toInclude('{border:1px solid var(--my-variable,red)}');
   });
 
-  it('should transform variable within a template literal within an interpolation function', () => {
-    const actual = transform(`
-      import { styled } from '@compiled/react';
-
-      const color = 'red';
-      const color2 = 'blue';
-
-      const ListItem = styled.div<{ ruleEnabled: boolean }>\`
-        color: \${({ ruleEnabled }) =>
-          (ruleEnabled ? color : \`var(--my-variable, \${color2})\`)};
-      \`;
-    `);
-
-    // We currently don't statically evaluate color and color2 here
-    expect(actual).toMatchInlineSnapshot(`
-      "const color = "red";
-      const color2 = "blue";
-      const ListItem = styled.div<{
-        ruleEnabled: boolean;
-      }>\`
-        color: \${({ ruleEnabled }) =>
-          ruleEnabled ? color : \`var(--my-variable, \${color2})\`};
-      \`;
-      "
-    `);
-  });
-
   it('should handle destructuring in interpolation functions', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
@@ -941,6 +918,55 @@ describe('styled tagged template expression', () => {
     ]);
   });
 
+  // For the next two test cases, the value of color and background-color
+  // cannot be statically evaluated, so the value gets extracted into
+  // the HTML style attribute
+
+  it('should transform variable within a template literal within an interpolation function', () => {
+    const actual = transform(
+      `
+      import { styled } from '@compiled/react';
+
+      const color = 'red';
+      const color2 = 'blue';
+
+      const ListItem = styled.div<{ ruleEnabled: boolean }>\`
+        color: \${({ ruleEnabled }) =>
+          (ruleEnabled ? color : \`var(--my-variable, \${color2})\`)};
+      \`;
+    `,
+      enableTypescript
+    );
+
+    expect(actual).toMatchInlineSnapshot(`
+      "const _2 = "._syazj09m{color:var(--my-variable,blue)}";
+      const _ = "._syaz5scu{color:red}";
+      const color = "red";
+      const color2 = "blue";
+      const ListItem = forwardRef(
+        ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          const { ruleEnabled, ...__cmpldp } = __cmplp;
+          return (
+            <CC>
+              <CS>{[_, _2]}</CS>
+              <C
+                {...__cmpldp}
+                style={__cmpls}
+                ref={__cmplr}
+                className={ax([
+                  "",
+                  __cmplp.ruleEnabled ? "_syaz5scu" : "_syazj09m",
+                  __cmplp.className,
+                ])}
+              />
+            </CC>
+          );
+        }
+      );
+      "
+    `);
+  });
+
   it('should transform variables within nested template literals that are all in an interpolation function', () => {
     // this aims to represent the following use case:
     //     background-color: ${({ isActive }) =>
@@ -953,7 +979,8 @@ describe('styled tagged template expression', () => {
     //
     // after token(...) has been processed by the babel plugin in
     // @atlaskit/tokens (as of @atlaskit/tokens v1.0.0)
-    const actual = transform(`
+    const actual = transform(
+      `
       import { styled } from '@compiled/react';
 
       const color = 'red';
@@ -968,22 +995,39 @@ describe('styled tagged template expression', () => {
           }\`
         };
       \`;
-    `);
+    `,
+      enableTypescript
+    );
 
-    // We currently don't do any static evaluation here
     expect(actual).toMatchInlineSnapshot(`
-      "const color = "red";
+      "const _ = "._bfhk17td{background-color:var(--_hcoy15)}";
+      const color = "red";
       const color2 = "blue";
-      const ListItem = styled.div<{
-        isActive: boolean;
-      }>\`
-        background-color: \${({ isActive }) =>
-          \`\${
-            isActive
-              ? \`\${\`var(--my-variable, color)\`}\`
-              : \`\${\`var(--my-other-variable, color2)\`}\`
-          }\`};
-      \`;
+      const ListItem = forwardRef(
+        ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          const { isActive, ...__cmpldp } = __cmplp;
+          return (
+            <CC>
+              <CS>{[_]}</CS>
+              <C
+                {...__cmpldp}
+                style={{
+                  ...__cmpls,
+                  "--_hcoy15": ix(
+                    \`\${
+                      __cmplp.isActive
+                        ? \`\${\`var(--my-variable, color)\`}\`
+                        : \`\${\`var(--my-other-variable, color2)\`}\`
+                    }\`
+                  ),
+                }}
+                ref={__cmplr}
+                className={ax(["_bfhk17td", __cmplp.className])}
+              />
+            </CC>
+          );
+        }
+      );
       "
     `);
   });
