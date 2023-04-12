@@ -1,7 +1,9 @@
 import { transform as transformCode } from '../../test-utils';
+import type { TransformOptions } from '../../test-utils';
 
 describe('styled object call expression', () => {
-  const transform = (code: string) => transformCode(code, { snippet: true });
+  const transform = (code: string, opts: TransformOptions = {}) =>
+    transformCode(code, { snippet: true, ...opts });
 
   it('only transforms @compiled/react usages', () => {
     const actual = transform(`
@@ -587,7 +589,12 @@ describe('styled object call expression', () => {
     //                 : token('some.other.token', color2),
     //     })
 
-    const actual = transform(`
+    const enableTypescript: TransformOptions = {
+      parserBabelPlugins: ['typescript', 'jsx'],
+    };
+
+    const actual = transform(
+      `
       import { styled } from '@compiled/react';
 
       const color = 'red';
@@ -600,24 +607,37 @@ describe('styled object call expression', () => {
                 ? \`0 \${size}px \${\`var(--my-variable, \${color})\`}\`
                 : \`var(--my-other-variable, \${color2})\`,
       });
-    `);
+    `,
+      enableTypescript
+    );
 
     // We currently don't statically evaluate color, color2, or size here
     expect(actual).toMatchInlineSnapshot(`
-      "const color = "red";
+      "const _2 = "._16qs1j0n{box-shadow:var(--my-other-variable,blue)}";
+      const _ = "._16qslfrr{box-shadow:0 5px var(--my-variable,red)}";
+      const color = "red";
       const color2 = "blue";
       const size = 5;
-      const Component =
-        styled.div <
-        {
-          isActive: boolean,
-        } >
-        {
-          boxShadow: (props) =>
-            props.isActive
-              ? \`0 \${size}px \${\`var(--my-variable, \${color})\`}\`
-              : \`var(--my-other-variable, \${color2})\`,
-        };
+      const Component = forwardRef(
+        ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          const { isActive, ...__cmpldp } = __cmplp;
+          return (
+            <CC>
+              <CS>{[_, _2]}</CS>
+              <C
+                {...__cmpldp}
+                style={__cmpls}
+                ref={__cmplr}
+                className={ax([
+                  "",
+                  __cmplp.isActive ? "_16qslfrr" : "_16qs1j0n",
+                  __cmplp.className,
+                ])}
+              />
+            </CC>
+          );
+        }
+      );
       "
     `);
   });
