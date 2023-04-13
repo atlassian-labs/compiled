@@ -4,10 +4,19 @@
  * Flowgen v1.20.1
  * @flow
  */
+/**
+ * Memoize the result of ac so if it is called with the same args, it returns immediately.
+ * Also, to prevent useless React rerenders
+ */
+declare var cache: Map<any, any>;
+/**
+ * `ac` returns an instance of AtomicGroups. The instance holds the knowledge of Atomic Group so we can chain `ac`.
+ * e.g. <div className={ax([ax(['_aaaa_b']), '_aaaa_c'])} />
+ */
 declare class AtomicGroups {
   values: { [key: string]: string } | void;
-  key: string;
-  constructor(values: { [key: string]: string }, key: string): this;
+  cacheKey: string;
+  constructor(values: { [key: string]: string }, cacheKey: string): this;
   toString(): string;
 }
 /**
@@ -34,7 +43,10 @@ declare export default function ac(
   classNames: (AtomicGroups | string | void | false)[]
 ): AtomicGroups | void;
 /**
- * Provide an opportunity to clear the cache on server to prevent memory leak.
- * Ideally, cache should be cleared at the end of request.
+ * Provide an opportunity to clear the cache to prevent memory leak.
  */
-declare export function clear(): void;
+declare export function clearCache(): void;
+/**
+ * Expose cache
+ */
+declare export function getCache(): typeof cache;
