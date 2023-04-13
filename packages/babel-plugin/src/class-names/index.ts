@@ -6,6 +6,7 @@ import { buildCodeFrameError, pickFunctionBody } from '../utils/ast';
 import { compiledTemplate } from '../utils/build-compiled-component';
 import { buildCssVariables } from '../utils/build-css-variables';
 import { buildCss } from '../utils/css-builders';
+import { getRuntimeClassNameLibrary } from '../utils/get-runtime-class-name-library';
 import { resolveIdentifierComingFromDestructuring } from '../utils/resolve-binding';
 import { transformCssItems } from '../utils/transform-css-items';
 import type { CSSOutput } from '../utils/types';
@@ -137,7 +138,11 @@ export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata
       collectedVariables.push(...builtCss.variables);
       collectedSheets.push(...sheets);
 
-      path.replaceWith(t.callExpression(t.identifier('ax'), [t.arrayExpression(classNames)]));
+      path.replaceWith(
+        t.callExpression(t.identifier(getRuntimeClassNameLibrary(meta)), [
+          t.arrayExpression(classNames),
+        ])
+      );
     },
   });
 

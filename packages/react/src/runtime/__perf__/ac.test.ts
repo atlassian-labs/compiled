@@ -1,6 +1,6 @@
 import { runBenchmark } from '@compiled/benchmark';
 
-import { ax, ac } from '../index';
+import { ax, ac, clearAcCache } from '../index';
 
 describe('ac vs ax benchmark', () => {
   const arr = [
@@ -43,7 +43,10 @@ describe('ac vs ax benchmark', () => {
       },
       {
         name: 'ac() array with compressed class names',
-        fn: () => ac(arrWithCompressedClassNames)?.toString(),
+        fn: () => {
+          clearAcCache();
+          ac(arrWithCompressedClassNames)?.toString();
+        },
       },
     ]);
 
@@ -61,7 +64,10 @@ describe('ac vs ax benchmark', () => {
       },
       {
         name: 'ac() string with compressed class names',
-        fn: () => ac([strWithCompressedClassNames, undefined])?.toString(),
+        fn: () => {
+          clearAcCache();
+          ac([strWithCompressedClassNames, undefined])?.toString();
+        },
       },
     ]);
 
@@ -75,11 +81,14 @@ describe('ac vs ax benchmark', () => {
     const benchmark = await runBenchmark('ax', [
       {
         name: 'chain ax() string',
-        fn: () => ax([ax([str, undefined]), str]),
+        fn: () => ax([ax([str, undefined]), '_aaaabbbb']),
       },
       {
         name: 'chain ac() string with compressed class names',
-        fn: () => ac([ac([strWithCompressedClassNames, undefined]), strWithCompressedClassNames]),
+        fn: () => {
+          clearAcCache();
+          ac([ac([strWithCompressedClassNames, undefined]), '_aaaa_a'])?.toString();
+        },
       },
     ]);
 

@@ -6,10 +6,26 @@ const UNDERSCORE_UNICODE = 95;
  */
 const ATOMIC_GROUP_LENGTH = 5;
 
+/**
+ * Memoize the result of ac so if it is called with the same args, it returns immediately.
+ * Also, to prevent useless React rerenders
+ */
+const cache = new Map();
+
+/**
+ * `ac` returns an instance of AtomicGroups. The instance holds the knowledge of Atomic Group so we can chain `ac`.
+ * e.g. <div className={ax([ax(['_aaaa_b']), '_aaaa_c'])} />
+ */
 class AtomicGroups {
   values: Record<string, string> | undefined;
-  constructor(values: Record<string, string>) {
+  cacheKey: string;
+  constructor(values: Record<string, string>, cacheKey: string) {
+    // An object stores the relation between Atomic group and actual class name
+    // e.g. { "aaaa": "a" } `aaaa` is the Atomic group and `a` is the actual class name
     this.values = values;
+    // e.g. A unique identifier of the AtomicGroups.
+    // e.g. If this.values is { "aaaa": "a", "bbbb": "b" }, this.cacheKey is "_aaaa_a_bbbb_b"
+    this.cacheKey = cacheKey;
   }
   toString() {
     let str = '';
@@ -50,6 +66,20 @@ export default function ac(
   // short circuit if there's no class names.
   if (classNames.length <= 1 && !classNames[0]) return undefined;
 
+  // build the cacheKey based on the function argument
+  // e.g. if the argument is ["_aaaabbbb", "_aaaa_a", "some-class-name"],
+  // then the cacheKey is "_aaaabbbb_aaaa_asome-class-name"
+  const cacheKey = classNames.reduce((accumulator: string, currentValue) => {
+    // if current is undefined, false, or ""
+    if (!currentValue) return accumulator;
+    if (typeof currentValue === 'string') {
+      return accumulator + currentValue;
+    }
+    return accumulator + currentValue.cacheKey;
+  }, '');
+
+  if (cache.has(cacheKey)) return cache.get(cacheKey);
+
   const atomicGroups: Record<string, string> = {};
 
   for (let i = 0; i < classNames.length; i++) {
@@ -79,5 +109,23 @@ export default function ac(
     }
   }
 
-  return new AtomicGroups(atomicGroups);
+  const result = new AtomicGroups(atomicGroups, cacheKey);
+
+  cache.set(cacheKey, result);
+
+  return result;
+}
+
+/**
+ * Provide an opportunity to clear the cache to prevent memory leak.
+ */
+export function clearCache(): void {
+  cache.clear();
+}
+
+/**
+ * Expose cache
+ */
+export function getCache(): typeof cache {
+  return cache;
 }

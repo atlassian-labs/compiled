@@ -1,7 +1,11 @@
-import ac from '../ac';
+import ac, { clearCache, getCache } from '../ac';
 
 describe('ac', () => {
   const isEnabled: boolean = (() => false)();
+
+  beforeEach(() => {
+    clearCache();
+  });
 
   it.each([
     ['should handle empty array', [], undefined],
@@ -77,9 +81,36 @@ describe('ac', () => {
     ],
   ])('%s', (_, params, result) => {
     expect(result).toEqual(ac(params)?.toString());
+
+    // should not create a new obj ref
+    expect(ac(params)).toEqual(ac(params));
   });
 
   it('should ensure the last atomic declaration wins if calling ax multiple times with short class names', () => {
     expect(ac([ac(['_aaaa_b']), '_aaaa_c'])?.toString()).toEqual('c');
+  });
+
+  it('should cache correctly', () => {
+    ac([ac(['_aaaa_b', '_aaaabbbb', 'hello_world']), '_bbbb_d', '_aaaa_e']);
+
+    expect(getCache()).toMatchInlineSnapshot(`
+      Map {
+        "_aaaa_b_aaaabbbbhello_world" => AtomicGroups {
+          "cacheKey": "_aaaa_b_aaaabbbbhello_world",
+          "values": {
+            "_aaaa": "_aaaabbbb",
+            "hello_world": "hello_world",
+          },
+        },
+        "_aaaa_b_aaaabbbbhello_world_bbbb_d_aaaa_e" => AtomicGroups {
+          "cacheKey": "_aaaa_b_aaaabbbbhello_world_bbbb_d_aaaa_e",
+          "values": {
+            "_aaaa": "e",
+            "_bbbb": "d",
+            "hello_world": "hello_world",
+          },
+        },
+      }
+    `);
   });
 });
