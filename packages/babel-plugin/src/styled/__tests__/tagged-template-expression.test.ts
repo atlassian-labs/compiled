@@ -990,8 +990,8 @@ describe('styled tagged template expression', () => {
         background-color: \${({ isActive }) =>
           \`\${
             isActive
-              ? \`\${\`var(--my-variable, color)\`}\`
-              : \`\${\`var(--my-other-variable, color2)\`}\`
+              ? \`\${\`var(--my-variable, \${color})\`}\`
+              : \`\${\`var(--my-other-variable, \${color2})\`}\`
           }\`
         };
       \`;
@@ -1000,7 +1000,7 @@ describe('styled tagged template expression', () => {
     );
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = "._bfhk17td{background-color:var(--_hcoy15)}";
+      "const _ = "._bfhkkqce{background-color:var(--_hudwc7)}";
       const color = "red";
       const color2 = "blue";
       const ListItem = forwardRef(
@@ -1013,16 +1013,16 @@ describe('styled tagged template expression', () => {
                 {...__cmpldp}
                 style={{
                   ...__cmpls,
-                  "--_hcoy15": ix(
+                  "--_hudwc7": ix(
                     \`\${
                       __cmplp.isActive
-                        ? \`\${\`var(--my-variable, color)\`}\`
-                        : \`\${\`var(--my-other-variable, color2)\`}\`
+                        ? \`\${\`var(--my-variable, \${color})\`}\`
+                        : \`\${\`var(--my-other-variable, \${color2})\`}\`
                     }\`
                   ),
                 }}
                 ref={__cmplr}
-                className={ax(["_bfhk17td", __cmplp.className])}
+                className={ax(["_bfhkkqce", __cmplp.className])}
               />
             </CC>
           );
