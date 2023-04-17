@@ -1,7 +1,9 @@
 import { transform as transformCode } from '../../test-utils';
+import type { TransformOptions } from '../../test-utils';
 
 describe('styled object call expression', () => {
-  const transform = (code: string) => transformCode(code, { snippet: true });
+  const transform = (code: string, opts: TransformOptions = {}) =>
+    transformCode(code, { snippet: true, ...opts });
 
   it('only transforms @compiled/react usages', () => {
     const actual = transform(`
@@ -537,5 +539,106 @@ describe('styled object call expression', () => {
     `);
 
     expect(actual).toIncludeMultiple(['color:black', 'font-weight:400', 'background-color:white']);
+  });
+
+  it('should transform variable in a nested template literal', () => {
+    // this is the output of applying @atlaskit/tokens babel plugin
+    // (as of v1.0.0) to some code similar to this:
+    //     styled.div({
+    //         backgroundColor: token('some.token', color),
+    //     })
+
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const color = 'red';
+
+      const Component = styled.div({
+        backgroundColor: \`var(--my-variable, \${color})\`,
+      });
+    `);
+
+    expect(actual).toInclude('{background-color:var(--my-variable,red)}');
+  });
+
+  it('should transform variable in a heavily nested template literal', () => {
+    // corresponds to
+    //     styled.div({
+    //         boxShadow: `0 8px ${token('some.token', color)}`
+    //     })
+
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const color = 'red';
+
+      const Component = styled.div({
+        boxShadow: \`0 8px \${\`var(--my-variable, \${color})\`}\`,
+      });
+    `);
+
+    expect(actual).toInclude('{box-shadow:0 8px var(--my-variable,red)}');
+  });
+
+  it('should transform variables within nested template literals that are all in an interpolation function', () => {
+    // corresponds to
+    //     styled.div<{ isActive: boolean }>({
+    //         boxShadow: (props) =>
+    //             props.isActive
+    //                 ? `0 ${size}px ${token('some.token', color)}`
+    //                 : token('some.other.token', color2),
+    //     })
+
+    const enableTypescript: TransformOptions = {
+      parserBabelPlugins: ['typescript', 'jsx'],
+    };
+
+    const actual = transform(
+      `
+      import { styled } from '@compiled/react';
+
+      const color = 'red';
+      const color2 = 'blue';
+      const size = 5;
+
+      const Component = styled.div<{ isActive: boolean }>({
+        boxShadow: (props) =>
+            props.isActive
+                ? \`0 \${size}px \${\`var(--my-variable, \${color})\`}\`
+                : \`var(--my-other-variable, \${color2})\`,
+      });
+    `,
+      enableTypescript
+    );
+
+    // We currently don't statically evaluate color, color2, or size here
+    expect(actual).toMatchInlineSnapshot(`
+      "const _2 = "._16qs1j0n{box-shadow:var(--my-other-variable,blue)}";
+      const _ = "._16qslfrr{box-shadow:0 5px var(--my-variable,red)}";
+      const color = "red";
+      const color2 = "blue";
+      const size = 5;
+      const Component = forwardRef(
+        ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          const { isActive, ...__cmpldp } = __cmplp;
+          return (
+            <CC>
+              <CS>{[_, _2]}</CS>
+              <C
+                {...__cmpldp}
+                style={__cmpls}
+                ref={__cmplr}
+                className={ax([
+                  "",
+                  __cmplp.isActive ? "_16qslfrr" : "_16qs1j0n",
+                  __cmplp.className,
+                ])}
+              />
+            </CC>
+          );
+        }
+      );
+      "
+    `);
   });
 });

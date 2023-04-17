@@ -643,7 +643,7 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       !nodeExpression ||
       (t.isArrowFunctionExpression(nodeExpression) && t.isLogicalExpression(nodeExpression.body))
     ) {
-      const suffix = meta.context === 'keyframes' ? '' : ';';
+      const suffix = meta.context === 'keyframes' || meta.context === 'fragment' ? '' : ';';
       return acc + quasi.value.raw + suffix;
     }
 
@@ -679,9 +679,28 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
       isCompiledCSSTaggedTemplateExpression(interpolation, meta.state) ||
       isCompiledCSSCallExpression(interpolation, meta.state);
 
-    if ((!isMidStatement && doesExpressionContainCssBlock) || doesExpressionHaveConditionalCss) {
+    // isTemplateLiteral(nodeExpression) allows handling of expressions
+    // inside template literals inside another template literals
+    // e.g. the output of token function calls by @atlaskit/tokens babel plugin
+    const canBuildExpressionAsCss =
+      (!isMidStatement && doesExpressionContainCssBlock) ||
+      doesExpressionHaveConditionalCss ||
+      t.isTemplateLiteral(nodeExpression);
+
+    if (canBuildExpressionAsCss) {
       // We found something that looks like CSS.
-      const result = buildCss(interpolation, updatedMeta);
+
+      const nestedTemplateLiteralMeta: Metadata = {
+        context: 'fragment',
+        state: updatedMeta.state,
+        parentPath: updatedMeta.parentPath,
+      };
+
+      const buildCssMeta = t.isTemplateLiteral(nodeExpression)
+        ? nestedTemplateLiteralMeta
+        : updatedMeta;
+
+      const result = buildCss(interpolation, buildCssMeta);
 
       if (result.css.length) {
         // Add previous accumulative CSS first before CSS from expressions

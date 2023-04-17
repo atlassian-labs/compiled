@@ -167,11 +167,16 @@ interface KeyframesMetadata extends CommonMetadata {
   keyframe: string;
 }
 
+// Used for nodes where we don't want the processed CSS to have a semicolon afterwards
+interface FragmentMetadata extends CommonMetadata {
+  context: 'fragment';
+}
+
 interface RootMetadata extends CommonMetadata {
   context: 'root';
 }
 
-export type Metadata = RootMetadata | KeyframesMetadata;
+export type Metadata = RootMetadata | KeyframesMetadata | FragmentMetadata;
 
 export interface Tag {
   /**
