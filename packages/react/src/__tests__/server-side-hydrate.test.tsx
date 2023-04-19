@@ -7,6 +7,8 @@ jest.mock('../runtime/is-server-environment', () => ({
   isServerEnvironment: () => false,
 }));
 
+jest.mock('../runtime/ensure-singleton', () => undefined);
+
 describe('server side hydrate', () => {
   beforeEach(() => {
     jest.spyOn(global.console, 'error');

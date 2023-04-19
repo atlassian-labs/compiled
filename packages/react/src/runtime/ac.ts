@@ -1,3 +1,5 @@
+import { isServerEnvironment } from './is-server-environment';
+
 const UNDERSCORE_UNICODE = 95;
 
 /**
@@ -17,21 +19,16 @@ const cache = new Map();
  * e.g. <div className={ax([ax(['_aaaa_b']), '_aaaa_c'])} />
  */
 class AtomicGroups {
-  values: Record<string, string> | undefined;
-  cacheKey: string;
-  constructor(values: Record<string, string>, cacheKey: string) {
+  values: Map<string, string>;
+  constructor(values: Map<string, string>) {
     // An object stores the relation between Atomic group and actual class name
     // e.g. { "aaaa": "a" } `aaaa` is the Atomic group and `a` is the actual class name
     this.values = values;
-    // e.g. A unique identifier of the AtomicGroups.
-    // e.g. If this.values is { "aaaa": "a", "bbbb": "b" }, this.cacheKey is "_aaaa_a_bbbb_b"
-    this.cacheKey = cacheKey;
   }
   toString() {
     let str = '';
 
-    for (const key in this.values) {
-      const value = this.values[key];
+    for (const [, value] of this.values) {
       str += value + ' ';
     }
 
@@ -60,27 +57,13 @@ class AtomicGroups {
  *
  * @param classes
  */
-export default function ac(
+export function ac(
   classNames: (AtomicGroups | string | undefined | false)[]
 ): AtomicGroups | undefined {
   // short circuit if there's no class names.
   if (classNames.length <= 1 && !classNames[0]) return undefined;
 
-  // build the cacheKey based on the function argument
-  // e.g. if the argument is ["_aaaabbbb", "_aaaa_a", "some-class-name"],
-  // then the cacheKey is "_aaaabbbb_aaaa_asome-class-name"
-  const cacheKey = classNames.reduce((accumulator: string, currentValue) => {
-    // if current is undefined, false, or ""
-    if (!currentValue) return accumulator;
-    if (typeof currentValue === 'string') {
-      return accumulator + currentValue;
-    }
-    return accumulator + currentValue.cacheKey;
-  }, '');
-
-  if (cache.has(cacheKey)) return cache.get(cacheKey);
-
-  const atomicGroups: Record<string, string> = {};
+  const atomicGroups: Map<string, string> = new Map();
 
   for (let i = 0; i < classNames.length; i++) {
     const cls = classNames[i];
@@ -97,24 +80,53 @@ export default function ac(
         const isCompressed = isAtomic && atomic.charCodeAt(5) === UNDERSCORE_UNICODE;
 
         const atomicGroupName = isAtomic ? atomic.slice(0, ATOMIC_GROUP_LENGTH) : atomic;
-        atomicGroups[atomicGroupName] = isCompressed
-          ? atomic.slice(ATOMIC_GROUP_LENGTH + 1)
-          : atomic;
+        atomicGroups.set(
+          atomicGroupName,
+          isCompressed ? atomic.slice(ATOMIC_GROUP_LENGTH + 1) : atomic
+        );
       }
     } else {
       // if cls is an instance of AtomicGroups, transfer its values to `atomicGroups`
-      for (const key in cls.values) {
-        atomicGroups[key] = cls.values[key];
+      for (const [key, value] of cls.values) {
+        atomicGroups.set(key, value);
       }
     }
   }
 
-  const result = new AtomicGroups(atomicGroups, cacheKey);
+  return new AtomicGroups(atomicGroups);
+}
+
+export function memoizedAc(
+  classNames: (AtomicGroups | string | undefined | false)[]
+): AtomicGroups | undefined {
+  // short circuit if there's no class names.
+  if (classNames.length <= 1 && !classNames[0]) return undefined;
+
+  // build the cacheKey based on the function argument
+  // e.g. if the argument is ["_aaaabbbb", "_aaaa_a", "some-class-name"],
+  // then the cacheKey is "_aaaabbbb _aaaa_a some-class-name"
+  let cacheKey = '';
+  for (let i = 0; i < classNames.length; i += 1) {
+    const current = classNames[i];
+    // continue if current is undefined, false, or ""
+    if (!current) continue;
+    cacheKey += current + ' ';
+  }
+
+  cacheKey = cacheKey.slice(0, -1);
+
+  if (cache.has(cacheKey)) return cache.get(cacheKey);
+
+  const result = ac(classNames);
 
   cache.set(cacheKey, result);
 
   return result;
 }
+
+// Memoization is primarily used to prevent React from unncessary re-rendering.
+// Use unmemoizedAc on server-side because We don't need to worry about re-rendering on server-side.
+export default isServerEnvironment() ? ac : memoizedAc;
 
 /**
  * Provide an opportunity to clear the cache to prevent memory leak.

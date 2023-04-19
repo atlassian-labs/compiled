@@ -14,9 +14,8 @@ declare var cache: Map<any, any>;
  * e.g. <div className={ax([ax(['_aaaa_b']), '_aaaa_c'])} />
  */
 declare class AtomicGroups {
-  values: { [key: string]: string } | void;
-  cacheKey: string;
-  constructor(values: { [key: string]: string }, cacheKey: string): this;
+  values: Map<string, string>;
+  constructor(values: Map<string, string>): this;
   toString(): string;
 }
 /**
@@ -39,9 +38,14 @@ declare class AtomicGroups {
  * ```
  * @param classes
  */
-declare export default function ac(
+declare export function ac(
   classNames: (AtomicGroups | string | void | false)[]
 ): AtomicGroups | void;
+declare export function memoizedAc(
+  classNames: (AtomicGroups | string | void | false)[]
+): AtomicGroups | void;
+declare var _default: typeof ac;
+declare export default typeof _default;
 /**
  * Provide an opportunity to clear the cache to prevent memory leak.
  */
