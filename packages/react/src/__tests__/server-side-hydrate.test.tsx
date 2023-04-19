@@ -7,8 +7,6 @@ jest.mock('../runtime/is-server-environment', () => ({
   isServerEnvironment: () => false,
 }));
 
-jest.mock('../runtime/ensure-singleton', () => undefined);
-
 describe('server side hydrate', () => {
   beforeEach(() => {
     jest.spyOn(global.console, 'error');
@@ -18,7 +16,7 @@ describe('server side hydrate', () => {
     jest.resetModules();
     // We need to force this module to re-instantiate because on the client
     // when it does it will move all found SSRd style elements to the head.
-    require('../runtime');
+    require('../runtime/style-cache');
   };
 
   const appendHTML = (markup: string) => {

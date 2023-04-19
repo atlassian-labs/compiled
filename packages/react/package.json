@@ -18,9 +18,9 @@
   "license": "Apache-2.0",
   "author": "Michael Dougall",
   "sideEffects": [
-    "./dist/browser/runtime/ensure-singleton.js",
-    "./dist/cjs/runtime/ensure-singleton.js",
-    "./dist/esm/runtime/ensure-singleton.js"
+    "./dist/browser/runtime/index.js",
+    "./dist/cjs/runtime/index.js",
+    "./dist/esm/runtime/index.js"
   ],
   "exports": {
     ".": {

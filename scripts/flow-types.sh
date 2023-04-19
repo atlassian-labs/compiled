@@ -12,7 +12,6 @@ generate() {
     -not -path 'packages/react/*/jsx/jsx-local-namespace.*' \
     -not -path 'packages/react/*/jsx/jsx-runtime.*' \
     -not -path 'packages/react/*/jsx/jsx-dev-runtime.*' \
-    -not -path 'packages/react/*/runtime/ensure-singleton.*' \
     -print0 | while read -rd $'\0' file; do
     flowFilename=${file%.*.*}.js.flow
     flowgen --add-flow-header "$file" -o "$flowFilename"
@@ -36,7 +35,6 @@ generate() {
     -not -path 'packages/react/*/jsx/jsx-local-namespace.*' \
     -not -path 'packages/react/*/jsx/jsx-runtime.*' \
     -not -path 'packages/react/*/jsx/jsx-dev-runtime.*' \
-    -not -path 'packages/react/*/runtime/ensure-singleton.*' \
     -print0 | while read -rd $'\0' file; do
 
     # Change import to import type (bug in flowgen)
