@@ -55,5 +55,5 @@ export interface ParcelTransformerOpts extends BabelPluginOpts {
    *
    * Default to `undefined`
    */
-  classNameCompressionMapFilePath?: 'string';
+  classNameCompressionMapFilePath?: string;
 }
