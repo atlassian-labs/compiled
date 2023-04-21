@@ -47,4 +47,13 @@ export interface ParcelTransformerOpts extends BabelPluginOpts {
    * Default to `undefined`
    */
   classNameCompressionMap?: { [index: string]: string };
+
+  /**
+   * File path to classNameCompressionMap. It's relative to project root.
+   * Note `classNameCompressionMap` and `classNameCompressionMapFilePath` are mutually exclusive.
+   * If both are provided, classNameCompressionMap takes precedence.
+   *
+   * Default to `undefined`
+   */
+  classNameCompressionMapFilePath?: 'string';
 }

@@ -22,16 +22,22 @@ const configFiles = [
   'compiledcss.config.js',
 ];
 
+const packageKey = '@compiled/parcel-transformer';
+
 /**
  * Compiled parcel transformer.
  */
 export default new Transformer<ParcelTransformerOpts>({
   async loadConfig({ config, options }) {
-    const conf = await config.getConfigFrom(join(options.projectRoot, 'index'), configFiles, {
-      packageKey: '@compiled/parcel-transformer',
-    });
+    const conf = await config.getConfigFrom<ParcelTransformerOpts>(
+      join(options.projectRoot, 'index'),
+      configFiles,
+      {
+        packageKey,
+      }
+    );
 
-    const contents = {
+    const contents: ParcelTransformerOpts = {
       extract: false,
       importReact: true,
       ssr: false,
@@ -40,6 +46,26 @@ export default new Transformer<ParcelTransformerOpts>({
     if (conf) {
       if (conf.filePath.endsWith('.js')) {
         config.invalidateOnStartup();
+      }
+
+      // Use `classNameCompressionMapFilePath` to get classNameCompressionMap
+      // Note `classNameCompressionMap` and `classNameCompressionMapFilePath` are mutually exclusive.
+      // If both are provided, classNameCompressionMap takes precedence.
+      if (!conf.contents.classNameCompressionMap && conf.contents.classNameCompressionMapFilePath) {
+        // Use `getConfigFrom` from Parcel so the contents are cached at `.parcel-cache`
+        const configClassNameCompressionMap = await config.getConfigFrom(
+          join(options.projectRoot, 'index'),
+          [conf.contents.classNameCompressionMapFilePath],
+          {
+            packageKey,
+          }
+        );
+
+        if (configClassNameCompressionMap?.contents) {
+          Object.assign(contents, {
+            classNameCompressionMap: configClassNameCompressionMap?.contents,
+          });
+        }
       }
 
       Object.assign(contents, conf.contents);
