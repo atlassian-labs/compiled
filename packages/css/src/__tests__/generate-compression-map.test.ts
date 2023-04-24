@@ -1,6 +1,8 @@
 import { generateCompressionMap as generate } from '../generate-compression-map';
 
 describe('generate compression map', () => {
+  beforeEach(() => {});
+
   const baseCSS = `
     ._154i14e6{top:33px}
     ._14tk72c6>div:not([role=group])>a{padding-left:18.6px}
@@ -126,15 +128,15 @@ describe('generate compression map', () => {
   });
 
   it('should generate class names with the old compression map', () => {
+    const consoleWarnMock = jest.spyOn(console, 'warn').mockImplementation();
     const oldCompressionMap: { [index: string]: string } = {
       '17gjpfqs': 'a',
       '1vdp1hna': 'b',
       '14fy1hna': 'c',
     };
     const result = generate(baseCSS, { oldClassNameCompressionMap: oldCompressionMap });
-    for (const property in oldCompressionMap) {
-      expect(result).toHaveProperty(property, oldCompressionMap[property]);
-    }
+    expect(result).toMatchObject(oldCompressionMap);
+    consoleWarnMock.mockRestore();
   });
 
   it('should generate class names with prefix', () => {
@@ -220,5 +222,23 @@ describe('generate compression map', () => {
       '1vdp1hna': '_na',
       '17gjpfqs': '_oa',
     });
+  });
+  it('should keep previous compressed names', () => {
+    const oldCompressionMap: { [index: string]: string } = {
+      '154i14e6': 'a',
+      hnu8tcjq: 'b',
+      '121jagmp': 'c',
+    };
+
+    let inputCSS = baseCSS;
+
+    Object.entries(oldCompressionMap).forEach(([key, value]) => {
+      inputCSS = inputCSS.replace('_' + key, value);
+    });
+
+    const result = generate(inputCSS, {
+      oldClassNameCompressionMap: oldCompressionMap,
+    });
+    expect(result).toMatchObject(oldCompressionMap);
   });
 });

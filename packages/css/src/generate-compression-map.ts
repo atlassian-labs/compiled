@@ -19,15 +19,17 @@ export const generateCompressionMap = (
 ): undefined | { [index: string]: string } => {
   const { oldClassNameCompressionMap, prefix } = opts || {};
 
-  let classNamesToCompress: string[] = [];
+  let atomicClassNames: string[] = [];
+  let nonAtomicClassNames: string[] = [];
   const classNameCompressionMap: { [index: string]: string } = {};
   const reservedClassNames: string[] = [];
 
   const selectorProcessor = selectorParser((selectors) => {
     selectors.walkClasses((node: selectorParser.ClassName | selectorParser.Identifier) => {
-      // Only compress Atomic class names, which has the format of `_aaaabbbb`.
       if (node.value.charCodeAt(0) === UNDERSCORE_UNICODE && node.value.length === 9) {
-        classNamesToCompress.push(node.value.slice(1));
+        atomicClassNames.push(node.value.slice(1));
+      } else {
+        nonAtomicClassNames.push(node.value);
       }
     });
   });
@@ -45,12 +47,14 @@ export const generateCompressionMap = (
   result.css;
 
   // Remove duplicates
-  classNamesToCompress = Array.from(new Set(classNamesToCompress));
+  atomicClassNames = Array.from(new Set(atomicClassNames));
+  nonAtomicClassNames = Array.from(new Set(nonAtomicClassNames));
 
-  // Check if class name to compress already exists in oldClassNameCompressionMap
-  // If yes, re-use the compressed class name
+  // `oldClassNameCompressionMap` is used to ensure class names are consistent between builds.
+  // It means if `aaaabbbb` gets compressed to `a` previously, it needs to be compressed to `a` again.
+  // If a compressed name exists in both stylesheet and old compression map, we assume it's a previously compressed class name, and keep it.
   if (oldClassNameCompressionMap) {
-    classNamesToCompress = classNamesToCompress.filter((className) => {
+    atomicClassNames = atomicClassNames.filter((className) => {
       if (oldClassNameCompressionMap[className]) {
         reservedClassNames.push(oldClassNameCompressionMap[className]);
         classNameCompressionMap[className] = oldClassNameCompressionMap[className];
@@ -58,10 +62,41 @@ export const generateCompressionMap = (
       }
       return true;
     });
+
+    if (Object.keys(classNameCompressionMap).length) {
+      // We've found class names which exist in old compression map but not in the stylesheet.
+      // Theoretically this should not happen. We want to warn the developers so they can investigate it. There is likely some race condition in the builds.
+      console.warn(
+        `${JSON.stringify(
+          classNameCompressionMap
+        )} exists in the old compression map but it's uncompressed in the stylesheet.`
+      );
+    }
+
+    nonAtomicClassNames = nonAtomicClassNames.filter((className) => {
+      for (const [key, value] of Object.entries(oldClassNameCompressionMap)) {
+        if (value === className) {
+          reservedClassNames.push(className);
+          classNameCompressionMap[key] = className;
+          return false;
+        }
+      }
+      return true;
+    });
+
+    // We've found compressed class names which exist in stylesheet but not in old compression map.
+    // Like the above, theoretically this should not happen. We want to warn the developers so they can investigate it. There is likely some race condition in the builds.
+    if (nonAtomicClassNames.length) {
+      console.warn(
+        `${JSON.stringify(
+          nonAtomicClassNames
+        )} exists in the stylesheet but not in the old compression map.`
+      );
+    }
   }
 
   const classNameGenerator = new ClassNameGenerator({ reservedClassNames, prefix });
-  classNamesToCompress.forEach((className) => {
+  atomicClassNames.forEach((className) => {
     const newClassName = classNameGenerator.generateClassName();
     classNameCompressionMap[className] = newClassName;
   });
