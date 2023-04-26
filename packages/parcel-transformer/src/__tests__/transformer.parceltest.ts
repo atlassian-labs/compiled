@@ -7,6 +7,10 @@ import { format } from 'prettier';
 const rootPath = join(__dirname, '..', '..', '..', '..');
 const fixtureRoot = join(rootPath, 'fixtures/parcel-transformer-test-app');
 const extractionFixtureRoot = join(rootPath, 'fixtures/parcel-transformer-test-extract-app');
+const compressingClassNameFixtureRoot = join(
+  rootPath,
+  'fixtures/parcel-transformer-test-compress-class-name-app'
+);
 const customResolverFixtureRoot = join(
   rootPath,
   'fixtures/parcel-transformer-test-custom-resolver-app'
@@ -203,5 +207,38 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
             })
         });
     }"
+  `);
+}, 50000);
+
+it('transforms assets with class name compression enabled', async () => {
+  const parcel = getParcelInstance(compressingClassNameFixtureRoot);
+  const { changedAssets, bundleGraph } = await parcel.run();
+
+  const htmlAsset = Array.from(changedAssets.values()).find(
+    (asset) => asset.filePath === join(compressingClassNameFixtureRoot, '/src/index.html')
+  );
+
+  const outputHtml = await outputFS.readFile(
+    bundleGraph.getBundlesWithAsset(htmlAsset!)[0].filePath,
+    'utf8'
+  );
+
+  const css = /<style>(.*?)<\/style>/.exec(outputHtml)?.pop();
+
+  if (!css) throw new Error('No CSS is found.');
+
+  expect(
+    format(css, {
+      parser: 'css',
+      singleQuote: true,
+    })
+  ).toMatchInlineSnapshot(`
+    ".a {
+      font-size: 50px;
+    }
+    .b {
+      color: red;
+    }
+    "
   `);
 }, 50000);
