@@ -1,5 +1,21 @@
 # @compiled/parcel-transformer
 
+## 0.13.0
+
+### Minor Changes
+
+- c4e6b7c0: Change TypeScript compiler target from es5 to es6.
+- 89c5d043: Add "classNameCompressionMapFilePath" as an option to Parcel transformer. If both "classNameCompressionMap" and "classNameCompressionMapFilePath" are provided, classNameCompressionMap takes precedence.
+
+### Patch Changes
+
+- Updated dependencies [c4e6b7c0]
+- Updated dependencies [c4e6b7c0]
+- Updated dependencies [25779e3a]
+  - @compiled/babel-plugin@0.19.0
+  - @compiled/babel-plugin-strip-runtime@0.19.0
+  - @compiled/utils@0.8.0
+
 ## 0.12.1
 
 ### Patch Changes

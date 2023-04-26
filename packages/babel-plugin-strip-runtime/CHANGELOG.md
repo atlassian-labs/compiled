@@ -1,5 +1,16 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.19.0
+
+### Minor Changes
+
+- c4e6b7c0: Change TypeScript compiler target from es5 to es6.
+
+### Patch Changes
+
+- Updated dependencies [c4e6b7c0]
+  - @compiled/utils@0.8.0
+
 ## 0.18.0
 
 ### Minor Changes
