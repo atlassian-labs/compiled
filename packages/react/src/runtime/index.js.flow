@@ -7,4 +7,5 @@
 declare export { default as CS } from './style';
 declare export { default as CC } from './style-cache';
 declare export { default as ax } from './ax';
+declare export { default as ac, clearCache as clearAcCache } from './ac';
 declare export { default as ix } from './css-custom-property';

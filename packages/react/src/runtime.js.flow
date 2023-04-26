@@ -4,4 +4,4 @@
  * Flowgen v1.20.1
  * @flow
  */
-declare export { CC, CS, ax, ix } from './runtime/index';
+declare export { CC, CS, ax, ac, clearAcCache, ix } from './runtime/index';
