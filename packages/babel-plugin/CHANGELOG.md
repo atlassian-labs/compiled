@@ -1,5 +1,19 @@
 # @compiled/babel-plugin
 
+## 0.19.0
+
+### Minor Changes
+
+- c4e6b7c0: Introduce a new runtime class name library, which resolves the `ax` chaining issue. The new library is used only if class name compression is enabled.
+- c4e6b7c0: Change TypeScript compiler target from es5 to es6.
+- 25779e3a: Statically evaluate variables inside nested template strings (excluding template strings inside functions)
+
+### Patch Changes
+
+- Updated dependencies [c4e6b7c0]
+  - @compiled/utils@0.8.0
+  - @compiled/css@0.11.0
+
 ## 0.18.1
 
 ### Patch Changes

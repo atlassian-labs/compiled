@@ -1,5 +1,12 @@
 # @compiled/react
 
+## 0.13.0
+
+### Minor Changes
+
+- c4e6b7c0: Introduce a new runtime class name library, which resolves the `ax` chaining issue. The new library is used only if class name compression is enabled.
+- c4e6b7c0: Change TypeScript compiler target from es5 to es6.
+
 ## 0.12.0
 
 ### Minor Changes
