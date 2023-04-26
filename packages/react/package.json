@@ -17,7 +17,11 @@
   },
   "license": "Apache-2.0",
   "author": "Michael Dougall",
-  "sideEffects": false,
+  "sideEffects": [
+    "./dist/browser/runtime/index.js",
+    "./dist/cjs/runtime/index.js",
+    "./dist/esm/runtime/index.js"
+  ],
   "exports": {
     ".": {
       "import": [

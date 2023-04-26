@@ -3,7 +3,7 @@ import { transformCss } from '@compiled/css';
 
 import type { Metadata } from '../types';
 
-import { compressClassNamesForAx } from './compress-class-names-for-ax';
+import { compressClassNamesForRuntime } from './compress-class-names-for-runtime';
 import { getItemCss } from './css-builders';
 import type { CssItem } from './types';
 
@@ -66,7 +66,7 @@ const transformCssItem = (
           item.operator,
           item.expression,
           t.stringLiteral(
-            compressClassNamesForAx(
+            compressClassNamesForRuntime(
               logicalCss.classNames,
               meta.state.opts.classNameCompressionMap
             ).join(' ')
@@ -76,7 +76,7 @@ const transformCssItem = (
 
     default:
       const css = transformCss(getItemCss(item), meta.state.opts);
-      const className = compressClassNamesForAx(
+      const className = compressClassNamesForRuntime(
         css.classNames,
         meta.state.opts.classNameCompressionMap
       ).join(' ');

@@ -15,28 +15,13 @@ describe('ax', () => {
       '_aaaacccc',
     ],
     [
-      'should ensure the last atomic declaration of a single group with short class name wins',
-      ['_aaaabbbb', '_aaaacccc', '_aaaa_a'],
-      'a',
-    ],
-    [
       'should ensure the last atomic declaration of many single groups wins',
       ['_aaaabbbb', '_aaaacccc', '_aaaadddd', '_aaaaeeee'],
       '_aaaaeeee',
     ],
     [
-      'should ensure the last atomic declaration of many single groups with short class name wins',
-      ['_aaaabbbb', '_aaaacccc', '_aaaa_a', '_aaaa_b'],
-      'b',
-    ],
-    [
       'should ensure the last atomic declaration of a multi group wins',
       ['_aaaabbbb _aaaacccc'],
-      '_aaaacccc',
-    ],
-    [
-      'should ensure the last atomic declaration of a multi group with short class name wins',
-      ['_aaaa_e', '_aaaabbbb _aaaacccc'],
       '_aaaacccc',
     ],
     [
@@ -46,18 +31,13 @@ describe('ax', () => {
     ],
     [
       'should ensure the last atomic declaration of many multi groups with short class name wins',
-      ['_aaaabbbb', '_aaaa_a', '_bbbb_b', '_ddddcccc'],
-      'a b _ddddcccc',
+      ['_aaaabbbb', '_aaaaaaa', '_ddddbbb', '_ddddcccc'],
+      '_aaaaaaa _ddddcccc',
     ],
     [
       'should not remove any atomic declarations if there are no duplicate groups',
       ['_aaaabbbb', '_bbbbcccc'],
       '_aaaabbbb _bbbbcccc',
-    ],
-    [
-      'should not remove any atomic declarations if there are short class name and no duplicate groups',
-      ['_eeee_e', '_aaaabbbb', '_bbbbcccc'],
-      'e _aaaabbbb _bbbbcccc',
     ],
     ['should not apply conditional class', [isEnabled && 'foo', 'bar'], 'bar'],
     [
@@ -69,11 +49,6 @@ describe('ax', () => {
       'should ignore non atomic declarations when atomic declarations exist',
       ['hello_there', 'hello_world', '_aaaabbbb'],
       'hello_there hello_world _aaaabbbb',
-    ],
-    [
-      'should ignore non atomic declarations when atomic declarations with short class name exist',
-      ['hello_there', 'hello_world', '_aaaa_a'],
-      'hello_there hello_world a',
     ],
   ])('%s', (_, params, result) => {
     expect(result).toEqual(ax(params));

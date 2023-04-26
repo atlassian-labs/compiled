@@ -125,25 +125,32 @@
   },
   "size-limit": [
     {
-      "path": "./packages/react/dist/browser/runtime.js",
+      "path": "./packages/react/dist/browser/runtime/css-custom-property.js",
       "limit": "50B",
-      "import": "{ ix }",
+      "import": "ix"
+    },
+    {
+      "path": "./packages/react/dist/browser/runtime/ax.js",
+      "limit": "195B",
+      "import": "ax"
+    },
+    {
+      "path": "./packages/react/dist/browser/runtime/ac.js",
+      "limit": "332B",
+      "import": "ac, { clearCache }"
+    },
+    {
+      "path": "./packages/react/dist/browser/runtime/style.js",
+      "limit": "475B",
+      "import": "CS",
       "ignore": [
         "react"
       ]
     },
     {
-      "path": "./packages/react/dist/browser/runtime.js",
-      "limit": "189B",
-      "import": "{ ax }",
-      "ignore": [
-        "react"
-      ]
-    },
-    {
-      "path": "./packages/react/dist/browser/runtime.js",
-      "limit": "473B",
-      "import": "{ CC, CS }",
+      "path": "./packages/react/dist/browser/runtime/style-cache.js",
+      "limit": "99B",
+      "import": "CC",
       "ignore": [
         "react"
       ]

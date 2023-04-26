@@ -7,6 +7,7 @@ import type { Metadata } from '../types';
 
 import { buildCssVariables } from './build-css-variables';
 import { getJSXAttribute } from './get-jsx-attribute';
+import { getRuntimeClassNameLibrary } from './get-runtime-class-name-library';
 import { hoistSheet } from './hoist-sheet';
 import { transformCssItems } from './transform-css-items';
 import type { CSSOutput } from './types';
@@ -80,7 +81,7 @@ export const buildCompiledComponent = (
     const values: t.Expression[] = classNames.concat(classNameExpression);
 
     classNameAttribute.value = t.jsxExpressionContainer(
-      t.callExpression(t.identifier('ax'), [t.arrayExpression(values)])
+      t.callExpression(t.identifier(getRuntimeClassNameLibrary(meta)), [t.arrayExpression(values)])
     );
   } else {
     // No class name - just push our own one.
@@ -88,7 +89,9 @@ export const buildCompiledComponent = (
       t.jsxAttribute(
         t.jsxIdentifier('className'),
         t.jsxExpressionContainer(
-          t.callExpression(t.identifier('ax'), [t.arrayExpression(classNames)])
+          t.callExpression(t.identifier(getRuntimeClassNameLibrary(meta)), [
+            t.arrayExpression(classNames),
+          ])
         )
       )
     );
