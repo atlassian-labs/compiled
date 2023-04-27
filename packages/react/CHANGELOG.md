@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.13.1
+
+### Patch Changes
+
+- cd977654: Remove `@compiled/react` runtime side-effect to ensure no error if the module is reloaded.
+
 ## 0.13.0
 
 ### Minor Changes
