@@ -56,6 +56,12 @@ const expressionToString: ExpressionToString = (expression, meta) => {
   // handles {[key]: 'value'}
   if (t.isIdentifier(expression)) {
     const evaluatedExpression = evaluateExpression(expression, meta);
+    if (evaluatedExpression.value === expression) {
+      throw new Error(
+        `Cannot statically evaluate the value of "${expression.name}"; ` +
+          `are you importing this variable from an external package?`
+      );
+    }
 
     return expressionToString(evaluatedExpression.value, evaluatedExpression.meta);
   }
