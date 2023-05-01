@@ -1,5 +1,13 @@
 # @compiled/parcel-optimizer-test-app
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [c4e6b7c0]
+- Updated dependencies [c4e6b7c0]
+  - @compiled/react@0.13.0
+
 ## 0.1.0
 
 ### Minor Changes

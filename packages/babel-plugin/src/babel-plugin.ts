@@ -89,7 +89,7 @@ export default declare<State>((api) => {
 
           preserveLeadingComments(path);
 
-          appendRuntimeImports(path);
+          appendRuntimeImports(path, state);
 
           const hasPragma = pragma.jsxImportSource || pragma.jsx;
 

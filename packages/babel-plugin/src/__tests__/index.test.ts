@@ -218,7 +218,7 @@ describe('babel plugin', () => {
       }
     );
 
-    expect(actual).toIncludeMultiple(['.a{font-size:12px}', 'ax(["_1wyb_a", __cmplp.className])']);
+    expect(actual).toIncludeMultiple(['.a{font-size:12px}', 'ac(["_1wyb_a", __cmplp.className])']);
   });
 
   it('should compress class name for css props', () => {
@@ -235,7 +235,7 @@ describe('babel plugin', () => {
       }
     );
 
-    expect(actual).toIncludeMultiple(['.a{font-size:12px}', 'ax(["_1wyb_a"])']);
+    expect(actual).toIncludeMultiple(['.a{font-size:12px}', 'ac(["_1wyb_a"])']);
   });
 
   it('should compress class name for ClassNames', () => {
@@ -256,7 +256,7 @@ describe('babel plugin', () => {
       }
     );
 
-    expect(actual).toIncludeMultiple(['.a{font-size:12px}', 'className={ax(["_1wyb_a"])']);
+    expect(actual).toIncludeMultiple(['.a{font-size:12px}', 'className={ac(["_1wyb_a"])']);
   });
 
   it('should compress class names with atrules', () => {
@@ -274,7 +274,7 @@ describe('babel plugin', () => {
 
     expect(actual).toIncludeMultiple([
       '@media (max-width:1250px){.a{font-size:12px}}',
-      'ax(["_pz52_a"])',
+      'ac(["_pz52_a"])',
     ]);
   });
 
@@ -295,7 +295,7 @@ describe('babel plugin', () => {
     expect(actual).toIncludeMultiple([
       '.a:active{color:red}',
       '.b:hover{font-size:12px}',
-      'ax(["_e915_b _9h8h_a"])',
+      'ac(["_e915_b _9h8h_a"])',
     ]);
   });
 
@@ -312,7 +312,7 @@ describe('babel plugin', () => {
       }
     );
 
-    expect(actual).toIncludeMultiple(['.a >div div div:hover{font-size:12px}', 'ax(["_1jkf_a"]']);
+    expect(actual).toIncludeMultiple(['.a >div div div:hover{font-size:12px}', 'ac(["_1jkf_a"]']);
   });
 
   it('should compress conditional class names', () => {
@@ -354,7 +354,21 @@ describe('babel plugin', () => {
       '._19pk19bv{margin-top:10px}',
       '.a{color:red}',
       '._1wyb1fwx{font-size:12px}',
-      'ax(["_1wyb1fwx _syaz_a _19pk19bv"]',
+      'ac(["_1wyb1fwx _syaz_a _19pk19bv"]',
     ]);
+  });
+
+  it('should import ac if compression map is provided', () => {
+    const actual = transform(
+      `
+      import '@compiled/react';
+      <div css={{ fontSize: 12 }} />
+    `,
+      {
+        classNameCompressionMap: {},
+      }
+    );
+
+    expect(actual).toInclude('import { ac, ix, CC, CS } from "@compiled/react/runtime"');
   });
 });

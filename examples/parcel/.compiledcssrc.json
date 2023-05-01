@@ -1,0 +1,16 @@
+{
+  "importReact": false,
+  "extensions": [".js", ".jsx", ".ts", ".tsx", ".customjsx"],
+  "parserBabelPlugins": ["typescript", "jsx"],
+  "transformerBabelPlugins": [
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        "legacy": true
+      }
+    ]
+  ],
+  "extract": true,
+  "optimizeCss": false,
+  "classNameCompressionMapFilePath": "./class-name-compression-map.json"
+}

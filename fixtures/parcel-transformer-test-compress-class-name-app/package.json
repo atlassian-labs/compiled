@@ -1,6 +1,6 @@
 {
-  "name": "@compiled/parcel-transformer-test-app",
-  "version": "0.1.1",
+  "name": "@compiled/parcel-transformer-test-compress-class-name-app",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "@compiled/react": "^0.13.0",

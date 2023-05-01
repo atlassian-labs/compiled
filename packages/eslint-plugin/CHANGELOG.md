@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.7.0
+
+### Minor Changes
+
+- c4e6b7c0: Change TypeScript compiler target from es5 to es6.
+
 ## 0.6.0
 
 ### Minor Changes

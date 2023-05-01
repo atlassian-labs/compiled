@@ -1,6 +1,6 @@
 {
   "name": "@compiled/eslint-plugin",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-eslint-plugin",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -21,7 +21,7 @@
   ],
   "devDependencies": {
     "@babel/eslint-parser": "^7.21.3",
-    "@types/estree": "^1.0.0",
+    "@types/estree": "^1.0.1",
     "@types/estree-jsx": "^1.0.0",
     "@typescript-eslint/parser": "^5.54.0",
     "eslint": "^8.35.0",
