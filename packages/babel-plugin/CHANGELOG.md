@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.19.1
+
+### Patch Changes
+
+- 9aa6909a: Add error when expressionToString runs infinite loop ("Error: Maximum call stack size exceeded")
+
 ## 0.19.0
 
 ### Minor Changes
