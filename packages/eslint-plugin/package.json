@@ -20,7 +20,7 @@
     "src"
   ],
   "devDependencies": {
-    "@babel/eslint-parser": "^7.21.3",
+    "@babel/eslint-parser": "^7.21.8",
     "@types/estree": "^1.0.1",
     "@types/estree-jsx": "^1.0.0",
     "@typescript-eslint/parser": "^5.54.0",
