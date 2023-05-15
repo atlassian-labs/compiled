@@ -27,7 +27,9 @@ export interface StyledTemplateOpts {
   /**
    * Class to be used for the CSS selector.
    */
-  classNames: t.Expression[];
+  classNamesExperiment: t.Expression[];
+
+  classNamesControl: t.Expression[];
 
   /**
    * Tag for the Styled Component, for example "div" or user defined component.
@@ -123,14 +125,24 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
   const invalidDomProps = isInBuiltComponent ? getInvalidDomProps(meta.parentPath) : [];
   const hasInvalidDomProps = Boolean(invalidDomProps.length);
 
-  let unconditionalClassNames = '',
-    conditionalClassNames = '';
+  let unconditionalClassNamesControl = '',
+    conditionalClassNamesControl = '';
+  let unconditionalClassNamesExperiment = '',
+    conditionalClassNamesExperiment = '';
 
-  opts.classNames.forEach((item) => {
+  opts.classNamesControl.forEach((item) => {
     if (t.isStringLiteral(item)) {
-      unconditionalClassNames += `${item.value} `;
+      unconditionalClassNamesControl += `${item.value} `;
     } else if (t.isLogicalExpression(item) || t.isConditionalExpression(item)) {
-      conditionalClassNames += `${generate(item).code}, `;
+      conditionalClassNamesControl += `${generate(item).code}, `;
+    }
+  });
+
+  opts.classNamesExperiment.forEach((item) => {
+    if (t.isStringLiteral(item)) {
+      unconditionalClassNamesExperiment += `${item.value} `;
+    } else if (t.isLogicalExpression(item) || t.isConditionalExpression(item)) {
+      conditionalClassNamesExperiment += `${generate(item).code}, `;
     }
   });
 
@@ -146,7 +158,8 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
       ? `"c_${componentName}", `
       : '';
 
-  const classNames = `${componentClassName}"${unconditionalClassNames.trim()}", ${conditionalClassNames}`;
+  const classNamesControl = `${componentClassName}"${unconditionalClassNamesControl.trim()}", ${conditionalClassNamesControl}`;
+  const classNamesExperiment = `${componentClassName}"${unconditionalClassNamesExperiment.trim()}", ${conditionalClassNamesExperiment}`;
 
   return template(
     `
@@ -170,9 +183,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
           {...${hasInvalidDomProps ? DOM_PROPS_IDENTIFIER_NAME : PROPS_IDENTIFIER_NAME}}
           style={%%styleProp%%}
           ref={${REF_IDENTIFIER_NAME}}
-          className={${getRuntimeClassNameLibrary(
-            meta
-          )}([${classNames} ${PROPS_IDENTIFIER_NAME}.className])}
+          className={window.isXXXEnabled()?ax([${classNamesControl} ${PROPS_IDENTIFIER_NAME}.className]):ac([${classNamesExperiment} ${PROPS_IDENTIFIER_NAME}.className])}
         />
       </CC>
     );
@@ -234,27 +245,50 @@ export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metad
   });
 
   // Rely on transformCss to remove duplicates and return only the last unconditional CSS for each property
-  const uniqueUnconditionalCssOutput = transformCss(unconditionalCss, meta.state.opts);
+  const uniqueUnconditionalCssOutputControl = transformCss(unconditionalCss, {
+    ...meta.state.opts,
+    classNameCompressionMap: undefined,
+  });
+  const uniqueUnconditionalCssOutputExperiment = transformCss(unconditionalCss, meta.state.opts);
 
   // Rely on transformItemCss to build expressions for conditional & logical CSS
-  const conditionalCssOutput = transformCssItems(conditionalCssItems, meta);
+  const conditionalCssOutputControl = transformCssItems(conditionalCssItems, {
+    ...meta,
+    state: {
+      ...meta.state,
+      opts: {
+        ...meta.state.opts,
+        classNameCompressionMap: undefined,
+      },
+    },
+  });
+  const conditionalCssOutputExperiment = transformCssItems(conditionalCssItems, meta);
 
-  const sheets = [...uniqueUnconditionalCssOutput.sheets, ...conditionalCssOutput.sheets];
-  const classNames = [
+  const sheets = [
+    ...uniqueUnconditionalCssOutputExperiment.sheets,
+    ...conditionalCssOutputExperiment.sheets,
+  ];
+
+  const classNamesControl = [
+    ...[t.stringLiteral(uniqueUnconditionalCssOutputControl.classNames.join(' '))],
+    ...conditionalCssOutputControl.classNames,
+  ];
+  const classNamesExperiment = [
     ...[
       t.stringLiteral(
         compressClassNamesForRuntime(
-          uniqueUnconditionalCssOutput.classNames,
+          uniqueUnconditionalCssOutputExperiment.classNames,
           meta.state.opts.classNameCompressionMap
         ).join(' ')
       ),
     ],
-    ...conditionalCssOutput.classNames,
+    ...conditionalCssOutputExperiment.classNames,
   ];
 
   return styledTemplate(
     {
-      classNames,
+      classNamesControl: classNamesControl,
+      classNamesExperiment: classNamesExperiment,
       tag,
       sheets,
       variables: cssOutput.variables,
