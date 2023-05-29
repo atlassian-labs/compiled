@@ -7,3 +7,4 @@ export {
 } from './utils/css-affix-interpolation';
 export { sort } from './sort';
 export { generateCompressionMap } from './generate-compression-map';
+export { analyze } from './analyze';
