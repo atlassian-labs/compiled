@@ -3,6 +3,8 @@ Compiled CLI
 
 Useful commands for analysing Compiled's output.
 
+If you make any changes to this package, please run `yarn run pack` in this directory. Thank you!
+
 <!-- toc -->
 * [Usage](#usage)
 * [Commands](#commands)
