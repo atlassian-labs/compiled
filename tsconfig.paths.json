@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "paths": {
       "@compiled/benchmark": ["packages/benchmark/src/index.ts"],
+      "@compiled/cli": ["packages/cli/src/index.ts"],
       "@compiled/css": ["packages/css/src/index.ts"],
       "@compiled/jest": ["packages/jest/src/index.ts"],
       "@compiled/parcel-optimizer": ["packages/parcel-optimizer/src/index.tsx"],

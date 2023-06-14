@@ -4,6 +4,7 @@
     { "path": "babel-plugin/tsconfig.json" },
     { "path": "babel-plugin-strip-runtime/tsconfig.json" },
     { "path": "benchmark/tsconfig.json" },
+    { "path": "cli/tsconfig.json" },
     { "path": "codemods/tsconfig.json" },
     { "path": "css/tsconfig.json" },
     { "path": "eslint-plugin/tsconfig.json" },
