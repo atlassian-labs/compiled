@@ -7,6 +7,16 @@ export type {
   Visitor,
 } from './plugins/types';
 
-export { default as emotionToCompiled } from './transforms/emotion-to-compiled';
-export { default as styledComponentsToCompiled } from './transforms/styled-components-to-compiled';
-export { default as styledComponentsInnerRefToRef } from './transforms/styled-components-inner-ref-to-ref';
+import emotionToCompiled from './transforms/emotion-to-compiled';
+import styledComponentsInnerRefToRef from './transforms/styled-components-inner-ref-to-ref';
+import styledComponentsToCompiled from './transforms/styled-components-to-compiled';
+
+export { emotionToCompiled, styledComponentsToCompiled, styledComponentsInnerRefToRef };
+
+export default {
+  presets: {
+    'emotion-to-compiled': emotionToCompiled,
+    'styled-components-to-compiled': styledComponentsToCompiled,
+    'styled-components-inner-ref-to-ref': styledComponentsInnerRefToRef,
+  },
+};
