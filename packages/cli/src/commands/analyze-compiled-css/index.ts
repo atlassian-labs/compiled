@@ -3,33 +3,40 @@ import { readFile } from 'fs/promises';
 import { analyze, type DataAttributeBreakdown, type NestedSelectorBreakdown } from '@compiled/css';
 import { Args, Command, Flags } from '@oclif/core';
 
-import { makeDim, makeItalic } from './util';
+import { makeDim, makeItalic } from '../../util';
 
 export default class AnalyzeCompiledCss extends Command {
   static description =
-    'Analyse a compiled-css.css file and get some stats of how many ineffective and non-reusable selectors are being used.';
+    'Analyze a compiled-css.css file and get some stats of how many ineffective and non-reusable selectors are being used.';
 
   static examples = [
     `$ compiled-cli --removeLastLine --cssVariableFilter="ds-" compiled-css.css
-Analysing compiled-css.css file...
+Analyzing compiled-css.css file...
 
 ====================================
-Number of rules:                4000
+Number of total rules analyzed: 2000
+====================================
+Has data-* attribute(s):        50
+↳ Data attributes found:
+  component-selector: 27
+  testid:             25
 ------------------------------------
-PROBLEMATIC:
+Has nested selector:            800
+↳ Breakdown:
+  2 layers of nesting: 400
+  3 layers of nesting: 400
 ------------------------------------
 Has inline image:               5
-Has nested selector:            1000
-Uses CSS variables:             250
+Uses CSS variables:             300
 ====================================
 
-Done.`,
+Done!`,
   ];
 
   static flags = {
     removeLastLine: Flags.boolean({
       summary:
-        'Remove the last line of the file before analysing it. We may want to do this because the last line is often a sourcemap comment (which we want to ignore).',
+        'Remove the last line of the file before analyzing it. We may want to do this because the last line is often a sourcemap comment (which we want to ignore).',
     }),
     cssVariableFilter: Flags.string({
       summary:
@@ -39,7 +46,7 @@ Done.`,
 
   static args = {
     filename: Args.string({
-      description: 'Path to the compiled-css.css file we would like to analyse',
+      description: 'Path to the compiled-css.css file we would like to analyze',
       required: true,
     }),
   };
