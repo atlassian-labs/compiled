@@ -42,7 +42,7 @@
     ]
   },
   "scripts": {
-    "build": "shx rm -rf dist && shx rm tsconfig.tsbuildinfo && tsc -b",
+    "build": "shx rm -rf dist && shx rm -f tsconfig.tsbuildinfo && tsc -b",
     "pack": "yarn build && oclif manifest && oclif readme && shx rm -f oclif.manifest.json",
     "version": "oclif readme && git add README.md"
   },
