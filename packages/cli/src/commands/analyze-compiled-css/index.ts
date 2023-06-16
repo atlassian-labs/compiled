@@ -1,7 +1,9 @@
 import { readFile } from 'fs/promises';
 
-import { analyze } from '@compiled/css';
+import { analyze, type DataAttributeBreakdown, type NestedSelectorBreakdown } from '@compiled/css';
 import { Args, Command, Flags } from '@oclif/core';
+
+import { makeDim, makeItalic } from './util';
 
 export default class AnalyzeCompiledCss extends Command {
   static description =
@@ -56,8 +58,29 @@ Done.`,
     return stylesheet;
   }
 
+  private printDataAttributeBreakdown(dataAttributeBreakdown: DataAttributeBreakdown) {
+    const maxAttributeLength = Math.max(
+      ...Object.keys(dataAttributeBreakdown).map((k) => k.length)
+    );
+
+    // Sort data attributes from most frequently used to least
+    const sortedBreakdown = Object.entries(dataAttributeBreakdown).sort(([, a], [, b]) => b - a);
+
+    for (const [dataAttribute, frequency] of sortedBreakdown) {
+      console.log(
+        makeDim(`  ${(dataAttribute + ':').padEnd(maxAttributeLength + 1, ' ')} ${frequency}`)
+      );
+    }
+  }
+
+  private printNestedSelectorBreakdown(selectorBreakdown: NestedSelectorBreakdown) {
+    for (const [layer, frequency] of Object.entries(selectorBreakdown)) {
+      console.log(makeDim(`  ${layer} layers of nesting: ${frequency}`));
+    }
+  }
+
   async run(): Promise<void> {
-    console.log('Analysing compiled-css.css file...');
+    console.log('Analyzing compiled-css.css file...');
     const { flags, args } = await this.parse(AnalyzeCompiledCss);
 
     const stylesheet = await this.getStylesheet(args.filename, flags.removeLastLine);
@@ -65,15 +88,20 @@ Done.`,
 
     console.log();
     console.log('====================================');
-    console.log(`Number of rules:                ${report.total}`);
+    console.log(`Number of total rules analyzed: ${report.total}`);
+    console.log('====================================');
+    console.log(`Has data-* attribute(s):        ${report.hasDataAttribute}`);
+    console.log(makeItalic('↳ Data attributes found:'));
+    this.printDataAttributeBreakdown(report.dataAttributes);
     console.log('------------------------------------');
-    console.log('PROBLEMATIC:');
+    console.log(`Has nested selector:            ${report.hasNestedSelector}`);
+    console.log(makeItalic('↳ Breakdown:'));
+    this.printNestedSelectorBreakdown(report.nestedSelectors);
     console.log('------------------------------------');
     console.log(`Has inline image:               ${report.hasInlineImage}`);
-    console.log(`Has nested selector:            ${report.hasNestedSelector}`);
     console.log(`Uses CSS variables:             ${report.hasVariable}`);
     console.log('====================================');
     console.log();
-    console.log('Done.');
+    console.log('Done!');
   }
 }

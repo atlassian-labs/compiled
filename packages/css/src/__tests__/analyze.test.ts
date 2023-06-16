@@ -45,4 +45,6 @@ describe('analyze', () => {
         `);
     expect(report.hasInlineImage).toBe(1);
   });
+
+  // TODO: write tests for new attributes of report
 });
