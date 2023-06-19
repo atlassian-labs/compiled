@@ -1,299 +1,121 @@
 import { hash } from '@compiled/utils';
-import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
-import { rule } from 'postcss';
+import type { CustomAtRules, Rule, Visitor } from 'lightningcss';
 
-interface PluginOpts {
-  classNameCompressionMap?: { [index: string]: string };
+interface AtomicifyRulesOptions {
   callback?: (className: string) => void;
-}
-
-interface AtomicifyOpts extends PluginOpts {
-  selectors?: string[];
-  atRule?: string;
-  parentNode?: Container;
+  classNameCompressionMap?: { [index: string]: string };
 }
 
 /**
- * Returns an atomic rule class name using this form:
- *
- * ```
- * "_{atrulesselectorspropertyname}{propertyvalueimportant}"
- * ```
- *
- * Atomic rules are always prepended with an underscore.
- *
- * @param node CSS declaration
- * @param opts AtomicifyOpts
+ * Transforms a stylesheet into atomic rules
  */
-const atomicClassName = (node: Declaration, opts: AtomicifyOpts) => {
-  const selectors = opts.selectors ? opts.selectors.join('') : '';
-  const group = hash(`${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
-  const value = node.important ? node.value + node.important : node.value;
-  const valueHash = hash(value).slice(0, 4);
-
-  return `_${group}${valueHash}`;
-};
-
-/**
- * Returns a normalized selector.
- * The primary function is to get rid of white space and to place a nesting selector if one is missing.
- * If the selector already has a nesting selector - we won't do anything to it.
- *
- * ---
- * ASSUMPTION: Nesting and parent orphaned pseudos plugins should run before the atomicify plugin!
- * ---
- *
- * @param selector
- */
-const normalizeSelector = (selector: string | undefined) => {
-  if (!selector) {
-    // Nothing to see here - return early with a nesting selector!
-    return '&';
-  }
-
-  // We want to build a consistent selector that we will use to generate the group hash.
-  // Because of that we trim whitespace.
-  const trimmed = selector.trim();
-  if (trimmed.indexOf('&') === -1) {
-    return `& ${trimmed}`;
-  }
-
-  return trimmed;
-};
-
-/**
- * Replaces all instances of a nesting operator `&` with the parent class name.
- *
- * @param selector
- * @param parentClassName
- */
-const replaceNestingSelector = (selector: string, parentClassName: string) => {
-  return selector.replace(/&/g, `.${parentClassName}`);
-};
-
-/**
- * Builds an atomic rule selector.
- *
- * @param node
- */
-const buildAtomicSelector = (node: Declaration, opts: AtomicifyOpts) => {
-  const { classNameCompressionMap } = opts;
-  const selectors: string[] = [];
-
-  (opts.selectors || ['']).forEach((selector) => {
-    const normalizedSelector = normalizeSelector(selector);
-    const fullClassName = atomicClassName(node, {
-      ...opts,
-      selectors: [normalizedSelector],
-    });
-
-    const compressedClassName =
-      classNameCompressionMap && classNameCompressionMap[fullClassName.slice(1)];
-
-    if (compressedClassName) {
-      // Use compressed class name if compressedClassName is available
-      selectors.push(replaceNestingSelector(normalizedSelector, compressedClassName));
-    } else {
-      selectors.push(replaceNestingSelector(normalizedSelector, fullClassName));
+export const atomicifyRules = ({
+  callback,
+}: AtomicifyRulesOptions = {}): Visitor<CustomAtRules> => ({
+  // Flatten rules
+  Rule(rule: Rule) {
+    if (rule.type !== 'style') {
+      return;
     }
 
-    if (opts.callback) {
-      opts.callback(fullClassName);
+    const {
+      value: { rules, selectors },
+    } = rule;
+    if (!rules?.length) {
+      return;
     }
-  });
 
-  return selectors.join(', ');
-};
+    // We only need to flatten one level, pre-order traversal from lightning will handle the rest
+    const flattenedRules: Rule[] = [
+      {
+        type: 'style',
+        value: {
+          ...rule.value,
+          rules: [],
+        },
+      },
+    ];
 
-/**
- * Transforms a declaration into an atomic rule.
- *
- * @param node
- * @param opts
- */
-const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
-  const selector = buildAtomicSelector(node, opts);
-  const newDecl = node.clone({
-    raws: { before: '', value: { value: '', raw: '' }, between: '' },
-  });
-  const newRule = rule({
-    raws: { before: '', after: '', between: '', selector: { raw: '', value: '' } },
-    nodes: [newDecl],
-    selector,
-  });
+    for (const nestedRule of rules) {
+      // @ts-expect-error
+      if (nestedRule.value?.selectors) {
+        flattenedRules.push({
+          ...nestedRule,
+          // @ts-expect-error
+          value: {
+            // @ts-expect-error
+            ...nestedRule.value,
+            selectors: selectors.map((selector) => {
+              // @ts-expect-error
+              return nestedRule.value.selectors.flatMap((nestedSelector) =>
+                nestedSelector.flatMap((component) => {
+                  if (component.type === 'nesting') {
+                    return [component, { type: 'combinator', value: 'descendant' }, ...selector];
+                  }
 
-  // We need to link the new node to a parent else autoprefixer blows up.
-  newDecl.parent = newRule;
-  newRule.parent = opts.parentNode!;
-
-  return newRule;
-};
-
-/**
- * Transforms a rule into atomic rules.
- *
- * @param node
- * @param opts
- */
-const atomicifyRule = (node: Rule, opts: AtomicifyOpts): Rule[] => {
-  if (!node.nodes) {
-    return [];
-  }
-
-  return node.nodes
-    .map((childNode) => {
-      if (childNode.type === 'rule') {
-        throw childNode.error(
-          'Nested rules need to be flattened first - run the "postcss-nested" plugin before this.'
-        );
-      }
-
-      if (childNode.type !== 'decl') {
-        return undefined;
-      }
-
-      return atomicifyDecl(childNode, {
-        ...opts,
-        selectors: node.selectors,
-      });
-    })
-    .filter((child): child is Rule => !!child);
-};
-
-/**
- * Checks whether the given at-rule node can be
- * atomicified (transformed into atomic rules).
- *
- * Throws an error for unknown at-rules, as well as
- * at-rules that should not be used in the stylesheet.
- *
- * @param node
- */
-const canAtomicifyAtRule = (node: AtRule): boolean => {
-  const canBeAtomificied = [
-    'container',
-    '-moz-document',
-    'else',
-    'layer',
-    'media',
-    'supports',
-    'when',
-  ];
-  const forbidden = ['charset', 'import', 'namespace'];
-  const ignored = [
-    'color-profile',
-    'counter-style',
-    'font-face',
-    'font-palette-values',
-    'keyframes',
-    'page',
-    'property',
-  ];
-
-  if (canBeAtomificied.includes(node.name)) {
-    return true;
-  } else if (forbidden.includes(node.name)) {
-    throw new Error(`At-rule '@${node.name}' cannot be used in CSS rules.`);
-  } else if (!ignored.includes(node.name)) {
-    throw new Error(`Unknown at-rule '@${node.name}'.`);
-  }
-
-  return false;
-};
-
-/**
- * Transforms an atrule into atomic rules.
- *
- * @param node
- * @param opts
- */
-const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
-  const children: ChildNode[] = [];
-  const newNode = node.clone({
-    raws: {
-      before: '',
-      between: '',
-      semicolon: false,
-      params: { raw: '', value: '' },
-    },
-    nodes: children,
-  });
-  const atRuleLabel = `${opts.atRule || ''}${node.name}${node.params}`;
-  const atRuleOpts = {
-    ...opts,
-    parentNode: newNode,
-    atRule: atRuleLabel,
-  };
-
-  newNode.parent = opts.parentNode!;
-
-  node.each((childNode) => {
-    switch (childNode.type) {
-      case 'atrule':
-        if (canAtomicifyAtRule(childNode)) {
-          newNode.nodes.push(atomicifyAtRule(childNode, atRuleOpts));
-        } else {
-          newNode.nodes.push(childNode);
-        }
-
-        break;
-
-      case 'rule':
-        atomicifyRule(childNode, atRuleOpts).forEach((rule) => {
-          newNode.nodes.push(rule);
+                  return component;
+                })
+              );
+            }),
+          },
         });
-        break;
-
-      case 'decl':
-        newNode.nodes.push(atomicifyDecl(childNode, atRuleOpts));
-        break;
-
-      default:
-        break;
+      } else {
+        flattenedRules.push(nestedRule);
+      }
     }
-  });
 
-  return newNode;
-};
+    return flattenedRules;
+  },
 
-/**
- * Transforms a style sheet into atomic rules.
- * When passing a `callback` option it will callback with created class names.
- *
- * Preconditions:
- *
- * 1. No nested rules allowed - normalize them with the `parent-orphaned-pseudos` and `nested` plugins first.
- */
-export const atomicifyRules = (opts = {}): Plugin => {
-  return {
-    postcssPlugin: 'atomicify-rules',
-    OnceExit(root) {
-      root.each((node) => {
-        switch (node.type) {
-          case 'atrule':
-            if (canAtomicifyAtRule(node)) {
-              node.replaceWith(atomicifyAtRule(node, opts));
-            }
-            break;
+  // Atomicise rules
+  // TODO important handling, compressed class names
+  RuleExit(rule) {
+    if (rule.type !== 'style') {
+      return;
+    }
 
-          case 'rule':
-            node.replaceWith(atomicifyRule(node, opts));
-            break;
+    const atomicRules = [];
+    const {
+      value: {
+        declarations: { declarations },
+        loc,
+        selectors,
+      },
+    } = rule;
 
-          case 'decl':
-            node.replaceWith(atomicifyDecl(node, opts));
-            break;
+    for (const declaration of declarations) {
+      for (const selector of selectors) {
+        const atomicSelector = selector.map((part) => {
+          if (part.type !== 'nesting') {
+            return part;
+          }
 
-          case 'comment':
-            node.remove();
-            break;
+          const group = hash(JSON.stringify(selector) + declaration.property).slice(0, 4);
+          const value = hash(JSON.stringify(declaration.value)).slice(0, 4);
+          const name = `_${group}${value}`;
 
-          default:
-            break;
-        }
-      });
-    },
-  };
-};
+          callback?.(name);
 
-export const postcss = true;
+          return {
+            type: 'class',
+            name,
+          };
+        });
+
+        atomicRules.push({
+          type: 'style',
+          value: {
+            declarations: {
+              declarations: [declaration],
+              importantDeclarations: [],
+            },
+            loc,
+            selectors: [atomicSelector],
+          },
+        });
+      }
+    }
+
+    return atomicRules;
+  },
+});

@@ -1,65 +1,52 @@
-import type { AtRule, Rule, Plugin } from 'postcss';
+import type { CustomAtRules, Rule, Visitor } from 'lightningcss';
 
-import { styleOrder } from '../utils/style-ordering';
+const pseudoSelectorOrder = [
+  'link',
+  'visited',
+  'focus-within',
+  'focus',
+  'focus-visible',
+  'hover',
+  'active',
+];
 
-const getPseudoClassScore = (selector: string) => {
-  const index = styleOrder.findIndex((pseudoClass) => selector.trim().endsWith(pseudoClass));
-  return index + 1;
-};
+function getScore(nestedRule: Rule) {
+  if (nestedRule.type !== 'style' || nestedRule.value.selectors.length !== 1) {
+    return 0;
+  }
 
-const sortPseudoClasses = (atRule: AtRule) => {
-  const rules: Rule[] = [];
+  const firstSelector = nestedRule.value.selectors[0];
+  // This doesn't handle selectors like div:hover:focus, but it could
+  const firstSelectorComponent = firstSelector[0];
+  if (firstSelectorComponent.type !== 'pseudo-class') {
+    // Does not preserve original order, but could if you track original pos
+    return pseudoSelectorOrder.length + 1;
+  }
 
-  atRule.each((childNode) => {
-    switch (childNode.type) {
-      case 'atrule':
-        sortPseudoClasses(childNode);
-        break;
-
-      case 'rule':
-        rules.push(childNode.clone());
-        childNode.remove();
-        break;
-
-      default:
-        break;
-    }
-  });
-
-  rules
-    .sort((rule1, rule2) => {
-      const selector1 = rule1.selectors.length ? rule1.selectors[0] : rule1.selector;
-      const selector2 = rule2.selectors.length ? rule2.selectors[0] : rule2.selector;
-
-      return getPseudoClassScore(selector1) - getPseudoClassScore(selector2);
-    })
-    .forEach((rule) => {
-      atRule.append(rule);
-    });
-};
+  return pseudoSelectorOrder.findIndex(p => p === firstSelectorComponent.kind) + 1;
+}
 
 /**
- * PostCSS plugin for sorting rules inside AtRules based on lvfha ordering.
- *
- * Using Once rather than AtRule as remove + append behaviour
- * leads to adding infinitely to the call stack
+ * Sorts at rules based on lvfha ordering
  */
-export const sortAtRulePseudos = (): Plugin => {
-  return {
-    postcssPlugin: 'sort-at-rule-pseudos',
-    Once(root) {
-      root.each((node) => {
-        switch (node.type) {
-          case 'atrule':
-            sortPseudoClasses(node);
-            break;
+export const sortAtRulePseudosVisitor = (): Visitor<CustomAtRules> => ({
+  Rule(rule) {
+    // @ts-expect-error
+    console.log('rule', JSON.stringify(rule));
+    if (!rule.value?.rules) {
+      return;
+    }
 
-          default:
-            break;
-        }
-      });
-    },
-  };
-};
-
-export const postcss = true;
+    return {
+      ...rule,
+      value: {
+        // @ts-expect-error
+        ...rule.value,
+        // @ts-expect-error
+        rules: rule.value.rules.sort((r1, r2) => {
+          return getScore(r1) - getScore(r2);
+        }),
+      }
+    }
+  }
+});

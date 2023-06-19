@@ -1,153 +1,143 @@
-import postcss from 'postcss';
+/**
+ * @jest-environment node
+ */
 
-import { parentOrphanedPseudos } from '../parent-orphaned-pseudos';
+import { transform as lightningcss } from 'lightningcss';
 
-const transform = (css: TemplateStringsArray) => {
-  const result = postcss([parentOrphanedPseudos()]).process(css[0], {
-    from: undefined,
+const transform = (css: string) => {
+  const { code } = lightningcss({
+    code: Buffer.from(css),
+    drafts: {
+      nesting: true,
+    },
+    filename: 'styles.css',
   });
 
-  return result.css;
+  return code.toString().trim();
 };
 
-describe('parent orphaned pseudos', () => {
+describe('nested selectors', () => {
   it('should not parent a psuedo that already has a nesting selector', () => {
-    const actual = transform`
-      div {
+    expect(
+      transform(`
+        div {
+          &:hover {
+            display: block;
+          }
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "div {
         &:hover {
           display: block;
         }
-      }
-    `;
-
-    expect(actual).toMatchInlineSnapshot(`
-      "
-            div {
-              &:hover {
-                display: block;
-              }
-            }
-          "
+      }"
     `);
   });
 
-  it('should parent an orphened pseudo', () => {
-    const actual = transform`
-      div {
-        :hover {
+  it('should parent an orphaned pseudo', () => {
+    expect(
+      transform(`
+        div {
+          :hover {
+            display: block;
+          }
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "div {
+        &:hover {
           display: block;
         }
-      }
-    `;
-
-    expect(actual).toMatchInlineSnapshot(`
-      "
-            div {
-              &:hover {
-                display: block;
-              }
-            }
-          "
+      }"
     `);
   });
 
   it('should do nothing if preceding selector is a combinator', () => {
-    const actual = transform`
-      div {
+    expect(
+      transform(`
+        div {
+          & div > :hover {
+            display: block;
+          }
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "div {
         div > :hover {
           display: block;
         }
-      }
-    `;
-
-    expect(actual).toMatchInlineSnapshot(`
-      "
-            div {
-              div > :hover {
-                display: block;
-              }
-            }
-          "
+      }"
     `);
   });
 
   it('should add nesting selector to top level psuedo', () => {
-    const actual = transform`
-      :hover {
+    expect(
+      transform(`
+        :hover {
+          display: block;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "&:hover {
         display: block;
-      }
-    `;
-
-    expect(actual).toMatchInlineSnapshot(`
-      "
-            &:hover {
-              display: block;
-            }
-          "
+      }"
     `);
   });
 
   it('should add nesting selector to dangling pseudo that has a appended nesting selector', () => {
-    const actual = transform`
-      :first-child & {
-        color: hotpink;
-      }
-    `;
-
-    expect(actual).toMatchInlineSnapshot(`
-      "
-            &:first-child & {
-              color: hotpink;
-            }
-          "
+    expect(
+      transform(`
+        :first-child & {
+          color: hotpink;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "&:first-child & {
+        color: #ff69b4;
+      }"
     `);
   });
 
   it('should do nothing when a nesting selector is appended to selector', () => {
-    const actual = transform`
-      [data-look='h100']& {
+    expect(
+      transform(`
+        [data-look='h100']& {
+          display: block;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "[data-look="h100"]& {
         display: block;
-      }
-    `;
-
-    expect(actual).toMatchInlineSnapshot(`
-      "
-            [data-look='h100']& {
-              display: block;
-            }
-          "
+      }"
     `);
   });
 
   it('should prepend nesting selector to multiple selector groups', () => {
-    const actual = transform`
-      :hover, :active {
+    expect(
+      transform(`
+        :hover, :active {
+          display: block;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "&:hover, &:active {
         display: block;
-      }
-    `;
-
-    expect(actual).toMatchInlineSnapshot(`
-      "
-            &:hover, &:active {
-              display: block;
-            }
-          "
+      }"
     `);
   });
 
   it('should prepend nesting selector to multiple selector groups', () => {
-    const actual = transform`
-      div, :active {
+    expect(
+      transform(`
+        div, :active {
+          display: block;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "div, &:active {
         display: block;
-      }
-    `;
-
-    expect(actual).toMatchInlineSnapshot(`
-      "
-            div, &:active {
-              display: block;
-            }
-          "
+      }"
     `);
   });
 });

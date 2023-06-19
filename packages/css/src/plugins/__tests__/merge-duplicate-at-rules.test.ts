@@ -1,39 +1,79 @@
-import postcss from 'postcss';
+/**
+ * @jest-environment node
+ */
 
-import { mergeDuplicateAtRules } from '../merge-duplicate-at-rules';
+import { transform as lightningcss } from 'lightningcss';
 
-const transform = (css: TemplateStringsArray) => {
-  const result = postcss([mergeDuplicateAtRules()]).process(css[0], {
-    from: undefined,
+const transform = (css: string) => {
+  const { code } = lightningcss({
+    code: Buffer.from(css),
+    filename: 'styles.css',
   });
 
-  return result.css;
+  return code.toString().trim();
 };
+describe('transform()', () => {
+  it('removes duplicate at rules', () => {
+    expect(
+      transform(`
+        @media screen {
+          span {
+            color: blue;
+          }
+        }
 
-describe('discard duplicate at-rule children plugin', () => {
-  it('should remove duplicate children', () => {
-    const actual = transform`
-      @media (min-width:500px){._171dak0l{border:2px solid red}}
-      @media (min-width:500px){._171dak0l{border:2px solid red}._1swkri7e:before{content:'large screen'}}
-    `;
+        @media screen {
+          span {
+            color: blue;
+          }
 
-    expect(actual).toMatchInlineSnapshot(`
-      "
-            @media (min-width:500px){._171dak0l{border:2px solid red}._1swkri7e:before{content:'large screen'}}
-          "
+          span:hover {
+            color: purple;
+          }
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "@media screen {
+        span {
+          color: #00f;
+        }
+
+        span:hover {
+          color: purple;
+        }
+      }"
     `);
   });
 
-  it('should remove duplicate children with a different order', () => {
-    const actual = transform`
-    @media (min-width:500px){._171dak0l{border:2px solid red}._1swkri7e:before{content:'large screen'}}
-      @media (min-width:500px){._171dak0l{border:2px solid red}}
-    `;
+  it('removes duplicate at rules with a different order', () => {
+    expect(
+      transform(`
+        @media screen {
+          span {
+            color: blue;
+          }
 
-    expect(actual).toMatchInlineSnapshot(`
-      "
-          @media (min-width:500px){._171dak0l{border:2px solid red}._1swkri7e:before{content:'large screen'}}
-          "
+          span:hover {
+            color: purple;
+          }
+        }
+
+        @media screen {
+          span {
+            color: blue;
+          }
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "@media screen {
+        span:hover {
+          color: purple;
+        }
+
+        span {
+          color: #00f;
+        }
+      }"
     `);
   });
 });

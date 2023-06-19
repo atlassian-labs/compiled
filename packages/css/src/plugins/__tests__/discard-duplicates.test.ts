@@ -1,36 +1,47 @@
-import postcss from 'postcss';
+/**
+ * @jest-environment node
+ */
 
-import { discardDuplicates } from '../discard-duplicates';
+import { transform as lightningcss } from 'lightningcss';
 
-const transform = (css: TemplateStringsArray) => {
-  const result = postcss([discardDuplicates()]).process(css[0], {
-    from: undefined,
+const transform = (css: string) => {
+  const { code } = lightningcss({
+    code: Buffer.from(css),
+    filename: 'styles.css',
   });
 
-  return result.css;
+  return code.toString().trim();
 };
 
-describe('discard dupicates plugin', () => {
-  it('should do nothing if no duplicates', () => {
-    expect(transform`
-      display: block;
-      margin: 0 auto;
-    `).toMatchInlineSnapshot(`
-      "
-            display: block;
-            margin: 0 auto;
-          "
+describe('discard duplicates', () => {
+  it('does nothing if no duplicates', () => {
+    expect(
+      transform(`
+        span {
+          display: block;
+          margin: 0 auto;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "span {
+        margin: 0 auto;
+        display: block;
+      }"
     `);
   });
 
-  it('should discard duplicates', () => {
-    expect(transform`
-      display: block;
-      display: flex;
-    `).toMatchInlineSnapshot(`
-      "
-            display: flex;
-          "
+  it('discards duplicates', () => {
+    expect(
+      transform(`
+        span {
+          display: block;
+          display: flex;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "span {
+        display: flex;
+      }"
     `);
   });
 });

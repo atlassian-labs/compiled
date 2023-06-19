@@ -1,72 +1,89 @@
-import postcss from 'postcss';
+/**
+ * @jest-environment node
+ */
+
+import { transform as lightningcss } from 'lightningcss';
 
 import { discardEmptyRules } from '../discard-empty-rules';
 
-const transform = (css: TemplateStringsArray) => {
-  const result = postcss([discardEmptyRules()]).process(css[0], {
-    from: undefined,
+const transform = (css: string) => {
+  const { code } = lightningcss({
+    code: Buffer.from(css),
+    filename: 'styles.css',
+    visitor: discardEmptyRules(),
   });
 
-  return result.css;
+  return code.toString().trim();
 };
 
-describe('discard empty rules plugin', () => {
+describe('discard empty rules visitor', () => {
   it('should omit rule with undefined value', () => {
-    expect(transform`
-      display: undefined;
-      color: red;
-    `).toMatchInlineSnapshot(`
-      "
-            color: red;
-          "
+    expect(
+      transform(`
+        span {
+          display: undefined;
+          color: red;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "span {
+        color: red;
+      }"
     `);
   });
 
   it('should omit rule with null value', () => {
-    expect(transform`
-      display: null;
-      color: red;
-    `).toMatchInlineSnapshot(`
-      "
-            color: red;
-          "
+    expect(
+      transform(`
+        span {
+          display: null;
+          color: red;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "span {
+        color: red;
+      }"
     `);
   });
 
   it('should omit rule with empty value', () => {
-    expect(transform`
-      display: ;
-      color: red;
-    `).toMatchInlineSnapshot(`
-      "
-            color: red;
-          "
+    expect(
+      transform(`
+        span {
+          display: ;
+          color: red;
+        }
+      `)
+    ).toMatchInlineSnapshot(`
+      "span {
+        color: red;
+      }"
     `);
   });
 
   it('should omit rule inside selector', () => {
-    expect(transform`
-      :hover {        
-        display: undefined;
+    expect(
+      transform(`
+        :hover {
+          display: undefined;
+          color: red;
+        }
+    `)
+    ).toMatchInlineSnapshot(`
+      ":hover {
         color: red;
-      }
-    `).toMatchInlineSnapshot(`
-      "
-            :hover {
-              color: red;
-            }
-          "
+      }"
     `);
   });
 
   it('should omit selector when no rules with values', () => {
-    expect(transform`
-      :hover {        
-        display: undefined;
-      }
-    `).toMatchInlineSnapshot(`
-      "
-          "
-    `);
+    expect(
+      transform(`
+        :hover {
+          display: undefined;
+        }
+      `)
+    ).toEqual('');
   });
 });
