@@ -31,37 +31,44 @@ USAGE
 
 ## `compiled-cli analyze-compiled-css FILENAME`
 
-Analyse a compiled-css.css file and get some stats of how many ineffective and non-reusable selectors are being used.
+Analyze a compiled-css.css file and get some stats of how many ineffective and non-reusable selectors are being used.
 
 ```
 USAGE
   $ compiled-cli analyze-compiled-css FILENAME [--removeLastLine] [--cssVariableFilter <value>]
 
 ARGUMENTS
-  FILENAME  Path to the compiled-css.css file we would like to analyse
+  FILENAME  Path to the compiled-css.css file we would like to analyze
 
 FLAGS
   --cssVariableFilter=<value>  In the report, we exclude all CSS variables that start with the value of the
                                cssVariableFilter flag.
-  --removeLastLine             Remove the last line of the file before analysing it. We may want to do this because the
+  --removeLastLine             Remove the last line of the file before analyzing it. We may want to do this because the
                                last line is often a sourcemap comment (which we want to ignore).
 
 DESCRIPTION
-  Analyse a compiled-css.css file and get some stats of how many ineffective and non-reusable selectors are being used.
+  Analyze a compiled-css.css file and get some stats of how many ineffective and non-reusable selectors are being used.
 
 EXAMPLES
   $ compiled-cli --removeLastLine --cssVariableFilter="ds-" compiled-css.css
-  Analysing compiled-css.css file...
+  Analyzing compiled-css.css file...
   ====================================
-  Number of rules:                4000
+  Number of total rules analyzed: 2000
+  ====================================
+  Has data-* attribute(s):        50
+  ↳ Data attributes found:
+    component-selector: 27
+    testid:             25
   ------------------------------------
-  PROBLEMATIC:
+  Has nested selector:            800
+  ↳ Breakdown:
+    2 layers of nesting: 400
+    3 layers of nesting: 400
   ------------------------------------
   Has inline image:               5
-  Has nested selector:            1000
-  Uses CSS variables:             250
+  Uses CSS variables:             300
   ====================================
-  Done.
+  Done!
 ```
 
 _See code: [dist/commands/analyze-compiled-css/index.ts](https://github.com/atlassian-labs/compiled/blob/v0.0.1/dist/commands/analyze-compiled-css/index.ts)_
