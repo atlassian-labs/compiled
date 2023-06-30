@@ -683,8 +683,6 @@ describe('styled object call expression', () => {
     const Container = styled.div({
       padding: ({ morePadding }) => morePadding ? morePadding : '4px 8px',
     });
-
-    <Container customPadding="10px 20px 30px 40px">Hello world1</Container>
     `);
 
     expect(actual).toMatchInlineSnapshot(`
