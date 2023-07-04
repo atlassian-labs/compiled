@@ -641,4 +641,82 @@ describe('styled object call expression', () => {
       "
     `);
   });
+
+  it('should refuse to expand shorthand property when value is unknown at build time (arrow function)', () => {
+    const actual = transform(`
+    import { styled } from '@compiled/react';
+
+    const Container = styled.div({
+      padding: ({ customPadding }) => customPadding,
+    });
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "const _ = "._1yt414tu{padding:var(--_1hhnq9y)}";
+      const Container = forwardRef(
+        ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          const { customPadding, ...__cmpldp } = __cmplp;
+          return (
+            <CC>
+              <CS>{[_]}</CS>
+              <C
+                {...__cmpldp}
+                style={{
+                  ...__cmpls,
+                  "--_1hhnq9y": ix(__cmplp.customPadding),
+                }}
+                ref={__cmplr}
+                className={ax(["_1yt414tu", __cmplp.className])}
+              />
+            </CC>
+          );
+        }
+      );
+      "
+    `);
+  });
+
+  it('should refuse to expand shorthand property when value is unknown at build time (ternary expression)', () => {
+    const actual = transform(`
+    import { styled } from '@compiled/react';
+
+    const Container = styled.div({
+      padding: ({ morePadding }) => morePadding ? morePadding : '4px 8px',
+    });
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "const _5 = "._19bvftgi{padding-left:8px}";
+      const _4 = "._n3td1y44{padding-bottom:4px}";
+      const _3 = "._u5f3ftgi{padding-right:8px}";
+      const _2 = "._ca0q1y44{padding-top:4px}";
+      const _ = "._1yt41v0o{padding:var(--_1dm0vu2)}";
+      const Container = forwardRef(
+        ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          const { morePadding, ...__cmpldp } = __cmplp;
+          return (
+            <CC>
+              <CS>{[_, _2, _3, _4, _5]}</CS>
+              <C
+                {...__cmpldp}
+                style={{
+                  ...__cmpls,
+                  "--_1dm0vu2": ix(__cmplp.morePadding),
+                }}
+                ref={__cmplr}
+                className={ax([
+                  "",
+                  __cmplp.morePadding
+                    ? "_1yt41v0o"
+                    : "_ca0q1y44 _u5f3ftgi _n3td1y44 _19bvftgi",
+                  __cmplp.className,
+                ])}
+              />
+            </CC>
+          );
+        }
+      );
+      "
+    `);
+  });
 });

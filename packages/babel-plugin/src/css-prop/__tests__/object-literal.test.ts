@@ -606,10 +606,7 @@ describe('css prop object literal', () => {
        }}>hello world</div>
     `);
 
-    expect(actual).toInclude('{padding-top:0}');
-    expect(actual).toInclude('{padding-right:var(--_1xlms2h)}');
-    expect(actual).toInclude('{padding-bottom:0}');
-    expect(actual).toInclude('{padding-left:var(--_1xlms2h)}');
+    expect(actual).toInclude('{padding:0 var(--_1xlms2h)}');
   });
 
   it('should parse an inline string interpolation delimited by multiple spaces', () => {
@@ -625,10 +622,7 @@ describe('css prop object literal', () => {
        }}>hello world</div>
     `);
 
-    expect(actual).toInclude('{padding-top:0}');
-    expect(actual).toInclude('{padding-right:var(--_1xlms2h)}');
-    expect(actual).toInclude('{padding-bottom:0}');
-    expect(actual).toInclude('{padding-left:0}');
+    expect(actual).toInclude('{padding:0 var(--_1xlms2h) 0 0}');
   });
 
   it('should parse an inline string interpolation delimited by multiple spaces and suffix', () => {
@@ -783,5 +777,28 @@ describe('css prop object literal', () => {
     `);
 
     expect(actual).toInclude('{display:grid}');
+  });
+
+  it('should correctly expand shorthand property with ternary expression', () => {
+    const actual = transform(`
+    import { css } from '@compiled/react';
+
+    const morePadding = true;
+
+    <div css={{
+        padding: morePadding ? "10px 20px 30px 40px" : "4px 8px",
+    }}>
+      Hello world
+    </div>
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "import*as React from'react';import{ax,ix,CC,CS}from"@compiled/react/runtime";const _4="._19bv1ylp{padding-left:40px}";const _3="._n3td1ul9{padding-bottom:30px}";const _2="._u5f3gktf{padding-right:20px}";const _="._ca0q19bv{padding-top:10px}";const morePadding=true;<CC>
+          <CS>{[_,_2,_3,_4]}</CS>
+          {<div className={ax(["_ca0q19bv _u5f3gktf _n3td1ul9 _19bv1ylp"])}>
+            Hello world
+          </div>}
+        </CC>;"
+    `);
   });
 });

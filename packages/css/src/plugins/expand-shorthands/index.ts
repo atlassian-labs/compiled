@@ -1,5 +1,5 @@
 import type { Plugin } from 'postcss';
-import { parse } from 'postcss-values-parser';
+import { parse, type ChildNode } from 'postcss-values-parser';
 
 import { background } from './background';
 import { flex } from './flex';
@@ -56,6 +56,15 @@ const shorthands: Record<string, ConversionFunction> = {
    */
 };
 
+const valueIsNotSafeToExpand = (node: ChildNode): boolean => {
+  // This is the case where a CSS variable is given as the value, e.g.
+  // `padding: var(--_fl6vf6)`. Value of _fl6vf6 is unknown, so this
+  // cannot be expanded safely.
+  //
+  // https://github.com/atlassian-labs/compiled/issues/1331
+  return node.type === 'func' && node.isVar;
+};
+
 /**
  * PostCSS plugin that expands shortform properties to their longform equivalents.
  */
@@ -68,12 +77,17 @@ export const expandShorthands = (): Plugin => {
       if (!expand) {
         return;
       }
+
       const valueNode = parse(decl.value);
+      if (valueNode.nodes.some(valueIsNotSafeToExpand)) {
+        return;
+      }
 
       const longforms = expand(valueNode);
       if (!longforms) {
         throw new Error('Longform properties were not returned!');
       }
+
       /** Return early if not replacing a node */
       if (longforms.length === 1 && longforms[0].prop === undefined) {
         return;
