@@ -1,5 +1,11 @@
 # @compiled/css
 
+## 0.12.0
+
+### Minor Changes
+
+- a24c157c: Skip expansion of shorthand properties (e.g. padding, margin) if they have dynamic values (e.g. CSS variables, ternary expressions, arrow functions)
+
 ## 0.11.0
 
 ### Minor Changes
