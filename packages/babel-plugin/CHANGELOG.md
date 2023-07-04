@@ -1,5 +1,13 @@
 # @compiled/babel-plugin
 
+## 0.19.2
+
+### Patch Changes
+
+- a24c157c: Skip expansion of shorthand properties (e.g. padding, margin) if they have dynamic values (e.g. CSS variables, ternary expressions, arrow functions)
+- Updated dependencies [a24c157c]
+  - @compiled/css@0.12.0
+
 ## 0.19.1
 
 ### Patch Changes
