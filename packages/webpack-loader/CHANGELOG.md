@@ -1,5 +1,13 @@
 # @compiled/webpack-loader
 
+## 0.11.1
+
+### Patch Changes
+
+- Updated dependencies [a24c157c]
+  - @compiled/css@0.12.0
+  - @compiled/babel-plugin@0.20.0
+
 ## 0.11.0
 
 ### Minor Changes
