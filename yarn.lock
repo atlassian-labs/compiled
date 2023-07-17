@@ -16609,10 +16609,10 @@ storybook-addon-performance@^0.16.1:
     tiny-invariant "^1.1.0"
     xstate "^4.22.0"
 
-storybook-addon-pseudo-states@^1.15.2:
-  version "1.15.2"
-  resolved "https://registry.yarnpkg.com/storybook-addon-pseudo-states/-/storybook-addon-pseudo-states-1.15.2.tgz#8d98c896eb9bc590187043da88b30cdd750268ac"
-  integrity sha512-YMjzct/747PyCfzAD2469283gbBSdK3pMfuPg4nq5ZtPzfDAkaiGlxPnXNL9dMA2Bo1PLgNJ3f9u2Kh1OfuPlw==
+storybook-addon-pseudo-states@^1.15.5:
+  version "1.15.5"
+  resolved "https://registry.yarnpkg.com/storybook-addon-pseudo-states/-/storybook-addon-pseudo-states-1.15.5.tgz#47d40391440dff235c05938c5b033aa655dda38e"
+  integrity sha512-DVngZ4121lJ6s42vKNfmLCBKhBMhh01D7sCV/LohP0rZoVW6Zws552g906Wan5R14gnArAlPCxQ+zbgm7QqxDA==
 
 stream-browserify@^2.0.1:
   version "2.0.2"
