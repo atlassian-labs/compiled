@@ -61,8 +61,6 @@ const getDefaultParameters = (
   path: NodePath<t.Identifier | t.RestElement | t.Pattern>
 ): Record<string, t.Expression> => {
   const node = path.node;
-  if (!t.isObjectPattern(node)) return {};
-
   const assignments: Record<string, t.Expression> = {};
 
   const FindAllAssignmentsVisitor = {
@@ -70,11 +68,34 @@ const getDefaultParameters = (
       const { node } = path;
       if (t.isIdentifier(node.left)) {
         assignments[node.left.name] = node.right;
+      } else {
+        throw new Error(
+          `This syntax for assignments in arrow function parameters isn't supported by Compiled. (Left-hand side ${node.left.type} and right-hand side ${node.right.type})`
+        );
       }
     },
   };
 
-  path.traverse(FindAllAssignmentsVisitor);
+  const FindAllPropertiesVisitor = {
+    ObjectProperty(path: NodePath<t.ObjectProperty>) {
+      const { node } = path;
+      if (t.isIdentifier(node.key) && t.isExpression(node.value)) {
+        assignments[node.key.name] = node.value;
+      } else {
+        throw new Error(
+          `This syntax for objects in arrow function parameters isn't supported by Compiled. (Left-hand side ${node.key.type} and right-hand side ${node.value.type})`
+        );
+      }
+    },
+  };
+
+  if (t.isObjectPattern(node)) {
+    // e.g. ({ a: 20, b: 30 }) => ...
+    path.traverse(FindAllAssignmentsVisitor);
+  } else if (t.isAssignmentPattern(node)) {
+    // e.g. ({ a, b } = {a: 20, b: 30 }) => ...
+    path.traverse(FindAllPropertiesVisitor);
+  }
   return assignments;
 };
 
@@ -126,10 +147,15 @@ const arrowFunctionVisitor = {
 
       if (t.isIdentifier(node) && node.name !== PROPS_IDENTIFIER_NAME) {
         normalizeDestructuredString(node, path);
-      } else if (t.isObjectPattern(node)) {
+      } else if (t.isObjectPattern(node) || t.isAssignmentPattern(node)) {
         // We need to destructure a props parameter, i.e. the parameter
         // of a function like
+        //
+        // (object pattern)
         // ({ width, height = 16 }) => `${height}px ${width}px`
+        //
+        // (assignment pattern)
+        // ({ width, height } = { height: 200 }) => `${height}px ${width}px`
 
         const destructedPaths: Record<
           string,
@@ -144,9 +170,6 @@ const arrowFunctionVisitor = {
         const values = getDefaultParameters(propsParam);
 
         normalizeDestructuredObject(bindings, values, destructedPaths);
-      } else if (t.isAssignmentPattern(node)) {
-        // e.g. ({ a, b } = { a: 100, b: 200 }) => `${a}px ${b}px`
-        throw new Error('TODO not implemented');
       }
 
       propsParam.replaceWith(t.identifier(PROPS_IDENTIFIER_NAME));

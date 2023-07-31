@@ -140,15 +140,16 @@ describe('normalizePropsUsage', () => {
         expect(actual).toInclude(`color: (${P_NAME}) => ${P_NAME}.theme.colors.dark ?? "#aaa"`);
       });
 
-      it.only('reconstructs default parameters in props (alternative syntax)', () => {
+      it('reconstructs default parameters in props (alternative syntax)', () => {
         const actual = transform(`
         styled.div({
           padding: ({ a, b } = { a: 100, b: 200 }) => \`\${a}px \${b}px\`,
         });
         `);
 
-        // TODO replace snapshot with something better
-        expect(actual).toMatchInlineSnapshot();
+        expect(actual).toInclude(
+          `padding: (__cmplp) => \`\${__cmplp.a ?? 100}px \${__cmplp.b ?? 200}px\``
+        );
       });
     });
   });
