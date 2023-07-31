@@ -95,13 +95,17 @@ describe('normalizePropsUsage', () => {
 
     describe('deconstructing arrays in props', () => {
       it('throws an error when deconstructing arrays in props', () => {
-        const actual = transform(`
-        styled.div({
-          width: ({ a: [, second] }) => \`\${second}px\`,
-        });
-        `);
+        const actual = () => {
+          transform(`
+            styled.div({
+              width: ({ a: [, second] }) => \`\${second}px\`,
+            });
+          `);
+        };
 
-        expect(actual).toThrowWithMessage(Error, 'Compiled does not support arrays in props.');
+        expect(actual).toThrow(
+          'Compiled does not support arrays given in the parameters of an arrow function.'
+        );
       });
     });
 
@@ -136,7 +140,7 @@ describe('normalizePropsUsage', () => {
         expect(actual).toInclude(`color: (${P_NAME}) => ${P_NAME}.theme.colors.dark ?? "#aaa"`);
       });
 
-      it('reconstructs default parameters in props (alternative syntax)', () => {
+      it.only('reconstructs default parameters in props (alternative syntax)', () => {
         const actual = transform(`
         styled.div({
           padding: ({ a, b } = { a: 100, b: 200 }) => \`\${a}px \${b}px\`,

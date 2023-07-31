@@ -21,6 +21,14 @@ const buildObjectChain = (path: NodePath<t.Node> | null, currentChain: string[] 
       return buildObjectChain(parentPath, currentChain);
     }
 
+    // e.g. an arrow function like
+    // ({ a: [, second] }) => ...
+    if (t.isArrayPattern(node)) {
+      throw new Error(
+        'Compiled does not support arrays given in the parameters of an arrow function.'
+      );
+    }
+
     if (t.isObjectProperty(node) && t.isIdentifier(node.key)) {
       currentChain.unshift(node.key.name);
     }
