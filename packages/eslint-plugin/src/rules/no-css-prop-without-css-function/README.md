@@ -6,6 +6,8 @@ Using the CSS import also improves readability and type-safety, as errors will s
 
 When defining a CSS prop value, CSS-in-JS libraries often will not be able to figure out which library you want to use. This can cause undefined behaviour depending on how the bundler visits the file.
 
+TODO: add documentation for changes.
+
 ## Rule details
 
 👎 Examples of **incorrect** code for this rule:

@@ -1,6 +1,6 @@
 import { outdent } from 'outdent';
 
-import { tester } from '../../../test-utils';
+import { typeScriptTester as tester } from '../../../test-utils';
 import { noCssPropWithoutCssFunctionRule } from '../index';
 
 tester.run('no-css-prop-without-css-function', noCssPropWithoutCssFunctionRule, {
@@ -46,6 +46,7 @@ tester.run('no-css-prop-without-css-function', noCssPropWithoutCssFunctionRule, 
       <div css={styles} />;
     `,
   ],
+
   invalid: [
     {
       // Inline object expression without function
@@ -64,6 +65,22 @@ tester.run('no-css-prop-without-css-function', noCssPropWithoutCssFunctionRule, 
         import { css } from '@compiled/react';
 
         <div css={css({ backgroundColor: 'red' })} />;
+      `,
+    },
+    {
+      errors: [
+        {
+          messageId: 'noCssFunction',
+        },
+      ],
+      code: outdent`
+        import React from 'react';
+
+        const coolStyles = {
+            width: '5px',
+        } as const;
+
+        <div css={coolStyles} />;
       `,
     },
     // Inline template string without function
@@ -179,6 +196,85 @@ tester.run('no-css-prop-without-css-function', noCssPropWithoutCssFunctionRule, 
         const styles = css({ backgroundColor: 'red' });
 
         <div css={[someBoolean ? styles : undefined]} />;
+      `,
+    },
+    // Passing in an imported value when not using an HTML element
+    {
+      errors: [
+        {
+          messageId: 'importedInvalidCssUsage',
+        },
+      ],
+      code: outdent`
+        import React from 'react';
+        import { css } from '@compiled/react';
+        import { MyComponent, styles } from './external-file';
+
+        <MyComponent css={styles} />;
+      `,
+    },
+    // Passing in a function parameter when not using an HTML element
+    {
+      errors: [
+        {
+          messageId: 'functionParameterInvalidCssUsage',
+        },
+      ],
+      code: outdent`
+        import React from 'react';
+        import { css } from '@compiled/react';
+        import { MyComponent, styles } from './external-file';
+
+        const CoolComponent = ({ styles }) => {
+          return <MyComponent css={styles} />;
+        }
+      `,
+    },
+    {
+      errors: [
+        {
+          messageId: 'functionParameterInvalidCssUsage',
+        },
+      ],
+      code: outdent`
+        import React from 'react';
+        import { css } from '@compiled/react';
+        import { MyComponent, styles } from './external-file';
+
+        const CoolComponent = ({ styles = { color: blue } }) => {
+          return <MyComponent css={styles} />;
+        }
+      `,
+    },
+    {
+      errors: [
+        {
+          messageId: 'functionParameterInvalidCssUsage',
+        },
+      ],
+      code: outdent`
+        import React from 'react';
+        import { css } from '@compiled/react';
+        import { MyComponent, styles } from './external-file';
+
+        const CoolComponent = (styles) => {
+          return <MyComponent css={styles} />;
+        }
+      `,
+    },
+    // Passing in a variable that doesn't exist
+    {
+      errors: [
+        {
+          messageId: 'otherInvalidCssUsage',
+        },
+      ],
+      code: outdent`
+        import React from 'react';
+        import { css } from '@compiled/react';
+        import { MyComponent } from './external-file';
+
+        <MyComponent css={styles} />;
       `,
     },
   ],

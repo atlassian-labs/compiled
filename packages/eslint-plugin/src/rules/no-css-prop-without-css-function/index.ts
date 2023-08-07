@@ -1,6 +1,6 @@
 import type { Rule, Scope } from 'eslint';
 import type { Node } from 'estree';
-import type { JSXExpressionContainer } from 'estree-jsx';
+import type { JSXExpressionContainer, JSXOpeningElement } from 'estree-jsx';
 
 import { findCompiledImportDeclarations } from '../../utils/ast';
 import { addImportToDeclaration, buildImportDeclaration } from '../../utils/ast-to-string';
@@ -33,6 +33,56 @@ const findStyleNodes = (node: Node, references: Scope.Reference[], context: Rule
     // Traverse to the variable value
     if (definition && definition.node.init) {
       findStyleNodes(definition.node.init, references, context);
+    } else {
+      const isImported = reference?.resolved?.defs.find((def) => def.type === 'ImportBinding');
+
+      const isFunctionParameter = reference?.resolved?.defs.find((def) => def.type === 'Parameter');
+
+      const isDOMElement = (elementName: string) =>
+        elementName.charAt(0) !== elementName.charAt(0).toUpperCase() &&
+        elementName.charAt(0) === elementName.charAt(0).toLowerCase();
+
+      const traverseUpToJSXOpeningElement = (node: Node): JSXOpeningElement => {
+        // @ts-ignore Property 'parent' does not exist on type 'Node'.
+        //
+        // parent property is added by eslint, so estree's Node type
+        // will not have this defined.
+        while (node.parent && node.type !== 'JSXOpeningElement') {
+          // @ts-ignore Property 'parent' does not exist on type 'Node'.
+          return traverseUpToJSXOpeningElement(node.parent);
+        }
+
+        if (node.type === 'JSXOpeningElement') {
+          return node as JSXOpeningElement;
+        }
+
+        throw new Error('Could not find JSXOpeningElement');
+      };
+
+      const jsxElement = traverseUpToJSXOpeningElement(node);
+
+      // css property on DOM elements are always fine, e.g.
+      // <div css={...}> instead of <MyComponent css={...}>
+      if (jsxElement.name.type === 'JSXIdentifier' && isDOMElement(jsxElement.name.name)) {
+        return;
+      }
+
+      if (isImported) {
+        context.report({
+          messageId: 'importedInvalidCssUsage',
+          node,
+        });
+      } else if (isFunctionParameter) {
+        context.report({
+          messageId: 'functionParameterInvalidCssUsage',
+          node,
+        });
+      } else {
+        context.report({
+          messageId: 'otherInvalidCssUsage',
+          node,
+        });
+      }
     }
   } else if (node.type === 'MemberExpression') {
     // Since we don't support MemberExpression yet, we don't have a contract for what it should look like
@@ -85,6 +135,13 @@ export const noCssPropWithoutCssFunctionRule: Rule.RuleModule = {
     },
     messages: {
       noCssFunction: 'css prop values are required to use the css import from @compiled/react',
+      valueIsProp:
+        'Compiled cannot determine the value of function props in the css attribute at build time. Consider moving the value into the same file.',
+      importedInvalidCssUsage:
+        'Compiled: imported invalid CSS usage. TODO write a complete message',
+      functionParameterInvalidCssUsage:
+        'Compiled: function parameter invalid CSS usage. TODO write a complete message',
+      otherInvalidCssUsage: 'Compiled: other invalid CSS usage. TODO write a complete message',
     },
     type: 'problem',
     fixable: 'code',
