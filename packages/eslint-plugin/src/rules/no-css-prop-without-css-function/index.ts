@@ -136,17 +136,16 @@ export const noCssPropWithoutCssFunctionRule: TSESLint.RuleModule<string> = {
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-css-prop-without-css-function',
       recommended: 'error',
       description:
-        'Disallows `css` prop usages without wrapping in the `css` import from `@compiled/react`.',
+        'Disallows `css` prop usages without wrapping in the `css` import from `@compiled/react`. Also forbids `css` prop usages where Compiled cannot determine whether the `css` import is included at build time.',
     },
     messages: {
       noCssFunction: 'css prop values are required to use the css import from @compiled/react',
-      valueIsProp:
-        'Compiled cannot determine the value of function props in the css attribute at build time. Consider moving the value into the same file.',
       importedInvalidCssUsage:
-        'Compiled: imported invalid CSS usage. TODO write a complete message',
+        'Compiled cannot determine the value of imported values in the css attribute at build time. If this component uses Compiled, this will cause a build error or invalid CSS! Consider moving the value into the same file.',
       functionParameterInvalidCssUsage:
-        'Compiled: function parameter invalid CSS usage. TODO write a complete message',
-      otherInvalidCssUsage: 'Compiled: other invalid CSS usage. TODO write a complete message',
+        'Compiled cannot determine the value of function props in the css attribute at build time. If this component uses Compiled, this will cause a build error or invalid CSS! Consider moving the value into the same file.',
+      otherInvalidCssUsage:
+        'Compiled cannot determine the value of this expression in the css attribute at build time. If this component uses Compiled, this will cause a build error or invalid CSS! Consider moving the value into the same file.',
     },
     type: 'problem',
     fixable: 'code',
