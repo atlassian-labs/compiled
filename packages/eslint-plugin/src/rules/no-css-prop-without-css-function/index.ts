@@ -1,17 +1,27 @@
-import type { Rule, Scope } from 'eslint';
-import type { Node } from 'estree';
-import type { JSXExpressionContainer, JSXOpeningElement } from 'estree-jsx';
+import type { TSESTree, TSESLint } from '@typescript-eslint/utils';
 
-import { findCompiledImportDeclarations } from '../../utils/ast';
+import {
+  findTSCompiledImportDeclarations,
+  isDOMElement,
+  traverseUpToJSXOpeningElement,
+} from '../../utils/ast';
 import { addImportToDeclaration, buildImportDeclaration } from '../../utils/ast-to-string';
 
-type Q<T> = T extends Scope.Definition ? (T['type'] extends 'Variable' ? T : never) : never;
-type VariableDefinition = Q<Scope.Definition>;
+type Q<T> = T extends TSESLint.Scope.Definition
+  ? T['type'] extends 'Variable'
+    ? T
+    : never
+  : never;
+type VariableDefinition = Q<TSESLint.Scope.Definition>;
 
-const findStyleNodes = (node: Node, references: Scope.Reference[], context: Rule.RuleContext) => {
+const findStyleNodes = (
+  node: TSESTree.Expression | TSESTree.JSXEmptyExpression,
+  references: TSESLint.Scope.Reference[],
+  context: TSESLint.RuleContext<string, readonly []>
+): void => {
   if (node.type === 'ArrayExpression') {
     node.elements.forEach((arrayElement) => {
-      if (arrayElement) {
+      if (arrayElement && arrayElement.type !== 'SpreadElement') {
         findStyleNodes(arrayElement, references, context);
       }
     });
@@ -35,29 +45,7 @@ const findStyleNodes = (node: Node, references: Scope.Reference[], context: Rule
       findStyleNodes(definition.node.init, references, context);
     } else {
       const isImported = reference?.resolved?.defs.find((def) => def.type === 'ImportBinding');
-
       const isFunctionParameter = reference?.resolved?.defs.find((def) => def.type === 'Parameter');
-
-      const isDOMElement = (elementName: string) =>
-        elementName.charAt(0) !== elementName.charAt(0).toUpperCase() &&
-        elementName.charAt(0) === elementName.charAt(0).toLowerCase();
-
-      const traverseUpToJSXOpeningElement = (node: Node): JSXOpeningElement => {
-        // @ts-ignore Property 'parent' does not exist on type 'Node'.
-        //
-        // parent property is added by eslint, so estree's Node type
-        // will not have this defined.
-        while (node.parent && node.type !== 'JSXOpeningElement') {
-          // @ts-ignore Property 'parent' does not exist on type 'Node'.
-          return traverseUpToJSXOpeningElement(node.parent);
-        }
-
-        if (node.type === 'JSXOpeningElement') {
-          return node as JSXOpeningElement;
-        }
-
-        throw new Error('Could not find JSXOpeningElement');
-      };
 
       const jsxElement = traverseUpToJSXOpeningElement(node);
 
@@ -92,8 +80,10 @@ const findStyleNodes = (node: Node, references: Scope.Reference[], context: Rule
     context.report({
       messageId: 'noCssFunction',
       node,
-      *fix(fixer) {
-        const compiledImports = findCompiledImportDeclarations(context);
+      *fix(fixer: TSESLint.RuleFixer) {
+        const compiledImports = findTSCompiledImportDeclarations(context);
+        const source = context.getSourceCode();
+
         if (compiledImports.length > 0) {
           // Import found, add the specifier to it
           const [firstCompiledImport] = compiledImports;
@@ -102,7 +92,6 @@ const findStyleNodes = (node: Node, references: Scope.Reference[], context: Rule
           yield fixer.replaceText(firstCompiledImport, specifiersString);
         } else {
           // Import not found, add a new one
-          const source = context.getSourceCode();
           yield fixer.insertTextAfter(
             source.ast.body[0],
             `\n${buildImportDeclaration('css', '@compiled/react')}`
@@ -110,28 +99,44 @@ const findStyleNodes = (node: Node, references: Scope.Reference[], context: Rule
         }
 
         if (node.type === 'ObjectExpression') {
-          yield fixer.insertTextBefore(node, 'css(');
-          yield fixer.insertTextAfter(node, ')');
+          const parent = node.parent;
+          if (parent && parent.type === 'TSAsExpression') {
+            yield fixer.replaceText(parent, `css(${source.getText(node)})`);
+          } else {
+            yield fixer.insertTextBefore(node, 'css(');
+            yield fixer.insertTextAfter(node, ')');
+          }
         } else {
           yield fixer.insertTextBefore(node, 'css');
         }
       },
     });
+  } else if (node.type === 'TSAsExpression') {
+    // TSAsExpression is anything in the form "X as Y", e.g.:
+    // const abc = { ... } as const;
+    return findStyleNodes(node.expression, references, context);
   }
 };
 
-const createNoCssPropWithoutCssFunctionRule = (): Rule.RuleModule['create'] => (context) => ({
-  'JSXAttribute[name.name="css"] JSXExpressionContainer': (node: Rule.Node): void => {
-    const { references } = context.getScope();
+const createNoCssPropWithoutCssFunctionRule =
+  (): TSESLint.RuleModule<string>['create'] => (context) => ({
+    'JSXAttribute[name.name="css"] JSXExpressionContainer': (
+      node: TSESTree.JSXExpressionContainer
+    ): void => {
+      const { references } = context.getScope();
 
-    findStyleNodes((node as JSXExpressionContainer).expression, references, context);
-  },
-});
+      findStyleNodes(node.expression, references, context);
+    },
+  });
 
-export const noCssPropWithoutCssFunctionRule: Rule.RuleModule = {
+export const noCssPropWithoutCssFunctionRule: TSESLint.RuleModule<string> = {
+  defaultOptions: [],
   meta: {
     docs: {
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-css-prop-without-css-function',
+      recommended: 'error',
+      description:
+        'Disallows `css` prop usages without wrapping in the `css` import from `@compiled/react`.',
     },
     messages: {
       noCssFunction: 'css prop values are required to use the css import from @compiled/react',
@@ -145,6 +150,7 @@ export const noCssPropWithoutCssFunctionRule: Rule.RuleModule = {
     },
     type: 'problem',
     fixable: 'code',
+    schema: [],
   },
   create: createNoCssPropWithoutCssFunctionRule(),
 };
