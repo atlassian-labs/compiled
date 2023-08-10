@@ -57,6 +57,21 @@ tester.run(
 
     invalid: [
       {
+        errors: [
+          {
+            messageId: 'functionParameterInvalidCssUsage',
+          },
+        ],
+        code: outdent`
+        import React from 'react';
+        import { css } from '@compiled/react';
+
+        const CoolComponent = (props) => {
+          return <MyComponent css={props.styles} />;
+        }
+      `,
+      },
+      {
         // Inline object expression without function
         errors: [
           {

@@ -13,12 +13,38 @@ type Q<T> = T extends TSESLint.Scope.Definition
     : never
   : never;
 type VariableDefinition = Q<TSESLint.Scope.Definition>;
+type ParameterDefinition = TSESLint.Scope.Definitions.ParameterDefinition;
 
-const findStyleNodes = (
-  node: TSESTree.Expression | TSESTree.JSXEmptyExpression,
-  references: TSESLint.Scope.Reference[],
-  context: TSESLint.RuleContext<string, readonly []>
-): void => {
+type CSSValue = TSESTree.Expression | TSESTree.JSXEmptyExpression;
+type Reference = TSESLint.Scope.Reference;
+type Context = TSESLint.RuleContext<string, readonly []>;
+
+const findNodeReference = (
+  references: Reference[],
+  node: TSESTree.Expression
+): Reference | undefined => {
+  return references.find((reference) => reference.identifier === node);
+};
+
+const handleMemberExpression = (
+  node: TSESTree.MemberExpression,
+  references: Reference[],
+  context: Context
+) => {
+  const reference = findNodeReference(references, node.object);
+  const definition = reference?.resolved?.defs.find(
+    (def): def is ParameterDefinition => def.type === 'Parameter'
+  );
+
+  if (definition) {
+    context.report({
+      messageId: 'functionParameterInvalidCssUsage',
+      node,
+    });
+  }
+};
+
+const findStyleNodes = (node: CSSValue, references: Reference[], context: Context): void => {
   if (node.type === 'ArrayExpression') {
     node.elements.forEach((arrayElement) => {
       if (arrayElement && arrayElement.type !== 'SpreadElement') {
@@ -35,7 +61,7 @@ const findStyleNodes = (
     findStyleNodes(node.alternate, references, context);
   } else if (node.type === 'Identifier') {
     // Resolve the variable for the reference
-    const reference = references.find((reference) => reference.identifier === node);
+    const reference = findNodeReference(references, node);
     const definition = reference?.resolved?.defs.find(
       (def): def is VariableDefinition => def.type === 'Variable'
     );
@@ -73,8 +99,7 @@ const findStyleNodes = (
       }
     }
   } else if (node.type === 'MemberExpression') {
-    // Since we don't support MemberExpression yet, we don't have a contract for what it should look like
-    // We can skip this for now, until we implement the CSS map API
+    handleMemberExpression(node, references, context);
   } else if (node.type === 'ObjectExpression' || node.type === 'TemplateLiteral') {
     // We found an object expression that was not wrapped, report
     context.report({
