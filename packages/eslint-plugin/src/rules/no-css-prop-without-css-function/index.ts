@@ -26,6 +26,47 @@ const findNodeReference = (
   return references.find((reference) => reference.identifier === node);
 };
 
+const handleIdentifier = (node: TSESTree.Identifier, references: Reference[], context: Context) => {
+  // Resolve the variable for the reference
+  const reference = findNodeReference(references, node);
+  const definition = reference?.resolved?.defs.find(
+    (def): def is VariableDefinition => def.type === 'Variable'
+  );
+
+  // Traverse to the variable value
+  if (definition && definition.node.init) {
+    findStyleNodes(definition.node.init, references, context);
+  } else {
+    const isImported = reference?.resolved?.defs.find((def) => def.type === 'ImportBinding');
+    const isFunctionParameter = reference?.resolved?.defs.find((def) => def.type === 'Parameter');
+
+    const jsxElement = traverseUpToJSXOpeningElement(node);
+
+    // css property on DOM elements are always fine, e.g.
+    // <div css={...}> instead of <MyComponent css={...}>
+    if (jsxElement.name.type === 'JSXIdentifier' && isDOMElement(jsxElement.name.name)) {
+      return;
+    }
+
+    if (isImported) {
+      context.report({
+        messageId: 'importedInvalidCssUsage',
+        node,
+      });
+    } else if (isFunctionParameter) {
+      context.report({
+        messageId: 'functionParameterInvalidCssUsage',
+        node,
+      });
+    } else {
+      context.report({
+        messageId: 'otherInvalidCssUsage',
+        node,
+      });
+    }
+  }
+};
+
 const handleMemberExpression = (
   node: TSESTree.MemberExpression,
   references: Reference[],
@@ -44,6 +85,41 @@ const handleMemberExpression = (
   }
 };
 
+function fixWrapper(node: CSSValue, context: Context) {
+  function* fix(fixer: TSESLint.RuleFixer) {
+    const compiledImports = findTSCompiledImportDeclarations(context);
+    const source = context.getSourceCode();
+
+    if (compiledImports.length > 0) {
+      // Import found, add the specifier to it
+      const [firstCompiledImport] = compiledImports;
+      const specifiersString = addImportToDeclaration(firstCompiledImport, ['css']);
+
+      yield fixer.replaceText(firstCompiledImport, specifiersString);
+    } else {
+      // Import not found, add a new one
+      yield fixer.insertTextAfter(
+        source.ast.body[0],
+        `\n${buildImportDeclaration('css', '@compiled/react')}`
+      );
+    }
+
+    if (node.type === 'ObjectExpression') {
+      const parent = node.parent;
+      if (parent && parent.type === 'TSAsExpression') {
+        yield fixer.replaceText(parent, `css(${source.getText(node)})`);
+      } else {
+        yield fixer.insertTextBefore(node, 'css(');
+        yield fixer.insertTextAfter(node, ')');
+      }
+    } else {
+      yield fixer.insertTextBefore(node, 'css');
+    }
+  }
+
+  return fix;
+}
+
 const findStyleNodes = (node: CSSValue, references: Reference[], context: Context): void => {
   if (node.type === 'ArrayExpression') {
     node.elements.forEach((arrayElement) => {
@@ -60,44 +136,7 @@ const findStyleNodes = (node: CSSValue, references: Reference[], context: Contex
     findStyleNodes(node.consequent, references, context);
     findStyleNodes(node.alternate, references, context);
   } else if (node.type === 'Identifier') {
-    // Resolve the variable for the reference
-    const reference = findNodeReference(references, node);
-    const definition = reference?.resolved?.defs.find(
-      (def): def is VariableDefinition => def.type === 'Variable'
-    );
-
-    // Traverse to the variable value
-    if (definition && definition.node.init) {
-      findStyleNodes(definition.node.init, references, context);
-    } else {
-      const isImported = reference?.resolved?.defs.find((def) => def.type === 'ImportBinding');
-      const isFunctionParameter = reference?.resolved?.defs.find((def) => def.type === 'Parameter');
-
-      const jsxElement = traverseUpToJSXOpeningElement(node);
-
-      // css property on DOM elements are always fine, e.g.
-      // <div css={...}> instead of <MyComponent css={...}>
-      if (jsxElement.name.type === 'JSXIdentifier' && isDOMElement(jsxElement.name.name)) {
-        return;
-      }
-
-      if (isImported) {
-        context.report({
-          messageId: 'importedInvalidCssUsage',
-          node,
-        });
-      } else if (isFunctionParameter) {
-        context.report({
-          messageId: 'functionParameterInvalidCssUsage',
-          node,
-        });
-      } else {
-        context.report({
-          messageId: 'otherInvalidCssUsage',
-          node,
-        });
-      }
-    }
+    handleIdentifier(node, references, context);
   } else if (node.type === 'MemberExpression') {
     handleMemberExpression(node, references, context);
   } else if (node.type === 'ObjectExpression' || node.type === 'TemplateLiteral') {
@@ -105,36 +144,7 @@ const findStyleNodes = (node: CSSValue, references: Reference[], context: Contex
     context.report({
       messageId: 'noCssFunction',
       node,
-      *fix(fixer: TSESLint.RuleFixer) {
-        const compiledImports = findTSCompiledImportDeclarations(context);
-        const source = context.getSourceCode();
-
-        if (compiledImports.length > 0) {
-          // Import found, add the specifier to it
-          const [firstCompiledImport] = compiledImports;
-          const specifiersString = addImportToDeclaration(firstCompiledImport, ['css']);
-
-          yield fixer.replaceText(firstCompiledImport, specifiersString);
-        } else {
-          // Import not found, add a new one
-          yield fixer.insertTextAfter(
-            source.ast.body[0],
-            `\n${buildImportDeclaration('css', '@compiled/react')}`
-          );
-        }
-
-        if (node.type === 'ObjectExpression') {
-          const parent = node.parent;
-          if (parent && parent.type === 'TSAsExpression') {
-            yield fixer.replaceText(parent, `css(${source.getText(node)})`);
-          } else {
-            yield fixer.insertTextBefore(node, 'css(');
-            yield fixer.insertTextAfter(node, ')');
-          }
-        } else {
-          yield fixer.insertTextBefore(node, 'css');
-        }
-      },
+      fix: fixWrapper(node, context),
     });
   } else if (node.type === 'TSAsExpression') {
     // TSAsExpression is anything in the form "X as Y", e.g.:
