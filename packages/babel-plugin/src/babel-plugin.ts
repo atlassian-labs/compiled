@@ -20,6 +20,7 @@ import {
   isCompiledKeyframesTaggedTemplateExpression,
   isCompiledStyledCallExpression,
   isCompiledStyledTaggedTemplateExpression,
+  isCompiledCSSMapCallExpression,
 } from './utils/is-compiled';
 import { normalizePropsUsage } from './utils/normalize-props-usage';
 
@@ -150,7 +151,7 @@ export default declare<State>((api) => {
             return;
           }
 
-          (['styled', 'ClassNames', 'css', 'keyframes'] as const).forEach((apiName) => {
+          (['styled', 'ClassNames', 'css', 'keyframes', 'cssMap'] as const).forEach((apiName) => {
             if (
               state.compiledImports &&
               t.isIdentifier(specifier.node?.imported) &&
@@ -185,7 +186,8 @@ export default declare<State>((api) => {
           isCompiledCSSTaggedTemplateExpression(path.node, state) ||
           isCompiledKeyframesTaggedTemplateExpression(path.node, state) ||
           isCompiledCSSCallExpression(path.node, state) ||
-          isCompiledKeyframesCallExpression(path.node, state);
+          isCompiledKeyframesCallExpression(path.node, state) ||
+          isCompiledCSSMapCallExpression(path.node, state);
 
         if (isCompiledUtil) {
           state.pathsToCleanup.push({ path, action: 'replace' });

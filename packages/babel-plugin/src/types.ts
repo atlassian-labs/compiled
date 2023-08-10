@@ -98,6 +98,7 @@ export interface State extends PluginPass {
     css?: string;
     keyframes?: string;
     styled?: string;
+    cssMap?: string;
   };
 
   importedCompiledImports?: {

@@ -5,6 +5,7 @@ import type { Metadata } from '../types';
 
 import { getPathOfNode } from './ast';
 import { createResultPair } from './create-result-pair';
+import { isCSSMap, evaluateCSSMap } from './css-map';
 import { isCompiledKeyframesCallExpression } from './is-compiled';
 import {
   traverseBinaryExpression,
@@ -137,7 +138,9 @@ export const evaluateExpression = (
   // there is something we could do better here.
   // --------------
 
-  if (t.isIdentifier(targetExpression)) {
+  if (isCSSMap(targetExpression, updatedMeta, evaluateExpression)) {
+    return evaluateCSSMap(targetExpression, updatedMeta, evaluateExpression);
+  } else if (t.isIdentifier(targetExpression)) {
     ({ value, meta: updatedMeta } = traverseIdentifier(
       targetExpression,
       updatedMeta,
