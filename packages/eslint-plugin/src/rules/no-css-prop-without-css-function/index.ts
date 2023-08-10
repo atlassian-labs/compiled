@@ -85,7 +85,7 @@ const handleMemberExpression = (
   }
 };
 
-function fixWrapper(node: CSSValue, context: Context) {
+const fixWrapper = (node: CSSValue, context: Context) => {
   function* fix(fixer: TSESLint.RuleFixer) {
     const compiledImports = findTSCompiledImportDeclarations(context);
     const source = context.getSourceCode();
@@ -118,7 +118,7 @@ function fixWrapper(node: CSSValue, context: Context) {
   }
 
   return fix;
-}
+};
 
 const findStyleNodes = (node: CSSValue, references: Reference[], context: Context): void => {
   if (node.type === 'ArrayExpression') {
