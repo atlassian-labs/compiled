@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.8.0
+
+### Minor Changes
+
+- 9cfda8ef: no-css-prop-without-css-function: Forbid imported styles and function parameters in `css` attribute
+
 ## 0.7.0
 
 ### Minor Changes
