@@ -44,7 +44,7 @@ describe('css map behaviour', () => {
       );
     });
 
-    it('should evulate css map when variant is statically defined', () => {
+    it('should evaluate css map when variant is statically defined', () => {
       const actual = transform(`
        ${styles}
         
