@@ -32,7 +32,7 @@ describe('css map behaviour', () => {
   const nestedErrorMessage = 'You cannot access a nested CSS Map';
 
   describe('valid syntax', () => {
-    it.only('should evulate css map when variant is a runtime variable', () => {
+    it('should evaluate css map when variant is a runtime variable', () => {
       const actual = transform(`
         ${styles}
 
