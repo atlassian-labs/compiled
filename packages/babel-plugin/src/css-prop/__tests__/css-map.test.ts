@@ -66,11 +66,8 @@ describe('css map behaviour', () => {
         ${styles}
 
         <div css={css([styles[variant], { color: 'blue' }])} />;
-      `,
-        { pretty: true }
+      `
       );
-
-      console.log(actual);
 
       expect(actual).toInclude(
         '<div className={ax([variant==="danger"&&"_syaz5scu _bfhk5scu",variant==="success"&&"_syazbf54 _bfhkbf54","_syaz13q2"])}/>'
