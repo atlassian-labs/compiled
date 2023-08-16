@@ -54,7 +54,7 @@ const findBindingIdentifier = (
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  * @param evaluateExpression {EvaluateExpression} Function that evaluates an expression
  */
-const getCSSmap = (
+const getCssMap = (
   expression: t.Expression,
   meta: Metadata,
   evaluateExpression: EvaluateExpression
@@ -125,7 +125,7 @@ export const isCSSMap = (
   meta: Metadata,
   evaluateExpression: EvaluateExpression
 ): boolean => {
-  return getCSSmap(expression, meta, evaluateExpression) !== undefined;
+  return getCssMap(expression, meta, evaluateExpression) !== undefined;
 };
 
 /**
@@ -155,7 +155,7 @@ export const evaluateCSSMap = (
   meta: Metadata,
   evaluateExpression: EvaluateExpression
 ): ReturnType<typeof createResultPair> => {
-  const result = getCSSmap(expression, meta, evaluateExpression);
+  const result = getCssMap(expression, meta, evaluateExpression);
 
   // It should never happen because `isCSSMap` should have been checked already.
   if (!result) throw buildCodeFrameError(createErrorMessage(), expression, meta.parentPath);
