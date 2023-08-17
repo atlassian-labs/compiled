@@ -1,3 +1,5 @@
+import assert from 'assert';
+
 import * as t from '@babel/types';
 
 import type { Metadata } from '../types';
@@ -7,11 +9,21 @@ import { createResultPair } from './create-result-pair';
 import { evaluateIdentifier } from './traverse-expression/traverse-member-expression/traverse-access-path/resolve-expression/identifier';
 import type { EvaluateExpression } from './types';
 
-const createErrorMessage = (message?: string): string => {
+// The messages are exported for testing.
+export enum ErrorMessages {
+  NUMBER_OF_ARGUMENT = 'You must provide cssMap with only one argument.',
+  ARGUMENT_TYPE = 'cssMap can receive object only.',
+  NESTED_VARIANT = 'You cannot access a nested CSS Map.',
+  VARIANT_CALL_EXPRESSION = 'You cannot use a function call to access a CSS Map.',
+  VARIANT_ACCESS = "You cannot access a CSS Map this way. Please use a string literal (e.g. styles['variantName']) or an identifier (e.g. styles[variantName]).",
+  STATIC_VARIANT_OBJECT = 'You must statically define variant object.',
+  STATIC_VARIANT_KEY = 'You must statically define variant keys.',
+}
+
+const createErrorMessage = (message: string): string => {
   return `
-${
-  message || 'Using a CSS Map in this manner is incorrect.'
-} To correctly implement a CSS Map, follow the syntax below:
+${message} 
+To correctly implement a CSS Map, follow the syntax below:
 
 \`\`\`
 import { css, cssMap } from '@compiled/react';
@@ -48,6 +60,38 @@ const findBindingIdentifier = (
 };
 
 /**
+ * Retrieves the key from a given expression or property from a given member expression.
+ *
+ * For example:
+ * Given a member expression `colors[variant]`, the function will return `variant` (as t.Identifier).
+ * Given a member expression `colors["variant"]`, the function will return `"variant"` (as t.StringLiteral).
+ * Given a member expression `colors.variant, the function will return `"variant"` (as t.StringLiteral).
+ * Given a member expression `colors.variant.nested, the function will return `undefined`.
+ * Given a object property `{ variant: 'something' }`, the function will return `"variant"` (as t.StringLiteral).
+ * Given a object property `{ "variant": 'something' }`, the function will return `"variant"` (as t.StringLiteral).
+ * Given a object property `{ [someDynamicVariable]: 'something' }`, the function will return `undefined`.
+ *
+ * @param {t.ObjectProperty | t.MemberExpression} The expression to be evaluated.
+ * @returns {t.Identifier | t.StringLiteral | undefined} The key or property from the expression.
+ */
+const getKeyOrProperty = (
+  value: t.ObjectProperty | t.MemberExpression
+): t.Identifier | t.StringLiteral | undefined => {
+  const keyOrProperty = t.isObjectProperty(value) ? value.key : value.property;
+
+  if (t.isStringLiteral(keyOrProperty)) {
+    return keyOrProperty;
+  }
+
+  if (t.isIdentifier(keyOrProperty)) {
+    if (t.isObjectProperty(value) && value.computed) return undefined;
+    return value.computed ? keyOrProperty : t.stringLiteral(keyOrProperty.name);
+  }
+
+  return undefined;
+};
+
+/**
  * Retrieves the CSS Map related information from a given expression.
  *
  * @param expression The expression to be evaluated.
@@ -61,9 +105,8 @@ const getCssMap = (
 ):
   | {
       value: t.ObjectExpression;
-      meta: Metadata;
       property: t.Identifier | t.StringLiteral;
-      computed: boolean;
+      meta: Metadata;
     }
   | undefined => {
   // Bail out early if cssMap callExpression doesn't exist in the file
@@ -87,31 +130,58 @@ const getCssMap = (
   if (
     t.isCallExpression(value) &&
     t.isIdentifier(value.callee) &&
-    value.callee.name === meta.state.compiledImports?.cssMap &&
-    value.arguments.length > 0 &&
-    t.isObjectExpression(value.arguments[0])
+    value.callee.name === meta.state.compiledImports?.cssMap
   ) {
-    // It's CSS Map! We now need to check if the use of the CSS Map is correct.
-    if (t.isCallExpression(expression.object)) {
-      throw buildCodeFrameError(createErrorMessage(), expression, updatedMeta.parentPath);
-    }
-
-    if (t.isMemberExpression(expression.object)) {
+    // It's CSS Map! We now need to check a few things to ensure CSS Map is correctly used.
+    // We need to ensure cssMap receives only one argument.
+    if (value.arguments.length !== 1) {
       throw buildCodeFrameError(
-        createErrorMessage('You cannot access a nested CSS Map.'),
-        expression,
+        createErrorMessage(ErrorMessages.NUMBER_OF_ARGUMENT),
+        value,
         updatedMeta.parentPath
       );
     }
 
-    if (!t.isIdentifier(expression.property) && !t.isStringLiteral(expression.property)) {
-      throw buildCodeFrameError(createErrorMessage(), expression, updatedMeta.parentPath);
+    // We need to ensure the argument is an objectExpression.
+    if (!t.isObjectExpression(value.arguments[0])) {
+      throw buildCodeFrameError(
+        createErrorMessage(ErrorMessages.ARGUMENT_TYPE),
+        value,
+        updatedMeta.parentPath
+      );
+    }
+
+    // We need to ensure callExpression isn't used to access a variant.
+    if (t.isCallExpression(expression.object)) {
+      throw buildCodeFrameError(
+        createErrorMessage(ErrorMessages.VARIANT_CALL_EXPRESSION),
+        expression.object,
+        meta.parentPath
+      );
+    }
+
+    // We disallows a nested CSS Map. e.g. { danger: { veryDanger: { ... } } }
+    if (t.isMemberExpression(expression.object)) {
+      throw buildCodeFrameError(
+        createErrorMessage(ErrorMessages.NESTED_VARIANT),
+        expression.object,
+        meta.parentPath
+      );
+    }
+
+    // We need to ensure the cssMap is accessed using a string literal or an identifier.
+    const property = getKeyOrProperty(expression);
+    if (!property) {
+      throw buildCodeFrameError(
+        createErrorMessage(ErrorMessages.VARIANT_ACCESS),
+        expression.property,
+        meta.parentPath
+      );
     }
 
     return {
       value: value.arguments[0],
-      property: expression.property,
-      computed: expression.computed,
+      property,
       meta: updatedMeta,
     };
   }
@@ -158,31 +228,32 @@ export const evaluateCSSMap = (
   const result = getCssMap(expression, meta, evaluateExpression);
 
   // It should never happen because `isCSSMap` should have been checked already.
-  if (!result) throw buildCodeFrameError(createErrorMessage(), expression, meta.parentPath);
+  assert(result !== undefined);
 
-  const { value: objectExpression, property: objectProperty, computed, meta: updatedMeta } = result;
+  const { value: cssMapObjectExpression, property: selectedVariant, meta: updatedMeta } = result;
 
   return createResultPair(
     t.arrayExpression(
-      objectExpression.properties.map((property) => {
-        if (
-          !t.isObjectProperty(property) ||
-          !t.isIdentifier(property.key) ||
-          !t.isExpression(property.value)
-        )
-          throw buildCodeFrameError(createErrorMessage(), expression, updatedMeta.parentPath);
+      cssMapObjectExpression.properties.map((property) => {
+        if (!t.isObjectProperty(property) || !t.isExpression(property.value))
+          throw buildCodeFrameError(
+            createErrorMessage(ErrorMessages.STATIC_VARIANT_OBJECT),
+            cssMapObjectExpression,
+            updatedMeta.parentPath
+          );
+
+        const variant = getKeyOrProperty(property);
+
+        if (!variant)
+          throw buildCodeFrameError(
+            createErrorMessage(ErrorMessages.STATIC_VARIANT_KEY),
+            cssMapObjectExpression,
+            updatedMeta.parentPath
+          );
 
         return t.logicalExpression(
           '&&',
-          t.binaryExpression(
-            '===',
-            t.isStringLiteral(objectProperty)
-              ? objectProperty
-              : computed
-              ? objectProperty
-              : t.stringLiteral(objectProperty.name),
-            t.stringLiteral(property.key.name)
-          ),
+          t.binaryExpression('===', selectedVariant, variant),
           property.value
         );
       })

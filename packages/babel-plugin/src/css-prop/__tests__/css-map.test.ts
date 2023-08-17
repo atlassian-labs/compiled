@@ -1,5 +1,6 @@
 import type { TransformOptions } from '../../test-utils';
 import { transform as transformCode } from '../../test-utils';
+import { ErrorMessages } from '../../utils/css-map';
 
 describe('css map behaviour', () => {
   beforeAll(() => {
@@ -27,9 +28,6 @@ describe('css map behaviour', () => {
       }
     });
   `;
-
-  const defaultErrorMessage = 'Using a CSS Map in this manner is incorrect.';
-  const nestedErrorMessage = 'You cannot access a nested CSS Map';
 
   describe('valid syntax', () => {
     it('should evaluate css map when variant is a runtime variable', () => {
@@ -83,7 +81,7 @@ describe('css map behaviour', () => {
 
           <div css={css(styles[\`danger\`])} />;
         `);
-      }).toThrow(defaultErrorMessage);
+      }).toThrow(ErrorMessages.VARIANT_ACCESS);
     });
 
     it('does not support Expression as object property', () => {
@@ -93,7 +91,7 @@ describe('css map behaviour', () => {
 
           <div css={css(styles['dang' + 'er'])} />;
         `);
-      }).toThrow(defaultErrorMessage);
+      }).toThrow(ErrorMessages.VARIANT_ACCESS);
     });
 
     it('does not support BinaryExpression as object property', () => {
@@ -103,7 +101,7 @@ describe('css map behaviour', () => {
 
           <div css={css(styles['dang' + 'er'])} />;
         `);
-      }).toThrow(defaultErrorMessage);
+      }).toThrow(ErrorMessages.VARIANT_ACCESS);
     });
 
     it('does not support MemberExpression as object property', () => {
@@ -113,7 +111,7 @@ describe('css map behaviour', () => {
 
           <div css={css(styles[props.variant])} />;
         `);
-      }).toThrow(defaultErrorMessage);
+      }).toThrow(ErrorMessages.VARIANT_ACCESS);
     });
 
     it('does not support CallExpression as object property', () => {
@@ -123,7 +121,7 @@ describe('css map behaviour', () => {
 
           <div css={css(styles()[variant])} />;
         `);
-      }).toThrow(defaultErrorMessage);
+      }).toThrow(ErrorMessages.VARIANT_CALL_EXPRESSION);
     });
 
     it('does not support nesting', () => {
@@ -133,7 +131,71 @@ describe('css map behaviour', () => {
 
           <div css={css(styles.danger.veryDanger)} />;
         `);
-      }).toThrow(nestedErrorMessage);
+      }).toThrow(ErrorMessages.NESTED_VARIANT);
+    });
+
+    it('should error out if cssMap does not receive any argument', () => {
+      expect(() => {
+        transform(`
+          import { css, cssMap } from '@compiled/react';
+
+          const styles = cssMap();
+
+          <div css={css(styles.danger)} />;
+        `);
+      }).toThrow(ErrorMessages.NUMBER_OF_ARGUMENT);
+    });
+
+    it('should error out if cssMap does not receive more than one argument', () => {
+      expect(() => {
+        transform(`
+          import { css, cssMap } from '@compiled/react';
+
+          const styles = cssMap({}, {});
+
+          <div css={css(styles.danger)} />;
+        `);
+      }).toThrow(ErrorMessages.NUMBER_OF_ARGUMENT);
+    });
+
+    it('should error out if cssMap does not receive an object', () => {
+      expect(() => {
+        transform(`
+          import { css, cssMap } from '@compiled/react';
+
+          const styles = cssMap('color: red');
+
+          <div css={css(styles.danger)} />;
+        `);
+      }).toThrow(ErrorMessages.ARGUMENT_TYPE);
+    });
+
+    it('should error out if spread element is used', () => {
+      expect(() => {
+        transform(`
+          import { css, cssMap } from '@compiled/react';
+
+          const styles = cssMap({
+            ...base
+          });
+
+          <div css={css(styles.danger)} />;
+        `);
+      }).toThrow(ErrorMessages.STATIC_VARIANT_OBJECT);
+    });
+
+    it('should error out if css map object key is dynamic', () => {
+      expect(() => {
+        transform(`
+          import { css, cssMap } from '@compiled/react';
+
+          const styles = cssMap({
+            [variantName]: { color: 'red' }
+          });
+
+          <div css={css(styles.danger)} />;
+        `);
+      }).toThrow(ErrorMessages.STATIC_VARIANT_KEY);
     });
   });
 });
