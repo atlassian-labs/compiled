@@ -84,17 +84,15 @@ describe('css map behaviour', () => {
       }).toThrow(ErrorMessages.VARIANT_ACCESS);
     });
 
-    it('does not support Expression as object property', () => {
+    it('does not support BinaryExpression as object property', () => {
       expect(() => {
         transform(`
           ${styles}
 
-          <div css={css(styles['dang' + 'er'])} />;
+          <div css={css(styles[isDanger?'danger':'success'])} />;
         `);
       }).toThrow(ErrorMessages.VARIANT_ACCESS);
-    });
 
-    it('does not support BinaryExpression as object property', () => {
       expect(() => {
         transform(`
           ${styles}
@@ -146,7 +144,7 @@ describe('css map behaviour', () => {
       }).toThrow(ErrorMessages.NUMBER_OF_ARGUMENT);
     });
 
-    it('should error out if cssMap does not receive more than one argument', () => {
+    it('should error out if cssMap receives more than one argument', () => {
       expect(() => {
         transform(`
           import { css, cssMap } from '@compiled/react';
