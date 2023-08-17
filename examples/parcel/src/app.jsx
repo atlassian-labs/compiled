@@ -9,6 +9,7 @@ import '@compiled/react';
 
 import { primary } from './constants';
 import Annotated from './ui/annotated';
+import CSSMap from './ui/css-map';
 import {
   CustomFileExtensionStyled,
   customFileExtensionCss,
@@ -29,5 +30,6 @@ export const App = () => (
     <React.Suspense fallback={<div>Loading...</div>}>
       <AsyncComponent />
     </React.Suspense>
+    <CSSMap variant="danger">CSS Map</CSSMap>
   </>
 );
