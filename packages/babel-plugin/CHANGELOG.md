@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.21.0
+
+### Minor Changes
+
+- 487bbd46: Support default parameters in arrow functions, and explicitly throw error when using unsupported syntax in arrow function parameters
+
 ## 0.20.0
 
 ### Minor Changes
