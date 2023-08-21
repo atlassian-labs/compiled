@@ -12,12 +12,12 @@ import type { EvaluateExpression } from './types';
 // The messages are exported for testing.
 export enum ErrorMessages {
   NUMBER_OF_ARGUMENT = 'You must provide cssMap with only one argument.',
-  ARGUMENT_TYPE = 'cssMap can receive object only.',
+  ARGUMENT_TYPE = 'cssMap can only receive an object.',
   NESTED_VARIANT = 'You cannot access a nested CSS Map.',
   VARIANT_CALL_EXPRESSION = 'You cannot use a function call to access a CSS Map.',
   VARIANT_ACCESS = "You cannot access a CSS Map this way. Please use a string literal (e.g. styles['variantName']) or an identifier (e.g. styles[variantName]).",
-  STATIC_VARIANT_OBJECT = 'You must statically define variant object.',
-  STATIC_VARIANT_KEY = 'You must statically define variant keys.',
+  STATIC_VARIANT_OBJECT = 'The variant object must be statically defined.',
+  STATIC_VARIANT_KEY = 'The variant key must be statically defined.',
 }
 
 const createErrorMessage = (message: string): string => {
