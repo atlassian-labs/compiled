@@ -40,6 +40,18 @@ const handleIdentifier = (node: TSESTree.Identifier, references: Reference[], co
     const isImported = reference?.resolved?.defs.find((def) => def.type === 'ImportBinding');
     const isFunctionParameter = reference?.resolved?.defs.find((def) => def.type === 'Parameter');
 
+    // We assume that anything that is not on the right side of an AND logical expression
+    // (e.g. the A in css={A && B}) is only used as a boolean (or de-facto booleans) for
+    // short-circuiting, and do not form part of the final styling for our component.
+    const isNotRightSideOfAndExpression =
+      node.parent?.type === 'LogicalExpression' &&
+      node.parent.operator === '&&' &&
+      node !== node.parent.right;
+
+    if (isNotRightSideOfAndExpression) {
+      return;
+    }
+
     const jsxElement = traverseUpToJSXOpeningElement(node);
 
     // css property on DOM elements are always fine, e.g.
