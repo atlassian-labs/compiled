@@ -40,18 +40,6 @@ const handleIdentifier = (node: TSESTree.Identifier, references: Reference[], co
     const isImported = reference?.resolved?.defs.find((def) => def.type === 'ImportBinding');
     const isFunctionParameter = reference?.resolved?.defs.find((def) => def.type === 'Parameter');
 
-    // We assume that anything that is on the left side of an AND logical expression
-    // (e.g. the A in css={A && B}) is only used as a boolean (or de-facto booleans) for
-    // short-circuiting, and do not form part of the final styling for our component.
-    const isLeftSideOfAndExpression =
-      node.parent?.type === 'LogicalExpression' &&
-      node.parent.operator === '&&' &&
-      node === node.parent.left;
-
-    if (isLeftSideOfAndExpression) {
-      return;
-    }
-
     const jsxElement = traverseUpToJSXOpeningElement(node);
 
     // css property on DOM elements are always fine, e.g.
@@ -140,8 +128,6 @@ const findStyleNodes = (node: CSSValue, references: Reference[], context: Contex
       }
     });
   } else if (node.type === 'LogicalExpression') {
-    // Traverse both values in the logical expression
-    findStyleNodes(node.left, references, context);
     findStyleNodes(node.right, references, context);
   } else if (node.type === 'ConditionalExpression') {
     // Traverse both return values in the conditional expression

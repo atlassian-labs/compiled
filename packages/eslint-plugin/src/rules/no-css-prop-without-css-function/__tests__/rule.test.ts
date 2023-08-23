@@ -53,8 +53,7 @@ tester.run(
 
         <div css={styles} />;
       `,
-      // an AND expression containing a boolean (or something that we can treat
-      // as truthy or falsy) and some styles
+      // Logical expressions in the css attribute
       outdent`
       import React from 'react';
       import { css } from '@compiled/react';
@@ -71,6 +70,51 @@ tester.run(
       const styles = css({ color: 'yellow' });
       const otherStyles = css({ background: 'blue' });
       const Component = ({ myBoolean }) => <MyComponent css={[myBoolean && styles, otherStyles]} />;
+      `,
+      outdent`
+      import React from 'react';
+      import { css } from '@compiled/react';
+      import { MyComponent } from './external-file';
+
+      const styles = css({ color: 'yellow' });
+      const otherStyles = css({ background: 'blue' });
+      const Component = ({ myBoolean }) => <MyComponent css={[myBoolean || styles, otherStyles]} />;
+      `,
+      outdent`
+      import React from 'react';
+      import { css } from '@compiled/react';
+      import { MyComponent } from './external-file';
+
+      const styles = css({ color: 'yellow' });
+      const otherStyles = css({ background: 'blue' });
+      const Component = ({ myBoolean }) => <MyComponent css={[myBoolean ?? styles, otherStyles]} />;
+      `,
+      outdent`
+      import React from 'react';
+      import { css } from '@compiled/react';
+      import { MyComponent } from './external-file';
+
+      const styles = css({ color: 'yellow' });
+      const otherStyles = css({ background: 'blue' });
+      const Component = (props) => <MyComponent css={[props.myBoolean && styles, otherStyles]} />;
+      `,
+      outdent`
+      import React from 'react';
+      import { css } from '@compiled/react';
+      import { MyComponent } from './external-file';
+
+      const styles = css({ color: 'yellow' });
+      const otherStyles = css({ background: 'blue' });
+      const Component = ({ myBoolean }) => <MyComponent css={[myBoolean() && styles, otherStyles]} />;
+      `,
+      outdent`
+      import React from 'react';
+      import { css } from '@compiled/react';
+      import { MyComponent } from './external-file';
+
+      const styles = css({ color: 'yellow' });
+      const otherStyles = css({ background: 'blue' });
+      const Component = (props) => <MyComponent css={[props.myBoolean() && styles, otherStyles]} />;
       `,
     ],
 
