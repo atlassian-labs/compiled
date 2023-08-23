@@ -1,0 +1,5 @@
+---
+'@compiled/eslint-plugin': minor
+---
+
+Allow function parameters and imported values for variables on left side of an `&&` (AND) expression
