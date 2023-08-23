@@ -8,6 +8,7 @@ import * as t from '@babel/types';
 import { unique, preserveLeadingComments } from '@compiled/utils';
 
 import { visitClassNamesPath } from './class-names';
+import { visitCssMapPath } from './css-map';
 import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
 import type { State } from './types';
@@ -40,6 +41,7 @@ export default declare<State>((api) => {
     inherits: jsxSyntax,
     pre() {
       this.sheets = {};
+      this.cssMap = {};
       let cache: Cache;
 
       if (this.opts.cache === true) {
@@ -172,6 +174,11 @@ export default declare<State>((api) => {
         path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
         state: State
       ) {
+        if (isCompiledCSSMapCallExpression(path.node, state)) {
+          visitCssMapPath(path, { context: 'root', state, parentPath: path });
+          return;
+        }
+
         const hasStyles =
           isCompiledCSSTaggedTemplateExpression(path.node, state) ||
           isCompiledStyledTaggedTemplateExpression(path.node, state) ||
@@ -186,8 +193,7 @@ export default declare<State>((api) => {
           isCompiledCSSTaggedTemplateExpression(path.node, state) ||
           isCompiledKeyframesTaggedTemplateExpression(path.node, state) ||
           isCompiledCSSCallExpression(path.node, state) ||
-          isCompiledKeyframesCallExpression(path.node, state) ||
-          isCompiledCSSMapCallExpression(path.node, state);
+          isCompiledKeyframesCallExpression(path.node, state);
 
         if (isCompiledUtil) {
           state.pathsToCleanup.push({ path, action: 'replace' });

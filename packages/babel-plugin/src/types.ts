@@ -142,6 +142,11 @@ export interface State extends PluginPass {
    * Files that have been included in this pass.
    */
   includedFiles: string[];
+
+  /**
+   * Holds a record of currently evulated CSS Map and its sheets in the module.
+   */
+  cssMap: Record<string, string[]>;
 }
 
 interface CommonMetadata {

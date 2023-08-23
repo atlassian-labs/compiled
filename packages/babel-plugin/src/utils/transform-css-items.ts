@@ -74,6 +74,12 @@ const transformCssItem = (
         ),
       };
 
+    case 'map':
+      return {
+        sheets: meta.state.cssMap[item.name],
+        classExpression: item.expression,
+      };
+
     default:
       const css = transformCss(getItemCss(item), meta.state.opts);
       const className = compressClassNamesForRuntime(

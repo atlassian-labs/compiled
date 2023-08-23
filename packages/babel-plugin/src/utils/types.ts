@@ -27,7 +27,20 @@ export interface SheetCssItem {
   css: string;
 }
 
-export type CssItem = UnconditionalCssItem | ConditionalCssItem | LogicalCssItem | SheetCssItem;
+export interface CssMapItem {
+  name: string;
+  type: 'map';
+  expression: t.Expression;
+  // We can remove this once we local transform other CssItem types
+  css: string;
+}
+
+export type CssItem =
+  | UnconditionalCssItem
+  | ConditionalCssItem
+  | LogicalCssItem
+  | SheetCssItem
+  | CssMapItem;
 
 export type Variable = {
   name: string;

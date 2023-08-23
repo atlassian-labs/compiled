@@ -28,8 +28,32 @@ import type {
   CssItem,
   LogicalCssItem,
   SheetCssItem,
+  CssMapItem,
   PartialBindingWithMeta,
 } from './types';
+
+/**
+ * Retrieves the leftmost identity from a given expression.
+ *
+ * For example:
+ * Given a member expression "colors.primary.500", the function will return "colors".
+ *
+ * @param expression The expression to be evaluated.
+ * @returns {string} The leftmost identity in the expression.
+ */
+const findBindingIdentifier = (
+  expression: t.Expression | t.V8IntrinsicIdentifier
+): t.Identifier | undefined => {
+  if (t.isIdentifier(expression)) {
+    return expression;
+  } else if (t.isCallExpression(expression)) {
+    return findBindingIdentifier(expression.callee);
+  } else if (t.isMemberExpression(expression)) {
+    return findBindingIdentifier(expression.object);
+  }
+
+  return undefined;
+};
 
 /**
  * Will normalize the value of a `content` CSS property to ensure it has quotations around it.
@@ -804,6 +828,13 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
   }
 
   if (t.isMemberExpression(node)) {
+    const bindingIdentifier = findBindingIdentifier(node);
+    if (bindingIdentifier && meta.state.cssMap[bindingIdentifier.name]) {
+      return {
+        css: [{ type: 'map', expression: node, name: bindingIdentifier.name, css: '' }],
+        variables: [],
+      };
+    }
     const { value, meta: updatedMeta } = evaluateExpression(node, meta);
     return buildCss(value, updatedMeta);
   }
@@ -875,6 +906,13 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
           ...item,
           expression: t.logicalExpression(item.operator, expression, item.expression),
         };
+      }
+
+      if (item.type === 'map') {
+        return {
+          ...item,
+          expression: t.logicalExpression(node.operator, expression, item.expression),
+        } as CssMapItem;
       }
 
       const logicalItem: LogicalCssItem = {
