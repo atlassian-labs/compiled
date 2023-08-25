@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.8.1
+
+### Patch Changes
+
+- 40904082: Allow function parameters and imported values for left side of any logical expression in `css` attribute (A && B, A || B, A ?? B)
+
 ## 0.8.0
 
 ### Minor Changes
