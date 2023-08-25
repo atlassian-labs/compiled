@@ -128,8 +128,6 @@ const findStyleNodes = (node: CSSValue, references: Reference[], context: Contex
       }
     });
   } else if (node.type === 'LogicalExpression') {
-    // Traverse both values in the logical expression
-    findStyleNodes(node.left, references, context);
     findStyleNodes(node.right, references, context);
   } else if (node.type === 'ConditionalExpression') {
     // Traverse both return values in the conditional expression
