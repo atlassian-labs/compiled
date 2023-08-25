@@ -53,6 +53,69 @@ tester.run(
 
         <div css={styles} />;
       `,
+      // Logical expressions in the css attribute
+      outdent`
+      import React from 'react';
+      import { css } from '@compiled/react';
+      import { MyComponent } from './external-file';
+
+      const styles = css({ color: 'yellow' });
+      const Component = ({ myBoolean }) => <MyComponent css={myBoolean && styles} />;
+      `,
+      outdent`
+      import React from 'react';
+      import { css } from '@compiled/react';
+      import { MyComponent } from './external-file';
+
+      const styles = css({ color: 'yellow' });
+      const otherStyles = css({ background: 'blue' });
+      const Component = ({ myBoolean }) => <MyComponent css={[myBoolean && styles, otherStyles]} />;
+      `,
+      outdent`
+      import React from 'react';
+      import { css } from '@compiled/react';
+      import { MyComponent } from './external-file';
+
+      const styles = css({ color: 'yellow' });
+      const otherStyles = css({ background: 'blue' });
+      const Component = ({ myBoolean }) => <MyComponent css={[myBoolean || styles, otherStyles]} />;
+      `,
+      outdent`
+      import React from 'react';
+      import { css } from '@compiled/react';
+      import { MyComponent } from './external-file';
+
+      const styles = css({ color: 'yellow' });
+      const otherStyles = css({ background: 'blue' });
+      const Component = ({ myBoolean }) => <MyComponent css={[myBoolean ?? styles, otherStyles]} />;
+      `,
+      outdent`
+      import React from 'react';
+      import { css } from '@compiled/react';
+      import { MyComponent } from './external-file';
+
+      const styles = css({ color: 'yellow' });
+      const otherStyles = css({ background: 'blue' });
+      const Component = (props) => <MyComponent css={[props.myBoolean && styles, otherStyles]} />;
+      `,
+      outdent`
+      import React from 'react';
+      import { css } from '@compiled/react';
+      import { MyComponent } from './external-file';
+
+      const styles = css({ color: 'yellow' });
+      const otherStyles = css({ background: 'blue' });
+      const Component = ({ myBoolean }) => <MyComponent css={[myBoolean() && styles, otherStyles]} />;
+      `,
+      outdent`
+      import React from 'react';
+      import { css } from '@compiled/react';
+      import { MyComponent } from './external-file';
+
+      const styles = css({ color: 'yellow' });
+      const otherStyles = css({ background: 'blue' });
+      const Component = (props) => <MyComponent css={[props.myBoolean() && styles, otherStyles]} />;
+      `,
     ],
 
     invalid: [
@@ -277,6 +340,22 @@ tester.run(
           const CoolComponent = ({ styles = { color: blue } }) => {
             return <MyComponent css={styles} />;
           }
+        `,
+      },
+      {
+        errors: [
+          {
+            messageId: 'functionParameterInvalidCssUsage',
+          },
+        ],
+        code: outdent`
+        import React from 'react';
+        import { css } from '@compiled/react';
+
+        import { MyComponent } from './external-file';
+
+        const myBoolean = true;
+        const Component = ({ styles }) => <MyComponent css={myBoolean && styles} />;
         `,
       },
       {
