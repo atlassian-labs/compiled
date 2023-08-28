@@ -18,8 +18,8 @@ describe('css map behaviour', () => {
 
     const styles = cssMap({
       danger: {
-          color: 'red',
-          backgroundColor: 'red'
+        color: 'red',
+        backgroundColor: 'red'
       },
       success: {
         color: 'green',
@@ -32,7 +32,7 @@ describe('css map behaviour', () => {
     const actual = transform(
       `
         ${styles}
-        <div css={css([
+        <div css={[
           foo && styles['danger'], 
           props.foo && styles['danger'], 
           styles.success,
@@ -43,7 +43,7 @@ describe('css map behaviour', () => {
           styles['dang' + 'er'],
           styles[props.variant],
           { color: 'blue' }
-        ])} />;
+        ]} />;
       `,
       { pretty: true }
     );
