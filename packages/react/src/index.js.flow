@@ -10,3 +10,4 @@ declare export { keyframes } from './keyframes';
 declare export { styled } from './styled';
 declare export { ClassNames } from './class-names';
 declare export { default as css } from './css';
+declare export { default as cssMap } from './css-map';
