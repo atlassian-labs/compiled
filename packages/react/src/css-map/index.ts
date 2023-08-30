@@ -18,8 +18,10 @@ import { createSetupError } from '../utils/error';
  * <Component borderStyle="solid" />
  * ```
  */
+type returnType<T extends string, P> = Record<T, CSSProps<P>>;
+
 export default function cssMap<T extends string, TProps = unknown>(
   _styles: Record<T, CssObject<TProps> | CssObject<TProps>[]>
-): Readonly<Record<T, CSSProps<TProps>>> {
+): Readonly<returnType<T, TProps>> {
   throw createSetupError();
 }

@@ -58,7 +58,8 @@
   "resolutions": {
     "css-what": ">=6.1.0",
     "nth-check": ">=2.1.1",
-    "semver": "^7.5.4"
+    "semver": "^7.5.4",
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.21.5",

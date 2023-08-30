@@ -5,7 +5,7 @@
  * @flow
  */
 import type { BasicTemplateInterpolations, CSSProps } from '../types';
-export type KeyframeSteps = string | { [key: string]: CSSProps<void>, ... };
+export type KeyframeSteps = string | { [key: string]: CSSProps<void> };
 /**
  * ## Keyframes
  *
