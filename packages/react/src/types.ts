@@ -21,11 +21,11 @@ export type CssType<TProps> =
 /**
  * These are all the CSS props that will exist.
  */
-export type CSSProps<TProps> = CSS.Properties<CssFunction<TProps>>;
+export type CSSProps<TProps> = Readonly<CSS.Properties<CssFunction<TProps>>>;
 
-export type CssObject<TProps> = {
+export type CssObject<TProps> = Readonly<{
   [key: string]: CssFunction<TProps>;
-};
+}>;
 
 // CSS inside of a CSS expression
 export type CssFunction<TProps = unknown> =

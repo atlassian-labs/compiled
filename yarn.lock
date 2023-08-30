@@ -8965,10 +8965,10 @@ flow-parser@0.*:
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.149.0.tgz#6e5749ad832ba211968429accdb6a3858706e4f8"
   integrity sha512-ruUVkZuM9oFQjhSsLO/OJYRYpGnuXJpTnIZmgzna6DyLFb3CLpeO27oJbWyeXaa830hmKf0JRzpcdFsFS8lmpg==
 
-flowgen@^1.20.1:
-  version "1.20.1"
-  resolved "https://registry.yarnpkg.com/flowgen/-/flowgen-1.20.1.tgz#336871d59a36980fbe2c3de553bd558f06a46e24"
-  integrity sha512-Wus3KAhsOF7CiZGkBKZawf0AJXe06Wot6UGQt7h9QS6MBtBkFgG30wTAgpy1byA3FKYb059vO341XtN8LUhenQ==
+flowgen@^1.21.0:
+  version "1.21.0"
+  resolved "https://registry.yarnpkg.com/flowgen/-/flowgen-1.21.0.tgz#f7ecb693892c4bd069492dbf77db561bbb451aa9"
+  integrity sha512-pFNFFyMLRmW6njhOIm5TrbGUDTv64aujmys2KrkRE2NYD8sXwJUyicQRwU5SPRBRJnFSD/FNlnHo2NnHI5eJSw==
   dependencies:
     "@babel/code-frame" "^7.16.7"
     "@babel/highlight" "^7.16.7"
@@ -17586,10 +17586,20 @@ typescript-compiler@^1.4.1-2:
   resolved "https://registry.yarnpkg.com/typescript-compiler/-/typescript-compiler-1.4.1-2.tgz#ba4f7db22d91534a1929d90009dce161eb72fd3f"
   integrity sha1-uk99si2RU0oZKdkACdzhYety/T8=
 
-typescript@^3.7.0, typescript@^4.9.5, typescript@~4.4.4:
+typescript@^3.7.0:
+  version "3.9.10"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.10.tgz#70f3910ac7a51ed6bef79da7800690b19bf778b8"
+  integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
+
+typescript@^4.9.5:
   version "4.9.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
   integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
+
+typescript@~4.4.4:
+  version "4.4.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.4.tgz#2cd01a1a1f160704d3101fd5a58ff0f9fcb8030c"
+  integrity sha512-DqGhF5IKoBl8WNf8C1gu8q0xZSInh9j1kJJMqT3a94w1JzVaBU4EXOSMrz9yDqMT0xt3selp83fuFMQ0uzv6qA==
 
 uglify-js@^3.1.4:
   version "3.14.5"
