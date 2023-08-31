@@ -46,6 +46,9 @@ generate() {
     # Use readonly array to handle flow strict mode
     sed -i.bak -E 's/css: CssObject<TProps> \| CssObject<TProps>\[\],/css: CssObject<TProps> \| \$ReadOnlyArray<CssObject<TProps>>,/g' "$file" && rm "$file.bak"
 
+    # Replace Readonly with $ReadOnly
+    sed -i.bak -E 's/Readonly</$ReadOnly</g' "$file" && rm "$file.bak"
+
     # Rename JSX.IntrinsicElements to existing flow type
     sed -i.bak -E 's/JSX.IntrinsicElements/$JSXIntrinsics/g' "$file" && rm "$file.bak"
 
