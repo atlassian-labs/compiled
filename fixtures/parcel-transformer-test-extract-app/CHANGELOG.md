@@ -1,5 +1,13 @@
 # @compiled/parcel-transformer-test-extract-app
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [4a2174c5]
+- Updated dependencies [c5377cdb]
+  - @compiled/react@0.14.0
+
 ## 0.1.1
 
 ### Patch Changes

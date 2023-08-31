@@ -1,5 +1,15 @@
 # @compiled/react
 
+## 0.14.0
+
+### Minor Changes
+
+- 4a2174c5: Implement the `cssMap` API to enable library users to dynamically choose a varied set of CSS rules.
+
+### Patch Changes
+
+- c5377cdb: Ensure that the return types of `css` and `cssMap` are readonly.
+
 ## 0.13.1
 
 ### Patch Changes
