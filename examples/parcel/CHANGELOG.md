@@ -1,5 +1,17 @@
 # @compiled/parcel-app
 
+## 1.3.0
+
+### Minor Changes
+
+- 4a2174c5: Implement the `cssMap` API to enable library users to dynamically choose a varied set of CSS rules.
+
+### Patch Changes
+
+- Updated dependencies [4a2174c5]
+- Updated dependencies [c5377cdb]
+  - @compiled/react@0.14.0
+
 ## 1.2.0
 
 ### Minor Changes
