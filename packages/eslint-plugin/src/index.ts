@@ -5,6 +5,7 @@ import { noCssTaggedTemplateExpressionRule } from './rules/no-css-tagged-templat
 import { noEmotionCssRule } from './rules/no-emotion-css';
 import { noExportedCssRule } from './rules/no-exported-css';
 import { noExportedKeyframesRule } from './rules/no-exported-keyframes';
+import { noInvalidCssMapRule } from './rules/no-invalid-css-map';
 import { noKeyframesTaggedTemplateExpressionRule } from './rules/no-keyframes-tagged-template-expression';
 import { noStyledTaggedTemplateExpressionRule } from './rules/no-styled-tagged-template-expression';
 
@@ -17,6 +18,7 @@ export const rules = {
   'no-keyframes-tagged-template-expression': noKeyframesTaggedTemplateExpressionRule,
   'no-styled-tagged-template-expression': noStyledTaggedTemplateExpressionRule,
   'no-css-prop-without-css-function': noCssPropWithoutCssFunctionRule,
+  'no-invalid-css-map': noInvalidCssMapRule,
 };
 
 export const configs = {

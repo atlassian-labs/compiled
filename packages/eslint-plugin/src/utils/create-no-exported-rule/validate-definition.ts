@@ -13,7 +13,7 @@ type Stack = {
 };
 
 const getStack = (context: RuleContext, node: Node) => {
-  const { scopeManager } = context.getSourceCode();
+  const { scopeManager } = context.sourceCode;
   const stack: Omit<Stack, 'scope'> = {
     nodes: [],
     root: node,
