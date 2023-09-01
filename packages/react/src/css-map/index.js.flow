@@ -4,7 +4,37 @@
  * Flowgen v1.21.0
  * @flow
  */
-import type { CSSProps, CssObject } from '../types';
+import * as CSS from 'csstype';
+/**
+ * These are all the CSS props that will exist.
+ * Only 'string' and 'number' are valid CSS values.
+ * @example ```
+ * const style: CssProps = {
+ *  color: 'red',
+ *  margin: 10,
+ * };
+ * ```
+ */
+declare type CssProps = $ReadOnly<CSS.Properties<string, number>>;
+/**
+ * Recursively typed CSS object because nested objects are allowed.
+ * @example ```
+ * const style: CssObject = {
+ *  "@media screen and (min-width: 480px)": {
+ *    ":hover": {
+ *      color: 'red'
+ *   }
+ *  }
+ * }
+ * ```
+ */
+declare type CssObject = $ReadOnly<
+  | {
+      [key: string]: CssObject,
+    }
+  | CssProps
+>;
+declare type returnType<T: string> = { [key: T]: CssProps };
 /**
  * ## cssMap
  *
@@ -20,7 +50,6 @@ import type { CSSProps, CssObject } from '../types';
  * <Component borderStyle="solid" />
  * ```
  */
-declare type returnType<T: string, P> = { [key: T]: CSSProps<P> };
-declare export default function cssMap<T: string, TProps>(_styles: {
-  [key: T]: CssObject<TProps>,
-}): $ReadOnly<returnType<T, TProps>>;
+declare export default function cssMap<T: string>(_styles: { [key: T]: CssObject }): $ReadOnly<
+  returnType<T>
+>;
