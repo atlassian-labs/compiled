@@ -1,5 +1,43 @@
-import type { CSSProps, CssObject } from '../types';
+import type * as CSS from 'csstype';
+
 import { createSetupError } from '../utils/error';
+
+/**
+ * These are all the CSS props that will exist.
+ * Only 'string' and 'number' are valid CSS values.
+ *
+ * @example
+ * ```
+ * const style: CssProps = {
+ *  color: 'red',
+ *  margin: 10,
+ * };
+ * ```
+ */
+type CssProps = Readonly<CSS.Properties<string, number>>;
+
+/**
+ * Recursively typed CSS object because nested objects are allowed.
+ *
+ * @example
+ * ```
+ * const style: CssObject = {
+ *  "@media screen and (min-width: 480px)": {
+ *    ":hover": {
+ *      color: 'red'
+ *   }
+ *  }
+ * }
+ * ```
+ */
+type CssObject = Readonly<
+  | {
+      [key: string]: CssObject;
+    }
+  | CssProps
+>;
+
+type returnType<T extends string> = Record<T, CssProps>;
 
 /**
  * ## cssMap
@@ -18,10 +56,9 @@ import { createSetupError } from '../utils/error';
  * <Component borderStyle="solid" />
  * ```
  */
-type returnType<T extends string, P> = Record<T, CSSProps<P>>;
 
-export default function cssMap<T extends string, TProps = unknown>(
-  _styles: Record<T, CssObject<TProps>>
-): Readonly<returnType<T, TProps>> {
+export default function cssMap<T extends string>(
+  _styles: Record<T, CssObject>
+): Readonly<returnType<T>> {
   throw createSetupError();
 }
