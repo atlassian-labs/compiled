@@ -1,7 +1,11 @@
+import { mkdirSync, writeFileSync } from 'fs';
+import { basename, dirname, join } from 'path';
+
 import { declare } from '@babel/helper-plugin-utils';
 import template from '@babel/template';
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
+import { sort } from '@compiled/css';
 import { preserveLeadingComments } from '@compiled/utils';
 
 import type { PluginPass, PluginOptions, BabelFileMetadata } from './types';
@@ -21,9 +25,9 @@ export default declare<PluginPass>((api) => {
     },
     visitor: {
       Program: {
-        exit(path, { file }) {
+        exit(path, { file, filename }) {
           if (this.opts.compiledRequireExclude) {
-            // Rather than inserting styleRules to the code, inserting them to matadata in the case like SSR
+            // Rather than inserting styleRules to the code, inserting them to metadata in the case like SSR
             if (!file.metadata?.styleRules) file.metadata.styleRules = [];
             this.styleRules.forEach((rule) => {
               file.metadata.styleRules.push(rule);
@@ -46,6 +50,34 @@ export default declare<PluginPass>((api) => {
               // We use require instead of import so it works with both ESM and CJS source.
               // If we used ESM it would blow up with CJS source, unfortunately.
             });
+          }
+
+          if (this.opts.extractStylesToDirectory && this.styleRules.length > 0) {
+            // Build filename of the css file
+            const currentFilename = basename(filename);
+            const cssFilename = `${currentFilename.substring(
+              0,
+              currentFilename.lastIndexOf('.')
+            )}.css`;
+
+            // Get the path relative to the working directory
+            const relativePath = file.opts.sourceFileName.slice(
+              file.opts.sourceFileName.indexOf(this.opts.extractStylesToDirectory.source) +
+                this.opts.extractStylesToDirectory.source.length
+            );
+
+            // Write styles to sibling css file
+            const cssFilePath = join(
+              this.cwd,
+              this.opts.extractStylesToDirectory.dest,
+              dirname(relativePath),
+              cssFilename
+            );
+            mkdirSync(dirname(cssFilePath), { recursive: true });
+            writeFileSync(cssFilePath, sort(this.styleRules.sort().join('\n')));
+
+            // Add css import to file
+            path.unshiftContainer('body', template.ast(`import "./${cssFilename}";`));
           }
         },
       },
