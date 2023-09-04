@@ -1,7 +1,7 @@
 import type { Rule } from 'eslint';
 import type { CallExpression as ESCallExpression } from 'estree';
 
-import { CssMapObjectChecker, getCssMapObject, validateDefinition } from '../../utils';
+import { CssMapObjectChecker, getCssMapObject, isCssMap, validateDefinition } from '../../utils';
 import { COMPILED_IMPORT } from '../../utils/constants';
 
 type CallExpression = ESCallExpression & Rule.NodeParentExtension;
@@ -47,14 +47,16 @@ const createCssMapRule = (context: Rule.RuleContext): Rule.RuleListener => {
   return {
     CallExpression(node) {
       const references = context.getScope().references;
-      const cssMapObject = getCssMapObject(node, references);
 
-      if (cssMapObject === undefined) {
+      if (!isCssMap(node.callee as Rule.Node, references)) {
         return;
       }
 
       reportIfExported(node, context);
       reportIfNotTopLevelScope(node, context);
+
+      const cssMapObject = getCssMapObject(node);
+      if (!cssMapObject) return;
 
       const cssMapObjectChecker = new CssMapObjectChecker(cssMapObject, context);
       cssMapObjectChecker.run();

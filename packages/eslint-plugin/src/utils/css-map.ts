@@ -1,20 +1,13 @@
 import type { Rule, Scope } from 'eslint';
 import type { CallExpression, Expression, ObjectExpression, Property, Super } from 'estree';
 
-import { isCssMap } from './is-compiled-import';
-
 type Reference = Scope.Reference;
 type WhitelistedFunction = [packageName: string, functionName: string];
 
 type Reporter = Rule.RuleContext['report'];
 
-export const getCssMapObject = (
-  node: CallExpression,
-  references: Reference[]
-): ObjectExpression | undefined => {
-  if (!isCssMap(node.callee as Rule.Node, references)) {
-    return undefined;
-  }
+export const getCssMapObject = (node: CallExpression): ObjectExpression | undefined => {
+  // We assume the argument `node` is already a cssMap() call.
 
   // Things like the number of arguments to cssMap and the type of
   // cssMap's argument are handled by the TypeScript compiler, so
