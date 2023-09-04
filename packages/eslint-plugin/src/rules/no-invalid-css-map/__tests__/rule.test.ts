@@ -25,7 +25,7 @@ tester.run('css-map', noInvalidCssMapRule, {
     },
     {
       name: 'valid css map with valid function calls',
-      options: [{ allowedFunctionCalls: ['token'] }],
+      options: [{ allowedFunctionCalls: [['@atlaskit/token', 'token']] }],
       code: outdent`
         import React from 'react';
         import { cssMap } from '@compiled/react';
@@ -45,8 +45,18 @@ tester.run('css-map', noInvalidCssMapRule, {
     },
     {
       name: 'valid css map with several valid function calls',
-      options: [{ allowedFunctionCalls: ['firstFunction', 'otherFunction', 'thirdFunction'] }],
+      options: [
+        {
+          allowedFunctionCalls: [
+            ['example', 'firstFunction'],
+            ['example', 'otherFunction'],
+            ['example2', 'thirdFunction'],
+          ],
+        },
+      ],
       code: outdent`
+        import { firstFunction, otherFunction } from 'example';
+        import { thirdFunction } from 'example2';
         import React from 'react';
         import { cssMap } from '@compiled/react';
         import { token } from '@atlaskit/token';
@@ -280,13 +290,11 @@ tester.run('css-map', noInvalidCssMapRule, {
       name: 'getters (object methods)',
       errors: [
         {
-          messageId: 'noFunctionCalls',
+          messageId: 'noInlineFunctions',
         },
       ],
-      // object methods are forbidden in all cases, so
-      // we expect the eslint rule to ignore the fact
-      // that 'danger' is in allowedFunctionCalls
-      options: [{ allowedFunctionCalls: ['danger'] }],
+      // This should not match the danger() used in cssMap
+      options: [{ allowedFunctionCalls: [['@atlaskit/token', 'danger']] }],
       code: outdent`
         import React from 'react';
         import { cssMap } from '@compiled/react';
@@ -300,13 +308,32 @@ tester.run('css-map', noInvalidCssMapRule, {
       `,
     },
     {
-      name: 'function calls to forbidden functions',
+      name: 'arrow functions',
+      errors: [
+        {
+          messageId: 'noInlineFunctions',
+        },
+      ],
+      // This should not match the danger() used in cssMap
+      options: [{ allowedFunctionCalls: [['@atlaskit/token', 'danger']] }],
+      code: outdent`
+        import React from 'react';
+        import { cssMap } from '@compiled/react';
+        import { token } from '@atlaskit/token';
+
+        const styles = cssMap({
+          danger: () => { color: '#123456' },
+        });
+      `,
+    },
+    {
+      name: 'function call to a forbidden imported function',
       errors: [
         {
           messageId: 'noFunctionCalls',
         },
       ],
-      options: [{ allowedFunctionCalls: ['token'] }],
+      options: [{ allowedFunctionCalls: [['@atlaskit/token', 'token']] }],
       code: outdent`
         import React from 'react';
         import { cssMap } from '@compiled/react';
@@ -320,7 +347,50 @@ tester.run('css-map', noInvalidCssMapRule, {
           success: {
             color: 'green',
             backgroundColor: myInvalidFunction('green', 'yellow'),
-          }
+          },
+        });
+      `,
+    },
+    {
+      name: 'function call to a default export',
+      errors: [
+        {
+          messageId: 'noFunctionCalls',
+        },
+      ],
+      options: [{ allowedFunctionCalls: [['@atlaskit/token', 'token']] }],
+      code: outdent`
+        import React from 'react';
+        import { cssMap } from '@compiled/react';
+        import token from '@atlaskit/token';
+
+        const styles = cssMap({
+          danger: {
+            color: token('red', 'blue'),
+            backgroundColor: 'red'
+          },
+        });
+      `,
+    },
+    {
+      name: 'function call to a local function',
+      errors: [
+        {
+          messageId: 'noFunctionCalls',
+        },
+      ],
+      options: [{ allowedFunctionCalls: [['@atlaskit/token', 'token']] }],
+      code: outdent`
+        import React from 'react';
+        import { cssMap } from '@compiled/react';
+
+        function token(...args) { return arguments.join(''); }
+
+        const styles = cssMap({
+          danger: {
+            color: token('red', 'blue'),
+            backgroundColor: 'red'
+          },
         });
       `,
     },
@@ -331,7 +401,7 @@ tester.run('css-map', noInvalidCssMapRule, {
           messageId: 'noFunctionCalls',
         },
       ],
-      options: [{ allowedFunctionCalls: ['token'] }],
+      options: [{ allowedFunctionCalls: [['@atlaskit/token', 'token']] }],
       code: outdent`
         import React from 'react';
         import { cssMap } from '@compiled/react';
@@ -355,7 +425,7 @@ tester.run('css-map', noInvalidCssMapRule, {
           messageId: 'noFunctionCalls',
         },
       ],
-      options: [{ allowedFunctionCalls: ['token'] }],
+      options: [{ allowedFunctionCalls: [['@atlaskit/token', 'token']] }],
       code: outdent`
         import React from 'react';
         import { cssMap } from '@compiled/react';
@@ -373,14 +443,37 @@ tester.run('css-map', noInvalidCssMapRule, {
       `,
     },
     {
+      name: 'valid css map with variable in template strings',
+      errors: [
+        {
+          messageId: 'noNonStaticallyEvaluable',
+        },
+      ],
+      code: outdent`
+        import { firstFunction } from 'example';
+        import React from 'react';
+        import { cssMap } from '@compiled/react';
+        import { bap } from '@atlaskit/token';
+
+        const otherFunction = (prop) => prop;
+
+        const styles = cssMap({
+          danger: {
+              padding: \`1px \${bap}\`,
+          },
+        });
+      `,
+    },
+    {
       name: 'valid css map with invalid function calls in template strings, variant 1',
       errors: [
         {
           messageId: 'noFunctionCalls',
         },
       ],
-      options: [{ allowedFunctionCalls: ['firstFunction'] }],
+      options: [{ allowedFunctionCalls: [['example', 'firstFunction']] }],
       code: outdent`
+        import { firstFunction } from 'example';
         import React from 'react';
         import { cssMap } from '@compiled/react';
         import { token } from '@atlaskit/token';
@@ -402,7 +495,7 @@ tester.run('css-map', noInvalidCssMapRule, {
           messageId: 'noFunctionCalls',
         },
       ],
-      options: [{ allowedFunctionCalls: ['firstFunction'] }],
+      options: [{ allowedFunctionCalls: [['@atlaskit/token', 'firstFunction']] }],
       code: outdent`
         import React from 'react';
         import { cssMap } from '@compiled/react';
@@ -435,6 +528,25 @@ tester.run('css-map', noInvalidCssMapRule, {
         const styles = cssMap({
           danger: {
             color: firstFunction('red') ?? 'pink',
+          },
+        });
+      `,
+    },
+    {
+      name: 'valid css map with imported variable',
+      errors: [
+        {
+          messageId: 'noNonStaticallyEvaluable',
+        },
+      ],
+      code: outdent`
+        import React from 'react';
+        import { cssMap } from '@compiled/react';
+        import { bap } from '@atlaskit/token';
+
+        const styles = cssMap({
+          danger: {
+            color: bap,
           },
         });
       `,
