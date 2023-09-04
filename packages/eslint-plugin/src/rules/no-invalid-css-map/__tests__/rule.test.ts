@@ -98,6 +98,26 @@ tester.run('css-map', noInvalidCssMapRule, {
         });
       `,
     },
+    {
+      name: 'valid css map with valid function call thru `import { X as Y } from Z`',
+      options: [{ allowedFunctionCalls: [['@atlaskit/token', 'token']] }],
+      code: outdent`
+        import React from 'react';
+        import { cssMap } from '@compiled/react';
+        import { token as myOtherFunction } from '@atlaskit/token';
+
+        const styles = cssMap({
+          danger: {
+              color: myOtherFunction('red', 'blue'),
+              backgroundColor: 'red',
+          },
+          success: {
+            color: 'green',
+            backgroundColor: myOtherFunction('green', 'yellow'),
+          },
+        });
+      `,
+    },
   ],
   invalid: [
     {
@@ -368,6 +388,37 @@ tester.run('css-map', noInvalidCssMapRule, {
           danger: {
             color: token('red', 'blue'),
             backgroundColor: 'red',
+          },
+        });
+      `,
+    },
+    {
+      // We currently do not support whitelisting default exports
+      // through the allowedFunctionCalls option
+      //
+      // so ['@atlaskit/token', 'token'] will allow
+      //     import { token } from '@atlaskit/token'
+      // but not
+      //     import token from '@atlaskit/token'
+      name: 'function call to a default export listed in allowedFunctionCalls',
+      errors: [
+        {
+          messageId: 'noFunctionCalls',
+        },
+      ],
+      options: [{ allowedFunctionCalls: [['@atlaskit/token', 'token']] }],
+      code: outdent`
+        import React from 'react';
+        import { cssMap } from '@compiled/react';
+        import token from '@atlaskit/token';
+
+        const styles = cssMap({
+          danger: {
+            color: 'blue',
+            backgroundColor: 'red',
+          },
+          success: {
+            color: token('green'),
           },
         });
       `,
