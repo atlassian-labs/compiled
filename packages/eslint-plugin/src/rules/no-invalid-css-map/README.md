@@ -31,12 +31,14 @@ import React from 'react';
 import { cssMap } from '@compiled/react';
 import { importedVariable, importedFunction } from 'another-package';
 
-// Cannot use imported variables or functions as values
-// in cssMap.
+// Cannot use imported functions as values in cssMap.
+
+const myVariable = importedFunction();
 
 const styles = cssMap({
   danger: {
-    color: importedVariable,
+    // Both invalid because they rely on an imported function.
+    color: myVariable,
     padding: importedFunction(),
   },
 });

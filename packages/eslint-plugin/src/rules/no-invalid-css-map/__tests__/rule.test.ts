@@ -118,6 +118,37 @@ tester.run('css-map', noInvalidCssMapRule, {
         });
       `,
     },
+    {
+      name: 'valid css map with imported variable',
+      code: outdent`
+        import React from 'react';
+        import { cssMap } from '@compiled/react';
+        import { bap } from '@atlaskit/token';
+
+        const styles = cssMap({
+          danger: {
+            color: bap,
+          },
+        });
+      `,
+    },
+    {
+      name: 'valid css map with variable in template strings',
+      code: outdent`
+        import { firstFunction } from 'example';
+        import React from 'react';
+        import { cssMap } from '@compiled/react';
+        import { bap } from '@atlaskit/token';
+
+        const otherFunction = (prop) => prop;
+
+        const styles = cssMap({
+          danger: {
+              padding: \`1px \${bap}\`,
+          },
+        });
+      `,
+    },
   ],
   invalid: [
     {
@@ -494,28 +525,6 @@ tester.run('css-map', noInvalidCssMapRule, {
       `,
     },
     {
-      name: 'valid css map with variable in template strings',
-      errors: [
-        {
-          messageId: 'noNonStaticallyEvaluable',
-        },
-      ],
-      code: outdent`
-        import { firstFunction } from 'example';
-        import React from 'react';
-        import { cssMap } from '@compiled/react';
-        import { bap } from '@atlaskit/token';
-
-        const otherFunction = (prop) => prop;
-
-        const styles = cssMap({
-          danger: {
-              padding: \`1px \${bap}\`,
-          },
-        });
-      `,
-    },
-    {
       name: 'valid css map with invalid function calls in template strings, variant 1',
       errors: [
         {
@@ -579,25 +588,6 @@ tester.run('css-map', noInvalidCssMapRule, {
         const styles = cssMap({
           danger: {
             color: firstFunction('red') ?? 'pink',
-          },
-        });
-      `,
-    },
-    {
-      name: 'valid css map with imported variable',
-      errors: [
-        {
-          messageId: 'noNonStaticallyEvaluable',
-        },
-      ],
-      code: outdent`
-        import React from 'react';
-        import { cssMap } from '@compiled/react';
-        import { bap } from '@atlaskit/token';
-
-        const styles = cssMap({
-          danger: {
-            color: bap,
           },
         });
       `,

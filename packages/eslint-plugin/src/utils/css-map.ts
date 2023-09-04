@@ -115,12 +115,7 @@ export class CssMapObjectChecker {
       }
 
       for (const definition of definitions) {
-        if (definition.type === 'ImportBinding') {
-          this.report({
-            node: value,
-            messageId: 'noNonStaticallyEvaluable',
-          });
-        } else if (definition.type === 'Variable' && definition.node.init) {
+        if (definition.type === 'Variable' && definition.node.init) {
           return this.checkCssMapObjectValue(definition.node.init);
         }
       }
