@@ -14,12 +14,12 @@ tester.run('css-map', noInvalidCssMapRule, {
         const styles = cssMap({
           danger: {
             color: 'red',
-            backgroundColor: 'red'
+            backgroundColor: 'red',
           },
           success: {
             color: 'green',
-            backgroundColor: 'green'
-          }
+            backgroundColor: 'green',
+          },
         });
       `,
     },
@@ -34,12 +34,12 @@ tester.run('css-map', noInvalidCssMapRule, {
         const styles = cssMap({
           danger: {
               color: token('red', 'blue'),
-              backgroundColor: 'red'
+              backgroundColor: 'red',
           },
           success: {
             color: 'green',
             backgroundColor: token('green', 'yellow'),
-          }
+          },
         });
       `,
     },
@@ -113,15 +113,15 @@ tester.run('css-map', noInvalidCssMapRule, {
 
         const base = {
           success: {
-            color: "green"
-          }
+            color: 'green',
+          },
         };
 
         const bar = someOtherFunction({
           ...base,
           danger: {
-            color: "red"
-          }
+            color: 'red',
+          },
         });
       `,
     },
@@ -139,8 +139,8 @@ tester.run('css-map', noInvalidCssMapRule, {
         const Foo = () => {
           const bar = cssMap({
             danger: {
-              color: "red"
-            }
+              color: 'red',
+            },
           });
         };
       `,
@@ -159,7 +159,7 @@ tester.run('css-map', noInvalidCssMapRule, {
         const foo = {
           bar: cssMap({
             danger: {
-              color: "red"
+              color: 'red'
             },
           }),
         };
@@ -179,8 +179,8 @@ tester.run('css-map', noInvalidCssMapRule, {
         function foo() {
           const bar = cssMap({
             danger: {
-              color: "red"
-            }
+              color: 'red',
+            },
           });
         }
       `,
@@ -199,8 +199,8 @@ tester.run('css-map', noInvalidCssMapRule, {
         function* foo() {
           const bar = cssMap({
             danger: {
-              color: "red"
-            }
+              color: 'red',
+            },
           });
         }
       `,
@@ -219,8 +219,8 @@ tester.run('css-map', noInvalidCssMapRule, {
         function* foo() {
           yield cssMap({
             danger: {
-              color: "red"
-            }
+              color: 'red',
+            },
           });
         }
       `,
@@ -238,15 +238,15 @@ tester.run('css-map', noInvalidCssMapRule, {
 
         const base = {
           success: {
-            color: "green"
-          }
+            color: 'green',
+          },
         };
 
         const bar = cssMap({
           ...base,
           danger: {
-            color: "red"
-          }
+            color: 'red',
+          },
         });
       `,
     },
@@ -263,7 +263,7 @@ tester.run('css-map', noInvalidCssMapRule, {
 
         export const foo = cssMap({
           danger: {
-            color: "red"
+            color: 'red',
           },
         });
       `,
@@ -281,8 +281,8 @@ tester.run('css-map', noInvalidCssMapRule, {
 
         export default cssMap({
           danger: {
-            color: "red"
-          }
+            color: 'red',
+          },
         });
       `,
     },
@@ -342,7 +342,7 @@ tester.run('css-map', noInvalidCssMapRule, {
         const styles = cssMap({
           danger: {
             color: token('red', 'blue'),
-            backgroundColor: 'red'
+            backgroundColor: 'red',
           },
           success: {
             color: 'green',
@@ -367,7 +367,7 @@ tester.run('css-map', noInvalidCssMapRule, {
         const styles = cssMap({
           danger: {
             color: token('red', 'blue'),
-            backgroundColor: 'red'
+            backgroundColor: 'red',
           },
         });
       `,
@@ -389,7 +389,7 @@ tester.run('css-map', noInvalidCssMapRule, {
         const styles = cssMap({
           danger: {
             color: token('red', 'blue'),
-            backgroundColor: 'red'
+            backgroundColor: 'red',
           },
         });
       `,
@@ -434,7 +434,7 @@ tester.run('css-map', noInvalidCssMapRule, {
         const styles = cssMap({
           danger: {
             color: token('red', 'blue'),
-            backgroundColor: 'red'
+            backgroundColor: 'red',
           },
           success: {
             color: 'green',
@@ -629,7 +629,7 @@ tester.run('css-map', noInvalidCssMapRule, {
         const Foo = () => {
           const bar = cssMap({
             danger: {
-              color: "red"
+              color: 'red',
             },
           });
         };
