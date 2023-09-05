@@ -30,7 +30,9 @@ export interface PluginPass {
    */
   file: {
     opts: {
-      sourceFileName: string;
+      generatorOpts?: {
+        sourceFileName?: string;
+      };
     };
     metadata: {
       styleRules: string[];

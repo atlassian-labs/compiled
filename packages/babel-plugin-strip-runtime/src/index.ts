@@ -58,11 +58,21 @@ export default declare<PluginPass>((api) => {
             const cssFilename = `${currentFilename.substring(
               0,
               currentFilename.lastIndexOf('.')
-            )}.css`;
+            )}.compiled.css`;
+
+            if (!file.opts.generatorOpts?.sourceFileName) {
+              throw new Error(`Source filename was not defined`);
+            }
+            const sourceFileName = `${file.opts.generatorOpts.sourceFileName}`;
+            if (!sourceFileName.includes(this.opts.extractStylesToDirectory.source)) {
+              throw new Error(
+                `Source directory '${this.opts.extractStylesToDirectory.source}' was not found relative to source file ('${sourceFileName}')`
+              );
+            }
 
             // Get the path relative to the working directory
-            const relativePath = file.opts.sourceFileName.slice(
-              file.opts.sourceFileName.indexOf(this.opts.extractStylesToDirectory.source) +
+            const relativePath = sourceFileName.slice(
+              sourceFileName.indexOf(this.opts.extractStylesToDirectory.source) +
                 this.opts.extractStylesToDirectory.source.length
             );
 
