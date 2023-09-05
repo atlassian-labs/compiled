@@ -11,17 +11,11 @@ const styles = cssMap({
     ':hover': {
       color: 'DarkGreen',
     },
-    '@media (max-width: 800px)': {
-      color: 'SpringGreen',
-    },
   },
   danger: {
     color: 'red',
     ':hover': {
       color: 'DarkRed',
-    },
-    '@media (max-width: 800px)': {
-      color: 'Crimson',
     },
   },
 });
