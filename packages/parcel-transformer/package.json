@@ -27,7 +27,7 @@
     "@compiled/utils": "^0.8.0",
     "@parcel/plugin": "^2.8.3",
     "@parcel/source-map": "^2.1.1",
-    "enhanced-resolve": "^5.12.0"
+    "enhanced-resolve": "^5.15.0"
   },
   "devDependencies": {
     "@parcel/core": "^2.8.3",
