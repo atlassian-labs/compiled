@@ -34,7 +34,7 @@
     "@compiled/react": "^0.14.0",
     "babel-loader": "^9.1.2",
     "css-loader": "^6.7.3",
-    "memfs": "^3.4.13",
+    "memfs": "^3.5.3",
     "mini-css-extract-plugin": "^1.6.2",
     "react": "^17.0.2",
     "ts-node": "^10.9.1",
