@@ -5,7 +5,11 @@ import {
   isDOMElement,
   traverseUpToJSXOpeningElement,
 } from '../../utils/ast';
-import { addImportToDeclaration, buildImportDeclaration } from '../../utils/ast-to-string';
+import {
+  addImportToDeclaration,
+  buildImportDeclaration,
+  getImportedName,
+} from '../../utils/ast-to-string';
 
 type Q<T> = T extends TSESLint.Scope.Definition
   ? T['type'] extends 'Variable'
@@ -90,12 +94,17 @@ const fixWrapper = (node: CSSValue, context: Context) => {
     const compiledImports = findTSCompiledImportDeclarations(context);
     const source = context.getSourceCode();
 
-    if (compiledImports.length > 0) {
-      // Import found, add the specifier to it
-      const [firstCompiledImport] = compiledImports;
-      const specifiersString = addImportToDeclaration(firstCompiledImport, ['css']);
+    // The string that `css` from `@compiled/css` is imported as
+    const cssImportName = getImportedName(compiledImports, 'css');
 
-      yield fixer.replaceText(firstCompiledImport, specifiersString);
+    if (compiledImports.length > 0) {
+      if (!cssImportName) {
+        // Import found, add the specifier to it
+        const [firstCompiledImport] = compiledImports;
+        const specifiersString = addImportToDeclaration(firstCompiledImport, ['css']);
+
+        yield fixer.replaceText(firstCompiledImport, specifiersString);
+      }
     } else {
       // Import not found, add a new one
       yield fixer.insertTextAfter(
@@ -104,16 +113,18 @@ const fixWrapper = (node: CSSValue, context: Context) => {
       );
     }
 
+    const cssFunctionName = cssImportName ?? 'css';
+
     if (node.type === 'ObjectExpression') {
       const parent = node.parent;
       if (parent && parent.type === 'TSAsExpression') {
-        yield fixer.replaceText(parent, `css(${source.getText(node)})`);
+        yield fixer.replaceText(parent, `${cssFunctionName}(${source.getText(node)})`);
       } else {
-        yield fixer.insertTextBefore(node, 'css(');
+        yield fixer.insertTextBefore(node, `${cssFunctionName}(`);
         yield fixer.insertTextAfter(node, ')');
       }
     } else {
-      yield fixer.insertTextBefore(node, 'css');
+      yield fixer.insertTextBefore(node, cssFunctionName);
     }
   }
 

@@ -62,3 +62,29 @@ export const buildNamedImport = (
 
   return '';
 };
+
+/**
+ * Given a list of import declarations and the name of an import,
+ * return two things:
+ *
+ * 1. Whether the import declarations import the name `importName`, and
+ * 2. What name `importName` is imported as.
+ *
+ * @param declarations
+ * @param importName
+ * @returns the name that `importName` is imported as, or `undefined`
+ *          if `importName` is not imported
+ */
+export const getImportedName = (
+  declarations: ImportDeclaration[],
+  importName: string
+): string | undefined => {
+  for (const decl of declarations) {
+    for (const specifier of decl.specifiers) {
+      if (specifier.type === 'ImportSpecifier' && importName === specifier.imported.name) {
+        return specifier.local.name;
+      }
+    }
+  }
+  return undefined;
+};

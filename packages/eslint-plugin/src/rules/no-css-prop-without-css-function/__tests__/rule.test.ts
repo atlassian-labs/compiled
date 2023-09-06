@@ -154,6 +154,54 @@ tester.run(
       `,
       },
       {
+        // Inline object expression without function
+        // with existing css import
+        errors: [
+          {
+            messageId: 'noCssFunction',
+          },
+        ],
+        code: outdent`
+        import React from 'react';
+        import { css } from '@compiled/react';
+
+        <div css={{ backgroundColor: 'red' }} />;
+              `,
+        output: outdent`
+        import React from 'react';
+        import { css } from '@compiled/react';
+
+        <div css={css({ backgroundColor: 'red' })} />;
+      `,
+      },
+      {
+        // Inline object expression without function
+        // with existing css import, imported as something else
+        errors: [
+          {
+            messageId: 'noCssFunction',
+          },
+        ],
+        code: outdent`
+        import React from 'react';
+        import { css as css2 } from '@compiled/react';
+        import { css } from 'example';
+
+        css();
+
+        <div css={{ backgroundColor: 'red' }} />;
+              `,
+        output: outdent`
+        import React from 'react';
+        import { css as css2 } from '@compiled/react';
+        import { css } from 'example';
+
+        css();
+
+        <div css={css2({ backgroundColor: 'red' })} />;
+      `,
+      },
+      {
         errors: [
           {
             messageId: 'noCssFunction',
