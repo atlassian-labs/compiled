@@ -4,7 +4,8 @@
  * Flowgen v1.21.0
  * @flow
  */
-import * as CSS from 'csstype';
+import type { Properties, AtRules } from 'csstype';
+import type { Pseudos } from './pseudos';
 /**
  * These are all the CSS props that will exist.
  * Only 'string' and 'number' are valid CSS values.
@@ -15,26 +16,105 @@ import * as CSS from 'csstype';
  * };
  * ```
  */
-declare type CssProps = $ReadOnly<CSS.Properties<string, number>>;
-/**
- * Recursively typed CSS object because nested objects are allowed.
- * @example ```
- * const style: CssObject = {
- *  "@media screen and (min-width: 480px)": {
- *    ":hover": {
- *      color: 'red'
- *   }
- *  }
- * }
- * ```
- */
-declare type CssObject = $ReadOnly<
-  | {
-      [key: string]: CssObject,
-    }
-  | CssProps
+declare type CssProps = $ReadOnly<Properties<string | number>>;
+declare type AllPseudos = $ObjMapi<
+  { [k: Pseudos]: any },
+  <key>(key) => { ...CssProps, ...WhitelistedPseudo }
 >;
-declare type returnType<T: string> = { [key: T]: CssProps };
+declare type ExcludedPseudos =
+  | '&:first-in-type'
+  | '&:first-child'
+  | '&:nth-child'
+  | '&:nth-last-child'
+  | '&:nth-last-of-type'
+  | '&:nth-of-type';
+declare type WhitelistedPseudo = Omit<AllPseudos, ExcludedPseudos>;
+declare type AtRuleSecondHalf = string;
+declare type WhitelistedAtRule = $ObjMapi<
+  { [k: AtRules]: any },
+  <atRuleFirstHalf>(atRuleFirstHalf) => $ObjMapi<
+    { [k: AtRuleSecondHalf]: any },
+    <atRuleSecondHalf>(atRuleSecondHalf) => {
+      ...CssProps,
+      ...WhitelistedPseudo,
+      ...WhitelistedAtRule,
+    }
+  >
+>;
+declare type WhitelistedSelector = {
+  ...WhitelistedPseudo,
+  ...WhitelistedAtRule,
+};
+declare type ExtendedSelector = {
+  ...{
+    [key: string]: CssProps | ExtendedSelector,
+  },
+  ...{
+    /**
+     * Using `selectors` is not valid here - you cannot nest a `selectors` object
+     * inside another `selectors` object.
+     */
+    selectors?: empty,
+    ...
+  },
+};
+declare type ExtendedSelectors = {
+  /**
+   * Provides a way to use selectors that have not been explicitly whitelisted
+   * in cssMap.
+   *
+   * This does not provide any type-checking for the selectors (thus allowing
+   * more expressive selectors), though this is more flexible and allows
+   * nesting selectors in other selectors.
+   *
+   * A selector defined both outside of the `selectors` object and
+   * inside the `selectors` object is a runtime error.
+   *
+   * Note that you cannot nest a `selectors` object inside another
+   * `selectors` object.
+   *
+   * Only use if absolutely necessary.
+   * @example ```
+   * const myMap = cssMap({
+   *   danger: {
+   *     color: 'red',
+   *     '@media (min-width: 100px)': {
+   *       font-size: '1.5em',
+   *     },
+   *     '&:hover': {
+   *       color: 'pink'
+   *     },
+   *     selectors: {
+   *       '&:not(:active)': {
+   *         backgroundColor: 'yellow',
+   *       }
+   *     },
+   *   },
+   *   success: {
+   *     color: 'green',
+   *     '@media (min-width: 100px)': {
+   *       font-size: '1.5em'
+   *     },
+   *     '&:hover': {
+   *       color: '#8f8'
+   *     },
+   *     selectors: {
+   *       '&:not(:active)': {
+   *         backgroundColor: 'white',
+   *       }
+   *     },
+   *   },
+   * });
+   * ```
+   */
+  selectors?: ExtendedSelector,
+  ...
+};
+declare type Variants<VariantName: string> = Record<
+  VariantName,
+  { ...CssProps, ...WhitelistedSelector, ...ExtendedSelectors }
+>;
+declare type ReturnType<VariantName: string> = { [key: VariantName]: CssProps };
 /**
  * ## cssMap
  *
@@ -50,6 +130,4 @@ declare type returnType<T: string> = { [key: T]: CssProps };
  * <Component borderStyle="solid" />
  * ```
  */
-declare export default function cssMap<T: string>(_styles: { [key: T]: CssObject }): $ReadOnly<
-  returnType<T>
->;
+declare export default function cssMap<T: string>(_styles: Variants<T>): $ReadOnly<ReturnType<T>>;

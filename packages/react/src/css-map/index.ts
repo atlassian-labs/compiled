@@ -1,6 +1,8 @@
-import type { Pseudos, Properties, AtRules } from 'csstype';
+import type { Properties, AtRules } from 'csstype';
 
 import { createSetupError } from '../utils/error';
+
+import type { Pseudos } from './pseudos';
 
 /**
  * These are all the CSS props that will exist.
@@ -16,10 +18,17 @@ import { createSetupError } from '../utils/error';
  */
 type CssProps = Readonly<Properties<string | number>>;
 
-type AllPseudos = { [key in `&${Pseudos}`]?: CssProps & WhitelistedPseudo };
-// We discourage use of nested selectors (selectors that target child elements)
+type AllPseudos = { [key in Pseudos]?: CssProps & WhitelistedPseudo };
+// We discourage use of 'nested' selectors (selectors that can target other elements)
 // such as :first-in-type and :first-child.
-type WhitelistedPseudo = Omit<AllPseudos, '&:first-in-type' | '&:first-child'>;
+type ExcludedPseudos =
+  | '&:first-in-type'
+  | '&:first-child'
+  | '&:nth-child'
+  | '&:nth-last-child'
+  | '&:nth-last-of-type'
+  | '&:nth-of-type';
+type WhitelistedPseudo = Omit<AllPseudos, ExcludedPseudos>;
 
 // The `screen and (max-width: 768px)` part of `@media screen and (max-width: 768px)`.
 // Ideally we would do type checking to forbid this from containing the `@media` part,
