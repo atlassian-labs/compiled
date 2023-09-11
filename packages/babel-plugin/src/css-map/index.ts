@@ -4,34 +4,10 @@ import * as t from '@babel/types';
 import type { Metadata } from '../types';
 import { buildCodeFrameError } from '../utils/ast';
 import { buildCss } from '../utils/css-builders';
+import { ErrorMessages, createErrorMessage } from '../utils/css-map';
 import { transformCssItems } from '../utils/transform-css-items';
 
-// The messages are exported for testing.
-export enum ErrorMessages {
-  NO_TAGGED_TEMPLATE = 'cssMap function cannot be used as a tagged template expression.',
-  NUMBER_OF_ARGUMENT = 'cssMap function can only receive one argument.',
-  ARGUMENT_TYPE = 'cssMap function can only receive an object.',
-  DEFINE_MAP = 'CSS Map must be declared at the top-most scope of the module.',
-  NO_SPREAD_ELEMENT = 'Spread element is not supported in CSS Map.',
-  NO_OBJECT_METHOD = 'Object method is not supported in CSS Map.',
-  STATIC_VARIANT_OBJECT = 'The variant object must be statically defined.',
-}
-
-const createErrorMessage = (message: string): string => {
-  return `
-${message} 
-To correctly implement a CSS Map, follow the syntax below:
-
-\`\`\`
-import { css, cssMap } from '@compiled/react';
-const borderStyleMap = cssMap({
-    none: { borderStyle: 'none' },
-    solid: { borderStyle: 'solid' },
-});
-const Component = ({ borderStyle }) => <div css={css(borderStyleMap[borderStyle])} />
-\`\`\`
-    `;
-};
+import { mergeExtendedSelectorsIntoProperties } from './process-selectors';
 
 /**
  * Takes `cssMap` function expression and then transforms it to a record of class names and sheets.
@@ -122,7 +98,8 @@ export const visitCssMapPath = (
           );
         }
 
-        const { css, variables } = buildCss(property.value, meta);
+        const processedPropertyValue = mergeExtendedSelectorsIntoProperties(property.value, meta);
+        const { css, variables } = buildCss(processedPropertyValue, meta);
 
         if (variables.length) {
           throw buildCodeFrameError(

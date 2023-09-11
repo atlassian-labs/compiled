@@ -1,6 +1,6 @@
 import type { TransformOptions } from '../../test-utils';
 import { transform as transformCode } from '../../test-utils';
-import { ErrorMessages } from '../index';
+import { ErrorMessages } from '../../utils/css-map';
 
 describe('css map', () => {
   const transform = (code: string, opts: TransformOptions = {}) =>

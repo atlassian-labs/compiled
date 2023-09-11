@@ -1,4 +1,4 @@
-import type * as CSS from 'csstype';
+import type { Pseudos, Properties, AtRules } from 'csstype';
 
 import { createSetupError } from '../utils/error';
 
@@ -14,30 +14,91 @@ import { createSetupError } from '../utils/error';
  * };
  * ```
  */
-type CssProps = Readonly<CSS.Properties<string, number>>;
+type CssProps = Readonly<Properties<string | number>>;
 
-/**
- * Recursively typed CSS object because nested objects are allowed.
- *
- * @example
- * ```
- * const style: CssObject = {
- *  "@media screen and (min-width: 480px)": {
- *    ":hover": {
- *      color: 'red'
- *   }
- *  }
- * }
- * ```
- */
-type CssObject = Readonly<
-  | {
-      [key: string]: CssObject;
-    }
-  | CssProps
+type AllPseudos = { [key in `&${Pseudos}`]?: CssProps & WhitelistedPseudo };
+// We discourage use of nested selectors (selectors that target child elements)
+// such as :first-in-type and :first-child.
+type WhitelistedPseudo = Omit<AllPseudos, '&:first-in-type' | '&:first-child'>;
+
+// The `screen and (max-width: 768px)` part of `@media screen and (max-width: 768px)`.
+// Ideally we would do type checking to forbid this from containing the `@media` part,
+// but TypeScript doesn't provide a good way to do this.
+type AtRuleSecondHalf = string;
+type WhitelistedAtRule = {
+  [atRuleFirstHalf in AtRules]?: {
+    [atRuleSecondHalf in AtRuleSecondHalf]: CssProps & WhitelistedPseudo & WhitelistedAtRule;
+  };
+};
+type WhitelistedSelector = WhitelistedPseudo & WhitelistedAtRule;
+
+type ExtendedSelector = { [key: string]: CssProps | ExtendedSelector } & {
+  /**
+   * Using `selectors` is not valid here - you cannot nest a `selectors` object
+   * inside another `selectors` object.
+   */
+  selectors?: never;
+};
+
+type ExtendedSelectors = {
+  /**
+   * Provides a way to use selectors that have not been explicitly whitelisted
+   * in cssMap.
+   *
+   * This does not provide any type-checking for the selectors (thus allowing
+   * more expressive selectors), though this is more flexible and allows
+   * nesting selectors in other selectors.
+   *
+   * A selector defined both outside of the `selectors` object and
+   * inside the `selectors` object is a runtime error.
+   *
+   * Note that you cannot nest a `selectors` object inside another
+   * `selectors` object.
+   *
+   * Only use if absolutely necessary.
+   *
+   * @example
+   * ```
+   * const myMap = cssMap({
+   *   danger: {
+   *     color: 'red',
+   *     '@media (min-width: 100px)': {
+   *       font-size: '1.5em',
+   *     },
+   *     '&:hover': {
+   *       color: 'pink'
+   *     },
+   *     selectors: {
+   *       '&:not(:active)': {
+   *         backgroundColor: 'yellow',
+   *       }
+   *     },
+   *   },
+   *   success: {
+   *     color: 'green',
+   *     '@media (min-width: 100px)': {
+   *       font-size: '1.5em'
+   *     },
+   *     '&:hover': {
+   *       color: '#8f8'
+   *     },
+   *     selectors: {
+   *       '&:not(:active)': {
+   *         backgroundColor: 'white',
+   *       }
+   *     },
+   *   },
+   * });
+   * ```
+   */
+  selectors?: ExtendedSelector;
+};
+
+type Variants<VariantName extends string> = Record<
+  VariantName,
+  CssProps & WhitelistedSelector & ExtendedSelectors
 >;
-
-type returnType<T extends string> = Record<T, CssProps>;
+type ReturnType<VariantName extends string> = Record<VariantName, CssProps>;
 
 /**
  * ## cssMap
@@ -57,8 +118,6 @@ type returnType<T extends string> = Record<T, CssProps>;
  * ```
  */
 
-export default function cssMap<T extends string>(
-  _styles: Record<T, CssObject>
-): Readonly<returnType<T>> {
+export default function cssMap<T extends string>(_styles: Variants<T>): Readonly<ReturnType<T>> {
   throw createSetupError();
 }

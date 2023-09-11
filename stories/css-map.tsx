@@ -1,4 +1,4 @@
-import { cssMap } from '@compiled/react';
+import { cssMap, css } from '@compiled/react';
 import { useState } from 'react';
 
 export default {
@@ -7,21 +7,45 @@ export default {
 
 const styles = cssMap({
   success: {
-    color: 'green',
-    ':hover': {
-      color: 'DarkGreen',
+    color: '#0b0',
+    '&:hover': {
+      color: '#060',
     },
-    '@media (max-width: 800px)': {
-      color: 'SpringGreen',
+    // At-rules (@media, @screen, etc.)
+    '@media': {
+      'screen and (min-width: 500px)': {
+        fontSize: '10vw',
+      },
+    },
+    // Using the selectors object for any selectors
+    // that we do not expressly support
+    selectors: {
+      span: {
+        color: 'lightgreen',
+        '&:hover': {
+          color: '#090',
+        },
+      },
     },
   },
   danger: {
     color: 'red',
-    ':hover': {
+    '&:hover': {
       color: 'DarkRed',
     },
-    '@media (max-width: 800px)': {
-      color: 'Crimson',
+    '@media': {
+      'screen and (min-width: 500px)': {
+        fontSize: '20vw',
+      },
+    },
+    selectors: {
+      span: {
+        color: 'orange',
+        '&:hover': {
+          color: 'pink',
+        },
+      },
+      '&:hover': { color: 'pink' },
     },
   },
 });
@@ -32,14 +56,16 @@ export const DynamicVariant = (): JSX.Element => {
   return (
     <>
       <div
-        css={{
+        css={css({
           '> *': {
             margin: '5px',
           },
-        }}>
+        })}>
         <button onClick={() => setVariant('success')}>success</button>
         <button onClick={() => setVariant('danger')}>danger</button>
-        <div css={styles[variant]}>hello world</div>
+        <div css={styles[variant]}>
+          hello <span>hello!</span> world
+        </div>
       </div>
     </>
   );
@@ -47,16 +73,26 @@ export const DynamicVariant = (): JSX.Element => {
 
 export const VariantAsProp = (): JSX.Element => {
   const Component = ({ variant }: { variant: keyof typeof styles }) => (
-    <div css={styles[variant]}>hello world</div>
+    <div css={styles[variant]}>
+      hello <span>hello!</span> world
+    </div>
   );
   return <Component variant={'success'} />;
 };
 
 export const MergeStyles = (): JSX.Element => {
-  return <div css={[styles.danger, { backgroundColor: 'green' }]}>hello world</div>;
+  return (
+    <div css={[styles.danger, css({ backgroundColor: 'green' })]}>
+      hello <span>hello!</span> world
+    </div>
+  );
 };
 
 export const ConditionalStyles = (): JSX.Element => {
   const isDanger = true;
-  return <div css={styles[isDanger ? 'danger' : 'success']}>hello world</div>;
+  return (
+    <div css={styles[isDanger ? 'danger' : 'success']}>
+      hello <span>hello!</span> world
+    </div>
+  );
 };
