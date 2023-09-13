@@ -63,6 +63,21 @@ export const isCompiledCSSMapCallExpression = (
   node.callee.name === state.compiledImports?.cssMap;
 
 /**
+ * Returns `true` if the node is using `xcss` from `@compiled/react` as a call expression
+ *
+ * @param node {t.Node} The node that is being checked
+ * @param state {State} Plugin state
+ * @returns {boolean} Whether the node is a compiled xcss
+ */
+export const isCompiledXCssCallExpression = (
+  node: t.Node,
+  state: State
+): node is t.CallExpression =>
+  t.isCallExpression(node) &&
+  t.isIdentifier(node.callee) &&
+  node.callee.name === state.compiledImports?.xcss;
+
+/**
  * Returns `true` if the node is using `keyframes` from `@compiled/react` as a tagged template expression
  *
  * @param node {t.Node} The node that is being checked

@@ -1,5 +1,5 @@
 import BabelComponent from '@compiled/babel-component-fixture';
-import '@compiled/react';
+import { xcss } from '@compiled/react';
 import { Suspense, lazy } from 'react';
 
 import { primary } from './common/constants';
@@ -10,8 +10,13 @@ import {
   customFileExtensionCss,
 } from './ui/custom-file-extension.customjsx';
 import { TypeScript } from './ui/typescript';
+import XCSSComponent from './ui/xcss';
 
 const AsyncComponent = lazy(() => import('./ui/async'));
+
+const styleOverrides = xcss({
+  color: primary,
+});
 
 export const App = () => (
   <>
@@ -25,5 +30,6 @@ export const App = () => (
     <div css={customFileExtensionCss}>Custom File Extension CSS</div>
     <Annotated />
     <CSSMap variant="danger">CSS Map</CSSMap>
+    <XCSSComponent xcss={styleOverrides}>XCSS Component</XCSSComponent>
   </>
 );

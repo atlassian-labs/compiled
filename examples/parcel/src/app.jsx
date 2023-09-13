@@ -1,5 +1,5 @@
+import { xcss } from '@compiled/react';
 import * as React from 'react';
-import '@compiled/react';
 // These are unused placeholder examples, as including them will break the application. The static evaluation in the
 // @compiled/babel-plugin must be synchronous, whereas parcel offers promise-based APIs, making them incompatible.
 // Eventually, the static evaluation (i.e. resolveBindingNode) should be replaced or removed so that these aliases
@@ -15,8 +15,13 @@ import {
   customFileExtensionCss,
 } from './ui/custom-file-extension.customjsx';
 import { TypeScript } from './ui/typescript';
+import XCSSComponent from './ui/xcss';
 
 const AsyncComponent = React.lazy(() => import('./async'));
+
+const styleOverrides = xcss({
+  color: primary,
+});
 
 export const App = () => (
   <>
@@ -31,5 +36,6 @@ export const App = () => (
       <AsyncComponent />
     </React.Suspense>
     <CSSMap variant="danger">CSS Map</CSSMap>
+    <XCSSComponent xcss={styleOverrides}>XCSS Component</XCSSComponent>
   </>
 );

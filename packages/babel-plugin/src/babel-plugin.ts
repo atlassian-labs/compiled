@@ -22,8 +22,11 @@ import {
   isCompiledStyledCallExpression,
   isCompiledStyledTaggedTemplateExpression,
   isCompiledCSSMapCallExpression,
+  isCompiledXCssCallExpression,
 } from './utils/is-compiled';
 import { normalizePropsUsage } from './utils/normalize-props-usage';
+import { visitXCssPath } from './xcss';
+import { visitXCssPropPath } from './xcss-prop';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -42,6 +45,7 @@ export default declare<State>((api) => {
     pre() {
       this.sheets = {};
       this.cssMap = {};
+      this.xcss = {};
       let cache: Cache;
 
       if (this.opts.cache === true) {
@@ -153,17 +157,19 @@ export default declare<State>((api) => {
             return;
           }
 
-          (['styled', 'ClassNames', 'css', 'keyframes', 'cssMap'] as const).forEach((apiName) => {
-            if (
-              state.compiledImports &&
-              t.isIdentifier(specifier.node?.imported) &&
-              specifier.node?.imported.name === apiName
-            ) {
-              // Enable the API with the local name
-              state.compiledImports[apiName] = specifier.node.local.name;
-              specifier.remove();
+          (['styled', 'ClassNames', 'css', 'keyframes', 'cssMap', 'xcss'] as const).forEach(
+            (apiName) => {
+              if (
+                state.compiledImports &&
+                t.isIdentifier(specifier.node?.imported) &&
+                specifier.node?.imported.name === apiName
+              ) {
+                // Enable the API with the local name
+                state.compiledImports[apiName] = specifier.node.local.name;
+                specifier.remove();
+              }
             }
-          });
+          );
         });
 
         if (path.node.specifiers.length === 0) {
@@ -176,6 +182,11 @@ export default declare<State>((api) => {
       ) {
         if (isCompiledCSSMapCallExpression(path.node, state)) {
           visitCssMapPath(path, { context: 'root', state, parentPath: path });
+          return;
+        }
+
+        if (isCompiledXCssCallExpression(path.node, state)) {
+          visitXCssPath(path, { context: 'root', state, parentPath: path });
           return;
         }
 
@@ -221,6 +232,7 @@ export default declare<State>((api) => {
           return;
         }
 
+        visitXCssPropPath(path, { context: 'root', state, parentPath: path });
         visitCssPropPath(path, { context: 'root', state, parentPath: path });
       },
     },

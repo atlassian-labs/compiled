@@ -99,6 +99,7 @@ export interface State extends PluginPass {
     keyframes?: string;
     styled?: string;
     cssMap?: string;
+    xcss?: string;
   };
 
   importedCompiledImports?: {
@@ -147,6 +148,11 @@ export interface State extends PluginPass {
    * Holds a record of currently evaluated CSS Map and its sheets in the module.
    */
   cssMap: Record<string, string[]>;
+
+  /**
+   * Holds a record of currently evaluated XCSS identifier name and its sheets in the module.
+   */
+  xcss: Record<string, string[]>;
 }
 
 interface CommonMetadata {
