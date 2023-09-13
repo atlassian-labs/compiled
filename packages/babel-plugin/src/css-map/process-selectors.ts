@@ -1,70 +1,68 @@
-import type * as t from '@babel/types';
+import * as t from '@babel/types';
 
 import type { Metadata } from '../types';
 import { buildCodeFrameError } from '../utils/ast';
 import {
   ErrorMessages,
   createErrorMessage,
+  errorIfNotValidObjectProperty,
   getKeyValue,
-  hasExtendedSelectorsKey,
+  hasExtendedSelectorsKey as propertyHasExtendedSelectorsKey,
   isAtRule,
   objectKeyIsLiteralValue,
+  isPlainSelector,
 } from '../utils/css-map';
 
-function errorIfNotValidObjectProperty(
-  property: t.ObjectExpression['properties'][number],
-  meta: Metadata
-): asserts property is t.ObjectProperty {
-  if (property.type === 'ObjectMethod') {
+function* collapseAtRule(atRuleBlock: t.ObjectProperty, atRuleType: string, meta: Metadata) {
+  if (!t.isObjectExpression(atRuleBlock.value)) {
     throw buildCodeFrameError(
-      createErrorMessage(ErrorMessages.NO_OBJECT_METHOD),
-      property.key,
+      createErrorMessage(ErrorMessages.AT_RULE_VALUE_TYPE),
+      atRuleBlock.value,
       meta.parentPath
     );
-  } else if (property.type === 'SpreadElement') {
-    throw new Error(
-      `cssMap does not support object methods and spread elements (e.g. "...myArray").`
-    );
-  }
-}
-
-function* collapseAtRule(atRuleBlock: t.ObjectProperty, atRuleType: string, meta: Metadata) {
-  if (atRuleBlock.value.type !== 'ObjectExpression') {
-    throw new Error(`Value of at rule block '${atRuleType}' must be an object.`);
   }
 
   for (const atRule of atRuleBlock.value.properties) {
     errorIfNotValidObjectProperty(atRule, meta);
     if (!objectKeyIsLiteralValue(atRule.key)) {
-      throw new Error(
-        `The keys of the at rule block '${atRuleType}' must be a simple string literal.`
+      throw buildCodeFrameError(
+        createErrorMessage(ErrorMessages.STATIC_PROPERTY_KEY),
+        atRule.key,
+        meta.parentPath
       );
     }
 
     const atRuleName = `${atRuleType} ${getKeyValue(atRule.key)}`;
-    const newKey = { ...atRule.key, value: atRuleName };
+    const newKey = t.identifier(atRuleName);
     yield { atRuleName, atRuleValue: { ...atRule, key: newKey } };
   }
 }
 
 const getExtendedSelectors = (
-  variantStyles: t.ObjectExpression
+  variantStyles: t.ObjectExpression,
+  meta: Metadata
 ): t.ObjectExpression['properties'] => {
   const extendedSelectorsFound = variantStyles.properties.filter(
     (value): value is t.ObjectProperty =>
-      value.type === 'ObjectProperty' && hasExtendedSelectorsKey(value)
+      t.isObjectProperty(value) && propertyHasExtendedSelectorsKey(value)
   );
 
   if (extendedSelectorsFound.length === 0) return [];
   if (extendedSelectorsFound.length > 1) {
-    throw new Error(
-      'Duplicate `selectors` key found in cssMap; expected either zero `selectors` keys or one.'
+    throw buildCodeFrameError(
+      createErrorMessage(ErrorMessages.DUPLICATE_SELECTORS_BLOCK),
+      extendedSelectorsFound[1],
+      meta.parentPath
     );
   }
 
   const extendedSelectors = extendedSelectorsFound[0];
-  if (extendedSelectors.value.type !== 'ObjectExpression') {
-    throw new Error('Value of `selectors` key must be an object.');
+  if (!t.isObjectExpression(extendedSelectors.value)) {
+    throw buildCodeFrameError(
+      createErrorMessage(ErrorMessages.SELECTORS_BLOCK_VALUE_TYPE),
+      extendedSelectors.value,
+      meta.parentPath
+    );
   }
 
   return extendedSelectors.value.properties;
@@ -112,52 +110,80 @@ export const mergeExtendedSelectorsIntoProperties = (
   variantStyles: t.ObjectExpression,
   meta: Metadata
 ): t.ObjectExpression => {
-  const extendedSelectors = getExtendedSelectors(variantStyles);
+  const extendedSelectors = getExtendedSelectors(variantStyles, meta);
   const mergedProperties: t.ObjectProperty[] = [];
-  const addedPropertyKeys: Set<string> = new Set();
+  const addedSelectors: Set<string> = new Set();
+
+  if (variantStyles.properties.length === 0) {
+    throw buildCodeFrameError(
+      createErrorMessage(ErrorMessages.EMPTY_VARIANT_OBJECT),
+      variantStyles,
+      meta.parentPath
+    );
+  }
 
   for (const property of [...variantStyles.properties, ...extendedSelectors]) {
     // Covered by ESLint rule already
     errorIfNotValidObjectProperty(property, meta);
+    // Extract property.key into its own variable so we can do
+    // type checking on it
+    const propertyKey = property.key;
+
+    if (!objectKeyIsLiteralValue(propertyKey)) {
+      throw buildCodeFrameError(
+        createErrorMessage(ErrorMessages.STATIC_PROPERTY_KEY),
+        property.key,
+        meta.parentPath
+      );
+    }
+
+    if (isPlainSelector(getKeyValue(propertyKey))) {
+      throw buildCodeFrameError(
+        createErrorMessage(ErrorMessages.USE_SELECTORS_WITH_AMPERSAND),
+        property.key,
+        meta.parentPath
+      );
+    }
 
     // we have already extracted the selectors object into the `extendedSelectors`
     // variable, so we can skip it now
-    if (hasExtendedSelectorsKey(property)) continue;
+    if (propertyHasExtendedSelectorsKey(property)) continue;
 
-    if (objectKeyIsLiteralValue(property.key) && isAtRule(property.key)) {
-      const atRuleType = getKeyValue(property.key);
+    if (isAtRule(propertyKey)) {
+      const atRuleType = getKeyValue(propertyKey);
       const atRules = collapseAtRule(property, atRuleType, meta);
 
       for (const { atRuleName, atRuleValue } of atRules) {
-        if (addedPropertyKeys.has(atRuleName)) {
-          throw new Error(
-            `This at rule was found more than once in the cssMap object: \`${atRuleName}\`\n` +
-              'You may only specify this selector once.'
+        if (addedSelectors.has(atRuleName)) {
+          throw buildCodeFrameError(
+            createErrorMessage(ErrorMessages.DUPLICATE_AT_RULE),
+            property.key,
+            meta.parentPath
           );
         }
         mergedProperties.push(atRuleValue);
-        addedPropertyKeys.add(atRuleName);
+        addedSelectors.add(atRuleName);
       }
     } else {
-      if (
-        // If the value is an object, we can be reasonably sure that the key is a CSS selector
-        // and not a CSS property
-        property.value.type === 'ObjectExpression' &&
-        objectKeyIsLiteralValue(property.key) &&
-        addedPropertyKeys.has(getKeyValue(property.key))
-      ) {
-        throw new Error(
-          `This selector was found more than once in the cssMap object: \`${getKeyValue(
-            property.key
-          )}\`\nYou may only specify this selector once.`
-        );
+      // If the property value is an object, we can be reasonably sure that
+      // the key is a CSS selector and not a CSS property (this is just an
+      // assumption, because we can never be 100% sure...)
+      const isSelector = t.isObjectExpression(property.value);
+
+      if (isSelector) {
+        const isDuplicateSelector = addedSelectors.has(getKeyValue(propertyKey));
+        if (isDuplicateSelector) {
+          throw buildCodeFrameError(
+            createErrorMessage(ErrorMessages.DUPLICATE_SELECTOR),
+            property.key,
+            meta.parentPath
+          );
+        } else {
+          addedSelectors.add(getKeyValue(propertyKey));
+        }
       }
+
       mergedProperties.push(property);
-      if (property.key.type === 'Identifier') {
-        addedPropertyKeys.add(property.key.name);
-      } else if (property.key.type === 'StringLiteral') {
-        addedPropertyKeys.add(property.key.value);
-      }
     }
   }
 

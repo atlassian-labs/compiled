@@ -61,11 +61,13 @@ type ExtendedSelectors = {
    * const myMap = cssMap({
    *   danger: {
    *     color: 'red',
-   *     '@media (min-width: 100px)': {
-   *       font-size: '1.5em',
+   *     '@media': {
+   *       '(min-width: 100px)': {
+   *         font-size: '1.5em',
+   *       },
    *     },
    *     '&:hover': {
-   *       color: 'pink'
+   *       color: 'pink',
    *     },
    *     selectors: {
    *       '&:not(:active)': {
@@ -75,11 +77,13 @@ type ExtendedSelectors = {
    *   },
    *   success: {
    *     color: 'green',
-   *     '@media (min-width: 100px)': {
-   *       font-size: '1.5em'
+   *     '@media': {
+   *       '(min-width: 100px)': {
+   *         font-size: '1.3em',
+   *       },
    *     },
    *     '&:hover': {
-   *       color: '#8f8'
+   *       color: '#8f8',
    *     },
    *     selectors: {
    *       '&:not(:active)': {

@@ -18,7 +18,7 @@ const styles = cssMap({
       },
     },
     // Using the selectors object for any selectors
-    // that we do not expressly support
+    // that we do not expressly support.
     selectors: {
       span: {
         color: 'lightgreen',

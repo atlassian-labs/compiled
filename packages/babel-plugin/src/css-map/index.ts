@@ -4,7 +4,7 @@ import * as t from '@babel/types';
 import type { Metadata } from '../types';
 import { buildCodeFrameError } from '../utils/ast';
 import { buildCss } from '../utils/css-builders';
-import { ErrorMessages, createErrorMessage } from '../utils/css-map';
+import { ErrorMessages, createErrorMessage, errorIfNotValidObjectProperty } from '../utils/css-map';
 import { transformCssItems } from '../utils/transform-css-items';
 
 import { mergeExtendedSelectorsIntoProperties } from './process-selectors';
@@ -74,21 +74,7 @@ export const visitCssMapPath = (
   path.replaceWith(
     t.objectExpression(
       path.node.arguments[0].properties.map((property) => {
-        if (t.isSpreadElement(property)) {
-          throw buildCodeFrameError(
-            createErrorMessage(ErrorMessages.NO_SPREAD_ELEMENT),
-            property.argument,
-            meta.parentPath
-          );
-        }
-
-        if (t.isObjectMethod(property)) {
-          throw buildCodeFrameError(
-            createErrorMessage(ErrorMessages.NO_OBJECT_METHOD),
-            property.key,
-            meta.parentPath
-          );
-        }
+        errorIfNotValidObjectProperty(property, meta);
 
         if (!t.isObjectExpression(property.value)) {
           throw buildCodeFrameError(
