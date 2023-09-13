@@ -19,16 +19,8 @@ import type { Pseudos } from './pseudos';
 declare type CssProps = $ReadOnly<Properties<string | number>>;
 declare type AllPseudos = $ObjMapi<
   { [k: Pseudos]: any },
-  <key>(key) => { ...CssProps, ...WhitelistedPseudo }
+  <key>(key) => { ...CssProps, ...AllPseudos }
 >;
-declare type ExcludedPseudos =
-  | '&:first-in-type'
-  | '&:first-child'
-  | '&:nth-child'
-  | '&:nth-last-child'
-  | '&:nth-last-of-type'
-  | '&:nth-of-type';
-declare type WhitelistedPseudo = Omit<AllPseudos, ExcludedPseudos>;
 declare type AtRuleSecondHalf = string;
 declare type WhitelistedAtRule = $ObjMapi<
   { [k: AtRules]: any },
@@ -36,15 +28,12 @@ declare type WhitelistedAtRule = $ObjMapi<
     { [k: AtRuleSecondHalf]: any },
     <atRuleSecondHalf>(atRuleSecondHalf) => {
       ...CssProps,
-      ...WhitelistedPseudo,
+      ...AllPseudos,
       ...WhitelistedAtRule,
     }
   >
 >;
-declare type WhitelistedSelector = {
-  ...WhitelistedPseudo,
-  ...WhitelistedAtRule,
-};
+declare type WhitelistedSelector = { ...AllPseudos, ...WhitelistedAtRule };
 declare type ExtendedSelector = {
   ...{
     [key: string]: CssProps | ExtendedSelector,
@@ -110,10 +99,9 @@ declare type ExtendedSelectors = {
   selectors?: ExtendedSelector,
   ...
 };
-declare type Variants<VariantName: string> = Record<
-  VariantName,
-  { ...CssProps, ...WhitelistedSelector, ...ExtendedSelectors }
->;
+declare type Variants<VariantName: string> = {
+  [key: VariantName]: { ...CssProps, ...WhitelistedSelector, ...ExtendedSelectors },
+};
 declare type ReturnType<VariantName: string> = { [key: VariantName]: CssProps };
 /**
  * ## cssMap

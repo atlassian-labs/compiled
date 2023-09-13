@@ -18,17 +18,7 @@ import type { Pseudos } from './pseudos';
  */
 type CssProps = Readonly<Properties<string | number>>;
 
-type AllPseudos = { [key in Pseudos]?: CssProps & WhitelistedPseudo };
-// We discourage use of 'nested' selectors (selectors that can target other elements)
-// such as :first-in-type and :first-child.
-type ExcludedPseudos =
-  | '&:first-in-type'
-  | '&:first-child'
-  | '&:nth-child'
-  | '&:nth-last-child'
-  | '&:nth-last-of-type'
-  | '&:nth-of-type';
-type WhitelistedPseudo = Omit<AllPseudos, ExcludedPseudos>;
+type AllPseudos = { [key in Pseudos]?: CssProps & AllPseudos };
 
 // The `screen and (max-width: 768px)` part of `@media screen and (max-width: 768px)`.
 // Ideally we would do type checking to forbid this from containing the `@media` part,
@@ -36,10 +26,10 @@ type WhitelistedPseudo = Omit<AllPseudos, ExcludedPseudos>;
 type AtRuleSecondHalf = string;
 type WhitelistedAtRule = {
   [atRuleFirstHalf in AtRules]?: {
-    [atRuleSecondHalf in AtRuleSecondHalf]: CssProps & WhitelistedPseudo & WhitelistedAtRule;
+    [atRuleSecondHalf in AtRuleSecondHalf]: CssProps & AllPseudos & WhitelistedAtRule;
   };
 };
-type WhitelistedSelector = WhitelistedPseudo & WhitelistedAtRule;
+type WhitelistedSelector = AllPseudos & WhitelistedAtRule;
 
 type ExtendedSelector = { [key: string]: CssProps | ExtendedSelector } & {
   /**
