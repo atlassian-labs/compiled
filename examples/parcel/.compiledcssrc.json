@@ -1,5 +1,5 @@
 {
-  "importReact": false,
+  "importReact": true,
   "extensions": [".js", ".jsx", ".ts", ".tsx", ".customjsx"],
   "parserBabelPlugins": ["typescript", "jsx"],
   "transformerBabelPlugins": [

@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, isAbsolute } from 'path';
 
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import generate from '@babel/generator';
@@ -112,7 +112,29 @@ export default new Transformer<ParcelTransformerOpts>({
   },
 
   async transform({ asset, config, options }) {
+    const distStyleRules: string[] = [];
+    let someCode = await asset.getCode();
+    for (const match of someCode.matchAll(
+      /(import ['"](?<importSpec>.+\.compiled\.css)['"];)|(require\(['"](?<requireSpec>.+\.compiled\.css)['"]\);)/g
+    )) {
+      const specifierPath = match.groups?.importSpec || match.groups?.requireSpec;
+      if (!specifierPath) continue;
+      someCode = someCode.replace(match[0], '');
+      asset.setCode(someCode);
+
+      const cssFilePath = isAbsolute(specifierPath)
+        ? specifierPath
+        : join(dirname(asset.filePath), specifierPath);
+
+      const cssContent = (await asset.fs.readFile(cssFilePath)).toString().split('\n');
+      if (!asset.meta.styleRules) {
+        asset.meta.styleRules = [];
+      }
+      (asset.meta.styleRules as string[]).push(...cssContent);
+    }
+
     const ast = await asset.getAST();
+
     if (!ast) {
       // We will only receive ASTs for assets we're interested in.
       // Since this is undefined (or in node modules) we aren't interested in it.
@@ -187,7 +209,7 @@ export default new Transformer<ParcelTransformerOpts>({
     if (extract) {
       // Store styleRules to asset.meta to be used by @compiled/parcel-optimizer
       const metadata = result?.metadata as BabelFileMetadata;
-      asset.meta.styleRules = metadata.styleRules;
+      asset.meta.styleRules = [...(metadata.styleRules ?? []), ...distStyleRules];
     }
 
     return [asset];

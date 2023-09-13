@@ -1,5 +1,6 @@
-import * as React from 'react';
-import '@compiled/react';
+import BabelComponentExtracted from '@compiled/babel-component-extracted-fixture/dist/index';
+import { css } from '@compiled/react';
+import React, { lazy } from 'react';
 // These are unused placeholder examples, as including them will break the application. The static evaluation in the
 // @compiled/babel-plugin must be synchronous, whereas parcel offers promise-based APIs, making them incompatible.
 // Eventually, the static evaluation (i.e. resolveBindingNode) should be replaced or removed so that these aliases
@@ -16,14 +17,14 @@ import {
 } from './ui/custom-file-extension.customjsx';
 import { TypeScript } from './ui/typescript';
 
-const AsyncComponent = React.lazy(() => import('./async'));
-
+const AsyncComponent = lazy(() => import('./async'));
 export const App = () => (
   <>
-    <div css={{ fontSize: 50, color: primary }}>hello from parcel 2</div>
+    <div css={css({ fontSize: 50, color: primary })}>hello from parcel 2</div>
     <TypeScript color="blue" />
     {/*<div css={parcelAliasStyles}>custom alias</div>*/}
     {/*<div css={parcelResolverAliasStyles}>custom resolver</div>*/}
+    <BabelComponentExtracted>Component from NPM</BabelComponentExtracted>
     <CustomFileExtensionStyled>Custom File Extension Styled</CustomFileExtensionStyled>
     <div css={customFileExtensionCss}>Custom File Extension CSS</div>
     <Annotated />

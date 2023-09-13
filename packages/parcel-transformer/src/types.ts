@@ -6,6 +6,7 @@ type BabelPluginOpts = Omit<PluginOptions, 'cache' | 'onIncludedFiles' | 'resolv
 
 export interface ParcelTransformerOpts extends BabelPluginOpts {
   extract?: boolean;
+  extractFromDistributedCode?: boolean;
   stylesheetPath?: string;
 
   /**

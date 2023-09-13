@@ -4,14 +4,17 @@
   "private": true,
   "scripts": {
     "build": "parcel build ./src/index.html",
-    "start": "parcel serve ./src/index.html --open --no-cache"
+    "start": "parcel serve ./src/index.html --open --no-cache",
+    "start:debug": "node --inspect-brk node_modules/.bin/parcel serve ./src/index.html --open --no-cache"
   },
   "dependencies": {
+    "@compiled/babel-component-extracted-fixture": "*",
     "@compiled/react": "*",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.22.15",
     "@compiled/parcel-config": "*",
     "@compiled/parcel-transformer": "*",
     "@parcel/config-default": "^2.8.3",

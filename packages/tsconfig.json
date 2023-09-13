@@ -10,6 +10,7 @@
     { "path": "jest/tsconfig.json" },
     { "path": "parcel-optimizer/tsconfig.json" },
     { "path": "parcel-transformer/tsconfig.json" },
+    { "path": "parcel-transformer-css/tsconfig.json" },
     { "path": "react/tsconfig.json" },
     { "path": "utils/tsconfig.json" },
     { "path": "webpack-loader/tsconfig.json" }
