@@ -805,12 +805,50 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 };
 
 /**
+ * Extracts CSS data from an array of expressions or arrayExpression
+ *
+ * @param node Node we're interested in extracting CSS from.
+ * @param meta {Metadata} Useful metadata that can be used during the transformation
+ */
+const extractArray = (node: t.ArrayExpression | t.Expression[], meta: Metadata) => {
+  const css: CSSOutput['css'] = [];
+  const variables: CSSOutput['variables'] = [];
+  const elements = Array.isArray(node) ? node : node.elements;
+
+  elements.forEach((element) => {
+    if (!t.isExpression(element)) {
+      throw buildCodeFrameError(
+        `${element && element.type} isn't a supported CSS type - try using an object or string`,
+        Array.isArray(node) ? element : node,
+        meta.parentPath
+      );
+    }
+
+    const result = t.isConditionalExpression(element)
+      ? extractConditionalExpression(element, meta)
+      : buildCss(element, meta);
+
+    css.push(...result.css);
+    variables.push(...result.variables);
+  });
+
+  return {
+    css,
+    variables,
+  };
+};
+
+/**
  * Will return a CSS string and CSS variables array from an input node.
  *
  * @param node Node we're interested in extracting CSS from.
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): CSSOutput => {
+  if (Array.isArray(node)) {
+    return extractArray(node, meta);
+  }
+
   if (t.isStringLiteral(node)) {
     return { css: [{ type: 'unconditional', css: node.value }], variables: [] };
   }
@@ -869,32 +907,8 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     return result;
   }
 
-  if (t.isArrayExpression(node) || Array.isArray(node)) {
-    const css: CSSOutput['css'] = [];
-    const variables: CSSOutput['variables'] = [];
-    const elements = t.isArrayExpression(node) ? node.elements : node;
-
-    elements.forEach((element) => {
-      if (!t.isExpression(element)) {
-        throw buildCodeFrameError(
-          `${element && element.type} isn't a supported CSS type - try using an object or string`,
-          t.isArrayExpression(node) ? node : element,
-          meta.parentPath
-        );
-      }
-
-      const result = t.isConditionalExpression(element)
-        ? extractConditionalExpression(element, meta)
-        : buildCss(element, meta);
-
-      css.push(...result.css);
-      variables.push(...result.variables);
-    });
-
-    return {
-      css,
-      variables,
-    };
+  if (t.isArrayExpression(node)) {
+    return extractArray(node, meta);
   }
 
   if (t.isLogicalExpression(node)) {
