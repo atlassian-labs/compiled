@@ -45,7 +45,6 @@ const styles = cssMap({
           color: 'pink',
         },
       },
-      '&:hover': { color: 'pink' },
     },
   },
 });

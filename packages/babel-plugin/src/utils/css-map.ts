@@ -62,33 +62,8 @@ export enum ErrorMessages {
   DUPLICATE_SELECTORS_BLOCK = 'Duplicate `selectors` key found in cssMap; expected either zero `selectors` keys or one.',
   STATIC_PROPERTY_KEY = 'Property key may only be a static string.',
   SELECTOR_BLOCK_WRONG_PLACE = '`selector` key was defined in the wrong place.',
-  USE_SELECTORS_WITH_AMPERSAND = 'This selector is applied to the current element (or the parent element), and so it should have the ampersand symbol (&) directly before it. For example, `:hover` should be written as `&:hover`.',
+  USE_SELECTORS_WITH_AMPERSAND = 'This selector is applied to the parent element, and so you need to specify the ampersand symbol (&) directly before it. For example, `:hover` should be written as `&:hover`.',
 }
-
-// TODO: add selectors key and @media queries to the below message
-// TODO: move this to the website documentation?
-// export const createErrorMessage = (message: string): string => {
-//   return `
-// ${message}
-
-// The below cssMap example may be helpful:
-
-// \`\`\`
-// import { css, cssMap } from '@compiled/react';
-// const borderStyleMap = cssMap({
-//     none: {
-//       borderStyle: 'none',
-//       '@media': { 'screen and (max-width: 500px)': { font-size: 2rem; } },
-//     },
-//     solid: {
-//       borderStyle: 'solid',
-//       '@media': { 'screen and (max-width: 500px)': { font-size: 1.75rem; } },
-//     },
-// });
-// const Component = ({ borderStyle }) => <div css={css(borderStyleMap[borderStyle])} />
-// \`\`\`
-//     `;
-// };
 
 export const createErrorMessage = (message: string): string => {
   return `
