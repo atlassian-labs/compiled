@@ -1,6 +1,6 @@
-version: v1.0.0
+version: v3.0.0
     ignore:
         'snyk:lic:npm:postcss-selector-parser:MPL-2.0':
-        - '*':
-            reason: We can utilize MPL-2.0 for non-distributed code. Given that this library is employed during the build step which is non-distributed, it appears to be compliant.
-            expires: 2030-01-01T00:00:00.000Z
+            - '*':
+                reason:  We can utilize MPL-2.0 for non-distributed code. Given that this library is employed during the build step which is non-distributed, it appears to be compliant.
+                expires: 2030-01-01T00:00:00.000Z
