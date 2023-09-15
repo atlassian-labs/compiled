@@ -1,0 +1,10 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.0
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'snyk:lic:npm:postcss-values-parser:MPL-2.0':
+    - 'packages/css':
+        reason: Given the library is employed during the build step which is non-distributed, it is compliant.
+        expires: 2033-09-15T05:46:34.098Z
+        created: 2023-09-15T05:46:34.102Z
+patch: {}
