@@ -7,7 +7,7 @@ import stripRuntimeBabelPlugin from '../index';
 import type { BabelFileMetadata } from '../types';
 
 // Mock out FS to avoid writing to disk
-// We aren't processing the result anywhere, so no need for specifying the response
+// We aren't processing the result anyway, so no need for specifying the response
 jest.mock('fs');
 
 const testStyleSheetPath =
