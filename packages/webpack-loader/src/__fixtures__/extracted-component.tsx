@@ -2,6 +2,7 @@
 import { jsx, css } from '@compiled/react';
 import { Fragment } from 'react';
 
+// @ts-expect-error
 import BabelComponentExtracted from '../../../../fixtures/babel-component-extracted/dist/';
 
 const Component = (): JSX.Element => (
