@@ -14,7 +14,7 @@ const styles = cssMap({
     // At-rules (@media, @screen, etc.)
     '@media': {
       'screen and (min-width: 500px)': {
-        fontSize: '10vw',
+        fontSize: '2rem',
       },
     },
     // Using the selectors object for any selectors
@@ -35,7 +35,7 @@ const styles = cssMap({
     },
     '@media': {
       'screen and (min-width: 500px)': {
-        fontSize: '20vw',
+        fontSize: '2.5rem',
       },
     },
     selectors: {
