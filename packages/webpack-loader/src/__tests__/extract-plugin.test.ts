@@ -187,7 +187,7 @@ describe('CompiledExtractPlugin', () => {
     const actual = await bundle(join(fixturesPath, 'extracted-component.tsx'));
 
     expect(actual).toMatchInlineSnapshot(`
-      "._1wybc038{font-size:12!important}
+      "._1wyb1fwx{font-size:12px}
       ._19bv1vi7{padding-left:32px}
       ._19itlf8h{border:2px solid blue}
       ._19pk1ul9{margin-top:30px}

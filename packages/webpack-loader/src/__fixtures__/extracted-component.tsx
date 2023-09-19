@@ -1,8 +1,8 @@
 /** @jsx jsx */
-// @ts-ignore
-import BabelComponentExtracted from '@compiled/babel-component-extracted-fixture/dist/index';
 import { jsx, css } from '@compiled/react';
 import { Fragment } from 'react';
+
+import BabelComponentExtracted from '../../../../fixtures/babel-component-extracted/dist/';
 
 const Component = (): JSX.Element => (
   <Fragment>
