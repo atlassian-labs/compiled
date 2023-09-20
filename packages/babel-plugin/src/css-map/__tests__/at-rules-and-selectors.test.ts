@@ -314,6 +314,6 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
           },
         });
       `);
-    }).toThrowError(ErrorMessages.SELECTORS_BLOCK_VALUE_TYPE);
+    }).toThrow(ErrorMessages.SELECTORS_BLOCK_VALUE_TYPE);
   });
 });

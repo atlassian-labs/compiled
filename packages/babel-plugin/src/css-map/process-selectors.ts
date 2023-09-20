@@ -123,7 +123,8 @@ export const mergeExtendedSelectorsIntoProperties = (
   }
 
   for (const property of [...variantStyles.properties, ...extendedSelectors]) {
-    // Covered by ESLint rule already
+    // Covered by @compiled/eslint-plugin rule already,
+    // this is just to make the type checker happy
     errorIfNotValidObjectProperty(property, meta);
     // Extract property.key into its own variable so we can do
     // type checking on it
