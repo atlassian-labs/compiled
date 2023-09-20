@@ -1,5 +1,9 @@
 import { css, cssMap } from '@compiled/react';
 
+const base = css({
+  backgroundColor: 'blue',
+});
+
 const styles = cssMap({
   danger: {
     color: 'red',
@@ -9,4 +13,4 @@ const styles = cssMap({
   },
 });
 
-export default ({ variant, children }) => <div css={css(styles[variant])}>{children}</div>;
+export default ({ variant, children }) => <div css={[base, styles[variant]]}>{children}</div>;

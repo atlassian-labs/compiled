@@ -1,8 +1,8 @@
 import type { TransformOptions } from '../../test-utils';
 import { transform as transformCode } from '../../test-utils';
-import { ErrorMessages } from '../index';
+import { ErrorMessages } from '../../utils/css-map';
 
-describe('css map', () => {
+describe('css map basic functionality', () => {
   const transform = (code: string, opts: TransformOptions = {}) =>
     transformCode(code, { pretty: false, ...opts });
 
@@ -91,6 +91,18 @@ describe('css map', () => {
         });
       `);
     }).toThrow(ErrorMessages.NO_OBJECT_METHOD);
+  });
+
+  it('should error out if empty object passed to variant', () => {
+    expect(() => {
+      transform(`
+        import { css, cssMap } from '@compiled/react';
+
+        const styles = cssMap({
+          danger: {}
+        });
+      `);
+    }).toThrow(ErrorMessages.EMPTY_VARIANT_OBJECT);
   });
 
   it('should error out if variant object is dynamic', () => {
