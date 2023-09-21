@@ -345,7 +345,7 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
 
   const [consequentCss, alternateCss] = CONDITIONAL_PATHS.map((path) => {
     const pathNode = node[path];
-    let cssOutput: CSSOutput | void;
+    let cssOutput: CSSOutput | undefined;
 
     if (
       t.isObjectExpression(pathNode) ||
