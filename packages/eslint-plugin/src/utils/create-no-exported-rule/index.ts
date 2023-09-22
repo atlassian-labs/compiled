@@ -2,7 +2,7 @@ import type { Rule, Scope } from 'eslint';
 
 import { COMPILED_IMPORT } from '../constants';
 
-import { validateDefinition } from './validate-definition';
+import { checkIfCompiledExport } from './check-if-compiled-export';
 
 type Node = Rule.Node;
 type Reference = Scope.Reference;
@@ -26,8 +26,8 @@ export const createNoExportedRule =
           return;
         }
 
-        const state = validateDefinition(context, node);
-        if (state.type === 'valid') {
+        const state = checkIfCompiledExport(context, node);
+        if (!state.isExport) {
           return;
         }
 
@@ -42,8 +42,8 @@ export const createNoExportedRule =
           return;
         }
 
-        const state = validateDefinition(context, node);
-        if (state.type === 'valid') {
+        const state = checkIfCompiledExport(context, node);
+        if (!state.isExport) {
           return;
         }
 
