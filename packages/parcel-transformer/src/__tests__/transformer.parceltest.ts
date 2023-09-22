@@ -92,7 +92,7 @@ it('transforms assets with custom resolver and statically evaluates imports', as
   expect(code).toInclude('color:red');
 }, 50000);
 
-it.only('transforms assets with compiled and extraction babel plugins', async () => {
+it('transforms assets with compiled and extraction babel plugins', async () => {
   const parcel = getParcelInstance(extractionFixtureRoot);
   const { changedAssets, bundleGraph } = await parcel.run();
   const assets = Array.from(changedAssets.values());
