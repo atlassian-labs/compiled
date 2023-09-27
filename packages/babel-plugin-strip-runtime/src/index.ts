@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from 'fs';
-import { basename, dirname, join } from 'path';
+import { dirname, join, parse } from 'path';
 
 import { declare } from '@babel/helper-plugin-utils';
 import template from '@babel/template';
@@ -53,17 +53,16 @@ export default declare<PluginPass>((api) => {
           }
 
           if (this.opts.extractStylesToDirectory && this.styleRules.length > 0) {
-            // Build filename of the css file
-            const currentFilename = basename(filename);
-            const cssFilename = `${currentFilename.substring(
-              0,
-              currentFilename.lastIndexOf('.')
-            )}.compiled.css`;
+            // Build and sanitize filename of the css file
+            const cssFilename = `${parse(filename).name}.compiled.css`.replace(
+              /[^.a-zA-Z0-9_-]+/g,
+              ''
+            );
 
             if (!file.opts.generatorOpts?.sourceFileName) {
               throw new Error(`Source filename was not defined`);
             }
-            const sourceFileName = `${file.opts.generatorOpts.sourceFileName}`;
+            const sourceFileName = file.opts.generatorOpts.sourceFileName;
             if (!sourceFileName.includes(this.opts.extractStylesToDirectory.source)) {
               throw new Error(
                 `Source directory '${this.opts.extractStylesToDirectory.source}' was not found relative to source file ('${sourceFileName}')`

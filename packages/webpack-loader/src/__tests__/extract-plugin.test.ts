@@ -183,7 +183,7 @@ describe('CompiledExtractPlugin', () => {
     `);
   }, 10000);
 
-  it('should hanlde extracted styles', async () => {
+  it('should handle extracted styles', async () => {
     const actual = await bundle(join(fixturesPath, 'extracted-component.tsx'));
 
     expect(actual).toMatchInlineSnapshot(`
