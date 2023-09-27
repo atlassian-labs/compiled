@@ -187,6 +187,7 @@ export default new Transformer<ParcelTransformerOpts>({
           '@compiled/babel-plugin-strip-runtime',
           {
             compiledRequireExclude: true,
+            extractStylesToDirectory: config.extractStylesToDirectory,
           } as BabelStripRuntimePluginOptions,
         ],
       ].filter(toBoolean),

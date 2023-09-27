@@ -57,4 +57,9 @@ export interface ParcelTransformerOpts extends BabelPluginOpts {
    * Default to `undefined`
    */
   classNameCompressionMapFilePath?: string;
+
+  /**
+   * When set, extract styles to an external CSS file
+   */
+  extractStylesToDirectory?: { source: string; dest: string };
 }
