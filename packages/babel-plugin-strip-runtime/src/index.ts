@@ -15,10 +15,6 @@ import { isCreateElement } from './utils/is-create-element';
 import { removeStyleDeclarations } from './utils/remove-style-declarations';
 import { toURIComponent } from './utils/to-uri-component';
 
-function addslashes(str: string) {
-  return str.replace(/[\\"']/g, '\\$&');
-}
-
 export default declare<PluginPass>((api) => {
   api.assertVersion(7);
 
@@ -87,7 +83,10 @@ export default declare<PluginPass>((api) => {
             writeFileSync(cssFilePath, sort(this.styleRules.sort().join('\n')));
 
             // Add css import to file
-            path.unshiftContainer('body', template.ast(`import "./${addslashes(cssFilename)}";`));
+            path.unshiftContainer(
+              'body',
+              t.importDeclaration([], t.stringLiteral(`./${cssFilename}`))
+            );
           }
         },
       },
