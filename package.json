@@ -13,7 +13,7 @@
     "benchmark": "jest --config benchmark.config.json",
     "build": "yarn build:babel-fixture && yarn build:browser && yarn build:cjs && yarn build:esm && yarn flow-types build && yarn postbuild",
     "postbuild": "scripts/postbuild.sh",
-    "build:babel-fixture": "yarn workspace @compiled/babel-component-fixture build",
+    "build:babel-fixture": "yarn workspace @compiled/babel-component-fixture build && yarn workspace @compiled/babel-component-extracted-fixture build",
     "build:browser": "ttsc --build packages/tsconfig.browser.json",
     "build:cjs": "ttsc --build packages/tsconfig.cjs.json",
     "build:esm": "ttsc --build packages/tsconfig.json",

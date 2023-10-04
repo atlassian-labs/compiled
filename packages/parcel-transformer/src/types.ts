@@ -6,6 +6,7 @@ type BabelPluginOpts = Omit<PluginOptions, 'cache' | 'onIncludedFiles' | 'resolv
 
 export interface ParcelTransformerOpts extends BabelPluginOpts {
   extract?: boolean;
+  extractFromDistributedCode?: boolean;
   stylesheetPath?: string;
 
   /**
@@ -56,4 +57,9 @@ export interface ParcelTransformerOpts extends BabelPluginOpts {
    * Default to `undefined`
    */
   classNameCompressionMapFilePath?: string;
+
+  /**
+   * When set, extract styles to an external CSS file
+   */
+  extractStylesToDirectory?: { source: string; dest: string };
 }

@@ -86,6 +86,11 @@ export interface CompiledLoaderOptions {
    * Default to `undefined`
    */
   classNameCompressionMap?: object;
+
+  /**
+   * When set, extract styles to an external CSS file
+   */
+  extractStylesToDirectory?: { source: string; dest: string };
 }
 
 export interface CompiledExtractPluginOptions {

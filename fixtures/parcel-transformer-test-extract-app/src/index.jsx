@@ -1,9 +1,11 @@
+import BabelComponentExtracted from '@compiled/babel-component-extracted-fixture/dist/index';
 import BabelComponent from '@compiled/babel-component-fixture';
-import '@compiled/react';
+import { css } from '@compiled/react';
 
 const App = () => (
   <>
-    <div css={{ fontSize: 50, color: 'red' }}>CSS prop</div>
+    <div css={css({ fontSize: 50, color: 'blue' })}>CSS prop</div>
     <BabelComponent>Babel component</BabelComponent>
+    <BabelComponentExtracted>Component from NPM</BabelComponentExtracted>
   </>
 );
