@@ -1,5 +1,12 @@
 # @compiled/parcel-transformer-test-compress-class-name-app
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [b6f3e41e]
+  - @compiled/react@0.15.0
+
 ## 0.2.1
 
 ### Patch Changes

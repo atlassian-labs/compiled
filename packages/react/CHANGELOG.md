@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.15.0
+
+### Minor Changes
+
+- b6f3e41e: Change `cssMap` types to use stricter type checking and only allowing a limited subset of whitelisted selectors (e.g. `&:hover`); implement syntax for at-rules (e.g. `@media`); implement `selectors` key for non-whitelisted selectors.
+
 ## 0.14.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @compiled/parcel-transformer
 
+## 0.13.4
+
+### Patch Changes
+
+- 9304fa3b: Add extractStylesToDirectory config to support extraction to CSS files
+- Updated dependencies [9304fa3b]
+  - @compiled/babel-plugin-strip-runtime@0.23.0
+
 ## 0.13.3
 
 ### Patch Changes
