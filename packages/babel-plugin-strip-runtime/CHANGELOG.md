@@ -1,5 +1,11 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.23.0
+
+### Minor Changes
+
+- 9304fa3b: Add extractStylesToDirectory config to support extraction to CSS files
+
 ## 0.19.0
 
 ### Minor Changes

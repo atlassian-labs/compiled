@@ -1,5 +1,15 @@
 # @compiled/eslint-plugin
 
+## 0.9.0
+
+### Minor Changes
+
+- 685093a5: Add ESLint rule `@compiled/no-invalid-css-map` for linting cssMap usages
+
+### Patch Changes
+
+- 59687aba: Fix @compiled/eslint-plugin no-css-prop-without-css-function rule adding duplicate css import
+
 ## 0.8.1
 
 ### Patch Changes

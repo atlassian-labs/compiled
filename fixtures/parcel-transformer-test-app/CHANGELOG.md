@@ -1,5 +1,12 @@
 # @compiled/parcel-transformer-test-app
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [b6f3e41e]
+  - @compiled/react@0.15.0
+
 ## 0.1.2
 
 ### Patch Changes
