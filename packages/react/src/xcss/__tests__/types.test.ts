@@ -2,8 +2,8 @@
 import { expectTypeOf } from 'expect-type';
 
 import xcss from '..';
-import cx from '../cx';
-import type { XCSSProp } from '../xcss';
+import cx from '../../cx';
+import type { XCSSProp } from '../xcss-prop';
 
 describe('xcss valid tests', () => {
   it('should work with subset types', () => {

@@ -19,7 +19,30 @@ type XCSSPseudos<K extends keyof CSSProperties, TPseudos extends CSSPseudos> = {
   [Q in CSSPseudos]?: Q extends TPseudos ? XCSSItem<K> : never;
 };
 
-/** xcss prop public api */
+/**
+ * __xcss prop__
+ *
+ * Controls the type of `xcss` supplied to a component allowing for
+ * more restrictive typing.
+ *
+ * @example
+ * ```tsx
+ * type Props = {
+ *   xcss: XCSSProp<'color', '&:hover'>
+ * }
+ *
+ * const Component = ({ xcss }: Props) => {
+ *
+ * }
+ *
+ * // Valid usage
+ * <Component xcss={{ color: 'red', '&:hover': { color: 'blue' } }} />
+ *
+ * // Invalid usage
+ * <Component xcss={{ backgroundColor: 'red' }} />
+ * ```
+ *
+ */
 export type XCSSProp<AllowedProperties extends keyof CSSProperties, TPseudos extends CSSPseudos> =
   | (XCSSItem<AllowedProperties> & XCSSPseudos<AllowedProperties, TPseudos>)
   | false
