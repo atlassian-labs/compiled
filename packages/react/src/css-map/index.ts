@@ -1,8 +1,7 @@
 import type { Properties, AtRules } from 'csstype';
 
 import { createSetupError } from '../utils/error';
-
-import type { Pseudos } from './pseudos';
+import type { Pseudos } from '../xcss/pseudos';
 
 /**
  * These are all the CSS props that will exist.
@@ -16,9 +15,9 @@ import type { Pseudos } from './pseudos';
  * };
  * ```
  */
-type CssProps = Readonly<Properties<string | number>>;
+type CSSProperties = Readonly<Properties<string | number>>;
 
-type AllPseudos = { [key in Pseudos]?: CssProps & AllPseudos };
+type AllPseudos = { [key in Pseudos]?: CSSProperties & AllPseudos };
 
 // The `screen and (max-width: 768px)` part of `@media screen and (max-width: 768px)`.
 // Ideally we would do type checking to forbid this from containing the `@media` part,
@@ -26,12 +25,12 @@ type AllPseudos = { [key in Pseudos]?: CssProps & AllPseudos };
 type AtRuleSecondHalf = string;
 type WhitelistedAtRule = {
   [atRuleFirstHalf in AtRules]?: {
-    [atRuleSecondHalf in AtRuleSecondHalf]: CssProps & AllPseudos & WhitelistedAtRule;
+    [atRuleSecondHalf in AtRuleSecondHalf]: CSSProperties & AllPseudos & WhitelistedAtRule;
   };
 };
 type WhitelistedSelector = AllPseudos & WhitelistedAtRule;
 
-type ExtendedSelector = { [key: string]: CssProps | ExtendedSelector } & {
+type ExtendedSelector = { [key: string]: CSSProperties | ExtendedSelector } & {
   /**
    * Using `selectors` is not valid here - you cannot nest a `selectors` object
    * inside another `selectors` object.
@@ -99,9 +98,9 @@ type ExtendedSelectors = {
 
 type Variants<VariantName extends string> = Record<
   VariantName,
-  CssProps & WhitelistedSelector & ExtendedSelectors
+  CSSProperties & WhitelistedSelector & ExtendedSelectors
 >;
-type ReturnType<VariantName extends string> = Record<VariantName, CssProps>;
+type ReturnType<VariantName extends string> = Record<VariantName, CSSProperties>;
 
 /**
  * ## cssMap
