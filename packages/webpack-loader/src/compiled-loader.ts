@@ -33,6 +33,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     optimizeCss = true,
     addComponentName = false,
     classNameCompressionMap = undefined,
+    extractStylesToDirectory = undefined,
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -79,6 +80,9 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           classNameCompressionMap: {
             type: 'object',
           },
+          extractStylesToDirectory: {
+            type: 'object',
+          },
         },
       });
 
@@ -96,6 +100,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     optimizeCss,
     addComponentName,
     classNameCompressionMap,
+    extractStylesToDirectory,
   };
 }
 
@@ -162,6 +167,7 @@ export default async function compiledLoader(
           {
             styleSheetPath: `@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${styleSheetName}.css`,
             compiledRequireExclude: options.ssr,
+            extractStylesToDirectory: options.extractStylesToDirectory,
           },
         ],
         options.bake && [

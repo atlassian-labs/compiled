@@ -10,6 +10,11 @@ export interface PluginOptions {
    * When set will prevent additional require (one import per rule) in the bundle.
    */
   compiledRequireExclude?: boolean;
+
+  /**
+   * When set, extract styles to an external CSS file
+   */
+  extractStylesToDirectory?: { source: string; dest: string };
 }
 
 export interface PluginPass {
@@ -24,10 +29,25 @@ export interface PluginPass {
    * Data of the current file being transformed.
    */
   file: {
+    opts: {
+      generatorOpts?: {
+        sourceFileName?: string;
+      };
+    };
     metadata: {
       styleRules: string[];
     };
   };
+
+  /**
+   * Current filename
+   */
+  filename: string;
+
+  /**
+   * Working directory for babel
+   */
+  cwd: string;
 }
 
 export interface BabelFileMetadata extends OriginalBabelFileMetadata {

@@ -7,11 +7,15 @@ import * as t from '@babel/types';
  * @param node
  * @param parentPath
  */
-export const getPathOfNode = <TNode>(node: TNode, parentPath: NodePath): NodePath<TNode> => {
+export const getPathOfNode = (node: t.Node, parentPath: NodePath): NodePath => {
   let foundPath: NodePath | null = null;
 
+  if (t.isExpression(node)) {
+    node = t.expressionStatement(node);
+  }
+
   traverse(
-    t.expressionStatement(node as any),
+    node,
     {
       enter(path) {
         foundPath = path;

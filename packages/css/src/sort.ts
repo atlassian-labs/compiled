@@ -1,4 +1,5 @@
 import postcss from 'postcss';
+import discardDuplicates from 'postcss-discard-duplicates';
 
 import { mergeDuplicateAtRules } from './plugins/merge-duplicate-at-rules';
 import { sortAtomicStyleSheet } from './plugins/sort-atomic-style-sheet';
@@ -10,7 +11,11 @@ import { sortAtomicStyleSheet } from './plugins/sort-atomic-style-sheet';
  * @returns
  */
 export function sort(stylesheet: string): string {
-  const result = postcss([mergeDuplicateAtRules(), sortAtomicStyleSheet()]).process(stylesheet, {
+  const result = postcss([
+    discardDuplicates(),
+    mergeDuplicateAtRules(),
+    sortAtomicStyleSheet(),
+  ]).process(stylesheet, {
     from: undefined,
   });
 

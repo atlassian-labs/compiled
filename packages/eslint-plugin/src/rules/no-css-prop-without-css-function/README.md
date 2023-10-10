@@ -6,6 +6,12 @@ Using the CSS import also improves readability and type-safety, as errors will s
 
 When defining a CSS prop value, CSS-in-JS libraries often will not be able to figure out which library you want to use. This can cause undefined behaviour depending on how the bundler visits the file.
 
+This rule also forbids using the `css` props with a value that Compiled cannot determine at build time, as listed below. These are situations that would cause Compiled to error at build time, or undefined behaviour if Compiled is used alongside another library (e.g. styled-components).
+
+- imported values
+- function parameters/props
+- value that uses an undefined variable
+
 ## Rule details
 
 👎 Examples of **incorrect** code for this rule:
@@ -50,4 +56,29 @@ const styles = css`
 `;
 
 const Component = () => <div css={styles} />;
+```
+
+👎 Examples of **incorrect** code for this rule:
+
+```js
+import React from 'react';
+
+const CoolComponent = ({ styles }) => {
+  return <MyComponent css={styles} />;
+};
+```
+
+👍 Examples of **correct** code for this rule:
+
+```js
+import React from 'react';
+import { css } from '@compiled/react';
+
+const CoolComponent = () => {
+  const styles = css({
+    color: 'red';
+  });
+
+  return <MyComponent css={styles} />;
+}
 ```

@@ -28,8 +28,32 @@ import type {
   CssItem,
   LogicalCssItem,
   SheetCssItem,
+  CssMapItem,
   PartialBindingWithMeta,
 } from './types';
+
+/**
+ * Retrieves the leftmost identity from a given expression.
+ *
+ * For example:
+ * Given a member expression "colors.primary.500", the function will return "colors".
+ *
+ * @param expression The expression to be evaluated.
+ * @returns {string} The leftmost identity in the expression.
+ */
+const findBindingIdentifier = (
+  expression: t.Expression | t.V8IntrinsicIdentifier
+): t.Identifier | undefined => {
+  if (t.isIdentifier(expression)) {
+    return expression;
+  } else if (t.isCallExpression(expression)) {
+    return findBindingIdentifier(expression.callee);
+  } else if (t.isMemberExpression(expression)) {
+    return findBindingIdentifier(expression.object);
+  }
+
+  return undefined;
+};
 
 /**
  * Will normalize the value of a `content` CSS property to ensure it has quotations around it.
@@ -321,7 +345,7 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
 
   const [consequentCss, alternateCss] = CONDITIONAL_PATHS.map((path) => {
     const pathNode = node[path];
-    let cssOutput: CSSOutput | void;
+    let cssOutput: CSSOutput | undefined;
 
     if (
       t.isObjectExpression(pathNode) ||
@@ -781,12 +805,50 @@ const extractTemplateLiteral = (node: t.TemplateLiteral, meta: Metadata): CSSOut
 };
 
 /**
+ * Extracts CSS data from an array of expressions or arrayExpression
+ *
+ * @param node Node we're interested in extracting CSS from.
+ * @param meta {Metadata} Useful metadata that can be used during the transformation
+ */
+const extractArray = (node: t.ArrayExpression | t.Expression[], meta: Metadata) => {
+  const css: CSSOutput['css'] = [];
+  const variables: CSSOutput['variables'] = [];
+  const elements = Array.isArray(node) ? node : node.elements;
+
+  elements.forEach((element) => {
+    if (!t.isExpression(element)) {
+      throw buildCodeFrameError(
+        `${element && element.type} isn't a supported CSS type - try using an object or string`,
+        Array.isArray(node) ? element : node,
+        meta.parentPath
+      );
+    }
+
+    const result = t.isConditionalExpression(element)
+      ? extractConditionalExpression(element, meta)
+      : buildCss(element, meta);
+
+    css.push(...result.css);
+    variables.push(...result.variables);
+  });
+
+  return {
+    css,
+    variables,
+  };
+};
+
+/**
  * Will return a CSS string and CSS variables array from an input node.
  *
  * @param node Node we're interested in extracting CSS from.
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): CSSOutput => {
+  if (Array.isArray(node)) {
+    return extractArray(node, meta);
+  }
+
   if (t.isStringLiteral(node)) {
     return { css: [{ type: 'unconditional', css: node.value }], variables: [] };
   }
@@ -804,6 +866,13 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
   }
 
   if (t.isMemberExpression(node)) {
+    const bindingIdentifier = findBindingIdentifier(node);
+    if (bindingIdentifier && meta.state.cssMap[bindingIdentifier.name]) {
+      return {
+        css: [{ type: 'map', expression: node, name: bindingIdentifier.name, css: '' }],
+        variables: [],
+      };
+    }
     const { value, meta: updatedMeta } = evaluateExpression(node, meta);
     return buildCss(value, updatedMeta);
   }
@@ -838,32 +907,8 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     return result;
   }
 
-  if (t.isArrayExpression(node) || Array.isArray(node)) {
-    const css: CSSOutput['css'] = [];
-    const variables: CSSOutput['variables'] = [];
-    const elements = t.isArrayExpression(node) ? node.elements : node;
-
-    elements.forEach((element) => {
-      if (!t.isExpression(element)) {
-        throw buildCodeFrameError(
-          `${element && element.type} isn't a supported CSS type - try using an object or string`,
-          t.isArrayExpression(node) ? node : element,
-          meta.parentPath
-        );
-      }
-
-      const result = t.isConditionalExpression(element)
-        ? extractConditionalExpression(element, meta)
-        : buildCss(element, meta);
-
-      css.push(...result.css);
-      variables.push(...result.variables);
-    });
-
-    return {
-      css,
-      variables,
-    };
+  if (t.isArrayExpression(node)) {
+    return extractArray(node, meta);
   }
 
   if (t.isLogicalExpression(node)) {
@@ -875,6 +920,13 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
           ...item,
           expression: t.logicalExpression(item.operator, expression, item.expression),
         };
+      }
+
+      if (item.type === 'map') {
+        return {
+          ...item,
+          expression: t.logicalExpression(node.operator, expression, item.expression),
+        } as CssMapItem;
       }
 
       const logicalItem: LogicalCssItem = {

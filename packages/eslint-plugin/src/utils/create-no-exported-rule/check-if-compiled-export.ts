@@ -13,7 +13,7 @@ type Stack = {
 };
 
 const getStack = (context: RuleContext, node: Node) => {
-  const { scopeManager } = context.getSourceCode();
+  const { scopeManager } = context.sourceCode;
   const stack: Omit<Stack, 'scope'> = {
     nodes: [],
     root: node,
@@ -97,26 +97,26 @@ const matches = (defs: Node[], refs: Node[]) => {
   });
 };
 
-export type InvalidDefinition = {
-  type: 'invalid';
+type Yes = {
+  isExport: true;
   node: Node;
 };
 
-export type ValidDefinition = {
-  type: 'valid';
+type No = {
+  isExport: false;
 };
 
-export type Validity = InvalidDefinition | ValidDefinition;
+type IsCompiledExport = Yes | No;
 
-export const validateDefinition = (
+export const checkIfCompiledExport = (
   context: RuleContext,
   node: Node,
   scope: Scope = context.getScope()
-): Validity => {
+): IsCompiledExport => {
   // Ignore any expression defined outside of the global or module scope as we have no way of statically analysing them
   if (scope.type !== 'global' && scope.type !== 'module') {
     return {
-      type: 'valid',
+      isExport: false,
     };
   }
 
@@ -124,20 +124,20 @@ export const validateDefinition = (
   // Exporting a component with a css reference should be allowed
   if (isStyledComponent(nodes, context)) {
     return {
-      type: 'valid',
+      isExport: false,
     };
   }
 
   if (root.type === 'ExportDefaultDeclaration' || root.type === 'ExportNamedDeclaration') {
     return {
-      type: 'invalid',
+      isExport: true,
       node: root,
     };
   }
 
   if (root.type !== 'VariableDeclarator') {
     return {
-      type: 'valid',
+      isExport: false,
     };
   }
 
@@ -145,7 +145,7 @@ export const validateDefinition = (
   const reference = scope.references.find(({ identifier }) => identifier === root.id);
   if (!reference) {
     return {
-      type: 'valid',
+      isExport: false,
     };
   }
 
@@ -162,14 +162,14 @@ export const validateDefinition = (
     // Only validate the resolved reference if it accesses the definition node
     if (matches(nodes, refs.reverse())) {
       // Now validate the identifier reference as a definition
-      const validity = validateDefinition(context, identifier as Rule.Node, nextScope);
-      if (validity.type === 'invalid') {
+      const validity = checkIfCompiledExport(context, identifier as Rule.Node, nextScope);
+      if (validity.isExport) {
         return validity;
       }
     }
   }
 
   return {
-    type: 'valid',
+    isExport: false,
   };
 };

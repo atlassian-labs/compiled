@@ -1,5 +1,27 @@
 # @compiled/eslint-plugin
 
+## 0.9.0
+
+### Minor Changes
+
+- 685093a5: Add ESLint rule `@compiled/no-invalid-css-map` for linting cssMap usages
+
+### Patch Changes
+
+- 59687aba: Fix @compiled/eslint-plugin no-css-prop-without-css-function rule adding duplicate css import
+
+## 0.8.1
+
+### Patch Changes
+
+- 40904082: Allow function parameters and imported values for left side of any logical expression in `css` attribute (A && B, A || B, A ?? B)
+
+## 0.8.0
+
+### Minor Changes
+
+- 9cfda8ef: no-css-prop-without-css-function: Forbid imported styles and function parameters in `css` attribute
+
 ## 0.7.0
 
 ### Minor Changes

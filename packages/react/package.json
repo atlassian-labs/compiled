@@ -1,6 +1,6 @@
 {
   "name": "@compiled/react",
-  "version": "0.13.1",
+  "version": "0.15.0",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "keywords": [
     "compiled",
@@ -79,6 +79,7 @@
     "@testing-library/react": "^12.1.5",
     "@types/jsdom": "^16.2.15",
     "@types/react-dom": "^17.0.20",
+    "expect-type": "^0.17.3",
     "jsdom": "^19.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"

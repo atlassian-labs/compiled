@@ -46,6 +46,9 @@ generate() {
     # Use readonly array to handle flow strict mode
     sed -i.bak -E 's/css: CssObject<TProps> \| CssObject<TProps>\[\],/css: CssObject<TProps> \| \$ReadOnlyArray<CssObject<TProps>>,/g' "$file" && rm "$file.bak"
 
+    # Replace Readonly with $ReadOnly
+    sed -i.bak -E 's/Readonly</$ReadOnly</g' "$file" && rm "$file.bak"
+
     # Rename JSX.IntrinsicElements to existing flow type
     sed -i.bak -E 's/JSX.IntrinsicElements/$JSXIntrinsics/g' "$file" && rm "$file.bak"
 
@@ -62,8 +65,12 @@ generate() {
     # Refactor interface to object type to allow spreading
     sed -i.bak -E 's/export interface StyledProps \{/export type StyledProps = \{/g' "$file" && rm "$file.bak"
 
-    # Fix records to object type
-    sed -i.bak -E 's/Record<(.+), (.+)>/{[key: \1]: \2}/g' "$file" && rm "$file.bak"
+    # Fix records to object type. `s` flag and `-0777` makes perl
+    # match multiline.
+    #
+    # Assumes that the first argument to Record does not contain
+    # commas (otherwise this hacky script will break...)
+    perl -i.bak -0777 -pe 's/Record<(.+?),(.+?)>;/{[key: $1]: $2}/gs' "$file" && rm "$file.bak"
 
     # Change spread to allow correct type matching in flow
     sed -i.bak -E 's/\[key: string\]: CssFunction<TProps>,/...CSSProps<TProps>,\n[key: string]: CssFunction<TProps>,/g' "$file" && rm "$file.bak"

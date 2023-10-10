@@ -30,6 +30,10 @@ export const tester = new RuleTester(baseTesterConfig);
 export const typeScriptTester = new RuleTester({
   ...baseTesterConfig,
   parser: require.resolve('@typescript-eslint/parser'),
+  parserOptions: {
+    ...baseTesterConfig.parserOptions,
+    ecmaFeatures: { jsx: true },
+  },
 });
 
 export const createAliasedInvalidTestCase = (
