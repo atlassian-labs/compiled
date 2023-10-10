@@ -39,7 +39,22 @@ module.exports = {
         'import/export': 'off',
         // We will let TypeScript handle this for tsx? files, and ignore it on jsx? files to enable linting without
         // building packages
-        'import/no-extraneous-dependencies': 'error',
+        'import/no-extraneous-dependencies': [
+          'error',
+          {
+            devDependencies: [
+              '**/__tests__/**',
+              '**/test/**',
+              '**/stories/**',
+              '**/__fixtures__/**',
+              '**/fixtures/**',
+              '**/__perf__/**',
+              '**/*.test.tsx?',
+              '**/index.js',
+              '**/test-utils.ts',
+            ],
+          },
+        ],
         'import/no-unresolved': 'off',
         'import/order': [
           'error',
