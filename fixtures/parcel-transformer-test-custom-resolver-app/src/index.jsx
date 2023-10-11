@@ -1,8 +1,4 @@
-import '@compiled/react';
-import { color } from '~/src/foo.js';
+import { css } from '@compiled/react';
+import { primary } from 'test';
 
-const App = () => (
-  <>
-    <div css={{ color }}>CSS prop</div>
-  </>
-);
+const App = () => <div css={css({ color: primary })} />;

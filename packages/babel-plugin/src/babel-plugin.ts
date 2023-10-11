@@ -39,7 +39,7 @@ export default declare<State>((api) => {
   return {
     name: packageJson.name,
     inherits: jsxSyntax,
-    pre() {
+    pre(state) {
       this.sheets = {};
       this.cssMap = {};
       let cache: Cache;
@@ -57,6 +57,14 @@ export default declare<State>((api) => {
       this.includedFiles = [];
       this.pathsToCleanup = [];
       this.pragma = {};
+
+      if (typeof this.opts.resolver === 'object') {
+        this.resolver = this.opts.resolver;
+      } else if (typeof this.opts.resolver === 'string') {
+        this.resolver = require(require.resolve(this.opts.resolver, {
+          paths: [state.opts.root ?? this.cwd],
+        }));
+      }
     },
     visitor: {
       Program: {

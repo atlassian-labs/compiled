@@ -45,9 +45,9 @@ export interface PluginOptions {
   optimizeCss?: boolean;
 
   /**
-   * A custom resolver used to statically evaluate import declarations
+   * A custom resolver used to statically evaluate import declarations, specified as either an object or module path
    */
-  resolver?: Resolver;
+  resolver?: string | Resolver;
 
   /**
    * List of file extensions to traverse as code
@@ -147,6 +147,11 @@ export interface State extends PluginPass {
    * Holds a record of currently evaluated CSS Map and its sheets in the module.
    */
   cssMap: Record<string, string[]>;
+
+  /**
+   * A custom resolver used to statically evaluate import declarations
+   */
+  resolver?: Resolver;
 }
 
 interface CommonMetadata {

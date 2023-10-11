@@ -1,4 +1,3 @@
-import fs from 'fs';
 import { join, dirname, isAbsolute } from 'path';
 
 import { parseAsync, transformFromAstAsync } from '@babel/core';
@@ -11,9 +10,9 @@ import type {
 import { toBoolean } from '@compiled/utils';
 import { Transformer } from '@parcel/plugin';
 import SourceMap from '@parcel/source-map';
-import { CachedInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
 import type { ParcelTransformerOpts } from './types';
+import { createDefaultResolver } from './utils';
 
 const configFiles = [
   '.compiledcssrc',
@@ -146,16 +145,6 @@ export default new Transformer<ParcelTransformerOpts>({
     const includedFiles: string[] = [];
     const code = asset.isASTDirty() ? undefined : await asset.getCode();
 
-    const resolver = ResolverFactory.createResolver({
-      fileSystem: new CachedInputFileSystem(fs, 4000),
-      ...(config.extensions && {
-        extensions: config.extensions,
-      }),
-      ...(config.resolve ?? {}),
-      // This makes the resolver invoke the callback synchronously
-      useSyncFileSystemCalls: true,
-    });
-
     const result = await transformFromAstAsync(ast.program, code, {
       code: true,
       ast: false,
@@ -174,12 +163,7 @@ export default new Transformer<ParcelTransformerOpts>({
             ...config,
             classNameCompressionMap: config.extract && config.classNameCompressionMap,
             onIncludedFiles: (files: string[]) => includedFiles.push(...files),
-            resolver: {
-              // The resolver needs to be synchronous, as babel plugins must be synchronous
-              resolveSync: (context: string, request: string) => {
-                return resolver.resolveSync({}, dirname(context), request);
-              },
-            },
+            resolver: config.resolver ? config.resolver : createDefaultResolver(config),
             cache: false,
           } as BabelPluginOptions,
         ],

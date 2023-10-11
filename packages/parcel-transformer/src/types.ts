@@ -30,9 +30,14 @@ export interface ParcelTransformerOpts extends BabelPluginOpts {
   optimizeCss?: boolean;
 
   /**
-   * Override the default `resolve` used by @compiled/babel-plugin, which is used to statically evaluate import declarations
+   * @deprecated Override the default `resolve` used by @compiled/babel-plugin, which is used to statically evaluate import declarations
    */
   resolve?: ResolveOptions;
+
+  /**
+   * Override the default @compiled/babel-plugin resolver, by providing a module path that exports a custom resolver
+   */
+  resolver?: string;
 
   /**
    * Add the component name as class name to DOM in non-production environment if styled is used
