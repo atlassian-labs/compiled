@@ -176,8 +176,7 @@ const getDestructuredObjectPatternKey = (node: t.ObjectPattern, referenceName: s
 };
 
 const resolveRequest = (request: string, extensions: string[], meta: Metadata) => {
-  const { filename, opts } = meta.state;
-  const { resolver } = opts;
+  const { filename, resolver } = meta.state;
   if (!filename) {
     throw new Error('Unable to resolve request due to a missing filename, this is probably a bug!');
   }

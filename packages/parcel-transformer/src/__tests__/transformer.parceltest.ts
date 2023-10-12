@@ -6,15 +6,6 @@ import { format } from 'prettier';
 
 const rootPath = join(__dirname, '..', '..', '..', '..');
 const fixtureRoot = join(rootPath, 'fixtures/parcel-transformer-test-app');
-const extractionFixtureRoot = join(rootPath, 'fixtures/parcel-transformer-test-extract-app');
-const compressingClassNameFixtureRoot = join(
-  rootPath,
-  'fixtures/parcel-transformer-test-compress-class-name-app'
-);
-const customResolverFixtureRoot = join(
-  rootPath,
-  'fixtures/parcel-transformer-test-custom-resolver-app'
-);
 const babelComponentFixture = join(rootPath, 'fixtures/babel-component');
 
 const workerFarm = createWorkerFarm();
@@ -79,7 +70,28 @@ it('transforms assets with babel plugin', async () => {
   `);
 }, 50000);
 
+it('transforms assets with custom resolve and statically evaluates imports', async () => {
+  const customResolveFixtureRoot = join(
+    rootPath,
+    'fixtures/parcel-transformer-test-custom-resolve-app'
+  );
+  const parcel = getParcelInstance(customResolveFixtureRoot);
+  const { changedAssets } = await parcel.run();
+
+  const asset = Array.from(changedAssets.values()).find(
+    (asset) => asset.filePath === join(customResolveFixtureRoot, 'src/index.jsx')
+  );
+
+  const code = await asset?.getCode();
+
+  expect(code).toInclude('color:red');
+}, 50000);
+
 it('transforms assets with custom resolver and statically evaluates imports', async () => {
+  const customResolverFixtureRoot = join(
+    rootPath,
+    'fixtures/parcel-transformer-test-custom-resolver-app'
+  );
   const parcel = getParcelInstance(customResolverFixtureRoot);
   const { changedAssets } = await parcel.run();
 
@@ -93,6 +105,7 @@ it('transforms assets with custom resolver and statically evaluates imports', as
 }, 50000);
 
 it('transforms assets with compiled and extraction babel plugins', async () => {
+  const extractionFixtureRoot = join(rootPath, 'fixtures/parcel-transformer-test-extract-app');
   const parcel = getParcelInstance(extractionFixtureRoot);
   const { changedAssets, bundleGraph } = await parcel.run();
   const assets = Array.from(changedAssets.values());
@@ -216,6 +229,10 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
 }, 50000);
 
 it('transforms assets with class name compression enabled', async () => {
+  const compressingClassNameFixtureRoot = join(
+    rootPath,
+    'fixtures/parcel-transformer-test-compress-class-name-app'
+  );
   const parcel = getParcelInstance(compressingClassNameFixtureRoot);
   const { changedAssets, bundleGraph } = await parcel.run();
 
