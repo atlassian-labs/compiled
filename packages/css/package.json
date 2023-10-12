@@ -26,7 +26,7 @@
     "@compiled/utils": "^0.8.0",
     "autoprefixer": "^10.4.14",
     "cssnano-preset-default": "^5.2.14",
-    "postcss": "^8.4.27",
+    "postcss": "^8.4.31",
     "postcss-discard-duplicates": "^6.0.0",
     "postcss-nested": "^5.0.6",
     "postcss-normalize-whitespace": "^5.1.1",
