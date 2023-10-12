@@ -39,7 +39,7 @@ const reportIfNotTopLevelScope = (node: CallExpression, context: Rule.RuleContex
 };
 
 const createCssMapRule = (context: Rule.RuleContext): Rule.RuleListener => {
-  const { text } = context.sourceCode;
+  const { text } = context.getSourceCode();
   if (!text.includes(COMPILED_IMPORT)) {
     return {};
   }
