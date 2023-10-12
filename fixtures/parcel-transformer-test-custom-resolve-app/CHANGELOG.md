@@ -1,5 +1,11 @@
 # @compiled/parcel-transformer-test-custom-resolve-app
 
+## 0.1.4
+
+### Patch Changes
+
+- 809cc389: Rename package to resolve over resolver
+
 ## 0.1.3
 
 ### Patch Changes
