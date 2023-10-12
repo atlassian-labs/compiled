@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.9.1
+
+### Patch Changes
+
+- bfa60425: Replace context.sourceCode with context.getSourceCode(), to restore compatibility with ESLint v7 and <v8.40.0
+
 ## 0.9.0
 
 ### Minor Changes
