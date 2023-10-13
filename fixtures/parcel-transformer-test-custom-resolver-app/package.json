@@ -1,6 +1,6 @@
 {
   "name": "@compiled/parcel-transformer-test-custom-resolver-app",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@compiled/react": "^0.15.0",

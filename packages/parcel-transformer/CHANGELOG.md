@@ -1,5 +1,16 @@
 # @compiled/parcel-transformer
 
+## 0.14.0
+
+### Minor Changes
+
+- 809cc389: Add resolver configuration option
+
+### Patch Changes
+
+- Updated dependencies [809cc389]
+  - @compiled/babel-plugin@0.24.0
+
 ## 0.13.4
 
 ### Patch Changes

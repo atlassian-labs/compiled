@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.24.0
+
+### Minor Changes
+
+- 809cc389: Update resolver to support module paths
+
 ## 0.22.0
 
 ### Minor Changes
