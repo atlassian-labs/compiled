@@ -30,146 +30,157 @@ const findNodeReference = (
   return references.find((reference) => reference.identifier === node);
 };
 
-const handleIdentifier = (node: TSESTree.Identifier, references: Reference[], context: Context) => {
-  // Resolve the variable for the reference
-  const reference = findNodeReference(references, node);
-  const definition = reference?.resolved?.defs.find(
-    (def): def is VariableDefinition => def.type === 'Variable'
-  );
+class NoCssPropWithoutCssFunctionRunner {
+  private references: Reference[];
 
-  // Traverse to the variable value
-  if (definition && definition.node.init) {
-    findStyleNodes(definition.node.init, references, context);
-  } else {
-    const isImported = reference?.resolved?.defs.find((def) => def.type === 'ImportBinding');
-    const isFunctionParameter = reference?.resolved?.defs.find((def) => def.type === 'Parameter');
+  constructor(private baseNode: TSESTree.JSXExpressionContainer, private context: Context) {
+    this.references = context.getScope().references;
+  }
 
-    const jsxElement = traverseUpToJSXOpeningElement(node);
+  private handleIdentifier(node: TSESTree.Identifier) {
+    // Resolve the variable for the reference
+    const reference = findNodeReference(this.references, node);
+    const definition = reference?.resolved?.defs.find(
+      (def): def is VariableDefinition => def.type === 'Variable'
+    );
 
-    // css property on DOM elements are always fine, e.g.
-    // <div css={...}> instead of <MyComponent css={...}>
-    if (jsxElement.name.type === 'JSXIdentifier' && isDOMElement(jsxElement.name.name)) {
-      return;
+    // Traverse to the variable value
+    if (definition && definition.node.init) {
+      this.findStyleNodes(definition.node.init);
+    } else {
+      const isImported = reference?.resolved?.defs.find((def) => def.type === 'ImportBinding');
+      const isFunctionParameter = reference?.resolved?.defs.find((def) => def.type === 'Parameter');
+
+      const jsxElement = traverseUpToJSXOpeningElement(this.baseNode);
+
+      // css property on DOM elements are always fine, e.g.
+      // <div css={...}> instead of <MyComponent css={...}>
+      if (
+        jsxElement &&
+        jsxElement.name.type === 'JSXIdentifier' &&
+        isDOMElement(jsxElement.name.name)
+      ) {
+        return;
+      }
+
+      if (isImported) {
+        this.context.report({
+          messageId: 'importedInvalidCssUsage',
+          node,
+        });
+      } else if (isFunctionParameter) {
+        this.context.report({
+          messageId: 'functionParameterInvalidCssUsage',
+          node,
+        });
+      } else {
+        this.context.report({
+          messageId: 'otherInvalidCssUsage',
+          node,
+        });
+      }
     }
+  }
 
-    if (isImported) {
-      context.report({
-        messageId: 'importedInvalidCssUsage',
-        node,
-      });
-    } else if (isFunctionParameter) {
-      context.report({
+  private handleMemberExpression(node: TSESTree.MemberExpression) {
+    const reference = findNodeReference(this.references, node.object);
+    const definition = reference?.resolved?.defs.find(
+      (def): def is ParameterDefinition => def.type === 'Parameter'
+    );
+
+    if (definition) {
+      this.context.report({
         messageId: 'functionParameterInvalidCssUsage',
         node,
       });
-    } else {
-      context.report({
-        messageId: 'otherInvalidCssUsage',
-        node,
-      });
     }
   }
-};
 
-const handleMemberExpression = (
-  node: TSESTree.MemberExpression,
-  references: Reference[],
-  context: Context
-) => {
-  const reference = findNodeReference(references, node.object);
-  const definition = reference?.resolved?.defs.find(
-    (def): def is ParameterDefinition => def.type === 'Parameter'
-  );
+  private fixWrapper(node: CSSValue, context: Context) {
+    function* fix(fixer: TSESLint.RuleFixer) {
+      const compiledImports = findTSCompiledImportDeclarations(context);
+      const source = context.getSourceCode();
 
-  if (definition) {
-    context.report({
-      messageId: 'functionParameterInvalidCssUsage',
-      node,
-    });
-  }
-};
+      // The string that `css` from `@compiled/css` is imported as
+      const cssImportName = getImportedName(compiledImports, 'css');
 
-const fixWrapper = (node: CSSValue, context: Context) => {
-  function* fix(fixer: TSESLint.RuleFixer) {
-    const compiledImports = findTSCompiledImportDeclarations(context);
-    const source = context.getSourceCode();
+      if (compiledImports.length > 0) {
+        if (!cssImportName) {
+          // Import found, add the specifier to it
+          const [firstCompiledImport] = compiledImports;
+          const specifiersString = addImportToDeclaration(firstCompiledImport, ['css']);
 
-    // The string that `css` from `@compiled/css` is imported as
-    const cssImportName = getImportedName(compiledImports, 'css');
-
-    if (compiledImports.length > 0) {
-      if (!cssImportName) {
-        // Import found, add the specifier to it
-        const [firstCompiledImport] = compiledImports;
-        const specifiersString = addImportToDeclaration(firstCompiledImport, ['css']);
-
-        yield fixer.replaceText(firstCompiledImport, specifiersString);
-      }
-    } else {
-      // Import not found, add a new one
-      yield fixer.insertTextAfter(
-        source.ast.body[0],
-        `\n${buildImportDeclaration('css', '@compiled/react')}`
-      );
-    }
-
-    const cssFunctionName = cssImportName ?? 'css';
-
-    if (node.type === 'ObjectExpression') {
-      const parent = node.parent;
-      if (parent && parent.type === 'TSAsExpression') {
-        yield fixer.replaceText(parent, `${cssFunctionName}(${source.getText(node)})`);
+          yield fixer.replaceText(firstCompiledImport, specifiersString);
+        }
       } else {
-        yield fixer.insertTextBefore(node, `${cssFunctionName}(`);
-        yield fixer.insertTextAfter(node, ')');
+        // Import not found, add a new one
+        yield fixer.insertTextAfter(
+          source.ast.body[0],
+          `\n${buildImportDeclaration('css', '@compiled/react')}`
+        );
       }
-    } else {
-      yield fixer.insertTextBefore(node, cssFunctionName);
+
+      const cssFunctionName = cssImportName ?? 'css';
+
+      if (node.type === 'ObjectExpression') {
+        const parent = node.parent;
+        if (parent && parent.type === 'TSAsExpression') {
+          yield fixer.replaceText(parent, `${cssFunctionName}(${source.getText(node)})`);
+        } else {
+          yield fixer.insertTextBefore(node, `${cssFunctionName}(`);
+          yield fixer.insertTextAfter(node, ')');
+        }
+      } else {
+        yield fixer.insertTextBefore(node, cssFunctionName);
+      }
+    }
+
+    return fix;
+  }
+
+  private findStyleNodes(node: CSSValue): void {
+    if (node.type === 'ArrayExpression') {
+      node.elements.forEach((arrayElement) => {
+        if (arrayElement && arrayElement.type !== 'SpreadElement') {
+          this.findStyleNodes(arrayElement);
+        }
+      });
+    } else if (node.type === 'LogicalExpression') {
+      this.findStyleNodes(node.right);
+    } else if (node.type === 'ConditionalExpression') {
+      // Traverse both return values in the conditional expression
+      this.findStyleNodes(node.consequent);
+      this.findStyleNodes(node.alternate);
+    } else if (node.type === 'Identifier') {
+      this.handleIdentifier(node);
+    } else if (node.type === 'MemberExpression') {
+      this.handleMemberExpression(node);
+    } else if (node.type === 'ObjectExpression' || node.type === 'TemplateLiteral') {
+      // We found an object expression that was not wrapped, report
+      this.context.report({
+        messageId: 'noCssFunction',
+        node,
+        fix: this.fixWrapper(node, this.context),
+      });
+    } else if (node.type === 'TSAsExpression') {
+      // TSAsExpression is anything in the form "X as Y", e.g.:
+      // const abc = { ... } as const;
+      return this.findStyleNodes(node.expression);
     }
   }
 
-  return fix;
-};
-
-const findStyleNodes = (node: CSSValue, references: Reference[], context: Context): void => {
-  if (node.type === 'ArrayExpression') {
-    node.elements.forEach((arrayElement) => {
-      if (arrayElement && arrayElement.type !== 'SpreadElement') {
-        findStyleNodes(arrayElement, references, context);
-      }
-    });
-  } else if (node.type === 'LogicalExpression') {
-    findStyleNodes(node.right, references, context);
-  } else if (node.type === 'ConditionalExpression') {
-    // Traverse both return values in the conditional expression
-    findStyleNodes(node.consequent, references, context);
-    findStyleNodes(node.alternate, references, context);
-  } else if (node.type === 'Identifier') {
-    handleIdentifier(node, references, context);
-  } else if (node.type === 'MemberExpression') {
-    handleMemberExpression(node, references, context);
-  } else if (node.type === 'ObjectExpression' || node.type === 'TemplateLiteral') {
-    // We found an object expression that was not wrapped, report
-    context.report({
-      messageId: 'noCssFunction',
-      node,
-      fix: fixWrapper(node, context),
-    });
-  } else if (node.type === 'TSAsExpression') {
-    // TSAsExpression is anything in the form "X as Y", e.g.:
-    // const abc = { ... } as const;
-    return findStyleNodes(node.expression, references, context);
+  run() {
+    this.findStyleNodes(this.baseNode.expression);
   }
-};
+}
 
 const createNoCssPropWithoutCssFunctionRule =
   (): TSESLint.RuleModule<string>['create'] => (context) => ({
     'JSXAttribute[name.name="css"] JSXExpressionContainer': (
       node: TSESTree.JSXExpressionContainer
     ): void => {
-      const { references } = context.getScope();
-
-      findStyleNodes(node.expression, references, context);
+      const runner = new NoCssPropWithoutCssFunctionRunner(node, context);
+      runner.run();
     },
   });
 
