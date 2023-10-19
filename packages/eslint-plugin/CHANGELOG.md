@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.9.2
+
+### Patch Changes
+
+- 28c927c1: Fix edge case where no-css-prop-without-css-function crashes
+
 ## 0.9.1
 
 ### Patch Changes
