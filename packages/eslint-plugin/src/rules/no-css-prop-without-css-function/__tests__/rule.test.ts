@@ -116,6 +116,20 @@ tester.run(
       const otherStyles = css({ background: 'blue' });
       const Component = (props) => <MyComponent css={[props.myBoolean() && styles, otherStyles]} />;
       `,
+      outdent`
+      import { css } from '@compiled/react';
+
+      const FloatingContainer = (css) => {
+        const floatingContainerStyles = css({ color: 'pink' });
+        const cssStyles = [floatingContainerStyles, css({ color: 'blue' })];
+
+        return (
+          <div ref={ref} css={cssStyles} {...rest}>
+            {children}
+          </div>
+        );
+      }
+      `,
     ],
 
     invalid: [
