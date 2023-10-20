@@ -1,7 +1,8 @@
 import type { Properties, AtRules } from 'csstype';
 
+import type { CSSPseudos } from '../types';
 import { createSetupError } from '../utils/error';
-import type { Pseudos } from '../xcss/pseudos';
+import type { CompiledStyles } from '../xcss-prop';
 
 /**
  * These are all the CSS props that will exist.
@@ -17,7 +18,7 @@ import type { Pseudos } from '../xcss/pseudos';
  */
 type CSSProperties = Readonly<Properties<string | number>>;
 
-type AllPseudos = { [key in Pseudos]?: CSSProperties & AllPseudos };
+type AllPseudos = { [key in CSSPseudos]?: CSSProperties & AllPseudos };
 
 // The `screen and (max-width: 768px)` part of `@media screen and (max-width: 768px)`.
 // Ideally we would do type checking to forbid this from containing the `@media` part,
@@ -96,12 +97,6 @@ type ExtendedSelectors = {
   selectors?: ExtendedSelector;
 };
 
-type Variants<VariantName extends string> = Record<
-  VariantName,
-  CSSProperties & WhitelistedSelector & ExtendedSelectors
->;
-type ReturnType<VariantName extends string> = Record<VariantName, CSSProperties>;
-
 /**
  * ## cssMap
  *
@@ -111,15 +106,20 @@ type ReturnType<VariantName extends string> = Record<VariantName, CSSProperties>
  * @example
  * ```
  * const borderStyleMap = cssMap({
- *     none: { borderStyle: 'none' },
- *     solid: { borderStyle: 'solid' },
+ *  none: { borderStyle: 'none' },
+ *  solid: { borderStyle: 'solid' },
  * });
  * const Component = ({ borderStyle }) => <div css={css(borderStyleMap[borderStyle])} />
  *
  * <Component borderStyle="solid" />
  * ```
  */
-
-export default function cssMap<T extends string>(_styles: Variants<T>): Readonly<ReturnType<T>> {
+export default function cssMap<
+  TStyles extends Record<string, CSSProperties & WhitelistedSelector & ExtendedSelectors>
+>(
+  _styles: TStyles
+): {
+  readonly [P in keyof TStyles]: CompiledStyles<TStyles[P]> & string;
+} {
   throw createSetupError();
 }
