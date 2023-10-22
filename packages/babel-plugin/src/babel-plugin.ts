@@ -24,6 +24,7 @@ import {
   isCompiledCSSMapCallExpression,
 } from './utils/is-compiled';
 import { normalizePropsUsage } from './utils/normalize-props-usage';
+import { visitXcssPropPath } from './xcss-prop';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -65,6 +66,8 @@ export default declare<State>((api) => {
           paths: [state.opts.root ?? this.cwd],
         }));
       }
+
+      this.transformCache = new WeakMap();
     },
     visitor: {
       Program: {
@@ -86,6 +89,11 @@ export default declare<State>((api) => {
                 state.pragma.jsx = true;
               }
             }
+          }
+
+          if (/(x|X)css={/.exec(file.code)) {
+            // xcss prop was found turn on Compiled
+            state.compiledImports = {};
           }
         },
         exit(path, state) {
@@ -229,6 +237,7 @@ export default declare<State>((api) => {
           return;
         }
 
+        visitXcssPropPath(path, { context: 'root', state, parentPath: path });
         visitCssPropPath(path, { context: 'root', state, parentPath: path });
       },
     },

@@ -152,6 +152,11 @@ export interface State extends PluginPass {
    * A custom resolver used to statically evaluate import declarations
    */
   resolver?: Resolver;
+
+  /**
+   * Holds paths that have been transformed that we can ignore.
+   */
+  transformCache: WeakMap<NodePath<any>, true>;
 }
 
 interface CommonMetadata {
