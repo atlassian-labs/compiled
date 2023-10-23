@@ -23,10 +23,20 @@ function staticObjectInvariant(expression: t.ObjectExpression, meta: Metadata) {
   }
 
   throw buildCodeFrameError(
-    'Object given to xcss prop must be static',
+    'Object given to the xcss prop must be static',
     expression,
     meta.parentPath
   );
+}
+
+function collectPassStyles(meta: Metadata): string[] {
+  const styles: string[] = [];
+
+  for (const key in meta.state.cssMap) {
+    styles.push(...meta.state.cssMap[key]);
+  }
+
+  return styles;
 }
 
 export const visitXcssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Metadata): void => {
@@ -36,6 +46,7 @@ export const visitXcssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Met
   }
 
   meta.state.transformCache.set(path, true);
+  const jsxElementNode = path.parentPath.node as t.JSXElement;
 
   const prop = path.get('attributes').find((attr): attr is NodePath<t.JSXAttribute> => {
     if (t.isJSXAttribute(attr.node) && `${attr.node.name.name}`.toLowerCase().endsWith('xcss')) {
@@ -54,21 +65,15 @@ export const visitXcssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Met
   if (container.expression.type === 'ObjectExpression') {
     // An inline object expression has been passed, throw if it has any identifiers.
     staticObjectInvariant(container.expression, meta);
-  }
 
-  const cssOutput = buildCss(container.expression, meta);
-  if (!cssOutput.css.length) {
-    // Nothing to do — bail out!
-    return;
-  }
+    const cssOutput = buildCss(container.expression, meta);
+    const { sheets, classNames } = transformCssItems(cssOutput.css, meta);
 
-  const { sheets, classNames } = transformCssItems(cssOutput.css, meta);
-
-  if (container.expression.type === 'ObjectExpression') {
     // Replace xcss prop with class names
     // The object has a type constraint to always be a basic object with no values.
     container.expression = classNames[0];
+    path.parentPath.replaceWith(compiledTemplate(jsxElementNode, sheets, meta));
+  } else {
+    path.parentPath.replaceWith(compiledTemplate(jsxElementNode, collectPassStyles(meta), meta));
   }
-
-  path.parentPath.replaceWith(compiledTemplate(path.parentPath.node as t.JSXElement, sheets, meta));
 };

@@ -144,7 +144,7 @@ export interface State extends PluginPass {
   includedFiles: string[];
 
   /**
-   * Holds a record of currently evaluated CSS Map and its sheets in the module.
+   * Holds a record of evaluated `cssMap()` calls with their compiled style sheets in the current pass.
    */
   cssMap: Record<string, string[]>;
 
