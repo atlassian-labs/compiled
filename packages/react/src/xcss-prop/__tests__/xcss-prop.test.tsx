@@ -4,12 +4,12 @@ import { cssMap, cx } from '@compiled/react';
 import { render } from '@testing-library/react';
 import { expectTypeOf } from 'expect-type';
 
-import type { XCSSProp, XCSSAllProperties, XCSSAllPseudos, XCSSPropStrict } from '../index';
+import type { XCSSProp, XCSSAllProperties, XCSSAllPseudos } from '../index';
 
 describe('xcss prop', () => {
   it('should allow all styles from xcss prop to class name when no constraints are applied', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<XCSSAllProperties, XCSSAllPseudos> }) {
-      return <div className={xcss}>foo</div>;
+      return <div className={cx(xcss)}>foo</div>;
     }
 
     const styles = cssMap({
@@ -23,7 +23,7 @@ describe('xcss prop', () => {
 
   it('should error when given a pseduo and none are allowed', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<XCSSAllProperties, never> }) {
-      return <div className={xcss}>foo</div>;
+      return <div className={cx(xcss)}>foo</div>;
     }
 
     const styles = cssMap({
