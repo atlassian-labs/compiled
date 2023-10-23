@@ -7,43 +7,56 @@ type CSSProperties = Readonly<CSS.PropertiesFallback<number | string>>;
 
 type CSSPseudoRule = { [Q in CSSPseudos]?: CSSProperties };
 
-declare const __classref: unique symbol;
-
-type XCSSItem<TStyleDecl extends keyof CSSProperties> = {
-  [Q in keyof CSSProperties]: Q extends TStyleDecl ? CompiledStyleClassReference : never;
+type XCSSItem<
+  TStyleDecl extends keyof CSSProperties,
+  TPropertyDeclMode extends 'loose' | 'strict'
+> = {
+  [Q in keyof CSSProperties]: Q extends TStyleDecl
+    ? TPropertyDeclMode extends 'strict'
+      ? CompiledPropertyDeclarationReference
+      : CompiledPropertyDeclarationReference | string | number
+    : never;
 };
 
-type XCSSPseudos<K extends keyof CSSProperties, TPseudos extends CSSPseudos> = {
-  [Q in CSSPseudos]?: Q extends TPseudos ? XCSSItem<K> : never;
+type XCSSPseudos<
+  K extends keyof CSSProperties,
+  TPseudos extends CSSPseudos,
+  TPropertyDeclMode extends 'loose' | 'strict'
+> = {
+  [Q in CSSPseudos]?: Q extends TPseudos ? XCSSItem<K, TPropertyDeclMode> : never;
 };
+
+type Falsy = false | null | undefined;
 
 export type CSSRuleDefinition = CSSProperties & CSSPseudoRule;
 
-export type CompiledStyleClassReference = { [__classref]: true };
+declare const __classref: unique symbol;
+export type CompiledPropertyDeclarationReference = { [__classref]: true };
 
 export type CompiledStyles<TObject> = {
   [Q in keyof TObject]: TObject[Q] extends Record<string, unknown>
     ? CompiledStyles<TObject[Q]>
-    : CompiledStyleClassReference;
+    : CompiledPropertyDeclarationReference;
 };
 
-export type AllCSSProperties = keyof CSSProperties;
+export type XCSSAllProperties = keyof CSSProperties;
 
-export type AllPseudos = CSSPseudos;
+export type XCSSBlockPseudos = never;
+
+export type XCSSAllPseudos = CSSPseudos;
 
 export type XCSSProp<
   TAllowedProperties extends keyof CSSProperties,
   TAllowedPseudos extends CSSPseudos
-> = (
-  | (XCSSItem<TAllowedProperties> & XCSSPseudos<TAllowedProperties, TAllowedPseudos>)
-  | false
-  | null
-  | undefined
-) &
-  string;
+> =
+  | (XCSSItem<TAllowedProperties, 'loose'> &
+      XCSSPseudos<TAllowedProperties, TAllowedPseudos, 'loose'>)
+  | Falsy;
 
 export const cx = <TStyles extends [...XCSSProp<any, any>[]]>(
   ...styles: TStyles
-): TStyles[number] => {
-  return ax(styles) as TStyles[number];
+): TStyles[number] & string => {
+  // Types won't match here as type-time are always objects.
+  // At runtime however they will be an array of strings.
+  return ax(styles as unknown as string[]) as TStyles[number] & string;
 };

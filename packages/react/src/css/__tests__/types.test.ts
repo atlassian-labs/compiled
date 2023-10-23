@@ -1,4 +1,5 @@
 /** @jsxImportSource @compiled/react */
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { css } from '@compiled/react';
 import { expectTypeOf } from 'expect-type';
 
