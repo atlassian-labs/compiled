@@ -70,6 +70,6 @@ export const cssCallExpressionMixin = {
 
 export const cssPropertyNames = {
   level1: {
-    level2: 'color'
-  }
-}
+    level2: 'color',
+  },
+};

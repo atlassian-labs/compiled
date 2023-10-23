@@ -643,7 +643,7 @@ describe('module traversal', () => {
       <div css={{ [cssPropertyNames.level1.level2]: 'blue' }} />
     `);
 
-    expect(actual).toInclude('{color:blue}');
-    })
+      expect(actual).toInclude('{color:blue}');
+    });
   });
 });

@@ -57,7 +57,11 @@ const expressionToString: ExpressionToString = (expression, meta) => {
   if (t.isIdentifier(expression) || t.isMemberExpression(expression)) {
     const evaluatedExpression = evaluateExpression(expression, meta);
     if (evaluatedExpression.value === expression) {
-        throw new Error(`Cannot statically evaluate the value of "${t.isIdentifier(expression) ? expression.name : expression.type}`);
+      throw new Error(
+        `Cannot statically evaluate the value of "${
+          t.isIdentifier(expression) ? expression.name : expression.type
+        }`
+      );
     }
 
     return expressionToString(evaluatedExpression.value, evaluatedExpression.meta);
