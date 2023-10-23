@@ -635,13 +635,13 @@ describe('module traversal', () => {
       expect(actual).toIncludeMultiple(['{color:red}', '{display:flex}', '{flex-direction:row}']);
     });
 
-    it('should reolve member expression if used as CSS property', () => {
+    it('should resolve member expression if used as CSS property', () => {
       const actual = transform(`
-      import '@compiled/react';
-      import { cssPropertyNames } from '../__fixtures__/mixins/objects';
+        import '@compiled/react';
+        import { cssPropertyNames } from '../__fixtures__/mixins/objects';
 
-      <div css={{ [cssPropertyNames.level1.level2]: 'blue' }} />
-    `);
+        <div css={{ [cssPropertyNames.level1.level2]: 'blue' }} />
+      `);
 
       expect(actual).toInclude('{color:blue}');
     });
