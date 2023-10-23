@@ -7,26 +7,23 @@ type CSSProperties = Readonly<CSS.PropertiesFallback<number | string>>;
 
 type CSSPseudoRule = { [Q in CSSPseudos]?: CSSProperties };
 
-type XCSSItem<
-  TStyleDecl extends keyof CSSProperties,
-  TPropertyDeclMode extends 'loose' | 'strict'
-> = {
+type XCSSItem<TStyleDecl extends keyof CSSProperties> = {
   [Q in keyof CSSProperties]: Q extends TStyleDecl
-    ? TPropertyDeclMode extends 'strict'
-      ? CompiledPropertyDeclarationReference
-      : CompiledPropertyDeclarationReference | string | number
+    ? CompiledPropertyDeclarationReference | string | number
     : never;
 };
 
-type XCSSPseudos<
-  K extends keyof CSSProperties,
-  TPseudos extends CSSPseudos,
-  TPropertyDeclMode extends 'loose' | 'strict'
-> = {
-  [Q in CSSPseudos]?: Q extends TPseudos ? XCSSItem<K, TPropertyDeclMode> : never;
+type XCSSPseudos<K extends keyof CSSProperties, TPseudos extends CSSPseudos> = {
+  [Q in CSSPseudos]?: Q extends TPseudos ? XCSSItem<K> : never;
 };
 
-type Falsy = false | null | undefined;
+/**
+ * We currently block all at rules from xcss prop.
+ * This needs us to decide on what the final API is across Compiled to be able to set.
+ */
+type XCSSAtRules = {
+  [Q in CSS.AtRules]?: never;
+};
 
 export type CSSRuleDefinition = CSSProperties & CSSPseudoRule;
 
@@ -47,9 +44,10 @@ export type XCSSProp<
   TAllowedProperties extends keyof CSSProperties,
   TAllowedPseudos extends CSSPseudos
 > =
-  | (XCSSItem<TAllowedProperties, 'loose'> &
-      XCSSPseudos<TAllowedProperties, TAllowedPseudos, 'loose'>)
-  | Falsy;
+  | (XCSSItem<TAllowedProperties> & XCSSPseudos<TAllowedProperties, TAllowedPseudos> & XCSSAtRules)
+  | false
+  | null
+  | undefined;
 
 export const cx = <TStyles extends [...XCSSProp<any, any>[]]>(
   ...styles: TStyles

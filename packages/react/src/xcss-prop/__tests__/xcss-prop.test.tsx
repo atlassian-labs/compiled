@@ -21,7 +21,7 @@ describe('xcss prop', () => {
     expect(getByText('foo')).toHaveCompiledCss('color', 'red');
   });
 
-  it('should error when given a pseduo and none are allowed', () => {
+  it('should type error when given a pseduo and none are allowed', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<XCSSAllProperties, never> }) {
       return <div className={cx(xcss)}>foo</div>;
     }
@@ -100,5 +100,51 @@ describe('xcss prop', () => {
     const { getByText } = render(<CSSPropComponent xcss={{ color: 'green' }} />);
 
     expect(getByText('foo')).toHaveCompiledCss('color', 'green');
+  });
+
+  it('should type error when passing in a disallowed value in a pseudo mixed with allowed values', () => {
+    function CSSPropComponent({ xcss }: { xcss: XCSSProp<'color', '&:hover'> }) {
+      return <div className={cx(xcss)}>foo</div>;
+    }
+
+    const styles = cssMap({
+      redColor: { color: 'red', '&:hover': { color: 'red', backgroundColor: 'red' } },
+    });
+
+    expectTypeOf(
+      <CSSPropComponent
+        // @ts-expect-error — Types of property 'backgroundColor' are incompatible.
+        xcss={styles.redColor}
+      />
+    ).toBeObject();
+    expectTypeOf(
+      <CSSPropComponent
+        // @ts-expect-error — Types of property 'backgroundColor' are incompatible.
+        xcss={{ color: 'red', '&:hover': { color: 'red', backgroundColor: 'red' } }}
+      />
+    ).toBeObject();
+  });
+
+  it('should type error when passing in at rules to xcss prop', () => {
+    function CSSPropComponent({ xcss }: { xcss: XCSSProp<'color', '&:hover'> }) {
+      return <div className={cx(xcss)}>foo</div>;
+    }
+
+    const styles = cssMap({
+      redColor: { color: 'red', '@media': { 'screen and': { color: 'red' } } },
+    });
+
+    expectTypeOf(
+      <CSSPropComponent
+        // @ts-expect-error — Types of property '"@media"' are incompatible.
+        xcss={styles.redColor}
+      />
+    ).toBeObject();
+    expectTypeOf(
+      <CSSPropComponent
+        // @ts-expect-error — Type '{ screen: { color: string; backgroundColor: string; }; }' is not assignable to type 'undefined'.
+        xcss={{ color: 'red', '@media': { screen: { color: 'red', backgroundColor: 'red' } } }}
+      />
+    ).toBeObject();
   });
 });
