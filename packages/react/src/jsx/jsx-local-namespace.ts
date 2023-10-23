@@ -68,7 +68,11 @@ export namespace CompiledJSX {
   export type IntrinsicAttributes = ReactJSXIntrinsicAttributes;
   export type IntrinsicClassAttributes<T> = ReactJSXIntrinsicClassAttributes<T>;
   export type IntrinsicElements = {
-    [K in keyof ReactJSXIntrinsicElements]: ReactJSXIntrinsicElements[K] & {
+    [K in keyof ReactJSXIntrinsicElements]: Omit<ReactJSXIntrinsicElements[K], 'className'> & {
+      // We override class name so we can pass xcss prop to it. We opt to do this instead of
+      // Making the output of cssMap() a string intersection so we can also have an inline object
+      // be declared.
+      className?: string | Record<string, any> | null | false;
       css?: CssFunction<void> | CssFunction<void>[];
     };
   };
