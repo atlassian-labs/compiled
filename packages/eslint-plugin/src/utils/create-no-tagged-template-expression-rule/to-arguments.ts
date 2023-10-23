@@ -25,7 +25,11 @@ const getArguments = (
     return args;
   }
 
-  const [property, value] = chars.split(':');
+  // Split the property and value
+  // e.g. `color: red` becomes ['color', 'red']
+  // also consider `background: url("https://some-url-b")`, which has a colon in the value.
+  const [property, ...v] = chars.split(':');
+  const value = v.join(':');
 
   // Extract any expressions listed before the property that were not delimited by a ;
   if (expressions.length) {
