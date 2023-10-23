@@ -3,7 +3,6 @@ module.exports = {
   ignorePatterns: [
     'dist',
     'build',
-    'flow-typed',
     '*.d.ts',
     'babel-cjs.js',
     'babel-esm.js',
@@ -94,14 +93,6 @@ module.exports = {
             ignoreRestSiblings: true,
           },
         ],
-      },
-    },
-    {
-      files: ['*.js.flow'],
-      extends: ['plugin:flowtype/recommended'],
-      plugins: ['flowtype'],
-      rules: {
-        'flowtype/generic-spacing': 'off',
       },
     },
     {
