@@ -1,5 +1,6 @@
 import type * as CSS from 'csstype';
 
+import { ax } from '../runtime';
 import type { CSSPseudos } from '../types';
 
 type CSSProperties = Readonly<CSS.PropertiesFallback<number | string>>;
@@ -30,8 +31,11 @@ export type AllCSSProperties = keyof CSSProperties;
 
 export type AllPseudos = CSSPseudos;
 
-export type XCSSProp<AllowedProperties extends keyof CSSProperties, TPseudos extends CSSPseudos> = (
-  | (XCSSItem<AllowedProperties> & XCSSPseudos<AllowedProperties, TPseudos>)
+export type XCSSProp<
+  TAllowedProperties extends keyof CSSProperties,
+  TAllowedPseudos extends CSSPseudos
+> = (
+  | (XCSSItem<TAllowedProperties> & XCSSPseudos<TAllowedProperties, TAllowedPseudos>)
   | false
   | null
   | undefined
@@ -39,8 +43,7 @@ export type XCSSProp<AllowedProperties extends keyof CSSProperties, TPseudos ext
   string;
 
 export const cx = <TStyles extends [...XCSSProp<any, any>[]]>(
-  ..._css: TStyles
+  ...styles: TStyles
 ): TStyles[number] => {
-  // Pass through to let the current compiled css prop handle.
-  return _css as never as TStyles[number];
+  return ax(styles) as TStyles[number];
 };
