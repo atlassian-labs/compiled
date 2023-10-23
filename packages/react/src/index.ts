@@ -10,13 +10,7 @@ export { styled } from './styled';
 export { ClassNames } from './class-names';
 export { default as css } from './css';
 export { default as cssMap } from './css-map';
-export {
-  type XCSSAllProperties,
-  type XCSSAllPseudos,
-  type XCSSBlockPseudos,
-  type XCSSProp,
-  cx,
-} from './xcss-prop';
+export { type XCSSAllProperties, type XCSSAllPseudos, type XCSSProp, cx } from './xcss-prop';
 
 // Pass through the (classic) jsx runtime.
 // Compiled currently doesn't define its own and uses this purely to enable a local jsx namespace.

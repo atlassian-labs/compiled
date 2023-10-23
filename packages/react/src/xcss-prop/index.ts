@@ -41,8 +41,6 @@ export type CompiledStyles<TObject> = {
 
 export type XCSSAllProperties = keyof CSSProperties;
 
-export type XCSSBlockPseudos = never;
-
 export type XCSSAllPseudos = CSSPseudos;
 
 export type XCSSProp<
