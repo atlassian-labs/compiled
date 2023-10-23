@@ -9,7 +9,7 @@ import type { XCSSProp, XCSSAllProperties, XCSSAllPseudos } from '../index';
 describe('xcss prop', () => {
   it('should allow all styles from xcss prop to class name when no constraints are applied', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<XCSSAllProperties, XCSSAllPseudos> }) {
-      return <div className={cx(xcss)}>foo</div>;
+      return <div className={xcss}>foo</div>;
     }
 
     const styles = cssMap({
@@ -23,7 +23,7 @@ describe('xcss prop', () => {
 
   it('should type error when given a pseduo and none are allowed', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<XCSSAllProperties, never> }) {
-      return <div className={cx(xcss)}>foo</div>;
+      return <div className={xcss}>foo</div>;
     }
 
     const styles = cssMap({
@@ -40,13 +40,13 @@ describe('xcss prop', () => {
     expect(getByText('foo')).toHaveCompiledCss('color', 'red');
   });
 
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // TODO: This test throws currently because css prop can't take xcss prop.
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  xit('should allow all styles from xcss prop to css prop when no constraints are applied', () => {
+  it('should concat styles from class name and xcss prop', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<XCSSAllProperties, XCSSAllPseudos> }) {
-      // @compiled-disable-next-line transform-css-prop
-      return <div css={xcss}>foo</div>;
+      return (
+        <div css={{ color: 'blue' }} className={xcss}>
+          foo
+        </div>
+      );
     }
 
     const styles = cssMap({
@@ -60,7 +60,7 @@ describe('xcss prop', () => {
 
   it('should type error when passing styles that are not defined', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<'color', XCSSAllPseudos> }) {
-      return <div className={cx(xcss)}>foo</div>;
+      return <div className={xcss}>foo</div>;
     }
 
     const styles = cssMap({
@@ -77,24 +77,24 @@ describe('xcss prop', () => {
 
   it('should concat styles together', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<XCSSAllProperties, XCSSAllPseudos> }) {
-      return <div className={cx(xcss)}>foo</div>;
+      return <div className={xcss}>foo</div>;
     }
     const styles = cssMap({
       redColor: { color: 'red' },
-      greenBackground: { backgroundColor: 'green' },
+      greenBackground: { color: 'blue', backgroundColor: 'green' },
     });
 
     const { getByText } = render(
       <CSSPropComponent xcss={cx(styles.redColor, styles.greenBackground)} />
     );
 
-    expect(getByText('foo')).toHaveCompiledCss('color', 'red');
+    expect(getByText('foo')).toHaveCompiledCss('color', 'blue');
     expect(getByText('foo')).toHaveCompiledCss('backgroundColor', 'green');
   });
 
   it('should transform inline object', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<'color', XCSSAllPseudos> }) {
-      return <div className={cx(xcss)}>foo</div>;
+      return <div className={xcss}>foo</div>;
     }
 
     const { getByText } = render(<CSSPropComponent xcss={{ color: 'green' }} />);
@@ -104,7 +104,7 @@ describe('xcss prop', () => {
 
   it('should type error when passing in a disallowed value in a pseudo mixed with allowed values', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<'color', '&:hover'> }) {
-      return <div className={cx(xcss)}>foo</div>;
+      return <div className={xcss}>foo</div>;
     }
 
     const styles = cssMap({
@@ -127,7 +127,7 @@ describe('xcss prop', () => {
 
   it('should type error when passing in at rules to xcss prop', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<'color', '&:hover'> }) {
-      return <div className={cx(xcss)}>foo</div>;
+      return <div className={xcss}>foo</div>;
     }
 
     const styles = cssMap({

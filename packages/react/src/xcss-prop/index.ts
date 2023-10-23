@@ -43,11 +43,13 @@ export type XCSSAllPseudos = CSSPseudos;
 export type XCSSProp<
   TAllowedProperties extends keyof CSSProperties,
   TAllowedPseudos extends CSSPseudos
-> =
+> = (
   | (XCSSItem<TAllowedProperties> & XCSSPseudos<TAllowedProperties, TAllowedPseudos> & XCSSAtRules)
   | false
   | null
-  | undefined;
+  | undefined
+) &
+  string;
 
 export const cx = <TStyles extends [...XCSSProp<any, any>[]]>(
   ...styles: TStyles
