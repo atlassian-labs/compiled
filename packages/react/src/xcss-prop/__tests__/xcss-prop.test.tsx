@@ -6,9 +6,25 @@ import { expectTypeOf } from 'expect-type';
 import type { XCSSProp, AllCSSProperties, AllPseudos } from '../index';
 
 describe('xcss prop', () => {
-  it('should allow all styles when no constraints are applied', () => {
+  it('should allow all styles from xcss prop to class name when no constraints are applied', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<AllCSSProperties, AllPseudos> }) {
       return <div className={xcss}>foo</div>;
+    }
+
+    const styles = cssMap({
+      redColor: { color: 'red' },
+    });
+
+    const { getByText } = render(<CSSPropComponent xcss={styles.redColor} />);
+
+    expect(getByText('foo')).toHaveCompiledCss('color', 'red');
+  });
+
+  // TODO: This test throws currently because css prop can't take xcss prop.
+  xit('should allow all styles from xcss prop to css prop when no constraints are applied', () => {
+    function CSSPropComponent({ xcss }: { xcss: XCSSProp<AllCSSProperties, AllPseudos> }) {
+      // @compiled-disable-next-line transform-css-prop
+      return <div css={xcss}>foo</div>;
     }
 
     const styles = cssMap({
