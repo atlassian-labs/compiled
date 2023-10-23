@@ -74,6 +74,7 @@ export const visitXcssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Met
     container.expression = classNames[0];
     path.parentPath.replaceWith(compiledTemplate(jsxElementNode, sheets, meta));
   } else {
-    path.parentPath.replaceWith(compiledTemplate(jsxElementNode, collectPassStyles(meta), meta));
+    const sheets = collectPassStyles(meta);
+    path.parentPath.replaceWith(compiledTemplate(jsxElementNode, sheets, meta));
   }
 };
