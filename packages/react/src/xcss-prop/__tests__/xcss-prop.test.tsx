@@ -92,6 +92,52 @@ describe('xcss prop', () => {
     expect(getByText('foo')).toHaveCompiledCss('backgroundColor', 'green');
   });
 
+  it('should conditionally apply styles directly', () => {
+    const styles = cssMap({
+      redColor: { color: 'red' },
+      blueColor: { color: 'blue' },
+    });
+    function CSSPropComponent({ xcss }: { xcss: XCSSProp<'color', never> }) {
+      return <div className={xcss}>foo</div>;
+    }
+    function Parent({ isRed }: { isRed: boolean }) {
+      return <CSSPropComponent xcss={isRed ? styles.redColor : styles.blueColor} />;
+    }
+
+    const { getByText, rerender } = render(<Parent isRed />);
+
+    expect(getByText('foo')).toHaveCompiledCss('color', 'red');
+    expect(getByText('foo')).not.toHaveCompiledCss('color', 'blue');
+
+    rerender(<Parent isRed={false} />);
+
+    expect(getByText('foo')).toHaveCompiledCss('color', 'blue');
+    expect(getByText('foo')).not.toHaveCompiledCss('color', 'red');
+  });
+
+  it('should conditionally apply styles via cx function', () => {
+    const styles = cssMap({
+      redColor: { color: 'red' },
+      blueColor: { color: 'blue' },
+    });
+    function CSSPropComponent({ xcss }: { xcss: XCSSProp<'color', never> }) {
+      return <div className={xcss}>foo</div>;
+    }
+    function Parent({ isRed }: { isRed: boolean }) {
+      return <CSSPropComponent xcss={cx(isRed && styles.redColor, !isRed && styles.blueColor)} />;
+    }
+
+    const { getByText, rerender } = render(<Parent isRed />);
+
+    expect(getByText('foo')).toHaveCompiledCss('color', 'red');
+    expect(getByText('foo')).not.toHaveCompiledCss('color', 'blue');
+
+    rerender(<Parent isRed={false} />);
+
+    expect(getByText('foo')).toHaveCompiledCss('color', 'blue');
+    expect(getByText('foo')).not.toHaveCompiledCss('color', 'red');
+  });
+
   it('should transform inline object', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<'color', XCSSAllPseudos> }) {
       return <div className={xcss}>foo</div>;

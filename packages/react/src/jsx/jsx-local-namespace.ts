@@ -72,6 +72,9 @@ export namespace CompiledJSX {
       // We override class name so we can pass xcss prop to it. We opt to do this instead of
       // Making the output of cssMap() a string intersection so we can also have an inline object
       // be declared.
+      /**
+       * The class name prop now can be given the output of xcss prop from `@compiled/react`.
+       */
       className?: string | Record<string, any> | null | false;
       css?: CssFunction<void> | CssFunction<void>[];
     };
