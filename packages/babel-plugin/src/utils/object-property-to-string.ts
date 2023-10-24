@@ -53,11 +53,15 @@ const expressionToString: ExpressionToString = (expression, meta) => {
   if (t.isStringLiteral(expression) || t.isNumericLiteral(expression)) {
     return String(expression.value);
   }
-  // handles {[key]: 'value'}
-  if (t.isIdentifier(expression)) {
+  // handles {[key]: 'value'} and {[key.key]: 'value'}]}
+  if (t.isIdentifier(expression) || t.isMemberExpression(expression)) {
     const evaluatedExpression = evaluateExpression(expression, meta);
     if (evaluatedExpression.value === expression) {
-      throw new Error(`Cannot statically evaluate the value of "${expression.name}".`);
+      throw new Error(
+        `Cannot statically evaluate the value of "${
+          t.isIdentifier(expression) ? expression.name : expression.type
+        }`
+      );
     }
 
     return expressionToString(evaluatedExpression.value, evaluatedExpression.meta);
