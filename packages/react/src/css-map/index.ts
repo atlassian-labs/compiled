@@ -1,4 +1,4 @@
-import type { Properties, AtRules } from 'csstype';
+import type * as CSS from 'csstype';
 
 import type { CSSPseudos } from '../types';
 import { createSetupError } from '../utils/error';
@@ -16,7 +16,7 @@ import type { CompiledStyles } from '../xcss-prop';
  * };
  * ```
  */
-type CSSProperties = Readonly<Properties<string | number>>;
+type CSSProperties = Readonly<CSS.Properties<string | number>>;
 
 type AllPseudos = { [key in CSSPseudos]?: CSSProperties & AllPseudos };
 
@@ -25,7 +25,7 @@ type AllPseudos = { [key in CSSPseudos]?: CSSProperties & AllPseudos };
 // but TypeScript doesn't provide a good way to do this.
 type AtRuleSecondHalf = string;
 type WhitelistedAtRule = {
-  [atRuleFirstHalf in AtRules]?: {
+  [atRuleFirstHalf in CSS.AtRules]?: {
     [atRuleSecondHalf in AtRuleSecondHalf]: CSSProperties & AllPseudos & WhitelistedAtRule;
   };
 };

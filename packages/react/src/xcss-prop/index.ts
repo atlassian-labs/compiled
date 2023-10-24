@@ -3,7 +3,7 @@ import type * as CSS from 'csstype';
 import { ac } from '../runtime';
 import type { CSSPseudos } from '../types';
 
-type CSSProperties = Readonly<CSS.PropertiesFallback<number | string>>;
+type CSSProperties = Readonly<CSS.Properties<string | number>>;
 
 type XCSSItem<TStyleDecl extends keyof CSSProperties> = {
   [Q in keyof CSSProperties]: Q extends TStyleDecl
@@ -91,7 +91,7 @@ export type XCSSAllPseudos = CSSPseudos;
  * }
  *
  * function MyComponent({ xcss }: MyComponentProps) {
- *   return <div css={{ color: 'var(--ds-text-danger') }} className={xcss} />
+ *   return <div css={{ color: 'var(--ds-text-danger)' }} className={xcss} />
  * }
  * ```
  *
