@@ -60,9 +60,6 @@ jobs:
       - name: Build source for remainder tests
         run: yarn build
 
-      - name: Run flow types validation
-        run: yarn flow-types validate
-
       - name: Run import test
         run: yarn test:imports
 
