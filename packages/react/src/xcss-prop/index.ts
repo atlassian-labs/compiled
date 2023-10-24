@@ -5,8 +5,6 @@ import type { CSSPseudos } from '../types';
 
 type CSSProperties = Readonly<CSS.PropertiesFallback<number | string>>;
 
-type CSSPseudoRule = { [Q in CSSPseudos]?: CSSProperties };
-
 type XCSSItem<TStyleDecl extends keyof CSSProperties> = {
   [Q in keyof CSSProperties]: Q extends TStyleDecl
     ? CompiledPropertyDeclarationReference | string | number
@@ -25,11 +23,15 @@ type XCSSAtRules = {
   [Q in CSS.AtRules]?: never;
 };
 
-export type CSSRuleDefinition = CSSProperties & CSSPseudoRule;
+type CompiledPropertyDeclarationReference = {
+  ['__COMPILED_PROPERTY_DECLARATION_REFERENCE_DO_NOT_WRITE_DIRECTLY__']: true;
+};
 
-declare const __classref: unique symbol;
-export type CompiledPropertyDeclarationReference = { [__classref]: true };
-
+/**
+ * Used to mark styles that have been flushed through an API as being generated
+ * from Compiled. This is useful when you want other ends of the API to ensure they
+ * take Compiled generated styles and not some arbitrary object.
+ */
 export type CompiledStyles<TObject> = {
   [Q in keyof TObject]: TObject[Q] extends Record<string, unknown>
     ? CompiledStyles<TObject[Q]>
