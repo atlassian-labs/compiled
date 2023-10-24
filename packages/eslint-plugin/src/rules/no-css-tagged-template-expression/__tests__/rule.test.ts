@@ -612,5 +612,22 @@ tester.run('no-css-tagged-template-expression', noCssTaggedTemplateExpressionRul
         \`;
       `,
     },
+    {
+      filename: 'colon-in-value.ts',
+      code: `
+        import { css } from '@compiled/react';
+
+        css\`
+          background-image: url('https://some-url-b');
+        \`;
+      `,
+      output: `
+        import { css } from '@compiled/react';
+
+        css({
+          backgroundImage: "url('https://some-url-b')"
+        });
+      `,
+    },
   ]),
 });
