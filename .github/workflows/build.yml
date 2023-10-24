@@ -51,6 +51,3 @@ jobs:
 
       - name: Build webpack extracted example
         run: yarn build:webpack:extract
-
-      - name: Compare committed flow types to generated
-        run: yarn flow-types compare

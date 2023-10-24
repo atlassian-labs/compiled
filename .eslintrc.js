@@ -1,14 +1,6 @@
 module.exports = {
   root: true,
-  ignorePatterns: [
-    'dist',
-    'build',
-    'flow-typed',
-    '*.d.ts',
-    'babel-cjs.js',
-    'babel-esm.js',
-    'storybook-static',
-  ],
+  ignorePatterns: ['dist', 'build', '*.d.ts', 'babel-cjs.js', 'babel-esm.js', 'storybook-static'],
   overrides: [
     {
       files: ['*.{js,jsx,ts,tsx}'],
@@ -94,14 +86,6 @@ module.exports = {
             ignoreRestSiblings: true,
           },
         ],
-      },
-    },
-    {
-      files: ['*.js.flow'],
-      extends: ['plugin:flowtype/recommended'],
-      plugins: ['flowtype'],
-      rules: {
-        'flowtype/generic-spacing': 'off',
       },
     },
     {
