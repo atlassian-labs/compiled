@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.24.1
+
+### Patch Changes
+
+- 4a11c5f4: Bugfix: handle memberExpression as CSS object property
+
 ## 0.24.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.9.3
+
+### Patch Changes
+
+- 941a723f: Bugfix: no-css-tagged-template-expression ESLint rule truncates strings which include colons during autofixing.
+
 ## 0.9.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @compiled/jest
 
+## 0.10.0
+
+### Minor Changes
+
+- f8d01fa2: Remove Flow types as they are increasingly difficult to maintain
+
 ## 0.9.0
 
 ### Minor Changes

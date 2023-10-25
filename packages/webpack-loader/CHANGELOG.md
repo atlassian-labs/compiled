@@ -1,5 +1,13 @@
 # @compiled/webpack-loader
 
+## 0.11.6
+
+### Patch Changes
+
+- 941a723f: Bugfix: no-css-tagged-template-expression ESLint rule truncates strings which include colons during autofixing.
+- Updated dependencies [4a11c5f4]
+  - @compiled/babel-plugin@0.24.1
+
 ## 0.11.5
 
 ### Patch Changes
