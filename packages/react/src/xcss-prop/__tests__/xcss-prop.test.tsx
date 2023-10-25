@@ -21,7 +21,7 @@ describe('xcss prop', () => {
     expect(getByText('foo')).toHaveCompiledCss('color', 'red');
   });
 
-  it('should type error when given a pseduo and none are allowed', () => {
+  it('should type error when given a pseudo and none are allowed', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<XCSSAllProperties, never> }) {
       return <div className={xcss}>foo</div>;
     }
