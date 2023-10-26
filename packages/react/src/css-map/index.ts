@@ -105,7 +105,7 @@ export default function cssMap<
 >(
   _styles: TStyles
 ): {
-  readonly [P in keyof TStyles]: CompiledStyles<TStyles[P]> & string;
+  readonly [P in keyof TStyles]: CompiledStyles<TStyles[P]>;
 } {
   throw createSetupError();
 }
