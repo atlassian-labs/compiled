@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.16.0
+
+### Minor Changes
+
+- f8d01fa2: Remove Flow types as they are increasingly difficult to maintain
+
 ## 0.15.0
 
 ### Minor Changes
