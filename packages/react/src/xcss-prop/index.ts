@@ -81,9 +81,11 @@ export type XCSSAllPseudos = CSSPseudos;
  * it means products only pay for styles they use as they're now the ones who declare
  * the styles!
  *
- * The {@link XCSSProp} type has generics which must be defined — of which should be what you
- * explicitly want to maintain as API. Use {@link XCSSAllProperties} and {@link XCSSAllPseudos}
+ * The {@link XCSSProp} type has generics two of which must be defined — use to explicitly
+ * set want you to maintain as API. Use {@link XCSSAllProperties} and {@link XCSSAllPseudos}
  * to enable all properties and pseudos.
+ *
+ * The third generic is used to declare what properties and pseudos should be required.
  *
  * @example
  * ```
@@ -99,6 +101,9 @@ export type XCSSAllPseudos = CSSPseudos;
  *
  *   // All properties are accepted, only the hover pseudo is accepted.
  *   xcss?: XCSSProp<XCSSAllProperties, '&:hover'>;
+ *
+ *   // The xcss prop is required as well as the color property. No pseudos are required.
+ *   xcss: XCSSProp<XCSSAllProperties, '&:hover', { requiredProperties: 'color', requiredPseudos: never }>;
  * }
  *
  * function MyComponent({ xcss }: MyComponentProps) {
