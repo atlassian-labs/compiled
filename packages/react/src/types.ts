@@ -31,5 +31,73 @@ export type CssObject<TProps> = Readonly<{
 export type CssFunction<TProps = unknown> =
   | CssType<TProps>
   | BasicTemplateInterpolations // CSS values in tagged template expression
+  | null
   | boolean // Something like `false && styles`
   | undefined; // Something like `undefined && styles`
+
+/*
+ * This list of pseudo-classes and pseudo-elements are from csstype
+ * but with & added to the front. Compiled supports both &-ful
+ * and &-less forms and both will target the current element
+ * (`&:hover` <==> `:hover`), however we force the use of the
+ * &-ful form for consistency with the nested spec for new APIs.
+ */
+export type CSSPseudos =
+  | '&::after'
+  | '&::backdrop'
+  | '&::before'
+  | '&::cue'
+  | '&::cue-region'
+  | '&::first-letter'
+  | '&::first-line'
+  | '&::grammar-error'
+  | '&::marker'
+  | '&::placeholder'
+  | '&::selection'
+  | '&::spelling-error'
+  | '&::target-text'
+  | '&::view-transition'
+  | '&:active'
+  | '&:autofill'
+  | '&:blank'
+  | '&:checked'
+  | '&:default'
+  | '&:defined'
+  | '&:disabled'
+  | '&:empty'
+  | '&:enabled'
+  | '&:first'
+  | '&:focus'
+  | '&:focus-visible'
+  | '&:focus-within'
+  | '&:fullscreen'
+  | '&:hover'
+  | '&:in-range'
+  | '&:indeterminate'
+  | '&:invalid'
+  | '&:left'
+  | '&:link'
+  | '&:local-link'
+  | '&:optional'
+  | '&:out-of-range'
+  | '&:paused'
+  | '&:picture-in-picture'
+  | '&:placeholder-shown'
+  | '&:playing'
+  | '&:read-only'
+  | '&:read-write'
+  | '&:required'
+  | '&:right'
+  | '&:target'
+  | '&:user-invalid'
+  | '&:user-valid'
+  | '&:valid'
+  | '&:visited';
+
+/**
+ * The xcss prop must be given all known available properties even
+ * if it takes a subset of them. This is ensure the (lack-of an)
+ * excess property check doesn't enable makers to circumvent the
+ * system and pass in values they shouldn't.
+ */
+export type CSSProperties = Readonly<CSS.Properties<string | number>>;

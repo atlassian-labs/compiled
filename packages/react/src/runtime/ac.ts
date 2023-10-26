@@ -58,7 +58,7 @@ class AtomicGroups {
  * @param classes
  */
 export function ac(
-  classNames: (AtomicGroups | string | undefined | false)[]
+  classNames: (AtomicGroups | string | null | undefined | false)[]
 ): AtomicGroups | undefined {
   // short circuit if there's no class names.
   if (classNames.length <= 1 && !classNames[0]) return undefined;

@@ -1,37 +1,23 @@
-import type { Properties, AtRules } from 'csstype';
+import type * as CSS from 'csstype';
 
+import type { CSSPseudos, CSSProperties } from '../types';
 import { createSetupError } from '../utils/error';
+import type { CompiledStyles } from '../xcss-prop';
 
-import type { Pseudos } from './pseudos';
-
-/**
- * These are all the CSS props that will exist.
- * Only 'string' and 'number' are valid CSS values.
- *
- * @example
- * ```
- * const style: CssProps = {
- *  color: 'red',
- *  margin: 10,
- * };
- * ```
- */
-type CssProps = Readonly<Properties<string | number>>;
-
-type AllPseudos = { [key in Pseudos]?: CssProps & AllPseudos };
+type AllPseudos = { [key in CSSPseudos]?: CSSProperties & AllPseudos };
 
 // The `screen and (max-width: 768px)` part of `@media screen and (max-width: 768px)`.
 // Ideally we would do type checking to forbid this from containing the `@media` part,
 // but TypeScript doesn't provide a good way to do this.
 type AtRuleSecondHalf = string;
 type WhitelistedAtRule = {
-  [atRuleFirstHalf in AtRules]?: {
-    [atRuleSecondHalf in AtRuleSecondHalf]: CssProps & AllPseudos & WhitelistedAtRule;
+  [atRuleFirstHalf in CSS.AtRules]?: {
+    [atRuleSecondHalf in AtRuleSecondHalf]: CSSProperties & AllPseudos & WhitelistedAtRule;
   };
 };
 type WhitelistedSelector = AllPseudos & WhitelistedAtRule;
 
-type ExtendedSelector = { [key: string]: CssProps | ExtendedSelector } & {
+type ExtendedSelector = { [key: string]: CSSProperties | ExtendedSelector } & {
   /**
    * Using `selectors` is not valid here - you cannot nest a `selectors` object
    * inside another `selectors` object.
@@ -97,12 +83,6 @@ type ExtendedSelectors = {
   selectors?: ExtendedSelector;
 };
 
-type Variants<VariantName extends string> = Record<
-  VariantName,
-  CssProps & WhitelistedSelector & ExtendedSelectors
->;
-type ReturnType<VariantName extends string> = Record<VariantName, CssProps>;
-
 /**
  * ## cssMap
  *
@@ -112,15 +92,20 @@ type ReturnType<VariantName extends string> = Record<VariantName, CssProps>;
  * @example
  * ```
  * const borderStyleMap = cssMap({
- *     none: { borderStyle: 'none' },
- *     solid: { borderStyle: 'solid' },
+ *  none: { borderStyle: 'none' },
+ *  solid: { borderStyle: 'solid' },
  * });
  * const Component = ({ borderStyle }) => <div css={css(borderStyleMap[borderStyle])} />
  *
  * <Component borderStyle="solid" />
  * ```
  */
-
-export default function cssMap<T extends string>(_styles: Variants<T>): Readonly<ReturnType<T>> {
+export default function cssMap<
+  TStyles extends Record<string, CSSProperties & WhitelistedSelector & ExtendedSelectors>
+>(
+  _styles: TStyles
+): {
+  readonly [P in keyof TStyles]: CompiledStyles<TStyles[P]>;
+} {
   throw createSetupError();
 }

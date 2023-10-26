@@ -28,6 +28,16 @@ export interface PluginOptions {
   importReact?: boolean;
 
   /**
+   * By default the `xcss` prop works by just using it. To aid repositories
+   * migrating to Compiled `xcss` prop, you can use this config to have it
+   * only be enabled when Compiled has been activated either by jsx pragma
+   * or other Compiled APIs.
+   *
+   * Defaults to `false`.
+   */
+  requireCompiledInScopeForXCSSProp?: boolean;
+
+  /**
    * Security nonce that will be applied to inline style elements if defined.
    */
   nonce?: string;
@@ -144,7 +154,7 @@ export interface State extends PluginPass {
   includedFiles: string[];
 
   /**
-   * Holds a record of currently evaluated CSS Map and its sheets in the module.
+   * Holds a record of evaluated `cssMap()` calls with their compiled style sheets in the current pass.
    */
   cssMap: Record<string, string[]>;
 
@@ -152,6 +162,11 @@ export interface State extends PluginPass {
    * A custom resolver used to statically evaluate import declarations
    */
   resolver?: Resolver;
+
+  /**
+   * Holds paths that have been transformed that we can ignore.
+   */
+  transformCache: WeakMap<NodePath<any>, true>;
 }
 
 interface CommonMetadata {
