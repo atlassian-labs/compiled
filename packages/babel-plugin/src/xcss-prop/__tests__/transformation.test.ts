@@ -190,4 +190,22 @@ describe('xcss prop transformation', () => {
       "
     `);
   });
+
+  it('should not blow up transforming an empty xcss object', () => {
+    const result = transform(
+      `
+      <Component xcss={{}} />
+    `
+    );
+
+    expect(result).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      <CC>
+        <CS>{[]}</CS>
+        {<Component xcss={undefined} />}
+      </CC>;
+      "
+    `);
+  });
 });

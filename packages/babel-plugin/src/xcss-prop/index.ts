@@ -69,9 +69,26 @@ export const visitXcssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Met
     const cssOutput = buildCss(container.expression, meta);
     const { sheets, classNames } = transformCssItems(cssOutput.css, meta);
 
-    // Replace xcss prop with class names
-    // The object has a type constraint to always be a basic object with no values.
-    container.expression = classNames[0];
+    switch (classNames.length) {
+      case 1:
+        // Replace xcss prop with class names
+        // Remeber: The object has a type constraint to always be a basic object with no values.
+        container.expression = classNames[0];
+        break;
+
+      case 0:
+        // No styles were merged so we replace with an undefined identifier.
+        container.expression = t.identifier('undefined');
+        break;
+
+      default:
+        throw buildCodeFrameError(
+          'Unexpected count of class names please raise an issue on Github',
+          prop.node,
+          meta.parentPath
+        );
+    }
+
     path.parentPath.replaceWith(compiledTemplate(jsxElementNode, sheets, meta));
   } else {
     const sheets = collectPassStyles(meta);
