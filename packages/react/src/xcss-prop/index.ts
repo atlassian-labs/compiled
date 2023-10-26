@@ -9,15 +9,28 @@ type XCSSItem<TStyleDecl extends keyof CSSProperties> = {
     : never;
 };
 
-type XCSSPseudos<K extends keyof CSSProperties, TPseudos extends CSSPseudos> = {
-  [Q in CSSPseudos]?: Q extends TPseudos ? XCSSItem<K> : never;
+type XCSSPseudos<
+  TAllowedProperties extends keyof CSSProperties,
+  TAllowedPseudos extends CSSPseudos,
+  TRequiredProperties extends { requiredProperties: TAllowedProperties }
+> = {
+  [Q in CSSPseudos]?: Q extends TAllowedPseudos
+    ? MarkAsRequired<XCSSItem<TAllowedProperties>, TRequiredProperties['requiredProperties']>
+    : never;
 };
 
 /**
- * We currently block all at rules from xcss prop.
- * This needs us to decide on what the final API is across Compiled to be able to set.
+ * These APIs we don't want to allow to be passed through the `xcss` prop but we also
+ * must declare them so the (lack-of a) excess property check doesn't bite us and allow
+ * unexpected values through.
  */
-type XCSSAtRules = {
+type BlockedRules = {
+  selectors?: never;
+} & {
+  /**
+   * We currently block all at rules from xcss prop.
+   * This needs us to decide on what the final API is across Compiled to be able to set.
+   */
   [Q in CSS.AtRules]?: never;
 };
 
@@ -109,12 +122,23 @@ export type XCSSAllPseudos = CSSPseudos;
  */
 export type XCSSProp<
   TAllowedProperties extends keyof CSSProperties,
-  TAllowedPseudos extends CSSPseudos
+  TAllowedPseudos extends CSSPseudos,
+  TRequiredProperties extends {
+    requiredProperties: TAllowedProperties;
+    requiredPseudos: TAllowedPseudos;
+  } = never
 > =
-  | (XCSSItem<TAllowedProperties> & XCSSPseudos<TAllowedProperties, TAllowedPseudos> & XCSSAtRules)
+  | (MarkAsRequired<XCSSItem<TAllowedProperties>, TRequiredProperties['requiredProperties']> &
+      MarkAsRequired<
+        XCSSPseudos<TAllowedProperties, TAllowedPseudos, TRequiredProperties>,
+        TRequiredProperties['requiredPseudos']
+      > &
+      BlockedRules)
   | false
   | null
   | undefined;
+
+type MarkAsRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
 /**
  * ## cx

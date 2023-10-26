@@ -205,7 +205,79 @@ describe('xcss prop', () => {
       },
     });
 
-    // @ts-expect-error — Type 'CompiledStyles<{ selectors: { '&:not(:first-child):last-child': { color: "red"; }; }; }>' is not assignable to type 'XCSSProp<"color", "&:hover">'.
-    expectTypeOf(<CSSPropComponent xcss={styles.primary} />).toBeObject();
+    expectTypeOf(
+      <CSSPropComponent
+        // @ts-expect-error — Type 'CompiledStyles<{ '&:not(:first-child):last-child': { color: "red"; }; }>' is not assignable to type 'undefined'.
+        xcss={styles.primary}
+      />
+    ).toBeObject();
+  });
+
+  it('should mark a xcss prop as required', () => {
+    function CSSPropComponent({
+      xcss,
+    }: {
+      xcss: XCSSProp<
+        'color' | 'backgroundColor',
+        '&:hover',
+        { requiredProperties: 'color'; requiredPseudos: never }
+      >;
+    }) {
+      return <div className={xcss}>foo</div>;
+    }
+
+    expectTypeOf(
+      <CSSPropComponent
+        // @ts-expect-error — Type '{}' is not assignable to type 'XCSSProp<"backgroundColor" | "color", "&:hover", { requiredProperties: "color"; }>'.
+        xcss={{}}
+      />
+    ).toBeObject();
+  });
+
+  it('should mark a xcss prop inside a pseudo as required', () => {
+    function CSSPropComponent({
+      xcss,
+    }: {
+      xcss: XCSSProp<
+        'color' | 'backgroundColor',
+        '&:hover',
+        { requiredProperties: 'color'; requiredPseudos: never }
+      >;
+    }) {
+      return <div className={xcss}>foo</div>;
+    }
+
+    expectTypeOf(
+      <CSSPropComponent
+        xcss={{
+          color: 'red',
+          // @ts-expect-error — Property 'color' is missing in type '{}' but required in type '{ readonly color: string | number | CompiledPropertyDeclarationReference; }'.
+          '&:hover': {},
+        }}
+      />
+    ).toBeObject();
+  });
+
+  it('should mark a xcss prop pseudo as required', () => {
+    function CSSPropComponent({
+      xcss,
+    }: {
+      xcss: XCSSProp<
+        'color' | 'backgroundColor',
+        '&:hover',
+        { requiredProperties: never; requiredPseudos: '&:hover' }
+      >;
+    }) {
+      return <div className={xcss}>foo</div>;
+    }
+
+    expectTypeOf(
+      <CSSPropComponent
+        // @ts-expect-error — Property '"&:hover"' is missing in type '{ color: string; }' but required in type '{ "&:hover": MarkAsRequired<XCSSItem<"backgroundColor" | "color">, never>; }'.
+        xcss={{
+          color: 'red',
+        }}
+      />
+    ).toBeObject();
   });
 });
