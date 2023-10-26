@@ -193,4 +193,19 @@ describe('xcss prop', () => {
       />
     ).toBeObject();
   });
+
+  it('should block selectors api from CSS Map', () => {
+    function CSSPropComponent({ xcss }: { xcss: XCSSProp<'color', '&:hover'> }) {
+      return <div className={xcss}>foo</div>;
+    }
+
+    const styles = cssMap({
+      primary: {
+        selectors: { '&:not(:first-child):last-child': { color: 'red' } },
+      },
+    });
+
+    // @ts-expect-error — Type 'CompiledStyles<{ selectors: { '&:not(:first-child):last-child': { color: "red"; }; }; }>' is not assignable to type 'XCSSProp<"color", "&:hover">'.
+    expectTypeOf(<CSSPropComponent xcss={styles.primary} />).toBeObject();
+  });
 });
