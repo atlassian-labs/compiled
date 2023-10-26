@@ -1,9 +1,7 @@
 import type * as CSS from 'csstype';
 
 import { ac } from '../runtime';
-import type { CSSPseudos } from '../types';
-
-type CSSProperties = Readonly<CSS.Properties<string | number>>;
+import type { CSSPseudos, CSSProperties } from '../types';
 
 type XCSSItem<TStyleDecl extends keyof CSSProperties> = {
   [Q in keyof CSSProperties]: Q extends TStyleDecl
@@ -40,7 +38,7 @@ export type CompiledStyles<TObject> = {
 
 /**
  * Please think twice before using this type, you're better off declaring explicitly
- * what your API should be, for example only defining `color`.
+ * what your API should be, for example only defining `"color"`.
  *
  * Use in conjunction with {@link XCSSProp} to allow all properties to be given to
  * your component.
@@ -136,8 +134,12 @@ export type XCSSProp<
  */
 export const cx = <TStyles extends [...XCSSProp<any, any>[]]>(
   ...styles: TStyles
-): TStyles[number] & string => {
-  // Types won't match here as type-time are always objects.
-  // At runtime however they will be an array of strings.
-  return ac(styles as unknown as string[]) as unknown as TStyles[number] & string;
+): TStyles[number] => {
+  // At runtime TStyles is resolved down to strings, but not at compile time.
+  // We circumvent the type system here because of that.
+  const actualStyles = styles as unknown as string[];
+
+  // The output should be a union type of passed in styles. This ensures the call
+  // site of xcss prop can raise violations when disallowed styles have been passed.
+  return ac(actualStyles) as TStyles[number];
 };

@@ -27,7 +27,7 @@ const ATOMIC_GROUP_LENGTH = 5;
  *
  * @param classes
  */
-export default function ax(classNames: (string | undefined | false)[]): string | undefined {
+export default function ax(classNames: (string | undefined | null | false)[]): string | undefined {
   if (classNames.length <= 1 && (!classNames[0] || classNames[0].indexOf(' ') === -1)) {
     // short circuit if there's no custom class names.
     return classNames[0] || undefined;

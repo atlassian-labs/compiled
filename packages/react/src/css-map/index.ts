@@ -1,22 +1,8 @@
 import type * as CSS from 'csstype';
 
-import type { CSSPseudos } from '../types';
+import type { CSSPseudos, CSSProperties } from '../types';
 import { createSetupError } from '../utils/error';
 import type { CompiledStyles } from '../xcss-prop';
-
-/**
- * These are all the CSS props that will exist.
- * Only 'string' and 'number' are valid CSS values.
- *
- * @example
- * ```
- * const style: CssProps = {
- *  color: 'red',
- *  margin: 10,
- * };
- * ```
- */
-type CSSProperties = Readonly<CSS.Properties<string | number>>;
 
 type AllPseudos = { [key in CSSPseudos]?: CSSProperties & AllPseudos };
 

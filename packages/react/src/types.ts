@@ -35,13 +35,13 @@ export type CssFunction<TProps = unknown> =
   | boolean // Something like `false && styles`
   | undefined; // Something like `undefined && styles`
 
-// List of pseudo-classes and pseudo-elements are from csstype
-// but with & added in the front, so that we target the current element
-// (instead of a child element)
-
-// We also exclude anything that requires providing an argument
-// (e.g. &:not(...) ), and anything that uses information from elements
-// outside of the current element (e.g. &:first-of-type)
+/*
+ * This list of pseudo-classes and pseudo-elements are from csstype
+ * but with & added to the front. Compiled supports both &-ful
+ * and &-less forms and both will target the current element
+ * (`&:hover` <==> `:hover`), however we force the use of the
+ * &-ful form for consistency with the nested spec for new APIs.
+ */
 export type CSSPseudos =
   | '&::after'
   | '&::backdrop'
@@ -93,3 +93,11 @@ export type CSSPseudos =
   | '&:user-valid'
   | '&:valid'
   | '&:visited';
+
+/**
+ * The xcss prop must be given all known available properties even
+ * if it takes a subset of them. This is ensure the (lack-of an)
+ * excess property check doesn't enable makers to circumvent the
+ * system and pass in values they shouldn't.
+ */
+export type CSSProperties = Readonly<CSS.Properties<string | number>>;
