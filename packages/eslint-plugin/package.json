@@ -21,8 +21,8 @@
   ],
   "devDependencies": {
     "@babel/eslint-parser": "^7.21.8",
-    "@types/estree": "^1.0.1",
-    "@types/estree-jsx": "^1.0.0",
+    "@types/estree": "^1.0.3",
+    "@types/estree-jsx": "^1.0.2",
     "@typescript-eslint/parser": "^5.59.8",
     "eslint": "^8.41.0",
     "outdent": "^0.8.0",
