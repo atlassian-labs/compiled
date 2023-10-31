@@ -8,17 +8,19 @@ import { noExportedKeyframesRule } from './rules/no-exported-keyframes';
 import { noInvalidCssMapRule } from './rules/no-invalid-css-map';
 import { noKeyframesTaggedTemplateExpressionRule } from './rules/no-keyframes-tagged-template-expression';
 import { noStyledTaggedTemplateExpressionRule } from './rules/no-styled-tagged-template-expression';
+import { noSuppressXCSS } from './rules/no-suppress-xcss';
 
 export const rules = {
   'jsx-pragma': jsxPragmaRule,
+  'no-css-prop-without-css-function': noCssPropWithoutCssFunctionRule,
   'no-css-tagged-template-expression': noCssTaggedTemplateExpressionRule,
+  'no-emotion-css': noEmotionCssRule,
   'no-exported-css': noExportedCssRule,
   'no-exported-keyframes': noExportedKeyframesRule,
-  'no-emotion-css': noEmotionCssRule,
+  'no-invalid-css-map': noInvalidCssMapRule,
   'no-keyframes-tagged-template-expression': noKeyframesTaggedTemplateExpressionRule,
   'no-styled-tagged-template-expression': noStyledTaggedTemplateExpressionRule,
-  'no-css-prop-without-css-function': noCssPropWithoutCssFunctionRule,
-  'no-invalid-css-map': noInvalidCssMapRule,
+  'no-suppress-xcss': noSuppressXCSS,
 };
 
 export const configs = {
