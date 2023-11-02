@@ -5,7 +5,7 @@ This rule ensures the `cx()` function is only used within the `xcss` prop. This 
 👎 Examples of **incorrect** code for this rule:
 
 ```js
-import { styleMap } from '@compiled/react';
+import { cx, styleMap } from '@compiled/react';
 
 const styles = styleMap({
   text: { color: 'red' },
@@ -20,7 +20,7 @@ const joinedStyles = cx(styles.text, styles.bg);
 👍 Examples of **correct** code for this rule:
 
 ```js
-import { styleMap } from '@compiled/react';
+import { cx, styleMap } from '@compiled/react';
 
 const styles = styleMap({ text: { color: 'red' } });
 
