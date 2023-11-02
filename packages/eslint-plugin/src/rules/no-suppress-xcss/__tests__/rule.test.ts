@@ -35,6 +35,28 @@ tester.run('no-styled-tagged-template-expression', noSuppressXCSS, {
     },
     {
       code: `
+      <Component
+        xcss={{
+          // @ts-ignore
+          fill: 'red'
+        }}
+      />
+    `,
+      errors: [{ messageId: 'no-suppress-xcss' }],
+    },
+    {
+      code: `
+      <Component
+        xcss={{
+          // @ts-nocheck
+          fill: 'red'
+        }}
+      />
+    `,
+      errors: [{ messageId: 'no-suppress-xcss' }],
+    },
+    {
+      code: `
       // @ts-expect-error
       <Component xcss={{ fill: 'red' }} />
     `,
@@ -69,6 +91,16 @@ tester.run('no-styled-tagged-template-expression', noSuppressXCSS, {
 
       <Component
         // @ts-ignore
+        xcss={{ fill: 'red' }}
+      />
+    `,
+      errors: [{ messageId: 'no-suppress-xcss' }],
+    },
+    {
+      code: `
+
+      <Component
+        // @ts-nocheck
         xcss={{ fill: 'red' }}
       />
     `,

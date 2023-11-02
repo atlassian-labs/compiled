@@ -7,8 +7,7 @@ function nodeIsTypeSuppressed(context: Rule.RuleContext, node: Rule.Node) {
 
   const comments = context.sourceCode.getAllComments();
 
-  for (let i = 0; i < comments.length; i++) {
-    const comment = comments[i];
+  for (const comment of comments) {
     if (!comment.loc) {
       continue;
     }
@@ -19,7 +18,7 @@ function nodeIsTypeSuppressed(context: Rule.RuleContext, node: Rule.Node) {
 
     if (
       isCommentOnPreviousLine &&
-      ['@ts-expect-error', '@ts-ignore'].some((tag) => comment.value.includes(tag))
+      ['@ts-expect-error', '@ts-ignore', '@ts-nocheck'].some((tag) => comment.value.includes(tag))
     ) {
       return true;
     }
@@ -47,7 +46,8 @@ export const noSuppressXCSS: Rule.RuleModule = {
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-supress-xcss',
     },
     messages: {
-      'no-suppress-xcss': 'bad!',
+      'no-suppress-xcss':
+        'Supressing type violations inside xcss risks incidents and unintended behaviour when code changes — only declare allowed values',
     },
     type: 'problem',
   },
