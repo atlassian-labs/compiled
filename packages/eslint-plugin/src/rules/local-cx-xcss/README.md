@@ -22,7 +22,10 @@ const joinedStyles = cx(styles.text, styles.bg);
 ```js
 import { cx, styleMap } from '@compiled/react';
 
-const styles = styleMap({ text: { color: 'red' } });
+const styles = styleMap({
+  text: { color: 'red' },
+  bg: { background: 'blue' },
+});
 
 <Button xcss={cx(styles.text, styles.bg)} />;
 ```
