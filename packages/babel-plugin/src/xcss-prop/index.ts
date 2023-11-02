@@ -92,6 +92,12 @@ export const visitXcssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Met
     path.parentPath.replaceWith(compiledTemplate(jsxElementNode, sheets, meta));
   } else {
     const sheets = collectPassStyles(meta);
+    if (sheets.length === 0) {
+      // No sheets were extracted — bail out from the transform.
+      // This covers the legacy use case of runtime xcss prop.
+      return;
+    }
+
     path.parentPath.replaceWith(compiledTemplate(jsxElementNode, sheets, meta));
   }
 };

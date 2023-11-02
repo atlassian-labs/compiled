@@ -208,4 +208,26 @@ describe('xcss prop transformation', () => {
       "
     `);
   });
+
+  it('should ignore primitive components using runtime xcss prop', () => {
+    const result = transform(
+      `
+      import { Box, xcss } from '@atlaskit/primitives';
+
+      <Box xcss={xcss({ color: 'red' })} />
+    `
+    );
+
+    expect(result).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      import { Box, xcss } from "@atlaskit/primitives";
+      <Box
+        xcss={xcss({
+          color: "red",
+        })}
+      />;
+      "
+    `);
+  });
 });
