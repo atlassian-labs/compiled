@@ -6,6 +6,7 @@ import { noEmotionCssRule } from './rules/no-emotion-css';
 import { noExportedCssRule } from './rules/no-exported-css';
 import { noExportedKeyframesRule } from './rules/no-exported-keyframes';
 import { noInvalidCssMapRule } from './rules/no-invalid-css-map';
+import { noJavaScriptXCSSRule } from './rules/no-js-xcss';
 import { noKeyframesTaggedTemplateExpressionRule } from './rules/no-keyframes-tagged-template-expression';
 import { noStyledTaggedTemplateExpressionRule } from './rules/no-styled-tagged-template-expression';
 import { noSuppressXCSS } from './rules/no-suppress-xcss';
@@ -18,6 +19,7 @@ export const rules = {
   'no-exported-css': noExportedCssRule,
   'no-exported-keyframes': noExportedKeyframesRule,
   'no-invalid-css-map': noInvalidCssMapRule,
+  'no-js-xcss': noJavaScriptXCSSRule,
   'no-keyframes-tagged-template-expression': noKeyframesTaggedTemplateExpressionRule,
   'no-styled-tagged-template-expression': noStyledTaggedTemplateExpressionRule,
   'no-suppress-xcss': noSuppressXCSS,

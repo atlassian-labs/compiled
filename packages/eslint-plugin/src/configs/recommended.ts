@@ -6,6 +6,7 @@ export const recommended = {
     '@compiled/no-exported-css': 'error',
     '@compiled/no-exported-keyframes': 'error',
     '@compiled/no-invalid-css-map': 'error',
+    '@compiled/no-js-xcss': 'error',
     '@compiled/no-keyframes-tagged-template-expression': 'error',
     '@compiled/no-styled-tagged-template-expression': 'error',
     '@compiled/no-suppress-xcss': 'error',
