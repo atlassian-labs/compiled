@@ -24,6 +24,17 @@ tester.run('no-styled-tagged-template-expression', noSuppressXCSS, {
   invalid: [
     {
       code: `
+      <Component
+        xcss={{
+          // @ts-expect-error
+          fill: 'red'
+        }}
+      />
+    `,
+      errors: [{ messageId: 'no-suppress-xcss' }],
+    },
+    {
+      code: `
       // @ts-expect-error
       <Component xcss={{ fill: 'red' }} />
     `,
@@ -71,7 +82,6 @@ tester.run('no-styled-tagged-template-expression', noSuppressXCSS, {
       errors: [{ messageId: 'no-suppress-xcss' }],
     },
     {
-      only: true,
       code: `
       function Foo() {
         return (
@@ -85,7 +95,6 @@ tester.run('no-styled-tagged-template-expression', noSuppressXCSS, {
       errors: [{ messageId: 'no-suppress-xcss' }],
     },
     {
-      only: true,
       code: `
       function Foo() {
         return (

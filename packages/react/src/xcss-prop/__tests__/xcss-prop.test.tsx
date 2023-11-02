@@ -165,8 +165,14 @@ describe('xcss prop', () => {
     ).toBeObject();
     expectTypeOf(
       <CSSPropComponent
-        // @ts-expect-error — Types of property 'backgroundColor' are incompatible.
-        xcss={{ color: 'red', '&:hover': { color: 'red', backgroundColor: 'red' } }}
+        xcss={{
+          color: 'red',
+          '&:hover': {
+            color: 'red',
+            // @ts-expect-error — Types of property 'backgroundColor' are incompatible.
+            backgroundColor: 'red',
+          },
+        }}
       />
     ).toBeObject();
   });
@@ -188,8 +194,13 @@ describe('xcss prop', () => {
     ).toBeObject();
     expectTypeOf(
       <CSSPropComponent
-        // @ts-expect-error — Type '{ screen: { color: string; backgroundColor: string; }; }' is not assignable to type 'undefined'.
-        xcss={{ color: 'red', '@media': { screen: { color: 'red', backgroundColor: 'red' } } }}
+        xcss={{
+          color: 'red',
+          // @ts-expect-error — Type '{ screen: { color: string; backgroundColor: string; }; }' is not assignable to type 'undefined'.
+          '@media': {
+            screen: { color: 'red', backgroundColor: 'red' },
+          },
+        }}
       />
     ).toBeObject();
   });
