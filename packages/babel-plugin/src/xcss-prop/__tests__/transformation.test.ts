@@ -144,24 +144,6 @@ describe('xcss prop transformation', () => {
     `);
   });
 
-  it('should ignore xcss prop when compiled must be in scope', () => {
-    const result = transform(
-      `
-      <Component xcss={{ color: 'red' }} />
-    `,
-      { requireCompiledInScopeForXCSSProp: true }
-    );
-
-    expect(result).toMatchInlineSnapshot(`
-      "<Component
-        xcss={{
-          color: "red",
-        }}
-      />;
-      "
-    `);
-  });
-
   it('should transform xcss prop when compiled is in scope', () => {
     const result = transform(
       `
@@ -172,8 +154,7 @@ describe('xcss prop transformation', () => {
       });
 
       <Component xcss={styles.primary} />
-    `,
-      { requireCompiledInScopeForXCSSProp: true }
+    `
     );
 
     expect(result).toMatchInlineSnapshot(`
@@ -227,6 +208,52 @@ describe('xcss prop transformation', () => {
           color: "red",
         })}
       />;
+      "
+    `);
+  });
+
+  it('should ignore primitive components mixed with compiled components', () => {
+    const result = transform(
+      `
+      import { Box, xcss } from '@atlaskit/primitives';
+      import { cssMap } from '@compiled/react';
+
+      const styles = cssMap({ text: { color: 'red' } })
+
+      export function Mixed() {
+        return (
+          <>
+            <Box xcss={xcss({ color: 'red' })} />
+            <Button xcss={styles.text} />
+          </>
+        );
+      }
+    `
+    );
+
+    expect(result).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      import { Box, xcss } from "@atlaskit/primitives";
+      const _ = "._syaz5scu{color:red}";
+      const styles = {
+        text: "_syaz5scu",
+      };
+      export function Mixed() {
+        return (
+          <>
+            <Box
+              xcss={xcss({
+                color: "red",
+              })}
+            />
+            <CC>
+              <CS>{[_]}</CS>
+              {<Button xcss={styles.text} />}
+            </CC>
+          </>
+        );
+      }
       "
     `);
   });
