@@ -14,7 +14,7 @@ tester.run('local-cx-xcss', localCXXCSSRule, {
     <Component innerXcss={cx({})} />
   `,
     `
-    import { cx } from '@compiled/react';
+    import { cx, cssMap } from '@compiled/react';
 
     const styles = cssMap({
       text: { color: 'red' },
@@ -32,7 +32,7 @@ tester.run('local-cx-xcss', localCXXCSSRule, {
 
     const joinedStyles = cx(styles.text, styles.bg);
 
-    <Button xcss={styles} />;
+    <Button xcss={joinedStyles} />;
     `,
     `
     // Ignore cx usage not from compiled
@@ -53,7 +53,7 @@ tester.run('local-cx-xcss', localCXXCSSRule, {
     },
     {
       code: `
-      import { cx } from '@compiled/react';
+      import { cx, cssMap } from '@compiled/react';
 
       const styles = cssMap({
         text: { color: 'red' },
@@ -62,7 +62,7 @@ tester.run('local-cx-xcss', localCXXCSSRule, {
 
       const joinedStyles = cx(styles.text, styles.bg);
 
-      <Button xcss={styles} />;
+      <Button xcss={joinedStyles} />;
     `,
       errors: [{ messageId: 'local-cx-xcss' }],
     },
@@ -77,7 +77,7 @@ tester.run('local-cx-xcss', localCXXCSSRule, {
     },
     {
       code: `
-      import { cx } from '@compiled/react';
+      import { cx, cssMap} from '@compiled/react';
 
       const styles = cssMap({
         text: { color: 'red' },
@@ -86,7 +86,7 @@ tester.run('local-cx-xcss', localCXXCSSRule, {
 
       const joinedStyles = cx(styles.text, styles.bg);
 
-      <Button innerXcss={styles} />;
+      <Button innerXcss={joinedStyles} />;
     `,
       errors: [{ messageId: 'local-cx-xcss' }],
     },
