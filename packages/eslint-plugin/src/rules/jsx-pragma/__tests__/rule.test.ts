@@ -40,13 +40,21 @@ tester.run('jsx-pragma', jsxPragmaRule, {
   invalid: [
     {
       code: `
-        <div className={xcss} />
+      <div className={xcss} />
+      `,
+      output: `
+      /** @jsxImportSource @compiled/react */
+<div className={xcss} />
       `,
       errors: [{ messageId: 'missingPragmaXCSS' }],
     },
     {
       code: `
       <div className={innerXcss} />
+    `,
+      output: `
+      /** @jsxImportSource @compiled/react */
+<div className={innerXcss} />
     `,
       errors: [{ messageId: 'missingPragmaXCSS' }],
     },
