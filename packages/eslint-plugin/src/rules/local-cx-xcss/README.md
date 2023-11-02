@@ -14,7 +14,7 @@ const styles = styleMap({
 
 const joinedStyles = cx(styles.text, styles.bg);
 
-<Button xcss={styles} />;
+<Button xcss={joinedStyles} />;
 ```
 
 👍 Examples of **correct** code for this rule:
