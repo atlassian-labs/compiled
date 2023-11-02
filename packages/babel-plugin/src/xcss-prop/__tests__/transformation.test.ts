@@ -144,24 +144,6 @@ describe('xcss prop transformation', () => {
     `);
   });
 
-  it('should ignore xcss prop when compiled must be in scope', () => {
-    const result = transform(
-      `
-      <Component xcss={{ color: 'red' }} />
-    `,
-      { requireCompiledInScopeForXCSSProp: true }
-    );
-
-    expect(result).toMatchInlineSnapshot(`
-      "<Component
-        xcss={{
-          color: "red",
-        }}
-      />;
-      "
-    `);
-  });
-
   it('should transform xcss prop when compiled is in scope', () => {
     const result = transform(
       `
@@ -172,8 +154,7 @@ describe('xcss prop transformation', () => {
       });
 
       <Component xcss={styles.primary} />
-    `,
-      { requireCompiledInScopeForXCSSProp: true }
+    `
     );
 
     expect(result).toMatchInlineSnapshot(`
@@ -205,6 +186,122 @@ describe('xcss prop transformation', () => {
         <CS>{[]}</CS>
         {<Component xcss={undefined} />}
       </CC>;
+      "
+    `);
+  });
+
+  it('should ignore primitive components using runtime xcss prop', () => {
+    const result = transform(
+      `
+      import { Box, xcss } from '@atlaskit/primitives';
+
+      <Box xcss={xcss({ color: 'red' })} />
+    `
+    );
+
+    expect(result).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      import { Box, xcss } from "@atlaskit/primitives";
+      <Box
+        xcss={xcss({
+          color: "red",
+        })}
+      />;
+      "
+    `);
+  });
+
+  it('should only add styles to xcss call sites that use them', () => {
+    const result = transform(
+      `
+      import { cssMap } from '@compiled/react';
+
+      const stylesOne = cssMap({ text: { color: 'red' } })
+      const stylesTwo = cssMap({ text: { color: 'blue' } })
+
+      export function Mixed() {
+        return (
+          <>
+            <Button xcss={stylesOne.text} />
+            <Button xcss={stylesTwo.text} />
+          </>
+        );
+      }
+    `
+    );
+
+    expect(result).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _2 = "._syaz13q2{color:blue}";
+      const _ = "._syaz5scu{color:red}";
+      const stylesOne = {
+        text: "_syaz5scu",
+      };
+      const stylesTwo = {
+        text: "_syaz13q2",
+      };
+      export function Mixed() {
+        return (
+          <>
+            <CC>
+              <CS>{[_]}</CS>
+              {<Button xcss={stylesOne.text} />}
+            </CC>
+            <CC>
+              <CS>{[_2]}</CS>
+              {<Button xcss={stylesTwo.text} />}
+            </CC>
+          </>
+        );
+      }
+      "
+    `);
+  });
+
+  it('should ignore primitive components mixed with compiled components', () => {
+    const result = transform(
+      `
+      import { Box, xcss } from '@atlaskit/primitives';
+      import { cssMap } from '@compiled/react';
+
+      const styles = cssMap({ text: { color: 'red' } })
+
+      export function Mixed() {
+        return (
+          <>
+            <Box xcss={xcss({ color: 'red' })} />
+            <Button xcss={styles.text} />
+          </>
+        );
+      }
+    `
+    );
+
+    expect(result).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      import { Box, xcss } from "@atlaskit/primitives";
+      const _ = "._syaz5scu{color:red}";
+      const styles = {
+        text: "_syaz5scu",
+      };
+      export function Mixed() {
+        return (
+          <>
+            <Box
+              xcss={xcss({
+                color: "red",
+              })}
+            />
+            <CC>
+              <CS>{[_]}</CS>
+              {<Button xcss={styles.text} />}
+            </CC>
+          </>
+        );
+      }
       "
     `);
   });
