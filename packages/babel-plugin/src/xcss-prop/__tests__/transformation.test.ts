@@ -212,6 +212,54 @@ describe('xcss prop transformation', () => {
     `);
   });
 
+  it('should only add styles to xcss call sites that use them', () => {
+    const result = transform(
+      `
+      import { cssMap } from '@compiled/react';
+
+      const stylesOne = cssMap({ text: { color: 'red' } })
+      const stylesTwo = cssMap({ text: { color: 'blue' } })
+
+      export function Mixed() {
+        return (
+          <>
+            <Button xcss={stylesOne.text} />
+            <Button xcss={stylesTwo.text} />
+          </>
+        );
+      }
+    `
+    );
+
+    expect(result).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _2 = "._syaz13q2{color:blue}";
+      const _ = "._syaz5scu{color:red}";
+      const stylesOne = {
+        text: "_syaz5scu",
+      };
+      const stylesTwo = {
+        text: "_syaz13q2",
+      };
+      export function Mixed() {
+        return (
+          <>
+            <CC>
+              <CS>{[_]}</CS>
+              {<Button xcss={stylesOne.text} />}
+            </CC>
+            <CC>
+              <CS>{[_2]}</CS>
+              {<Button xcss={stylesTwo.text} />}
+            </CC>
+          </>
+        );
+      }
+      "
+    `);
+  });
+
   it('should ignore primitive components mixed with compiled components', () => {
     const result = transform(
       `
