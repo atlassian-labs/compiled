@@ -15,12 +15,9 @@ export const noJavaScriptXCSSRule: Rule.RuleModule = {
     type: 'problem',
   },
   create(context) {
-    const violations = new WeakSet<Rule.Node>();
-
     return {
       'JSXAttribute[name.name=/[xX]css$/]': (node: Rule.Node) => {
         if (node.type === 'JSXAttribute' && !context.filename.endsWith('.tsx')) {
-          violations.add(node);
           context.report({
             node: node.name,
             messageId: 'no-js-xcss',
