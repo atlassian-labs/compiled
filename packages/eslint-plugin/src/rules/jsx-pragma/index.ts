@@ -176,7 +176,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
         if (
           node.value?.type === 'JSXExpressionContainer' &&
           node.value.expression.type === 'Identifier' &&
-          /[Xx]css$/.exec(node.value.expression.name)
+          /[Xx]css$/.test(node.value.expression.name)
         ) {
           context.report({
             node,
