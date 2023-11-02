@@ -1,7 +1,7 @@
 import { typeScriptTester as tester } from '../../../test-utils';
-import { noSuppressXCSS } from '../index';
+import { noJavaScriptXCSSRule } from '../index';
 
-tester.run('no-styled-tagged-template-expression', noSuppressXCSS, {
+tester.run('no-styled-tagged-template-expression', noJavaScriptXCSSRule, {
   valid: [
     {
       filename: 'my-component.tsx',
