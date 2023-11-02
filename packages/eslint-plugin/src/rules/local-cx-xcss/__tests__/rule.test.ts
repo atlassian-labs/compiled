@@ -16,7 +16,7 @@ tester.run('local-cx-xcss', localCXXCSSRule, {
     `
     import { cx } from '@compiled/react';
 
-    const styles = styleMap({
+    const styles = cssMap({
       text: { color: 'red' },
       bg: { background: 'blue' },
     });
@@ -25,7 +25,7 @@ tester.run('local-cx-xcss', localCXXCSSRule, {
   `,
     `
     // Ignore cx usage not from compiled
-    const styles = styleMap({
+    const styles = cssMap({
       text: { color: 'red' },
       bg: { background: 'blue' },
     });
@@ -55,7 +55,7 @@ tester.run('local-cx-xcss', localCXXCSSRule, {
       code: `
       import { cx } from '@compiled/react';
 
-      const styles = styleMap({
+      const styles = cssMap({
         text: { color: 'red' },
         bg: { background: 'blue' },
       });
@@ -79,7 +79,7 @@ tester.run('local-cx-xcss', localCXXCSSRule, {
       code: `
       import { cx } from '@compiled/react';
 
-      const styles = styleMap({
+      const styles = cssMap({
         text: { color: 'red' },
         bg: { background: 'blue' },
       });

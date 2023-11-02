@@ -91,11 +91,12 @@ type ExtendedSelectors = {
  *
  * @example
  * ```
- * const borderStyleMap = cssMap({
+ * const styles = cssMap({
  *  none: { borderStyle: 'none' },
  *  solid: { borderStyle: 'solid' },
  * });
- * const Component = ({ borderStyle }) => <div css={css(borderStyleMap[borderStyle])} />
+ *
+ * const Component = ({ borderStyle }) => <div css={styles[borderStyle]} />
  *
  * <Component borderStyle="solid" />
  * ```
