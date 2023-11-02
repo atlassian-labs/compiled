@@ -28,5 +28,6 @@ const isCompiledImport = (name: string): CompiledNameChecker => {
 };
 
 export const isCss = isCompiledImport('css');
+export const isCxFunction = isCompiledImport('cx');
 export const isCssMap = isCompiledImport('cssMap');
 export const isKeyframes = isCompiledImport('keyframes');

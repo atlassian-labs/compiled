@@ -1,7 +1,7 @@
 export const recommended = {
   plugins: ['@compiled'],
   rules: {
-    '@compiled/local-cx': 'error',
+    '@compiled/local-cx-xcss': 'error',
     '@compiled/no-css-prop-without-css-function': 'error',
     '@compiled/no-css-tagged-template-expression': 'error',
     '@compiled/no-exported-css': 'error',
