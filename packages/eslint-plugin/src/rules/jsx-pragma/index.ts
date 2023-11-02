@@ -34,6 +34,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
     },
     fixable: 'code',
     messages: {
+      missingPragmaXCSS: 'Applying xcss prop to className requires the jsx pragma in scope.',
       missingPragma: 'To use the `css` prop you must set the {{ pragma }} pragma.',
       preferJsxImportSource:
         'Use of the jsxImportSource pragma (automatic runtime) is preferred over the jsx pragma (classic runtime).',
@@ -117,6 +118,25 @@ export const jsxPragmaRule: Rule.RuleModule = {
                 );
               }
             },
+          });
+        }
+      },
+
+      'JSXOpeningElement[name.name=/^[a-z]+$/] > JSXAttribute[name.name=/^className$/]': (
+        node: Rule.Node
+      ) => {
+        if (node.type !== 'JSXAttribute' || jsxPragma || jsxImportSourcePragma) {
+          return;
+        }
+
+        if (
+          node.value?.type === 'JSXExpressionContainer' &&
+          node.value.expression.type === 'Identifier' &&
+          /[Xx]css$/.exec(node.value.expression.name)
+        ) {
+          context.report({
+            node,
+            messageId: 'missingPragmaXCSS',
           });
         }
       },
