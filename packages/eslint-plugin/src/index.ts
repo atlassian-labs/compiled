@@ -1,5 +1,6 @@
 import { recommended } from './configs/recommended';
 import { jsxPragmaRule } from './rules/jsx-pragma';
+import { localCXRule } from './rules/local-cx';
 import { noCssPropWithoutCssFunctionRule } from './rules/no-css-prop-without-css-function';
 import { noCssTaggedTemplateExpressionRule } from './rules/no-css-tagged-template-expression';
 import { noEmotionCssRule } from './rules/no-emotion-css';
@@ -13,6 +14,7 @@ import { noSuppressXCSS } from './rules/no-suppress-xcss';
 
 export const rules = {
   'jsx-pragma': jsxPragmaRule,
+  'local-cx': localCXRule,
   'no-css-prop-without-css-function': noCssPropWithoutCssFunctionRule,
   'no-css-tagged-template-expression': noCssTaggedTemplateExpressionRule,
   'no-emotion-css': noEmotionCssRule,

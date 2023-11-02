@@ -1,6 +1,6 @@
 import type { Rule } from 'eslint';
 
-export const noSuppressXCSS: Rule.RuleModule = {
+export const localCXRule: Rule.RuleModule = {
   meta: {
     docs: {
       recommended: true,
