@@ -1,5 +1,14 @@
 # @compiled/eslint-plugin
 
+## 0.9.4
+
+### Patch Changes
+
+- 351dbc2a: Adds a new supplementary rule for xcss prop — `no-suppress-xcss`.
+- 9e75ff2c: Update jsx-pragma lint rule to enforce the pragma is in scope when passing the `className` prop on host elements an output of xcss prop.
+- 157e7eec: Add supplementary lint rule for xcss prop `local-cx-xcss`.
+- 2010cde2: Adds new supplementary lint rule for xcss prop `no-js-xcss`.
+
 ## 0.9.3
 
 ### Patch Changes
