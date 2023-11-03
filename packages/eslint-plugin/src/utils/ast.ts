@@ -5,17 +5,27 @@ import type { ImportDeclaration, ImportSpecifier } from 'estree';
 import { COMPILED_IMPORT } from './constants';
 
 /**
- * Given a rule, return any `@compiled/react` nodes in the source being parsed.
+ * Given a rule, return all imports from the libraries defined in `source`
+ * in the file. If `source` is not specified, return all import statements
+ * from `@compiled/react`.
  *
  * @param context Rule context
- * @returns {Rule.Node} The `@compiled/react` node or undefined
+ * @param sources An array containing all the libraries for which we want to
+ *   find import statements
+ * @returns {Rule.Node} All import statements from `source` (or from
+ *   `@compiled/react` by default)
  */
-export const findCompiledImportDeclarations = (context: Rule.RuleContext): ImportDeclaration[] => {
+export const findLibraryImportDeclarations = (
+  context: Rule.RuleContext,
+  sources = [COMPILED_IMPORT]
+): ImportDeclaration[] => {
   return context
     .getSourceCode()
     .ast.body.filter(
       (node): node is ImportDeclaration =>
-        node.type === 'ImportDeclaration' && node.source.value === COMPILED_IMPORT
+        node.type === 'ImportDeclaration' &&
+        typeof node.source.value === 'string' &&
+        sources.includes(node.source.value)
     );
 };
 
@@ -84,4 +94,28 @@ export const findDeclarationWithImport = (
         spec.type === 'ImportSpecifier' && spec.imported.name === importName
     )
   );
+};
+
+const COMPILED_CSS_IMPORTS: readonly string[] = ['css', 'cssMap'];
+
+/**
+ * Given an array of import statements, return whether there are any css and cssMap imports
+ * from `@compiled/react`.
+ *
+ * @param source an array of import declarations
+ * @returns whether any Compiled css APIs are being imported from @compiled/react (css, cssMap)
+ */
+export const usesCompiledCssAPI = (imports: ImportDeclaration[]): boolean => {
+  for (const importDeclaration of imports) {
+    for (const specifier of importDeclaration.specifiers) {
+      if (
+        specifier.type === 'ImportSpecifier' &&
+        COMPILED_CSS_IMPORTS.includes(specifier.imported.name)
+      ) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 };
