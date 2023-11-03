@@ -7,6 +7,20 @@ tester.run('jsx-pragma', jsxPragmaRule, {
       /** @jsxImportSource @compiled/react */
       <div css={{ display: 'block' }} />
     `,
+    `
+      <AnotherComponent className={xcss} />
+    `,
+    `
+      <div className={anythingElse} />
+    `,
+    `
+      /** @jsxImportSource @compiled/react */
+      <div className={xcss} />
+    `,
+    `
+      /** @jsxImportSource @compiled/react */
+      <div className={innerXcss} />
+    `,
     {
       code: `
       /** @jsxImportSource @compiled/react */
@@ -24,6 +38,26 @@ tester.run('jsx-pragma', jsxPragmaRule, {
     },
   ],
   invalid: [
+    {
+      code: `
+      <div className={xcss} />
+      `,
+      output: `
+      /** @jsxImportSource @compiled/react */
+<div className={xcss} />
+      `,
+      errors: [{ messageId: 'missingPragmaXCSS' }],
+    },
+    {
+      code: `
+      <div className={innerXcss} />
+    `,
+      output: `
+      /** @jsxImportSource @compiled/react */
+<div className={innerXcss} />
+    `,
+      errors: [{ messageId: 'missingPragmaXCSS' }],
+    },
     {
       code: `<div css={{ display: 'block' }} />`,
       output: `/** @jsx jsx */

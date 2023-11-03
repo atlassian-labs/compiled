@@ -91,7 +91,7 @@ export default declare<State>((api) => {
             }
           }
 
-          if (!state.compiledImports && /(x|X)css={/.exec(file.code)) {
+          if (!state.compiledImports && /(x|X)css={/.test(file.code)) {
             // xcss prop was found turn on Compiled
             state.compiledImports = {};
           }

@@ -38,7 +38,7 @@ export const localCXXCSSRule: Rule.RuleModule = {
           const parentJSXAttribute = getParentJSXAttribute(node);
           const propName = parentJSXAttribute?.name.name.toString();
 
-          if (propName && /[xX]css$/.exec(propName)) {
+          if (propName && /[xX]css$/.test(propName)) {
             return;
           }
 
