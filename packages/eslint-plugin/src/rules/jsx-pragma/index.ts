@@ -4,7 +4,7 @@ import type { ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifie
 import {
   findDeclarationWithImport,
   findLibraryImportDeclarations,
-  usesCompiledCssAPI,
+  usesCompiledAPI,
 } from '../../utils/ast';
 import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-to-string';
 import { findJsxImportSourcePragma, findJsxPragma } from '../../utils/jsx';
@@ -15,32 +15,13 @@ type Options = {
   runtime: 'classic' | 'automatic';
 };
 
-type OtherLibraries = '@emotion/core' | '@emotion/react';
-
-/**
- * Given a query and an object, finds whether the query appears in the object's keys.
- *
- * Gets around pesky type-checking false positives.
- *
- * @param query
- * @param myObject
- * @returns whether query is in the object's keys
- */
-function inObjectKeys<T extends string>(query: any, myObject: Record<T, any>): query is T {
-  return Object.keys(myObject).includes(query);
-}
-
-const getOtherLibraryImports = (context: Rule.RuleContext): OtherLibraries[] => {
+const getOtherLibraryImports = (context: Rule.RuleContext): ImportDeclaration[] => {
   const PROBLEMATIC_IMPORT_SPECIFIERS: readonly string[] = ['css', 'jsx'];
 
-  const detectedLibraries: Record<OtherLibraries, number> = {
-    '@emotion/core': 0,
-    '@emotion/react': 0,
-  };
-  const otherLibraryImports = findLibraryImportDeclarations(
-    context,
-    Object.keys(detectedLibraries)
-  );
+  const PROBLEMATIC_LIBRARIES = ['@emotion/core', '@emotion/react'];
+  const otherLibraryImports = findLibraryImportDeclarations(context, PROBLEMATIC_LIBRARIES);
+
+  const detectedLibraries: ImportDeclaration[] = [];
 
   for (const importDecl of otherLibraryImports) {
     for (const specifier of importDecl.specifiers) {
@@ -49,16 +30,14 @@ const getOtherLibraryImports = (context: Rule.RuleContext): OtherLibraries[] => 
         PROBLEMATIC_IMPORT_SPECIFIERS.includes(specifier.imported.name)
       ) {
         const sourceLibrary = importDecl.source.value;
-        if (inObjectKeys(sourceLibrary, detectedLibraries)) {
-          detectedLibraries[sourceLibrary]++;
+        if (typeof sourceLibrary === 'string' && PROBLEMATIC_LIBRARIES.includes(sourceLibrary)) {
+          detectedLibraries.push(importDecl);
         }
       }
     }
   }
 
-  return (Object.keys(detectedLibraries) as OtherLibraries[]).filter(
-    (name) => detectedLibraries[name as OtherLibraries] > 0
-  );
+  return detectedLibraries;
 };
 
 const findReactDeclarationWithDefaultImport = (
@@ -137,10 +116,8 @@ export const jsxPragmaRule: Rule.RuleModule = {
         'Use of the jsxImportSource pragma (automatic runtime) is preferred over the jsx pragma (classic runtime).',
       preferJsx:
         'Use of the jsx pragma (classic runtime) is preferred over the jsx pragma (automatic runtime).',
-
-      // TODO: test whether Compiled's styled works with Emotion's css
       emotionAndCompiledConflict:
-        "You can't have css or jsx be imported from both Emotion and Compiled in the same file - this will cause type-checking and runtime errors. Consider changing all of your Emotion imports from `@emotion/react` to `@compiled/react`.",
+        "You can't have css/styled/jsx be imported from both Emotion and Compiled in the same file - this will cause type-checking and runtime errors. Consider changing all of your Emotion imports from `@emotion/react` to `@compiled/react`.",
     },
     schema: [
       {
@@ -257,20 +234,20 @@ export const jsxPragmaRule: Rule.RuleModule = {
       },
 
       'JSXAttribute[name.name=/^css$/]': (node: Rule.Node) => {
-        if (node.type !== 'JSXAttribute' || jsxPragma || jsxImportSourcePragma) {
-          return;
-        }
-
-        if (options.onlyRunIfImportingCompiled && !usesCompiledCssAPI(compiledImports)) {
+        if (options.onlyRunIfImportingCompiled && !usesCompiledAPI(compiledImports)) {
           return;
         }
 
         if (options.detectConflictWithOtherLibraries && otherLibraryImports.length) {
           context.report({
-            node,
+            node: otherLibraryImports[0],
             messageId: 'emotionAndCompiledConflict',
           });
 
+          return;
+        }
+
+        if (node.type !== 'JSXAttribute' || jsxPragma || jsxImportSourcePragma) {
           return;
         }
 

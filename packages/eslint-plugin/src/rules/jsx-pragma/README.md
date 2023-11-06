@@ -1,6 +1,6 @@
 # `jsx-pragma`
 
-Ensure that the Compiled JSX pragma is set when using the `css` prop.
+Ensure that the Compiled JSX pragma is set when using the `css` or `xcss` prop.
 
 A JSX pragma is a comment that declares where to import the JSX namespace from. It looks
 like one of the following:
@@ -49,6 +49,15 @@ import { jsx } from '@compiled/react';
 import '@compiled/react';
 
 <div css={{ display: 'block' }} />;
+     ^^^ missing pragma
+```
+
+```js
+// [{ "pragma": "jsxImportSource" }]
+
+import { Box } from '@atlaskit/primitives';
+
+<Box xcss={{ borderStyle: 'solid' }} />;
      ^^^ missing pragma
 ```
 
@@ -108,7 +117,9 @@ Raises a linting error if `css` or `jsx` is imported from `@emotion/react` (or `
 as a Compiled import.
 
 This is important as Emotion can't be used with Compiled in the same file, and ignoring this linting error will
-result in a confusing runtime error. This defaults to `true`.
+result in a confusing runtime error.
+
+This defaults to `true`.
 
 ### `onlyRunIfImportingCompiled: boolean`
 
@@ -116,5 +127,7 @@ By default, the `jsx-pragma` rule suggests adding the Compiled JSX pragma whenev
 used. This may not be ideal if your codebase uses a mix of Compiled and other libraries (e.g. Emotion,
 styled-components). Setting `onlyRunIfImportingCompiled` to true turns off this rule unless `css` or `cssMap`
 are imported from `@compiled/react`.
+
+Note that this option does not affect `xcss`.
 
 This option defaults to `false`.

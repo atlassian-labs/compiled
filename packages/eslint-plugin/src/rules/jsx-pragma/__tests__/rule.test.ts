@@ -67,16 +67,8 @@ tester.run('jsx-pragma', jsxPragmaRule, {
     {
       name: "when onlyRunIfImportingCompiled is true and Emotion css is used, don't override with Compiled (with Emotion css and jsx)",
       code: `
+        /** @jsx jsx */
         import { css, jsx } from '@emotion/react';
-        <div css={css({ display: 'block' })} />
-      `,
-      options: [{ onlyRunIfImportingCompiled: true }],
-    },
-    {
-      name: "when onlyRunIfImportingCompiled is true, Emotion css is used and Compiled styled is used, don't add jsx",
-      code: `
-        import { css } from '@emotion/react';
-        import { styled } from '@compiled/react';
         <div css={css({ display: 'block' })} />
       `,
       options: [{ onlyRunIfImportingCompiled: true }],
@@ -366,6 +358,33 @@ import * as React from 'react';
       ],
     },
     {
+      name: 'should error if Emotion css and Compiled styled are used',
+      code: `
+        import { css } from '@emotion/react';
+        import { styled } from '@compiled/react';
+        <div css={css({ display: 'block' })} />
+      `,
+      errors: [
+        {
+          messageId: 'emotionAndCompiledConflict',
+        },
+      ],
+    },
+    {
+      name: 'should error if Emotion css and Compiled styled are used (onlyRunIfImportingCompiled = true)',
+      code: `
+        import { css } from '@emotion/react';
+        import { styled } from '@compiled/react';
+        <div css={css({ display: 'block' })} />
+      `,
+      options: [{ onlyRunIfImportingCompiled: true }],
+      errors: [
+        {
+          messageId: 'emotionAndCompiledConflict',
+        },
+      ],
+    },
+    {
       name: 'should error when both Emotion and Compiled css APIs are being used',
       code: `
         /** @jsx jsx */
@@ -416,6 +435,40 @@ import * as React from 'react';
       ],
     },
     {
+      name: 'should error when both Emotion jsx API and Compiled css API are being used (with JSX pragma)',
+      code: `
+        /** @jsx jsx */
+        import * as React from 'react';
+        import { jsx } from '@emotion/react';
+        import { css } from '@compiled/react';
+
+        <div css={css({ display: 'block' })} />
+      `,
+      options: [{ onlyRunIfImportingCompiled: true }],
+      errors: [
+        {
+          messageId: 'emotionAndCompiledConflict',
+        },
+      ],
+    },
+    {
+      name: 'should error when both Emotion css API and Compiled jsx API are being used (with JSX pragma)',
+      code: `
+        /** @jsx jsx */
+        import * as React from 'react';
+        import { jsx } from '@compiled/react';
+        import { css } from '@emotion/react';
+
+        <div css={css({ display: 'block' })} />
+      `,
+      options: [{ onlyRunIfImportingCompiled: true, runtime: 'classic' }],
+      errors: [
+        {
+          messageId: 'emotionAndCompiledConflict',
+        },
+      ],
+    },
+    {
       name: 'should error when both Emotion and Compiled css APIs are being used (with @emotion/core)',
       code: `
         /** @jsx jsxEmotion */
@@ -433,7 +486,7 @@ import * as React from 'react';
       ],
     },
     {
-      name: 'should error when both Emotion and Compiled css APIs are being used (onlyRunIfImportingCompiled on)',
+      name: 'should error when both Emotion and Compiled css APIs are being used (onlyRunIfImportingCompiled = true)',
       code: `
         import * as React from 'react';
         import { css } from '@emotion/react';

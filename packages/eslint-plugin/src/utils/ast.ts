@@ -96,21 +96,21 @@ export const findDeclarationWithImport = (
   );
 };
 
-const COMPILED_CSS_IMPORTS: readonly string[] = ['css', 'cssMap'];
+const COMPILED_IMPORTS: readonly string[] = ['css', 'cssMap', 'styled', 'jsx'];
 
 /**
- * Given an array of import statements, return whether there are any css and cssMap imports
+ * Given an array of import statements, return whether there are any Compiled imports
  * from `@compiled/react`.
  *
  * @param source an array of import declarations
- * @returns whether any Compiled css APIs are being imported from @compiled/react (css, cssMap)
+ * @returns whether any Compiled APIs are being imported from @compiled/react
  */
-export const usesCompiledCssAPI = (imports: ImportDeclaration[]): boolean => {
+export const usesCompiledAPI = (imports: ImportDeclaration[]): boolean => {
   for (const importDeclaration of imports) {
     for (const specifier of importDeclaration.specifiers) {
       if (
         specifier.type === 'ImportSpecifier' &&
-        COMPILED_CSS_IMPORTS.includes(specifier.imported.name)
+        COMPILED_IMPORTS.includes(specifier.imported.name)
       ) {
         return true;
       }
