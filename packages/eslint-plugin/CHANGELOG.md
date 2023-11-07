@@ -1,5 +1,12 @@
 # @compiled/eslint-plugin
 
+## 0.10.1
+
+### Patch Changes
+
+- c6e2e87c: Fix xcss eslint rules not compatible with eslint v7
+- 28559a54: Update no-exported-css and no-exported-keyframes message
+
 ## 0.10.0
 
 ### Minor Changes
