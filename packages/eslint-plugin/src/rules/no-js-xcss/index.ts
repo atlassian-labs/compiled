@@ -17,7 +17,7 @@ export const noJavaScriptXCSSRule: Rule.RuleModule = {
   create(context) {
     return {
       'JSXAttribute[name.name=/[xX]css$/]': (node: Rule.Node) => {
-        if (node.type === 'JSXAttribute' && !context.filename.endsWith('.tsx')) {
+        if (node.type === 'JSXAttribute' && !context.getFilename().endsWith('.tsx')) {
           context.report({
             node: node.name,
             messageId: 'no-js-xcss',

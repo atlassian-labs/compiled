@@ -5,7 +5,7 @@ function nodeIsTypeSuppressed(context: Rule.RuleContext, node: Rule.Node) {
     return;
   }
 
-  const comments = context.sourceCode.getAllComments();
+  const comments = context.getSourceCode().getAllComments();
 
   for (const comment of comments) {
     if (!comment.loc) {
