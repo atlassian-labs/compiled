@@ -1,11 +1,43 @@
 import type { Rule, SourceCode } from 'eslint';
 import type { ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifier } from 'estree';
 
-import { findCompiledImportDeclarations, findDeclarationWithImport } from '../../utils/ast';
+import {
+  findDeclarationWithImport,
+  findLibraryImportDeclarations,
+  usesCompiledAPI,
+} from '../../utils/ast';
 import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-to-string';
+import { findJsxImportSourcePragma, findJsxPragma } from '../../utils/jsx';
 
 type Options = {
+  detectConflictWithOtherLibraries: boolean;
+  onlyRunIfImportingCompiled: boolean;
   runtime: 'classic' | 'automatic';
+};
+
+const getOtherLibraryImports = (context: Rule.RuleContext): ImportDeclaration[] => {
+  const PROBLEMATIC_IMPORT_SPECIFIERS: readonly string[] = ['css', 'jsx'];
+
+  const PROBLEMATIC_LIBRARIES = ['@emotion/core', '@emotion/react'];
+  const otherLibraryImports = findLibraryImportDeclarations(context, PROBLEMATIC_LIBRARIES);
+
+  const detectedLibraries: ImportDeclaration[] = [];
+
+  for (const importDecl of otherLibraryImports) {
+    for (const specifier of importDecl.specifiers) {
+      if (
+        specifier.type === 'ImportSpecifier' &&
+        PROBLEMATIC_IMPORT_SPECIFIERS.includes(specifier.imported.name)
+      ) {
+        const sourceLibrary = importDecl.source.value;
+        if (typeof sourceLibrary === 'string' && PROBLEMATIC_LIBRARIES.includes(sourceLibrary)) {
+          detectedLibraries.push(importDecl);
+        }
+      }
+    }
+  }
+
+  return detectedLibraries;
 };
 
 const findReactDeclarationWithDefaultImport = (
@@ -28,6 +60,8 @@ const findReactDeclarationWithDefaultImport = (
 };
 
 function createFixer(context: Rule.RuleContext, source: SourceCode, options: Options) {
+  const compiledImports = findLibraryImportDeclarations(context);
+
   return function* fix(fixer: Rule.RuleFixer) {
     const pragma = options.runtime === 'classic' ? '@jsx jsx' : '@jsxImportSource @compiled/react';
     const reactImport = findReactDeclarationWithDefaultImport(source);
@@ -47,8 +81,6 @@ function createFixer(context: Rule.RuleContext, source: SourceCode, options: Opt
     }
 
     yield fixer.insertTextBefore(source.ast.body[0], `/** ${pragma} */\n`);
-
-    const compiledImports = findCompiledImportDeclarations(context);
 
     if (options.runtime === 'classic' && !findDeclarationWithImport(compiledImports, 'jsx')) {
       // jsx import is missing time to add one
@@ -84,6 +116,8 @@ export const jsxPragmaRule: Rule.RuleModule = {
         'Use of the jsxImportSource pragma (automatic runtime) is preferred over the jsx pragma (classic runtime).',
       preferJsx:
         'Use of the jsx pragma (classic runtime) is preferred over the jsx pragma (automatic runtime).',
+      emotionAndCompiledConflict:
+        "You can't have css/styled/jsx be imported from both Emotion and Compiled in the same file - this will cause type-checking and runtime errors. Consider changing all of your Emotion imports from `@emotion/react` to `@compiled/react`.",
     },
     schema: [
       {
@@ -93,20 +127,34 @@ export const jsxPragmaRule: Rule.RuleModule = {
             type: 'string',
             pattern: '^(classic|automatic)$',
           },
+          detectConflictWithOtherLibraries: {
+            type: 'boolean',
+          },
+          onlyRunIfImportingCompiled: {
+            type: 'boolean',
+          },
         },
         additionalProperties: false,
       },
     ],
     type: 'problem',
   },
+
   create(context) {
-    const options: Options = context.options[0] || { runtime: 'automatic' };
+    const optionsRaw = context.options[0] || {};
+    const options: Options = {
+      detectConflictWithOtherLibraries: optionsRaw.detectConflictWithOtherLibraries ?? true,
+      onlyRunIfImportingCompiled: optionsRaw.onlyRunIfImportingCompiled ?? false,
+      runtime: optionsRaw.runtime ?? 'automatic',
+    };
+
     const source = context.getSourceCode();
     const comments = source.getAllComments();
-    const jsxPragma = comments.find((n) => n.value.indexOf('@jsx jsx') > -1);
-    const jsxImportSourcePragma = comments.find(
-      (n) => n.value.indexOf('@jsxImportSource @compiled/react') > -1
-    );
+
+    const compiledImports = findLibraryImportDeclarations(context);
+    const otherLibraryImports = getOtherLibraryImports(context);
+    const jsxPragma = findJsxPragma(comments, compiledImports);
+    const jsxImportSourcePragma = findJsxImportSourcePragma(comments);
 
     return {
       Program() {
@@ -117,7 +165,6 @@ export const jsxPragmaRule: Rule.RuleModule = {
             *fix(fixer) {
               yield fixer.replaceText(jsxPragma as any, '/** @jsxImportSource @compiled/react */');
 
-              const compiledImports = findCompiledImportDeclarations(context);
               const jsxImport = findDeclarationWithImport(compiledImports, 'jsx');
               if (!jsxImport) {
                 return;
@@ -144,7 +191,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
             *fix(fixer) {
               yield fixer.replaceText(jsxImportSourcePragma as any, '/** @jsx jsx */');
 
-              const compiledImports = findCompiledImportDeclarations(context);
+              const compiledImports = findLibraryImportDeclarations(context);
               const jsxImport = findDeclarationWithImport(compiledImports, 'jsx');
               if (jsxImport) {
                 return;
@@ -186,17 +233,30 @@ export const jsxPragmaRule: Rule.RuleModule = {
         }
       },
 
-      JSXAttribute(node: any) {
-        if (jsxPragma || jsxImportSourcePragma || node.name.name !== 'css') {
+      'JSXAttribute[name.name=/^css$/]': (node: Rule.Node) => {
+        if (options.onlyRunIfImportingCompiled && !usesCompiledAPI(compiledImports)) {
+          return;
+        }
+
+        if (options.detectConflictWithOtherLibraries && otherLibraryImports.length) {
+          context.report({
+            node: otherLibraryImports[0],
+            messageId: 'emotionAndCompiledConflict',
+          });
+
+          return;
+        }
+
+        if (node.type !== 'JSXAttribute' || jsxPragma || jsxImportSourcePragma) {
           return;
         }
 
         context.report({
+          node,
           messageId: 'missingPragma',
           data: {
             pragma: options.runtime === 'classic' ? 'jsx' : 'jsxImportSource',
           },
-          node,
           fix: createFixer(context, source, options),
         });
       },
