@@ -19,6 +19,9 @@
     "dist",
     "src"
   ],
+  "dependencies": {
+    "@compiled/utils": "^0.8.0"
+  },
   "devDependencies": {
     "@babel/eslint-parser": "^7.21.8",
     "@types/estree": "^1.0.3",
