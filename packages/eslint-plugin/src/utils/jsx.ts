@@ -1,9 +1,17 @@
+import { JSX_ANNOTATION_REGEX } from '@compiled/utils';
 import type { Comment, ImportDeclaration } from 'estree';
 
 /**
- * Return the "@ jsx jsx" JSX pragma (i.e. a comment that has special
- * meaning to the TypeScript compiler), if it exists AND if jsx is
- * imported from "@compiled/react".
+ * Return the JSX pragma, which looks like this:
+ *
+ *     /** @ jsx jsx * /
+ *
+ * ... if it exists AND if jsx is imported from "@compiled/react".
+ *
+ * The JSX pragma is a special comment at the _beginning_ of the file
+ * used to find the jsx namespace in TypeScript. It is also used by Babel's
+ * @babel/plugin-transform-react-jsx to override the function used
+ * when converting JSX syntax to plain JS (React.createElement by default).
  */
 export const findJsxPragma = (
   comments: Comment[],
@@ -16,7 +24,7 @@ export const findJsxPragma = (
   let jsxPragmaName = '';
 
   for (const comment of comments) {
-    const match = /@jsx (\w+)/.exec(comment.value);
+    const match = JSX_ANNOTATION_REGEX.exec(comment.value);
     if (match) {
       jsxPragma = comment;
       jsxPragmaName = match[1];
