@@ -2,7 +2,7 @@ import type { TSESTree, TSESLint } from '@typescript-eslint/utils';
 
 import {
   findTSLibraryImportDeclarations,
-  isDOMElement,
+  isNodeDOMElement,
   traverseUpToJSXOpeningElement,
 } from '../../utils/ast';
 import {
@@ -31,21 +31,34 @@ const findNodeReference = (
 };
 
 class NoCssPropWithoutCssFunctionRunner {
-  private references: Reference[];
+  private excludeReactComponents: boolean;
   private ignoreIfImported: string[];
+  private jsxElement: TSESTree.JSXOpeningElement;
+  private references: Reference[];
 
   constructor(private baseNode: TSESTree.JSXExpressionContainer, private context: Context) {
+    this.jsxElement = traverseUpToJSXOpeningElement(this.baseNode);
     this.references = context.getScope().references;
 
-    const options: any = this.context.options;
-    if (
-      options.length > 0 &&
-      options[0].ignoreIfImported &&
-      Array.isArray(options[0].ignoreIfImported)
-    ) {
+    this.ignoreIfImported = [];
+    this.excludeReactComponents = false;
+    this.parseOptions(this.context.options as any);
+  }
+
+  private parseOptions(options: any[]) {
+    if (options.length === 0) return;
+
+    if (options[0].ignoreIfImported && Array.isArray(options[0].ignoreIfImported)) {
       this.ignoreIfImported = options[0].ignoreIfImported;
-    } else {
-      this.ignoreIfImported = [];
+    }
+
+    if (typeof options[0].excludeReactComponents === 'boolean') {
+      this.excludeReactComponents = options[0].excludeReactComponents;
+    } else if (options[0].excludeReactComponents !== undefined) {
+      throw new Error(
+        `Expected the excludeReactComponents option to be a boolean, actually got ${typeof options[0]
+          .excludeReactComponents}`
+      );
     }
   }
 
@@ -69,15 +82,9 @@ class NoCssPropWithoutCssFunctionRunner {
       const isImported = reference?.resolved?.defs.find((def) => def.type === 'ImportBinding');
       const isFunctionParameter = reference?.resolved?.defs.find((def) => def.type === 'Parameter');
 
-      const jsxElement = traverseUpToJSXOpeningElement(this.baseNode);
-
       // css property on DOM elements are always fine, e.g.
       // <div css={...}> instead of <MyComponent css={...}>
-      if (
-        jsxElement &&
-        jsxElement.name.type === 'JSXIdentifier' &&
-        isDOMElement(jsxElement.name.name)
-      ) {
+      if (isNodeDOMElement(this.jsxElement)) {
         return;
       }
 
@@ -189,6 +196,9 @@ class NoCssPropWithoutCssFunctionRunner {
 
   run() {
     if (!this.importsIgnoredLibraries()) {
+      if (this.excludeReactComponents && !isNodeDOMElement(this.jsxElement)) {
+        return;
+      }
       this.findStyleNodes(this.baseNode.expression);
     }
   }
@@ -235,6 +245,9 @@ export const noCssPropWithoutCssFunctionRule: TSESLint.RuleModule<string> = {
                 type: 'string',
               },
             ],
+          },
+          excludeReactComponents: {
+            type: 'boolean',
           },
         },
         additionalProperties: false,

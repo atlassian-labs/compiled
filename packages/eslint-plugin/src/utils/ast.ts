@@ -61,16 +61,20 @@ export const findTSLibraryImportDeclarations = (
     );
 };
 
+const isDOMElementName = (elementName: string): boolean =>
+  elementName.charAt(0) !== elementName.charAt(0).toUpperCase() &&
+  elementName.charAt(0) === elementName.charAt(0).toLowerCase();
+
 /**
  * Returns whether the element is a DOM element, which is all lowercase...
  * as opposed to a React component, which is capitalized.
  *
- * @param elementName
+ * @param jsxElement the JSX element to check
  * @returns whether the element is a DOM element (true) or a React component (false)
  */
-export const isDOMElement = (elementName: string): boolean =>
-  elementName.charAt(0) !== elementName.charAt(0).toUpperCase() &&
-  elementName.charAt(0) === elementName.charAt(0).toLowerCase();
+export const isNodeDOMElement = (jsxElement: TSESTree.JSXOpeningElement): boolean => {
+  return jsxElement.name.type === 'JSXIdentifier' && isDOMElementName(jsxElement.name.name);
+};
 
 /**
  * Traverses up the AST until it reaches a JSXOpeningElement. Used in conjunction with

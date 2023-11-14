@@ -157,6 +157,12 @@ tester.run(
         `,
         options: [{ ignoreIfImported: ['@emotion/react'] }],
       },
+      {
+        code: outdent`
+          <CustomComponent css={{ color: 'blue' }} />
+        `,
+        options: [{ excludeReactComponents: true }],
+      },
     ],
 
     invalid: [

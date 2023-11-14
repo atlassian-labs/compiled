@@ -99,3 +99,11 @@ import { jsx } from '@emotion/react';
 
 // ...
 ```
+
+This is an empty array by default.
+
+### `excludeReactComponents: boolean`
+
+Whether to exclude `css` attributes of React components from being affected by this ESLint rule. We assume that an element is a React component if it starts with a capital letter.
+
+This is false by default.
