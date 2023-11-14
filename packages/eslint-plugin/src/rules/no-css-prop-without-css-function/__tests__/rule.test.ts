@@ -130,6 +130,33 @@ tester.run(
         );
       }
       `,
+      {
+        code: outdent`
+          /** @jsx jsx */
+          import { jsx } from '@emotion/react';
+
+          <div css={{ color: 'blue' }} />
+        `,
+        options: [{ ignoreIfImported: ['@emotion/react'] }],
+      },
+      {
+        code: outdent`
+          /** @jsx jsx */
+          import { jsx } from '@emotion/core';
+
+          <div css={{ color: 'blue' }} />
+        `,
+        options: [{ ignoreIfImported: ['styled-components', '@emotion/core'] }],
+      },
+      {
+        code: outdent`
+          import { css } from '@compiled/react';
+          import { jsx } from '@emotion/react';
+
+          <div css={{ color: 'blue' }} />
+        `,
+        options: [{ ignoreIfImported: ['@emotion/react'] }],
+      },
     ],
 
     invalid: [
@@ -450,6 +477,24 @@ tester.run(
 
           <MyComponent css={styles} />;
         `,
+      },
+      {
+        errors: [
+          {
+            messageId: 'noCssFunction',
+          },
+        ],
+        code: outdent`
+          import { css } from '@compiled/react';
+
+          <div css={{ color: 'blue' }} />
+        `,
+        output: outdent`
+          import { css } from '@compiled/react';
+
+          <div css={css({ color: 'blue' })} />
+        `,
+        options: [{ ignoreIfImported: ['@emotion/react'] }],
       },
     ],
   }

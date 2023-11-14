@@ -1,7 +1,7 @@
 import type { TSESTree, TSESLint } from '@typescript-eslint/utils';
 
 import {
-  findTSCompiledImportDeclarations,
+  findTSLibraryImportDeclarations,
   isDOMElement,
   traverseUpToJSXOpeningElement,
 } from '../../utils/ast';
@@ -21,7 +21,7 @@ type ParameterDefinition = TSESLint.Scope.Definitions.ParameterDefinition;
 
 type CSSValue = TSESTree.Expression | TSESTree.JSXEmptyExpression;
 type Reference = TSESLint.Scope.Reference;
-type Context = TSESLint.RuleContext<string, readonly []>;
+type Context = TSESLint.RuleContext<string, readonly unknown[]>;
 
 const findNodeReference = (
   references: Reference[],
@@ -32,9 +32,27 @@ const findNodeReference = (
 
 class NoCssPropWithoutCssFunctionRunner {
   private references: Reference[];
+  private ignoreIfImported: string[];
 
   constructor(private baseNode: TSESTree.JSXExpressionContainer, private context: Context) {
     this.references = context.getScope().references;
+
+    const options: any = this.context.options;
+    if (
+      options.length > 0 &&
+      options[0].ignoreIfImported &&
+      Array.isArray(options[0].ignoreIfImported)
+    ) {
+      this.ignoreIfImported = options[0].ignoreIfImported;
+    } else {
+      this.ignoreIfImported = [];
+    }
+  }
+
+  private importsIgnoredLibraries() {
+    if (!this.ignoreIfImported.length) return;
+
+    return findTSLibraryImportDeclarations(this.context, this.ignoreIfImported).length > 0;
   }
 
   private handleIdentifier(node: TSESTree.Identifier) {
@@ -98,7 +116,7 @@ class NoCssPropWithoutCssFunctionRunner {
 
   private fixWrapper(node: CSSValue, context: Context) {
     function* fix(fixer: TSESLint.RuleFixer) {
-      const compiledImports = findTSCompiledImportDeclarations(context);
+      const compiledImports = findTSLibraryImportDeclarations(context);
       const source = context.getSourceCode();
 
       // The string that `css` from `@compiled/css` is imported as
@@ -170,7 +188,9 @@ class NoCssPropWithoutCssFunctionRunner {
   }
 
   run() {
-    this.findStyleNodes(this.baseNode.expression);
+    if (!this.importsIgnoredLibraries()) {
+      this.findStyleNodes(this.baseNode.expression);
+    }
   }
 }
 
@@ -204,7 +224,22 @@ export const noCssPropWithoutCssFunctionRule: TSESLint.RuleModule<string> = {
     },
     type: 'problem',
     fixable: 'code',
-    schema: [],
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          ignoreIfImported: {
+            type: 'array',
+            items: [
+              {
+                type: 'string',
+              },
+            ],
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
   },
   create: createNoCssPropWithoutCssFunctionRule(),
 };

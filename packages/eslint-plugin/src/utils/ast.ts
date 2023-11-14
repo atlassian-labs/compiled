@@ -4,6 +4,14 @@ import type { ImportDeclaration, ImportSpecifier } from 'estree';
 
 import { COMPILED_IMPORT } from './constants';
 
+// WARNING
+// context.getSourceCode() is deprecated, but we still use it here because
+// the newer alternative, context.sourceCode, is not supported below
+// ESLint 8.40.
+//
+// We can replace this with context.sourceCode once we are certain that
+// all Compiled users are using ESLint 8.40+.
+
 /**
  * Given a rule, return all imports from the libraries defined in `source`
  * in the file. If `source` is not specified, return all import statements
@@ -30,21 +38,26 @@ export const findLibraryImportDeclarations = (
 };
 
 /**
- * Re-implementation of findCompiledImportDeclarations for typescript-eslint.
+ * Re-implementation of findLibraryImportDeclarations for typescript-eslint.
  *
- * Given a rule, return any `@compiled/react` import declarations in the source code.
+ * Given a rule, return all imports from the libraries defined in `source`
+ * in the file. If `source` is not specified, return all import statements
+ * from `@compiled/react`.
  *
  * @param context Rule context
  * @returns a list of import declarations
  */
-export const findTSCompiledImportDeclarations = (
-  context: TSESLint.RuleContext<string, readonly unknown[]>
+export const findTSLibraryImportDeclarations = (
+  context: TSESLint.RuleContext<string, readonly unknown[]>,
+  sources = [COMPILED_IMPORT]
 ): TSESTree.ImportDeclaration[] => {
   return context
     .getSourceCode()
     .ast.body.filter(
       (node): node is TSESTree.ImportDeclaration =>
-        node.type === 'ImportDeclaration' && node.source.value === COMPILED_IMPORT
+        node.type === 'ImportDeclaration' &&
+        typeof node.source.value === 'string' &&
+        sources.includes(node.source.value)
     );
 };
 
