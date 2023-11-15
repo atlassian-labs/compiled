@@ -1,6 +1,6 @@
 {
   "name": "@compiled/eslint-plugin",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-eslint-plugin",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -20,7 +20,7 @@
     "src"
   ],
   "dependencies": {
-    "@compiled/utils": "^0.8.0"
+    "@compiled/utils": "^0.9.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.21.8",

@@ -1,5 +1,19 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.25.0
+
+### Minor Changes
+
+- fbc17ed3: - `@compiled/babel-plugin-strip-runtime`: Fix `css` function calls not being extracted when using classic JSX pragma syntax and `@babel/preset-react` is turned on. Now, when the classic JSX pragma syntax is used for Compiled and `@babel/preset-react` is turned on (assuming `@babel/preset-react` runs before `@compiled/babel-plugin-strip-runtime`), the JSX pragma and the `jsx` import will be completely removed in the output.
+  - `@compiled/eslint-plugin`: Change regex in `jsx-pragma` rule to match @babel/plugin-transform-react-jsx
+  - `@compiled/utils`: Change regex in `jsx-pragma` rule to match @babel/plugin-transform-react-jsx
+
+### Patch Changes
+
+- Updated dependencies [fbc17ed3]
+  - @compiled/utils@0.9.0
+  - @compiled/css@0.12.1
+
 ## 0.23.0
 
 ### Minor Changes
