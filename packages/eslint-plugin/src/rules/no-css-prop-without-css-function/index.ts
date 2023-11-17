@@ -1,8 +1,8 @@
 import type { TSESTree, TSESLint } from '@typescript-eslint/utils';
 
 import {
-  findTSCompiledImportDeclarations,
-  isDOMElement,
+  findTSLibraryImportDeclarations,
+  isNodeDOMElement,
   traverseUpToJSXOpeningElement,
 } from '../../utils/ast';
 import {
@@ -21,7 +21,7 @@ type ParameterDefinition = TSESLint.Scope.Definitions.ParameterDefinition;
 
 type CSSValue = TSESTree.Expression | TSESTree.JSXEmptyExpression;
 type Reference = TSESLint.Scope.Reference;
-type Context = TSESLint.RuleContext<string, readonly []>;
+type Context = TSESLint.RuleContext<string, readonly unknown[]>;
 
 const findNodeReference = (
   references: Reference[],
@@ -31,10 +31,41 @@ const findNodeReference = (
 };
 
 class NoCssPropWithoutCssFunctionRunner {
+  private excludeReactComponents: boolean;
+  private ignoreIfImported: string[];
+  private jsxElement: TSESTree.JSXOpeningElement;
   private references: Reference[];
 
   constructor(private baseNode: TSESTree.JSXExpressionContainer, private context: Context) {
+    this.jsxElement = traverseUpToJSXOpeningElement(this.baseNode);
     this.references = context.getScope().references;
+
+    this.ignoreIfImported = [];
+    this.excludeReactComponents = false;
+    this.parseOptions(this.context.options as any);
+  }
+
+  private parseOptions(options: any[]) {
+    if (options.length === 0) return;
+
+    if (options[0].ignoreIfImported && Array.isArray(options[0].ignoreIfImported)) {
+      this.ignoreIfImported = options[0].ignoreIfImported;
+    }
+
+    if (typeof options[0].excludeReactComponents === 'boolean') {
+      this.excludeReactComponents = options[0].excludeReactComponents;
+    } else if (options[0].excludeReactComponents !== undefined) {
+      throw new Error(
+        `Expected the excludeReactComponents option to be a boolean, actually got ${typeof options[0]
+          .excludeReactComponents}`
+      );
+    }
+  }
+
+  private importsIgnoredLibraries() {
+    if (!this.ignoreIfImported.length) return;
+
+    return findTSLibraryImportDeclarations(this.context, this.ignoreIfImported).length > 0;
   }
 
   private handleIdentifier(node: TSESTree.Identifier) {
@@ -51,15 +82,9 @@ class NoCssPropWithoutCssFunctionRunner {
       const isImported = reference?.resolved?.defs.find((def) => def.type === 'ImportBinding');
       const isFunctionParameter = reference?.resolved?.defs.find((def) => def.type === 'Parameter');
 
-      const jsxElement = traverseUpToJSXOpeningElement(this.baseNode);
-
       // css property on DOM elements are always fine, e.g.
       // <div css={...}> instead of <MyComponent css={...}>
-      if (
-        jsxElement &&
-        jsxElement.name.type === 'JSXIdentifier' &&
-        isDOMElement(jsxElement.name.name)
-      ) {
+      if (isNodeDOMElement(this.jsxElement)) {
         return;
       }
 
@@ -98,7 +123,7 @@ class NoCssPropWithoutCssFunctionRunner {
 
   private fixWrapper(node: CSSValue, context: Context) {
     function* fix(fixer: TSESLint.RuleFixer) {
-      const compiledImports = findTSCompiledImportDeclarations(context);
+      const compiledImports = findTSLibraryImportDeclarations(context);
       const source = context.getSourceCode();
 
       // The string that `css` from `@compiled/css` is imported as
@@ -170,7 +195,12 @@ class NoCssPropWithoutCssFunctionRunner {
   }
 
   run() {
-    this.findStyleNodes(this.baseNode.expression);
+    if (!this.importsIgnoredLibraries()) {
+      if (this.excludeReactComponents && !isNodeDOMElement(this.jsxElement)) {
+        return;
+      }
+      this.findStyleNodes(this.baseNode.expression);
+    }
   }
 }
 
@@ -204,7 +234,25 @@ export const noCssPropWithoutCssFunctionRule: TSESLint.RuleModule<string> = {
     },
     type: 'problem',
     fixable: 'code',
-    schema: [],
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          ignoreIfImported: {
+            type: 'array',
+            items: [
+              {
+                type: 'string',
+              },
+            ],
+          },
+          excludeReactComponents: {
+            type: 'boolean',
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
   },
   create: createNoCssPropWithoutCssFunctionRule(),
 };

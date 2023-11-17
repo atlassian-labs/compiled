@@ -82,3 +82,28 @@ const CoolComponent = () => {
   return <MyComponent css={styles} />;
 }
 ```
+
+## Options
+
+This rule supports the following options:
+
+### `ignoreIfImported: string[]`
+
+An array of libraries, each specified as a string (e.g. `['@emotion/core', '@emotion/react']`). If any of these libraries is detected as being imported in the current file, then this ESLint rule does not run.
+
+This is useful if you do not want `no-css-prop-without-css-function` to conflict with files where Emotion's JSX pragma is being used (such as the below example).
+
+```tsx
+/** @jsx jsx */
+import { jsx } from '@emotion/react';
+
+// ...
+```
+
+This is an empty array by default.
+
+### `excludeReactComponents: boolean`
+
+Whether to exclude `css` attributes of React components from being affected by this ESLint rule. We assume that an element is a React component if it starts with a capital letter.
+
+This is false by default.

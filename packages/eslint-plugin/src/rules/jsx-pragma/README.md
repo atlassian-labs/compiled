@@ -106,7 +106,7 @@ import { css } from '@emotion/react';
 
 This rule supports the following options:
 
-### `runtime: 'classic' | 'automatic`
+### `runtime: 'classic' | 'automatic'`
 
 What [JSX runtime](https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html) to adhere to,
 defaults to automatic.
