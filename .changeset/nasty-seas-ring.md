@@ -1,5 +1,5 @@
 ---
-'@compiled/babel-plugin': minor
+'@compiled/babel-plugin': patch
 ---
 
 Fix xcss being incompatible with codebases that use Emotion and Compiled:
