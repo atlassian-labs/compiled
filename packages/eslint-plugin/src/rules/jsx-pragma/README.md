@@ -1,6 +1,6 @@
 # `jsx-pragma`
 
-Ensure that the Compiled JSX pragma is set when using the `css` or `xcss` prop.
+Ensure that the Compiled JSX pragma is set when using the `css` prop.
 
 A JSX pragma is a comment that declares where to import the JSX namespace from. It looks
 like one of the following:
@@ -16,7 +16,7 @@ import { jsx } from '@compiled/react';
 ```
 
 For all Compiled usages, one of these should be used. See the
-[Emotion documentation](https://emotion.sh/docs/css-prop#jsx-pragma) for more details
+[React documentation](https://babeljs.io/docs/babel-plugin-transform-react-jsx) for more details
 on how JSX pragmas work.
 
 ---
@@ -49,15 +49,6 @@ import { jsx } from '@compiled/react';
 import '@compiled/react';
 
 <div css={{ display: 'block' }} />;
-     ^^^ missing pragma
-```
-
-```js
-// [{ "pragma": "jsxImportSource" }]
-
-import { Box } from '@atlaskit/primitives';
-
-<Box xcss={{ borderStyle: 'solid' }} />;
      ^^^ missing pragma
 ```
 
