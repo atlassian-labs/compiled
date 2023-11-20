@@ -14,17 +14,20 @@ describe('createAPI()', () => {
 
   it('should type error when circumventing the excess property check', () => {
     const { css } = createAPI<{
-      '&:hover': { background: 'var(--ds-surface)' | 'var(--ds-surface-sunken' };
+      '&:hover': { background: 'var(--ds-surface)' | 'var(--ds-surface-sunken'; bkgrnd: 'red' };
       bkgrnd: 'red' | 'green';
     }>();
 
     css({
+      color: 'red',
       // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
       bkgrnd: 'red',
+      '&:hover': {
+        color: 'red',
+        // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
+        bkgrnd: 'red',
+      },
     });
-
-    // @ts-expect-error — Type '{ ':hover': {}; }' has no properties in common with type 'Readonly<Properties<string | number, string & {}>>'.ts(2559)
-    createAPI<{ ':hover': { backgroundColor: 'red' } }>();
   });
 
   it('should constrain declared types for css() func', () => {
@@ -41,6 +44,7 @@ describe('createAPI()', () => {
     }>();
 
     css({});
+    css({ '&:hover': {} });
   });
 
   it('should constrain pseudos', () => {
@@ -57,7 +61,7 @@ describe('createAPI()', () => {
     });
   });
 
-  it('should allow valid properties inside pseudos', () => {
+  it('should allow valid properties inside pseudos that are different to root', () => {
     const { css } = createAPI<{
       background: 'var(--ds-exclusive)';
       '&:hover': { background: 'var(--ds-surface)' | 'var(--ds-surface-sunken' };
