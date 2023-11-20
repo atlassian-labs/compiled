@@ -16,7 +16,7 @@ import { jsx } from '@compiled/react';
 ```
 
 For all Compiled usages, one of these should be used. See the
-[React documentation](https://babeljs.io/docs/babel-plugin-transform-react-jsx) for more details
+[Babel documentation](https://babeljs.io/docs/babel-plugin-transform-react-jsx) for more details
 on how JSX pragmas work.
 
 ---
