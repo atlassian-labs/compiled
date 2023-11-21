@@ -75,6 +75,14 @@ export interface PluginOptions {
    * Default to `undefined`
    */
   classNameCompressionMap?: { [index: string]: string };
+
+  /**
+   * Whether Compiled should process usages of xcss in the codebase.
+   * Disable this if xcss is not implemented in your codebase using Compiled's xcss functionality.
+   *
+   * Default to `true`
+   */
+  processXcss?: boolean;
 }
 
 export interface State extends PluginPass {
@@ -100,6 +108,8 @@ export interface State extends PluginPass {
     styled?: string;
     cssMap?: string;
   };
+
+  usesXcss?: boolean;
 
   importedCompiledImports?: {
     css?: string;

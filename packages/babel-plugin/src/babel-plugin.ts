@@ -58,6 +58,7 @@ export default declare<State>((api) => {
       this.includedFiles = [];
       this.pathsToCleanup = [];
       this.pragma = {};
+      this.usesXcss = false;
 
       if (typeof this.opts.resolver === 'object') {
         this.resolver = this.opts.resolver;
@@ -91,13 +92,16 @@ export default declare<State>((api) => {
             }
           }
 
-          if (!state.compiledImports && /(x|X)css={/.test(file.code)) {
-            // xcss prop was found turn on Compiled
-            state.compiledImports = {};
+          // Default to true
+          const processXcss = state.opts.processXcss ?? true;
+
+          if (processXcss && /(x|X)css={/.test(file.code)) {
+            // xcss prop was found, turn on Compiled but just for xcss
+            state.usesXcss = true;
           }
         },
         exit(path, state) {
-          if (!state.compiledImports) {
+          if (!state.compiledImports && !state.usesXcss) {
             return;
           }
 
@@ -117,7 +121,7 @@ export default declare<State>((api) => {
             path.unshiftContainer('body', template.ast(`import * as React from 'react'`));
           }
 
-          if (state.compiledImports.styled && !path.scope.getBinding('forwardRef')) {
+          if (state.compiledImports?.styled && !path.scope.getBinding('forwardRef')) {
             // forwardRef is missing - add it in at the last moment!
             path.unshiftContainer('body', template.ast(`import { forwardRef } from 'react'`));
           }
@@ -233,12 +237,13 @@ export default declare<State>((api) => {
         visitClassNamesPath(path, { context: 'root', state, parentPath: path });
       },
       JSXOpeningElement(path, state) {
-        if (!state.compiledImports) {
-          return;
+        if (state.usesXcss) {
+          visitXcssPropPath(path, { context: 'root', state, parentPath: path });
         }
 
-        visitXcssPropPath(path, { context: 'root', state, parentPath: path });
-        visitCssPropPath(path, { context: 'root', state, parentPath: path });
+        if (state.compiledImports) {
+          visitCssPropPath(path, { context: 'root', state, parentPath: path });
+        }
       },
     },
   };
