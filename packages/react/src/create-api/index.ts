@@ -16,12 +16,7 @@ type EnforceSchema<TObject> = {
 
 interface CompiledAPI<TSchema> {
   css(styles: CSSProperties & PseudosDeclarations & TSchema): CSSProperties;
-  cssMap<
-    TStyles extends Record<
-      string,
-      Record<string, never> & CSSProperties & PseudosDeclarations & TSchema
-    >
-  >(
+  cssMap<TStyles extends Record<string, CSSProperties & PseudosDeclarations & TSchema>>(
     styles: TStyles
   ): {
     readonly [P in keyof TStyles]: CompiledStyles<TStyles[P]>;

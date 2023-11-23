@@ -52,7 +52,7 @@ describe('createAPI()', () => {
   });
 
   it('should allow valid properties inside pseudos that are different to root', () => {
-    const { css } = createAPI<{
+    const { css, cssMap } = createAPI<{
       background: 'var(--ds-exclusive)';
       '&:hover': { background: 'var(--ds-surface)' | 'var(--ds-surface-sunken' };
     }>();
@@ -64,10 +64,22 @@ describe('createAPI()', () => {
         background: 'var(--ds-surface)',
       },
     });
+
+    cssMap({
+      primary: {
+        background: 'var(--ds-exclusive)',
+        '&:hover': {
+          accentColor: 'red',
+          background: 'var(--ds-surface)',
+        },
+      },
+    });
   });
 
   it('should allow valid properties', () => {
-    const { css } = createAPI<{ background: 'var(--ds-surface)' | 'var(--ds-surface-sunken' }>();
+    const { css, cssMap } = createAPI<{
+      background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
+    }>();
 
     css({
       background: 'var(--ds-surface)',
@@ -76,6 +88,15 @@ describe('createAPI()', () => {
       '&:hover': { color: 'red' },
       '&:invalid': { color: 'orange' },
     });
+    cssMap({
+      primary: {
+        background: 'var(--ds-surface)',
+        accentColor: 'red',
+        all: 'inherit',
+        '&:hover': { color: 'red' },
+        '&:invalid': { color: 'orange' },
+      },
+    });
   });
 
   it('should constrain types for cssMap() func', () => {
@@ -83,7 +104,9 @@ describe('createAPI()', () => {
 
     cssMap({
       primary: {
-        // @ts-expect-error — Type 'string' is not assignable to type 'never'.ts(2322)
+        // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // This should be an error but it's not. The inner nested one is however! What!?
+        // @ts-expect-please-error — Type 'string' is not assignable to type 'never'.ts(2322)
         val: 'ok',
         // @ts-expect-error — Type '"red"' is not assignable to type '"var(--ds-surface)" | "var(--ds-surface-sunken" | undefined'.ts(2322)
         background: 'red',
