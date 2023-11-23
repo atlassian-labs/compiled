@@ -69,7 +69,13 @@ describe('createAPI()', () => {
   it('should allow valid properties', () => {
     const { css } = createAPI<{ background: 'var(--ds-surface)' | 'var(--ds-surface-sunken' }>();
 
-    css({ background: 'var(--ds-surface)', accentColor: 'red', all: 'inherit' });
+    css({
+      background: 'var(--ds-surface)',
+      accentColor: 'red',
+      all: 'inherit',
+      '&:hover': { color: 'red' },
+      '&:invalid': { color: 'orange' },
+    });
   });
 
   it('should constrain types for cssMap() func', () => {
