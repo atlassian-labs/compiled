@@ -1,7 +1,7 @@
 import type { Rule } from 'eslint';
 import type { MemberExpression, Identifier } from 'estree';
 
-import { findCompiledImportDeclarations } from '../ast';
+import { findLibraryImportDeclarations } from '../ast';
 
 type Node = Rule.Node;
 type RuleContext = Rule.RuleContext;
@@ -48,7 +48,7 @@ const findNode = (nodes: Node[]): MemberExpression | Identifier | undefined => {
  * @returns
  */
 const getStyledImportSpecifierName = (context: RuleContext): string | undefined => {
-  const compiledImports = findCompiledImportDeclarations(context);
+  const compiledImports = findLibraryImportDeclarations(context);
 
   return compiledImports[0].specifiers.find(
     (spec) => spec.type === 'ImportSpecifier' && spec.imported.name === 'styled'

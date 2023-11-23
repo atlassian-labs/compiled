@@ -29,11 +29,27 @@ function staticObjectInvariant(expression: t.ObjectExpression, meta: Metadata) {
   );
 }
 
-function collectPassStyles(meta: Metadata): string[] {
+function collectPathMemberExpressionIdentifiers(propPath: NodePath<t.JSXAttribute>): string[] {
+  const identifiers: string[] = [];
+
+  propPath.traverse({
+    MemberExpression(node) {
+      if (node.node.object.type === 'Identifier') {
+        identifiers.push(node.node.object.name);
+      }
+    },
+  });
+
+  return identifiers;
+}
+
+function collectPassStyles(meta: Metadata, identifiers: string[]): string[] {
   const styles: string[] = [];
 
   for (const key in meta.state.cssMap) {
-    styles.push(...meta.state.cssMap[key]);
+    if (identifiers.includes(key)) {
+      styles.push(...meta.state.cssMap[key]);
+    }
   }
 
   return styles;
@@ -48,7 +64,7 @@ export const visitXcssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Met
   meta.state.transformCache.set(path, true);
   const jsxElementNode = path.parentPath.node as t.JSXElement;
 
-  const prop = path.get('attributes').find((attr): attr is NodePath<t.JSXAttribute> => {
+  const propPath = path.get('attributes').find((attr): attr is NodePath<t.JSXAttribute> => {
     if (t.isJSXAttribute(attr.node) && `${attr.node.name.name}`.toLowerCase().endsWith('xcss')) {
       return true;
     }
@@ -56,8 +72,8 @@ export const visitXcssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Met
     return false;
   });
 
-  const container = getJsxAttributeExpressionContainer(prop);
-  if (!prop || !container || container.expression.type === 'JSXEmptyExpression') {
+  const container = getJsxAttributeExpressionContainer(propPath);
+  if (!propPath || !container || container.expression.type === 'JSXEmptyExpression') {
     // Nothing to do — bail out!
     return;
   }
@@ -84,14 +100,25 @@ export const visitXcssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Met
       default:
         throw buildCodeFrameError(
           'Unexpected count of class names please raise an issue on Github',
-          prop.node,
+          propPath.node,
           meta.parentPath
         );
     }
 
     path.parentPath.replaceWith(compiledTemplate(jsxElementNode, sheets, meta));
   } else {
-    const sheets = collectPassStyles(meta);
+    // We make the assumption that xcss prop only takes member expressions such as:
+    // 1. Dot notation, such as "styles.text"
+    // 2. Bracket notation, such as "styles[appearance]"
+    const identifiers = collectPathMemberExpressionIdentifiers(propPath);
+    const sheets = collectPassStyles(meta, identifiers);
+
+    if (sheets.length === 0) {
+      // No sheets were extracted — bail out from the transform.
+      // This covers the legacy use case of runtime xcss prop.
+      return;
+    }
+
     path.parentPath.replaceWith(compiledTemplate(jsxElementNode, sheets, meta));
   }
 };

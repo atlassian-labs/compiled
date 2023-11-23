@@ -8,7 +8,8 @@ export const noExportedCssRule: Rule.RuleModule = {
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-exported-css',
     },
     messages: {
-      unexpected: 'Unexpected `css` export declaration from @compiled/react',
+      unexpected:
+        "`css` can't be exported - this will cause unexpected behaviour at runtime. Instead, please move your `css(...)` code to the same file where these styles are being used.",
     },
     type: 'problem',
   },

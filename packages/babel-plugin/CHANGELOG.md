@@ -1,5 +1,80 @@
 # @compiled/babel-plugin
 
+## 0.25.0
+
+### Patch Changes
+
+- Updated dependencies [fbc17ed3]
+  - @compiled/utils@0.9.0
+  - @compiled/css@0.12.1
+
+## 0.24.3
+
+### Patch Changes
+
+- be019f11: Add detectConflictWithOtherLibraries and onlyRunIfImportingCompiled config options to jsx-pragma ESLint rule. Both are set to true by default, hence the breaking change.
+
+  `detectConflictWithOtherLibraries` raises a linting error if `css` or `jsx` is imported from `@emotion/react` (or `@emotion/core`) in the same file
+  as a Compiled import. Set to true by default.
+
+  `onlyRunIfImportingCompiled` sets this rule to only suggest adding the JSX pragma if the `css` or `cssMap` functions are imported from `@compiled/react`, as opposed to whenever the `css` attribute is detected at all. Set to false by default.
+
+## 0.24.2
+
+### Patch Changes
+
+- 4caa6784: The xcss prop is now available.
+  Declare styles your component takes with all other styles marked as violations
+  by the TypeScript compiler. There are two primary use cases for xcss prop:
+
+  - safe style overrides
+  - inverting style declarations
+
+  Interverting style declarations is interesting for platform teams as
+  it means products only pay for styles they use as they're now the ones who declare
+  the styles!
+
+  The `XCSSProp` type has generics which must be defined — of which should be what you
+  explicitly want to maintain as API. Use `XCSSAllProperties` and `XCSSAllPseudos` types
+  to enable all properties and pseudos.
+
+  ```tsx
+  import { type XCSSProp } from '@compiled/react';
+
+  interface MyComponentProps {
+    // Color is accepted, all other properties / pseudos are considered violations.
+    xcss?: XCSSProp<'color', never>;
+
+    // Only backgrond color and hover pseudo is accepted.
+    xcss?: XCSSProp<'backgroundColor', '&:hover'>;
+
+    // All properties are accepted, all pseudos are considered violations.
+    xcss?: XCSSProp<XCSSAllProperties, never>;
+
+    // All properties are accepted, only the hover pseudo is accepted.
+    xcss?: XCSSProp<XCSSAllProperties, '&:hover'>;
+  }
+
+  function MyComponent({ xcss }: MyComponentProps) {
+    return <div css={{ color: 'var(--ds-text-danger)' }} className={xcss} />;
+  }
+  ```
+
+  The xcss prop works with static inline objects and the [cssMap](https://compiledcssinjs.com/docs/api-cssmap) API.
+
+  ```tsx
+  // Declared as an inline object
+  <Component xcss={{ color: 'var(--ds-text)' }} />;
+
+  // Declared with the cssMap API
+  const styles = cssMap({ text: { color: 'var(--ds-text)' } });
+  <Component xcss={styles.text} />;
+  ```
+
+  To concatenate and conditonally apply styles use the `cssMap` and `cx` functions.
+
+- dccb71e0: Adds third generic for XCSSProp type for declaring what properties and pseudos should be required.
+
 ## 0.24.1
 
 ### Patch Changes

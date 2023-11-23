@@ -28,16 +28,6 @@ export interface PluginOptions {
   importReact?: boolean;
 
   /**
-   * By default the `xcss` prop works by just using it. To aid repositories
-   * migrating to Compiled `xcss` prop, you can use this config to have it
-   * only be enabled when Compiled has been activated either by jsx pragma
-   * or other Compiled APIs.
-   *
-   * Defaults to `false`.
-   */
-  requireCompiledInScopeForXCSSProp?: boolean;
-
-  /**
    * Security nonce that will be applied to inline style elements if defined.
    */
   nonce?: string;
@@ -85,6 +75,14 @@ export interface PluginOptions {
    * Default to `undefined`
    */
   classNameCompressionMap?: { [index: string]: string };
+
+  /**
+   * Whether Compiled should process usages of xcss in the codebase.
+   * Disable this if xcss is not implemented in your codebase using Compiled's xcss functionality.
+   *
+   * Default to `true`
+   */
+  processXcss?: boolean;
 }
 
 export interface State extends PluginPass {
@@ -110,6 +108,8 @@ export interface State extends PluginPass {
     styled?: string;
     cssMap?: string;
   };
+
+  usesXcss?: boolean;
 
   importedCompiledImports?: {
     css?: string;

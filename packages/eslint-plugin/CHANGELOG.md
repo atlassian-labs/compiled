@@ -1,5 +1,54 @@
 # @compiled/eslint-plugin
 
+## 0.12.0
+
+### Minor Changes
+
+- 2d1a5e76: Add two more configuration options to the `no-css-prop-without-css-function` rule:
+
+  - `ignoreIfImported` accepts an array of library names. If specified, rule execution will be skipped for all files that import any of the specified libraries (e.g. `@emotion/react`). By default, this is an empty array.
+  - `excludeReactComponents` is a boolean that determines whether this rule should skip all React components (as opposed to plain HTML elements). False by default.
+
+## 0.11.0
+
+### Minor Changes
+
+- fbc17ed3: - `@compiled/babel-plugin-strip-runtime`: Fix `css` function calls not being extracted when using classic JSX pragma syntax and `@babel/preset-react` is turned on. Now, when the classic JSX pragma syntax is used for Compiled and `@babel/preset-react` is turned on (assuming `@babel/preset-react` runs before `@compiled/babel-plugin-strip-runtime`), the JSX pragma and the `jsx` import will be completely removed in the output.
+  - `@compiled/eslint-plugin`: Change regex in `jsx-pragma` rule to match @babel/plugin-transform-react-jsx
+  - `@compiled/utils`: Change regex in `jsx-pragma` rule to match @babel/plugin-transform-react-jsx
+
+### Patch Changes
+
+- Updated dependencies [fbc17ed3]
+  - @compiled/utils@0.9.0
+
+## 0.10.1
+
+### Patch Changes
+
+- c6e2e87c: Fix xcss eslint rules not compatible with eslint v7
+- 28559a54: Update no-exported-css and no-exported-keyframes message
+
+## 0.10.0
+
+### Minor Changes
+
+- be019f11: Add detectConflictWithOtherLibraries and onlyRunIfImportingCompiled config options to jsx-pragma ESLint rule. Both are set to true by default, hence the breaking change.
+
+  `detectConflictWithOtherLibraries` raises a linting error if `css` or `jsx` is imported from `@emotion/react` (or `@emotion/core`) in the same file
+  as a Compiled import. Set to true by default.
+
+  `onlyRunIfImportingCompiled` sets this rule to only suggest adding the JSX pragma if the `css` or `cssMap` functions are imported from `@compiled/react`, as opposed to whenever the `css` attribute is detected at all. Set to false by default.
+
+## 0.9.4
+
+### Patch Changes
+
+- 351dbc2a: Adds a new supplementary rule for xcss prop — `no-suppress-xcss`.
+- 9e75ff2c: Update jsx-pragma lint rule to enforce the pragma is in scope when passing the `className` prop on host elements an output of xcss prop.
+- 157e7eec: Add supplementary lint rule for xcss prop `local-cx-xcss`.
+- 2010cde2: Adds new supplementary lint rule for xcss prop `no-js-xcss`.
+
 ## 0.9.3
 
 ### Patch Changes
