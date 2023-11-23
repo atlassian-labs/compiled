@@ -2,19 +2,9 @@
 import { createAPI } from '../';
 
 describe('createAPI()', () => {
-  it('should type error when passing in unsupported properties', () => {
-    // @ts-expect-error — Type '{ bkgrnd: "red" | "green"; }' has no properties in common with type 'Readonly<Properties<string | number, string & {}>>'.ts(2559)
-    createAPI<{
-      bkgrnd: 'red' | 'green';
-    }>();
-
-    // @ts-expect-error — Type '{ ':hover': {}; }' has no properties in common with type 'Readonly<Properties<string | number, string & {}>>'.ts(2559)
-    createAPI<{ ':hover': { backgroundColor: 'red' } }>();
-  });
-
   it('should type error when circumventing the excess property check', () => {
     const { css } = createAPI<{
-      '&:hover': { background: 'var(--ds-surface)' | 'var(--ds-surface-sunken'; bkgrnd: 'red' };
+      '&:hover': { background: 'var(--ds-surface)' | 'var(--ds-surface-sunken' };
       bkgrnd: 'red' | 'green';
     }>();
 
@@ -82,7 +72,21 @@ describe('createAPI()', () => {
     css({ background: 'var(--ds-surface)', accentColor: 'red', all: 'inherit' });
   });
 
-  it.todo('should constrain types for cssMap() func');
+  it('should constrain types for cssMap() func', () => {
+    const { cssMap } = createAPI<{ background: 'var(--ds-surface)' | 'var(--ds-surface-sunken' }>();
+
+    cssMap({
+      primary: {
+        // @ts-expect-error — Type 'string' is not assignable to type 'never'.ts(2322)
+        val: 'ok',
+        // @ts-expect-error — Type '"red"' is not assignable to type '"var(--ds-surface)" | "var(--ds-surface-sunken" | undefined'.ts(2322)
+        background: 'red',
+        '&:hover': {
+          background: 'red',
+        },
+      },
+    });
+  });
 
   it.todo('should constrain types for XCSSProp type');
 

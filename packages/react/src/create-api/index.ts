@@ -1,30 +1,44 @@
 import type { CSSProperties, CSSPseudos } from '../types';
 import { createSetupError } from '../utils/error';
+import type { CompiledStyles } from '../xcss-prop';
 
 type PseudosDeclarations = {
   [Q in CSSPseudos]?: CSSProperties;
 };
 
-type CompiledSchema<TObject> = {
-  [P in keyof TObject]?: P extends keyof Schema
+type EnforceSchema<TObject> = {
+  [P in keyof TObject]?: P extends keyof CompiledSchema
     ? TObject[P] extends Record<string, unknown>
-      ? CompiledSchema<TObject[P]>
+      ? EnforceSchema<TObject[P]>
       : TObject[P]
     : never;
 };
 
 interface CompiledAPI<TSchema> {
-  css(props: CSSProperties & PseudosDeclarations & TSchema): CSSProperties;
+  css(styles: CSSProperties & PseudosDeclarations & TSchema): CSSProperties;
+  cssMap<
+    TStyles extends Record<
+      string,
+      Record<string, never> & CSSProperties & PseudosDeclarations & TSchema
+    >
+  >(
+    styles: TStyles
+  ): {
+    readonly [P in keyof TStyles]: CompiledStyles<TStyles[P]>;
+  };
 }
 
-interface Schema extends CSSProperties, PseudosDeclarations {}
+type CompiledSchema = CSSProperties & PseudosDeclarations;
 
 /**
- * Hello world
+ * ## createAPI
  */
-export function createAPI<TSchema extends Schema>(): CompiledAPI<CompiledSchema<TSchema>> {
+export function createAPI<TSchema extends CompiledSchema>(): CompiledAPI<EnforceSchema<TSchema>> {
   return {
     css() {
+      throw createSetupError();
+    },
+    cssMap() {
       throw createSetupError();
     },
   };
