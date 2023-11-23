@@ -88,6 +88,8 @@ describe('createAPI()', () => {
         // @ts-expect-error — Type '"red"' is not assignable to type '"var(--ds-surface)" | "var(--ds-surface-sunken" | undefined'.ts(2322)
         background: 'red',
         '&:hover': {
+          // @ts-expect-error — Type 'string' is not assignable to type 'never'.ts(2322)
+          val: 'ok',
           background: 'red',
         },
       },
