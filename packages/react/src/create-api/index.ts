@@ -1,6 +1,6 @@
 import type { CSSProperties, CSSPseudos } from '../types';
 import { createSetupError } from '../utils/error';
-import type { CompiledStyles } from '../xcss-prop';
+import { type CompiledStyles, cx, type XCSSProp } from '../xcss-prop';
 
 type PseudosDeclarations = {
   [Q in CSSPseudos]?: CSSProperties;
@@ -21,6 +21,7 @@ interface CompiledAPI<TSchema> {
   ): {
     readonly [P in keyof TStyles]: CompiledStyles<TStyles[P]>;
   };
+  cx: typeof cx;
 }
 
 type CompiledSchema = CSSProperties & PseudosDeclarations;
@@ -36,5 +37,6 @@ export function createAPI<TSchema extends CompiledSchema>(): CompiledAPI<Enforce
     cssMap() {
       throw createSetupError();
     },
+    cx,
   };
 }

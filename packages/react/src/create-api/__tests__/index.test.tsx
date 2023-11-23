@@ -120,12 +120,4 @@ describe('createAPI()', () => {
   });
 
   it.todo('should constrain types for XCSSProp type');
-
-  it.todo('should constrain types for ClassNames element');
-
-  it.todo('should constrain types for styled component');
-
-  it.todo('should pass through keyframes');
-
-  it.todo('should expose 1:1 api');
 });
