@@ -96,8 +96,13 @@ export type CSSPseudos =
 
 /**
  * The xcss prop must be given all known available properties even
- * if it takes a subset of them. This is ensure the (lack-of an)
+ * if it takes a subset of them. This ensures the (lack-of an)
  * excess property check doesn't enable makers to circumvent the
  * system and pass in values they shouldn't.
  */
 export type CSSProperties = Readonly<CSS.Properties<string | number>>;
+
+/**
+ * Words go here brrr
+ */
+export type CSSPropertiesStrict = Readonly<CSS.StandardProperties & CSS.SvgProperties>;

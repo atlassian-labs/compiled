@@ -3,19 +3,30 @@ import type * as CSS from 'csstype';
 import { ac } from '../runtime';
 import type { CSSPseudos, CSSProperties } from '../types';
 
-type XCSSItem<TStyleDecl extends keyof CSSProperties> = {
+type MarkAsRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
+
+type XCSSItem<TStyleDecl extends keyof CSSProperties, TCompiledTypedProperty> = {
   [Q in keyof CSSProperties]: Q extends TStyleDecl
-    ? CompiledPropertyDeclarationReference | string | number
+    ?
+        | CompiledPropertyDeclarationReference
+        | (Q extends keyof TCompiledTypedProperty ? TCompiledTypedProperty[Q] : CSSProperties[Q])
     : never;
 };
 
 type XCSSPseudos<
   TAllowedProperties extends keyof CSSProperties,
   TAllowedPseudos extends CSSPseudos,
-  TRequiredProperties extends { requiredProperties: TAllowedProperties }
+  TRequiredProperties extends { requiredProperties: TAllowedProperties },
+  TCompiledTypedPseudo
 > = {
   [Q in CSSPseudos]?: Q extends TAllowedPseudos
-    ? MarkAsRequired<XCSSItem<TAllowedProperties>, TRequiredProperties['requiredProperties']>
+    ? MarkAsRequired<
+        XCSSItem<
+          TAllowedProperties,
+          Q extends keyof TCompiledTypedPseudo ? TCompiledTypedPseudo[Q] : object
+        >,
+        TRequiredProperties['requiredProperties']
+      >
     : never;
 };
 
@@ -132,18 +143,30 @@ export type XCSSProp<
     requiredProperties: TAllowedProperties;
     requiredPseudos: TAllowedPseudos;
   } = never
+> = Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, object, object, TRequiredProperties>;
+
+export type Internal$XCSSProp<
+  TAllowedProperties extends keyof CSSProperties,
+  TAllowedPseudos extends CSSPseudos,
+  TCompiledTypedProperty,
+  TCompiledTypedPseudo,
+  TRequiredProperties extends {
+    requiredProperties: TAllowedProperties;
+    requiredPseudos: TAllowedPseudos;
+  }
 > =
-  | (MarkAsRequired<XCSSItem<TAllowedProperties>, TRequiredProperties['requiredProperties']> &
+  | (MarkAsRequired<
+      XCSSItem<TAllowedProperties, TCompiledTypedProperty>,
+      TRequiredProperties['requiredProperties']
+    > &
       MarkAsRequired<
-        XCSSPseudos<TAllowedProperties, TAllowedPseudos, TRequiredProperties>,
+        XCSSPseudos<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TCompiledTypedPseudo>,
         TRequiredProperties['requiredPseudos']
       > &
       BlockedRules)
   | false
   | null
   | undefined;
-
-type MarkAsRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
 /**
  * ## cx
