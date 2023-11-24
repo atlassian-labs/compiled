@@ -118,6 +118,4 @@ describe('createAPI()', () => {
       },
     });
   });
-
-  it.todo('should constrain types for XCSSProp type');
 });

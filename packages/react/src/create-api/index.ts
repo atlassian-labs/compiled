@@ -1,6 +1,6 @@
 import type { CSSProperties, CSSPseudos } from '../types';
 import { createSetupError } from '../utils/error';
-import { type CompiledStyles, cx, type XCSSProp } from '../xcss-prop';
+import { type CompiledStyles, cx } from '../xcss-prop';
 
 type PseudosDeclarations = {
   [Q in CSSPseudos]?: CSSProperties;
