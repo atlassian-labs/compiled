@@ -31,6 +31,11 @@ describe('styled component behaviour', () => {
       const _ = "._1wybgktf{font-size:20px}";
       const ListItem = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error(
+              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+            );
+          }
           return (
             <CC>
               <CS>{[_]}</CS>
@@ -69,6 +74,11 @@ describe('styled component behaviour', () => {
       const _ = "._1wybgktf{font-size:20px}";
       const ListItem = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error(
+              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+            );
+          }
           return (
             <CC>
               <CS>{[_]}</CS>
@@ -344,6 +354,11 @@ describe('styled component behaviour', () => {
       const _ = "._bfhkhk3l{background-color:var(--_16ldrz5)}";
       export const BadgeSkeleton = forwardRef(
         ({ as: C = "span", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error(
+              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+            );
+          }
           const { isLoading, state, ...__cmpldp } = __cmplp;
           return (
             <CC>

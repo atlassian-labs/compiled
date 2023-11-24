@@ -925,6 +925,11 @@ describe('keyframes', () => {
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+                if (__cmplp.innerRef) {
+                  throw new Error(
+                    "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+                  );
+                }
                 return (
                   <CC>
                     <CS>{[_, _2, _3, _4]}</CS>
@@ -954,6 +959,11 @@ describe('keyframes', () => {
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+                if (__cmplp.innerRef) {
+                  throw new Error(
+                    "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+                  );
+                }
                 return (
                   <CC>
                     <CS>{[_, _2]}</CS>
@@ -991,6 +1001,11 @@ describe('keyframes', () => {
             const darken = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+                if (__cmplp.innerRef) {
+                  throw new Error(
+                    "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+                  );
+                }
                 return (
                   <CC>
                     <CS>{[_, _2, _3]}</CS>
@@ -1026,6 +1041,11 @@ describe('keyframes', () => {
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+                if (__cmplp.innerRef) {
+                  throw new Error(
+                    "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+                  );
+                }
                 return (
                   <CC>
                     <CS>{[_, _2, _3, _4]}</CS>
@@ -1055,6 +1075,11 @@ describe('keyframes', () => {
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+                if (__cmplp.innerRef) {
+                  throw new Error(
+                    "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+                  );
+                }
                 return (
                   <CC>
                     <CS>{[_, _2]}</CS>
@@ -1092,6 +1117,11 @@ describe('keyframes', () => {
             const darken = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+                if (__cmplp.innerRef) {
+                  throw new Error(
+                    "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+                  );
+                }
                 return (
                   <CC>
                     <CS>{[_, _2, _3]}</CS>
@@ -1305,6 +1335,11 @@ describe('keyframes', () => {
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+                if (__cmplp.innerRef) {
+                  throw new Error(
+                    "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+                  );
+                }
                 return (
                   <CC>
                     <CS>{[_, _2, _3, _4]}</CS>
@@ -1334,6 +1369,11 @@ describe('keyframes', () => {
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+                if (__cmplp.innerRef) {
+                  throw new Error(
+                    "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+                  );
+                }
                 return (
                   <CC>
                     <CS>{[_, _2]}</CS>
@@ -1371,6 +1411,11 @@ describe('keyframes', () => {
             const darken = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+                if (__cmplp.innerRef) {
+                  throw new Error(
+                    "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+                  );
+                }
                 return (
                   <CC>
                     <CS>{[_, _2, _3]}</CS>
@@ -1406,6 +1451,11 @@ describe('keyframes', () => {
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+                if (__cmplp.innerRef) {
+                  throw new Error(
+                    "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+                  );
+                }
                 return (
                   <CC>
                     <CS>{[_, _2, _3, _4]}</CS>
@@ -1435,6 +1485,11 @@ describe('keyframes', () => {
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+                if (__cmplp.innerRef) {
+                  throw new Error(
+                    "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+                  );
+                }
                 return (
                   <CC>
                     <CS>{[_, _2]}</CS>
@@ -1472,6 +1527,11 @@ describe('keyframes', () => {
             const darken = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+                if (__cmplp.innerRef) {
+                  throw new Error(
+                    "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+                  );
+                }
                 return (
                   <CC>
                     <CS>{[_, _2, _3]}</CS>

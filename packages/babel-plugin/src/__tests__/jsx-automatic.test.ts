@@ -73,6 +73,11 @@ describe('jsx automatic', () => {
       import { jsxs as _jsxs } from "react/jsx-runtime";
       const _ = "._syaz13q2{color:blue}";
       forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+        if (__cmplp.innerRef) {
+          throw new Error(
+            "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+          );
+        }
         return _jsxs(CC, {
           children: [
             _jsx(CS, {

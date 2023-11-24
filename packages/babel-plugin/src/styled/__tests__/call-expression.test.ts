@@ -26,6 +26,11 @@ describe('styled object call expression', () => {
       });
       const CompiledComponent = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error(
+              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+            );
+          }
           return (
             <CC>
               <CS>{[_]}</CS>
@@ -620,6 +625,11 @@ describe('styled object call expression', () => {
       const size = 5;
       const Component = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error(
+              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+            );
+          }
           const { isActive, ...__cmpldp } = __cmplp;
           return (
             <CC>
@@ -655,6 +665,11 @@ describe('styled object call expression', () => {
       "const _ = "._1yt414tu{padding:var(--_1hhnq9y)}";
       const Container = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error(
+              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+            );
+          }
           const { customPadding, ...__cmpldp } = __cmplp;
           return (
             <CC>
@@ -693,6 +708,11 @@ describe('styled object call expression', () => {
       const _ = "._1yt41v0o{padding:var(--_1dm0vu2)}";
       const Container = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error(
+              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
+            );
+          }
           const { morePadding, ...__cmpldp } = __cmplp;
           return (
             <CC>
