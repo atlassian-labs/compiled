@@ -32,9 +32,7 @@ describe('styled component behaviour', () => {
       const ListItem = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           if (__cmplp.innerRef) {
-            throw new Error(
-              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
-            );
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
           }
           return (
             <CC>
@@ -75,9 +73,7 @@ describe('styled component behaviour', () => {
       const ListItem = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           if (__cmplp.innerRef) {
-            throw new Error(
-              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
-            );
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
           }
           return (
             <CC>
@@ -355,9 +351,7 @@ describe('styled component behaviour', () => {
       export const BadgeSkeleton = forwardRef(
         ({ as: C = "span", style: __cmpls, ...__cmplp }, __cmplr) => {
           if (__cmplp.innerRef) {
-            throw new Error(
-              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
-            );
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
           }
           const { isLoading, state, ...__cmpldp } = __cmplp;
           return (

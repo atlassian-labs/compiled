@@ -162,7 +162,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     ${
       isDevelopmentEnv
         ? `if (${PROPS_IDENTIFIER_NAME}.innerRef) {
-          throw new Error("Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref")
+          throw new Error("Please use 'ref' instead of 'innerRef'.")
         }`
         : ''
     }

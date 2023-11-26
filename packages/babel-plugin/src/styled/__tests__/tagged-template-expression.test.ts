@@ -31,9 +31,7 @@ describe('styled tagged template expression', () => {
       const CompiledComponent = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           if (__cmplp.innerRef) {
-            throw new Error(
-              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
-            );
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
           }
           return (
             <CC>
@@ -79,9 +77,7 @@ describe('styled tagged template expression', () => {
       const CompiledComponent = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           if (__cmplp.innerRef) {
-            throw new Error(
-              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
-            );
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
           }
           return (
             <CC>
@@ -956,9 +952,7 @@ describe('styled tagged template expression', () => {
       const ListItem = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           if (__cmplp.innerRef) {
-            throw new Error(
-              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
-            );
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
           }
           const { ruleEnabled, ...__cmpldp } = __cmplp;
           return (
@@ -1021,9 +1015,7 @@ describe('styled tagged template expression', () => {
       const ListItem = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           if (__cmplp.innerRef) {
-            throw new Error(
-              "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
-            );
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
           }
           const { isActive, ...__cmpldp } = __cmplp;
           return (

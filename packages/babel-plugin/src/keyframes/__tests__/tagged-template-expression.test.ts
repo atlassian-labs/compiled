@@ -814,9 +814,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const StyledComponent = forwardRef(
             ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
               if (__cmplp.innerRef) {
-                throw new Error(
-                  "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
-                );
+                throw new Error("Please use 'ref' instead of 'innerRef'.");
               }
               return (
                 <CC>
@@ -848,9 +846,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const StyledComponent = forwardRef(
             ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
               if (__cmplp.innerRef) {
-                throw new Error(
-                  "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
-                );
+                throw new Error("Please use 'ref' instead of 'innerRef'.");
               }
               return (
                 <CC>
@@ -890,9 +886,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const StyledComponent = forwardRef(
             ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
               if (__cmplp.innerRef) {
-                throw new Error(
-                  "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
-                );
+                throw new Error("Please use 'ref' instead of 'innerRef'.");
               }
               return (
                 <CC>
@@ -930,9 +924,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const StyledComponent = forwardRef(
             ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
               if (__cmplp.innerRef) {
-                throw new Error(
-                  "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
-                );
+                throw new Error("Please use 'ref' instead of 'innerRef'.");
               }
               return (
                 <CC>
@@ -964,9 +956,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const StyledComponent = forwardRef(
             ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
               if (__cmplp.innerRef) {
-                throw new Error(
-                  "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
-                );
+                throw new Error("Please use 'ref' instead of 'innerRef'.");
               }
               return (
                 <CC>
@@ -1006,9 +996,7 @@ describe('keyframes transforms a tagged template expression', () => {
           const StyledComponent = forwardRef(
             ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
               if (__cmplp.innerRef) {
-                throw new Error(
-                  "Please use 'ref' instead of 'innerRef'. For more details, visit go/compiled-innerref"
-                );
+                throw new Error("Please use 'ref' instead of 'innerRef'.");
               }
               return (
                 <CC>
