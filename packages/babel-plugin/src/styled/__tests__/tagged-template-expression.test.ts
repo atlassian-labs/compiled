@@ -30,6 +30,9 @@ describe('styled tagged template expression', () => {
       \`;
       const CompiledComponent = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
+          }
           return (
             <CC>
               <CS>{[_]}</CS>
@@ -73,6 +76,9 @@ describe('styled tagged template expression', () => {
       \`;
       const CompiledComponent = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
+          }
           return (
             <CC>
               <CS>{[_]}</CS>
@@ -945,6 +951,9 @@ describe('styled tagged template expression', () => {
       const color2 = "blue";
       const ListItem = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
+          }
           const { ruleEnabled, ...__cmpldp } = __cmplp;
           return (
             <CC>
@@ -1005,6 +1014,9 @@ describe('styled tagged template expression', () => {
       const color2 = "blue";
       const ListItem = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
+          }
           const { isActive, ...__cmpldp } = __cmplp;
           return (
             <CC>

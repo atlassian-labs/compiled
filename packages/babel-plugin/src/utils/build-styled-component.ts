@@ -147,6 +147,10 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
       : '';
 
   const classNames = `${componentClassName}"${unconditionalClassNames.trim()}", ${conditionalClassNames}`;
+  const isDevelopmentEnv =
+    (!process.env.BABEL_ENV && !process.env.NODE_ENV) ||
+    ['development', 'test'].includes(process.env.BABEL_ENV || '') ||
+    ['development', 'test'].includes(process.env.NODE_ENV || '');
 
   return template(
     `
@@ -155,6 +159,13 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
     style: ${STYLE_IDENTIFIER_NAME},
     ...${PROPS_IDENTIFIER_NAME}
   }, ${REF_IDENTIFIER_NAME}) => {
+    ${
+      isDevelopmentEnv
+        ? `if (${PROPS_IDENTIFIER_NAME}.innerRef) {
+          throw new Error("Please use 'ref' instead of 'innerRef'.")
+        }`
+        : ''
+    }
     ${
       hasInvalidDomProps
         ? `const {${invalidDomProps.join(
