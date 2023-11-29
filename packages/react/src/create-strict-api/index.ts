@@ -14,9 +14,15 @@ type EnforceSchema<TObject> = {
     : never;
 };
 
+type PickObjects<TObject> = {
+  [P in keyof TObject]: TObject[P] extends Record<string, unknown> ? TObject[P] : never;
+};
+
 interface CompiledAPI<TSchema> {
-  css(styles: CSSProperties & PseudosDeclarations & TSchema): CSSProperties;
-  cssMap<TStyles extends Record<string, CSSProperties & PseudosDeclarations & TSchema>>(
+  css(styles: CSSProperties & PseudosDeclarations & EnforceSchema<TSchema>): CSSProperties;
+  cssMap<
+    TStyles extends Record<string, CSSProperties & PseudosDeclarations & EnforceSchema<TSchema>>
+  >(
     styles: TStyles
   ): {
     readonly [P in keyof TStyles]: CompiledStyles<TStyles[P]>;
@@ -29,7 +35,13 @@ interface CompiledAPI<TSchema> {
       requiredProperties: TAllowedProperties;
       requiredPseudos: TAllowedPseudos;
     } = never
-  >(): Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, TSchema, object, TRequiredProperties>;
+  >(): Internal$XCSSProp<
+    TAllowedProperties,
+    TAllowedPseudos,
+    TSchema,
+    PickObjects<TSchema>,
+    TRequiredProperties
+  >;
 }
 
 type CompiledSchema = CSSProperties & PseudosDeclarations;
@@ -37,9 +49,7 @@ type CompiledSchema = CSSProperties & PseudosDeclarations;
 /**
  * ## createAPI
  */
-export function createStrictAPI<TSchema extends CompiledSchema>(): CompiledAPI<
-  EnforceSchema<TSchema>
-> {
+export function createStrictAPI<TSchema extends CompiledSchema>(): CompiledAPI<TSchema> {
   return {
     css() {
       throw createSetupError();

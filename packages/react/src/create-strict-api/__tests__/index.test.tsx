@@ -161,6 +161,50 @@ describe('createStrictAPI()', () => {
       />;
     });
 
+    it('should type error for unsupported pseudos', () => {
+      const { XCSSProp } = createStrictAPI<{
+        background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
+        ':hover': {
+          color: 'var(--ds-text)';
+        };
+      }>();
+
+      function Button(_: { xcss: ReturnType<typeof XCSSProp<'background', never>> }) {
+        return null;
+      }
+
+      <Button
+        xcss={{
+          // @ts-expect-error — Object literal may only specify known properties, and '':hover'' does not exist in type
+          ':hover': {
+            color: 'red',
+          },
+        }}
+      />;
+    });
+
+    it('should type error for invalid values in pseudos', () => {
+      const { XCSSProp } = createStrictAPI<{
+        background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
+        '&:hover': {
+          color: 'var(--ds-text)';
+        };
+      }>();
+
+      function Button(_: { xcss: ReturnType<typeof XCSSProp<'color', '&:hover'>> }) {
+        return null;
+      }
+
+      <Button
+        xcss={{
+          '&:hover': {
+            // @ts-expect-error — Type '"red"' is not assignable to type 'CompiledPropertyDeclarationReference | "var(--ds-text)" | undefined'.ts(2322)
+            color: 'red',
+          },
+        }}
+      />;
+    });
+
     it('should enforce required properties', () => {
       const { XCSSProp } = createStrictAPI<{
         background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
