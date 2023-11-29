@@ -149,14 +149,18 @@ describe('createStrictAPI()', () => {
 
       <Button
         xcss={{
-          // @ts-expect-error — ???
-          asd: 0,
           // @ts-expect-error — Type '"red"' is not assignable to type '"var(--ds-surface)" | "var(--ds-surface-sunken" | CompiledPropertyDeclarationReference | undefined'.ts(2322)
           background: 'red',
           // @ts-expect-error — Type '{ background: string; }' is not assignable to type 'undefined'.ts(2322)
           '&::after': {
             background: 'red',
           },
+        }}
+      />;
+      <Button
+        xcss={{
+          // @ts-expect-error — Type '{ asd: number; }' is not assignable to type 'Internal$XCSSProp<"background", never, { background: "var(--ds-surface)" | "var(--ds-surface-sunken"; }, PickObjects<{ background: "var(--ds-surface)" | "var(--ds-surface-sunken"; }>, never>'.
+          asd: 0,
         }}
       />;
     });
@@ -181,6 +185,14 @@ describe('createStrictAPI()', () => {
           },
         }}
       />;
+      <Button
+        xcss={{
+          // @ts-expect-error — Object literal may only specify known properties, and '':hover'' does not exist in type
+          ':asd': {
+            color: 'red',
+          },
+        }}
+      />;
     });
 
     it('should type error for invalid values in pseudos', () => {
@@ -200,6 +212,14 @@ describe('createStrictAPI()', () => {
           '&:hover': {
             // @ts-expect-error — Type '"red"' is not assignable to type 'CompiledPropertyDeclarationReference | "var(--ds-text)" | undefined'.ts(2322)
             color: 'red',
+          },
+        }}
+      />;
+      <Button
+        xcss={{
+          '&:hover': {
+            // @ts-expect-error — Type '{ asd: string; }' is not assignable to type 'MarkAsRequired<XCSSItem<"color", { color: "var(--ds-text)"; }>, never>'.
+            asd: 'red',
           },
         }}
       />;
