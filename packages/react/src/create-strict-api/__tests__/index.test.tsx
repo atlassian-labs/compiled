@@ -86,50 +86,71 @@ describe('createStrictAPI()', () => {
     });
   });
 
-  // describe('cssMap()', () => {
-  //   it('should allow valid properties inside pseudos that are different to root', () => {
-  //     cssMap({
-  //       primary: {
-  //         background: 'var(--ds-surface)',
-  //         '&:hover': {
-  //           accentColor: 'red',
-  //           background: 'var(--ds-surface-hover)',
-  //         },
-  //       },
-  //     });
-  //   });
+  describe('cssMap()', () => {
+    it('should allow valid properties', () => {
+      const styles = cssMap({
+        primary: {
+          background: 'var(--ds-surface)',
+          accentColor: 'red',
+          all: 'inherit',
+          '&:hover': { color: 'var(--ds-text)' },
+          '&:invalid': { color: 'orange' },
+        },
+      });
 
-  //   it('should allow valid properties', () => {
-  //     cssMap({
-  //       primary: {
-  //         background: 'var(--ds-surface)',
-  //         accentColor: 'red',
-  //         all: 'inherit',
-  //         '&:hover': { color: 'var(--ds-text)' },
-  //         '&:invalid': { color: 'orange' },
-  //       },
-  //     });
-  //   });
+      const { getByTestId } = render(<div css={styles.primary} data-testid="div" />);
 
-  //   it('should constrain types', () => {
-  //     cssMap({
-  //       primary: {
-  //         // @ts-expect-error — Type '{ val: string; }' is not assignable to type 'Readonly<Properties<string | number, string & {}>> & PseudosDeclarations & EnforceSchema<{ background: "var(--ds-surface)" | "var(--ds-surface-sunken"; }>'.
-  //         val: 'ok',
-  //       },
-  //     });
-  //     cssMap({
-  //       primary: {
-  //         // @ts-expect-error — Type '"red"' is not assignable to type '"var(--ds-surface)" | "var(--ds-surface-sunken" | undefined'.ts(2322)
-  //         background: 'red',
-  //         '&:hover': {
-  //           // @ts-expect-error — Type 'string' is not assignable to type 'never'.ts(2322)
-  //           val: 'ok',
-  //         },
-  //       },
-  //     });
-  //   });
-  // });
+      expect(getByTestId('div')).toHaveCompiledCss('background', 'var(--ds-surface)');
+    });
+
+    it('should allow valid properties inside pseudos that are different to root', () => {
+      const styles = cssMap({
+        primary: {
+          background: 'var(--ds-surface)',
+          '&:hover': {
+            accentColor: 'red',
+            background: 'var(--ds-surface-hover)',
+          },
+        },
+      });
+
+      const { getByTestId } = render(<div css={styles.primary} data-testid="div" />);
+
+      expect(getByTestId('div')).toHaveCompiledCss('background', 'var(--ds-surface-hover)', {
+        target: ':hover',
+      });
+    });
+
+    it('should type error invalid vales', () => {
+      const styles = cssMap({
+        primary: {
+          // @ts-expect-error — Type '{ val: string; }' is not assignable to type 'Readonly<Properties<string | number, string & {}>> & PseudosDeclarations & EnforceSchema<{ background: "var(--ds-surface)" | "var(--ds-surface-sunken"; }>'.
+          val: 'ok',
+        },
+      });
+
+      const { getByTestId } = render(<div css={styles.primary} data-testid="div" />);
+
+      expect(getByTestId('div')).toHaveCompiledCss('val', 'ok');
+    });
+
+    it('should type error invalid values in pseudos', () => {
+      const styles = cssMap({
+        primary: {
+          // @ts-expect-error — Type '"red"' is not assignable to type '"var(--ds-surface)" | "var(--ds-surface-sunken" | undefined'.ts(2322)
+          background: 'red',
+          '&:hover': {
+            // @ts-expect-error — Type 'string' is not assignable to type 'never'.ts(2322)
+            val: 'ok',
+          },
+        },
+      });
+
+      const { getByTestId } = render(<div css={styles.primary} data-testid="div" />);
+
+      expect(getByTestId('div')).toHaveCompiledCss('val', 'ok', { target: ':hover' });
+    });
+  });
 
   describe('XCSSProp', () => {
     it('should allow valid values', () => {
