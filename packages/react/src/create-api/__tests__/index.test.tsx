@@ -1,4 +1,6 @@
 /* eslint-disable react/jsx-filename-extension */
+import React from 'react';
+
 import { createAPI } from '../';
 
 describe('createAPI()', () => {
@@ -116,6 +118,58 @@ describe('createAPI()', () => {
           background: 'red',
         },
       },
+    });
+  });
+
+  describe('xcss', () => {
+    it('should allow valid values', () => {
+      const { XCSSProp } = createAPI<{
+        background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
+      }>();
+
+      function Button(_: { xcss: ReturnType<typeof XCSSProp<'background', never>> }) {
+        return null;
+      }
+
+      <Button xcss={{ background: 'var(--ds-surface)' }} />;
+    });
+
+    it('should type error for invalid values', () => {
+      const { XCSSProp } = createAPI<{
+        background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
+      }>();
+
+      function Button(_: { xcss: ReturnType<typeof XCSSProp<'background', never>> }) {
+        return null;
+      }
+
+      <Button
+        xcss={{
+          // @ts-expect-error — Type '"red"' is not assignable to type '"var(--ds-surface)" | "var(--ds-surface-sunken" | CompiledPropertyDeclarationReference | undefined'.ts(2322)
+          background: 'red',
+        }}
+      />;
+    });
+
+    it('should enforce required properties', () => {
+      const { XCSSProp } = createAPI<{
+        background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
+      }>();
+
+      function Button(_: {
+        xcss: ReturnType<
+          typeof XCSSProp<
+            'background',
+            never,
+            { requiredProperties: 'background'; requiredPseudos: never }
+          >
+        >;
+      }) {
+        return null;
+      }
+
+      // @ts-expect-error — Type '{}' is not assignable to type 'Internal$XCSSProp<"background", never, EnforceSchema<{ background: "var(--ds-surface)" | "var(--ds-surface-sunken"; }>, object, { requiredProperties: "background"; requiredPseudos: never; }>'.ts(2322)
+      <Button xcss={{}} />;
     });
   });
 });
