@@ -110,10 +110,12 @@ describe('createStrictAPI()', () => {
 
     cssMap({
       primary: {
-        // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // This should be an error but it's not. The inner nested one is however! What!?
-        // @ts-expect-please-error — Type 'string' is not assignable to type 'never'.ts(2322)
+        // @ts-expect-error — Type '{ val: string; }' is not assignable to type 'Readonly<Properties<string | number, string & {}>> & PseudosDeclarations & EnforceSchema<{ background: "var(--ds-surface)" | "var(--ds-surface-sunken"; }>'.
         val: 'ok',
+      },
+    });
+    cssMap({
+      primary: {
         // @ts-expect-error — Type '"red"' is not assignable to type '"var(--ds-surface)" | "var(--ds-surface-sunken" | undefined'.ts(2322)
         background: 'red',
         '&:hover': {
