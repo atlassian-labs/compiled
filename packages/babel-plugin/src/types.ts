@@ -116,6 +116,11 @@ export interface State extends PluginPass {
   };
 
   /**
+   * Modules that expose APIs to be compiled by Compiled.
+   */
+  compiledModuleOrigins: string[];
+
+  /**
    * Details of pragmas that are currently enabled in the pass.
    */
   pragma: {

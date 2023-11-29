@@ -19,7 +19,13 @@ type PickObjects<TObject> = {
 };
 
 interface CompiledAPI<TSchema> {
+  /**
+   * ## css
+   */
   css(styles: CSSProperties & PseudosDeclarations & EnforceSchema<TSchema>): CSSProperties;
+  /**
+   * ## cssMap
+   */
   cssMap<
     TStyles extends Record<string, CSSProperties & PseudosDeclarations & EnforceSchema<TSchema>>
   >(
@@ -27,7 +33,13 @@ interface CompiledAPI<TSchema> {
   ): {
     readonly [P in keyof TStyles]: CompiledStyles<TStyles[P]>;
   };
+  /**
+   * ## cx
+   */
   cx: typeof cx;
+  /**
+   * ## XCSSProp
+   */
   XCSSProp<
     TAllowedProperties extends keyof CSSProperties,
     TAllowedPseudos extends CSSPseudos,
