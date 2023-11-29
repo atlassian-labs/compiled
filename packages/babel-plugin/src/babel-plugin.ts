@@ -176,7 +176,7 @@ export default declare<State>((api) => {
 
           if (
             state.filename &&
-            userLandModule === '.' &&
+            userLandModule[0] === '.' &&
             userLandModule.endsWith(basename(compiledModuleOrigin))
           ) {
             // Relative import that might be a match, resolve the relative path and compare.
