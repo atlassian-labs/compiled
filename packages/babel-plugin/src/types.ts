@@ -33,6 +33,11 @@ export interface PluginOptions {
   nonce?: string;
 
   /**
+   * Custom module origins that Compiled should compile when using APIs from.
+   */
+  customModuleOrigins?: string[];
+
+  /**
    * Callback fired at the end of the file pass when files have been included in the transformation.
    */
   onIncludedFiles?: (files: string[]) => void;

@@ -1,4 +1,4 @@
-import { basename } from 'path';
+import { basename, resolve, join, dirname } from 'path';
 
 import { declare } from '@babel/helper-plugin-utils';
 import jsxSyntax from '@babel/plugin-syntax-jsx';
@@ -30,7 +30,7 @@ import { visitXcssPropPath } from './xcss-prop';
 const packageJson = require('../package.json');
 const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
 const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
-const COMPILED_MODULE_ORIGIN = '@compiled/react';
+const DEFAULT_COMPILED_MODULE = '@compiled/react';
 
 let globalCache: Cache | undefined;
 
@@ -59,7 +59,12 @@ export default declare<State>((api) => {
       this.pathsToCleanup = [];
       this.pragma = {};
       this.usesXcss = false;
-      this.compiledModuleOrigins = [COMPILED_MODULE_ORIGIN];
+      this.compiledModuleOrigins = [
+        DEFAULT_COMPILED_MODULE,
+        ...(this.opts.customModuleOrigins
+          ? this.opts.customModuleOrigins.map((origin) => join(process.cwd(), origin))
+          : []),
+      ];
 
       if (typeof this.opts.resolver === 'object') {
         this.resolver = this.opts.resolver;
@@ -83,7 +88,7 @@ export default declare<State>((api) => {
 
               // jsxPragmas currently only run on the top-level compiled module,
               // hence we don't interrogate this.compiledModuleOrigins.
-              if (jsxSourceMatches && jsxSourceMatches[1] === COMPILED_MODULE_ORIGIN) {
+              if (jsxSourceMatches && jsxSourceMatches[1] === DEFAULT_COMPILED_MODULE) {
                 // jsxImportSource pragma found - turn on CSS prop!
                 state.compiledImports = {};
                 state.pragma.jsxImportSource = true;
@@ -162,7 +167,27 @@ export default declare<State>((api) => {
         },
       },
       ImportDeclaration(path, state) {
-        if (!this.compiledModuleOrigins.includes(path.node.source.value)) {
+        const userLandModule = path.node.source.value;
+
+        const isCompiledModule = this.compiledModuleOrigins.some((compiledModuleOrigin) => {
+          if (userLandModule === DEFAULT_COMPILED_MODULE) {
+            return true;
+          }
+
+          if (
+            state.filename &&
+            userLandModule === '.' &&
+            userLandModule.endsWith(basename(compiledModuleOrigin))
+          ) {
+            // Relative import that might be a match, resolve the relative path and compare.
+            const fullpath = resolve(dirname(state.filename), userLandModule);
+            return fullpath === compiledModuleOrigin;
+          }
+
+          return false;
+        });
+
+        if (!isCompiledModule) {
           return;
         }
 
