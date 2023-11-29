@@ -1,12 +1,8 @@
-// How can I test a rule that emits a warning/error message, but makes no changes in the code?
-// Is there an Assert for ESLint?
-
 import type { RuleTester } from 'eslint';
 
 import { typeScriptTester as tester } from '../../../test-utils';
 import { noStyledEmptyExpressionRule } from '../index';
 
-// Omitting errors in this type so createInvalidTestCases can be used to automatically add them
 type InvalidTestCase = Omit<RuleTester.InvalidTestCase, 'errors'>;
 
 const createInvalidTestCases = (tests: InvalidTestCase[]) =>
@@ -20,12 +16,9 @@ tester.run('no-styled-tagged-template-expression', noStyledEmptyExpressionRule, 
     `
       import { styled } from 'styled';
 
-      styled.div\`color: blue\`;
-    `,
-    `
-      import { styled } from '@compiled/react-clone';
-
-      styled.div\`color: blue\`;
+      styled.div({
+        color: blue
+      });
     `,
   ],
   invalid: createInvalidTestCases([
