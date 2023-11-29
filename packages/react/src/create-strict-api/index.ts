@@ -37,7 +37,9 @@ type CompiledSchema = CSSProperties & PseudosDeclarations;
 /**
  * ## createAPI
  */
-export function createAPI<TSchema extends CompiledSchema>(): CompiledAPI<EnforceSchema<TSchema>> {
+export function createStrictAPI<TSchema extends CompiledSchema>(): CompiledAPI<
+  EnforceSchema<TSchema>
+> {
   return {
     css() {
       throw createSetupError();

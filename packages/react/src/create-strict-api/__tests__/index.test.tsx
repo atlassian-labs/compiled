@@ -1,11 +1,11 @@
 /* eslint-disable react/jsx-filename-extension */
 import React from 'react';
 
-import { createAPI } from '../';
+import { createStrictAPI } from '../';
 
-describe('createAPI()', () => {
+describe('createStrictAPI()', () => {
   it('should type error when circumventing the excess property check', () => {
-    const { css } = createAPI<{
+    const { css } = createStrictAPI<{
       '&:hover': { background: 'var(--ds-surface)' | 'var(--ds-surface-sunken' };
       bkgrnd: 'red' | 'green';
     }>();
@@ -23,14 +23,16 @@ describe('createAPI()', () => {
   });
 
   it('should constrain declared types for css() func', () => {
-    const { css } = createAPI<{ background: 'var(--ds-surface)' | 'var(--ds-surface-sunken' }>();
+    const { css } = createStrictAPI<{
+      background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
+    }>();
 
     // @ts-expect-error — Type '"red"' is not assignable to type '"var(--ds-surface)" | "var(--ds-surface-sunken" | undefined'.ts(2322)
     css({ background: 'red' });
   });
 
   it('should mark all properties as optional', () => {
-    const { css } = createAPI<{
+    const { css } = createStrictAPI<{
       background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
       '&:hover': { background: 'var(--ds-surface)' | 'var(--ds-surface-sunken' };
     }>();
@@ -40,7 +42,7 @@ describe('createAPI()', () => {
   });
 
   it('should constrain pseudos', () => {
-    const { css } = createAPI<{
+    const { css } = createStrictAPI<{
       '&:hover': { background: 'var(--ds-surface)' | 'var(--ds-surface-sunken' };
     }>();
 
@@ -54,7 +56,7 @@ describe('createAPI()', () => {
   });
 
   it('should allow valid properties inside pseudos that are different to root', () => {
-    const { css, cssMap } = createAPI<{
+    const { css, cssMap } = createStrictAPI<{
       background: 'var(--ds-exclusive)';
       '&:hover': { background: 'var(--ds-surface)' | 'var(--ds-surface-sunken' };
     }>();
@@ -79,7 +81,7 @@ describe('createAPI()', () => {
   });
 
   it('should allow valid properties', () => {
-    const { css, cssMap } = createAPI<{
+    const { css, cssMap } = createStrictAPI<{
       background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
     }>();
 
@@ -102,7 +104,9 @@ describe('createAPI()', () => {
   });
 
   it('should constrain types for cssMap() func', () => {
-    const { cssMap } = createAPI<{ background: 'var(--ds-surface)' | 'var(--ds-surface-sunken' }>();
+    const { cssMap } = createStrictAPI<{
+      background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
+    }>();
 
     cssMap({
       primary: {
@@ -123,7 +127,7 @@ describe('createAPI()', () => {
 
   describe('xcss', () => {
     it('should allow valid values', () => {
-      const { XCSSProp } = createAPI<{
+      const { XCSSProp } = createStrictAPI<{
         background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
       }>();
 
@@ -135,7 +139,7 @@ describe('createAPI()', () => {
     });
 
     it('should type error for invalid values', () => {
-      const { XCSSProp } = createAPI<{
+      const { XCSSProp } = createStrictAPI<{
         background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
       }>();
 
@@ -145,14 +149,20 @@ describe('createAPI()', () => {
 
       <Button
         xcss={{
+          // @ts-expect-error — ???
+          asd: 0,
           // @ts-expect-error — Type '"red"' is not assignable to type '"var(--ds-surface)" | "var(--ds-surface-sunken" | CompiledPropertyDeclarationReference | undefined'.ts(2322)
           background: 'red',
+          // @ts-expect-error — Type '{ background: string; }' is not assignable to type 'undefined'.ts(2322)
+          '&::after': {
+            background: 'red',
+          },
         }}
       />;
     });
 
     it('should enforce required properties', () => {
-      const { XCSSProp } = createAPI<{
+      const { XCSSProp } = createStrictAPI<{
         background: 'var(--ds-surface)' | 'var(--ds-surface-sunken';
       }>();
 
