@@ -6,7 +6,7 @@ import { css, cssMap, XCSSProp } from './__fixtures__/strict-api';
 describe('createStrictAPI()', () => {
   describe('css()', () => {
     it('should type error when circumventing the excess property check', () => {
-      css({
+      const styles = css({
         color: 'red',
         // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
         bkgrnd: 'red',
@@ -16,20 +16,32 @@ describe('createStrictAPI()', () => {
           bkgrnd: 'red',
         },
       });
+
+      const { getByTestId } = render(<div css={styles} data-testid="div" />);
+
+      expect(getByTestId('div')).toHaveCompiledCss('color', 'red');
     });
 
     it('should constrain declared types for css() func', () => {
       // @ts-expect-error — Type '"red"' is not assignable to type '"var(--ds-surface)" | "var(--ds-surface-sunken" | undefined'.ts(2322)
-      css({ background: 'red' });
+      const styles = css({ background: 'red' });
+
+      const { getByTestId } = render(<div css={styles} data-testid="div" />);
+
+      expect(getByTestId('div')).toHaveCompiledCss('background-color', 'red');
     });
 
     it('should mark all properties as optional', () => {
-      css({});
-      css({ '&:hover': {} });
+      const styles1 = css({});
+      const styles2 = css({ '&:hover': {} });
+
+      const { getByTestId } = render(<div css={[styles1, styles2]} data-testid="div" />);
+
+      expect(getByTestId('div')).not.toHaveCompiledCss('color', 'red');
     });
 
     it('should constrain pseudos', () => {
-      css({
+      const styles = css({
         // @ts-expect-error — Type '"red"' is not assignable to type '"var(--ds-surface)" | "var(--ds-surface-sunken" | undefined'.ts(2322)
         background: 'red',
         '&:hover': {
@@ -37,26 +49,40 @@ describe('createStrictAPI()', () => {
           background: 'red',
         },
       });
+
+      const { getByTestId } = render(<div css={styles} data-testid="div" />);
+
+      expect(getByTestId('div')).toHaveCompiledCss('background-color', 'red', { target: ':hover' });
     });
 
     it('should allow valid properties inside pseudos that are different to root', () => {
-      css({
+      const styles = css({
         background: 'var(--ds-surface)',
         '&:hover': {
           accentColor: 'red',
           background: 'var(--ds-surface-hover)',
         },
       });
+
+      const { getByTestId } = render(<div css={styles} data-testid="div" />);
+
+      expect(getByTestId('div')).toHaveCompiledCss('background', 'var(--ds-surface-hover)', {
+        target: ':hover',
+      });
     });
 
     it('should allow valid properties', () => {
-      css({
+      const styles = css({
         background: 'var(--ds-surface)',
         accentColor: 'red',
         all: 'inherit',
         '&:hover': { color: 'var(--ds-text)' },
         '&:invalid': { color: 'orange' },
       });
+
+      const { getByTestId } = render(<div css={styles} data-testid="div" />);
+
+      expect(getByTestId('div')).toHaveCompiledCss('all', 'inherit');
     });
   });
 
