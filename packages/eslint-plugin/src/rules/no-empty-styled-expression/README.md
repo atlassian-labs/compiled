@@ -31,9 +31,9 @@ const Wrapper = styled.div({
 });
 ```
 
-# 🔀 Recommendations
+## 🔀 Recommendations
 
-## Use elements directly
+### Use elements directly
 
 ```diff
 - const Wrapper = styled.div({});
@@ -44,7 +44,7 @@ const Wrapper = styled.div({
   }
 ```
 
-## Use a React fragment
+### Use a React fragment
 
 ```diff
 - const Wrapper = styled.div({});
