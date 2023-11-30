@@ -38,7 +38,7 @@ tester.run('no-styled-tagged-template-expression', noStyledEmptyExpressionRule, 
         `,
     },
     {
-      name: 'styled.div({}) is passed no arguments',
+      name: 'styled.div() is passed no arguments',
       code: `
             import { styled } from '@compiled/react';
 
@@ -54,7 +54,7 @@ tester.run('no-styled-tagged-template-expression', noStyledEmptyExpressionRule, 
         `,
     },
     {
-      name: 'styled.span({}) is passed no arguments',
+      name: 'styled.span() is passed no arguments',
       code: `
             import { styled } from '@compiled/react';
 
