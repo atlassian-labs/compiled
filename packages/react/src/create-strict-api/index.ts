@@ -1,9 +1,9 @@
-import type { CSSProperties, CSSPseudos } from '../types';
+import type { StrictCSSProperties, CSSPseudos } from '../types';
 import { createSetupError } from '../utils/error';
 import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop';
 
 type PseudosDeclarations = {
-  [Q in CSSPseudos]?: CSSProperties;
+  [Q in CSSPseudos]?: StrictCSSProperties;
 };
 
 type EnforceSchema<TObject> = {
@@ -22,12 +22,17 @@ interface CompiledAPI<TSchema> {
   /**
    * ## css
    */
-  css(styles: CSSProperties & PseudosDeclarations & EnforceSchema<TSchema>): CSSProperties;
+  css(
+    styles: StrictCSSProperties & PseudosDeclarations & EnforceSchema<TSchema>
+  ): StrictCSSProperties;
   /**
    * ## cssMap
    */
   cssMap<
-    TStyles extends Record<string, CSSProperties & PseudosDeclarations & EnforceSchema<TSchema>>
+    TStyles extends Record<
+      string,
+      StrictCSSProperties & PseudosDeclarations & EnforceSchema<TSchema>
+    >
   >(
     styles: TStyles
   ): {
@@ -41,7 +46,7 @@ interface CompiledAPI<TSchema> {
    * ## XCSSProp
    */
   XCSSProp<
-    TAllowedProperties extends keyof CSSProperties,
+    TAllowedProperties extends keyof StrictCSSProperties,
     TAllowedPseudos extends CSSPseudos,
     TRequiredProperties extends {
       requiredProperties: TAllowedProperties;
@@ -56,7 +61,7 @@ interface CompiledAPI<TSchema> {
   >;
 }
 
-type CompiledSchema = CSSProperties & PseudosDeclarations;
+type CompiledSchema = StrictCSSProperties & PseudosDeclarations;
 
 /**
  * ## createAPI

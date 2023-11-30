@@ -105,4 +105,4 @@ export type CSSProperties = Readonly<CSS.Properties<string | number>>;
 /**
  * Words go here brrr
  */
-export type CSSPropertiesStrict = Readonly<CSS.StandardProperties & CSS.SvgProperties>;
+export type StrictCSSProperties = Readonly<CSS.StandardProperties & CSS.SvgProperties>;
