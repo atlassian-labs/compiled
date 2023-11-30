@@ -20,7 +20,7 @@
             "nonce": "\"k0Mp1lEd\"",
             "importReact": false,
             "optimizeCss": false,
-            "customModuleOrigins": [
+            "importSources": [
               "packages/react/src/create-strict-api/__tests__/__fixtures__/strict-api",
               "@compiled/strict-api-test"
             ]

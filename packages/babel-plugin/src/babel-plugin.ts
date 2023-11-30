@@ -59,10 +59,10 @@ export default declare<State>((api) => {
       this.pathsToCleanup = [];
       this.pragma = {};
       this.usesXcss = false;
-      this.compiledModuleOrigins = [
+      this.importSources = [
         DEFAULT_COMPILED_MODULE,
-        ...(this.opts.customModuleOrigins
-          ? this.opts.customModuleOrigins.map((origin) => {
+        ...(this.opts.importSources
+          ? this.opts.importSources.map((origin) => {
               if (origin[0] === '.') {
                 // We've found a relative path, transform it to be fully qualified.
                 return join(process.cwd(), origin);
@@ -94,7 +94,7 @@ export default declare<State>((api) => {
               const jsxMatches = JSX_ANNOTATION_REGEX.exec(comment.value);
 
               // jsxPragmas currently only run on the top-level compiled module,
-              // hence we don't interrogate this.compiledModuleOrigins.
+              // hence we don't interrogate this.importSources.
               if (jsxSourceMatches && jsxSourceMatches[1] === DEFAULT_COMPILED_MODULE) {
                 // jsxImportSource pragma found - turn on CSS prop!
                 state.compiledImports = {};
@@ -176,7 +176,7 @@ export default declare<State>((api) => {
       ImportDeclaration(path, state) {
         const userLandModule = path.node.source.value;
 
-        const isCompiledModule = this.compiledModuleOrigins.some((compiledModuleOrigin) => {
+        const isCompiledModule = this.importSources.some((compiledModuleOrigin) => {
           if (
             userLandModule === DEFAULT_COMPILED_MODULE ||
             compiledModuleOrigin === userLandModule

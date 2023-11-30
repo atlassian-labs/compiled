@@ -10,7 +10,7 @@ describe('custom import source', () => {
 
       <div css={styles} />
     `,
-      { filename: './foo/index.js', customModuleOrigins: ['./bar/stub-api'] }
+      { filename: './foo/index.js', importSources: ['./bar/stub-api'] }
     );
 
     expect(actual).toInclude('@compiled/react/runtime');
@@ -25,7 +25,7 @@ describe('custom import source', () => {
 
         <div css={styles} />
       `,
-      { filename: './foo/index.js', customModuleOrigins: ['/bar/stub-api'] }
+      { filename: './foo/index.js', importSources: ['/bar/stub-api'] }
     );
 
     expect(actual).toInclude('@compiled/react/runtime');
@@ -40,7 +40,7 @@ describe('custom import source', () => {
 
         <div css={styles} />
       `,
-      { filename: './foo/index.js', customModuleOrigins: ['@af/compiled'] }
+      { filename: './foo/index.js', importSources: ['@af/compiled'] }
     );
 
     expect(actual).toInclude('@compiled/react/runtime');
@@ -56,7 +56,7 @@ describe('custom import source', () => {
 
         <div css={styles} />
       `,
-        { filename: './foo/index.js', customModuleOrigins: ['asdasd2323'] }
+        { filename: './foo/index.js', importSources: ['asdasd2323'] }
       )
     ).not.toThrow();
   });
