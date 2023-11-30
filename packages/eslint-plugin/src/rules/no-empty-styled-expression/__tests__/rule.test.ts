@@ -14,18 +14,28 @@ const createInvalidTestCases = (tests: InvalidTestCase[]) =>
 tester.run('no-styled-tagged-template-expression', noEmptyStyledExpressionRule, {
   valid: [
     `
-      import { styled } from 'styled';
+        import { styled } from 'styled';
 
-      styled.div({
-        color: blue
-      });
+        styled.div({
+            color: blue
+        });
     `,
     `
-      import { styled } from 'styled';
+        import { styled } from 'styled';
 
-      styled.span({
-        color: blue
-      });
+        styled.span({
+            color: blue
+        });
+    `,
+    `
+        import { styled } from '@compiled/react';
+
+        styled.span("hello world");
+    `,
+    `
+        import { styled } from '@compiled/react';
+
+        styled.span({}, {});
     `,
   ],
   invalid: createInvalidTestCases([

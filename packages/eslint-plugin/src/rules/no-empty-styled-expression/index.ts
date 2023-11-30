@@ -7,10 +7,11 @@ type RuleModule = Rule.RuleModule;
 
 const isEmptyStyledExpression = (node: CallExpression): boolean => {
   const [firstArg] = node.arguments;
-  if (firstArg?.type === 'ObjectExpression') {
+  if (node.arguments.length === 0) return true;
+  else if (node.arguments.length === 1 && firstArg?.type === 'ObjectExpression') {
     return firstArg.properties.length === 0;
   }
-  return true;
+  return false;
 };
 
 export const createNoEmptyStyledExpressionRule =
