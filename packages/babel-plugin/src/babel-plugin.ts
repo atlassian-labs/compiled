@@ -62,7 +62,14 @@ export default declare<State>((api) => {
       this.compiledModuleOrigins = [
         DEFAULT_COMPILED_MODULE,
         ...(this.opts.customModuleOrigins
-          ? this.opts.customModuleOrigins.map((origin) => join(process.cwd(), origin))
+          ? this.opts.customModuleOrigins.map((origin) => {
+              if (origin[0] === '.') {
+                // We've found a relative path, transform it to be fully qualified.
+                return join(process.cwd(), origin);
+              }
+
+              return origin;
+            })
           : []),
       ];
 
@@ -170,7 +177,10 @@ export default declare<State>((api) => {
         const userLandModule = path.node.source.value;
 
         const isCompiledModule = this.compiledModuleOrigins.some((compiledModuleOrigin) => {
-          if (userLandModule === DEFAULT_COMPILED_MODULE) {
+          if (
+            userLandModule === DEFAULT_COMPILED_MODULE ||
+            compiledModuleOrigin === userLandModule
+          ) {
             return true;
           }
 

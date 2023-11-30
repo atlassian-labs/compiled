@@ -21,7 +21,8 @@
             "importReact": false,
             "optimizeCss": false,
             "customModuleOrigins": [
-              "packages/react/src/create-strict-api/__tests__/__fixtures__/strict-api"
+              "packages/react/src/create-strict-api/__tests__/__fixtures__/strict-api",
+              "@compiled/strict-api-test"
             ]
           }
         ]

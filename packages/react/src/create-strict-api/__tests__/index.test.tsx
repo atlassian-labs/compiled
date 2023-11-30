@@ -7,11 +7,11 @@ describe('createStrictAPI()', () => {
   describe('css()', () => {
     it('should type error when circumventing the excess property check', () => {
       const styles = css({
-        color: 'red',
+        accentColor: 'red',
         // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
         bkgrnd: 'red',
         '&:hover': {
-          color: 'var(--ds-text)',
+          color: 'var(--ds-text-hover)',
           // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
           bkgrnd: 'red',
         },
@@ -75,8 +75,9 @@ describe('createStrictAPI()', () => {
       const styles = css({
         background: 'var(--ds-surface)',
         accentColor: 'red',
+        color: 'var(--ds-text)',
         all: 'inherit',
-        '&:hover': { color: 'var(--ds-text)' },
+        '&:hover': { color: 'var(--ds-text-hover)' },
         '&:invalid': { color: 'orange' },
       });
 
@@ -93,7 +94,7 @@ describe('createStrictAPI()', () => {
           background: 'var(--ds-surface)',
           accentColor: 'red',
           all: 'inherit',
-          '&:hover': { color: 'var(--ds-text)' },
+          '&:hover': { color: 'var(--ds-text-hover)' },
           '&:invalid': { color: 'orange' },
         },
       });

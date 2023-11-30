@@ -7,7 +7,6 @@ const { css, XCSSProp, cssMap, cx } = createStrictAPI<{
   };
   color: 'var(--ds-text)';
   background: 'var(--ds-surface)' | 'var(--ds-surface-sunken)';
-  bkgrnd: 'red' | 'green';
 }>();
 
 export { css, XCSSProp, cssMap, cx };
