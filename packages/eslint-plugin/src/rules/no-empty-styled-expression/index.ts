@@ -20,7 +20,7 @@ const isEmptyStyledExpression = (node: CallExpression): boolean => {
  * @param messageId
  * @returns
  */
-export const createNoStyledEmptyExpressionRule =
+export const createNoEmptyStyledExpressionRule =
   (
     isEmptyStyledExpression: (node: CallExpression) => boolean,
     messageId: string
@@ -53,7 +53,7 @@ export const createNoStyledEmptyExpressionRule =
 /**
  * The module declaration for the No Styled Empty Expression rule.
  */
-export const noStyledEmptyExpressionRule: Rule.RuleModule = {
+export const noEmptyStyledExpressionRule: Rule.RuleModule = {
   meta: {
     docs: {
       url: '',
@@ -65,5 +65,5 @@ export const noStyledEmptyExpressionRule: Rule.RuleModule = {
     },
     type: 'problem',
   },
-  create: createNoStyledEmptyExpressionRule(isEmptyStyledExpression, 'unexpected'),
+  create: createNoEmptyStyledExpressionRule(isEmptyStyledExpression, 'unexpected'),
 };

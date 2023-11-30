@@ -2,7 +2,7 @@
 
 Discourages any `styled` expression to be used when passing empty arguments in `@compiled/react`.
 
-Passing an empty object or no object at all causes Compiled to build extra `div` elements as opposed to simply using a `div`. This leads to reduced performance and is greatly discouraged. If a wrapper is necessary, opt to use a `div` or wrap it in the empty React fragment `<> <YourComponentHere></YourComponentHere> </>`.
+Passing an empty object or no object at all causes Compiled to build extra `div/span` elements, as opposed to simply using a `div`. This leads to reduced performance and is greatly discouraged. If a wrapper is necessary, opt to use a `div` or wrap it in the empty React fragment `<> <YourComponentHere></YourComponentHere> </>`.
 
 ---
 

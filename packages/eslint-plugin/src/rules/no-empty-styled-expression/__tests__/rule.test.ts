@@ -1,7 +1,7 @@
 import type { RuleTester } from 'eslint';
 
 import { typeScriptTester as tester } from '../../../test-utils';
-import { noStyledEmptyExpressionRule } from '../index';
+import { noEmptyStyledExpressionRule } from '../index';
 
 type InvalidTestCase = Omit<RuleTester.InvalidTestCase, 'errors'>;
 
@@ -11,7 +11,7 @@ const createInvalidTestCases = (tests: InvalidTestCase[]) =>
     errors: [{ messageId: 'unexpected' }],
   }));
 
-tester.run('no-styled-tagged-template-expression', noStyledEmptyExpressionRule, {
+tester.run('no-styled-tagged-template-expression', noEmptyStyledExpressionRule, {
   valid: [
     `
       import { styled } from 'styled';
