@@ -20,6 +20,13 @@ tester.run('no-styled-tagged-template-expression', noStyledEmptyExpressionRule, 
         color: blue
       });
     `,
+    `
+      import { styled } from 'styled';
+
+      styled.span({
+        color: blue
+      });
+    `,
   ],
   invalid: createInvalidTestCases([
     {
