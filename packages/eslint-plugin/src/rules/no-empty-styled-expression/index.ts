@@ -22,15 +22,11 @@ export const createNoEmptyStyledExpressionRule =
     return {
       'CallExpression[callee.type="MemberExpression"]': (node: CallExpression) => {
         const { references } = context.getScope();
-
         const isStyledImported = references.some((reference) =>
           reference.resolved?.defs.some(isStyledImportSpecifier)
         );
-        if (!isStyledImported) {
-          return;
-        }
 
-        if (!isEmptyStyledExpression(node)) {
+        if (!isStyledImported || !isEmptyStyledExpression(node)) {
           return;
         }
 
