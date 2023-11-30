@@ -58,7 +58,6 @@ export const noEmptyStyledExpressionRule: Rule.RuleModule = {
     docs: {
       url: '',
     },
-    fixable: 'code',
     messages: {
       unexpected:
         'Unexpected empty expression/empty object argument passed to styled.div() from @compiled/react',
