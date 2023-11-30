@@ -11,27 +11,13 @@ Passing an empty object or no object at all causes Compiled to build extra `div/
 👎 Examples of **incorrect** code for this rule:
 
 ```
-const Wrapper = styled.div();
-
-function Button() {
-  return <Wrapper>
-    <MyComponent>Hello</MyComponent>
-    <MyOtherComponent>world</MyOtherComponent>
-  </Wrapper>;
-}
+const EmptyStyledExpression = styled.div();
 ```
 
 and
 
 ```
-const Wrapper = styled.div({});
-
-function Button() {
-  return <Wrapper>
-    <MyComponent>Hello</MyComponent>
-    <MyOtherComponent>world</MyOtherComponent>
-  </Wrapper>;
-}
+const EmptyStyledExpressionArgument = styled.div({});
 ```
 
 👍 Examples of **correct** code for this rule:
@@ -43,16 +29,9 @@ const Wrapper = styled.div({
     backgroundColor: 'green',
   },
 });
-
-function Button() {
-  return <Wrapper>
-    <MyComponent>Hello</MyComponent>
-    <MyOtherComponent>world</MyOtherComponent>
-  </Wrapper>;
-}
 ```
 
-🔀 Work Arounds and Recommendations
+🔀 Recommendations
 
 1. Write your code in a way that doesn't require a Wrapper
 2. Use the empty React fragment: `<> <YourComponentHere></YourComponentHere> </>`
