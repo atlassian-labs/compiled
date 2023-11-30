@@ -31,8 +31,25 @@ const Wrapper = styled.div({
 });
 ```
 
-🔀 Recommendations
+# 🔀 Recommendations
 
-1. Write your code in a way that doesn't require a Wrapper
-2. Use the empty React fragment: `<> <YourComponentHere></YourComponentHere> </>`
-3. Use a `<div>`
+## Use elements directly
+
+```diff
+- const Wrapper = styled.div({});
+
+   function App() {
+-    return <Wrapper>hello world</Wrapper>;
++    return <div>hello world</div>;
+  }
+```
+
+```diff
+Use a React fragment
+- const Wrapper = styled.div({});
+
+   function App() {
+-    return <Wrapper>hello world</Wrapper>;
++    return <>hello world</>;
+  }
+```
