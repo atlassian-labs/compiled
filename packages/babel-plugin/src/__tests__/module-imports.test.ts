@@ -78,6 +78,9 @@ describe('import specifiers', () => {
       const _ = "._1wybgktf{font-size:20px}";
       const ListItem = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
+          }
           return (
             <CC>
               <CS>{[_]}</CS>
