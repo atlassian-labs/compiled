@@ -11,6 +11,6 @@ export const recommended = {
     '@compiled/no-keyframes-tagged-template-expression': 'error',
     '@compiled/no-styled-tagged-template-expression': 'error',
     '@compiled/no-suppress-xcss': 'error',
-    '@compiled/no-empty-styled-expression': 'warning',
+    '@compiled/no-empty-styled-expression': 'error',
   },
 };
