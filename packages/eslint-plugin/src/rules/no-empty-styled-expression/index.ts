@@ -8,18 +8,11 @@ type RuleModule = Rule.RuleModule;
 const isEmptyStyledExpression = (node: CallExpression): boolean => {
   const [firstArg] = node.arguments;
   if (firstArg?.type === 'ObjectExpression') {
-    // Check if it has properties. If empty, return true.
     return firstArg.properties.length === 0;
   }
   return true;
 };
 
-/**
- * Creation of the rule to identify empty styled.div/span() calls and raise an error message
- * @param isEmptyStyledTag
- * @param messageId
- * @returns
- */
 export const createNoEmptyStyledExpressionRule =
   (
     isEmptyStyledExpression: (node: CallExpression) => boolean,
@@ -41,7 +34,6 @@ export const createNoEmptyStyledExpressionRule =
           return;
         }
 
-        // Prints the unexpected message for all CallExpression nodes that match the isEmptyStyledTag criteria
         context.report({
           messageId,
           node,
@@ -50,13 +42,10 @@ export const createNoEmptyStyledExpressionRule =
     };
   };
 
-/**
- * The module declaration for the No Styled Empty Expression rule.
- */
 export const noEmptyStyledExpressionRule: Rule.RuleModule = {
   meta: {
     docs: {
-      url: '',
+      url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-empty-styled-expression',
     },
     messages: {
       unexpected:
