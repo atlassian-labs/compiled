@@ -1,9 +1,7 @@
-import fs from 'fs';
-import { dirname, normalize } from 'path';
+import { normalize } from 'path';
 
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import { createError, toBoolean } from '@compiled/utils';
-import { CachedInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 import { getOptions } from 'loader-utils';
 import type { LoaderContext } from 'webpack';
 
