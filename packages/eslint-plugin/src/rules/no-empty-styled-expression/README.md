@@ -12,12 +12,10 @@ Passing an empty object or no object at all causes Compiled to build extra `div/
 
 ```javascript
 const EmptyStyledExpression = styled.div();
-```
 
-and
-
-```javascript
 const EmptyStyledExpressionArgument = styled.div({});
+
+const EmptyStyledExpressionArgument = styled.div([]);
 ```
 
 👍 Examples of **correct** code for this rule:
