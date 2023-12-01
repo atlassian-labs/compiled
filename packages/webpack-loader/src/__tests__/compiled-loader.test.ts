@@ -80,8 +80,6 @@ describe.each<'development' | 'production'>(['development', 'production'])(
         resolver: '@compiled-private/resolver-webpack',
       });
 
-      // console.log('assets', assets['main.js']);
-
       expect(assets['main.js']).toInclude('._syaz8p1k{color:very-very red color');
     });
 
