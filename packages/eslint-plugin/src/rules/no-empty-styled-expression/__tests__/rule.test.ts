@@ -71,5 +71,13 @@ tester.run('no-styled-tagged-template-expression', noEmptyStyledExpressionRule, 
             styled.span();
         `,
     },
+    {
+      name: 'styled.div() passed empty array as argument',
+      code: `
+            import { styled } from '@compiled/react';
+
+            styled.div([]);
+        `,
+    },
   ]),
 });

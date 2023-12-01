@@ -8,7 +8,9 @@ type RuleModule = Rule.RuleModule;
 const isEmptyStyledExpression = (node: CallExpression): boolean => {
   const [firstArg] = node.arguments;
   if (node.arguments.length === 0) return true;
-  else if (node.arguments.length === 1 && firstArg?.type === 'ObjectExpression') {
+  else if (node.arguments.length === 1 && firstArg?.type === 'ArrayExpression') {
+    return firstArg.elements.length === 0;
+  } else if (node.arguments.length === 1 && firstArg?.type === 'ObjectExpression') {
     return firstArg.properties.length === 0;
   }
   return false;
