@@ -32,9 +32,10 @@ tester.run('no-styled-tagged-template-expression', noEmptyStyledExpressionRule, 
 
         styled.span("hello world");
     `,
-    `
+    ` 
         import { styled } from '@compiled/react';
 
+        // Considered valid due to the scope of this rule only covering arguments of length 0 and 1.
         styled.span({}, {});
     `,
   ],
