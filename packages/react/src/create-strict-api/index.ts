@@ -99,8 +99,7 @@ interface CompiledAPI<TSchema> {
    *
    * The third generic is used to declare what properties and pseudos should be required.
    *
-   * @example
-   * ```
+   * ```tsx
    * interface MyComponentProps {
    *   // Color is accepted, all other properties / pseudos are considered violations.
    *   xcss?: ReturnType<typeof XCSSProp<'color', never>>;
@@ -131,8 +130,7 @@ interface CompiledAPI<TSchema> {
    *
    * The xcss prop works with static inline objects and the [cssMap](https://compiledcssinjs.com/docs/api-cssmap) API.
    *
-   * @example
-   * ```
+   * ```jsx
    * // Declared as an inline object
    * <Component xcss={{ color: 'var(--ds-text)' }} />
    *
@@ -141,7 +139,7 @@ interface CompiledAPI<TSchema> {
    * <Component xcss={styles.text} />
    * ```
    *
-   * To concatenate and conditonally apply styles use the {@link cssMap} {@link cx} functions.
+   * To concatenate and conditonally apply styles use the {@link cssMap} and {@link cx} functions.
    */
   XCSSProp<
     TAllowedProperties extends keyof StrictCSSProperties,
