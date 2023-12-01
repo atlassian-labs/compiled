@@ -1,6 +1,6 @@
 /** @jsxImportSource @compiled/react */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { css } from '@compiled/strict-api-test';
+import { css } from '@fixture/strict-api-test';
 import { render } from '@testing-library/react';
 
 describe('createStrictAPI()', () => {
@@ -15,7 +15,7 @@ describe('createStrictAPI()', () => {
 
       const { getByTestId } = render(<div css={styles} data-testid="div" />);
 
-      expect(getByTestId('div')).toHaveCompiledCss('color', 'red');
+      expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
     });
   });
 });

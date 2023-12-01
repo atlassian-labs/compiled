@@ -1,5 +1,5 @@
 {
-  "name": "@compiled/strict-api-test",
+  "name": "@fixture/strict-api-test",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
