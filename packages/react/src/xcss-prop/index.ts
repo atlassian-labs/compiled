@@ -80,7 +80,7 @@ export type XCSSAllProperties = keyof CSSProperties;
 export type XCSSAllPseudos = CSSPseudos;
 
 /**
- * ## xcss prop
+ * ## XCSSProp
  *
  * Declare styles your component takes with all other styles marked as violations
  * by the TypeScript compiler. There are two primary use cases for xcss prop:
@@ -169,7 +169,7 @@ export type Internal$XCSSProp<
   | undefined;
 
 /**
- * ## cx
+ * ## CX
  *
  * Use in conjunction with the {@link XCSSProp} to concatenate and conditionally apply
  * declared styles. Can only be used with the `cssMap()` and {@link XCSSProp} APIs.

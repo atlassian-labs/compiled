@@ -95,7 +95,7 @@ export type CSSPseudos =
   | '&:visited';
 
 /**
- * The xcss prop must be given all known available properties even
+ * The XCSSProp must be given all known available properties even
  * if it takes a subset of them. This ensures the (lack-of an)
  * excess property check doesn't enable makers to circumvent the
  * system and pass in values they shouldn't.
@@ -103,6 +103,7 @@ export type CSSPseudos =
 export type CSSProperties = Readonly<CSS.Properties<string | number>>;
 
 /**
- * Words go here brrr
+ * A stricter subset of the {@link CSSProperties} type that excludes
+ * vendor and obsolete properties.
  */
 export type StrictCSSProperties = Readonly<CSS.StandardProperties & CSS.SvgProperties>;
