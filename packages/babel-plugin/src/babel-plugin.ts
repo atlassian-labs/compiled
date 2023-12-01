@@ -30,7 +30,7 @@ import { visitXcssPropPath } from './xcss-prop';
 const packageJson = require('../package.json');
 const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
 const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
-const DEFAULT_COMPILED_MODULE = '@compiled/react';
+const DEFAULT_IMPORT_SOURCE = '@compiled/react';
 
 let globalCache: Cache | undefined;
 
@@ -60,7 +60,7 @@ export default declare<State>((api) => {
       this.pragma = {};
       this.usesXcss = false;
       this.importSources = [
-        DEFAULT_COMPILED_MODULE,
+        DEFAULT_IMPORT_SOURCE,
         ...(this.opts.importSources
           ? this.opts.importSources.map((origin) => {
               if (origin[0] === '.') {
@@ -95,7 +95,7 @@ export default declare<State>((api) => {
 
               // jsxPragmas currently only run on the top-level compiled module,
               // hence we don't interrogate this.importSources.
-              if (jsxSourceMatches && jsxSourceMatches[1] === DEFAULT_COMPILED_MODULE) {
+              if (jsxSourceMatches && jsxSourceMatches[1] === DEFAULT_IMPORT_SOURCE) {
                 // jsxImportSource pragma found - turn on CSS prop!
                 state.compiledImports = {};
                 state.pragma.jsxImportSource = true;
@@ -177,10 +177,7 @@ export default declare<State>((api) => {
         const userLandModule = path.node.source.value;
 
         const isCompiledModule = this.importSources.some((compiledModuleOrigin) => {
-          if (
-            userLandModule === DEFAULT_COMPILED_MODULE ||
-            compiledModuleOrigin === userLandModule
-          ) {
+          if (userLandModule === DEFAULT_IMPORT_SOURCE || compiledModuleOrigin === userLandModule) {
             return true;
           }
 
