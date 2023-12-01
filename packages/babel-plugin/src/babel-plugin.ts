@@ -41,6 +41,8 @@ export default declare<State>((api) => {
     name: packageJson.name,
     inherits: jsxSyntax,
     pre(state) {
+      const rootPath = state.opts.root ?? this.cwd;
+
       this.sheets = {};
       this.cssMap = {};
       let cache: Cache;
@@ -65,7 +67,7 @@ export default declare<State>((api) => {
           ? this.opts.importSources.map((origin) => {
               if (origin[0] === '.') {
                 // We've found a relative path, transform it to be fully qualified.
-                return join(process.cwd(), origin);
+                return join(rootPath, origin);
               }
 
               return origin;
@@ -77,7 +79,7 @@ export default declare<State>((api) => {
         this.resolver = this.opts.resolver;
       } else if (typeof this.opts.resolver === 'string') {
         this.resolver = require(require.resolve(this.opts.resolver, {
-          paths: [state.opts.root ?? this.cwd],
+          paths: [rootPath],
         }));
       }
 
