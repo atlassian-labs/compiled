@@ -21,7 +21,7 @@
             "importReact": false,
             "optimizeCss": false,
             "importSources": [
-              "packages/react/src/create-strict-api/__tests__/__fixtures__/strict-api",
+              "./packages/react/src/create-strict-api/__tests__/__fixtures__/strict-api",
               "@fixture/strict-api-test"
             ]
           }

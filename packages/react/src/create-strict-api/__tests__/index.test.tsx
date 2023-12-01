@@ -7,6 +7,7 @@ describe('createStrictAPI()', () => {
   describe('css()', () => {
     it('should type error when circumventing the excess property check', () => {
       const styles = css({
+        color: 'var(--ds-text)',
         accentColor: 'red',
         // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
         bkgrnd: 'red',
@@ -19,7 +20,7 @@ describe('createStrictAPI()', () => {
 
       const { getByTestId } = render(<div css={styles} data-testid="div" />);
 
-      expect(getByTestId('div')).toHaveCompiledCss('color', 'red');
+      expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
     });
 
     it('should constrain declared types for css() func', () => {
