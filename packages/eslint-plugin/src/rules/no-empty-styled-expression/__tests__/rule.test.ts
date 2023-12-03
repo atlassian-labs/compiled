@@ -30,6 +30,7 @@ tester.run('no-styled-tagged-template-expression', noEmptyStyledExpressionRule, 
     `
         import { styled } from '@compiled/react';
 
+        // Considered valid due to the scope of this rule only checking for empty objects and arrays
         styled.span("hello world");
     `,
     ` 
@@ -37,6 +38,12 @@ tester.run('no-styled-tagged-template-expression', noEmptyStyledExpressionRule, 
 
         // Considered valid due to the scope of this rule only covering arguments of length 0 and 1.
         styled.span({}, {});
+    `,
+    ` 
+        import { styled } from '@compiled/react';
+
+        // Considered valid (not checking) due to boolean operations within styled calls being unused within Atlassian repositories
+        styled.span(true && {});
     `,
   ],
   invalid: createInvalidTestCases([
