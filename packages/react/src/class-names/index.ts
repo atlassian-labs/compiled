@@ -19,7 +19,7 @@ export interface ClassNamesProps<TProps> {
 }
 
 /**
- * ## Class names
+ * ## Class Names
  *
  * Use a component where styles are not necessarily used on a JSX element.
  * For further details [read the documentation](https://compiledcssinjs.com/docs/api-class-names).

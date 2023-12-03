@@ -6,7 +6,7 @@ import { createSetupError } from '../utils/error';
 /**
  * ## CSS
  *
- * Define styles that are statically typed and useable with other Compiled APIs.
+ * Create styles that are statically typed and useable with other Compiled APIs.
  * For further details [read the documentation](https://compiledcssinjs.com/docs/api-css).
  *
  * ### Style with objects

@@ -10,6 +10,7 @@ export { styled } from './styled';
 export { ClassNames } from './class-names';
 export { default as css } from './css';
 export { default as cssMap } from './css-map';
+export { createStrictAPI } from './create-strict-api';
 export { type XCSSAllProperties, type XCSSAllPseudos, type XCSSProp, cx } from './xcss-prop';
 
 // Pass through the (classic) jsx runtime.

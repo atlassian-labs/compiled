@@ -183,9 +183,9 @@ describe('styled component behaviour', () => {
 
   it('creates a separate var name for positive and negative values of the same interpolation', () => {
     const actual = transform(`
-      import { styled } from '@compiled/react';      
+      import { styled } from '@compiled/react';
       const random = Math.random;
-      
+
       const LayoutRight = styled.aside\`
         margin-right: -\${random() * 5}px;
         margin-left: \${random() * 5}px;
@@ -749,7 +749,9 @@ describe('styled component behaviour', () => {
         \${props => props.isShown && (props.isPrimary ? { color: 'blue' } : { color: 'green' })};
       \`;
     `)
-    ).toThrow("ConditionalExpression isn't a supported CSS type");
+    ).toThrow(
+      'This ConditionalExpression was unable to have its styles extracted — try to define them statically using Compiled APIs instead'
+    );
   });
 
   it('should apply conditional CSS when using "key: value" in string form', () => {
