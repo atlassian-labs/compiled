@@ -953,8 +953,15 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     return buildCss(node.arguments[0] as t.ObjectExpression, meta);
   }
 
+  const areCompiledAPIsEnabled =
+    meta.state.compiledImports && Object.keys(meta.state.compiledImports).length > 0;
+
+  const errorMessage = areCompiledAPIsEnabled
+    ? 'try to define them statically using Compiled APIs instead'
+    : "no Compiled APIs were found in scope, if you're using createStrictAPI make sure to configure importSources";
+
   throw buildCodeFrameError(
-    `${node.type} isn't a supported CSS type - try using an object or string`,
+    `This ${node.type} was unable to have its styles extracted — ${errorMessage}`,
     node,
     meta.parentPath
   );

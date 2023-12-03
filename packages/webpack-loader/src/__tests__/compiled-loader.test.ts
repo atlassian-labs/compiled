@@ -79,7 +79,7 @@ describe.each<'development' | 'production'>(['development', 'production'])(
       await expect(bundle(join(fixturesPath, 'compiled-error.tsx'))).rejects.toEqual([
         expect.objectContaining({
           message: expect.stringContaining(
-            "BooleanLiteral isn't a supported CSS type - try using an object or string"
+            'This BooleanLiteral was unable to have its styles extracted — try to define them statically using Compiled APIs instead'
           ),
         }),
       ]);
