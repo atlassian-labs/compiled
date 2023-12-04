@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { createStrictAPI } from '@compiled/react';
 
 const { css, XCSSProp, cssMap, cx } = createStrictAPI<{
