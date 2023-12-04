@@ -42,7 +42,7 @@ tester.run('no-styled-tagged-template-expression', noEmptyStyledExpressionRule, 
     ` 
         import { styled } from '@compiled/react';
 
-        // Considered valid (not checking) due to boolean operations within styled calls being unused within Atlassian repositories
+        // Considered valid (not checking) due to boolean operations within styled calls not being used with empty objects
         styled.span(true && {});
     `,
   ],
