@@ -16,7 +16,7 @@ const isEmptyStyledExpression = (node: CallExpression): boolean => {
   return false;
 };
 
-export const createNoEmptyStyledExpressionRule =
+const createNoEmptyStyledExpressionRule =
   (
     isEmptyStyledExpression: (node: CallExpression) => boolean,
     messageId: string
