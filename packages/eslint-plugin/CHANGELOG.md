@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.13.0
+
+### Minor Changes
+
+- 83f2c48b: Created ESLint rule to disallow usage of empty styled.element() function calls/empty object arguments
+
 ## 0.12.0
 
 ### Minor Changes
