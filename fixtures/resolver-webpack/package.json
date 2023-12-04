@@ -1,0 +1,6 @@
+{
+  "name": "@compiled-private/resolver-webpack",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js"
+}
