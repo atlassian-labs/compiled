@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.16.4
+
+### Patch Changes
+
+- e9b50b44: Add custom error message to be shown when any output from createStrictAPI() is unexpectedly executed.
+
 ## 0.16.3
 
 ### Patch Changes
