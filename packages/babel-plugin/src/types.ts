@@ -33,6 +33,11 @@ export interface PluginOptions {
   nonce?: string;
 
   /**
+   * Custom module origins that Compiled should compile when using APIs from.
+   */
+  importSources?: string[];
+
+  /**
    * Callback fired at the end of the file pass when files have been included in the transformation.
    */
   onIncludedFiles?: (files: string[]) => void;
@@ -114,6 +119,11 @@ export interface State extends PluginPass {
   importedCompiledImports?: {
     css?: string;
   };
+
+  /**
+   * Modules that expose APIs to be compiled by Compiled.
+   */
+  importSources: string[];
 
   /**
    * Details of pragmas that are currently enabled in the pass.
