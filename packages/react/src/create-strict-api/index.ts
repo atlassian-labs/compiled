@@ -1,5 +1,5 @@
 import type { StrictCSSProperties, CSSPseudos } from '../types';
-import { createSetupError } from '../utils/error';
+import { createStrictSetupError } from '../utils/error';
 import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop';
 
 type PseudosDeclarations = {
@@ -210,14 +210,14 @@ type CompiledSchema = StrictCSSProperties & PseudosDeclarations;
 export function createStrictAPI<TSchema extends CompiledSchema>(): CompiledAPI<TSchema> {
   return {
     css() {
-      throw createSetupError();
+      throw createStrictSetupError();
     },
     cssMap() {
-      throw createSetupError();
+      throw createStrictSetupError();
     },
     cx,
     XCSSProp() {
-      throw createSetupError();
+      throw createStrictSetupError();
     },
   };
 }
