@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.13.1
+
+### Patch Changes
+
+- 45186502: Added no-empty-styled-expression rule to eslint plugin rule declarations
+
 ## 0.13.0
 
 ### Minor Changes
