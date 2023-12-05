@@ -1,8 +1,0 @@
-{
-  "$schema": "https://unpkg.com/@changesets/config@1.0.1/schema.json",
-  "changelog": "@changesets/cli/changelog",
-  "commit": false,
-  "linked": [["@compiled/babel-plugin", "@compiled/babel-plugin-strip-runtime"]],
-  "access": "public",
-  "baseBranch": "master"
-}
