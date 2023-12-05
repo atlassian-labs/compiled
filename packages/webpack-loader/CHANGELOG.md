@@ -1,5 +1,11 @@
 # @compiled/webpack-loader
 
+## 0.12.0
+
+### Minor Changes
+
+- 66695a2d: Support resolver module path
+
 ## 0.11.8
 
 ### Patch Changes
