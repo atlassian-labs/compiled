@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { createStrictAPI } from '@compiled/react';
+import { createStrictAPI } from '../../index';
 
 const { css, XCSSProp, cssMap, cx } = createStrictAPI<{
   '&:hover': {
