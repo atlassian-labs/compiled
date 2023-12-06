@@ -86,6 +86,35 @@ describe('createStrictAPI()', () => {
 
       expect(getByTestId('div')).toHaveCompiledCss('all', 'inherit');
     });
+
+    it('should type error when using values not the styles scope', () => {
+      const styles = css({
+        color: 'var(--ds-text)',
+        accentColor: 'red',
+        // NOTE: This should error, but doesn't until the other errors are resolved, only one error at a time
+        asdf: 'red',
+        '&:hover': {
+          color: 'var(--ds-text-hover)',
+          // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
+          asdf: 'red',
+        },
+        // NOTE: This should error, but desn't until the other errors are resolved, only one error at a time
+        '&:invalid-pseudo': {
+          color: 'var(--ds-text)',
+        },
+      });
+
+      const { getByTestId } = render(<div css={styles} data-testid="div" />);
+
+      expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
+      expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text-hover)', {
+        target: ':hover',
+      });
+
+      // These still get compiled to css, even if they're not valid
+      expect(getByTestId('div')).toHaveCompiledCss('asdf', 'red');
+      expect(getByTestId('div')).toHaveCompiledCss('asdf', 'red', { target: ':hover' });
+    });
   });
 
   describe('cssMap()', () => {
@@ -153,7 +182,7 @@ describe('createStrictAPI()', () => {
       expect(getByTestId('div')).toHaveCompiledCss('val', 'ok', { target: ':hover' });
     });
 
-    it('should type error when circumventing the excess property check', () => {
+    it('should type error when using values not the styles scope', () => {
       const styles = cssMap({
         primary: {
           color: 'var(--ds-text)',
@@ -175,11 +204,13 @@ describe('createStrictAPI()', () => {
       const { getByTestId } = render(<div css={styles.primary} data-testid="div" />);
 
       expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
-      expect(getByTestId('div')).toHaveCompiledCss('bkgrnd', 'red');
       expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text-hover)', {
         target: ':hover',
       });
-      expect(getByTestId('div')).toHaveCompiledCss('bkgrnd', 'red', { target: ':hover' });
+
+      // These still get compiled to css, even if they're not valid
+      expect(getByTestId('div')).toHaveCompiledCss('asdf', 'red');
+      expect(getByTestId('div')).toHaveCompiledCss('asdf', 'red', { target: ':hover' });
     });
   });
 
