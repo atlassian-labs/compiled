@@ -152,6 +152,35 @@ describe('createStrictAPI()', () => {
 
       expect(getByTestId('div')).toHaveCompiledCss('val', 'ok', { target: ':hover' });
     });
+
+    it('should type error when circumventing the excess property check', () => {
+      const styles = cssMap({
+        primary: {
+          color: 'var(--ds-text)',
+          accentColor: 'red',
+          // NOTE: This should error, but doesn't until the other errors are resolved, only one error at a time
+          asdf: 'red',
+          '&:hover': {
+            color: 'var(--ds-text-hover)',
+            // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
+            asdf: 'red',
+          },
+          // NOTE: This should error, but desn't until the other errors are resolved, only one error at a time
+          '&:invalid-pseudo': {
+            color: 'var(--ds-text)',
+          },
+        },
+      });
+
+      const { getByTestId } = render(<div css={styles.primary} data-testid="div" />);
+
+      expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
+      expect(getByTestId('div')).toHaveCompiledCss('bkgrnd', 'red');
+      expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text-hover)', {
+        target: ':hover',
+      });
+      expect(getByTestId('div')).toHaveCompiledCss('bkgrnd', 'red', { target: ':hover' });
+    });
   });
 
   describe('XCSSProp', () => {

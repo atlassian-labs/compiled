@@ -59,7 +59,9 @@ interface CompiledAPI<TSchema> {
       StrictCSSProperties & PseudosDeclarations & EnforceSchema<TSchema>
     >
   >(
-    styles: TStyles
+    // NOTE: This should be 1:1 with the `TStyles extends …` above as we want it to strictly satisfy this type, not extend it.
+    // The "extends" functionality is to infer and build the return type, this is to enforce the input type
+    styles: Record<string, StrictCSSProperties & PseudosDeclarations & EnforceSchema<TSchema>>
   ): {
     readonly [P in keyof TStyles]: CompiledStyles<TStyles[P]>;
   };
