@@ -18,7 +18,12 @@ type PickObjects<TObject> = {
   [P in keyof TObject]: TObject[P] extends Record<string, unknown> ? TObject[P] : never;
 };
 
-interface CompiledAPI<TSchema> {
+type CSSStyles<TSchema extends CompiledSchema> = StrictCSSProperties &
+  PseudosDeclarations &
+  EnforceSchema<TSchema>;
+type CSSMapStyles<TSchema extends CompiledSchema> = Record<string, CSSStyles<TSchema>>;
+
+interface CompiledAPI<TSchema extends CompiledSchema> {
   /**
    * ## CSS
    *
@@ -34,9 +39,7 @@ interface CompiledAPI<TSchema> {
    * <div css={redText} />
    * ```
    */
-  css(
-    styles: StrictCSSProperties & PseudosDeclarations & EnforceSchema<TSchema>
-  ): StrictCSSProperties;
+  css(styles: CSSStyles<TSchema>): StrictCSSProperties;
   /**
    * ## CSS Map
    *
@@ -53,17 +56,12 @@ interface CompiledAPI<TSchema> {
    * <div css={styles.solid} />
    * ```
    */
-  cssMap<
-    TStyles extends Record<
-      string,
-      StrictCSSProperties & PseudosDeclarations & EnforceSchema<TSchema>
-    >
-  >(
-    // NOTE: This should be 1:1 with the `TStyles extends …` above as we want it to strictly satisfy this type, not extend it.
-    // The "extends" functionality is to infer and build the return type, this is to enforce the input type
-    styles: Record<string, StrictCSSProperties & PseudosDeclarations & EnforceSchema<TSchema>>
+  cssMap<TStylesMap extends CSSMapStyles<TSchema>>(
+    // NOTE: This should match the generic `TStylesMap extends …` as we want this arg to strictly satisfy this type, not just extend it.
+    // The "extends" functionality is to infer and build the return type, this is to enforce the input type.
+    styles: CSSMapStyles<TSchema>
   ): {
-    readonly [P in keyof TStyles]: CompiledStyles<TStyles[P]>;
+    readonly [P in keyof TStylesMap]: CompiledStyles<TStylesMap[P]>;
   };
   /**
    * ## CX
