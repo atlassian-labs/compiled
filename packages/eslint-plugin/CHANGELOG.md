@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.13.2
+
+### Patch Changes
+
+- 9dd62659: Fixed eslint rule declaration typo causing missing rule errors
+
 ## 0.13.1
 
 ### Patch Changes
