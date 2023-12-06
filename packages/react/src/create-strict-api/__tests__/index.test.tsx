@@ -87,33 +87,54 @@ describe('createStrictAPI()', () => {
       expect(getByTestId('div')).toHaveCompiledCss('all', 'inherit');
     });
 
-    it('should type error when using values not the styles scope', () => {
-      const styles = css({
-        color: 'var(--ds-text)',
-        accentColor: 'red',
-        // NOTE: This should error, but doesn't until the other errors are resolved, only one error at a time
-        asdf: 'red',
+    it('should type error with css properties not in the style scope', () => {
+      // NOTE: These are split into mutliple `css()` calls to ensure the type errors are not hidden
+      // as only one will error at a time when combined into one query
+
+      const bgStyles = css({
+        fontWeight: 'bold', // just a valid property to ensure the `extends` keyword isn't working as intended
+        // @ts-expect-error - Object literal may only specify known properties, and 'bg' does not exist in type …
+        bg: 'red',
+      });
+
+      const colourStyles = css({
+        fontWeight: 'bold', // just a valid property to ensure the `extends` keyword isn't working as intended
+        // @ts-expect-error - Object literal may only specify known properties, and 'colour' does not exist in type …
+        colour: 'var(--ds-text)',
+      });
+
+      const hoverStyles = css({
+        fontWeight: 'bold', // just a valid property to ensure the `extends` keyword isn't working as intended
         '&:hover': {
-          color: 'var(--ds-text-hover)',
-          // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
-          asdf: 'red',
+          fontWeight: 'bold', // just a valid property to ensure the `extends` keyword isn't working as intended
+          // @ts-expect-error - Object literal may only specify known properties, and 'colour' does not exist in type …
+          colour: 'var(--ds-text-hover)',
         },
-        // NOTE: This should error, but desn't until the other errors are resolved, only one error at a time
+      });
+
+      const invalidPsuedoStyles = css({
+        fontWeight: 'bold', // just a valid property to ensure the `extends` keyword isn't working as intended
+        // @ts-expect-error - bject literal may only specify known properties, and ''&:invalid-pseudo'' does not exist in type …
         '&:invalid-pseudo': {
           color: 'var(--ds-text)',
         },
       });
 
-      const { getByTestId } = render(<div css={styles} data-testid="div" />);
+      const { getByTestId } = render(
+        <div css={[bgStyles, colourStyles, hoverStyles, invalidPsuedoStyles]} data-testid="div" />
+      );
 
-      expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
-      expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text-hover)', {
+      expect(getByTestId('div')).toHaveCompiledCss('font-weight', 'bold');
+      expect(getByTestId('div')).toHaveCompiledCss('font-weight', 'bold', {
         target: ':hover',
       });
 
       // These still get compiled to css, even if they're not valid
-      expect(getByTestId('div')).toHaveCompiledCss('asdf', 'red');
-      expect(getByTestId('div')).toHaveCompiledCss('asdf', 'red', { target: ':hover' });
+      expect(getByTestId('div')).toHaveCompiledCss('bg', 'red');
+      expect(getByTestId('div')).toHaveCompiledCss('colour', 'var(--ds-text)');
+      expect(getByTestId('div')).toHaveCompiledCss('colour', 'var(--ds-text-hover)', {
+        target: ':hover',
+      });
     });
   });
 
@@ -182,35 +203,70 @@ describe('createStrictAPI()', () => {
       expect(getByTestId('div')).toHaveCompiledCss('val', 'ok', { target: ':hover' });
     });
 
-    it('should type error when using values not the styles scope', () => {
-      const styles = cssMap({
+    it('should type error with css properties not in the style scope', () => {
+      // NOTE: These are split into mutliple `css()` calls to ensure the type errors are not hidden
+      // as only one will error at a time when combined into one query
+
+      const bgStyles = cssMap({
         primary: {
-          color: 'var(--ds-text)',
-          accentColor: 'red',
-          // NOTE: This should error, but doesn't until the other errors are resolved, only one error at a time
-          asdf: 'red',
+          fontWeight: 'bold', // just a valid property to ensure the `extends` keyword isn't working as intended
+          // @ts-expect-error - Object literal may only specify known properties, and 'bg' does not exist in type …
+          bg: 'red',
+        },
+      });
+
+      const colourStyles = cssMap({
+        primary: {
+          fontWeight: 'bold', // just a valid property to ensure the `extends` keyword isn't working as intended
+          // @ts-expect-error - Object literal may only specify known properties, and 'colour' does not exist in type …
+          colour: 'var(--ds-text)',
+        },
+      });
+
+      const hoverStyles = cssMap({
+        primary: {
+          fontWeight: 'bold', // just a valid property to ensure the `extends` keyword isn't working as intended
           '&:hover': {
-            color: 'var(--ds-text-hover)',
-            // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
-            asdf: 'red',
+            fontWeight: 'bold', // just a valid property to ensure the `extends` keyword isn't working as intended
+            // @ts-expect-error - Object literal may only specify known properties, and 'colour' does not exist in type …
+            colour: 'var(--ds-text-hover)',
           },
-          // NOTE: This should error, but desn't until the other errors are resolved, only one error at a time
+        },
+      });
+
+      const invalidPsuedoStyles = cssMap({
+        primary: {
+          fontWeight: 'bold', // just a valid property to ensure the `extends` keyword isn't working as intended
+          // @ts-expect-error - bject literal may only specify known properties, and ''&:invalid-pseudo'' does not exist in type …
           '&:invalid-pseudo': {
             color: 'var(--ds-text)',
           },
         },
       });
 
-      const { getByTestId } = render(<div css={styles.primary} data-testid="div" />);
+      const { getByTestId } = render(
+        <div
+          css={[
+            bgStyles.primary,
+            colourStyles.primary,
+            hoverStyles.primary,
+            invalidPsuedoStyles.primary,
+          ]}
+          data-testid="div"
+        />
+      );
 
-      expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
-      expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text-hover)', {
+      expect(getByTestId('div')).toHaveCompiledCss('font-weight', 'bold');
+      expect(getByTestId('div')).toHaveCompiledCss('font-weight', 'bold', {
         target: ':hover',
       });
 
       // These still get compiled to css, even if they're not valid
-      expect(getByTestId('div')).toHaveCompiledCss('asdf', 'red');
-      expect(getByTestId('div')).toHaveCompiledCss('asdf', 'red', { target: ':hover' });
+      expect(getByTestId('div')).toHaveCompiledCss('bg', 'red');
+      expect(getByTestId('div')).toHaveCompiledCss('colour', 'var(--ds-text)');
+      expect(getByTestId('div')).toHaveCompiledCss('colour', 'var(--ds-text-hover)', {
+        target: ':hover',
+      });
     });
   });
 
