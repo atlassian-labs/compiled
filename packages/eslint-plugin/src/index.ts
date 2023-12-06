@@ -26,7 +26,7 @@ export const rules = {
   'no-keyframes-tagged-template-expression': noKeyframesTaggedTemplateExpressionRule,
   'no-styled-tagged-template-expression': noStyledTaggedTemplateExpressionRule,
   'no-suppress-xcss': noSuppressXCSS,
-  'no-empry-styled-expression': noEmptyStyledExpressionRule,
+  'no-empty-styled-expression': noEmptyStyledExpressionRule,
 };
 
 export const configs = {
