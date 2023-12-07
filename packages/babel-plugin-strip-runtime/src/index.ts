@@ -55,13 +55,14 @@ export default declare<PluginPass>((api) => {
           this.classicJsxPragmaName = classicJsxPragma?.name;
           if (!this.classicJsxPragmaName) return;
 
+          path.traverse<PluginPass>(FindJsxPragmaImport, this);
+
           // Delete comment so that @babel/preset-react doesn't see it and convert all of the
           // React.createElement function calls to jsx function calls
-          if (classicJsxPragma?.comment) {
+          if (classicJsxPragma?.comment && this.jsxPragmaIsCompiled) {
             file.ast.comments = file.ast.comments?.filter(
               (comment) => comment !== classicJsxPragma.comment
             );
-
             // Babel provides no way for us to traverse comments >:(
             //
             // So the best we can do is guess that the JSX pragma is probably at the start of
@@ -72,8 +73,6 @@ export default declare<PluginPass>((api) => {
               );
             }
           }
-
-          path.traverse<PluginPass>(FindJsxPragmaImport, this);
         },
 
         exit(path, { file, filename }) {
