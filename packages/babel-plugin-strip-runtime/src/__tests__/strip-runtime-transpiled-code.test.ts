@@ -96,7 +96,7 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
 
       expect(actual.split('var Component = ')[1]).toMatchInlineSnapshot(`
         "() =>
-          /*#__PURE__*/ (0, _jsxRuntime.jsx)('div', {
+          (0, _jsxRuntime.jsx)('div', {
             className: (0, _runtime.ax)(['_1wyb1fwx _syaz13q2']),
             children: 'hello world',
           });
@@ -114,7 +114,7 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
         import { jsxs as _jsxs } from 'react/jsx-runtime';
         import { jsx as _jsx } from 'react/jsx-runtime';
         var Component = () =>
-          /*#__PURE__*/ _jsx('div', {
+          _jsx('div', {
             className: ax(['_1wyb1fwx _syaz13q2']),
             children: 'hello world',
           });
@@ -150,7 +150,7 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
 
       expect(actual.split('var Component = ')[1]).toMatchInlineSnapshot(`
         "() =>
-          /*#__PURE__*/ React.createElement(
+          React.createElement(
             'div',
             {
               className: (0, _runtime.ax)(['_1wyb1fwx _syaz13q2']),
@@ -169,7 +169,7 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
         import * as React from 'react';
         import { ax, ix } from '@compiled/react/runtime';
         var Component = () =>
-          /*#__PURE__*/ React.createElement(
+          React.createElement(
             'div',
             {
               className: ax(['_1wyb1fwx _syaz13q2']),
