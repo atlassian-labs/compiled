@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.16.5
+
+### Patch Changes
+
+- cd11b421: Block invalid properties on our `cssMap` input objects to avoid invalid css and other mistakes.
+
 ## 0.16.4
 
 ### Patch Changes
