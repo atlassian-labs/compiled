@@ -1,5 +1,13 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.26.2
+
+### Patch Changes
+
+- 3bb89ef9: Reverting jsx pragma fix which is causing runtime errors
+- Updated dependencies [3bb89ef9]
+  - @compiled/utils@0.9.1
+
 ## 0.25.0
 
 ### Minor Changes

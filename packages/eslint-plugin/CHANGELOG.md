@@ -1,5 +1,13 @@
 # @compiled/eslint-plugin
 
+## 0.13.3
+
+### Patch Changes
+
+- 3bb89ef9: Reverting jsx pragma fix which is causing runtime errors
+- Updated dependencies [3bb89ef9]
+  - @compiled/utils@0.9.1
+
 ## 0.13.2
 
 ### Patch Changes
