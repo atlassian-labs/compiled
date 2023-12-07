@@ -3,42 +3,17 @@ import { dirname, join, parse } from 'path';
 
 import { declare } from '@babel/helper-plugin-utils';
 import template from '@babel/template';
-import type { NodePath, Visitor } from '@babel/traverse';
+import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { sort } from '@compiled/css';
 import { preserveLeadingComments } from '@compiled/utils';
 
 import type { PluginPass, PluginOptions, BabelFileMetadata } from './types';
-import { getClassicJsxPragma } from './utils/get-jsx-pragma';
 import { isAutomaticRuntime } from './utils/is-automatic-runtime';
 import { isCCComponent } from './utils/is-cc-component';
 import { isCreateElement } from './utils/is-create-element';
 import { removeStyleDeclarations } from './utils/remove-style-declarations';
 import { toURIComponent } from './utils/to-uri-component';
-
-const FindJsxPragmaImport: Visitor<PluginPass> = {
-  ImportSpecifier(path, state) {
-    const specifier = path.node;
-
-    t.assertImportDeclaration(path.parent);
-    // We don't care about other libraries
-    if (path.parent.source.value !== '@compiled/react') return;
-
-    if (
-      (specifier.imported.type === 'StringLiteral' && specifier.imported.value === 'jsx') ||
-      (specifier.imported.type === 'Identifier' && specifier.imported.name === 'jsx')
-    ) {
-      // Hurrah, we know that the jsx function in the JSX pragma refers to the
-      // jsx function from Compiled.
-      state.jsxPragmaIsCompiled = true;
-
-      // Remove the jsx import; the assumption is that we removed the classic JSX pragma, so
-      // Babel shouldn't convert React.createElement to the jsx function anymore.
-      path.remove();
-      return;
-    }
-  },
-};
 
 export default declare<PluginPass>((api) => {
   api.assertVersion(7);
@@ -50,39 +25,7 @@ export default declare<PluginPass>((api) => {
     },
     visitor: {
       Program: {
-        enter(path, { file }) {
-          const classicJsxPragma = getClassicJsxPragma(file.ast.comments);
-          this.classicJsxPragmaName = classicJsxPragma?.name;
-          if (!this.classicJsxPragmaName) return;
-
-          // Delete comment so that @babel/preset-react doesn't see it and convert all of the
-          // React.createElement function calls to jsx function calls
-          if (classicJsxPragma?.comment) {
-            file.ast.comments = file.ast.comments?.filter(
-              (comment) => comment !== classicJsxPragma.comment
-            );
-
-            // Babel provides no way for us to traverse comments >:(
-            //
-            // So the best we can do is guess that the JSX pragma is probably at the start of
-            // the file.
-            if (path.node.body[0].leadingComments) {
-              path.node.body[0].leadingComments = path.node.body[0].leadingComments.filter(
-                (comment) => comment !== classicJsxPragma.comment
-              );
-            }
-          }
-
-          path.traverse<PluginPass>(FindJsxPragmaImport, this);
-        },
-
         exit(path, { file, filename }) {
-          if (!filename) {
-            throw new Error(
-              `@compiled/babel-plugin-strip-runtime expected the filename not to be empty, but actually got '${filename}'.`
-            );
-          }
-
           if (this.opts.compiledRequireExclude) {
             // Rather than inserting styleRules to the code, inserting them to metadata in the case like SSR
             if (!file.metadata?.styleRules) file.metadata.styleRules = [];
@@ -147,13 +90,11 @@ export default declare<PluginPass>((api) => {
           }
         },
       },
-
       ImportSpecifier(path) {
         if (t.isIdentifier(path.node.imported) && ['CC', 'CS'].includes(path.node.imported.name)) {
           path.remove();
         }
       },
-
       JSXElement(path, pass) {
         if (!t.isJSXIdentifier(path.node.openingElement.name)) {
           return;
@@ -181,7 +122,6 @@ export default declare<PluginPass>((api) => {
         path.node.leadingComments = null;
         return;
       },
-
       CallExpression(path, pass) {
         const callee = path.node.callee;
         if (isCreateElement(callee)) {
@@ -199,8 +139,8 @@ export default declare<PluginPass>((api) => {
           removeStyleDeclarations(compiledStyles.node, path, pass);
 
           // All done! Let's replace this node with the user land child.
-          path.node.leadingComments = null;
           path.replaceWith(nodeToReplace);
+          path.node.leadingComments = null;
           return;
         }
 
@@ -237,8 +177,8 @@ export default declare<PluginPass>((api) => {
           removeStyleDeclarations(compiledStyles, path, pass);
 
           // All done! Let's replace this node with the user land child.
-          path.node.leadingComments = null;
           path.replaceWith(nodeToReplace);
+          path.node.leadingComments = null;
           return;
         }
       },
