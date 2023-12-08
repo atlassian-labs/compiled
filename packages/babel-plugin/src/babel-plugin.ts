@@ -109,8 +109,8 @@ export default declare<State>((api) => {
             }
           }
 
-          // Default to true
-          const processXcss = state.opts.processXcss ?? true;
+          // Default to false
+          const processXcss = state.opts.processXcss;
 
           if (processXcss && /(x|X)css={/.test(file.code)) {
             // xcss prop was found, turn on Compiled but just for xcss
