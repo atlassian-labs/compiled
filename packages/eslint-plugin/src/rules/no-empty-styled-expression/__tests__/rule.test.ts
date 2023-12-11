@@ -45,6 +45,21 @@ tester.run('no-styled-tagged-template-expression', noEmptyStyledExpressionRule, 
         // Considered valid (not checking) due to boolean operations within styled calls not being used with empty objects
         styled.span(true && {});
     `,
+    `   
+        import { styled } from '@compiled/react';
+
+        const HeaderTitle = styled.h1<any>\`
+        \${typography.h500()}\` 
+    `,
+    `
+        import { styled } from '@compiled/react';
+
+        ufologger.enable();
+        
+        const StyledHeading = styled.h3({
+          marginRight: token('space.250', '20px'),
+        });
+    `,
   ],
   invalid: createInvalidTestCases([
     {
