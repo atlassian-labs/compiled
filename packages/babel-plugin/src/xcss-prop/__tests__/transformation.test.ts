@@ -337,7 +337,7 @@ describe('xcss prop transformation', () => {
 // i.e. xcss prop, where @compiled/react isn't imported but
 // @compiled/babel-plugin will still process the xcss usages.
 describe('xcss prop interacting with other libraries', () => {
-  it('should skip importing Compiled runtime no Compiled API usage was found', () => {
+  it('should skip importing Compiled runtime when no direct Compiled usage was found', () => {
     const result = transform(
       `
       /** @jsx jsx */
@@ -380,7 +380,7 @@ describe('xcss prop interacting with other libraries', () => {
     `);
   });
 
-  it('should import Compiled runtime when using inline object xcss', () => {
+  it('should import Compiled runtime when inline object is used in xcss', () => {
     const result = transform(
       `
       /** @jsx jsx */
