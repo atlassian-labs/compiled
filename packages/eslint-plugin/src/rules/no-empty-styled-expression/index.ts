@@ -1,9 +1,11 @@
-import type { Rule } from 'eslint';
-import type { CallExpression } from 'estree';
+import type { Rule, Scope } from 'eslint';
+import type { CallExpression, MemberExpression } from 'estree';
 
 import { isStyledImportSpecifier } from '../../utils/styled-import';
 
 type RuleModule = Rule.RuleModule;
+type Node = Rule.Node;
+type Reference = Scope.Reference;
 
 const isEmptyStyledExpression = (node: CallExpression): boolean => {
   const [firstArg] = node.arguments;
@@ -25,9 +27,19 @@ const createNoEmptyStyledExpressionRule =
     return {
       'CallExpression[callee.type="MemberExpression"]': (node: CallExpression) => {
         const { references } = context.getScope();
-        const isStyledImported = references.some((reference) =>
-          reference.resolved?.defs.some(isStyledImportSpecifier)
-        );
+
+        if (node.callee.type !== 'MemberExpression') {
+          return;
+        }
+
+        const membEx = node.callee;
+        const isStyledImported =
+          membEx.object.type === 'Identifier' &&
+          references.some(
+            (reference) =>
+              reference.identifier === membEx.object &&
+              reference.resolved?.defs.some(isStyledImportSpecifier)
+          );
 
         if (!isStyledImported || !isEmptyStyledExpression(node)) {
           return;
