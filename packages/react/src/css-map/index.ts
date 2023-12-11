@@ -84,9 +84,9 @@ type ExtendedSelectors = {
 };
 
 /**
- * ## cssMap
+ * ## CSS Map
  *
- * Creates a collection of named CSS rules that are statically typed and useable with other Compiled APIs.
+ * Creates a collection of named styles that are statically typed and useable with other Compiled APIs.
  * For further details [read the documentation](https://compiledcssinjs.com/docs/api-cssmap).
  *
  * @example
@@ -96,9 +96,7 @@ type ExtendedSelectors = {
  *  solid: { borderStyle: 'solid' },
  * });
  *
- * const Component = ({ borderStyle }) => <div css={styles[borderStyle]} />
- *
- * <Component borderStyle="solid" />
+ * <div css={styles.solid} />
  * ```
  */
 export default function cssMap<

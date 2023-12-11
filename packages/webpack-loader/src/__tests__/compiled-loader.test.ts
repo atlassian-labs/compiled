@@ -75,11 +75,19 @@ describe.each<'development' | 'production'>(['development', 'production'])(
       expect(assets['main.js']).toInclude('._syaz1if8{color:indigo}');
     });
 
+    it('transforms styles imported through an overridden resolver', async () => {
+      const assets = await bundle(join(fixturesPath, 'custom-resolver.tsx'), {
+        resolver: '@compiled-private/resolver-webpack',
+      });
+
+      expect(assets['main.js']).toInclude('._syaz8p1k{color:very-very red color');
+    });
+
     it('fails when using unrecognised compiled syntax', async () => {
       await expect(bundle(join(fixturesPath, 'compiled-error.tsx'))).rejects.toEqual([
         expect.objectContaining({
           message: expect.stringContaining(
-            "BooleanLiteral isn't a supported CSS type - try using an object or string"
+            'This BooleanLiteral was unable to have its styles extracted — try to define them statically using Compiled APIs instead'
           ),
         }),
       ]);

@@ -15,7 +15,7 @@ describe('error handling', () => {
         <div css={() => {}} />
       `);
     }).toThrowErrorMatchingInlineSnapshot(`
-      "unknown file: ArrowFunctionExpression isn't a supported CSS type - try using an object or string (4:18).
+      "unknown file: This ArrowFunctionExpression was unable to have its styles extracted — no Compiled APIs were found in scope, if you're using createStrictAPI make sure to configure importSources (4:18).
         2 |         import '@compiled/react';
         3 |
       > 4 |         <div css={() => {}} />

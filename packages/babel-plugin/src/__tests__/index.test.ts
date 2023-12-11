@@ -65,6 +65,9 @@ describe('babel plugin', () => {
       const _ = "._1wyb1fwx{font-size:12px}";
       const MyDiv = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
+          }
           return (
             <CC>
               <CS>{[_]}</CS>

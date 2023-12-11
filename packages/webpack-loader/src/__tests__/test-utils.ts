@@ -16,6 +16,7 @@ export interface BundleOptions {
   disableCacheGroup?: boolean;
   mode: 'development' | 'production';
   resolve?: ResolveOptions;
+  resolver?: string;
 }
 
 export function bundle(
@@ -27,6 +28,7 @@ export function bundle(
     disableCacheGroup = false,
     mode,
     resolve = {},
+    resolver,
   }: BundleOptions
 ): Promise<Record<string, string>> {
   const outputPath = join(__dirname, 'dist');
@@ -56,6 +58,7 @@ export function bundle(
                 importReact: false,
                 optimizeCss: false,
                 resolve,
+                resolver,
               },
             },
           ],

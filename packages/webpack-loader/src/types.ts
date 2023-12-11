@@ -91,6 +91,11 @@ export interface CompiledLoaderOptions {
    * When set, extract styles to an external CSS file
    */
   extractStylesToDirectory?: { source: string; dest: string };
+
+  /**
+   * Custom resolver for babel plugin, when set overrides default resolver
+   */
+  resolver?: string;
 }
 
 export interface CompiledExtractPluginOptions {

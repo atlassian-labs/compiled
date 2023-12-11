@@ -31,6 +31,9 @@ describe('styled component behaviour', () => {
       const _ = "._1wybgktf{font-size:20px}";
       const ListItem = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
+          }
           return (
             <CC>
               <CS>{[_]}</CS>
@@ -69,6 +72,9 @@ describe('styled component behaviour', () => {
       const _ = "._1wybgktf{font-size:20px}";
       const ListItem = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
+          }
           return (
             <CC>
               <CS>{[_]}</CS>
@@ -177,9 +183,9 @@ describe('styled component behaviour', () => {
 
   it('creates a separate var name for positive and negative values of the same interpolation', () => {
     const actual = transform(`
-      import { styled } from '@compiled/react';      
+      import { styled } from '@compiled/react';
       const random = Math.random;
-      
+
       const LayoutRight = styled.aside\`
         margin-right: -\${random() * 5}px;
         margin-left: \${random() * 5}px;
@@ -344,6 +350,9 @@ describe('styled component behaviour', () => {
       const _ = "._bfhkhk3l{background-color:var(--_16ldrz5)}";
       export const BadgeSkeleton = forwardRef(
         ({ as: C = "span", style: __cmpls, ...__cmplp }, __cmplr) => {
+          if (__cmplp.innerRef) {
+            throw new Error("Please use 'ref' instead of 'innerRef'.");
+          }
           const { isLoading, state, ...__cmpldp } = __cmplp;
           return (
             <CC>
@@ -740,7 +749,9 @@ describe('styled component behaviour', () => {
         \${props => props.isShown && (props.isPrimary ? { color: 'blue' } : { color: 'green' })};
       \`;
     `)
-    ).toThrow("ConditionalExpression isn't a supported CSS type");
+    ).toThrow(
+      'This ConditionalExpression was unable to have its styles extracted — try to define them statically using Compiled APIs instead'
+    );
   });
 
   it('should apply conditional CSS when using "key: value" in string form', () => {

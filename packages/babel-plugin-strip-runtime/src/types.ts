@@ -1,14 +1,4 @@
-import type {
-  BabelFile as OriginalBabelFile,
-  BabelFileMetadata as OriginalBabelFileMetadata,
-  PluginPass as OriginalPluginPass,
-} from '@babel/core';
-
-interface BabelFile extends OriginalBabelFile {
-  metadata: {
-    styleRules: string[];
-  };
-}
+import type { BabelFileMetadata as OriginalBabelFileMetadata } from '@babel/core';
 
 export interface PluginOptions {
   /**
@@ -27,7 +17,7 @@ export interface PluginOptions {
   extractStylesToDirectory?: { source: string; dest: string };
 }
 
-export interface PluginPass extends OriginalPluginPass {
+export interface PluginPass {
   opts: PluginOptions;
 
   /**
@@ -38,19 +28,26 @@ export interface PluginPass extends OriginalPluginPass {
   /**
    * Data of the current file being transformed.
    */
-  file: BabelFile;
+  file: {
+    opts: {
+      generatorOpts?: {
+        sourceFileName?: string;
+      };
+    };
+    metadata: {
+      styleRules: string[];
+    };
+  };
 
   /**
-   * The name of the jsx function specified in the JSX pragma
-   * "@ jsx nameOfJsxFunction". (Classic syntax)
+   * Current filename
    */
-  classicJsxPragmaName?: string;
+  filename: string;
 
   /**
-   * Whether the name of the jsx function (given in the jsxPragmaName
-   * property) is the `jsx` function and namespace from `@compiled/react`.
+   * Working directory for babel
    */
-  jsxPragmaIsCompiled?: boolean;
+  cwd: string;
 }
 
 export interface BabelFileMetadata extends OriginalBabelFileMetadata {

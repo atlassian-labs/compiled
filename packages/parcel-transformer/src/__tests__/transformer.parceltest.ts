@@ -204,7 +204,8 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
   expect(extractedComponent).toMatchInlineSnapshot(`
     "var Button = (0, _react.forwardRef)(function(_ref, __cmplr) {
         var _ref$as = _ref.as, C = _ref$as === void 0 ? "button" : _ref$as, __cmpls = _ref.style, __cmplp = _objectWithoutProperties(_ref, _excluded);
-        return /*#__PURE__*/ (0, _jsxRuntime.jsx)(C, _objectSpread(_objectSpread({}, __cmplp), {}, {
+        if (__cmplp.innerRef) throw new Error("Please use 'ref' instead of 'innerRef'.");
+        return (0, _jsxRuntime.jsx)(C, _objectSpread(_objectSpread({}, __cmplp), {}, {
             style: __cmpls,
             ref: __cmplr,
             className: (0, _runtime.ax)([
@@ -216,7 +217,7 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
     Button.displayName = "Button";
     function BabelComponent(_ref2) {
         var children = _ref2.children;
-        return /*#__PURE__*/ (0, _jsxRuntime.jsx)("div", {
+        return (0, _jsxRuntime.jsx)("div", {
             className: (0, _runtime.ax)([
                 "_19pk1ul9"
             ]),

@@ -1,11 +1,10 @@
 import * as t from '@babel/types';
 
 /**
- * Return true if (and only if) the current node is a
- * `React.createElement()` function call.
+ * Returns `true` if `node` looks like `React.createElement()`.
  *
  * @param node
- * @returns if the node is `React.createElement()`
+ * @returns
  */
 export const isCreateElement = (node: t.Node): node is t.CallExpression => {
   return (

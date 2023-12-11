@@ -1,5 +1,27 @@
 # @compiled/webpack-loader
 
+## 0.12.1
+
+### Patch Changes
+
+- Updated dependencies [3bb89ef9]
+  - @compiled/babel-plugin-strip-runtime@0.26.2
+  - @compiled/utils@0.9.1
+
+## 0.12.0
+
+### Minor Changes
+
+- 66695a2d: Support resolver module path
+
+## 0.11.8
+
+### Patch Changes
+
+- Updated dependencies [52ea5aba]
+- Updated dependencies [9860df38]
+  - @compiled/babel-plugin@0.26.0
+
 ## 0.11.7
 
 ### Patch Changes

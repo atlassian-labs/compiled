@@ -1,4 +1,4 @@
-import { basename } from 'path';
+import { basename, resolve, join, dirname } from 'path';
 
 import { declare } from '@babel/helper-plugin-utils';
 import jsxSyntax from '@babel/plugin-syntax-jsx';
@@ -30,7 +30,7 @@ import { visitXcssPropPath } from './xcss-prop';
 const packageJson = require('../package.json');
 const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
 const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
-const COMPILED_MODULE = '@compiled/react';
+const DEFAULT_IMPORT_SOURCE = '@compiled/react';
 
 let globalCache: Cache | undefined;
 
@@ -41,6 +41,8 @@ export default declare<State>((api) => {
     name: packageJson.name,
     inherits: jsxSyntax,
     pre(state) {
+      const rootPath = state.opts.root ?? this.cwd;
+
       this.sheets = {};
       this.cssMap = {};
       let cache: Cache;
@@ -59,12 +61,25 @@ export default declare<State>((api) => {
       this.pathsToCleanup = [];
       this.pragma = {};
       this.usesXcss = false;
+      this.importSources = [
+        DEFAULT_IMPORT_SOURCE,
+        ...(this.opts.importSources
+          ? this.opts.importSources.map((origin) => {
+              if (origin[0] === '.') {
+                // We've found a relative path, transform it to be fully qualified.
+                return join(rootPath, origin);
+              }
+
+              return origin;
+            })
+          : []),
+      ];
 
       if (typeof this.opts.resolver === 'object') {
         this.resolver = this.opts.resolver;
       } else if (typeof this.opts.resolver === 'string') {
         this.resolver = require(require.resolve(this.opts.resolver, {
-          paths: [state.opts.root ?? this.cwd],
+          paths: [rootPath],
         }));
       }
 
@@ -80,7 +95,9 @@ export default declare<State>((api) => {
               const jsxSourceMatches = JSX_SOURCE_ANNOTATION_REGEX.exec(comment.value);
               const jsxMatches = JSX_ANNOTATION_REGEX.exec(comment.value);
 
-              if (jsxSourceMatches && jsxSourceMatches[1] === COMPILED_MODULE) {
+              // jsxPragmas currently only run on the top-level compiled module,
+              // hence we don't interrogate this.importSources.
+              if (jsxSourceMatches && jsxSourceMatches[1] === DEFAULT_IMPORT_SOURCE) {
                 // jsxImportSource pragma found - turn on CSS prop!
                 state.compiledImports = {};
                 state.pragma.jsxImportSource = true;
@@ -90,14 +107,6 @@ export default declare<State>((api) => {
                 state.pragma.jsx = true;
               }
             }
-          }
-
-          // Default to true
-          const processXcss = state.opts.processXcss ?? true;
-
-          if (processXcss && /(x|X)css={/.test(file.code)) {
-            // xcss prop was found, turn on Compiled but just for xcss
-            state.usesXcss = true;
           }
         },
         exit(path, state) {
@@ -159,7 +168,27 @@ export default declare<State>((api) => {
         },
       },
       ImportDeclaration(path, state) {
-        if (path.node.source.value !== COMPILED_MODULE) {
+        const userLandModule = path.node.source.value;
+
+        const isCompiledModule = this.importSources.some((compiledModuleOrigin) => {
+          if (userLandModule === DEFAULT_IMPORT_SOURCE || compiledModuleOrigin === userLandModule) {
+            return true;
+          }
+
+          if (
+            state.filename &&
+            userLandModule[0] === '.' &&
+            userLandModule.endsWith(basename(compiledModuleOrigin))
+          ) {
+            // Relative import that might be a match, resolve the relative path and compare.
+            const fullpath = resolve(dirname(state.filename), userLandModule);
+            return fullpath === compiledModuleOrigin;
+          }
+
+          return false;
+        });
+
+        if (!isCompiledModule) {
           return;
         }
 
@@ -237,7 +266,8 @@ export default declare<State>((api) => {
         visitClassNamesPath(path, { context: 'root', state, parentPath: path });
       },
       JSXOpeningElement(path, state) {
-        if (state.usesXcss) {
+        const compiledXCSSProp = state.opts.processXcss ?? true;
+        if (compiledXCSSProp) {
           visitXcssPropPath(path, { context: 'root', state, parentPath: path });
         }
 

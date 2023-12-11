@@ -1,5 +1,31 @@
 # @compiled/eslint-plugin
 
+## 0.13.3
+
+### Patch Changes
+
+- 3bb89ef9: Reverting jsx pragma fix which is causing runtime errors
+- Updated dependencies [3bb89ef9]
+  - @compiled/utils@0.9.1
+
+## 0.13.2
+
+### Patch Changes
+
+- 9dd62659: Fixed eslint rule declaration typo causing missing rule errors
+
+## 0.13.1
+
+### Patch Changes
+
+- 45186502: Added no-empty-styled-expression rule to eslint plugin rule declarations
+
+## 0.13.0
+
+### Minor Changes
+
+- 83f2c48b: Created ESLint rule to disallow usage of empty styled.element() function calls/empty object arguments
+
 ## 0.12.0
 
 ### Minor Changes

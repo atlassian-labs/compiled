@@ -1,12 +1,11 @@
-import fs from 'fs';
-import { dirname, normalize } from 'path';
+import { normalize } from 'path';
 
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import { createError, toBoolean } from '@compiled/utils';
-import { CachedInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 import { getOptions } from 'loader-utils';
 import type { LoaderContext } from 'webpack';
 
+import { createDefaultResolver } from './create-default-resolver';
 import { pluginName, styleSheetName } from './extract-plugin';
 import type { CompiledLoaderOptions } from './types';
 
@@ -34,6 +33,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     addComponentName = false,
     classNameCompressionMap = undefined,
     extractStylesToDirectory = undefined,
+    resolver = undefined,
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -83,6 +83,9 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           extractStylesToDirectory: {
             type: 'object',
           },
+          resolver: {
+            type: 'string',
+          },
         },
       });
 
@@ -101,6 +104,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     addComponentName,
     classNameCompressionMap,
     extractStylesToDirectory,
+    resolver,
   };
 }
 
@@ -139,18 +143,6 @@ export default async function compiledLoader(
       plugins: options.transformerBabelPlugins ?? undefined,
     });
 
-    // Setup the default resolver, where webpack will merge any passed in options with the default
-    // resolve configuration. Ideally, we use this.getResolve({ ...resolve, useSyncFileSystemCalls: true, })
-    // However, it does not work correctly when in development mode :/
-    const resolver = ResolverFactory.createResolver({
-      // @ts-expect-error
-      fileSystem: new CachedInputFileSystem(fs, 4000),
-      ...(this._compilation?.options.resolve ?? {}),
-      ...resolve,
-      // This makes the resolver invoke the callback synchronously
-      useSyncFileSystemCalls: true,
-    });
-
     // Transform using the Compiled Babel Plugin - we deliberately turn off using the local config.
     const result = await transformFromAstAsync(ast!, code, {
       babelrc: false,
@@ -177,12 +169,12 @@ export default async function compiledLoader(
             // Turn off compressing class names if stylesheet extraction is off
             classNameCompressionMap: options.extract && options.classNameCompressionMap,
             onIncludedFiles: (files: string[]) => includedFiles.push(...files),
-            resolver: {
-              // The resolver needs to be synchronous, as babel plugins must be synchronous
-              resolveSync: (context: string, request: string) => {
-                return resolver.resolveSync({}, dirname(context), request);
-              },
-            },
+            resolver: options.resolver
+              ? options.resolver
+              : createDefaultResolver({
+                  resolveOptions: resolve,
+                  webpackResolveOptions: this._compilation?.options.resolve,
+                }),
           },
         ],
       ].filter(toBoolean),

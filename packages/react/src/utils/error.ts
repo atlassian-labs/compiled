@@ -17,3 +17,23 @@ export const createSetupError = (): Error => {
   Good luck!
 `);
 };
+
+export const createStrictSetupError = (): Error => {
+  return new Error(`
+ ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
+██╔════╝██╔═══██╗████╗ ████║██╔══██╗██║██║     ██╔════╝██╔══██╗
+██║     ██║   ██║██╔████╔██║██████╔╝██║██║     █████╗  ██║  ██║
+██║     ██║   ██║██║╚██╔╝██║██╔═══╝ ██║██║     ██╔══╝  ██║  ██║
+╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║███████╗███████╗██████╔╝
+ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═════╝
+
+  @compiled/react
+
+  Code was executed when it shouldn't have. To resolve make sure to:
+
+  1. Set up Compiled.
+  2. Configure importSources in your Compiled config to point to the module that exports the output of createStrictAPI().
+
+  For more information visit https://compiledcssinjs.com/docs/installation and follow the instructions.
+`);
+};

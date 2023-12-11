@@ -1,5 +1,11 @@
 # @compiled/utils
 
+## 0.9.1
+
+### Patch Changes
+
+- 3bb89ef9: Reverting jsx pragma fix which is causing runtime errors
+
 ## 0.9.0
 
 ### Minor Changes

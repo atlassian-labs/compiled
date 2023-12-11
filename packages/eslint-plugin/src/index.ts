@@ -4,6 +4,7 @@ import { localCXXCSSRule } from './rules/local-cx-xcss';
 import { noCssPropWithoutCssFunctionRule } from './rules/no-css-prop-without-css-function';
 import { noCssTaggedTemplateExpressionRule } from './rules/no-css-tagged-template-expression';
 import { noEmotionCssRule } from './rules/no-emotion-css';
+import { noEmptyStyledExpressionRule } from './rules/no-empty-styled-expression';
 import { noExportedCssRule } from './rules/no-exported-css';
 import { noExportedKeyframesRule } from './rules/no-exported-keyframes';
 import { noInvalidCssMapRule } from './rules/no-invalid-css-map';
@@ -25,6 +26,7 @@ export const rules = {
   'no-keyframes-tagged-template-expression': noKeyframesTaggedTemplateExpressionRule,
   'no-styled-tagged-template-expression': noStyledTaggedTemplateExpressionRule,
   'no-suppress-xcss': noSuppressXCSS,
+  'no-empty-styled-expression': noEmptyStyledExpressionRule,
 };
 
 export const configs = {
