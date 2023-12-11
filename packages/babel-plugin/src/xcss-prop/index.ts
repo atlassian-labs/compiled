@@ -121,7 +121,6 @@ export const visitXcssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Met
     }
 
     meta.state.usesXcss = true;
-
     path.parentPath.replaceWith(compiledTemplate(jsxElementNode, sheets, meta));
   }
 };
