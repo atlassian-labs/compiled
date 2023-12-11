@@ -105,6 +105,7 @@ export const visitXcssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Met
         );
     }
 
+    meta.state.usesXcss = true;
     path.parentPath.replaceWith(compiledTemplate(jsxElementNode, sheets, meta));
   } else {
     // We make the assumption that xcss prop only takes member expressions such as:
@@ -118,6 +119,8 @@ export const visitXcssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Met
       // This covers the legacy use case of runtime xcss prop.
       return;
     }
+
+    meta.state.usesXcss = true;
 
     path.parentPath.replaceWith(compiledTemplate(jsxElementNode, sheets, meta));
   }
