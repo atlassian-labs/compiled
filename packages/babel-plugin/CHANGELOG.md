@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.26.3
+
+### Patch Changes
+
+- a9509cc0: Compiled runtime is no-longer inserted for non-Compiled xcss prop usage.
+
 ## 0.26.1
 
 ### Patch Changes
