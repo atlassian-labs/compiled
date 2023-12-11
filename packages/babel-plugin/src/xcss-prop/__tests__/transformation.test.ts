@@ -199,15 +199,8 @@ describe('xcss prop transformation', () => {
     `
     );
 
-    // Ideally this shouldn't import @compiled/react/runtime at all because those
-    // are unused, and xcss runs at runtime here.
-    //
-    // Tree-shaking should get rid of these, but not adding these imports in the first
-    // place is something we could do in a future PR perhaps.
     expect(result).toMatchInlineSnapshot(`
-      "import * as React from "react";
-      import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      import { Box, xcss } from "@atlaskit/primitives";
+      "import { Box, xcss } from "@atlaskit/primitives";
       <Box
         xcss={xcss({
           color: "red",
@@ -344,7 +337,7 @@ describe('xcss prop transformation', () => {
 // i.e. xcss prop, where @compiled/react isn't imported but
 // @compiled/babel-plugin will still process the xcss usages.
 describe('xcss prop interacting with other libraries', () => {
-  it("xcss prop in primitive component shouldn't affect css prop from Emotion", () => {
+  it('should skip importing Compiled runtime when no direct Compiled usage was found', () => {
     const result = transform(
       `
       /** @jsx jsx */
@@ -364,8 +357,7 @@ describe('xcss prop interacting with other libraries', () => {
     );
 
     expect(result).toMatchInlineSnapshot(`
-      "import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      import { css, jsx } from "@emotion/react";
+      "import { css, jsx } from "@emotion/react";
       import { Box, xcss } from "@atlaskit/primitives";
       import Button from "@atlaskit/button";
       export function Mixed() {
@@ -388,7 +380,7 @@ describe('xcss prop interacting with other libraries', () => {
     `);
   });
 
-  it("xcss prop shouldn't affect css prop from Emotion", () => {
+  it('should import Compiled runtime when inline object is used in xcss', () => {
     const result = transform(
       `
       /** @jsx jsx */

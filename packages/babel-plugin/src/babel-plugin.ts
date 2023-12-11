@@ -108,14 +108,6 @@ export default declare<State>((api) => {
               }
             }
           }
-
-          // Default to true
-          const processXcss = state.opts.processXcss ?? true;
-
-          if (processXcss && /(x|X)css={/.test(file.code)) {
-            // xcss prop was found, turn on Compiled but just for xcss
-            state.usesXcss = true;
-          }
         },
         exit(path, state) {
           if (!state.compiledImports && !state.usesXcss) {
@@ -274,7 +266,8 @@ export default declare<State>((api) => {
         visitClassNamesPath(path, { context: 'root', state, parentPath: path });
       },
       JSXOpeningElement(path, state) {
-        if (state.usesXcss) {
+        const compiledXCSSProp = state.opts.processXcss ?? true;
+        if (compiledXCSSProp) {
           visitXcssPropPath(path, { context: 'root', state, parentPath: path });
         }
 
