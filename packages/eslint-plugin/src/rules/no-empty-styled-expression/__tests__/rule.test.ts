@@ -49,14 +49,14 @@ tester.run('no-styled-tagged-template-expression', noEmptyStyledExpressionRule, 
         import { styled } from '@compiled/react';
 
         const HeaderTitle = styled.h1<any>\`
-        \${typography.h500()}\` 
+          \${typography.h500()}\` 
     `,
     `   
         import { styled } from '@compiled/react';
 
         const HeaderTitle = styled.h1<any>\`
-        \${typography.h500()};
-        \${typography.h400()};\` 
+          \${typography.h500()};
+          \${typography.h400()};\` 
     `,
     `
         import { styled } from '@compiled/react';
