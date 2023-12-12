@@ -61,12 +61,12 @@ tester.run('no-styled-tagged-template-expression', noEmptyStyledExpressionRule, 
     `
         import { styled } from '@compiled/react';
 
-        ufologger.enable();
+        foo.bar();
     `,
     `
         import { styled } from '@compiled/react';
 
-        provideHealthcheck();
+        foo();
     `,
   ],
   invalid: createInvalidTestCases([
