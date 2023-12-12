@@ -24,14 +24,14 @@ const createNoEmptyStyledExpressionRule =
   (context) => {
     return {
       'CallExpression[callee.type="MemberExpression"]': (node: CallExpression) => {
-        const callee: MemberExpression = node.callee as MemberExpression;
+        const membEx: MemberExpression = node.callee as MemberExpression;
         const { references } = context.getScope();
 
         const isStyledImported =
-          callee.object.type === 'Identifier' &&
+          membEx.object.type === 'Identifier' &&
           references.some(
             (reference) =>
-              reference.identifier === callee.object &&
+              reference.identifier === membEx.object &&
               reference.resolved?.defs.some(isStyledImportSpecifier)
           );
 
