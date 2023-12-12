@@ -51,14 +51,22 @@ tester.run('no-styled-tagged-template-expression', noEmptyStyledExpressionRule, 
         const HeaderTitle = styled.h1<any>\`
         \${typography.h500()}\` 
     `,
+    `   
+        import { styled } from '@compiled/react';
+
+        const HeaderTitle = styled.h1<any>\`
+        \${typography.h500()};
+        \${typography.h400()};\` 
+    `,
     `
         import { styled } from '@compiled/react';
 
         ufologger.enable();
-        
-        const StyledHeading = styled.h3({
-          marginRight: token('space.250', '20px'),
-        });
+    `,
+    `
+        import { styled } from '@compiled/react';
+
+        provideHealthcheck();
     `,
   ],
   invalid: createInvalidTestCases([
