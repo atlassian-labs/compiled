@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.13.4
+
+### Patch Changes
+
+- 6dfb0cdf: Fixed eslint bug for no-empty-styled-expressions rule that detected false positives
+
 ## 0.13.3
 
 ### Patch Changes
