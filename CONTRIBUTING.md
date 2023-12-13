@@ -3,12 +3,15 @@
 Thank you for considering to contribute to Compiled!
 Pull requests, issues and comments are welcome.
 
-For pull requests,
-please:
+## Contribution Standards
 
 - Add tests for new features and bug fixes
 - Follow the existing style
 - Separate unrelated changes into multiple pull requests
+- As Compiled has not been officially released, when implementing a new feature, please add a changeset by calling `yarn changeset` and select `minor`.
+  - When implementing bug fixes, please select the `patch` option.
+  - Ensure the changeset message is informative.
+- Please name your feature/bug branches descriptively.
 
 See the [existing issues](https://github.com/atlassian-labs/compiled/issues) for things to start contributing.
 
@@ -26,9 +29,63 @@ The Corporate CLA is for those who are contributing as a member of an organizati
 - [CLA for individuals](https://opensource.atlassian.com/individual)
 - [CLA for corporate contributors](https://opensource.atlassian.com/corporate)
 
+## Key Concepts
+
+### CSS-in-JS
+
+Compiled is a CSS-in-JS library: a library that lets React developers write CSS within their React code. Other libraries in this space include styled-components and Emotion. Below are some code examples.
+
+How people usually write in Compiled (we do want to change this long-term). This is similar to the styled function from [styled-components](https://styled-components.com/).
+
+```javascript
+import { styled } from '@compiled/react';
+
+const MyComponent = styled.div({
+  margin: 0,
+  color: 'blue',
+  padding: '250px',
+  backgroundColor: 'pink',
+});
+
+export const App = () => <MyComponent>Hello!</MyComponent>;
+```
+
+However, long term we want developers to write more like below. This is more similar to [emotion](https://emotion.sh/docs/css-prop).
+
+```javascript
+/** @jsx jsx */
+import { css } from '@compiled/react';
+
+const myStyles = css({
+  margin: 0,
+  color: 'blue',
+  padding: '250px',
+  backgroundColor: 'pink',
+});
+
+export const App = () => <div css={myStyles}>Hello!</div>;
+```
+
+### Abstract Syntax Trees
+
+ASTs are a core concept that is used in the babel plugin (bulk of compiled implementation) and automations via codemods or ESLinters. An AST is an abstract representation of the syntax that makes up the programming language. ASTs are used to manipulate JavaScript code at build time, or to automatically refactor code. This concept is important for understanding automation, which is key to maintaining any moderate to large codebase.
+
+To gain a working understanding of ASTs, we recommend using [AST Explorer](https://astexplorer.net/).
+
 ## Getting started with local development
 
-Make sure to install dependencies with `yarn` locally before continuing.
+### Requirements
+
+- NodeJS: https://nodejs.org/en/download
+- NVM: https://github.com/nvm-sh/nvm
+- Yarn: https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable
+
+### Set Up
+
+- Use the recommended nvm version by calling `nvm use`
+- Install all necessary dependencies with `yarn` or `yarn install`
+- You will know things are working when calling `nvm use && yarn build` show no error output
+- You can call `yarn start` to start the storybook instance. If you have all the right dependencies and set up the repository properly, it should output no errors.
 
 ### Unit tests
 
@@ -41,6 +98,10 @@ yarn test <filter> --watch
 ```
 
 Looking at tests first is generally the best way to get started.
+
+- Run a specific test file: `yarn test <filename> --watch`
+- Run tests related to a package `yarn test:packageName --watch`
+- Update snapshot tests after implementing a code change: `yarn test <filter> --watch --updateSnapshot`
 
 ### Storybook
 
@@ -96,6 +157,8 @@ a few small changes to the examples/webpack folder.
 
 - `"webpack": "^4"`
 - `"html-webpack-plugin": "^4"`
+
+---
 
 ### Helpful links
 
