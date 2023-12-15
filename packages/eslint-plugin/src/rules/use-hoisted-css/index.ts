@@ -25,12 +25,9 @@ const isHoistedCss = (node: JSXAttribute): boolean => {
     return false;
   }
 
-  // If it is an array expression, check if there is at least one ObjectExpression or CallExpression amongst its children
-  // What do we do for Conditionals within collections? Do we check every single one?
-  // What is the impact of this function if I made it recursive? Are there performance issues with this?
   if (expression.type === 'ArrayExpression') {
     const { elements } = expression;
-
+    // TODO: consider logical expresisons
     return !elements.some((el) => el?.type !== 'Identifier');
   }
 
