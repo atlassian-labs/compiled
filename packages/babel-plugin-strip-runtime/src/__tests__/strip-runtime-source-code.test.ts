@@ -296,6 +296,58 @@ describe('babel-plugin-strip-runtime using source code', () => {
         `);
       });
 
+      it("doesn't do anything to emotion's classic jsx pragma", () => {
+        const codeWithPragma = `
+          /** @jsx myJsx */
+          import { css, jsx as myJsx } from '@emotion/react';
+
+          const Component = () => (
+            <div css={{ fontSize: 12, color: 'blue' }}>
+              hello world 2
+            </div>
+          );
+
+          const Component2 = () => (
+            <div css={css({ fontSize: 12, color: 'pink' })}>
+              hello world 2
+            </div>
+          );
+        `;
+
+        const actual = transform(codeWithPragma, {
+          run: 'both',
+          runtime: 'classic',
+        });
+
+        expect(actual).toMatchInlineSnapshot(`
+          "/** @jsx myJsx */
+          import { css, jsx as myJsx } from '@emotion/react';
+          const Component = () =>
+            myJsx(
+              'div',
+              {
+                css: {
+                  fontSize: 12,
+                  color: 'blue',
+                },
+              },
+              'hello world 2'
+            );
+          const Component2 = () =>
+            myJsx(
+              'div',
+              {
+                css: css({
+                  fontSize: 12,
+                  color: 'pink',
+                }),
+              },
+              'hello world 2'
+            );
+          "
+        `);
+      });
+
       it('work with automatic jsx pragma', () => {
         const codeWithPragma = `
           /** @jsxImportSource @compiled/react */
@@ -334,6 +386,53 @@ describe('babel-plugin-strip-runtime using source code', () => {
           const Component2 = () =>
             _jsx('div', {
               className: ax(['_1wyb1fwx _syaz32ev']),
+              children: 'hello world 2',
+            });
+          "
+        `);
+      });
+
+      it("doesn't do anything to emotion's automatic jsx pragma", () => {
+        const codeWithPragma = `
+          /** @jsxImportSource @emotion/react */
+          import { css } from '@emotion/react';
+
+          const Component = () => (
+            <div css={{ fontSize: 12, color: 'blue' }}>
+              hello world 2
+            </div>
+          );
+
+          const Component2 = () => (
+            <div css={css({ fontSize: 12, color: 'pink' })}>
+              hello world 2
+            </div>
+          );
+        `;
+
+        const actual = transform(codeWithPragma, {
+          run: 'both',
+          runtime: 'automatic',
+        });
+
+        expect(actual).toMatchInlineSnapshot(`
+          "/** @jsxImportSource @emotion/react */
+          import { css } from '@emotion/react';
+          import { jsx as _jsx } from '@emotion/react/jsx-runtime';
+          const Component = () =>
+            _jsx('div', {
+              css: {
+                fontSize: 12,
+                color: 'blue',
+              },
+              children: 'hello world 2',
+            });
+          const Component2 = () =>
+            _jsx('div', {
+              css: css({
+                fontSize: 12,
+                color: 'pink',
+              }),
               children: 'hello world 2',
             });
           "
