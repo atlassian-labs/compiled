@@ -8,7 +8,7 @@ Pull requests, issues and comments are welcome.
 - Add tests for new features and bug fixes
 - Follow the existing style
 - Separate unrelated changes into multiple pull requests
-- As Compiled has not been officially released, when implementing a new feature, please add a changeset by calling `yarn changeset` and select `minor`.
+- As Compiled has not been officially released, when introducing a breaking change, please add a changeset by calling `yarn changeset` and select `minor`.
   - When implementing bug fixes, please select the `patch` option.
   - Ensure the changeset message is informative.
 - Please name your feature/bug branches descriptively.
