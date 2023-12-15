@@ -33,7 +33,7 @@ The Corporate CLA is for those who are contributing as a member of an organizati
 
 ### CSS-in-JS
 
-Compiled is a CSS-in-JS library: a library that lets React developers write CSS within their React code. Other libraries in this space include styled-components and Emotion. Below are some code examples.
+Compiled is a CSS-in-JS library: a library that lets frontend developers write CSS within their JavaScript code. Other libraries in this space include styled-components and Emotion. Below are some code examples.
 
 How people usually write in Compiled (we do want to change this long-term). This is similar to the styled function from [styled-components](https://styled-components.com/).
 
