@@ -8,8 +8,8 @@ Pull requests, issues and comments are welcome.
 - Add tests for new features and bug fixes
 - Follow the existing style
 - Separate unrelated changes into multiple pull requests
-- As Compiled has not been officially released, when introducing a breaking change, please add a changeset by calling `yarn changeset` and select `minor`.
-  - When implementing bug fixes, please select the `patch` option.
+- Add a changeset for packages requiring a version bump by calling `yarn changeset`
+  - Select `minor` when introducing new features, and `patch` for bug fixes
   - Ensure the changeset message is informative.
 - Please name your feature/bug branches descriptively.
 
@@ -33,7 +33,7 @@ The Corporate CLA is for those who are contributing as a member of an organizati
 
 ### CSS-in-JS
 
-Compiled is a CSS-in-JS library: a library that lets frontend developers write CSS within their JavaScript code. Other libraries in this space include styled-components and Emotion. Below are some code examples.
+Compiled is a CSS-in-JS library that lets developers write CSS within their React code. Other libraries in this space include styled-components and Emotion. Below are some code examples.
 
 How people usually write in Compiled (we do want to change this long-term). This is similar to the styled function from [styled-components](https://styled-components.com/).
 
@@ -66,21 +66,21 @@ const myStyles = css({
 export const App = () => <div css={myStyles}>Hello!</div>;
 ```
 
-### Abstract Syntax Trees
+### Abstract Syntax Trees (AST)
 
-ASTs are a core concept that is used in the babel plugin (bulk of compiled implementation) and automations via codemods or ESLinters. An AST is an abstract representation of the syntax that makes up the programming language. ASTs are used to manipulate JavaScript code at build time, or to automatically refactor code. This concept is important for understanding automation, which is key to maintaining any moderate to large codebase.
+An AST is an abstract representation of the syntax that makes up the programming language. ASTs are used to manipulate JavaScript code at build time, or to automatically refactor code. This concept is important for understanding automation, which is key to maintaining any moderate to large codebase.
 
-To gain a working understanding of ASTs, we recommend using [AST Explorer](https://astexplorer.net/).
+The `@compiled/babel-plugin` is backed by ASTs and forms the core implementation of Compiled. We recommend using [AST Explorer](https://astexplorer.net/) to gain a working understanding of ASTs, and the codebase.
 
 ## Getting started with local development
 
-### Requirements
+### Prerequisites
 
 - NodeJS: https://nodejs.org/en/download
 - NVM: https://github.com/nvm-sh/nvm
 - Yarn: https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable
 
-### Set Up
+### Installation
 
 - Use the recommended nvm version by calling `nvm use`
 - Install all necessary dependencies with `yarn` or `yarn install`
