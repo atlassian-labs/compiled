@@ -11,7 +11,7 @@ const createInvalidTestCases = (tests: InvalidTestCase[]) =>
     errors: [{ messageId: 'unexpected' }],
   }));
 
-tester.run('no-styled-tagged-template-expression', useHoistedCSSRule, {
+tester.run('use-hoisted-css', useHoistedCSSRule, {
   valid: [
     `
         const styles = css({ color: token('color.text.danger') });
@@ -23,6 +23,13 @@ tester.run('no-styled-tagged-template-expression', useHoistedCSSRule, {
         const disabledStyles = css({ color: token('color.text.disabled') });
 
         <div css={props.disabled ? disabledStyles : baseStyles}></div>
+    `,
+    `
+        const styles1 = css({ color: 'blue' });
+        const styles2 = css({ color: 'red' });
+        const styles3 = css({ color: 'green' });
+
+        <div css={[ styles1, styles2, styles3 ]}></div>
     `,
   ],
   invalid: createInvalidTestCases([
@@ -48,6 +55,24 @@ tester.run('no-styled-tagged-template-expression', useHoistedCSSRule, {
       name: 'Directly add object to the cssMap property of JSX element',
       code: `
             <div cssMap={{ color: 'red' }}></div>
+        `,
+    },
+    {
+      name: 'Directly css call in a collection',
+      code: `
+            const styles1 = css({ color: 'blue' });
+            const styles2 = css({ color: 'red' });
+
+            <div css={[ styles1, styles2, css({ color: 'green' })]}></div>
+        `,
+    },
+    {
+      name: 'Direct object declaration in a collection',
+      code: `
+            const styles1 = css({ color: 'blue' });
+            const styles2 = css({ color: 'red' });
+
+            <div css={[ styles1, styles2, { color: 'green' }]}></div>
         `,
     },
   ]),

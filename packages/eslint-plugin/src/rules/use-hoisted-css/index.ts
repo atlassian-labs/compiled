@@ -28,6 +28,11 @@ const isHoistedCss = (node: JSXAttribute): boolean => {
   // If it is an array expression, check if there is at least one ObjectExpression or CallExpression amongst its children
   // What do we do for Conditionals within collections? Do we check every single one?
   // What is the impact of this function if I made it recursive? Are there performance issues with this?
+  if (expression.type === 'ArrayExpression') {
+    const { elements } = expression;
+
+    return !elements.some((el) => el?.type !== 'Identifier');
+  }
 
   return true;
 };
@@ -55,8 +60,7 @@ export const useHoistedCSSRule: Rule.RuleModule = {
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-empty-styled-expression',
     },
     messages: {
-      unexpected:
-        'Unexpected empty expression/empty object argument passed to styled.div() from @compiled/react',
+      unexpected: 'Arguments in css/xcss/cssMap property not properly hoisted',
     },
     type: 'problem',
   },
