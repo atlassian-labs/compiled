@@ -13,7 +13,8 @@ const isHoistedCss = (node: JSXAttribute): boolean => {
     return false;
   }
 
-  // If it's a conditional expression, check the consequent and alternate. If either are NOT Identifiers, return false!!
+  // If it's a conditional expression, check the consequent and alternate.
+  // If either are NOT Identifiers, return false!!
   if (
     expression.type === 'ConditionalExpression' &&
     (expression.consequent.type !== 'Identifier' || expression.alternate.type !== 'Identifier')
@@ -29,8 +30,6 @@ const createUseHoistedCSSRule =
   (context) => {
     return {
       'JSXAttribute[name.name="css"]': (node: Node) => {
-        // We know the JSXAttribute node we got is the css one
-
         // Check the value which is a JSXExpressionContainer
         if (isHoistedCss(node as JSXAttribute)) {
           return;

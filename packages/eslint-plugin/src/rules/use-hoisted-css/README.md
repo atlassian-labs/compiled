@@ -8,14 +8,15 @@ Disallows/discourages implementation of CSS styles directly within the `css` pro
 
 👎 Examples of **incorrect** code for this rule:
 
-```javascript
-<div css={{ color: 'red' }}>
-<div css={css({ color: 'red' })}>
+```html
+<div css={{ color: 'red' }}></div>
+
+<div css={css({ color: 'red' })}></div>
 ```
 
 👍 Examples of **correct** code for this rule:
 
-```javascript
+```typescript
 const styles = css({ color: token('color.text.danger') });
 const disabledStyles = css({ color: token('color.text.disabled') });
 
