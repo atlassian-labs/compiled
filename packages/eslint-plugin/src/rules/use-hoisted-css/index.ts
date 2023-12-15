@@ -4,6 +4,9 @@ import type { JSXAttribute, JSXExpressionContainer } from 'estree-jsx';
 type RuleModule = Rule.RuleModule;
 type Node = Rule.Node;
 
+const getAttributeNames = () =>
+  ['css', 'xcss', 'cssMap'].map((name) => `[name.name="${name}"]`).join();
+
 const isHoistedCss = (node: JSXAttribute): boolean => {
   // Get the JSX attribute container which should have all of the expressions for the node
   const { expression } = node.value as JSXExpressionContainer;
@@ -22,6 +25,10 @@ const isHoistedCss = (node: JSXAttribute): boolean => {
     return false;
   }
 
+  // If it is an array expression, check if there is at least one ObjectExpression or CallExpression amongst its children
+  // What do we do for Conditionals within collections? Do we check every single one?
+  // What is the impact of this function if I made it recursive? Are there performance issues with this?
+
   return true;
 };
 
@@ -29,7 +36,7 @@ const createUseHoistedCSSRule =
   (isHoistedCss: (node: JSXAttribute) => boolean, messageId: string): RuleModule['create'] =>
   (context) => {
     return {
-      'JSXAttribute[name.name="css"]': (node: Node) => {
+      [`JSXAttribute:matches(${getAttributeNames()})`]: (node: Node) => {
         // Check the value which is a JSXExpressionContainer
         if (isHoistedCss(node as JSXAttribute)) {
           return;

@@ -38,5 +38,17 @@ tester.run('no-styled-tagged-template-expression', useHoistedCSSRule, {
             <div css={{ color: 'red' }}></div>
         `,
     },
+    {
+      name: 'Directly add object to the xcss property of JSX element',
+      code: `
+            <div xcss={{ color: 'red' }}></div>
+        `,
+    },
+    {
+      name: 'Directly add object to the cssMap property of JSX element',
+      code: `
+            <div cssMap={{ color: 'red' }}></div>
+        `,
+    },
   ]),
 });
