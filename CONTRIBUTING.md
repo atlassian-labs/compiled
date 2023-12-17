@@ -84,7 +84,7 @@ The `@compiled/babel-plugin` is backed by ASTs and forms the core implementation
 
 - Use the recommended nvm version by calling `nvm use`
 - Install all necessary dependencies with `yarn` or `yarn install`
-- You will know things are working when calling `nvm use && yarn build` show no error output
+- You will know things are working when calling `nvm use && yarn build` shows no error output
 - You can call `yarn start` to start the storybook instance. If you have all the right dependencies and set up the repository properly, it should output no errors.
 
 ### Unit tests
