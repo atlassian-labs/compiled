@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.16.6
+
+### Patch Changes
+
+- 34674ae1: Fix `cssMap` returned from `createStrictAPI` to return types based on the generic input, fixing usage with the `XCSSProp` API.
+
 ## 0.16.5
 
 ### Patch Changes
