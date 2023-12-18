@@ -331,7 +331,7 @@ describe('createStrictAPI()', () => {
         />
       );
 
-      expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
+      expect(getByTestId('button')).toHaveCompiledCss('color', 'var(--ds-text)');
     });
 
     it('should error with values not in the strict `CompiledAPI`', () => {
