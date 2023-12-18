@@ -288,8 +288,12 @@ describe('createStrictAPI()', () => {
       }
 
       const styles = cssMap({ bg: { accentColor: 'red' } });
-      // @ts-expect-error — Type 'CompiledStyles<{ accentColor: "red"; }>' is not assignable to type ...
-      const { getByTestId } = render(<Button xcss={styles.bg} />);
+      const { getByTestId } = render(
+        <Button
+          // @ts-expect-error — Type 'CompiledStyles<{ accentColor: "red"; }>' is not assignable to type ...
+          xcss={styles.bg}
+        />
+      );
 
       expect(getByTestId('button')).toHaveCompiledCss('accent-color', 'red');
     });
