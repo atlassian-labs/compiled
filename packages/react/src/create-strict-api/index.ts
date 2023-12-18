@@ -59,7 +59,8 @@ interface CompiledAPI<TSchema extends CompiledSchema> {
    */
   cssMap<TStylesMap extends CSSMapStyles<TSchema>>(
     // We intersection type the generic both with the concrete type and the generic to ensure the output has the generic applied.
-    // Without both it would allow either the input to now have excess property check kick in, or have all values set as the output.
+    // Without both it would either have the input arg not have excess property check kick in allowing unexpected values or
+    // have all values set as the output making usage with XCSSProp have type violations unexpectedly.
     styles: CSSMapStyles<TSchema> & TStylesMap
   ): {
     readonly [P in keyof TStylesMap]: CompiledStyles<TStylesMap[P]>;
