@@ -271,6 +271,46 @@ describe('createStrictAPI()', () => {
   });
 
   describe('XCSSProp', () => {
+    it('should allow valid values from cssMap', () => {
+      function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', never>> }) {
+        return <button data-testid="button" className={xcss} />;
+      }
+
+      const styles = cssMap({ bg: { background: 'var(--ds-surface)' } });
+      const { getByTestId } = render(<Button xcss={styles.bg} />);
+
+      expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
+    });
+
+    it('should disallow invalid values from cssMap', () => {
+      function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', never>> }) {
+        return <button data-testid="button" className={xcss} />;
+      }
+
+      const styles = cssMap({ bg: { accentColor: 'red' } });
+      // @ts-expect-error — Type 'CompiledStyles<{ accentColor: "red"; }>' is not assignable to type ...
+      const { getByTestId } = render(<Button xcss={styles.bg} />);
+
+      expect(getByTestId('button')).toHaveCompiledCss('accent-color', 'red');
+    });
+
+    it('should allow constrained background and pseudo', () => {
+      function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', '&:hover'>> }) {
+        return <button data-testid="button" className={xcss} />;
+      }
+
+      const styles = cssMap({
+        primary: {
+          background: 'var(--ds-surface)',
+          '&:hover': { background: 'var(--ds-surface-hover)' },
+        },
+      });
+
+      const { getByTestId } = render(<Button xcss={styles.primary} />);
+
+      expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
+    });
+
     it('should allow valid values', () => {
       function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', never>> }) {
         return <button data-testid="button" className={xcss} />;

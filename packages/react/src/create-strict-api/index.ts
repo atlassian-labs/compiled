@@ -21,6 +21,7 @@ type PickObjects<TObject> = {
 type CSSStyles<TSchema extends CompiledSchema> = StrictCSSProperties &
   PseudosDeclarations &
   EnforceSchema<TSchema>;
+
 type CSSMapStyles<TSchema extends CompiledSchema> = Record<string, CSSStyles<TSchema>>;
 
 interface CompiledAPI<TSchema extends CompiledSchema> {
@@ -57,9 +58,9 @@ interface CompiledAPI<TSchema extends CompiledSchema> {
    * ```
    */
   cssMap<TStylesMap extends CSSMapStyles<TSchema>>(
-    // NOTE: This should match the generic `TStylesMap extends …` as we want this arg to strictly satisfy this type, not just extend it.
-    // The "extends" functionality is to infer and build the return type, this is to enforce the input type.
-    styles: CSSMapStyles<TSchema>
+    // We intersection type the generic both with the concrete type and the generic to ensure the output has the generic applied.
+    // Without both it would allow either the input to now have excess property check kick in, or have all values set as the output.
+    styles: CSSMapStyles<TSchema> & TStylesMap
   ): {
     readonly [P in keyof TStylesMap]: CompiledStyles<TStylesMap[P]>;
   };
