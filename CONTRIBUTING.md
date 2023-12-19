@@ -54,7 +54,7 @@ However, long term we want developers to write more like below. This is more sim
 
 ```javascript
 /** @jsx jsx */
-import { css } from '@compiled/react';
+import { css, jsx } from '@compiled/react';
 
 const myStyles = css({
   margin: 0,
