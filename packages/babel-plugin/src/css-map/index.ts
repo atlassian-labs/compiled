@@ -98,7 +98,7 @@ export const visitCssMapPath = (
         const { sheets, classNames } = transformCssItems(css, meta);
         totalSheets.push(...sheets);
 
-        if (classNames.length !== 1) {
+        if (classNames.length > 1) {
           throw buildCodeFrameError(
             createErrorMessage(ErrorMessages.STATIC_VARIANT_OBJECT),
             property,
@@ -106,7 +106,7 @@ export const visitCssMapPath = (
           );
         }
 
-        return t.objectProperty(property.key, classNames[0]);
+        return t.objectProperty(property.key, classNames[0] || t.stringLiteral(''));
       })
     )
   );
