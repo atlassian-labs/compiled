@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.27.1
+
+### Patch Changes
+
+- 39714ae3: cssMap() no longer throws an invariant if no styles were generated.
+
 ## 0.26.3
 
 ### Patch Changes
