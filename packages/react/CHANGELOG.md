@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.16.7
+
+### Patch Changes
+
+- 5dca5c51: Export `CSSPseudos, CSSProperties, StrictCSSProperties` types for a strict `XCSSProp` implementation.
+
 ## 0.16.6
 
 ### Patch Changes
