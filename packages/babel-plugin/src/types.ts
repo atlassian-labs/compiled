@@ -131,6 +131,9 @@ export interface State extends PluginPass {
   pragma: {
     jsx?: boolean;
     jsxImportSource?: boolean;
+
+    classicJsxPragmaIsCompiled?: boolean;
+    classicJsxPragmaLocalName?: string;
   };
 
   /**

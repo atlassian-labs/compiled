@@ -3,9 +3,9 @@ import { basename, resolve, join, dirname } from 'path';
 import { declare } from '@babel/helper-plugin-utils';
 import jsxSyntax from '@babel/plugin-syntax-jsx';
 import template from '@babel/template';
-import type { NodePath } from '@babel/traverse';
+import type { NodePath, Visitor } from '@babel/traverse';
 import * as t from '@babel/types';
-import { unique, preserveLeadingComments } from '@compiled/utils';
+import { unique, preserveLeadingComments, JSX_ANNOTATION_REGEX } from '@compiled/utils';
 
 import { visitClassNamesPath } from './class-names';
 import { visitCssMapPath } from './css-map';
@@ -29,10 +29,34 @@ import { visitXcssPropPath } from './xcss-prop';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
 const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
-const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
 const DEFAULT_IMPORT_SOURCE = '@compiled/react';
 
 let globalCache: Cache | undefined;
+
+const FindClassicJsxPragmaImport: Visitor<State> = {
+  ImportSpecifier(path, state) {
+    const specifier = path.node;
+
+    t.assertImportDeclaration(path.parent);
+    // We don't care about other libraries
+    if (path.parent.source.value !== '@compiled/react') return;
+
+    if (
+      (specifier.imported.type === 'StringLiteral' && specifier.imported.value === 'jsx') ||
+      (specifier.imported.type === 'Identifier' && specifier.imported.name === 'jsx')
+    ) {
+      // Hurrah, we know that the jsx function in the JSX pragma refers to the
+      // jsx function from Compiled.
+      state.pragma.classicJsxPragmaIsCompiled = true;
+      state.pragma.classicJsxPragmaLocalName = specifier.local.name;
+
+      // Remove the jsx import; the assumption is that we removed the classic JSX pragma, so
+      // Babel shouldn't convert React.createElement to the jsx function anymore.
+      path.remove();
+      return;
+    }
+  },
+};
 
 export default declare<State>((api) => {
   api.assertVersion(7);
@@ -87,25 +111,66 @@ export default declare<State>((api) => {
     },
     visitor: {
       Program: {
-        enter(_, state) {
+        enter(path, state) {
           const { file } = state;
+          let jsxComment: t.Comment | undefined;
 
-          if (file.ast.comments) {
-            for (const comment of file.ast.comments) {
-              const jsxSourceMatches = JSX_SOURCE_ANNOTATION_REGEX.exec(comment.value);
-              const jsxMatches = JSX_ANNOTATION_REGEX.exec(comment.value);
+          // Handle classic JSX pragma, if it exists
+          path.traverse<State>(FindClassicJsxPragmaImport, this);
 
-              // jsxPragmas currently only run on the top-level compiled module,
-              // hence we don't interrogate this.importSources.
-              if (jsxSourceMatches && jsxSourceMatches[1] === DEFAULT_IMPORT_SOURCE) {
-                // jsxImportSource pragma found - turn on CSS prop!
-                state.compiledImports = {};
-                state.pragma.jsxImportSource = true;
-              }
+          if (!file.ast.comments) {
+            return;
+          }
 
-              if (jsxMatches && jsxMatches[1] === 'jsx') {
-                state.pragma.jsx = true;
-              }
+          for (const comment of file.ast.comments) {
+            const jsxSourceMatches = JSX_SOURCE_ANNOTATION_REGEX.exec(comment.value);
+            const jsxMatches = JSX_ANNOTATION_REGEX.exec(comment.value);
+
+            // jsxPragmas currently only run on the top-level compiled module,
+            // hence we don't interrogate this.importSources.
+            if (jsxSourceMatches && jsxSourceMatches[1] === DEFAULT_IMPORT_SOURCE) {
+              // jsxImportSource pragma found - turn on CSS prop!
+              state.compiledImports = {};
+              state.pragma.jsxImportSource = true;
+            }
+
+            if (
+              jsxMatches &&
+              state.pragma.classicJsxPragmaIsCompiled &&
+              jsxMatches[1] === state.pragma.classicJsxPragmaLocalName
+            ) {
+              state.compiledImports = {};
+              state.pragma.jsx = true;
+              jsxComment = comment;
+            }
+          }
+
+          if (jsxComment) {
+            // Delete the /* @jsx jsx */ comment from the file, so that JSX
+            // elements don't get converted to jsx functions when using Compiled.
+            // This is to avoid having an import from a library that isn't
+            // `@compiled/react/runtime` or `@compiled/react/jsx-runtime` in
+            // the final output
+            // (i.e. `import { jsx } from '@compiled/react'`).
+            //
+            // Note that we don't currently bother trying to delete the
+            // /* @jsxImportSource @compiled/react */
+            // comments, because these get converted to imports from
+            // @compiled/react/jsx-runtime, which isn't ideal but not as bad.
+
+            // Hide the /* @jsx jsx */ comment from the
+            // @babel/plugin-transform-react-jsx plugin
+            file.ast.comments = file.ast.comments.filter((c: t.Comment) => c !== jsxComment);
+
+            // Hide the /* @jsx jsx */ comment from
+            // the Babel output.
+            //
+            // Note that Babel provides no way for us to traverse comments >:(
+            // So the best we can do is guess that the JSX pragma is probably at the start of the file.
+            if (path.node.body[0].leadingComments) {
+              path.node.body[0].leadingComments = path.node.body[0].leadingComments.filter(
+                (newComment) => newComment !== jsxComment
+              );
             }
           }
         },
@@ -114,18 +179,18 @@ export default declare<State>((api) => {
             return;
           }
 
-          const {
-            pragma,
-            opts: { importReact: shouldImportReact = true },
-          } = state;
+          const { pragma } = state;
+
+          // Always import React if the developer is using
+          // /** @jsx jsx */, because these will get converted
+          // to React.createElement function calls
+          const shouldImportReact = state.pragma.jsx || (state.opts.importReact ?? true);
 
           preserveLeadingComments(path);
 
           appendRuntimeImports(path, state);
 
-          const hasPragma = pragma.jsxImportSource || pragma.jsx;
-
-          if (!hasPragma && shouldImportReact && !path.scope.getBinding('React')) {
+          if (!pragma.jsxImportSource && shouldImportReact && !path.scope.getBinding('React')) {
             // React is missing - add it in at the last moment!
             path.unshiftContainer('body', template.ast(`import * as React from 'react'`));
           }
