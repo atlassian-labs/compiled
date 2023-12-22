@@ -5,6 +5,58 @@ import type { XCSSProp } from './__fixtures__/strict-api-recursive';
 import { css, cssMap } from './__fixtures__/strict-api-recursive';
 
 describe('createStrictAPI()', () => {
+  it('should mark all styles as optional in css()', () => {
+    const styles = css({
+      '&:hover': {},
+      '&:active': {},
+      '&::before': {},
+      '&::after': {},
+    });
+
+    const { getByTestId } = render(<div css={styles} data-testid="div" />);
+
+    expect(getByTestId('div')).toBeDefined();
+  });
+
+  it('should mark all styles as optional in cssMap()', () => {
+    const styles = cssMap({
+      nested: {
+        '&:hover': {},
+        '&:active': {},
+        '&::before': {},
+        '&::after': {},
+      },
+    });
+
+    const { getByTestId } = render(<div css={styles.nested} data-testid="div" />);
+
+    expect(getByTestId('div')).toBeDefined();
+  });
+
+  it('should mark all styles as optional in xcss prop', () => {
+    function Component({
+      xcss,
+    }: {
+      xcss: ReturnType<
+        typeof XCSSProp<
+          'backgroundColor' | 'color',
+          '&:hover' | '&:active' | '&::before' | '&::after'
+        >
+      >;
+    }) {
+      return <div data-testid="div" className={xcss} />;
+    }
+
+    const { getByTestId } = render(
+      <Component
+        xcss={{ '&:hover': {}, '&:active': {}, '&::before': {}, '&::after': {} }}
+        data-testid="div"
+      />
+    );
+
+    expect(getByTestId('div')).toBeDefined();
+  });
+
   describe('type violations', () => {
     it('should violate types for css()', () => {
       const styles = css({
