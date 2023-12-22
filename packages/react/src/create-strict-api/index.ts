@@ -6,11 +6,11 @@ type PseudosDeclarations = {
   [Q in CSSPseudos]?: StrictCSSProperties;
 };
 
-type EnforceSchema<TObject> = {
-  [P in keyof TObject]?: P extends keyof CompiledSchema
-    ? TObject[P] extends Record<string, unknown>
-      ? EnforceSchema<TObject[P]>
-      : TObject[P]
+type EnforceSchema<TSchema> = {
+  [P in keyof TSchema]?: P extends keyof CompiledSchema
+    ? TSchema[P] extends Record<string, any>
+      ? EnforceSchema<TSchema[P]>
+      : TSchema[P]
     : never;
 };
 
