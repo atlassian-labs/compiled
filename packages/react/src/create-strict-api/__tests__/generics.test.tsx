@@ -1,0 +1,235 @@
+/** @jsxImportSource @compiled/react */
+import { render } from '@testing-library/react';
+
+import type { XCSSProp } from './__fixtures__/strict-api-recursive';
+import { css, cssMap } from './__fixtures__/strict-api-recursive';
+
+describe('createStrictAPI()', () => {
+  describe('type violations', () => {
+    it('should violate types for css()', () => {
+      const styles = css({
+        // @ts-expect-error — Type '""' is not assignable to type ...
+        color: '',
+        // @ts-expect-error — Type '""' is not assignable to type ...
+        backgroundColor: '',
+        '&:hover': {
+          // @ts-expect-error — Type '""' is not assignable to type ...
+          color: '',
+          // @ts-expect-error — Type '""' is not assignable to type ...
+          backgroundColor: '',
+        },
+        '&:active': {
+          // @ts-expect-error — Type '""' is not assignable to type ...
+          color: '',
+          // @ts-expect-error — Type '""' is not assignable to type ...
+          backgroundColor: '',
+        },
+        '&::before': {
+          // @ts-expect-error — Type '""' is not assignable to type ...
+          color: '',
+          // @ts-expect-error — Type '""' is not assignable to type ...
+          backgroundColor: '',
+        },
+        '&::after': {
+          // @ts-expect-error — Type '""' is not assignable to type ...
+          color: '',
+          // @ts-expect-error — Type '""' is not assignable to type ...
+          backgroundColor: '',
+        },
+      });
+
+      const { getByTestId } = render(<div css={styles} data-testid="div" />);
+
+      expect(getByTestId('div')).toBeDefined();
+    });
+
+    it('should violate types for cssMap()', () => {
+      const styles = cssMap({
+        primary: {
+          // @ts-expect-error — Type '""' is not assignable to type ...
+          color: 's',
+          // @ts-expect-error — Type '""' is not assignable to type ...
+          backgroundColor: '',
+          '&:hover': {
+            // @ts-expect-error — Type '""' is not assignable to type ...
+            color: '',
+            // @ts-expect-error — Type '""' is not assignable to type ...
+            backgroundColor: '',
+          },
+          '&:active': {
+            // @ts-expect-error — Type '""' is not assignable to type ...
+            color: '',
+            // @ts-expect-error — Type '""' is not assignable to type ...
+            backgroundColor: '',
+          },
+          '&::before': {
+            // @ts-expect-error — Type '""' is not assignable to type ...
+            color: '',
+            // @ts-expect-error — Type '""' is not assignable to type ...
+            backgroundColor: '',
+          },
+          '&::after': {
+            // @ts-expect-error — Type '""' is not assignable to type ...
+            color: '',
+            // @ts-expect-error — Type '""' is not assignable to type ...
+            backgroundColor: '',
+          },
+        },
+      });
+
+      const { getByTestId } = render(<div css={styles.primary} data-testid="div" />);
+
+      expect(getByTestId('div')).toBeDefined();
+    });
+
+    it('should violate types for xcss prop', () => {
+      function Component(_: {
+        xcss: ReturnType<
+          typeof XCSSProp<
+            'backgroundColor' | 'color',
+            '&:hover' | '&:active' | '&::before' | '&::after'
+          >
+        >;
+      }) {
+        return <div data-testid="div" />;
+      }
+
+      const { getByTestId } = render(
+        <Component
+          xcss={{
+            // @ts-expect-error — Type '""' is not assignable to type ...
+            color: '',
+            // @ts-expect-error — Type '""' is not assignable to type ...
+            backgroundColor: '',
+            '&:hover': {
+              // @ts-expect-error — Type '""' is not assignable to type ...
+              color: '',
+              // @ts-expect-error — Type '""' is not assignable to type ...
+              backgroundColor: '',
+            },
+            '&:active': {
+              // @ts-expect-error — Type '""' is not assignable to type ...
+              color: '',
+              // @ts-expect-error — Type '""' is not assignable to type ...
+              backgroundColor: '',
+            },
+            '&::before': {
+              // @ts-expect-error — Type '""' is not assignable to type ...
+              color: '',
+              // @ts-expect-error — Type '""' is not assignable to type ...
+              backgroundColor: '',
+            },
+            '&::after': {
+              // @ts-expect-error — Type '""' is not assignable to type ...
+              color: '',
+              // @ts-expect-error — Type '""' is not assignable to type ...
+              backgroundColor: '',
+            },
+          }}
+        />
+      );
+
+      expect(getByTestId('div')).toBeDefined();
+    });
+  });
+
+  describe('type success', () => {
+    it('should pass type check for css()', () => {
+      const styles = css({
+        color: 'var(--ds-text)',
+        backgroundColor: 'var(--ds-bold)',
+        '&:hover': {
+          color: 'var(--ds-text-hovered)',
+          backgroundColor: 'var(--ds-bold-hovered)',
+        },
+        '&:active': {
+          color: 'var(--ds-text-pressed)',
+          backgroundColor: 'var(--ds-bold-pressed)',
+        },
+        '&::before': {
+          color: 'var(--ds-text)',
+          backgroundColor: 'var(--ds-bold)',
+        },
+        '&::after': {
+          color: 'var(--ds-text)',
+          backgroundColor: 'var(--ds-bold)',
+        },
+      });
+
+      const { getByTestId } = render(<div css={styles} data-testid="div" />);
+
+      expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
+    });
+
+    it('should pass type check for cssMap()', () => {
+      const styles = cssMap({
+        primary: {
+          color: 'var(--ds-text)',
+          backgroundColor: 'var(--ds-bold)',
+          '&:hover': {
+            color: 'var(--ds-text-hovered)',
+            backgroundColor: 'var(--ds-bold-hovered)',
+          },
+          '&:active': {
+            color: 'var(--ds-text-pressed)',
+            backgroundColor: 'var(--ds-bold-pressed)',
+          },
+          '&::before': {
+            color: 'var(--ds-text)',
+            backgroundColor: 'var(--ds-bold)',
+          },
+          '&::after': {
+            color: 'var(--ds-text)',
+            backgroundColor: 'var(--ds-bold)',
+          },
+        },
+      });
+
+      const { getByTestId } = render(<div css={styles.primary} data-testid="div" />);
+
+      expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
+    });
+
+    it('should pass type check for xcss prop', () => {
+      function Component({
+        xcss,
+      }: {
+        xcss: ReturnType<
+          typeof XCSSProp<
+            'backgroundColor' | 'color',
+            '&:hover' | '&:active' | '&::before' | '&::after'
+          >
+        >;
+      }) {
+        return <div data-testid="div" className={xcss} />;
+      }
+
+      const { getByTestId } = render(
+        <Component
+          xcss={{
+            color: 'var(--ds-text)',
+            backgroundColor: 'var(--ds-bold)',
+            '&:hover': {
+              color: 'var(--ds-text-hovered)',
+              backgroundColor: 'var(--ds-bold-hovered)',
+            },
+            '&:active': {
+              color: 'var(--ds-text-pressed)',
+              backgroundColor: 'var(--ds-bold-pressed)',
+            },
+            '&::before': {
+              color: 'var(--ds-text)',
+              backgroundColor: 'var(--ds-bold)',
+            },
+            '&::after': {
+              color: 'var(--ds-text)',
+              backgroundColor: 'var(--ds-bold)',
+            },
+          }}
+        />
+      );
+
+      expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
+    });
+  });
+});

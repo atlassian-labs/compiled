@@ -14,10 +14,6 @@ type EnforceSchema<TObject> = {
     : never;
 };
 
-type PickObjects<TObject> = {
-  [P in keyof TObject]: TObject[P] extends Record<string, unknown> ? TObject[P] : never;
-};
-
 type CSSStyles<TSchema extends CompiledSchema> = StrictCSSProperties &
   PseudosDeclarations &
   EnforceSchema<TSchema>;
@@ -150,13 +146,7 @@ interface CompiledAPI<TSchema extends CompiledSchema> {
       requiredProperties: TAllowedProperties;
       requiredPseudos: TAllowedPseudos;
     } = never
-  >(): Internal$XCSSProp<
-    TAllowedProperties,
-    TAllowedPseudos,
-    TSchema,
-    PickObjects<TSchema>,
-    TRequiredProperties
-  >;
+  >(): Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, TSchema, TRequiredProperties>;
 }
 
 type CompiledSchema = StrictCSSProperties & PseudosDeclarations;
