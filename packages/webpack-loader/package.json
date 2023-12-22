@@ -1,6 +1,6 @@
 {
   "name": "@compiled/webpack-loader",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-webpack-loader",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -22,7 +22,7 @@
   "dependencies": {
     "@babel/core": "^7.21.8",
     "@babel/parser": "^7.21.8",
-    "@compiled/babel-plugin": "^0.26.0",
+    "@compiled/babel-plugin": "^0.27.1",
     "@compiled/babel-plugin-strip-runtime": "^0.27.0",
     "@compiled/css": "^0.12.1",
     "@compiled/utils": "^0.9.2",
@@ -31,7 +31,7 @@
     "webpack-sources": "^3.2.3"
   },
   "devDependencies": {
-    "@compiled/react": "^0.16.5",
+    "@compiled/react": "^0.16.8",
     "babel-loader": "^9.1.2",
     "css-loader": "^6.7.3",
     "memfs": "^3.5.3",

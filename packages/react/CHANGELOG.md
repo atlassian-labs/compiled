@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.16.8
+
+### Patch Changes
+
+- 39714ae3: Fix nested types being forcibly required.
+
 ## 0.16.7
 
 ### Patch Changes
