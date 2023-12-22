@@ -1,16 +1,21 @@
 import { createElement } from 'react';
 
 import type { CompiledJSX } from './jsx/jsx-local-namespace';
-import type { CssFunction, CSSProps, CssType } from './types';
 
-export type { CSSProps, CssFunction, CssType };
-
-export { keyframes } from './keyframes';
-export { styled } from './styled';
 export { ClassNames } from './class-names';
+export { createStrictAPI } from './create-strict-api';
 export { default as css } from './css';
 export { default as cssMap } from './css-map';
-export { createStrictAPI } from './create-strict-api';
+export { keyframes } from './keyframes';
+export { styled } from './styled';
+export type {
+  CSSProperties,
+  CSSProps,
+  CSSPseudos,
+  CssFunction,
+  CssType,
+  StrictCSSProperties,
+} from './types';
 export { type XCSSAllProperties, type XCSSAllPseudos, type XCSSProp, cx } from './xcss-prop';
 
 // Pass through the (classic) jsx runtime.

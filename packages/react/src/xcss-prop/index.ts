@@ -1,7 +1,7 @@
 import type * as CSS from 'csstype';
 
 import { ac } from '../runtime';
-import type { CSSPseudos, CSSProperties } from '../types';
+import type { CSSPseudos, CSSProperties, StrictCSSProperties } from '../types';
 
 type MarkAsRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
@@ -64,7 +64,7 @@ export type CompiledStyles<TObject> = {
  * Use in conjunction with {@link XCSSProp} to allow all properties to be given to
  * your component.
  */
-export type XCSSAllProperties = keyof CSSProperties;
+export type XCSSAllProperties = keyof StrictCSSProperties;
 
 /**
  * Please think twice before using this type, you're better off declaring explicitly
