@@ -134,6 +134,7 @@ export default declare<State>((api) => {
               // jsxImportSource pragma found - turn on CSS prop!
               state.compiledImports = {};
               state.pragma.jsxImportSource = true;
+              jsxComment = comment;
             }
 
             if (
@@ -148,23 +149,20 @@ export default declare<State>((api) => {
           }
 
           if (jsxComment) {
-            // Delete the /* @jsx jsx */ comment from the file, so that JSX
+            // Delete the JSX pragma from the file, so that JSX
             // elements don't get converted to jsx functions when using Compiled.
             // This is to avoid having an import from a library that isn't
-            // `@compiled/react/runtime` or `@compiled/react/jsx-runtime` in
-            // the final output
-            // (i.e. `import { jsx } from '@compiled/react'`).
+            // `@compiled/react/runtime` in the final output:
             //
-            // Note that we don't currently bother trying to delete the
-            // /* @jsxImportSource @compiled/react */
-            // comments, because these get converted to imports from
-            // @compiled/react/jsx-runtime, which isn't ideal but not as bad.
+            //     import { jsx } from '@compiled/react'
+            //     import { jsx as _jsx } from '@compiled/react/jsx-runtime';
+            //     import { jsxs as _jsxs } from '@compiled/react/jsx-runtime';
 
-            // Hide the /* @jsx jsx */ comment from the
+            // Hide the JSX pragma from the
             // @babel/plugin-transform-react-jsx plugin
             file.ast.comments = file.ast.comments.filter((c: t.Comment) => c !== jsxComment);
 
-            // Hide the /* @jsx jsx */ comment from
+            // Remove the JSX pragma comment from
             // the Babel output.
             //
             // Note that Babel provides no way for us to traverse comments >:(
@@ -292,9 +290,11 @@ export default declare<State>((api) => {
       ) {
         if (isJsx(path, state)) {
           throw buildCodeFrameError(
-            `Found a Compiled \`jsx\` function call in the Babel output where one should not have been generated. Was Compiled was not set up correctly?
+            `Found a \`jsx\` function call in the Babel output where one should not have been generated. Was Compiled was not set up correctly?
 
-This can happen if you specify both \`runtime: classic\` and \`pragma: 'jsx'\` in your Babel configuration - please use the /** @jsx jsx */ syntax instead, or switch to \`runtime: automatic\`.
+Reasons this might happen:
+* Importing \`jsx\` from a library other than Compiled CSS-in-JS - please only import from \`@compiled/react\`.
+* Both \`runtime: classic\` and \`pragma: 'jsx'\` were specified in your Babel configuration - please use the /** @jsx jsx */ syntax instead, or switch to \`runtime: automatic\`.
 
 See https://compiledcssinjs.com/docs/installation for how to set up the Compiled Babel plugin.`,
             // Use parent node to get rid of the
