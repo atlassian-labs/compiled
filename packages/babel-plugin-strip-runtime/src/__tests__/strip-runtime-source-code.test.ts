@@ -24,6 +24,7 @@ const transformSync = (
     run: 'both' | 'bake' | 'extract';
     runtime: 'automatic' | 'classic';
     extractStylesToDirectory?: { source: string; dest: string };
+    babelJSXPragma?: string;
   }
 ): BabelFileResult | null => {
   const { styleSheetPath, compiledRequireExclude, run, runtime, extractStylesToDirectory } = opts;
@@ -50,7 +51,15 @@ const transformSync = (
           ]
         : []),
     ],
-    presets: [['@babel/preset-react', { runtime }]],
+    presets: [
+      [
+        '@babel/preset-react',
+        {
+          runtime,
+          ...(opts.babelJSXPragma ? { pragma: opts.babelJSXPragma } : {}),
+        },
+      ],
+    ],
   });
 };
 
@@ -62,6 +71,7 @@ const transform = (
     run: 'both' | 'bake' | 'extract';
     runtime: 'automatic' | 'classic';
     extractStylesToDirectory?: { source: string; dest: string };
+    babelJSXPragma?: string;
   }
 ): string => {
   const fileResult = transformSync(c, opts);
@@ -343,7 +353,113 @@ describe('babel-plugin-strip-runtime using source code', () => {
         `);
       });
 
+      it('throws if pragma is set in babel config', () => {
+        const codeWithPragma = `
+          /** @jsx jsx */
+          import { css, jsx } from '@compiled/react';
+
+          const Component = () => (
+            <div css={{ fontSize: 12, color: 'blue' }}>
+              hello world 2
+            </div>
+          );
+
+          const Component2 = () => (
+            <div css={css({ fontSize: 12, color: 'pink' })}>
+              hello world 2
+            </div>
+          );
+        `;
+
+        expect(() =>
+          transform(codeWithPragma, {
+            run: 'both',
+            runtime: 'classic',
+            babelJSXPragma: 'jsx',
+          })
+        ).toThrow();
+      });
+
+      it('throws if pragma is set in babel config (custom import)', () => {
+        const codeWithPragma = `
+          /** @jsx myJsx */
+          import { css, jsx as myJsx } from '@compiled/react';
+
+          const Component = () => (
+            <div css={{ fontSize: 12, color: 'blue' }}>
+              hello world 2
+            </div>
+          );
+
+          const Component2 = () => (
+            <div css={css({ fontSize: 12, color: 'pink' })}>
+              hello world 2
+            </div>
+          );
+        `;
+
+        expect(() =>
+          transform(codeWithPragma, {
+            run: 'both',
+            runtime: 'classic',
+            babelJSXPragma: 'myJsx',
+          })
+        ).toThrow();
+      });
+
       it("doesn't do anything to emotion's classic jsx pragma", () => {
+        const codeWithPragma = `
+          /** @jsx jsx */
+          import { css, jsx } from '@emotion/react';
+
+          const Component = () => (
+            <div css={{ fontSize: 12, color: 'blue' }}>
+              hello world 2
+            </div>
+          );
+
+          const Component2 = () => (
+            <div css={css({ fontSize: 12, color: 'pink' })}>
+              hello world 2
+            </div>
+          );
+        `;
+
+        const actual = transform(codeWithPragma, {
+          run: 'both',
+          runtime: 'classic',
+        });
+
+        expect(actual).toMatchInlineSnapshot(`
+          "/** @jsx jsx */
+          import { css, jsx } from '@emotion/react';
+          const Component = () =>
+            jsx(
+              'div',
+              {
+                css: {
+                  fontSize: 12,
+                  color: 'blue',
+                },
+              },
+              'hello world 2'
+            );
+          const Component2 = () =>
+            jsx(
+              'div',
+              {
+                css: css({
+                  fontSize: 12,
+                  color: 'pink',
+                }),
+              },
+              'hello world 2'
+            );
+          "
+        `);
+      });
+
+      it("doesn't do anything to emotion's classic jsx pragma (custom import)", () => {
         const codeWithPragma = `
           /** @jsx myJsx */
           import { css, jsx as myJsx } from '@emotion/react';
