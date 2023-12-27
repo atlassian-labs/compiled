@@ -13,6 +13,7 @@ import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
 import type { State } from './types';
 import { appendRuntimeImports } from './utils/append-runtime-imports';
+import { buildCodeFrameError } from './utils/ast';
 import { Cache } from './utils/cache';
 import {
   isCompiledCSSCallExpression,
@@ -23,6 +24,7 @@ import {
   isCompiledStyledTaggedTemplateExpression,
   isCompiledCSSMapCallExpression,
 } from './utils/is-compiled';
+import { isJsx } from './utils/is-jsx-function';
 import { normalizePropsUsage } from './utils/normalize-props-usage';
 import { visitXcssPropPath } from './xcss-prop';
 
@@ -288,6 +290,20 @@ export default declare<State>((api) => {
         path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
         state: State
       ) {
+        if (isJsx(path, state)) {
+          throw buildCodeFrameError(
+            `Found a Compiled \`jsx\` function call in the Babel output where one should not have been generated. Was Compiled was not set up correctly?
+
+This can happen if you specify both \`runtime: classic\` and \`pragma: 'jsx'\` in your Babel configuration - please use the /** @jsx jsx */ syntax instead, or switch to \`runtime: automatic\`.
+
+See https://compiledcssinjs.com/docs/installation for how to set up the Compiled Babel plugin.`,
+            // Use parent node to get rid of the
+            // "This is an error on an internal node." warning in the
+            // error output
+            path.parentPath.node,
+            path.parentPath
+          );
+        }
         if (isCompiledCSSMapCallExpression(path.node, state)) {
           visitCssMapPath(path, { context: 'root', state, parentPath: path });
           return;
