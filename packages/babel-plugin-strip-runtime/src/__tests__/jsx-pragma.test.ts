@@ -11,422 +11,360 @@ import { transform } from './transform';
 //     https://babeljs.io/docs/babel-plugin-transform-react-jsx
 //     and https://babeljs.io/docs/babel-preset-react)
 
-describe('TODO', () => {
-  it('TODO', () => {
-    throw new Error('These snapshot tests are too vague - change these to be more specific in what they are testing');
+describe('Compiled setup with classic runtime', () => {
+  describe('with JSX pragma', () => {
+    describe('if only Compiled is used in file', () => {
+      it('converts JSX elements to React.createElement', () => {
+        const code = `
+        /** @jsx jsx */
+        import { css, jsx } from '@compiled/react';
+
+        const Component = () => (
+          <div css={{ fontSize: 12, color: 'blue' }}>
+            hello world 2
+          </div>
+        );
+
+        const Component2 = () => (
+          <div css={css({ fontSize: 12, color: 'pink' })}>
+            hello world 2
+          </div>
+        );
+      `;
+
+        const codeWithRenamedImport = `
+        /** @jsx myJsx */
+        import { css, jsx as myJsx } from '@compiled/react';
+
+        const Component = () => (
+          <div css={{ fontSize: 12, color: 'blue' }}>
+            hello world 2
+          </div>
+        );
+
+        const Component2 = () => (
+          <div css={css({ fontSize: 12, color: 'pink' })}>
+            hello world 2
+          </div>
+        );
+      `;
+
+        for (const c of [code, codeWithRenamedImport]) {
+          const actual = transform(c, {
+            run: 'both',
+            runtime: 'classic',
+          });
+
+          expect(actual).toContain("import * as React from 'react';");
+          // All components should look like this:
+          //     const Component = () => /*#__PURE__*/ React.createElement(...)
+          expect(actual).toMatch(
+            /Component = \(\) =>\n(\s)*\/\*#__PURE__\*\/ React.createElement/m
+          );
+          expect(actual).toMatch(
+            /Component2 = \(\) =>\n(\s)*\/\*#__PURE__\*\/ React.createElement/m
+          );
+          // All traces of JSX pragma or JSX imports are removed
+          expect(actual).not.toContain('jsx');
+        }
+      });
+    });
+
+    describe('if only Emotion is used in file', () => {
+      it('does not process file', () => {
+        const code = `
+          /** @jsx jsx */
+          import { css, jsx } from '@emotion/react';
+
+          const Component = () => (
+            <div css={{ fontSize: 12, color: 'blue' }}>
+              hello world 2
+            </div>
+          );
+
+          const Component2 = () => (
+            <div css={css({ fontSize: 12, color: 'pink' })}>
+              hello world 2
+            </div>
+          );
+        `;
+
+        const actual = transform(code, {
+          run: 'both',
+          runtime: 'classic',
+        });
+
+        expect(actual).toMatchInlineSnapshot(`
+          "/** @jsx jsx */
+          import { css, jsx } from '@emotion/react';
+          const Component = () =>
+            jsx(
+              'div',
+              {
+                css: {
+                  fontSize: 12,
+                  color: 'blue',
+                },
+              },
+              'hello world 2'
+            );
+          const Component2 = () =>
+            jsx(
+              'div',
+              {
+                css: css({
+                  fontSize: 12,
+                  color: 'pink',
+                }),
+              },
+              'hello world 2'
+            );
+          "
+        `);
+      });
+
+      it('does not process file (alt.)', () => {
+        // Uses renamed import `myJsx`
+        const code = `
+          /** @jsx myJsx */
+          import { css, jsx as myJsx } from '@emotion/react';
+
+          const Component = () => (
+            <div css={{ fontSize: 12, color: 'blue' }}>
+              hello world 2
+            </div>
+          );
+
+          const Component2 = () => (
+            <div css={css({ fontSize: 12, color: 'pink' })}>
+              hello world 2
+            </div>
+          );
+        `;
+
+        const actual = transform(code, {
+          run: 'both',
+          runtime: 'classic',
+        });
+
+        expect(actual).toMatchInlineSnapshot(`
+          "/** @jsx myJsx */
+          import { css, jsx as myJsx } from '@emotion/react';
+          const Component = () =>
+            myJsx(
+              'div',
+              {
+                css: {
+                  fontSize: 12,
+                  color: 'blue',
+                },
+              },
+              'hello world 2'
+            );
+          const Component2 = () =>
+            myJsx(
+              'div',
+              {
+                css: css({
+                  fontSize: 12,
+                  color: 'pink',
+                }),
+              },
+              'hello world 2'
+            );
+          "
+        `);
+      });
+    });
+
+    describe('if both Compiled and Emotion are used in file', () => {
+      it('throws error', () => {
+        const code = `
+          /** @jsx jsx */
+          import { css } from '@compiled/react';
+          import { jsx } from '@emotion/react';
+
+          const Component = () => (
+            <div css={{ fontSize: 12, color: 'blue' }}>
+              hello world 2
+            </div>
+          );
+
+          const Component2 = () => (
+            <div css={css({ fontSize: 12, color: 'pink' })}>
+              hello world 2
+            </div>
+          );
+        `;
+
+        expect(() =>
+          transform(code, {
+            run: 'both',
+            runtime: 'classic',
+          })
+        ).toThrow(/Found a `jsx` function call/);
+      });
+    });
+  });
+
+  describe('without JSX pragma', () => {
+    it('throws error if pragma is set in babel config', () => {
+      const code = `
+        /** @jsx jsx */
+        import { css, jsx } from '@compiled/react';
+
+        const Component = () => (
+          <div css={{ fontSize: 12, color: 'blue' }}>
+            hello world 2
+          </div>
+        );
+
+        const Component2 = () => (
+          <div css={css({ fontSize: 12, color: 'pink' })}>
+            hello world 2
+          </div>
+        );
+      `;
+
+      const codeWithRenamedImport = `
+        /** @jsx myJsx */
+        import { css, jsx as myJsx } from '@compiled/react';
+
+        const Component = () => (
+          <div css={{ fontSize: 12, color: 'blue' }}>
+            hello world 2
+          </div>
+        );
+
+        const Component2 = () => (
+          <div css={css({ fontSize: 12, color: 'pink' })}>
+            hello world 2
+          </div>
+        );
+      `;
+
+      for (const c of [code, codeWithRenamedImport]) {
+        expect(() =>
+          transform(c, {
+            run: 'both',
+            runtime: 'classic',
+            babelJSXPragma: 'jsx',
+          })
+        ).toThrow(/Found a `jsx` function call/);
+      }
+    });
   });
 });
 
-describe('should work with classic runtime + jsx pragma', () => {
-  it('works with classic runtime + jsx pragma', () => {
-    const codeWithPragma = `
-      /** @jsx jsx */
-      import { css, jsx } from '@compiled/react';
+describe('Compiled setup with automatic runtime', () => {
+  describe('with JSX pragma', () => {
+    describe('if Compiled is used in file', () => {
+      it('imports JSX runtime from React, not Compiled', () => {
+        const code = `
+          /** @jsxImportSource @compiled/react */
+          import { css } from '@compiled/react';
 
-      const Component = () => (
-        <div css={{ fontSize: 12, color: 'blue' }}>
-          hello world 2
-        </div>
-      );
+          const Component = () => (
+            <div css={{ fontSize: 12, color: 'blue' }}>
+              hello world 2
+            </div>
+          );
 
-      const Component2 = () => (
-        <div css={css({ fontSize: 12, color: 'pink' })}>
-          hello world 2
-        </div>
-      );
-    `;
+          const Component2 = () => (
+            <div css={css({ fontSize: 12, color: 'pink' })}>
+              hello world 2
+            </div>
+          );
+        `;
 
-    const actual = transform(codeWithPragma, {
-      run: 'both',
-      runtime: 'classic',
+        const actual = transform(code, {
+          run: 'both',
+          runtime: 'automatic',
+        });
+
+        expect(actual).toContain("import { jsx as _jsx } from 'react/jsx-runtime';");
+        // jsx function calls from React have "PURE" comments
+        // added beforehand from @babel/preset-react. This helps
+        // with tree-shaking by Webpack or Parcel
+        expect(actual).toContain('/*#__PURE__*/ _jsx');
+
+        expect(actual).not.toContain(
+          "import { jsxs as _jsxs } from '@compiled/react/jsx-runtime';"
+        );
+        expect(actual).not.toContain("import { jsx as _jsx } from '@compiled/react/jsx-runtime';");
+      });
     });
 
-    expect(actual).toMatchInlineSnapshot(`
-      "/* app.tsx generated by @compiled/babel-plugin v0.0.0 */
-      import * as React from 'react';
-      import { ax, ix } from '@compiled/react/runtime';
-      const Component = () =>
-        /*#__PURE__*/ React.createElement(
-          'div',
-          {
-            className: ax(['_1wyb1fwx _syaz13q2']),
-          },
-          'hello world 2'
+    describe('if Emotion is used in file', () => {
+      it('does not process file', () => {
+        const code = `
+          /** @jsxImportSource @emotion/react */
+          import { css } from '@emotion/react';
+
+          const Component = () => (
+            <div css={{ fontSize: 12, color: 'blue' }}>
+              hello world 2
+            </div>
+          );
+
+          const Component2 = () => (
+            <div css={css({ fontSize: 12, color: 'pink' })}>
+              hello world 2
+            </div>
+          );
+        `;
+
+        const actual = transform(code, {
+          run: 'both',
+          runtime: 'automatic',
+        });
+
+        expect(actual).toContain("import { jsx as _jsx } from '@emotion/react/jsx-runtime';");
+
+        expect(actual).not.toContain(
+          "import { jsxs as _jsxs } from '@compiled/react/jsx-runtime';"
         );
-      const Component2 = () =>
-        /*#__PURE__*/ React.createElement(
-          'div',
-          {
-            className: ax(['_1wyb1fwx _syaz32ev']),
-          },
-          'hello world 2'
-        );
-      "
-    `);
-  });
+        expect(actual).not.toContain("import { jsx as _jsx } from '@compiled/react/jsx-runtime';");
 
-  it('works with classic runtime + jsx pragma (custom import)', () => {
-    const codeWithPragma = `
-      /** @jsx myJsx */
-      import { css, jsx as myJsx } from '@compiled/react';
-
-      const Component = () => (
-        <div css={{ fontSize: 12, color: 'blue' }}>
-          hello world 2
-        </div>
-      );
-
-      const Component2 = () => (
-        <div css={css({ fontSize: 12, color: 'pink' })}>
-          hello world 2
-        </div>
-      );
-    `;
-
-    const actual = transform(codeWithPragma, {
-      run: 'both',
-      runtime: 'classic',
+        // If any of the below statements are present, that means we accidentally
+        // got rid of the /** @jsxImportSource @emotion/react */ and the default React
+        // JSX runtime is being used instead of Emotion -- whoops!
+        expect(actual).not.toContain("import { jsxs as _jsxs } from 'react/jsx-runtime';");
+        expect(actual).not.toContain("import { jsx as _jsx } from 'react/jsx-runtime';");
+        expect(actual).not.toContain('/*#__PURE__*/ _jsx');
+      });
     });
-
-    expect(actual).toMatchInlineSnapshot(`
-      "/* app.tsx generated by @compiled/babel-plugin v0.0.0 */
-      import * as React from 'react';
-      import { ax, ix } from '@compiled/react/runtime';
-      const Component = () =>
-        /*#__PURE__*/ React.createElement(
-          'div',
-          {
-            className: ax(['_1wyb1fwx _syaz13q2']),
-          },
-          'hello world 2'
-        );
-      const Component2 = () =>
-        /*#__PURE__*/ React.createElement(
-          'div',
-          {
-            className: ax(['_1wyb1fwx _syaz32ev']),
-          },
-          'hello world 2'
-        );
-      "
-    `);
   });
 
-  it('throws if runtime is classic, and pragma is set in babel config', () => {
-    const codeWithPragma = `
-      /** @jsx jsx */
-      import { css, jsx } from '@compiled/react';
+  describe('without JSX pragma', () => {
+    it('imports JSX from Compiled if pragma is set in babel config', () => {
+      const code = `
+        import { css, jsx } from '@compiled/react';
 
-      const Component = () => (
-        <div css={{ fontSize: 12, color: 'blue' }}>
-          hello world 2
-        </div>
-      );
+        const Component = () => (
+          <div css={{ fontSize: 12, color: 'blue' }}>
+            hello world 2
+          </div>
+        );
 
-      const Component2 = () => (
-        <div css={css({ fontSize: 12, color: 'pink' })}>
-          hello world 2
-        </div>
-      );
-    `;
+        const Component2 = () => (
+          <div css={css({ fontSize: 12, color: 'pink' })}>
+            hello world 2
+          </div>
+        );
+      `;
 
-    expect(() =>
-      transform(codeWithPragma, {
+      const actual = transform(code, {
         run: 'both',
-        runtime: 'classic',
-        babelJSXPragma: 'jsx',
-      })
-    ).toThrow();
-  });
+        runtime: 'automatic',
+        babelJSXImportSource: '@compiled/react',
+      });
 
-  it('throws if runtime is classic, and pragma is set in babel config (custom import)', () => {
-    const codeWithPragma = `
-      /** @jsx myJsx */
-      import { css, jsx as myJsx } from '@compiled/react';
+      expect(actual).toContain("import { jsxs as _jsxs } from '@compiled/react/jsx-runtime';");
+      expect(actual).toContain("import { jsx as _jsx } from '@compiled/react/jsx-runtime';");
 
-      const Component = () => (
-        <div css={{ fontSize: 12, color: 'blue' }}>
-          hello world 2
-        </div>
-      );
-
-      const Component2 = () => (
-        <div css={css({ fontSize: 12, color: 'pink' })}>
-          hello world 2
-        </div>
-      );
-    `;
-
-    expect(() =>
-      transform(codeWithPragma, {
-        run: 'both',
-        runtime: 'classic',
-        babelJSXPragma: 'myJsx',
-      })
-    ).toThrow();
-  });
-
-  it("doesn't do anything to emotion's jsx pragma with classic runtime", () => {
-    const codeWithPragma = `
-      /** @jsx jsx */
-      import { css, jsx } from '@emotion/react';
-
-      const Component = () => (
-        <div css={{ fontSize: 12, color: 'blue' }}>
-          hello world 2
-        </div>
-      );
-
-      const Component2 = () => (
-        <div css={css({ fontSize: 12, color: 'pink' })}>
-          hello world 2
-        </div>
-      );
-    `;
-
-    const actual = transform(codeWithPragma, {
-      run: 'both',
-      runtime: 'classic',
+      expect(actual).not.toContain("import { jsxs as _jsxs } from 'react/jsx-runtime';");
+      expect(actual).not.toContain("import { jsx as _jsx } from 'react/jsx-runtime';");
     });
-
-    expect(actual).toMatchInlineSnapshot(`
-      "/** @jsx jsx */
-      import { css, jsx } from '@emotion/react';
-      const Component = () =>
-        jsx(
-          'div',
-          {
-            css: {
-              fontSize: 12,
-              color: 'blue',
-            },
-          },
-          'hello world 2'
-        );
-      const Component2 = () =>
-        jsx(
-          'div',
-          {
-            css: css({
-              fontSize: 12,
-              color: 'pink',
-            }),
-          },
-          'hello world 2'
-        );
-      "
-    `);
-  });
-
-  it("doesn't do anything to emotion's jsx pragma with classic runtime (custom import)", () => {
-    const codeWithPragma = `
-      /** @jsx myJsx */
-      import { css, jsx as myJsx } from '@emotion/react';
-
-      const Component = () => (
-        <div css={{ fontSize: 12, color: 'blue' }}>
-          hello world 2
-        </div>
-      );
-
-      const Component2 = () => (
-        <div css={css({ fontSize: 12, color: 'pink' })}>
-          hello world 2
-        </div>
-      );
-    `;
-
-    const actual = transform(codeWithPragma, {
-      run: 'both',
-      runtime: 'classic',
-    });
-
-    expect(actual).toMatchInlineSnapshot(`
-      "/** @jsx myJsx */
-      import { css, jsx as myJsx } from '@emotion/react';
-      const Component = () =>
-        myJsx(
-          'div',
-          {
-            css: {
-              fontSize: 12,
-              color: 'blue',
-            },
-          },
-          'hello world 2'
-        );
-      const Component2 = () =>
-        myJsx(
-          'div',
-          {
-            css: css({
-              fontSize: 12,
-              color: 'pink',
-            }),
-          },
-          'hello world 2'
-        );
-      "
-    `);
-  });
-
-  it("errors when emotion's classic runtime jsx pragma is mixed with compiled", () => {
-    const codeWithPragma = `
-      /** @jsx jsx */
-      import { css } from '@compiled/react';
-      import { jsx } from '@emotion/react';
-
-      const Component = () => (
-        <div css={{ fontSize: 12, color: 'blue' }}>
-          hello world 2
-        </div>
-      );
-
-      const Component2 = () => (
-        <div css={css({ fontSize: 12, color: 'pink' })}>
-          hello world 2
-        </div>
-      );
-    `;
-
-    expect(() =>
-      transform(codeWithPragma, {
-        run: 'both',
-        runtime: 'classic',
-      })
-    ).toThrow();
-  });
-});
-
-describe('should work with automatic runtime + jsx pragma', () => {
-  it('works with automatic runtime + jsx pragma', () => {
-    const codeWithPragma = `
-      /** @jsxImportSource @compiled/react */
-      import { css } from '@compiled/react';
-
-      const Component = () => (
-        <div css={{ fontSize: 12, color: 'blue' }}>
-          hello world 2
-        </div>
-      );
-
-      const Component2 = () => (
-        <div css={css({ fontSize: 12, color: 'pink' })}>
-          hello world 2
-        </div>
-      );
-    `;
-
-    const actual = transform(codeWithPragma, {
-      run: 'both',
-      runtime: 'automatic',
-    });
-
-    expect(actual).toMatchInlineSnapshot(`
-      "/* app.tsx generated by @compiled/babel-plugin v0.0.0 */
-      import { ax, ix } from '@compiled/react/runtime';
-      import { jsxs as _jsxs } from 'react/jsx-runtime';
-      import { jsx as _jsx } from 'react/jsx-runtime';
-      const Component = () =>
-        /*#__PURE__*/ _jsx('div', {
-          className: ax(['_1wyb1fwx _syaz13q2']),
-          children: 'hello world 2',
-        });
-      const Component2 = () =>
-        /*#__PURE__*/ _jsx('div', {
-          className: ax(['_1wyb1fwx _syaz32ev']),
-          children: 'hello world 2',
-        });
-      "
-    `);
-  });
-
-  it("doesn't do anything to emotion's jsx pragma with automatic runtime", () => {
-    const codeWithPragma = `
-      /** @jsxImportSource @emotion/react */
-      import { css } from '@emotion/react';
-
-      const Component = () => (
-        <div css={{ fontSize: 12, color: 'blue' }}>
-          hello world 2
-        </div>
-      );
-
-      const Component2 = () => (
-        <div css={css({ fontSize: 12, color: 'pink' })}>
-          hello world 2
-        </div>
-      );
-    `;
-
-    const actual = transform(codeWithPragma, {
-      run: 'both',
-      runtime: 'automatic',
-    });
-
-    expect(actual).toMatchInlineSnapshot(`
-      "/** @jsxImportSource @emotion/react */
-      import { css } from '@emotion/react';
-      import { jsx as _jsx } from '@emotion/react/jsx-runtime';
-      const Component = () =>
-        _jsx('div', {
-          css: {
-            fontSize: 12,
-            color: 'blue',
-          },
-          children: 'hello world 2',
-        });
-      const Component2 = () =>
-        _jsx('div', {
-          css: css({
-            fontSize: 12,
-            color: 'pink',
-          }),
-          children: 'hello world 2',
-        });
-      "
-    `);
-  });
-
-  it('works fine if runtime is automatic, and pragma is set in babel config', () => {
-    const codeWithPragma = `
-      import { css, jsx } from '@compiled/react';
-
-      const Component = () => (
-        <div css={{ fontSize: 12, color: 'blue' }}>
-          hello world 2
-        </div>
-      );
-
-      const Component2 = () => (
-        <div css={css({ fontSize: 12, color: 'pink' })}>
-          hello world 2
-        </div>
-      );
-    `;
-
-    const actual = transform(codeWithPragma, {
-      run: 'both',
-      runtime: 'automatic',
-      babelJSXImportSource: '@compiled/react',
-    });
-
-    expect(actual).toMatchInlineSnapshot(`
-      "/* app.tsx generated by @compiled/babel-plugin v0.0.0 */
-      import { ax, ix } from '@compiled/react/runtime';
-      import { jsxs as _jsxs } from '@compiled/react/jsx-runtime';
-      import { jsx as _jsx } from '@compiled/react/jsx-runtime';
-      const Component = () =>
-        _jsx('div', {
-          className: ax(['_1wyb1fwx _syaz13q2']),
-          children: 'hello world 2',
-        });
-      const Component2 = () =>
-        _jsx('div', {
-          className: ax(['_1wyb1fwx _syaz32ev']),
-          children: 'hello world 2',
-        });
-      "
-    `);
   });
 });

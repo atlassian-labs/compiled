@@ -184,15 +184,8 @@ describe('babel-plugin-strip-runtime using source code', () => {
       });
     });
 
-    describe('TODO', () => {
-      it('TODO', () => {
-        throw new Error('The below snapshot tests are too vague - change these to be more specific in what they are testing');
-      });
-    });
-
-
     describe('with extractStylesToDirectory', () => {
-      it('work with classic jsx pragma', () => {
+      it('with classic jsx pragma: extracts styles into app.compiled.css', () => {
         const codeWithPragma = `
           /** @jsx myJsx */
           import { css, jsx as myJsx } from '@compiled/react';
@@ -241,7 +234,7 @@ describe('babel-plugin-strip-runtime using source code', () => {
         `);
       });
 
-      it('work with automatic jsx pragma', () => {
+      it('with automatic jsx pragma: extracts styles into app.compiled.css', () => {
         const codeWithPragma = `
           /** @jsxImportSource @compiled/react */
           import { css } from '@compiled/react';
