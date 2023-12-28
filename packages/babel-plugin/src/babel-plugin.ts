@@ -290,7 +290,7 @@ export default declare<State>((api) => {
       ) {
         if (isJsx(path, state)) {
           throw buildCodeFrameError(
-            `Found a \`jsx\` function call in the Babel output where one should not have been generated. Was Compiled was not set up correctly?
+            `Found a \`jsx\` function call in the Babel output where one should not have been generated. Was Compiled not set up correctly?
 
 Reasons this might happen:
 * Importing \`jsx\` from a library other than Compiled CSS-in-JS - please only import from \`@compiled/react\`.

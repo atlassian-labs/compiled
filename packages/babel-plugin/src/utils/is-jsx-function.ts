@@ -3,7 +3,7 @@ import * as t from '@babel/types';
 
 import type { State } from '../types';
 
-export const isJsx = (
+export const isTransformedJsxFunction = (
   path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
   state: State
 ): boolean => {
