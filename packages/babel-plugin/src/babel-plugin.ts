@@ -24,7 +24,7 @@ import {
   isCompiledStyledTaggedTemplateExpression,
   isCompiledCSSMapCallExpression,
 } from './utils/is-compiled';
-import { isJsx } from './utils/is-jsx-function';
+import { isTransformedJsxFunction } from './utils/is-jsx-function';
 import { normalizePropsUsage } from './utils/normalize-props-usage';
 import { visitXcssPropPath } from './xcss-prop';
 
@@ -288,7 +288,7 @@ export default declare<State>((api) => {
         path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
         state: State
       ) {
-        if (isJsx(path, state)) {
+        if (isTransformedJsxFunction(path, state)) {
           throw buildCodeFrameError(
             `Found a \`jsx\` function call in the Babel output where one should not have been generated. Was Compiled not set up correctly?
 
