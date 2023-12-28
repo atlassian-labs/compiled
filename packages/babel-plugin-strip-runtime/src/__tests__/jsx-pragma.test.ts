@@ -11,6 +11,12 @@ import { transform } from './transform';
 //     https://babeljs.io/docs/babel-plugin-transform-react-jsx
 //     and https://babeljs.io/docs/babel-preset-react)
 
+describe('TODO', () => {
+  it('TODO', () => {
+    throw new Error('These snapshot tests are too vague - change these to be more specific in what they are testing');
+  });
+});
+
 describe('should work with classic runtime + jsx pragma', () => {
   it('works with classic runtime + jsx pragma', () => {
     const codeWithPragma = `

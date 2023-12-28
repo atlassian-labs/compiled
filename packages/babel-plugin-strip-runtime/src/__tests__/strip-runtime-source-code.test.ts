@@ -184,6 +184,13 @@ describe('babel-plugin-strip-runtime using source code', () => {
       });
     });
 
+    describe('TODO', () => {
+      it('TODO', () => {
+        throw new Error('The below snapshot tests are too vague - change these to be more specific in what they are testing');
+      });
+    });
+
+
     describe('with extractStylesToDirectory', () => {
       it('work with classic jsx pragma', () => {
         const codeWithPragma = `
