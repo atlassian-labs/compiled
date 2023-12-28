@@ -15,7 +15,7 @@ import { sortAtRulePseudos } from './plugins/sort-at-rule-pseudos';
 
 interface TransformOpts {
   optimizeCss?: boolean;
-  classNameCompressionMap?: object;
+  classNameCompressionMap?: Record<string, string>;
 }
 
 /**
