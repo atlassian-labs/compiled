@@ -1,4 +1,10 @@
+import { writeFileSync } from 'fs';
+
 import { transform } from './transform';
+
+// Mock out FS to avoid writing to disk
+// We aren't processing the result anyway, so no need for specifying the response
+jest.mock('fs');
 
 describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesToDirectory)', () => {
   describe('with the classic runtime', () => {
@@ -37,6 +43,11 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
             );
           "
         `);
+
+        expect(writeFileSync).toBeCalledWith(
+          expect.stringContaining('app.compiled.css'),
+          '._1wyb1fwx{font-size:12px}\n._syaz13q2{color:blue}'
+        );
       });
 
       it('error when source directory is not found', () => {

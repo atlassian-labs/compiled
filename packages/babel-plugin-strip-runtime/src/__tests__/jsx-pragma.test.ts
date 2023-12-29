@@ -71,7 +71,7 @@ describe('Compiled setup with classic runtime', () => {
     });
 
     describe('if only Emotion is used in file', () => {
-      it('does not process file', () => {
+      it('is not processed by Compiled', () => {
         const code = `
           /** @jsx jsx */
           import { css, jsx } from '@emotion/react';
@@ -123,7 +123,7 @@ describe('Compiled setup with classic runtime', () => {
         `);
       });
 
-      it('does not process file (alt.)', () => {
+      it('is not processed by Compiled (with renamed JSX pragma)', () => {
         // Uses renamed import `myJsx`
         const code = `
           /** @jsx myJsx */
@@ -282,16 +282,13 @@ describe('Compiled setup with automatic runtime', () => {
           runtime: 'automatic',
         });
 
-        expect(actual).toContain("import { jsx as _jsx } from 'react/jsx-runtime';");
-        // jsx function calls from React have "PURE" comments
-        // added beforehand from @babel/preset-react. This helps
-        // with tree-shaking by Webpack or Parcel
-        expect(actual).toContain('/*#__PURE__*/ _jsx');
+        expect(actual).toContain("'react/jsx-runtime'");
+        expect(actual).not.toContain("'@compiled/react/jsx-runtime'");
 
-        expect(actual).not.toContain(
-          "import { jsxs as _jsxs } from '@compiled/react/jsx-runtime';"
-        );
-        expect(actual).not.toContain("import { jsx as _jsx } from '@compiled/react/jsx-runtime';");
+        // jsx function calls from React (and not from Compiled/Emotion/etc)
+        // have "PURE" comments added beforehand by @babel/preset-react.
+        // Make sure this is there so Webpack or Parcel can use tree-shaking.
+        expect(actual).toContain('/*#__PURE__*/ _jsx');
       });
     });
 
@@ -319,18 +316,14 @@ describe('Compiled setup with automatic runtime', () => {
           runtime: 'automatic',
         });
 
-        expect(actual).toContain("import { jsx as _jsx } from '@emotion/react/jsx-runtime';");
+        expect(actual).toContain("'@emotion/react/jsx-runtime'");
 
-        expect(actual).not.toContain(
-          "import { jsxs as _jsxs } from '@compiled/react/jsx-runtime';"
-        );
-        expect(actual).not.toContain("import { jsx as _jsx } from '@compiled/react/jsx-runtime';");
+        expect(actual).not.toContain("'@compiled/react/jsx-runtime'");
 
         // If any of the below statements are present, that means we accidentally
         // got rid of the /** @jsxImportSource @emotion/react */ and the default React
         // JSX runtime is being used instead of Emotion -- whoops!
-        expect(actual).not.toContain("import { jsxs as _jsxs } from 'react/jsx-runtime';");
-        expect(actual).not.toContain("import { jsx as _jsx } from 'react/jsx-runtime';");
+        expect(actual).not.toContain("'react/jsx-runtime'");
         expect(actual).not.toContain('/*#__PURE__*/ _jsx');
       });
     });
@@ -360,11 +353,8 @@ describe('Compiled setup with automatic runtime', () => {
         babelJSXImportSource: '@compiled/react',
       });
 
-      expect(actual).toContain("import { jsxs as _jsxs } from '@compiled/react/jsx-runtime';");
-      expect(actual).toContain("import { jsx as _jsx } from '@compiled/react/jsx-runtime';");
-
-      expect(actual).not.toContain("import { jsxs as _jsxs } from 'react/jsx-runtime';");
-      expect(actual).not.toContain("import { jsx as _jsx } from 'react/jsx-runtime';");
+      expect(actual).toContain("'@compiled/react/jsx-runtime'");
+      expect(actual).not.toContain("'react/jsx-runtime'");
     });
   });
 });

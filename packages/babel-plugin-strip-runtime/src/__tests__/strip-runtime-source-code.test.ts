@@ -2,10 +2,6 @@ import type { BabelFileMetadata } from '../types';
 
 import { transform, transformSync } from './transform';
 
-// Mock out FS to avoid writing to disk
-// We aren't processing the result anyway, so no need for specifying the response
-jest.mock('fs');
-
 const testStyleSheetPath =
   '@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/compiled-css.css';
 const regexToFindRequireStatements =
