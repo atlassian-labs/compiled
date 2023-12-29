@@ -437,15 +437,42 @@ describe('#css-transform', () => {
   });
 
   it('should add extra specificity after atomicizing without affecting class names', () => {
-    const actual = transformCss(`margin-left: 0;`, { increaseSpecificity: true });
-    const expected = transformCss(`margin-left: 0;`, { increaseSpecificity: false });
+    const styles = `
+      padding: 8px;
+      color: red;
+      :before {
+        content: var(--hello-world);
+        margin-right: 8px;
+        color: pink;
+      }
+    `;
+    const actual = transformCss(styles, { increaseSpecificity: true });
+    const expected = transformCss(styles, { increaseSpecificity: false });
 
     expect(actual.classNames).toEqual(expected.classNames);
   });
 
   it('should add extra specificity to declarations', () => {
-    const { sheets: actual } = transformCss(`margin-left: 0;`, { increaseSpecificity: true });
+    const styles = `
+      padding: 8px;
+      color: red;
+      :before {
+        content: var(--hello-world);
+        margin-right: 8px;
+        color: pink;
+      }
+    `;
+    const { sheets: actual } = transformCss(styles, { increaseSpecificity: true });
 
-    expect(actual.join()).toMatchInlineSnapshot(`"._18u0idpf:not(#\\9){margin-left:0}"`);
+    expect(actual.join('\n')).toMatchInlineSnapshot(`
+      "._ca0qftgi:not(#\\9){padding-top:8px}
+      ._u5f3ftgi:not(#\\9){padding-right:8px}
+      ._n3tdftgi:not(#\\9){padding-bottom:8px}
+      ._19bvftgi:not(#\\9){padding-left:8px}
+      ._syaz5scu:not(#\\9){color:red}
+      ._1kt9o5oc:not(#\\9):before{content:var(--hello-world)}
+      ._eid3ftgi:not(#\\9):before{margin-right:8px}
+      ._is0632ev:not(#\\9):before{color:pink}"
+    `);
   });
 });

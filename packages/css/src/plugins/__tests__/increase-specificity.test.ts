@@ -52,4 +52,28 @@ describe('increase specicifity plugin', () => {
           "
     `);
   });
+
+  it('should prepend selector before other pseudos', () => {
+    const actual = transform`
+      .foo:hover {
+        color: red;
+      }
+
+      .baz::before {
+        content: "bar";
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+            .foo:not(#\\9):hover {
+              color: red;
+            }
+
+            .baz:not(#\\9)::before {
+              content: "bar";
+            }
+          "
+    `);
+  });
 });

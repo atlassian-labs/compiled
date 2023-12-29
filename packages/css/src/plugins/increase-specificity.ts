@@ -20,6 +20,14 @@ export const increaseSpecificity = (): Plugin => {
       root.walkRules((rule) => {
         rule.selectors = rule.selectors.map((selector) => {
           if (selector.startsWith('.')) {
+            if (selector.includes(':')) {
+              // Split up the selector and put it back together where the specificity
+              // selector is the first pseudo. If we don't do this before/after psuedos
+              // seem to break.
+              const parts = selector.split(':');
+              return parts[0] + [INCREASE_SPECIFICITY_SELECTOR, ...parts.slice(1)].join(':');
+            }
+
             return selector + INCREASE_SPECIFICITY_SELECTOR;
           }
 
