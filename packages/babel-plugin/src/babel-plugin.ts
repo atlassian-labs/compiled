@@ -293,11 +293,11 @@ export default declare<State>((api) => {
             `Found a \`jsx\` function call in the Babel output where one should not have been generated. Was Compiled not set up correctly?
 
 Reasons this might happen:
-* Importing \`jsx\` from a library other than Compiled CSS-in-JS - please only import from \`@compiled/react\`.
-* Both \`runtime: classic\` and \`pragma: 'jsx'\` were specified in your Babel configuration - please use the /** @jsx jsx */ syntax instead, or switch to \`runtime: automatic\`.
 
-See https://compiledcssinjs.com/docs/installation for how to set up the Compiled Babel plugin.`,
-            // Use parent node to get rid of the
+[Likely] Importing \`jsx\` from a library other than Compiled CSS-in-JS - please only import from \`@compiled/react\`.
+
+[Less likely] If you are using \`@babel/preset-react\` (or \`@babel/plugin-transform-react-jsx\`) in your Babel configuration, and you are using \`runtime: classic\`, make sure you do not use the \`pragma\` option. Please use the /** @jsx jsx */ syntax instead, or switch to \`runtime: automatic\``,
+            // Use parent node to mitigate likelihood of
             // "This is an error on an internal node." warning in the
             // error output
             path.parentPath.node,
