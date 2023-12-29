@@ -1,5 +1,5 @@
 import React from 'react';
-import { hydrate } from 'react-dom';
+import { hydrateRoot } from 'react-dom/client';
 
 import { CC, CS } from '../runtime';
 
@@ -34,12 +34,12 @@ describe('server side hydrate', () => {
     );
 
     flushRuntimeModule();
-    hydrate(
+    hydrateRoot(
+      elem,
       <CC>
         <CS>{['.foo { color: blue; }', '.foo { color: blue; }']}</CS>
         <div className="foo">hello world</div>
-      </CC>,
-      elem
+      </CC>
     );
 
     expect(console.error).not.toHaveBeenCalled();
