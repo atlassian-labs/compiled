@@ -3,7 +3,7 @@ import type { Plugin } from 'postcss';
 const INCREASE_SPECIFICITY_SELECTOR = ':not(#\\9)';
 
 /**
- * Increase the specificity of classes generated in Compiled by prepending ":not(#\\9)".
+ * Increase the specificity of classes generated in Compiled by appended ":not(#\\9)".
  * This rule should run after CSS declarations have been atomicized and should not affect
  * the original generated class name.
  *
