@@ -35,7 +35,7 @@ const DEFAULT_IMPORT_SOURCE = '@compiled/react';
 
 let globalCache: Cache | undefined;
 
-const FindClassicJsxPragmaImport: Visitor<State> = {
+const findClassicJsxPragmaImport: Visitor<State> = {
   ImportSpecifier(path, state) {
     const specifier = path.node;
 
@@ -118,7 +118,7 @@ export default declare<State>((api) => {
           let jsxComment: t.Comment | undefined;
 
           // Handle classic JSX pragma, if it exists
-          path.traverse<State>(FindClassicJsxPragmaImport, this);
+          path.traverse<State>(findClassicJsxPragmaImport, this);
 
           if (!file.ast.comments) {
             return;
