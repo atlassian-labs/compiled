@@ -399,7 +399,8 @@ describe('xcss prop interacting with other libraries', () => {
     );
 
     expect(result).toMatchInlineSnapshot(`
-      "import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import { css, jsx } from "@emotion/react";
       import { Box } from "@atlaskit/primitives";
       const _ = "._syaz5scu{color:red}";

@@ -3,9 +3,9 @@ import { basename, resolve, join, dirname } from 'path';
 import { declare } from '@babel/helper-plugin-utils';
 import jsxSyntax from '@babel/plugin-syntax-jsx';
 import template from '@babel/template';
-import type { NodePath } from '@babel/traverse';
+import type { NodePath, Visitor } from '@babel/traverse';
 import * as t from '@babel/types';
-import { unique, preserveLeadingComments } from '@compiled/utils';
+import { unique, preserveLeadingComments, JSX_ANNOTATION_REGEX } from '@compiled/utils';
 
 import { visitClassNamesPath } from './class-names';
 import { visitCssMapPath } from './css-map';
@@ -13,6 +13,7 @@ import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
 import type { State } from './types';
 import { appendRuntimeImports } from './utils/append-runtime-imports';
+import { buildCodeFrameError } from './utils/ast';
 import { Cache } from './utils/cache';
 import {
   isCompiledCSSCallExpression,
@@ -23,16 +24,41 @@ import {
   isCompiledStyledTaggedTemplateExpression,
   isCompiledCSSMapCallExpression,
 } from './utils/is-compiled';
+import { isTransformedJsxFunction } from './utils/is-jsx-function';
 import { normalizePropsUsage } from './utils/normalize-props-usage';
 import { visitXcssPropPath } from './xcss-prop';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
 const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
-const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
 const DEFAULT_IMPORT_SOURCE = '@compiled/react';
 
 let globalCache: Cache | undefined;
+
+const findClassicJsxPragmaImport: Visitor<State> = {
+  ImportSpecifier(path, state) {
+    const specifier = path.node;
+
+    t.assertImportDeclaration(path.parent);
+    // We don't care about other libraries
+    if (path.parent.source.value !== '@compiled/react') return;
+
+    if (
+      (specifier.imported.type === 'StringLiteral' && specifier.imported.value === 'jsx') ||
+      (specifier.imported.type === 'Identifier' && specifier.imported.name === 'jsx')
+    ) {
+      // Hurrah, we know that the jsx function in the JSX pragma refers to the
+      // jsx function from Compiled.
+      state.pragma.classicJsxPragmaIsCompiled = true;
+      state.pragma.classicJsxPragmaLocalName = specifier.local.name;
+
+      // Remove the jsx import; the assumption is that we removed the classic JSX pragma, so
+      // Babel shouldn't convert React.createElement to the jsx function anymore.
+      path.remove();
+      return;
+    }
+  },
+};
 
 export default declare<State>((api) => {
   api.assertVersion(7);
@@ -87,25 +113,64 @@ export default declare<State>((api) => {
     },
     visitor: {
       Program: {
-        enter(_, state) {
+        enter(path, state) {
           const { file } = state;
+          let jsxComment: t.Comment | undefined;
 
-          if (file.ast.comments) {
-            for (const comment of file.ast.comments) {
-              const jsxSourceMatches = JSX_SOURCE_ANNOTATION_REGEX.exec(comment.value);
-              const jsxMatches = JSX_ANNOTATION_REGEX.exec(comment.value);
+          // Handle classic JSX pragma, if it exists
+          path.traverse<State>(findClassicJsxPragmaImport, this);
 
-              // jsxPragmas currently only run on the top-level compiled module,
-              // hence we don't interrogate this.importSources.
-              if (jsxSourceMatches && jsxSourceMatches[1] === DEFAULT_IMPORT_SOURCE) {
-                // jsxImportSource pragma found - turn on CSS prop!
-                state.compiledImports = {};
-                state.pragma.jsxImportSource = true;
-              }
+          if (!file.ast.comments) {
+            return;
+          }
 
-              if (jsxMatches && jsxMatches[1] === 'jsx') {
-                state.pragma.jsx = true;
-              }
+          for (const comment of file.ast.comments) {
+            const jsxSourceMatches = JSX_SOURCE_ANNOTATION_REGEX.exec(comment.value);
+            const jsxMatches = JSX_ANNOTATION_REGEX.exec(comment.value);
+
+            // jsxPragmas currently only run on the top-level compiled module,
+            // hence we don't interrogate this.importSources.
+            if (jsxSourceMatches && jsxSourceMatches[1] === DEFAULT_IMPORT_SOURCE) {
+              // jsxImportSource pragma found - turn on CSS prop!
+              state.compiledImports = {};
+              state.pragma.jsxImportSource = true;
+              jsxComment = comment;
+            }
+
+            if (
+              jsxMatches &&
+              state.pragma.classicJsxPragmaIsCompiled &&
+              jsxMatches[1] === state.pragma.classicJsxPragmaLocalName
+            ) {
+              state.compiledImports = {};
+              state.pragma.jsx = true;
+              jsxComment = comment;
+            }
+          }
+
+          if (jsxComment) {
+            // Delete the JSX pragma from the file, so that JSX
+            // elements don't get converted to jsx functions when using Compiled.
+            // This is to avoid having an import from a library that isn't
+            // `@compiled/react/runtime` in the final output:
+            //
+            //     import { jsx } from '@compiled/react'
+            //     import { jsx as _jsx } from '@compiled/react/jsx-runtime';
+            //     import { jsxs as _jsxs } from '@compiled/react/jsx-runtime';
+
+            // Hide the JSX pragma from the
+            // @babel/plugin-transform-react-jsx plugin
+            file.ast.comments = file.ast.comments.filter((c: t.Comment) => c !== jsxComment);
+
+            // Remove the JSX pragma comment from
+            // the Babel output.
+            //
+            // Note that Babel provides no way for us to traverse comments >:(
+            // So the best we can do is guess that the JSX pragma is probably at the start of the file.
+            if (path.node.body[0].leadingComments) {
+              path.node.body[0].leadingComments = path.node.body[0].leadingComments.filter(
+                (newComment) => newComment !== jsxComment
+              );
             }
           }
         },
@@ -114,18 +179,18 @@ export default declare<State>((api) => {
             return;
           }
 
-          const {
-            pragma,
-            opts: { importReact: shouldImportReact = true },
-          } = state;
+          const { pragma } = state;
+
+          // Always import React if the developer is using
+          // /** @jsx jsx */, because these will get converted
+          // to React.createElement function calls
+          const shouldImportReact = state.pragma.jsx || (state.opts.importReact ?? true);
 
           preserveLeadingComments(path);
 
           appendRuntimeImports(path, state);
 
-          const hasPragma = pragma.jsxImportSource || pragma.jsx;
-
-          if (!hasPragma && shouldImportReact && !path.scope.getBinding('React')) {
+          if (!pragma.jsxImportSource && shouldImportReact && !path.scope.getBinding('React')) {
             // React is missing - add it in at the last moment!
             path.unshiftContainer('body', template.ast(`import * as React from 'react'`));
           }
@@ -223,6 +288,22 @@ export default declare<State>((api) => {
         path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
         state: State
       ) {
+        if (isTransformedJsxFunction(path, state)) {
+          throw buildCodeFrameError(
+            `Found a \`jsx\` function call in the Babel output where one should not have been generated. Was Compiled not set up correctly?
+
+Reasons this might happen:
+
+[Likely] Importing \`jsx\` from a library other than Compiled CSS-in-JS - please only import from \`@compiled/react\`.
+
+[Less likely] If you are using \`@babel/preset-react\` (or \`@babel/plugin-transform-react-jsx\`) in your Babel configuration, and you are using \`runtime: classic\`, make sure you do not use the \`pragma\` option. Please use the /** @jsx jsx */ syntax instead, or switch to \`runtime: automatic\``,
+            // Use parent node to mitigate likelihood of
+            // "This is an error on an internal node." warning in the
+            // error output
+            path.parentPath.node,
+            path.parentPath
+          );
+        }
         if (isCompiledCSSMapCallExpression(path.node, state)) {
           visitCssMapPath(path, { context: 'root', state, parentPath: path });
           return;

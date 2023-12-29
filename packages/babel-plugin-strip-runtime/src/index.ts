@@ -3,42 +3,17 @@ import { dirname, join, parse } from 'path';
 
 import { declare } from '@babel/helper-plugin-utils';
 import template from '@babel/template';
-import type { NodePath, Visitor } from '@babel/traverse';
+import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { sort } from '@compiled/css';
 import { preserveLeadingComments } from '@compiled/utils';
 
 import type { PluginPass, PluginOptions, BabelFileMetadata } from './types';
-import { getClassicJsxPragma } from './utils/get-jsx-pragma';
 import { isAutomaticRuntime } from './utils/is-automatic-runtime';
 import { isCCComponent } from './utils/is-cc-component';
 import { isCreateElement } from './utils/is-create-element';
 import { removeStyleDeclarations } from './utils/remove-style-declarations';
 import { toURIComponent } from './utils/to-uri-component';
-
-const FindJsxPragmaImport: Visitor<PluginPass> = {
-  ImportSpecifier(path, state) {
-    const specifier = path.node;
-
-    t.assertImportDeclaration(path.parent);
-    // We don't care about other libraries
-    if (path.parent.source.value !== '@compiled/react') return;
-
-    if (
-      (specifier.imported.type === 'StringLiteral' && specifier.imported.value === 'jsx') ||
-      (specifier.imported.type === 'Identifier' && specifier.imported.name === 'jsx')
-    ) {
-      // Hurrah, we know that the jsx function in the JSX pragma refers to the
-      // jsx function from Compiled.
-      state.jsxPragmaIsCompiled = true;
-
-      // Remove the jsx import; the assumption is that we removed the classic JSX pragma, so
-      // Babel shouldn't convert React.createElement to the jsx function anymore.
-      path.remove();
-      return;
-    }
-  },
-};
 
 export default declare<PluginPass>((api) => {
   api.assertVersion(7);
@@ -50,31 +25,6 @@ export default declare<PluginPass>((api) => {
     },
     visitor: {
       Program: {
-        enter(path, { file }) {
-          const classicJsxPragma = getClassicJsxPragma(file.ast.comments);
-          this.classicJsxPragmaName = classicJsxPragma?.name;
-          if (!this.classicJsxPragmaName) return;
-
-          path.traverse<PluginPass>(FindJsxPragmaImport, this);
-
-          // Delete comment so that @babel/preset-react doesn't see it and convert all of the
-          // React.createElement function calls to jsx function calls
-          if (classicJsxPragma?.comment && this.jsxPragmaIsCompiled) {
-            file.ast.comments = file.ast.comments?.filter(
-              (comment) => comment !== classicJsxPragma.comment
-            );
-            // Babel provides no way for us to traverse comments >:(
-            //
-            // So the best we can do is guess that the JSX pragma is probably at the start of
-            // the file.
-            if (path.node.body[0].leadingComments) {
-              path.node.body[0].leadingComments = path.node.body[0].leadingComments.filter(
-                (comment) => comment !== classicJsxPragma.comment
-              );
-            }
-          }
-        },
-
         exit(path, { file, filename }) {
           if (!filename) {
             throw new Error(
