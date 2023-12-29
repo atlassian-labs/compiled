@@ -1,5 +1,13 @@
 # @compiled/parcel-transformer
 
+## 0.14.6
+
+### Patch Changes
+
+- Updated dependencies [df91c60f]
+  - @compiled/babel-plugin-strip-runtime@0.28.0
+  - @compiled/babel-plugin@0.28.0
+
 ## 0.14.5
 
 ### Patch Changes
