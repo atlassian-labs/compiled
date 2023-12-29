@@ -20,7 +20,7 @@ export const increaseSpecificity = (): Plugin => {
       root.walkRules((rule) => {
         rule.selectors = rule.selectors.map((selector) => {
           if (selector.startsWith('.')) {
-            return INCREASE_SPECIFICITY_SELECTOR + ' ' + selector;
+            return selector + INCREASE_SPECIFICITY_SELECTOR;
           }
 
           return selector;

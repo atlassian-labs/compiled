@@ -14,10 +14,10 @@ import { normalizeCSS } from './plugins/normalize-css';
 import { parentOrphanedPseudos } from './plugins/parent-orphaned-pseudos';
 import { sortAtRulePseudos } from './plugins/sort-at-rule-pseudos';
 
-interface TransformOpts {
+export interface TransformOpts {
   optimizeCss?: boolean;
   classNameCompressionMap?: Record<string, string>;
-  UNSAFE_increaseSpecificity?: boolean;
+  increaseSpecificity?: boolean;
 }
 
 /**
@@ -48,7 +48,7 @@ export const transformCss = (
         classNameCompressionMap: opts.classNameCompressionMap,
         callback: (className: string) => classNames.push(className),
       }),
-      increaseSpecificity(),
+      ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
       sortAtRulePseudos(),
       ...(process.env.AUTOPREFIXER === 'off' ? [] : [autoprefixer()]),
       whitespace(),

@@ -88,6 +88,15 @@ export interface PluginOptions {
    * Default to `true`
    */
   processXcss?: boolean;
+
+  /**
+   * Increases the specificity of all declared Compiled styles.
+   * Generally you would only use this for migration purposes when mixing two or more styling
+   * solutions.
+   *
+   * Default to `false`.
+   */
+  increaseSpecificity?: boolean;
 }
 
 export interface State extends PluginPass {

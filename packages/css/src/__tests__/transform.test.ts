@@ -1,8 +1,4 @@
-import { transformCss as transform } from '../transform';
-
-interface TransformOpts {
-  optimizeCss?: boolean;
-}
+import { transformCss as transform, type TransformOpts } from '../transform';
 
 const transformCss = (code: string, opts: TransformOpts = { optimizeCss: false }) =>
   transform(code, opts);
@@ -438,5 +434,18 @@ describe('#css-transform', () => {
         ._otyridpf{margin-bottom:0}"
       `);
     });
+  });
+
+  it('should add extra specificity after atomicizing without affecting class names', () => {
+    const actual = transformCss(`margin-left: 0;`, { increaseSpecificity: true });
+    const expected = transformCss(`margin-left: 0;`, { increaseSpecificity: false });
+
+    expect(actual.classNames).toEqual(expected.classNames);
+  });
+
+  it('should add extra specificity to declarations', () => {
+    const { sheets: actual } = transformCss(`margin-left: 0;`, { increaseSpecificity: true });
+
+    expect(actual.join()).toMatchInlineSnapshot(`"._18u0idpf:not(#\\9){margin-left:0}"`);
   });
 });

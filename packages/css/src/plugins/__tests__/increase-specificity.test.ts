@@ -18,7 +18,7 @@ describe('increase specicifity plugin', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "
-            :not(#\\9) .foo {}
+            .foo:not(#\\9) {}
           "
     `);
   });
@@ -33,7 +33,7 @@ describe('increase specicifity plugin', () => {
     expect(actual).toMatchInlineSnapshot(`
       "
             @media {
-              :not(#\\9) .foo {}
+              .foo:not(#\\9) {}
             }
           "
     `);
