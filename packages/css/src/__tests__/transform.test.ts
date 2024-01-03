@@ -452,27 +452,48 @@ describe('#css-transform', () => {
     expect(actual.classNames).toEqual(expected.classNames);
   });
 
-  it('should add extra specificity to declarations', () => {
-    const styles = `
-      padding: 8px;
-      color: red;
-      :before {
-        content: var(--hello-world);
-        margin-right: 8px;
-        color: pink;
-      }
-    `;
-    const { sheets: actual } = transformCss(styles, { increaseSpecificity: true });
+  describe('increased specificity', () => {
+    it('should add extra specificity to declarations', () => {
+      const styles = `
+        padding: 8px;
+        color: red;
+        :before {
+          content: var(--hello-world);
+          margin-right: 8px;
+          color: pink;
+        }
+        ::after {
+          color: red;
+        }
+      `;
+      const { sheets: actual } = transformCss(styles, { increaseSpecificity: true });
 
-    expect(actual.join('\n')).toMatchInlineSnapshot(`
-      "._ca0qftgi:not(#\\9){padding-top:8px}
-      ._u5f3ftgi:not(#\\9){padding-right:8px}
-      ._n3tdftgi:not(#\\9){padding-bottom:8px}
-      ._19bvftgi:not(#\\9){padding-left:8px}
-      ._syaz5scu:not(#\\9){color:red}
-      ._1kt9o5oc:not(#\\9):before{content:var(--hello-world)}
-      ._eid3ftgi:not(#\\9):before{margin-right:8px}
-      ._is0632ev:not(#\\9):before{color:pink}"
-    `);
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._ca0qftgi:not(#\\9){padding-top:8px}
+        ._u5f3ftgi:not(#\\9){padding-right:8px}
+        ._n3tdftgi:not(#\\9){padding-bottom:8px}
+        ._19bvftgi:not(#\\9){padding-left:8px}
+        ._syaz5scu:not(#\\9){color:red}
+        ._1kt9o5oc:not(#\\9):before{content:var(--hello-world)}
+        ._eid3ftgi:not(#\\9):before{margin-right:8px}
+        ._is0632ev:not(#\\9):before{color:pink}
+        ._14rn5scu:not(#\\9):after{color:red}"
+      `);
+    });
+
+    it('should increase & selector specificity', () => {
+      const styles = `
+        div & { color: red; }
+        div:hover & { color: red; }
+        div &:hover { color: red; }
+      `;
+      const { sheets: actual } = transformCss(styles, { increaseSpecificity: true });
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "div ._kqan5scu:not(#\\9){color:red}
+        div:hover ._12hc5scu:not(#\\9){color:red}
+        div ._wntz5scu:not(#\\9):hover{color:red}"
+      `);
+    });
   });
 });

@@ -1,6 +1,15 @@
 import type { Plugin } from 'postcss';
+import { default as selectorParser, pseudo } from 'postcss-selector-parser';
 
 const INCREASE_SPECIFICITY_SELECTOR = ':not(#\\9)';
+
+const parser = selectorParser((root) => {
+  root.walkClasses((node) => {
+    if (node.parent) {
+      node.parent.insertAfter(node, pseudo({ value: INCREASE_SPECIFICITY_SELECTOR }));
+    }
+  });
+});
 
 /**
  * Increase the specificity of classes generated in Compiled by appended ":not(#\\9)".
@@ -19,16 +28,8 @@ export const increaseSpecificity = (): Plugin => {
     OnceExit(root) {
       root.walkRules((rule) => {
         rule.selectors = rule.selectors.map((selector) => {
-          if (selector.startsWith('.')) {
-            if (selector.includes(':')) {
-              // Split up the selector and put it back together where the specificity
-              // selector is the first pseudo. If we don't do this before/after psuedos
-              // seem to break.
-              const parts = selector.split(':');
-              return parts[0] + [INCREASE_SPECIFICITY_SELECTOR, ...parts.slice(1)].join(':');
-            }
-
-            return selector + INCREASE_SPECIFICITY_SELECTOR;
+          if (selector.includes('.')) {
+            return parser.astSync(selector).toString();
           }
 
           return selector;
