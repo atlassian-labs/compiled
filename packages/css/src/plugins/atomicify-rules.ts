@@ -3,11 +3,8 @@ import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'po
 import { rule } from 'postcss';
 
 interface PluginOpts {
-  classNameCompressionMap?: { [index: string]: string };
+  classNameCompressionMap?: Record<string, string>;
   callback?: (className: string) => void;
-}
-
-interface AtomicifyOpts extends PluginOpts {
   selectors?: string[];
   atRule?: string;
   parentNode?: Container;
@@ -25,7 +22,7 @@ interface AtomicifyOpts extends PluginOpts {
  * @param node CSS declaration
  * @param opts AtomicifyOpts
  */
-const atomicClassName = (node: Declaration, opts: AtomicifyOpts) => {
+const atomicClassName = (node: Declaration, opts: PluginOpts) => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
   const group = hash(`${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
   const value = node.important ? node.value + node.important : node.value;
@@ -76,7 +73,7 @@ const replaceNestingSelector = (selector: string, parentClassName: string) => {
  *
  * @param node
  */
-const buildAtomicSelector = (node: Declaration, opts: AtomicifyOpts) => {
+const buildAtomicSelector = (node: Declaration, opts: PluginOpts) => {
   const { classNameCompressionMap } = opts;
   const selectors: string[] = [];
 
@@ -111,7 +108,7 @@ const buildAtomicSelector = (node: Declaration, opts: AtomicifyOpts) => {
  * @param node
  * @param opts
  */
-const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
+const atomicifyDecl = (node: Declaration, opts: PluginOpts) => {
   const selector = buildAtomicSelector(node, opts);
   const newDecl = node.clone({
     raws: { before: '', value: { value: '', raw: '' }, between: '' },
@@ -135,7 +132,7 @@ const atomicifyDecl = (node: Declaration, opts: AtomicifyOpts) => {
  * @param node
  * @param opts
  */
-const atomicifyRule = (node: Rule, opts: AtomicifyOpts): Rule[] => {
+const atomicifyRule = (node: Rule, opts: PluginOpts): Rule[] => {
   if (!node.nodes) {
     return [];
   }
@@ -207,7 +204,7 @@ const canAtomicifyAtRule = (node: AtRule): boolean => {
  * @param node
  * @param opts
  */
-const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
+const atomicifyAtRule = (node: AtRule, opts: PluginOpts): AtRule => {
   const children: ChildNode[] = [];
   const newNode = node.clone({
     raws: {
@@ -264,7 +261,7 @@ const atomicifyAtRule = (node: AtRule, opts: AtomicifyOpts): AtRule => {
  *
  * 1. No nested rules allowed - normalize them with the `parent-orphaned-pseudos` and `nested` plugins first.
  */
-export const atomicifyRules = (opts = {}): Plugin => {
+export const atomicifyRules = (opts: PluginOpts = {}): Plugin => {
   return {
     postcssPlugin: 'atomicify-rules',
     OnceExit(root) {

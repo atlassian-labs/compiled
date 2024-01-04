@@ -9,13 +9,15 @@ import { discardDuplicates } from './plugins/discard-duplicates';
 import { discardEmptyRules } from './plugins/discard-empty-rules';
 import { expandShorthands } from './plugins/expand-shorthands';
 import { extractStyleSheets } from './plugins/extract-stylesheets';
+import { increaseSpecificity } from './plugins/increase-specificity';
 import { normalizeCSS } from './plugins/normalize-css';
 import { parentOrphanedPseudos } from './plugins/parent-orphaned-pseudos';
 import { sortAtRulePseudos } from './plugins/sort-at-rule-pseudos';
 
-interface TransformOpts {
+export interface TransformOpts {
   optimizeCss?: boolean;
-  classNameCompressionMap?: object;
+  classNameCompressionMap?: Record<string, string>;
+  increaseSpecificity?: boolean;
 }
 
 /**
@@ -46,6 +48,7 @@ export const transformCss = (
         classNameCompressionMap: opts.classNameCompressionMap,
         callback: (className: string) => classNames.push(className),
       }),
+      ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
       sortAtRulePseudos(),
       ...(process.env.AUTOPREFIXER === 'off' ? [] : [autoprefixer()]),
       whitespace(),
