@@ -11,29 +11,29 @@ const transform = (css: TemplateStringsArray) => {
 };
 
 describe('increase specicifity plugin', () => {
-  it('should increase specicifity of declared classes', () => {
-    const actual = transform`
-      .foo {}
-    `;
+  it('should ignore non-prefixed class names', () => {
+    const actual = transform`.foo {}`;
 
-    expect(actual).toMatchInlineSnapshot(`
-      "
-            .foo:not(#\\9) {}
-          "
-    `);
+    expect(actual).toMatchInlineSnapshot(`".foo {}"`);
+  });
+
+  it('should increase specicifity of declared classes', () => {
+    const actual = transform`._foo {}`;
+
+    expect(actual).toMatchInlineSnapshot(`"._foo:not(#\\9) {}"`);
   });
 
   it('should ignore atrules', () => {
     const actual = transform`
       @media {
-        .foo {}
+        ._foo {}
       }
     `;
 
     expect(actual).toMatchInlineSnapshot(`
       "
             @media {
-              .foo:not(#\\9) {}
+              ._foo:not(#\\9) {}
             }
           "
     `);
@@ -55,22 +55,22 @@ describe('increase specicifity plugin', () => {
 
   it('should prepend selector before other pseudos', () => {
     const actual = transform`
-      .foo:hover {
+      ._foo:hover {
         color: red;
       }
 
-      .baz::before {
+      ._baz::before {
         content: "bar";
       }
     `;
 
     expect(actual).toMatchInlineSnapshot(`
       "
-            .foo:not(#\\9):hover {
+            ._foo:not(#\\9):hover {
               color: red;
             }
 
-            .baz:not(#\\9)::before {
+            ._baz:not(#\\9)::before {
               content: "bar";
             }
           "

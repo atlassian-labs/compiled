@@ -28,7 +28,8 @@ export const increaseSpecificity = (): Plugin => {
     OnceExit(root) {
       root.walkRules((rule) => {
         rule.selectors = rule.selectors.map((selector) => {
-          if (selector.includes('.')) {
+          if (selector.includes('._')) {
+            // This rule should only apply to Compiled generated class names.
             return parser.astSync(selector).toString();
           }
 
