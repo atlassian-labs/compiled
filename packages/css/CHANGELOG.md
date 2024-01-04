@@ -1,5 +1,11 @@
 # @compiled/css
 
+## 0.12.2
+
+### Patch Changes
+
+- 5bd1b492: Introduce a new config option `increaseSpecificity` that increases the specificity of all generated Compiled classes. This is useful when migrating between two or more other styling solutions to Compiled.
+
 ## 0.12.1
 
 ### Patch Changes

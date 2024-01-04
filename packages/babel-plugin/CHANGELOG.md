@@ -1,5 +1,13 @@
 # @compiled/babel-plugin
 
+## 0.28.1
+
+### Patch Changes
+
+- 5bd1b492: Introduce a new config option `increaseSpecificity` that increases the specificity of all generated Compiled classes. This is useful when migrating between two or more other styling solutions to Compiled.
+- Updated dependencies [5bd1b492]
+  - @compiled/css@0.12.2
+
 ## 0.28.0
 
 ### Minor Changes
