@@ -116,11 +116,11 @@ export interface State extends PluginPass {
    * Means the `styled` api was found as `styledFunction` - as well as CSS prop is enabled in this module.
    */
   compiledImports?: {
-    ClassNames?: string;
-    css?: string;
-    keyframes?: string;
-    styled?: string;
-    cssMap?: string;
+    ClassNames?: string[];
+    css?: string[];
+    keyframes?: string[];
+    styled?: string[];
+    cssMap?: string[];
   };
 
   usesXcss?: boolean;

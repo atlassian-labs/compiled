@@ -88,6 +88,7 @@ const extractStyles = (path: NodePath<t.Expression>): t.Expression[] | t.Express
  */
 const getJsxChildrenAsFunction = (path: NodePath<t.JSXElement>) => {
   const children = path.node.children.find((node) => t.isJSXExpressionContainer(node));
+
   if (t.isJSXExpressionContainer(children) && t.isFunction(children.expression)) {
     return children.expression;
   }
@@ -114,7 +115,7 @@ E.g: <ClassNames>{props => <div />}</ClassNames>`,
 export const visitClassNamesPath = (path: NodePath<t.JSXElement>, meta: Metadata): void => {
   if (
     t.isJSXIdentifier(path.node.openingElement.name) &&
-    path.node.openingElement.name.name !== meta.state.compiledImports?.ClassNames
+    !meta.state.compiledImports?.ClassNames?.includes(path.node.openingElement.name.name)
   ) {
     // We aren't interested in this element. Bail out!
     return;

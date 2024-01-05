@@ -15,7 +15,9 @@ export const isCompiledCSSCallExpression = (
 ): node is t.CallExpression =>
   t.isCallExpression(node) &&
   t.isIdentifier(node.callee) &&
-  [state.compiledImports?.css, state.importedCompiledImports?.css].includes(node.callee.name);
+  [...(state.compiledImports?.css || []), state.importedCompiledImports?.css].includes(
+    node.callee.name
+  );
 
 /**
  * Returns `true` if the node is using `css` from `@compiled/react` as a tagged template expression
@@ -30,7 +32,7 @@ export const isCompiledCSSTaggedTemplateExpression = (
 ): node is t.TaggedTemplateExpression =>
   t.isTaggedTemplateExpression(node) &&
   t.isIdentifier(node.tag) &&
-  node.tag.name === state.compiledImports?.css;
+  !!state.compiledImports?.css?.includes(node.tag.name);
 
 /**
  * Returns `true` if the node is using `keyframes` from `@compiled/react` as a call expression
@@ -45,7 +47,7 @@ export const isCompiledKeyframesCallExpression = (
 ): node is t.CallExpression =>
   t.isCallExpression(node) &&
   t.isIdentifier(node.callee) &&
-  node.callee.name === state.compiledImports?.keyframes;
+  !!state.compiledImports?.keyframes?.includes(node.callee.name);
 
 /**
  * Returns `true` if the node is using `cssMap` from `@compiled/react` as a call expression
@@ -60,7 +62,7 @@ export const isCompiledCSSMapCallExpression = (
 ): node is t.CallExpression =>
   t.isCallExpression(node) &&
   t.isIdentifier(node.callee) &&
-  node.callee.name === state.compiledImports?.cssMap;
+  !!state.compiledImports?.cssMap?.includes(node.callee.name);
 
 /**
  * Returns `true` if the node is using `keyframes` from `@compiled/react` as a tagged template expression
@@ -75,7 +77,7 @@ export const isCompiledKeyframesTaggedTemplateExpression = (
 ): node is t.TaggedTemplateExpression =>
   t.isTaggedTemplateExpression(node) &&
   t.isIdentifier(node.tag) &&
-  node.tag.name === state.compiledImports?.keyframes;
+  !!state.compiledImports?.keyframes?.includes(node.tag.name);
 
 /**
  * Returns `true` if the node is using `styled` from `@compiled/react` from a styled.tag usage
@@ -87,7 +89,7 @@ export const isCompiledKeyframesTaggedTemplateExpression = (
 const isCompiledStyledMemberExpression = (node: t.Node, state: State): node is t.MemberExpression =>
   t.isMemberExpression(node) &&
   t.isIdentifier(node.object) &&
-  node.object.name === state.compiledImports?.styled;
+  !!state.compiledImports?.styled?.includes(node.object.name);
 
 /**
  * Returns `true` if the node is using `styled` from `@compiled/react` from a styled(Component) usage
@@ -102,7 +104,7 @@ const isCompiledStyledCompositionCallExpression = (
 ): node is t.CallExpression =>
   t.isCallExpression(node) &&
   t.isIdentifier(node.callee) &&
-  node.callee.name === state.compiledImports?.styled;
+  !!state.compiledImports?.styled?.includes(node.callee.name);
 
 /**
  * Returns `true` if the node is using `styled` from `@compiled/react` as a call expression
