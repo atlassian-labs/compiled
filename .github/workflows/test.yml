@@ -43,6 +43,9 @@ jobs:
       - name: Validate
         run: yarn lint
 
+      - name: Typecheck
+        run: yarn typecheck
+
       - name: Run tests
         run: yarn test:cover --ci
 

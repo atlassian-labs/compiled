@@ -1,3 +1,4 @@
+/** @jsxImportSource @compiled/react */
 import { css, keyframes, styled } from '@compiled/react';
 
 import './keyframes/globals';

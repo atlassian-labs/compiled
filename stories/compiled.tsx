@@ -1,4 +1,4 @@
-import '@compiled/react';
+/** @jsxImportSource @compiled/react */
 
 export default {
   title: 'benchmarks/compiled',

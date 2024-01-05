@@ -24,16 +24,19 @@ const DivWithoutClassName = ({ children }: { children: JSX.Element }) => {
 };
 
 export const LocalJSXNamespace = (): JSX.Element => (
+  // @ts-expect-error — Hack to compile with jsx pragma
   <div css={{ fontSize: 30, color: 'blue' }}>Sourced from local JSX Namespace</div>
 );
 
 export const WithClassName = (): JSX.Element => (
+  // @ts-expect-error — Hack to compile with jsx pragma
   <DivWithClassName css={{ color: 'red' }}>
     <span>Text is now red</span>
   </DivWithClassName>
 );
 
 export const NoClassName = (): JSX.Element => (
+  // @ts-expect-error — Hack to compile with jsx pragma
   <DivWithoutClassName css={{ color: 'red' }}>
     <span>Text is NOT red and there is a type error</span>
   </DivWithoutClassName>

@@ -47,7 +47,8 @@
     "test:imports": "node test/test-imports",
     "test:parcel": "jest --testMatch '**/src/**/*.parceltest.{ts,tsx}'",
     "test:vr": "yarn loki --host host.docker.internal",
-    "test:watch": "jest --no-cache --watch"
+    "test:watch": "jest --no-cache --watch",
+    "typecheck": "tsc --noEmit"
   },
   "husky": {
     "hooks": {

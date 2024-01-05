@@ -1,3 +1,4 @@
+/** @jsxImportSource @compiled/react */
 import { styled } from '@compiled/react';
 
 import { primary } from '../common/constants';

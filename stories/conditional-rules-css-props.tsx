@@ -1,3 +1,4 @@
+/** @jsxImportSource @compiled/react */
 import '@compiled/react';
 
 export default {

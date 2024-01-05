@@ -29,6 +29,7 @@ export const WithClassName = (): JSX.Element => (
 );
 
 export const NoClassName = (): JSX.Element => (
+  // @ts-expect-error — ClassName doesn't exist! Error!
   <DivWithoutClassName css={{ color: 'red' }}>
     <span>Text is NOT red and there is a type error</span>
   </DivWithoutClassName>

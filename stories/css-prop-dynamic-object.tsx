@@ -1,3 +1,4 @@
+/** @jsxImportSource @compiled/react */
 import { useState } from 'react';
 import '@compiled/react';
 

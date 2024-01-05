@@ -1,4 +1,4 @@
-import '@compiled/react';
+/** @jsxImportSource @compiled/react */
 
 import { hoverObjectLiteral } from './mixins';
 

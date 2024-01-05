@@ -1,3 +1,4 @@
+/** @jsxImportSource @compiled/react */
 import { styled } from '@compiled/react';
 
 const Container = styled.div<{ color?: string }>`
