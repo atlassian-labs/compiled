@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.28.2
+
+### Patch Changes
+
+- 35675858: Fix the compiler throwing when multiple Compiled imports were used in the same module.
+
 ## 0.28.1
 
 ### Patch Changes
