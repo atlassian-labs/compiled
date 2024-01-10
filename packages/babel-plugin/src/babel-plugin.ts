@@ -274,7 +274,9 @@ export default declare<State>((api) => {
               specifier.node?.imported.name === apiName
             ) {
               // Enable the API with the local name
-              state.compiledImports[apiName] = specifier.node.local.name;
+              const apiArray = state.compiledImports[apiName] || [];
+              apiArray.push(specifier.node.local.name);
+              state.compiledImports[apiName] = apiArray;
               specifier.remove();
             }
           });

@@ -35,7 +35,7 @@ const extractStyledDataFromTemplateLiteral = (
   if (
     t.isMemberExpression(node.tag) &&
     t.isIdentifier(node.tag.object) &&
-    node.tag.object.name === meta.state.compiledImports?.styled &&
+    meta.state.compiledImports?.styled?.includes(node.tag.object.name) &&
     t.isIdentifier(node.tag.property)
   ) {
     const tagName = node.tag.property.name;
@@ -47,7 +47,7 @@ const extractStyledDataFromTemplateLiteral = (
   if (
     t.isCallExpression(node.tag) &&
     t.isIdentifier(node.tag.callee) &&
-    node.tag.callee.name === meta.state.compiledImports?.styled &&
+    meta.state.compiledImports?.styled?.includes(node.tag.callee.name) &&
     t.isIdentifier(node.tag.arguments[0])
   ) {
     const tagName = node.tag.arguments[0].name;
@@ -66,7 +66,7 @@ const extractStyledDataFromObjectLiteral = (
   if (
     t.isMemberExpression(node.callee) &&
     t.isIdentifier(node.callee.object) &&
-    node.callee.object.name === meta.state.compiledImports?.styled &&
+    meta.state.compiledImports?.styled?.includes(node.callee.object.name) &&
     t.isExpression(node.arguments[0]) &&
     t.isIdentifier(node.callee.property)
   ) {
@@ -79,7 +79,7 @@ const extractStyledDataFromObjectLiteral = (
   if (
     t.isCallExpression(node.callee) &&
     t.isIdentifier(node.callee.callee) &&
-    node.callee.callee.name === meta.state.compiledImports?.styled &&
+    meta.state.compiledImports?.styled?.includes(node.callee.callee.name) &&
     t.isExpression(node.arguments[0]) &&
     t.isIdentifier(node.callee.arguments[0])
   ) {
