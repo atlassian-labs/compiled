@@ -49,6 +49,9 @@ type WithConditionalCSSProp<TProps> = 'className' extends keyof TProps
     {};
 
 // Unpack all here to avoid infinite self-referencing when defining our own JSX namespace
+// Based on the code from @types/react@18.2.8 / @emotion-js
+// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/3197efc097d522c4bf02b94e1a0766d007d6cdeb/types/react/index.d.ts#LL3204C13-L3204C13
+type ReactJSXElementType = string | React.JSXElementConstructor<any>;
 type ReactJSXElement = JSX.Element;
 type ReactJSXElementClass = JSX.ElementClass;
 type ReactJSXElementAttributesProperty = JSX.ElementAttributesProperty;
@@ -59,6 +62,7 @@ type ReactJSXIntrinsicClassAttributes<T> = JSX.IntrinsicClassAttributes<T>;
 type ReactJSXIntrinsicElements = JSX.IntrinsicElements;
 
 export namespace CompiledJSX {
+  export type ElementType = ReactJSXElementType;
   export type Element = ReactJSXElement;
   export type ElementClass = ReactJSXElementClass;
   export type ElementAttributesProperty = ReactJSXElementAttributesProperty;
