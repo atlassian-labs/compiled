@@ -61,7 +61,7 @@ export const foo = cssMap({
 ```js
 import React from 'react';
 import { cssMap } from '@compiled/react';
-import { token } from '@atlaskit/token';
+import { token } from '@atlaskit/tokens';
 
 // Functions and object methods are not allowed as
 // values in cssMap.
@@ -159,7 +159,7 @@ Normally, this ESLint rule forbids all function calls from being used inside the
 ```js
 import React from 'react';
 import { cssMap } from '@compiled/react';
-import { token } from '@atlaskit/token';
+import { token } from '@atlaskit/tokens';
 
 const styles = cssMap({
   danger: {
@@ -172,7 +172,7 @@ const styles = cssMap({
 });
 ```
 
-If you would like to whitelist certain functions (e.g. `token` from `@atlaskit/token`), you can include the names of the functions as part of the `allowedFunctionCalls` argument. Each function should be represented as a two-element array, with the first element being the package the function is from, and the second element being the name of the function.
+If you would like to whitelist certain functions (e.g. `token` from `@atlaskit/tokens`), you can include the names of the functions as part of the `allowedFunctionCalls` argument. Each function should be represented as a two-element array, with the first element being the package the function is from, and the second element being the name of the function.
 
 For example, with the below configuration, the above code example would be okay.
 
@@ -185,7 +185,7 @@ For example, with the below configuration, the above code example would be okay.
           'error',
           {
             allowedFunctionCalls: [
-              ['@atlaskit/token', 'token'],
+              ['@atlaskit/tokens', 'token'],
             ]
           },
         ],
