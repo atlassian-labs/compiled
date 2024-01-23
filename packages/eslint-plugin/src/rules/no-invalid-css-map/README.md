@@ -184,7 +184,7 @@ For example, with the below configuration, the above code example would be okay.
         '@compiled/no-invalid-css-map': [
           'error',
           {
-            allowFunctionCalls: [
+            allowedFunctionCalls: [
               ['@atlaskit/token', 'token'],
             ]
           },
