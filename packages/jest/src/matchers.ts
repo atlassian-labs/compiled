@@ -69,21 +69,29 @@ const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) =
 
 const findStylesInRules = (styles: string[], rules: CSS.Rule[] | undefined) => {
   const found: string[] = [];
+  const similar: string[] = [];
 
-  if (!rules) return found;
-
-  styles.forEach((s) => {
-    rules?.forEach((r) => {
-      if ('declarations' in r) {
-        r.declarations?.forEach((d) => {
-          if ('property' in d) {
-            if (s === `${d.property}:${d.value}`) found.push(s);
-          }
-        });
-      }
+  if (rules) {
+    styles.forEach((s) => {
+      rules?.forEach((r) => {
+        if ('declarations' in r) {
+          r.declarations?.forEach((d) => {
+            if ('property' in d) {
+              if (s === `${d.property}:${d.value}`) {
+                // We found this exact match, eg. `color:#fff`
+                found.push(s);
+              } else if (s.split(':')[0] === d.property) {
+                // We found something similar by property, eg. `color:#fff` vs. `color:#333`
+                similar.push(`${d.property}:${d.value}`);
+              }
+            }
+          });
+        }
+      });
     });
-  });
-  return found;
+  }
+
+  return { found, similar };
 };
 
 export function toHaveCompiledCss(
@@ -107,6 +115,7 @@ export function toHaveCompiledCss(
 
   const stylesToFind = mapProperties(properties);
   const foundStyles: string[] = [];
+  const similarStyles: string[] = [];
   const classNames = element.className.split(' ');
 
   for (const styleElement of styleElements) {
@@ -129,13 +138,15 @@ export function toHaveCompiledCss(
     const ast = CSS.parse(css);
     classNames.forEach((c) => {
       const rules = getRules(ast, matchFilter, c);
-      foundStyles.push(...findStylesInRules(stylesToFind, rules));
+      const search = findStylesInRules(stylesToFind, rules);
+
+      foundStyles.push(...search.found);
+      similarStyles.push(...search.similar);
     });
   }
 
   const notFoundStyles = stylesToFind.filter((style) => !foundStyles.includes(style));
   const foundFormatted = stylesToFind.join(', ');
-  const notFoundFormatted = notFoundStyles.join(', ');
 
   if (foundStyles.length > 0 && notFoundStyles.length === 0) {
     return {
@@ -146,8 +157,27 @@ export function toHaveCompiledCss(
     };
   }
 
+  const notFoundFormatted = notFoundStyles.join(', ');
+  const notFoundProperties = notFoundStyles.map((style) => style.split(':')[0]);
+  const similarStylesFormatted = similarStyles
+    .reduce<string[]>((acc, keyValue) => {
+      const property = keyValue.split(':')[0];
+
+      if (notFoundProperties.includes(property)) {
+        acc.push(keyValue);
+      }
+      return acc;
+    }, [])
+    .join('\r\n');
+  const similarStylesMessage = !similarStylesFormatted
+    ? 'Found 0 styles with matching properties.'
+    : `Found similar styles:
+${similarStylesFormatted}`;
+
   return {
     pass: false,
-    message: () => `Could not find "${notFoundFormatted}" on ${element.outerHTML} element.`,
+    message: () => `Could not find "${notFoundFormatted}" on ${element.outerHTML} element.
+
+${similarStylesMessage}`,
   };
 }
