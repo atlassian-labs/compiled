@@ -1,5 +1,11 @@
 # @compiled/jest
 
+## 0.10.1
+
+### Patch Changes
+
+- 749994b4: Add "found similar styles" to assist debugging to the `toHaveCompiledCss` matcher.
+
 ## 0.10.0
 
 ### Minor Changes
