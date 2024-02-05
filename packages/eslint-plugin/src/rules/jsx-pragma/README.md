@@ -28,7 +28,7 @@ The `--fix` option on the command line automatically fixes problems reported by 
 👎 Examples of **incorrect** code for this rule:
 
 ```js
-// [{ "pragma": "jsx" }]
+// [{ "runtime": "automatic" }]
 
 /** @jsx jsx */
     ^^^^^^^^ should use jsxImportSource pragma
@@ -36,7 +36,7 @@ import { jsx } from '@compiled/react';
 ```
 
 ```js
-// [{ "pragma": "jsxImportSource" }]
+// [{ "runtime": "classic" }]
 
 /** @jsxImportSource @compiled/react */
     ^^^^^^^^^^^^^^^^ should use jsx pragma
@@ -44,8 +44,6 @@ import { jsx } from '@compiled/react';
 ```
 
 ```js
-// [{ "pragma": "jsxImportSource" }]
-
 import '@compiled/react';
 
 <div css={{ display: 'block' }} />;
@@ -57,6 +55,20 @@ import '@compiled/react';
 
 /** @jsx jsx */
 import { css } from '@compiled/react';
+import { jsx } from '@emotion/react';
+
+<div css={css({ display: 'block' })} />;
+          ^^^ cannot mix Compiled and Emotion
+```
+
+```js
+// [{
+//   "detectConflictWithOtherLibraries": true,
+//   "alsoAddCompiledPragmaFor": ["@atlaskit/css"],
+// }]
+
+/** @jsx jsx */
+import { css } from '@atlaskit/css';
 import { jsx } from '@emotion/react';
 
 <div css={css({ display: 'block' })} />;
@@ -105,7 +117,7 @@ defaults to automatic.
 ### `detectConflictWithOtherLibraries: boolean`
 
 Raises a linting error if `css` or `jsx` is imported from `@emotion/react` (or `@emotion/core`) in the same file
-as a Compiled import.
+as a Compiled import. By default, Compiled import is an import from `@compiled/react`, but you can change this by specifying `alsoAddCompiledPragmaFor`.
 
 This is important as Emotion can't be used with Compiled in the same file, and ignoring this linting error will
 result in a confusing runtime error.
@@ -117,8 +129,12 @@ This defaults to `true`.
 By default, the `jsx-pragma` rule suggests adding the Compiled JSX pragma whenever the `css` attribute is being
 used. This may not be ideal if your codebase uses a mix of Compiled and other libraries (e.g. Emotion,
 styled-components). Setting `onlyRunIfImportingCompiled` to true turns off this rule unless `css` or `cssMap`
-are imported from `@compiled/react`.
+are imported from Compiled (`@compiled/react`, unless you specify `alsoAddCompiledPragmaFor`).
 
 Note that this option does not affect `xcss`.
 
 This option defaults to `false`.
+
+### `alsoAddCompiledPragmaFor: boolean`
+
+By default, we consider an import from Compiled to be one from `@compiled/react`, in the context of the `detectConflictWithOtherLibraries` and `onlyRunIfImportingCompiled` options described above. However, if you are providing a wrapper around `@compiled/react`, you can specify _additional_ libraries that should be considered a "Compiled import".
