@@ -196,11 +196,13 @@ import { jsx } from '@compiled/react';
         </Fragment>`,
       options: [{ runtime: 'classic' }],
       errors: [
+        // check the raw message, not the messageId, to ensure that this
+        // says "jsx pragma" and not "jsxImportSource pragma"
         {
-          messageId: 'missingPragma',
+          message: 'To use the `css` prop you must set the jsx pragma.',
         },
         {
-          messageId: 'missingPragma',
+          message: 'To use the `css` prop you must set the jsx pragma.',
         },
       ],
     },
@@ -227,8 +229,10 @@ import { css } from '@compiled/react';
         <div css={css({ display: 'block' })} />
       `,
       errors: [
+        // check the raw message, not the messageId, to ensure that this
+        // says "jsxImportSource pragma" and not "jsx pragma"
         {
-          messageId: 'missingPragma',
+          message: 'To use the `css` prop you must set the jsx pragma.',
         },
       ],
     },
@@ -547,7 +551,7 @@ import * as React from 'react';
       ],
     },
     {
-      name: 'should error if Emotion css and Compiled styled are used (with alsoAddCompiledPragmaFor)',
+      name: 'should error if Emotion css and Compiled styled are used (with importSources)',
       code: `
         import { css } from '@emotion/react';
         import { styled } from '@atlaskit/css';
@@ -555,7 +559,7 @@ import * as React from 'react';
       `,
       options: [
         {
-          alsoAddCompiledPragmaFor: ['@atlaskit/css'],
+          importSources: ['@atlaskit/css'],
           onlyRunIfImportingCompiled: true,
         },
       ],
@@ -566,7 +570,7 @@ import * as React from 'react';
       ],
     },
     {
-      name: 'should consider libraries in alsoAddCompiledPragmaFor to be Compiled imports',
+      name: 'should consider libraries in importSources to be Compiled imports',
       code: `
         import { css } from '@atlaskit/css';
 
@@ -582,7 +586,7 @@ import { css } from '@atlaskit/css';
       `,
       options: [
         {
-          alsoAddCompiledPragmaFor: ['@atlaskit/css'],
+          importSources: ['@atlaskit/css'],
           onlyRunIfImportingCompiled: true,
         },
       ],

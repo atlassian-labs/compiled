@@ -14,7 +14,7 @@ type Options = {
   detectConflictWithOtherLibraries: boolean;
   onlyRunIfImportingCompiled: boolean;
   runtime: 'classic' | 'automatic';
-  alsoAddCompiledPragmaFor: string[];
+  importSources: string[];
 };
 
 const getOtherLibraryImports = (context: Rule.RuleContext): ImportDeclaration[] => {
@@ -135,7 +135,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
           onlyRunIfImportingCompiled: {
             type: 'boolean',
           },
-          alsoAddCompiledPragmaFor: {
+          importSources: {
             type: 'array',
             items: [
               {
@@ -155,9 +155,9 @@ export const jsxPragmaRule: Rule.RuleModule = {
     const options: Options = {
       detectConflictWithOtherLibraries: optionsRaw.detectConflictWithOtherLibraries ?? true,
       onlyRunIfImportingCompiled:
-        optionsRaw.onlyRunIfImportingCompiled ?? optionsRaw.alsoAddCompiledPragmaFor ?? false,
+        optionsRaw.onlyRunIfImportingCompiled ?? optionsRaw.importSources ?? false,
       runtime: optionsRaw.runtime ?? 'automatic',
-      alsoAddCompiledPragmaFor: optionsRaw.alsoAddCompiledPragmaFor ?? [],
+      importSources: optionsRaw.importSources ?? [],
     };
 
     const source = context.getSourceCode();
@@ -166,7 +166,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
     const compiledImports = findLibraryImportDeclarations(context);
     const otherCompiledImports = findLibraryImportDeclarations(
       context,
-      options.alsoAddCompiledPragmaFor
+      options.importSources,
     );
     const otherLibraryImports = getOtherLibraryImports(context);
     const jsxPragma = findJsxPragma(comments, compiledImports);
