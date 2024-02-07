@@ -232,7 +232,7 @@ import { css } from '@compiled/react';
         // check the raw message, not the messageId, to ensure that this
         // says "jsxImportSource pragma" and not "jsx pragma"
         {
-          message: 'To use the `css` prop you must set the jsx pragma.',
+          message: 'To use the `css` prop you must set the jsxImportSource pragma.',
         },
       ],
     },
