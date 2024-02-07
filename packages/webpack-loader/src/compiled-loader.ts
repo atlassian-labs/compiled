@@ -34,6 +34,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     classNameCompressionMap = undefined,
     extractStylesToDirectory = undefined,
     resolver = undefined,
+    importSources = undefined,
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -86,6 +87,9 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           resolver: {
             type: 'string',
           },
+          importSources: {
+            type: 'array',
+          },
         },
       });
 
@@ -105,6 +109,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     classNameCompressionMap,
     extractStylesToDirectory,
     resolver,
+    importSources,
   };
 }
 
