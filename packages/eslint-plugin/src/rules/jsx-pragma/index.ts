@@ -155,7 +155,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
     const options: Options = {
       detectConflictWithOtherLibraries: optionsRaw.detectConflictWithOtherLibraries ?? true,
       onlyRunIfImportingCompiled:
-        optionsRaw.onlyRunIfImportingCompiled ?? optionsRaw.importSources ?? false,
+        optionsRaw.onlyRunIfImportingCompiled ?? !!optionsRaw.importSources?.length,
       runtime: optionsRaw.runtime ?? 'automatic',
       importSources: optionsRaw.importSources ?? [],
     };

@@ -129,7 +129,7 @@ This defaults to `true`.
 By default, the `jsx-pragma` rule suggests adding the Compiled JSX pragma whenever the `css` attribute is being
 used. This may not be ideal if your codebase uses a mix of Compiled and other libraries (e.g. Emotion,
 styled-components). Setting `onlyRunIfImportingCompiled` to true turns off this rule unless `css` or `cssMap`
-are imported from Compiled (`@compiled/react`, unless you specify `importSources`).
+are imported from Compiled (`@compiled/react`, unless `importSources` is specified and not empty).
 
 Note that this option does not affect `xcss`.
 

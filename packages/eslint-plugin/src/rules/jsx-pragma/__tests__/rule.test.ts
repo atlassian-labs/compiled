@@ -105,6 +105,16 @@ tester.run('jsx-pragma', jsxPragmaRule, {
       `,
       options: [{ onlyRunIfImportingCompiled: true }],
     },
+    {
+      name: 'when importSources is non-empty, onlyRunIfImportingCompiled should automatically be set to true',
+      // If we get an error here, then onlyRunIfImportingCompiled was not set to true.
+      code: `
+        /** @jsx jsx */
+        import { css, jsx } from '@emotion/react';
+        <div css={css({ display: 'block' })} />
+      `,
+      options: [{ importSources: ['@atlaskit/css'] }],
+    },
   ],
   invalid: [
     {
@@ -595,6 +605,24 @@ import { css } from '@atlaskit/css';
           messageId: 'missingPragma',
         },
       ],
+    },
+    {
+      name: 'when importSources is empty, onlyRunIfImportingCompiled should not automatically be set to true',
+      code: `
+        import { css } from '@emotion/react';
+        <div css={css({ display: 'block' })} />
+      `,
+      output: `
+        /** @jsxImportSource @compiled/react */
+import { css } from '@emotion/react';
+        <div css={css({ display: 'block' })} />
+      `,
+      errors: [
+        {
+          messageId: 'missingPragma',
+        },
+      ],
+      options: [{ importSources: [] }],
     },
   ],
 });
