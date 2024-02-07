@@ -164,10 +164,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
     const comments = source.getAllComments();
 
     const compiledImports = findLibraryImportDeclarations(context);
-    const otherCompiledImports = findLibraryImportDeclarations(
-      context,
-      options.importSources,
-    );
+    const otherCompiledImports = findLibraryImportDeclarations(context, options.importSources);
     const otherLibraryImports = getOtherLibraryImports(context);
     const jsxPragma = findJsxPragma(comments, compiledImports);
     const jsxImportSourcePragma = findJsxImportSourcePragma(comments);
