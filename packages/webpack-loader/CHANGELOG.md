@@ -1,5 +1,11 @@
 # @compiled/webpack-loader
 
+## 0.12.5
+
+### Patch Changes
+
+- 8d48ca03: Add `importSources` option to @compiled/webpack-loader
+
 ## 0.12.4
 
 ### Patch Changes
