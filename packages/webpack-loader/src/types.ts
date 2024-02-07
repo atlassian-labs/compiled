@@ -62,7 +62,7 @@ export interface CompiledLoaderOptions {
   parserBabelPlugins?: ParserPlugin[];
 
   /**
-   * Set to true if CompiledExtractPlugin has been set up correctly
+   * Set to true if CompiledExtractPlugin has been set up correctly.
    */
   [pluginName]?: boolean;
 
@@ -73,29 +73,36 @@ export interface CompiledLoaderOptions {
   ssr?: boolean;
 
   /**
-   * Add the component name as class name to DOM in non-production environment if styled is used
+   * Add the component name as class name to DOM in non-production environment if styled is used.
    *
-   * Default to `false`
+   * Defaults to `false`.
    */
   addComponentName?: boolean;
 
   /**
-   * A map holds the key-value pairs between full Atomic class names and the compressed ones
-   * i.e. { '_aaaabbbb': 'a' }
+   * A map holds the key-value pairs between full Atomic class names and the compressed ones,
+   * i.e. { '_aaaabbbb': 'a' }.
    *
    * Default to `undefined`
    */
   classNameCompressionMap?: object;
 
   /**
-   * When set, extract styles to an external CSS file
+   * When set, extract styles to an external CSS file.
    */
   extractStylesToDirectory?: { source: string; dest: string };
 
   /**
-   * Custom resolver for babel plugin, when set overrides default resolver
+   * Custom resolver for babel plugin, when set overrides default resolver.
    */
   resolver?: string;
+
+  /**
+   * Custom module origins that Compiled should compile when using APIs from.
+   *
+   * Passed to @compiled/babel-plugin.
+   */
+  importSources?: string[];
 }
 
 export interface CompiledExtractPluginOptions {
