@@ -87,7 +87,10 @@ export default new Transformer<ParcelTransformerOpts>({
     }
 
     const code = await asset.getCode();
-    if (code.indexOf('@compiled/react') === -1) {
+    if (
+      code.indexOf('@compiled/react') === -1 &&
+      (config.importSources?.every((importSource) => !code.includes(importSource)) ?? true)
+    ) {
       // We only want to parse files that are actually using Compiled.
       // For everything else we bail out.
       return undefined;
