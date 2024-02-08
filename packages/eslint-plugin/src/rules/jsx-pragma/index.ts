@@ -7,12 +7,14 @@ import {
   usesCompiledAPI,
 } from '../../utils/ast';
 import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-to-string';
+import { COMPILED_IMPORT } from '../../utils/constants';
 import { findJsxImportSourcePragma, findJsxPragma } from '../../utils/jsx';
 
 type Options = {
   detectConflictWithOtherLibraries: boolean;
   onlyRunIfImportingCompiled: boolean;
   runtime: 'classic' | 'automatic';
+  importSources: string[];
 };
 
 const getOtherLibraryImports = (context: Rule.RuleContext): ImportDeclaration[] => {
@@ -60,7 +62,7 @@ const findReactDeclarationWithDefaultImport = (
 };
 
 function createFixer(context: Rule.RuleContext, source: SourceCode, options: Options) {
-  const compiledImports = findLibraryImportDeclarations(context);
+  const compiledImports = findLibraryImportDeclarations(context, [COMPILED_IMPORT]);
 
   return function* fix(fixer: Rule.RuleFixer) {
     const pragma = options.runtime === 'classic' ? '@jsx jsx' : '@jsxImportSource @compiled/react';
@@ -133,6 +135,14 @@ export const jsxPragmaRule: Rule.RuleModule = {
           onlyRunIfImportingCompiled: {
             type: 'boolean',
           },
+          importSources: {
+            type: 'array',
+            items: [
+              {
+                type: 'string',
+              },
+            ],
+          },
         },
         additionalProperties: false,
       },
@@ -144,14 +154,17 @@ export const jsxPragmaRule: Rule.RuleModule = {
     const optionsRaw = context.options[0] || {};
     const options: Options = {
       detectConflictWithOtherLibraries: optionsRaw.detectConflictWithOtherLibraries ?? true,
-      onlyRunIfImportingCompiled: optionsRaw.onlyRunIfImportingCompiled ?? false,
+      onlyRunIfImportingCompiled:
+        optionsRaw.onlyRunIfImportingCompiled ?? !!optionsRaw.importSources?.length,
       runtime: optionsRaw.runtime ?? 'automatic',
+      importSources: optionsRaw.importSources ?? [],
     };
 
     const source = context.getSourceCode();
     const comments = source.getAllComments();
 
     const compiledImports = findLibraryImportDeclarations(context);
+    const otherCompiledImports = findLibraryImportDeclarations(context, options.importSources);
     const otherLibraryImports = getOtherLibraryImports(context);
     const jsxPragma = findJsxPragma(comments, compiledImports);
     const jsxImportSourcePragma = findJsxImportSourcePragma(comments);
@@ -234,11 +247,18 @@ export const jsxPragmaRule: Rule.RuleModule = {
       },
 
       'JSXAttribute[name.name=/^css$/]': (node: Rule.Node) => {
-        if (options.onlyRunIfImportingCompiled && !usesCompiledAPI(compiledImports)) {
+        if (
+          options.onlyRunIfImportingCompiled &&
+          !usesCompiledAPI([...compiledImports, ...otherCompiledImports])
+        ) {
           return;
         }
 
-        if (options.detectConflictWithOtherLibraries && otherLibraryImports.length) {
+        if (
+          options.detectConflictWithOtherLibraries &&
+          [...compiledImports, ...otherCompiledImports].length &&
+          otherLibraryImports.length
+        ) {
           context.report({
             node: otherLibraryImports[0],
             messageId: 'emotionAndCompiledConflict',

@@ -3,25 +3,41 @@ import { jsxPragmaRule } from '../index';
 
 tester.run('jsx-pragma', jsxPragmaRule, {
   valid: [
-    `
-      /** @jsxImportSource @compiled/react */
-      <div css={{ display: 'block' }} />
-    `,
-    `
-      <AnotherComponent className={xcss} />
-    `,
-    `
-      <div className={anythingElse} />
-    `,
-    `
-      /** @jsxImportSource @compiled/react */
-      <div className={xcss} />
-    `,
-    `
-      /** @jsxImportSource @compiled/react */
-      <div className={innerXcss} />
-    `,
     {
+      name: 'should be valid if automatic jsx pragma is used',
+      code: `
+        /** @jsxImportSource @compiled/react */
+        <div css={{ display: 'block' }} />
+      `,
+    },
+    {
+      name: 'should be valid if using xcss on a React component',
+      code: `
+        <AnotherComponent className={xcss} />
+      `,
+    },
+    {
+      name: 'should be valid if not using xcss on a JSX element',
+      code: `
+        <div className={anythingElse} />
+      `,
+    },
+    {
+      name: 'should be valid if using xcss on a JSX element with automatic jsx pragma',
+      code: `
+        /** @jsxImportSource @compiled/react */
+        <div className={xcss} />
+      `,
+    },
+    {
+      name: 'should be valid if using xcss under a different name with automatic jsx pragma',
+      code: `
+        /** @jsxImportSource @compiled/react */
+        <div className={innerXcss} />
+      `,
+    },
+    {
+      name: 'should be valid if runtime = automatic and automatic jsx pragma is used',
       code: `
         /** @jsxImportSource @compiled/react */
         <div css={{ display: 'block' }} />
@@ -29,6 +45,7 @@ tester.run('jsx-pragma', jsxPragmaRule, {
       options: [{ runtime: 'automatic' }],
     },
     {
+      name: 'should be valid if runtime = classic and classic jsx pragma is used',
       code: `
         /** @jsx jsx */
         import { jsx } from '@compiled/react';
@@ -46,6 +63,7 @@ tester.run('jsx-pragma', jsxPragmaRule, {
       options: [{ runtime: 'automatic' }],
     },
     {
+      name: 'should be valid if runtime = classic and classic jsx pragma is used with css function call',
       code: `
         /** @jsx jsx */
         import { css, jsx } from '@compiled/react';
@@ -87,29 +105,42 @@ tester.run('jsx-pragma', jsxPragmaRule, {
       `,
       options: [{ onlyRunIfImportingCompiled: true }],
     },
+    {
+      name: 'when importSources is non-empty, onlyRunIfImportingCompiled should automatically be set to true',
+      // If we get an error here, then onlyRunIfImportingCompiled was not set to true.
+      code: `
+        /** @jsx jsx */
+        import { css, jsx } from '@emotion/react';
+        <div css={css({ display: 'block' })} />
+      `,
+      options: [{ importSources: ['@atlaskit/css'] }],
+    },
   ],
   invalid: [
     {
+      name: 'should error if pragma missing when using xcss on JSX element',
       code: `
-      <div className={xcss} />
+        <div className={xcss} />
       `,
       output: `
-      /** @jsxImportSource @compiled/react */
+        /** @jsxImportSource @compiled/react */
 <div className={xcss} />
       `,
       errors: [{ messageId: 'missingPragmaXCSS' }],
     },
     {
+      name: 'should error if pragma missing when using xcss under different name',
       code: `
-      <div className={innerXcss} />
-    `,
+        <div className={innerXcss} />
+      `,
       output: `
-      /** @jsxImportSource @compiled/react */
+        /** @jsxImportSource @compiled/react */
 <div className={innerXcss} />
-    `,
+      `,
       errors: [{ messageId: 'missingPragmaXCSS' }],
     },
     {
+      name: 'should add jsx pragma and Compiled import if neither are there',
       code: `<div css={{ display: 'block' }} />`,
       output: `/** @jsx jsx */
 import { jsx } from '@compiled/react';
@@ -122,6 +153,7 @@ import { jsx } from '@compiled/react';
       ],
     },
     {
+      name: 'should replace automatic jsx pragma with classic pragma, if runtime = classic',
       code: `
         /** @jsxImportSource @compiled/react */
         <div css={{ display: 'block' }} />
@@ -139,6 +171,7 @@ import { jsx } from '@compiled/react';
       ],
     },
     {
+      name: 'should replace automatic jsx pragma with classic pragma, if runtime = classic (with css function call)',
       code: `
         /** @jsxImportSource @compiled/react */
         import { css } from '@compiled/react';
@@ -157,6 +190,7 @@ import { jsx } from '@compiled/react';
       ],
     },
     {
+      name: 'should replace automatic jsx pragma with classic pragma, if runtime = classic',
       code: `
         import '@compiled/react';
         <Fragment>
@@ -172,6 +206,8 @@ import { jsx } from '@compiled/react';
         </Fragment>`,
       options: [{ runtime: 'classic' }],
       errors: [
+        // check the raw message, not the messageId, to ensure that this
+        // says "jsx pragma" and not "jsxImportSource pragma"
         {
           message: 'To use the `css` prop you must set the jsx pragma.',
         },
@@ -181,6 +217,7 @@ import { jsx } from '@compiled/react';
       ],
     },
     {
+      name: 'should add automatic jsx pragma if not specified',
       code: `<div css={{ display: 'block' }} />`,
       output: `/** @jsxImportSource @compiled/react */
 <div css={{ display: 'block' }} />`,
@@ -191,6 +228,7 @@ import { jsx } from '@compiled/react';
       ],
     },
     {
+      name: 'should add automatic jsx pragma if css function call is used',
       code: `
         import { css } from '@compiled/react';
         <div css={css({ display: 'block' })} />
@@ -201,12 +239,15 @@ import { css } from '@compiled/react';
         <div css={css({ display: 'block' })} />
       `,
       errors: [
+        // check the raw message, not the messageId, to ensure that this
+        // says "jsxImportSource pragma" and not "jsx pragma"
         {
           message: 'To use the `css` prop you must set the jsxImportSource pragma.',
         },
       ],
     },
     {
+      name: 'should add classic jsx pragma if css function call is used',
       code: `/** @jsx jsx */ import { jsx } from '@compiled/react';<div css={{ display: 'block' }} />`,
       output: `/** @jsxImportSource @compiled/react */ <div css={{ display: 'block' }} />`,
       errors: [
@@ -216,6 +257,7 @@ import { css } from '@compiled/react';
       ],
     },
     {
+      name: 'should keep other Compiled imports intact when fixing',
       code: `/** @jsx jsx */ import { jsx, styled } from '@compiled/react';<div css={{ display: 'block' }} />`,
       output: `/** @jsxImportSource @compiled/react */ import { styled } from '@compiled/react';<div css={{ display: 'block' }} />`,
       errors: [
@@ -225,6 +267,7 @@ import { css } from '@compiled/react';
       ],
     },
     {
+      name: 'should keep other, renamed Compiled imports intact when fixing',
       code: `/** @jsx jsx */ import { jsx, styled as styl } from '@compiled/react';<div css={{ display: 'block' }} />`,
       output: `/** @jsxImportSource @compiled/react */ import { styled as styl } from '@compiled/react';<div css={{ display: 'block' }} />`,
       errors: [
@@ -234,6 +277,7 @@ import { css } from '@compiled/react';
       ],
     },
     {
+      name: 'should remove React default import',
       code: `
         import React from 'react';
         import { css } from '@compiled/react';
@@ -252,6 +296,7 @@ import { css } from '@compiled/react';
       ],
     },
     {
+      name: 'should keep React import if React is used',
       code: `
         import React from 'react';
         import { css } from '@compiled/react';
@@ -276,6 +321,7 @@ import React from 'react';
       ],
     },
     {
+      name: 'should remove React default import if other React imports are imported separately',
       code: `
         import React, { useState } from 'react';
         import { css } from '@compiled/react';
@@ -300,30 +346,7 @@ import { useState } from 'react';
       ],
     },
     {
-      code: `
-        import React,{useState } from 'react';
-        import { css } from '@compiled/react';
-
-        useState();
-
-        <div css={css({ display: 'block' })} />
-      `,
-      output: `
-        /** @jsxImportSource @compiled/react */
-import { useState } from 'react';
-        import { css } from '@compiled/react';
-
-        useState();
-
-        <div css={css({ display: 'block' })} />
-      `,
-      errors: [
-        {
-          messageId: 'missingPragma',
-        },
-      ],
-    },
-    {
+      name: 'should keep React import if no React default imports present',
       code: `
         import { useState } from 'react';
         import { css } from '@compiled/react';
@@ -348,6 +371,7 @@ import { useState } from 'react';
       ],
     },
     {
+      name: 'should keep React namespace import if used in file',
       code: `
         import * as React from 'react';
         import { css } from '@compiled/react';
@@ -372,6 +396,7 @@ import * as React from 'react';
       ],
     },
     {
+      name: 'should remove React namespace import',
       code: `
         import * as React from 'react';
         import { css } from '@compiled/react';
@@ -534,6 +559,70 @@ import * as React from 'react';
           messageId: 'emotionAndCompiledConflict',
         },
       ],
+    },
+    {
+      name: 'should error if Emotion css and Compiled styled are used (with importSources)',
+      code: `
+        import { css } from '@emotion/react';
+        import { styled } from '@atlaskit/css';
+        <div css={css({ display: 'block' })} />
+      `,
+      options: [
+        {
+          importSources: ['@atlaskit/css'],
+          onlyRunIfImportingCompiled: true,
+        },
+      ],
+      errors: [
+        {
+          messageId: 'emotionAndCompiledConflict',
+        },
+      ],
+    },
+    {
+      name: 'should consider libraries in importSources to be Compiled imports',
+      code: `
+        import { css } from '@atlaskit/css';
+
+        const styles = css({ display: 'block' });
+        <div css={styles} />
+      `,
+      output: `
+        /** @jsxImportSource @compiled/react */
+import { css } from '@atlaskit/css';
+
+        const styles = css({ display: 'block' });
+        <div css={styles} />
+      `,
+      options: [
+        {
+          importSources: ['@atlaskit/css'],
+          onlyRunIfImportingCompiled: true,
+        },
+      ],
+      errors: [
+        {
+          messageId: 'missingPragma',
+        },
+      ],
+    },
+    {
+      name: 'when importSources is empty, onlyRunIfImportingCompiled should not automatically be set to true',
+      code: `
+        import { css } from '@emotion/react';
+        <div css={css({ display: 'block' })} />
+      `,
+      output: `
+        /** @jsxImportSource @compiled/react */
+import { css } from '@emotion/react';
+        <div css={css({ display: 'block' })} />
+      `,
+      errors: [
+        {
+          messageId: 'missingPragma',
+        },
+      ],
+      options: [{ importSources: [] }],
     },
   ],
 });
