@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.13.6
+
+### Patch Changes
+
+- 292a05d5: Add `importSources` option to `jsx-pragma` rule, to specify additional libraries that should be considered Compiled imports
+
 ## 0.13.5
 
 ### Patch Changes
