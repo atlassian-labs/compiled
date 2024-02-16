@@ -108,6 +108,27 @@ const normalizeDestructuredString = (
   });
 };
 
+/**
+ * Create a member expression from a list of strings. For example, if
+ * `objectChain = ['a', 'b', 'c']`, the generated member expression will be
+ * `a.b.c`.
+ * @param objectChain List of strings
+ * @returns A member expression.
+ */
+const createNestedMemberExpression = (objectChain: string[]): t.Identifier | t.MemberExpression => {
+  if (objectChain.length === 1) return t.identifier(objectChain[0]);
+  if (objectChain.length > 1) {
+    const [init, last] = [
+      objectChain.slice(0, objectChain.length - 1),
+      objectChain[objectChain.length - 1],
+    ];
+    return t.memberExpression(createNestedMemberExpression(init), t.identifier(last));
+  }
+  throw new Error(
+    'Could not build a Compiled component, due to objectChain being empty when generating a member expression. This is likely a bug with Compiled - please file a bug report.'
+  );
+};
+
 const normalizeDestructuredObject = (
   bindings: Record<string, Binding>,
   values: Record<string, t.Expression>,
@@ -128,10 +149,10 @@ const normalizeDestructuredObject = (
           // passing null to the function will still result in the
           // default value being used.
           reference.replaceWith(
-            t.logicalExpression('??', t.identifier(objectChain.join('.')), defaultValue)
+            t.logicalExpression('??', createNestedMemberExpression(objectChain), defaultValue)
           );
         } else {
-          reference.replaceWithSourceString(objectChain.join('.'));
+          reference.replaceWith(createNestedMemberExpression(objectChain));
         }
       });
     }
