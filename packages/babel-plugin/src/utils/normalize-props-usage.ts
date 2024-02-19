@@ -116,17 +116,20 @@ const normalizeDestructuredString = (
  * @returns A member expression.
  */
 const createNestedMemberExpression = (objectChain: string[]): t.Identifier | t.MemberExpression => {
-  if (objectChain.length === 1) return t.identifier(objectChain[0]);
-  if (objectChain.length > 1) {
-    const [init, last] = [
-      objectChain.slice(0, objectChain.length - 1),
-      objectChain[objectChain.length - 1],
-    ];
-    return t.memberExpression(createNestedMemberExpression(init), t.identifier(last));
+  if (objectChain.length === 0) {
+    throw new Error(
+      'Could not build a Compiled component, due to objectChain being empty when generating a member expression. This is likely a bug with Compiled - please file a bug report.'
+    );
   }
-  throw new Error(
-    'Could not build a Compiled component, due to objectChain being empty when generating a member expression. This is likely a bug with Compiled - please file a bug report.'
-  );
+  if (objectChain.length === 1) {
+    return t.identifier(objectChain[0]);
+  }
+
+  const [initial, last] = [
+    objectChain.slice(0, objectChain.length - 1),
+    objectChain[objectChain.length - 1],
+  ];
+  return t.memberExpression(createNestedMemberExpression(initial), t.identifier(last));
 };
 
 const normalizeDestructuredObject = (
