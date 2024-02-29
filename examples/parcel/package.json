@@ -17,6 +17,7 @@
     "@babel/plugin-proposal-decorators": "^7.22.15",
     "@compiled/parcel-config": "*",
     "@compiled/parcel-transformer": "*",
+    "@compiled/parcel-transformer-external": "*",
     "@parcel/config-default": "^2.8.3",
     "@parcel/optimizer-htmlnano": "^2.8.3",
     "@parcel/packager-html": "^2.8.3",

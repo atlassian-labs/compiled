@@ -1,4 +1,4 @@
-import { join, dirname, isAbsolute } from 'path';
+import { join } from 'path';
 
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import generate from '@babel/generator';
@@ -10,6 +10,8 @@ import type {
 import { toBoolean } from '@compiled/utils';
 import { Transformer } from '@parcel/plugin';
 import SourceMap from '@parcel/source-map';
+// @ts-expect-error missing type
+import { relativeUrl } from '@parcel/utils';
 
 import type { ParcelTransformerOpts } from './types';
 import { createDefaultResolver } from './utils';
@@ -114,27 +116,6 @@ export default new Transformer<ParcelTransformerOpts>({
   },
 
   async transform({ asset, config, options }) {
-    const distStyleRules: string[] = [];
-    let someCode = await asset.getCode();
-    for (const match of someCode.matchAll(
-      /(import ['"](?<importSpec>.+\.compiled\.css)['"];)|(require\(['"](?<requireSpec>.+\.compiled\.css)['"]\);)/g
-    )) {
-      const specifierPath = match.groups?.importSpec || match.groups?.requireSpec;
-      if (!specifierPath) continue;
-      someCode = someCode.replace(match[0], '');
-      asset.setCode(someCode);
-
-      const cssFilePath = isAbsolute(specifierPath)
-        ? specifierPath
-        : join(dirname(asset.filePath), specifierPath);
-
-      const cssContent = (await asset.fs.readFile(cssFilePath)).toString().split('\n');
-      if (!asset.meta.styleRules) {
-        asset.meta.styleRules = [];
-      }
-      (asset.meta.styleRules as string[]).push(...cssContent);
-    }
-
     const ast = await asset.getAST();
 
     if (!ast) {
@@ -148,13 +129,16 @@ export default new Transformer<ParcelTransformerOpts>({
     const includedFiles: string[] = [];
     const code = asset.isASTDirty() ? undefined : await asset.getCode();
 
+    const shouldUseSourceMaps = asset.env.sourceMap != null;
+
     const result = await transformFromAstAsync(ast.program, code, {
-      code: true,
-      ast: false,
+      code: false,
+      ast: true,
       filename: asset.filePath,
       babelrc: false,
       configFile: false,
-      sourceMaps: true,
+      sourceMaps: shouldUseSourceMaps,
+      compact: false,
       parserOpts: {
         plugins: config.parserBabelPlugins ?? undefined,
       },
@@ -183,8 +167,6 @@ export default new Transformer<ParcelTransformerOpts>({
       },
     });
 
-    const output = result?.code || '';
-
     includedFiles.forEach((file) => {
       // Included files are those which have been statically evaluated into this asset.
       // This tells parcel that if any of those files change this asset should be transformed
@@ -192,30 +174,58 @@ export default new Transformer<ParcelTransformerOpts>({
       asset.invalidateOnFileChange(file);
     });
 
-    asset.setCode(output);
-
     if (extract) {
       // Store styleRules to asset.meta to be used by @compiled/parcel-optimizer
       const metadata = result?.metadata as BabelFileMetadata;
-      asset.meta.styleRules = [...(metadata.styleRules ?? []), ...distStyleRules];
+      asset.meta.styleRules = [
+        ...((asset.meta?.styleRules as string[] | undefined) ?? []),
+        ...(metadata.styleRules ?? []),
+      ];
+    }
+
+    if (result?.ast) {
+      asset.setAST({
+        type: 'babel',
+        version: '7.0.0',
+        program: result?.ast,
+      });
     }
 
     return [asset];
   },
 
-  async generate({ asset, ast }) {
-    // TODO: We're using babels standard generator. Internally parcel does some hacks in
-    // the official Babel transformer to make it faster - using ASTree directly.
-    // Perhaps we should do the same thing.
-    const { code, map: babelMap } = generate(ast.program, {
-      filename: asset.filePath,
-      sourceMaps: true,
-      sourceFileName: asset.filePath,
+  async generate({ asset, ast, options }) {
+    const originalSourceMap = await asset.getMap();
+    const sourceFileName: string = relativeUrl(options.projectRoot, asset.filePath);
+
+    // @ts-expect-error RawMappings should exist here
+    const { code, rawMappings } = generate(ast.program, {
+      sourceFileName,
+      sourceMaps: !!asset.env.sourceMap,
+      comments: true,
     });
+
+    const map = new SourceMap(options.projectRoot);
+    if (rawMappings) {
+      map.addIndexedMappings(rawMappings);
+    }
+
+    if (originalSourceMap) {
+      // The babel AST already contains the correct mappings, but not the source contents.
+      // We need to copy over the source contents from the original map.
+      // @ts-expect-error getSourcesContentMap exists
+      const sourcesContent = originalSourceMap.getSourcesContentMap();
+      for (const filePath in sourcesContent) {
+        const content = sourcesContent[filePath];
+        if (content != null) {
+          map.setSourceContent(filePath, content);
+        }
+      }
+    }
 
     return {
       content: code,
-      map: babelMap ? new SourceMap().addVLQMap(babelMap) : null,
+      map,
     };
   },
 });

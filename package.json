@@ -45,7 +45,7 @@
     "test": "jest --no-cache",
     "test:cover": "yarn test --collectCoverage",
     "test:imports": "node test/test-imports",
-    "test:parcel": "jest --testMatch '**/src/**/*.parceltest.{ts,tsx}'",
+    "test:parcel": "jest --testMatch '**/src/**/*.parceltest.{ts,tsx}' --testEnvironment=node",
     "test:vr": "yarn loki --host host.docker.internal",
     "test:watch": "jest --no-cache --watch"
   },
