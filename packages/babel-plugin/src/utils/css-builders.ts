@@ -877,6 +877,10 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     return buildCss(value, updatedMeta);
   }
 
+  if (t.isArrowFunctionExpression(node) && t.isObjectExpression(node.body)) {
+    return buildCss(node.body, meta);
+  }
+
   if (t.isArrowFunctionExpression(node) && t.isLogicalExpression(node.body)) {
     return extractLogicalExpression(node, meta);
   }
