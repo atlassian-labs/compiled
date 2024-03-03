@@ -129,15 +129,13 @@ export default new Transformer<ParcelTransformerOpts>({
     const includedFiles: string[] = [];
     const code = asset.isASTDirty() ? undefined : await asset.getCode();
 
-    const shouldUseSourceMaps = asset.env.sourceMap != null;
-
     const result = await transformFromAstAsync(ast.program, code, {
       code: false,
       ast: true,
       filename: asset.filePath,
       babelrc: false,
       configFile: false,
-      sourceMaps: shouldUseSourceMaps,
+      sourceMaps: !!asset.env.sourceMap,
       compact: false,
       parserOpts: {
         plugins: config.parserBabelPlugins ?? undefined,

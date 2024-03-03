@@ -27,7 +27,7 @@ function findTargetSourcePosition(source: string, regex: RegExp): { line: number
     const line = lines[i];
     const match = line.match(regex);
 
-    if (match && match.index != null) {
+    if (match && match.index !== undefined) {
       return {
         line: i + 1,
         column: match.index,
