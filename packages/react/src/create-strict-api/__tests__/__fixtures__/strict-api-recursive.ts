@@ -1,5 +1,3 @@
-/* eslint-disable prefer-const */
-import type { CompiledAPI } from '../../index';
 import { createStrictAPI } from '../../index';
 
 type Color = 'var(--ds-text)';
@@ -31,11 +29,6 @@ interface StrictAPI extends Properties {
   '&:active': PressedProperties;
 }
 
-let css: CompiledAPI<StrictAPI>['css'];
-let cssMap: CompiledAPI<StrictAPI>['cssMap'];
-let cx: CompiledAPI<StrictAPI>['cx'];
-let XCSSProp: CompiledAPI<StrictAPI>['XCSSProp'];
-
-({ css, cssMap, cx, XCSSProp } = createStrictAPI<StrictAPI>());
+const { css, cssMap, cx, XCSSProp } = createStrictAPI<StrictAPI>();
 
 export { css, XCSSProp, cssMap, cx };
