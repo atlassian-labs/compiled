@@ -162,15 +162,15 @@ describe('createStrictAPI()', () => {
             backgroundColor: '',
             '&:hover': {
               // @ts-expect-error — Type '""' is not assignable to type ...
-              color: '',
+              color: 'var(--ds-text)',
               // @ts-expect-error — Type '""' is not assignable to type ...
-              backgroundColor: '',
+              backgroundColor: 'var(--ds-success)',
             },
             '&:active': {
               // @ts-expect-error — Type '""' is not assignable to type ...
-              color: '',
+              color: 'var(--ds-text)',
               // @ts-expect-error — Type '""' is not assignable to type ...
-              backgroundColor: '',
+              backgroundColor: 'var(--ds-success)',
             },
             '&::before': {
               // @ts-expect-error — Type '""' is not assignable to type ...

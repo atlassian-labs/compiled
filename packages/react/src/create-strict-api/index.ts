@@ -1,34 +1,8 @@
-import type { StrictCSSProperties, CSSPseudoClasses, CSSPseudos } from '../types';
+import type { StrictCSSProperties, CSSPseudos } from '../types';
 import { createStrictSetupError } from '../utils/error';
 import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop';
 
-type CompiledSchema = StrictCSSProperties & { [Q in CSSPseudoClasses]?: StrictCSSProperties };
-
-type AllowedStyles = StrictCSSProperties & PseudosDeclarations;
-
-type PseudosDeclarations = {
-  [Q in CSSPseudos]?: StrictCSSProperties;
-};
-
-type ApplySchemaValue<
-  TSchema,
-  TKey extends keyof StrictCSSProperties,
-  TPseudoKey extends CSSPseudoClasses | ''
-> = TKey extends keyof TSchema
-  ? TPseudoKey extends keyof TSchema
-    ? TKey extends keyof TSchema[TPseudoKey]
-      ? TSchema[TPseudoKey][TKey]
-      : TSchema[TKey]
-    : TSchema[TKey]
-  : StrictCSSProperties[TKey];
-
-type ApplySchema<TObject, TSchema, TPseudoKey extends CSSPseudoClasses | '' = ''> = {
-  [TKey in keyof TObject]?: TKey extends keyof StrictCSSProperties
-    ? ApplySchemaValue<TSchema, TKey, TPseudoKey>
-    : TKey extends CSSPseudoClasses
-    ? ApplySchema<TObject[TKey], TSchema, TKey>
-    : ApplySchema<TObject[TKey], TSchema>;
-};
+import type { AllowedStyles, ApplySchema, CompiledSchema } from './types';
 
 export interface CompiledAPI<TSchema extends CompiledSchema> {
   /**

@@ -146,7 +146,7 @@ describe('createStrictAPI()', () => {
           accentColor: 'red',
           all: 'inherit',
           '&:hover': { color: 'var(--ds-text-hover)' },
-          '&:invalid': { color: 'orange' },
+          '&:invalid': { color: 'var(--ds-text)' },
         },
       });
 
@@ -275,8 +275,8 @@ describe('createStrictAPI()', () => {
       function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', never>> }) {
         return <button data-testid="button" className={xcss} />;
       }
-
       const styles = cssMap({ bg: { background: 'var(--ds-surface)' } });
+
       const { getByTestId } = render(<Button xcss={styles.bg} />);
 
       expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
@@ -302,7 +302,6 @@ describe('createStrictAPI()', () => {
       function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', '&:hover'>> }) {
         return <button data-testid="button" className={xcss} />;
       }
-
       const styles = cssMap({
         primary: {
           background: 'var(--ds-surface)',
