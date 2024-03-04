@@ -59,6 +59,13 @@ describe('createStrictAPI()', () => {
 
   describe('type violations', () => {
     it('should violate types for css()', () => {
+      css({
+        color: 'var(--ds-text)',
+        '&:hover': {
+          color: 'var(--ds-text-hovered)',
+        },
+      });
+
       const styles = css({
         // @ts-expect-error — Type '""' is not assignable to type ...
         color: '',
@@ -99,7 +106,7 @@ describe('createStrictAPI()', () => {
       const styles = cssMap({
         primary: {
           // @ts-expect-error — Type '""' is not assignable to type ...
-          color: 's',
+          color: '',
           // @ts-expect-error — Type '""' is not assignable to type ...
           backgroundColor: '',
           '&:hover': {
@@ -188,21 +195,31 @@ describe('createStrictAPI()', () => {
   describe('type success', () => {
     it('should pass type check for css()', () => {
       const styles = css({
+        // @ts-expect-error — should be a value from the schema
+        padding: '10px',
         color: 'var(--ds-text)',
         backgroundColor: 'var(--ds-bold)',
         '&:hover': {
+          // @ts-expect-error — should be a value from the schema
+          padding: '10px',
           color: 'var(--ds-text-hovered)',
           backgroundColor: 'var(--ds-bold-hovered)',
         },
         '&:active': {
+          // @ts-expect-error — should be a value from the schema
+          padding: '10px',
           color: 'var(--ds-text-pressed)',
           backgroundColor: 'var(--ds-bold-pressed)',
         },
         '&::before': {
+          // @ts-expect-error — should be a value from the schema
+          padding: '10px',
           color: 'var(--ds-text)',
           backgroundColor: 'var(--ds-bold)',
         },
         '&::after': {
+          // @ts-expect-error — should be a value from the schema
+          padding: '10px',
           color: 'var(--ds-text)',
           backgroundColor: 'var(--ds-bold)',
         },
@@ -218,19 +235,30 @@ describe('createStrictAPI()', () => {
         primary: {
           color: 'var(--ds-text)',
           backgroundColor: 'var(--ds-bold)',
+          // @ts-expect-error — should be a value from the schema
+          padding: '10px',
           '&:hover': {
+            accentColor: 'red',
+            // @ts-expect-error — should be a value from the schema
+            padding: '10px',
             color: 'var(--ds-text-hovered)',
             backgroundColor: 'var(--ds-bold-hovered)',
           },
           '&:active': {
+            // @ts-expect-error — should be a value from the schema
+            padding: '10px',
             color: 'var(--ds-text-pressed)',
             backgroundColor: 'var(--ds-bold-pressed)',
           },
           '&::before': {
+            // @ts-expect-error — should be a value from the schema
+            padding: '10px',
             color: 'var(--ds-text)',
             backgroundColor: 'var(--ds-bold)',
           },
           '&::after': {
+            // @ts-expect-error — should be a value from the schema
+            padding: '10px',
             color: 'var(--ds-text)',
             backgroundColor: 'var(--ds-bold)',
           },

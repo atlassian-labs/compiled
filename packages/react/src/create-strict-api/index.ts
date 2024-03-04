@@ -2,23 +2,33 @@ import type { StrictCSSProperties, CSSPseudos } from '../types';
 import { createStrictSetupError } from '../utils/error';
 import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop';
 
+type CompiledSchema = StrictCSSProperties & PseudosDeclarations;
+
 type PseudosDeclarations = {
   [Q in CSSPseudos]?: StrictCSSProperties;
 };
 
-type EnforceSchema<TSchema> = {
-  [P in keyof TSchema]?: P extends keyof CompiledSchema
-    ? TSchema[P] extends Record<string, any>
-      ? EnforceSchema<TSchema[P]>
-      : TSchema[P]
-    : never;
+type ApplySchemaValue<
+  TSchema,
+  TKey extends keyof StrictCSSProperties,
+  TPseudoKey extends CSSPseudos | ''
+> = TKey extends keyof TSchema
+  ? TPseudoKey extends keyof TSchema
+    ? TKey extends keyof TSchema[TPseudoKey]
+      ? TSchema[TPseudoKey][TKey]
+      : TSchema[TKey]
+    : TSchema[TKey]
+  : StrictCSSProperties[TKey];
+
+type ApplySchema<TObject, TSchema, TPseudoKey extends CSSPseudos | '' = ''> = {
+  [TKey in keyof TObject]?: TKey extends keyof StrictCSSProperties
+    ? ApplySchemaValue<TSchema, TKey, TPseudoKey>
+    : TKey extends CSSPseudos
+    ? TKey extends `@${string}`
+      ? ApplySchema<TObject[TKey], TSchema>
+      : ApplySchema<TObject[TKey], TSchema, TKey>
+    : '__VALUE_NOT_ALLOWED__';
 };
-
-type CSSStyles<TSchema extends CompiledSchema> = StrictCSSProperties &
-  PseudosDeclarations &
-  EnforceSchema<TSchema>;
-
-type CSSMapStyles<TSchema extends CompiledSchema> = Record<string, CSSStyles<TSchema>>;
 
 interface CompiledAPI<TSchema extends CompiledSchema> {
   /**
@@ -36,7 +46,7 @@ interface CompiledAPI<TSchema extends CompiledSchema> {
    * <div css={redText} />
    * ```
    */
-  css(styles: CSSStyles<TSchema>): StrictCSSProperties;
+  css<TStyles extends CompiledSchema>(styles: ApplySchema<TStyles, TSchema>): StrictCSSProperties;
   /**
    * ## CSS Map
    *
@@ -53,12 +63,9 @@ interface CompiledAPI<TSchema extends CompiledSchema> {
    * <div css={styles.solid} />
    * ```
    */
-  cssMap<TStylesMap extends CSSMapStyles<TSchema>>(
-    // We intersection type the generic both with the concrete type and the generic to ensure the output has the generic applied.
-    // Without both it would either have the input arg not have excess property check kick in allowing unexpected values or
-    // have all values set as the output making usage with XCSSProp have type violations unexpectedly.
-    styles: CSSMapStyles<TSchema> & TStylesMap
-  ): {
+  cssMap<TStylesMap extends Record<string, CompiledSchema>>(styles: {
+    [P in keyof TStylesMap]: ApplySchema<TStylesMap[P], TSchema>;
+  }): {
     readonly [P in keyof TStylesMap]: CompiledStyles<TStylesMap[P]>;
   };
   /**
@@ -148,8 +155,6 @@ interface CompiledAPI<TSchema extends CompiledSchema> {
     } = never
   >(): Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, TSchema, TRequiredProperties>;
 }
-
-type CompiledSchema = StrictCSSProperties & PseudosDeclarations;
 
 /**
  * ## Create Strict API
