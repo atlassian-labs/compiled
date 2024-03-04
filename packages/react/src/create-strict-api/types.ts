@@ -1,4 +1,9 @@
-import type { StrictCSSProperties, CSSPseudoClasses, CSSPseudos } from '../types';
+import type {
+  StrictCSSProperties,
+  CSSPseudoClasses,
+  CSSPseudoElements,
+  CSSPseudos,
+} from '../types';
 
 export type CompiledSchemaShape = StrictCSSProperties & {
   [Q in CSSPseudoClasses]?: StrictCSSProperties;
@@ -25,5 +30,11 @@ export type ApplySchema<TObject, TSchema, TPseudoKey extends CSSPseudoClasses | 
     ? ApplySchemaValue<TSchema, TKey, TPseudoKey>
     : TKey extends CSSPseudoClasses
     ? ApplySchema<TObject[TKey], TSchema, TKey>
-    : ApplySchema<TObject[TKey], TSchema>;
+    : TKey extends `@${string}` | CSSPseudoElements
+    ? ApplySchema<TObject[TKey], TSchema>
+    : never;
+};
+
+export type ApplySchemaMap<TStylesMap, TSchema> = {
+  [P in keyof TStylesMap]: ApplySchema<TStylesMap[P], TSchema>;
 };

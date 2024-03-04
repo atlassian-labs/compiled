@@ -347,10 +347,12 @@ describe('createStrictAPI()', () => {
     it('should error with values not in the strict `CompiledAPI`', () => {
       function Button({
         xcss,
+        testId,
       }: {
+        testId: string;
         xcss: ReturnType<typeof XCSSProp<'background' | 'color', '&:hover'>>;
       }) {
-        return <button data-testid="button" className={xcss} />;
+        return <button data-testid={testId} className={xcss} />;
       }
 
       const styles = cssMap({
@@ -363,13 +365,19 @@ describe('createStrictAPI()', () => {
       });
 
       const { getByTestId } = render(
-        <Button
-          // @ts-expect-error -- Errors because `color` conflicts with the `XCSSProp` schema–`color` should be a css variable.
-          xcss={styles.primary}
-        />
+        <>
+          <Button testId="button-1" xcss={styles.primary} />
+          <Button
+            testId="button-2"
+            xcss={{
+              // @ts-expect-error -- This is not in the `createStrictAPI` schema—this should be a css variable.
+              color: 'red',
+            }}
+          />
+        </>
       );
 
-      expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
+      expect(getByTestId('button-1')).toHaveCompiledCss('background', 'var(--ds-surface)');
     });
 
     it('should error with properties not in the `XCSSProp`', () => {

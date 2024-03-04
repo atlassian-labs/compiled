@@ -2,7 +2,7 @@ import type { StrictCSSProperties, CSSPseudos } from '../types';
 import { createStrictSetupError } from '../utils/error';
 import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop';
 
-import type { AllowedStyles, ApplySchema, CompiledSchemaShape } from './types';
+import type { AllowedStyles, ApplySchema, ApplySchemaMap, CompiledSchemaShape } from './types';
 
 export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
   /**
@@ -20,7 +20,9 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
    * <div css={redText} />
    * ```
    */
-  css<TStyles extends AllowedStyles>(styles: ApplySchema<TStyles, TSchema>): StrictCSSProperties;
+  css<TStyles extends ApplySchema<TStyles, TSchema>>(
+    styles: AllowedStyles & TStyles
+  ): CompiledStyles<TStyles>;
   /**
    * ## CSS Map
    *
@@ -37,9 +39,9 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
    * <div css={styles.solid} />
    * ```
    */
-  cssMap<TStylesMap extends Record<string, AllowedStyles>>(styles: {
-    [P in keyof TStylesMap]: ApplySchema<TStylesMap[P], TSchema>;
-  }): {
+  cssMap<TStylesMap extends ApplySchemaMap<TStylesMap, TSchema>>(
+    styles: Record<string, AllowedStyles> & TStylesMap
+  ): {
     readonly [P in keyof TStylesMap]: CompiledStyles<TStylesMap[P]>;
   };
   /**
