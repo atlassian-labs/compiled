@@ -869,6 +869,42 @@ describe('styled component behaviour', () => {
     );
   });
 
+  it('should apply unconditional CSS with props', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div(
+        props => ({ color: props.primary }),
+      );
+    `);
+
+    expect(actual).toIncludeMultiple([
+      'const _="._syaz1q2z{color:var(--_1r7cl4y)}"',
+      '"--_1r7cl4y":ix(__cmplp.primary)',
+    ]);
+
+    expect(actual).toInclude('className={ax(["_syaz1q2z",__cmplp.className])}');
+  });
+
+  it('should apply unconditional CSS with and without props', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+
+      const Component = styled.div(
+        { background: 'red' },
+        props => ({ color: props.primary }),
+      );
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._syaz1q2z{color:var(--_1r7cl4y)}',
+      '._bfhk5scu{background-color:red}',
+      '--_1r7cl4y":ix(__cmplp.primary)}',
+    ]);
+
+    expect(actual).toInclude('className={ax(["_bfhk5scu _syaz1q2z",__cmplp.className])}');
+  });
+
   it('should apply conditional CSS with object styles', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
