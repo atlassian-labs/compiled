@@ -2,9 +2,9 @@ import type { StrictCSSProperties, CSSPseudos } from '../types';
 import { createStrictSetupError } from '../utils/error';
 import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop';
 
-import type { AllowedStyles, ApplySchema, CompiledSchema } from './types';
+import type { AllowedStyles, ApplySchema, CompiledSchemaShape } from './types';
 
-export interface CompiledAPI<TSchema extends CompiledSchema> {
+export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
   /**
    * ## CSS
    *
@@ -178,7 +178,7 @@ export interface CompiledAPI<TSchema extends CompiledSchema> {
  * <div css={styles} />
  * ```
  */
-export function createStrictAPI<TSchema extends CompiledSchema>(): CompiledAPI<TSchema> {
+export function createStrictAPI<TSchema extends CompiledSchemaShape>(): CompiledAPI<TSchema> {
   return {
     css() {
       throw createStrictSetupError();
