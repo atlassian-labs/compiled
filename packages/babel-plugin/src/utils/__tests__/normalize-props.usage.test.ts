@@ -42,6 +42,14 @@ describe('normalizePropsUsage', () => {
 
   describe('destructured props', () => {
     it('reconstructs destructured props param', () => {
+      const actual = transform(
+        `styled.div(({ customColor }) => ({ backgroundColor: customColor }));`
+      );
+
+      expect(actual).toInclude(`(${P_NAME}) => ({ backgroundColor: ${P_NAME}.customColor,}))`);
+    });
+
+    it('reconstructs destructured props param with logical expression', () => {
       const actual = transform(`
         styled.div(({ width }) => width && { width });
     `);
