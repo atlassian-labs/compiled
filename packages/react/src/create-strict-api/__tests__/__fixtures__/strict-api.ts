@@ -1,5 +1,3 @@
-/* eslint-disable prefer-const */
-import type { CompiledAPI } from '../../index';
 import { createStrictAPI } from '../../index';
 
 interface API {
@@ -12,11 +10,6 @@ interface API {
   bkgrnd: 'red' | 'green';
 }
 
-let css: CompiledAPI<API>['css'];
-let cssMap: CompiledAPI<API>['cssMap'];
-let cx: CompiledAPI<API>['cx'];
-let XCSSProp: CompiledAPI<API>['XCSSProp'];
-
-({ css, XCSSProp, cssMap, cx } = createStrictAPI<API>());
+const { css, XCSSProp, cssMap, cx } = createStrictAPI<API>();
 
 export { css, XCSSProp, cssMap, cx };
