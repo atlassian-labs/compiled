@@ -8,7 +8,7 @@ Previously, if you passed `props => ...` directly to `styled.div` or `css()`, an
 import { styled } from '@compiled/react';
 import React from 'react';
 
-const Component = styled.div(props => ({
+const Component = styled.div((props) => ({
   color: `${props.customColor}`,
   background: props.background,
 }));
@@ -17,8 +17,8 @@ const Component = styled.div(props => ({
 While at the same time, wrapping the return value inside a logical expression or ternary expression would make it work perfectly fine:
 
 ```tsx
-const Styles = styled.div(
-  (props) => (props.isEditing ? {} : { backgroundColor: props.highlightColor }),
+const Styles = styled.div((props) =>
+  props.isEditing ? {} : { backgroundColor: props.highlightColor }
 );
 ```
 
