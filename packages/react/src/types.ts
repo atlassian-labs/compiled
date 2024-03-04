@@ -35,14 +35,7 @@ export type CssFunction<TProps = unknown> =
   | boolean // Something like `false && styles`
   | undefined; // Something like `undefined && styles`
 
-/*
- * This list of pseudo-classes and pseudo-elements are from csstype
- * but with & added to the front. Compiled supports both &-ful
- * and &-less forms and both will target the current element
- * (`&:hover` <==> `:hover`), however we force the use of the
- * &-ful form for consistency with the nested spec for new APIs.
- */
-export type CSSPseudos =
+export type CSSPseudoElements =
   | '&::after'
   | '&::backdrop'
   | '&::before'
@@ -56,7 +49,9 @@ export type CSSPseudos =
   | '&::selection'
   | '&::spelling-error'
   | '&::target-text'
-  | '&::view-transition'
+  | '&::view-transition';
+
+export type CSSPseudoClasses =
   | '&:active'
   | '&:autofill'
   | '&:blank'
@@ -93,6 +88,15 @@ export type CSSPseudos =
   | '&:user-valid'
   | '&:valid'
   | '&:visited';
+
+/*
+ * This list of pseudo-classes and pseudo-elements are from csstype
+ * but with & added to the front. Compiled supports both &-ful
+ * and &-less forms and both will target the current element
+ * (`&:hover` <==> `:hover`), however we force the use of the
+ * &-ful form for consistency with the nested spec for new APIs.
+ */
+export type CSSPseudos = CSSPseudoElements | CSSPseudoClasses;
 
 /**
  * The XCSSProp must be given all known available properties even

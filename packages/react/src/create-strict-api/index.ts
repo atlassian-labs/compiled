@@ -1,8 +1,10 @@
-import type { StrictCSSProperties, CSSPseudos } from '../types';
+import type { StrictCSSProperties, CSSPseudoClasses, CSSPseudos } from '../types';
 import { createStrictSetupError } from '../utils/error';
 import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop';
 
-type CompiledSchema = StrictCSSProperties & PseudosDeclarations;
+type CompiledSchema = StrictCSSProperties & { [Q in CSSPseudoClasses]?: StrictCSSProperties };
+
+type AllowedStyles = StrictCSSProperties & PseudosDeclarations;
 
 type PseudosDeclarations = {
   [Q in CSSPseudos]?: StrictCSSProperties;
@@ -11,7 +13,7 @@ type PseudosDeclarations = {
 type ApplySchemaValue<
   TSchema,
   TKey extends keyof StrictCSSProperties,
-  TPseudoKey extends CSSPseudos | ''
+  TPseudoKey extends CSSPseudoClasses | ''
 > = TKey extends keyof TSchema
   ? TPseudoKey extends keyof TSchema
     ? TKey extends keyof TSchema[TPseudoKey]
@@ -20,17 +22,15 @@ type ApplySchemaValue<
     : TSchema[TKey]
   : StrictCSSProperties[TKey];
 
-type ApplySchema<TObject, TSchema, TPseudoKey extends CSSPseudos | '' = ''> = {
+type ApplySchema<TObject, TSchema, TPseudoKey extends CSSPseudoClasses | '' = ''> = {
   [TKey in keyof TObject]?: TKey extends keyof StrictCSSProperties
     ? ApplySchemaValue<TSchema, TKey, TPseudoKey>
-    : TKey extends CSSPseudos
-    ? TKey extends `@${string}`
-      ? ApplySchema<TObject[TKey], TSchema>
-      : ApplySchema<TObject[TKey], TSchema, TKey>
-    : '__VALUE_NOT_ALLOWED__';
+    : TKey extends CSSPseudoClasses
+    ? ApplySchema<TObject[TKey], TSchema, TKey>
+    : ApplySchema<TObject[TKey], TSchema>;
 };
 
-interface CompiledAPI<TSchema extends CompiledSchema> {
+export interface CompiledAPI<TSchema extends CompiledSchema> {
   /**
    * ## CSS
    *
@@ -46,7 +46,7 @@ interface CompiledAPI<TSchema extends CompiledSchema> {
    * <div css={redText} />
    * ```
    */
-  css<TStyles extends CompiledSchema>(styles: ApplySchema<TStyles, TSchema>): StrictCSSProperties;
+  css<TStyles extends AllowedStyles>(styles: ApplySchema<TStyles, TSchema>): StrictCSSProperties;
   /**
    * ## CSS Map
    *
@@ -63,7 +63,7 @@ interface CompiledAPI<TSchema extends CompiledSchema> {
    * <div css={styles.solid} />
    * ```
    */
-  cssMap<TStylesMap extends Record<string, CompiledSchema>>(styles: {
+  cssMap<TStylesMap extends Record<string, AllowedStyles>>(styles: {
     [P in keyof TStylesMap]: ApplySchema<TStylesMap[P], TSchema>;
   }): {
     readonly [P in keyof TStylesMap]: CompiledStyles<TStylesMap[P]>;
