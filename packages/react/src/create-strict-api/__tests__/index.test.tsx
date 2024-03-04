@@ -1,16 +1,23 @@
 /** @jsxImportSource @compiled/react */
 import { render } from '@testing-library/react';
 
-import { css, cssMap, XCSSProp } from './__fixtures__/strict-api';
+import { css, cssMap, XCSSProp, cx } from './__fixtures__/strict-api';
 
 describe('createStrictAPI()', () => {
   describe('css()', () => {
     it('should type error when circumventing the excess property check', () => {
-      const styles = css({
+      const stylesOne = css({
         color: 'var(--ds-text)',
         accentColor: 'red',
         // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
         bkgrnd: 'red',
+        '&:hover': {
+          color: 'var(--ds-text-hover)',
+        },
+      });
+      const stylesTwo = css({
+        color: 'var(--ds-text)',
+        accentColor: 'red',
         '&:hover': {
           color: 'var(--ds-text-hover)',
           // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
@@ -18,7 +25,7 @@ describe('createStrictAPI()', () => {
         },
       });
 
-      const { getByTestId } = render(<div css={styles} data-testid="div" />);
+      const { getByTestId } = render(<div css={[stylesOne, stylesTwo]} data-testid="div" />);
 
       expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
     });
@@ -79,7 +86,7 @@ describe('createStrictAPI()', () => {
         color: 'var(--ds-text)',
         all: 'inherit',
         '&:hover': { color: 'var(--ds-text-hover)' },
-        '&:invalid': { color: 'orange' },
+        '&:invalid': { color: 'var(--ds-text)' },
       });
 
       const { getByTestId } = render(<div css={styles} data-testid="div" />);
@@ -391,21 +398,22 @@ describe('createStrictAPI()', () => {
       function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', '&:hover'>> }) {
         return <button data-testid="button" className={xcss} />;
       }
-
       const styles = cssMap({
         primary: {
           // @ts-expect-error -- Fails because `foo` is not assignable to our CSSProperties whatsoever.
           foo: 'bar',
           background: 'var(--ds-surface)',
+        },
+        hover: {
           '&:hover': {
-            // This does not fail, but would if the above was removed; this should be tested in raw `cssMap` fully.
+            // @ts-expect-error -- Fails because `foo` is not assignable to our CSSProperties whatsoever.
             foo: 'bar',
             background: 'var(--ds-surface-hover)',
           },
         },
       });
 
-      const { getByTestId } = render(<Button xcss={styles.primary} />);
+      const { getByTestId } = render(<Button xcss={cx(styles.primary, styles.hover)} />);
 
       expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
     });
