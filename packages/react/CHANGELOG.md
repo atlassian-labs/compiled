@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.16.10
+
+### Patch Changes
+
+- a68817a2: Fix css function base types to have CSS property values available in intellisense.
+
 ## 0.16.9
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @compiled/parcel-transformer
 
+## 0.14.7
+
+### Patch Changes
+
+- 41bcb1eb: Allow the transformer to bail early if compiled isn't present
+- Updated dependencies [7d3406c9]
+- Updated dependencies [d5c6578c]
+  - @compiled/babel-plugin@0.28.3
+
 ## 0.14.6
 
 ### Patch Changes
