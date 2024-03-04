@@ -1,6 +1,6 @@
 import type { StrictCSSProperties, CSSPseudoClasses, CSSPseudos } from '../types';
 
-export type CompiledSchema = StrictCSSProperties & {
+export type CompiledSchemaShape = StrictCSSProperties & {
   [Q in CSSPseudoClasses]?: StrictCSSProperties;
 };
 
