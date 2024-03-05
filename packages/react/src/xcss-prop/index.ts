@@ -12,7 +12,9 @@ type XCSSValue<
   TPseudoKey extends CSSPseudoClasses | ''
 > = {
   [Q in keyof StrictCSSProperties]: Q extends TStyleDecl
-    ? CompiledPropertyDeclarationReference | ApplySchemaValue<TSchema, Q, TPseudoKey>
+    ?
+        | (CompiledPropertyDeclarationReference & ApplySchemaValue<TSchema, Q, TPseudoKey>)
+        | ApplySchemaValue<TSchema, Q, TPseudoKey>
     : never;
 };
 
@@ -57,7 +59,7 @@ type CompiledPropertyDeclarationReference = {
 export type CompiledStyles<TObject> = {
   [Q in keyof TObject]: TObject[Q] extends Record<string, unknown>
     ? CompiledStyles<TObject[Q]>
-    : CompiledPropertyDeclarationReference;
+    : CompiledPropertyDeclarationReference & TObject[Q];
 };
 
 /**

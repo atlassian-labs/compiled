@@ -1,4 +1,6 @@
 /** @jsxImportSource @compiled/react */
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { cssMap as cssMapLoose } from '@compiled/react';
 import { render } from '@testing-library/react';
 
 import { css, cssMap, XCSSProp, cx } from './__fixtures__/strict-api';
@@ -355,9 +357,16 @@ describe('createStrictAPI()', () => {
         return <button data-testid={testId} className={xcss} />;
       }
 
-      const styles = cssMap({
+      const stylesOne = cssMapLoose({
         primary: {
-          // @ts-expect-error -- This is not in the `createStrictAPI` schema—this should be a css variable.
+          color: 'red',
+          background: 'var(--ds-surface)',
+          '&:hover': { background: 'var(--ds-surface-hover)' },
+        },
+      });
+      const stylesTwo = cssMap({
+        primary: {
+          // @ts-expect-error — This is not in the `createStrictAPI` schema—this should be a css variable.
           color: 'red',
           background: 'var(--ds-surface)',
           '&:hover': { background: 'var(--ds-surface-hover)' },
@@ -366,11 +375,20 @@ describe('createStrictAPI()', () => {
 
       const { getByTestId } = render(
         <>
-          <Button testId="button-1" xcss={styles.primary} />
+          <Button
+            testId="button-1"
+            // @ts-expect-error — This is not in the `createStrictAPI` schema—this should be a css variable.
+            xcss={stylesOne.primary}
+          />
+          <Button
+            testId="button-3"
+            // @ts-expect-error — This is not in the `createStrictAPI` schema—this should be a css variable.
+            xcss={stylesTwo.stylesTwo}
+          />
           <Button
             testId="button-2"
             xcss={{
-              // @ts-expect-error -- This is not in the `createStrictAPI` schema—this should be a css variable.
+              // @ts-expect-error — This is not in the `createStrictAPI` schema—this should be a css variable.
               color: 'red',
             }}
           />
@@ -394,7 +412,7 @@ describe('createStrictAPI()', () => {
 
       const { getByTestId } = render(
         <Button
-          // @ts-expect-error -- Errors because `background` + `&:hover` are not in the `XCSSProp` schema.
+          // @ts-expect-error — Errors because `background` + `&:hover` are not in the `XCSSProp` schema.
           xcss={styles.primary}
         />
       );
@@ -408,13 +426,13 @@ describe('createStrictAPI()', () => {
       }
       const styles = cssMap({
         primary: {
-          // @ts-expect-error -- Fails because `foo` is not assignable to our CSSProperties whatsoever.
+          // @ts-expect-error — Fails because `foo` is not assignable to our CSSProperties whatsoever.
           foo: 'bar',
           background: 'var(--ds-surface)',
         },
         hover: {
           '&:hover': {
-            // @ts-expect-error -- Fails because `foo` is not assignable to our CSSProperties whatsoever.
+            // @ts-expect-error — Fails because `foo` is not assignable to our CSSProperties whatsoever.
             foo: 'bar',
             background: 'var(--ds-surface-hover)',
           },
