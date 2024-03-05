@@ -12,7 +12,7 @@ type XCSSValue<
   TPseudoKey extends CSSPseudoClasses | ''
 > = {
   [Q in keyof StrictCSSProperties]: Q extends TStyleDecl
-    ? CompiledPropertyDeclarationReference | ApplySchemaValue<TSchema, Q, TPseudoKey>
+    ? ApplySchemaValue<TSchema, Q, TPseudoKey>
     : never;
 };
 
@@ -23,10 +23,11 @@ type XCSSPseudo<
   TSchema
 > = {
   [Q in CSSPseudos]?: Q extends TAllowedPseudos
-    ? MarkAsRequired<
-        XCSSValue<TAllowedProperties, TSchema, Q extends CSSPseudoClasses ? Q : ''>,
-        TRequiredProperties['requiredProperties']
-      >
+    ? XCSSValue<TAllowedProperties, TSchema, Q extends CSSPseudoClasses ? Q : ''> &
+        MarkAsRequired<
+          XCSSValue<TAllowedProperties, TSchema, Q extends CSSPseudoClasses ? Q : ''>,
+          TRequiredProperties['requiredProperties']
+        >
     : never;
 };
 
@@ -45,9 +46,9 @@ type BlockedRules = {
   [Q in CSS.AtRules]?: never;
 };
 
-type CompiledPropertyDeclarationReference = {
+interface CompiledPropertyDeclarationReference {
   ['__COMPILED_PROPERTY_DECLARATION_REFERENCE_DO_NOT_WRITE_DIRECTLY__']: true;
-};
+}
 
 /**
  * Used to mark styles that have been flushed through an API as being generated
@@ -57,8 +58,8 @@ type CompiledPropertyDeclarationReference = {
 export type CompiledStyles<TObject> = {
   [Q in keyof TObject]: TObject[Q] extends Record<string, unknown>
     ? CompiledStyles<TObject[Q]>
-    : CompiledPropertyDeclarationReference;
-};
+    : TObject[Q];
+} & CompiledPropertyDeclarationReference;
 
 /**
  * Please think twice before using this type, you're better off declaring explicitly
@@ -162,7 +163,8 @@ export type Internal$XCSSProp<
         XCSSPseudo<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TSchema>,
         TRequiredProperties['requiredPseudos']
       > &
-      BlockedRules)
+      BlockedRules &
+      CompiledPropertyDeclarationReference)
   | false
   | null
   | undefined;

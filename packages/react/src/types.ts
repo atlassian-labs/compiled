@@ -111,3 +111,7 @@ export type CSSProperties = Readonly<CSS.Properties<string | number>>;
  * vendor and obsolete properties.
  */
 export type StrictCSSProperties = Readonly<CSS.StandardProperties & CSS.SvgProperties>;
+
+export interface CompiledPropertyDeclarationReference {
+  ['__COMPILED_PROPERTY_DECLARATION_REFERENCE_DO_NOT_WRITE_DIRECTLY__']: true;
+}

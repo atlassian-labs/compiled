@@ -1,4 +1,4 @@
-import type { CssFunction } from '../types';
+import type { CssFunction, CompiledPropertyDeclarationReference } from '../types';
 
 type WithConditionalCSSProp<TProps> = 'className' extends keyof TProps
   ? string extends TProps['className' & keyof TProps]
@@ -80,7 +80,11 @@ export namespace CompiledJSX {
        * The class name prop now can be given the output of xcss prop from `@compiled/react`.
        */
       className?: string | Record<string, any> | null | false;
-      css?: CssFunction<void> | CssFunction<void>[];
+      css?:
+        | CssFunction<void>
+        | CssFunction<void>[]
+        | (CssFunction<void> & CompiledPropertyDeclarationReference)
+        | (CssFunction<void> & CompiledPropertyDeclarationReference)[];
     };
   };
 }

@@ -1,6 +1,9 @@
 /** @jsxImportSource @compiled/react */
 import { render } from '@testing-library/react';
 
+import baseCssMap from '../../css-map';
+
+import type { CompiledStrictAPI } from './__fixtures__/strict-api';
 import { css, cssMap, XCSSProp, cx } from './__fixtures__/strict-api';
 
 describe('createStrictAPI()', () => {
@@ -344,7 +347,7 @@ describe('createStrictAPI()', () => {
       expect(getByTestId('button')).toHaveCompiledCss('color', 'var(--ds-text)');
     });
 
-    it('should error with values not in the strict `CompiledAPI`', () => {
+    it('should error with values not in the strict `CompiledStrictSchema`', () => {
       function Button({
         xcss,
         testId,
@@ -355,20 +358,54 @@ describe('createStrictAPI()', () => {
         return <button data-testid={testId} className={xcss} />;
       }
 
-      const styles = cssMap({
+      const stylesInvalidRoot = baseCssMap({
         primary: {
-          // @ts-expect-error -- This is not in the `createStrictAPI` schema—this should be a css variable.
           color: 'red',
-          background: 'var(--ds-surface)',
-          '&:hover': { background: 'var(--ds-surface-hover)' },
+          '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+        },
+      });
+
+      const stylesInvalid = cssMap({
+        primary: {
+          // @ts-expect-error -- This is not valid in the CompiledStrictSchema
+          color: 'red',
+          '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+        },
+      });
+
+      const stylesValid = cssMap({
+        primary: {
+          color: 'var(--ds-text)',
+          '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
         },
       });
 
       const { getByTestId } = render(
         <>
-          <Button testId="button-1" xcss={styles.primary} />
           <Button
-            testId="button-2"
+            testId="button-invalid-root"
+            // @ts-expect-error -- This conflicts with the custom API, should be a different bg color
+            xcss={stylesInvalidRoot.primary}
+          />
+          <Button
+            testId="button-invalid-root-cx"
+            // @ts-expect-error -- This conflicts with the custom API, should be a different bg color
+            xcss={cx(stylesInvalidRoot.primary, stylesValid.primary)}
+          />
+          <Button
+            testId="button-invalid-strict"
+            // @ts-expect-error -- TODO: This should conflict, but when `cssMap` conflicts, it gets a different type (this has `ApplySchema`, not the raw object), so this doesn't error?  Weird…
+            xcss={stylesInvalid.primary}
+          />
+          <Button
+            testId="button-invalid-strict-cx"
+            // @ts-expect-error -- TODO: This should conflict, but when `cssMap` conflicts, it gets a different type (this has `ApplySchema`, not the raw object), so this doesn't error?  Weird…
+            xcss={cx(stylesInvalid.primary, stylesValid.primary)}
+          />
+          <Button testId="button-valid" xcss={stylesValid.primary} />
+          <Button testId="button-valid-cx" xcss={cx(stylesValid.primary, stylesValid.primary)} />
+          <Button
+            testId="button-invalid-direct"
             xcss={{
               // @ts-expect-error -- This is not in the `createStrictAPI` schema—this should be a css variable.
               color: 'red',
@@ -377,7 +414,83 @@ describe('createStrictAPI()', () => {
         </>
       );
 
-      expect(getByTestId('button-1')).toHaveCompiledCss('background', 'var(--ds-surface)');
+      expect(getByTestId('button-invalid')).toHaveCompiledCss('background', 'var(--ds-surface)');
+    });
+
+    it('should error with values not in a custom `CompiledAPI` generic', () => {
+      function Button({
+        xcss,
+        testId,
+      }: {
+        testId: string;
+        xcss: ReturnType<
+          typeof XCSSProp<
+            'background' | 'color',
+            '&:hover',
+            never,
+            CompiledStrictAPI & { background: 'var(--ds-surface-sunken)' } // custom generic restricting our API
+          >
+        >;
+      }) {
+        return <button data-testid={testId} className={xcss} />;
+      }
+
+      const stylesInvalidRoot = baseCssMap({
+        primary: {
+          background: 'var(--ds-surface)',
+          '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+        },
+      });
+
+      const stylesInvalid = cssMap({
+        primary: {
+          background: 'var(--ds-surface)',
+          '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+        },
+      });
+
+      const stylesValid = cssMap({
+        primary: {
+          background: 'var(--ds-surface-sunken)',
+          '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+        },
+      });
+
+      const { getByTestId } = render(
+        <>
+          <Button
+            testId="button-invalid-root"
+            // @ts-expect-error -- This conflicts with the xcss-prop level restriction, should be a different bg color
+            xcss={stylesInvalidRoot.primary}
+          />
+          <Button
+            testId="button-invalid-root-cx"
+            // @ts-expect-error -- This conflicts with the xcss-prop level restriction, should be a different bg color
+            xcss={cx(stylesInvalidRoot.primary, stylesValid.primary)}
+          />
+          <Button
+            testId="button-invalid-strict"
+            // @ts-expect-error -- This conflicts with the xcss-prop level restriction, should be a different bg color
+            xcss={stylesInvalid.primary}
+          />
+          <Button
+            testId="button-invalid-strict-cx"
+            // @ts-expect-error -- This conflicts with the xcss-prop level restriction, should be a different bg color
+            xcss={cx(stylesInvalid.primary, stylesValid.primary)}
+          />
+          <Button testId="button-valid" xcss={stylesValid.primary} />
+          <Button testId="button-valid-cx" xcss={cx(stylesValid.primary, stylesValid.primary)} />
+          <Button
+            testId="button-invalid-direct"
+            xcss={{
+              // @ts-expect-error -- This conflicts with the xcss-prop level restriction, should be a different bg color
+              background: 'red',
+            }}
+          />
+        </>
+      );
+
+      expect(getByTestId('button-invalid')).toHaveCompiledCss('background', 'var(--ds-surface)');
     });
 
     it('should error with properties not in the `XCSSProp`', () => {
@@ -426,12 +539,25 @@ describe('createStrictAPI()', () => {
       expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
     });
 
+    it('should error without `cssMap`', () => {
+      function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', never>> }) {
+        return <button data-testid="button" className={xcss} />;
+      }
+
+      // @ts-expect-error -- Direct objects are not allowed by the type definition
+      const { getByTestId } = render(<Button xcss={{ background: 'var(--ds-surface)' }} />);
+
+      expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
+    });
+
     it('should allow valid values', () => {
       function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', never>> }) {
         return <button data-testid="button" className={xcss} />;
       }
 
-      const { getByTestId } = render(<Button xcss={{ background: 'var(--ds-surface)' }} />);
+      const styles = cssMap({ primary: { background: 'var(--ds-surface)' } });
+
+      const { getByTestId } = render(<Button xcss={styles.primary} />);
 
       expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
     });

@@ -128,8 +128,9 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
     TRequiredProperties extends {
       requiredProperties: TAllowedProperties;
       requiredPseudos: TAllowedPseudos;
-    } = never
-  >(): Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, TSchema, TRequiredProperties>;
+    } = never,
+    CustomTSchema extends CompiledSchemaShape = TSchema
+  >(): Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, CustomTSchema, TRequiredProperties>;
 }
 
 /**
