@@ -38,7 +38,7 @@ export type ApplySchemaValue<
 /**
  * Recursively maps over object properties to resolve them to either a {@link TSchema}
  * value if present, else fallback to its value from {@link StrictCSSProperties}. If
- * the property isn't a known CSS property its value will be resolved to `never`.
+ * the property isn't a known property its value will be resolved to `never`.
  */
 export type ApplySchema<TObject, TSchema, TPseudoKey extends CSSPseudoClasses | '' = ''> = {
   [TKey in keyof TObject]?: TKey extends keyof StrictCSSProperties
