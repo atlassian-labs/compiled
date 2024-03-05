@@ -22,7 +22,7 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
    */
   css<TStyles extends ApplySchema<TStyles, TSchema>>(
     styles: AllowedStyles & TStyles
-  ): CompiledStyles<TStyles>;
+  ): Readonly<CompiledStyles<TStyles>>;
   /**
    * ## CSS Map
    *

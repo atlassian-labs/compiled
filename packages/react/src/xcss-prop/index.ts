@@ -12,9 +12,7 @@ type XCSSValue<
   TPseudoKey extends CSSPseudoClasses | ''
 > = {
   [Q in keyof StrictCSSProperties]: Q extends TStyleDecl
-    ?
-        | (CompiledPropertyDeclarationReference & ApplySchemaValue<TSchema, Q, TPseudoKey>)
-        | ApplySchemaValue<TSchema, Q, TPseudoKey>
+    ? ApplySchemaValue<TSchema, Q, TPseudoKey>
     : never;
 };
 
