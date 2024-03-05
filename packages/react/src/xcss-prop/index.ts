@@ -2,7 +2,13 @@ import type * as CSS from 'csstype';
 
 import type { ApplySchemaValue } from '../create-strict-api/types';
 import { ac } from '../runtime';
-import type { CSSPseudos, CSSPseudoClasses, CSSProperties, StrictCSSProperties } from '../types';
+import type {
+  CSSPseudos,
+  CSSPseudoClasses,
+  CSSProperties,
+  StrictCSSProperties,
+  CompiledPropertyDeclarationReference,
+} from '../types';
 
 type MarkAsRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
@@ -45,10 +51,6 @@ type BlockedRules = {
    */
   [Q in CSS.AtRules]?: never;
 };
-
-interface CompiledPropertyDeclarationReference {
-  ['__COMPILED_PROPERTY_DECLARATION_REFERENCE_DO_NOT_WRITE_DIRECTLY__']: true;
-}
 
 /**
  * Used to mark styles that have been flushed through an API as being generated
