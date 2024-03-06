@@ -290,7 +290,9 @@ describe('createStrictAPI()', () => {
       }) {
         return <button data-testid={testId} className={xcss} />;
       }
-      // NOTE: Even though valid, it cannot be consumed within `xcss` due to technical reasons
+      // NOTE: For some reason the "background" property is being expanded to "string" instead of
+      // staying narrowed as "var(--ds-surface-hover)" meaning it breaks when used with the strict
+      // schema loaded XCSS prop. This is a bug and unexpected.
       const stylesValidRoot = cssMapLoose({
         primary: {
           color: 'var(--ds-text)',
@@ -332,12 +334,16 @@ describe('createStrictAPI()', () => {
           />
           <Button
             testId="button-valid-root"
-            // @ts-expect-error — We do not accept loose `cssMap` values
+            // @ts-expect-error — For some reason the "background" property is being expanded to "string" instead of
+            // staying narrowed as "var(--ds-surface-hover)" meaning it breaks when used with the strict
+            // schema loaded XCSS prop. This is a bug and unexpected.
             xcss={stylesValidRoot.primary}
           />
           <Button
             testId="button-valid-root-cx"
-            // @ts-expect-error — We do not accept loose `cssMap` values
+            // @ts-expect-error — For some reason the "background" property is being expanded to "string" instead of
+            // staying narrowed as "var(--ds-surface-hover)" meaning it breaks when used with the strict
+            // schema loaded XCSS prop. This is a bug and unexpected.
             xcss={cx(stylesValidRoot.primary, stylesValid.primary)}
           />
           <Button
