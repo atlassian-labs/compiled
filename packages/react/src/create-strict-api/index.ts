@@ -1,4 +1,4 @@
-import type { StrictCSSProperties, CSSPseudos } from '../types';
+import type { StrictCSSProperties, CSSPseudos, CSSProps } from '../types';
 import { createStrictSetupError } from '../utils/error';
 import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop';
 
@@ -11,6 +11,8 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
    * Creates styles that are statically typed and useable with other Compiled APIs.
    * For further details [read the documentation](https://compiledcssinjs.com/docs/api-css).
    *
+   * This API does not currently work with XCSS prop.
+   *
    * @example
    * ```
    * const redText = css({
@@ -22,7 +24,10 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
    */
   css<TStyles extends ApplySchema<TStyles, TSchema>>(
     styles: AllowedStyles & TStyles
-  ): Readonly<CompiledStyles<TStyles>>;
+    // NOTE: This return type is deliberately not using ReadOnly<CompiledStyles<TStyles>>
+    // So it type errors when used with XCSS prop. When we update the compiler to work with
+    // it we can update the return type so it stops being a type violation.
+  ): CSSProps<unknown>;
   /**
    * ## CSS Map
    *
