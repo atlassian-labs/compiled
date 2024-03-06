@@ -9,6 +9,8 @@ import { createSetupError } from '../utils/error';
  * Create styles that are statically typed and useable with other Compiled APIs.
  * For further details [read the documentation](https://compiledcssinjs.com/docs/api-css).
  *
+ * This API does not currently work with XCSS prop.
+ *
  * ### Style with objects
  *
  * @example
