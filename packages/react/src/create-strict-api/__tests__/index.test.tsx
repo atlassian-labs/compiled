@@ -333,20 +333,6 @@ describe('createStrictAPI()', () => {
             xcss={cx(stylesInvalidRoot.primary, stylesValid.primary)}
           />
           <Button
-            testId="button-valid-root"
-            // @ts-expect-error — For some reason the "background" property is being expanded to "string" instead of
-            // staying narrowed as "var(--ds-surface-hover)" meaning it breaks when used with the strict
-            // schema loaded XCSS prop. This is a bug and unexpected.
-            xcss={stylesValidRoot.primary}
-          />
-          <Button
-            testId="button-valid-root-cx"
-            // @ts-expect-error — For some reason the "background" property is being expanded to "string" instead of
-            // staying narrowed as "var(--ds-surface-hover)" meaning it breaks when used with the strict
-            // schema loaded XCSS prop. This is a bug and unexpected.
-            xcss={cx(stylesValidRoot.primary, stylesValid.primary)}
-          />
-          <Button
             testId="button-invalid-strict"
             // @ts-expect-error — TODO: This should conflict, but when `cssMap` conflicts, it gets a different type (this has `ApplySchema`, not the raw object), so this doesn't error?  Weird…
             xcss={stylesInvalid.primary}
@@ -356,14 +342,19 @@ describe('createStrictAPI()', () => {
             // @ts-expect-error — TODO: This should conflict, but when `cssMap` conflicts, it gets a different type (this has `ApplySchema`, not the raw object), so this doesn't error?  Weird…
             xcss={cx(stylesInvalid.primary, stylesValid.primary)}
           />
-          <Button testId="button-valid" xcss={stylesValid.primary} />
-          <Button testId="button-valid-cx" xcss={cx(stylesValid.primary, stylesValid.primary)} />
           <Button
             testId="button-invalid-direct"
             xcss={{
               // @ts-expect-error — This is not in the `createStrictAPI` schema—this should be a css variable.
               color: 'red',
             }}
+          />
+          <Button testId="button-valid" xcss={stylesValid.primary} />
+          <Button testId="button-valid-cx" xcss={cx(stylesValid.primary, stylesValid.primary)} />
+          <Button testId="button-valid-root" xcss={stylesValidRoot.primary} />
+          <Button
+            testId="button-valid-root-cx"
+            xcss={cx(stylesValidRoot.primary, stylesValid.primary)}
           />
         </>
       );
