@@ -519,12 +519,16 @@ describe('createStrictAPI()', () => {
       function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', '&:hover'>> }) {
         return <button data-testid="button" className={xcss} />;
       }
-      const styles = cssMap({
+
+      // Split into two to have proper ts errors
+      const stylesOne = cssMap({
         primary: {
           // @ts-expect-error -- Fails because `foo` is not assignable to our CSSProperties whatsoever.
           foo: 'bar',
           background: 'var(--ds-surface)',
         },
+      });
+      const stylesTwo = cssMap({
         hover: {
           '&:hover': {
             // @ts-expect-error -- Fails because `foo` is not assignable to our CSSProperties whatsoever.
@@ -534,7 +538,7 @@ describe('createStrictAPI()', () => {
         },
       });
 
-      const { getByTestId } = render(<Button xcss={cx(styles.primary, styles.hover)} />);
+      const { getByTestId } = render(<Button xcss={cx(stylesOne.primary, stylesTwo.hover)} />);
 
       expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
     });
