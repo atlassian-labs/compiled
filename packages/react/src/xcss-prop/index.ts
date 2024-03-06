@@ -1,27 +1,30 @@
 import type * as CSS from 'csstype';
 
+import type { ApplySchemaValue } from '../create-strict-api/types';
 import { ac } from '../runtime';
-import type { CSSPseudos, CSSProperties, StrictCSSProperties } from '../types';
+import type { CSSPseudos, CSSPseudoClasses, CSSProperties, StrictCSSProperties } from '../types';
 
 type MarkAsRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
-type XCSSItem<TStyleDecl extends keyof CSSProperties, TSchema> = {
-  [Q in keyof CSSProperties]: Q extends TStyleDecl
-    ?
-        | CompiledPropertyDeclarationReference
-        | (Q extends keyof TSchema ? TSchema[Q] : CSSProperties[Q])
+type XCSSValue<
+  TStyleDecl extends keyof CSSProperties,
+  TSchema,
+  TPseudoKey extends CSSPseudoClasses | ''
+> = {
+  [Q in keyof StrictCSSProperties]: Q extends TStyleDecl
+    ? ApplySchemaValue<TSchema, Q, TPseudoKey>
     : never;
 };
 
-type XCSSPseudos<
-  TAllowedProperties extends keyof CSSProperties,
+type XCSSPseudo<
+  TAllowedProperties extends keyof StrictCSSProperties,
   TAllowedPseudos extends CSSPseudos,
   TRequiredProperties extends { requiredProperties: TAllowedProperties },
   TSchema
 > = {
   [Q in CSSPseudos]?: Q extends TAllowedPseudos
     ? MarkAsRequired<
-        XCSSItem<TAllowedProperties, Q extends keyof TSchema ? TSchema[Q] : object>,
+        XCSSValue<TAllowedProperties, TSchema, Q extends CSSPseudoClasses ? Q : ''>,
         TRequiredProperties['requiredProperties']
       >
     : never;
@@ -54,7 +57,7 @@ type CompiledPropertyDeclarationReference = {
 export type CompiledStyles<TObject> = {
   [Q in keyof TObject]: TObject[Q] extends Record<string, unknown>
     ? CompiledStyles<TObject[Q]>
-    : CompiledPropertyDeclarationReference;
+    : CompiledPropertyDeclarationReference & TObject[Q];
 };
 
 /**
@@ -134,7 +137,7 @@ export type XCSSAllPseudos = CSSPseudos;
  * To concatenate and conditonally apply styles use the {@link cssMap} {@link cx} functions.
  */
 export type XCSSProp<
-  TAllowedProperties extends keyof CSSProperties,
+  TAllowedProperties extends keyof StrictCSSProperties,
   TAllowedPseudos extends CSSPseudos,
   TRequiredProperties extends {
     requiredProperties: TAllowedProperties;
@@ -143,7 +146,7 @@ export type XCSSProp<
 > = Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, object, TRequiredProperties>;
 
 export type Internal$XCSSProp<
-  TAllowedProperties extends keyof CSSProperties,
+  TAllowedProperties extends keyof StrictCSSProperties,
   TAllowedPseudos extends CSSPseudos,
   TSchema,
   TRequiredProperties extends {
@@ -152,11 +155,11 @@ export type Internal$XCSSProp<
   }
 > =
   | (MarkAsRequired<
-      XCSSItem<TAllowedProperties, TSchema>,
+      XCSSValue<TAllowedProperties, TSchema, ''>,
       TRequiredProperties['requiredProperties']
     > &
       MarkAsRequired<
-        XCSSPseudos<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TSchema>,
+        XCSSPseudo<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TSchema>,
         TRequiredProperties['requiredPseudos']
       > &
       BlockedRules)

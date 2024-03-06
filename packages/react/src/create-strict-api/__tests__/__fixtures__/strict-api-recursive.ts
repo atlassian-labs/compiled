@@ -6,29 +6,29 @@ type ColorPressed = 'var(--ds-text-pressed)';
 type Background = 'var(--ds-bold)' | 'var(--ds-success)';
 type BackgroundHovered = 'var(--ds-bold-hovered)' | 'var(--ds-success-hovered)';
 type BackgroundPressed = 'var(--ds-bold-pressed)' | 'var(--ds-success-pressed)';
+type Space = 'var(--ds-space-050)' | 'var(--ds-space-0)';
 
 interface Properties {
   color: Color;
   backgroundColor: Background;
+  padding: Space;
 }
 
-interface HoveredProperties extends Omit<Properties, 'backgroundColor' | 'color'> {
+interface HoveredProperties {
   color: ColorHovered;
   backgroundColor: BackgroundHovered;
 }
 
-interface PressedProperties extends Omit<Properties, 'backgroundColor' | 'color'> {
+interface PressedProperties {
   color: ColorPressed;
   backgroundColor: BackgroundPressed;
 }
 
-interface StrictAPI extends Properties {
+interface CSSPropertiesSchema extends Properties {
   '&:hover': HoveredProperties;
   '&:active': PressedProperties;
-  '&::before': Properties;
-  '&::after': Properties;
 }
 
-const { css, XCSSProp, cssMap, cx } = createStrictAPI<StrictAPI>();
+const { css, cssMap, cx, XCSSProp } = createStrictAPI<CSSPropertiesSchema>();
 
 export { css, XCSSProp, cssMap, cx };

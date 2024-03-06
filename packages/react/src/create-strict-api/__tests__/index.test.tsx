@@ -1,16 +1,25 @@
 /** @jsxImportSource @compiled/react */
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { cssMap as cssMapLoose } from '@compiled/react';
 import { render } from '@testing-library/react';
 
-import { css, cssMap, XCSSProp } from './__fixtures__/strict-api';
+import { css, cssMap, XCSSProp, cx } from './__fixtures__/strict-api';
 
 describe('createStrictAPI()', () => {
   describe('css()', () => {
     it('should type error when circumventing the excess property check', () => {
-      const styles = css({
+      const stylesOne = css({
         color: 'var(--ds-text)',
         accentColor: 'red',
         // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
         bkgrnd: 'red',
+        '&:hover': {
+          color: 'var(--ds-text-hover)',
+        },
+      });
+      const stylesTwo = css({
+        color: 'var(--ds-text)',
+        accentColor: 'red',
         '&:hover': {
           color: 'var(--ds-text-hover)',
           // @ts-expect-error — Type 'string' is not assignable to type 'undefined'.ts(2322)
@@ -18,7 +27,7 @@ describe('createStrictAPI()', () => {
         },
       });
 
-      const { getByTestId } = render(<div css={styles} data-testid="div" />);
+      const { getByTestId } = render(<div css={[stylesOne, stylesTwo]} data-testid="div" />);
 
       expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
     });
@@ -79,7 +88,7 @@ describe('createStrictAPI()', () => {
         color: 'var(--ds-text)',
         all: 'inherit',
         '&:hover': { color: 'var(--ds-text-hover)' },
-        '&:invalid': { color: 'orange' },
+        '&:invalid': { color: 'var(--ds-text)' },
       });
 
       const { getByTestId } = render(<div css={styles} data-testid="div" />);
@@ -146,7 +155,7 @@ describe('createStrictAPI()', () => {
           accentColor: 'red',
           all: 'inherit',
           '&:hover': { color: 'var(--ds-text-hover)' },
-          '&:invalid': { color: 'orange' },
+          '&:invalid': { color: 'var(--ds-text)' },
         },
       });
 
@@ -271,12 +280,103 @@ describe('createStrictAPI()', () => {
   });
 
   describe('XCSSProp', () => {
+    it('should error with values not in the strict `CompiledStrictSchema`', () => {
+      function Button({
+        xcss,
+        testId,
+      }: {
+        testId: string;
+        xcss: ReturnType<typeof XCSSProp<'background' | 'color', '&:hover'>>;
+      }) {
+        return <button data-testid={testId} className={xcss} />;
+      }
+      // NOTE: For some reason the "background" property is being expanded to "string" instead of
+      // staying narrowed as "var(--ds-surface-hover)" meaning it breaks when used with the strict
+      // schema loaded XCSS prop. This is a bug and unexpected.
+      const stylesValidRoot = cssMapLoose({
+        primary: {
+          color: 'var(--ds-text)',
+          '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+        },
+      });
+      const stylesInvalidRoot = cssMapLoose({
+        primary: {
+          color: 'red',
+          '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+        },
+      });
+      const stylesInvalid = cssMap({
+        primary: {
+          // @ts-expect-error -- This is not valid in the CompiledStrictSchema
+          color: 'red',
+          '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+        },
+      });
+
+      const stylesValid = cssMap({
+        primary: {
+          color: 'var(--ds-text)',
+          '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+        },
+      });
+
+      const { getByTestId } = render(
+        <>
+          <Button
+            testId="button-invalid-root"
+            // @ts-expect-error — This conflicts with the custom API, should be a different bg color
+            xcss={stylesInvalidRoot.primary}
+          />
+          <Button
+            testId="button-invalid-root-cx"
+            // @ts-expect-error — This conflicts with the custom API, should be a different bg color
+            xcss={cx(stylesInvalidRoot.primary, stylesValid.primary)}
+          />
+          <Button
+            testId="button-valid-root"
+            // @ts-expect-error — For some reason the "background" property is being expanded to "string" instead of
+            // staying narrowed as "var(--ds-surface-hover)" meaning it breaks when used with the strict
+            // schema loaded XCSS prop. This is a bug and unexpected.
+            xcss={stylesValidRoot.primary}
+          />
+          <Button
+            testId="button-valid-root-cx"
+            // @ts-expect-error — For some reason the "background" property is being expanded to "string" instead of
+            // staying narrowed as "var(--ds-surface-hover)" meaning it breaks when used with the strict
+            // schema loaded XCSS prop. This is a bug and unexpected.
+            xcss={cx(stylesValidRoot.primary, stylesValid.primary)}
+          />
+          <Button
+            testId="button-invalid-strict"
+            // @ts-expect-error — TODO: This should conflict, but when `cssMap` conflicts, it gets a different type (this has `ApplySchema`, not the raw object), so this doesn't error?  Weird…
+            xcss={stylesInvalid.primary}
+          />
+          <Button
+            testId="button-invalid-strict-cx"
+            // @ts-expect-error — TODO: This should conflict, but when `cssMap` conflicts, it gets a different type (this has `ApplySchema`, not the raw object), so this doesn't error?  Weird…
+            xcss={cx(stylesInvalid.primary, stylesValid.primary)}
+          />
+          <Button testId="button-valid" xcss={stylesValid.primary} />
+          <Button testId="button-valid-cx" xcss={cx(stylesValid.primary, stylesValid.primary)} />
+          <Button
+            testId="button-invalid-direct"
+            xcss={{
+              // @ts-expect-error — This is not in the `createStrictAPI` schema—this should be a css variable.
+              color: 'red',
+            }}
+          />
+        </>
+      );
+
+      expect(getByTestId('button-invalid-root')).toHaveCompiledCss('color', 'red');
+    });
+
     it('should allow valid values from cssMap', () => {
       function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', never>> }) {
         return <button data-testid="button" className={xcss} />;
       }
-
       const styles = cssMap({ bg: { background: 'var(--ds-surface)' } });
+
       const { getByTestId } = render(<Button xcss={styles.bg} />);
 
       expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
@@ -302,7 +402,6 @@ describe('createStrictAPI()', () => {
       function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', '&:hover'>> }) {
         return <button data-testid="button" className={xcss} />;
       }
-
       const styles = cssMap({
         primary: {
           background: 'var(--ds-surface)',
@@ -341,15 +440,24 @@ describe('createStrictAPI()', () => {
     it('should error with values not in the strict `CompiledAPI`', () => {
       function Button({
         xcss,
+        testId,
       }: {
+        testId: string;
         xcss: ReturnType<typeof XCSSProp<'background' | 'color', '&:hover'>>;
       }) {
-        return <button data-testid="button" className={xcss} />;
+        return <button data-testid={testId} className={xcss} />;
       }
 
-      const styles = cssMap({
+      const stylesOne = cssMapLoose({
         primary: {
-          // @ts-expect-error -- This is not in the `createStrictAPI` schema—this should be a css variable.
+          color: 'red',
+          background: 'var(--ds-surface)',
+          '&:hover': { background: 'var(--ds-surface-hover)' },
+        },
+      });
+      const stylesTwo = cssMap({
+        primary: {
+          // @ts-expect-error — This is not in the `createStrictAPI` schema—this should be a css variable.
           color: 'red',
           background: 'var(--ds-surface)',
           '&:hover': { background: 'var(--ds-surface-hover)' },
@@ -357,13 +465,28 @@ describe('createStrictAPI()', () => {
       });
 
       const { getByTestId } = render(
-        <Button
-          // @ts-expect-error -- Errors because `color` conflicts with the `XCSSProp` schema–`color` should be a css variable.
-          xcss={styles.primary}
-        />
+        <>
+          <Button
+            testId="button-1"
+            // @ts-expect-error — This is not in the `createStrictAPI` schema—this should be a css variable.
+            xcss={stylesOne.primary}
+          />
+          <Button
+            testId="button-3"
+            // @ts-expect-error — This is not in the `createStrictAPI` schema—this should be a css variable.
+            xcss={stylesTwo.stylesTwo}
+          />
+          <Button
+            testId="button-2"
+            xcss={{
+              // @ts-expect-error — This is not in the `createStrictAPI` schema—this should be a css variable.
+              color: 'red',
+            }}
+          />
+        </>
       );
 
-      expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
+      expect(getByTestId('button-1')).toHaveCompiledCss('background', 'var(--ds-surface)');
     });
 
     it('should error with properties not in the `XCSSProp`', () => {
@@ -380,7 +503,7 @@ describe('createStrictAPI()', () => {
 
       const { getByTestId } = render(
         <Button
-          // @ts-expect-error -- Errors because `background` + `&:hover` are not in the `XCSSProp` schema.
+          // @ts-expect-error — Errors because `background` + `&:hover` are not in the `XCSSProp` schema.
           xcss={styles.primary}
         />
       );
@@ -392,21 +515,24 @@ describe('createStrictAPI()', () => {
       function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', '&:hover'>> }) {
         return <button data-testid="button" className={xcss} />;
       }
-
-      const styles = cssMap({
+      const stylesOne = cssMap({
         primary: {
-          // @ts-expect-error -- Fails because `foo` is not assignable to our CSSProperties whatsoever.
+          // @ts-expect-error — Fails because `foo` is not assignable to our CSSProperties whatsoever.
           foo: 'bar',
           background: 'var(--ds-surface)',
+        },
+      });
+      const stylesTwo = cssMap({
+        hover: {
           '&:hover': {
-            // This does not fail, but would if the above was removed; this should be tested in raw `cssMap` fully.
+            // @ts-expect-error — Fails because `foo` is not assignable to our CSSProperties whatsoever.
             foo: 'bar',
             background: 'var(--ds-surface-hover)',
           },
         },
       });
 
-      const { getByTestId } = render(<Button xcss={styles.primary} />);
+      const { getByTestId } = render(<Button xcss={cx(stylesOne.primary, stylesTwo.hover)} />);
 
       expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
     });
@@ -536,27 +662,84 @@ describe('createStrictAPI()', () => {
 
     it('should enforce required properties', () => {
       function Button({
+        testId,
         xcss,
       }: {
+        testId: string;
         xcss: ReturnType<
           typeof XCSSProp<
-            'background',
+            'background' | 'color',
             never,
             { requiredProperties: 'background'; requiredPseudos: never }
           >
         >;
       }) {
-        return <button data-testid="button" className={xcss} />;
+        return <button data-testid={`button-${testId}`} className={xcss} />;
       }
 
+      const stylesValid = cssMap({
+        primary: { background: 'var(--ds-surface)' },
+      });
+      const stylesInvalid = cssMap({
+        primary: { color: 'var(--ds-text)' },
+      });
+
       const { getByTestId } = render(
-        <Button
-          // @ts-expect-error — Type '{}' is not assignable to type 'Internal$XCSSProp<"background", never, EnforceSchema<{ background: "var(--ds-surface)" | "var(--ds-surface-sunken"; }>, object, { requiredProperties: "background"; requiredPseudos: never; }>'.ts(2322)
-          xcss={{}}
-        />
+        <>
+          <Button testId="valid" xcss={stylesValid.primary} />
+          <Button
+            testId="invalid"
+            // @ts-expect-error — This is not assignable as it's missing the required `background` property.
+            xcss={stylesInvalid.primary}
+          />
+        </>
       );
 
-      expect(getByTestId('button')).not.toHaveCompiledCss('color', 'red');
+      expect(getByTestId('button-valid')).toHaveCompiledCss('background', 'var(--ds-surface)');
+      expect(getByTestId('button-invalid')).toHaveCompiledCss('color', 'var(--ds-text)');
+    });
+
+    it('should enforce required psuedos', () => {
+      function Button({
+        testId,
+        xcss,
+      }: {
+        testId: string;
+        xcss: ReturnType<
+          typeof XCSSProp<
+            'color',
+            '&:hover' | '&:focus',
+            { requiredProperties: never; requiredPseudos: '&:hover' }
+          >
+        >;
+      }) {
+        return <button data-testid={`button-${testId}`} className={xcss} />;
+      }
+
+      const stylesValid = cssMap({
+        primary: { '&:hover': { color: 'var(--ds-text-hover)' } },
+      });
+      const stylesInvalid = cssMap({
+        primary: { '&:focus': { color: 'var(--ds-text)' } },
+      });
+
+      const { getByTestId } = render(
+        <>
+          <Button testId="valid" xcss={stylesValid.primary} />
+          <Button
+            testId="invalid"
+            // @ts-expect-error — This is not assignable as it's missing the required `background` property.
+            xcss={stylesInvalid.primary}
+          />
+        </>
+      );
+
+      expect(getByTestId('button-valid')).toHaveCompiledCss('color', 'var(--ds-text-hover)', {
+        target: ':hover',
+      });
+      expect(getByTestId('button-invalid')).toHaveCompiledCss('color', 'var(--ds-text)', {
+        target: ':focus',
+      });
     });
   });
 
