@@ -394,12 +394,12 @@ describe('createStrictAPI()', () => {
           />
           <Button
             testId="button-invalid-strict"
-            // @ts-expect-error -- TODO: This should conflict, but when `cssMap` conflicts, it gets a different type (this has `ApplySchema`, not the raw object), so this doesn't error?  Weird…
+            // @ts-expect-error -- This should conflict, but when `cssMap` conflicts, it gets a different type (this has `ApplySchema`, not the raw object), so this doesn't error?  Weird…
             xcss={stylesInvalid.primary}
           />
           <Button
             testId="button-invalid-strict-cx"
-            // @ts-expect-error -- TODO: This should conflict, but when `cssMap` conflicts, it gets a different type (this has `ApplySchema`, not the raw object), so this doesn't error?  Weird…
+            // @ts-expect-error -- This should conflict, but when `cssMap` conflicts, it gets a different type (this has `ApplySchema`, not the raw object), so this doesn't error?  Weird…
             xcss={cx(stylesInvalid.primary, stylesValid.primary)}
           />
           <Button testId="button-valid" xcss={stylesValid.primary} />
