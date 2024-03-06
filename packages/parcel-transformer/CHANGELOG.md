@@ -1,5 +1,11 @@
 # @compiled/parcel-transformer
 
+## 0.15.0
+
+### Minor Changes
+
+- 0666530c: Add new parcel transformer for distributed Compiled code
+
 ## 0.14.7
 
 ### Patch Changes
