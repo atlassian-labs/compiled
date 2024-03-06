@@ -1,6 +1,6 @@
 import { createStrictAPI } from '../../index';
 
-interface API {
+interface CSSPropertiesSchema {
   '&:hover': {
     color: 'var(--ds-text-hover)';
     background: 'var(--ds-surface-hover)' | 'var(--ds-surface-sunken-hover)';
@@ -10,6 +10,6 @@ interface API {
   bkgrnd: 'red' | 'green';
 }
 
-const { css, XCSSProp, cssMap, cx } = createStrictAPI<API>();
+const { css, XCSSProp, cssMap, cx } = createStrictAPI<CSSPropertiesSchema>();
 
 export { css, XCSSProp, cssMap, cx };

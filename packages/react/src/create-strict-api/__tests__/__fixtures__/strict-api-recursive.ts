@@ -24,11 +24,11 @@ interface PressedProperties {
   backgroundColor: BackgroundPressed;
 }
 
-interface StrictAPI extends Properties {
+interface CSSPropertiesSchema extends Properties {
   '&:hover': HoveredProperties;
   '&:active': PressedProperties;
 }
 
-const { css, cssMap, cx, XCSSProp } = createStrictAPI<StrictAPI>();
+const { css, cssMap, cx, XCSSProp } = createStrictAPI<CSSPropertiesSchema>();
 
 export { css, XCSSProp, cssMap, cx };

@@ -59,13 +59,6 @@ describe('createStrictAPI()', () => {
 
   describe('type violations', () => {
     it('should violate types for css()', () => {
-      css({
-        color: 'var(--ds-text)',
-        '&:hover': {
-          color: 'var(--ds-text-hovered)',
-        },
-      });
-
       const styles = css({
         // @ts-expect-error — Type '""' is not assignable to type ...
         color: '',
