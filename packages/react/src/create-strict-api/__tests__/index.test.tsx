@@ -280,6 +280,76 @@ describe('createStrictAPI()', () => {
   });
 
   describe('XCSSProp', () => {
+    it('should error with values not in the strict `CompiledStrictSchema`', () => {
+      function Button({
+        xcss,
+        testId,
+      }: {
+        testId: string;
+        xcss: ReturnType<typeof XCSSProp<'background' | 'color', '&:hover'>>;
+      }) {
+        return <button data-testid={testId} className={xcss} />;
+      }
+
+      const stylesInvalidRoot = cssMapLoose({
+        primary: {
+          color: 'red',
+          '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+        },
+      });
+
+      const stylesInvalid = cssMap({
+        primary: {
+          // @ts-expect-error -- This is not valid in the CompiledStrictSchema
+          color: 'red',
+          '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+        },
+      });
+
+      const stylesValid = cssMap({
+        primary: {
+          color: 'var(--ds-text)',
+          '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+        },
+      });
+
+      const { getByTestId } = render(
+        <>
+          <Button
+            testId="button-invalid-root"
+            // @ts-expect-error — This conflicts with the custom API, should be a different bg color
+            xcss={stylesInvalidRoot.primary}
+          />
+          <Button
+            testId="button-invalid-root-cx"
+            // @ts-expect-error — This conflicts with the custom API, should be a different bg color
+            xcss={cx(stylesInvalidRoot.primary, stylesValid.primary)}
+          />
+          <Button
+            testId="button-invalid-strict"
+            // @ts-expect-error — TODO: This should conflict, but when `cssMap` conflicts, it gets a different type (this has `ApplySchema`, not the raw object), so this doesn't error?  Weird…
+            xcss={stylesInvalid.primary}
+          />
+          <Button
+            testId="button-invalid-strict-cx"
+            // @ts-expect-error — TODO: This should conflict, but when `cssMap` conflicts, it gets a different type (this has `ApplySchema`, not the raw object), so this doesn't error?  Weird…
+            xcss={cx(stylesInvalid.primary, stylesValid.primary)}
+          />
+          <Button testId="button-valid" xcss={stylesValid.primary} />
+          <Button testId="button-valid-cx" xcss={cx(stylesValid.primary, stylesValid.primary)} />
+          <Button
+            testId="button-invalid-direct"
+            xcss={{
+              // @ts-expect-error — This is not in the `createStrictAPI` schema—this should be a css variable.
+              color: 'red',
+            }}
+          />
+        </>
+      );
+
+      expect(getByTestId('button-invalid')).toHaveCompiledCss('background', 'var(--ds-surface)');
+    });
+
     it('should allow valid values from cssMap', () => {
       function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', never>> }) {
         return <button data-testid="button" className={xcss} />;
@@ -424,12 +494,14 @@ describe('createStrictAPI()', () => {
       function Button({ xcss }: { xcss: ReturnType<typeof XCSSProp<'background', '&:hover'>> }) {
         return <button data-testid="button" className={xcss} />;
       }
-      const styles = cssMap({
+      const stylesOne = cssMap({
         primary: {
           // @ts-expect-error — Fails because `foo` is not assignable to our CSSProperties whatsoever.
           foo: 'bar',
           background: 'var(--ds-surface)',
         },
+      });
+      const stylesTwo = cssMap({
         hover: {
           '&:hover': {
             // @ts-expect-error — Fails because `foo` is not assignable to our CSSProperties whatsoever.
@@ -439,7 +511,7 @@ describe('createStrictAPI()', () => {
         },
       });
 
-      const { getByTestId } = render(<Button xcss={cx(styles.primary, styles.hover)} />);
+      const { getByTestId } = render(<Button xcss={cx(stylesOne.primary, stylesTwo.hover)} />);
 
       expect(getByTestId('button')).toHaveCompiledCss('background', 'var(--ds-surface)');
     });

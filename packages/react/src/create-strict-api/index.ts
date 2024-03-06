@@ -44,7 +44,10 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
    * <div css={styles.solid} />
    * ```
    */
-  cssMap<TStylesMap extends ApplySchemaMap<TStylesMap, TSchema>>(
+  cssMap<
+    TObject extends Record<string, AllowedStyles>,
+    TStylesMap extends ApplySchemaMap<TObject, TSchema>
+  >(
     styles: Record<string, AllowedStyles> & TStylesMap
   ): {
     readonly [P in keyof TStylesMap]: CompiledStyles<TStylesMap[P]>;
