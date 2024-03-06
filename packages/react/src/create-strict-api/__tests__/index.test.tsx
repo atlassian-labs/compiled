@@ -347,7 +347,7 @@ describe('createStrictAPI()', () => {
         </>
       );
 
-      expect(getByTestId('button-invalid')).toHaveCompiledCss('background', 'var(--ds-surface)');
+      expect(getByTestId('button-invalid-root')).toHaveCompiledCss('color', 'red');
     });
 
     it('should allow valid values from cssMap', () => {
