@@ -1,5 +1,17 @@
 # @compiled/parcel-config
 
+## 0.4.0
+
+### Minor Changes
+
+- 0666530c: Add new parcel transformer for distributed Compiled code
+
+### Patch Changes
+
+- Updated dependencies [0666530c]
+  - @compiled/parcel-transformer-external@0.1.0
+  - @compiled/parcel-transformer@0.15.0
+
 ## 0.3.2
 
 ### Patch Changes
