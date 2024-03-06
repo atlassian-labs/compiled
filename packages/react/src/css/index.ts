@@ -36,7 +36,9 @@ export default function css<TProps = unknown>(
   ...interpolations: CssFunction<TProps>[]
 ): CSSProps<TProps>;
 
-export default function css<T = unknown>(styles: CssObject<T> | CssObject<T>[]): CSSProps<T>;
+export default function css<T = unknown>(
+  styles: CssObject<T> | CssObject<T>[] | CSSProps<T> | CSSProps<T>[]
+): CSSProps<T>;
 
 export default function css<T = unknown>(
   _styles: TemplateStringsArray | CssObject<T> | CssObject<T>[],
