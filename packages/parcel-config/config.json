@@ -1,6 +1,10 @@
 {
   "transformers": {
-    "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}": ["@compiled/parcel-transformer", "..."]
+    "*.{js,mjs,jsm,jsx,es6,cjs,ts,tsx}": [
+      "@compiled/parcel-transformer-external",
+      "@compiled/parcel-transformer",
+      "..."
+    ]
   },
   "optimizers": {
     "*.html": ["@compiled/parcel-optimizer", "..."]

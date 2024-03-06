@@ -11,6 +11,7 @@
     "@compiled/babel-component-extracted-fixture": "*",
     "@compiled/babel-component-fixture": "*",
     "@compiled/parcel-transformer": "*",
+    "@compiled/parcel-transformer-external": "*",
     "@parcel/config-default": "^2.8.3"
   }
 }

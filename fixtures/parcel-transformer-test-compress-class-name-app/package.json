@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@compiled/parcel-transformer": "*",
+    "@compiled/parcel-transformer-external": "*",
     "@parcel/config-default": "^2.8.3"
   }
 }
