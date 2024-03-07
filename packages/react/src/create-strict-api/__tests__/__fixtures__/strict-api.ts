@@ -10,6 +10,15 @@ interface CSSPropertiesSchema {
   bkgrnd: 'red' | 'green';
 }
 
-const { css, XCSSProp, cssMap, cx } = createStrictAPI<CSSPropertiesSchema>();
+type MediaQuery =
+  | '(min-width: 30rem)'
+  | '(min-width: 48rem)'
+  | '(min-width: 64rem)'
+  | '(min-width: 90rem)'
+  | '(min-width: 110rem)'
+  | '(prefers-color-scheme: dark)'
+  | '(prefers-color-scheme: light)';
+
+const { css, XCSSProp, cssMap, cx } = createStrictAPI<CSSPropertiesSchema, MediaQuery>();
 
 export { css, XCSSProp, cssMap, cx };

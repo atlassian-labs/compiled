@@ -30,6 +30,21 @@ type XCSSPseudo<
     : never;
 };
 
+type XCSSMediaQuery<
+  TAllowedProperties extends keyof StrictCSSProperties,
+  TAllowedPseudos extends CSSPseudos,
+  TAllowedMediaQueries extends string,
+  TRequiredProperties extends { requiredProperties: TAllowedProperties },
+  TSchema
+> = {
+  [Q in `@media ${TAllowedMediaQueries}`]?:
+    | MarkAsRequired<
+        XCSSValue<TAllowedProperties, TSchema, Q extends CSSPseudoClasses ? Q : ''>,
+        TRequiredProperties['requiredProperties']
+      >
+    | XCSSPseudo<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TSchema>;
+};
+
 /**
  * These APIs we don't want to allow to be passed through the `xcss` prop but we also
  * must declare them so the (lack-of a) excess property check doesn't bite us and allow
@@ -38,10 +53,7 @@ type XCSSPseudo<
 type BlockedRules = {
   selectors?: never;
 } & {
-  /**
-   * We currently block all at rules from xcss prop.
-   * This needs us to decide on what the final API is across Compiled to be able to set.
-   */
+  // We also block all type level at rule "objects" that are present on cssMap.
   [Q in CSS.AtRules]?: never;
 };
 
@@ -143,11 +155,12 @@ export type XCSSProp<
     requiredProperties: TAllowedProperties;
     requiredPseudos: TAllowedPseudos;
   } = never
-> = Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, object, TRequiredProperties>;
+> = Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, string, object, TRequiredProperties>;
 
 export type Internal$XCSSProp<
   TAllowedProperties extends keyof StrictCSSProperties,
   TAllowedPseudos extends CSSPseudos,
+  TAllowedMediaQueries extends string,
   TSchema,
   TRequiredProperties extends {
     requiredProperties: TAllowedProperties;
@@ -161,6 +174,13 @@ export type Internal$XCSSProp<
       MarkAsRequired<
         XCSSPseudo<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TSchema>,
         TRequiredProperties['requiredPseudos']
+      > &
+      XCSSMediaQuery<
+        TAllowedProperties,
+        TAllowedPseudos,
+        TAllowedMediaQueries,
+        TRequiredProperties,
+        TSchema
       > &
       BlockedRules)
   | false
