@@ -1,5 +1,6 @@
 /** @jsxImportSource @compiled/react */
 // eslint-disable-next-line import/no-extraneous-dependencies
+import { cssMap as cssMapLoose } from '@compiled/react';
 import { render } from '@testing-library/react';
 
 import { cssMap } from '../../create-strict-api/__tests__/__fixtures__/strict-api';
@@ -29,7 +30,37 @@ const styles = cssMap({
   },
 });
 
+const looseStyles = cssMapLoose({
+  invalid: {
+    '@media': {
+      screen: { color: 'var(--ds-text)' },
+    },
+  },
+  valid: {
+    '@media (min-width: 110rem)': {
+      color: 'var(--ds-text)',
+    },
+  },
+});
+
 describe('xcss prop', () => {
+  it('should allow valid media queries from loose api', () => {
+    const { getByText } = render(<CSSPropComponent xcss={looseStyles.valid} />);
+
+    expect(getByText('foo')).toHaveCompiledCss('color', 'red', { media: '(min-width: 110rem)' });
+  });
+
+  it('should type error invalid media queries from loose api', () => {
+    const { getByText } = render(
+      <CSSPropComponent
+        // @ts-expect-error — Types of property '"@media"' are incompatible.
+        xcss={looseStyles.invalid}
+      />
+    );
+
+    expect(getByText('foo')).toHaveCompiledCss('color', 'red', { media: '(min-width: 110rem)' });
+  });
+
   it('should allow valid media queries in inline xcss prop', () => {
     const { getByText } = render(
       <CSSPropComponent
