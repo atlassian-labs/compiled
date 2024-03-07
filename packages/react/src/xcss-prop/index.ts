@@ -38,10 +38,7 @@ type XCSSMediaQuery<
   TSchema
 > = {
   [Q in `@media ${TAllowedMediaQueries}`]?:
-    | MarkAsRequired<
-        XCSSValue<TAllowedProperties, TSchema, Q extends CSSPseudoClasses ? Q : ''>,
-        TRequiredProperties['requiredProperties']
-      >
+    | XCSSValue<TAllowedProperties, TSchema, Q extends CSSPseudoClasses ? Q : ''>
     | XCSSPseudo<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TSchema>;
 };
 
