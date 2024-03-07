@@ -199,7 +199,7 @@ export interface CompiledAPI<
  */
 export function createStrictAPI<
   TSchema extends CompiledSchemaShape,
-  TAllowedMediaQueries extends string = string
+  TAllowedMediaQueries extends string = never
 >(): CompiledAPI<TSchema, TAllowedMediaQueries> {
   return {
     css() {
