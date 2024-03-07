@@ -83,6 +83,8 @@ type ExtendedSelectors = {
   selectors?: ExtendedSelector;
 };
 
+type LooseMediaQueries = Record<`@media ${string}`, CSSProperties & AllPseudos>;
+
 /**
  * ## CSS Map
  *
@@ -100,7 +102,10 @@ type ExtendedSelectors = {
  * ```
  */
 export default function cssMap<
-  TStyles extends Record<string, CSSProperties & WhitelistedSelector & ExtendedSelectors>
+  TStyles extends Record<
+    string,
+    CSSProperties & WhitelistedSelector & ExtendedSelectors & LooseMediaQueries
+  >
 >(
   _styles: TStyles
 ): {

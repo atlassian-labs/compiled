@@ -17,8 +17,18 @@ export const getKeyValue = (key: ObjectKeyWithLiteralValue): string => {
   throw new Error(`Expected an identifier or a string literal, got type ${(key as any).type}`);
 };
 
-export const isAtRule = (key: ObjectKeyWithLiteralValue): key is ObjectKeyWithLiteralValue =>
-  getKeyValue(key).startsWith('@');
+export const isAtRuleObject = (
+  key: ObjectKeyWithLiteralValue
+): key is ObjectKeyWithLiteralValue => {
+  const keyValue = getKeyValue(key);
+  if (keyValue.includes(' ')) {
+    // Anything that includes a space character won't have an at rule "object".
+    // So we can skip it here.
+    return false;
+  }
+
+  return keyValue.startsWith('@');
+};
 
 export const isPlainSelector = (selector: string): boolean => selector.startsWith(':');
 
