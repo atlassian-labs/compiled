@@ -27,7 +27,7 @@ Now takes an optional second generic to define what media queries are supported:
 ```diff
 createStrictAPI<
   { color: 'var(--text)' }
-+  '(min-width: 30rem)' | '(min-width: 48rem)'
++  { media: '(min-width: 30rem)' | '(min-width: 48rem)' }
 >();
 ```
 

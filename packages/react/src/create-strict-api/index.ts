@@ -4,6 +4,10 @@ import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop';
 
 import type { AllowedStyles, ApplySchema, ApplySchemaMap, CompiledSchemaShape } from './types';
 
+export interface StrictOptions {
+  media: string;
+}
+
 export interface CompiledAPI<
   TSchema extends CompiledSchemaShape,
   TAllowedMediaQueries extends string
@@ -164,17 +168,19 @@ export interface CompiledAPI<
  *
  * To set up:
  *
- * 1. Declare the API in a module (either local or in a package):
+ * 1. Declare the API in a module (either local or in a package), optionally declaring accepted media queries.
  *
  * @example
  * ```tsx
  * // ./foo.ts
- * const { css } = createStrictAPI<{
+ * interface Schema {
  *   color: 'var(--ds-text)',
  *   '&:hover': { color: 'var(--ds-text-hover)' }
- * }>();
+ * }
  *
- * export { css };
+ * const { css, cssMap, XCSSProp, cx } = createStrictAPI<Schema, { media: '(min-width: 30rem)' }>();
+ *
+ * export { css, cssMap, XCSSProp, cx };
  * ```
  *
  * 2. Configure Compiled to pick up this module:
@@ -200,8 +206,8 @@ export interface CompiledAPI<
  */
 export function createStrictAPI<
   TSchema extends CompiledSchemaShape,
-  TAllowedMediaQueries extends string = never
->(): CompiledAPI<TSchema, TAllowedMediaQueries> {
+  TCreateStrictAPIOptions extends StrictOptions = never
+>(): CompiledAPI<TSchema, TCreateStrictAPIOptions['media']> {
   return {
     css() {
       throw createStrictSetupError();
