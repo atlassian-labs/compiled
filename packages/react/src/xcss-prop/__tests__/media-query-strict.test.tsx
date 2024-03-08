@@ -22,7 +22,7 @@ const styles = cssMap({
       screen: { color: 'red' },
     },
   },
-  invalidQuery: {
+  invalidMediaQuery: {
     // @ts-expect-error — this specific @media is not in our allowed types
     '@media (min-width: 100px)': {
       color: 'red',
@@ -37,9 +37,19 @@ const styles = cssMap({
 });
 
 const looseStyles = cssMapLoose({
-  invalid: {
+  invalidMediaObject: {
     '@media': {
       screen: { color: 'var(--ds-text)' },
+    },
+  },
+  invalidMediaQuery: {
+    '@media (min-width: 100px)': {
+      color: 'red',
+    },
+  },
+  validMediaQueryInvalidProperty: {
+    '@media (min-width: 110rem)': {
+      color: 'red',
     },
   },
   valid: {
@@ -60,10 +70,13 @@ describe('xcss prop', () => {
 
   it('should type error invalid media queries from loose api', () => {
     const { getByText } = render(
-      <CSSPropComponent
-        // @ts-expect-error — Types of property '"@media"' are incompatible.
-        xcss={looseStyles.invalid}
-      />
+      <>
+        <CSSPropComponent
+          // @ts-expect-error — Types of property '"@media"' are incompatible.
+          xcss={looseStyles.invalidMediaObject}
+        />
+        <CSSPropComponent xcss={styles.invalidMediaObject} />
+      </>
     );
 
     expect(getByText('foo')).toHaveCompiledCss('color', 'var(--ds-text)', { media: 'screen' });
@@ -113,8 +126,33 @@ describe('xcss prop', () => {
     });
   });
 
-  it('should type error for disallowed nested media query object from cssMap', () => {
-    const { getByText } = render(<CSSPropComponent xcss={styles.invalidMediaObject} />);
+  it('should type error for unexpected media query', () => {
+    const { getByText } = render(
+      <>
+        <CSSPropComponent
+          // NOTE: This doesn't currently error as the excess property check does not
+          // kick in. The callsite of the strict API enforces this however.
+          xcss={styles.invalidMediaQuery}
+        />
+        <CSSPropComponent
+          // TODO: This really needs to type error else we're opening a can of worms.
+          // @ts-expect-error — Types of property '"@media"' are incompatible.
+          xcss={looseStyles.invalidMediaQuery}
+        />
+        <CSSPropComponent
+          // @ts-expect-error — Types of property '"@media"' are incompatible.
+          xcss={looseStyles.validMediaQueryInvalidProperty}
+        />
+        <CSSPropComponent
+          xcss={{
+            // @ts-expect-error — Types of property '"@media"' are incompatible.
+            '@media (min-width: 100px)': {
+              color: 'var(--ds-text)',
+            },
+          }}
+        />
+      </>
+    );
 
     expect(getByText('foo')).toHaveCompiledCss('color', 'red', { media: 'screen' });
   });
