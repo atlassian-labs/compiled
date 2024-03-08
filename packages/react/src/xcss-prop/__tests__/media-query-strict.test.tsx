@@ -47,7 +47,9 @@ describe('xcss prop', () => {
   it('should allow valid media queries from loose api', () => {
     const { getByText } = render(<CSSPropComponent xcss={looseStyles.valid} />);
 
-    expect(getByText('foo')).toHaveCompiledCss('color', 'red', { media: '(min-width: 110rem)' });
+    expect(getByText('foo')).toHaveCompiledCss('color', 'var(--ds-text)', {
+      media: '(min-width: 110rem)',
+    });
   });
 
   it('should type error invalid media queries from loose api', () => {
@@ -58,7 +60,7 @@ describe('xcss prop', () => {
       />
     );
 
-    expect(getByText('foo')).toHaveCompiledCss('color', 'red', { media: '(min-width: 110rem)' });
+    expect(getByText('foo')).toHaveCompiledCss('color', 'var(--ds-text)', { media: 'screen' });
   });
 
   it('should allow valid media queries in inline xcss prop', () => {
@@ -72,7 +74,9 @@ describe('xcss prop', () => {
       />
     );
 
-    expect(getByText('foo')).toHaveCompiledCss('color', 'red', { media: '(min-width: 110rem)' });
+    expect(getByText('foo')).toHaveCompiledCss('color', 'var(--ds-text)', {
+      media: '(min-width: 110rem)',
+    });
   });
 
   it('should allow valid media queries in inline xcss prop', () => {
