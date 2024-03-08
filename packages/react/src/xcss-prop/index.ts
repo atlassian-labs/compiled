@@ -34,12 +34,11 @@ type XCSSMediaQuery<
   TAllowedProperties extends keyof StrictCSSProperties,
   TAllowedPseudos extends CSSPseudos,
   TAllowedMediaQueries extends string,
-  TRequiredProperties extends { requiredProperties: TAllowedProperties },
   TSchema
 > = {
   [Q in `@media ${TAllowedMediaQueries}`]?:
     | XCSSValue<TAllowedProperties, TSchema, Q extends CSSPseudoClasses ? Q : ''>
-    | XCSSPseudo<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TSchema>;
+    | XCSSPseudo<TAllowedProperties, TAllowedPseudos, never, TSchema>;
 };
 
 /**
@@ -172,13 +171,7 @@ export type Internal$XCSSProp<
         XCSSPseudo<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TSchema>,
         TRequiredProperties['requiredPseudos']
       > &
-      XCSSMediaQuery<
-        TAllowedProperties,
-        TAllowedPseudos,
-        TAllowedMediaQueries,
-        TRequiredProperties,
-        TSchema
-      > &
+      XCSSMediaQuery<TAllowedProperties, TAllowedPseudos, TAllowedMediaQueries, TSchema> &
       BlockedRules)
   | false
   | null
