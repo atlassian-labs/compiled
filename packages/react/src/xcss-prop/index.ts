@@ -30,6 +30,17 @@ type XCSSPseudo<
     : never;
 };
 
+type XCSSMediaQuery<
+  TAllowedProperties extends keyof StrictCSSProperties,
+  TAllowedPseudos extends CSSPseudos,
+  TAllowedMediaQueries extends string,
+  TSchema
+> = {
+  [Q in `@media ${TAllowedMediaQueries}`]?:
+    | XCSSValue<TAllowedProperties, TSchema, ''>
+    | XCSSPseudo<TAllowedProperties, TAllowedPseudos, never, TSchema>;
+};
+
 /**
  * These APIs we don't want to allow to be passed through the `xcss` prop but we also
  * must declare them so the (lack-of a) excess property check doesn't bite us and allow
@@ -143,11 +154,12 @@ export type XCSSProp<
     requiredProperties: TAllowedProperties;
     requiredPseudos: TAllowedPseudos;
   } = never
-> = Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, object, TRequiredProperties>;
+> = Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, string, object, TRequiredProperties>;
 
 export type Internal$XCSSProp<
   TAllowedProperties extends keyof StrictCSSProperties,
   TAllowedPseudos extends CSSPseudos,
+  TAllowedMediaQueries extends string,
   TSchema,
   TRequiredProperties extends {
     requiredProperties: TAllowedProperties;
@@ -162,6 +174,7 @@ export type Internal$XCSSProp<
         XCSSPseudo<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TSchema>,
         TRequiredProperties['requiredPseudos']
       > &
+      XCSSMediaQuery<TAllowedProperties, TAllowedPseudos, TAllowedMediaQueries, TSchema> &
       BlockedRules)
   | false
   | null

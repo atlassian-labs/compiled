@@ -165,6 +165,7 @@ describe('createStrictAPI()', () => {
     });
 
     it('should allow valid properties inside pseudos that are different to root', () => {
+      // KYLOR NOTES: This type looks good?
       const styles = cssMap({
         primary: {
           background: 'var(--ds-surface)',
@@ -172,6 +173,9 @@ describe('createStrictAPI()', () => {
             accentColor: 'red',
             background: 'var(--ds-surface-hover)',
           },
+        },
+        invalid: {
+          '@media (min-width: 40rem)': { background: 'var(--ds-surface)' },
         },
       });
 
@@ -297,6 +301,7 @@ describe('createStrictAPI()', () => {
         primary: {
           color: 'var(--ds-text)',
           '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+          '@media (min-width: 40rem)': { background: 'var(--ds-surface)' },
         },
       });
       const stylesInvalidRoot = cssMapLoose({
@@ -310,6 +315,7 @@ describe('createStrictAPI()', () => {
           // @ts-expect-error -- This is not valid in the CompiledStrictSchema
           color: 'red',
           '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+          '@media (min-width: 40rem)': { background: 'var(--ds-surface)' },
         },
       });
 
@@ -317,6 +323,7 @@ describe('createStrictAPI()', () => {
         primary: {
           color: 'var(--ds-text)',
           '&:hover': { color: 'var(--ds-text-hover)', background: 'var(--ds-surface-hover)' },
+          '@media (min-width: 100rem)': { background: 'var(--ds-surface)' },
         },
       });
 

@@ -4,7 +4,10 @@ import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop';
 
 import type { AllowedStyles, ApplySchema, ApplySchemaMap, CompiledSchemaShape } from './types';
 
-export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
+export interface CompiledAPI<
+  TSchema extends CompiledSchemaShape,
+  CustomMediaQueries extends string
+> {
   /**
    * ## CSS
    *
@@ -23,7 +26,7 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
    * ```
    */
   css<TStyles extends ApplySchema<TStyles, TSchema>>(
-    styles: AllowedStyles & TStyles
+    styles: AllowedStyles<CustomMediaQueries> & TStyles
     // NOTE: This return type is deliberately not using ReadOnly<CompiledStyles<TStyles>>
     // So it type errors when used with XCSS prop. When we update the compiler to work with
     // it we can update the return type so it stops being a type violation.
@@ -45,10 +48,10 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
    * ```
    */
   cssMap<
-    TObject extends Record<string, AllowedStyles>,
+    TObject extends Record<string, AllowedStyles<CustomMediaQueries>>,
     TStylesMap extends ApplySchemaMap<TObject, TSchema>
   >(
-    styles: Record<string, AllowedStyles> & TStylesMap
+    styles: Record<string, AllowedStyles<CustomMediaQueries>> & TStylesMap
   ): {
     readonly [P in keyof TStylesMap]: CompiledStyles<TStylesMap[P]>;
   };
@@ -137,7 +140,13 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
       requiredProperties: TAllowedProperties;
       requiredPseudos: TAllowedPseudos;
     } = never
-  >(): Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, TSchema, TRequiredProperties>;
+  >(): Internal$XCSSProp<
+    TAllowedProperties,
+    TAllowedPseudos,
+    CustomMediaQueries,
+    TSchema,
+    TRequiredProperties
+  >;
 }
 
 /**
@@ -188,7 +197,10 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
  * <div css={styles} />
  * ```
  */
-export function createStrictAPI<TSchema extends CompiledSchemaShape>(): CompiledAPI<TSchema> {
+export function createStrictAPI<
+  TSchema extends CompiledSchemaShape,
+  TMediaQuery extends string
+>(): CompiledAPI<TSchema, TMediaQuery> {
   return {
     css() {
       throw createStrictSetupError();

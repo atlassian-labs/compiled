@@ -15,8 +15,13 @@ export type CompiledSchemaShape = StrictCSSProperties & {
 };
 
 export type PseudosDeclarations = { [Q in CSSPseudos]?: StrictCSSProperties };
+export type MediaQueries<TMedia extends string> = {
+  [Q in `@media ${TMedia}`]?: StrictCSSProperties & PseudosDeclarations;
+};
 
-export type AllowedStyles = StrictCSSProperties & PseudosDeclarations;
+export type AllowedStyles<TMedia extends string> = StrictCSSProperties &
+  PseudosDeclarations &
+  MediaQueries<TMedia>;
 
 export type ApplySchemaValue<
   TSchema,
