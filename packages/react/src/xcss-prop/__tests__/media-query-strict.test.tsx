@@ -8,11 +8,17 @@ import type { XCSSProp } from '../../create-strict-api/__tests__/__fixtures__/st
 import type { XCSSAllProperties, XCSSAllPseudos } from '../index';
 
 function CSSPropComponent({
+  testId,
   xcss,
 }: {
+  testId?: string;
   xcss: ReturnType<typeof XCSSProp<XCSSAllProperties, XCSSAllPseudos>>;
 }) {
-  return <div className={xcss}>foo</div>;
+  return (
+    <div data-testid={testId} className={xcss}>
+      foo
+    </div>
+  );
 }
 
 const styles = cssMap({
@@ -74,17 +80,17 @@ describe('xcss prop', () => {
   });
 
   it('should type error invalid media queries from loose api', () => {
-    const { getByText } = render(
+    const { getByTestId } = render(
       <>
         <CSSPropComponent
           // @ts-expect-error — Types of property '"@media"' are incompatible.
           xcss={looseStyles.invalidMediaObject}
         />
-        <CSSPropComponent xcss={styles.invalidMediaObject} />
+        <CSSPropComponent testId="foobar" xcss={styles.invalidMediaObject} />
       </>
     );
 
-    expect(getByText('foo')).toHaveCompiledCss('color', 'var(--ds-text)', { media: 'screen' });
+    expect(getByTestId('foobar')).toHaveCompiledCss('color', 'red', { media: 'screen' });
   });
 
   it('should allow valid media queries in inline xcss prop', () => {
@@ -132,7 +138,7 @@ describe('xcss prop', () => {
   });
 
   it('should type error for unexpected media query', () => {
-    const { getByText } = render(
+    const { getByTestId } = render(
       <>
         <CSSPropComponent
           // NOTE: This doesn't currently error as the output isn't the generic value
@@ -149,6 +155,7 @@ describe('xcss prop', () => {
           xcss={looseStyles.validMediaQueryInvalidProperty}
         />
         <CSSPropComponent
+          testId="foobar"
           xcss={{
             // @ts-expect-error — Types of property '"@media"' are incompatible.
             '@media (min-width: 100px)': {
@@ -159,7 +166,9 @@ describe('xcss prop', () => {
       </>
     );
 
-    expect(getByText('foo')).toHaveCompiledCss('color', 'red', { media: 'screen' });
+    expect(getByTestId('foobar')).toHaveCompiledCss('color', 'var(--ds-text)', {
+      media: '(min-width: 100px)',
+    });
   });
 
   it('should type check top level media query styles from cssMap', () => {
