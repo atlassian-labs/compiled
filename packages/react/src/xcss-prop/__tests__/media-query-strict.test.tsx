@@ -16,10 +16,16 @@ function CSSPropComponent({
 }
 
 const styles = cssMap({
-  invalid: {
+  invalidMediaObject: {
     // @ts-expect-error — @media at rule object is not allowed in strict cssMap
     '@media': {
       screen: { color: 'red' },
+    },
+  },
+  invalidQuery: {
+    // @ts-expect-error — this specific @media is not in our allowed types
+    '@media (min-width: 100px)': {
+      color: 'red',
     },
   },
   valid: {
@@ -108,7 +114,7 @@ describe('xcss prop', () => {
   });
 
   it('should type error for disallowed nested media query object from cssMap', () => {
-    const { getByText } = render(<CSSPropComponent xcss={styles.invalid} />);
+    const { getByText } = render(<CSSPropComponent xcss={styles.invalidMediaObject} />);
 
     expect(getByText('foo')).toHaveCompiledCss('color', 'red', { media: 'screen' });
   });
