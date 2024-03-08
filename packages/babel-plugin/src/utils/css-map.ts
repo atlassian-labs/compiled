@@ -1,9 +1,29 @@
 import * as t from '@babel/types';
+import type { AtRules } from 'csstype';
 
 import type { Metadata } from '../types';
 import { buildCodeFrameError } from '../utils/ast';
 
 export const EXTENDED_SELECTORS_KEY = 'selectors';
+
+const atRules: Record<AtRules, boolean> = {
+  '@charset': true,
+  '@counter-style': true,
+  '@document': true,
+  '@font-face': true,
+  '@font-feature-values': true,
+  '@font-palette-values': true,
+  '@import': true,
+  '@keyframes': true,
+  '@layer': true,
+  '@media': true,
+  '@namespace': true,
+  '@page': true,
+  '@property': true,
+  '@scroll-timeline': true,
+  '@supports': true,
+  '@viewport': true,
+};
 
 type ObjectKeyWithLiteralValue = t.Identifier | t.StringLiteral;
 
@@ -21,13 +41,7 @@ export const isAtRuleObject = (
   key: ObjectKeyWithLiteralValue
 ): key is ObjectKeyWithLiteralValue => {
   const keyValue = getKeyValue(key);
-  if (keyValue.includes(' ')) {
-    // Anything that includes a space character won't have an at rule "object".
-    // So we can skip it here.
-    return false;
-  }
-
-  return keyValue.startsWith('@');
+  return keyValue in atRules;
 };
 
 export const isPlainSelector = (selector: string): boolean => selector.startsWith(':');
