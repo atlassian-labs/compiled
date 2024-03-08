@@ -145,7 +145,8 @@ export interface CompiledAPI<
     TAllowedPseudos,
     TAllowedMediaQueries,
     TSchema,
-    TRequiredProperties
+    TRequiredProperties,
+    'strict'
   >;
 }
 

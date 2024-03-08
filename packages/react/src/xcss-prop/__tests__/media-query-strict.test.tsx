@@ -60,8 +60,13 @@ const looseStyles = cssMapLoose({
 });
 
 describe('xcss prop', () => {
-  it('should allow valid media queries from loose api', () => {
-    const { getByText } = render(<CSSPropComponent xcss={looseStyles.valid} />);
+  it('should block all usage of loose media queries in strict api as it is unsafe', () => {
+    const { getByText } = render(
+      <CSSPropComponent
+        // @ts-expect-error — Block all media queries in strict xcss prop
+        xcss={looseStyles.valid}
+      />
+    );
 
     expect(getByText('foo')).toHaveCompiledCss('color', 'var(--ds-text)', {
       media: '(min-width: 110rem)',
@@ -136,12 +141,11 @@ describe('xcss prop', () => {
           xcss={styles.invalidMediaQuery}
         />
         <CSSPropComponent
-          // TODO: This really needs to type error else we're opening a can of worms.
-          // @ts-expect-error — Types of property '"@media"' are incompatible.
+          // @ts-expect-error — Passing loose media queries to XCSS prop is not supported.
           xcss={looseStyles.invalidMediaQuery}
         />
         <CSSPropComponent
-          // @ts-expect-error — Types of property '"@media"' are incompatible.
+          // @ts-expect-error — Passing loose media queries to XCSS prop is not supported.
           xcss={looseStyles.validMediaQueryInvalidProperty}
         />
         <CSSPropComponent

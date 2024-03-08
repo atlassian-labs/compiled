@@ -86,6 +86,19 @@ type ExtendedSelectors = {
 type LooseMediaQueries = Record<`@media ${string}`, CSSProperties & AllPseudos>;
 
 /**
+ * We remap media query keys to `"@media"` so it's blocked inside the strict APIs.
+ * This is done as it's currently impossible to ensure type safety end-to-end — when
+ * passing in unknown media queries from the loose API into the strict API you end up
+ * being also able to pass any styles you want, which makes the whole point of the strict
+ * API meaningless.
+ *
+ * Sorry folks!
+ */
+type RemapMedia<TStyles> = {
+  [Q in keyof TStyles as Q extends `@media ${string}` ? '@media [loose]' : Q]: TStyles[Q];
+};
+
+/**
  * ## CSS Map
  *
  * Creates a collection of named styles that are statically typed and useable with other Compiled APIs.
@@ -109,7 +122,7 @@ export default function cssMap<
 >(
   _styles: TStyles
 ): {
-  readonly [P in keyof TStyles]: CompiledStyles<TStyles[P]>;
+  readonly [P in keyof TStyles]: CompiledStyles<RemapMedia<TStyles[P]>>;
 } {
   throw createSetupError();
 }
