@@ -130,8 +130,9 @@ describe('xcss prop', () => {
     const { getByText } = render(
       <>
         <CSSPropComponent
-          // NOTE: This doesn't currently error as the excess property check does not
-          // kick in. The callsite of the strict API enforces this however.
+          // NOTE: This doesn't currently error as the output isn't the generic value
+          // when the cssMap call has type supressions. While not ideal this is acceptable
+          // for now. Hopefully we can fix this in the future.
           xcss={styles.invalidMediaQuery}
         />
         <CSSPropComponent
