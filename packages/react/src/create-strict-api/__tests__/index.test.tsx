@@ -720,7 +720,7 @@ describe('createStrictAPI()', () => {
       expect(getByTestId('button-valid')).toHaveCompiledCss('color', 'var(--ds-text-hover)', {
         target: ':hover',
       });
-      expect(getByTestId('button-invalid')).toHaveCompiledCss('color', 'var(--ds-text)', {
+      expect(getByTestId('button-invalid')).toHaveCompiledCss('background', 'var(--ds-surface)', {
         target: ':focus',
       });
     });
