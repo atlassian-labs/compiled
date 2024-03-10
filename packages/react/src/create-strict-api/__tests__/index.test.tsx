@@ -658,11 +658,7 @@ describe('createStrictAPI()', () => {
       }: {
         testId: string;
         xcss: ReturnType<
-          typeof XCSSProp<
-            'background' | 'color',
-            never,
-            { requiredProperties: 'background'; requiredPseudos: never }
-          >
+          typeof XCSSProp<'background' | 'color', never, { requiredProperties: 'background' }>
         >;
       }) {
         return <button data-testid={`button-${testId}`} className={xcss} />;
@@ -697,11 +693,7 @@ describe('createStrictAPI()', () => {
       }: {
         testId: string;
         xcss: ReturnType<
-          typeof XCSSProp<
-            'color',
-            '&:hover' | '&:focus',
-            { requiredProperties: never; requiredPseudos: '&:hover' }
-          >
+          typeof XCSSProp<'color', '&:hover' | '&:focus', { requiredProperties: never }>
         >;
       }) {
         return <button data-testid={`button-${testId}`} className={xcss} />;
@@ -711,7 +703,7 @@ describe('createStrictAPI()', () => {
         primary: { '&:hover': { color: 'var(--ds-text-hover)' } },
       });
       const stylesInvalid = cssMap({
-        primary: { '&:focus': { color: 'var(--ds-text)' } },
+        primary: { '&:focus': { background: 'var(--ds-surface)' } },
       });
 
       const { getByTestId } = render(
@@ -728,7 +720,7 @@ describe('createStrictAPI()', () => {
       expect(getByTestId('button-valid')).toHaveCompiledCss('color', 'var(--ds-text-hover)', {
         target: ':hover',
       });
-      expect(getByTestId('button-invalid')).toHaveCompiledCss('color', 'var(--ds-text)', {
+      expect(getByTestId('button-invalid')).toHaveCompiledCss('background', 'var(--ds-surface)', {
         target: ':focus',
       });
     });

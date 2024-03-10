@@ -125,7 +125,7 @@ export type XCSSAllPseudos = CSSPseudos;
  *   xcss?: XCSSProp<XCSSAllProperties, '&:hover'>;
  *
  *   // The xcss prop is required as well as the color property. No pseudos are required.
- *   xcss: XCSSProp<XCSSAllProperties, '&:hover', { requiredProperties: 'color', requiredPseudos: never }>;
+ *   xcss: XCSSProp<XCSSAllProperties, '&:hover', { requiredProperties: 'color' }>;
  * }
  *
  * function MyComponent({ xcss }: MyComponentProps) {
@@ -152,7 +152,6 @@ export type XCSSProp<
   TAllowedPseudos extends CSSPseudos,
   TRequiredProperties extends {
     requiredProperties: TAllowedProperties;
-    requiredPseudos: TAllowedPseudos;
   } = never
 > = Internal$XCSSProp<
   TAllowedProperties,
@@ -170,7 +169,6 @@ export type Internal$XCSSProp<
   TSchema,
   TRequiredProperties extends {
     requiredProperties: TAllowedProperties;
-    requiredPseudos: TAllowedPseudos;
   },
   TMode extends 'loose' | 'strict'
 > =
@@ -178,10 +176,7 @@ export type Internal$XCSSProp<
       XCSSValue<TAllowedProperties, TSchema, ''>,
       TRequiredProperties['requiredProperties']
     > &
-      MarkAsRequired<
-        XCSSPseudo<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TSchema>,
-        TRequiredProperties['requiredPseudos']
-      > &
+      XCSSPseudo<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TSchema> &
       XCSSMediaQuery<TAllowedProperties, TAllowedPseudos, TAllowedMediaQueries, TSchema> &
       BlockedRules<TMode>)
   | false

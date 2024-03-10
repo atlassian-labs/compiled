@@ -114,7 +114,7 @@ export interface CompiledAPI<
    *    typeof XCSSProp<
    *      XCSSAllProperties,
    *      '&:hover',
-   *      { requiredProperties: 'color', requiredPseudos: never }
+   *      { requiredProperties: 'color' }
    *     >
    *   >;
    * }
@@ -142,7 +142,6 @@ export interface CompiledAPI<
     TAllowedPseudos extends CSSPseudos,
     TRequiredProperties extends {
       requiredProperties: TAllowedProperties;
-      requiredPseudos: TAllowedPseudos;
     } = never
   >(): Internal$XCSSProp<
     TAllowedProperties,
