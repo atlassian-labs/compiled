@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.28.4
+
+### Patch Changes
+
+- 4b2e5eeb: The CSS map transform now allows top level at rules to be defined.
+
 ## 0.28.3
 
 ### Patch Changes

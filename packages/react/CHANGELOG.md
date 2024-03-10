@@ -1,5 +1,80 @@
 # @compiled/react
 
+## 0.17.0
+
+### Minor Changes
+
+- 39d9a02c: The `requiredPseudos` type property in XCSS prop has been removed.
+- 5701b914: Types for `createStrictAPI` have been refactored to improve type inference and expectations.
+
+  Previously defining the schema came with a lot of redundant work. For every pseudo that you wanted to type you would have to define it, and then all of the base types again, like so:
+
+  ```ts
+  interface Schema {
+    background: 'var(--bg)';
+    color: 'var(--color)';
+    '&:hover': {
+      background: 'var(--bg)';
+      color: 'var(--color-hovered)';
+    };
+  }
+
+  createStrictAPI<Schema>();
+  ```
+
+  If you missed a value / didn't type every possible pseudo it would fallback to the CSSProperties value from csstype. This was mostly unexpected. So for example right now `&:hover` has been typed, but no other pseudo... meaning no other pseudos would benefit from the schema types!
+
+  With this refactor all CSS properties use the top types unless a more specific one is defined, meaning you only need to type the values you want to explicitly support. In the previous example we're now able to remove the `background` property as it's the same as the top one.
+
+  ```diff
+  interface Schema {
+    background: 'var(--bg)';
+    color: 'var(--color)';
+    '&:hover': {
+  -    background: 'var(--bg)';
+      color: 'var(--color-hovered)';
+    };
+  }
+
+  createStrictAPI<Schema>();
+  ```
+
+### Patch Changes
+
+- 4b2e5eeb: - The CSS map API now allows defining top level media queries. Previously you had to define them inside a `@media` object, this restriction has now been removed bringing it inline with the CSS function API.
+
+  - The XCSS prop and strict API types now allow defining and using media queries.
+
+  **XCSS prop**
+
+  The XCSS prop now takes top level media queries. Nested media queries is not allowed.
+
+  ```jsx
+  import { cssMap, css } from '@compiled/react';
+
+  const styles = cssMap({
+    valid: { '@media (min-width: 30rem)': { color: 'green' } },
+    invalid: { '@media': { '(min-width: 30rem)': { color: 'red' } } },
+  });
+
+  <Component xcss={styles.valid} />;
+  ```
+
+  **createStrictAPI**
+
+  Now takes an optional second generic to define what media queries are supported:
+
+  ```diff
+  createStrictAPI<
+    { color: 'var(--text)' }
+  +  { media: '(min-width: 30rem)' | '(min-width: 48rem)' }
+  >();
+  ```
+
+  Which is then flushed to all output APIs.
+
+- 20528e91: Better cssMap types: fix inference of complex types and adds descriptions to the type.
+
 ## 0.16.10
 
 ### Patch Changes
