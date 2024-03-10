@@ -8,7 +8,7 @@ import {
   errorIfNotValidObjectProperty,
   getKeyValue,
   hasExtendedSelectorsKey as propertyHasExtendedSelectorsKey,
-  isAtRule,
+  isAtRuleObject,
   objectKeyIsLiteralValue,
   isPlainSelector,
 } from '../utils/css-map';
@@ -150,7 +150,7 @@ export const mergeExtendedSelectorsIntoProperties = (
     // variable, so we can skip it now
     if (propertyHasExtendedSelectorsKey(property)) continue;
 
-    if (isAtRule(propertyKey)) {
+    if (isAtRuleObject(propertyKey)) {
       const atRuleType = getKeyValue(propertyKey);
       const atRules = collapseAtRule(property, atRuleType, meta);
 
@@ -162,6 +162,7 @@ export const mergeExtendedSelectorsIntoProperties = (
             meta.parentPath
           );
         }
+
         mergedProperties.push(atRuleValue);
         addedSelectors.add(atRuleName);
       }

@@ -4,7 +4,14 @@ import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop';
 
 import type { AllowedStyles, ApplySchema, ApplySchemaMap, CompiledSchemaShape } from './types';
 
-export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
+export interface StrictOptions {
+  media: string;
+}
+
+export interface CompiledAPI<
+  TSchema extends CompiledSchemaShape,
+  TAllowedMediaQueries extends string
+> {
   /**
    * ## CSS
    *
@@ -23,7 +30,7 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
    * ```
    */
   css<TStyles extends ApplySchema<TStyles, TSchema>>(
-    styles: AllowedStyles & TStyles
+    styles: AllowedStyles<TAllowedMediaQueries> & TStyles
     // NOTE: This return type is deliberately not using ReadOnly<CompiledStyles<TStyles>>
     // So it type errors when used with XCSS prop. When we update the compiler to work with
     // it we can update the return type so it stops being a type violation.
@@ -45,10 +52,10 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
    * ```
    */
   cssMap<
-    TObject extends Record<string, AllowedStyles>,
+    TObject extends Record<string, AllowedStyles<TAllowedMediaQueries>>,
     TStylesMap extends ApplySchemaMap<TObject, TSchema>
   >(
-    styles: Record<string, AllowedStyles> & TStylesMap
+    styles: Record<string, AllowedStyles<TAllowedMediaQueries>> & TStylesMap
   ): {
     readonly [P in keyof TStylesMap]: CompiledStyles<TStylesMap[P]>;
   };
@@ -137,7 +144,14 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
       requiredProperties: TAllowedProperties;
       requiredPseudos: TAllowedPseudos;
     } = never
-  >(): Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, TSchema, TRequiredProperties>;
+  >(): Internal$XCSSProp<
+    TAllowedProperties,
+    TAllowedPseudos,
+    TAllowedMediaQueries,
+    TSchema,
+    TRequiredProperties,
+    'strict'
+  >;
 }
 
 /**
@@ -154,17 +168,19 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
  *
  * To set up:
  *
- * 1. Declare the API in a module (either local or in a package):
+ * 1. Declare the API in a module (either local or in a package), optionally declaring accepted media queries.
  *
  * @example
  * ```tsx
  * // ./foo.ts
- * const { css } = createStrictAPI<{
+ * interface Schema {
  *   color: 'var(--ds-text)',
  *   '&:hover': { color: 'var(--ds-text-hover)' }
- * }>();
+ * }
  *
- * export { css };
+ * const { css, cssMap, XCSSProp, cx } = createStrictAPI<Schema, { media: '(min-width: 30rem)' }>();
+ *
+ * export { css, cssMap, XCSSProp, cx };
  * ```
  *
  * 2. Configure Compiled to pick up this module:
@@ -188,7 +204,10 @@ export interface CompiledAPI<TSchema extends CompiledSchemaShape> {
  * <div css={styles} />
  * ```
  */
-export function createStrictAPI<TSchema extends CompiledSchemaShape>(): CompiledAPI<TSchema> {
+export function createStrictAPI<
+  TSchema extends CompiledSchemaShape,
+  TCreateStrictAPIOptions extends StrictOptions = never
+>(): CompiledAPI<TSchema, TCreateStrictAPIOptions['media']> {
   return {
     css() {
       throw createStrictSetupError();

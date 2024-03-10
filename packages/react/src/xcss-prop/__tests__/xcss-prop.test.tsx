@@ -177,7 +177,7 @@ describe('xcss prop', () => {
     ).toBeObject();
   });
 
-  it('should type error when passing in at rules to xcss prop', () => {
+  it('should type error when passing in @media property to xcss prop', () => {
     function CSSPropComponent({ xcss }: { xcss: XCSSProp<'color', '&:hover'> }) {
       return <div className={xcss}>foo</div>;
     }

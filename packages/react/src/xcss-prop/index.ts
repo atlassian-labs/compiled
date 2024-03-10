@@ -30,18 +30,29 @@ type XCSSPseudo<
     : never;
 };
 
+type XCSSMediaQuery<
+  TAllowedProperties extends keyof StrictCSSProperties,
+  TAllowedPseudos extends CSSPseudos,
+  TAllowedMediaQueries extends string,
+  TSchema
+> = {
+  [Q in `@media ${TAllowedMediaQueries}`]?:
+    | XCSSValue<TAllowedProperties, TSchema, ''>
+    | XCSSPseudo<TAllowedProperties, TAllowedPseudos, never, TSchema>;
+};
+
 /**
  * These APIs we don't want to allow to be passed through the `xcss` prop but we also
  * must declare them so the (lack-of a) excess property check doesn't bite us and allow
  * unexpected values through.
  */
-type BlockedRules = {
+type BlockedRules<TMode extends 'loose' | 'strict'> = {
+  // To ensure styles that aren't allowed through XCSS prop strict APIs we block any
+  // loose media queries from being passed through as we can't ensure they're correct.
+  '@media [loose]'?: TMode extends 'loose' ? any : never;
   selectors?: never;
 } & {
-  /**
-   * We currently block all at rules from xcss prop.
-   * This needs us to decide on what the final API is across Compiled to be able to set.
-   */
+  // We also block all type level at rule "objects" that are present on cssMap.
   [Q in CSS.AtRules]?: never;
 };
 
@@ -143,16 +154,25 @@ export type XCSSProp<
     requiredProperties: TAllowedProperties;
     requiredPseudos: TAllowedPseudos;
   } = never
-> = Internal$XCSSProp<TAllowedProperties, TAllowedPseudos, object, TRequiredProperties>;
+> = Internal$XCSSProp<
+  TAllowedProperties,
+  TAllowedPseudos,
+  string,
+  object,
+  TRequiredProperties,
+  'loose'
+>;
 
 export type Internal$XCSSProp<
   TAllowedProperties extends keyof StrictCSSProperties,
   TAllowedPseudos extends CSSPseudos,
+  TAllowedMediaQueries extends string,
   TSchema,
   TRequiredProperties extends {
     requiredProperties: TAllowedProperties;
     requiredPseudos: TAllowedPseudos;
-  }
+  },
+  TMode extends 'loose' | 'strict'
 > =
   | (MarkAsRequired<
       XCSSValue<TAllowedProperties, TSchema, ''>,
@@ -162,7 +182,8 @@ export type Internal$XCSSProp<
         XCSSPseudo<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TSchema>,
         TRequiredProperties['requiredPseudos']
       > &
-      BlockedRules)
+      XCSSMediaQuery<TAllowedProperties, TAllowedPseudos, TAllowedMediaQueries, TSchema> &
+      BlockedRules<TMode>)
   | false
   | null
   | undefined;
