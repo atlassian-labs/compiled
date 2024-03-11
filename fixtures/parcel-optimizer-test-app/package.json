@@ -1,9 +1,9 @@
 {
   "name": "@compiled/parcel-optimizer-test-app",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "dependencies": {
-    "@compiled/react": "^0.16.0",
+    "@compiled/react": "^0.17.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
