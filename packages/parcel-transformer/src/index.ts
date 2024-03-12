@@ -108,17 +108,21 @@ export default new Transformer<ParcelTransformerOpts>({
       plugins: config.transformerBabelPlugins ?? undefined,
     });
 
-    return {
-      type: 'babel',
-      version: '7.0.0',
-      program,
-    };
+    if (program) {
+      return {
+        type: 'babel',
+        version: '7.0.0',
+        program,
+      };
+    }
+
+    return undefined;
   },
 
   async transform({ asset, config, options }) {
     const ast = await asset.getAST();
 
-    if (!ast) {
+    if (!(ast?.type === 'babel' && ast.program)) {
       // We will only receive ASTs for assets we're interested in.
       // Since this is undefined (or in node modules) we aren't interested in it.
       return [asset];
@@ -185,7 +189,7 @@ export default new Transformer<ParcelTransformerOpts>({
       asset.setAST({
         type: 'babel',
         version: '7.0.0',
-        program: result?.ast,
+        program: result.ast,
       });
     }
 
