@@ -1,5 +1,11 @@
 # @compiled/parcel-transformer
 
+## 0.15.1
+
+### Patch Changes
+
+- 6a606ee8: Check for missing AST in @compiled/parcel-transformer
+
 ## 0.15.0
 
 ### Minor Changes
