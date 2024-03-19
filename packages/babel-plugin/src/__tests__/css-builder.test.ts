@@ -50,6 +50,38 @@ describe('css builder', () => {
     `);
   });
 
+  it('works with css map', () => {
+    const actual = transform(`
+      import { cssMap } from '@compiled/react';
+
+      const styles = cssMap({ red: { color: 'red' }, blue: { color: 'blue' } });
+
+      function Component({ color }) {
+        return <div css={styles[color]} />
+      }
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _2 = "._syaz13q2{color:blue}";
+      const _ = "._syaz5scu{color:red}";
+      const styles = {
+        red: "_syaz5scu",
+        blue: "_syaz13q2",
+      };
+      function Component({ color }) {
+        return (
+          <CC>
+            <CS>{[_, _2]}</CS>
+            {<div className={ax([styles[color]])} />}
+          </CC>
+        );
+      }
+      "
+    `);
+  });
+
   it('works in spite of a style override', () => {
     const actual = transform(`
       import { css } from '@compiled/react';
@@ -124,8 +156,9 @@ describe('css builder', () => {
     `);
   });
 
-  it.only('does not work when there is simple logic to get to the style', () => {
-    const actual = transform(`
+  it('does not work when there is logic to get to the style', () => {
+    const actual = () =>
+      transform(`
       import { css } from '@compiled/react';
 
       const styles = {
@@ -140,31 +173,25 @@ describe('css builder', () => {
       }
     `);
 
-    expect(actual).toMatchInlineSnapshot(`
-      "import * as React from "react";
-      import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._syaz5scu{color:red}";
-      const styles = {
-        test: {
-          red: null,
-          blue: null,
-        },
-      };
-      function Component({ color }) {
-        return (
-          <CC>
-            <CS>{[_]}</CS>
-            {
-              <div
-                style={{
-                  background: "red",
-                }}
-                className={ax(["_syaz5scu"])}
-              />
-            }
-          </CC>
-        );
-      }
+    expect(actual).toThrowErrorMatchingInlineSnapshot(`
+      "unknown file:
+       ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
+      ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██║██║     ██╔════╝██╔══██╗
+      ██║     ██║   ██║██╔████╔██║██████╔╝██║██║     █████╗  ██║  ██║
+      ██║     ██║   ██║██║╚██╔╝██║██╔═══╝ ██║██║     ██╔══╝  ██║  ██║
+      ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║███████╗███████╗██████╔╝
+       ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═════╝
+
+        @compiled/css - Unhandled exception
+
+        An unhandled exception was raised when parsing your CSS, this is probably a bug!
+        Raise an issue here: https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=&template=bug_report.md&title=CSS%20Parsing%20Exception:%20
+
+        Input CSS: {
+          red
+        }
+
+        Exception: <css input>:1:1: Unknown word
       "
     `);
   });
