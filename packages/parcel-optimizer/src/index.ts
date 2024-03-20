@@ -71,7 +71,7 @@ export default new Optimizer<ParcelOptimizerOpts, unknown>({
           .use(
             insertAt({
               selector: 'head',
-              append: '<style>' + stylesheet + '</style>',
+              append: '<style title="compiled">' + stylesheet + '</style>',
               behavior: 'inside',
             })
           )
