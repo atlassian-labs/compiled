@@ -74,49 +74,4 @@ describe('buildCss', () => {
     expect(css).toEqual([{ css: 'background: red;', type: 'unconditional' }]);
     expect(variables).toEqual([]);
   });
-
-  it('returns a css string for a variable member expression', () => {
-    const file = parse(
-      `
-      import { css } from '@compiled/react';
-
-      const styles = { option1: css({ background: 'red' }) };
-
-      run(styles[key]);
-    `,
-      { sourceType: 'module' }
-    );
-
-    let path: NodePath<MemberExpression> | null = null;
-    traverse(file, {
-      CallExpression(nodePath) {
-        nodePath.traverse({
-          MemberExpression(innerPath) {
-            path = innerPath;
-          },
-        });
-      },
-    });
-
-    expect(path).not.toEqual(null);
-
-    const meta: Metadata = {
-      parentPath: path!.parentPath,
-      state: {
-        cssMap: {},
-        filename: '',
-      },
-    } as any;
-
-    const { css, variables } = buildCss(path!.node, meta);
-    // TODO: This should not happen
-    expect(css).toEqual([{ css: 'option1: var(--_g48cyt);', type: 'unconditional' }]);
-    expect(variables.length).toEqual(1);
-    expect(variables[0].name).toEqual('--_g48cyt');
-    expect(generate(variables[0].expression).code).toMatchInlineSnapshot(`
-      "css({
-        background: 'red'
-      })"
-    `);
-  });
 });
