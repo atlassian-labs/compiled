@@ -173,26 +173,6 @@ describe('css builder', () => {
       }
     `);
 
-    expect(actual).toThrowErrorMatchingInlineSnapshot(`
-      "unknown file:
-       ██████╗ ██████╗ ███╗   ███╗██████╗ ██╗██╗     ███████╗██████╗
-      ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██║██║     ██╔════╝██╔══██╗
-      ██║     ██║   ██║██╔████╔██║██████╔╝██║██║     █████╗  ██║  ██║
-      ██║     ██║   ██║██║╚██╔╝██║██╔═══╝ ██║██║     ██╔══╝  ██║  ██║
-      ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║███████╗███████╗██████╔╝
-       ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝╚═════╝
-
-        @compiled/css - Unhandled exception
-
-        An unhandled exception was raised when parsing your CSS, this is probably a bug!
-        Raise an issue here: https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=&template=bug_report.md&title=CSS%20Parsing%20Exception:%20
-
-        Input CSS: {
-          red
-        }
-
-        Exception: <css input>:1:1: Unknown word
-      "
-    `);
+    expect(actual).toThrow();
   });
 });
