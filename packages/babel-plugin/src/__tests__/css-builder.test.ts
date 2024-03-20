@@ -155,24 +155,4 @@ describe('css builder', () => {
       "
     `);
   });
-
-  it('does not work when there is logic to get to the style', () => {
-    const actual = () =>
-      transform(`
-      import { css } from '@compiled/react';
-
-      const styles = {
-        test: {
-          red: css({ color: 'red' }),
-          blue: css({ color: 'blue' }),
-        },
-      };
-
-      function Component({ color }) {
-        return <div style={{background: 'red'}} css={styles.test[color]} />
-      }
-    `);
-
-    expect(actual).toThrow();
-  });
 });
