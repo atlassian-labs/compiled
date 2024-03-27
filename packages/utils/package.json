@@ -24,6 +24,6 @@
   },
   "devDependencies": {
     "@babel/traverse": "^7.21.5",
-    "@types/convert-source-map": "^1.5.2"
+    "@types/convert-source-map": "^2.0.3"
   }
 }
