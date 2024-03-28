@@ -80,7 +80,6 @@ export enum ErrorMessages {
   NO_SPREAD_ELEMENT = 'Spread element is not supported in CSS Map.',
   NO_OBJECT_METHOD = 'Object method is not supported in CSS Map.',
   STATIC_VARIANT_OBJECT = 'The variant object must be statically defined.',
-  EMPTY_VARIANT_OBJECT = 'The variant object must not be empty.',
   DUPLICATE_AT_RULE = 'Cannot declare an at-rule more than once in CSS Map.',
   DUPLICATE_SELECTOR = 'Cannot declare a selector more than once in CSS Map.',
   DUPLICATE_SELECTORS_BLOCK = 'Duplicate `selectors` key found in cssMap; expected either zero `selectors` keys or one.',

@@ -114,14 +114,6 @@ export const mergeExtendedSelectorsIntoProperties = (
   const mergedProperties: t.ObjectProperty[] = [];
   const addedSelectors: Set<string> = new Set();
 
-  if (variantStyles.properties.length === 0) {
-    throw buildCodeFrameError(
-      createErrorMessage(ErrorMessages.EMPTY_VARIANT_OBJECT),
-      variantStyles,
-      meta.parentPath
-    );
-  }
-
   for (const property of [...variantStyles.properties, ...extendedSelectors]) {
     // Covered by @compiled/eslint-plugin rule already,
     // this is just to make the type checker happy
