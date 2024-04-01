@@ -29,6 +29,22 @@ describe('css map basic functionality', () => {
     );
   });
 
+  it('should transform css map even with an empty object', () => {
+    const actual = transform(`
+        import { css, cssMap } from '@compiled/react';
+
+        const styles = cssMap({
+          danger: {},
+          success: {
+            color: 'green',
+            backgroundColor: 'green'
+          }
+        });
+      `);
+
+    expect(actual).toInclude('const styles={danger:"",success:"_syazbf54 _bfhkbf54"};');
+  });
+
   it('should error out if variants are not defined at the top-most scope of the module.', () => {
     expect(() => {
       transform(`
@@ -53,7 +69,7 @@ describe('css map basic functionality', () => {
     expect(() => {
       transform(`
         import { cssMap } from '@compiled/react';
-  
+
         const styles = cssMap(${styles}, ${styles})
       `);
     }).toThrow(ErrorMessages.NUMBER_OF_ARGUMENT);
@@ -63,7 +79,7 @@ describe('css map basic functionality', () => {
     expect(() => {
       transform(`
         import { cssMap } from '@compiled/react';
-  
+
         const styles = cssMap('color: red')
       `);
     }).toThrow(ErrorMessages.ARGUMENT_TYPE);
@@ -91,18 +107,6 @@ describe('css map basic functionality', () => {
         });
       `);
     }).toThrow(ErrorMessages.NO_OBJECT_METHOD);
-  });
-
-  it('should error out if empty object passed to variant', () => {
-    expect(() => {
-      transform(`
-        import { css, cssMap } from '@compiled/react';
-
-        const styles = cssMap({
-          danger: {}
-        });
-      `);
-    }).toThrow(ErrorMessages.EMPTY_VARIANT_OBJECT);
   });
 
   it('should error out if variant object is dynamic', () => {
