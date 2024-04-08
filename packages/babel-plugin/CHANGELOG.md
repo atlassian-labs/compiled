@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.28.5
+
+### Patch Changes
+
+- 1b1a94a5: Remove the invariant to fail on an empty cssMap object for easier iterative development.
+
 ## 0.28.4
 
 ### Patch Changes
