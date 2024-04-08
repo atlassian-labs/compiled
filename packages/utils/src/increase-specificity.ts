@@ -1,2 +1,4 @@
-/** With the babel plugin in `increaseSpecificity:t rue`, classes will be appended with this. */
+/**
+ * Configuring the babel plugin with `increaseSpecificity: true` will result in this being appended to the end of generated classes.
+ */
 export const INCREASE_SPECIFICITY_SELECTOR = ':not(#\\9)';
