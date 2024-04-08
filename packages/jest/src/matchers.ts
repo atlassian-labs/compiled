@@ -1,3 +1,4 @@
+import { INCREASE_SPECIFICITY_SELECTOR } from '@compiled/utils';
 import type { Media, StyleRules } from 'css';
 import CSS from 'css';
 
@@ -5,8 +6,6 @@ import type { MatchFilter } from './types';
 
 type Arg = [{ [key: string]: string }, MatchFilter?];
 
-/** With the babel plugin in `increaseSpecificity:true`, classes will be appended with this. */
-const INCREASE_SPECIFICITY_SELECTOR = ':not(#\\9)';
 const DEFAULT_MATCH_FILTER: MatchFilter = { media: undefined, target: undefined };
 
 const kebabCase = (str: string) =>

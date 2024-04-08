@@ -1,7 +1,6 @@
+import { INCREASE_SPECIFICITY_SELECTOR } from '@compiled/utils';
 import type { Plugin } from 'postcss';
 import { default as selectorParser, pseudo } from 'postcss-selector-parser';
-
-const INCREASE_SPECIFICITY_SELECTOR = ':not(#\\9)';
 
 const parser = selectorParser((root) => {
   root.walkClasses((node) => {
