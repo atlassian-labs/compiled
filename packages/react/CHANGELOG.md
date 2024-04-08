@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.17.1
+
+### Patch Changes
+
+- 10c9dcec: added additional type exports to support other ts moduleResolution methods
+
 ## 0.17.0
 
 ### Minor Changes
