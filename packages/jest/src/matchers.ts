@@ -5,6 +5,8 @@ import type { MatchFilter } from './types';
 
 type Arg = [{ [key: string]: string }, MatchFilter?];
 
+/** With the babel plugin in `increaseSpecificity:true`, classes will be appended with this. */
+const INCREASE_SPECIFICITY_SELECTOR = ':not(#\\9)';
 const DEFAULT_MATCH_FILTER: MatchFilter = { media: undefined, target: undefined };
 
 const kebabCase = (str: string) =>
@@ -61,7 +63,13 @@ const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) =
   const klass = target ? `.${className}${target}` : `.${className}`;
   return allRules?.filter((r) => {
     if ('selectors' in r) {
-      return r.selectors?.find((s) => removeSpaces(s) === removeSpaces(klass));
+      return r.selectors?.find((s) => {
+        const sTrimmed = removeSpaces(s);
+        return (
+          sTrimmed === removeSpaces(klass) ||
+          sTrimmed === removeSpaces(klass + INCREASE_SPECIFICITY_SELECTOR)
+        );
+      });
     }
     return;
   });
