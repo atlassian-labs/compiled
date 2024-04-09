@@ -68,7 +68,7 @@ describe('handling of values for CSS `content` property', () => {
     `;
 
     const actual = transform(code, { pretty: true });
-    expect(actual).toContain('._1sb2b3bt{content:""}');
+    expect(actual).toContain('._1sb21icm{content:"this is a string"}');
   });
 
   it('should add quotes to custom content values', () => {
