@@ -56,16 +56,25 @@ const findBindingIdentifier = (
 };
 
 /**
- * Will normalize the value of a `content` CSS property to ensure it has quotations around it.
- * This is done to replicate both how Styled Components behaves,
- * while not breaking how Emotion handles it.
+ * Will normalize the value of a `content` CSS property to ensure it has quotations around it,
+ * but only when we reasonably think that they were intended. For example, url(...) and counter(...)
+ * will NOT have quotes added around them.
  */
 const normalizeContentValue = (value: string) => {
-  if (value.charAt(0) !== '"' && value.charAt(0) !== "'") {
-    return `"${value}"`;
+  // Adapted from vanilla-extract's handling of the `content` key
+  // https://github.com/vanilla-extract-css/vanilla-extract/blob/a623c1c65a543afcedb9feb30a7fe20452b99a95/packages/css/src/transformCss.ts#L266
+  const contentValuePattern =
+    /^([A-Za-z\-]+\([^]*|[^]*-quote|inherit|initial|none|normal|revert|unset)(\s|$)/;
+
+  if (!value) {
+    return `""`;
   }
 
-  return value;
+  if (value.includes('"') || value.includes("'") || contentValuePattern.test(value)) {
+    return value;
+  }
+
+  return `"${value}"`;
 };
 
 /**
