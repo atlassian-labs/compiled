@@ -1,5 +1,13 @@
 # @compiled/css
 
+## 0.12.3
+
+### Patch Changes
+
+- e49b4f08: Use a shared utils version of INCREASE_SPECIFICITY_SELECTOR
+- Updated dependencies [e49b4f08]
+  - @compiled/utils@0.10.0
+
 ## 0.12.2
 
 ### Patch Changes

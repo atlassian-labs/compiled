@@ -1,5 +1,11 @@
 # @compiled/utils
 
+## 0.10.0
+
+### Minor Changes
+
+- e49b4f08: Add INCREASE_SPECIFICITY_SELECTOR to utils to consolidate this selector
+
 ## 0.9.2
 
 ### Patch Changes

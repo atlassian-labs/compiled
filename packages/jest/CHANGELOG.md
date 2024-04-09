@@ -1,5 +1,11 @@
 # @compiled/jest
 
+## 0.10.2
+
+### Patch Changes
+
+- e49b4f08: Allow `@compiled/babel-plugin`'s `increaseSpecificity` to work with `@compiled/jest`'s `toHaveCompiledCss` jest matcher.
+
 ## 0.10.1
 
 ### Patch Changes
