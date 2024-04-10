@@ -1,6 +1,21 @@
 import { transform } from '../test-utils';
 
 describe('custom import source', () => {
+  it('should pick up atlaskit css without needing to configure', () => {
+    const actual = transform(
+      `
+      import { css } from '@atlaskit/css';
+
+      const styles = css({ color: 'red' });
+
+      <div css={styles} />
+    `,
+      { filename: './foo/index.js' }
+    );
+
+    expect(actual).toInclude('@compiled/react/runtime');
+  });
+
   it('should pick up custom relative import source', () => {
     const actual = transform(
       `
