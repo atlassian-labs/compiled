@@ -31,7 +31,8 @@ import { visitXcssPropPath } from './xcss-prop';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
 const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
-const DEFAULT_IMPORT_SOURCE = '@compiled/react';
+const COMPILED_IMPORT_SOURCE = '@compiled/react';
+const DEFAULT_IMPORT_SOURCES = [COMPILED_IMPORT_SOURCE, '@atlaskit/css'];
 
 let globalCache: Cache | undefined;
 
@@ -41,7 +42,7 @@ const findClassicJsxPragmaImport: Visitor<State> = {
 
     t.assertImportDeclaration(path.parent);
     // We don't care about other libraries
-    if (path.parent.source.value !== '@compiled/react') return;
+    if (path.parent.source.value !== COMPILED_IMPORT_SOURCE) return;
 
     if (
       (specifier.imported.type === 'StringLiteral' && specifier.imported.value === 'jsx') ||
@@ -88,7 +89,7 @@ export default declare<State>((api) => {
       this.pragma = {};
       this.usesXcss = false;
       this.importSources = [
-        DEFAULT_IMPORT_SOURCE,
+        ...DEFAULT_IMPORT_SOURCES,
         ...(this.opts.importSources
           ? this.opts.importSources.map((origin) => {
               if (origin[0] === '.') {
@@ -130,7 +131,7 @@ export default declare<State>((api) => {
 
             // jsxPragmas currently only run on the top-level compiled module,
             // hence we don't interrogate this.importSources.
-            if (jsxSourceMatches && jsxSourceMatches[1] === DEFAULT_IMPORT_SOURCE) {
+            if (jsxSourceMatches && jsxSourceMatches[1] === COMPILED_IMPORT_SOURCE) {
               // jsxImportSource pragma found - turn on CSS prop!
               state.compiledImports = {};
               state.pragma.jsxImportSource = true;
@@ -236,7 +237,7 @@ export default declare<State>((api) => {
         const userLandModule = path.node.source.value;
 
         const isCompiledModule = this.importSources.some((compiledModuleOrigin) => {
-          if (userLandModule === DEFAULT_IMPORT_SOURCE || compiledModuleOrigin === userLandModule) {
+          if (compiledModuleOrigin === userLandModule) {
             return true;
           }
 
