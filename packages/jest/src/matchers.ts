@@ -63,15 +63,17 @@ const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) =
   };
 
   const allRules = getAllRules();
+
   const klass = target ? `.${className}${target}` : `.${className}`;
+  const klassIncreased = target
+    ? `.${className}${INCREASE_SPECIFICITY_SELECTOR}${target}`
+    : `.${className}${INCREASE_SPECIFICITY_SELECTOR}`;
+
   return allRules?.filter((r) => {
     if ('selectors' in r) {
       return r.selectors?.find((s) => {
         const sTrimmed = removeSpaces(s);
-        return (
-          sTrimmed === removeSpaces(klass) ||
-          sTrimmed === removeSpaces(klass + INCREASE_SPECIFICITY_SELECTOR)
-        );
+        return sTrimmed === removeSpaces(klass) || sTrimmed === removeSpaces(klassIncreased);
       });
     }
     return;
