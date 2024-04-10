@@ -9,7 +9,7 @@ type Arg = [{ [key: string]: string }, MatchFilter?];
  * Configuring the babel plugin with `increaseSpecificity: true` will result in this being appended to the end of generated classes.
  * TODO: Use the import from `@compiled/utils`, but doing so results in a circular TS reference, so it's copy and pasted..
  */
-const INCREASE_SPECIFICITY_SELECTOR = ':not(#\\9)';
+const INCREASE_SPECIFICITY_SELECTOR = ':not(#\\#)';
 const DEFAULT_MATCH_FILTER: MatchFilter = { media: undefined, target: undefined };
 
 const kebabCase = (str: string) =>
