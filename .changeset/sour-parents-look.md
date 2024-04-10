@@ -1,6 +1,6 @@
 ---
 '@compiled/utils': minor
-'@compiled/jest': minor
+'@compiled/jest': patch
 '@compiled/css': minor
 ---
 
