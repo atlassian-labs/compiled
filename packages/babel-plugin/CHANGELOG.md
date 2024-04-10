@@ -1,5 +1,16 @@
 # @compiled/babel-plugin
 
+## 0.28.7
+
+### Patch Changes
+
+- 36c4f0b9: Fix handling of `content` property.
+
+  - The value of the `content` property will no longer automatically have quotes erroneously added around it, if the value is one of `open-quote`, `counter(...)`, `url(...)`, `inherit`, `none`, and so on.
+  - The full regex used to check is as follows: `/^([A-Za-z\-]+\([^]*|[^]*-quote|inherit|initial|none|normal|revert|unset)(\s|$)/`
+
+- 8ed3e9bf: The `@atlaskit/css` is now picked up as a default import source, meaning consumers of Compiled don't need to configure it to be picked up.
+
 ## 0.28.6
 
 ### Patch Changes
