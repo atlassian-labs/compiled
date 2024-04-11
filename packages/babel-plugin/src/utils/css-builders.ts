@@ -480,6 +480,8 @@ const extractKeyframes = (
   };
 };
 
+const isCustomPropertyName = (value: string): boolean => value.startsWith('--');
+
 /**
  * Extracts CSS data from an object expression node.
  *
@@ -505,7 +507,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         // We've found a string literal like: `color: 'blue'`
         css.push({
           type: 'unconditional',
-          css: `${kebabCase(key)}: ${
+          css: `${isCustomPropertyName(key) ? key : kebabCase(key)}: ${
             key === 'content' ? normalizeContentValue(propValue.value) : propValue.value
           };`,
         });
@@ -517,7 +519,10 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         // We've found a numeric literal like: `fontSize: 12`
         css.push({
           type: 'unconditional',
-          css: `${kebabCase(key)}: ${addUnitIfNeeded(key, propValue.value)};`,
+          css: `${isCustomPropertyName(key) ? key : kebabCase(key)}: ${addUnitIfNeeded(
+            key,
+            propValue.value
+          )};`,
         });
 
         return;

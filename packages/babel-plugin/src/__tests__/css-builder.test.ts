@@ -1,6 +1,24 @@
 import { transform } from '../test-utils';
 
 describe('css builder', () => {
+  it('should convert CSS properties to kebab-case', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      <div css={{ backgroundColor: 'red' }} />
+    `);
+
+    expect(actual).toInclude('background-color:red');
+  });
+
+  it('should preserve custom property value casing', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      <div css={{ '--panelColor': 'red', '--PANEL_WIDTH': 280 }} />
+    `);
+
+    expect(actual).toIncludeMultiple(['--panelColor:red', '--PANEL_WIDTH:280px']);
+  });
+
   it('should keep nested unconditional css together', () => {
     const actual = transform(`
       import '@compiled/react';
