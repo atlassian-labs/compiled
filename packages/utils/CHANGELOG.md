@@ -1,5 +1,11 @@
 # @compiled/utils
 
+## 0.11.0
+
+### Minor Changes
+
+- 04cb7ae7: Update the increaseSpecificity selector to play nicely with jsdom.
+
 ## 0.10.0
 
 ### Minor Changes

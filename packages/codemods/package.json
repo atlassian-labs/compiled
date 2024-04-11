@@ -1,6 +1,6 @@
 {
   "name": "@compiled/codemods",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "keywords": [
     "codemod",
@@ -30,7 +30,7 @@
     "unset-value": ">=2.0.1"
   },
   "dependencies": {
-    "@compiled/utils": "^0.10.0",
+    "@compiled/utils": "^0.11.0",
     "chalk": "^4.1.2",
     "jscodeshift": "^0.15.1"
   },

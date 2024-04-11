@@ -1,5 +1,12 @@
 # @compiled/jest
 
+## 0.10.3
+
+### Patch Changes
+
+- 04cb7ae7: Update the increaseSpecificity selector to play nicely with jsdom.
+- 04cb7ae7: Fix toHaveCompiledCss increasedSpecificity comparison with a target
+
 ## 0.10.2
 
 ### Patch Changes

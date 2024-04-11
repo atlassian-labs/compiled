@@ -1,5 +1,16 @@
 # @compiled/css
 
+## 0.13.0
+
+### Minor Changes
+
+- 04cb7ae7: Update the increaseSpecificity selector to play nicely with jsdom.
+
+### Patch Changes
+
+- Updated dependencies [04cb7ae7]
+  - @compiled/utils@0.11.0
+
 ## 0.12.3
 
 ### Patch Changes
