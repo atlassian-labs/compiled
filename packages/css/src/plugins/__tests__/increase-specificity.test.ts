@@ -20,7 +20,7 @@ describe('increase specicifity plugin', () => {
   it('should increase specicifity of declared classes', () => {
     const actual = transform`._foo {}`;
 
-    expect(actual).toMatchInlineSnapshot(`"._foo:not(#\\9) {}"`);
+    expect(actual).toMatchInlineSnapshot(`"._foo:not(#\\#) {}"`);
   });
 
   it('should ignore atrules', () => {
@@ -33,7 +33,7 @@ describe('increase specicifity plugin', () => {
     expect(actual).toMatchInlineSnapshot(`
       "
             @media {
-              ._foo:not(#\\9) {}
+              ._foo:not(#\\#) {}
             }
           "
     `);
@@ -66,11 +66,11 @@ describe('increase specicifity plugin', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "
-            ._foo:not(#\\9):hover {
+            ._foo:not(#\\#):hover {
               color: red;
             }
 
-            ._baz:not(#\\9)::before {
+            ._baz:not(#\\#)::before {
               content: "bar";
             }
           "
