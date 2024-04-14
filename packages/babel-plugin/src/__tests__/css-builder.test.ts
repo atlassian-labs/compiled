@@ -1,6 +1,107 @@
 import { transform } from '../test-utils';
 
 describe('css builder', () => {
+  it('should convert css properties to kebab-case with css prop', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      <div css={{ backgroundColor: 'red' }} />
+    `);
+
+    expect(actual).toInclude('background-color:red');
+  });
+
+  it('should convert css properties to kebab-case with styled function', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+      const MyDiv = styled.div({
+        backgroundColor: 'red'
+      });
+      <MyDiv />
+    `);
+
+    expect(actual).toInclude('background-color:red');
+  });
+
+  it('should convert css properties to kebab-case with css func and css map', () => {
+    const actual = transform(`
+    import { css, cssMap } from '@compiled/react';
+      const styles = cssMap({
+        danger: {
+          backgroundColor: 'red'
+        },
+        success: {
+          backgroundColor: 'green'
+        }
+      });
+      <div>
+        <div css={styles.danger} />
+        <div css={styles.success} />
+      </div>
+    `);
+
+    expect(actual).toIncludeMultiple(['background-color:red', 'background-color:green']);
+  });
+
+  it('should preserve custom property name casing with css prop', () => {
+    const actual = transform(`
+      import '@compiled/react';
+      <div css={{
+        '--panelColor': 'red',
+        '--panel-height': '600px',
+        '--PANEL_WIDTH': 280,
+       }} />
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '--panelColor:red',
+      '--panel-height:600px',
+      '--PANEL_WIDTH:280px',
+    ]);
+  });
+
+  it('should preserve custom property name casing with styled function', () => {
+    const actual = transform(`
+      import { styled } from '@compiled/react';
+      const MyDiv = styled.div({
+        '--panelColor': 'red',
+        '--panel-height': '600px',
+        '--PANEL_WIDTH': 280,
+      });
+      <MyDiv />
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '--panelColor:red',
+      '--panel-height:600px',
+      '--PANEL_WIDTH:280px',
+    ]);
+  });
+
+  it('should preserve custom property name casing with css func and css map', () => {
+    const actual = transform(`
+    import { css, cssMap } from '@compiled/react';
+      const styles = cssMap({
+        background: {
+          '--panelColor': 'red',
+        },
+        dimensions: {
+          '--panel-height': '600px',
+          '--PANEL_WIDTH': 280,
+        }
+      });
+      <div>
+        <div css={styles.danger} />
+        <div css={styles.success} />
+      </div>
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '--panelColor:red',
+      '--panel-height:600px',
+      '--PANEL_WIDTH:280px',
+    ]);
+  });
+
   it('should keep nested unconditional css together', () => {
     const actual = transform(`
       import '@compiled/react';
