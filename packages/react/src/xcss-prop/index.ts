@@ -99,7 +99,7 @@ export type XCSSAllPseudos = CSSPseudos;
  * - safe style overrides
  * - inverting style declarations
  *
- * Interverting style declarations is interesting for platform teams as
+ * Inverting style declarations is interesting for platform teams as
  * it means products only pay for styles they use as they're now the ones who declare
  * the styles!
  *
@@ -115,7 +115,7 @@ export type XCSSAllPseudos = CSSPseudos;
  *   // Color is accepted, all other properties / pseudos are considered violations.
  *   xcss?: XCSSProp<'color', never>;
  *
- *   // Only backgrond color and hover pseudo is accepted.
+ *   // Only background color and hover pseudo is accepted.
  *   xcss?: XCSSProp<'backgroundColor', '&:hover'>;
  *
  *   // All properties are accepted, all pseudos are considered violations.
@@ -145,19 +145,21 @@ export type XCSSAllPseudos = CSSPseudos;
  * <Component xcss={styles.text} />
  * ```
  *
- * To concatenate and conditonally apply styles use the {@link cssMap} {@link cx} functions.
+ * To concatenate and conditionally apply styles use the {@link cssMap} {@link cx} functions.
  */
 export type XCSSProp<
-  TAllowedProperties extends keyof StrictCSSProperties,
+  TAllowedProperties extends keyof StrictCSSProperties | StrictCSSProperties, // extend StrictCSSProperties with CSS vars.
   TAllowedPseudos extends CSSPseudos,
   TRequiredProperties extends {
-    requiredProperties: TAllowedProperties;
+    requiredProperties: TAllowedProperties extends string
+      ? TAllowedProperties
+      : keyof TAllowedProperties; // can we set to (keyof TAllowedProperties) and filter out the required properties?
   } = never
 > = Internal$XCSSProp<
-  TAllowedProperties,
+  TAllowedProperties extends string ? TAllowedProperties : keyof TAllowedProperties,
   TAllowedPseudos,
   string,
-  object,
+  TAllowedProperties extends string ? object : TAllowedProperties,
   TRequiredProperties,
   'loose'
 >;

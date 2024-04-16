@@ -260,4 +260,51 @@ describe('xcss prop', () => {
       />
     ).toBeObject();
   });
+
+  it('should accept an object with specific allowed values in TAllowedProperties', () => {
+    function CSSPropComponent({
+      xcss,
+    }: {
+      xcss: XCSSProp<{ color: 'color.red' | 'color.blue' }, never>;
+    }) {
+      return <div className={xcss}>foo</div>;
+    }
+
+    expectTypeOf(
+      <>
+        <CSSPropComponent
+          xcss={{
+            color: 'color.red',
+          }}
+        />
+        <CSSPropComponent
+          xcss={{
+            // @ts-expect-error - Type '"red"' is not assignable to type '"color.red" | "color.blue"'.
+            color: 'red',
+          }}
+        />
+        <CSSPropComponent
+          // This should ideally error because `color` isn't set, and it's a required property in the type.
+          xcss={{}}
+        />
+      </>
+    ).toBeObject();
+  });
+
+  it('should enforce required properties when TAllowedProperties set to an object', () => {
+    function CSSPropComponent({
+      xcss,
+    }: {
+      xcss: XCSSProp<{ color: 'color.red' | 'color.blue' }, never, { requiredProperties: 'color' }>;
+    }) {
+      return <div className={xcss}>foo</div>;
+    }
+
+    expectTypeOf(
+      <CSSPropComponent
+        // @ts-expect-error — Property 'color' is missing in type '{}' but required in type {color: 'color.red' | 'color.blue'}.
+        xcss={{}}
+      />
+    ).toBeObject();
+  });
 });
