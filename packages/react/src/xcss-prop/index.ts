@@ -153,7 +153,7 @@ export type XCSSProp<
   TRequiredProperties extends {
     requiredProperties: TAllowedProperties extends string
       ? TAllowedProperties
-      : keyof TAllowedProperties; // can we set to (keyof TAllowedProperties) and filter out the required properties?
+      : keyof TAllowedProperties;
   } = never
 > = Internal$XCSSProp<
   TAllowedProperties extends string ? TAllowedProperties : keyof TAllowedProperties,

@@ -265,7 +265,15 @@ describe('xcss prop', () => {
     function CSSPropComponent({
       xcss,
     }: {
-      xcss: XCSSProp<{ color: 'color.red' | 'color.blue' }, never>;
+      xcss: XCSSProp<
+        {
+          color: 'color.red' | 'color.blue';
+        },
+        never,
+        { requiredProperties: 'color' }
+      >;
+      // As with standard XCSS, invalid XCSS attributes don't error
+      xcssWrong?: XCSSProp<{ color: 'color.red'; invalidCSSAttr: 'color.red' }, never>;
     }) {
       return <div className={xcss}>foo</div>;
     }
@@ -281,10 +289,12 @@ describe('xcss prop', () => {
           xcss={{
             // @ts-expect-error - Type '"red"' is not assignable to type '"color.red" | "color.blue"'.
             color: 'red',
+            // @ts-expect-error - Type 'string' is not assignable to type 'undefined'.
+            backgroundColor: 'color.background',
           }}
         />
         <CSSPropComponent
-          // This should ideally error because `color` isn't set, and it's a required property in the type.
+          // @ts-expect-error - Property 'color' is missing in type '{}'.
           xcss={{}}
         />
       </>
