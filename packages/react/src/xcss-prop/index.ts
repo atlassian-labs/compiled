@@ -151,18 +151,24 @@ export type XCSSProp<
   TAllowedProperties extends keyof StrictCSSProperties | StrictCSSProperties, // extend StrictCSSProperties with CSS vars.
   TAllowedPseudos extends CSSPseudos,
   TRequiredProperties extends {
-    requiredProperties: TAllowedProperties extends string
-      ? TAllowedProperties
-      : keyof TAllowedProperties;
+    requiredProperties: TAllowedProperties extends object ? never : TAllowedProperties;
   } = never
 > = Internal$XCSSProp<
-  TAllowedProperties extends string ? TAllowedProperties : keyof TAllowedProperties,
+  TAllowedProperties extends object ? keyof TAllowedProperties : TAllowedProperties,
   TAllowedPseudos,
   string,
-  TAllowedProperties extends string ? object : TAllowedProperties,
-  TRequiredProperties,
+  TAllowedProperties extends object ? TAllowedProperties : object,
+  TAllowedProperties extends object
+    ? {
+        requiredProperties: Extract<RequiredKeys<TAllowedProperties>, keyof StrictCSSProperties>;
+      }
+    : TRequiredProperties,
   'loose'
 >;
+
+export type RequiredKeys<T extends object> = keyof {
+  [K in keyof T as T extends Record<K, T[K]> ? K : never]: K;
+};
 
 export type Internal$XCSSProp<
   TAllowedProperties extends keyof StrictCSSProperties,

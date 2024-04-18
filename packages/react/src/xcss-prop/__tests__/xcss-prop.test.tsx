@@ -267,13 +267,12 @@ describe('xcss prop', () => {
     }: {
       xcss: XCSSProp<
         {
-          color: 'color.red' | 'color.blue';
+          color: 'color.text.red' | 'color.text.blue';
         },
-        never,
-        { requiredProperties: 'color' }
+        never
       >;
       // As with standard XCSS, invalid XCSS attributes don't error
-      xcssWrong?: XCSSProp<{ color: 'color.red'; invalidCSSAttr: 'color.red' }, never>;
+      xcssWrong?: XCSSProp<{ color: 'color.text.red'; invalidCSSAttr: 'invalid' }, never>;
     }) {
       return <div className={xcss}>foo</div>;
     }
@@ -282,7 +281,7 @@ describe('xcss prop', () => {
       <>
         <CSSPropComponent
           xcss={{
-            color: 'color.red',
+            color: 'color.text.red',
           }}
         />
         <CSSPropComponent
@@ -293,10 +292,6 @@ describe('xcss prop', () => {
             backgroundColor: 'color.background',
           }}
         />
-        <CSSPropComponent
-          // @ts-expect-error - Property 'color' is missing in type '{}'.
-          xcss={{}}
-        />
       </>
     ).toBeObject();
   });
@@ -305,16 +300,27 @@ describe('xcss prop', () => {
     function CSSPropComponent({
       xcss,
     }: {
-      xcss: XCSSProp<{ color: 'color.red' | 'color.blue' }, never, { requiredProperties: 'color' }>;
+      xcss: XCSSProp<
+        { color: 'color.text.red' | 'color.text.blue'; borderColor?: 'color.border' },
+        never
+      >;
     }) {
       return <div className={xcss}>foo</div>;
     }
 
     expectTypeOf(
-      <CSSPropComponent
-        // @ts-expect-error — Property 'color' is missing in type '{}' but required in type {color: 'color.red' | 'color.blue'}.
-        xcss={{}}
-      />
+      <>
+        <CSSPropComponent
+          // @ts-expect-error — Property 'color' is missing in type '{}' but required in type {color: 'color.red' | 'color.blue'}.
+          xcss={{}}
+        />
+        <CSSPropComponent
+          xcss={{
+            color: 'color.text.red',
+            // Border color is optional
+          }}
+        />
+      </>
     ).toBeObject();
   });
 });
