@@ -323,4 +323,88 @@ describe('xcss prop', () => {
       </>
     ).toBeObject();
   });
+
+  it('should detect and enforce correct pseudos when TAllowedProperties set to an object', () => {
+    function CSSPropComponent({
+      xcss,
+    }: {
+      xcss: XCSSProp<
+        {
+          color: 'color.text.red' | 'color.text.blue';
+          borderColor?: 'color.border';
+          '&:hover': {
+            color: 'color.text.green';
+          };
+          // more specific types for optionals not supported yet
+          '&:active'?: object;
+        },
+        never
+      >;
+    }) {
+      return <div className={xcss}>foo</div>;
+    }
+
+    const validStyles = cssMap({
+      validPseudoMissingOptional: {
+        color: 'color.text.red',
+
+        '&:hover': {
+          color: 'color.text.green',
+        },
+      },
+      validPseudoProvidedOptional: {
+        color: 'color.text.red',
+        '&:hover': {
+          color: 'color.text.green',
+        },
+        '&:active': {
+          color: 'color.text.red',
+        } as const,
+      },
+    });
+
+    const invalidStyles = cssMap({
+      validPseudoInvalidValue: {
+        color: 'color.text.red',
+
+        '&:hover': {
+          color: 'color.text.red',
+        },
+      },
+      validPseudoCompletelyInvalidValue: {
+        color: 'color.text.red',
+
+        '&:hover': {
+          color: 'invalid color',
+        },
+      },
+      invalidPseudo: {
+        color: 'color.text.red',
+        '&::after': {
+          color: 'invalid color',
+        },
+      },
+    });
+
+    expectTypeOf(
+      <>
+        <CSSPropComponent xcss={validStyles.validPseudoMissingOptional} />
+        <CSSPropComponent xcss={validStyles.validPseudoProvidedOptional} />
+
+        <CSSPropComponent
+          // @ts-expect-error — Type '"color.text.red"' is not assignable to type '"color.text.green"'
+          xcss={invalidStyles.validPseudoInvalidValue}
+        />
+        <CSSPropComponent
+          // @ts-expect-error - Type '"invalid color"' is not assignable to type '"color.text.green" | undefined'.
+          xcss={invalidStyles.validPseudoCompletelyInvalidValue}
+        />
+
+        <CSSPropComponent
+          // @ts-expect-error - Type '{ color: "invalid color"; }' is not assignable to type 'undefined'
+          xcss={invalidStyles.invalidPseudo}
+        />
+      </>
+    ).toBeObject();
+  });
 });

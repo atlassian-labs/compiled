@@ -5,7 +5,7 @@
 `XCSSProp` now accepts an object as the first generic TAllowedProperties, in addition to the existing string union type.
 This allows you to restrict both the properties and values that can be used in `xcss`:
 
-Note: when TAllowedProperties is set to an object, the required properties for XCSSProp are determined automatically (requiredProperties is set to `never`).
+Note: when TAllowedProperties is set to an object, the required properties and pseudos for XCSSProp are determined automatically (requiredProperties is set to `never`).
 
 ```tsx
 import { type XCSSProp } from '@compiled/react';
@@ -23,7 +23,7 @@ interface MyComponentProps {
     never
   >;
 
-  // Pseudos can be restricted.
+  // Pseudos can have their own properties and values set.
   xcss?: XCSSProp<
     {
       backgroundColor?: 'var(--ds-background-neutral)';
@@ -31,7 +31,7 @@ interface MyComponentProps {
         backgroundColor?: 'var(--ds-background-neutral-hovered)';
       };
     },
-    '&:hover'
+    never
   >;
 }
 

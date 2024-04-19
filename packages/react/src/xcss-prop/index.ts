@@ -149,13 +149,15 @@ export type XCSSAllPseudos = CSSPseudos;
  */
 export type XCSSProp<
   TAllowedProperties extends keyof StrictCSSProperties | StrictCSSProperties, // extend StrictCSSProperties with CSS vars.
-  TAllowedPseudos extends CSSPseudos,
+  TAllowedPseudos extends TAllowedProperties extends object ? never : CSSPseudos,
   TRequiredProperties extends {
     requiredProperties: TAllowedProperties extends object ? never : TAllowedProperties;
   } = never
 > = Internal$XCSSProp<
   TAllowedProperties extends object ? keyof TAllowedProperties : TAllowedProperties,
-  TAllowedPseudos,
+  TAllowedProperties extends object
+    ? Extract<keyof TAllowedProperties, CSSPseudos>
+    : TAllowedPseudos,
   string,
   TAllowedProperties extends object ? TAllowedProperties : object,
   TAllowedProperties extends object
