@@ -154,7 +154,8 @@ export type XCSSAllPseudos = CSSPseudos;
  *       // setting color to `never` prevents it from being set
  *       color: never;
  *     };
- *   }>
+ *   },
+ *   never>
  * }
  * ```
  *

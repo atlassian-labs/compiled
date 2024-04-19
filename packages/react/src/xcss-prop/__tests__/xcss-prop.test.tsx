@@ -328,21 +328,24 @@ describe('xcss prop', () => {
     function CSSPropComponent({
       xcss,
     }: {
-      xcss: XCSSProp<{
-        color: 'color.text.red' | 'color.text.blue';
-        borderColor?: 'color.border';
-        '&:hover': {
-          // overrides valid color values above
-          color: 'color.text.green';
-          // borderColor can still be set, restricted to values above
-        };
-        '&:focus': {
-          // setting color to `never` should prevent it from being set
-          color: never;
-        };
-        // Pseudos are already optional; optional pseudos don't work as expected
-        '&:active'?: object;
-      }>;
+      xcss: XCSSProp<
+        {
+          color: 'color.text.red' | 'color.text.blue';
+          borderColor?: 'color.border';
+          '&:hover': {
+            // overrides valid color values above
+            color: 'color.text.green';
+            // borderColor can still be set, restricted to values above
+          };
+          '&:focus': {
+            // setting color to `never` should prevent it from being set
+            color: never;
+          };
+          // Pseudos are already optional; optional pseudos don't work as expected
+          '&:active'?: object;
+        },
+        never
+      >;
       xcssInvalid?: XCSSProp<
         {
           color: 'color.text.red' | 'color.text.blue';
