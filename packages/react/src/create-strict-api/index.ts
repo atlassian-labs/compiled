@@ -85,9 +85,8 @@ export interface CompiledAPI<
    * - safe style overrides
    * - inverting style declarations
    *
-   * Interverting style declarations is interesting for platform teams as
-   * it means products only pay for styles they use as they're now the ones who declare
-   * the styles!
+   * Inverting style declarations is interesting for platform teams as it means products
+   * only pay for styles they use as they're now the ones who declare the styles!
    *
    * The {@link XCSSProp} type has generics two of which must be defined — use to explicitly
    * set want you to maintain as API. Use {@link XCSSAllProperties} and {@link XCSSAllPseudos}
@@ -100,7 +99,7 @@ export interface CompiledAPI<
    *   // Color is accepted, all other properties / pseudos are considered violations.
    *   xcss?: ReturnType<typeof XCSSProp<'color', never>>;
    *
-   *   // Only backgrond color and hover pseudo is accepted.
+   *   // Only background color and hover pseudo is accepted.
    *   xcss?: ReturnType<typeof XCSSProp<'backgroundColor', '&:hover'>>;
    *
    *   // All properties are accepted, all pseudos are considered violations.
@@ -135,7 +134,7 @@ export interface CompiledAPI<
    * <Component xcss={styles.text} />
    * ```
    *
-   * To concatenate and conditonally apply styles use the {@link cssMap} and {@link cx} functions.
+   * To concatenate and conditionally apply styles use the {@link cssMap} and {@link cx} functions.
    */
   XCSSProp<
     TAllowedProperties extends keyof StrictCSSProperties,
@@ -157,7 +156,7 @@ export interface CompiledAPI<
  * ## Create Strict API
  *
  * Returns a strict subset of Compiled APIs augmented by a type definition.
- * This API does not change Compileds build time behavior — merely augmenting
+ * This API does not change Compiled's build time behavior — merely augmenting
  * the returned API types which enforce:
  *
  * - all APIs use object types
