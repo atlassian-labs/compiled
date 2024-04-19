@@ -335,10 +335,17 @@ describe('xcss prop', () => {
           '&:hover': {
             color: 'color.text.green';
           };
-          // more specific types for optionals not supported yet
+          // All pseudos are optional; optional pseudos don't work as expected currently
           '&:active'?: object;
         },
         never
+      >;
+      xcssInvalid?: XCSSProp<
+        {
+          color: 'color.text.red' | 'color.text.blue';
+        },
+        // @ts-expect-error - Type 'string' is not assignable to type 'never'.
+        '&:hover' | '&:active'
       >;
     }) {
       return <div className={xcss}>foo</div>;
@@ -359,7 +366,11 @@ describe('xcss prop', () => {
         },
         '&:active': {
           color: 'color.text.red',
-        } as const,
+        },
+      },
+      // We don't currently support enforcing required pseudos
+      missingRequiredPseudo: {
+        color: 'color.text.red',
       },
     });
 
@@ -384,12 +395,17 @@ describe('xcss prop', () => {
           color: 'invalid color',
         },
       },
+      missingRequiredPropInPseudo: {
+        color: 'color.text.red',
+        '&:hover': {},
+      },
     });
 
     expectTypeOf(
       <>
         <CSSPropComponent xcss={validStyles.validPseudoMissingOptional} />
         <CSSPropComponent xcss={validStyles.validPseudoProvidedOptional} />
+        <CSSPropComponent xcss={validStyles.missingRequiredPseudo} />
 
         <CSSPropComponent
           // @ts-expect-error — Type '"color.text.red"' is not assignable to type '"color.text.green"'
@@ -403,6 +419,10 @@ describe('xcss prop', () => {
         <CSSPropComponent
           // @ts-expect-error - Type '{ color: "invalid color"; }' is not assignable to type 'undefined'
           xcss={invalidStyles.invalidPseudo}
+        />
+        <CSSPropComponent
+          // @ts-expect-error - Property 'color' is missing in type 'CompiledStyles<{}>' but required in type '{ readonly color: "color.text.green"; }
+          xcss={invalidStyles.missingRequiredPropInPseudo}
         />
       </>
     ).toBeObject();

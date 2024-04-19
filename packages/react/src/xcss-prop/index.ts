@@ -154,7 +154,7 @@ export type XCSSProp<
     requiredProperties: TAllowedProperties extends object ? never : TAllowedProperties;
   } = never
 > = Internal$XCSSProp<
-  TAllowedProperties extends object ? keyof TAllowedProperties : TAllowedProperties,
+  TAllowedProperties extends object ? FilterPseudos<keyof TAllowedProperties> : TAllowedProperties,
   TAllowedProperties extends object
     ? Extract<keyof TAllowedProperties, CSSPseudos>
     : TAllowedPseudos,
@@ -167,6 +167,8 @@ export type XCSSProp<
     : TRequiredProperties,
   'loose'
 >;
+
+type FilterPseudos<T> = T extends CSSPseudos ? never : T;
 
 export type RequiredKeys<T extends object> = keyof {
   [K in keyof T as T extends Record<K, T[K]> ? K : never]: K;
