@@ -103,9 +103,11 @@ export type XCSSAllPseudos = CSSPseudos;
  * it means products only pay for styles they use as they're now the ones who declare
  * the styles!
  *
- * The {@link XCSSProp} type has generics two of which must be defined — use to explicitly
- * set want you to maintain as API. Use {@link XCSSAllProperties} and {@link XCSSAllPseudos}
- * to enable all properties and pseudos.
+ * The {@link XCSSProp} type has generics, which must be defined together:
+ *
+ * The first generic defines available properties, and the second defines available pseudos;
+ * use to explicitly set want you to maintain as API.
+ * Use {@link XCSSAllProperties} and {@link XCSSAllPseudos} to enable all properties and pseudos.
  *
  * The third generic is used to declare what properties and pseudos should be required.
  *
@@ -130,6 +132,29 @@ export type XCSSAllPseudos = CSSPseudos;
  *
  * function MyComponent({ xcss }: MyComponentProps) {
  *   return <div css={{ color: 'var(--ds-text-danger)' }} className={xcss} />
+ * }
+ * ```
+ * Alternatively, you can pass an object as the sole generic, to control both the
+ * available properties/pseudos and the values each property can take.
+ * Doing this allows you to define strict types for your styles.
+ *
+ * ```tsx
+ * interface MyComponentProps {
+ *   xcss: XCSSProp<{
+ *     // Properties can be optional or required, and can have strict types
+ *     color: 'color.text.red' | 'color.text.blue';
+ *     borderColor?: 'color.border';
+ *
+ *     // Pseudos are always optional, but you can define what pseudos are valid
+ *     '&:hover': {
+ *       // Setting a value in a pseudo lets you further refine the valid values
+ *       color: 'color.text.green';
+ *     };
+ *     '&:focus': {
+ *       // setting color to `never` prevents it from being set
+ *       color: never;
+ *     };
+ *   }>
  * }
  * ```
  *

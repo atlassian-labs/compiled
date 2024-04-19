@@ -328,18 +328,21 @@ describe('xcss prop', () => {
     function CSSPropComponent({
       xcss,
     }: {
-      xcss: XCSSProp<
-        {
-          color: 'color.text.red' | 'color.text.blue';
-          borderColor?: 'color.border';
-          '&:hover': {
-            color: 'color.text.green';
-          };
-          // All pseudos are optional; optional pseudos don't work as expected currently
-          '&:active'?: object;
-        },
-        never
-      >;
+      xcss: XCSSProp<{
+        color: 'color.text.red' | 'color.text.blue';
+        borderColor?: 'color.border';
+        '&:hover': {
+          // overrides valid color values above
+          color: 'color.text.green';
+          // borderColor can still be set, restricted to values above
+        };
+        '&:focus': {
+          // setting color to `never` should prevent it from being set
+          color: never;
+        };
+        // Pseudos are already optional; optional pseudos don't work as expected
+        '&:active'?: object;
+      }>;
       xcssInvalid?: XCSSProp<
         {
           color: 'color.text.red' | 'color.text.blue';
@@ -389,6 +392,13 @@ describe('xcss prop', () => {
           color: 'invalid color',
         },
       },
+      validPseudoInvalidProperty: {
+        color: 'color.text.red',
+
+        '&:focus': {
+          color: 'color.text.red',
+        },
+      },
       invalidPseudo: {
         color: 'color.text.red',
         '&::after': {
@@ -415,7 +425,10 @@ describe('xcss prop', () => {
           // @ts-expect-error - Type '"invalid color"' is not assignable to type '"color.text.green" | undefined'.
           xcss={invalidStyles.validPseudoCompletelyInvalidValue}
         />
-
+        <CSSPropComponent
+          // @ts-expect-error - Type '"color.text.red"' is not assignable to type 'undefined'
+          xcss={invalidStyles.validPseudoInvalidProperty}
+        />
         <CSSPropComponent
           // @ts-expect-error - Type '{ color: "invalid color"; }' is not assignable to type 'undefined'
           xcss={invalidStyles.invalidPseudo}
