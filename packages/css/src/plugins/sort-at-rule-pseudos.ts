@@ -7,6 +7,8 @@ const getPseudoClassScore = (selector: string) => {
   return index + 1;
 };
 
+// TODO: update this to match up with packages/css/src/plugins/sort-atomic-style-sheet.ts
+
 const sortPseudoClasses = (atRule: AtRule) => {
   const rules: Rule[] = [];
 

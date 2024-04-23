@@ -2,6 +2,10 @@ import type { ChildNode, Node, Rule, Plugin } from 'postcss';
 
 import { styleOrder } from '../utils/style-ordering';
 
+import { parseAtRule } from './at-rules/parse-at-rule';
+import { sortAtRules } from './at-rules/sort-at-rules';
+import type { AtRuleInfo } from './at-rules/types';
+
 /**
  * Returns where it should be placed.
  *
@@ -25,13 +29,17 @@ export const sortAtomicStyleSheet = (): Plugin => {
     Once(root) {
       const catchAll: Node[] = [];
       const rules: Rule[] = [];
-      const atRules: Node[] = [];
+      const atRules: AtRuleInfo[] = [];
 
       root.each((node) => {
         switch (node.type) {
           case 'rule': {
             if (node.first?.type === 'atrule') {
-              atRules.push(node);
+              atRules.push({
+                tokens: parseAtRule(node.first.params),
+                node,
+                query: node.first.params,
+              });
             } else {
               rules.push(node);
             }
@@ -40,7 +48,11 @@ export const sortAtomicStyleSheet = (): Plugin => {
           }
 
           case 'atrule': {
-            atRules.push(node);
+            atRules.push({
+              tokens: parseAtRule(node.params),
+              node,
+              query: node.params,
+            });
             break;
           }
 
@@ -56,7 +68,9 @@ export const sortAtomicStyleSheet = (): Plugin => {
         return pseudoSelectorScore(selector1) - pseudoSelectorScore(selector2);
       });
 
-      root.nodes = [...catchAll, ...rules, ...atRules] as ChildNode[];
+      atRules.sort(sortAtRules);
+
+      root.nodes = [...catchAll, ...rules, ...atRules.map((atRule) => atRule.node)] as ChildNode[];
     },
   };
 };
