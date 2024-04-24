@@ -36,8 +36,9 @@ export const sortAtomicStyleSheet = (): Plugin => {
           case 'rule': {
             if (node.first?.type === 'atrule') {
               atRules.push({
-                tokens: parseAtRule(node.first.params),
+                parsed: parseAtRule(node.first.params),
                 node,
+                atRuleName: node.first.name,
                 query: node.first.params,
               });
             } else {
@@ -49,8 +50,9 @@ export const sortAtomicStyleSheet = (): Plugin => {
 
           case 'atrule': {
             atRules.push({
-              tokens: parseAtRule(node.params),
+              parsed: parseAtRule(node.params),
               node,
+              atRuleName: node.name,
               query: node.params,
             });
             break;

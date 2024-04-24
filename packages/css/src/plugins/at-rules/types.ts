@@ -1,33 +1,36 @@
 import type { Node } from 'postcss';
 
-export type Property = 'width' | 'height';
+export type Property = 'width' | 'height' | 'device-width' | 'device-height';
 export type ComparisonOperator = '<=' | '=' | '>=' | '<' | '>';
 export type LengthUnit = 'ch' | 'em' | 'ex' | 'px' | 'rem';
 
 export type PropertyInfo = {
-  // Either 'width' or 'height'.
-  //
-  // 'max-width', 'min-width', 'max-height', and 'min-height'
-  // would be normalised to 'width' or 'height'.
+  /**
+   * Either 'width' or 'height'.
+   *
+   * 'max-width', 'min-width', 'max-height', and 'min-height'
+   * would be normalised to 'width' or 'height'.
+   */
   property: Property;
 };
 
 export type OperatorInfo = {
-  // We assume that the media query is in the format
-  // <normalizedProperty> <comparisonOperator> <length>
+  /** The operator (`<=`, `=`, `>=`, `<`, `>`) being used. */
   comparisonOperator: ComparisonOperator;
 };
 
+/**
+ * Information about the length and length unit being used (200px, 35rem, etc.)
+ */
 export type LengthInfo = {
   length: number;
-  // The unit for the length.
   lengthUnit: LengthUnit;
 };
 
 export type BasicMatchInfo = {
-  // The part of the media query that matched this regular expression.
+  /** The part of the media query that matched this regular expression. */
   match: string;
-  // Index where the match was found
+  /** Index where the match was found. */
   index: number;
 };
 
@@ -42,17 +45,20 @@ export type BasicMatchInfo = {
  *     height < 35rem
  *     height >= 50ch
  *
- * If the original query had
+ * If the original query had:
  *
- * * the `<width|height>` and the `<length><lengthUnit>` parts swapped (e.g. `200px >= width`), or
- * * `min-width/max-width/min-height/min-width` instead of `width` and `height` (e.g. `min-width: 200px`),
+ * - the `<width|height>` and the `<length><lengthUnit>` parts swapped (e.g. `200px >= width`), or
+ * - `min-width/max-width/min-height/min-width` instead of `width` and `height` (e.g. `min-width: 200px`),
  *
  * you should normalise this into the `width <= 200px` form before representing it as a `Match`.
  */
 type Match = PropertyInfo & OperatorInfo & LengthInfo & BasicMatchInfo;
 
-// Used for Situation 4:
-// <length> <comparisonOperator> <width|height> <comparisonOperator2> <length2>
+/**
+ * Used for Situation 4 - this is the second half of:
+ *
+ *     <length><lengthUnit> <comparisonOperator> <width|height> <comparisonOperator2> <length2><lengthUnit2>
+ */
 type ExtraComparison = {
   comparisonOperator2: ComparisonOperator;
   length2: number;
@@ -67,7 +73,12 @@ export type Situations = readonly {
 }[];
 
 export type AtRuleInfo = {
-  tokens: ParsedAtRule[];
+  /** The fully parsed at-rule. */
+  parsed: ParsedAtRule[];
+  /** The node representing the at-rule. */
   node: Node;
+  /** The name of the at-rule, without the @ symbol, e.g. "media", "container", "supports". */
+  atRuleName: string;
+  /** The original at-rule, without the "@media"/"@supports"/etc. part, e.g. "(screen and max-width: 500px)". */
   query: string;
 };

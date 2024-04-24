@@ -8,8 +8,10 @@ import type { ParsedAtRule, Situations } from './types';
 
 const comparisonOperators = /(?<operator>(?:<=?)|(?:>=?)|=)\s*/;
 const comparisonOperators2 = /(?<operator2>(?:<=?)|(?:>=?)|=)\s*/;
-const property = /(?:(?<property>(?:(?:min|max|device)-)?(?:width|height))\s*)/;
-const widthOrHeight = /(?<property>width|height)\s*/;
+// Matches min-width, min-height, max-width, max-height,
+// min-device-width, min-device-height, max-device-width, max-device-height,
+// width, height, device-width, and device-height.
+const property = /(?:(?<property>((?:min|max)-)?(?:device-)?(?:width|height))\s*)/;
 const colon = /(?<colon>:\s*)/;
 
 const length_ = /(?<length>-?\d*\.?\d+)(?<lengthUnit>ch|em|ex|px|rem)?\s*/;
@@ -65,22 +67,25 @@ export const parseAtRule = (params: string): ParsedAtRule[] => {
       regex: property.source + colon.source + length_.source,
       parser: parseSituationOne,
     },
+
     // Situation two
     {
-      regex: length_.source + comparisonOperators.source + widthOrHeight.source,
+      regex: length_.source + comparisonOperators.source + property.source,
       parser: parseSituationTwo,
     },
+
     // Situation three
     {
-      regex: widthOrHeight.source + comparisonOperators.source + length_.source,
+      regex: property.source + comparisonOperators.source + length_.source,
       parser: parseSituationThree,
     },
+
     // Situation four
     {
       regex:
         length_.source +
         comparisonOperators.source +
-        widthOrHeight.source +
+        property.source +
         comparisonOperators2.source +
         length2.source,
       parser: parseSituationFour,
@@ -97,7 +102,7 @@ export const parseAtRule = (params: string): ParsedAtRule[] => {
     }
   }
 
-  // Sort matches from first to last, as they appear in the media query
+  // Sort matches from first to last, as they appear in the at-rule / media query
   parsedMatches.sort((a, b) => {
     return a.index - b.index;
   });

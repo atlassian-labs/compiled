@@ -10,7 +10,7 @@ import type {
 } from './types';
 
 function isPropertyValid(property: string): property is Property {
-  return ['width', 'height'].includes(property);
+  return ['width', 'height', 'device-width', 'device-height'].includes(property);
 }
 
 function isComparisonOperatorValid(
@@ -25,42 +25,57 @@ const convertMinMaxMediaQuery = (
   const property = match.groups?.property;
   switch (property) {
     case 'min-width':
+    case 'min-device-width':
       // min-width: XYZ
       // is the same as
       // width >= XYZ
       return {
-        property: 'width',
+        property: property === 'min-width' ? 'width' : 'device-width',
         comparisonOperator: '>=',
       };
     case 'max-width':
+    case 'max-device-width':
       // max-width: XYZ
       // is the same as
       // width <= XYZ
       return {
-        property: 'width',
+        property: property === 'max-width' ? 'width' : 'device-width',
         comparisonOperator: '<=',
       };
     case 'min-height':
+    case 'min-device-height':
       return {
-        property: 'height',
+        property: property === 'min-height' ? 'height' : 'device-height',
         comparisonOperator: '>=',
       };
-    case 'min-height':
+    case 'max-height':
+    case 'max-device-height':
       return {
-        property: 'height',
+        property: property === 'max-height' ? 'height' : 'device-height',
         comparisonOperator: '<=',
       };
     case undefined:
       return;
     default:
-      throw new Error(`Unexpected property '${property}' found when sorting media queries`);
+      throw new SyntaxError(`Unexpected property '${property}' found when sorting media queries`);
   }
 };
 
+/**
+ * This runs when we expect
+ *
+ *     <width|height> <comparisonOperator> <length>
+ *
+ * but we actually got
+ *
+ *     <length> <comparisonOperator> <width|height>
+ *
+ * So we need to normalise the comparison operator by reversing it.
+ *
+ * @param operator Comparison operator.
+ * @returns The reversed comparison operator.
+ */
 const reverseComparisonOperator = (operator: ComparisonOperator): ComparisonOperator => {
-  // We expect <width|height> <comparisonOperator> <length>, but we actually got
-  // <length> <comparisonOperator> <width|height>. So we need to normalise it by
-  // reversing the operator.
   switch (operator) {
     case '<':
       return '>';
@@ -88,7 +103,7 @@ const getProperty = (match: RegExpMatchArray): PropertyInfo | undefined => {
     };
   }
 
-  throw new Error(`Unexpected property '${property}' found when sorting media queries.`);
+  throw new SyntaxError(`Unexpected property '${property}' found when sorting media queries.`);
 };
 
 const getOperator = (
@@ -108,7 +123,9 @@ const getOperator = (
     };
   }
 
-  throw new Error(`Unexpected comparison operator '${operator}' found when sorting media queries.`);
+  throw new SyntaxError(
+    `Unexpected comparison operator '${operator}' found when sorting media queries.`
+  );
 };
 
 const getLengthInfo = (match: RegExpMatchArray, groupName = 'length'): LengthInfo | undefined => {
