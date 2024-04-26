@@ -1,8 +1,9 @@
 /**
- * Ordered style buckets using the long psuedo selector.
- * If changes make sure that it aligns with the definition in `packages/react/src/runtime/sheet.tsx`.
+ * Ordered style buckets using the long pseudo-selector.
+ *
+ * If changed, make sure that it aligns with the definition in `packages/react/src/runtime/sheet.ts`.
  */
-export const styleOrder = [
+export const styleOrder: readonly string[] = [
   ':link',
   ':visited',
   ':focus-within',

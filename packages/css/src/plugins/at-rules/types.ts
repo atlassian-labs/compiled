@@ -1,4 +1,4 @@
-import type { Node } from 'postcss';
+import type { AtRule, Rule } from 'postcss';
 
 export type Property = 'width' | 'height' | 'device-width' | 'device-height';
 export type ComparisonOperator = '<=' | '=' | '>=' | '<' | '>';
@@ -76,7 +76,7 @@ export type AtRuleInfo = {
   /** The fully parsed at-rule. */
   parsed: ParsedAtRule[];
   /** The node representing the at-rule. */
-  node: Node;
+  node: Rule | AtRule;
   /** The name of the at-rule, without the @ symbol, e.g. "media", "container", "supports". */
   atRuleName: string;
   /** The original at-rule, without the "@media"/"@supports"/etc. part, e.g. "(screen and max-width: 500px)". */
