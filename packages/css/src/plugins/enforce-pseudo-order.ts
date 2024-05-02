@@ -11,20 +11,28 @@ const parser = selectorParser((root) => {
     }
 
     const lastNode = node.nodes[node.nodes.length - 1];
-    if (lastNode.type !== 'pseudo') {
-      continue;
-    }
 
-    const pseudoSelectorScore = getPseudoSelectorScore(lastNode.value) - 1;
-    if (pseudoSelectorScore < 0) {
-      return;
-    }
+    for (let i = node.nodes.length - 1; i >= 0; i--) {
+      const currentNode = node.nodes[i];
+      if (currentNode.type !== 'pseudo') {
+        continue;
+      }
 
-    if (node.parent) {
-      node.insertAfter(
-        lastNode,
-        pseudo({ value: `:not(${INCREASE_SPECIFICITY_ID.repeat(pseudoSelectorScore)})` })
-      );
+      const pseudoSelectorScore = getPseudoSelectorScore(currentNode.value) - 1;
+      if (pseudoSelectorScore < 0) {
+        continue;
+      }
+
+      // If pseudoSelectorScore == 0 (lowest specificity/priority in our
+      // pseudo-selector ordering), we can just skip adding :not(#\#) entirely, because
+      // we only care about the specificity of pseudo-selectors relative to each other.
+      if (node.parent && pseudoSelectorScore > 0) {
+        node.insertAfter(
+          lastNode,
+          pseudo({ value: `:not(${INCREASE_SPECIFICITY_ID.repeat(pseudoSelectorScore)})` })
+        );
+        return;
+      }
     }
   }
 });
