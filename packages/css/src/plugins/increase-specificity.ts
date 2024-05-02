@@ -11,7 +11,7 @@ const parser = selectorParser((root) => {
 });
 
 /**
- * Increase the specificity of classes generated in Compiled by appended ":not(#\\#)".
+ * Increase the specificity of classes generated in Compiled by appending ":not(#\\#)".
  * This rule should run after CSS declarations have been atomicized and should not affect
  * the original generated class name.
  *

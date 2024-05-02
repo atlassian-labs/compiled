@@ -103,6 +103,15 @@ export interface PluginOptions {
    * Defaults to `true`.
    */
   sortAtRules?: boolean;
+
+  /**
+   * Increases the specificity of pseudo-selectors to ensure that pseudo-selectors are applied in the correct order.
+   *
+   * This is necessary if you anticipate that other developers will import your Compiled components from two different files or packages.
+   *
+   * Default to `false`.
+   */
+  enforcePseudoOrder?: boolean;
 }
 
 export interface State extends PluginPass {

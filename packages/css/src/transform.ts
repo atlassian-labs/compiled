@@ -7,6 +7,7 @@ import whitespace from 'postcss-normalize-whitespace';
 import { atomicifyRules } from './plugins/atomicify-rules';
 import { discardDuplicates } from './plugins/discard-duplicates';
 import { discardEmptyRules } from './plugins/discard-empty-rules';
+import { enforcePseudoOrder } from './plugins/enforce-pseudo-order';
 import { expandShorthands } from './plugins/expand-shorthands';
 import { extractStyleSheets } from './plugins/extract-stylesheets';
 import { increaseSpecificity } from './plugins/increase-specificity';
@@ -19,6 +20,7 @@ export interface TransformOpts {
   classNameCompressionMap?: Record<string, string>;
   increaseSpecificity?: boolean;
   sortAtRules?: boolean;
+  enforcePseudoOrder?: boolean;
 }
 
 /**
@@ -49,6 +51,7 @@ export const transformCss = (
         classNameCompressionMap: opts.classNameCompressionMap,
         callback: (className: string) => classNames.push(className),
       }),
+      ...(opts.enforcePseudoOrder ? [enforcePseudoOrder()] : []),
       ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
       sortAtomicStyleSheet(opts.sortAtRules ?? true),
       ...(process.env.AUTOPREFIXER === 'off' ? [] : [autoprefixer()]),

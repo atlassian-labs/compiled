@@ -2,7 +2,7 @@ import type { Rule } from 'postcss';
 
 import { styleOrder } from './style-ordering';
 
-const getPseudoSelectorScore = (selector: string) => {
+export const getPseudoSelectorScore = (selector: string): number => {
   const index = styleOrder.findIndex((pseudoClass) => selector.trim().endsWith(pseudoClass));
   return index + 1;
 };

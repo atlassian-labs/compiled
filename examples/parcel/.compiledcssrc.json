@@ -11,6 +11,5 @@
     ]
   ],
   "extract": true,
-  "optimizeCss": false,
-  "classNameCompressionMapFilePath": "./class-name-compression-map.json"
+  "optimizeCss": false
 }
