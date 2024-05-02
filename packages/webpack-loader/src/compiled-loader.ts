@@ -35,6 +35,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     extractStylesToDirectory = undefined,
     resolver = undefined,
     importSources = undefined,
+    enforcePseudoOrder = undefined,
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -90,6 +91,9 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           importSources: {
             type: 'array',
           },
+          enforcePseudoOrder: {
+            type: 'boolean',
+          },
         },
       });
 
@@ -110,6 +114,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     extractStylesToDirectory,
     resolver,
     importSources,
+    enforcePseudoOrder,
   };
 }
 

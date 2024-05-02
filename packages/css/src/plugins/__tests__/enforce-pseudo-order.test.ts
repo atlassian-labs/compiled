@@ -10,8 +10,6 @@ const transform = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-// TODO: update test cases
-
 describe('enforce pseudo-selector order plugin', () => {
   it('should ignore non-prefixed class names', () => {
     const actual = transform`.foo {}`;
