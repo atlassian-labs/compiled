@@ -26,7 +26,11 @@ const parser = selectorParser((root) => {
       // If pseudoSelectorScore == 0 (lowest specificity/priority in our
       // pseudo-selector ordering), we can just skip adding :not(#\#) entirely, because
       // we only care about the specificity of pseudo-selectors relative to each other.
-      if (node.parent && pseudoSelectorScore > 0) {
+      if (pseudoSelectorScore === 0) {
+        return;
+      }
+
+      if (node.parent) {
         node.insertAfter(
           lastNode,
           pseudo({ value: `:not(${INCREASE_SPECIFICITY_ID.repeat(pseudoSelectorScore)})` })
