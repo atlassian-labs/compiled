@@ -1,3 +1,8 @@
+import {
+  INCREASE_SPECIFICITY_ID,
+  INCREASE_SPECIFICITY_SELECTOR,
+  getPseudoSelectorScore,
+} from '@compiled/utils';
 import type { Media, StyleRules } from 'css';
 import CSS from 'css';
 
@@ -5,11 +10,6 @@ import type { MatchFilter } from './types';
 
 type Arg = [{ [key: string]: string }, MatchFilter?];
 
-/**
- * Configuring the babel plugin with `increaseSpecificity: true` will result in this being appended to the end of generated classes.
- * TODO: Use the import from `@compiled/utils`, but doing so results in a circular TS reference, so it's copy and pasted..
- */
-const INCREASE_SPECIFICITY_SELECTOR = ':not(#\\#)';
 const DEFAULT_MATCH_FILTER: MatchFilter = { media: undefined, target: undefined };
 
 const kebabCase = (str: string) =>
@@ -18,7 +18,7 @@ const kebabCase = (str: string) =>
     .replace(/\s+/g, '-')
     .toLowerCase();
 
-const removeSpaces = (str?: string) => str && str.replace(/\s/g, '');
+const removeSpaces = (str: string): string => str.replace(/\s/g, '');
 
 const mapProperties = (properties: Record<string, any>) =>
   Object.keys(properties).map((property) => `${kebabCase(property)}:${properties[property]}`);
@@ -36,7 +36,7 @@ const findMediaRules = (
       continue;
     }
 
-    if ('media' in rule) {
+    if ('media' in rule && rule.media) {
       if (removeSpaces(rule.media) === removeSpaces(media) && 'rules' in rule && rule.rules) {
         rules.push(...rule.rules);
       } else if ('rules' in rule) {
@@ -47,6 +47,31 @@ const findMediaRules = (
   }
 
   return rules;
+};
+
+const getAllClassNameForms = (
+  className: string,
+  target: MatchFilter['target']
+): readonly string[] => {
+  const klass = target ? `.${className}${target}` : `.${className}`;
+  /**
+   * Configuring the babel plugin with `increaseSpecificity: true` will result in this being appended to the end of generated classes.
+   */
+  const klassIncreasedSpecificity = target
+    ? `.${className}${INCREASE_SPECIFICITY_SELECTOR}${target}`
+    : `.${className}${INCREASE_SPECIFICITY_SELECTOR}`;
+
+  if (target) {
+    const pseudoSelectorScore = getPseudoSelectorScore(target) - 1;
+    if (pseudoSelectorScore > 0) {
+      const klassWithPseudoOrdering = `.${className}${target}:not(${INCREASE_SPECIFICITY_ID.repeat(
+        pseudoSelectorScore
+      )})`;
+      return [klass, klassIncreasedSpecificity, klassWithPseudoOrdering];
+    }
+  }
+
+  return [klass, klassIncreasedSpecificity];
 };
 
 const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) => {
@@ -64,16 +89,13 @@ const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) =
 
   const allRules = getAllRules();
 
-  const klass = target ? `.${className}${target}` : `.${className}`;
-  const klassIncreased = target
-    ? `.${className}${INCREASE_SPECIFICITY_SELECTOR}${target}`
-    : `.${className}${INCREASE_SPECIFICITY_SELECTOR}`;
+  const classNameForms = getAllClassNameForms(className, target);
 
   return allRules?.filter((r) => {
     if ('selectors' in r) {
       return r.selectors?.find((s) => {
         const sTrimmed = removeSpaces(s);
-        return sTrimmed === removeSpaces(klass) || sTrimmed === removeSpaces(klassIncreased);
+        return classNameForms.includes(sTrimmed);
       });
     }
     return;
