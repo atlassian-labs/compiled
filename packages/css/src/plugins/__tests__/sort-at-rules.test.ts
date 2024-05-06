@@ -112,19 +112,19 @@ describe('sort at-rules', () => {
           color: green;
         }
         @media (width > 200px) {
-          color: red;
+          color: orange;
         }
         @media (200px < width <= 500px) {
           color: yellow;
         }
         @media (200px < width) {
-          color: orange;
+          color: red;
         }
         @media (width = 200px) {
-          color: purple;
+          color: pink;
         }
         @media (200px = width) {
-          color: pink;
+          color: purple;
         }
         @media (width <= 600px) {
           color: blue;
@@ -133,10 +133,10 @@ describe('sort at-rules', () => {
 
       expect(actual).toMatchInlineSnapshot(`
         "
-                @media (width > 200px) {
+                @media (200px < width) {
                   color: red;
                 }
-                @media (200px < width) {
+                @media (width > 200px) {
                   color: orange;
                 }
                 @media (200px < width <= 500px) {
@@ -148,10 +148,10 @@ describe('sort at-rules', () => {
                 @media (width <= 600px) {
                   color: blue;
                 }
-                @media (width = 200px) {
+                @media (200px = width) {
                   color: purple;
                 }
-                @media (200px = width) {
+                @media (width = 200px) {
                   color: pink;
                 }
               "
@@ -168,10 +168,10 @@ describe('sort at-rules', () => {
         }
 
         @media (height > 200px) {
-          color: green;
+          color: lime;
         }
         @media (width > 200px) {
-          color: maroon;
+          color: red;
         }
 
         @media (200px < height <= 500px) {
@@ -182,24 +182,24 @@ describe('sort at-rules', () => {
         }
 
         @media (200px < height) {
-          color: lime;
+          color: green;
         }
         @media (200px < width) {
-          color: red;
+          color: maroon;
         }
 
         @media (height = 200px) {
-          color: black;
+          color: white;
         }
         @media (width = 200px) {
-          color: purple;
+          color: fuchsia;
         }
 
         @media (200px = height) {
-          color: white;
+          color: black;
         }
         @media (200px = width) {
-          color: fuchsia;
+          color: purple;
         }
 
         @media (height <= 600px) {
@@ -212,10 +212,10 @@ describe('sort at-rules', () => {
 
       expect(actual).toMatchInlineSnapshot(`
         "
-                @media (width > 200px) {
+                @media (200px < width) {
                   color: maroon;
                 }
-                @media (200px < width) {
+                @media (width > 200px) {
                   color: red;
                 }
                 @media (200px < width <= 500px) {
@@ -225,11 +225,11 @@ describe('sort at-rules', () => {
                   color: yellow;
                 }
 
-                @media (height > 200px) {
+                @media (200px < height) {
                   color: green;
                 }
 
-                @media (200px < height) {
+                @media (height > 200px) {
                   color: lime;
                 }
 
@@ -246,18 +246,18 @@ describe('sort at-rules', () => {
                 @media (height <= 600px) {
                   color: navy;
                 }
-                @media (width = 200px) {
+                @media (200px = width) {
                   color: purple;
                 }
-                @media (200px = width) {
+                @media (width = 200px) {
                   color: fuchsia;
                 }
 
-                @media (height = 200px) {
+                @media (200px = height) {
                   color: black;
                 }
 
-                @media (200px = height) {
+                @media (height = 200px) {
                   color: white;
                 }
               "
@@ -273,7 +273,7 @@ describe('sort at-rules', () => {
           color: red;
         }
         @media (min-height: 300px) {
-          color: orange;
+          color: yellow;
         }
         @media (max-height: 300px) {
           color: purple;
@@ -282,7 +282,7 @@ describe('sort at-rules', () => {
           color: blue;
         }
         @media (300px <= height) {
-          color: yellow;
+          color: orange;
         }
       `);
       expect(actual).toMatchInlineSnapshot(`
@@ -290,10 +290,10 @@ describe('sort at-rules', () => {
                 @media (300px < height <= 400px) {
                   color: red;
                 }
-                @media (min-height: 300px) {
+                @media (300px <= height) {
                   color: orange;
                 }
-                @media (300px <= height) {
+                @media (min-height: 300px) {
                   color: yellow;
                 }
                 @media (300px <= height <= 400px) {
@@ -309,21 +309,18 @@ describe('sort at-rules', () => {
       `);
     });
 
-    it("shouldn't try to sort a mixture of range syntax and min/max syntax that are equivalent", () => {
-      // We do not attempt to sort this in any way, so if the sorting of the input was
-      // originally non-deterministic, then we will not have a deterministic sorting.
-      //
-      // But then again, we do not expect people to write multiple media queries that
-      // mean the exact same thing....
+    it('should sort a mixture of range syntax and min/max syntax that are equivalent in a deterministic way', () => {
+      // Here, we fall back to the `localeCompare` sorting function (i.e.
+      // lexicographical sorting).
       const actual = transform(`
         @media (300px >= height) {
           color: red;
         }
         @media (max-height: 300px) {
-          color: green;
+          color: blue;
         }
         @media (height <= 300px) {
-          color: blue;
+          color: green;
         }
       `);
       expect(actual).toMatchInlineSnapshot(`
@@ -331,10 +328,10 @@ describe('sort at-rules', () => {
                 @media (300px >= height) {
                   color: red;
                 }
-                @media (max-height: 300px) {
+                @media (height <= 300px) {
                   color: green;
                 }
-                @media (height <= 300px) {
+                @media (max-height: 300px) {
                   color: blue;
                 }
               "
@@ -695,16 +692,15 @@ describe('sort at-rules', () => {
         }
       `);
 
-      // TODO: Is there a more reasonable sorting?
       expect(actual).toMatchInlineSnapshot(`
         "
                 @media screen and (width > 1000px) {
                   color: abc;
                 }
-                @media screen and (width < 500px) {
+                @media (width < 500px) {
                   color: abc;
                 }
-                @media (width < 500px) {
+                @media screen and (width < 500px) {
                   color: abc;
                 }
                 @media screen and not (width < 500px) {

@@ -97,7 +97,10 @@ export const sortAtRules = (rule1: AtRuleInfo, rule2: AtRuleInfo): number => {
   // If one at-rule is "@media (width < 200px)" and another has more conditions, such as
   // "@media (width < 200px and something else)", the second at-rule should come after
   // the first.
-  if (rule2.parsed.length || rule1.parsed.length) {
+  if (
+    rule2.parsed.length + rule1.parsed.length > 0 &&
+    rule1.parsed.length !== rule2.parsed.length
+  ) {
     return rule1.parsed.length - rule2.parsed.length;
   }
 
