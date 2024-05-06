@@ -32,7 +32,9 @@ const sortAtRulePseudoSelectors = (atRule: AtRule) => {
 };
 
 /**
- * PostCSS plugin for sorting rules inside AtRules based on lvfha ordering.
+ * PostCSS plugin for sorting pseudo-selectors (inside and outside at-rules)
+ * based on lvfha ordering, and the at-rules themselves as well.
+ *
  * Only top level CSS rules will be sorted.
  *
  * Using Once due to the catchAll behaviour

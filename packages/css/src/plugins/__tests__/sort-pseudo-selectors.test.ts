@@ -20,7 +20,7 @@ const transformWithAtomicClasses = (css: TemplateStringsArray) => {
   return result.css;
 };
 
-describe('sorting pseudo-selectors and at-rules', () => {
+describe('sorting pseudo-selectors', () => {
   it('should move at-rules to the bottom', () => {
     const actual = transform`
       @media screen {
@@ -175,7 +175,7 @@ describe('sorting rules inside at-rules (with atomic classes)', () => {
   });
 });
 
-describe('sorting rules inside at-rules (without atomic classes)', () => {
+describe('sorting pseudo-selectors inside at-rules (without atomic classes)', () => {
   it('should leave unsorted rules in place', () => {
     const actual = transform`
       @media (max-width: 400px) {
