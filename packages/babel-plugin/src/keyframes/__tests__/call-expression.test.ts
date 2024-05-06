@@ -917,11 +917,11 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
-            const _3 = "._j7hqb4f3{animation-name:k1wmcptp}";
-            const _2 = "._5sagymdr{animation-duration:2s}";
-            const _ =
+            "const _4 =
               "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+            const _3 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+            const _2 = "._j7hqb4f3{animation-name:k1wmcptp}";
+            const _ = "._5sagymdr{animation-duration:2s}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
@@ -951,9 +951,9 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = "._y44vjvcp{animation:k1wmcptp 2s ease-in-out}";
-            const _ =
+            "const _2 =
               "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+            const _ = "._y44vjvcp{animation:k1wmcptp 2s ease-in-out}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
@@ -989,10 +989,10 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _3 =
+            "const _3 = "@keyframes k1mcm2lv{0%{color:blue}to{color:indigo}}";
+            const _2 = "@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}";
+            const _ =
               "._y44vwtez{animation:k1m8j3od 2s ease-in-out,k1mcm2lv 2s ease-in-out}";
-            const _2 = "@keyframes k1mcm2lv{0%{color:blue}to{color:indigo}}";
-            const _ = "@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}";
             const fadeOut = null;
             const darken = null;
             const StyledComponent = forwardRef(
@@ -1027,11 +1027,11 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
-            const _3 = "._j7hqb4f3{animation-name:k1wmcptp}";
-            const _2 = "._5sagymdr{animation-duration:2s}";
-            const _ =
+            "const _4 =
               "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+            const _3 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+            const _2 = "._j7hqb4f3{animation-name:k1wmcptp}";
+            const _ = "._5sagymdr{animation-duration:2s}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
@@ -1061,9 +1061,9 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = "._y44vjvcp{animation:k1wmcptp 2s ease-in-out}";
-            const _ =
+            "const _2 =
               "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+            const _ = "._y44vjvcp{animation:k1wmcptp 2s ease-in-out}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
@@ -1099,10 +1099,10 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _3 =
+            "const _3 = "@keyframes k1mcm2lv{0%{color:blue}to{color:indigo}}";
+            const _2 = "@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}";
+            const _ =
               "._y44vwtez{animation:k1m8j3od 2s ease-in-out,k1mcm2lv 2s ease-in-out}";
-            const _2 = "@keyframes k1mcm2lv{0%{color:blue}to{color:indigo}}";
-            const _ = "@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}";
             const fadeOut = null;
             const darken = null;
             const StyledComponent = forwardRef(
@@ -1315,11 +1315,11 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
-            const _3 = "._j7hq1c6j{animation-name:khheuil}";
-            const _2 = "._5sagymdr{animation-duration:2s}";
-            const _ =
+            "const _4 =
               "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+            const _3 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+            const _2 = "._j7hq1c6j{animation-name:khheuil}";
+            const _ = "._5sagymdr{animation-duration:2s}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
@@ -1349,9 +1349,9 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = "._y44v1go4{animation:khheuil 2s ease-in-out}";
-            const _ =
+            "const _2 =
               "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+            const _ = "._y44v1go4{animation:khheuil 2s ease-in-out}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
@@ -1387,10 +1387,10 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _3 =
+            "const _3 = "@keyframes k164f01r{0%{color:blue}to{color:indigo}}";
+            const _2 = "@keyframes k15szqvw{0%{opacity:1}to{opacity:0}}";
+            const _ =
               "._y44vheiy{animation:k15szqvw 2s ease-in-out,k164f01r 2s ease-in-out}";
-            const _2 = "@keyframes k164f01r{0%{color:blue}to{color:indigo}}";
-            const _ = "@keyframes k15szqvw{0%{opacity:1}to{opacity:0}}";
             const fadeOut = null;
             const darken = null;
             const StyledComponent = forwardRef(
@@ -1425,11 +1425,11 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
-            const _3 = "._j7hq1c6j{animation-name:khheuil}";
-            const _2 = "._5sagymdr{animation-duration:2s}";
-            const _ =
+            "const _4 =
               "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+            const _3 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
+            const _2 = "._j7hq1c6j{animation-name:khheuil}";
+            const _ = "._5sagymdr{animation-duration:2s}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
@@ -1459,9 +1459,9 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _2 = "._y44v1go4{animation:khheuil 2s ease-in-out}";
-            const _ =
+            "const _2 =
               "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+            const _ = "._y44v1go4{animation:khheuil 2s ease-in-out}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
               ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
@@ -1497,10 +1497,10 @@ describe('keyframes', () => {
           );
 
           expect(actual).toMatchInlineSnapshot(`
-            "const _3 =
+            "const _3 = "@keyframes k164f01r{0%{color:blue}to{color:indigo}}";
+            const _2 = "@keyframes k15szqvw{0%{opacity:1}to{opacity:0}}";
+            const _ =
               "._y44vheiy{animation:k15szqvw 2s ease-in-out,k164f01r 2s ease-in-out}";
-            const _2 = "@keyframes k164f01r{0%{color:blue}to{color:indigo}}";
-            const _ = "@keyframes k15szqvw{0%{opacity:1}to{opacity:0}}";
             const fadeOut = null;
             const darken = null;
             const StyledComponent = forwardRef(

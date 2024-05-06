@@ -449,8 +449,8 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      'const _2="._y44vk4ag{animation:fadeOut 2s ease-in-out}"',
-      'const _="@keyframes fadeOut{0%{opacity:1}50%{opacity:0.5}to{opacity:0}}"',
+      'const _2="@keyframes fadeOut{0%{opacity:1}50%{opacity:0.5}to{opacity:0}}"',
+      'const _="._y44vk4ag{animation:fadeOut 2s ease-in-out}"',
       '<CS>{[_,_2]}</CS>',
       'className={ax(["_y44vk4ag"])}',
     ]);
