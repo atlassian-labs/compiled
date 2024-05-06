@@ -100,7 +100,7 @@ describe('browser', () => {
       <style nonce="k0Mp1lEd">._f8pjbf54:focus{color:green}</style>
       <style nonce="k0Mp1lEd">._30l31gy6:hover{color:yellow}</style>
       <style nonce="k0Mp1lEd">._9h8h13q2:active{color:blue}</style>
-      <style nonce="k0Mp1lEd">@supports (display:grid){._1df61gy6:focus{color:yellow}._7okp11x8:active{color:black}}@media (max-width:800px){._1o8z1gy6:focus{color:yellow}._jbabtwqo:focus-visible, ._6146twqo:hover{color:grey}._1cld11x8:active{color:black}}</style>
+      <style nonce="k0Mp1lEd">@media (max-width:800px){._1o8z1gy6:focus{color:yellow}._jbabtwqo:focus-visible, ._6146twqo:hover{color:grey}._1cld11x8:active{color:black}}@supports (display:grid){._1df61gy6:focus{color:yellow}._7okp11x8:active{color:black}}</style>
       "
     `);
   });
