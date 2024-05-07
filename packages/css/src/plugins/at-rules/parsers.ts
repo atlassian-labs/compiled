@@ -149,7 +149,7 @@ const getBasicMatchInfo = (match: RegExpMatchArray): BasicMatchInfo | undefined 
   return { index: match.index, match: match[0] };
 };
 
-export const parseSituationOne = (match: RegExpMatchArray): ParsedAtRule | undefined => {
+export const parseMinMaxSyntax = (match: RegExpMatchArray): ParsedAtRule | undefined => {
   const basicMatchInfo = getBasicMatchInfo(match);
   const propertyAndOperatorInfo = convertMinMaxMediaQuery(match);
   const lengthInfo = getLengthInfo(match);
@@ -165,7 +165,7 @@ export const parseSituationOne = (match: RegExpMatchArray): ParsedAtRule | undef
   return;
 };
 
-export const parseSituationTwo = (match: RegExpMatchArray): ParsedAtRule | undefined => {
+export const parseReversedRangeSyntax = (match: RegExpMatchArray): ParsedAtRule | undefined => {
   const basicMatchInfo = getBasicMatchInfo(match);
   const propertyInfo = getProperty(match);
   const operatorInfo = getOperator(match, 'reverse');
@@ -183,7 +183,7 @@ export const parseSituationTwo = (match: RegExpMatchArray): ParsedAtRule | undef
   return;
 };
 
-export const parseSituationThree = (match: RegExpMatchArray): ParsedAtRule | undefined => {
+export const parseRangeSyntax = (match: RegExpMatchArray): ParsedAtRule | undefined => {
   const basicMatchInfo = getBasicMatchInfo(match);
   const propertyInfo = getProperty(match);
   const operatorInfo = getOperator(match, 'no-reverse');
@@ -201,7 +201,7 @@ export const parseSituationThree = (match: RegExpMatchArray): ParsedAtRule | und
   return;
 };
 
-export const parseSituationFour = (match: RegExpMatchArray): ParsedAtRule | undefined => {
+export const parseDoubleRangeSyntax = (match: RegExpMatchArray): ParsedAtRule | undefined => {
   const basicMatchInfo = getBasicMatchInfo(match);
   const propertyInfo = getProperty(match);
   const firstOperatorInfo = getOperator(match, 'reverse');

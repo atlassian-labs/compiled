@@ -1,8 +1,8 @@
 import {
-  parseSituationFour,
-  parseSituationOne,
-  parseSituationThree,
-  parseSituationTwo,
+  parseDoubleRangeSyntax,
+  parseMinMaxSyntax,
+  parseRangeSyntax,
+  parseReversedRangeSyntax,
 } from './parsers';
 import type { ParsedAtRule, Situations } from './types';
 
@@ -21,36 +21,36 @@ const length2 = /(?<length2>-?\d*\.?\d+)(?<lengthUnit2>ch|em|ex|px|rem)?\s*/;
  * Extracts and parses breakpoint information from a media query. We define breakpoints as
  * the `min-width`/`max-width`/`min-height`/`max-width`/`width`/`height` parts of a media query.
  *
- * There are four situations that this function can handle:
+ * There are four situations that this function can handle (terminology is based on
+ * [that from W3C](https://drafts.csswg.org/mediaqueries/)):
  *
- * ### Situation one
+ * ### Situation one - min/max syntax
  *
  *     <property>: <length><lengthUnit>
  *
  *     e.g. max-width: 200px
  *
- * ### Situation two
+ * ### Situation two - reversed range syntax
  *
  *     <length><lengthUnit> <comparisonOperator> <width|height>
  *
  *     e.g. 200px >= width
  *
- * ### Situation three
+ * ### Situation three - range syntax
  *
  *     <width|height> <comparisonOperator> <length><lengthUnit>
  *
  *     e.g. width <= 200px
  *
- * ### Situation four
+ * ### Situation four - double range syntax
  *
  *     <length><lengthUnit> <comparisonOperator> <width|height> <comparisonOperator2> <length2><lengthUnit2>
  *
  *     e.g. 0 <= width <= 200px
  *
  * Note that more exotic syntax (e.g. `calc()` functions, ratios) are not currently
- * supported.
- *
- * They will either be returned without being parsed, or throw an error.
+ * supported. They will be returned without being parsed, and might be sorted in a
+ * still-deterministic but slightly odd manner.
  *
  * @param params The original media query, as a string
  * @returns The extracted and parsed breakpoints from the media query
@@ -62,25 +62,25 @@ export const parseAtRule = (params: string): ParsedAtRule[] => {
   const parsedMatches: ParsedAtRule[] = [];
 
   const situations: Situations = [
-    // Situation one
+    // Situation one - min/max syntax
     {
       regex: property.source + colon.source + length_.source,
-      parser: parseSituationOne,
+      parser: parseMinMaxSyntax,
     },
 
-    // Situation two
+    // Situation two - reversed range syntax
     {
       regex: length_.source + comparisonOperators.source + property.source,
-      parser: parseSituationTwo,
+      parser: parseReversedRangeSyntax,
     },
 
-    // Situation three
+    // Situation three - range syntax
     {
       regex: property.source + comparisonOperators.source + length_.source,
-      parser: parseSituationThree,
+      parser: parseRangeSyntax,
     },
 
-    // Situation four
+    // Situation four - double range syntax
     {
       regex:
         length_.source +
@@ -88,7 +88,7 @@ export const parseAtRule = (params: string): ParsedAtRule[] => {
         property.source +
         comparisonOperators2.source +
         length2.source,
-      parser: parseSituationFour,
+      parser: parseDoubleRangeSyntax,
     },
   ];
 
@@ -102,7 +102,17 @@ export const parseAtRule = (params: string): ParsedAtRule[] => {
     }
   }
 
-  // Sort matches from first to last, as they appear in the at-rule / media query
+  // Ensure that the order of the media features within an at-rule / media query are preserved.
+  //
+  // For example, if we have
+  //
+  //     @media (width > 400px) or (width < 200px)
+  //
+  // We want to make sure that `parsedMatches` returns something equivalent to
+  // `['width > 400px', 'width < 200px']`, not `['width < 200px', 'width > 400px']`.
+  //
+  // This is important as the order of the array elements will affect the result of
+  // sorting stages after this.
   parsedMatches.sort((a, b) => {
     return a.index - b.index;
   });
