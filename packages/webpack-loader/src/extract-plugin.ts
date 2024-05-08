@@ -127,7 +127,7 @@ export class CompiledExtractPlugin {
 
         const [asset] = cssAssets;
         const contents = getAssetSourceContents(asset.source);
-        const newSource = new RawSource(sort(contents));
+        const newSource = new RawSource(sort(contents, this.#options.sortAtRules));
 
         compilation.updateAsset(asset.name, newSource, asset.info);
       });

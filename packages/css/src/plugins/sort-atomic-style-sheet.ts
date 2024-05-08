@@ -39,7 +39,7 @@ const sortAtRulePseudoSelectors = (atRule: AtRule) => {
  *
  * Using Once due to the catchAll behaviour
  */
-export const sortAtomicStyleSheet = (): Plugin => {
+export const sortAtomicStyleSheet = (sortAtRulesEnabled: boolean): Plugin => {
   return {
     postcssPlugin: 'sort-atomic-style-sheet',
     Once(root) {
@@ -52,7 +52,7 @@ export const sortAtomicStyleSheet = (): Plugin => {
           case 'rule': {
             if (node.first?.type === 'atrule') {
               atRules.push({
-                parsed: parseAtRule(node.first.params),
+                parsed: sortAtRulesEnabled ? parseAtRule(node.first.params) : [],
                 node,
                 atRuleName: node.first.name,
                 query: node.first.params,
@@ -66,7 +66,7 @@ export const sortAtomicStyleSheet = (): Plugin => {
 
           case 'atrule': {
             atRules.push({
-              parsed: parseAtRule(node.params),
+              parsed: sortAtRulesEnabled ? parseAtRule(node.params) : [],
               node,
               atRuleName: node.name,
               query: node.params,
@@ -81,7 +81,9 @@ export const sortAtomicStyleSheet = (): Plugin => {
       });
 
       sortPseudoSelectors(rules);
-      atRules.sort(sortAtRules);
+      if (sortAtRulesEnabled) {
+        atRules.sort(sortAtRules);
+      }
 
       for (const atRule of atRules) {
         const node = atRule.node;

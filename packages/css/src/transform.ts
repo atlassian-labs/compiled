@@ -18,6 +18,7 @@ export interface TransformOpts {
   optimizeCss?: boolean;
   classNameCompressionMap?: Record<string, string>;
   increaseSpecificity?: boolean;
+  sortAtRules?: boolean;
 }
 
 /**
@@ -49,7 +50,7 @@ export const transformCss = (
         callback: (className: string) => classNames.push(className),
       }),
       ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
-      sortAtomicStyleSheet(),
+      sortAtomicStyleSheet(opts.sortAtRules ?? true),
       ...(process.env.AUTOPREFIXER === 'off' ? [] : [autoprefixer()]),
       whitespace(),
       extractStyleSheets({ callback: (sheet: string) => sheets.push(sheet) }),

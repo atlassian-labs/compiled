@@ -25,6 +25,12 @@ export interface PluginOptions {
    * When set, extract styles to an external CSS file
    */
   extractStylesToDirectory?: { source: string; dest: string };
+
+  /**
+   * Whether to sort at-rules, including media queries.
+   * Defaults to `true`.
+   */
+  sortAtRules?: boolean;
 }
 
 export interface PluginPass extends OriginalPluginPass {
