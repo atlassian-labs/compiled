@@ -579,7 +579,7 @@ describe('sort at-rules', () => {
       `);
     });
 
-    it("shouldn't sort media queries with ratios and calc() functions", () => {
+    it("shouldn't sort media queries with ratios or calc() functions", () => {
       // This is currently not supported - media queries with ratios and calc() functions
       // will be sorted purely alphabetically, without regard for their media features
       // (e.g. max-width) and values.
@@ -837,6 +837,47 @@ describe('sort at-rules', () => {
                 }
                 @supports (display: flex) {
                   color: blue;
+                }
+              "
+      `);
+    });
+
+    it('should normalise lengths of different units', () => {
+      // We assume that 1ch = 1ex = 0.5rem = 0.5em = 8px
+      const actual = transform(`
+        @media (width > 200px) {
+          color: abc;
+        }
+        @media (width > 26.1ch) {
+          color: abc;
+        }
+        @media (width > 26.0ex) {
+          color: abc;
+        }
+        @media (width > 12.51rem) {
+          color: abc;
+        }
+        @media (width > 12.5000001em) {
+          color: abc;
+        }
+      `);
+
+      expect(actual).toMatchInlineSnapshot(`
+        "
+                @media (width > 200px) {
+                  color: abc;
+                }
+                @media (width > 12.5000001em) {
+                  color: abc;
+                }
+                @media (width > 12.51rem) {
+                  color: abc;
+                }
+                @media (width > 26.0ex) {
+                  color: abc;
+                }
+                @media (width > 26.1ch) {
+                  color: abc;
                 }
               "
       `);

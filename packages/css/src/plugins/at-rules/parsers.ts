@@ -9,6 +9,8 @@ import type {
   PropertyInfo,
 } from './types';
 
+const REM_SIZE = 16;
+
 function isPropertyValid(property: string): property is Property {
   return ['width', 'height', 'device-width', 'device-height'].includes(property);
 }
@@ -128,17 +130,33 @@ const getOperator = (
   );
 };
 
-const getLengthInfo = (match: RegExpMatchArray, groupName = 'length'): LengthInfo | undefined => {
-  const length_ = match.groups?.[groupName];
-  const lengthUnit = match.groups?.[groupName];
+const getLengthInfo = (match: RegExpMatchArray): LengthInfo | undefined => {
+  const length_ = match.groups?.length;
+  const lengthUnit = match.groups?.lengthUnit;
+
+  if (length_ === '0') {
+    return { length: 0 };
+  }
 
   if (typeof length_ !== 'string' || typeof lengthUnit !== 'string') {
     return undefined;
   }
-  return {
-    length: +length_,
-    lengthUnit: lengthUnit as LengthUnit,
-  };
+
+  switch (lengthUnit as LengthUnit) {
+    case 'ch':
+    case 'ex':
+      // https://drafts.csswg.org/css-values/#font-relative-lengths
+      // We assume 1ch and 1ex are 0.5em, as we cannot rely on more specific information here.
+      return { length: +length_ * 0.5 * REM_SIZE };
+    case 'em':
+    case 'rem':
+      return { length: +length_ * REM_SIZE };
+    case 'px':
+      return { length: +length_ };
+    default:
+      // This should never happen
+      throw new Error(`Unrecognized length unit ${lengthUnit}. This is a Compiled bug!`);
+  }
 };
 
 const getBasicMatchInfo = (match: RegExpMatchArray): BasicMatchInfo | undefined => {

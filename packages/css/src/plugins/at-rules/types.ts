@@ -24,7 +24,6 @@ export type OperatorInfo = {
  */
 export type LengthInfo = {
   length: number;
-  lengthUnit: LengthUnit;
 };
 
 export type BasicMatchInfo = {
