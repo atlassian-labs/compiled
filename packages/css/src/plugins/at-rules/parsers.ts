@@ -200,32 +200,3 @@ export const parseRangeSyntax = (match: RegExpMatchArray): ParsedAtRule | undefi
 
   return;
 };
-
-export const parseDoubleRangeSyntax = (match: RegExpMatchArray): ParsedAtRule | undefined => {
-  const basicMatchInfo = getBasicMatchInfo(match);
-  const propertyInfo = getProperty(match);
-  const firstOperatorInfo = getOperator(match, 'reverse');
-  const secondOperatorInfo = getOperator(match, 'no-reverse', 'operator2');
-  const lengthInfo = getLengthInfo(match);
-  const lengthInfo2 = getLengthInfo(match, 'operator2');
-
-  if (
-    basicMatchInfo &&
-    propertyInfo &&
-    firstOperatorInfo &&
-    secondOperatorInfo &&
-    lengthInfo &&
-    lengthInfo2
-  ) {
-    return {
-      ...basicMatchInfo,
-      ...propertyInfo,
-      ...firstOperatorInfo,
-      ...secondOperatorInfo,
-      ...lengthInfo,
-      ...lengthInfo2,
-    };
-  }
-
-  return;
-};

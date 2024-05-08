@@ -52,20 +52,7 @@ export type BasicMatchInfo = {
  *
  * you should normalise this into the `width <= 200px` form before representing it as a `Match`.
  */
-type Match = PropertyInfo & OperatorInfo & LengthInfo & BasicMatchInfo;
-
-/**
- * Used for Situation 4 - this is the second half of:
- *
- *     <length><lengthUnit> <comparisonOperator> <width|height> <comparisonOperator2> <length2><lengthUnit2>
- */
-type ExtraComparison = {
-  comparisonOperator2: ComparisonOperator;
-  length2: number;
-  lengthUnit2: LengthUnit;
-};
-
-export type ParsedAtRule = Match | (Match & ExtraComparison);
+export type ParsedAtRule = PropertyInfo & OperatorInfo & LengthInfo & BasicMatchInfo;
 
 export type Situations = readonly {
   regex: string;
