@@ -1,12 +1,12 @@
-import {
-  INCREASE_SPECIFICITY_ID,
-  INCREASE_SPECIFICITY_SELECTOR,
-  getPseudoSelectorScore,
-} from '@compiled/utils';
 import type { Media, StyleRules } from 'css';
 import CSS from 'css';
 
 import type { MatchFilter } from './types';
+import {
+  INCREASE_SPECIFICITY_ID,
+  INCREASE_SPECIFICITY_SELECTOR,
+  getPseudoSelectorScore,
+} from './utils';
 
 type Arg = [{ [key: string]: string }, MatchFilter?];
 
@@ -62,7 +62,7 @@ const getAllClassNameForms = (
     : `.${className}${INCREASE_SPECIFICITY_SELECTOR}`;
 
   if (target) {
-    const pseudoSelectorScore = getPseudoSelectorScore(target) - 1;
+    const pseudoSelectorScore = getPseudoSelectorScore(target);
     if (pseudoSelectorScore > 0) {
       const klassWithPseudoOrdering = `.${className}${target}:not(${INCREASE_SPECIFICITY_ID.repeat(
         pseudoSelectorScore
