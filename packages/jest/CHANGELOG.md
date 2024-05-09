@@ -1,5 +1,11 @@
 # @compiled/jest
 
+## 0.10.4
+
+### Patch Changes
+
+- 4f5865a1: Fixes the parsing of custom properties (CSS variables) names in object syntax. The casing is now preserved instead of being converted to kebab-case.
+
 ## 0.10.3
 
 ### Patch Changes

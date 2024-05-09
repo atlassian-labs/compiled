@@ -1,5 +1,15 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.29.0
+
+### Patch Changes
+
+- 4f5865a1: Fixes the parsing of custom properties (CSS variables) names in object syntax. The casing is now preserved instead of being converted to kebab-case.
+- Updated dependencies [4f5865a1]
+- Updated dependencies [83c47f85]
+  - @compiled/utils@0.11.1
+  - @compiled/css@0.14.0
+
 ## 0.28.8
 
 ### Patch Changes
