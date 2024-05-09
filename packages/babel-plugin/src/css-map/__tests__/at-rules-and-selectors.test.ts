@@ -72,7 +72,7 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
       '._1tjqruxl span{color:orange}',
       '._yzbc32ev span:hover{color:pink}',
 
-      'const styles={success:"_syazjafr _30l3aebp _1takoyl8 _1tjq1v9d _yzbcy77s",danger:"_syaz5scu _30l3qaj3 _1taki9ra _1tjqruxl _yzbc32ev"}',
+      'const styles={success:"_syazjafr _1tjq1v9d _yzbcy77s _30l3aebp _1takoyl8",danger:"_syaz5scu _1tjqruxl _yzbc32ev _30l3qaj3 _1taki9ra"}',
     ]);
   });
 
@@ -273,7 +273,7 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
         '@media screen and (min-width:500px){._1qhm13q2{color:blue}}',
         '@media screen{._434732ev{color:pink}}',
 
-        'const styles={success:"_syaz5scu _1qhm13q2 _434732ev"}',
+        'const styles={success:"_syaz5scu _434732ev _1qhm13q2"}',
       ]);
     }
   });

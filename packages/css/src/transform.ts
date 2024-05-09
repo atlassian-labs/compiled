@@ -12,12 +12,13 @@ import { extractStyleSheets } from './plugins/extract-stylesheets';
 import { increaseSpecificity } from './plugins/increase-specificity';
 import { normalizeCSS } from './plugins/normalize-css';
 import { parentOrphanedPseudos } from './plugins/parent-orphaned-pseudos';
-import { sortAtRulePseudos } from './plugins/sort-at-rule-pseudos';
+import { sortAtomicStyleSheet } from './plugins/sort-atomic-style-sheet';
 
 export interface TransformOpts {
   optimizeCss?: boolean;
   classNameCompressionMap?: Record<string, string>;
   increaseSpecificity?: boolean;
+  sortAtRules?: boolean;
 }
 
 /**
@@ -49,7 +50,7 @@ export const transformCss = (
         callback: (className: string) => classNames.push(className),
       }),
       ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
-      sortAtRulePseudos(),
+      sortAtomicStyleSheet(opts.sortAtRules ?? true),
       ...(process.env.AUTOPREFIXER === 'off' ? [] : [autoprefixer()]),
       whitespace(),
       extractStyleSheets({ callback: (sheet: string) => sheets.push(sheet) }),

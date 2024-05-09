@@ -97,6 +97,12 @@ export interface PluginOptions {
    * Default to `false`.
    */
   increaseSpecificity?: boolean;
+
+  /**
+   * Whether to sort at-rules, including media queries.
+   * Defaults to `true`.
+   */
+  sortAtRules?: boolean;
 }
 
 export interface State extends PluginPass {

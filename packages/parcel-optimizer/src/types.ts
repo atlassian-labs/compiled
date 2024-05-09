@@ -4,4 +4,10 @@ export interface ParcelOptimizerOpts {
    * Defaults to `false`.
    */
   inlineCss: boolean;
+
+  /**
+   * Whether to sort at-rules, including media queries.
+   * Defaults to `true`.
+   */
+  sortAtRules: boolean;
 }

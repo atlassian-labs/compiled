@@ -24,6 +24,7 @@ export default new Optimizer<ParcelOptimizerOpts, unknown>({
 
     const contents = {
       inlineCss: false,
+      sortAtRules: true,
     };
 
     if (conf) {
@@ -61,7 +62,7 @@ export default new Optimizer<ParcelOptimizerOpts, unknown>({
 
     if (styleRules.size === 0) return { contents, map };
 
-    const stylesheet = sort(Array.from(styleRules).join(''));
+    const stylesheet = sort(Array.from(styleRules).join(''), config.sortAtRules);
 
     let newContents = '';
 

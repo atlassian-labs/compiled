@@ -129,4 +129,10 @@ export interface CompiledExtractPluginOptions {
    * Eg. This may be required in SSR to prevent side-effects
    */
   cacheGroupExclude?: boolean;
+
+  /**
+   * Whether to sort at-rules, including media queries.
+   * Defaults to `true`.
+   */
+  sortAtRules?: boolean;
 }
