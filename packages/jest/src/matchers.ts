@@ -49,10 +49,20 @@ const findMediaRules = (
   return rules;
 };
 
+/**
+ * Normalise a target starting with an ampersand, such that it no longer starts with an ampersand,
+ * for ease of matching.
+ *
+ * For example, it will convert `&:hover` to `:hover`.
+ */
+const normalizeTarget = (target: MatchFilter['target']): MatchFilter['target'] =>
+  target?.startsWith('&') ? target.slice(1) : target;
+
 const getAllClassNameForms = (
   className: string,
-  target: MatchFilter['target']
+  originalTarget: MatchFilter['target']
 ): readonly string[] => {
+  const target = normalizeTarget(originalTarget);
   const klass = target ? `.${className}${target}` : `.${className}`;
   /**
    * Configuring the babel plugin with `increaseSpecificity: true` will result in this being appended to the end of generated classes.
@@ -71,7 +81,7 @@ const getAllClassNameForms = (
     }
   }
 
-  return [klass, klassIncreasedSpecificity];
+  return [klass, klassIncreasedSpecificity].map(removeSpaces);
 };
 
 const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) => {

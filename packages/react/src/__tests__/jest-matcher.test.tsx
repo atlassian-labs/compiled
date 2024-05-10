@@ -196,4 +196,20 @@ describe('toHaveCompliedCss', () => {
     const el = getByText('hello world');
     expect(el).toHaveCompiledCss('color', 'red', { target: '> :first-child' });
   });
+
+  it('should match styles starting with ampersand', () => {
+    const { getByText } = render(
+      <div
+        css={{
+          '&:hover': {
+            color: 'red',
+          },
+        }}>
+        hello world
+      </div>
+    );
+
+    const el = getByText('hello world');
+    expect(el).toHaveCompiledCss('color', 'red', { target: '&:hover' });
+  });
 });
