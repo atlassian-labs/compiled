@@ -1,5 +1,17 @@
 # @compiled/parcel-transformer
 
+## 0.15.4
+
+### Patch Changes
+
+- 4f5865a1: Fixes the parsing of custom properties (CSS variables) names in object syntax. The casing is now preserved instead of being converted to kebab-case.
+- Updated dependencies [4f5865a1]
+- Updated dependencies [4f5865a1]
+- Updated dependencies [83c47f85]
+  - @compiled/babel-plugin@0.29.0
+  - @compiled/babel-plugin-strip-runtime@0.29.0
+  - @compiled/utils@0.11.1
+
 ## 0.15.3
 
 ### Patch Changes
