@@ -13,6 +13,8 @@ export const evaluatePath = (
 ): ReturnType<typeof createResultPair> => {
   if (t.isObjectExpression(expression)) {
     return evaluateObjectPath(expression, meta, pathName);
+  } else if (t.isTSAsExpression(expression)) {
+    return evaluatePath(expression.expression, meta, pathName);
   } else if (t.isImportNamespaceSpecifier(expression)) {
     return evaluateNamespaceImportPath(expression, meta.state.file, meta, pathName);
   }
