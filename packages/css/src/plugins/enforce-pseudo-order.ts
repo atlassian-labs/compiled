@@ -54,12 +54,7 @@ export const enforcePseudoOrder = (): Plugin => {
     OnceExit(root) {
       root.walkRules((rule) => {
         rule.selectors = rule.selectors.map((selector) => {
-          if (selector.includes('._')) {
-            // This rule should only apply to Compiled generated class names.
-            return parser.astSync(selector).toString();
-          }
-
-          return selector;
+          return parser.astSync(selector).toString();
         });
       });
     },
