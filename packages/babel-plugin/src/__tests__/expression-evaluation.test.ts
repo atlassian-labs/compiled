@@ -343,6 +343,25 @@ describe('import specifiers', () => {
     expect(actual).toInclude('@media screen{._434713q2{color:blue}}');
   });
 
+  it('handles the computed object property, where the variable in property is defined inside `as const` expression', () => {
+    const actual = transform(
+      `
+        import '@compiled/react';
+
+        const something = { large: '@media screen' } as const;
+
+        <div css={{
+          [something.large]: { color: 'blue' },
+        }} />
+      `,
+      {
+        parserBabelPlugins: ['typescript', 'jsx'],
+      }
+    );
+
+    expect(actual).toInclude('@media screen{._434713q2{color:blue}}');
+  });
+
   it('uses fallback node when evaluating a non expression returning a non static value', () => {
     const actual = transform(`
       import '@compiled/react';
