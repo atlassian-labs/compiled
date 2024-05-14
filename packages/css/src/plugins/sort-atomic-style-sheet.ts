@@ -1,6 +1,5 @@
+import { sortPseudoSelectors } from '@compiled/utils';
 import type { ChildNode, Rule, Plugin, AtRule } from 'postcss';
-
-import { sortPseudoSelectors } from '../utils/sort-pseudo-selectors';
 
 import { parseAtRule } from './at-rules/parse-at-rule';
 import { sortAtRules } from './at-rules/sort-at-rules';

@@ -1,8 +1,6 @@
-import { INCREASE_SPECIFICITY_ID } from '@compiled/utils';
+import { INCREASE_SPECIFICITY_ID, getPseudoSelectorScore } from '@compiled/utils';
 import type { Plugin } from 'postcss';
 import { default as selectorParser, pseudo } from 'postcss-selector-parser';
-
-import { getPseudoSelectorScore } from '../utils/sort-pseudo-selectors';
 
 const parser = selectorParser((root) => {
   for (const node of root.nodes) {
@@ -18,7 +16,7 @@ const parser = selectorParser((root) => {
         continue;
       }
 
-      const pseudoSelectorScore = getPseudoSelectorScore(currentNode.value) - 1;
+      const pseudoSelectorScore = getPseudoSelectorScore(currentNode.value);
       if (pseudoSelectorScore < 0) {
         continue;
       }
