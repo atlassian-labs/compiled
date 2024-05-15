@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.29.1
+
+### Patch Changes
+
+- 5c04f896: Fix 'as const' expressions causing Compiled to crash at build time
+
 ## 0.29.0
 
 ### Minor Changes
