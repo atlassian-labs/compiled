@@ -21,7 +21,10 @@ const kebabCase = (str: string) =>
 const removeSpaces = (str?: string) => str && str.replace(/\s/g, '');
 
 const mapProperties = (properties: Record<string, any>) =>
-  Object.keys(properties).map((property) => `${kebabCase(property)}:${properties[property]}`);
+  Object.keys(properties).map((property) => {
+    const key = property.startsWith('--') ? property : kebabCase(property);
+    return `${key}:${properties[property]}`;
+  });
 
 const onlyRules = (rules?: StyleRules['rules']) => rules?.filter((r) => r.type === 'rule');
 
