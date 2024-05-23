@@ -1,5 +1,11 @@
 # @compiled/jest
 
+## 0.10.5
+
+### Patch Changes
+
+- a205c087: Fix jest matcher unintentionally kebab-casing css custom properties.
+
 ## 0.10.4
 
 ### Patch Changes
