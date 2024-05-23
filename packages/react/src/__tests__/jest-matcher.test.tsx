@@ -132,6 +132,14 @@ describe('toHaveCompliedCss', () => {
     expect(getByText('hello world')).toHaveCompiledCss('--myCamelVar', 'red');
   });
 
+  it('should match kebab-case css vars', () => {
+    const styles = cssMap({ root: { '--my-kebab-var': 'green' } });
+
+    const { getByText } = render(<div css={styles.root}>hello world</div>);
+
+    expect(getByText('hello world')).toHaveCompiledCss('--my-kebab-var', 'green');
+  });
+
   it('should match styles with media', () => {
     const { getByText } = render(
       <div
