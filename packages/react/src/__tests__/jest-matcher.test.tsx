@@ -1,7 +1,7 @@
 /** @jsxImportSource @compiled/react */
 // This test belongs in @compiled/jest - but can't be placed there due to a circular dependency.
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { styled } from '@compiled/react';
+import { cssMap, styled } from '@compiled/react';
 import { render } from '@testing-library/react';
 
 describe('toHaveCompliedCss', () => {
@@ -122,6 +122,14 @@ describe('toHaveCompliedCss', () => {
     expect(el).not.toHaveCompiledCss('transform', 'scale(2)', { target: ':active' });
     expect(el).toHaveCompiledCss('transform', 'scale(2)', { target: ':hover' });
     expect(el).toHaveCompiledCss('color', 'blue', { target: ':active' });
+  });
+
+  it('should match camelCase css vars', () => {
+    const styles = cssMap({ root: { '--myCamelVar': 'red' } });
+
+    const { getByText } = render(<div css={styles.root}>hello world</div>);
+
+    expect(getByText('hello world')).toHaveCompiledCss('--myCamelVar', 'red');
   });
 
   it('should match styles with media', () => {
