@@ -1,0 +1,53 @@
+---
+order: 99
+section: 99-Packages
+name: css
+---
+
+# @compiled/css
+
+CSS utilities used by the [Babel plugin](/pkg-babel-plugin).
+
+## addUnitIfNeeded
+
+Adds `px` after a unit value if its missing.
+
+```tsx
+import { addUnitIfNeeded } from '@compiled/css';
+
+addUnitIfNeeded('margin', 12);
+// > "12px"
+```
+
+## transformCss
+
+Transforms CSS to atomic CSS sheets.
+
+```tsx
+import { transformCss } from '@compiled/css';
+
+transformCss('color: #ff5630;');
+// > { sheets: ["._syaz18rw{color:#ff5630}"], classNames: ["_syaz18rw"] }
+```
+
+## cssAfterInterpolation
+
+Returns any found suffix and removes it out of the CSS.
+
+```tsx
+import { cssAfterInterpolation } from '@compiled/css';
+
+cssAfterInterpolation('px;font-size: 20px;');
+// > { css: ';font-size: 20px;', variableSuffix: 'px' }
+```
+
+## cssBeforeInterpolation
+
+Returns any found prefix and removes it out of the CSS.
+
+```tsx
+import { cssBeforeInterpolation } from '@compiled/css';
+
+cssBeforeInterpolation('content: "');
+// > { css: 'content: ', variablePrefix: '"' }
+```

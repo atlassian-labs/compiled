@@ -1,0 +1,35 @@
+---
+section: 5-API
+order: 99
+name: Keyframes
+---
+
+# Keyframes
+
+Define keyframes to be used in a [CSS animation](https://developer.mozilla.org/en-US/docs/Web/CSS/animation).
+
+```jsx
+/** @jsxImportSource @compiled/react */
+import { keyframes } from '@compiled/react';
+
+const fadeOut = keyframes({
+  from: {
+    opacity: 1,
+  },
+  to: {
+    opacity: 0,
+  },
+});
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+`;
+
+<div css={{ animation: `${fadeOut} 2s` }} />;
+```

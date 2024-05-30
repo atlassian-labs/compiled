@@ -1,0 +1,163 @@
+---
+section: 99-Packages
+name: parcel-config
+order: 3
+---
+
+# @compiled/parcel-config
+
+import { Lozenge, HorizontalStack } from '@compiled/website-ui';
+
+<HorizontalStack gap={0.5} spacing={2}>
+  <Lozenge>Parcel 2</Lozenge>
+</HorizontalStack>
+
+[Parcel v2](https://v2.parceljs.org) configuration used to set up a parcel project with Compiled CSS-in-JS.
+See [installation](/installation#parcel) for setup instructions.
+
+```bash
+npm install @compiled/parcel-config --save-dev
+```
+
+## Options
+
+Configure using any of the following at the root of your project.
+
+- `.compiledcssrc`
+- `.compiledcssrc.json`
+- `compiledcss.js`
+- `compiledcss.config.js`
+
+```json
+// .compiledcssrc
+{
+  "importReact": true
+}
+```
+
+### importReact: boolean
+
+Will import React into the module if it is not found.
+When using `@babel/preset-react` with the [automatic runtime](https://babeljs.io/docs/en/babel-preset-react#react-automatic-runtime) this is not needed and can be set to `false`.
+
+Defaults to `true`.
+
+### transformerBabelPlugins: PluginItem[]
+
+Babel transformer plugins to be applied to transformed files before the Compiled evaluation.
+
+Use this if you have some sort of babel plugin that should run before Compiled,
+likely because you have some sort of non-standard syntax in your code.
+See the [babel docs](https://babeljs.io/docs/en/plugins/#transform-plugins) for more context.
+
+Example usage:
+
+```json
+// .compiledcssrc
+{
+  "transformerBabelPlugins": [
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        "legacy": true
+      }
+    ]
+  ]
+}
+```
+
+Defaults to none.
+
+### parserBabelPlugins: ParserPlugin[]
+
+Babel parser plugins to be used when parsing the source code. Define these to enable extra babel parsers (for example, typescript).
+See the [babel docs](https://babeljs.io/docs/en/plugins/#syntax-plugins) for more context.
+
+Example usage:
+
+```json
+// .compiledcssrc
+{
+  "parserBabelPlugins": ["typescript"]
+}
+```
+
+Defaults to none.
+
+### extract: boolean
+
+Enables the stylesheet extraction feature. When enabled, Compiled react components will be removed and the css will be extracted into a single CSS stylesheet.
+
+The stylesheet extraction feature is disabled on local development due to [known issue](https://github.com/atlassian-labs/compiled/issues/1306).
+
+Defaults to `false`.
+
+### ssr: boolean
+
+To be used in conjunction with `extract: true` when having a different configuration for SSR.
+When set will prevent additional require (one import per rule) in the bundle during style sheet extraction.
+
+Defaults to `false`.
+
+### nonce: string
+
+[Security nonce](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce) that will be applied to inline style elements if defined.
+
+Defaults to `false`.
+
+### extensions: string[]
+
+Extensions that we should consider code. We use these to identify if a file should be parsed.
+
+Defaults to `['.js', '.jsx', '.ts', '.tsx']`.
+
+
+### inlineCss: boolean
+
+Indicates whether CSS content is inlined in HTML or served as a external .css file when the styleshset extraction is enabled.
+
+Defaults to `false`.
+
+
+### resolve: ResolveOptions
+
+Override the default `resolve` used by @compiled/babel-plugin, which is used to statically evaluate import declarations.
+
+Example usage:
+
+```json
+// .compiledcssrc
+{
+  "resolve": {
+    "mainFields": ["module:es2019", "browser", "module", "main"]
+  }
+}
+```
+
+See [enhanced-resolver docs](https://github.com/webpack/enhanced-resolve#resolver-options) for more options.
+
+Defaults to none.
+
+### sortAtRules: boolean
+
+Whether to sort at-rules, including media queries.
+
+See [here](/media-queries-and-other-at-rules) for more information.
+
+Defaults to `true`.
+
+### addComponentName: boolean
+
+Add the component name as class name to DOM in non-production environment if styled is used.
+
+Default to `false`
+
+### extractStylesToDirectory?: \{ source: string; dest: string \};
+
+When set, extracts styles to an external CSS file. Read [babel-plugin-strip-runtime](/pkg-babel-plugin-strip-runtime#extractstylestodirectory) for more information.
+
+### importSources: string[]
+
+Additional libraries that should be parsed as though they were `@compiled/react` imports. This is passed directly to `@compiled/babel-plugin`.
+
+Specifying this is important if you are using Compiled APIs through another package using the `createStrictAPI` function.

@@ -1,0 +1,110 @@
+import { ExampleContainer, ExampleRoot } from '@compiled/website-ui';
+import { LargeText } from '../components/example';
+
+## Don't change a thing
+
+Using **APIs and behavior you may already be familiar with**,
+write your styles in JavaScript with the **full power of CSS** —
+leveraging the language to create expressive & dynamic experiences.
+
+```jsx
+/** @jsxImportSource @compiled/react */
+
+import { css } from '@compiled/react';
+
+const largeTextStyles = css({ fontSize: '48px' });
+
+export const LargeText = ({ color, children }) => {
+  const dynamicColorStyles = css({ color: color });
+
+  return (
+    <span
+      css={[largeTextStyles, dynamicColorStyles]}>
+      {children}
+    </span>
+  )
+};
+```
+
+<!-- prettier-ignore -->
+```jsx
+<LargeText color="pink">Hello world</LargeText>
+```
+
+<LargeText color="pink">Hello world</LargeText>
+
+## Speed up your styles
+
+Build with your bundler of choice or just [Babel](https://babeljs.io/docs/en/config-files),
+resulting in **very performant components** that have their **styles built ahead of time**.
+
+```json
+{
+  "plugins": ["@compiled/babel-plugin"]
+}
+```
+
+```bash
+$ babel src
+Successfully compiled 1 file with Babel (9ms)
+```
+
+```jsx
+import { CC, CS } from '@compiled/react/runtime';
+
+const _2 = '._syaz4rde{color: var(--_kmurgp)}';
+const _ = '._1wybfyhu{font-size: 48px}';
+
+export const LargeHotPinkText = ({ color, children }) => (
+  <CC>
+    <CS>{[_, _2]}</CS>
+    <span style={{ '--_kmurgp': color }} className="_syaz4rde _1wybfyhu">
+      {children}
+    </span>
+  </CC>
+);
+```
+
+## Extract styles
+
+Turn on extraction and all components styled in your app and sourced through [NPM](https://npmjs.com/) will have their **runtime stripped and styles extracted** to an [atomic style sheet](./docs/atomic-css).
+
+1. Bundle your app
+
+```bash
+$ webpack
+webpack 5.26.3 compiled successfully in 1912 ms
+```
+
+2. All styles and runtime are removed
+
+```diff
+-import { CC, CS } from '@compiled/react/runtime';
+-
+-const _2 = '._syaz4rde{color: var(--_kmurgp)}';
+-const _ = '._1wybfyhu{font-size: 48px}';
+
+export const LargeHotPinkText = ({ color, children }) => (
+-  <CC>
+-    <CS>{[_, _2]}</CS>
+    <span style={{ '--_kmurgp': color }} className="_syaz4rde _1wybfyhu">
+      {children}
+    </span>
+-  </CC>
+);
+```
+
+3. An atomic style sheet is generated
+
+```css
+._1wybfyhu {
+  font-size: 48px;
+}
+._syaz4rde {
+  color: var(--_kmurgp);
+}
+```
+
+Compiled brings distributed styles from platform,
+product,
+and the wider ecosystem together.

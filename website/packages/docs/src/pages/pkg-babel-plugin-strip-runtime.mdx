@@ -1,0 +1,104 @@
+---
+section: 99-Packages
+name: babel-plugin-strip-runtime
+order: 5
+---
+
+# @compiled/babel-plugin-strip-runtime
+
+import { Lozenge, HorizontalStack } from '@compiled/website-ui';
+
+<HorizontalStack gap={0.5} spacing={2}>
+  <Lozenge>Babel 7</Lozenge>
+</HorizontalStack>
+
+[Babel plugin](https://babeljs.io) used to strip the runtime away.
+
+```bash
+npm install @compiled/babel-plugin-strip-runtime --save-dev
+```
+
+## Options
+
+Configure in your Babel config.
+
+```json
+// .babelrc
+{
+  "plugins": [["@compiled/babel-plugin-strip-runtime", {}]]
+}
+```
+
+### onFoundStyleRules: (rules: string[]) => void
+
+Will callback at the end of a file pass with all found style rules.
+
+### compiledRequireExclude: boolean
+
+When set will prevent additional require (one import per rule) in the bundle and add style rules to meta data.
+This could be used when enabling style sheet extraction in a different configuration for SSR.
+
+Defaults to `false`.
+
+### extractStylesToDirectory
+
+extractStylesToDirectory?: \{ source: string; dest: string \};
+
+When set, extracts styles to an external CSS file. This is beneficial for building platform components that are to be published on NPM.
+
+Example of useage:
+
+Given the below folder structure:
+
+- src
+  - index.jsx
+
+```js
+// src/index.jsx
+import { css } from '@compiled/react';
+
+const Component = () => (
+  <div css={css({ fontSize: 12, color: 'blue' })}>
+    hello world
+  </div>
+);
+```
+
+Set the source folder and output folder relative to the root project path.
+
+```json
+// .babelrc
+[
+  "@compiled/babel-plugin-strip-runtime",
+  { "extractStylesToDirectory": { "source": "src", "dest": "dist" } }
+]
+```
+
+It extracts the CSS sheet to a seperate file.
+
+- dist
+  - index.js
+  - index.compiled.css
+
+```js
+// src/index.jsx
+import './index.compiled.css';
+import * as React from 'react';
+import { ax, ix } from '@compiled/react/runtime';
+const Component = () =>
+  /*#__PURE__*/ React.createElement(
+    'div',
+    {
+      className: ax(['_1wyb1fwx _syaz13q2']),
+    },
+    'hello world'
+  );
+```
+
+### sortAtRules: boolean
+
+Whether to sort at-rules, including media queries.
+
+See [here](/media-queries-and-other-at-rules) for more information.
+
+Defaults to `true`.

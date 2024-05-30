@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "lib": ["ES2015", "DOM"],
+    "declaration": true,
+    "typeRoots": ["types/global.d.ts"]
+  },
+  "exclude": ["dist", ".cache"]
+}

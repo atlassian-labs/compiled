@@ -1,0 +1,52 @@
+---
+section: 1-Getting started
+name: Migrating to Compiled
+---
+
+# Migrating to Compiled
+
+Follow the [installation](/installation) instructions before continuing.
+
+## Styled Components
+
+Replace the imports with `@compiled/react`.
+
+```diff
+-import styled from 'styled-components';
++import { styled } from '@compiled/react';
+```
+
+There exists a [codemod](/pkg-codemods#styled-components-to-compiled) to streamline this.
+For features that aren't available due to the compile time nature of the library read [limitations](/limitations).
+
+## Emotion
+
+Replace the imports with `@compiled/react`.
+
+> **Incremental adoption**<br />
+> To find every call site to convert install the `no-emotion-css` rule from the [ESLint plugin](/pkg-eslint-plugin).
+
+```diff
+/** @jsx jsx */
+-import { css, jsx } from '@emotion/core';
++import { css, jsx } from '@compiled/react';
+```
+
+```diff
+-/** @jsxImportSource @emotion/react */
++/** @jsxImportSource @compiled/react */
+```
+
+```diff
+-import styled from '@emotion/styled';
++import { styled } from '@compiled/react';
+```
+
+```diff
+-import { css, ClassNames, keyframes } from '@emotion/core';
+-import { css, ClassNames, keyframes } from '@emotion/react';
++import { css, ClassNames, keyframes } from '@compiled/react';
+```
+
+There exists a [codemod](/pkg-codemods#emotion-to-compiled) to streamline this.
+For features that aren't available due to the compile time nature of the library read [limitations](/limitations).

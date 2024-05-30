@@ -1,0 +1,87 @@
+---
+section: 5-API
+order: 2
+name: Styled
+---
+
+import {
+  StyledString,
+  StyledObj,
+  StyledTransientProps,
+  StyledDynamic,
+  StyledAsProp,
+  StyledComposition,
+} from '../examples/styled';
+
+# Styled
+
+Create a component that styles a JSX element which comes with built-in behavior such as `ref` and `as` prop support.
+
+<StyledObj />
+
+> **Tagged template expressions** <br /> Tagged template expressions are supported but call expression syntax is preferred.
+> See the
+> [no-styled-tagged-template-expression eslint rule](https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-styled-tagged-template-expression)
+> for more details.
+
+## Dynamic declarations
+
+Change a [CSS declaration](https://developer.mozilla.org/en-US/docs/Learn/CSS/First_steps/How_CSS_is_structured#Properties_and_values) at runtime,
+powered by [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
+
+Any props that are valid HTML attributes will be passed down to the underlying DOM element -
+otherwise they will be ignored.
+
+This example shows that behavior -
+inspect the example using dev tools and you'll see the `primary` prop has not been passed through.
+
+<StyledDynamic />
+
+> **Remember** <br /> Styles are all pre-calculated at compile time,
+> no cost is paid at runtime to check if the prop is a valid HTML attribute.
+
+### Transient props
+
+Use a prop name prefixed with `$` and even if it's a valid HTML attribute it won't be passed down to the DOM element.
+
+This example shows that `color` is passed down to the DOM element,
+but `$color` is not.
+
+<StyledTransientProps />
+
+## The as prop
+
+The `as` prop is useful when wanting to change the markup during runtime to something else,
+such as from a `<h1>` element to a `<span>`.
+
+<StyledAsProp />
+
+## Composing components
+
+Wrapping an already defined component enables you to pass styles to it.
+Here the `BlueText` styles take presedence over `RedText`.
+
+<StyledComposition />
+
+> **Custom components** <br />
+> When composing custom components make sure to set its `className` and `style` props otherwise styles will not be applied correctly.
+
+## TypeScript
+
+Type support comes out of the box so you'll have a great time using Compiled with TypeScript,
+any interpolation will have access to the props defined in the tagged template generic.
+
+```jsx
+import { styled } from '@compiled/react';
+
+const BigIfTrue = styled.div<{ big: true }>({
+  fontSize: props => props.big ? 100 : 10
+});
+
+<BigIfTrue />
+ ^^^^^^^^^ Property 'big' is missing in type [..]
+```
+
+> **Inherited types** <br />
+> Typing of composed components are inherited,
+> which means their props will be available on the styled component as well.

@@ -1,0 +1,135 @@
+---
+section: 50-Guides
+---
+
+
+# Media queries and other at-rules
+
+Media queries and other at-rules (e.g. `@layer` and `@supports`) are sorted based on a simplified version of the mobile-first sorting algorithm used by the [`sort-css-media-queries`](https://github.com/olehdutchenko/sort-css-media-queries/) library.
+
+A quick summary:
+
+* `min-width` and `min-height` are sorted from smallest to biggest, and then
+* `max-width` and `max-height` are sorted from biggest to smallest.
+* At-rules will be sorted alphabetically when they cannot be sorted another way.
+
+Note that this implies that `@layer` will be sorted as well, and as such, this is not compatible with `@layer`. You should not need to use `@layer` regardless, as Compiled's atomic CSS design removes the need to override specificity manually.
+
+Scroll down to the [full algorithm](#full-algorithm) for more details.
+
+## Limitations
+
+This sorting algorithm will be applied on a project-level basis when using a Compiled plugin in the bundler (`@compiled/webpack-loader` or `@compiled/parcel-config`) with stylesheet extraction turned on (`extract: true` in the Compiled configuration).
+
+This implies some caveats:
+
+* You'll need to turn on stylesheet extraction for this sorting to be guaranteed. If it is not turned on, at rules are not guaranteed to be sorted when there is more than one component.
+  * Without the de-duplication and sorting stage that occurs in our stylesheet extraction, each component's CSS will be concatenated together by the bundler without any additional processing. A media query from one component may be repeated later in the file for another component, and if they contain the same styles and thus use the same class names, we break our guarantees of a consistent ordering.
+* When using Parcel, you cannot use stylesheet extraction in development mode (e.g. `parcel serve`), and `extract: true` will have no effect. As a result, at-rule sorting will not apply. Parcel builds (`parcel build`) do not have this limitation.
+  * See the [bug report](https://github.com/atlassian-labs/compiled/issues/1306) on GitHub.
+* If you are importing Compiled components from another package, you will need either `@compiled/webpack-loader` or `@compiled/parcel-config` in your bundler settings for the sorting to work correctly.
+
+If either of the above situations apply to you, you should consider re-writing your at-rules (including media queries) in a way such that the ordering of the styles do not matter.
+
+For example, given this code:
+
+```jsx
+import { css } from '@compiled/react';
+
+const styles = css({
+   'color': 'yellow',
+   '@media (min-width: 720px)': { color: 'red' },
+   '@media (min-width: 1280px)': { color: 'green' },
+});
+```
+
+For any browser windows above `1280px` wide, any inconsistency in the ordering of the media queries will change the color from `red` to `green` (and vice versa).
+
+To avoid any potential ordering issues, we can change the code to this:
+
+```jsx
+import { css } from '@compiled/react';
+
+const styles = css({
+   'color': 'yellow',
+   '@media (min-width: 720px) and (width < 1280px)': { color: 'red' },
+   '@media (min-width: 1280px)': { color: 'green' },
+});
+```
+
+## Full algorithm
+
+Below is a description of the full sorting algorithm used by Compiled:
+
+1. The name of the at-rule, alphabetically (e.g. `@media`, `@supports`)
+2. `width > [number]` and `height > [number]`, from smallest to biggest
+3. `width >= [number]` and `min-width: [number]`, and `height >= [number]` and `min-height: [number]`, from smallest to biggest
+4. `width < [number]` and `height < [number]`, from biggest to smallest
+5. `width <= [number]` and `max-width: [number]`, and `height <= [number]` and `max-height: [number]`, from biggest to smallest
+6. `width = [number]` and `height = [number]`
+7. Repeat the previous steps (2 to 6), but for `device-width`, `device-height`, `min/max-device-width`, `min/max-device-height`
+8. If two at-rules are equal after applying the above sorting steps, at-rules with multiple features (e.g. `@media (width < 200px) and (height < 200px)`) will come after at-rules with fewer features (e.g. `@media (width < 200px)`).
+8. If there are no `width`/`height`/`device-width`/`device-height` features (or their `min`/`max` equivalents) in the at-rule, then the entire at-rule (e.g. `@media screen`) is sorted lexicographically (alphabetically) after at-rules that do contain these features.
+
+For example:
+
+```tsx
+const styles = css({
+  '@supports (display: grid)': {
+    display: 'grid',
+  },
+  '@media (300px <= height <= 400px)': {
+    color: 'green',
+  },
+  '@media (300px < height <= 400px)': {
+    color: 'red',
+  },
+  '@media (min-height: 300px)': {
+    color: 'yellow',
+  },
+  '@media (max-height: 300px)': {
+    color: 'purple',
+  },
+  '@media (min-height: 400px)': {
+    color: 'blue',
+  },
+  '@media (300px <= height)': {
+    color: 'orange',
+  },
+});
+```
+
+will be sorted at build-time to be equivalent to the following:
+
+```tsx
+const styles = css({
+  // parsed as @media (height > 300px) and (height <= 400px)
+  '@media (300px < height <= 400px)': {
+    color: 'red',
+  },
+  // parsed as @media (height >= 300px)
+  '@media (300px <= height)': {
+    color: 'orange',
+  },
+  // parsed as @media (height >= 300px)
+  '@media (min-height: 300px)': {
+    color: 'yellow',
+  },
+  // parsed as @media (height >= 300px) and (height <= 400px)
+  '@media (300px <= height <= 400px)': {
+    color: 'green',
+  },
+  // parsed as @media (height >= 400px)
+  '@media (min-height: 400px)': {
+    color: 'blue',
+  },
+  // parsed as @media (height <= 300px)
+  '@media (max-height: 300px)': {
+    color: 'purple',
+  },
+  '@supports (display: grid)': {
+    display: 'grid',
+  },
+});
+```
+

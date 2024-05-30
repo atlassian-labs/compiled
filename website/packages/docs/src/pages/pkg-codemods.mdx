@@ -1,0 +1,47 @@
+---
+section: 99-Packages
+order: 99
+name: codemods
+---
+
+# @compiled/codemods
+
+We provide a few codemods for migrating from styled components and emotion to Compiled. The codemods are implemented with [jscodeshift](https://github.com/facebook/jscodeshift). Compiled codemods are enrolled in the [CodeshiftCommunity](https://www.codeshiftcommunity.com/docs/) tooling for easy usage.
+
+## Codemods
+
+```bash
+# Transform single file
+npx @codeshift/cli --packages @compiled/codemods /Project/path/to/file
+
+# Transform multiple files
+npx @codeshift/cli --packages @compiled/codemods /Project/**/*.tsx
+```
+
+Our codemods will transform the source code into code that utilises `@compiled/react`. Keep in mind that the change will happen in-place so make sure you're utilising version control or backup the original source.
+
+### Emotion to Compiled
+
+```bash
+# Transform single file
+npx @codeshift/cli --packages "@compiled/codemods#emotion-to-compiled" /Project/path/to/file
+
+# Transform multiple files
+npx @codeshift/cli --packages "@compiled/codemods#emotion-to-compiled" /Project/**/*.tsx
+```
+
+Will convert all usages of Emotion to Compiled.
+For code that could not be automatically converted a `/** TODO(@compiled/react codemod):` comment will be placed.
+
+### Styled components to Compiled
+
+```bash
+# Transform single file
+npx @codeshift/cli --packages "@compiled/codemods#styled-components-inner-ref-to-ref" /Project/path/to/file
+
+# Transform multiple files
+npx @codeshift/cli --packages "@compiled/codemods#styled-components-inner-ref-to-ref" /Project/**/*.tsx
+```
+
+Will convert all usages of Styled Components to Compiled.
+For code that could not be automatically converted a `/** TODO(@compiled/react codemod):` comment will be placed.

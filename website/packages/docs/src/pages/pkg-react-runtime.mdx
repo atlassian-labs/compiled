@@ -1,0 +1,54 @@
+---
+order: 2
+section: 99-Packages
+name: react/runtime
+---
+
+# @compiled/react/runtime
+
+Functionality used at runtime,
+such as style reconciliation and atomic class names compositon.
+
+## CC
+
+Ensures the minimum amount of styles are rendered on the server for child `CS` components.
+
+```jsx
+import { CC } from '@compiled/react/runtime';
+
+<CC></CC>;
+```
+
+## CS
+
+Moves child CSS to the head of the document when rendered on the client while also rendering an inline `style` element when rendered on the server.
+
+```jsx
+import { CS } from '@compiled/react/runtime';
+
+<CS>{['.foo{color:#ff5630;}']}</CS>;
+```
+
+## ax
+
+Concats class names together ensuring the uniqueness of atomic groups.
+Similar in functionality to the `cx` function from the [`classnames`](https://github.com/JedWatson/classnames) package but optimized for atomic groups.
+
+```tsx
+import { ax } from '@compiled/react/runtime';
+
+ax(['_k48pni7l _syaz18rw', '_syazff21']);
+// "_k48pni7l _syazff21"
+```
+
+## ix
+
+Handles interpolations that may resolve to a falsy value.
+When called with a falsy value an empty CSS variable is returned.
+
+```js
+import { ix } from '@compiled/react/runtime';
+
+ix(true && '#36B37E'); // "#36B37E"
+ix(false && '#36B37E'); // "var(--, )"
+```

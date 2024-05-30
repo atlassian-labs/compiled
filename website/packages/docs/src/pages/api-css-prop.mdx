@@ -1,0 +1,75 @@
+---
+section: 5-API
+order: 1
+name: CSS Prop
+---
+
+import {
+  CssPropObj,
+  CssPropString,
+  CssPropDynamic,
+  CssPropCompositionCorrect,
+  CssPropCompositionIncorrect,
+  CssPropCompositionNoStyle,
+  CssPropConditionalRules,
+} from '../examples/css-prop';
+
+# CSS Prop
+
+Style a JSX element,
+enabled when a JSX pragma is defined and the JSX element also takes a `className` prop.
+
+<CssPropObj />
+
+> **Don't worry about the pragma**<br />
+> For a streamlined developer experience install the `jsx-pragma` rule from the [ESLint plugin](/pkg-eslint-plugin) and never forget it again.
+
+## Template literal rules
+
+Write your styles as a template literal.
+Use the [`css`](/api-css) import for better syntax highlighting.
+
+<CssPropString />
+
+Although template literal is supported, we recommend using object style instead of template literal.
+
+## Conditional rules
+
+Conditionally apply [CSS rules](https://developer.mozilla.org/en-US/docs/Learn/CSS/First_steps/How_CSS_is_structured#Selectors).
+
+<CssPropConditionalRules />
+
+## Dynamic declarations
+
+Change a [CSS declaration](https://developer.mozilla.org/en-US/docs/Learn/CSS/First_steps/How_CSS_is_structured#Properties_and_values) at runtime,
+powered by [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
+
+<CssPropDynamic />
+
+## Composition gotchas
+
+Compiled will try to generate the smallest amount of code possible.
+When composing styles ensure to explicitly define both a `className` and `style` prop.
+
+Here the `className` and `style` props are both defined so styling works correctly.
+
+<CssPropCompositionCorrect />
+
+The next few example show what happens if you don't do this.
+
+### Spread pops
+
+The overflow `props` are spread onto the element so the composed styles are not applied.
+
+Statically defining them fixes this.
+
+<CssPropCompositionIncorrect />
+
+### Missing style
+
+The `style` prop is missing so the CSS variables used to power dynamic declarations aren't set.
+In this case instead it receives the `body` color value instead of pink.
+
+Statically defining the style prop fixes this.
+
+<CssPropCompositionNoStyle />
