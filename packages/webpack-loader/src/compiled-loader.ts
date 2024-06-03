@@ -140,6 +140,8 @@ export default async function compiledLoader(
     // Transform to an AST using the local babel config.
     const ast = await parseAsync(code, {
       filename: this.resourcePath,
+      babelrc: false,
+      configFile: false,
       caller: { name: 'compiled' },
       rootMode: 'upward-optional',
       parserOpts: {
