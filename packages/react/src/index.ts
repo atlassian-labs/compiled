@@ -39,6 +39,7 @@ export const jsx = createElement;
 export namespace jsx {
   export namespace JSX {
     export type Element = CompiledJSX.Element;
+    export type ElementType = CompiledJSX.ElementType;
     export type ElementClass = CompiledJSX.ElementClass;
     export type ElementAttributesProperty = CompiledJSX.ElementAttributesProperty;
     export type ElementChildrenAttribute = CompiledJSX.ElementChildrenAttribute;
