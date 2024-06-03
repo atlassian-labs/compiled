@@ -7,7 +7,7 @@ import type {
   PluginOptions as BabelStripRuntimePluginOptions,
   BabelFileMetadata,
 } from '@compiled/babel-plugin-strip-runtime';
-import { toBoolean } from '@compiled/utils';
+import { DEFAULT_PARSER_BABEL_PLUGINS, toBoolean } from '@compiled/utils';
 import { Transformer } from '@parcel/plugin';
 import SourceMap from '@parcel/source-map';
 // @ts-expect-error missing type
@@ -105,7 +105,7 @@ export default new Transformer<ParcelTransformerOpts>({
       caller: { name: 'compiled' },
       rootMode: 'upward-optional',
       parserOpts: {
-        plugins: config.parserBabelPlugins ?? undefined,
+        plugins: config.parserBabelPlugins ?? DEFAULT_PARSER_BABEL_PLUGINS,
       },
       plugins: config.transformerBabelPlugins ?? undefined,
     });
@@ -144,7 +144,7 @@ export default new Transformer<ParcelTransformerOpts>({
       sourceMaps: !!asset.env.sourceMap,
       compact: false,
       parserOpts: {
-        plugins: config.parserBabelPlugins ?? undefined,
+        plugins: config.parserBabelPlugins ?? DEFAULT_PARSER_BABEL_PLUGINS,
       },
       plugins: [
         ...(config.transformerBabelPlugins ?? []),

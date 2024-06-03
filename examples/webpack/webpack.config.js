@@ -39,7 +39,6 @@ module.exports = {
               extract: extractCSS,
               importReact: false,
               extensions: ['.js', '.jsx', '.ts', '.tsx', '.customjsx'],
-              parserBabelPlugins: ['typescript', 'jsx'],
               transformerBabelPlugins: [['@babel/plugin-proposal-decorators', { legacy: true }]],
               optimizeCss: false,
               classNameCompressionMap,

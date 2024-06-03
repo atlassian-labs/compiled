@@ -1,4 +1,5 @@
 import { transformSync } from '@babel/core';
+import { DEFAULT_PARSER_BABEL_PLUGINS } from '@compiled/utils';
 import { format } from 'prettier';
 
 import babelPlugin from './babel-plugin';
@@ -35,7 +36,7 @@ export const transform = (code: string, options: TransformOptions = {}): string 
         ? [['@babel/preset-react', { runtime: 'automatic' }]]
         : [],
     parserOpts: {
-      plugins: pluginOptions.parserBabelPlugins,
+      plugins: pluginOptions.parserBabelPlugins ?? DEFAULT_PARSER_BABEL_PLUGINS,
     },
   });
 

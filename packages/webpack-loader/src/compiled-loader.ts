@@ -1,7 +1,7 @@
 import { normalize } from 'path';
 
 import { parseAsync, transformFromAstAsync } from '@babel/core';
-import { createError, toBoolean } from '@compiled/utils';
+import { createError, DEFAULT_PARSER_BABEL_PLUGINS, toBoolean } from '@compiled/utils';
 import { getOptions } from 'loader-utils';
 import type { LoaderContext } from 'webpack';
 
@@ -25,7 +25,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     nonce = undefined,
     resolve = {},
     extensions = undefined,
-    parserBabelPlugins = [],
+    parserBabelPlugins = DEFAULT_PARSER_BABEL_PLUGINS,
     transformerBabelPlugins = [],
     [pluginName]: isPluginEnabled = false,
     ssr = false,
@@ -145,7 +145,7 @@ export default async function compiledLoader(
       caller: { name: 'compiled' },
       rootMode: 'upward-optional',
       parserOpts: {
-        plugins: options.parserBabelPlugins ?? undefined,
+        plugins: options.parserBabelPlugins,
       },
       plugins: options.transformerBabelPlugins ?? undefined,
     });
@@ -157,7 +157,7 @@ export default async function compiledLoader(
       sourceMaps: true,
       filename: this.resourcePath,
       parserOpts: {
-        plugins: options.parserBabelPlugins ?? undefined,
+        plugins: options.parserBabelPlugins,
       },
       plugins: [
         ...(options.transformerBabelPlugins ?? []),

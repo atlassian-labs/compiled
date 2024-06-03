@@ -1,7 +1,6 @@
 {
   "importReact": true,
   "extensions": [".js", ".jsx", ".ts", ".tsx", ".customjsx"],
-  "parserBabelPlugins": ["typescript", "jsx"],
   "transformerBabelPlugins": [
     [
       "@babel/plugin-proposal-decorators",
