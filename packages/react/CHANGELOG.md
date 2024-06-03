@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.17.2
+
+### Patch Changes
+
+- d75b8286: Add `ElementType` to the global compiled JSX namespace
+
 ## 0.17.1
 
 ### Patch Changes
