@@ -100,6 +100,8 @@ export default new Transformer<ParcelTransformerOpts>({
 
     const program = await parseAsync(code, {
       filename: asset.filePath,
+      babelrc: false,
+      configFile: false,
       caller: { name: 'compiled' },
       rootMode: 'upward-optional',
       parserOpts: {
