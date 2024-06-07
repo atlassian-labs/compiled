@@ -5,6 +5,7 @@ import { parse } from '@babel/parser';
 import type { NodePath, Binding } from '@babel/traverse';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
+import { DEFAULT_PARSER_BABEL_PLUGINS } from '@compiled/utils';
 import resolve from 'resolve';
 
 import { DEFAULT_CODE_EXTENSIONS } from '../constants';
@@ -316,7 +317,7 @@ export const resolveBinding = (
         parse(moduleCode, {
           sourceType: 'module',
           sourceFilename: modulePath,
-          plugins: meta.state.opts.parserBabelPlugins || [],
+          plugins: meta.state.opts.parserBabelPlugins ?? DEFAULT_PARSER_BABEL_PLUGINS,
         }),
     });
 
