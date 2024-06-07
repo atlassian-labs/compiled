@@ -1,5 +1,13 @@
 # @compiled/utils
 
+## 0.11.2
+
+### Patch Changes
+
+- a0f8c897: - Set `parserBabelPlugins` to default to `['typescript', 'jsx']`
+  - This is already used across different Atlassian codebases.
+  - Add missing 'babelrc: false' for all internal `parseAsync` calls to Babel. This was already included for `transformFromAstAsync` calls.
+
 ## 0.11.1
 
 ### Patch Changes

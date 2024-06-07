@@ -1,5 +1,18 @@
 # @compiled/webpack-loader
 
+## 0.14.0
+
+### Minor Changes
+
+- a0f8c897: - Set `parserBabelPlugins` to default to `['typescript', 'jsx']`
+  - This is already used across different Atlassian codebases.
+  - Add missing 'babelrc: false' for all internal `parseAsync` calls to Babel. This was already included for `transformFromAstAsync` calls.
+
+### Patch Changes
+
+- Updated dependencies [a0f8c897]
+  - @compiled/utils@0.11.2
+
 ## 0.13.0
 
 ### Minor Changes
