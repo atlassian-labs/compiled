@@ -1,6 +1,10 @@
 import { ClassNames } from '@compiled/react';
 
-export const EmphasisText = (props) => (
+type EmphasisTextProps = {
+  children: React.ReactNode;
+};
+
+export const EmphasisText = (props: EmphasisTextProps): JSX.Element => (
   <ClassNames>
     {({ css }) => (
       <span

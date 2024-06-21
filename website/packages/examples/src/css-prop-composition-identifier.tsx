@@ -5,6 +5,6 @@ const base = css({
   color: 'hotpink',
 });
 
-export const CompositionIdentifier = () => {
+export const CompositionIdentifier = (): JSX.Element => {
   return <span css={base}>This is hot pink.</span>;
 };

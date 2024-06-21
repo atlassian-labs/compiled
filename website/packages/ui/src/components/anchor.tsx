@@ -1,7 +1,7 @@
 /** @jsxImportSource @compiled/react */
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Text, colors } from '@compiled/website-ui';
-import type {
-  Ref} from 'react';
+import type { Ref } from 'react';
 import {
   createContext,
   useContext,
@@ -9,7 +9,7 @@ import {
   useMemo,
   useEffect,
   useCallback,
-  useState
+  useState,
 } from 'react';
 
 interface AnchorContextData {
@@ -24,7 +24,7 @@ const AnchorContext = createContext<AnchorContextData>({
   selected: '',
 });
 
-export const Anchor = ({ children }: { children: string | string[] }) => {
+export const Anchor = ({ children }: { children: string | string[] }): JSX.Element => {
   const context = useContext(AnchorContext);
   const ref = useRef<HTMLElement | null>(null);
 
@@ -32,9 +32,7 @@ export const Anchor = ({ children }: { children: string | string[] }) => {
     typeof children === 'string'
       ? [children.trim().split(' ').join('-')]
       : // Somehow children arrays could END with a space.
-        children.filter(
-          (text, index) => !(index === children.length - 1 && text === ' ')
-        )
+        children.filter((text, index) => !(index === children.length - 1 && text === ' '))
   )
     .filter((child) => typeof child === 'string')
     .map((child) => child.trim().split(' ').join('-'))
@@ -84,21 +82,12 @@ export const Anchor = ({ children }: { children: string | string[] }) => {
   );
 };
 
-export const ToAnchor = ({
-  children,
-  depth,
-}: {
-  children: string;
-  depth: number;
-}) => {
+export const ToAnchor = ({ children, depth }: { children: string; depth: number }): JSX.Element => {
   const id = children.trim().split(' ').join('-').toLowerCase();
   const context = useContext(AnchorContext);
 
   return (
-    <Text
-      as="div"
-      variant="supplementary"
-      css={{ paddingLeft: `${depth - 1}rem` }}>
+    <Text as="div" variant="supplementary" css={{ paddingLeft: `${depth - 1}rem` }}>
       <a
         css={{
           color: context.selected === id ? colors.primary : 'currentColor',
@@ -123,7 +112,7 @@ export const AnchorProvider = ({
   children,
 }: {
   children: JSX.Element | JSX.Element[];
-}) => {
+}): JSX.Element => {
   const observer = useRef<IntersectionObserver>();
   const [selected, setSelected] = useState('');
 
@@ -156,10 +145,7 @@ export const AnchorProvider = ({
     }
   }, []);
 
-  const value = useMemo(
-    () => ({ listen, unlisten, selected }),
-    [listen, unlisten, selected]
-  );
+  const value = useMemo(() => ({ listen, unlisten, selected }), [listen, unlisten, selected]);
 
   useEffect(() => {
     return () => {
@@ -167,7 +153,5 @@ export const AnchorProvider = ({
     };
   }, []);
 
-  return (
-    <AnchorContext.Provider value={value}>{children}</AnchorContext.Provider>
-  );
+  return <AnchorContext.Provider value={value}>{children}</AnchorContext.Provider>;
 };

@@ -3,7 +3,7 @@ import { primary, textLight } from '../utils/colors';
 
 import { Text } from './text';
 
-export function Lozenge({ children }: { children: string }) {
+export function Lozenge({ children }: { children: string }): JSX.Element {
   return (
     <span
       css={{

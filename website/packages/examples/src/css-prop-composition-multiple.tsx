@@ -11,7 +11,7 @@ const base = css({
   backgroundColor: 'rgba(0, 0, 0, 0.05)',
 });
 
-export const CompositionMultiple = () => {
+export const CompositionMultiple = (): JSX.Element => {
   return (
     <div>
       <div css={base}>This is hot pink.</div>

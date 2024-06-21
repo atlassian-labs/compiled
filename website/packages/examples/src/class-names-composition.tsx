@@ -2,7 +2,20 @@
 import { ClassNames } from '@compiled/react';
 import { ax } from '@compiled/react/runtime';
 
-const EmphasisText = ({ className, children, style }: { className?: string; children?: any; style?: any }) => (
+type CustomColorTextProps = {
+  color: string;
+  children: React.ReactNode;
+};
+
+const EmphasisText = ({
+  className,
+  children,
+  style,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+  style?: any;
+}) => (
   <ClassNames>
     {({ css }) => (
       <span
@@ -21,6 +34,6 @@ const EmphasisText = ({ className, children, style }: { className?: string; chil
   </ClassNames>
 );
 
-export const CustomColorText = (props) => (
+export const CustomColorText = (props: CustomColorTextProps): JSX.Element => (
   <EmphasisText css={{ color: props.color }}>{props.children}</EmphasisText>
 );

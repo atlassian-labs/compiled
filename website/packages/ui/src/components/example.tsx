@@ -1,6 +1,9 @@
+/** @jsxImportSource @compiled/react */
+
 import { styled } from '@compiled/react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { CodeBlock, colors, Text } from '@compiled/website-ui';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 interface ExampleProps {
   before: string;
@@ -12,8 +15,7 @@ interface ExampleProps {
 }
 
 export const ExampleRoot = styled.div`
-  box-shadow: rgba(9, 30, 66, 0.25) 0px 12px 24px -6px,
-    rgba(9, 30, 66, 0.31) 0px 0px 1px;
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 12px 24px -6px, rgba(9, 30, 66, 0.31) 0px 0px 1px;
   border-radius: 8px;
   overflow: hidden;
 `;
@@ -56,15 +58,13 @@ const ExampleButton = styled.button<{
   padding-top: 12px;
   padding-bottom: 12px;
   border: none;
-  background: ${(props) =>
-    props.fullWidth ? 'rgba(255, 255, 255, 0.75)' : 'transparent'};
+  background: ${(props) => (props.fullWidth ? 'rgba(255, 255, 255, 0.75)' : 'transparent')};
   text-align: center;
   cursor: pointer;
   text-transform: uppercase;
   font-weight: 600;
   font-size: 11px;
-  color: ${(props) =>
-    props.isSelected ? colors.primary : 'rgba(37, 56, 88, 0.8)'};
+  color: ${(props) => (props.isSelected ? colors.primary : 'rgba(37, 56, 88, 0.8)')};
   margin: 0;
   outline: none;
   font-family: inherit;
@@ -101,7 +101,7 @@ export const Example = ({
   codeBackground = 'rgb(37, 56, 88)',
   variant = 'fluid',
   exampleCode,
-}: ExampleProps) => {
+}: ExampleProps): JSX.Element => {
   const [isShown, setIsShown] = useState(false);
   const [htmlShown, setHtmlShown] = useState(false);
 
@@ -132,10 +132,7 @@ export const Example = ({
       </ExampleSwitcher>
 
       <ExampleContainer>
-        <span
-          css={{ display: 'flex', padding: '1.5rem', alignItems: 'center' }}>
-          {children}
-        </span>
+        <span css={{ display: 'flex', padding: '1.5rem', alignItems: 'center' }}>{children}</span>
         {exampleCode && (
           <ExampleButton
             data-button

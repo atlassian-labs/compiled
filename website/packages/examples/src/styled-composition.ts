@@ -5,5 +5,5 @@ const RedText = styled.span({
 });
 
 export const BlueText = styled(RedText)({
-  color: 'blue'
+  color: 'blue',
 });

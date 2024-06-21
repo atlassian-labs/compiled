@@ -1,3 +1,4 @@
+/** @jsxAutomaticRuntime @compiled/react */
 import { styled } from '@compiled/react';
 import React, { Fragment, useState, useEffect } from 'react';
 
@@ -33,12 +34,7 @@ const Link = styled.a<{ href: string; exact?: boolean }>`
   }
 `;
 
-export const RootLayout = ({
-  children,
-  sidenav,
-  aside,
-  invertHeader,
-}: RootProps) => {
+export const RootLayout = ({ children, sidenav, aside, invertHeader }: RootProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
 
   // TODO: Move to global style component.
@@ -67,9 +63,7 @@ export const RootLayout = ({
             <Link href="/docs">
               <Text variant="aside">Documentation</Text>
             </Link>
-            <Link
-              title="GitHub"
-              href="https://github.com/atlassian-labs/compiled">
+            <Link title="GitHub" href="https://github.com/atlassian-labs/compiled">
               <Text variant="aside">GitHub</Text>
             </Link>
           </HorizontalStack>
@@ -166,9 +160,7 @@ export const RootLayout = ({
                 display: 'none',
               },
             }}>
-            <ScreenReaderText>
-              {isOpen ? 'Close navigation' : 'Open navigation'}+
-            </ScreenReaderText>
+            <ScreenReaderText>{isOpen ? 'Close navigation' : 'Open navigation'}+</ScreenReaderText>
             <span aria-hidden="true">🍔</span>
           </label>
           <main

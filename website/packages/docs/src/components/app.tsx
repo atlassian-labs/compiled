@@ -19,7 +19,6 @@ import { PageTitle } from './page-title';
 import { ScrollTop } from './scroll-top';
 import { LinkItem, Section } from './side-nav';
 
-
 function requireAllPages() {
   const req = require.context('../pages');
   return req.keys().reduce(
@@ -32,7 +31,7 @@ function requireAllPages() {
 }
 
 interface Page {
-  default: React.ComponentType<{}>;
+  default: React.ComponentType<Record<string, never>>;
   data: {
     headings: {
       depth: number;
@@ -49,10 +48,7 @@ const getSections = () => {
   const sections: Record<string, (Page & { name: string })[]> = {};
 
   Object.entries(pages)
-    .sort(
-      (page1, page2) =>
-        (page1[1].data.order || 100) - (page2[1].data.order || 100)
-    )
+    .sort((page1, page2) => (page1[1].data.order || 100) - (page2[1].data.order || 100))
     .forEach(([pageName, page]) => {
       const section = page.data.section;
       if (!section) {
@@ -98,9 +94,7 @@ const getPage = (slug: string) => {
     return null;
   }
 
-  const sectionIndex = sections.findIndex(
-    (section) => section.name === page.data.section
-  );
+  const sectionIndex = sections.findIndex((section) => section.name === page.data.section);
   const previousSection = sections[sectionIndex - 1];
   const nextSection = sections[sectionIndex + 1];
   const section = sections[sectionIndex];
@@ -118,9 +112,7 @@ const getPage = (slug: string) => {
       slug: nextPage ? nextPage.name : nextSection.pages[0].name,
     },
     previous: (previousPage || previousSection) && {
-      cta: previousPage
-        ? 'Previous'
-        : previousSection.name.replace(/^\d+-/, ''),
+      cta: previousPage ? 'Previous' : previousSection.name.replace(/^\d+-/, ''),
       name: previousPage
         ? previousPage.data.name
         : previousSection.pages[previousSection.pages.length - 1].data.name,
@@ -131,7 +123,7 @@ const getPage = (slug: string) => {
   };
 };
 
-export const App = () => {
+export const App = (): JSX.Element => {
   const location = useLocation();
   const pageSlug = location.pathname;
   const page = getPage(pageSlug);
@@ -149,9 +141,7 @@ export const App = () => {
                 {page.data.headings
                   .filter((heading) => heading.depth < 4)
                   .map((heading, index) => (
-                    <ToAnchor
-                      depth={heading.depth}
-                      key={`${heading.text}-${index}`}>
+                    <ToAnchor depth={heading.depth} key={`${heading.text}-${index}`}>
                       {heading.text}
                     </ToAnchor>
                   ))}
@@ -162,16 +152,12 @@ export const App = () => {
         sidenav={
           <>
             {getSections().map((section, sectionIndex) => (
-              <Section
-                key={section.name}
-                title={section.name.replace(/^\d+-/, '')}>
+              <Section key={section.name} title={section.name.replace(/^\d+-/, '')}>
                 {section.pages.map((page, pageIndex) => (
                   <LinkItem
                     aria-current={
                       location.pathname === `/${page.name}` ||
-                      (location.pathname === '/' &&
-                        sectionIndex === 0 &&
-                        pageIndex === 0)
+                      (location.pathname === '/' && sectionIndex === 0 && pageIndex === 0)
                         ? 'page'
                         : undefined
                     }
@@ -187,10 +173,7 @@ export const App = () => {
         <MDXProvider components={mdxComponents}>
           <ScrollTop key={pageSlug} />
           <PageTitle
-            title={
-              (page && page.data.headings[0].text) ||
-              (page && titleCase(page.name))
-            }
+            title={(page && page.data.headings[0].text) || (page && titleCase(page.name))}
           />
 
           {page && (
@@ -208,7 +191,8 @@ export const App = () => {
                     opacity: 0.7,
                     fontWeight: 500,
                   }}
-                  href={getEditUrl()} rel="noreferrer">
+                  href={getEditUrl()}
+                  rel="noreferrer">
                   <Text variant="aside" weight="bold">
                     Suggest changes to this page ➚
                   </Text>
@@ -233,10 +217,7 @@ export const App = () => {
                 )}
 
                 {page.next && (
-                  <PageLink
-                    direction="next"
-                    section={page.next.cta}
-                    to={`/${page.next.slug}`}>
+                  <PageLink direction="next" section={page.next.cta} to={`/${page.next.slug}`}>
                     {page.next.name || titleCase(page.next.slug)}
                   </PageLink>
                 )}

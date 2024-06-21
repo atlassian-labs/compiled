@@ -1,7 +1,13 @@
 /** @jsxImportSource @compiled/react */
 import { css } from '@compiled/react';
+import type { ReactNode } from 'react';
 
-export const EmphasisText = (props) => (
+type EmphasisTextProps = {
+  children: ReactNode;
+  primary: boolean;
+};
+
+export const EmphasisText = (props: EmphasisTextProps): JSX.Element => (
   <span
     css={css({
       color: props.primary ? '#00B8D9' : '#36B37E',

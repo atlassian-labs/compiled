@@ -17,7 +17,7 @@ export function Text({
   variant = 'reading',
   className,
   style,
-}: TextProps) {
+}: TextProps): JSX.Element {
   return (
     <Component
       className={className}

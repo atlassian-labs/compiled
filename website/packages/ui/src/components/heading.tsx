@@ -2,10 +2,7 @@
 import type { ReactNode, DetailedHTMLProps, HTMLAttributes } from 'react';
 
 interface HeadingProps
-  extends DetailedHTMLProps<
-    HTMLAttributes<HTMLHeadingElement>,
-    HTMLHeadingElement
-  > {
+  extends DetailedHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement> {
   look: 'h500' | 'h400' | 'h300' | 'h200' | 'h100';
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'span' | 'div';
   children: ReactNode;
@@ -19,7 +16,7 @@ const headingMap = {
   h500: 'h5',
 } as const;
 
-export const Heading = ({ children, style, ...props }: HeadingProps) => {
+export const Heading = ({ children, style, ...props }: HeadingProps): JSX.Element => {
   const As = props.as || headingMap[props.look];
 
   return (

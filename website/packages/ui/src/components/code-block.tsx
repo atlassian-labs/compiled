@@ -29,13 +29,12 @@ export const CodeBlock = ({
   className,
   style,
   ...props
-}: CodeBlockProps) => (
+}: CodeBlockProps): JSX.Element => (
   <div
     css={{
       fontSize: '2rem',
       backgroundColor: 'rgb(37, 56, 88)',
-      boxShadow:
-        'rgba(9, 30, 66, 0.25) 0px 12px 24px -6px, rgba(9, 30, 66, 0.31) 0px 0px 1px',
+      boxShadow: 'rgba(9, 30, 66, 0.25) 0px 12px 24px -6px, rgba(9, 30, 66, 0.31) 0px 0px 1px',
       borderRadius: variant === 'sharp' ? 0 : '5px',
       overflow: 'auto',
       display: 'flex',
@@ -60,7 +59,7 @@ export const CodeBlock = ({
   </div>
 );
 
-export const Terminal = ({ children }: { children: React.ReactNode }) => {
+export const Terminal = ({ children }: { children: React.ReactNode }): JSX.Element => {
   return (
     <div
       css={{

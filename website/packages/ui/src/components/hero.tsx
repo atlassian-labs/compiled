@@ -4,7 +4,7 @@ const rgb = '101, 84, 192';
 const step = 0.0185;
 const size = 250;
 
-export const Hero = ({ children }: { children: React.ReactNode }) => {
+export const Hero = ({ children }: { children: React.ReactNode }): JSX.Element => {
   return (
     <div
       css={{

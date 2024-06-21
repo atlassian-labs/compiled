@@ -1,4 +1,6 @@
 /** @jsxImportSource @compiled/react */
+import type { ReactNode } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Link } from 'react-router-dom';
 
 import { primary } from '../utils/colors';
@@ -14,9 +16,25 @@ interface PageLink {
   direction: 'next' | 'previous';
 }
 
-export function PageLink({ to, hard, section, direction, children }: PageLink) {
-  const A = hard ? 'a' : Link;
-  const props = hard ? { href: to } : { to };
+function A({ isHard, children, to }: { isHard: boolean; children: ReactNode; to: string }) {
+  const styles = {
+    textDecoration: 'none',
+  };
+  if (isHard) {
+    return (
+      <a css={styles} href={to}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <Link css={styles} to={to}>
+      {children}
+    </Link>
+  );
+}
+
+export function PageLink({ to, hard, section, direction, children }: PageLink): JSX.Element {
   const isNext = direction === 'next';
 
   return (
@@ -31,11 +49,7 @@ export function PageLink({ to, hard, section, direction, children }: PageLink) {
         {section}
       </Heading>
 
-      <A
-        css={{
-          textDecoration: 'none',
-        }}
-        {...props}>
+      <A isHard={hard} to={to}>
         <Heading
           as="span"
           look="h300"
@@ -44,9 +58,7 @@ export function PageLink({ to, hard, section, direction, children }: PageLink) {
             textTransform: 'capitalize',
           }}>
           {!isNext && (
-            <span
-              aria-hidden
-              css={{ position: 'absolute', transform: 'translateX(-160%)' }}>
+            <span aria-hidden css={{ position: 'absolute', transform: 'translateX(-160%)' }}>
               ‹
             </span>
           )}
@@ -54,9 +66,7 @@ export function PageLink({ to, hard, section, direction, children }: PageLink) {
           {children}
 
           {isNext && (
-            <span
-              aria-hidden
-              css={{ position: 'absolute', transform: 'translateX(80%)' }}>
+            <span aria-hidden css={{ position: 'absolute', transform: 'translateX(80%)' }}>
               ›
             </span>
           )}

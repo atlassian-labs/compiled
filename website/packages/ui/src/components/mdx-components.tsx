@@ -1,13 +1,9 @@
 /** @jsxImportSource @compiled/react */
 import { styled } from '@compiled/react';
-import {
-  VerticalStack,
-  Heading,
-  CodeBlock,
-  colors,
-  Text,
-} from '@compiled/website-ui';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { VerticalStack, Heading, CodeBlock, colors, Text } from '@compiled/website-ui';
 import type { MDXProviderComponentsProp } from '@mdx-js/react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Link } from 'react-router-dom';
 
 import { Anchor } from './anchor';
@@ -38,8 +34,8 @@ const Code = styled.code`
   border-radius: 5px;
   margin: 0;
   padding: 0.2rem 0.325rem;
-  font-family: 'SFMono-Medium', 'SF Mono', 'Segoe UI Mono', 'Roboto Mono',
-    'Ubuntu Mono', Menlo, Consolas, Courier, monospace;
+  font-family: 'SFMono-Medium', 'SF Mono', 'Segoe UI Mono', 'Roboto Mono', 'Ubuntu Mono', Menlo,
+    Consolas, Courier, monospace;
 `;
 
 const P = styled.p`
@@ -80,9 +76,7 @@ export const mdxComponents: MDXProviderComponentsProp = {
   pre: ({ children }) => children,
   code: ({ children, className }) => (
     <VerticalStack spacing={2}>
-      <CodeBlock language={className ? className.split('-')[1] : undefined}>
-        {children}
-      </CodeBlock>
+      <CodeBlock language={className ? className.split('-')[1] : undefined}>{children}</CodeBlock>
     </VerticalStack>
   ),
   hr: () => <Hr />,

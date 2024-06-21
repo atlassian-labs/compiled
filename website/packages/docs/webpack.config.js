@@ -1,5 +1,6 @@
 const path = require('path');
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 const { CompiledExtractPlugin } = require('@compiled/webpack-loader');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');

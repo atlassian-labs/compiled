@@ -1,9 +1,6 @@
-import { styled } from '@compiled/react';
-import {
-  cssProp,
-  styled as styledExamples,
-  classNames,
-} from '@compiled/website-examples';
+/** @jsxImportSource @compiled/react */
+
+import { cssProp, styled as styledExamples, classNames } from '@compiled/website-examples';
 import {
   Hero,
   Heading,
@@ -27,9 +24,6 @@ import styledAfter from '!!raw-loader!@compiled/website-examples/dist/js/styled-
 import classNamesBefore from '!!raw-loader!@compiled/website-examples/dist/jsx/class-names-button.js';
 import cssPropBefore from '!!raw-loader!@compiled/website-examples/dist/jsx/css-prop-button.js';
 import styledBefore from '!!raw-loader!@compiled/website-examples/dist/jsx/styled-button.js';
-
-// @ts-ignore
-
 
 const codeBackground = 'rgba(23, 43, 77, 0.6)';
 
@@ -58,9 +52,7 @@ const TabButton = (props: {
         backgroundColor: 'transparent',
         border: 'none',
         '&&& *': {
-          color: props.isSelected
-            ? 'rgba(255, 255, 255, 0.99)'
-            : 'rgba(255, 255, 255, 0.75)',
+          color: props.isSelected ? 'rgba(255, 255, 255, 0.99)' : 'rgba(255, 255, 255, 0.75)',
         },
         ':disabled': {
           cursor: 'not-allowed',
@@ -132,9 +124,7 @@ const CodeExamples = () => {
             exampleCode="<Button>{props => <button {...props}>Button</button>}</Button>"
             before={classNamesBefore}
             after={classNamesAfter}>
-            <classNames.Button>
-              {(props) => <button {...props}>Button</button>}
-            </classNames.Button>
+            <classNames.Button>{(props) => <button {...props}>Button</button>}</classNames.Button>
           </Example>
         </div>
       )}
@@ -142,7 +132,7 @@ const CodeExamples = () => {
   );
 };
 
-export default () => (
+export default (): JSX.Element => (
   <RootLayout invertHeader>
     <Hero>
       <Content>
@@ -176,11 +166,7 @@ export default () => (
       </MDXProvider>
 
       <VerticalStack align="right" spacing={10}>
-        <PageLink
-          to="docs/installation"
-          hard
-          direction="next"
-          section="Getting started">
+        <PageLink to="docs/installation" hard direction="next" section="Getting started">
           Installation
         </PageLink>
       </VerticalStack>

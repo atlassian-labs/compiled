@@ -21,11 +21,9 @@ const buttonStyles = css({
   },
 });
 
-export const Button = ({ children }) => {
+export const Button = ({ children }: { children: React.ReactNode }): JSX.Element => {
   return (
-    <button
-      type="button"
-      css={buttonStyles}>
+    <button type="button" css={buttonStyles}>
       {children}
     </button>
   );

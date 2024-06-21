@@ -1,87 +1,87 @@
 import { cssProp } from '@compiled/website-examples';
 import { Example } from '@compiled/website-ui';
 
-export const CssPropObj = () => {
+export const CssPropObj = (): JSX.Element => {
   return (
     <Example
       exampleCode="<EmphasisText>Arrange</EmphasisText>"
       before={
-        require('!!raw-loader!@compiled/website-examples/dist/jsx/css-prop-obj.js')
-          .default
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require('!!raw-loader!@compiled/website-examples/dist/jsx/css-prop-obj.js').default
       }
       after={
-        require('!!raw-loader!@compiled/website-examples/dist/js/css-prop-obj.js')
-          .default
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require('!!raw-loader!@compiled/website-examples/dist/js/css-prop-obj.js').default
       }>
       <cssProp.CssPropObj>Arrange</cssProp.CssPropObj>
     </Example>
   );
 };
 
-export const CssPropString = () => {
+export const CssPropString = (): JSX.Element => {
   return (
     <Example
       exampleCode="<EmphasisText>Sort out</EmphasisText>"
       before={
-        require('!!raw-loader!@compiled/website-examples/dist/jsx/css-prop-string.js')
-          .default
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require('!!raw-loader!@compiled/website-examples/dist/jsx/css-prop-string.js').default
       }
       after={
-        require('!!raw-loader!@compiled/website-examples/dist/js/css-prop-string.js')
-          .default
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require('!!raw-loader!@compiled/website-examples/dist/js/css-prop-string.js').default
       }>
       <cssProp.CssPropString>Sort out</cssProp.CssPropString>
     </Example>
   );
 };
 
-export const CssPropDynamic = () => {
+export const CssPropDynamic = (): JSX.Element => {
   return (
     <Example
       exampleCode="<EmphasisText primary>Systematize</EmphasisText>"
       before={
-        require('!!raw-loader!@compiled/website-examples/dist/jsx/css-prop-dynamic-decl.js')
-          .default
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require('!!raw-loader!@compiled/website-examples/dist/jsx/css-prop-dynamic-decl.js').default
       }
       after={
-        require('!!raw-loader!@compiled/website-examples/dist/js/css-prop-dynamic-decl.js')
-          .default
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require('!!raw-loader!@compiled/website-examples/dist/js/css-prop-dynamic-decl.js').default
       }>
       <cssProp.CssPropDynamic primary>Systematize</cssProp.CssPropDynamic>
     </Example>
   );
 };
 
-export const CssPropCompositionCorrect = () => {
+export const CssPropCompositionCorrect = (): JSX.Element => {
   return (
     <Example
       exampleCode={'<CustomColorText color="pink">Pink text</CustomColorText>'}
       before={
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         require('!!raw-loader!@compiled/website-examples/dist/jsx/css-prop-composition-correct.js')
           .default
       }
       after={
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         require('!!raw-loader!@compiled/website-examples/dist/js/css-prop-composition-correct.js')
           .default
       }>
-      <cssProp.CssPropCompositionCorrect color="pink">
-        Pink text
-      </cssProp.CssPropCompositionCorrect>
+      <cssProp.CssPropCompositionCorrect color="pink">Pink text</cssProp.CssPropCompositionCorrect>
     </Example>
   );
 };
 
-export const CssPropCompositionIncorrect = () => {
+export const CssPropCompositionIncorrect = (): JSX.Element => {
   return (
     <Example
-      exampleCode={
-        '<CustomColorText color="pink">This text should be pink</CustomColorText>'
-      }
+      exampleCode={'<CustomColorText color="pink">This text should be pink</CustomColorText>'}
       before={
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         require('!!raw-loader!@compiled/website-examples/dist/jsx/css-prop-composition-incorrect.js')
           .default
       }
       after={
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         require('!!raw-loader!@compiled/website-examples/dist/js/css-prop-composition-incorrect.js')
           .default
       }>
@@ -92,17 +92,17 @@ export const CssPropCompositionIncorrect = () => {
   );
 };
 
-export const CssPropCompositionNoStyle = () => {
+export const CssPropCompositionNoStyle = (): JSX.Element => {
   return (
     <Example
-      exampleCode={
-        '<CustomColorText color="pink">This text should be pink</CustomColorText>'
-      }
+      exampleCode={'<CustomColorText color="pink">This text should be pink</CustomColorText>'}
       before={
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         require('!!raw-loader!@compiled/website-examples/dist/jsx/css-prop-composition-no-style.js')
           .default
       }
       after={
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         require('!!raw-loader!@compiled/website-examples/dist/js/css-prop-composition-no-style.js')
           .default
       }>
@@ -113,15 +113,17 @@ export const CssPropCompositionNoStyle = () => {
   );
 };
 
-export const CssPropConditionalRules = () => {
+export const CssPropConditionalRules = (): JSX.Element => {
   return (
     <Example
       exampleCode="<Lozenge primary>Arrange</Lozenge>"
       before={
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         require('!!raw-loader!@compiled/website-examples/dist/jsx/css-prop-conditional-rules.js')
           .default
       }
       after={
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         require('!!raw-loader!@compiled/website-examples/dist/js/css-prop-conditional-rules.js')
           .default
       }>

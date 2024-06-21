@@ -8,7 +8,7 @@ interface ComparisonProps {
   maxHeight?: string;
 }
 
-export const Comparison = (props: ComparisonProps) => {
+export const Comparison = (props: ComparisonProps): JSX.Element => {
   return (
     <HorizontalStack
       gap={1}

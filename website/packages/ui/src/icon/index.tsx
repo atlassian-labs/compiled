@@ -11,7 +11,7 @@ const iconMap = {
   npm: Npm,
 };
 
-export const Icon = (props: IconProps) => {
+export const Icon = (props: IconProps): JSX.Element => {
   const Svg = iconMap[props.name];
 
   return (

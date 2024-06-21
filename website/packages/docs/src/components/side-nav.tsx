@@ -8,7 +8,7 @@ interface SectionProps {
   title: string;
 }
 
-export const Section = ({ children, title }: SectionProps) => {
+export const Section = ({ children, title }: SectionProps): JSX.Element => {
   const id = `section--${title.toLowerCase().split(' ').join('-')}`;
 
   return (
@@ -60,7 +60,7 @@ export const LinkItem = ({
 }: {
   children: React.ReactNode;
   href: string;
-}) => {
+}): JSX.Element => {
   return (
     <Text as="div" variant="aside">
       <StyledLink {...props} to={href}>

@@ -1,6 +1,10 @@
 import { ClassNames } from '@compiled/react';
 
-export const Button = ({ children }) => {
+export const Button = ({
+  children,
+}: {
+  children: (props: Record<string, unknown>) => JSX.Element;
+}): JSX.Element => {
   return (
     <ClassNames>
       {({ css }) =>
@@ -28,3 +32,5 @@ export const Button = ({ children }) => {
     </ClassNames>
   );
 };
+
+<Button>{(props) => <button {...props}>Button</button>}</Button>;

@@ -1,4 +1,4 @@
-export const titleCase = (str: string) => {
+export const titleCase = (str: string): string => {
   const parsedStr = str.replace(/\d+-/, '');
   return `${parsedStr[0].toUpperCase()}${parsedStr
     .slice(1)

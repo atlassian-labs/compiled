@@ -21,8 +21,7 @@ const StyledHeader = styled.header<{
   margin: 0 auto;
   max-width: 140rem;
   border-bottom: 1px solid
-    ${(props) =>
-      props.variant === 'default' ? 'rgba(135, 119, 217, 0.2)' : 'transparent'};
+    ${(props) => (props.variant === 'default' ? 'rgba(135, 119, 217, 0.2)' : 'transparent')};
   color: ${(props) => props.color};
 `;
 
@@ -35,15 +34,8 @@ interface HeaderProps {
   children: React.ReactNode;
 }
 
-export const Header = ({
-  children,
-  variant = 'default',
-  ...props
-}: HeaderProps) => {
-  const color =
-    variant === 'default'
-      ? 'rgba(37, 56, 88, 0.9)'
-      : 'rgba(255, 255, 255, 0.75)';
+export const Header = ({ children, variant = 'default', ...props }: HeaderProps): JSX.Element => {
+  const color = variant === 'default' ? 'rgba(37, 56, 88, 0.9)' : 'rgba(255, 255, 255, 0.75)';
 
   return (
     <StyledHeader variant={variant} color={color} {...props}>

@@ -24,7 +24,7 @@
     "build:webpack": "yarn build:babel-fixture && ttsc --build examples/webpack/tsconfig.json && yarn workspace @compiled/webpack-app build",
     "build:webpack:extract": "EXTRACT_TO_CSS=true yarn build:webpack",
     "bundlesize": "yarn build && size-limit",
-    "clean": "yarn clean:node-modules && yarn clean:ts-cache && yarn clean:dist && yarn clean:parcel-cache",
+    "clean": "yarn clean:node-modules && yarn clean:ts-cache && yarn clean:dist && yarn clean:parcel-cache && yarn website:clean",
     "clean:dist": "find . -name \"dist\" -not -path \"*/node_modules/*\" -type d -exec rm -rf {} +",
     "clean:node-modules": "rm -rf node_modules/.cache",
     "clean:parcel-cache": "rm -rf .parcel-cache/",
@@ -48,16 +48,8 @@
     "test:parcel": "jest --testMatch '**/src/**/*.parceltest.{ts,tsx}' --testEnvironment=node",
     "test:vr": "yarn loki --host host.docker.internal",
     "test:watch": "jest --no-cache --watch",
-    "website:build": "NODE_ENV=production yarn build:examples && NODE_ENV=production yarn build:landing && NODE_ENV=production yarn build:docs",
-    "website:build:docs": "cd website/docs && yarn build",
-    "website:build:examples": "cd website/examples && yarn build",
-    "website:build:landing": "cd website/landing && yarn build",
-    "website:clean": "rm -rf dist && workspaces-run -- rm -rf dist && workspaces-run -- rm -rf .cache",
-    "website:clean:npm": "yarn clean:pkg:npm && rm -rf node_modules",
-    "website:clean:pkg:npm": "workspaces-run -- rm -rf node_modules",
-    "website:postinstall": "npx yarn-deduplicate",
-    "website:start:docs": "cd website/docs && yarn start",
-    "website:start:landing": "cd website/landing && yarn start"
+    "website:build": "cd website/ && NODE_ENV=production yarn build",
+    "website:clean": "cd website/ && yarn clean"
   },
   "husky": {
     "hooks": {
