@@ -25,15 +25,6 @@ This is the actual documentation.
 yarn start:docs
 ```
 
-## FAQ
-
-### Why is this not in the monorepo?
-
-This site is written with Compiled.
-We want to make sure the consumption story works,
-completely,
-with no impacts from the monorepo.
-
 ---
 
 [![Atlassian](https://raw.githubusercontent.com/atlassian-internal/oss-assets/master/banner-cheers-light.png)](https://atlassian.com)
