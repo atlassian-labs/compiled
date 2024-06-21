@@ -22,7 +22,7 @@ const styles = css({
   },
 });
 
-<div css={styles}/>;
+<div css={styles} />;
 ```
 
 If a dynamic value resolves to a static constant value however, it will work!
@@ -47,7 +47,7 @@ const styles = css({ color: 'blue' });
 const otherStyles = css({ color: 'red' });
 
 // build-time error
-const Component = <div css={isPrimary ? styles : otherStyles}>Hello</div>
+const Component = <div css={isPrimary ? styles : otherStyles}>Hello</div>;
 ```
 
 A workaround is to use the `&&` operator, which is supported:
@@ -60,7 +60,7 @@ const styles = css({ color: 'blue' });
 const otherStyles = css({ color: 'red' });
 
 // build-time error
-const Component = <div css={[isPrimary && styles, !isPrimary && otherStyles]}>Hello</div>
+const Component = <div css={[isPrimary && styles, !isPrimary && otherStyles]}>Hello</div>;
 ```
 
 There is a [bug report on GitHub](https://github.com/atlassian-labs/compiled/issues/389) if you would like to stay updated.

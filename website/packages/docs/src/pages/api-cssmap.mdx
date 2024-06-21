@@ -114,7 +114,7 @@ const myMap = cssMap({
       },
       '(max-width: 800px)': {
         fontSize: '1.8em',
-      }
+      },
     },
   },
   success: {
@@ -162,8 +162,8 @@ const myMap = cssMap({
         div: {
           '&::before': {
             content: 'hello',
-          }
-        }
+          },
+        },
       },
     },
   },
@@ -180,7 +180,7 @@ const myMap = cssMap({
     selectors: {
       '&:not(:active)': {
         backgroundColor: 'white',
-      }
+      },
     },
   },
 });
@@ -191,10 +191,10 @@ const myMap = cssMap({
 `cssMap` can be composed with other styles that are specified through the [css API](/api-css).
 
 ```jsx
-import { css, cssMap } from '@compiled/react'
+import { css, cssMap } from '@compiled/react';
 
 const base = css({
-  borderColor: 'red'
+  borderColor: 'red',
 });
 
 const borderStyleMap = cssMap({

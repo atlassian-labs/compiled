@@ -160,9 +160,9 @@ We have [optimization ideas](https://github.com/atlassian-labs/compiled/issues/3
 ### Selector specificity
 
 Styles where several CSS blocks can be applied at once can be problematic (i.e. when using pseudo-selectors and at-rules). This is because styles delivered with atomic CSS share the same [specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity),
-so it is up to their order in the stylesheet to determine what takes precedence over the other.  However, when importing CSS from Compiled components across several files or packages, the order in which CSS classes appear in the stylesheet may be non-deterministic.
+so it is up to their order in the stylesheet to determine what takes precedence over the other. However, when importing CSS from Compiled components across several files or packages, the order in which CSS classes appear in the stylesheet may be non-deterministic.
 
-Compiled sorts common [pseudo-class ordering](#ordered-pseudos) for you, as well as [all at-rules](/limitations#overlapping-styles) (including media queries) in *most* cases. However, other pseudo-selectors and situations may result in unpredictable behaviour.
+Compiled sorts common [pseudo-class ordering](#ordered-pseudos) for you, as well as [all at-rules](/limitations#overlapping-styles) (including media queries) in _most_ cases. However, other pseudo-selectors and situations may result in unpredictable behaviour.
 
 In cases where this is a problem, we recommend re-writing your styles so that only a single declaration can take effect at once. If this is not possible, you may resort to the [nesting selector](/writing-css#nesting-selector), however we do not recommend this.
 

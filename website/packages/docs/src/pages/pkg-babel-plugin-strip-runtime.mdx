@@ -57,11 +57,7 @@ Given the below folder structure:
 // src/index.jsx
 import { css } from '@compiled/react';
 
-const Component = () => (
-  <div css={css({ fontSize: 12, color: 'blue' })}>
-    hello world
-  </div>
-);
+const Component = () => <div css={css({ fontSize: 12, color: 'blue' })}>hello world</div>;
 ```
 
 Set the source folder and output folder relative to the root project path.

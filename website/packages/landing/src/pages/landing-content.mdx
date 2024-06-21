@@ -17,12 +17,7 @@ const largeTextStyles = css({ fontSize: '48px' });
 export const LargeText = ({ color, children }) => {
   const dynamicColorStyles = css({ color: color });
 
-  return (
-    <span
-      css={[largeTextStyles, dynamicColorStyles]}>
-      {children}
-    </span>
-  )
+  return <span css={[largeTextStyles, dynamicColorStyles]}>{children}</span>;
 };
 ```
 
