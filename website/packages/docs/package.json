@@ -15,7 +15,7 @@
     "@compiled/website-ui": "^1.0.0",
     "@mdx-js/loader": "^1.6.22",
     "@mdx-js/react": "^1.6.22",
-    "@types/mdx-js__react": "^1.5.8",
+    "@types/mdx-js__react": "^2.0.0",
     "@types/node": "^20.12.8",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
