@@ -1,0 +1,141 @@
+---
+section: 50-Guides
+---
+
+# Server Side Rendering
+
+[Server side rendering](https://reactjs.org/docs/react-dom-server.html) (SSR) is an important tool used to show your app faster to your users on the initial page load.
+
+> **Extract styles**<br/>
+> When [extracting styles](/css-extraction-webpack) the following information no longer applies.
+
+Have you heard the phrase "SSR is zero config" before?
+In the context of Compiled -
+consumers of your components don't have to do anything to make it work.
+Just import and go!
+
+This is accomplished by inlining `style` elements in the server rendered markup,
+like so:
+
+<!-- prettier-ignore -->
+```html
+<style>._k48pni7l{font-weight:600}</style>
+<div class="_k48pni7l">
+  <style>._syaz18rw{color:#ff5630}</style>
+  <div class="_syaz18rw">hello world</div>
+</div>
+```
+
+And then on the web browser when the JavaScript initializes they get moved to the head of the document:
+
+```html
+<div class="_k48pni7l">
+  <div class="_syaz18rw">hello world</div>
+</div>
+```
+
+The magic sauce though -
+if any atomic CSS is defined multiple times only the first atomic rule will render,
+resulting in less styles rendered initially:
+
+<!-- prettier-ignore -->
+```html
+<style>._k48pni7l{margin-top:24px}</style>
+<div class="_k48pni7l">
+  <style>._syaz18rw{color:#ff5630}</style>
+  <div class="_k48pni7l _syaz18rw">hello world</div>
+  <div class="_k48pni7l _syaz18rw">hello world</div>
+  <div class="_k48pni7l _syaz18rw">hello world</div>
+  <div class="_k48pni7l _syaz18rw">hello world</div>
+</div>
+```
+
+This strategy of rendering `style` elements next to their pairing component has two main benefits:
+
+1. Consumers of your components don't need to configure anything
+1. When using the [React streaming server API](https://reactjs.org/docs/react-dom-server.html#rendertonodestream) component styles are streamed together with your component markup,
+   resulting in content being rendered to users faster
+
+> **Warning** <br /> This will interfere with nth child and similar selectors as it is inserts style tags directly into your markup.
+> We have an [RFC where we are thinking about what to do with this](https://github.com/atlassian-labs/compiled/issues/31) - please join the conversation!
+
+## Selector workarounds
+
+There are a few workarounds for the nth child type selector problems.
+Try to only use these workarounds if you can't think of an alternate implementation,
+such as applying styles directly to the element you're interested in.
+
+### First child
+
+Here we target the `:first-child` element.
+
+```jsx
+<div css={{
+  '& :first-child': {
+    color: 'red'
+  }
+}}>
+  <div /> <-- text will be red, after JavaScript executes
+  <div />
+</div>
+```
+
+But the text isn't red before the JavaScript has executed!
+
+To workaround this we can use a different selector,
+either `:first-of-type` or explicitly marking the first child with a [data attribute](https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes).
+
+```jsx
+<div css={{
+  '& :first-of-type': {
+    color: 'red'
+  }
+}}>
+  <div /> <-- text will be red, always
+  <div />
+</div>
+```
+
+```jsx
+<div css={{
+  '& [data-first-child]': {
+    color: 'red'
+  }
+}}>
+  <div data-first-child /> <-- text will be red, always
+  <div />
+</div>
+```
+
+### Nth child
+
+This also applies to `:nth-child` as well,
+where `style` elements can appear and complicate things before JavaScript has executed.
+
+```jsx
+<div css={{
+  '& :nth-child(even)': {
+    color: 'red'
+  },
+  '& :nth-child(odd)': {
+    color: 'blue'
+  }
+}}>
+  <div /> <-- text will be red, after JavaScript executes
+  <div /> <-- text will be blue, after JavaScript executes
+</div>
+```
+
+```jsx
+<div css={{
+  '& [data-even]': {
+    color: 'red'
+  },
+  '& [data-odd]': {
+    color: 'blue'
+  }
+}}>
+  <div data-even /> <-- text will be red, always
+  <div data-odd /> <-- text will be blue, always
+</div>
+```

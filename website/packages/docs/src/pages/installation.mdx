@@ -1,0 +1,94 @@
+---
+order: 3
+section: 1-Getting started
+---
+
+# Installation
+
+Setup is required.
+Install the [React](https://reactjs.org) package with `npm` or your package manager of choice.
+
+```bash
+npm install @compiled/react
+```
+
+Then configure your bundler of choice or use [Babel](https://babeljs.io) directly.
+
+## Webpack
+
+Install the [Webpack](https://webpack.js.org/) loader.
+
+```bash
+npm install @compiled/webpack-loader --save-dev
+```
+
+Add the loader to your [Webpack config](https://webpack.js.org/).
+Make sure this is defined after other loaders so it runs first.
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.(js|ts|tsx)$/,
+        exclude: /node_modules/,
+        use: [
+          { loader: 'babel-loader' },
+          {
+            // ↓↓ defined last ↓↓
+            loader: '@compiled/webpack-loader',
+          },
+        ],
+      },
+    ],
+  },
+};
+```
+
+If you're shipping an app you'll also be interested in CSS extraction,
+read the [Webpack CSS extraction](/css-extraction-webpack) for a step-by-step guide.
+
+See the [loader package docs](/pkg-webpack-loader) for configuration options.
+
+## Parcel
+
+Install the [Parcel v2](https://v2.parceljs.org) configuration.
+
+```bash
+npm install @compiled/parcel-config --save-dev
+```
+
+Add the compiled preset to your [Parcel config](https://parceljs.org/features/plugins/).
+
+```json
+{
+  "extends": ["@parcel/config-default", "@compiled/parcel-config"]
+}
+```
+
+See the [configuration package docs](/pkg-parcel-config) for configuration options.
+
+## Babel
+
+> **Local development** <br />
+> When developing locally its advised to use a bundler instead of Babel directly for improved developer experience.
+
+Install the [Babel](https://babeljs.io) plugin.
+
+```bash
+npm install @compiled/babel-plugin --save-dev
+```
+
+Add the plugin to your [Babel config](https://babeljs.io/docs/en/configuration).
+Make sure this is defined after other plugins so it runs first.
+
+```json
+{
+  "plugins": [
+    // ↓↓ defined last ↓↓
+    "@compiled/babel-plugin"
+  ]
+}
+```
+
+See the [plugin package docs](/pkg-babel-plugin) for configuration options.

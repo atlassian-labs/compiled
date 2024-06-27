@@ -1,0 +1,81 @@
+---
+section: 99-Packages
+name: babel-plugin
+order: 4
+---
+
+# @compiled/babel-plugin
+
+import { Lozenge, HorizontalStack } from '@compiled/website-ui';
+
+<HorizontalStack gap={0.5} spacing={2}>
+  <Lozenge>Babel 7</Lozenge>
+</HorizontalStack>
+
+[Babel plugin](https://babeljs.io) used to bake styles into your JavaScript.
+See [installation](/installation#babel) for setup instructions.
+
+```bash
+npm install @compiled/babel-plugin --save-dev
+```
+
+> **Double transform** <br/> When configuring Babel watch out for inadvertently transforming your code with Compiled twice if _also using one of the bundler packages_.
+> Utilizing [JavaScript configuration files](https://babeljs.io/docs/en/configuration#javascript-configuration-files) can help you conditionally set plugins based on your running environment.
+
+## Options
+
+Configure in your Babel config.
+
+```json
+// .babelrc
+{
+  "plugins": [
+    [
+      "@compiled/babel-plugin",
+      {
+        "importReact": true,
+        "cache": true
+      }
+    ]
+  ]
+}
+```
+
+### importReact: boolean
+
+Will import React into the module if it is not found.
+When using `@babel/preset-react` with the [automatic runtime](https://babeljs.io/docs/en/babel-preset-react#react-automatic-runtime) this is not needed and can be set to `false`.
+
+Defaults to `true`.
+
+### cache: boolean | 'single-pass'
+
+Will cache the result of statically evaluated imports.
+
+- `true` will cache for the duration of the node process
+- `'single-pass'` will cache for a single pass of a file
+- `false` turns caching off
+
+Defaults to `true`.
+
+### optimizeCss: boolean
+
+Will run additional cssnano plugins to normalize CSS during build.
+
+Defaults to `true`.
+
+### onIncludedFiles: (files: string[]) => void
+
+Will callback at the end of a file pass with all imported files that were statically evaluated into the file.
+
+### addComponentName: boolean
+
+Add the component name as class name to DOM in non-production environment if styled is used.
+
+Default to `false`
+
+### importSources: string[]
+
+Additional libraries that should be parsed as though they were `@compiled/react` imports.
+
+Specifying this is important if you are using Compiled APIs through another package using the `createStrictAPI` function.

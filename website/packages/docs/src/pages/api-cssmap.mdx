@@ -1,0 +1,208 @@
+---
+section: 5-API
+order: 99
+name: CSS Map
+---
+
+# CSS Map
+
+Define a map consisting of named CSS rules that can be statically typed and useable with other Compiled APIs.
+
+> **Can only be used with other Compiled APIs**<br />
+> The `cssMap` function returns an object at runtime, which contains classnames as its values and variant names as its keys. These can only be used in conjunction with other Compiled APIs.
+
+```jsx
+import { cssMap } from '@compiled/react';
+
+const borderStyleMap = cssMap({
+  none: { borderStyle: 'none' },
+  solid: { borderStyle: 'solid' },
+});
+
+// Will apply `border-style: none` to the component
+const Component = () => <div css={borderStyleMap['none']} />;
+
+// Will apply `border-style: solid` to the component
+const Component = () => <div css={borderStyleMap['solid']} />;
+```
+
+## Dynamic declarations
+
+You can use cssMap to pick which CSS styles are used at runtime, depending on the value of a function prop:
+
+```jsx
+import { cssMap } from '@compiled/react';
+
+const borderStyleMap = cssMap({
+  none: { borderStyle: 'none' },
+  solid: { borderStyle: 'solid' },
+});
+
+const Component = ({ variant }) => <div css={borderStyleMap[variant]} />;
+```
+
+## Keys must be static strings
+
+Note that the keys of cssMap must be plain strings - object keys passed into `cssMap` function cannot be a function, a template string, etc.:
+
+```jsx
+import { cssMap } from '@compiled/react';
+import { functionCall } from './util';
+
+const variable = 'my';
+
+const borderStyleMap = cssMap({
+  none: {
+    // Valid
+    color: 'yellow',
+    '&::before': { color: 'yellow' },
+
+    // Invalid
+    [functionCall()]: { color: 'yellow' },
+    ['hello' + 'world']: { color: 'yellow' },
+    [`hello ${variable} world`]: { color: 'yellow' },
+  },
+  solid: { borderStyle: 'solid' },
+});
+```
+
+## Specifying selectors
+
+`cssMap` comes with several deliberate restrictions to help with performance and reliability. These are described below.
+
+### Pseudo-classes and pseudo-elements
+
+`cssMap` has a whitelist of pseudo-classes and pseudo-elements. This whitelist includes all pseudo selectors that don't take any parameters (`&:hover`, `&::before`, etc.), excluding those that rely on information outside of the current element (`&:first-of-type`, etc.). See the "Nested selectors and advanced selectors" section below if you need to use other selectors.
+
+With other Compiled APIs like `styled` and `css`, selectors like `:hover` and `&:hover` are both valid and have the same behaviour, applying the `:hover` selector on the parent element (or the current element, if there is no applicable parent element). To avoid mixing the two together, `cssMap` only allows the variant with the `&`:
+
+```jsx
+const borderStyleMap = cssMap({
+  none: {
+    borderStyle: 'none',
+
+    // This will cause a runtime error.
+    ':hover': { color: 'yellow' },
+    '::before': { content: 'hello!' },
+
+    // Use the following instead!
+    '&:hover': { color: 'yellow' },
+    '&::before': { content: 'hello!' },
+  },
+  solid: {
+    borderStyle: 'solid',
+  },
+});
+```
+
+### At-rules (`@media` queries, `@supports`, `@page`, etc.)
+
+With `cssMap`, you can specify media queries by splitting the `@media` part and the rest of the media query into two, just like with the [`vanilla-extract`](https://vanilla-extract.style/documentation/styling/#media-queries) library. `@media` becomes the key, and the value is an object that contains the remainder of your media query. This allows you to more easily find your media queries in one place.
+
+See below for an example:
+
+```jsx
+const myMap = cssMap({
+  danger: {
+    color: 'red',
+    // The generated CSS will be
+    // @media (min-width: 500px) { ... }
+    // @media (max-width: 800px) { ... }
+    '@media': {
+      '(min-width: 500px)': {
+        fontSize: '1.5em',
+      },
+      '(max-width: 800px)': {
+        fontSize: '1.8em',
+      },
+    },
+  },
+  success: {
+    color: 'green',
+    '@media': {
+      // You can specify different media queries
+      // for another variant if you want.
+      '(min-width: 400px)': {
+        fontSize: '1.3em',
+      },
+      '(min-width: 900px)': {
+        fontSize: '1.5em',
+      },
+    },
+    '&:hover': {
+      color: '#8f8',
+    },
+  },
+});
+```
+
+This applies to other at-rules as well (CSS rules that start with an `@` sign), including `@support`, `@container`, and so on.
+
+### Nested selectors and advanced selectors
+
+Nested selectors are discouraged -- instead of using a nested selector such as `div span`, we encourage you to apply styles directly on the components that use them. See [here](/writing-css#nested-rules) for an example.
+
+However, if you really need to use nested selectors, this can be done through the
+`selectors` object. The same syntax is used for advanced selectors, such as `&:not(...)` and `&:first-of-type`.
+
+```jsx
+const myMap = cssMap({
+  danger: {
+    color: 'red',
+    '@media': {
+      '(min-width: 100px)': {
+        fontSize: '1.5em',
+      },
+    },
+    '&:hover': {
+      color: 'pink',
+    },
+    selectors: {
+      '&:not(:active)': {
+        div: {
+          '&::before': {
+            content: 'hello',
+          },
+        },
+      },
+    },
+  },
+  success: {
+    color: 'green',
+    '@media': {
+      '(min-width: 100px)': {
+        fontSize: '1.3em',
+      },
+    },
+    '&:hover': {
+      color: '#8f8',
+    },
+    selectors: {
+      '&:not(:active)': {
+        backgroundColor: 'white',
+      },
+    },
+  },
+});
+```
+
+## Composing styles
+
+`cssMap` can be composed with other styles that are specified through the [css API](/api-css).
+
+```jsx
+import { css, cssMap } from '@compiled/react';
+
+const base = css({
+  borderColor: 'red',
+});
+
+const borderStyleMap = cssMap({
+  none: { borderStyle: 'none' },
+  solid: { borderStyle: 'solid' },
+});
+
+const Component = ({ variant }) => <div css={[base, borderStyleMap[variant]]} />;
+```
+
+Read [composition](/composition) for more information around composing styles together.

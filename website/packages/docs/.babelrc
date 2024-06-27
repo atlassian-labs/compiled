@@ -1,0 +1,7 @@
+{
+  "presets": ["@babel/preset-typescript"],
+  "plugins": [
+    "transform-inline-environment-variables",
+    ["@compiled/babel-plugin", { "importReact": false }]
+  ]
+}

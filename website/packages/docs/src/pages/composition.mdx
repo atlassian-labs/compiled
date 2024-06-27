@@ -1,0 +1,25 @@
+---
+section: 50-Guides
+---
+
+import { CompositionIdentifier, CompositionMultiple } from '../examples/composition';
+
+# Composition
+
+Composing styles together will enable you to reuse styles and have more flexibility.
+
+Traditionally when defining CSS it is not the `className` order that ensures style get applied,
+but the the [order of CSS rules](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Cascade_and_inheritance) in the DOM.
+This is a common cause for developer confusion.
+
+Compiled eliminates these cascade gotchas by ensuring the last CSS property defined always wins.
+
+<CompositionIdentifier />
+
+When composing styles together remember that the last defined style will win.
+In this example we can see that red overrides the pink color.
+
+<CompositionMultiple />
+
+Style composition works with all APIs found in Compiled.
+Read [more about atomic CSS](/atomic-css#overriding-through-composition) to understand how this works.

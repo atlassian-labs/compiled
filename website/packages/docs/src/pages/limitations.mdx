@@ -1,0 +1,193 @@
+---
+section: 50-Guides
+---
+
+# Limitations
+
+The architecture or design of Compiled prevents some things that are possible with runtime libraries. There are also some features we would like to add to Compiled in the future that we have not yet.
+
+## Runtime styles
+
+Styles can't be created at runtime which includes dynamic selectors as well.
+
+```jsx
+/** @jsxImportSource @compiled/react */
+import { css } from '@compiled/react';
+const selectedIndex = useState(0);
+
+const styles = css({
+  // Will not work!
+  [`:nth-child(${selectedIndex})`]: {
+    display: 'block',
+  },
+});
+
+<div css={styles} />;
+```
+
+If a dynamic value resolves to a static constant value however, it will work!
+
+## Overlapping styles, caused by media queries and other at-rules
+
+Media queries and other at-rules are sorted deterministically when stylesheet extraction is turned on. See [this page](/media-queries-and-other-at-rules) for more details of how the sorting works and what its limitations are.
+
+## Unsupported features
+
+Below is a non-exhaustive list of features that Compiled does not support. Some are features we would like to add to Compiled at some point in the future, while others are features that we don't plan to implement.
+
+### Ternary operators
+
+There is a bug where ternary operators in the `css` prop won't work:
+
+```tsx
+/** @jsxImportSource @compiled/react */
+import { css } from '@compiled/react';
+
+const styles = css({ color: 'blue' });
+const otherStyles = css({ color: 'red' });
+
+// build-time error
+const Component = <div css={isPrimary ? styles : otherStyles}>Hello</div>;
+```
+
+A workaround is to use the `&&` operator, which is supported:
+
+```tsx
+/** @jsxImportSource @compiled/react */
+import { css } from '@compiled/react';
+
+const styles = css({ color: 'blue' });
+const otherStyles = css({ color: 'red' });
+
+// build-time error
+const Component = <div css={[isPrimary && styles, !isPrimary && otherStyles]}>Hello</div>;
+```
+
+There is a [bug report on GitHub](https://github.com/atlassian-labs/compiled/issues/389) if you would like to stay updated.
+
+### Theming
+
+We've elected not to support [`styled-components`-style theming](https://styled-components.com/docs/advanced#theming) in Compiled, as the implementation complexity is high, and the same effect can be achieved with CSS variables.
+
+See [here](https://github.com/atlassian-labs/compiled/issues/18) for the original (no longer pursued) GitHub proposal.
+
+### Component selectors
+
+We currently have no plans to support [component selectors](https://styled-components.com/docs/advanced#referring-to-other-components) in Compiled. This is due to Compiled's [atomic CSS](/atomic-css) design, where every style used is its own CSS class name. Component selectors would negate the benefits of atomic CSS in reducing stylesheet size.
+
+This can feel limiting in some situations, for example if you need styles to apply to a child component depending on a parent component's state (which is an issue that [other libraries face as well](https://github.com/facebook/stylex/issues/373)). Below is an example of this:
+
+```jsx
+import React from 'react';
+import styled from 'styled-components';
+
+const List = styled.div`
+  font-size: 2rem;
+`;
+
+const Item = styled.div`
+  color: green;
+
+  /* If List is hovered, then its children Items will turn red. */
+  ${List}:hover & {
+    color: red;
+  }
+`;
+
+function App() {
+  return (
+    <List>
+      <Item>Item 1</Item>
+      <Item>Item 2</Item>
+      <Item>Item 3</Item>
+    </List>
+  );
+}
+```
+
+While we don't currently have a first-class API to handle this use case, there are two potential approaches you can use to write this in Compiled.
+
+The recommended and more idiomatic way is to use JavaScript to pass state between the parent and child elements. There are many ways to achieve this – below is just one approach:
+
+```jsx
+/** @jsxImportSource @compiled/react */
+const { css } from '@compiled/react';
+
+const listStyles = css({ fontSize: '2rem' });
+const itemStyles = css({ color: 'green', });
+const redStyles = css({ color: 'red' });
+
+const List = ({ children, hoverCallback }) => (
+  <div
+    css={listStyles}
+    onMouseEnter={() => hoverCallback(true)}
+    onMouseLeave={() => hoverCallback(false)}
+  >
+    {children}
+  </div>
+);
+
+const Item = ({ children, isHover }) => (
+  <div css={[itemStyles, isHover && redStyles]}>
+    {children}
+  </div>
+);
+
+function App() {
+  const [isHover, setIsHover] = React.useState(false);
+  return (
+    <List hoverCallback={setIsHover}>
+      <Item isHover={isHover}>Item 1</Item>
+      <Item isHover={isHover}>Item 2</Item>
+      <Item isHover={isHover}>Item 3</Item>
+    </List>
+  );
+}
+```
+
+If the first method does not work for your use case, or if it degrades runtime performance to an unacceptable level, a workaround is to use a `data` attribute as a selector in your CSS. This is faster at runtime, but it negates the benefits of atomic CSS by bloating your stylesheet size (as mentioned earlier). In addition, the styles are much harder to statically analyse for any tooling from Compiled or the [Atlassian Design System](https://atlassian.design/):
+
+```jsx
+/** @jsxImportSource @compiled/react */
+const { css } from '@compiled/react';
+
+const listStyles = css({ fontSize: '2rem' });
+const itemStyles = css({
+  color: 'green',
+  '[data-component-selector="list-84d2"]:hover &': {
+    color: 'red',
+  },
+});
+
+const List = ({ children }) => (
+  <div data-component-selector="list-84d2" css={listStyles}>
+    {children}
+  </div>
+);
+
+const Item = ({ children }) => (
+  <div css={itemStyles}>
+    {children}
+  </div>
+);
+
+function App() {
+  return (
+    <List>
+      <Item>Item 1</Item>
+      <Item>Item 2</Item>
+      <Item>Item 3</Item>
+    </List>
+  );
+}
+```
+
+### Other unsupported features
+
+- [Conditional CSS rules for ClassNames](https://github.com/atlassian-labs/compiled/issues/391)
+- [Global component](https://github.com/atlassian-labs/compiled/issues/62)
+
+## Found a bug?
+
+When migrating over you may find some code that doesn't work as expected —
+in that case please [raise an issue](https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=&template=bug_report.md&title=Bug:&labels=bug%20%F0%9F%90%9B) and we'll look into it. Bonus points if you put up a pull request as well!

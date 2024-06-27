@@ -1,0 +1,38 @@
+---
+section: 1-Getting started
+name: About Compiled
+order: 2
+---
+
+# About Compiled
+
+Compiled is a compile-time CSS-in-JS library for React.
+It parses styles written in JavaScript, transforms those styles, then outputs them as atomic CSS.
+
+Using Compiled enables any JavaScript developer to create style sheets using a language they’re already familiar with, and although this is its most obvious characteristic, its true benefits are in the **familiar CSS-in-JS library syntax** and the **robust CSS output**.
+
+## Familiar syntax
+
+Before CSS-in-JS tools existed, CSS content was stored in its own file. Developers had to remember to check and update their CSS files during code changes.
+CSS-in-JS libraries overcome this separation by reading JS-like CSS directly from your JS files, with the following advantages:
+
+- Styles are easier to find
+- Styles are more convenient to maintain
+- No need to worry about cascading nature of style sheets
+- Tidier codebase
+- Manipulate styles in more powerful ways, such as nested rules
+
+Because all CSS-in-JS libraries share a similar syntax, developers can easily transition between tools, and that includes Compiled.
+The CSS Prop API of Compiled is a subset of Emotion, so developers can benefit from familiar syntax as well as all of the advantages outlined above.
+
+## Robust CSS
+
+Compiled helps you build robust and performant CSS. It outputs style sheets at compile time, reducing overhead at run time. Its atomic nature reduces bloat through style re-use (see the [Atomic CSS page](/atomic-css) for a more detailed explanation, with an example included). In addition, Compiled helps teams achieve a higher, more consistent standard of style sheets.
+
+## What’s been happening, and what’s coming up
+
+We add new functionality to Compiled regularly, so keep an eye on the [release notes](https://github.com/atlassian-labs/compiled/releases).
+
+We will be focusing our efforts on the CSS Prop API, which is a subset of [Emotion](https://emotion.sh/docs/introduction).
+
+The older Styled API will eventually be retired; its details are included on this site to support existing implementations.

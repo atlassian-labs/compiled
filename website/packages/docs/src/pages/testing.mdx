@@ -1,0 +1,110 @@
+---
+section: 50-Guides
+---
+
+# Testing
+
+> **Runtime only functionality**<br />
+> These testing utils are only available when styles have not been [extracted to a stylesheet](/css-extraction-webpack).
+
+Use the [Jest matcher](https://jestjs.io/docs/en/using-matchers) when writing unit tests to assert style behavior over state changes.
+
+First install the matcher:
+
+```bash
+npm install @compiled/jest --save-dev
+```
+
+Then configure it in Jest:
+
+```jsx
+// test/setup.js
+const { toHaveCompiledCss } = require('@compiled/jest');
+
+expect.extend({
+  toHaveCompiledCss,
+});
+```
+
+```jsx
+// jest.config.js
+module.exports = {
+  setupFilesAfterEnv: ['./test/setup.js'],
+};
+```
+
+The matcher is now globally available for your tests.
+Here we are using the assertion with [`react-testing-library`](https://github.com/testing-library/react-testing-library).
+
+```jsx
+import { render } from '@testing-library/react';
+
+it('should have small font', () => {
+  const SmallText = styled.div({
+    fontSize: '12px',
+    fontWeight: 'bold',
+  });
+
+  const { getByText } = render(<SmallText>hello world</SmallText>);
+
+  expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
+});
+```
+
+## TypeScript
+
+Having types flow through generally requires an extra step.
+First create a `<root>/types/global.d.ts` file and then import the jest matcher to enable types.
+
+```tsx
+import '@compiled/jest';
+```
+
+Finally add your `/types/` folder as a [type root](https://www.typescriptlang.org/tsconfig#typeRoots).
+
+```json
+{
+  "compilerOptions": {
+    "typeRoots": ["./node_modules", "./types"]
+  }
+}
+```
+
+## Single match
+
+Assert a single style by passing a string.
+
+```jsx
+expect(element).toHaveCompiledCss('font-size', '12px');
+```
+
+## Multi match
+
+Assert multiple styles by passing an object.
+
+```jsx
+expect(element).toHaveCompiledCss({
+  fontSize: '12px',
+  fontWeight: 'bold',
+});
+```
+
+## Selector match
+
+Assert against any CSS selector and pseudo classes by passing `target` in an object as the third argument.
+
+```jsx
+expect(element).toHaveCompiledCss('background-color', 'blue', {
+  target: ':hover',
+});
+```
+
+## Media query match
+
+Assert against media queries by passing `media` in an object as the third argument.
+
+```jsx
+expect(element).toHaveCompiledCss('padding', '8rem', {
+  media: 'screen and (min-width: 1220px)',
+});
+```

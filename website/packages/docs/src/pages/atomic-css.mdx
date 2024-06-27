@@ -1,0 +1,173 @@
+---
+section: 50-Guides
+name: Atomic CSS
+order: 99
+---
+
+# Atomic CSS
+
+Compiled outputs your styles as atomic CSS.
+This page goes over what it is and what behaviors are enabled by using it.
+If you're just getting started don't feel the need to read this page,
+but if you're interested in understanding more under-the-hood keep on reading.
+
+## What is it?
+
+Atomic CSS is a method of reducing the total amount of defined rules by creating a single rule (and in turn, a unique class name) for every declaration – enabling large style re-use.
+
+Take a regular looking style rule:
+
+```css
+.button {
+  border: none;
+  font-size: 14px;
+  background-color: purple;
+  border-radius: 3px;
+}
+```
+
+```html
+<button className="button">Hello world</button>
+```
+
+If we apply the atomic CSS principle, every declaration is now its own rule:
+
+```css
+.b-none {
+  border: none;
+}
+
+.fs-14 {
+  font-size: 14px;
+}
+
+.bgc-purple {
+  background-color: purple;
+}
+
+.br-3 {
+  border-radius: 3px;
+}
+```
+
+```html
+<button className="b-none fs-14 bgc-purple br-3">Hello world</button>
+```
+
+(The actual class names that Compiled uses are different, but the principle is the same.)
+
+When other components define the same styles they use the same rules – creating no negative impact to the stylesheet size and less impact to the HTML size. As the size of your project increases, the stylesheet size grows less and less.
+
+## Overriding through composition
+
+Compiled [can't create CSS at runtime](/limitations) and because of this [composition of styles](/composition) may seem out of reach.
+
+Using atomic CSS we can encode all the data needed to ensure developers can compose styles together without the gotchas of [CSS cascade ordering](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Cascade_and_inheritance).
+
+Take these two atomic rules:
+
+```css
+.color-blue {
+  color: blue;
+}
+
+.color-red {
+  color: red;
+}
+```
+
+There are two pieces of data that can be used in the class name.
+
+1. The atomic group - in this case `color`
+1. The atomic value - in this case `blue` and `red`
+
+> **Group structure** <br /> Atomic groups also include selectors and at rules,
+> the structure of an actual atomic group in Compiled is `hash({atrules}{selectors}{propertyname})`.
+
+Using this data and a small utility called `ax` we ensure that only one atomic group can exist in an elements class name,
+
+```jsx
+<div className={ax(['color-blue', 'color-red'])} />
+// <div class="color-red" />
+```
+
+The last atomic group defined wins.
+
+## Automatic pseudo class ordering
+
+When defining [pseudo classes](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes) atomic CSS imposes some restrictions.
+Remember,
+only one CSS rule per declaration can exist!
+
+Take these two examples which order `hover` and `active` pseudo classes differently,
+but they share the same atomic rule,
+what happens?
+
+```jsx
+<div
+  css={css`
+    :hover {
+      color: blue;
+    }
+    :active {
+      color: red;
+    }
+  `}
+/>
+```
+
+```jsx
+<div
+  css={css`
+    :active {
+      color: red;
+    }
+    :hover {
+      color: blue;
+    }
+  `}
+/>
+```
+
+The simple answer is it depends which component renders first!
+To ensure we have a stable experience automatic ordering of common pseudo classes is done.
+
+- **L**ink
+- **V**isited
+- **F**ocus within
+- **F**ocus
+- **F**ocus visible
+- **H**over
+- **A**ctive
+
+The last defined pseudo wins.
+For the list above,
+active state would take precedence over hover state.
+This ordering ensures a stable,
+consistent experience.
+
+## Trade-offs
+
+### Larger class names
+
+Styles delivered as atomic CSS increases HTML markup by the addition of classes to elements.
+Every CSS declaration will add a class to the element,
+scaling linearly,
+with compression techniques like `gzip` working very well at keeping your bundle size small.
+
+We have [optimization ideas](https://github.com/atlassian-labs/compiled/issues/335) to investigate for compressing class names.
+
+### Selector specificity
+
+Styles where several CSS blocks can be applied at once can be problematic (i.e. when using pseudo-selectors and at-rules). This is because styles delivered with atomic CSS share the same [specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity),
+so it is up to their order in the stylesheet to determine what takes precedence over the other. However, when importing CSS from Compiled components across several files or packages, the order in which CSS classes appear in the stylesheet may be non-deterministic.
+
+Compiled sorts common [pseudo-class ordering](#ordered-pseudos) for you, as well as [all at-rules](/limitations#overlapping-styles) (including media queries) in _most_ cases. However, other pseudo-selectors and situations may result in unpredictable behaviour.
+
+In cases where this is a problem, we recommend re-writing your styles so that only a single declaration can take effect at once. If this is not possible, you may resort to the [nesting selector](/writing-css#nesting-selector), however we do not recommend this.
+
+## Other resources
+
+- [Atomic CSS-in-JS](https://sebastienlorber.com/atomic-css-in-js)
+- [The Shorthand-Longhand Problem in Atomic CSS](https://weser.io/blog/the-shorthand-longhand-problem-in-atomic-css)
+- [Why I Love Tailwind](https://mxstbr.com/thoughts/tailwind/)

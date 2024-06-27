@@ -1,0 +1,28 @@
+---
+section: 5-API
+order: 3
+name: Class Names
+---
+
+import { ClassNamesObj, ClassNamesDynamic, ClassNamesComposition } from '../examples/class-names';
+
+# Class Names
+
+Use a component where styles are not necessarily used on a JSX element.
+
+<ClassNamesObj />
+
+## Dynamic declarations
+
+Change a [CSS declaration](https://developer.mozilla.org/en-US/docs/Learn/CSS/First_steps/How_CSS_is_structured#Properties_and_values) at runtime,
+powered by [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
+Make sure to set the `style` prop.
+
+<ClassNamesDynamic />
+
+## Composing styles
+
+Composing styles through props allows your consumers to add and override styles.
+Make sure to pass through `className` and `style`.
+
+<ClassNamesComposition />

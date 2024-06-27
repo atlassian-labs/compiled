@@ -1,0 +1,42 @@
+{
+  "extends": ["group:monorepos", "group:recommended", "group:definitelyTyped"],
+  "dependencyDashboard": true,
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "managers": ["npm"],
+      "updateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "managers": ["nvm"],
+      "automerge": true
+    },
+    {
+      "updateTypes": ["lockFileMaintenance"],
+      "automerge": true
+    },
+    {
+      "extends": "group:postcss",
+      "packagePatterns": ["^postcss-", "^autoprefixer"],
+      "groupName": "postcss packages"
+    },
+    {
+      "packagePatterns": ["^@compiled/"],
+      "groupName": "compiled css-in-js packages"
+    },
+    {
+      "depTypeList": ["peerDependencies"],
+      "rangeStrategy": "widen"
+    },
+    {
+      "extends": "packages:eslint",
+      "groupName": "eslint packages"
+    }
+  ],
+  "postUpdateOptions": ["yarnDedupeHighest"],
+  "rangeStrategy": "bump",
+  "semanticCommits": true
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@compiled/website",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "author": "Michael Dougall",
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "scripts": {
+    "build": "NODE_ENV=production yarn build:examples && NODE_ENV=production yarn build:landing && NODE_ENV=production yarn build:docs",
+    "build:docs": "cd packages/docs && yarn build",
+    "build:examples": "cd packages/examples && yarn build",
+    "build:landing": "cd packages/landing && yarn build",
+    "clean": "rm -rf dist && workspaces-run -- rm -rf dist && workspaces-run -- rm -rf .cache",
+    "clean:npm": "yarn clean:pkg:npm && rm -rf node_modules",
+    "clean:pkg:npm": "workspaces-run -- rm -rf node_modules",
+    "postinstall": "npx yarn-deduplicate",
+    "start:docs": "cd packages/docs && yarn start",
+    "start:landing": "cd packages/landing && yarn start"
+  },
+  "dependencies": {
+    "@babel/preset-env": "^7.24.5",
+    "@babel/preset-react": "^7.24.1",
+    "@babel/preset-typescript": "^7.24.1",
+    "prettier": "^3.2.5",
+    "workspaces-run": "^1.0.2"
+  }
+}

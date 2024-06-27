@@ -1,0 +1,183 @@
+---
+order: 1
+section: 99-Packages
+name: react
+---
+
+# @compiled/react
+
+import { Lozenge, HorizontalStack } from '@compiled/website-ui';
+
+<HorizontalStack gap={0.5} spacing={2}>
+  <Lozenge>React 16</Lozenge>
+  <Lozenge>React 17</Lozenge>
+</HorizontalStack>
+
+The primary entrypoint package for Compiled that provides familiar APIs to style your app.
+
+```bash
+npm install @compiled/react
+```
+
+## CSS prop
+
+Use [CSS prop](/api-css-prop) to style a JSX element.
+
+```jsx
+/** @jsxImportSource @compiled/react */
+import { css } from '@compiled/react';
+
+<div
+  css={{
+    fontSize: 12,
+    ...(isPrimary && {
+      color: 'blue',
+    }),
+  }}
+/>;
+
+<div
+  css={css`
+    font-size: 12px;
+  `}
+/>;
+
+<div
+  css={[
+    css`
+      font-size: 12px;
+    `,
+    isPrimary && { color: 'blue' },
+  ]}
+/>;
+```
+
+## Styled
+
+Use [styled](/api-styled) to create a component that styles a JSX element which comes with built-in behavior such as `ref` and `as` prop support.
+
+```jsx
+import { css, styled } from '@compiled/react';
+
+styled.div`
+  font-size: 12px;
+  color: ${(props) => props.color};
+`;
+
+styled.div({
+  fontSize: 12,
+  color: (props) => props.color,
+});
+
+styled.div([
+  css`
+    font-size: 12px;
+  `,
+  { color: (props) => props.color },
+]);
+
+styled.div(
+  css`
+    font-size: 12px;
+  `,
+  { color: (props) => props.color }
+);
+```
+
+## Class names
+
+Use [ClassNames](/api-class-names) for when styles are not necessarily used on a JSX element.
+
+```jsx
+import { css, ClassNames } from '@compiled/react';
+
+<ClassNames>
+  {({ css, style }) =>
+    children({
+      style,
+      className: css({ fontSize: 12 }),
+    })
+  }
+</ClassNames>;
+
+<ClassNames>
+  {({ css, style }) =>
+    children({
+      style,
+      className: css`
+        font-size: 12px;
+      `,
+    })
+  }
+</ClassNames>;
+
+<ClassNames>
+  {({ css, style }) =>
+    children({
+      style,
+      className: css([
+        css`
+          font-size: 12px;
+        `,
+        { color: 'blue' },
+      ]),
+    })
+  }
+</ClassNames>;
+```
+
+## CSS
+
+Use [`css`](/api-css) to define styles that can be statically typed and useable with other Compiled APIs.
+
+```jsx
+import { css } from '@compiled/react';
+
+const blackText = css({
+  color: 'black',
+});
+
+const blackText = css`
+  color: black;
+`;
+```
+
+## CSS Map
+
+Use [`css`](/api-cssmap) to define a map consisting of named CSS rules that can be statically typed and useable with other Compiled APIs.
+
+```jsx
+import { cssMap } from '@compiled/react';
+
+const borderStyleMap = cssMap({
+  none: { borderStyle: 'none' },
+  solid: { borderStyle: 'solid' },
+});
+```
+
+## Keyframes
+
+Use [`keyframes`](/api-keyframes) to define keyframes to be used in a [CSS animation](https://developer.mozilla.org/en-US/docs/Web/CSS/animation).
+
+```jsx
+import { keyframes } from '@compiled/react';
+
+const fadeOut = keyframes({
+  from: {
+    opacity: 1,
+  },
+  to: {
+    opacity: 0,
+  },
+});
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+`;
+```

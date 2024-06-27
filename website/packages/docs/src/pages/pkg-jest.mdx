@@ -1,0 +1,51 @@
+---
+order: 99
+section: 99-Packages
+name: jest
+---
+
+# @compiled/jest
+
+Jest testing utilities.
+For help with testing read the [testing guide](/testing).
+
+```bash
+npm install @compiled/jest --save-dev
+```
+
+## Jest matcher
+
+Assert styles in your unit tests.
+
+```jsx
+import { toHaveCompiledCss } from '@compiled/jest';
+
+expect.extend({
+  toHaveCompiledCss,
+});
+```
+
+```tsx
+expect(element).toHaveCompiledCss(property-name, value, ?options);
+expect(element).toHaveCompiledCss({ [propertyName]: value }, ?options);
+```
+
+### Media queries
+
+Narrows the assertion down to any valid media query.
+
+```tsx
+expect(element).toHaveCompiledCss('color', 'red', {
+  media: '(min-width: 300px)',
+});
+```
+
+### Pseudo selectors
+
+Narrows the assertion down to any valid pseudo selector.
+
+```tsx
+expect(element).toHaveCompiledCss('color', 'red', {
+  target: ':hover',
+});
+```
