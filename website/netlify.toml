@@ -1,8 +1,7 @@
 [build]
-  base = "/"
-  publish = "dist/"
+  base = "/website/"
+  publish = "/website/dist/"
   command = "yarn build"
-  environment = { YARN_VERSION = "1.9.4" }
 
 [[redirects]]
   from = "/docs/*"
