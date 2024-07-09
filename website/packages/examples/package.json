@@ -7,8 +7,8 @@
   "source": "./src/index.tsx",
   "scripts": {
     "build": "yarn clean && yarn build:src && yarn build:dist && prettier ./dist --write",
-    "build:dist": "babel src --extensions .tsx --out-dir dist/js",
-    "build:src": "babel src --retain-lines --no-babelrc --presets=@babel/preset-typescript --out-dir dist/jsx --extensions .tsx",
+    "build:dist": "babel src --extensions .ts,.tsx --out-dir dist/js",
+    "build:src": "babel src --retain-lines --no-babelrc --presets=@babel/preset-typescript --out-dir dist/jsx --extensions .ts,.tsx",
     "clean": "rm -rf dist"
   },
   "dependencies": {
