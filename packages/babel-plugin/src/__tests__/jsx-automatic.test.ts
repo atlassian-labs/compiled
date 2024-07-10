@@ -12,8 +12,7 @@ describe('jsx automatic', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      import { jsxs as _jsxs } from "react/jsx-runtime";
-      import { jsx as _jsx } from "react/jsx-runtime";
+      import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
       const _ = "._syaz13q2{color:blue}";
       _jsxs(CC, {
         children: [
@@ -40,8 +39,7 @@ describe('jsx automatic', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      import { jsx as _jsx } from "react/jsx-runtime";
-      import { jsxs as _jsxs } from "react/jsx-runtime";
+      import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
       const _ = "._syaz13q2{color:blue}";
       _jsxs(CC, {
         children: [
@@ -69,8 +67,7 @@ describe('jsx automatic', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      import { jsx as _jsx } from "react/jsx-runtime";
-      import { jsxs as _jsxs } from "react/jsx-runtime";
+      import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
       const _ = "._syaz13q2{color:blue}";
       forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
         if (__cmplp.innerRef) {
