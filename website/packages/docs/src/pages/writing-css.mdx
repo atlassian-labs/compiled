@@ -6,125 +6,86 @@ order: 4
 
 # Writing CSS
 
-Write CSS using object styles and objects with any of the APIs available with Compiled.
+Write CSS using objects and objects with the `css` and `cssMap` APIs in Compiled.
 
-```jsx
-import { styled } from '@compiled/react';
-
-const Button = styled.button({
-  fontSize: '10px',
-  fontWeight: '500',
-  borderRadius: '3px',
-  border: '1px solid blue',
-});
-```
-
-## Features
-
-Compiled comes with extra features above standard [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS).
-
-### Nested rules
-
-Nest CSS rules within each other.
-
-```jsx
+```tsx
+import type { ReactNode } from 'react';
 import { css } from '@compiled/react';
 
-<div
-  css={css({
-    margin: '0 auto',
-    div: {
-      color: 'red',
-      fontSize: 12,
-      a: {
-        textDecoration: 'none',
-      },
-    },
-  })}>
-  <div>
-    <a />
-  </div>
-</div>;
+type CardProps = {
+  children: ReactNode;
+};
+
+const cardStyles = css({
+  backgroundColor: 'blue',
+  boxShadow: token('elevation.shadow.raised'),
+  padding: token('space.100'),
+});
+
+const Card = ({ children }: CardProps) => <div css={cardStyles}>{children}</div>;
 ```
 
-Use with caution.
-One of the promises of [atomic CSS](/atomic-css) is reducing the amount of styles,
-however more selectors are created when nested.
+Atlassian employees should use [Atlassian Design System tokens](https://atlassian.design/tokens/design-tokens) instead of plain string values.
 
-To create less CSS rules assign styles directly to the elements instead.
+Depending on your configuration, you might need `/** @jsxImportSource @compiled/react */` or `/** @jsx jsx */` at the start of your file -- see [Installation](/installation) for more details.
+
+## Writing pseudo-selectors
+
+The `&` character references the parent selector(s). If there is no parent selector, it references the element that the `css`/`cssMap`/`styled` function call is applied on.
+
+We can use this to define pseudo-selectors and pseudo-elements. In the example below, the two selectors (textarea and input) both alter the color on the `:hover` pseudo selector.
 
 ```jsx
-<div css={css({ margin: '0 auto' })}>
-  <div css={css({ color: 'red', fontSize: 12 })}>
-    <a css={css({ textDecoration: 'none' })} />
-  </div>
-</div>
+const styles = css({
+  color: '#a7a7a7',
+  '&:hover': {
+    color: '#000',
+  },
+});
+
+const CustomBox = () => <div css={styles}>Custom box</div>;
 ```
 
-### Nesting selector
+is processed into:
 
-The `&` character references the parent selector(s).
-In the example below the two selectors (textarea and input) both alter the color on the `:hover` pseudo selector.
-
-```jsx
-<div
-  css={css({
-    'textarea, input': {
-      color: '#a7a7a7',
-      '&:hover': {
-        color: '#000',
-      },
-    },
-  })}
-/>
+```tsx
+const CustomBox = () => <div className="_syazswos _30l3r3uz">Custom box</div>;
 ```
-
-Becomes:
 
 ```css
-textarea,
-input {
+._syazswos {
   color: #a7a7a7;
 }
-textarea:hover,
-input:hover {
+._30l3r3uz:hover {
   color: #000;
 }
 ```
 
-Both `textarea` and `input` have a hover selector.
+We recommend only using this on the current element, to minimise superfluous styles being generated in the stylesheet. For example, `&:hover` and `&::after` are okay, but `&:hover div` or `div &:hover` are not.
 
-### Dangling pseudos
+## Writing more complex components
 
-These rules are transformed to receive a nesting selector.
+See the [UI Styling Standard migration guide](https://atlassian.design/components/eslint-plugin-ui-styling-standard/migration-guide) for a detailed guide on how to write your styles in Compiled.
 
-```jsx
-<div
-  css={css({
-    ':before': {
-      content: 'Hello',
-    },
-  })}
-/>
+## Vendor prefixing
+
+[Auto-prefixing](https://github.com/postcss/autoprefixer) CSS declarations enables us to ignore slight browser differences and instead concentrate on the experiences we're developing.
+
+If we had this style:
+
+```tsx
+const styles = css({
+  userSelect: 'none',
+});
 ```
 
-Becomes:
-
-```css
-&:before {
-  content: 'Hello';
-}
-```
-
-### Vendor prefixing
-
-[Autoprefixing](https://github.com/postcss/autoprefixer) CSS declarations enables us to ignore slight browser differences and instead concentrate on the experiences we're developing.
+Compiled will first convert it into this CSS:
 
 ```css
 user-select: none;
 ```
 
-Becomes:
+It will then add auto-prefixes, as necessary:
 
 ```css
 -webkit-user-select: none;

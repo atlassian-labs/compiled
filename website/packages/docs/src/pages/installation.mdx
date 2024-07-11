@@ -14,7 +14,9 @@ npm install @compiled/react
 
 Then configure your bundler of choice or use [Babel](https://babeljs.io) directly.
 
-## Webpack
+## Installation methods
+
+### Webpack
 
 Install the [Webpack](https://webpack.js.org/) loader.
 
@@ -45,12 +47,12 @@ module.exports = {
 };
 ```
 
-If you're shipping an app you'll also be interested in CSS extraction,
-read the [Webpack CSS extraction](/css-extraction-webpack) for a step-by-step guide.
+If you're shipping an app, you'll also be interested in CSS extraction.
+Read the [Webpack CSS extraction](/css-extraction-webpack) for a step-by-step guide.
 
 See the [loader package docs](/pkg-webpack-loader) for configuration options.
 
-## Parcel
+### Parcel
 
 Install the [Parcel v2](https://v2.parceljs.org) configuration.
 
@@ -68,7 +70,7 @@ Add the compiled preset to your [Parcel config](https://parceljs.org/features/pl
 
 See the [configuration package docs](/pkg-parcel-config) for configuration options.
 
-## Babel
+### Babel
 
 > **Local development** <br />
 > When developing locally its advised to use a bundler instead of Babel directly for improved developer experience.
@@ -92,3 +94,111 @@ Make sure this is defined after other plugins so it runs first.
 ```
 
 See the [plugin package docs](/pkg-babel-plugin) for configuration options.
+
+## Ensuring Babel and TypeScript work with Compiled
+
+To [use the `css` prop](/writing-css), you may need to update your TypeScript and Babel configuration so that those libraries are aware of Compiled.
+
+There are two supported options you can take to set this up: automatic JSX pragma, or the classic JSX pragma. We recommend the automatic JSX pragma if you're not sure.
+
+### Automatic JSX pragma
+
+This requires TypeScript 4.1 or higher. In your [TypeScript configuration](https://www.typescriptlang.org/docs/handbook/jsx.html#configuring-jsx):
+
+```json
+// tsconfig.json
+
+{
+  "compilerOptions": {
+    // ...
+    "jsx": "react-jsx",
+    "jsxImportSource": "@compiled/react"
+  }
+}
+```
+
+In your [Babel configuration](https://babeljs.io/docs/babel-plugin-transform-react-jsx):
+
+```json
+// babel.config.json
+
+{
+  "presets": [
+    // ...
+  ],
+  "plugins": [
+    // ...
+    [
+      // You can also set these options on @babel/preset-react
+      // directly.
+      "@babel/plugin-transform-react-jsx",
+      {
+        "runtime": "automatic",
+        "importSource": "@compiled/react"
+      }
+    ]
+  ]
+}
+```
+
+If you don't want to set this globally, and instead want to set this on a per-file basis, you can use `/** @jsxImportSource @compiled/react */`:
+
+```tsx
+/** @jsxImportSource @compiled/react */
+import { css } from '@compiled/react';
+
+const someStyles = css({ /* ... */ });
+const Button = <button css={someStyles}>Button text</Button>;
+```
+
+### Classic JSX pragma
+
+In your [TypeScript configuration](https://www.typescriptlang.org/docs/handbook/jsx.html#configuring-jsx):
+
+```json
+// tsconfig.json
+
+{
+  "compilerOptions": {
+    // ...
+    "jsx": "react",
+    "jsxFactory": "jsx",
+    "jsxFragmentFactory": "React.Fragment"
+  }
+}
+```
+
+In your [Babel configuration](https://babeljs.io/docs/babel-plugin-transform-react-jsx):
+
+```json
+// babel.config.json
+
+{
+  "presets": [
+    // ...
+  ],
+  "plugins": [
+    // ...
+    [
+      // You can also set these options on @babel/preset-react
+      // directly.
+      "@babel/plugin-transform-react-jsx",
+      {
+        "runtime": "classic",
+        "pragma": "jsx",
+        "pragmaFrag": "React.Fragment"
+      }
+    ]
+  ]
+}
+```
+
+If you don't want to set this globally, and instead want to set this on a per-file basis, you can use `/** @jsx jsx */`, as well as `/** @jsxFrag React.Fragment */` if needed:
+
+```tsx
+/** @jsx jsx */
+import { css, jsx } from '@compiled/react';
+
+const someStyles = css({ /* ... */ });
+const Button = <button css={someStyles}>Button text</Button>;
+```
