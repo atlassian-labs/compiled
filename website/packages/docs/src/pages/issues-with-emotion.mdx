@@ -1,0 +1,49 @@
+---
+section: 3-Migration
+name: Known issues with Emotion
+---
+
+# Known issues with Emotion
+
+While Compiled has a very similar API to Emotion, there are some known issues specific to Emotion that you may need to address.
+
+For Compiled limitations not specific to migrating from Emotion, see our [limitations](/limitations) page.
+
+## `@emotion/core` types are not compatible with Compiled
+
+Emotion v10 (`@emotion/core`) extends the global interfaces for the `css` prop, causing the `css` prop to only work with Emotion, and not `styled-components` or Compiled. As a result, you may run into `Type 'CSSProps<unknown>' is not assignable to type 'InterpolationWithTheme<any>'.` errors.
+
+To fix this, we recommend:
+
+- Upgrading to [Emotion v11](https://emotion.sh/docs/emotion-11) (`@emotion/react`) before migrating to Compiled. This involves removing `@emotion/core` (v10 API) and replacing it with `@emotion/react` (v11 API). Emotion v11 uses types that do not conflict with Compiled, as long as Emotion and Compiled components are not defined in the same file.
+- If you cannot remove `@emotion/core` from your repository, you may be able to apply a patch similiar to the one below. You may need to change the patch manually for it to work for your specific version.
+
+```diff
+diff --git a/node_modules/@emotion/core/types/index.d.ts b/node_modules/@emotion/core/types/index.d.ts
+index 123456..abcdef 100644
+--- a/node_modules/@emotion/core/types/index.d.ts
++++ b/node_modules/@emotion/core/types/index.d.ts
+@@ -78,22 +78,3 @@ export interface ClassNamesProps<Theme> {
+ export function ClassNames<Theme = any>(
+   props: ClassNamesProps<Theme>
+ ): ReactElement
+-
+-declare module 'react' {
+-  interface DOMAttributes<T> {
+-    css?: InterpolationWithTheme<any>
+-  }
+-}
+-
+-declare global {
+-  namespace JSX {
+-    /**
+-     * Do we need to modify `LibraryManagedAttributes` too,
+-     * to make `className` props optional when `css` props is specified?
+-     */
+-
+-    interface IntrinsicAttributes {
+-      css?: InterpolationWithTheme<any>
+-    }
+-  }
+-}
+```
