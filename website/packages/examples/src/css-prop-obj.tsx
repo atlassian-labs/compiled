@@ -6,13 +6,12 @@ type EmphasisTextProps = {
   children: ReactNode;
 };
 
-export const EmphasisText = (props: EmphasisTextProps): JSX.Element => (
-  <span
-    css={css({
-      color: '#00b8d9',
-      textTransform: 'uppercase',
-      fontWeight: 700,
-    })}>
-    {props.children}
-  </span>
+const styles = css({
+  color: '#00b8d9',
+  textTransform: 'uppercase',
+  fontWeight: 700,
+});
+
+export const EmphasisText = ({ children }: EmphasisTextProps): JSX.Element => (
+  <span css={styles}>{children}</span>
 );

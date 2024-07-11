@@ -1,12 +1,34 @@
 ---
 section: 5-API
 name: Deprecated features
-order: 4
+order: 10
 ---
+
+import {
+  CssPropObj,
+  CssPropString,
+  CssPropCompositionCorrect,
+  CssPropCompositionIncorrect,
+  CssPropCompositionNoStyle,
+} from '../examples/css-prop';
 
 # Deprecated features
 
 There are features that Compiled supports, but we now discourage for performance reasons.
+
+## Template literals
+
+Compiled supports writing styles as a template literal on our `styled` and `css` APIs.
+
+We now recommend using style objects instead of template literals, due to better type safety and syntax validation when using object styles.
+
+Before:
+
+<CssPropString />
+
+After:
+
+<CssPropObj />
 
 ## Nested rules
 
@@ -50,3 +72,11 @@ const linkStyles = css({ textDecoration: 'none' });
   </div>
 </div>;
 ```
+
+## Passing `css` prop to JSX elements with `css` prop
+
+We support passing a `css` prop to components that you create with Compiled. However, this is not recommended as it can be tricky to statically determine which styles are applied at runtime.
+
+<CssPropCompositionCorrect />
+
+Note that both `className` and `style` props need to be explicitly given for this to work. (Spread props such as `<div {...props} css={{ ... }} />` may not be enough.) If not, the styles will not be applied correctly.

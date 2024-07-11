@@ -7,25 +7,24 @@ type LozengeProps = {
   primary: boolean;
 };
 
-export const Lozenge = (props: LozengeProps): JSX.Element => (
-  <span
-    css={[
-      props.primary &&
-        css({
-          border: '3px solid pink',
-          color: 'pink',
-        }),
-      !props.primary &&
-        css({
-          border: '3px solid blue',
-          color: 'blue',
-        }),
-      css({
-        padding: '4px 8px',
-        fontWeight: 600,
-        borderRadius: 3,
-      }),
-    ]}>
-    {props.children}
-  </span>
+const primaryStyles = css({
+  border: '3px solid pink',
+  color: 'pink',
+});
+
+const notPrimaryStyles = css({
+  border: '3px solid blue',
+  color: 'blue',
+});
+
+const moreStyles = css({
+  // any styles here will override what is in
+  // primaryStyles and notPrimaryStyles
+  padding: '4px 8px',
+  fontWeight: 600,
+  borderRadius: 3,
+});
+
+export const Lozenge = ({ children, primary }: LozengeProps): JSX.Element => (
+  <span css={[primary && primaryStyles, !primary && notPrimaryStyles, moreStyles]}>{children}</span>
 );
