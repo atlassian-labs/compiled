@@ -1,75 +1,41 @@
 ---
 section: 5-API
 order: 1
-name: CSS Prop
+name: css prop
 ---
 
-import {
-  CssPropObj,
-  CssPropString,
-  CssPropDynamic,
-  CssPropCompositionCorrect,
-  CssPropCompositionIncorrect,
-  CssPropCompositionNoStyle,
-  CssPropConditionalRules,
-} from '../examples/css-prop';
+import { CssPropConditionalRules, CssPropDynamic, CssPropObj } from '../examples/css-prop';
 
-# CSS Prop
+# css prop
 
-Style a JSX element,
-enabled when a JSX pragma is defined and the JSX element also takes a `className` prop.
+Using a `css` function call on a `css` prop is the preferred way to apply styles to a JSX element. This is enabled when a JSX pragma is defined, and the JSX element takes a `className` prop.
+
+We use a syntax similar to Emotion's `css` prop, but we wrap the style object in a `css` function call. Using the `css` function call allows us to apply type checking, and it makes it clear that the styles should be applied by Compiled (and not a different CSS-in-JS library).
+
+> **Only use `css` with Compiled APIs**<br />
+> The return value of the `css` function call at runtime is `null` and can only be passed to the `css` prop, or used with other Compiled APIs.
 
 <CssPropObj />
 
-> **Don't worry about the pragma**<br />
-> For a streamlined developer experience install the `jsx-pragma` rule from the [ESLint plugin](/pkg-eslint-plugin) and never forget it again.
+## Using composition to combine styles
 
-## Template literal rules
-
-Write your styles as a template literal.
-Use the [`css`](/api-css) import for better syntax highlighting.
-
-<CssPropString />
-
-Although template literal is supported, we recommend using object style instead of template literal.
+Read [composition](/composition) for more information around composing styles together.
 
 ## Conditional rules
 
-Conditionally apply [CSS rules](https://developer.mozilla.org/en-US/docs/Learn/CSS/First_steps/How_CSS_is_structured#Selectors).
+Conditionally apply [CSS rules](https://developer.mozilla.org/en-US/docs/Learn/CSS/First_steps/How_CSS_is_structured#Selectors) by passing an array to the `css` prop. The last styles applied in the array wins.
 
 <CssPropConditionalRules />
 
-## Dynamic declarations
+## Dynamic styling and props
 
-Change a [CSS declaration](https://developer.mozilla.org/en-US/docs/Learn/CSS/First_steps/How_CSS_is_structured#Properties_and_values) at runtime,
-powered by [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
+We no longer recommend passing dynamic styling or props to Compiled, as they can be tricky for other Atlassian tooling to statically analyse.
+
+Instead, we recommend you:
+
+- First, determine whether you truly need the styles to be dynamic. Many cases of dynamic styling can be rewritten as conditional rules or [`cssMap` usages](/api-cssmap).
+- If you absolutely need to use dynamic styling, you can pass dynamic styling to the `style` prop. Check out the [UI Styling Standard](https://atlassian.design/components/eslint-plugin-ui-styling-standard/migration-guide) for more details.
+
+In the past, this was how to write dynamic styles with Compiled:
 
 <CssPropDynamic />
-
-## Composition gotchas
-
-Compiled will try to generate the smallest amount of code possible.
-When composing styles ensure to explicitly define both a `className` and `style` prop.
-
-Here the `className` and `style` props are both defined so styling works correctly.
-
-<CssPropCompositionCorrect />
-
-The next few example show what happens if you don't do this.
-
-### Spread pops
-
-The overflow `props` are spread onto the element so the composed styles are not applied.
-
-Statically defining them fixes this.
-
-<CssPropCompositionIncorrect />
-
-### Missing style
-
-The `style` prop is missing so the CSS variables used to power dynamic declarations aren't set.
-In this case instead it receives the `body` color value instead of pink.
-
-Statically defining the style prop fixes this.
-
-<CssPropCompositionNoStyle />

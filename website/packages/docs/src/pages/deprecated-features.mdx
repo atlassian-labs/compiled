@@ -1,0 +1,82 @@
+---
+section: 6-Deprecated API
+name: Other deprecated features
+order: 12
+---
+
+import {
+  CssPropCompositionCorrect,
+  CssPropCompositionIncorrect,
+  CssPropCompositionNoStyle,
+  CssPropObj,
+  CssPropString,
+} from '../examples/css-prop';
+
+# Other deprecated features
+
+There are features that Compiled supports, but we now discourage for performance reasons.
+
+## Template literals
+
+Compiled supports writing styles as a template literal on our `styled` and `css` APIs.
+
+We now recommend using style objects instead of template literals, due to better type safety and syntax validation when using object styles.
+
+Before:
+
+<CssPropString />
+
+After:
+
+<CssPropObj />
+
+## Nested rules
+
+Like many other CSS-in-JS libraries, Compiled supports nested rules.
+
+**Use with caution.** Nested selectors will create bloat in the stylesheet through bespoke selectors that are never de-duplicated with other usages elsewhere in the codebase, defeating the purpose and benefits of [atomic CSS](/atomic-css).
+
+```jsx
+import { css } from '@compiled/react';
+
+const styles = css({
+  margin: '0 auto',
+  div: {
+    color: 'red',
+    fontSize: '12px',
+    a: {
+      textDecoration: 'none',
+    },
+  },
+});
+
+<div css={styles}>
+  <div>
+    <a>My link</a>
+  </div>
+</div>;
+```
+
+Instead, we recommend assigning styles directly to the elements to which they apply.
+
+```jsx
+import { css } from '@compiled/react';
+
+const outerStyles = css({ margin: '0 auto' });
+const innerStyles = css({ color: 'red', fontSize: '12px' });
+const linkStyles = css({ textDecoration: 'none' });
+
+<div css={outerStyles}>
+  <div css={innerStyles}>
+    <a css={linkStyles}>My link</a>
+  </div>
+</div>;
+```
+
+## Passing `css` prop to JSX elements with `css` prop
+
+We support passing a `css` prop to components that you create with Compiled. However, this is not recommended as it can be tricky to statically determine which styles are applied at runtime.
+
+<CssPropCompositionCorrect />
+
+Note that both `className` and `style` props need to be explicitly given for this to work. (Spread props such as `<div {...props} css={{ ... }} />` may not be enough.) If not, the styles will not be applied correctly.

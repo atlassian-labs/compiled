@@ -1,7 +1,7 @@
 ---
 section: 5-API
-order: 99
-name: Keyframes
+order: 10
+name: keyframes
 ---
 
 # Keyframes
@@ -21,15 +21,9 @@ const fadeOut = keyframes({
   },
 });
 
-const fadeOut = keyframes`
-  from {
-    opacity: 1;
-  }
+const animationStyles = css({
+  animation: `${fadeOut} 2s`,
+});
 
-  to {
-    opacity: 0;
-  }
-`;
-
-<div css={{ animation: `${fadeOut} 2s` }} />;
+const FadeOut = <div css={animationStyles}>I am fading out!</div>;
 ```

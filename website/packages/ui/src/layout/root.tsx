@@ -1,4 +1,4 @@
-/** @jsxAutomaticRuntime @compiled/react */
+/** @jsxImportSource @compiled/react */
 import { styled } from '@compiled/react';
 import React, { Fragment, useState, useEffect } from 'react';
 
