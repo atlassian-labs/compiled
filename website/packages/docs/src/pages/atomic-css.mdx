@@ -104,29 +104,29 @@ but they share the same atomic rule,
 what happens?
 
 ```jsx
-<div
-  css={css`
-    :hover {
-      color: blue;
-    }
-    :active {
-      color: red;
-    }
-  `}
-/>
+const styles = css({
+  '&:hover': {
+    color: 'blue',
+  },
+  '&:active': {
+    color: 'red',
+  },
+});
+
+<div css={styles} />;
 ```
 
 ```jsx
-<div
-  css={css`
-    :active {
-      color: red;
-    }
-    :hover {
-      color: blue;
-    }
-  `}
-/>
+const styles = css({
+  '&:active': {
+    color: 'red',
+  },
+  '&:hover': {
+    color: 'blue',
+  },
+});
+
+<div css={styles} />;
 ```
 
 The simple answer is it depends which component renders first!
