@@ -1,7 +1,7 @@
 ---
-section: 5-API
+section: 6-Deprecated API
 order: 10
-name: Styled
+name: '[Deprecated] styled'
 ---
 
 import {
@@ -13,16 +13,20 @@ import {
   StyledComposition,
 } from '../examples/styled';
 
-# Styled
+# \[Deprecated\] styled
+
+> **Deprecated**<br />
+> We no longer recommend using `styled` prop in new code, and we support this only to make migration from `styled-components` possible. Please use [`css`](/api-css-prop) or [`cssMap`](/api-cssmap) instead.<br /><br />
+> If you use the recommended [UI Styling Standard ESLint plugin](https://atlassian.design/components/eslint-plugin-ui-styling-standard/no-styled/usage), this will be enforced for you.
 
 Create a component that styles a JSX element which comes with built-in behavior such as `ref` and `as` prop support.
 
 <StyledObj />
 
-> **Tagged template expressions** <br /> Tagged template expressions are supported but call expression syntax is preferred.
+> **Tagged template expressions** <br /> Tagged template expressions are supported but using object styles is preferred.
 > See the
-> [no-styled-tagged-template-expression eslint rule](https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-styled-tagged-template-expression)
-> for more details.
+> [no-styled-tagged-template-expression ESLint rule](https://atlassian.design/components/eslint-plugin-design-system/no-styled-tagged-template-expression/usage) in the UI
+> Styling Standard for more details.
 
 ## Dynamic declarations
 
@@ -49,7 +53,7 @@ but `$color` is not.
 
 <StyledTransientProps />
 
-## The as prop
+## The `as` prop
 
 The `as` prop is useful when wanting to change the markup during runtime to something else,
 such as from a `<h1>` element to a `<span>`.
@@ -59,7 +63,7 @@ such as from a `<h1>` element to a `<span>`.
 ## Composing components
 
 Wrapping an already defined component enables you to pass styles to it.
-Here the `BlueText` styles take presedence over `RedText`.
+Here the `BlueText` styles take precedence over `RedText`.
 
 <StyledComposition />
 
@@ -68,8 +72,8 @@ Here the `BlueText` styles take presedence over `RedText`.
 
 ## TypeScript
 
-Type support comes out of the box so you'll have a great time using Compiled with TypeScript,
-any interpolation will have access to the props defined in the tagged template generic.
+Type support comes out of the box, so you'll have a great time using Compiled with TypeScript.
+Any interpolation will have access to the props defined in the tagged template generic.
 
 ```jsx
 import { styled } from '@compiled/react';

@@ -95,6 +95,12 @@ Make sure this is defined after other plugins so it runs first.
 
 See the [plugin package docs](/pkg-babel-plugin) for configuration options.
 
+## Installing the UI Styling Standard plugin
+
+We recommend using Compiled with the [UI Styling Standard ESLint plugin](https://atlassian.design/components/eslint-plugin-ui-styling-standard/overview). This plugin ensures that the styles you write are performant, idiomatic, and easier to maintain.
+
+Note that using this plugin will be a requirement for frontend developers at Atlassian.
+
 ## Ensuring Babel and TypeScript work with Compiled
 
 To [use the `css` prop](/writing-css), you may need to update your TypeScript and Babel configuration so that those libraries are aware of Compiled.
@@ -141,7 +147,7 @@ In your [Babel configuration](https://babeljs.io/docs/babel-plugin-transform-rea
 }
 ```
 
-If you don't want to set this globally, and instead want to set this on a per-file basis, you can use `/** @jsxImportSource @compiled/react */`:
+If you don't want to set this globally, and instead want to set this on a per-file basis, you can use `/** @jsxImportSource @compiled/react */`. You can use this in conjunction with the `jsx-pragma` rule from our [ESLint plugin](/pkg-eslint-plugin) to have this added for you automatically.
 
 ```tsx
 /** @jsxImportSource @compiled/react */
@@ -193,7 +199,7 @@ In your [Babel configuration](https://babeljs.io/docs/babel-plugin-transform-rea
 }
 ```
 
-If you don't want to set this globally, and instead want to set this on a per-file basis, you can use `/** @jsx jsx */`, as well as `/** @jsxFrag React.Fragment */` if needed:
+If you don't want to set this globally, and instead want to set this on a per-file basis, you can use `/** @jsx jsx */`, as well as `/** @jsxFrag React.Fragment */` if needed. You can use this in conjunction with the `jsx-pragma` rule from our [ESLint plugin](/pkg-eslint-plugin) to have `/** @jsx jsx */` added for you automatically.
 
 ```tsx
 /** @jsx jsx */

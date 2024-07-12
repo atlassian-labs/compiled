@@ -1,15 +1,15 @@
 ---
 section: 5-API
 order: 10
-name: CSS Map
+name: cssMap
 ---
 
-# CSS Map
+# cssMap
 
 Define a map consisting of named CSS rules that can be statically typed and useable with other Compiled APIs.
 
-> **Can only be used with other Compiled APIs**<br />
-> The `cssMap` function returns an object at runtime, which contains classnames as its values and variant names as its keys. These can only be used in conjunction with other Compiled APIs.
+> **Only use `cssMap` with Compiled APIs**<br />
+> The `cssMap` function returns an object at runtime, which contains class names as its values and variant names as its keys. These can only be used in conjunction with other Compiled APIs.
 
 ```jsx
 import { cssMap } from '@compiled/react';
@@ -97,7 +97,7 @@ const borderStyleMap = cssMap({
 
 ### At-rules (`@media` queries, `@supports`, `@page`, etc.)
 
-With `cssMap`, you can specify media queries by splitting the `@media` part and the rest of the media query into two, just like with the [`vanilla-extract`](https://vanilla-extract.style/documentation/styling/#media-queries) library. `@media` becomes the key, and the value is an object that contains the remainder of your media query. This allows you to more easily find your media queries in one place.
+With `cssMap`, you can also specify media queries and most other at-rules (`@supports`, `@page`, etc.) directly in the variant object. Media queries, and the styles inside them, will also be strongly typed.
 
 See below for an example:
 
@@ -106,28 +106,22 @@ const myMap = cssMap({
   danger: {
     color: 'red',
     // The generated CSS will be
-    // @media (min-width: 500px) { ... }
-    // @media (max-width: 800px) { ... }
-    '@media': {
-      '(min-width: 500px)': {
-        fontSize: '1.5em',
-      },
-      '(max-width: 800px)': {
-        fontSize: '1.8em',
-      },
+    '@media (min-width: 500px)': {
+      fontSize: '1.5em',
+    },
+    '@media (max-width: 800px)': {
+      fontSize: '1.8em',
     },
   },
   success: {
     color: 'green',
-    '@media': {
-      // You can specify different media queries
-      // for another variant if you want.
-      '(min-width: 400px)': {
-        fontSize: '1.3em',
-      },
-      '(min-width: 900px)': {
-        fontSize: '1.5em',
-      },
+    // You can specify different media queries
+    // for another variant if you want.
+    '@media (min-width: 400px)': {
+      fontSize: '1.3em',
+    },
+    '@media (min-width: 900px)': {
+      fontSize: '1.5em',
     },
     '&:hover': {
       color: '#8f8',
@@ -136,7 +130,7 @@ const myMap = cssMap({
 });
 ```
 
-This applies to other at-rules as well (CSS rules that start with an `@` sign), including `@support`, `@container`, and so on.
+Previously you would specify media queries by splitting the `@media` part and the rest of the media query into two, just like with the [`vanilla-extract`](https://vanilla-extract.style/documentation/styling/#media-queries) library. We no longer recommend this as it is inconsistent with other Compiled APIs, and our type checking now works without the need for splitting media queries into two.
 
 ### Nested selectors and advanced selectors
 
@@ -149,10 +143,8 @@ However, if you really need to use nested selectors, this can be done through th
 const myMap = cssMap({
   danger: {
     color: 'red',
-    '@media': {
-      '(min-width: 100px)': {
-        fontSize: '1.5em',
-      },
+    '@media (min-width: 100px)': {
+      fontSize: '1.5em',
     },
     '&:hover': {
       color: 'pink',
@@ -169,10 +161,8 @@ const myMap = cssMap({
   },
   success: {
     color: 'green',
-    '@media': {
-      '(min-width: 100px)': {
-        fontSize: '1.3em',
-      },
+    '@media (min-width: 100px)': {
+      fontSize: '1.3em',
     },
     '&:hover': {
       color: '#8f8',
@@ -188,7 +178,7 @@ const myMap = cssMap({
 
 ## Composing styles
 
-`cssMap` can be composed with other styles that are specified through the [css API](/api-css).
+`cssMap` can be composed with other styles that are specified through the [css API](/api-css-prop).
 
 ```jsx
 import { css, cssMap } from '@compiled/react';
