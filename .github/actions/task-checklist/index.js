@@ -31,9 +31,9 @@ const run = () => {
   console.log('---');
 
   core.setFailed(`
-Found an item in the PR description not marked as completed.
+Found at least one item in the PR description not marked as completed.
 
-Please complete this task before merging.
+Please complete all tasks in your PR description before merging.
 `);
 };
 
