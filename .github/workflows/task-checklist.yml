@@ -1,4 +1,4 @@
-name: Run task checklist
+name: Check whether all tasks are completed
 
 on:
   check_run:
