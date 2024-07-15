@@ -16,7 +16,27 @@ Then configure your bundler of choice or use [Babel](https://babeljs.io) directl
 
 ## Installation methods
 
+### (Recommended) Parcel
+
+Install the [Parcel v2](https://v2.parceljs.org) configuration.
+
+```bash
+npm install @compiled/parcel-config --save-dev
+```
+
+Add the compiled preset to your [Parcel config](https://parceljs.org/features/plugins/).
+
+```json
+{
+  "extends": ["@parcel/config-default", "@compiled/parcel-config"]
+}
+```
+
+See the [configuration package docs](/pkg-parcel-config) for configuration options.
+
 ### Webpack
+
+> We recommend Parcel, as this will be more performant, and it aligns with the Atlassian recommended tech stack.
 
 Install the [Webpack](https://webpack.js.org/) loader.
 
@@ -51,24 +71,6 @@ If you're shipping an app, you'll also be interested in CSS extraction.
 Read the [Webpack CSS extraction](/css-extraction-webpack) for a step-by-step guide.
 
 See the [loader package docs](/pkg-webpack-loader) for configuration options.
-
-### Parcel
-
-Install the [Parcel v2](https://v2.parceljs.org) configuration.
-
-```bash
-npm install @compiled/parcel-config --save-dev
-```
-
-Add the compiled preset to your [Parcel config](https://parceljs.org/features/plugins/).
-
-```json
-{
-  "extends": ["@parcel/config-default", "@compiled/parcel-config"]
-}
-```
-
-See the [configuration package docs](/pkg-parcel-config) for configuration options.
 
 ### Babel
 
