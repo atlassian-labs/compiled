@@ -12,7 +12,8 @@ const run = () => {
   const body = github.context.payload.pull_request?.body;
   if (!body) return;
 
-  const matches = body.matchAll(INCOMPLETE_TASKS_REGEX).map((match) => match[1]);
+  const matches = [];
+  body.matchAll(INCOMPLETE_TASKS_REGEX).forEach((match) => matches.push(match[1]));
 
   if (!matches.length) {
     return;
