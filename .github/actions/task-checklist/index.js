@@ -18,9 +18,13 @@ const run = () => {
     return;
   }
 
+  const plural = matches.length > 1 ? 's' : '';
+  console.log(`Found incomplete task${plural}:`);
   for (const match of matches) {
-    console.log(`Found incomplete task: ${match}`);
+    console.log(`- ${match}`);
   }
+
+  console.log('---');
 
   core.setFailed(`
 Found an item in the PR description not marked as completed.
