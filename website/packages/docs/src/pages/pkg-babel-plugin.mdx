@@ -41,14 +41,33 @@ Configure in your Babel config.
 }
 ```
 
-### importReact: boolean
+If you choose to configure Compiled through Webpack or Parcel (recommended), you can pass options for `@compiled/babel-plugin` through those configurations. See [`@compiled/webpack-loader`](/pkg-webpack-loader) and [`@compiled/parcel-config`](/pkg-parcel-config) for more information.
 
-Will import React into the module if it is not found.
-When using `@babel/preset-react` with the [automatic runtime](https://babeljs.io/docs/en/babel-preset-react#react-automatic-runtime) this is not needed and can be set to `false`.
+`@compiled/babel-plugin` supports the following options:
 
-Defaults to `true`.
+- `addComponentName`
+- `cache`
+- `classNameCompressionMap`
+- `extensions`
+- `importReact`
+- `importSources`
+- `increaseSpecificity`
+- `nonce`
+- `onIncludedFiles`
+- `optimizeCss`
+- `parserBabelPlugins`
+- `processXcss`
+- `resolver`
+- `sortAtRules`
 
-### cache: boolean | 'single-pass'
+#### addComponentName
+
+Add the component name as a class name to the DOM in non-production environments, if `styled` is used.
+
+- Type: `boolean`
+- Default: `false`
+
+#### cache
 
 Will cache the result of statically evaluated imports.
 
@@ -56,26 +75,84 @@ Will cache the result of statically evaluated imports.
 - `'single-pass'` will cache for a single pass of a file
 - `false` turns caching off
 
-Defaults to `true`.
+* Type: `boolean | 'single-pass'`
+* Default: `true`
 
-### optimizeCss: boolean
+#### classNameCompressionMap
 
-Will run additional cssnano plugins to normalize CSS during build.
+Don't use this!
 
-Defaults to `true`.
+An internal and experimental option used to compress class names.
 
-### onIncludedFiles: (files: string[]) => void
+Note that in `@compiled/webpack-loader` and `@compiled/parcel-config`, `classNameCompressionMap` requires `extract` to be true as well.
 
-Will callback at the end of a file pass with all imported files that were statically evaluated into the file.
+#### extensions
 
-### addComponentName: boolean
+Extensions that we should consider code. We use these to identify if a file should be parsed.
 
-Add the component name as class name to DOM in non-production environment if styled is used.
+- Type: `string[]`
+- Default: `['.js', '.jsx', '.ts', '.tsx']`
 
-Default to `false`
+#### importReact
 
-### importSources: string[]
+Will import React into the module if it is not found.
+When using `@babel/preset-react` with the [automatic runtime](https://babeljs.io/docs/en/babel-preset-react#react-automatic-runtime) this is not needed and can be set to `false`.
+
+- Type: `boolean`
+- Default: `true`
+
+#### importSources
 
 Additional libraries that should be parsed as though they were `@compiled/react` imports.
 
 Specifying this is important if you are using Compiled APIs through another package using the `createStrictAPI` function.
+
+- Type: `string[]`
+- Default: `undefined`
+
+#### increaseSpecificity
+
+An experimental option that increases the specificity of all generated Compiled classes. Don't use this!
+
+#### nonce
+
+[Security nonce](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce) that will be applied to inline style elements if defined.
+
+- Type: `string`
+- Default: `false`
+
+#### onIncludedFiles
+
+An internal option. Callback fired at the end of the file pass when files have been included in the transformation.
+
+- Type: `(files: string[]) => void`
+- Default: `undefined`
+
+#### optimizeCss
+
+Will run additional `cssnano` plugins to normalize CSS during the build.
+
+- Type: `boolean`
+- Default: `true`
+
+#### parserBabelPlugins
+
+Babel parser plugins to be used when parsing the source code. Define these to enable extra babel parsers (for example, typescript).
+See the [babel docs](https://babeljs.io/docs/en/plugins/#syntax-plugins) for more context.
+
+Usually, you will set this option through [`@compiled/parcel-config`] or [`@compiled/webpack-loader`](/webpack-loader) -- see there for examples.
+
+#### processXcss
+
+An option we are only using internally. Don't use!
+
+#### resolver
+
+A custom resolver used to statically evaluate import declarations, specified as either an object or module path. If this is an object, it should contain a `resolveSync` function with the following type signature: `(context: string, request: string) => string`.
+
+- Type: `string | Resolver`
+- Default: `undefined`
+
+#### sortAtRules
+
+Unused.
