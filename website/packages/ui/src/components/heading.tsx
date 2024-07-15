@@ -25,10 +25,10 @@ export const Heading = ({ children, style, ...props }: HeadingProps): JSX.Elemen
       className={props.className}
       style={style}
       css={`
-        font-family: 'Noto Sans', sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+          'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
         font-weight: 500;
         margin: 0;
-        opacity: 0.9;
         word-break: break-word;
 
         ::before {
@@ -72,8 +72,7 @@ export const Heading = ({ children, style, ...props }: HeadingProps): JSX.Elemen
         }
 
         [data-look='h200']& {
-          font-size: 36px;
-          line-height: 44px;
+          font-size: 5rem;
           padding: 0.05px 0;
 
           ::before {
@@ -86,8 +85,7 @@ export const Heading = ({ children, style, ...props }: HeadingProps): JSX.Elemen
         }
 
         [data-look='h300']& {
-          font-size: 24px;
-          line-height: 32px;
+          font-size: 3.5rem;
           padding: 0.05px 0;
           letter-spacing: 0.3px;
 
@@ -101,8 +99,7 @@ export const Heading = ({ children, style, ...props }: HeadingProps): JSX.Elemen
         }
 
         [data-look='h600']& {
-          font-size: 20px;
-          line-height: 24px;
+          font-size: 2.75rem;
           padding: 0.05px 0;
           letter-spacing: 0.3px;
 
@@ -116,11 +113,9 @@ export const Heading = ({ children, style, ...props }: HeadingProps): JSX.Elemen
         }
 
         [data-look='h400']& {
-          font-size: 14px;
-          line-height: 20px;
+          font-size: 2.5rem;
           padding: 0.05px 0;
-          text-transform: uppercase;
-          letter-spacing: 1px;
+          letter-spacing: 0.75px;
           color: #7a869a;
 
           ::before {
@@ -133,8 +128,7 @@ export const Heading = ({ children, style, ...props }: HeadingProps): JSX.Elemen
         }
 
         [data-look='h500']& {
-          font-size: 12px;
-          line-height: 18px;
+          font-size: 1.5rem;
           padding: 0.05px 0;
           text-transform: uppercase;
           letter-spacing: 1px;

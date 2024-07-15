@@ -39,7 +39,7 @@ const Code = styled.code`
 `;
 
 const P = styled.p`
-  margin: 4rem 0;
+  margin: 3rem 0;
 `;
 
 export const mdxComponents: MDXProviderComponentsProp = {

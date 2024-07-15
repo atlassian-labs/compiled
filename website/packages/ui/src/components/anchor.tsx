@@ -28,6 +28,7 @@ export const Anchor = ({ children }: { children: string | string[] }): JSX.Eleme
   const context = useContext(AnchorContext);
   const ref = useRef<HTMLElement | null>(null);
 
+  console.log(children);
   const id = (
     typeof children === 'string'
       ? [children.trim().split(' ').join('-')]
@@ -40,10 +41,11 @@ export const Anchor = ({ children }: { children: string | string[] }): JSX.Eleme
     .toLowerCase();
 
   useEffect(() => {
-    context.listen(ref.current);
+    const currentRef = ref.current;
+    context.listen(currentRef);
 
     return () => {
-      context.unlisten(ref.current);
+      context.unlisten(currentRef);
     };
   }, [context, id]);
 
