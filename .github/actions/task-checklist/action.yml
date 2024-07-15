@@ -1,0 +1,4 @@
+name: Task Checklist
+runs:
+  using: 'node20'
+  main: 'index.js'
