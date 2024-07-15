@@ -1,0 +1,14 @@
+name: Run task checklist
+
+on:
+  check_run:
+  pull_request:
+    types: [opened, synchronize, edited, reopened]
+
+jobs:
+  task-checklist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/task-checklist/action.yml
+        with:
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'

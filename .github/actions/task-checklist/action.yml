@@ -1,0 +1,9 @@
+name: Task Checklist
+inputs:
+  content:
+    description: 'Content of the PR description'
+    required: true
+    default: ''
+runs:
+  using: 'node20'
+  main: 'index.js'
