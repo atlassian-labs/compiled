@@ -10,18 +10,22 @@ const INCOMPLETE_TASKS_REGEX = /^\s*[-*+]\s+\[ \]\s+(.*)/gm;
 
 const run = () => {
   const body = github.context.payload.pull_request?.body;
-  if (!body) return;
+  if (!body) {
+    console.log('PR description empty, skipping this check.');
+    return;
+  }
 
   const matches = [...body.matchAll(INCOMPLETE_TASKS_REGEX)].map((match) => match[1]);
 
   if (!matches.length) {
+    console.log('No tasks marked as incomplete. Great work!');
     return;
   }
 
   const plural = matches.length > 1 ? 's' : '';
-  console.log(`Found incomplete task${plural}:`);
+  console.error(`Found incomplete task${plural}:`);
   for (const match of matches) {
-    console.log(`- ${match}`);
+    console.error(`- ${match}`);
   }
 
   console.log('---');
