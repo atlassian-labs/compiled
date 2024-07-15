@@ -9,6 +9,7 @@ jobs:
   task-checklist:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/task-checklist/action.yml
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/task-checklist/
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
