@@ -11,5 +11,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
-        run: cd ./.github/actions/task-checklist && yarn install
-      - uses: ./.github/actions/task-checklist/
+        run: cd .github/actions/task-checklist && yarn install
+      - uses: ./.github/actions/task-checklist
