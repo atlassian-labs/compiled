@@ -7,11 +7,18 @@ const github = require('@actions/github');
 // Also handles whitespace around any of the characters,
 // and the three different ways to make a list (dash, asterisk, plus)
 const INCOMPLETE_TASKS_REGEX = /^\s*[-*+]\s+\[ \]\s+(.*)/gm;
+const DISABLE_COMMENT_REGEX = /<!--\s*task-checklist-ignore\s*-->/;
 
 const run = () => {
   const body = github.context.payload.pull_request?.body;
   if (!body) {
     console.log('PR description empty, skipping this check.');
+    return;
+  }
+
+  const disableCommentMatch = body.match(DISABLE_COMMENT_REGEX);
+  if (disableCommentMatch) {
+    console.log('Found "task-checklist-ignore" comment - skipping checklist tasks.');
     return;
   }
 
@@ -27,6 +34,12 @@ const run = () => {
   for (const match of matches) {
     console.error(`- ${match}`);
   }
+
+  console.log('---');
+
+  console.log(
+    'False positive? Insert <!-- task-checklist-ignore --> in your PR description to skip this check. However, with great power comes great responsibility...'
+  );
 
   console.log('---');
 
