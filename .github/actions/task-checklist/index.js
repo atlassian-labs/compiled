@@ -19,21 +19,22 @@ const DISABLE_COMMENT_REGEX =
 const run = () => {
   const body = github.context.payload.pull_request?.body;
   if (!body) {
-    console.info('PR description empty, skipping this check.');
+    console.log('PR description empty, skipping this check.');
     return;
   }
 
   const bodyWithoutDisables = body.replace(DISABLE_COMMENT_REGEX, '');
   if (body !== bodyWithoutDisables) {
-    console.debug(
-      'Found at least one "task-checklist-ignore-start"/"task-checklist-ignore-end" block.'
+    console.log(
+      'Found at least one "task-checklist-ignore-start"/"task-checklist-ignore-end" block. Items in these blocks will be ignored.'
     );
+    console.log('---');
   }
 
   const matches = [...body.matchAll(INCOMPLETE_TASKS_REGEX)].map((match) => match[1]);
 
   if (!matches.length) {
-    console.info('No tasks marked as incomplete. Great work!');
+    console.log('No tasks marked as incomplete. Great work!');
     return;
   }
 
@@ -43,16 +44,15 @@ const run = () => {
     console.error(`- ${match}`);
   }
 
-  console.info('---');
-
-  console.info(
-    'False positive? Insert <!-- task-checklist-ignore-start --> and <!-- task-checklist-ignore-end --> in the sections of your PR where you want to skip the check. However, with great power comes great responsibility...'
+  console.log('---');
+  console.log(
+    'False positive? Insert <!-- task-checklist-ignore-start --> and <!-- task-checklist-ignore-end --> in the section(s) of your PR where you want to skip the check.'
   );
-
-  console.info('---');
+  console.log('However, with great power comes great responsibility...');
+  console.log('---');
 
   core.setFailed(`
-Found at least one item in the PR description not marked as completed.
+Found ${matches.length} task${plural} in the PR description not marked as completed.
 
 Please complete all tasks in your PR description before merging.
 `);
