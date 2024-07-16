@@ -28,7 +28,6 @@ const run = () => {
     console.debug(
       'Found at least one "task-checklist-ignore-start"/"task-checklist-ignore-end" block.'
     );
-    return;
   }
 
   const matches = [...body.matchAll(INCOMPLETE_TASKS_REGEX)].map((match) => match[1]);
