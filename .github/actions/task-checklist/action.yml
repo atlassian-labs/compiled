@@ -4,5 +4,7 @@ runs:
   steps:
     - name: Install dependencies
       run: yarn install
+      shell: bash
     - name: Check tasks in PR description
       run: yarn run check-tasks
+      shell: bash
