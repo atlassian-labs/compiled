@@ -3,8 +3,8 @@ runs:
   using: 'composite'
   steps:
     - name: Install dependencies
-      run: yarn install
+      run: cd ${{ github.action_path }} && yarn install
       shell: bash
     - name: Check tasks in PR description
-      run: yarn run check-tasks
+      run: cd ${{ github.action_path }} && yarn run check-tasks
       shell: bash
