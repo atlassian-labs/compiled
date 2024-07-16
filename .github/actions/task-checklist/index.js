@@ -19,16 +19,16 @@ const DISABLE_COMMENT_REGEX =
 const run = () => {
   const body = github.context.payload.pull_request?.body;
   if (!body) {
-    console.log('PR description empty, skipping this check.');
+    core.info('PR description empty, skipping this check.');
     return;
   }
 
   const bodyWithoutDisables = body.replace(DISABLE_COMMENT_REGEX, '');
   if (body !== bodyWithoutDisables) {
-    console.log(
+    core.notice(
       'Found at least one "task-checklist-ignore-start"/"task-checklist-ignore-end" block. Items in these blocks will be ignored.'
     );
-    console.log('---');
+    core.info('---');
   }
 
   const matches = [...bodyWithoutDisables.matchAll(INCOMPLETE_TASKS_REGEX)].map(
@@ -36,28 +36,25 @@ const run = () => {
   );
 
   if (!matches.length) {
-    console.log('No tasks marked as incomplete. Great work!');
+    core.info('No tasks marked as incomplete. Great work!');
     return;
   }
 
   const plural = matches.length > 1 ? 's' : '';
-  console.error(`Found incomplete task${plural}:`);
-  for (const match of matches) {
-    console.error(`- ${match}`);
-  }
+  const formattedMatches = matches.map((match) => `- ${match}`).join('\n');
+  core.error(`Found incomplete task${plural}:\n${formattedMatches}`);
 
-  console.log('---');
-  console.log(
-    'False positive? Insert <!-- task-checklist-ignore-start --> and <!-- task-checklist-ignore-end --> in the section(s) of your PR where you want to skip the check.'
+  core.info('---');
+  core.notice(
+    'False positive? Insert <!-- task-checklist-ignore-start --> and <!-- task-checklist-ignore-end --> in the section(s) of your PR where you want to skip the check.\n' +
+      'However, with great power comes great responsibility...'
   );
-  console.log('However, with great power comes great responsibility...');
-  console.log('---');
+  core.info('---');
 
-  core.setFailed(`
-Found ${matches.length} task${plural} in the PR description not marked as completed.
-
-Please complete all tasks in your PR description before merging.
-`);
+  core.setFailed(
+    `Found ${matches.length} task${plural} in the PR description not marked as completed.\n\n` +
+      'Please complete all tasks in your PR description before merging.'
+  );
 };
 
 run();

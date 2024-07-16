@@ -1,7 +1,6 @@
 name: Check all tasks are completed
 
 on:
-  check_run:
   pull_request:
     types: [opened, edited]
 
@@ -9,7 +8,4 @@ jobs:
   task-checklist:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: cd .github/actions/task-checklist && yarn install
       - uses: ./.github/actions/task-checklist

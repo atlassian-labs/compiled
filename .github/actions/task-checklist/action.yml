@@ -1,4 +1,9 @@
 name: Task Checklist
 runs:
-  using: 'node20'
-  main: 'index.js'
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: yarn install
+    - name: Check tasks in PR description
+      run: yarn run check-tasks
