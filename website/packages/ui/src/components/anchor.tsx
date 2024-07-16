@@ -28,7 +28,6 @@ export const Anchor = ({ children }: { children: string | string[] }): JSX.Eleme
   const context = useContext(AnchorContext);
   const ref = useRef<HTMLElement | null>(null);
 
-  console.log(children);
   const id = (
     typeof children === 'string'
       ? [children.trim().split(' ').join('-')]

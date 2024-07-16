@@ -52,6 +52,10 @@ const borderStyleMap = cssMap({
   none: { borderStyle: 'none' },
   solid: { borderStyle: 'solid' },
 });
+
+const Component = ({ appearance, children }) => (
+  <div css={borderStyleMap[props.appearance]}>{children}</div>
+);
 ```
 
 ## Keyframes
