@@ -31,7 +31,9 @@ const run = () => {
     console.log('---');
   }
 
-  const matches = [...body.matchAll(INCOMPLETE_TASKS_REGEX)].map((match) => match[1]);
+  const matches = [...bodyWithoutDisables.matchAll(INCOMPLETE_TASKS_REGEX)].map(
+    (match) => match[1]
+  );
 
   if (!matches.length) {
     console.log('No tasks marked as incomplete. Great work!');
