@@ -11,6 +11,7 @@ import { Lozenge, HorizontalStack } from '@compiled/website-ui';
 <HorizontalStack gap={0.5} spacing={2}>
   <Lozenge>React 16</Lozenge>
   <Lozenge>React 17</Lozenge>
+  <Lozenge>React 18</Lozenge>
 </HorizontalStack>
 
 The primary entrypoint package for Compiled that provides familiar APIs to style your app.
@@ -21,38 +22,62 @@ npm install @compiled/react
 
 ## CSS prop
 
-Use [CSS prop](/api-css-prop) to style a JSX element.
+Use the [CSS prop](/api-css-prop) in conjunction with our `css` function call to style a JSX element.
 
 ```jsx
 /** @jsxImportSource @compiled/react */
 import { css } from '@compiled/react';
 
-<div
-  css={{
-    fontSize: 12,
-    ...(isPrimary && {
-      color: 'blue',
-    }),
-  }}
-/>;
+const baseStyles = css({
+  fontSize: '12px',
+});
 
-<div
-  css={css`
-    font-size: 12px;
-  `}
-/>;
+const primaryStyles = css({
+  color: 'blue',
+});
 
-<div
-  css={[
-    css`
-      font-size: 12px;
-    `,
-    isPrimary && { color: 'blue' },
-  ]}
-/>;
+const Component2 = <div css={styles} />;
+
+const Component3 = <div css={[styles, isPrimary && primaryStyles]} />;
 ```
 
-## Styled
+## CSS Map
+
+Use [`cssMap`](/api-cssmap) to define a map consisting of named CSS rules that can be statically typed and useable with other Compiled APIs.
+
+```jsx
+import { cssMap } from '@compiled/react';
+
+const borderStyleMap = cssMap({
+  none: { borderStyle: 'none' },
+  solid: { borderStyle: 'solid' },
+});
+
+const Component = ({ appearance, children }) => (
+  <div css={borderStyleMap[props.appearance]}>{children}</div>
+);
+```
+
+## Keyframes
+
+Use [`keyframes`](/api-keyframes) to define keyframes to be used in a [CSS animation](https://developer.mozilla.org/en-US/docs/Web/CSS/animation).
+
+```jsx
+import { keyframes } from '@compiled/react';
+
+const fadeOut = keyframes({
+  from: {
+    opacity: 1,
+  },
+  to: {
+    opacity: 0,
+  },
+});
+```
+
+## Deprecated APIs
+
+### \[Deprecated\] Styled
 
 Use [styled](/api-styled) to create a component that styles a JSX element which comes with built-in behavior such as `ref` and `as` prop support.
 
@@ -84,7 +109,7 @@ styled.div(
 );
 ```
 
-## Class names
+### \[Deprecated\] ClassNames
 
 Use [ClassNames](/api-class-names) for when styles are not necessarily used on a JSX element.
 
@@ -124,60 +149,4 @@ import { css, ClassNames } from '@compiled/react';
     })
   }
 </ClassNames>;
-```
-
-## CSS
-
-Use [`css`](/api-css-prop) to define styles that can be statically typed and useable with other Compiled APIs.
-
-```jsx
-import { css } from '@compiled/react';
-
-const blackText = css({
-  color: 'black',
-});
-
-const blackText = css`
-  color: black;
-`;
-```
-
-## CSS Map
-
-Use [`css`](/api-cssmap) to define a map consisting of named CSS rules that can be statically typed and useable with other Compiled APIs.
-
-```jsx
-import { cssMap } from '@compiled/react';
-
-const borderStyleMap = cssMap({
-  none: { borderStyle: 'none' },
-  solid: { borderStyle: 'solid' },
-});
-```
-
-## Keyframes
-
-Use [`keyframes`](/api-keyframes) to define keyframes to be used in a [CSS animation](https://developer.mozilla.org/en-US/docs/Web/CSS/animation).
-
-```jsx
-import { keyframes } from '@compiled/react';
-
-const fadeOut = keyframes({
-  from: {
-    opacity: 1,
-  },
-  to: {
-    opacity: 0,
-  },
-});
-
-const fadeOut = keyframes`
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-`;
 ```

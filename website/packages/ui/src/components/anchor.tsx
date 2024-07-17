@@ -40,10 +40,11 @@ export const Anchor = ({ children }: { children: string | string[] }): JSX.Eleme
     .toLowerCase();
 
   useEffect(() => {
-    context.listen(ref.current);
+    const currentRef = ref.current;
+    context.listen(currentRef);
 
     return () => {
-      context.unlisten(ref.current);
+      context.unlisten(currentRef);
     };
   }, [context, id]);
 

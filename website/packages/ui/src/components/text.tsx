@@ -27,7 +27,7 @@ export function Text({
         weight === 'regular' && `font-weight: 300;`,
         weight === 'bold' && `font-weight: 500;`,
         `
-          font-family: 'Roboto', sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
           padding-top: 0.05px;
           padding-bottom: 0.05px;
 
@@ -44,8 +44,7 @@ export function Text({
           }
 
           &[data-variant='reading'] {
-            font-size: 20px;
-            line-height: 30px;
+            line-height: 1.6em;
 
             ::before {
               margin-top: -0.3834em;

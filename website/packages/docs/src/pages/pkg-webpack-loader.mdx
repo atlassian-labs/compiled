@@ -47,61 +47,123 @@ module.exports = {
 };
 ```
 
-### importReact: boolean
+### Options used by `@compiled/webpack-loader`
 
-Will import React into the module if it is not found.
-When using `@babel/preset-react` with the [automatic runtime](https://babeljs.io/docs/en/babel-preset-react#react-automatic-runtime) this is not needed and can be set to `false`.
+`@compiled/webpack-loader` accepts the following options:
 
-Defaults to `true`.
+- `bake`
+- `extensions`
+- `extract`
+- `extractStylesToDirectory`
+- `parserBabelPlugins`
+- `resolve`
+- `ssr`
+- `transformerBabelPlugins`
 
-### importSources: string[]
+#### bake
 
-Additional libraries that should be parsed as though they were `@compiled/react` imports. This is passed directly to `@compiled/babel-plugin`.
+Turns on `@compiled/babel-plugin`.
 
-Specifying this is important if you are using Compiled APIs through another package using the `createStrictAPI` function.
+- Type: `boolean`
+- Default: `true`
 
-### extract: boolean
+#### extensions
 
-Enables extracting all styles to an atomic style sheet,
-to be used in conjunction with `CompiledExtractPlugin`.
-Read the [Webpack CSS extraction](/css-extraction-webpack) guide for help.
+Extensions that we should consider to be code. We use these to identify if a file should be parsed.
 
-Defaults to `false`.
+If set, the value of `extensions` will be used in two places:
 
-### bake: boolean
+1. If `resolver` is not set, then `extensions` will be passed to the default resolver, `enhanced-resolver`.
+2. This is also passed to `@compiled/babel-plugin` under the hood.
 
-Enables baking your styles into JavaScript.
+- Type: `string[]`
+- Default: none, but note that `enhanced-resolver` and `@compiled/babel-plugin` have their own different defaults when the `extensions` option is not set.
 
-Defaults to `true`.
+#### extract
 
-### optimizeCss: boolean
+Enables extracting all styles to an atomic style sheet. This enables `@compiled/babel-plugin-strip-runtime` under the hood.
 
-Will run additional cssnano plugins to normalize CSS during build.
+You should use this in conjunction with `CompiledExtractPlugin`. Read the [Webpack CSS extraction](/css-extraction-webpack) guide for help.
 
-Defaults to `true`.
+- Type: `boolean`
+- Default: `false`
 
-### addComponentName: boolean
+#### extractStylesToDirectory
 
-Add the component name as class name to DOM in non-production environment if styled is used.
+When set, extracts styles to an external CSS file. Read [babel-plugin-strip-runtime](/pkg-babel-plugin-strip-runtime) for more information.
 
-Default to `false`
+- Type: `{ source: string; dest: string }`
+- Default: `undefined`
 
-### sortAtRules: boolean
+#### parserBabelPlugins
 
-Whether to sort at-rules, including media queries.
+Babel parser plugins to be used when parsing the source code. Define these to enable extra babel parsers (for example, typescript).
+See the [babel docs](https://babeljs.io/docs/en/plugins/#syntax-plugins) for more context.
 
-See [here](/media-queries-and-other-at-rules) for more information.
+Example usage:
 
-Defaults to `true`.
+```js
+// webpack.config.js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: [
+          { loader: 'babel-loader' },
+          {
+            loader: '@compiled/webpack-loader',
+            options: {
+              parserBabelPlugins: ['typescript'],
+            },
+          },
+        ],
+      },
+    ],
+  },
+};
+```
 
-### ssr: boolean
+This is also passed to `@compiled/babel-plugin` under the hood.
+
+- Type: `ParserPlugin[]`
+- Default: `['typescript', 'jsx']`
+
+#### \[Deprecated\] resolve
+
+If `resolver` is not provided, `resolve` specifies options that should be passed to the default resolver (`enhanced-resolver`). The resolver is used to statically evaluate import declarations.
+
+This has been superseded by `resolver`; you should use that instead!
+
+Example usage:
+
+```json
+options: {
+  // ...
+  "resolve": {
+    "mainFields": ["module:es2019", "browser", "module", "main"]
+  }
+}
+```
+
+See [enhanced-resolver docs](https://github.com/webpack/enhanced-resolve#resolver-options) for more options.
+
+- Type: `ResolveOptions`
+- Default: `undefined`
+
+#### ssr
 
 To be used in conjunction with `extract: true` when having a different configuration for SSR.
-When set will prevent additional require (one import per rule) in the bundle during style sheet extraction.
 
-Defaults to `false`.
+When set to true, `ssr` will prevent additional require (one import per rule) in the bundle during style sheet extraction.
 
-### transformerBabelPlugins: PluginItem[]
+This is equivalent to setting `compiledRequireExclude` in `@compiled/babel-plugin-strip-runtime`.
+
+- Type: `boolean`
+- Default: `false`
+
+#### transformerBabelPlugins
 
 Babel transformer plugins to be applied to transformed files before the Compiled evaluation.
 
@@ -141,41 +203,22 @@ module.exports = {
 };
 ```
 
-Defaults to none.
+- Type: `PluginItem[]`
+- Default: `[]`
 
-### parserBabelPlugins: ParserPlugin[]
+### Options passed to `@compiled/babel-plugin`
 
-Babel parser plugins to be used when parsing the source code. Define these to enable extra babel parsers (for example, typescript).
-See the [babel docs](https://babeljs.io/docs/en/plugins/#syntax-plugins) for more context.
+`@compiled/webpack-loader` also accepts the following options. These are not used in the loader itself, but instead they are passed directly to the underlying `@compiled/babel-plugin`.
 
-Example usage:
+- `addComponentName`
+- `classNameCompressionMap`
+- `importReact`
+- `importSources`
+- `nonce`
+- `optimizeCss`
+- `resolver`
 
-```js
-// webpack.config.js
-module.exports = {
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: [
-          { loader: 'babel-loader' },
-          {
-            loader: '@compiled/webpack-loader',
-            options: {
-              parserBabelPlugins: ['typescript'],
-            },
-          },
-        ],
-      },
-    ],
-  },
-};
-```
-
-### extractStylesToDirectory?: \{ source: string; dest: string \};
-
-When set, extracts styles to an external CSS file. Read [babel-plugin-strip-runtime](/pkg-babel-plugin-strip-runtime) for more information.
+To avoid repetition, we have not included the descriptions here. Please refer to the [`@compiled/babel-plugin` documentation](/pkg-babel-plugin) for more information.
 
 ## CompiledExtractPlugin
 
@@ -190,7 +233,9 @@ module.exports = {
 };
 ```
 
-### nodeModulesTest: Condition
+### Options
+
+#### nodeModulesTest
 
 As a performance optimization you can test paths to include by [passing a webpack condition](https://webpack.js.org/configuration/module/#condition) to the plugin.
 
@@ -200,7 +245,10 @@ new CompiledExtractPlugin({
 });
 ```
 
-### nodeModulesInclude: Condition
+- Type: `Condition`
+- Default: `undefined`
+
+#### nodeModulesInclude
 
 As a performance optimization you can include paths by [passing a webpack condition](https://webpack.js.org/configuration/module/#condition) to the plugin.
 
@@ -210,7 +258,10 @@ new CompiledExtractPlugin({
 });
 ```
 
-### nodeModulesExclude: Condition
+- Type: `Condition`
+- Default: `undefined`
+
+#### nodeModulesExclude
 
 As a performance optimization you can exclude paths by [passing a webpack condition](https://webpack.js.org/configuration/module/#condition) to the plugin.
 
@@ -220,7 +271,10 @@ new CompiledExtractPlugin({
 });
 ```
 
-### cacheGroupExclude: boolean
+- Type: `Condition`
+- Default: `undefined`
+
+#### cacheGroupExclude: boolean
 
 To be used in conjunction with `extract: true` when having a different configuration for SSR.
 This will prevent the additional `cacheGroup` chunk to be created during style sheet extraction; compiled-css files should be only generated in the client-side.
@@ -230,3 +284,15 @@ new CompiledExtractPlugin({
   cacheGroupExclude: true,
 });
 ```
+
+- Type: `boolean`
+- Default: `undefined`
+
+#### sortAtRules
+
+Whether to sort at-rules, including media queries.
+
+See [here](/media-queries-and-other-at-rules) for more information.
+
+- Type: `boolean`
+- Default: `true`
