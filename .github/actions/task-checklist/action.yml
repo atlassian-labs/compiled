@@ -1,0 +1,10 @@
+name: Task Checklist
+runs:
+  using: 'composite'
+  steps:
+    - name: Install dependencies
+      run: cd ${{ github.action_path }} && yarn install
+      shell: bash
+    - name: Check tasks in PR description
+      run: cd ${{ github.action_path }} && yarn run check-tasks
+      shell: bash

@@ -1,0 +1,14 @@
+{
+  "name": "task-checklist",
+  "private": "true",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^6.0.0"
+  },
+  "scripts": {
+    "check-tasks": "node index.js"
+  }
+}

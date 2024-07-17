@@ -1,0 +1,12 @@
+name: Check all tasks are completed
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  task-checklist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/task-checklist
