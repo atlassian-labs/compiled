@@ -1,4 +1,9 @@
+import { AtomicGroups } from '../ac';
 import ax from '../ax';
+
+const atomicMap = new Map();
+atomicMap.set('_aaaa', '_aaaabbbb');
+atomicMap.set('_bbbb', '_bbbbcccc');
 
 describe('ax', () => {
   const isEnabled: boolean = (() => false)();
@@ -49,6 +54,17 @@ describe('ax', () => {
       'should ignore non atomic declarations when atomic declarations exist',
       ['hello_there', 'hello_world', '_aaaabbbb'],
       'hello_there hello_world _aaaabbbb',
+    ],
+    [
+      'should handle a nested AtomicGroups class',
+      ['_aaaaaaaa', new AtomicGroups(atomicMap)],
+      '_aaaabbbb _bbbbcccc',
+    ],
+    [
+      'should handle a flat, nested array',
+      // We don't directly handle array-like collected classes (they shouldn't exist with types), but it's easy to solve for
+      ['_aaaabbbb', ['_bbbbaaaa', '_bbbbcccc'] as any],
+      '_aaaabbbb _bbbbcccc',
     ],
   ])('%s', (_, params, result) => {
     expect(result).toEqual(ax(params));

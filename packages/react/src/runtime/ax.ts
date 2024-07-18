@@ -1,4 +1,4 @@
-import { AtomicGroups } from './ac';
+import type { AtomicGroups } from './ac';
 
 const UNDERSCORE_UNICODE = 95;
 
@@ -52,11 +52,10 @@ export default function ax(
     if (typeof cls === 'string') {
       groups = cls.split(' ');
     } else if (Array.isArray(cls)) {
-      groups = cls;
-    } else if (cls instanceof AtomicGroups) {
-      groups = cls.toString().split(' ');
+      groups = cls; // NOTE: Not really a valid scenario, so we don't deeply recurse or handle this properly
     } else {
-      // NOTE: Could throw an error here to help understand that this is collecting invalid styles.
+      // NOTE: Could throw an error here if this isn't our `AtomicGroups` to help understand that this is collecting invalid styles.
+      groups = String(cls).split(' ');
     }
 
     for (let x = 0; x < groups.length; x++) {
