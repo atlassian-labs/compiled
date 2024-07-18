@@ -1,7 +1,7 @@
 import type * as CSS from 'csstype';
 
 import type { ApplySchemaValue } from '../create-strict-api/types';
-import { ac } from '../runtime';
+import { ax } from '../runtime';
 import type { CSSPseudos, CSSPseudoClasses, CSSProperties, StrictCSSProperties } from '../types';
 
 type MarkAsRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
@@ -208,5 +208,5 @@ export const cx = <TStyles extends [...XCSSProp<any, any>[]]>(
 
   // The output should be a union type of passed in styles. This ensures the call
   // site of xcss prop can raise violations when disallowed styles have been passed.
-  return ac(actualStyles) as TStyles[number];
+  return ax(actualStyles) as TStyles[number];
 };
