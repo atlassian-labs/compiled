@@ -1,3 +1,5 @@
+import { AtomicGroups } from './ac';
+
 const UNDERSCORE_UNICODE = 95;
 
 /**
@@ -27,8 +29,13 @@ const ATOMIC_GROUP_LENGTH = 5;
  *
  * @param classes
  */
-export default function ax(classNames: (string | undefined | null | false)[]): string | undefined {
-  if (classNames.length <= 1 && (!classNames[0] || classNames[0].indexOf(' ') === -1)) {
+export default function ax(
+  classNames: (string | undefined | null | false | AtomicGroups)[]
+): string | undefined {
+  if (
+    classNames.length <= 1 &&
+    (!classNames[0] || (typeof classNames[0] === 'string' && classNames[0].indexOf(' ') === -1))
+  ) {
     // short circuit if there's no custom class names.
     return classNames[0] || undefined;
   }
@@ -41,7 +48,16 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
       continue;
     }
 
-    const groups = cls.split(' ');
+    let groups: string[] = [];
+    if (typeof cls === 'string') {
+      groups = cls.split(' ');
+    } else if (Array.isArray(cls)) {
+      groups = cls;
+    } else if (cls instanceof AtomicGroups) {
+      groups = cls.toString().split(' ');
+    } else {
+      // NOTE: Could throw an error here to help understand that this is collecting invalid styles.
+    }
 
     for (let x = 0; x < groups.length; x++) {
       const atomic = groups[x];

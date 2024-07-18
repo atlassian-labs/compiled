@@ -18,14 +18,14 @@ const cache = new Map();
  * `ac` returns an instance of AtomicGroups. The instance holds the knowledge of Atomic Group so we can chain `ac`.
  * e.g. <div className={ax([ax(['_aaaa_b']), '_aaaa_c'])} />
  */
-class AtomicGroups {
+export class AtomicGroups {
   values: Map<string, string>;
   constructor(values: Map<string, string>) {
     // An object stores the relation between Atomic group and actual class name
     // e.g. { "aaaa": "a" } `aaaa` is the Atomic group and `a` is the actual class name
     this.values = values;
   }
-  toString() {
+  toString(): string {
     let str = '';
 
     for (const [, value] of this.values) {
