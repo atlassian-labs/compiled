@@ -5,8 +5,8 @@ interface CSSPropertiesSchema {
     color: 'var(--ds-text-hover)';
     background: 'var(--ds-surface-hover)' | 'var(--ds-surface-sunken-hover)';
   };
-  color: 'var(--ds-text)' | 'var(--ds-text-bold)';
-  background: 'var(--ds-surface)' | 'var(--ds-surface-sunken)';
+  color: 'var(--ds-text)' | 'var(--ds-text-bold)' | 'var(--ds-text-error)';
+  background: 'var(--ds-surface)' | 'var(--ds-surface-sunken)' | 'var(--ds-surface-overlay)';
   bkgrnd: 'red' | 'green';
 }
 
