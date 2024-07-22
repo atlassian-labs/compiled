@@ -13,6 +13,8 @@ export interface StyleSheetOpts {
 export type Bucket =
   // catch-all
   | ''
+  // font weight
+  | 'z'
   // link
   | 'l'
   // visited

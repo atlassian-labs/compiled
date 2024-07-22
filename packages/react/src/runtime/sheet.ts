@@ -1,11 +1,33 @@
 import { isCacheDisabled } from './cache';
 import type { Bucket, StyleSheetOpts } from './types';
 
+// Note: if we decide to follow this for margin/padding, maybe separate them into their own arrays in order to assign a different code
+/**
+ * Defines longhand CSS properties that should take precendence over their shorthand alternatives.
+ *
+ * In this example, `font-weight: 500` should override the 400 set as part of the `font` value.
+ * ```
+ *   font: normal 400 0.875rem/1.25rem ui-sans-serif;
+ *   font-weight: 500;
+ * ```
+ */
+const styleBucketPropertyOrdering = [
+  'font-family',
+  'font-size',
+  'font-stretch',
+  'font-style',
+  'font-variant',
+  'font-weight',
+  'line-height',
+];
+
 /**
  * Ordered style buckets using their short psuedo name.
- * If changes are needed make sure that it aligns with the definition in `sort-at-rule-pseudos.tsx`.
+ * If changes are needed make sure that it aligns with the definition in `packages/css/src/utils/style-ordering.ts`.
  */
 export const styleBucketOrdering: Bucket[] = [
+  // longhand properties
+  'z',
   // catch-all
   '',
   // link
@@ -34,7 +56,7 @@ const styleBucketsInHead: Partial<Record<Bucket, HTMLStyleElement>> = {};
 /**
  * Maps the long pseudo name to the short pseudo name.
  * Pseudos that match here will be ordered,
- * everythin else will make their way to the catch all style bucket.
+ * everything else will make their way to the catch all style bucket.
  * We reduce the pseduo name to save bundlesize.
  * Thankfully there aren't any overlaps, see: https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes.
  */
@@ -114,15 +136,23 @@ export const getStyleBucketName = (sheet: string): Bucket => {
     return 'm';
   }
 
+  const firstBracket = sheet.indexOf('{');
   /**
-   * We assume that classname will always be 9 character long,
+   * We assume that classname will always be 9 characters long,
    * using this the 10th character could be a pseudo declaration.
    */
   if (sheet.charCodeAt(10) === 58 /* ":" */) {
     // We send through a subset of the string instead of the full pseudo name.
     // For example `"focus-visible"` name would instead of `"us-visible"`.
     // Return a mapped pseudo else the default catch all bucket.
-    return pseudosMap[sheet.slice(14, sheet.indexOf('{'))] || '';
+    return pseudosMap[sheet.slice(14, firstBracket)] || '';
+  }
+
+  const property = sheet.slice(firstBracket + 1, sheet.indexOf(':', firstBracket)).trim();
+  // console.log(property);
+
+  if (styleBucketPropertyOrdering.includes(property)) {
+    return 'z';
   }
 
   // Return default catch all bucket

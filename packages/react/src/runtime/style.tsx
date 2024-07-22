@@ -16,6 +16,7 @@ interface StyleProps extends StyleSheetOpts {
 
 export default function Style(props: StyleProps): JSX.Element | null {
   const inserted = useCache();
+  // console.log(props.children);
 
   if (process.env.NODE_ENV === 'development') {
     props.children.forEach(analyzeCssInDev);

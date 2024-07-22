@@ -104,12 +104,17 @@ describe('<Style />', () => {
             `._g1234567:visited{ color: grey; }`,
             `._h1234567:focus-visible{ color: white; }`,
             `._i1234567:focus-within{ color: black; }`,
+            `._j1234567{ font-weight: 500; }`,
+            `._k1234567{ font: normal 400 0.875rem/1.25rem ui-sans-serif; }`,
+            `._l1234567{ line-height: 24px; }`,
+            `._m1234567{ font-family: ui-sans-serif; }`,
           ]}
         </Style>
       );
 
       expect(document.head.innerHTML.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
-        "<style>._d1234567{ display: block; }</style>
+        "<style>._j1234567{ font-weight: 500; }._l1234567{ line-height: 24px; }._m1234567{ font-family: ui-sans-serif; }</style>
+        <style>._d1234567{ display: block; }._k1234567{ font: normal 400 0.875rem/1.25rem ui-sans-serif; }</style>
         <style>._c1234567:link{ color: green; }</style>
         <style>._g1234567:visited{ color: grey; }</style>
         <style>._i1234567:focus-within{ color: black; }</style>

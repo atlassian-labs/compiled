@@ -52,6 +52,30 @@ describe('sorting pseudo-selectors', () => {
     `);
   });
 
+  fit('should sort declarations', () => {
+    const actual = transform`
+      .font {
+        font: normal 400 0.875rem/1.25rem ui-sans-serif;
+      }
+
+      .font-weight {
+        font-weight: 500;
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+            .font {
+              font: normal 400 0.875rem/1.25rem ui-sans-serif;
+            }
+
+            .font-weight {
+              font-weight: 500;
+            }
+          "
+      `);
+  });
+
   it('should sort pseudo rules', () => {
     const actual = transform`
       .hover-color-red:hover  {

@@ -1,4 +1,4 @@
-import type { ChildNode, Rule, Plugin, AtRule } from 'postcss';
+import type { ChildNode, Rule, Plugin, AtRule, Comment, Declaration } from 'postcss';
 
 import { sortPseudoSelectors } from '../utils/sort-pseudo-selectors';
 
@@ -43,13 +43,14 @@ export const sortAtomicStyleSheet = (sortAtRulesEnabled: boolean): Plugin => {
   return {
     postcssPlugin: 'sort-atomic-style-sheet',
     Once(root) {
-      const catchAll: ChildNode[] = [];
+      const catchAll: (Comment | Declaration)[] = [];
       const rules: Rule[] = [];
       const atRules: AtRuleInfo[] = [];
 
       root.each((node) => {
         switch (node.type) {
           case 'rule': {
+            // console.log(node.type, node.nodes[1].prop);
             if (node.first?.type === 'atrule') {
               atRules.push({
                 parsed: sortAtRulesEnabled ? parseAtRule(node.first.params) : [],
@@ -81,6 +82,7 @@ export const sortAtomicStyleSheet = (sortAtRulesEnabled: boolean): Plugin => {
       });
 
       sortPseudoSelectors(rules);
+      sortDeclarations(rules);
       if (sortAtRulesEnabled) {
         atRules.sort(sortAtRules);
       }
@@ -99,3 +101,27 @@ export const sortAtomicStyleSheet = (sortAtRulesEnabled: boolean): Plugin => {
 };
 
 export const postcss = true;
+
+const sortDeclarations = (rules: Rule[]): void => {
+  rules.sort((rule1, rule2) => {
+    const rule1Node = rule1.nodes[0];
+    const rule2Node = rule2.nodes[0];
+    if (rule1Node.type === 'decl' && rule2Node.type === 'decl') {
+      const prop1 = rule1Node.prop;
+      const prop2 = rule2Node.prop;
+      return propertyOrdering.indexOf(prop1) - propertyOrdering.indexOf(prop2);
+    } else {
+      return 0;
+    }
+  });
+};
+
+const propertyOrdering = [
+  'font-family',
+  'font-size',
+  'font-stretch',
+  'font-style',
+  'font-variant',
+  'font-weight',
+  'line-height',
+];

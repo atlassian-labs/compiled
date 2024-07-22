@@ -22,6 +22,7 @@ const TextWithTemplateLiteral = styled.span<TextProps>`
 
 const TextWithTernaryOperatorTemplateLiteral = styled.span<TextProps>`
   color: ${(props) => (props.isPrimary ? 'blue' : 'red')};
+  font: normal 400 0.875rem/1.25rem ui-sans-serif;
   font-weight: ${(props) =>
     props.isPrimary && props.isMaybe ? (props.isBolded && 'bold') || 'normal' : 'light'};
 `;
