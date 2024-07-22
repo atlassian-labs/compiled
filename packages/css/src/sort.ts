@@ -10,11 +10,17 @@ import { sortAtomicStyleSheet } from './plugins/sort-atomic-style-sheet';
  * @param stylesheet
  * @returns
  */
-export function sort(stylesheet: string, sortAtRulesEnabled: boolean | undefined): string {
+export function sort(
+  stylesheet: string,
+  {
+    sortAtRulesEnabled,
+    sortShorthandEnabled,
+  }: { sortAtRulesEnabled: boolean | undefined; sortShorthandEnabled: boolean | undefined }
+): string {
   const result = postcss([
     discardDuplicates(),
     mergeDuplicateAtRules(),
-    sortAtomicStyleSheet(sortAtRulesEnabled ?? true),
+    sortAtomicStyleSheet({ sortAtRulesEnabled, sortShorthandEnabled }),
   ]).process(stylesheet, {
     from: undefined,
   });

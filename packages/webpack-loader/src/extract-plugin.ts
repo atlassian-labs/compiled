@@ -127,7 +127,12 @@ export class CompiledExtractPlugin {
 
         const [asset] = cssAssets;
         const contents = getAssetSourceContents(asset.source);
-        const newSource = new RawSource(sort(contents, this.#options.sortAtRules));
+
+        const sortConfig = {
+          sortAtRulesEnabled: this.#options.sortAtRules,
+          sortShorthandEnabled: this.#options.sortShorthand,
+        };
+        const newSource = new RawSource(sort(contents, sortConfig));
 
         compilation.updateAsset(asset.name, newSource, asset.info);
       });
