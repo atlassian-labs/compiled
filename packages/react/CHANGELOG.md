@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.17.3
+
+### Patch Changes
+
+- 25a4bed4: Fix the `cx()` function's class collection at runtime as it generated class instances rather than strings
+
 ## 0.17.2
 
 ### Patch Changes
