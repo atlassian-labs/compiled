@@ -135,4 +135,11 @@ export interface CompiledExtractPluginOptions {
    * Defaults to `true`.
    */
   sortAtRules?: boolean;
+
+  /**
+   * Whether to sort shorthand and longhand properties,
+   * eg. `margin` before `margin-top` for enforced determinism.
+   * Defaults to `false`.
+   */
+  sortShorthand?: boolean;
 }

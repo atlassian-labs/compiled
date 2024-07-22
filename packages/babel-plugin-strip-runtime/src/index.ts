@@ -86,10 +86,13 @@ export default declare<PluginPass>((api) => {
               cssFilename
             );
             mkdirSync(dirname(cssFilePath), { recursive: true });
-            writeFileSync(
-              cssFilePath,
-              sort(this.styleRules.sort().join('\n'), this.opts.sortAtRules)
-            );
+
+            const sortConfig = {
+              sortAtRulesEnabled: this.opts.sortAtRules,
+              sortShorthandEnabled: this.opts.sortShorthand,
+            };
+
+            writeFileSync(cssFilePath, sort(this.styleRules.sort().join('\n'), sortConfig));
 
             // Add css import to file
             path.unshiftContainer(
