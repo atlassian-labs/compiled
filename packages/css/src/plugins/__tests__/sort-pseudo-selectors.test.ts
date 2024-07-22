@@ -5,7 +5,9 @@ import { atomicifyRules } from '../atomicify-rules';
 import { sortAtomicStyleSheet } from '../sort-atomic-style-sheet';
 
 const transform = (css: TemplateStringsArray) => {
-  const result = postcss([sortAtomicStyleSheet(true)]).process(css[0], {
+  const result = postcss([
+    sortAtomicStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
+  ]).process(css[0], {
     from: undefined,
   });
 
@@ -13,12 +15,13 @@ const transform = (css: TemplateStringsArray) => {
 };
 
 const transformWithAtomicClasses = (css: TemplateStringsArray) => {
-  const result = postcss([atomicifyRules(), sortAtomicStyleSheet(true), whitespace()]).process(
-    css[0],
-    {
-      from: undefined,
-    }
-  );
+  const result = postcss([
+    atomicifyRules(),
+    sortAtomicStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
+    whitespace(),
+  ]).process(css[0], {
+    from: undefined,
+  });
 
   return result.css;
 };

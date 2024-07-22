@@ -3,7 +3,9 @@ import postcss from 'postcss';
 import { sortAtomicStyleSheet } from '../sort-atomic-style-sheet';
 
 const transform = (css: string) => {
-  const result = postcss([sortAtomicStyleSheet(true)]).process(css, {
+  const result = postcss([
+    sortAtomicStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
+  ]).process(css, {
     from: undefined,
   });
 
