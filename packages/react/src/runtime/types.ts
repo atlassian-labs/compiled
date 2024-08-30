@@ -11,6 +11,11 @@ export interface StyleSheetOpts {
  * Buckets under which we will group our stylesheets
  */
 export type Bucket =
+  // shorthand properties
+  | 's-root'
+  | 's-1'
+  | 's-2'
+  | 's-3'
   // catch-all
   | ''
   // link

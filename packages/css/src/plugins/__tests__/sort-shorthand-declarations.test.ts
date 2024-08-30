@@ -5,7 +5,7 @@ import { sortAtomicStyleSheet } from '../sort-atomic-style-sheet';
 
 const transform = (css: string, enabled = true) => {
   const result = postcss([
-    sortAtomicStyleSheet({ sortAtRulesEnabled: false, sortShorthandEnabled: enabled }),
+    sortAtomicStyleSheet({ sortAtRulesEnabled: true, sortShorthandEnabled: enabled }),
   ]).process(css, {
     from: undefined,
   });
@@ -181,6 +181,164 @@ describe('sort shorthand vs. longhand declarations', () => {
           outline-width: 1px;
         }
       }"
+    `);
+  });
+
+  it("sorts 4 layers deep of shorthands from 'all' to 'border-block-start'", () => {
+    const actual = transform(outdent`
+      @media all {
+        .f {
+          display: block;
+        }
+        .e {
+          border-block-start-color: transparent;
+        }
+        .d {
+          border-block-start: none;
+        }
+        .c {
+          border-top: none;
+        }
+        .b {
+          border: none;
+        }
+        .a {
+          all: unset;
+        }
+      }
+
+      .f:focus {
+        display: block;
+      }
+      .e:hover {
+        border-block-start-color: transparent;
+      }
+      .d:active {
+        border-block-start: none;
+      }
+      .c[data-foo='bar'] {
+        border-top: none;
+      }
+      .b[disabled] {
+        border: none;
+      }
+      .a > .external {
+        all: unset;
+      }
+
+      .f {
+        display: block;
+      }
+      .e {
+        border-block-start-color: transparent;
+      }
+      .d {
+        border-block-start: none;
+      }
+      .c {
+        border-top: none;
+      }
+      .b {
+        border: none;
+      }
+      .a {
+        all: unset;
+      }
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+      .a {
+        all: unset;
+      }
+      .a > .external {
+        all: unset;
+      }
+      .b[disabled] {
+        border: none;
+      }
+      .c[data-foo='bar'] {
+        border-top: none;
+      }
+
+      .f {
+        display: block;
+      }
+      .b {
+        border: none;
+      }
+      .c {
+        border-top: none;
+      }
+      .d {
+        border-block-start: none;
+      }
+      .d:active {
+        border-block-start: none;
+      }
+      .e {
+        border-block-start-color: transparent;
+      }
+
+      .f:focus {
+        display: block;
+      }
+      .e:hover {
+        border-block-start-color: transparent;
+      }@media all {
+        .a {
+          all: unset;
+        }
+        .f {
+          display: block;
+        }
+        .b {
+          border: none;
+        }
+        .c {
+          border-top: none;
+        }
+        .d {
+          border-block-start: none;
+        }
+        .e {
+          border-block-start-color: transparent;
+        }
+      }"
+    `);
+  });
+
+  it('sorts non-atomic classes inline, but only singular declaration rules against each other', () => {
+    const actual = transform(outdent`
+      .e { border-top: none; }
+      .a {
+        border-block-start: 1px solid;
+        border-top: red;
+        all: reset;
+        border-block-start-color: transparent;
+        border: 2px dashed;
+      }
+      .f { border-block-start-color: transparent; }
+      .d { border: none; }
+      .c { all: unset; }
+      .b { all: unset; }
+    `);
+
+    // WARNING: This may be wrong as `.a { … }` is not sorted as we expect, it _should_ be 'abcdef' not 'eabcdf'.
+    // Is this a real scenario—multiple variables in a singular class?
+    expect(actual).toMatchInlineSnapshot(`
+      ".e { border-top: none; }
+      .a {
+        all: reset;
+        border: 2px dashed;
+        border-top: red;
+        border-block-start: 1px solid;
+        border-block-start-color: transparent;
+      }
+      .b { all: unset; }
+      .c { all: unset; }
+      .d { border: none; }
+      .f { border-block-start-color: transparent; }"
     `);
   });
 

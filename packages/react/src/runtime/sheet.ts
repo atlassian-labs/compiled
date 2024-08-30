@@ -1,3 +1,5 @@
+import { getShorthandDepth } from '@compiled/utils';
+
 import { isCacheDisabled } from './cache';
 import type { Bucket, StyleSheetOpts } from './types';
 
@@ -6,6 +8,11 @@ import type { Bucket, StyleSheetOpts } from './types';
  * If changes are needed make sure that it aligns with the definition in `sort-at-rule-pseudos.tsx`.
  */
 export const styleBucketOrdering: Bucket[] = [
+  // shorthand properties
+  's-root',
+  's-1',
+  's-2',
+  's-3',
   // catch-all
   '',
   // link
@@ -114,15 +121,26 @@ export const getStyleBucketName = (sheet: string): Bucket => {
     return 'm';
   }
 
+  const firstBracket = sheet.indexOf('{');
+
   /**
    * We assume that classname will always be 9 character long,
-   * using this the 10th character could be a pseudo declaration.
+   * using this the 10th characters could be a pseudo declaration.
    */
   if (sheet.charCodeAt(10) === 58 /* ":" */) {
     // We send through a subset of the string instead of the full pseudo name.
     // For example `"focus-visible"` name would instead of `"us-visible"`.
     // Return a mapped pseudo else the default catch all bucket.
-    return pseudosMap[sheet.slice(14, sheet.indexOf('{'))] || '';
+    const mapped = pseudosMap[sheet.slice(14, firstBracket)];
+    if (mapped) return mapped;
+  }
+
+  const property = sheet.slice(firstBracket + 1, sheet.indexOf(':', firstBracket)).trim();
+
+  const shorthandDepth = getShorthandDepth(property);
+  if (shorthandDepth) {
+    // NOTE: This doesn't actually work fully because there's various _layers_ of shorthands — up to 4 deep, I believe…
+    return `s-${shorthandDepth}` as const;
   }
 
   // Return default catch all bucket

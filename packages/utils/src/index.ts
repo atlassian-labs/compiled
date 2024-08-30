@@ -8,3 +8,4 @@ export { createError } from './error';
 export { preserveLeadingComments } from './preserve-leading-comments';
 export { INCREASE_SPECIFICITY_SELECTOR } from './increase-specificity';
 export { DEFAULT_PARSER_BABEL_PLUGINS } from './default-parser-babel-plugins';
+export { shorthandFor, getShorthandDepth } from './shorthand';
