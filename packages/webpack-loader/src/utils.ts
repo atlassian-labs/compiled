@@ -1,4 +1,10 @@
-import type { Compilation as CompilationType, Compiler, sources, RuleSetRule } from 'webpack';
+import type {
+  Compilation as CompilationType,
+  Compiler,
+  sources,
+  RuleSetRule,
+  WebpackOptionsNormalized,
+} from 'webpack';
 
 /**
  * Helper function to set plugin configured option on the @compiled/webpack-loader
@@ -13,6 +19,7 @@ const setOptionOnCompiledWebpackLoader = (use: RuleSetRule['use'], pluginName: s
 
   for (const nestedUse of use) {
     if (
+      nestedUse &&
       typeof nestedUse === 'object' &&
       (nestedUse.loader === '@compiled/webpack-loader' ||
         nestedUse.loader?.includes('/node_modules/@compiled/webpack-loader'))
@@ -34,15 +41,21 @@ const setOptionOnCompiledWebpackLoader = (use: RuleSetRule['use'], pluginName: s
  * @returns
  */
 export const setPluginConfiguredOption = (
-  rules: (RuleSetRule | '...')[],
+  rules: WebpackOptionsNormalized['module']['rules'],
   pluginName: string
 ): void => {
   for (const r of rules) {
+    if (!r) {
+      continue;
+    }
+
     const rule = r as RuleSetRule;
     const nestedRules = rule.oneOf ?? rule.rules;
     if (nestedRules) {
       for (const nestedRule of nestedRules) {
-        setOptionOnCompiledWebpackLoader(nestedRule.use, pluginName);
+        if (nestedRule) {
+          setOptionOnCompiledWebpackLoader(nestedRule.use, pluginName);
+        }
       }
     } else {
       setOptionOnCompiledWebpackLoader(rule.use, pluginName);

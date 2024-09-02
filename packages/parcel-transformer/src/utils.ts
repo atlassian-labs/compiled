@@ -8,6 +8,8 @@ import type { ParcelTransformerOpts } from './types';
 
 export function createDefaultResolver(config: ParcelTransformerOpts): Resolver {
   const resolver = ResolverFactory.createResolver({
+    // @ts-expect-error - enhanced-resolve CachedInputFileSystem types are not
+    // compatible with @types/node fs types
     fileSystem: new CachedInputFileSystem(fs, 4000),
     ...(config.extensions && {
       extensions: config.extensions,
