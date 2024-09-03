@@ -43,9 +43,6 @@ jobs:
       - name: Validate
         run: yarn lint
 
-      - name: Run tests
-        run: yarn test:cover --ci
-
       - name: Check prettier
         run: yarn prettier:check
 
@@ -59,6 +56,11 @@ jobs:
 
       - name: Build source for remainder tests
         run: yarn build
+
+        # Needs to run after `yarn build` so that `packages/webpack-loader/`
+        # tests can resolve `@compiled/react/runtime` correctly.
+      - name: Run tests
+        run: yarn test:cover --ci
 
       - name: Run import test
         run: yarn test:imports

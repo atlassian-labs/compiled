@@ -14,8 +14,12 @@ export function createDefaultResolver({ resolveOptions, webpackResolveOptions }:
   // Setup the default resolver, where webpack will merge any passed in options with the default
   // resolve configuration. Ideally, we use this.getResolve({ ...resolve, useSyncFileSystemCalls: true, })
   // However, it does not work correctly when in development mode :/
+
+  // @ts-expect-error - enhanced-resolve CachedInputFileSystem types are not
+  // compatible with @types/node fs types
   const resolver = ResolverFactory.createResolver({
-    // @ts-expect-error
+    // @ts-expect-error - enhanced-resolve CachedInputFileSystem types are not
+    // compatible with @types/node fs types
     fileSystem: new CachedInputFileSystem(fs, 4000),
     ...(webpackResolveOptions ?? {}),
     ...resolveOptions,
