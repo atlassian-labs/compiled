@@ -193,10 +193,10 @@ describe('sort shorthand vs. longhand declarations', () => {
         .e {
           border-block-start-color: transparent;
         }
-        .d {
+        .c {
           border-block-start: none;
         }
-        .c {
+        .d {
           border-top: none;
         }
         .b {
@@ -232,10 +232,10 @@ describe('sort shorthand vs. longhand declarations', () => {
       .e {
         border-block-start-color: transparent;
       }
-      .d {
+      .c {
         border-block-start: none;
       }
-      .c {
+      .d {
         border-top: none;
       }
       .b {
@@ -268,10 +268,10 @@ describe('sort shorthand vs. longhand declarations', () => {
         border: none;
       }
       .c {
-        border-top: none;
+        border-block-start: none;
       }
       .d {
-        border-block-start: none;
+        border-top: none;
       }
       .d:active {
         border-block-start: none;
@@ -296,10 +296,10 @@ describe('sort shorthand vs. longhand declarations', () => {
           border: none;
         }
         .c {
-          border-top: none;
+          border-block-start: none;
         }
         .d {
-          border-block-start: none;
+          border-top: none;
         }
         .e {
           border-block-start-color: transparent;
@@ -331,8 +331,8 @@ describe('sort shorthand vs. longhand declarations', () => {
       .a {
         all: reset;
         border: 2px dashed;
-        border-top: red;
         border-block-start: 1px solid;
+        border-top: red;
         border-block-start-color: transparent;
       }
       .b { all: unset; }

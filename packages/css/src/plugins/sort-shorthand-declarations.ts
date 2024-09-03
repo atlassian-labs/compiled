@@ -21,6 +21,8 @@ const findDeclaration = (node: ChildNode): Declaration | Declaration[] | undefin
 
     return declarations;
   }
+
+  return undefined;
 };
 
 const sortNodes = (a: ChildNode, b: ChildNode): number => {

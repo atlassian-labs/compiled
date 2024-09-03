@@ -2,6 +2,9 @@ const ALL = 'all' as const;
 
 /**
  * List of shorthand properties that should be sorted (or expanded).
+ * Please note these aren't necessarily just shorthand properties against their constituent properties, but
+ * also shorthand properties against sibnling constituent properties.
+ * Example: `border-color` supercedes `border-top-color` and `border-block-color` (and others)
  *
  * This list is outdated and should be expanded to include all shorthand properties—there are 71 as of writing.
  *
@@ -11,47 +14,28 @@ const ALL = 'all' as const;
  */
 export const shorthandFor: { [key: string]: true | string[] } = {
   [ALL]: true, // This is a special case, it's a shorthand for all properties
-  // TODO: Add all shorthand properties
-  // animation
-  // animation-range
-  // background
-  // border-color
-  // border-image
-  // border-radius
-  // border-style
-  // border-width
-  // column-rule
-  // columns
-  // contain-intrinsic-size
-  // container
-  // flex
-  // flex-flow
-  // font-synthesis
-  // gap
-  // list-style
-  // mask
-  // mask-border
-  // offset
-  // overscroll-behavior
-  // padding
-  // padding-block
-  // padding-inline
-  // place-content
-  // place-items
-  // place-self
-  // position-try
-  // scroll-margin
-  // scroll-margin-block
-  // scroll-margin-inline
-  // scroll-padding
-  // scroll-padding-block
-  // scroll-padding-inline
-  // scroll-timeline
-  // transition
-  // view-timeline
-  // -webkit-text-stroke
-  // -webkit-border-before
-  // -webkit-mask-box-image
+  animation: [
+    'animation-delay',
+    'animation-direction',
+    'animation-duration',
+    'animation-fill-mode',
+    'animation-iteration-count',
+    'animation-name',
+    'animation-play-state',
+    'animation-timeline',
+    'animation-timing-function',
+  ],
+  'animation-range': ['animation-range-start', 'animation-range-end'],
+  background: [
+    'background-attachment',
+    'background-clip',
+    'background-color',
+    'background-image',
+    'background-origin',
+    'background-position',
+    'background-repeat',
+    'background-size',
+  ],
   border: [
     'border-block',
     'border-block-end',
@@ -88,102 +72,23 @@ export const shorthandFor: { [key: string]: true | string[] } = {
     'border-top-style',
     'border-top-width',
   ],
-  'border-top': [
-    'border-top-color',
-    'border-top-style',
-    'border-top-width',
-    'border-block-start',
-    'border-block-start-color',
-    'border-block-start-style',
-    'border-block-start-width',
-    'border-block-end',
-    'border-block-end-color',
-    'border-block-end-style',
-    'border-block-end-width',
-  ],
-  'border-right': [
-    'border-right-color',
-    'border-right-style',
-    'border-right-width',
-    'border-inline-start',
-    'border-inline-start-color',
-    'border-inline-start-style',
-    'border-inline-start-width',
-    'border-inline-end',
-    'border-inline-end-color',
-    'border-inline-end-style',
-    'border-inline-end-width',
-  ],
-  'border-bottom': [
-    'border-bottom-color',
-    'border-bottom-style',
-    'border-bottom-width',
-    'border-block-start',
-    'border-block-start-color',
-    'border-block-start-style',
-    'border-block-start-width',
-    'border-block-end',
-    'border-block-end-color',
-    'border-block-end-style',
-    'border-block-end-width',
-  ],
-  'border-left': [
-    'border-left-color',
-    'border-left-style',
-    'border-left-width',
-    'border-inline-start',
-    'border-inline-start-color',
-    'border-inline-start-style',
-    'border-inline-start-width',
-    'border-inline-end',
-    'border-inline-end-color',
-    'border-inline-end-style',
-    'border-inline-end-width',
-  ],
-  'border-inline': [
-    'border-inline-start',
-    'border-inline-start-color',
-    'border-inline-start-style',
-    'border-inline-start-width',
-    'border-inline-end',
-    'border-inline-end-color',
-    'border-inline-end-style',
-    'border-inline-end-width',
-    'border-left-color',
-    'border-left-style',
-    'border-left-width',
-    'border-right-color',
-    'border-right-style',
-    'border-right-width',
-  ],
-  'border-inline-start': [
-    'border-inline-start-color',
-    'border-inline-start-style',
-    'border-inline-start-width',
-    'border-left-color',
-    'border-left-style',
-    'border-left-width',
-    'border-right-color',
-    'border-right-style',
-    'border-right-width',
-  ],
-  'border-inline-end': [
-    'border-inline-end-color',
-    'border-inline-end-style',
-    'border-inline-end-width',
-    'border-left-color',
-    'border-left-style',
-    'border-left-width',
-    'border-right-color',
-    'border-right-style',
-    'border-right-width',
-  ],
   'border-block': [
     'border-block-start',
     'border-block-start-color',
     'border-block-start-style',
     'border-block-start-width',
     'border-block-end',
+    'border-block-end-color',
+    'border-block-end-style',
+    'border-block-end-width',
+    'border-top-color',
+    'border-top-style',
+    'border-top-width',
+    'border-bottom-color',
+    'border-bottom-style',
+    'border-bottom-width',
+  ],
+  'border-block-end': [
     'border-block-end-color',
     'border-block-end-style',
     'border-block-end-width',
@@ -205,17 +110,152 @@ export const shorthandFor: { [key: string]: true | string[] } = {
     'border-bottom-style',
     'border-bottom-width',
   ],
-  'border-block-end': [
-    'border-block-end-color',
-    'border-block-end-style',
-    'border-block-end-width',
-    'border-top-color',
-    'border-top-style',
-    'border-top-width',
+  'border-bottom': [
     'border-bottom-color',
     'border-bottom-style',
     'border-bottom-width',
+    'border-block-start-color',
+    'border-block-start-style',
+    'border-block-start-width',
+    'border-block-end-color',
+    'border-block-end-style',
+    'border-block-end-width',
   ],
+  'border-color': [
+    'border-block-color',
+    'border-block-start-color',
+    'border-block-end-color',
+    'border-inline-color',
+    'border-inline-start-color',
+    'border-inline-end-color',
+    'border-bottom-color',
+    'border-left-color',
+    'border-right-color',
+    'border-top-color',
+  ],
+  'border-image': [
+    'border-image-outset',
+    'border-image-repeat',
+    'border-image-slice',
+    'border-image-source',
+    'border-image-width',
+  ],
+  'border-inline': [
+    'border-inline-start',
+    'border-inline-start-color',
+    'border-inline-start-style',
+    'border-inline-start-width',
+    'border-inline-end',
+    'border-inline-end-color',
+    'border-inline-end-style',
+    'border-inline-end-width',
+    'border-left-color',
+    'border-left-style',
+    'border-left-width',
+    'border-right-color',
+    'border-right-style',
+    'border-right-width',
+  ],
+  'border-inline-end': [
+    'border-inline-end-color',
+    'border-inline-end-style',
+    'border-inline-end-width',
+    'border-left-color',
+    'border-left-style',
+    'border-left-width',
+    'border-right-color',
+    'border-right-style',
+    'border-right-width',
+  ],
+  'border-inline-start': [
+    'border-inline-start-color',
+    'border-inline-start-style',
+    'border-inline-start-width',
+    'border-left-color',
+    'border-left-style',
+    'border-left-width',
+    'border-right-color',
+    'border-right-style',
+    'border-right-width',
+  ],
+  'border-left': [
+    'border-left-color',
+    'border-left-style',
+    'border-left-width',
+    'border-inline-start-color',
+    'border-inline-start-style',
+    'border-inline-start-width',
+    'border-inline-end-color',
+    'border-inline-end-style',
+    'border-inline-end-width',
+  ],
+  'border-radius': [
+    'border-top-left-radius',
+    'border-top-right-radius',
+    'border-bottom-right-radius',
+    'border-bottom-left-radius',
+    'border-start-start-radius',
+    'border-start-end-radius',
+    'border-end-end-radius',
+    'border-end-start-radius',
+  ],
+  'border-right': [
+    'border-right-color',
+    'border-right-style',
+    'border-right-width',
+    'border-inline-start-color',
+    'border-inline-start-style',
+    'border-inline-start-width',
+    'border-inline-end-color',
+    'border-inline-end-style',
+    'border-inline-end-width',
+  ],
+  'border-style': [
+    'border-block-style',
+    'border-block-start-style',
+    'border-block-end-style',
+    'border-inline-style',
+    'border-inline-start-style',
+    'border-inline-end-style',
+    'border-bottom-style',
+    'border-left-style',
+    'border-right-style',
+    'border-top-style',
+  ],
+  'border-top': [
+    'border-top-color',
+    'border-top-style',
+    'border-top-width',
+    'border-block-start-color',
+    'border-block-start-style',
+    'border-block-start-width',
+    'border-block-end-color',
+    'border-block-end-style',
+    'border-block-end-width',
+  ],
+  'border-width': [
+    'border-block-width',
+    'border-block-start-width',
+    'border-block-end-width',
+    'border-inline-width',
+    'border-inline-start-width',
+    'border-inline-end-width',
+    'border-bottom-width',
+    'border-left-width',
+    'border-right-width',
+    'border-top-width',
+  ],
+  'column-rule': ['column-rule-color', 'column-rule-style', 'column-rule-width'],
+  columns: ['column-count', 'column-width'],
+  'contain-intrinsic-size': [
+    'contain-intrinsic-width',
+    'contain-intrinsic-block-size',
+    'contain-intrinsic-height',
+    'contain-intrinsic-inline-size',
+  ],
+  container: ['container-name', 'container-type'],
+  flex: ['flex-basis', 'flex-grow', 'flex-shrink'],
+  'flex-flow': ['flex-direction', 'flex-wrap'],
   font: [
     'font-style',
     'font-variant',
@@ -232,6 +272,12 @@ export const shorthandFor: { [key: string]: true | string[] } = {
     'line-height',
     'font-family',
   ],
+  'font-synthesis': [
+    'font-synthesis-style',
+    'font-synthesis-weight',
+    'font-synthesis-small-caps',
+    'font-synthesis-position',
+  ],
   'font-variant': [
     'font-variant-alternates',
     'font-variant-caps',
@@ -241,6 +287,7 @@ export const shorthandFor: { [key: string]: true | string[] } = {
     'font-variant-numeric',
     'font-variant-position',
   ],
+  gap: ['row-gap', 'column-gap'],
   grid: [
     'grid-template',
     'grid-template-rows',
@@ -275,6 +322,7 @@ export const shorthandFor: { [key: string]: true | string[] } = {
   ],
   'inset-block': ['inset-block-start', 'inset-block-end', 'top', 'bottom'],
   'inset-inline': ['inset-inline-start', 'inset-inline-end', 'left', 'right'],
+  'list-style': ['list-style-image', 'list-style-position', 'list-style-type'],
   margin: [
     'margin-block',
     'margin-block-end',
@@ -289,6 +337,33 @@ export const shorthandFor: { [key: string]: true | string[] } = {
   ],
   'margin-block': ['margin-block-start', 'margin-block-end', 'margin-top', 'margin-bottom'],
   'margin-inline': ['margin-inline-start', 'margin-inline-end', 'margin-left', 'margin-right'],
+  mask: [
+    'mask-clip',
+    'mask-composite',
+    'mask-image',
+    'mask-mode',
+    'mask-origin',
+    'mask-position',
+    'mask-repeat',
+    'mask-size',
+  ],
+  'mask-border': [
+    'mask-border-mode',
+    'mask-border-outset',
+    'mask-border-repeat',
+    'mask-border-slice',
+    'mask-border-source',
+    'mask-border-width',
+  ],
+  offset: ['offset-anchor', 'offset-distance', 'offset-path', 'offset-position', 'offset-rotate'],
+  outline: ['outline-color', 'outline-style', 'outline-width'],
+  overflow: ['overflow-x', 'overflow-y', 'overflow-block', 'overflow-inline'],
+  'overscroll-behavior': [
+    'overscroll-behavior-x',
+    'overscroll-behavior-y',
+    'overscroll-behavior-inline',
+    'overscroll-behavior-block',
+  ],
   padding: [
     'padding-block',
     'padding-block-end',
@@ -303,6 +378,59 @@ export const shorthandFor: { [key: string]: true | string[] } = {
   ],
   'padding-block': ['padding-block-start', 'padding-block-end', 'padding-top', 'padding-bottom'],
   'padding-inline': ['padding-inline-start', 'padding-inline-end', 'padding-left', 'padding-right'],
+  'place-content': ['align-content', 'justify-content'],
+  'place-items': ['align-items', 'justify-items'],
+  'place-self': ['align-self', 'justify-self'],
+  'position-try': ['position-try-order', 'position-try-fallbacks'],
+  'scroll-margin': [
+    'scroll-margin-block',
+    'scroll-margin-block-end',
+    'scroll-margin-block-start',
+    'scroll-margin-bottom',
+    'scroll-margin-inline',
+    'scroll-margin-inline-end',
+    'scroll-margin-inline-start',
+    'scroll-margin-left',
+    'scroll-margin-right',
+    'scroll-margin-top',
+  ],
+  'scroll-margin-block': [
+    'scroll-margin-block-start',
+    'scroll-margin-block-end',
+    'scroll-margin-top',
+    'scroll-margin-bottom',
+  ],
+  'scroll-margin-inline': [
+    'scroll-margin-inline-start',
+    'scroll-margin-inline-end',
+    'scroll-margin-left',
+    'scroll-margin-right',
+  ],
+  'scroll-padding': [
+    'scroll-padding-block',
+    'scroll-padding-block-end',
+    'scroll-padding-block-start',
+    'scroll-padding-bottom',
+    'scroll-padding-inline',
+    'scroll-padding-inline-end',
+    'scroll-padding-inline-start',
+    'scroll-padding-left',
+    'scroll-padding-right',
+    'scroll-padding-top',
+  ],
+  'scroll-padding-block': [
+    'scroll-padding-block-start',
+    'scroll-padding-block-end',
+    'scroll-padding-top',
+    'scroll-padding-bottom',
+  ],
+  'scroll-padding-inline': [
+    'scroll-padding-inline-start',
+    'scroll-padding-inline-end',
+    'scroll-padding-left',
+    'scroll-padding-right',
+  ],
+  'scroll-timeline': ['scroll-timeline-name', 'scroll-timeline-axis'],
   'text-decoration': [
     'text-decoration-color',
     'text-decoration-line',
@@ -311,8 +439,14 @@ export const shorthandFor: { [key: string]: true | string[] } = {
   ],
   'text-emphasis': ['text-emphasis-color', 'text-emphasis-style'],
   'text-wrap': ['text-wrap-mode', 'text-wrap-style'],
-  overflow: ['overflow-x', 'overflow-y'],
-  outline: ['outline-color', 'outline-style', 'outline-width'],
+  transition: [
+    'transition-behavior',
+    'transition-delay',
+    'transition-duration',
+    'transition-property',
+    'transition-timing-function',
+  ],
+  'view-timeline': ['view-timeline-name', 'view-timeline-axis'],
 };
 
 /** We look at shorthands to determine what level they are because we need some shorthands to override other shorthands…
