@@ -7,8 +7,11 @@ import {
   usesCompiledAPI,
 } from '../../utils/ast';
 import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-to-string';
-import { COMPILED_IMPORT } from '../../utils/constants';
-import { findJsxImportSourcePragma, findJsxPragma } from '../../utils/jsx';
+import {
+  findJsxImportSourcePragma,
+  findJsxPragma,
+  getDefaultCompiledImport,
+} from '../../utils/jsx';
 
 type Options = {
   detectConflictWithOtherLibraries: boolean;
@@ -62,10 +65,16 @@ const findReactDeclarationWithDefaultImport = (
 };
 
 function createFixer(context: Rule.RuleContext, source: SourceCode, options: Options) {
-  const compiledImports = findLibraryImportDeclarations(context, [COMPILED_IMPORT]);
+  const compiledImports = [
+    // TODO: Should this just be one call, eg. `[COMPILED_IMPORT, ...options.importSources]`?
+    ...findLibraryImportDeclarations(context),
+    ...findLibraryImportDeclarations(context, options.importSources),
+  ];
+  const defaultCompiledImport = getDefaultCompiledImport(compiledImports);
 
   return function* fix(fixer: Rule.RuleFixer) {
-    const pragma = options.runtime === 'classic' ? '@jsx jsx' : '@jsxImportSource @compiled/react';
+    const pragma =
+      options.runtime === 'classic' ? '@jsx jsx' : `@jsxImportSource ${defaultCompiledImport}`;
     const reactImport = findReactDeclarationWithDefaultImport(source);
     if (reactImport) {
       const [declaration, defaultImport] = reactImport;
@@ -163,11 +172,15 @@ export const jsxPragmaRule: Rule.RuleModule = {
     const source = context.getSourceCode();
     const comments = source.getAllComments();
 
-    const compiledImports = findLibraryImportDeclarations(context);
-    const otherCompiledImports = findLibraryImportDeclarations(context, options.importSources);
+    const compiledImports = [
+      // TODO: Should this just be one call, eg. `[COMPILED_IMPORT, ...options.importSources]`?
+      ...findLibraryImportDeclarations(context),
+      ...findLibraryImportDeclarations(context, options.importSources),
+    ];
     const otherLibraryImports = getOtherLibraryImports(context);
     const jsxPragma = findJsxPragma(comments, compiledImports);
-    const jsxImportSourcePragma = findJsxImportSourcePragma(comments);
+    const jsxImportSourcePragma = findJsxImportSourcePragma(comments, options.importSources);
+    const defaultCompiledImport = getDefaultCompiledImport(compiledImports);
 
     return {
       Program() {
@@ -176,7 +189,10 @@ export const jsxPragmaRule: Rule.RuleModule = {
             messageId: 'preferJsxImportSource',
             loc: jsxPragma.loc!,
             *fix(fixer) {
-              yield fixer.replaceText(jsxPragma as any, '/** @jsxImportSource @compiled/react */');
+              yield fixer.replaceText(
+                jsxPragma as any,
+                `/** @jsxImportSource ${defaultCompiledImport} */`
+              );
 
               const jsxImport = findDeclarationWithImport(compiledImports, 'jsx');
               if (!jsxImport) {
@@ -204,7 +220,6 @@ export const jsxPragmaRule: Rule.RuleModule = {
             *fix(fixer) {
               yield fixer.replaceText(jsxImportSourcePragma as any, '/** @jsx jsx */');
 
-              const compiledImports = findLibraryImportDeclarations(context);
               const jsxImport = findDeclarationWithImport(compiledImports, 'jsx');
               if (jsxImport) {
                 return;
@@ -216,9 +231,13 @@ export const jsxPragmaRule: Rule.RuleModule = {
 
                 yield fixer.replaceText(firstCompiledImport, specifiersString);
               } else {
+                const jsxImportSourceName = [...options.importSources, '@compiled/react'].find(
+                  (name) => jsxImportSourcePragma.value.includes(`@jsxImportSource ${name}`)
+                );
+
                 yield fixer.insertTextBefore(
                   source.ast.body[0],
-                  "import { jsx } from '@compiled/react';\n"
+                  `import { jsx } from '${jsxImportSourceName}';\n`
                 );
               }
             },
@@ -247,16 +266,13 @@ export const jsxPragmaRule: Rule.RuleModule = {
       },
 
       'JSXAttribute[name.name=/^css$/]': (node: Rule.Node) => {
-        if (
-          options.onlyRunIfImportingCompiled &&
-          !usesCompiledAPI([...compiledImports, ...otherCompiledImports])
-        ) {
+        if (options.onlyRunIfImportingCompiled && !usesCompiledAPI(compiledImports)) {
           return;
         }
 
         if (
           options.detectConflictWithOtherLibraries &&
-          [...compiledImports, ...otherCompiledImports].length &&
+          compiledImports.length &&
           otherLibraryImports.length
         ) {
           context.report({
