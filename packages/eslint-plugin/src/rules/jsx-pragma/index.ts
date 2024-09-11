@@ -7,6 +7,7 @@ import {
   usesCompiledAPI,
 } from '../../utils/ast';
 import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-to-string';
+import { COMPILED_IMPORT } from '../../utils/constants';
 import {
   findJsxImportSourcePragma,
   findJsxPragma,
@@ -65,11 +66,10 @@ const findReactDeclarationWithDefaultImport = (
 };
 
 function createFixer(context: Rule.RuleContext, source: SourceCode, options: Options) {
-  const compiledImports = [
-    // TODO: Should this just be one call, eg. `[COMPILED_IMPORT, ...options.importSources]`?
-    ...findLibraryImportDeclarations(context),
-    ...findLibraryImportDeclarations(context, options.importSources),
-  ];
+  const compiledImports = findLibraryImportDeclarations(context, [
+    COMPILED_IMPORT,
+    ...options.importSources,
+  ]);
   const defaultCompiledImport = getDefaultCompiledImport(compiledImports);
 
   return function* fix(fixer: Rule.RuleFixer) {
@@ -99,7 +99,7 @@ function createFixer(context: Rule.RuleContext, source: SourceCode, options: Opt
         // No import exists, add a new one!
         yield fixer.insertTextBefore(
           source.ast.body[0],
-          "import { jsx } from '@compiled/react';\n"
+          `import { jsx } from '${COMPILED_IMPORT}';\n`
         );
       } else {
         // An import exists with no JSX! Let's add one to the first found.
@@ -127,8 +127,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
         'Use of the jsxImportSource pragma (automatic runtime) is preferred over the jsx pragma (classic runtime).',
       preferJsx:
         'Use of the jsx pragma (classic runtime) is preferred over the jsx pragma (automatic runtime).',
-      emotionAndCompiledConflict:
-        "You can't have css/styled/jsx be imported from both Emotion and Compiled in the same file - this will cause type-checking and runtime errors. Consider changing all of your Emotion imports from `@emotion/react` to `@compiled/react`.",
+      emotionAndCompiledConflict: `You can't have css/styled/jsx be imported from both Emotion and Compiled in the same file - this will cause type-checking and runtime errors. Consider changing all of your Emotion imports from \`@emotion/react\` to \`${COMPILED_IMPORT}\`.`,
     },
     schema: [
       {
@@ -172,11 +171,10 @@ export const jsxPragmaRule: Rule.RuleModule = {
     const source = context.getSourceCode();
     const comments = source.getAllComments();
 
-    const compiledImports = [
-      // TODO: Should this just be one call, eg. `[COMPILED_IMPORT, ...options.importSources]`?
-      ...findLibraryImportDeclarations(context),
-      ...findLibraryImportDeclarations(context, options.importSources),
-    ];
+    const compiledImports = findLibraryImportDeclarations(context, [
+      COMPILED_IMPORT,
+      ...options.importSources,
+    ]);
     const otherLibraryImports = getOtherLibraryImports(context);
     const jsxPragma = findJsxPragma(comments, compiledImports);
     const jsxImportSourcePragma = findJsxImportSourcePragma(comments, options.importSources);
@@ -231,7 +229,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
 
                 yield fixer.replaceText(firstCompiledImport, specifiersString);
               } else {
-                const jsxImportSourceName = [...options.importSources, '@compiled/react'].find(
+                const jsxImportSourceName = [...options.importSources, COMPILED_IMPORT].find(
                   (name) => jsxImportSourcePragma.value.includes(`@jsxImportSource ${name}`)
                 );
 
