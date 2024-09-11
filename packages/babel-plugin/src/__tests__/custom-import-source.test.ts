@@ -61,6 +61,18 @@ describe('custom import source', () => {
     expect(actual).toInclude('@compiled/react/runtime');
   });
 
+  it('should pick up an automatic pragma from a custom package import source', () => {
+    const actual = transform(
+      `
+        /** @jsxImportSource @af/compiled */
+        <div css={{ color: 'red' }} />
+      `,
+      { filename: './foo/index.js', importSources: ['@af/compiled'] }
+    );
+
+    expect(actual).toInclude('@compiled/react/runtime');
+  });
+
   it("should handle custom package sources that aren't found", () => {
     expect(() =>
       transform(
