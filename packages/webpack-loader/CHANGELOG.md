@@ -1,5 +1,11 @@
 # @compiled/webpack-loader
 
+## 0.14.1
+
+### Patch Changes
+
+- 8f3149fa: When parsing the Webpack config `rules` option, also handle the situation where a rule might be falsy (null, undefined, 0, "")
+
 ## 0.14.0
 
 ### Minor Changes

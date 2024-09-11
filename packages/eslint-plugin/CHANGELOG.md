@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.14.0
+
+### Minor Changes
+
+- dbb7ba43: Update @compiled/jsx-pragma to properly support `options.importSources` for pragmas, eg. using a wrapper around '@compiled/react' to distribute a typed variant.
+
 ## 0.13.9
 
 ### Patch Changes
