@@ -1,5 +1,23 @@
 import { JSX_ANNOTATION_REGEX } from '@compiled/utils';
-import type { Comment, ImportDeclaration } from 'estree';
+import type { Comment, ImportDeclaration, ImportSpecifier } from 'estree';
+
+import { COMPILED_IMPORT } from './constants';
+
+const importsToNames = (compiledImports: ImportDeclaration[]): string[] =>
+  compiledImports.flatMap((declaration) => {
+    return String(declaration.source.value);
+  });
+
+export const filterCompiledImportWithJsx = (
+  compiledImports: ImportDeclaration[]
+): ImportDeclaration[] => {
+  return compiledImports.filter((imp) =>
+    imp.specifiers.some(
+      (spec): spec is ImportSpecifier =>
+        spec.type === 'ImportSpecifier' && spec.imported.name === 'jsx'
+    )
+  );
+};
 
 /**
  * Return the JSX pragma, which looks like this:
@@ -47,5 +65,19 @@ export const findJsxPragma = (
   return undefined;
 };
 
-export const findJsxImportSourcePragma = (comments: Comment[]): Comment | undefined =>
-  comments.find((n) => n.value.indexOf('@jsxImportSource @compiled/react') > -1);
+export const getDefaultCompiledImport = (compiledImports: ImportDeclaration[]): string => {
+  return importsToNames(compiledImports)[0] || COMPILED_IMPORT;
+};
+
+export const findJsxImportSourcePragma = (
+  comments: Comment[],
+  importSources: string[]
+): Comment | undefined => {
+  const defaultedImportSources = [...new Set([...importSources, COMPILED_IMPORT])];
+
+  return comments.find((n) =>
+    defaultedImportSources.some((jsxImportSource) =>
+      n.value.includes(`@jsxImportSource ${jsxImportSource}`)
+    )
+  );
+};
