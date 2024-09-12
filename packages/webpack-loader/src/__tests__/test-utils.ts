@@ -17,6 +17,7 @@ export interface BundleOptions {
   mode: 'development' | 'production';
   resolve?: ResolveOptions;
   resolver?: string;
+  importSources?: string[];
 }
 
 export function bundle(
@@ -29,6 +30,7 @@ export function bundle(
     mode,
     resolve = {},
     resolver,
+    importSources,
   }: BundleOptions
 ): Promise<Record<string, string>> {
   const outputPath = join(__dirname, 'dist');
@@ -56,6 +58,7 @@ export function bundle(
               options: {
                 extract,
                 importReact: false,
+                importSources,
                 optimizeCss: false,
                 resolve,
                 resolver,
@@ -86,6 +89,7 @@ export function bundle(
     resolve: {
       alias: {
         'webpack-alias': join(__dirname, '..', '__fixtures__', 'lib', 'webpack-alias.ts'),
+        '@other/css': join(__dirname, '..', '__fixtures__', 'lib', 'other-css.ts'),
       },
       extensions: ['.tsx', '.ts', '.jsx', '.js'],
     },
