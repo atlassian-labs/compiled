@@ -1,5 +1,16 @@
 # @compiled/webpack-loader
 
+## 0.15.0
+
+### Minor Changes
+
+- 83c721d6: Modify the early-exit on our Webpack loader to work with `options.importSources` to properly transform other Compiled aliases.
+
+### Patch Changes
+
+- Updated dependencies [83c721d6]
+  - @compiled/babel-plugin@0.30.0
+
 ## 0.14.1
 
 ### Patch Changes
