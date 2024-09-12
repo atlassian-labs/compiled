@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.30.0
+
+### Minor Changes
+
+- 83c721d6: Allow an import of `jsx` from our internal `@atlaskit/css` package for babel plugin pragma resolutions.
+
 ## 0.29.1
 
 ### Patch Changes
