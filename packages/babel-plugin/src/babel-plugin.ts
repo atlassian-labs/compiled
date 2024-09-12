@@ -31,8 +31,7 @@ import { visitXcssPropPath } from './xcss-prop';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
 const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
-const COMPILED_IMPORT_SOURCE = '@compiled/react';
-const DEFAULT_IMPORT_SOURCES = [COMPILED_IMPORT_SOURCE, '@atlaskit/css'];
+const DEFAULT_IMPORT_SOURCES = ['@compiled/react', '@atlaskit/css'];
 
 let globalCache: Cache | undefined;
 
@@ -42,7 +41,7 @@ const findClassicJsxPragmaImport: Visitor<State> = {
 
     t.assertImportDeclaration(path.parent);
     // We don't care about other libraries
-    if (path.parent.source.value !== COMPILED_IMPORT_SOURCE) return;
+    if (!this.importSources.includes(path.parent.source.value)) return;
 
     if (
       (specifier.imported.type === 'StringLiteral' && specifier.imported.value === 'jsx') ||
@@ -131,7 +130,7 @@ export default declare<State>((api) => {
 
             // jsxPragmas currently only run on the top-level compiled module,
             // hence we don't interrogate this.importSources.
-            if (jsxSourceMatches && jsxSourceMatches[1] === COMPILED_IMPORT_SOURCE) {
+            if (jsxSourceMatches && this.importSources.includes(jsxSourceMatches[1])) {
               // jsxImportSource pragma found - turn on CSS prop!
               state.compiledImports = {};
               state.pragma.jsxImportSource = true;

@@ -1,7 +1,40 @@
 import { transform as transformCode } from '../test-utils';
 
 describe('jsx automatic', () => {
-  const transform = (code: string) => transformCode(code, { importReact: false });
+  const transform: typeof transformCode = (code, options) =>
+    transformCode(code, { ...options, importReact: false });
+
+  it('should work with css prop and a custom import source', () => {
+    const actual = transform(
+      `
+      import { cssMap } from '@af/compiled';
+      const styles = cssMap({ root: { color: 'blue' } });
+
+      <div css={styles.root} />
+    `,
+      { importSources: ['@af/compiled'] }
+    );
+
+    expect(actual).toMatchInlineSnapshot(`
+      "import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
+      const _ = "._syaz13q2{color:blue}";
+      const styles = {
+        root: "_syaz13q2",
+      };
+      _jsxs(CC, {
+        children: [
+          _jsx(CS, {
+            children: [_],
+          }),
+          _jsx("div", {
+            className: ax([styles.root]),
+          }),
+        ],
+      });
+      "
+    `);
+  });
 
   it('should work with css prop', () => {
     const actual = transform(`

@@ -20,7 +20,7 @@ describe.each<'development' | 'production'>(['development', 'production'])(
         mode,
       });
 
-    it('does not transform files that do not contain @compiled/react', async () => {
+    it('does not transform files that do not contain styles', async () => {
       const assets = await bundle(join(fixturesPath, 'no-compiled-styles.ts'));
 
       if (mode === 'development') {
@@ -28,6 +28,39 @@ describe.each<'development' | 'production'>(['development', 'production'])(
       } else {
         expect(assets['main.js']).toMatchInlineSnapshot(`"console.log("Hello world!");"`);
       }
+    });
+
+    it('does not transform files that do not contain @compiled/react', async () => {
+      const assets = await bundle(join(fixturesPath, 'non-compiled-import-source.tsx'));
+
+      if (mode === 'development') {
+        // This appears to just default to eval mode—I can't test much about it…
+        expect(assets['main.js']).toInclude('eval()');
+        expect(assets['main.js']).toInclude('React.createElement');
+        expect(assets['main.js']).not.toMatch(/\{[\s]*margin(-[a-z]+)?:[\s]*0[\s]*\}/);
+        expect(assets['main.js']).toInclude(
+          '__webpack_require__("./packages/webpack-loader/src/__fixtures__/non-compiled-import-source.tsx");'
+        );
+      } else {
+        expect(assets['main.js']).toMatch(
+          /@compiled\/react[\\n\s]+Code was executed when it shouldn't have\./
+        );
+        expect(assets['main.js']).toInclude('{margin:0}');
+      }
+    });
+
+    it('transforms a file that does not contain @compiled/react, but contains an importSource', async () => {
+      const assets = await bundle(join(fixturesPath, 'non-compiled-import-source.tsx'), {
+        importSources: ['@other/css'],
+      });
+
+      expect(assets['main.js']).not.toInclude('{margin:0}');
+      expect(assets['main.js']).toIncludeMultiple([
+        '._19pkidpf{margin-top:0}',
+        '._2hwxidpf{margin-right:0}',
+        '._otyridpf{margin-bottom:0}',
+        '._18u0idpf{margin-left:0}',
+      ]);
     });
 
     it('transforms local styles', async () => {

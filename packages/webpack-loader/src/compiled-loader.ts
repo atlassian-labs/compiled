@@ -124,18 +124,19 @@ export default async function compiledLoader(
   code: string
 ): Promise<void> {
   const callback = this.async();
+  const { resolve, ...options } = getLoaderOptions(this);
+  const importSources = ['@compiled/react', ...(options.importSources || [])];
 
-  // Bail early if Compiled isn't in the module or we're looking at compiled runtime code
+  // Bail early if we're looking at Compiled runtime code or Compiled (via an importSource) isn't in the module
   if (
-    code.indexOf('@compiled/react') === -1 ||
-    this.resourcePath.includes('/node_modules/@compiled/react')
+    this.resourcePath.includes('/node_modules/@compiled/react') ||
+    !importSources.some((name) => code.includes(name))
   ) {
     return callback(null, code);
   }
 
   try {
     const includedFiles: string[] = [];
-    const { resolve, ...options } = getLoaderOptions(this);
 
     // Transform to an AST using the local babel config.
     const ast = await parseAsync(code, {
