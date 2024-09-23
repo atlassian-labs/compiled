@@ -1,19 +1,88 @@
-const ALL = 'all' as const;
+export type ShorthandProperties =
+  | 'all'
+  | 'animation'
+  | 'animation-range'
+  | 'background'
+  | 'border'
+  | 'border-block'
+  | 'border-block-end'
+  | 'border-block-start'
+  | 'border-bottom'
+  | 'border-color'
+  | 'border-image'
+  | 'border-inline'
+  | 'border-inline-end'
+  | 'border-inline-start'
+  | 'border-left'
+  | 'border-radius'
+  | 'border-right'
+  | 'border-style'
+  | 'border-top'
+  | 'border-width'
+  | 'column-rule'
+  | 'columns'
+  | 'contain-intrinsic-size'
+  | 'container'
+  | 'flex'
+  | 'flex-flow'
+  | 'font'
+  | 'font-synthesis'
+  | 'font-variant'
+  | 'gap'
+  | 'grid'
+  | 'grid-area'
+  | 'grid-column'
+  | 'grid-row'
+  | 'grid-template'
+  | 'inset'
+  | 'inset-block'
+  | 'inset-inline'
+  | 'list-style'
+  | 'margin'
+  | 'margin-block'
+  | 'margin-inline'
+  | 'mask'
+  | 'mask-border'
+  | 'offset'
+  | 'outline'
+  | 'overflow'
+  | 'overscroll-behavior'
+  | 'padding'
+  | 'padding-block'
+  | 'padding-inline'
+  | 'place-content'
+  | 'place-items'
+  | 'place-self'
+  | 'position-try'
+  | 'scroll-margin'
+  | 'scroll-margin-block'
+  | 'scroll-margin-inline'
+  | 'scroll-padding'
+  | 'scroll-padding-block'
+  | 'scroll-padding-inline'
+  | 'scroll-timeline'
+  | 'text-decoration'
+  | 'text-emphasis'
+  | 'text-wrap'
+  | 'transition'
+  | 'view-timeline';
 
 /**
  * List of shorthand properties that should be sorted (or expanded).
  * Please note these aren't necessarily just shorthand properties against their constituent properties, but
- * also shorthand properties against sibnling constituent properties.
- * Example: `border-color` supercedes `border-top-color` and `border-block-color` (and others)
+ * also shorthand properties against sibling constituent properties.
+ * Example: `border-color` supersedes `border-top-color` and `border-block-color` (and others)
  *
  * This list is outdated and should be expanded to include all shorthand properties—there are 71 as of writing.
  *
- * Source MDN Web Docs (unclear which list is complete as there's a minor discrepenency)
+ * TODO: check whether there are more......
+ *
+ * Source MDN Web Docs (unclear which list is complete as there's a minor discrepancy)
  * @see https://github.com/search?q=repo%3Amdn%2Fcontent%20%22%23%23%20Constituent%20properties%22&type=code
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/Shorthand_properties#shorthand_properties
  */
-export const shorthandFor: { [key: string]: true | string[] } = {
-  [ALL]: true, // This is a special case, it's a shorthand for all properties
+export const shorthandFor: Record<ShorthandProperties, true | string[]> = {
+  all: true, // This is a special case, it's a shorthand for all properties
   animation: [
     'animation-delay',
     'animation-direction',
@@ -447,40 +516,4 @@ export const shorthandFor: { [key: string]: true | string[] } = {
     'transition-timing-function',
   ],
   'view-timeline': ['view-timeline-name', 'view-timeline-axis'],
-};
-
-/** We look at shorthands to determine what level they are because we need some shorthands to override other shorthands…
- * 0 – `all`
- * 1 – `border`, `margin`, `flex`, etc
- * 2 – `border-block`, `border-top` `margin-inline`
- * 3 – `border-block-start`, etc
- * null – `border-top-color`, `border-block-start-color`, `margin-block-start`, `margin-top`, etc (not shorthands)
- *
- * I'm not sure this is the best way to do this, but it _should_ work for known shorthands.
- */
-export const getShorthandDepth = (shorthand: string): 'root' | 1 | 2 | 3 | null => {
-  if (shorthand === ALL) {
-    return 'root';
-  }
-
-  if (!shorthandFor[shorthand]) return null;
-
-  // All shorthands (aside from 'all') are top-level shorthands (not a subset of another shorthand)
-  if (!shorthand.includes('-')) return 1;
-
-  let valid = true;
-  const parts = shorthand.split('-');
-  for (let i = 0; i < parts.length; i++) {
-    if (!shorthandFor[parts.slice(0, i + 1).join('-')]) {
-      valid = true;
-    }
-  }
-
-  if (valid && (parts.length === 1 || parts.length === 2 || parts.length === 3)) {
-    return parts.length;
-  } else {
-    console.error(`Invalid shorthand not properly categorized: ${shorthand}`);
-  }
-
-  return null;
 };

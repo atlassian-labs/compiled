@@ -1,4 +1,4 @@
-import { shorthandFor } from '@compiled/utils';
+import { shorthandFor, type ShorthandProperties } from '@compiled/utils';
 import type { ChildNode, Declaration } from 'postcss';
 
 const nodeIsDeclaration = (node: ChildNode): node is Declaration => node.type === 'decl';
@@ -35,12 +35,12 @@ const sortNodes = (a: ChildNode, b: ChildNode): number => {
 
   if (!aDecl?.prop || !bDecl?.prop) return 0;
 
-  const aShorthand = shorthandFor[aDecl.prop];
+  const aShorthand = shorthandFor[aDecl.prop as ShorthandProperties];
   if (aShorthand === true || aShorthand?.includes(bDecl.prop)) {
     return -1;
   }
 
-  const bShorthand = shorthandFor[bDecl.prop];
+  const bShorthand = shorthandFor[bDecl.prop as ShorthandProperties];
   if (bShorthand === true || bShorthand?.includes(aDecl.prop)) {
     return 1;
   }

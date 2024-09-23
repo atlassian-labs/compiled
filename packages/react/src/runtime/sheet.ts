@@ -1,6 +1,5 @@
-import { getShorthandDepth } from '@compiled/utils';
-
 import { isCacheDisabled } from './cache';
+import { getShorthandDepth } from './shorthand';
 import type { Bucket, StyleSheetOpts } from './types';
 
 /**
