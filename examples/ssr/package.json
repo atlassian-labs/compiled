@@ -7,6 +7,9 @@
     "start": "razzle start",
     "start:prod": "NODE_ENV=production node build/server.js"
   },
+  "resolutions": {
+    "path-to-regexp": "^0.1.10"
+  },
   "dependencies": {
     "@babel/helper-builder-react-jsx": "^7.19.0",
     "@babel/helper-builder-react-jsx-experimental": "^7.12.11",
