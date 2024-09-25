@@ -55,7 +55,7 @@ const sortNodes = (a: ChildNode, b: ChildNode): number => {
   //
   // For example, `border-top` and `border-color` are not shorthand properties of
   // each other, BUT both properties are shorthand versions of `border-top-color`.
-  // If `border-top` is in bucket 13 and `border-color` is in bucket 6, we can ensure
+  // If `border-top` is in bucket 12 and `border-color` is in bucket 6, we can ensure
   // that `border-color` always comes before `border-top`.
   if (aShorthandBucket && bShorthandBucket) {
     // TODO: write tests for this
