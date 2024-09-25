@@ -4,14 +4,26 @@ import type { Bucket, StyleSheetOpts } from './types';
 
 /**
  * Ordered style buckets using their short psuedo name.
- * If changes are needed make sure that it aligns with the definition in `sort-at-rule-pseudos.tsx`.
+ *
+ * If changes are needed to the pseudo-selectors, make sure that it aligns with the
+ * definition in `packages/css/src/utils/style-ordering.ts`.
  */
 export const styleBucketOrdering: Bucket[] = [
   // shorthand properties
-  's-root',
+  's-0',
   's-1',
   's-2',
   's-3',
+  's-4',
+  's-5',
+  's-6',
+  's-7',
+  's-8',
+  's-9',
+  's-10',
+  's-11',
+  's-12',
+  's-13',
   // catch-all
   '',
   // link
@@ -41,7 +53,7 @@ const styleBucketsInHead: Partial<Record<Bucket, HTMLStyleElement>> = {};
  * Maps the long pseudo name to the short pseudo name.
  * Pseudos that match here will be ordered,
  * everythin else will make their way to the catch all style bucket.
- * We reduce the pseduo name to save bundlesize.
+ * We reduce the pseudo name to save bundlesize.
  * Thankfully there aren't any overlaps, see: https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes.
  */
 const pseudosMap: Record<string, Bucket | undefined> = {
@@ -138,7 +150,6 @@ export const getStyleBucketName = (sheet: string): Bucket => {
 
   const shorthandDepth = getShorthandDepth(property);
   if (shorthandDepth) {
-    // NOTE: This doesn't actually work fully because there's various _layers_ of shorthands — up to 4 deep, I believe…
     return `s-${shorthandDepth}` as const;
   }
 

@@ -67,19 +67,28 @@ export type ShorthandProperties =
   | 'transition'
   | 'view-timeline';
 
+export type Depths = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13;
+
 /**
  * List of shorthand properties that should be sorted (or expanded).
- * Please note these aren't necessarily just shorthand properties against their constituent properties, but
- * also shorthand properties against sibling constituent properties.
+ *
+ * Please note these aren't necessarily just shorthand properties against
+ * their constituent properties, but also shorthand properties against sibling
+ * constituent properties.
+ *
  * Example: `border-color` supersedes `border-top-color` and `border-block-color` (and others)
  *
- * This list is outdated and should be expanded to include all shorthand properties—there are 71 as of writing.
+ * When making changes to `shorthandFor`, make sure to run
+ * `packages/scripts/src/generate-shorthand.ts`
+ * and copy the output to the two `shorthandBuckets` variables in
+ * `packages/utils/src/shorthand.ts` and
+ * `packages/react/src/runtime/shorthand.ts`.
  *
- * TODO: check whether there are more......
+ * The following list is derived from MDN Web Docs - this is not complete, but it
+ * tells us which rules developers are likely to use.
  *
- * Source MDN Web Docs (unclear which list is complete as there's a minor discrepancy)
- * @see https://github.com/search?q=repo%3Amdn%2Fcontent%20%22%23%23%20Constituent%20properties%22&type=code
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/Shorthand_properties#shorthand_properties
+ * @see https://github.com/search?q=repo%3Amdn%2Fcontent%20%22%23%23%20Constituent%20properties%22&type=code
  */
 export const shorthandFor: Record<ShorthandProperties, true | string[]> = {
   all: true, // This is a special case, it's a shorthand for all properties
@@ -516,4 +525,92 @@ export const shorthandFor: Record<ShorthandProperties, true | string[]> = {
     'transition-timing-function',
   ],
   'view-timeline': ['view-timeline-name', 'view-timeline-axis'],
+};
+
+// Make sure to update the `shorthandBuckets` variable in `packages/react/src/runtime/shorthand.ts`
+// after making changes to this object.
+//
+// You may want to use `packages/scripts/src/generate-shorthand.ts` to help
+// you generate this object.
+export const shorthandBuckets: Record<ShorthandProperties, Depths> = {
+  all: 0,
+  animation: 1,
+  'animation-range': 1,
+  background: 1,
+
+  // The following `border` properties are shorthand properties that overlap
+  // MASSIVELY. They are each in different buckets so that we have a
+  // deterministic ordering. (Even if it's not the _best_ deterministic ordering.)
+  //
+  // Ideally we would ban some of these `border` properties so that
+  // we don't need to create so many buckets to handle them.
+  //
+  // Note that `border-image` and `border-radius` do not overlap with
+  // these properties, so their bucket numbers are 1.
+  //
+  // TODO: test this
+  border: 1,
+  'border-block': 2,
+  'border-block-end': 3,
+  'border-block-start': 4,
+  'border-bottom': 5,
+  'border-color': 6,
+  'border-image': 1,
+  'border-inline': 7,
+  'border-inline-end': 8,
+  'border-inline-start': 9,
+  'border-left': 10,
+  'border-radius': 1,
+  'border-right': 10,
+  'border-style': 11,
+  'border-top': 12,
+  'border-width': 13,
+
+  'column-rule': 1,
+  columns: 1,
+  'contain-intrinsic-size': 1,
+  container: 1,
+  flex: 1,
+  'flex-flow': 1,
+  font: 1,
+  'font-synthesis': 1,
+  'font-variant': 2,
+  gap: 1,
+  grid: 1,
+  'grid-area': 1,
+  'grid-column': 2,
+  'grid-row': 2,
+  'grid-template': 2,
+  inset: 1,
+  'inset-block': 2,
+  'inset-inline': 2,
+  'list-style': 1,
+  margin: 1,
+  'margin-block': 2,
+  'margin-inline': 2,
+  mask: 1,
+  'mask-border': 1,
+  offset: 1,
+  outline: 1,
+  overflow: 1,
+  'overscroll-behavior': 1,
+  padding: 1,
+  'padding-block': 2,
+  'padding-inline': 2,
+  'place-content': 1,
+  'place-items': 1,
+  'place-self': 1,
+  'position-try': 1,
+  'scroll-margin': 1,
+  'scroll-margin-block': 2,
+  'scroll-margin-inline': 2,
+  'scroll-padding': 1,
+  'scroll-padding-block': 2,
+  'scroll-padding-inline': 2,
+  'scroll-timeline': 1,
+  'text-decoration': 1,
+  'text-emphasis': 1,
+  'text-wrap': 1,
+  transition: 1,
+  'view-timeline': 1,
 };

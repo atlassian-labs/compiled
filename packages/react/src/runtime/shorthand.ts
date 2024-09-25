@@ -1,108 +1,88 @@
-import type { ShorthandProperties } from '@compiled/utils';
+import type { Depths, ShorthandProperties } from '@compiled/utils';
 
-const shorthandFor: Record<ShorthandProperties, true> = {
-  all: true,
-  animation: true,
-  'animation-range': true,
-  background: true,
-  border: true,
-  'border-block': true,
-  'border-block-end': true,
-  'border-block-start': true,
-  'border-bottom': true,
-  'border-color': true,
-  'border-image': true,
-  'border-inline': true,
-  'border-inline-end': true,
-  'border-inline-start': true,
-  'border-left': true,
-  'border-radius': true,
-  'border-right': true,
-  'border-style': true,
-  'border-top': true,
-  'border-width': true,
-  'column-rule': true,
-  columns: true,
-  'contain-intrinsic-size': true,
-  container: true,
-  flex: true,
-  'flex-flow': true,
-  font: true,
-  'font-synthesis': true,
-  'font-variant': true,
-  gap: true,
-  grid: true,
-  'grid-area': true,
-  'grid-column': true,
-  'grid-row': true,
-  'grid-template': true,
-  inset: true,
-  'inset-block': true,
-  'inset-inline': true,
-  'list-style': true,
-  margin: true,
-  'margin-block': true,
-  'margin-inline': true,
-  mask: true,
-  'mask-border': true,
-  offset: true,
-  outline: true,
-  overflow: true,
-  'overscroll-behavior': true,
-  padding: true,
-  'padding-block': true,
-  'padding-inline': true,
-  'place-content': true,
-  'place-items': true,
-  'place-self': true,
-  'position-try': true,
-  'scroll-margin': true,
-  'scroll-margin-block': true,
-  'scroll-margin-inline': true,
-  'scroll-padding': true,
-  'scroll-padding-block': true,
-  'scroll-padding-inline': true,
-  'scroll-timeline': true,
-  'text-decoration': true,
-  'text-emphasis': true,
-  'text-wrap': true,
-  transition: true,
-  'view-timeline': true,
+// Copied from packages/utils/src/shorthand.ts so that we avoid
+// inflating the bundle size of @compiled/react/runtime with the contents
+// of @compiled/utils
+//
+// Keep this `shorthandBuckets` in sync with the `shorthandBuckets` defined in
+// packages/utils/src/shorthand.ts
+const shorthandBuckets: Record<ShorthandProperties, Depths> = {
+  all: 0,
+  animation: 1,
+  'animation-range': 1,
+  background: 1,
+  border: 1,
+  'border-block': 2,
+  'border-block-end': 3,
+  'border-block-start': 4,
+  'border-bottom': 5,
+  'border-color': 6,
+  'border-image': 1,
+  'border-inline': 7,
+  'border-inline-end': 8,
+  'border-inline-start': 9,
+  'border-left': 10,
+  'border-radius': 1,
+  'border-right': 10,
+  'border-style': 11,
+  'border-top': 12,
+  'border-width': 13,
+  'column-rule': 1,
+  columns: 1,
+  'contain-intrinsic-size': 1,
+  container: 1,
+  flex: 1,
+  'flex-flow': 1,
+  font: 1,
+  'font-synthesis': 1,
+  'font-variant': 2,
+  gap: 1,
+  grid: 1,
+  'grid-area': 1,
+  'grid-column': 2,
+  'grid-row': 2,
+  'grid-template': 2,
+  inset: 1,
+  'inset-block': 2,
+  'inset-inline': 2,
+  'list-style': 1,
+  margin: 1,
+  'margin-block': 2,
+  'margin-inline': 2,
+  mask: 1,
+  'mask-border': 1,
+  offset: 1,
+  outline: 1,
+  overflow: 1,
+  'overscroll-behavior': 1,
+  padding: 1,
+  'padding-block': 2,
+  'padding-inline': 2,
+  'place-content': 1,
+  'place-items': 1,
+  'place-self': 1,
+  'position-try': 1,
+  'scroll-margin': 1,
+  'scroll-margin-block': 2,
+  'scroll-margin-inline': 2,
+  'scroll-padding': 1,
+  'scroll-padding-block': 2,
+  'scroll-padding-inline': 2,
+  'scroll-timeline': 1,
+  'text-decoration': 1,
+  'text-emphasis': 1,
+  'text-wrap': 1,
+  transition: 1,
+  'view-timeline': 1,
 };
 
 /** We look at shorthands to determine what level they are because we need some shorthands to override other shorthands…
  * 0 – `all`
  * 1 – `border`, `margin`, `flex`, etc
  * 2 – `border-block`, `border-top` `margin-inline`
- * 3 – `border-block-start`, etc
+ * 3 – `border-block-end`, etc
  * null – `border-top-color`, `border-block-start-color`, `margin-block-start`, `margin-top`, etc (not shorthands)
- *
- * I'm not sure this is the best way to do this, but it _should_ work for known shorthands.
  */
-export const getShorthandDepth = (shorthand: string): 'root' | 1 | 2 | 3 | null => {
-  if (shorthand === 'all') {
-    return 'root';
-  }
-
-  if (!(shorthand in shorthandFor)) return null;
-
-  // All shorthands (aside from 'all') are top-level shorthands (not a subset of another shorthand)
-  if (!shorthand.includes('-')) return 1;
-
-  let valid = true;
-  const parts = shorthand.split('-');
-  for (let i = 0; i < parts.length; i++) {
-    if (!(parts.slice(0, i + 1).join('-') in shorthandFor)) {
-      valid = true;
-      break;
-    }
-  }
-
-  if (valid && (parts.length === 1 || parts.length === 2 || parts.length === 3)) {
-    return parts.length;
-  } else {
-    console.error(`Invalid shorthand not properly categorized: ${shorthand}`);
-  }
-
-  return null;
+export const getShorthandDepth = (shorthand: string): Depths | null => {
+  return shorthandBuckets[shorthand as ShorthandProperties] ?? null;
 };

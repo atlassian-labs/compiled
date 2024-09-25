@@ -1,3 +1,5 @@
+import type { Depths } from '@compiled/utils';
+
 export interface StyleSheetOpts {
   /**
    * Used to set a nonce on the style element.
@@ -12,10 +14,7 @@ export interface StyleSheetOpts {
  */
 export type Bucket =
   // shorthand properties
-  | 's-root'
-  | 's-1'
-  | 's-2'
-  | 's-3'
+  | `s-${Depths}`
   // catch-all
   | ''
   // link

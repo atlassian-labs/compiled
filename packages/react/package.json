@@ -72,11 +72,11 @@
     "jsx-dev-runtime"
   ],
   "dependencies": {
-    "@compiled/utils": "^0.11.1",
     "csstype": "^3.1.2"
   },
   "devDependencies": {
     "@compiled/benchmark": "^1.1.0",
+    "@compiled/utils": "^0.11.1",
     "@fixture/strict-api-test": "*",
     "@testing-library/react": "^12.1.5",
     "@types/jsdom": "^16.2.15",

@@ -1,4 +1,4 @@
-import { shorthandFor, type ShorthandProperties } from '@compiled/utils';
+import { shorthandBuckets, shorthandFor, type ShorthandProperties } from '@compiled/utils';
 import type { ChildNode, Declaration } from 'postcss';
 
 const nodeIsDeclaration = (node: ChildNode): node is Declaration => node.type === 'decl';
@@ -29,7 +29,9 @@ const sortNodes = (a: ChildNode, b: ChildNode): number => {
   const aDecl = findDeclaration(a);
   const bDecl = findDeclaration(b);
 
-  // Don't worry about any array of declarations, this would  be something like a group of AtRule versus a regular Rule
+  // Don't worry about any array of declarations, this would be something like a group of
+  // AtRule versus a regular Rule.
+  //
   // Those are sorted elsewhere…
   if (Array.isArray(aDecl) || Array.isArray(bDecl)) return 0;
 
@@ -43,6 +45,21 @@ const sortNodes = (a: ChildNode, b: ChildNode): number => {
   const bShorthand = shorthandFor[bDecl.prop as ShorthandProperties];
   if (bShorthand === true || bShorthand?.includes(aDecl.prop)) {
     return 1;
+  }
+
+  const aShorthandBucket = shorthandBuckets[aDecl.prop as ShorthandProperties];
+  const bShorthandBucket = shorthandBuckets[bDecl.prop as ShorthandProperties];
+
+  // Ensures a deterministic sorting of shorthand properties in the case where those
+  // shorthand properties overlap.
+  //
+  // For example, `border-top` and `border-color` are not shorthand properties of
+  // each other, BUT both properties are shorthand versions of `border-top-color`.
+  // If `border-top` is in bucket 13 and `border-color` is in bucket 6, we can ensure
+  // that `border-color` always comes before `border-top`.
+  if (aShorthandBucket && bShorthandBucket) {
+    // TODO: write tests for this
+    return aShorthandBucket - bShorthandBucket;
   }
 
   return 0;
