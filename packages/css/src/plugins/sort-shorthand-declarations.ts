@@ -37,6 +37,8 @@ const sortNodes = (a: ChildNode, b: ChildNode): number => {
 
   if (!aDecl?.prop || !bDecl?.prop) return 0;
 
+  console.log('sorting', aDecl.prop, bDecl.prop);
+
   const aShorthand = shorthandFor[aDecl.prop as ShorthandProperties];
   if (aShorthand === true || aShorthand?.includes(bDecl.prop)) {
     return -1;
@@ -58,7 +60,6 @@ const sortNodes = (a: ChildNode, b: ChildNode): number => {
   // If `border-top` is in bucket 12 and `border-color` is in bucket 6, we can ensure
   // that `border-color` always comes before `border-top`.
   if (aShorthandBucket && bShorthandBucket) {
-    // TODO: write tests for this
     return aShorthandBucket - bShorthandBucket;
   }
 

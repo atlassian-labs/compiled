@@ -3,7 +3,10 @@ import { getShorthandDepth } from './shorthand';
 import type { Bucket, StyleSheetOpts } from './types';
 
 /**
- * Ordered style buckets using their short psuedo name.
+ * Ordered style buckets using their short pseudo name.
+ *
+ * This is very bare-bones, with no support for nesting, like styles in
+ * `@media` queries, pseudo-selectors mixed with shorthand properties, etc.
  *
  * If changes are needed to the pseudo-selectors, make sure that it aligns with the
  * definition in `packages/css/src/utils/style-ordering.ts`.
@@ -16,14 +19,6 @@ export const styleBucketOrdering: Bucket[] = [
   's-3',
   's-4',
   's-5',
-  's-6',
-  's-7',
-  's-8',
-  's-9',
-  's-10',
-  's-11',
-  's-12',
-  's-13',
   // catch-all
   '',
   // link
@@ -52,7 +47,7 @@ const styleBucketsInHead: Partial<Record<Bucket, HTMLStyleElement>> = {};
 /**
  * Maps the long pseudo name to the short pseudo name.
  * Pseudos that match here will be ordered,
- * everythin else will make their way to the catch all style bucket.
+ * everything else will make their way to the catch all style bucket.
  * We reduce the pseudo name to save bundlesize.
  * Thankfully there aren't any overlaps, see: https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes.
  */

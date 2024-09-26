@@ -11,22 +11,28 @@ const shorthandBuckets: Record<ShorthandProperties, Depths> = {
   animation: 1,
   'animation-range': 1,
   background: 1,
+
   border: 1,
-  'border-block': 2,
-  'border-block-end': 3,
-  'border-block-start': 4,
-  'border-bottom': 5,
-  'border-color': 6,
+  'border-color': 2,
+  'border-style': 2,
+  'border-width': 2,
+
+  'border-block': 3,
+  'border-inline': 3,
+
+  'border-top': 4,
+  'border-right': 4,
+  'border-bottom': 4,
+  'border-left': 4,
+
+  'border-block-start': 5,
+  'border-block-end': 5,
+  'border-inline-start': 5,
+  'border-inline-end': 5,
+
   'border-image': 1,
-  'border-inline': 7,
-  'border-inline-end': 8,
-  'border-inline-start': 9,
-  'border-left': 10,
   'border-radius': 1,
-  'border-right': 10,
-  'border-style': 11,
-  'border-top': 12,
-  'border-width': 13,
+
   'column-rule': 1,
   columns: 1,
   'contain-intrinsic-size': 1,
@@ -46,28 +52,35 @@ const shorthandBuckets: Record<ShorthandProperties, Depths> = {
   'inset-block': 2,
   'inset-inline': 2,
   'list-style': 1,
+
   margin: 1,
   'margin-block': 2,
   'margin-inline': 2,
+
   mask: 1,
   'mask-border': 1,
   offset: 1,
   outline: 1,
   overflow: 1,
   'overscroll-behavior': 1,
+
   padding: 1,
   'padding-block': 2,
   'padding-inline': 2,
+
   'place-content': 1,
   'place-items': 1,
   'place-self': 1,
   'position-try': 1,
+
   'scroll-margin': 1,
   'scroll-margin-block': 2,
   'scroll-margin-inline': 2,
+
   'scroll-padding': 1,
   'scroll-padding-block': 2,
   'scroll-padding-inline': 2,
+
   'scroll-timeline': 1,
   'text-decoration': 1,
   'text-emphasis': 1,

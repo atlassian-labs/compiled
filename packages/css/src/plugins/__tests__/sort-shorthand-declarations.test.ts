@@ -184,7 +184,31 @@ describe('sort shorthand vs. longhand declarations', () => {
     `);
   });
 
-  it("sorts 4 layers deep of shorthands from 'all' to 'border-block-start'", () => {
+  it('sorts border-related properties', () => {
+    const actual = transform(outdent`
+      .h { border-inline-start: 8px solid purple; }
+      .f { border-left: 7px solid red; }
+      .g { border-right: 6px dashed green; }
+      .e { border-block: 5px dotted yellow; }
+      .b { border-width: 4px; }
+      .c { border-style: dashed; }
+      .d { border-color: pink; }
+      .a { border: 3px solid blue; }
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+      .a { border: 3px solid blue; }
+      .b { border-width: 4px; }
+      .c { border-style: dashed; }
+      .d { border-color: pink; }
+      .e { border-block: 5px dotted yellow; }
+      .f { border-left: 7px solid red; }
+      .g { border-right: 6px dashed green; }.h { border-inline-start: 8px solid purple; }"
+    `);
+  });
+
+  it('sorts a variety of different shorthand properties used together', () => {
     const actual = transform(outdent`
       @media all {
         .f {
@@ -226,6 +250,18 @@ describe('sort shorthand vs. longhand declarations', () => {
         all: unset;
       }
 
+      .j {
+        margin-bottom: 6px;
+      }
+      .i {
+        margin-inline: 2px;
+      }
+      .h {
+        margin-block: 5px;
+      }
+      .g {
+        margin: 2px;
+      }
       .f {
         display: block;
       }
@@ -257,23 +293,32 @@ describe('sort shorthand vs. longhand declarations', () => {
       .b[disabled] {
         border: none;
       }
-      .c[data-foo='bar'] {
-        border-top: none;
-      }
-
-      .f {
-        display: block;
+      .g {
+        margin: 2px;
       }
       .b {
         border: none;
       }
-      .c {
-        border-block-start: none;
+      .i {
+        margin-inline: 2px;
+      }
+      .h {
+        margin-block: 5px;
+      }
+      .c[data-foo='bar'] {
+        border-top: none;
+      }
+
+      .j {
+        margin-bottom: 6px;
+      }
+      .f {
+        display: block;
       }
       .d {
         border-top: none;
       }
-      .d:active {
+      .c {
         border-block-start: none;
       }
       .e {
@@ -282,6 +327,9 @@ describe('sort shorthand vs. longhand declarations', () => {
 
       .f:focus {
         display: block;
+      }
+      .d:active {
+        border-block-start: none;
       }
       .e:hover {
         border-block-start-color: transparent;
@@ -295,11 +343,11 @@ describe('sort shorthand vs. longhand declarations', () => {
         .b {
           border: none;
         }
-        .c {
-          border-block-start: none;
-        }
         .d {
           border-top: none;
+        }
+        .c {
+          border-block-start: none;
         }
         .e {
           border-block-start-color: transparent;
@@ -324,15 +372,18 @@ describe('sort shorthand vs. longhand declarations', () => {
       .b { all: unset; }
     `);
 
-    // WARNING: This may be wrong as `.a { … }` is not sorted as we expect, it _should_ be 'abcdef' not 'eabcdf'.
-    // Is this a real scenario—multiple variables in a singular class?
+    // WARNING: This is technically wrong as `.a { … }` is not sorted as we expect;
+    // it _should_ be 'abcdef' not 'eabcdf'.
+    //
+    // We are ok with this because we expect atomicifyRules to run before this plugin,
+    // so each class will never have more than one property.
     expect(actual).toMatchInlineSnapshot(`
       ".e { border-top: none; }
       .a {
         all: reset;
         border: 2px dashed;
-        border-block-start: 1px solid;
         border-top: red;
+        border-block-start: 1px solid;
         border-block-start-color: transparent;
       }
       .b { all: unset; }
