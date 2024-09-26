@@ -37,8 +37,6 @@ const sortNodes = (a: ChildNode, b: ChildNode): number => {
 
   if (!aDecl?.prop || !bDecl?.prop) return 0;
 
-  console.log('sorting', aDecl.prop, bDecl.prop);
-
   const aShorthand = shorthandFor[aDecl.prop as ShorthandProperties];
   if (aShorthand === true || aShorthand?.includes(bDecl.prop)) {
     return -1;

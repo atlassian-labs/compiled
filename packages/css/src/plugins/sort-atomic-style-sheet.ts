@@ -47,8 +47,6 @@ export const sortAtomicStyleSheet = (config: {
   const sortAtRulesEnabled = config.sortAtRulesEnabled ?? true;
   const sortShorthandEnabled = config.sortShorthandEnabled ?? false;
 
-  console.log('sortShorthandEnabled', sortShorthandEnabled);
-
   return {
     postcssPlugin: 'sort-atomic-style-sheet',
     Once(root) {

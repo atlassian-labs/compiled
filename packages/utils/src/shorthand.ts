@@ -84,7 +84,7 @@ export type Depths = 0 | 1 | 2 | 3 | 4 | 5;
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/Shorthand_properties#shorthand_properties
  * @see https://github.com/search?q=repo%3Amdn%2Fcontent%20%22%23%23%20Constituent%20properties%22&type=code
  */
-export const shorthandFor: Record<ShorthandProperties, true | string[]> = {
+export const shorthandFor: Record<ShorthandProperties, true | readonly string[]> = {
   all: true, // This is a special case, it's a shorthand for all properties
   animation: [
     'animation-delay',
@@ -519,13 +519,10 @@ export const shorthandFor: Record<ShorthandProperties, true | string[]> = {
     'transition-timing-function',
   ],
   'view-timeline': ['view-timeline-name', 'view-timeline-axis'],
-};
+} as const;
 
 // Make sure to update the `shorthandBuckets` variable in `packages/react/src/runtime/shorthand.ts`
 // after making changes to this object.
-//
-// You may want to use `packages/scripts/src/generate-shorthand.ts` to help
-// you generate this object.
 export const shorthandBuckets = {
   all: 0,
   animation: 1,
@@ -607,4 +604,7 @@ export const shorthandBuckets = {
   'text-wrap': 1,
   transition: 1,
   'view-timeline': 1,
-};
+} as const satisfies Record<ShorthandProperties, Depths>;
+// ^^ this type lets us enforce that the copy of shorthandBuckets
+//    in `packages/react/src/runtime/shorthand.ts`
+//    has the exact same contents as this object.

@@ -1,4 +1,8 @@
-import type { Depths, ShorthandProperties } from '@compiled/utils';
+import type {
+  Depths,
+  ShorthandProperties,
+  shorthandBuckets as ShorthandBucketsType,
+} from '@compiled/utils';
 
 // Copied from packages/utils/src/shorthand.ts so that we avoid
 // inflating the bundle size of @compiled/react/runtime with the contents
@@ -6,7 +10,7 @@ import type { Depths, ShorthandProperties } from '@compiled/utils';
 //
 // Keep this `shorthandBuckets` in sync with the `shorthandBuckets` defined in
 // packages/utils/src/shorthand.ts
-const shorthandBuckets: Record<ShorthandProperties, Depths> = {
+const shorthandBuckets: typeof ShorthandBucketsType = {
   all: 0,
   animation: 1,
   'animation-range': 1,
