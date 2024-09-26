@@ -125,7 +125,7 @@ The generated CSS stylesheet will look like:
 
 If stylesheet extraction is turned off, shorthand property sorting becomes a bit more rudimentary.
 
-Similarly to when stylesheet extraction is turned on, shorthand properties here are sorted before longhand properties. However, they are no longer guaranteed to be sorted when they are used in a pseudo-selector, e.g.
+Similarly to when stylesheet extraction is turned on, shorthand properties here are sorted before longhand properties. However, they are no longer guaranteed to be sorted when they are used in a pseudo-selector (especially when you have more than one component), e.g.
 
 ```tsx
 /** @jsxAutomaticRuntime @compiled/react */
@@ -137,6 +137,7 @@ const styles = css({
   border: '4px solid yellow',
   borderColor: 'pink',
   '&:active': {
+    // If there are other Compiled components in the app, we
     // CANNOT guarantee that `borderColor: green` will come after `border: 2px solid yellow`
     border: '2px solid yellow',
     borderColor: 'green',
@@ -146,7 +147,6 @@ const styles = css({
 export const App = () => (
   <>
     <div css={styles}>hi</div>
-    <div css={styles2}>hi</div>
   </>
 );
 ```

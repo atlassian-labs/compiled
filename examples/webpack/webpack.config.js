@@ -11,6 +11,8 @@ const classNameCompressionMap = require('./class-name-compression-map.json');
 
 const extractCSS = process.env.EXTRACT_TO_CSS === 'true';
 
+console.log('Stylesheet extraction enabled?', extractCSS);
+
 module.exports = {
   entry: './src/index.jsx',
   mode: 'development',
@@ -62,7 +64,10 @@ module.exports = {
   },
   plugins: [
     ...(extractCSS
-      ? [new MiniCssExtractPlugin({ filename: '[name].css' }), new CompiledExtractPlugin()]
+      ? [
+          new MiniCssExtractPlugin({ filename: '[name].css' }),
+          new CompiledExtractPlugin({ sortShorthand: true }),
+        ]
       : []),
     new HtmlWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
