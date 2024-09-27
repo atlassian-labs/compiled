@@ -31,7 +31,7 @@ import { visitXcssPropPath } from './xcss-prop';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
 const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
-const DEFAULT_IMPORT_SOURCES = ['@compiled/react', '@atlaskit/css'];
+const DEFAULT_IMPORT_SOURCES = ['@compiled/react', '@atlaskit/css', './css'];
 
 let globalCache: Cache | undefined;
 
