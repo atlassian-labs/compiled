@@ -11,6 +11,8 @@ We **do not** recommend mixing shorthand properties and longhand properties in t
 
 ## How does Compiled handle shorthand and longhand properties?
 
+By default, Compiled expands a few common properties, like `margin` and `padding`, but this is complex and not done for all properties.
+
 If shorthand sorting is enabled, then all shorthand properties in Compiled will come before their longhand forms. For example, `font` will come before `fontWeight` and `fontStyle`. The order your CSS properties appear in your source code is **ignored**.
 
 Whether shorthand sorting is enabled depends on whether stylesheet extraction is turned on or not -- see below for more details.

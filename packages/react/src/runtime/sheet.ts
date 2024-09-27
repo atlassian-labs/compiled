@@ -144,7 +144,7 @@ export const getStyleBucketName = (sheet: string): Bucket => {
   const property = sheet.slice(firstBracket + 1, sheet.indexOf(':', firstBracket)).trim();
 
   const shorthandDepth = getShorthandDepth(property);
-  if (shorthandDepth) {
+  if (typeof shorthandDepth === 'number') {
     return `s-${shorthandDepth}` as const;
   }
 
