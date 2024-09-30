@@ -11,15 +11,14 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       name: `correct property ordering (${pkg})`,
       code: outdent`
       import {${pkg}} from '${pkg === 'xcss' ? '@atlaskit/primitives' : '@compiled/react'}';
-
       const styles = ${pkg === 'styled' ? pkg + '.div' : pkg}({
         margin: '1', // 1
         border: '2', // 1
-        borderBlock: '3', // 2
-        borderBlockEnd: '4', // 3
-        borderBlockStart: '5', // 4
-        borderBottom: '6', // 5
-        borderColor: '7', // 6
+        borderColor: '7', // 2
+        borderBlock: '3', // 3
+        borderBottom: '6', // 4
+        borderBlockEnd: '4', // 5
+        borderBlockStart: '5', // 5
       });
       export const EmphasisText1 = ({ children }) => <span css={styles}>{children}</span>;
     `,
@@ -130,10 +129,10 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         borderTop: '1px solid #00b8d9',
         border: '#00b8d9',
         borderColor: '#00b8d9',
+        borderRight: '#00b8d9',
         gridTemplate: '1fr 1fr',
-        overscrollBehavior: 'contain',
-        gridRow: '1 / 2',
-        scrollMarginBlock: '10px',
+        gridRow: '1',
+        borderBlockStart: '10px',
       });
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
     `,
@@ -142,7 +141,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
 
       const styles = ${
         pkg === 'styled' ? pkg + '.div' : pkg
-      }({ border: '#00b8d9', overscrollBehavior: 'contain', gridTemplate: '1fr 1fr', scrollMarginBlock: '10px', gridRow: '1 / 2', borderColor: '#00b8d9', borderTop: '1px solid #00b8d9' });
+      }({ border: '#00b8d9', borderColor: '#00b8d9', gridTemplate: '1fr 1fr', gridRow: '1', borderTop: '1px solid #00b8d9', borderRight: '#00b8d9', borderBlockStart: '10px' });
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
     `,
       errors: [{ messageId: 'shorthand-first' }],
@@ -151,8 +150,6 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       // doesn't retain comments WIP
       name: 'incorrect property ordering with comments (css)',
       code: outdent`
-      import {css} from '@compiled/react';
-
       import { css } from '@compiled/react';
       const styles = css({
         borderTop: '1px solid #00b8d9', // 13
@@ -161,8 +158,6 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
     `,
       output: outdent`
-      import {css} from '@compiled/react';
-
       import { css } from '@compiled/react';
       const styles = css({ border: '#00b8d9', borderTop: '1px solid #00b8d9' });
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;

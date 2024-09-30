@@ -2,9 +2,9 @@
 
 Enforces css property sorting for packages `css`, `cssMap`, `styled` that originates from `@compiled/react`, and `xcss` from `@atlaskit/primitives`.
 
-When using both shorthand and longhand properties, compiled scrambles the properties and it is unintuative to understand which properties override which others. Ordering the shorthand first ensures that longhand always overrides shorthand.
+At build time, Compiled automatically sorts shorthand properties (like `font` and `border`) so that they come before any longhand properties (like `fontSize` and `borderTopColor`) defined on the component. This means that longhand properties will always override shorthand properties.
 
----
+This rule enforces that the order in which the properties appear in a component's source code matches the actual ordering the properties will have at build time and runtime.
 
 ## Rule details
 
