@@ -1,5 +1,14 @@
 # @compiled/babel-plugin
 
+## 0.31.0
+
+### Patch Changes
+
+- Updated dependencies [9a15e742]
+- Updated dependencies [9a15e742]
+  - @compiled/utils@0.12.0
+  - @compiled/css@0.15.0
+
 ## 0.30.0
 
 ### Minor Changes
