@@ -4,5 +4,5 @@
     "outDir": "dist/esm",
     "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo"
   },
-  "references": [{ "path": "../benchmark" }, { "path": "../jest" }]
+  "references": [{ "path": "../benchmark" }, { "path": "../jest" }, { "path": "../utils" }]
 }

@@ -5,6 +5,7 @@ import { sortPseudoSelectors } from '../utils/sort-pseudo-selectors';
 import { parseAtRule } from './at-rules/parse-at-rule';
 import { sortAtRules } from './at-rules/sort-at-rules';
 import type { AtRuleInfo } from './at-rules/types';
+import { sortShorthandDeclarations } from './sort-shorthand-declarations';
 
 const sortAtRulePseudoSelectors = (atRule: AtRule) => {
   const rules: Rule[] = [];
@@ -39,7 +40,13 @@ const sortAtRulePseudoSelectors = (atRule: AtRule) => {
  *
  * Using Once due to the catchAll behaviour
  */
-export const sortAtomicStyleSheet = (sortAtRulesEnabled: boolean): Plugin => {
+export const sortAtomicStyleSheet = (config: {
+  sortAtRulesEnabled: boolean | undefined;
+  sortShorthandEnabled: boolean | undefined;
+}): Plugin => {
+  const sortAtRulesEnabled = config.sortAtRulesEnabled ?? true;
+  const sortShorthandEnabled = config.sortShorthandEnabled ?? false;
+
   return {
     postcssPlugin: 'sort-atomic-style-sheet',
     Once(root) {
@@ -94,6 +101,10 @@ export const sortAtomicStyleSheet = (sortAtRulesEnabled: boolean): Plugin => {
       }
 
       root.nodes = [...catchAll, ...rules, ...atRules.map((atRule) => atRule.node)];
+
+      if (sortShorthandEnabled) {
+        sortShorthandDeclarations(root.nodes);
+      }
     },
   };
 };

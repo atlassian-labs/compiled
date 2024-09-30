@@ -62,7 +62,11 @@ export default new Optimizer<ParcelOptimizerOpts, unknown>({
 
     if (styleRules.size === 0) return { contents, map };
 
-    const stylesheet = sort(Array.from(styleRules).join(''), config.sortAtRules);
+    const sortConfig = {
+      sortAtRulesEnabled: config.sortAtRules,
+      sortShorthandEnabled: config.sortShorthand,
+    };
+    const stylesheet = sort(Array.from(styleRules).join(''), sortConfig);
 
     let newContents = '';
 

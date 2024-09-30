@@ -1,11 +1,24 @@
 import { isCacheDisabled } from './cache';
+import { getShorthandDepth } from './shorthand';
 import type { Bucket, StyleSheetOpts } from './types';
 
 /**
- * Ordered style buckets using their short psuedo name.
- * If changes are needed make sure that it aligns with the definition in `sort-at-rule-pseudos.tsx`.
+ * Ordered style buckets using their short pseudo name.
+ *
+ * This is very bare-bones, with no support for nesting, like styles in
+ * `@media` queries, pseudo-selectors mixed with shorthand properties, etc.
+ *
+ * If changes are needed to the pseudo-selectors, make sure that it aligns with the
+ * definition in `packages/css/src/utils/style-ordering.ts`.
  */
 export const styleBucketOrdering: Bucket[] = [
+  // shorthand properties
+  's-0',
+  's-1',
+  's-2',
+  's-3',
+  's-4',
+  's-5',
   // catch-all
   '',
   // link
@@ -34,8 +47,8 @@ const styleBucketsInHead: Partial<Record<Bucket, HTMLStyleElement>> = {};
 /**
  * Maps the long pseudo name to the short pseudo name.
  * Pseudos that match here will be ordered,
- * everythin else will make their way to the catch all style bucket.
- * We reduce the pseduo name to save bundlesize.
+ * everything else will make their way to the catch all style bucket.
+ * We reduce the pseudo name to save bundlesize.
  * Thankfully there aren't any overlaps, see: https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes.
  */
 const pseudosMap: Record<string, Bucket | undefined> = {
@@ -114,15 +127,25 @@ export const getStyleBucketName = (sheet: string): Bucket => {
     return 'm';
   }
 
+  const firstBracket = sheet.indexOf('{');
+
   /**
    * We assume that classname will always be 9 character long,
-   * using this the 10th character could be a pseudo declaration.
+   * using this the 10th characters could be a pseudo declaration.
    */
   if (sheet.charCodeAt(10) === 58 /* ":" */) {
     // We send through a subset of the string instead of the full pseudo name.
     // For example `"focus-visible"` name would instead of `"us-visible"`.
     // Return a mapped pseudo else the default catch all bucket.
-    return pseudosMap[sheet.slice(14, sheet.indexOf('{'))] || '';
+    const mapped = pseudosMap[sheet.slice(14, firstBracket)];
+    if (mapped) return mapped;
+  }
+
+  const property = sheet.slice(firstBracket + 1, sheet.indexOf(':', firstBracket)).trim();
+
+  const shorthandDepth = getShorthandDepth(property);
+  if (typeof shorthandDepth === 'number') {
+    return `s-${shorthandDepth}` as const;
   }
 
   // Return default catch all bucket
