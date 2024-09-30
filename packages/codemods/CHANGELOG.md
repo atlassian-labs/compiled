@@ -1,5 +1,13 @@
 # @compiled/codemods
 
+## 0.9.5
+
+### Patch Changes
+
+- Updated dependencies [9a15e742]
+- Updated dependencies [9a15e742]
+  - @compiled/utils@0.12.0
+
 ## 0.9.4
 
 ### Patch Changes

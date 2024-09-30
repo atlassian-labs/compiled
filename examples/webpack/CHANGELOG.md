@@ -1,5 +1,14 @@
 # @compiled/webpack-app
 
+## 1.3.1
+
+### Patch Changes
+
+- 9a15e742: Enable sortShorthand
+- Updated dependencies [9a15e742]
+  - @compiled/webpack-loader@0.16.0
+  - @compiled/react@0.18.0
+
 ## 1.3.0
 
 ### Minor Changes
