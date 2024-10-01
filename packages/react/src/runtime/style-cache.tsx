@@ -11,7 +11,7 @@ import type { ProviderComponent, UseCacheHook } from './types';
  */
 const Cache: any = isServerEnvironment() ? createContext<Record<string, true> | null>(null) : {};
 
-if (!isServerEnvironment()) {
+if (!isServerEnvironment() && typeof document !== 'undefined') {
   /**
    * Iterates through all found style elements generated when server side rendering.
    *
