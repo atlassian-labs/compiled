@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.18.1
+
+### Patch Changes
+
+- 1d2054c0: Protect @compiled/react/dist/browser/runtime in environments without a document defined.
+
 ## 0.18.0
 
 ### Minor Changes
