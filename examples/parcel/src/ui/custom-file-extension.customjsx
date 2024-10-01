@@ -1,4 +1,4 @@
-import { styled } from '@compiled/react';
+import { styled, css } from '@compiled/react';
 
 export const CustomFileExtensionStyled = styled.div({
   color: 'orange',
@@ -13,7 +13,7 @@ export const CustomFileExtensionStyled = styled.div({
   },
 });
 
-export const customFileExtensionCss = {
+export const customFileExtensionCss = css({
   color: 'orange',
   fontWeight: 500,
 
@@ -24,4 +24,4 @@ export const customFileExtensionCss = {
   ':focus': {
     color: 'blue',
   },
-};
+});
