@@ -1,6 +1,6 @@
 import type { Rule, Scope } from 'eslint';
 
-import { COMPILED_IMPORT } from './constants';
+import { COMPILED_IMPORT, ATLASKIT_IMPORT } from './constants';
 
 type Definition = Scope.Definition;
 type Node = Rule.Node;
@@ -13,10 +13,10 @@ const isImportSpecifierWrapper = (name: string) => {
     def.node.imported.type === 'Identifier' &&
     def.node.imported.name === name &&
     def.parent?.type === 'ImportDeclaration' &&
-    def.parent?.source.value === COMPILED_IMPORT;
+    (def.parent.source.value === ATLASKIT_IMPORT || def.parent.source.value === COMPILED_IMPORT);
 };
 
-const isCompiledImport = (name: string): CompiledNameChecker => {
+const isCompiledOrAtlaskitImport = (name: string): CompiledNameChecker => {
   const isImportSpecifier = isImportSpecifierWrapper(name);
 
   return (node: Node, references: Reference[]) =>
@@ -27,7 +27,7 @@ const isCompiledImport = (name: string): CompiledNameChecker => {
     );
 };
 
-export const isCss = isCompiledImport('css');
-export const isCxFunction = isCompiledImport('cx');
-export const isCssMap = isCompiledImport('cssMap');
-export const isKeyframes = isCompiledImport('keyframes');
+export const isCss = isCompiledOrAtlaskitImport('css');
+export const isCxFunction = isCompiledOrAtlaskitImport('cx');
+export const isCssMap = isCompiledOrAtlaskitImport('cssMap');
+export const isKeyframes = isCompiledOrAtlaskitImport('keyframes');

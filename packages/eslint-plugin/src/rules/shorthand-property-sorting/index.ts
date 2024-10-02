@@ -1,21 +1,53 @@
-import { shorthandBuckets, type ShorthandProperties } from '@compiled/utils';
-import type { Rule } from 'eslint';
-import type { Directive, ModuleDeclaration, Statement } from 'estree';
+import { shorthandBuckets, kebabCase, type ShorthandProperties } from '@compiled/utils';
+import type { Rule, Scope } from 'eslint';
 
-const findProgramRoot = (node: Rule.Node): Rule.Node | null => {
-  const parent = node.parent;
-  if (!parent) {
-    return null;
-  }
-  if (parent.type === 'Program') {
-    return parent;
-  }
-  return findProgramRoot(parent);
+import { isStyled, isCss, isCssMap } from '../../index';
+
+const fixProperties = (context: Rule.RuleContext, node: Rule.Node) => {
+  context.report({
+    node: node,
+    messageId: 'shorthand-first',
+    fix: (fixer) => {
+      if (node.type === 'ObjectExpression' && node.properties.length > 0) {
+        // sort the properties by depth
+        const sortedProperties = node.properties.slice().sort((a, b) => {
+          if (
+            a.type === 'Property' &&
+            a.key.type === 'Identifier' &&
+            b.type === 'Property' &&
+            b.key.type === 'Identifier'
+          ) {
+            const propA = kebabCase(a.key.name) as ShorthandProperties;
+            const propB = kebabCase(b.key.name) as ShorthandProperties;
+
+            return shorthandBuckets[propA] - shorthandBuckets[propB];
+          }
+          return 0;
+        });
+
+        const sourceCode = context.getSourceCode();
+        const sortedCode = sortedProperties
+          .map((property) => sourceCode.getText(property))
+          .join(', ');
+
+        // Replace the old object expression with the new sorted one
+        const newObjectExpression = `{ ${sortedCode} }`;
+
+        return fixer.replaceText(node, newObjectExpression);
+      }
+      return null;
+    },
+  });
 };
 
-function camelToKebab(camelCaseString: string): string {
-  return camelCaseString.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-}
+const callExpressionCorrectImport = (node: Rule.Node, references: Scope.Reference[]): boolean => {
+  return (
+    node.type === 'CallExpression' &&
+    (isCss(node.callee as Rule.Node, references) ||
+      isCssMap(node.callee as Rule.Node, references) ||
+      isStyled(node.callee as Rule.Node, references))
+  );
+};
 
 export const shorthandFirst: Rule.RuleModule = {
   meta: {
@@ -29,8 +61,9 @@ export const shorthandFirst: Rule.RuleModule = {
       'shorthand-first':
         'When using both shorthand and longhand properties, the shorthand property should be first.',
     },
-    type: 'problem',
+    type: 'suggestion',
     fixable: 'code',
+    hasSuggestions: true,
   },
   create(context) {
     const selectorString: string =
@@ -44,88 +77,61 @@ export const shorthandFirst: Rule.RuleModule = {
         if (node.type === 'ObjectExpression' && node.properties.length > 0) {
           let lowestDepth = 0;
           let fixRequired = false;
-          let importedFromCorrectPackage = null;
-          const program: Rule.Node | null = findProgramRoot(node);
 
-          // make sure node is imported from the correct package
-          const logicCssAndCssMap =
-            node.parent.type === 'CallExpression' &&
-            node.parent.callee.type === 'Identifier' &&
-            (node.parent.callee.name === 'css' || node.parent.callee.name === 'cssMap');
-
-          const logicStyled =
-            node.parent.type === 'CallExpression' &&
-            node.parent.callee.type === 'MemberExpression' &&
-            node.parent.callee.object.type === 'Identifier' &&
-            node.parent.callee.object.name === 'styled';
-
-          const logicXcc =
-            node.parent.type === 'CallExpression' &&
-            node.parent.callee.type === 'Identifier' &&
-            node.parent.callee.name === 'xcss';
-
-          if (program && program.type === 'Program' && (logicCssAndCssMap || logicStyled)) {
-            importedFromCorrectPackage = program.body.find(
-              (n: ModuleDeclaration | Statement | Directive) => {
-                return n.type === 'ImportDeclaration' && n.source.value === '@compiled/react';
-              }
-            );
-          }
-          if (program && program.type === 'Program' && logicXcc) {
-            importedFromCorrectPackage = program.body.find(
-              (n: ModuleDeclaration | Statement | Directive) => {
-                return n.type === 'ImportDeclaration' && n.source.value === '@atlaskit/primitives';
-              }
-            );
-          }
+          const references = context.getScope().references;
 
           // loop through the css properties of a ObjectExpression object
           node.properties.some((property) => {
-            if (property.type === 'Property' && property.key.type === 'Identifier') {
-              const prop = camelToKebab(property.key.name) as ShorthandProperties;
-              const depth = shorthandBuckets[prop];
+            if (fixRequired) return;
+            if (property.type === 'Property') {
+              // normal case
+              if (property.key.type === 'Identifier') {
+                const prop = kebabCase(property.key.name) as ShorthandProperties;
+                const depth = shorthandBuckets[prop];
 
-              // if we find a property with a with a higher depth below one with a lower depth, we trigger the eslint error
-              if (depth < lowestDepth) {
-                fixRequired = true;
-                return;
-              } else {
-                lowestDepth = depth;
+                // if we find a property with a with a higher depth below one with a lower depth, we trigger the eslint error
+                if (depth < lowestDepth) {
+                  fixRequired = true;
+                  return;
+                } else {
+                  lowestDepth = depth;
+                }
+              }
+              // pseduo-property case
+              if (
+                property.value.type === 'ObjectExpression' &&
+                property.value.properties.length > 0
+              ) {
+                let innerLowestDepth = 0;
+                let innerFixRequired = false;
+
+                property.value.properties.some((innerProperty) => {
+                  if (innerFixRequired) return;
+                  if (
+                    innerProperty.type === 'Property' &&
+                    innerProperty.key.type === 'Identifier'
+                  ) {
+                    const prop = kebabCase(innerProperty.key.name) as ShorthandProperties;
+                    const depth = shorthandBuckets[prop];
+
+                    // if we find a property with a with a higher depth below one with a lower depth, we trigger the eslint error
+                    if (depth < innerLowestDepth) {
+                      innerFixRequired = true;
+                      return;
+                    } else {
+                      innerLowestDepth = depth;
+                    }
+                  }
+                });
+                if (innerFixRequired && callExpressionCorrectImport(node.parent, references)) {
+                  fixProperties(context, property.value as Rule.Node);
+                }
               }
             }
           });
 
-          if (fixRequired && importedFromCorrectPackage) {
-            context.report({
-              node: node,
-              messageId: 'shorthand-first',
-              fix: (fixer) => {
-                // sort the properties by depth
-                const sortedProperties = node.properties.slice().sort((a, b) => {
-                  if (
-                    a.type === 'Property' &&
-                    a.key.type === 'Identifier' &&
-                    b.type === 'Property' &&
-                    b.key.type === 'Identifier'
-                  ) {
-                    const propA = camelToKebab(a.key.name) as ShorthandProperties;
-                    const propB = camelToKebab(b.key.name) as ShorthandProperties;
-
-                    return shorthandBuckets[propA] - shorthandBuckets[propB];
-                  }
-                  return 0;
-                });
-
-                const sourceCode = context.getSourceCode();
-                const sortedCode = sortedProperties
-                  .map((property) => sourceCode.getText(property))
-                  .join(', ');
-
-                // Replace the old object expression with the new sorted one
-                const newObjectExpression = `{ ${sortedCode} }`;
-                return [fixer.replaceText(node, newObjectExpression)];
-              },
-            });
+          if (fixRequired && callExpressionCorrectImport(node.parent, references)) {
+            fixProperties(context, node);
           }
         }
       },

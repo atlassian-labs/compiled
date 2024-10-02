@@ -3,15 +3,21 @@ import { outdent } from 'outdent';
 import { typeScriptTester as tester } from '../../../test-utils';
 import { shorthandFirst } from '../index';
 
-const packages = ['css', 'styled', 'cssMap', 'xcss'];
+const packages_and_imports = [
+  ['css', 'css', '@atlaskit/css'],
+  ['css', 'css', '@compiled/react'],
+  ['styled', 'styled.div', '@compiled/react'],
+  ['cssMap', 'cssMap', '@atlaskit/css'],
+  ['cssMap', 'cssMap', '@compiled/react'],
+];
 
 tester.run('shorthand-property-sorting', shorthandFirst, {
   valid: [
-    ...packages.map((pkg) => ({
-      name: `correct property ordering (${pkg})`,
+    ...packages_and_imports.map(([pkg, call, imp]) => ({
+      name: `correct property ordering, (${pkg}: '${imp}')`,
       code: outdent`
-      import {${pkg}} from '${pkg === 'xcss' ? '@atlaskit/primitives' : '@compiled/react'}';
-      const styles = ${pkg === 'styled' ? pkg + '.div' : pkg}({
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({
         margin: '1', // 1
         border: '2', // 1
         borderColor: '7', // 2
@@ -23,12 +29,11 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       export const EmphasisText1 = ({ children }) => <span css={styles}>{children}</span>;
     `,
     })),
-    ...packages.map((pkg) => ({
-      name: `incorrect property ordering, from unknown package (${pkg})`,
+    ...packages_and_imports.map(([pkg, call]) => ({
+      name: `incorrect property ordering, (${pkg}: from unregulated package)`,
       code: outdent`
       import {${pkg}} from 'wrongpackage';
-
-      const styles = ${pkg === 'styled' ? pkg + '.div' : pkg}({
+      const styles = ${call}({
         borderTop: '1px solid #00b8d9',
         border: '#00b8d9',
       });
@@ -37,64 +42,53 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
     })),
   ],
   invalid: [
-    ...packages.map((pkg) => ({
-      name: `incorrect property ordering (${pkg})`,
+    ...packages_and_imports.map(([pkg, call, imp]) => ({
+      name: `incorrect property ordering (${pkg}: '${imp}')`,
       code: outdent`
-      import {${pkg}} from '${pkg === 'xcss' ? '@atlaskit/primitives' : '@compiled/react'}';
-
-      const styles = ${pkg === 'styled' ? pkg + '.div' : pkg}({
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({
         borderTop: '1px solid #00b8d9',
         border: '#00b8d9',
       });
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
     `,
       output: outdent`
-      import {${pkg}} from '${pkg === 'xcss' ? '@atlaskit/primitives' : '@compiled/react'}';
-
-      const styles = ${
-        pkg === 'styled' ? pkg + '.div' : pkg
-      }({ border: '#00b8d9', borderTop: '1px solid #00b8d9' });
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({ border: '#00b8d9', borderTop: '1px solid #00b8d9' });
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
     `,
       errors: [{ messageId: 'shorthand-first' }],
     })),
-    ...packages.map((pkg) => ({
-      name: `incorrect property ordering, inline (${pkg})`,
+    ...packages_and_imports.map(([pkg, call, imp]) => ({
+      name: `incorrect property ordering -> inline (${pkg}: '${imp}')`,
       code: outdent`
-        import {${pkg}} from '${pkg === 'xcss' ? '@atlaskit/primitives' : '@compiled/react'}';
-
-        const styles = ${
-          pkg === 'styled' ? pkg + '.div' : pkg
-        }({ borderTop: '1px solid #00b8d9', border: '#00b8d9' });
+        import {${pkg}} from '${imp}';
+        const styles = ${call}({ borderTop: '1px solid #00b8d9', border: '#00b8d9' });
         export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
       `,
       output: outdent`
-        import {${pkg}} from '${pkg === 'xcss' ? '@atlaskit/primitives' : '@compiled/react'}';
-
-        const styles = ${
-          pkg === 'styled' ? pkg + '.div' : pkg
-        }({ border: '#00b8d9', borderTop: '1px solid #00b8d9' });
+        import {${pkg}} from '${imp}';
+        const styles = ${call}({ border: '#00b8d9', borderTop: '1px solid #00b8d9' });
         export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
       `,
       errors: [{ messageId: 'shorthand-first' }],
     })),
-    ...packages.map((pkg) => ({
-      name: `incorrect property ordering, nested ObjectExpression (${pkg})`,
+    ...packages_and_imports.map(([pkg, call, imp]) => ({
+      name: `incorrect property ordering -> nested ObjectExpression (${pkg}: '${imp}')`,
       code: outdent`
-      import {${pkg}} from '${pkg === 'xcss' ? '@atlaskit/primitives' : '@compiled/react'}';
-
+      import {${pkg}} from '${imp}';
       const containerAppearance = {
-        default: ${pkg === 'styled' ? pkg + '.div' : pkg}({
+        default: ${call}({
           borderBlockEnd: '1px solid #00b8d9',
           borderBlock: '#00b8d9',
           border: '#00b8d9',
         }),
-        success: ${pkg === 'styled' ? pkg + '.div' : pkg}({
+        success: ${call}({
           border: '#00b8d9',
           borderBlock: '#00b8d9',
           borderBlockEnd: '1px solid #00b8d9',
         }),
-        inverse: ${pkg === 'styled' ? pkg + '.div' : pkg}({
+        inverse: ${call}({
           border: '#00b8d9',
           borderBlockEnd: '1px solid #00b8d9',
           borderBlock: '#00b8d9',
@@ -102,30 +96,24 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       };
     `,
       output: outdent`
-      import {${pkg}} from '${pkg === 'xcss' ? '@atlaskit/primitives' : '@compiled/react'}';
-
+      import {${pkg}} from '${imp}';
       const containerAppearance = {
-        default: ${
-          pkg === 'styled' ? pkg + '.div' : pkg
-        }({ border: '#00b8d9', borderBlock: '#00b8d9', borderBlockEnd: '1px solid #00b8d9' }),
-        success: ${pkg === 'styled' ? pkg + '.div' : pkg}({
+        default: ${call}({ border: '#00b8d9', borderBlock: '#00b8d9', borderBlockEnd: '1px solid #00b8d9' }),
+        success: ${call}({
           border: '#00b8d9',
           borderBlock: '#00b8d9',
           borderBlockEnd: '1px solid #00b8d9',
         }),
-        inverse: ${
-          pkg === 'styled' ? pkg + '.div' : pkg
-        }({ border: '#00b8d9', borderBlock: '#00b8d9', borderBlockEnd: '1px solid #00b8d9' }),
+        inverse: ${call}({ border: '#00b8d9', borderBlock: '#00b8d9', borderBlockEnd: '1px solid #00b8d9' }),
       };
     `,
       errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     })),
-    ...packages.map((pkg) => ({
-      name: `6 reordering errors (${pkg})`,
+    ...packages_and_imports.map(([pkg, call, imp]) => ({
+      name: `incorrect property ordering -> 6 reordering errors (${pkg}: '${imp}')`,
       code: outdent`
-      import {${pkg}} from '${pkg === 'xcss' ? '@atlaskit/primitives' : '@compiled/react'}';
-
-      const styles = ${pkg === 'styled' ? pkg + '.div' : pkg}({
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({
         borderTop: '1px solid #00b8d9',
         border: '#00b8d9',
         borderColor: '#00b8d9',
@@ -137,32 +125,108 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
     `,
       output: outdent`
-      import {${pkg}} from '${pkg === 'xcss' ? '@atlaskit/primitives' : '@compiled/react'}';
-
-      const styles = ${
-        pkg === 'styled' ? pkg + '.div' : pkg
-      }({ border: '#00b8d9', borderColor: '#00b8d9', gridTemplate: '1fr 1fr', gridRow: '1', borderTop: '1px solid #00b8d9', borderRight: '#00b8d9', borderBlockStart: '10px' });
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({ border: '#00b8d9', borderColor: '#00b8d9', gridTemplate: '1fr 1fr', gridRow: '1', borderTop: '1px solid #00b8d9', borderRight: '#00b8d9', borderBlockStart: '10px' });
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
     `,
       errors: [{ messageId: 'shorthand-first' }],
     })),
-    {
-      // doesn't retain comments WIP
-      name: 'incorrect property ordering with comments (css)',
+    ...packages_and_imports.map(([pkg, call, imp]) => ({
+      name: `includes pseudo-selectors -> pseudo is out of order (${pkg}: '${imp}')`,
       code: outdent`
-      import { css } from '@compiled/react';
-      const styles = css({
-        borderTop: '1px solid #00b8d9', // 13
-        border: '#00b8d9', // 1
-      });
-      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
-    `,
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({
+        '&:hover': {
+            borderTop: '1px solid #00b8d9', // 4
+            borderColor: 'red', // 2
+            border: '1px solid #00b8d9', // 1
+        },
+        border: '1px solid #00b8d9', // 1
+        borderColor: 'red', // 2
+        borderTop: '1px solid #00b8d9', // 4
+      })
+      `,
       output: outdent`
-      import { css } from '@compiled/react';
-      const styles = css({ border: '#00b8d9', borderTop: '1px solid #00b8d9' });
-      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
-    `,
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({
+        '&:hover': { border: '1px solid #00b8d9', borderColor: 'red', borderTop: '1px solid #00b8d9' },
+        border: '1px solid #00b8d9', // 1
+        borderColor: 'red', // 2
+        borderTop: '1px solid #00b8d9', // 4
+      })
+      `,
       errors: [{ messageId: 'shorthand-first' }],
-    },
+    })),
+    ...packages_and_imports.map(([pkg, call, imp]) => ({
+      name: `includes pseudo-selectors -> non-pseduo are out of order (${pkg}: '${imp}')`,
+      code: outdent`
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({
+        '&:hover': {
+          border: '1px solid #00b8d9', // 1
+          borderColor: 'red', // 2
+          borderTop: '1px solid #00b8d9', // 4
+        },
+        borderTop: '1px solid #00b8d9', // 4
+        borderColor: 'red', // 2
+        border: '1px solid #00b8d9', // 1
+      })
+      `,
+      output: outdent`
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({ '&:hover': {
+          border: '1px solid #00b8d9', // 1
+          borderColor: 'red', // 2
+          borderTop: '1px solid #00b8d9', // 4
+        }, border: '1px solid #00b8d9', borderColor: 'red', borderTop: '1px solid #00b8d9' })
+      `,
+      errors: [{ messageId: 'shorthand-first' }],
+    })),
+
+    /* fixer can't deal with nested fixing in one go. I've split this test into:
+       pt1 with the first round of fixes,
+       pt2 carrying on from the output of pt1.
+    */
+    ...packages_and_imports.map(([pkg, call, imp]) => ({
+      name: `includes pseduo-selectors -> pseduo and non-pseduo are out of order pt1 (${pkg}: '${imp}')`,
+      code: outdent`
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({
+        '&:hover': {
+            borderTop: '1px solid #00b8d9', // 4
+            borderColor: 'red', // 2
+            border: '1px solid #00b8d9', // 1
+        },
+        borderTop: '1px solid #00b8d9', // 4
+        borderColor: 'red', // 2
+        border: '1px solid #00b8d9', // 1
+      })
+      `,
+      output: outdent`
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({ '&:hover': {
+            borderTop: '1px solid #00b8d9', // 4
+            borderColor: 'red', // 2
+            border: '1px solid #00b8d9', // 1
+        }, border: '1px solid #00b8d9', borderColor: 'red', borderTop: '1px solid #00b8d9' })
+      `,
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
+    })),
+    ...packages_and_imports.map(([pkg, call, imp]) => ({
+      name: `includes pseduo-selectors -> pseduo and non-pseduo are out of order pt2 (${pkg}: '${imp}')`,
+      code: outdent`
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({ '&:hover': {
+            borderTop: '1px solid #00b8d9', // 4
+            borderColor: 'red', // 2
+            border: '1px solid #00b8d9', // 1
+        }, border: '1px solid #00b8d9', borderColor: 'red', borderTop: '1px solid #00b8d9' })
+       `,
+      output: outdent`
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({ '&:hover': { border: '1px solid #00b8d9', borderColor: 'red', borderTop: '1px solid #00b8d9' }, border: '1px solid #00b8d9', borderColor: 'red', borderTop: '1px solid #00b8d9' })
+      `,
+      errors: [{ messageId: 'shorthand-first' }],
+    })),
   ],
 });
