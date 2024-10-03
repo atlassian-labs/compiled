@@ -150,7 +150,7 @@ export const shorthandFirst: Rule.RuleModule = {
                 propertyA.value.properties.length > 0
               ) {
                 let innerFixRequired = false;
-                // if it's a pseduo selector, we treat their selectors as an isolated case
+                // if it's a pseudo selector, we treat their selectors as an isolated case
                 // we loop through their properties and check if they are in the right order
                 for (let l = 0; l < propertyA.value.properties.length; l++) {
                   if (innerFixRequired) break;

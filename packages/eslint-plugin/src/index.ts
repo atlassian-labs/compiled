@@ -13,6 +13,7 @@ import { noKeyframesTaggedTemplateExpressionRule } from './rules/no-keyframes-ta
 import { noStyledTaggedTemplateExpressionRule } from './rules/no-styled-tagged-template-expression';
 import { isStyled } from './rules/no-styled-tagged-template-expression/utils';
 import { noSuppressXCSS } from './rules/no-suppress-xcss';
+import { shorthandFirst } from './rules/shorthand-property-sorting';
 import { isCss, isCssMap } from './utils';
 
 export const rules = {
@@ -29,6 +30,7 @@ export const rules = {
   'no-styled-tagged-template-expression': noStyledTaggedTemplateExpressionRule,
   'no-suppress-xcss': noSuppressXCSS,
   'no-empty-styled-expression': noEmptyStyledExpressionRule,
+  'shorthand-property-sorting': shorthandFirst,
 };
 
 export { isStyled, isCss, isCssMap };
