@@ -1,5 +1,11 @@
-import { shorthandBuckets, kebabCase, type ShorthandProperties } from '@compiled/utils';
+import {
+  shorthandBuckets,
+  shorthandFor,
+  kebabCase,
+  type ShorthandProperties,
+} from '@compiled/utils';
 import type { Rule, Scope } from 'eslint';
+import type { ObjectExpression, Property } from 'estree';
 
 import { isStyled, isCss, isCssMap } from '../../index';
 
@@ -40,6 +46,57 @@ const fixProperties = (context: Rule.RuleContext, node: Rule.Node) => {
   });
 };
 
+const arePropertiesInTheRightOrder = (
+  node: ObjectExpression,
+  propertyA: Property,
+  i: number
+): boolean => {
+  if (node.properties.length > 0) {
+    if (propertyA.key.type === 'Identifier') {
+      const propA = kebabCase(propertyA.key.name) as ShorthandProperties;
+      const depthA = shorthandBuckets[propA];
+
+      for (let j = i + 1; j < node.properties.length; j++) {
+        const propertyB = node.properties[j];
+
+        if (propertyB.type === 'Property') {
+          if (propertyB.key.type === 'Identifier') {
+            const propB = kebabCase(propertyB.key.name) as ShorthandProperties;
+            const depthB = shorthandBuckets[propB];
+
+            if (propA === propB) {
+              node.properties.splice(node.properties.indexOf(propertyB), 1);
+              continue;
+            }
+
+            const shorthandForResA = shorthandFor[propA];
+            const shorthandForResB = shorthandFor[propB];
+
+            if (
+              shorthandForResA !== true &&
+              shorthandForResA !== undefined &&
+              shorthandForResB !== true &&
+              shorthandForResB !== undefined
+            ) {
+              // find intersection between objects
+              const intersectionAB = shorthandForResA.filter((x) => shorthandForResB.includes(x));
+
+              if (intersectionAB.length > 0) {
+                if (depthB < depthA) {
+                  return true;
+                }
+              }
+            }
+          }
+        }
+      }
+      return false;
+    }
+    return false;
+  }
+  return false;
+};
+
 const callExpressionCorrectImport = (node: Rule.Node, references: Scope.Reference[]): boolean => {
   return (
     node.type === 'CallExpression' &&
@@ -75,61 +132,41 @@ export const shorthandFirst: Rule.RuleModule = {
     return {
       [selectorString]: (node: Rule.Node) => {
         if (node.type === 'ObjectExpression' && node.properties.length > 0) {
-          let lowestDepth = 0;
+          const references = context.getScope().references;
           let fixRequired = false;
 
-          const references = context.getScope().references;
+          for (let i = 0; i < node.properties.length; i++) {
+            const propertyA = node.properties[i];
+            if (fixRequired) break;
 
-          // loop through the css properties of a ObjectExpression object
-          node.properties.some((property) => {
-            if (fixRequired) return;
-            if (property.type === 'Property') {
-              // normal case
-              if (property.key.type === 'Identifier') {
-                const prop = kebabCase(property.key.name) as ShorthandProperties;
-                const depth = shorthandBuckets[prop];
-
-                // if we find a property with a with a higher depth below one with a lower depth, we trigger the eslint error
-                if (depth < lowestDepth) {
-                  fixRequired = true;
-                  return;
-                } else {
-                  lowestDepth = depth;
-                }
+            if (propertyA.type === 'Property') {
+              // normal property case
+              if (propertyA.key.type === 'Identifier') {
+                fixRequired = arePropertiesInTheRightOrder(node, propertyA, i);
               }
-              // pseduo-property case
+              // pseudo selector case
               if (
-                property.value.type === 'ObjectExpression' &&
-                property.value.properties.length > 0
+                propertyA.value.type === 'ObjectExpression' &&
+                propertyA.value.properties.length > 0
               ) {
-                let innerLowestDepth = 0;
                 let innerFixRequired = false;
+                // if it's a pseduo selector, we treat their selectors as an isolated case
+                // we loop through their properties and check if they are in the right order
+                for (let l = 0; l < propertyA.value.properties.length; l++) {
+                  if (innerFixRequired) break;
 
-                property.value.properties.some((innerProperty) => {
-                  if (innerFixRequired) return;
-                  if (
-                    innerProperty.type === 'Property' &&
-                    innerProperty.key.type === 'Identifier'
-                  ) {
-                    const prop = kebabCase(innerProperty.key.name) as ShorthandProperties;
-                    const depth = shorthandBuckets[prop];
+                  const propertyAA = propertyA.value.properties[l];
 
-                    // if we find a property with a with a higher depth below one with a lower depth, we trigger the eslint error
-                    if (depth < innerLowestDepth) {
-                      innerFixRequired = true;
-                      return;
-                    } else {
-                      innerLowestDepth = depth;
-                    }
+                  if (propertyAA.type === 'Property' && propertyAA.key.type === 'Identifier') {
+                    innerFixRequired = arePropertiesInTheRightOrder(propertyA.value, propertyAA, l);
                   }
-                });
+                }
                 if (innerFixRequired && callExpressionCorrectImport(node.parent, references)) {
-                  fixProperties(context, property.value as Rule.Node);
+                  fixProperties(context, propertyA.value as Rule.Node);
                 }
               }
             }
-          });
-
+          }
           if (fixRequired && callExpressionCorrectImport(node.parent, references)) {
             fixProperties(context, node);
           }

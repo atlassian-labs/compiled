@@ -3,7 +3,7 @@ import { outdent } from 'outdent';
 import { typeScriptTester as tester } from '../../../test-utils';
 import { shorthandFirst } from '../index';
 
-const packages_and_imports = [
+const packages_calls_and_imports = [
   ['css', 'css', '@atlaskit/css'],
   ['css', 'css', '@compiled/react'],
   ['styled', 'styled.div', '@compiled/react'],
@@ -11,9 +11,15 @@ const packages_and_imports = [
   ['cssMap', 'cssMap', '@compiled/react'],
 ];
 
+const packages_and_calls = [
+  ['css', 'css'],
+  ['styled', 'styled.div'],
+  ['cssMap', 'cssMap'],
+];
+
 tester.run('shorthand-property-sorting', shorthandFirst, {
   valid: [
-    ...packages_and_imports.map(([pkg, call, imp]) => ({
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
       name: `correct property ordering, (${pkg}: '${imp}')`,
       code: outdent`
       import {${pkg}} from '${imp}';
@@ -29,7 +35,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       export const EmphasisText1 = ({ children }) => <span css={styles}>{children}</span>;
     `,
     })),
-    ...packages_and_imports.map(([pkg, call]) => ({
+    ...packages_and_calls.map(([pkg, call]) => ({
       name: `incorrect property ordering, (${pkg}: from unregulated package)`,
       code: outdent`
       import {${pkg}} from 'wrongpackage';
@@ -40,9 +46,31 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
     `,
     })),
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
+      name: `properties that don't interact with out of order depths (${pkg}: '${imp}')`,
+      code: outdent`
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({
+        borderColor: '#00b8d9', // 2
+        font: '#00b8d9', // 1
+      });
+      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
+    `,
+    })),
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
+      name: `property not in bucket (${pkg}: '${imp}'`,
+      code: outdent`
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({
+        transitionDuration: '2', // unknown
+        transition: 'fast', // 1
+      });
+      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
+    `,
+    })),
   ],
   invalid: [
-    ...packages_and_imports.map(([pkg, call, imp]) => ({
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
       name: `incorrect property ordering (${pkg}: '${imp}')`,
       code: outdent`
       import {${pkg}} from '${imp}';
@@ -59,7 +87,25 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
     `,
       errors: [{ messageId: 'shorthand-first' }],
     })),
-    ...packages_and_imports.map(([pkg, call, imp]) => ({
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
+      name: `incorrect property ordering -> 3 properties (${pkg}: '${imp}'`,
+      code: outdent`
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({
+        borderColor: '#00b8d9', // 2
+        font: '#00b8d9', // 1
+        border: '#00b8d9', // 1
+      });
+      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
+    `,
+      output: outdent`
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({ font: '#00b8d9', border: '#00b8d9', borderColor: '#00b8d9' });
+      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
+    `,
+      errors: [{ messageId: 'shorthand-first' }],
+    })),
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
       name: `incorrect property ordering -> inline (${pkg}: '${imp}')`,
       code: outdent`
         import {${pkg}} from '${imp}';
@@ -73,7 +119,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       `,
       errors: [{ messageId: 'shorthand-first' }],
     })),
-    ...packages_and_imports.map(([pkg, call, imp]) => ({
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
       name: `incorrect property ordering -> nested ObjectExpression (${pkg}: '${imp}')`,
       code: outdent`
       import {${pkg}} from '${imp}';
@@ -109,7 +155,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
     `,
       errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     })),
-    ...packages_and_imports.map(([pkg, call, imp]) => ({
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
       name: `incorrect property ordering -> 6 reordering errors (${pkg}: '${imp}')`,
       code: outdent`
       import {${pkg}} from '${imp}';
@@ -131,7 +177,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
     `,
       errors: [{ messageId: 'shorthand-first' }],
     })),
-    ...packages_and_imports.map(([pkg, call, imp]) => ({
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
       name: `includes pseudo-selectors -> pseudo is out of order (${pkg}: '${imp}')`,
       code: outdent`
       import {${pkg}} from '${imp}';
@@ -157,7 +203,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       `,
       errors: [{ messageId: 'shorthand-first' }],
     })),
-    ...packages_and_imports.map(([pkg, call, imp]) => ({
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
       name: `includes pseudo-selectors -> non-pseduo are out of order (${pkg}: '${imp}')`,
       code: outdent`
       import {${pkg}} from '${imp}';
@@ -187,7 +233,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
        pt1 with the first round of fixes,
        pt2 carrying on from the output of pt1.
     */
-    ...packages_and_imports.map(([pkg, call, imp]) => ({
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
       name: `includes pseduo-selectors -> pseduo and non-pseduo are out of order pt1 (${pkg}: '${imp}')`,
       code: outdent`
       import {${pkg}} from '${imp}';
@@ -212,7 +258,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       `,
       errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     })),
-    ...packages_and_imports.map(([pkg, call, imp]) => ({
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
       name: `includes pseduo-selectors -> pseduo and non-pseduo are out of order pt2 (${pkg}: '${imp}')`,
       code: outdent`
       import {${pkg}} from '${imp}';

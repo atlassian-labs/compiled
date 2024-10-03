@@ -1,8 +1,8 @@
 # `shorthand-property-sorting`
 
-Enforces css property sorting for packages `css`, `cssMap`, `styled` that originates from `@compiled/react`, and `xcss` from `@atlaskit/primitives`.
+Enforces css property sorting for packages `css`, `cssMap`, `styled` that originates from `@compiled/react`, and `@atlaskit/css`.
 
-At build time, Compiled automatically sorts shorthand properties (like `font` and `border`) so that they come before any longhand properties (like `fontSize` and `borderTopColor`) defined on the component. This means that longhand properties will always override shorthand properties.
+Having a longhand (like `fontSize` and `borderTopColor`) before a shorthand (like `font` and `border`) is not valid CSS. While this is not usually a problem, it becomes a problem in Compiled where classes are generated for each CSS declaration and rules are then sorted at build time during stylesheet extraction. As a result, this could cause unwanted side effects when CSS longhands are redudant.
 
 This rule enforces that the order in which the properties appear in a component's source code matches the actual ordering the properties will have at build time and runtime.
 
