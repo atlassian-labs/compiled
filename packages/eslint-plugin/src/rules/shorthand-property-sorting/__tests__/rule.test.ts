@@ -68,8 +68,37 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
     `,
     })),
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
+      name: `depth in correct order for properties in the same bucket (${pkg}: '${imp}')`,
+      code: outdent`
+          import {${pkg}} from '${imp}';
+          const styles = ${call}({
+            borderColor: '#00b8d9', // 2
+            borderTop: '1px solid #00b8d9', // 4
+          });
+          export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
+        `,
+    })),
   ],
   invalid: [
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
+      name: `depth out of order for properties in the same bucket (${pkg}: '${imp}')`,
+      code: outdent`
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({
+        borderTop: '1px solid #00b8d9',
+        borderColor: '#00b8d9',
+      });
+      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
+    `,
+      output: outdent`
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({ borderColor: '#00b8d9', borderTop: '1px solid #00b8d9' });
+      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
+    `,
+      errors: [{ messageId: 'shorthand-first' }],
+    })),
+
     ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
       name: `incorrect property ordering (${pkg}: '${imp}')`,
       code: outdent`

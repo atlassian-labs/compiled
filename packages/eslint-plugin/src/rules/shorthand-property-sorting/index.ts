@@ -51,48 +51,32 @@ const arePropertiesInTheRightOrder = (
   propertyA: Property,
   i: number
 ): boolean => {
-  if (node.properties.length > 0) {
-    if (propertyA.key.type === 'Identifier') {
-      const propA = kebabCase(propertyA.key.name) as ShorthandProperties;
-      const depthA = shorthandBuckets[propA];
+  if (node.properties.length > 0 && propertyA.key.type === 'Identifier') {
+    const propA = kebabCase(propertyA.key.name) as ShorthandProperties;
+    const depthA = shorthandBuckets[propA];
 
-      for (let j = i + 1; j < node.properties.length; j++) {
-        const propertyB = node.properties[j];
+    for (let j = i + 1; j < node.properties.length; j++) {
+      const propertyB = node.properties[j];
 
-        if (propertyB.type === 'Property') {
-          if (propertyB.key.type === 'Identifier') {
-            const propB = kebabCase(propertyB.key.name) as ShorthandProperties;
-            const depthB = shorthandBuckets[propB];
+      if (propertyB.type === 'Property') {
+        if (propertyB.key.type === 'Identifier') {
+          const propB = kebabCase(propertyB.key.name) as ShorthandProperties;
+          const depthB = shorthandBuckets[propB];
 
-            if (propA === propB) {
-              node.properties.splice(node.properties.indexOf(propertyB), 1);
-              continue;
-            }
+          const shorthandForResA = shorthandFor[propA];
+          const shorthandForResB = shorthandFor[propB];
 
-            const shorthandForResA = shorthandFor[propA];
-            const shorthandForResB = shorthandFor[propB];
+          if (Array.isArray(shorthandForResA) && Array.isArray(shorthandForResB)) {
+            // find intersection between objects
+            const intersectionAB = shorthandForResA.filter((x) => shorthandForResB.includes(x));
 
-            if (
-              shorthandForResA !== true &&
-              shorthandForResA !== undefined &&
-              shorthandForResB !== true &&
-              shorthandForResB !== undefined
-            ) {
-              // find intersection between objects
-              const intersectionAB = shorthandForResA.filter((x) => shorthandForResB.includes(x));
-
-              if (intersectionAB.length > 0) {
-                if (depthB < depthA) {
-                  return true;
-                }
-              }
+            if (intersectionAB.length > 0 && depthB < depthA) {
+              return true;
             }
           }
         }
       }
-      return false;
     }
-    return false;
   }
   return false;
 };
