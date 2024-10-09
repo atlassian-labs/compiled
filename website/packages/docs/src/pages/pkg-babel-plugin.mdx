@@ -49,6 +49,7 @@ If you choose to configure Compiled through Webpack or Parcel (recommended), you
 - `cache`
 - `classNameCompressionMap`
 - `extensions`
+- `hashPrefix`
 - `importReact`
 - `importSources`
 - `increaseSpecificity`
@@ -92,6 +93,15 @@ Extensions that we should consider code. We use these to identify if a file shou
 
 - Type: `string[]`
 - Default: `['.js', '.jsx', '.ts', '.tsx']`
+
+#### hashPrefix
+
+Adds a prefix to the generated hashed css rule names.
+
+This is useful when `@compiled` is being used in a micro frontend environment by multiple packages and you want to avoid specificity issues.
+
+- Type: `string`
+- Default: `undefined`
 
 #### importReact
 
