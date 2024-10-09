@@ -8,7 +8,20 @@ interface PluginOpts {
   selectors?: string[];
   atRule?: string;
   parentNode?: Container;
+  hashPrefix?: string;
 }
+
+/**
+ * Returns true if a given string is a valid CSS identifier
+ *
+ * @param value the value to test
+ * @returns `true` if given value is valid, `false` if not
+ *
+ */
+const isCssIdentifierValid = (value: string): boolean => {
+  const validCssIdentifierRegex = /^[a-zA-Z\-][a-zA-Z\-_0-9]*$/;
+  return Boolean(value.match(validCssIdentifierRegex));
+};
 
 /**
  * Returns an atomic rule class name using this form:
@@ -21,14 +34,22 @@ interface PluginOpts {
  *
  * @param node CSS declaration
  * @param opts AtomicifyOpts
+ *
+ * @throws Throws an error if `opts.hashPrefix` contains invalid css class/id characters
  */
 const atomicClassName = (node: Declaration, opts: PluginOpts) => {
+  if (opts.hashPrefix && !isCssIdentifierValid(opts.hashPrefix)) {
+    throw new Error(
+      `${opts.hashPrefix} isn't a valid CSS identifier. Accepted characters are [a-zA-Z][a-zA-Z\-_0-9]`
+    );
+  }
+
   const selectors = opts.selectors ? opts.selectors.join('') : '';
   const group = hash(`${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
   const value = node.important ? node.value + node.important : node.value;
   const valueHash = hash(value).slice(0, 4);
 
-  return `_${group}${valueHash}`;
+  return `_${opts.hashPrefix ?? ''}${group}${valueHash}`;
 };
 
 /**
