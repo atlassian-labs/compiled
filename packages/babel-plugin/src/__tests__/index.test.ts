@@ -205,6 +205,36 @@ describe('babel plugin', () => {
     expect(actual).toInclude('c_MyDiv');
   });
 
+  it.only('should add a prefix to style hash hashPrefix is present', () => {
+    const actual = transform(
+      `
+      import { styled } from '@compiled/react';
+
+      const MyDiv = styled.div\`
+        font-size: 12px;
+      \`;
+    `,
+      { hashPrefix: 'myprefix' }
+    );
+
+    expect(actual).toInclude('myprefix');
+  });
+
+  it.only('should throw if a given hashPrefix is not a valid css identifier', () => {
+    expect(() => {
+      transform(
+        `
+        import { styled } from '@compiled/react';
+
+        const MyDiv = styled.div\`
+          font-size: 12px;
+        \`;
+        `,
+        { hashPrefix: '$invalid%' }
+      );
+    }).toThrow();
+  });
+
   it('should compress class name for styled component', () => {
     const actual = transform(
       `
