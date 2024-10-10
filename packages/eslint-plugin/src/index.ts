@@ -12,6 +12,7 @@ import { noJavaScriptXCSSRule } from './rules/no-js-xcss';
 import { noKeyframesTaggedTemplateExpressionRule } from './rules/no-keyframes-tagged-template-expression';
 import { noStyledTaggedTemplateExpressionRule } from './rules/no-styled-tagged-template-expression';
 import { noSuppressXCSS } from './rules/no-suppress-xcss';
+import { shorthandFirst } from './rules/shorthand-property-sorting';
 
 export const rules = {
   'jsx-pragma': jsxPragmaRule,
@@ -27,6 +28,7 @@ export const rules = {
   'no-styled-tagged-template-expression': noStyledTaggedTemplateExpressionRule,
   'no-suppress-xcss': noSuppressXCSS,
   'no-empty-styled-expression': noEmptyStyledExpressionRule,
+  'shorthand-property-sorting': shorthandFirst,
 };
 
 export const configs = {
