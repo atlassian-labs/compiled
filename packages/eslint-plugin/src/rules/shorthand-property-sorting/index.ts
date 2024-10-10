@@ -7,44 +7,7 @@ import {
 import type { Rule, Scope } from 'eslint';
 import type { ObjectExpression, Property } from 'estree';
 
-import { isStyled, isCss, isCssMap } from '../../index';
-
-const fixProperties = (context: Rule.RuleContext, node: Rule.Node) => {
-  context.report({
-    node: node,
-    messageId: 'shorthand-first',
-    fix: (fixer) => {
-      if (node.type === 'ObjectExpression' && node.properties.length > 0) {
-        // sort the properties by depth
-        const sortedProperties = node.properties.slice().sort((a, b) => {
-          if (
-            a.type === 'Property' &&
-            a.key.type === 'Identifier' &&
-            b.type === 'Property' &&
-            b.key.type === 'Identifier'
-          ) {
-            const propA = kebabCase(a.key.name) as ShorthandProperties;
-            const propB = kebabCase(b.key.name) as ShorthandProperties;
-
-            return shorthandBuckets[propA] - shorthandBuckets[propB];
-          }
-          return 0;
-        });
-
-        const sourceCode = context.getSourceCode();
-        const sortedCode = sortedProperties
-          .map((property) => sourceCode.getText(property))
-          .join(', ');
-
-        // Replace the old object expression with the new sorted one
-        const newObjectExpression = `{ ${sortedCode} }`;
-
-        return fixer.replaceText(node, newObjectExpression);
-      }
-      return null;
-    },
-  });
-};
+import { isCss, isCssMap, isStyled } from '../../utils';
 
 const arePropertiesInTheRightOrder = (
   node: ObjectExpression,
@@ -102,9 +65,7 @@ export const shorthandFirst: Rule.RuleModule = {
       'shorthand-first':
         'When using both shorthand and longhand properties, the shorthand property should be first.',
     },
-    type: 'suggestion',
-    fixable: 'code',
-    hasSuggestions: true,
+    type: 'problem',
   },
   create(context) {
     const selectorString: string =
@@ -146,13 +107,19 @@ export const shorthandFirst: Rule.RuleModule = {
                   }
                 }
                 if (innerFixRequired && callExpressionCorrectImport(node.parent, references)) {
-                  fixProperties(context, propertyA.value as Rule.Node);
+                  context.report({
+                    node: propertyA.value,
+                    messageId: 'shorthand-first',
+                  });
                 }
               }
             }
           }
           if (fixRequired && callExpressionCorrectImport(node.parent, references)) {
-            fixProperties(context, node);
+            context.report({
+              node,
+              messageId: 'shorthand-first',
+            });
           }
         }
       },

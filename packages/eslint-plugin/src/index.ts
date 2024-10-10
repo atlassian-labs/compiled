@@ -11,10 +11,8 @@ import { noInvalidCssMapRule } from './rules/no-invalid-css-map';
 import { noJavaScriptXCSSRule } from './rules/no-js-xcss';
 import { noKeyframesTaggedTemplateExpressionRule } from './rules/no-keyframes-tagged-template-expression';
 import { noStyledTaggedTemplateExpressionRule } from './rules/no-styled-tagged-template-expression';
-import { isStyled } from './rules/no-styled-tagged-template-expression/utils';
 import { noSuppressXCSS } from './rules/no-suppress-xcss';
 import { shorthandFirst } from './rules/shorthand-property-sorting';
-import { isCss, isCssMap } from './utils';
 
 export const rules = {
   'jsx-pragma': jsxPragmaRule,
@@ -32,8 +30,6 @@ export const rules = {
   'no-empty-styled-expression': noEmptyStyledExpressionRule,
   'shorthand-property-sorting': shorthandFirst,
 };
-
-export { isStyled, isCss, isCssMap };
 
 export const configs = {
   recommended,

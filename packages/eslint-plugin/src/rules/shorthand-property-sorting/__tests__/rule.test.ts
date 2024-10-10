@@ -82,24 +82,6 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
   ],
   invalid: [
     ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
-      name: `depth out of order for properties in the same bucket (${pkg}: '${imp}')`,
-      code: outdent`
-      import {${pkg}} from '${imp}';
-      const styles = ${call}({
-        borderTop: '1px solid #00b8d9',
-        borderColor: '#00b8d9',
-      });
-      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
-    `,
-      output: outdent`
-      import {${pkg}} from '${imp}';
-      const styles = ${call}({ borderColor: '#00b8d9', borderTop: '1px solid #00b8d9' });
-      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
-    `,
-      errors: [{ messageId: 'shorthand-first' }],
-    })),
-
-    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
       name: `incorrect property ordering (${pkg}: '${imp}')`,
       code: outdent`
       import {${pkg}} from '${imp}';
@@ -107,11 +89,6 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         borderTop: '1px solid #00b8d9',
         border: '#00b8d9',
       });
-      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
-    `,
-      output: outdent`
-      import {${pkg}} from '${imp}';
-      const styles = ${call}({ border: '#00b8d9', borderTop: '1px solid #00b8d9' });
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
     `,
       errors: [{ messageId: 'shorthand-first' }],
@@ -127,11 +104,6 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       });
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
     `,
-      output: outdent`
-      import {${pkg}} from '${imp}';
-      const styles = ${call}({ font: '#00b8d9', border: '#00b8d9', borderColor: '#00b8d9' });
-      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
-    `,
       errors: [{ messageId: 'shorthand-first' }],
     })),
     ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
@@ -141,11 +113,18 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         const styles = ${call}({ borderTop: '1px solid #00b8d9', border: '#00b8d9' });
         export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
       `,
-      output: outdent`
-        import {${pkg}} from '${imp}';
-        const styles = ${call}({ border: '#00b8d9', borderTop: '1px solid #00b8d9' });
-        export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
-      `,
+      errors: [{ messageId: 'shorthand-first' }],
+    })),
+    ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
+      name: `depth out of order for properties in the same bucket (${pkg}: '${imp}')`,
+      code: outdent`
+      import {${pkg}} from '${imp}';
+      const styles = ${call}({
+        borderTop: '1px solid #00b8d9',
+        borderColor: '#00b8d9',
+      });
+      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
+    `,
       errors: [{ messageId: 'shorthand-first' }],
     })),
     ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
@@ -170,18 +149,6 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         }),
       };
     `,
-      output: outdent`
-      import {${pkg}} from '${imp}';
-      const containerAppearance = {
-        default: ${call}({ border: '#00b8d9', borderBlock: '#00b8d9', borderBlockEnd: '1px solid #00b8d9' }),
-        success: ${call}({
-          border: '#00b8d9',
-          borderBlock: '#00b8d9',
-          borderBlockEnd: '1px solid #00b8d9',
-        }),
-        inverse: ${call}({ border: '#00b8d9', borderBlock: '#00b8d9', borderBlockEnd: '1px solid #00b8d9' }),
-      };
-    `,
       errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     })),
     ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
@@ -199,11 +166,6 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       });
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
     `,
-      output: outdent`
-      import {${pkg}} from '${imp}';
-      const styles = ${call}({ border: '#00b8d9', borderColor: '#00b8d9', gridTemplate: '1fr 1fr', gridRow: '1', borderTop: '1px solid #00b8d9', borderRight: '#00b8d9', borderBlockStart: '10px' });
-      export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
-    `,
       errors: [{ messageId: 'shorthand-first' }],
     })),
     ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
@@ -216,15 +178,6 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
             borderColor: 'red', // 2
             border: '1px solid #00b8d9', // 1
         },
-        border: '1px solid #00b8d9', // 1
-        borderColor: 'red', // 2
-        borderTop: '1px solid #00b8d9', // 4
-      })
-      `,
-      output: outdent`
-      import {${pkg}} from '${imp}';
-      const styles = ${call}({
-        '&:hover': { border: '1px solid #00b8d9', borderColor: 'red', borderTop: '1px solid #00b8d9' },
         border: '1px solid #00b8d9', // 1
         borderColor: 'red', // 2
         borderTop: '1px solid #00b8d9', // 4
@@ -246,14 +199,6 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         borderColor: 'red', // 2
         border: '1px solid #00b8d9', // 1
       })
-      `,
-      output: outdent`
-      import {${pkg}} from '${imp}';
-      const styles = ${call}({ '&:hover': {
-          border: '1px solid #00b8d9', // 1
-          borderColor: 'red', // 2
-          borderTop: '1px solid #00b8d9', // 4
-        }, border: '1px solid #00b8d9', borderColor: 'red', borderTop: '1px solid #00b8d9' })
       `,
       errors: [{ messageId: 'shorthand-first' }],
     })),
@@ -277,14 +222,6 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         border: '1px solid #00b8d9', // 1
       })
       `,
-      output: outdent`
-      import {${pkg}} from '${imp}';
-      const styles = ${call}({ '&:hover': {
-            borderTop: '1px solid #00b8d9', // 4
-            borderColor: 'red', // 2
-            border: '1px solid #00b8d9', // 1
-        }, border: '1px solid #00b8d9', borderColor: 'red', borderTop: '1px solid #00b8d9' })
-      `,
       errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     })),
     ...packages_calls_and_imports.map(([pkg, call, imp]) => ({
@@ -297,10 +234,6 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
             border: '1px solid #00b8d9', // 1
         }, border: '1px solid #00b8d9', borderColor: 'red', borderTop: '1px solid #00b8d9' })
        `,
-      output: outdent`
-      import {${pkg}} from '${imp}';
-      const styles = ${call}({ '&:hover': { border: '1px solid #00b8d9', borderColor: 'red', borderTop: '1px solid #00b8d9' }, border: '1px solid #00b8d9', borderColor: 'red', borderTop: '1px solid #00b8d9' })
-      `,
       errors: [{ messageId: 'shorthand-first' }],
     })),
   ],

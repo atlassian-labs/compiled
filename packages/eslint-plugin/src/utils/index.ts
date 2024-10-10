@@ -3,3 +3,4 @@ export { checkIfCompiledExport as validateDefinition } from './create-no-exporte
 export { createNoTaggedTemplateExpressionRule } from './create-no-tagged-template-expression-rule';
 export { CssMapObjectChecker, getCssMapObject } from './css-map';
 export { isCss, isCssMap, isKeyframes, isCxFunction } from './is-compiled-import';
+export { isStyled } from '../rules/no-styled-tagged-template-expression/utils';
