@@ -45,11 +45,13 @@ const atomicClassName = (node: Declaration, opts: PluginOpts) => {
   }
 
   const selectors = opts.selectors ? opts.selectors.join('') : '';
-  const group = hash(`${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
+  const prefix = opts.hashPrefix ?? '';
+  const group = hash(`${prefix}${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
+
   const value = node.important ? node.value + node.important : node.value;
   const valueHash = hash(value).slice(0, 4);
 
-  return `_${opts.hashPrefix ?? ''}${group}${valueHash}`;
+  return `_${group}${valueHash}`;
 };
 
 /**
