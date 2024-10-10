@@ -1,8 +1,7 @@
 import type { Rule } from 'eslint';
 
 import { createNoTaggedTemplateExpressionRule } from '../../utils';
-
-import { isStyled } from './utils';
+import { isStyled } from '../../utils/is-compiled-import';
 
 export const noStyledTaggedTemplateExpressionRule: Rule.RuleModule = {
   meta: {

@@ -1,6 +1,7 @@
 import type { Rule, Scope } from 'eslint';
 
 import { COMPILED_IMPORT, ATLASKIT_IMPORT } from './constants';
+import { isStyledImportSpecifier } from './styled-import';
 
 type Definition = Scope.Definition;
 type Node = Rule.Node;
@@ -31,3 +32,19 @@ export const isCss = isCompiledOrAtlaskitImport('css');
 export const isCxFunction = isCompiledOrAtlaskitImport('cx');
 export const isCssMap = isCompiledOrAtlaskitImport('cssMap');
 export const isKeyframes = isCompiledOrAtlaskitImport('keyframes');
+
+export const isStyled = (node: Node, references: Reference[]): boolean =>
+  (node.type === 'MemberExpression' &&
+    node.object.type === 'Identifier' &&
+    references.some(
+      (reference) =>
+        reference.identifier === node.object &&
+        reference.resolved?.defs.some(isStyledImportSpecifier)
+    )) ||
+  (node.type === 'CallExpression' &&
+    node.callee.type === 'Identifier' &&
+    references.some(
+      (reference) =>
+        reference.identifier === node.callee &&
+        reference.resolved?.defs.some(isStyledImportSpecifier)
+    ));

@@ -57,8 +57,6 @@ export const shorthandFirst: Rule.RuleModule = {
   meta: {
     docs: {
       recommended: true,
-      description:
-        "At build time, Compiled automatically sorts shorthand properties (like `font` and `border`) so that they come before any longhand properties (like `fontSize` and `borderTopColor`) defined on the component. This means that longhand properties will always override shorthand properties. This rule enforces that the order in which the properties appear in a component's source code matches the actual ordering the properties will have at build time and runtime.",
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/shorthand-property-sorting',
     },
     messages: {
