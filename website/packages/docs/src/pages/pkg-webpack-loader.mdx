@@ -307,3 +307,18 @@ See [Shorthand properties](/shorthand) for more information.
 
 - Type: `boolean`
 - Default: `false`
+
+This should be set on both the `@compiled/webpack-loader`:
+
+```js
+{
+  loader: '@compiled/webpack-loader',
+  options: { sortShorthand: true }
+}
+```
+
+And the `CompiledExtractPlugin`:
+
+```js
+new CompiledExtractPlugin({ sortShorthand: true }),
+```
