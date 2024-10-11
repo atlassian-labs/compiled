@@ -34,8 +34,6 @@ const isCssIdentifierValid = (value: string): boolean => {
  *
  * @param node CSS declaration
  * @param opts AtomicifyOpts
- *
- * @throws Throws an error if `opts.classHashPrefix` contains invalid css class/id characters
  */
 const atomicClassName = (node: Declaration, opts: PluginOpts) => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
