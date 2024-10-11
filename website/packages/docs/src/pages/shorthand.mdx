@@ -25,7 +25,7 @@ Note that there is a bug where [stylesheet extraction cannot be used for Parcel]
 
 If stylesheet extraction is turned on, then shorthand property sorting is controlled by the `sortShorthand` option. This is set to `false` by default, meaning that if stylesheet extraction is turned on, shorthand properties will not be sorted in any way by default.
 
-If you are using Webpack, set `sortShorthand: true` as an option to `new CompiledExtractPlugin()`. If you are using Parcel, set `sortShorthand: true` in your Compiled configuration file (e.g. `.compiledcssrc`), but note that stylesheet extraction won't work unless you are in production mode [due to a bug](https://github.com/atlassian-labs/compiled/issues/1306).
+If you are using Webpack, set `sortShorthand: true` as an option like `new CompiledExtractPlugin({ sortShorthand: true })`. If you are using Parcel, set `sortShorthand: true` in your Compiled configuration file (e.g. `.compiledcssrc`), but note that stylesheet extraction won't work unless you are in production mode [due to a bug](https://github.com/atlassian-labs/compiled/issues/1306).
 
 With `sortShorthand` set to `true`, shorthand properties will be sorted deterministically, with more specific shorthand properties taking precedence over less specific shorthand properties. Shorthand property sorting takes precedence over the sorting of pseudo-selectors. For example, given the following example:
 
