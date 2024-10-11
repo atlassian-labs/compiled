@@ -4,14 +4,14 @@
 
 ## Usage
 
-Codemods in this repository can be run with the [CodeshiftCommunity](https://www.codeshiftcommunity.com/docs/) tooling.
+Codemods in this repository can be run with the [Hypermod.io CLI](https://www.hypermod.io/docs/tools/cli/).
 
 ```bash
 # Transform single file
-npx @codeshift/cli --packages @compiled/codemods /Project/path/to/file
+npx @hypermod/cli --packages @compiled/codemods /Project/path/to/file
 
 # Transform multiple files
-npx @codeshift/cli --packages @compiled/codemods /Project/**/*.tsx
+npx @hypermod/cli --packages @compiled/codemods /Project/**/*.tsx
 ```
 
 ## Available codemods
