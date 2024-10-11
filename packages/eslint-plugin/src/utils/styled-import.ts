@@ -1,6 +1,6 @@
+import { COMPILED_IMPORT } from '@compiled/utils';
 import type { Scope } from 'eslint';
 
-import { COMPILED_IMPORT } from './constants';
 type Definition = Scope.Definition;
 
 export const isStyledImportSpecifier = (def: Definition): boolean =>

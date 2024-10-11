@@ -1,7 +1,5 @@
-import { JSX_ANNOTATION_REGEX } from '@compiled/utils';
+import { COMPILED_IMPORT, JSX_ANNOTATION_REGEX } from '@compiled/utils';
 import type { Comment, ImportDeclaration, ImportSpecifier } from 'estree';
-
-import { COMPILED_IMPORT } from './constants';
 
 const importsToNames = (compiledImports: ImportDeclaration[]): string[] =>
   compiledImports.flatMap((declaration) => {

@@ -7,7 +7,7 @@ import type {
   PluginOptions as BabelStripRuntimePluginOptions,
   BabelFileMetadata,
 } from '@compiled/babel-plugin-strip-runtime';
-import { DEFAULT_PARSER_BABEL_PLUGINS, toBoolean } from '@compiled/utils';
+import { DEFAULT_IMPORT_SOURCES, DEFAULT_PARSER_BABEL_PLUGINS, toBoolean } from '@compiled/utils';
 import { Transformer } from '@parcel/plugin';
 import SourceMap from '@parcel/source-map';
 // @ts-expect-error missing type
@@ -90,8 +90,10 @@ export default new Transformer<ParcelTransformerOpts>({
 
     const code = await asset.getCode();
     if (
-      code.indexOf('@compiled/react') === -1 &&
-      (config.importSources?.every((importSource) => !code.includes(importSource)) ?? true)
+      // If neither Compiled (default) nor any of the additional import sources are found in the code, we bail out.
+      [...DEFAULT_IMPORT_SOURCES, ...(config.importSources || [])].every(
+        (importSource) => !code.includes(importSource)
+      )
     ) {
       // We only want to parse files that are actually using Compiled.
       // For everything else we bail out.

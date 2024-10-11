@@ -1,8 +1,7 @@
+import { DEFAULT_IMPORT_SOURCES } from '@compiled/utils';
 import type { TSESTree, TSESLint } from '@typescript-eslint/utils';
 import type { Rule } from 'eslint';
 import type { ImportDeclaration, ImportSpecifier } from 'estree';
-
-import { COMPILED_IMPORT } from './constants';
 
 // WARNING
 // context.getSourceCode() is deprecated, but we still use it here because
@@ -25,7 +24,7 @@ import { COMPILED_IMPORT } from './constants';
  */
 export const findLibraryImportDeclarations = (
   context: Rule.RuleContext,
-  sources = [COMPILED_IMPORT]
+  sources = DEFAULT_IMPORT_SOURCES
 ): ImportDeclaration[] => {
   return context
     .getSourceCode()
@@ -49,7 +48,7 @@ export const findLibraryImportDeclarations = (
  */
 export const findTSLibraryImportDeclarations = (
   context: TSESLint.RuleContext<string, readonly unknown[]>,
-  sources = [COMPILED_IMPORT]
+  sources = DEFAULT_IMPORT_SOURCES
 ): TSESTree.ImportDeclaration[] => {
   return context
     .getSourceCode()

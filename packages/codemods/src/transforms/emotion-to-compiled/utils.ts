@@ -1,3 +1,4 @@
+import { COMPILED_IMPORT } from '@compiled/utils';
 import type {
   Collection,
   ImportDeclaration,
@@ -8,7 +9,7 @@ import type {
   ImportSpecifier,
 } from 'jscodeshift';
 
-import { COMPILED_IMPORT_PATH, REACT_IMPORT_NAME, REACT_IMPORT_PATH } from '../../constants';
+import { REACT_IMPORT_NAME, REACT_IMPORT_PATH } from '../../constants';
 import { getImportDeclarationCollection, hasImportDeclaration } from '../../utils';
 
 export const addReactIdentifier = ({
@@ -102,7 +103,7 @@ export const mergeImportSpecifiers = ({
     {
       j,
       collection,
-      importPath: COMPILED_IMPORT_PATH,
+      importPath: COMPILED_IMPORT,
     }
   );
 
@@ -128,7 +129,7 @@ export const mergeImportSpecifiers = ({
 
     if (index === importDeclarationCollectionLength - 1) {
       j(importDeclarationPath).replaceWith([
-        j.importDeclaration(importSpecifiers, j.literal(COMPILED_IMPORT_PATH)),
+        j.importDeclaration(importSpecifiers, j.literal(COMPILED_IMPORT)),
       ]);
 
       const newNode = importDeclarationPath.node;

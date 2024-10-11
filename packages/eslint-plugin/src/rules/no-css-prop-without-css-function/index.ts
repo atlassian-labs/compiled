@@ -1,3 +1,4 @@
+import { COMPILED_IMPORT } from '@compiled/utils';
 import type { TSESTree, TSESLint } from '@typescript-eslint/utils';
 
 import {
@@ -141,7 +142,7 @@ class NoCssPropWithoutCssFunctionRunner {
         // Import not found, add a new one
         yield fixer.insertTextAfter(
           source.ast.body[0],
-          `\n${buildImportDeclaration('css', '@compiled/react')}`
+          `\n${buildImportDeclaration('css', COMPILED_IMPORT)}`
         );
       }
 

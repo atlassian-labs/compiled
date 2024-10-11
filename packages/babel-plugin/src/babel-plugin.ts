@@ -5,7 +5,13 @@ import jsxSyntax from '@babel/plugin-syntax-jsx';
 import template from '@babel/template';
 import type { NodePath, Visitor } from '@babel/traverse';
 import * as t from '@babel/types';
-import { unique, preserveLeadingComments, JSX_ANNOTATION_REGEX } from '@compiled/utils';
+import {
+  unique,
+  preserveLeadingComments,
+  JSX_ANNOTATION_REGEX,
+  DEFAULT_IMPORT_SOURCES,
+  COMPILED_IMPORT,
+} from '@compiled/utils';
 
 import { visitClassNamesPath } from './class-names';
 import { visitCssMapPath } from './css-map';
@@ -31,7 +37,6 @@ import { visitXcssPropPath } from './xcss-prop';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
 const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
-const DEFAULT_IMPORT_SOURCES = ['@compiled/react', '@atlaskit/css'];
 
 let globalCache: Cache | undefined;
 
@@ -296,7 +301,7 @@ export default declare<State>((api) => {
 
 Reasons this might happen:
 
-[Likely] Importing \`jsx\` from a library other than Compiled CSS-in-JS - please only import from \`@compiled/react\`.
+[Likely] Importing \`jsx\` from a library other than Compiled CSS-in-JS - please only import from \`${COMPILED_IMPORT}\`.
 
 [Less likely] If you are using \`@babel/preset-react\` (or \`@babel/plugin-transform-react-jsx\`) in your Babel configuration, and you are using \`runtime: classic\`, make sure you do not use the \`pragma\` option. Please use the /** @jsx jsx */ syntax instead, or switch to \`runtime: automatic\``,
             // Use parent node to mitigate likelihood of

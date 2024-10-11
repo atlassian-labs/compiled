@@ -8,3 +8,4 @@ export { preserveLeadingComments } from './preserve-leading-comments';
 export { INCREASE_SPECIFICITY_SELECTOR } from './increase-specificity';
 export { DEFAULT_PARSER_BABEL_PLUGINS } from './default-parser-babel-plugins';
 export { shorthandBuckets, shorthandFor, type ShorthandProperties, type Depths } from './shorthand';
+export { COMPILED_IMPORT, DEFAULT_IMPORT_SOURCES } from './constants';

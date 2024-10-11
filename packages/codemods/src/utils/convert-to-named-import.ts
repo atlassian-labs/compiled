@@ -1,3 +1,4 @@
+import { COMPILED_IMPORT } from '@compiled/utils';
 import type {
   Collection,
   ImportDeclaration,
@@ -6,7 +7,6 @@ import type {
   JSCodeshift,
 } from 'jscodeshift';
 
-import { COMPILED_IMPORT_PATH } from '../constants';
 import type { CodemodPluginInstance } from '../plugins/types';
 
 import { getImportDeclarationCollection } from './import-declarations';
@@ -30,7 +30,7 @@ const applyBuildImport = ({
       originalNode,
       currentNode,
       specifiers,
-      compiledImportPath: COMPILED_IMPORT_PATH,
+      compiledImportPath: COMPILED_IMPORT,
     });
   }, originalNode);
 
