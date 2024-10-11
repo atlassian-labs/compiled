@@ -20,7 +20,7 @@ interface PluginOpts {
  */
 const isCssIdentifierValid = (value: string): boolean => {
   const validCssIdentifierRegex = /^[a-zA-Z\-_]+[a-zA-Z\-_0-9]*$/;
-  return Boolean(value.match(validCssIdentifierRegex));
+  return validCssIdentifierRegex.test(value);
 };
 
 /**
