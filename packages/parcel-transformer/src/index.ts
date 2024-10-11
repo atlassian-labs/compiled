@@ -90,7 +90,7 @@ export default new Transformer<ParcelTransformerOpts>({
 
     const code = await asset.getCode();
     if (
-      // If Compiled (default) and noone of the additional import sources are not found in the code, we bail out.
+      // If neither Compiled (default) nor any of the additional import sources are found in the code, we bail out.
       [...DEFAULT_IMPORT_SOURCES, ...(config.importSources || [])].every(
         (importSource) => !code.includes(importSource)
       )
