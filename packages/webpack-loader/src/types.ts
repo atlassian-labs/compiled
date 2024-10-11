@@ -147,5 +147,5 @@ export interface CompiledExtractPluginOptions {
    * Adds a defined prefix to the generated classes' hashes.
    * Useful in micro frontend environments to avoid clashing/specificity issues.
    */
-  hashPrefix?: string;
+  classHashPrefix?: string;
 }

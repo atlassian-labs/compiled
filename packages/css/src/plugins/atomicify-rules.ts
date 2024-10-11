@@ -8,7 +8,7 @@ interface PluginOpts {
   selectors?: string[];
   atRule?: string;
   parentNode?: Container;
-  hashPrefix?: string;
+  classHashPrefix?: string;
 }
 
 /**
@@ -35,17 +35,17 @@ const isCssIdentifierValid = (value: string): boolean => {
  * @param node CSS declaration
  * @param opts AtomicifyOpts
  *
- * @throws Throws an error if `opts.hashPrefix` contains invalid css class/id characters
+ * @throws Throws an error if `opts.classHashPrefix` contains invalid css class/id characters
  */
 const atomicClassName = (node: Declaration, opts: PluginOpts) => {
-  if (opts.hashPrefix && !isCssIdentifierValid(opts.hashPrefix)) {
+  if (opts.classHashPrefix && !isCssIdentifierValid(opts.classHashPrefix)) {
     throw new Error(
-      `${opts.hashPrefix} isn't a valid CSS identifier. Accepted characters are [a-zA-Z][a-zA-Z\-_0-9]`
+      `${opts.classHashPrefix} isn't a valid CSS identifier. Accepted characters are [a-zA-Z][a-zA-Z\-_0-9]`
     );
   }
 
   const selectors = opts.selectors ? opts.selectors.join('') : '';
-  const prefix = opts.hashPrefix ?? '';
+  const prefix = opts.classHashPrefix ?? '';
   const group = hash(`${prefix}${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
 
   const value = node.important ? node.value + node.important : node.value;

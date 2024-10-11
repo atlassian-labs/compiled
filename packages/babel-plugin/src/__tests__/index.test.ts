@@ -205,7 +205,7 @@ describe('babel plugin', () => {
     expect(actual).toInclude('c_MyDiv');
   });
 
-  it.only('should add a prefix to style hash hashPrefix is present', () => {
+  it('should add a prefix to style hash classHashPrefix is present', () => {
     // changes to css/src/plugins/atomicify-rules can break this due to how the class name is hashed
     const hashedClassName = '_1lv61fwx';
     const actual = transform(
@@ -216,13 +216,13 @@ describe('babel plugin', () => {
         font-size: 12px;
       \`;
     `,
-      { hashPrefix: 'myprefix' }
+      { classHashPrefix: 'myprefix' }
     );
 
     expect(actual).toInclude(hashedClassName);
   });
 
-  it.only('should throw if a given hashPrefix is not a valid css identifier', () => {
+  it('should throw if a given classHashPrefix is not a valid css identifier', () => {
     expect(() => {
       transform(
         `
@@ -232,7 +232,7 @@ describe('babel plugin', () => {
           font-size: 12px;
         \`;
         `,
-        { hashPrefix: '$invalid%' }
+        { classHashPrefix: '$invalid%' }
       );
     }).toThrow();
   });
