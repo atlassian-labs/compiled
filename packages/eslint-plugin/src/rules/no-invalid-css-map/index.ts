@@ -1,8 +1,8 @@
+import { DEFAULT_IMPORT_SOURCES } from '@compiled/utils';
 import type { Rule } from 'eslint';
 import type { CallExpression as ESCallExpression } from 'estree';
 
 import { CssMapObjectChecker, getCssMapObject, isCssMap, validateDefinition } from '../../utils';
-import { COMPILED_IMPORT } from '../../utils/constants';
 
 type CallExpression = ESCallExpression & Rule.NodeParentExtension;
 
@@ -40,7 +40,9 @@ const reportIfNotTopLevelScope = (node: CallExpression, context: Rule.RuleContex
 
 const createCssMapRule = (context: Rule.RuleContext): Rule.RuleListener => {
   const { text } = context.getSourceCode();
-  if (!text.includes(COMPILED_IMPORT)) {
+
+  // Bail out if this is not one of the imports we care about (eg. not from @compiled/react)
+  if (DEFAULT_IMPORT_SOURCES.every((source) => !text.includes(source))) {
     return {};
   }
 

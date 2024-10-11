@@ -1,6 +1,5 @@
+import { COMPILED_IMPORT } from '@compiled/utils';
 import type { Rule, Scope } from 'eslint';
-
-import { COMPILED_IMPORT } from '../constants';
 
 import { checkIfCompiledExport } from './check-if-compiled-export';
 

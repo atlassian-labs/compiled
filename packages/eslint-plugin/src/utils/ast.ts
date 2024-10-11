@@ -1,8 +1,7 @@
+import { COMPILED_IMPORT } from '@compiled/utils';
 import type { TSESTree, TSESLint } from '@typescript-eslint/utils';
 import type { Rule } from 'eslint';
 import type { ImportDeclaration, ImportSpecifier } from 'estree';
-
-import { COMPILED_IMPORT } from './constants';
 
 // WARNING
 // context.getSourceCode() is deprecated, but we still use it here because

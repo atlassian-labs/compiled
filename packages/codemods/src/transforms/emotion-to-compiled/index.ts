@@ -1,3 +1,4 @@
+import { COMPILED_IMPORT } from '@compiled/utils';
 import type {
   API,
   Collection,
@@ -10,7 +11,6 @@ import type {
 } from 'jscodeshift';
 import type core from 'jscodeshift';
 
-import { COMPILED_IMPORT_PATH } from '../../constants';
 import defaultCodemodPlugin from '../../plugins/default';
 import type { CodemodPluginInstance } from '../../plugins/types';
 import {
@@ -98,7 +98,7 @@ const replaceEmotionCoreCSSTaggedTemplateExpression = (
 const handleClassNamesCXBehavior = (j: core.JSCodeshift, objectPattern: ObjectPattern) => {
   const cxIdentifierName = 'cx';
   const axIdentifierName = 'ax';
-  const compiledRuntimePackageName = `${COMPILED_IMPORT_PATH}/runtime`;
+  const compiledRuntimePackageName = `${COMPILED_IMPORT}/runtime`;
 
   const cxObjectPropertyCollection = j(objectPattern)
     .find(j.ObjectProperty)

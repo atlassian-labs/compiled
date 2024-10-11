@@ -1,7 +1,12 @@
 import { normalize } from 'path';
 
 import { parseAsync, transformFromAstAsync } from '@babel/core';
-import { createError, DEFAULT_PARSER_BABEL_PLUGINS, toBoolean } from '@compiled/utils';
+import {
+  createError,
+  DEFAULT_IMPORT_SOURCES,
+  DEFAULT_PARSER_BABEL_PLUGINS,
+  toBoolean,
+} from '@compiled/utils';
 import { getOptions } from 'loader-utils';
 import type { LoaderContext } from 'webpack';
 
@@ -125,7 +130,7 @@ export default async function compiledLoader(
 ): Promise<void> {
   const callback = this.async();
   const { resolve, ...options } = getLoaderOptions(this);
-  const importSources = ['@compiled/react', ...(options.importSources || [])];
+  const importSources = [...DEFAULT_IMPORT_SOURCES, ...(options.importSources || [])];
 
   // Bail early if we're looking at Compiled runtime code or Compiled (via an importSource) isn't in the module
   if (

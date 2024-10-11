@@ -1,6 +1,5 @@
+import { COMPILED_IMPORT } from '@compiled/utils';
 import type { Collection, JSCodeshift, Program } from 'jscodeshift';
-
-import { COMPILED_IMPORT_PATH } from '../constants';
 
 // not replacing newlines (which \s does)
 const spacesAndTabs = /[ \t]{2,}/g;
@@ -22,7 +21,7 @@ export const addCommentBefore = ({
   collection: Collection<Program>;
   message: string;
 }): void => {
-  const content = ` TODO(${COMPILED_IMPORT_PATH} codemod): ${clean(message)} `;
+  const content = ` TODO(${COMPILED_IMPORT} codemod): ${clean(message)} `;
   collection.forEach((path) => {
     path.value.comments = path.value.comments || [];
 

@@ -1,6 +1,6 @@
+import { DEFAULT_IMPORT_SOURCES } from '@compiled/utils';
 import type { Rule, Scope } from 'eslint';
 
-import { COMPILED_IMPORT, ATLASKIT_IMPORT } from './constants';
 import { isStyledImportSpecifier } from './styled-import';
 
 type Definition = Scope.Definition;
@@ -14,7 +14,7 @@ const isImportSpecifierWrapper = (name: string) => {
     def.node.imported.type === 'Identifier' &&
     def.node.imported.name === name &&
     def.parent?.type === 'ImportDeclaration' &&
-    (def.parent.source.value === ATLASKIT_IMPORT || def.parent.source.value === COMPILED_IMPORT);
+    DEFAULT_IMPORT_SOURCES.includes(String(def.parent.source.value));
 };
 
 const isCompiledOrAtlaskitImport = (name: string): CompiledNameChecker => {
