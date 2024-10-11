@@ -56,12 +56,14 @@ const callExpressionCorrectImport = (node: Rule.Node, references: Scope.Referenc
 export const shorthandFirst: Rule.RuleModule = {
   meta: {
     docs: {
+      description:
+        'Prevent unwanted side-effect by ensuring shorthand properties are always defined before their related longhands. See more in the README.',
       recommended: true,
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/shorthand-property-sorting',
     },
     messages: {
       'shorthand-first':
-        'When using both shorthand and longhand properties, the shorthand property should be first.',
+        'If the intention is to override a shorthand property with a longhand, the longhand should come after otherwise it is redundant and may cause unwanted side effects with stylesheet extraction. Please remove the longhand if it is not your intention to override the shorthand.',
     },
     type: 'problem',
   },
