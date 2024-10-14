@@ -1,5 +1,21 @@
 # @compiled/babel-plugin
 
+## 0.32.0
+
+### Minor Changes
+
+- 4fb5c6e1: Adds a new option that can be passed to the babel plugin called `classHashPrefix`. Its value is used to add a prefix to the class names when generating their hashes.
+- 2750e288: Make support for `@atlaskit/css` as a first-class import consistently default. This means the same functionality of parsing JSX pragmas, linting specific imports, and extracting styles should all work from `@compiled/react` and `@atlaskit/css` equally without the `importSources: ['@atlaskit/css']` config we use internally.
+
+  This was already the default in about 1/3rd of the code, but not consistent. Now it's consistent and I've cleaned up duplicated import patterns.
+
+### Patch Changes
+
+- Updated dependencies [4fb5c6e1]
+- Updated dependencies [2750e288]
+  - @compiled/css@0.16.0
+  - @compiled/utils@0.13.0
+
 ## 0.31.0
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @compiled/codemods
 
+## 0.10.0
+
+### Minor Changes
+
+- 2750e288: Make support for `@atlaskit/css` as a first-class import consistently default. This means the same functionality of parsing JSX pragmas, linting specific imports, and extracting styles should all work from `@compiled/react` and `@atlaskit/css` equally without the `importSources: ['@atlaskit/css']` config we use internally.
+
+  This was already the default in about 1/3rd of the code, but not consistent. Now it's consistent and I've cleaned up duplicated import patterns.
+
+### Patch Changes
+
+- Updated dependencies [2750e288]
+  - @compiled/utils@0.13.0
+
 ## 0.9.5
 
 ### Patch Changes

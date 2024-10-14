@@ -1,5 +1,16 @@
 # @compiled/css
 
+## 0.16.0
+
+### Minor Changes
+
+- 4fb5c6e1: Adds a new option that can be passed to the babel plugin called `classHashPrefix`. Its value is used to add a prefix to the class names when generating their hashes.
+
+### Patch Changes
+
+- Updated dependencies [2750e288]
+  - @compiled/utils@0.13.0
+
 ## 0.15.0
 
 ### Minor Changes
