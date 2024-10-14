@@ -20,6 +20,7 @@ export interface TransformOpts {
   increaseSpecificity?: boolean;
   sortAtRules?: boolean;
   sortShorthand?: boolean;
+  classHashPrefix?: string;
 }
 
 /**
@@ -49,6 +50,7 @@ export const transformCss = (
       atomicifyRules({
         classNameCompressionMap: opts.classNameCompressionMap,
         callback: (className: string) => classNames.push(className),
+        classHashPrefix: opts.classHashPrefix,
       }),
       ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
       sortAtomicStyleSheet({

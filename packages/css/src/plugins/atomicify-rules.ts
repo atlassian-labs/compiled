@@ -8,7 +8,20 @@ interface PluginOpts {
   selectors?: string[];
   atRule?: string;
   parentNode?: Container;
+  classHashPrefix?: string;
 }
+
+/**
+ * Returns true if a given string is a valid CSS identifier
+ *
+ * @param value the value to test
+ * @returns `true` if given value is valid, `false` if not
+ *
+ */
+const isCssIdentifierValid = (value: string): boolean => {
+  const validCssIdentifierRegex = /^[a-zA-Z\-_]+[a-zA-Z\-_0-9]*$/;
+  return validCssIdentifierRegex.test(value);
+};
 
 /**
  * Returns an atomic rule class name using this form:
@@ -24,7 +37,9 @@ interface PluginOpts {
  */
 const atomicClassName = (node: Declaration, opts: PluginOpts) => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
-  const group = hash(`${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
+  const prefix = opts.classHashPrefix ?? '';
+  const group = hash(`${prefix}${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
+
   const value = node.important ? node.value + node.important : node.value;
   const valueHash = hash(value).slice(0, 4);
 
@@ -260,8 +275,16 @@ const atomicifyAtRule = (node: AtRule, opts: PluginOpts): AtRule => {
  * Preconditions:
  *
  * 1. No nested rules allowed - normalize them with the `parent-orphaned-pseudos` and `nested` plugins first.
+ *
+ * @throws Throws an error if `opts.classHashPrefix` contains invalid css class/id characters
  */
 export const atomicifyRules = (opts: PluginOpts = {}): Plugin => {
+  if (opts.classHashPrefix && !isCssIdentifierValid(opts.classHashPrefix)) {
+    throw new Error(
+      `${opts.classHashPrefix} isn't a valid CSS identifier. Accepted characters are ^[a-zA-Z\-_]+[a-zA-Z\-_0-9]*$`
+    );
+  }
+
   return {
     postcssPlugin: 'atomicify-rules',
     OnceExit(root) {

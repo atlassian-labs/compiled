@@ -205,6 +205,38 @@ describe('babel plugin', () => {
     expect(actual).toInclude('c_MyDiv');
   });
 
+  it('should add a prefix to style hash classHashPrefix is present', () => {
+    // changes to css/src/plugins/atomicify-rules can break this due to how the class name is hashed
+    const hashedClassName = '_1lv61fwx';
+    const actual = transform(
+      `
+      import { styled } from '@compiled/react';
+
+      const MyDiv = styled.div\`
+        font-size: 12px;
+      \`;
+    `,
+      { classHashPrefix: 'myprefix' }
+    );
+
+    expect(actual).toInclude(hashedClassName);
+  });
+
+  it('should throw if a given classHashPrefix is not a valid css identifier', () => {
+    expect(() => {
+      transform(
+        `
+        import { styled } from '@compiled/react';
+
+        const MyDiv = styled.div\`
+          font-size: 12px;
+        \`;
+        `,
+        { classHashPrefix: '$invalid%' }
+      );
+    }).toThrow();
+  });
+
   it('should compress class name for styled component', () => {
     const actual = transform(
       `
