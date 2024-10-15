@@ -108,6 +108,13 @@ export class CompiledExtractPlugin {
 
   constructor(options: CompiledExtractPluginOptions = {}) {
     this.#options = options;
+
+    // @ts-expect-error -- Make sure this config doesn't bleed in as it's passed through
+    if (options.classHashPrefix) {
+      throw new Error(
+        '`@compiled/webpack-loader.CompiledExtractPlugin` is mixing `extract: true` and `classHashPrefix` options, which will not supported and will result in bundle size bloat.'
+      );
+    }
   }
 
   apply(compiler: Compiler): void {
