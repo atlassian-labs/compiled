@@ -1,49 +1,121 @@
 ---
 section: 50-Guides
-name: Webpack CSS Extraction
+name: Stylesheet extraction
 ---
 
-# Webpack CSS Extraction
+# Stylesheet Extraction
 
-Extracting to a static style sheet can be enabled with some extra configuration.
-We recommend only extracting when building an application for production.
+Stylesheet extraction is **highly recommended** for all component libraries and applications, so that generated class names can be combined and de-duplicated into one external stylesheet. This allows you to enjoy the decreased stylesheet size that comes with atomic styling.
 
-If you're building a design system or component library and shipping to NPM you shouldn't extract just yet,
-let your consumers do it in their app.
+There are two types of stylesheet extraction:
 
-## Setup
+- Platform stylesheet extraction
+- Parcel / Webpack stylesheet extraction
 
-Before continuing make sure to install the [webpack loader](/installation#webpack).
+## Which type should I use?
 
-### Compiled configuration
+If your package is a component library, use our **platform stylesheet extraction**. This includes Atlassian Design System packages like `@atlaskit/button`; or any other package that isn't run directly, but is imported and used by _another codebase_ (e.g. Jira, Confluence).
 
-Configure the `extract` option to `true` in the webpack loader and turn on the extract plugin.
+If your package exists in the same codebase as, and is _directly consumed_ by, a Webpack or Parcel app, use **Parcel stylesheet extraction** or **Webpack stylesheet extraction** depending on what bundler your app uses.
+
+Note that we currently do not support other bundlers.
+
+## Platform stylesheet extraction
+
+Platform stylesheet extraction only works if you use Babel to build your component library. Note that we do not recommend nor support using bundlers (e.g. Webpack or Parcel) to build your component library, because bundlers are appropriate for web apps (e.g. Jira) and not for component libraries.
+
+Add `@compiled/babel-plugin-strip-runtime` to your Babel configuration, with `extractStylesToDirectory` set as an option. Set `source` to the folder your component library's source code is defined in, and `dest` to the folder your component library's build output is generated to.
+
+For example:
+
+```js
+// babel.config.js
+module.exports = {
+  plugins: [
+    // This will handle all `token()` calls outside of
+    // Compiled usages
+    '@atlaskit/tokens/babel-plugin',
+
+    // ↓↓ Compiled should run last ↓↓
+    [
+      '@compiled/babel-plugin',
+      {
+        transformerBabelPlugins: ['@atlaskit/tokens/babel-plugin'],
+      },
+    ],
+    [
+      '@compiled/babel-plugin-strip-runtime',
+      {
+        extractStylesToDirectory: {
+          source: 'src',
+          dest: 'dist',
+        },
+      },
+    ],
+  ],
+};
+```
+
+Your `dest` may vary depending on how you generate your `dist/` folder in your component library. For example, if you have mutliple `cjs` and `esm` distributions, those will each need a separate `dest` through Babel's environment-specific configuration.
+
+## Parcel stylesheet extraction
+
+If you are using a web app that uses Parcel, first install the [Parcel loader](https://compiledcssinjs.com/docs/installation#installation-methods).
+
+Then configure the `extract` plugin to `true` in your Compiled configuration. For example:
+
+```json
+// .compiledcssrc
+{
+  "addComponentName": true,
+  "extract": true, // <-- add this
+  "inlineCss": true,
+  "transformerBabelPlugins": [
+    [
+      "@atlaskit/tokens/babel-plugin",
+      {
+        "shouldUseAutoFallback": true
+      }
+    ]
+  ]
+}
+```
+
+Note that stylesheet extraction feature is disabled on local development due to a [known issue](https://github.com/atlassian-labs/compiled/issues/1306).
+
+See the [`@compiled/parcel-config` documentation](https://compiledcssinjs.com/docs/pkg-parcel-config#options) for information about other configuration options.
+
+## Webpack stylesheet extraction
+
+If your web app uses Webpack, first install the [webpack loader](/installation#webpack).
+
+Then configure the `extract` option to `true` in the webpack loader and turn on the extract plugin.
 
 ```diff
 // webpack.config.js
 +const { CompiledExtractPlugin } = require('@compiled/webpack-loader');
 
 module.exports = {
-  module: {
-    rules: [
-      {
-        test: /\.(js|ts|tsx)$/,
-        exclude: /node_modules/,
-        use: [
-          { loader: 'babel-loader' },
-          {
-            loader: '@compiled/webpack-loader',
-+            options: {
-+              extract: true,
-+            },
-          },
-        ],
-      },
-    ],
-  },
-+  plugins: [
-+    new CompiledExtractPlugin(),
-+  ],
+	module: {
+		rules: [
+			{
+				test: /\.(js|ts|tsx)$/,
+				exclude: /node_modules/,
+				use: [
+					{ loader: 'babel-loader' },
+					{
+						loader: '@compiled/webpack-loader',
++						options: {
++							extract: true,
++						},
+					},
+				],
+			},
+		],
+	},
++	plugins: [
++		new CompiledExtractPlugin(),
++	],
 };
 ```
 
@@ -64,31 +136,31 @@ If you don't already handle `.css` files in your `webpack.config.js`, you can up
 +const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-  module: {
-    rules: [
-      {
-        test: /\.(js|ts|tsx)$/,
-        exclude: /node_modules/,
-        use: [
-          { loader: 'babel-loader' },
-          {
-            loader: '@compiled/webpack-loader',
-            options: {
-              extract: true,
-            },
-          },
-        ],
-      },
-+      {
-+        test: /\.css$/i,
-+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
-+      },
-    ],
-  },
-  plugins: [
-+    new MiniCssExtractPlugin(),
-    new CompiledExtractPlugin(),
-  ],
+	module: {
+		rules: [
+			{
+				test: /\.(js|ts|tsx)$/,
+				exclude: /node_modules/,
+				use: [
+					{ loader: 'babel-loader' },
+					{
+						loader: '@compiled/webpack-loader',
+						options: {
+							extract: true,
+						},
+					},
+				],
+			},
++			{
++				test: /\.css$/i,
++				use: [MiniCssExtractPlugin.loader, 'css-loader'],
++			},
+		],
+	},
+	plugins: [
++		new MiniCssExtractPlugin(),
+		new CompiledExtractPlugin(),
+	],
 };
 ```
 
@@ -99,46 +171,46 @@ Note that we don't currently support `style-loader` for loading `css` files from
 +const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-  module: {
-    rules: [
-      {
-        test: /\.(js|ts|tsx)$/,
-        exclude: /node_modules/,
-        use: [
-          { loader: 'babel-loader' },
-          {
-            loader: '@compiled/webpack-loader',
-            options: {
-              extract: true,
-            },
-          },
-        ],
-      },
-+      {
-+        test: /\.compiled-css.css$/i,
-+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
-+      },
-      // The following loader will be used for css files that are not from Compiled.
-      {
--        test: /\.css$/i,
-+        test: /(?<!compiled-css)(?<!\.compiled)\.css$/,
-        // Put your existing css loader configuration here
-        use: ['style-loader', 'css-loader'],
-      },
-    ],
-  },
-  plugins: [
-+    new MiniCssExtractPlugin(),
-    new CompiledExtractPlugin(),
-  ],
+	module: {
+		rules: [
+			{
+				test: /\.(js|ts|tsx)$/,
+				exclude: /node_modules/,
+				use: [
+					{ loader: 'babel-loader' },
+					{
+						loader: '@compiled/webpack-loader',
+						options: {
+							extract: true,
+						},
+					},
+				],
+			},
++			{
++				test: /\.compiled-css.css$/i,
++				use: [MiniCssExtractPlugin.loader, 'css-loader'],
++			},
+			// The following loader will be used for css files that are not from Compiled.
+			{
+-				test: /\.css$/i,
++				test: /(?<!compiled-css)(?<!\.compiled)\.css$/,
+				// Put your existing css loader configuration here
+				use: ['style-loader', 'css-loader'],
+			},
+		],
+	},
+	plugins: [
++		new MiniCssExtractPlugin(),
+		new CompiledExtractPlugin(),
+	],
 };
 ```
 
 All extracted styles will be placed in a file called `compiled-css.css`.
 
-## Production optimization
+### Production optimization
 
-### Filename
+#### Filename
 
 Pass the `filename` option to the extract plugin,
 we recommend using `[contenthash]` in the name.
@@ -164,37 +236,37 @@ npm i css-minimizer-webpack-plugin --save-dev
 +const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 module.exports = {
-+  mode: 'production',
-  module: {
-    rules: [
-      {
-        test: /\.(js|ts|tsx)$/,
-        exclude: /node_modules/,
-        use: [
-          { loader: 'babel-loader' },
-          {
-            loader: '@compiled/webpack-loader',
-            options: {
-              extract: true,
-            },
-          },
-        ],
-      },
-      {
-        test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
-      },
-    ],
-  },
-  plugins: [
-    new MiniCssExtractPlugin({ filename: '[contenthash].[name].css' })
-    new CompiledExtractPlugin(),
-  ],
-+  optimization: {
-+    minimizer: [
-+      '...',
-+      new CssMinimizerPlugin(),
-+    ],
-+  },
++	mode: 'production',
+	module: {
+		rules: [
+			{
+				test: /\.(js|ts|tsx)$/,
+				exclude: /node_modules/,
+				use: [
+					{ loader: 'babel-loader' },
+					{
+						loader: '@compiled/webpack-loader',
+						options: {
+							extract: true,
+						},
+					},
+				],
+			},
+			{
+				test: /\.css$/i,
+				use: [MiniCssExtractPlugin.loader, 'css-loader'],
+			},
+		],
+	},
+	plugins: [
+		new MiniCssExtractPlugin({ filename: '[contenthash].[name].css' })
+		new CompiledExtractPlugin(),
+	],
++	optimization: {
++		minimizer: [
++			'...',
++			new CssMinimizerPlugin(),
++		],
++	},
 };
 ```
