@@ -14,7 +14,7 @@ There are two types of stylesheet extraction:
 
 ## Which type should I use?
 
-If your package is a component library, use our **platform stylesheet extraction**. This includes Atlassian Design System packages like `@atlaskit/button`; or any other package that isn't run directly, but is imported and used by _another codebase_ (e.g. Jira, Confluence).
+If your package is a component library, use our **platform stylesheet extraction**. This includes Atlassian Design System packages like `@atlaskit/button` or any other package that is treated as a platform offering or used across products or repositories.
 
 If your package exists in the same codebase as, and is _directly consumed_ by, a Webpack or Parcel app, use **Parcel stylesheet extraction** or **Webpack stylesheet extraction** depending on what bundler your app uses.
 
