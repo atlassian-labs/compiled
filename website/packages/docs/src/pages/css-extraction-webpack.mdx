@@ -91,17 +91,8 @@ Then configure the `extract` plugin to `true` in your Compiled configuration. Fo
 ```json
 // .compiledcssrc
 {
-  "addComponentName": true,
   "extract": true, // <-- add this
-  "inlineCss": true,
-  "transformerBabelPlugins": [
-    [
-      "@atlaskit/tokens/babel-plugin",
-      {
-        "shouldUseAutoFallback": true
-      }
-    ]
-  ]
+  "transformerBabelPlugins": [["@atlaskit/tokens/babel-plugin"]]
 }
 ```
 
@@ -211,7 +202,7 @@ module.exports = {
 				],
 			},
 +			{
-+				test: /\.compiled-css.css$/i,
++				test: /compiled-css\.css$/i,
 +				use: [MiniCssExtractPlugin.loader, 'css-loader'],
 +			},
 			// The following loader will be used for css files that are not from Compiled.
