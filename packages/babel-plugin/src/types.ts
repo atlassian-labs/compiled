@@ -108,7 +108,8 @@ export interface PluginOptions {
    * Adds a defined prefix to the generated classes' hashes.
    * Useful in micro frontend environments to avoid clashing/specificity issues.
    *
-   * This will throw an error if used alongside extraction or `extract: true`.
+   * Avoid mixing this with extraction as this may throw an error if combined with extraction
+   * or `extract: true` in Webpack loaders or Parcel tranformers.
    */
   classHashPrefix?: string;
 }
