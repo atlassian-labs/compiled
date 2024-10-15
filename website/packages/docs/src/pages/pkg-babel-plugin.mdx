@@ -83,7 +83,7 @@ Will cache the result of statically evaluated imports.
 
 Adds a prefix to the generated hashed css rule names. The valued passed to it gets hashed in conjunction with the rest of the rule declaration.
 
-This is useful when `@compiled` is being used in a micro frontend environment by multiple packages and you want to avoid specificity issues.
+This is useful when `@compiled` is being used in a micro frontend environment by multiple packages and you want to avoid specificity issues. Please note that mixing this with extraction is not supported and Parcel or Webpack will throw an error if combined.
 
 The currently accepted regex for this value is `^[a-zA-Z\-_]+[a-zA-Z\-_0-9]*$`.
 
