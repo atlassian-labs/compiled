@@ -4,14 +4,14 @@
 
 ## Usage
 
-Codemods in this repository can be run with the [CodeshiftCommunity](https://www.codeshiftcommunity.com/docs/) tooling.
+Codemods in this repository can be run with the [Hypermod CLI](https://www.hypermod.io/docs/tools/cli) tooling.
 
 ```bash
 # Transform single file
-npx @codeshift/cli --packages "@compiled/codemods#emotion-to-compiled" /Project/path/to/file
+npx @hypermod/cli --packages "@compiled/codemods#emotion-to-compiled" /Project/path/to/file
 
 # Transform multiple files
-npx @codeshift/cli --packages "@compiled/codemods#emotion-to-compiled" /Project/**/*.tsx
+npx @hypermod/cli --packages "@compiled/codemods#emotion-to-compiled" /Project/**/*.tsx
 ```
 
 **Will modify files in place, so make sure you can recover if it goes wrong!**
