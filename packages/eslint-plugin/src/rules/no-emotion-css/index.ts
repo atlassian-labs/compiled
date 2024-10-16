@@ -29,6 +29,7 @@ export const noEmotionCssRule: Rule.RuleModule = {
     fixable: 'code',
     type: 'problem',
     docs: {
+      description: 'Disallows `@emotion` usages',
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-emotion-css',
     },
     messages: {

@@ -19,6 +19,7 @@ function getParentJSXAttribute(node: Rule.Node) {
 export const localCXXCSSRule: Rule.RuleModule = {
   meta: {
     docs: {
+      description: 'Ensures the `cx()` function is only used within the `xcss` prop',
       recommended: true,
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/local-cx-xcss',
     },

@@ -57,7 +57,7 @@ export const shorthandFirst: Rule.RuleModule = {
   meta: {
     docs: {
       description:
-        'Prevent unwanted side-effect by ensuring shorthand properties are always defined before their related longhands. See more in the README.',
+        'Prevent unwanted side-effect by ensuring shorthand properties are always defined before their related longhands.',
       recommended: true,
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/shorthand-property-sorting',
     },
