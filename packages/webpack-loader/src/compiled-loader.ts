@@ -40,6 +40,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     extractStylesToDirectory = undefined,
     resolver = undefined,
     importSources = undefined,
+    classHashPrefix = undefined,
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -95,6 +96,9 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           importSources: {
             type: 'array',
           },
+          classHashPrefix: {
+            type: 'string',
+          },
         },
       });
 
@@ -115,6 +119,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     extractStylesToDirectory,
     resolver,
     importSources,
+    classHashPrefix,
   };
 }
 

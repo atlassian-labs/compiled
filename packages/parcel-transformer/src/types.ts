@@ -71,6 +71,8 @@ export interface ParcelTransformerOpts extends BabelPluginOpts {
   /**
    * Adds a defined prefix to the generated classes' hashes.
    * Useful in micro frontend environments to avoid clashing/specificity issues.
+   *
+   * This will throw an error if used alongside extraction or `extract: true`.
    */
   classHashPrefix?: string;
 }
