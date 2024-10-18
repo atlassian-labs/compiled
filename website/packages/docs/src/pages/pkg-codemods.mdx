@@ -6,16 +6,16 @@ name: codemods
 
 # @compiled/codemods
 
-We provide a few codemods for migrating from styled components and emotion to Compiled. The codemods are implemented with [jscodeshift](https://github.com/facebook/jscodeshift). Compiled codemods are enrolled in the [CodeshiftCommunity](https://www.codeshiftcommunity.com/docs/) tooling for easy usage.
+We provide a few codemods for migrating from styled-components and emotion to Compiled. The codemods are implemented with [jscodeshift](https://github.com/facebook/jscodeshift). Compiled codemods are enrolled in the [Hypermod CLI](https://www.hypermod.io/docs/tools/cli) tooling for easy usage.
 
 ## Codemods
 
 ```bash
 # Transform single file
-npx @codeshift/cli --packages @compiled/codemods /Project/path/to/file
+npx @hypermod/cli --packages @compiled/codemods /Project/path/to/file
 
 # Transform multiple files
-npx @codeshift/cli --packages @compiled/codemods /Project/**/*.tsx
+npx @hypermod/cli --packages @compiled/codemods /Project/**/*.tsx
 ```
 
 Our codemods will transform the source code into code that utilises `@compiled/react`. Keep in mind that the change will happen in-place so make sure you're utilising version control or backup the original source.
@@ -24,10 +24,10 @@ Our codemods will transform the source code into code that utilises `@compiled/r
 
 ```bash
 # Transform single file
-npx @codeshift/cli --packages "@compiled/codemods#emotion-to-compiled" /Project/path/to/file
+npx @hypermod/cli --packages "@compiled/codemods#emotion-to-compiled" /Project/path/to/file
 
 # Transform multiple files
-npx @codeshift/cli --packages "@compiled/codemods#emotion-to-compiled" /Project/**/*.tsx
+npx @hypermod/cli --packages "@compiled/codemods#emotion-to-compiled" /Project/**/*.tsx
 ```
 
 Will convert all usages of Emotion to Compiled.
@@ -37,10 +37,10 @@ For code that could not be automatically converted a `/** TODO(@compiled/react c
 
 ```bash
 # Transform single file
-npx @codeshift/cli --packages "@compiled/codemods#styled-components-inner-ref-to-ref" /Project/path/to/file
+npx @hypermod/cli --packages "@compiled/codemods#styled-components-inner-ref-to-ref" /Project/path/to/file
 
 # Transform multiple files
-npx @codeshift/cli --packages "@compiled/codemods#styled-components-inner-ref-to-ref" /Project/**/*.tsx
+npx @hypermod/cli --packages "@compiled/codemods#styled-components-inner-ref-to-ref" /Project/**/*.tsx
 ```
 
 Will convert all usages of Styled Components to Compiled.
