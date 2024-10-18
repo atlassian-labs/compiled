@@ -124,6 +124,12 @@ export default new Transformer<ParcelTransformerOpts>({
   },
 
   async transform({ asset, config, options }) {
+    if (config.extract && config.classHashPrefix) {
+      throw new Error(
+        '`@compiled/parcel-transformer` is mixing `extract: true` and `classHashPrefix` options, which will not supported and will result in bundle size bloat.'
+      );
+    }
+
     const ast = await asset.getAST();
 
     if (!(ast?.type === 'babel' && ast.program)) {
