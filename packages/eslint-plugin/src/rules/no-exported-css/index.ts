@@ -5,6 +5,8 @@ import { createNoExportedRule, isCss } from '../../utils';
 export const noExportedCssRule: Rule.RuleModule = {
   meta: {
     docs: {
+      recommended: true,
+      description: 'Disallows `css` usages from being exported',
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-exported-css',
     },
     messages: {

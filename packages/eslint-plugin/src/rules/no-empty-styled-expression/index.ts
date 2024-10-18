@@ -50,6 +50,9 @@ const createNoEmptyStyledExpressionRule =
 export const noEmptyStyledExpressionRule: Rule.RuleModule = {
   meta: {
     docs: {
+      recommended: true,
+      description:
+        'Disallows any `styled` expression to be used when passing empty arguments in `@compiled/react`',
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-empty-styled-expression',
     },
     messages: {

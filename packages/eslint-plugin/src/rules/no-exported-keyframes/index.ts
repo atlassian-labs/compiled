@@ -5,6 +5,8 @@ import { createNoExportedRule, isKeyframes } from '../../utils';
 export const noExportedKeyframesRule: Rule.RuleModule = {
   meta: {
     docs: {
+      recommended: true,
+      description: 'Disallows `keyframes` usages from being exported',
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-exported-css',
     },
     messages: {

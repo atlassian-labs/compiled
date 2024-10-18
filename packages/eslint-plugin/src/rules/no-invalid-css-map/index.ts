@@ -69,6 +69,7 @@ const createCssMapRule = (context: Rule.RuleContext): Rule.RuleListener => {
 export const noInvalidCssMapRule: Rule.RuleModule = {
   meta: {
     docs: {
+      recommended: true,
       description:
         "Checks the validity of a CSS map created through cssMap. This is intended to be used alongside TypeScript's type-checking.",
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-invalid-css-map',

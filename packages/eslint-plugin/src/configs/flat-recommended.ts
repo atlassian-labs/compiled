@@ -1,5 +1,5 @@
-export const recommended = {
-  plugins: ['@compiled'],
+export const flatRecommended = {
+  // plugin is not specified here because flat config needs a reference to the plugin
   rules: {
     '@compiled/local-cx-xcss': 'error',
     '@compiled/no-css-prop-without-css-function': 'error',
@@ -13,4 +13,4 @@ export const recommended = {
     '@compiled/no-styled-tagged-template-expression': 'error',
     '@compiled/no-suppress-xcss': 'error',
   },
-};
+} as const;
