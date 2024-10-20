@@ -1,5 +1,3 @@
-import pkgJson from '../package.json';
-
 import { flatRecommended } from './configs/flat-recommended';
 import { recommended } from './configs/recommended';
 import { jsxPragmaRule } from './rules/jsx-pragma';
@@ -17,7 +15,8 @@ import { noStyledTaggedTemplateExpressionRule } from './rules/no-styled-tagged-t
 import { noSuppressXCSS } from './rules/no-suppress-xcss';
 import { shorthandFirst } from './rules/shorthand-property-sorting';
 
-const { name, version } = pkgJson;
+export const name = '/* NAME */';
+export const version = '/* VERSION */';
 
 export const rules = {
   'jsx-pragma': jsxPragmaRule,
@@ -37,8 +36,10 @@ export const rules = {
 } as const;
 
 export const plugin = {
-  name,
-  version,
+  meta: {
+    name,
+    version,
+  },
   rules,
   configs: {
     recommended,

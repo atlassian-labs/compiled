@@ -1,11 +1,16 @@
 {
   "extends": "../tsconfig.options.json",
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "src",
     "outDir": "dist",
     "module": "commonjs",
-    "target": "es2017"
+    "target": "es2017",
+    "plugins": [
+      {
+        "name": "transform-pkg-info",
+        "transform": "./add-pkg-info-transform.js"
+      }
+    ]
   },
-  "files": ["./package.json"],
   "references": [{ "path": "../jest" }, { "path": "../utils" }]
 }
