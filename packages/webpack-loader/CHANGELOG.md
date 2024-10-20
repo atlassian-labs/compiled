@@ -1,5 +1,18 @@
 # @compiled/webpack-loader
 
+## 0.18.0
+
+### Minor Changes
+
+- c1655312: Throw an error when mixing `extract: true` and `classHashPrefix` configuration options to avoid unsupported usage and bundle size bloat.
+
+### Patch Changes
+
+- c1655312: Documents what happens when mixing extraction and classHashPrefix
+- c1655312: fix: webpack loader wasn't passing classHashPrefix option down to babel plugin
+- Updated dependencies [c1655312]
+  - @compiled/babel-plugin@0.32.1
+
 ## 0.17.0
 
 ### Minor Changes
