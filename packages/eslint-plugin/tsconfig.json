@@ -1,10 +1,11 @@
 {
   "extends": "../tsconfig.options.json",
   "compilerOptions": {
-    "rootDir": "src",
+    "rootDir": ".",
     "outDir": "dist",
     "module": "commonjs",
     "target": "es2017"
   },
+  "files": ["./package.json"],
   "references": [{ "path": "../jest" }, { "path": "../utils" }]
 }
