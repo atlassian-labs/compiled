@@ -12,7 +12,7 @@ npm install @compiled/eslint-plugin --save-dev
 
 ### Flat Config
 
-Import the `@compiled/eslint-plugin` and add it to your plugins like so, then configure the ruels you want to use under the rules section.
+Import the `@compiled/eslint-plugin` and add it to your plugins like so, then configure the rules you want to use under the "Supported rules" section.
 
 ```ts
 import compiled from '@compiled/eslint-plugin';
