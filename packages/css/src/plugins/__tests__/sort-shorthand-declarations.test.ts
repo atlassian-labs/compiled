@@ -393,7 +393,7 @@ describe('sort shorthand vs. longhand declarations', () => {
     `);
   });
 
-  it('sorts a subset of atomic classes taken from a real stylesheet', () => {
+  it('sorts a stylesheet that is mainly longhand properties', () => {
     const actual = transform(outdent`
       ._oqicidpf{padding-top:0}
       ._1rmjidpf{padding-right:0}
@@ -437,6 +437,60 @@ describe('sort shorthand vs. longhand declarations', () => {
         ._inid1wug{margin-left:auto}
         ._12wp9ac1{max-width:1400px}
         ._jvpgglyw{display:none}
+      }"
+    `);
+  });
+
+  it('sorts border, border-top, border-top-color', () => {
+    const actual = transform(outdent`
+
+      ._abcd1234 { border-top-color: red }
+      ._abcd1234 { border-top: 1px solid }
+      ._abcd1234 { border: none }
+      ._abcd1234:hover { border-top-color: red }
+      ._abcd1234:hover { border-top: 1px solid }
+      ._abcd1234:hover { border: none }
+      ._abcd1234:active { border-top-color: red }
+      ._abcd1234:active { border-top: 1px solid }
+      ._abcd1234:active { border: none }
+      @supports (border: none) {
+        ._abcd1234 { border-top-color: red }
+        ._abcd1234 { border-top: 1px solid }
+        ._abcd1234 { border: none }
+      }
+      @media (max-width: 50px) { ._abcd1234 { border-top-color: red } }
+      @media (max-width: 100px) { ._abcd1234 { border-top: 1px solid } }
+      @media (max-width: 120px) {
+        ._abcd1234 { border-top-color: red }
+        ._abcd1234 { border-top: 1px solid }
+        ._abcd1234 { border: none }
+      }
+      @media (max-width: 150px) { ._abcd1234 { border: none } }
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+      ._abcd1234 { border: none }
+      ._abcd1234:hover { border: none }
+      ._abcd1234:active { border: none }
+      ._abcd1234 { border-top: 1px solid }
+      ._abcd1234:hover { border-top: 1px solid }
+      ._abcd1234:active { border-top: 1px solid }
+      ._abcd1234 { border-top-color: red }
+      ._abcd1234:hover { border-top-color: red }
+      ._abcd1234:active { border-top-color: red }
+      @media (max-width: 150px) { ._abcd1234 { border: none } }
+      @media (max-width: 120px) {
+        ._abcd1234 { border: none }
+        ._abcd1234 { border-top: 1px solid }
+        ._abcd1234 { border-top-color: red }
+      }
+      @media (max-width: 100px) { ._abcd1234 { border-top: 1px solid } }
+      @media (max-width: 50px) { ._abcd1234 { border-top-color: red } }
+      @supports (border: none) {
+        ._abcd1234 { border: none }
+        ._abcd1234 { border-top: 1px solid }
+        ._abcd1234 { border-top-color: red }
       }"
     `);
   });
