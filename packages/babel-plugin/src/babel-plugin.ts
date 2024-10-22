@@ -14,6 +14,7 @@ import {
 } from '@compiled/utils';
 
 import { visitClassNamesPath } from './class-names';
+import { visitCloneElementPath } from './clone-element';
 import { visitCssMapPath } from './css-map';
 import { visitCssPropPath } from './css-prop';
 import { visitStyledPath } from './styled';
@@ -295,6 +296,19 @@ export default declare<State>((api) => {
         path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
         state: State
       ) {
+        if (
+          t.isCallExpression(path.node) &&
+          t.isIdentifier(path.node.callee) &&
+          path.node.callee.name === 'cloneElement'
+        ) {
+          visitCloneElementPath(path as NodePath<t.CallExpression>, {
+            context: 'root',
+            state,
+            parentPath: path,
+          });
+          return;
+        }
+
         if (isTransformedJsxFunction(path, state)) {
           throw buildCodeFrameError(
             `Found a \`jsx\` function call in the Babel output where one should not have been generated. Was Compiled not set up correctly?
