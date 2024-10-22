@@ -37,31 +37,19 @@ const sortNodes = (a: ChildNode, b: ChildNode): number => {
 
   if (!aDecl?.prop || !bDecl?.prop) return 0;
 
-  const aShorthand = shorthandFor[aDecl.prop as ShorthandProperties];
-  if (aShorthand === true || aShorthand?.includes(bDecl.prop)) {
-    return -1;
-  }
-
-  const bShorthand = shorthandFor[bDecl.prop as ShorthandProperties];
-  if (bShorthand === true || bShorthand?.includes(aDecl.prop)) {
-    return 1;
-  }
-
-  const aShorthandBucket = shorthandBuckets[aDecl.prop as ShorthandProperties];
-  const bShorthandBucket = shorthandBuckets[bDecl.prop as ShorthandProperties];
+  // Why default to Infinity? Because if the property is not a shorthand property,
+  // we want it to come after all of the other shorthand properties.
+  const aShorthandBucket = shorthandBuckets[aDecl.prop as ShorthandProperties] ?? Infinity;
+  const bShorthandBucket = shorthandBuckets[bDecl.prop as ShorthandProperties] ?? Infinity;
 
   // Ensures a deterministic sorting of shorthand properties in the case where those
   // shorthand properties overlap.
   //
   // For example, `border-top` and `border-color` are not shorthand properties of
   // each other, BUT both properties are shorthand versions of `border-top-color`.
-  // If `border-top` is in bucket 12 and `border-color` is in bucket 6, we can ensure
+  // If `border-top` is in bucket 4 and `border-color` is in bucket 2, we can ensure
   // that `border-color` always comes before `border-top`.
-  if (aShorthandBucket && bShorthandBucket) {
-    return aShorthandBucket - bShorthandBucket;
-  }
-
-  return 0;
+  return aShorthandBucket - bShorthandBucket;
 };
 
 export const sortShorthandDeclarations = (nodes: ChildNode[]): void => {

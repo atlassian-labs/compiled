@@ -36,8 +36,8 @@ describe('sort shorthand vs. longhand declarations', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       ".a {
-        outline-width: 1px;
         font: 16px;
+        outline-width: 1px;
       }
       .b {
         font: 24px;
@@ -69,8 +69,8 @@ describe('sort shorthand vs. longhand declarations', () => {
     expect(actual).toMatchInlineSnapshot(`
       ".a {
         outline: none;
-        outline-width: 1px;
         font: 16px normal;
+        outline-width: 1px;
         font-weight: bold;
       }
       .b {
@@ -147,8 +147,8 @@ describe('sort shorthand vs. longhand declarations', () => {
 
       .a {
         outline: none;
-        outline-width: 1px;
         font: 16px normal;
+        outline-width: 1px;
         font-weight: bold;
       }
       .b {
@@ -162,14 +162,14 @@ describe('sort shorthand vs. longhand declarations', () => {
 
       .a:focus {
         outline: none;
-        outline-width: 1px;
         font: 16px normal;
+        outline-width: 1px;
         font-weight: bold;
       }@media all {
         .a {
           outline: none;
-          outline-width: 1px;
           font: 16px normal;
+          outline-width: 1px;
           font-weight: bold;
         }
         .b {
@@ -284,10 +284,10 @@ describe('sort shorthand vs. longhand declarations', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "
-      .a {
+      .a > .external {
         all: unset;
       }
-      .a > .external {
+      .a {
         all: unset;
       }
       .b[disabled] {
@@ -308,18 +308,21 @@ describe('sort shorthand vs. longhand declarations', () => {
       .c[data-foo='bar'] {
         border-top: none;
       }
+      .d {
+        border-top: none;
+      }
+      .c {
+        border-block-start: none;
+      }
+      .d:active {
+        border-block-start: none;
+      }
 
       .j {
         margin-bottom: 6px;
       }
       .f {
         display: block;
-      }
-      .d {
-        border-top: none;
-      }
-      .c {
-        border-block-start: none;
       }
       .e {
         border-block-start-color: transparent;
@@ -328,17 +331,11 @@ describe('sort shorthand vs. longhand declarations', () => {
       .f:focus {
         display: block;
       }
-      .d:active {
-        border-block-start: none;
-      }
       .e:hover {
         border-block-start-color: transparent;
       }@media all {
         .a {
           all: unset;
-        }
-        .f {
-          display: block;
         }
         .b {
           border: none;
@@ -348,6 +345,9 @@ describe('sort shorthand vs. longhand declarations', () => {
         }
         .c {
           border-block-start: none;
+        }
+        .f {
+          display: block;
         }
         .e {
           border-block-start-color: transparent;
@@ -386,10 +386,58 @@ describe('sort shorthand vs. longhand declarations', () => {
         border-block-start: 1px solid;
         border-block-start-color: transparent;
       }
-      .b { all: unset; }
       .c { all: unset; }
+      .b { all: unset; }
       .d { border: none; }
       .f { border-block-start-color: transparent; }"
+    `);
+  });
+
+  it('sorts a subset of atomic classes taken from a real stylesheet', () => {
+    const actual = transform(outdent`
+      ._oqicidpf{padding-top:0}
+      ._1rmjidpf{padding-right:0}
+      ._cjbtidpf{padding-bottom:0}
+      ._pnmbidpf{padding-left:0}
+      ._glte7vkz{width:1pc}
+      ._165t7vkz{height:1pc}
+      ._ue5g1408{margin:0 var(--ds-space-800,4pc)}
+      ._1yag1dzv{padding:var(--ds-space-100) var(--ds-space-150)}
+      ._dbjg12x7{margin-top:var(--ds-space-075,6px)}
+
+      @media (min-width:1200px){
+        ._jvpg11p5{display:grid}
+        ._szna1wug{margin-top:auto}
+        ._13on1wug{margin-right:auto}
+        ._1f3k1wug{margin-bottom:auto}
+        ._inid1wug{margin-left:auto}
+        ._1oqj1epz{padding:var(--ds-space-1000,5pc)}
+        ._12wp9ac1{max-width:1400px}
+        ._jvpgglyw{display:none}
+      }
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+      ._ue5g1408{margin:0 var(--ds-space-800,4pc)}
+      ._1yag1dzv{padding:var(--ds-space-100) var(--ds-space-150)}._oqicidpf{padding-top:0}
+      ._1rmjidpf{padding-right:0}
+      ._cjbtidpf{padding-bottom:0}
+      ._pnmbidpf{padding-left:0}
+      ._glte7vkz{width:1pc}
+      ._165t7vkz{height:1pc}
+      ._dbjg12x7{margin-top:var(--ds-space-075,6px)}
+
+      @media (min-width:1200px){
+        ._1oqj1epz{padding:var(--ds-space-1000,5pc)}
+        ._jvpg11p5{display:grid}
+        ._szna1wug{margin-top:auto}
+        ._13on1wug{margin-right:auto}
+        ._1f3k1wug{margin-bottom:auto}
+        ._inid1wug{margin-left:auto}
+        ._12wp9ac1{max-width:1400px}
+        ._jvpgglyw{display:none}
+      }"
     `);
   });
 
