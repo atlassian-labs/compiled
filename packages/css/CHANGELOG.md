@@ -1,5 +1,11 @@
 # @compiled/css
 
+## 0.17.0
+
+### Minor Changes
+
+- 9b960009: Fix shorthand sorting not working most of the time, when stylesheet extraction is turned on.
+
 ## 0.16.0
 
 ### Minor Changes
