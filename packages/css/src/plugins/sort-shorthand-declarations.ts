@@ -16,8 +16,6 @@ const findDeclaration = (node: ChildNode): Declaration | undefined => {
   return undefined;
 };
 
-export const props = new Set();
-
 const sortNodes = (a: ChildNode, b: ChildNode): number => {
   // NOTE: These return the first declaration when the class has multiple properties
   // eg. `-webkit-text-decoration:initial;text-decoration:initial` would sort

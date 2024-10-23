@@ -493,11 +493,6 @@ describe('sort shorthand vs. longhand declarations', () => {
       .b { all: unset; }
     `);
 
-    // WARNING: This is technically wrong as `.a { … }` is not sorted as we expect;
-    // it _should_ be 'abcdef' not 'eabcdf'.
-    //
-    // We are ok with this because we expect atomicifyRules to run before this plugin,
-    // so each class will never have more than one property.
     expect(actual).toMatchInlineSnapshot(`
       "
       .a {
