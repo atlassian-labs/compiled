@@ -28,7 +28,7 @@ jobs:
           node-version: ${{ steps.nvm.outputs.NVMRC }}
 
       - name: Install Dependencies
-        run: yarn
+        run: yarn --frozen-lockfile
 
       - name: Create Release Pull Request or Publish to npm
         uses: changesets/action@v1
