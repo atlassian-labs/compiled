@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install packages
-        run: yarn
+        run: yarn --immutable --immutable-cache --check-cache
 
       - name: Build source
         run: yarn build
