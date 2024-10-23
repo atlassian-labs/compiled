@@ -20,7 +20,28 @@ describe('sort shorthand vs. longhand declarations', () => {
     process.env.BROWSERSLIST = 'last 1 version';
   });
 
-  it('sorts against multi-property classes', () => {
+  it('sorts against multi-property classes: simple', () => {
+    // We need to make sure this `{-webkit-text-decoration-color:initial;text-decoration-color:initial}` doesn't "block" sorting
+    const actual = transform(outdent`
+      ._zulph461{gap:3px}
+      ._bfhk1ayf{background-color:red}
+      ._1jmq18uv{-webkit-text-decoration-color:initial;text-decoration-color:initial}
+      ._bfhk1ayf{background-color:red}
+      ._y44v1tgl{background:red}
+      ._kkk21kw7{all:inherit}
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+      ._kkk21kw7{all:inherit}._zulph461{gap:3px}
+      ._y44v1tgl{background:red}
+      ._bfhk1ayf{background-color:red}
+      ._1jmq18uv{-webkit-text-decoration-color:initial;text-decoration-color:initial}
+      ._bfhk1ayf{background-color:red}"
+    `);
+  });
+
+  it('sorts against multi-property classes fully', () => {
     const actual = transform(outdent`
       ._zulph461{gap:var(--ds-space-050)}
       ._y44v1tgl{animation:kbayob8 5s ease infinite}
@@ -32,7 +53,6 @@ describe('sort shorthand vs. longhand declarations', () => {
       ._1jmq18uv:hover .linkText{-webkit-text-decoration-color:initial;text-decoration-color:initial}
       ._1owrotz2:active, ._jzfzotz2:focus, ._1mq6otz2:hover{padding:0 var(--ds-space-050,4px)}
       ._apju8stv:hover .linkText{-webkit-text-decoration-line:underline;text-decoration-line:underline}
-      ._kkk21kw7{all:inherit}
       @media (min-width:1024px){
         ._j6xt1fef:active{background:var(--_hcgrh3)}
         ._syaz1qtk{color:var(--ds-link)}
@@ -67,6 +87,7 @@ describe('sort shorthand vs. longhand declarations', () => {
         ._1b7p1epz{padding-left:var(--ds-space-1000,5pc)}
         ._jvmr1epz{padding-right:var(--ds-space-1000,5pc)}
       }
+      ._kkk21kw7{all:inherit}
     `);
 
     expect(actual).toMatchInlineSnapshot(`
