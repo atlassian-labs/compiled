@@ -210,6 +210,7 @@ describe('sort shorthand vs. longhand declarations', () => {
 
   it('sorts a variety of different shorthand properties used together', () => {
     const actual = transform(outdent`
+
       @media all {
         .f {
           display: block;
@@ -314,9 +315,6 @@ describe('sort shorthand vs. longhand declarations', () => {
       .c {
         border-block-start: none;
       }
-      .d:active {
-        border-block-start: none;
-      }
 
       .j {
         margin-bottom: 6px;
@@ -333,7 +331,11 @@ describe('sort shorthand vs. longhand declarations', () => {
       }
       .e:hover {
         border-block-start-color: transparent;
-      }@media all {
+      }
+      .d:active {
+        border-block-start: none;
+      }
+      @media all {
         .a {
           all: unset;
         }
@@ -471,13 +473,13 @@ describe('sort shorthand vs. longhand declarations', () => {
     expect(actual).toMatchInlineSnapshot(`
       "
       ._abcd1234 { border: none }
-      ._abcd1234:hover { border: none }
-      ._abcd1234:active { border: none }
       ._abcd1234 { border-top: 1px solid }
-      ._abcd1234:hover { border-top: 1px solid }
-      ._abcd1234:active { border-top: 1px solid }
       ._abcd1234 { border-top-color: red }
+      ._abcd1234:hover { border: none }
+      ._abcd1234:hover { border-top: 1px solid }
       ._abcd1234:hover { border-top-color: red }
+      ._abcd1234:active { border: none }
+      ._abcd1234:active { border-top: 1px solid }
       ._abcd1234:active { border-top-color: red }
       @media (max-width: 150px) { ._abcd1234 { border: none } }
       @media (max-width: 120px) {
