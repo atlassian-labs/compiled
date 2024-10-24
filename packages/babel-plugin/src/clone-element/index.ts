@@ -3,27 +3,11 @@ import * as t from '@babel/types';
 
 import type { Metadata } from '../types';
 import { buildCompiledCloneElement } from '../utils/build-compiled-component';
-import { buildCssVariables } from '../utils/build-css-variables';
 import { buildCss } from '../utils/css-builders';
 import { getRuntimeClassNameLibrary } from '../utils/get-runtime-class-name-library';
 import { resolveIdentifierComingFromDestructuring } from '../utils/resolve-binding';
 import { transformCssItems } from '../utils/transform-css-items';
 import type { CSSOutput } from '../utils/types';
-
-/**
- * Handles style prop value. If variables are present it will replace its value with it
- * otherwise will add undefined.
- *
- * @param variables CSS variables prop to be placed as inline styles
- * @param path Any Expression path
- */
-const handleStyleProp = (variables: CSSOutput['variables'], path: NodePath<t.Expression>) => {
-  const styleValue = variables.length
-    ? t.objectExpression(buildCssVariables(variables))
-    : t.identifier('undefined');
-
-  path.replaceWith(styleValue);
-};
 
 /**
  * Extracts styles from an expression.
@@ -128,9 +112,13 @@ export const visitCloneElementPath = (path: NodePath<t.CallExpression>, meta: Me
       // find ancestor cloneElement callExpression
       const ancestorPath = path.findParent(
         (p) =>
-          p.isCallExpression() &&
-          t.isIdentifier(p.node.callee) &&
-          p.node.callee.name === 'cloneElement'
+          (p.isCallExpression() &&
+            t.isIdentifier(p.node.callee) &&
+            p.node.callee.name === meta.state.reactImports?.cloneElement) ||
+          (p.isCallExpression() &&
+            t.isMemberExpression(p.node.callee) &&
+            t.isIdentifier(p.node.callee.property) &&
+            p.node.callee.property.name === 'cloneElement')
       ) as NodePath<t.CallExpression>;
 
       if (!ancestorPath) {
@@ -140,44 +128,4 @@ export const visitCloneElementPath = (path: NodePath<t.CallExpression>, meta: Me
       ancestorPath.replaceWith(buildCompiledCloneElement(ancestorPath.node, builtCss, meta));
     },
   });
-
-  // // Second pass to replace all usages of `style`.
-  // path.traverse({
-  //   Expression(path) {
-  //     if (t.isIdentifier(path.node)) {
-  //       if (path.parentPath.isProperty()) {
-  //         return;
-  //       }
-
-  //       // style={style}
-  //       if (path.node.name === 'style' && path.scope.hasOwnBinding('style')) {
-  //         handleStyleProp(collectedVariables, path);
-  //       }
-
-  //       // style={style} rename prop
-  //       if (path.scope.hasOwnBinding(path.node.name)) {
-  //         const binding = path.scope.getBinding(path.node.name)?.path.node;
-
-  //         if (
-  //           !!resolveIdentifierComingFromDestructuring({
-  //             name: 'style',
-  //             node: binding as t.Expression,
-  //           })
-  //         ) {
-  //           handleStyleProp(collectedVariables, path);
-  //         }
-  //       }
-  //     } else if (t.isMemberExpression(path.node)) {
-  //       // filter out invalid calls like dontexist.style
-  //       if (t.isIdentifier(path.node.object) && !path.scope.hasOwnBinding(path.node.object.name)) {
-  //         return;
-  //       }
-
-  //       // style={props.style}
-  //       if (t.isIdentifier(path.node.property) && path.node.property.name === 'style') {
-  //         handleStyleProp(collectedVariables, path);
-  //       }
-  //     }
-  //   },
-  // });
 };

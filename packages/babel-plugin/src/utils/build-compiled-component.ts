@@ -168,9 +168,12 @@ export const buildCompiledCloneElement = (
     (prop) => t.isObjectProperty(prop) && t.isIdentifier(prop.key) && prop.key.name === 'className'
   );
 
-  if (classNameProperty && t.isObjectProperty(classNameProperty)) {
-    const classNameExpression = getExpression(classNameProperty.value);
-    const values: t.Expression[] = classNames.concat(classNameExpression);
+  if (
+    classNameProperty &&
+    t.isObjectProperty(classNameProperty) &&
+    t.isIdentifier(classNameProperty.value)
+  ) {
+    const values: t.Expression[] = classNames.concat(classNameProperty.value);
 
     classNameProperty.value = t.callExpression(t.identifier(getRuntimeClassNameLibrary(meta)), [
       t.arrayExpression(values),

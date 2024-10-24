@@ -66,6 +66,26 @@ const findClassicJsxPragmaImport: Visitor<State> = {
   },
 };
 
+const findReactImportSpecifier: Visitor<State> = {
+  ImportSpecifier(path, state) {
+    const specifier = path.node;
+
+    t.assertImportDeclaration(path.parent);
+    if (path.parent.source.value !== 'react') {
+      return;
+    }
+
+    if (
+      (specifier.imported.type === 'StringLiteral' &&
+        specifier.imported.value === 'cloneElement') ||
+      (specifier.imported.type === 'Identifier' && specifier.imported.name === 'cloneElement')
+    ) {
+      state.reactImports = state.reactImports || {};
+      state.reactImports.cloneElement = specifier.local.name;
+    }
+  },
+};
+
 export default declare<State>((api) => {
   api.assertVersion(7);
 
@@ -125,6 +145,7 @@ export default declare<State>((api) => {
 
           // Handle classic JSX pragma, if it exists
           path.traverse<State>(findClassicJsxPragmaImport, this);
+          path.traverse<State>(findReactImportSpecifier, this);
 
           if (!file.ast.comments) {
             return;
@@ -297,9 +318,16 @@ export default declare<State>((api) => {
         state: State
       ) {
         if (
-          t.isCallExpression(path.node) &&
-          t.isIdentifier(path.node.callee) &&
-          path.node.callee.name === 'cloneElement'
+          (t.isCallExpression(path.node) &&
+            t.isIdentifier(path.node.callee) &&
+            path.node.callee.name === state.reactImports?.cloneElement) ||
+          // handle member expression React.cloneElement
+          (t.isCallExpression(path.node) &&
+            t.isMemberExpression(path.node.callee) &&
+            t.isIdentifier(path.node.callee.object) &&
+            path.node.callee.object.name === 'React' &&
+            t.isIdentifier(path.node.callee.property) &&
+            path.node.callee.property.name === 'cloneElement')
         ) {
           visitCloneElementPath(path as NodePath<t.CallExpression>, {
             context: 'root',
