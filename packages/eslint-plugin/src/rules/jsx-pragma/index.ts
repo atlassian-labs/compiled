@@ -114,6 +114,7 @@ function createFixer(context: Rule.RuleContext, source: SourceCode, options: Opt
 export const jsxPragmaRule: Rule.RuleModule = {
   meta: {
     docs: {
+      description: 'Enforces a jsx pragma when using the `css` prop',
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/jsx-pragma',
     },
     fixable: 'code',

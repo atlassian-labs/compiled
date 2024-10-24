@@ -4,7 +4,13 @@
     "rootDir": "src",
     "outDir": "dist",
     "module": "commonjs",
-    "target": "es2017"
+    "target": "es2017",
+    "plugins": [
+      {
+        "name": "transform-pkg-info",
+        "transform": "./add-pkg-info-transform.js"
+      }
+    ]
   },
   "references": [{ "path": "../jest" }, { "path": "../utils" }]
 }

@@ -1,3 +1,4 @@
+import { flatRecommended } from './configs/flat-recommended';
 import { recommended } from './configs/recommended';
 import { jsxPragmaRule } from './rules/jsx-pragma';
 import { localCXXCSSRule } from './rules/local-cx-xcss';
@@ -14,6 +15,9 @@ import { noStyledTaggedTemplateExpressionRule } from './rules/no-styled-tagged-t
 import { noSuppressXCSS } from './rules/no-suppress-xcss';
 import { shorthandFirst } from './rules/shorthand-property-sorting';
 
+export const name = '/* NAME */';
+export const version = '/* VERSION */';
+
 export const rules = {
   'jsx-pragma': jsxPragmaRule,
   'local-cx-xcss': localCXXCSSRule,
@@ -29,8 +33,27 @@ export const rules = {
   'no-suppress-xcss': noSuppressXCSS,
   'no-empty-styled-expression': noEmptyStyledExpressionRule,
   'shorthand-property-sorting': shorthandFirst,
-};
+} as const;
 
-export const configs = {
-  recommended,
-};
+export const plugin = {
+  meta: {
+    name,
+    version,
+  },
+  rules,
+  configs: {
+    recommended,
+    'flat/recommended': {
+      ...flatRecommended,
+      plugins: {
+        get '@compiled'() {
+          return plugin;
+        },
+      },
+    },
+  },
+} as const;
+
+export const configs = plugin.configs;
+
+export default plugin;
