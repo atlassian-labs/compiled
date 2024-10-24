@@ -103,6 +103,15 @@ export interface CompiledLoaderOptions {
    * Passed to @compiled/babel-plugin.
    */
   importSources?: string[];
+
+  /**
+   * Adds a defined prefix to the generated classes' hashes.
+   * Useful in micro frontend environments to avoid clashing/specificity issues.
+   *
+   * Avoid mixing this with extraction as this may throw an error if combined with extraction
+   * or `extract: true` in Webpack loaders or Parcel tranformers.
+   */
+  classHashPrefix?: string;
 }
 
 export interface CompiledExtractPluginOptions {
@@ -142,10 +151,4 @@ export interface CompiledExtractPluginOptions {
    * Defaults to `false`.
    */
   sortShorthand?: boolean;
-
-  /**
-   * Adds a defined prefix to the generated classes' hashes.
-   * Useful in micro frontend environments to avoid clashing/specificity issues.
-   */
-  classHashPrefix?: string;
 }

@@ -1,5 +1,13 @@
 # @compiled/parcel-config
 
+## 0.5.4
+
+### Patch Changes
+
+- Updated dependencies [c1655312]
+- Updated dependencies [c1655312]
+  - @compiled/parcel-transformer@0.18.0
+
 ## 0.5.3
 
 ### Patch Changes

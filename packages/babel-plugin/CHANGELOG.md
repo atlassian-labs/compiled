@@ -1,5 +1,18 @@
 # @compiled/babel-plugin
 
+## 0.32.2
+
+### Patch Changes
+
+- Updated dependencies [9b960009]
+  - @compiled/css@0.17.0
+
+## 0.32.1
+
+### Patch Changes
+
+- c1655312: Documents what happens when mixing extraction and classHashPrefix
+
 ## 0.32.0
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @compiled/parcel-optimizer
 
+## 0.5.2
+
+### Patch Changes
+
+- Updated dependencies [9b960009]
+  - @compiled/css@0.17.0
+
 ## 0.5.1
 
 ### Patch Changes
