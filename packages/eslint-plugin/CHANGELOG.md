@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.16.0
+
+### Minor Changes
+
+- e8b09ecd: Adding flat config preset for `@compiled/eslint-plugin` and adding missing descriptions to ESLint rules
+
 ## 0.15.0
 
 ### Minor Changes
