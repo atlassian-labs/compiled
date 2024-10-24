@@ -87,6 +87,14 @@ export const sortAtomicStyleSheet = (config: {
         }
       });
 
+      if (sortShorthandEnabled) {
+        sortShorthandDeclarations(catchAll);
+        sortShorthandDeclarations(rules);
+        sortShorthandDeclarations(atRules.map((atRule) => atRule.node));
+      }
+
+      // Pseudo-selector and at-rule sorting takes priority over shorthand
+      // property sorting.
       sortPseudoSelectors(rules);
       if (sortAtRulesEnabled) {
         atRules.sort(sortAtRules);
@@ -101,10 +109,6 @@ export const sortAtomicStyleSheet = (config: {
       }
 
       root.nodes = [...catchAll, ...rules, ...atRules.map((atRule) => atRule.node)];
-
-      if (sortShorthandEnabled) {
-        sortShorthandDeclarations(root.nodes);
-      }
     },
   };
 };

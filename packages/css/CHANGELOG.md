@@ -1,5 +1,17 @@
 # @compiled/css
 
+## 0.17.1
+
+### Patch Changes
+
+- 124243cd: Fix sortShorthand when mixed with multi-property classes such as `._1jmq18uv{-webkit-text-decoration-color:initial;text-decoration-color:initial}` (previously, these broke sorting as they exited early).
+
+## 0.17.0
+
+### Minor Changes
+
+- 9b960009: Fix shorthand sorting not working most of the time, when stylesheet extraction is turned on.
+
 ## 0.16.0
 
 ### Minor Changes

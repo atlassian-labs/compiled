@@ -1,5 +1,17 @@
 # @compiled/parcel-transformer
 
+## 0.18.0
+
+### Minor Changes
+
+- c1655312: Throw an error when mixing `extract: true` and `classHashPrefix` configuration options to avoid unsupported usage and bundle size bloat.
+
+### Patch Changes
+
+- c1655312: Documents what happens when mixing extraction and classHashPrefix
+- Updated dependencies [c1655312]
+  - @compiled/babel-plugin@0.32.1
+
 ## 0.17.0
 
 ### Minor Changes
