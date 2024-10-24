@@ -1,5 +1,11 @@
 # @compiled/css
 
+## 0.17.1
+
+### Patch Changes
+
+- 124243cd: Fix sortShorthand when mixed with multi-property classes such as `._1jmq18uv{-webkit-text-decoration-color:initial;text-decoration-color:initial}` (previously, these broke sorting as they exited early).
+
 ## 0.17.0
 
 ### Minor Changes
