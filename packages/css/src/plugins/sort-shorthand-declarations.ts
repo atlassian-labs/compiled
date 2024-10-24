@@ -9,15 +9,17 @@ const findDeclaration = (node: ChildNode): Declaration | undefined => {
   }
 
   if ('nodes' in node) {
-    if (node.nodes.length === 1 && nodeIsDeclaration(node.nodes[0])) {
-      return node.nodes[0];
-    }
+    // Return the first node that is a declaration, if we find one
+    return node.nodes.find(nodeIsDeclaration);
   }
 
   return undefined;
 };
 
 const sortNodes = (a: ChildNode, b: ChildNode): number => {
+  // NOTE: These return the first declaration when the class has multiple properties
+  // eg. `-webkit-text-decoration:initial;text-decoration:initial` would sort
+  // against `-webkit-text-decoration`, which may not be perfect in all cases
   const aDecl = findDeclaration(a);
   const bDecl = findDeclaration(b);
 
