@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.17.0
+
+### Minor Changes
+
+- 6fc00de6: Add `shorthand-property-sorting` to recommended ESLint rules
+
 ## 0.16.0
 
 ### Minor Changes
