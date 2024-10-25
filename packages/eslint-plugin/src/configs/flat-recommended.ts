@@ -12,5 +12,6 @@ export const flatRecommended = {
     '@compiled/no-keyframes-tagged-template-expression': 'error',
     '@compiled/no-styled-tagged-template-expression': 'error',
     '@compiled/no-suppress-xcss': 'error',
+    '@compiled/shorthand-property-sorting': 'error',
   },
 } as const;
