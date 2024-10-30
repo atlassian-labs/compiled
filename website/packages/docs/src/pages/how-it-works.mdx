@@ -41,7 +41,8 @@ With the most basic Babel setup, Compiled will be transformed to **runtime style
 This is typically used in a development or testing environments.
 
 It is **not recommended in production environments** as it will be less performant, but also mixing
-runtime and Extraction can result in breaking visual changes from atomic specificity conflicts.
+runtime and extraction can result in breaking visual changes from atomic specificity conflicts.
+Refer to [extracted styles](#extracted-styles) below for the recommendation.
 
 ```bash
 $ babel src
@@ -91,6 +92,8 @@ export const LargeText = ({ inverted, children }) => {
 We highly suggest you turn on style extraction to distribute styles statically at build time,
 either through [NPM](https://npmjs.com/) or Production environments. Doing this, styles will
 have their **runtime stripped and styles extracted** to an [atomic style sheet](/atomic-css).
+
+Refer to [stylesheet extraction](/css-extraction-webpack) for more details.
 
 Let's compare this to runtime styles, assuming we have Parcel configured
 
