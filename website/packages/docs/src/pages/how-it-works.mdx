@@ -9,7 +9,7 @@ Once you've [installed and configured](/installation) everything, you can start 
 but it's best to explain what happens under the hood.
 
 Compiled uses Babel (with pre-configuration options via Webpack and Parcel) to transform styles
-into atomic CSS determined at build time, resulting in resulting in **very performant components**.
+into atomic CSS determined at build time, resulting in **very performant components**.
 
 Let's take a typical component you might write:
 
@@ -58,16 +58,18 @@ You'll see a few things happening in the code below:
    `className` inlined. Note that `cssMap()` works slightly differently and maintains the object syntax.
 4. There are a few internal runtime functions that are used to manage the styles like `ax` and `CC`.
    [Read more about this](/pkg-react-runtime)
+5. [Postcss](https://postcss.org/), [autoprefixer](https://github.com/postcss/autoprefixer), and some other
+   optimizations will run over your code to make it more performant and safer for use.
 
 ```jsx
 import { ax, ix, CC, CS } from '@compiled/react/runtime';
 const _8 = '._syazu67f{color:#fff}';
 const _7 = '._bfhk1d6m{background-color:#333}';
 const _6 = '._bfhkr75e{background-color:#eee}';
-const _5 = '._19bvftgi{padding-left:8px}';
-const _4 = '._n3tdftgi{padding-bottom:8px}';
-const _3 = '._u5f3ftgi{padding-right:8px}';
-const _2 = '._ca0qftgi{padding-top:8px}';
+const _5 = '._19bvftgi{padding-left:1pc}';
+const _4 = '._n3tdftgi{padding-bottom:1pc}';
+const _3 = '._u5f3ftgi{padding-right:1pc}';
+const _2 = '._ca0qftgi{padding-top:1pc}';
 const _ = '._1wybckbl{font-size:3pc}';
 const largeTextStyles = null;
 const invertedStyles = null;
