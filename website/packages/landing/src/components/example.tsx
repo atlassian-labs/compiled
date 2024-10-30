@@ -1,18 +1,19 @@
 /** @jsxImportSource @compiled/react */
-
+import { css } from '@compiled/react';
 import type { ReactNode } from 'react';
 
-type Props = {
-  color: string;
-  children: ReactNode;
-};
+type Props = { inverted?: boolean; children: ReactNode };
 
-export const LargeText = (props: Props): JSX.Element => (
-  <span
-    css={{
-      color: props.color,
-      fontSize: 48,
-    }}>
-    {props.children}
-  </span>
-);
+const largeTextStyles = css({
+  fontSize: '48px',
+  padding: '8px',
+  background: '#eee',
+});
+const invertedStyles = css({
+  background: '#333',
+  color: '#fff',
+});
+
+export const LargeText = ({ inverted, children }: Props): JSX.Element => {
+  return <span css={[largeTextStyles, inverted && invertedStyles]}>{children}</span>;
+};

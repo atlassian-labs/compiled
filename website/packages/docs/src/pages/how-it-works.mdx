@@ -1,0 +1,165 @@
+---
+order: 3
+section: 1-Getting started
+---
+
+# How it Works
+
+Once you've [installed and configured](/installation) everything, you can start using it,
+but it's best to explain what happens under the hood.
+
+Compiled uses Babel (with pre-configuration options via Webpack and Parcel) to transform styles
+into atomic CSS determined at build time, resulting in **very performant components**.
+
+Let's take a typical component you might write:
+
+```jsx
+/** @jsxImportSource @compiled/react */
+import { css } from '@compiled/react';
+import type { ReactNode } from 'react';
+
+type Props = { inverted?: boolean, children: ReactNode };
+
+const largeTextStyles = css({
+  fontSize: '48px',
+  padding: '8px',
+  background: '#eee',
+});
+const invertedStyles = css({
+  background: '#333',
+  color: '#fff',
+});
+
+export const LargeText = ({ inverted, children }: Props): JSX.Element => {
+  return <span css={[largeTextStyles, inverted && invertedStyles]}>{children}</span>;
+};
+```
+
+## Runtime styles (unperformant)
+
+With the most basic Babel setup, Compiled will be transformed to **runtime styles**.
+This is typically used in a development or testing environments.
+
+It is **not recommended in production environments** as it will be less performant, but also mixing
+runtime and extraction can result in breaking visual changes from atomic specificity conflicts.
+Refer to [extracted styles](#extracted-styles) below for the recommendation.
+
+```bash
+$ babel src
+Successfully compiled 1 file with Babel (9ms)
+```
+
+You'll see a few things happening in the code below:
+
+1. All styles are converted into [Atomic CSS](/atomic-css) for reuse.
+2. Some styles, such as `padding:8px` will be expanded out to `padding-left`, `padding-right`, etc,
+   while others might be sorted. [Read more about this](shorthand)
+3. All `css()` calls are replaced with `null` and instead the styles are injected at runtime with the
+   `className` inlined. Note that `cssMap()` works slightly differently and maintains the object syntax.
+4. There are a few internal runtime functions that are used to manage the styles like `ax` and `CC`.
+   [Read more about this](/pkg-react-runtime)
+5. [Postcss](https://postcss.org/), [autoprefixer](https://github.com/postcss/autoprefixer), and some other
+   optimizations will run over your code to make it more performant and safer for use.
+
+```jsx
+import { ax, ix, CC, CS } from '@compiled/react/runtime';
+const _8 = '._syazu67f{color:#fff}';
+const _7 = '._bfhk1d6m{background-color:#333}';
+const _6 = '._bfhkr75e{background-color:#eee}';
+const _5 = '._19bvftgi{padding-left:1pc}';
+const _4 = '._n3tdftgi{padding-bottom:1pc}';
+const _3 = '._u5f3ftgi{padding-right:1pc}';
+const _2 = '._ca0qftgi{padding-top:1pc}';
+const _ = '._1wybckbl{font-size:3pc}';
+const largeTextStyles = null;
+const invertedStyles = null;
+export const LargeText = ({ inverted, children }) => {
+  return (
+    <CC>
+      <CS>{[_, _2, _3, _4, _5, _6, _7, _8]}</CS>
+      <span
+        className={ax([
+          '_1wybckbl _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi _bfhkr75e',
+          inverted && '_bfhk1d6m _syazu67f',
+        ])}>
+        {children}
+      </span>
+    </CC>
+  );
+};
+```
+
+## Extracted styles
+
+We highly suggest you turn on style extraction to distribute styles statically at build time,
+either through [NPM](https://npmjs.com/) or Production environments. Doing this, styles will
+have their **runtime stripped and styles extracted** to an [atomic style sheet](/atomic-css).
+
+Refer to [stylesheet extraction](/css-extraction-webpack) for more details.
+
+Let's compare this to runtime styles, assuming we have Parcel configured
+
+```bash
+$ parcel build ./src/index.html
+✨ Built in 4.94s
+dist/index.html               246 B    349ms
+dist/index.019bae5f.js    136.13 KB    806ms
+# This generates `index.compiled.css` file(s) too.
+🌽 ✅ Done in 6.26s
+```
+
+You'll see a few different things are happening in the code below:
+
+1. All styles are moved into a separate file, `index.compiled.css`, that is imported into this file for
+   your bundler to pick up and combine and serve to the user.
+2. The runtime injection of `<CS>` is no longer required because the styles are statically available.
+
+The main difference beyond the greatly reduced runtime cost is that the atomic styles can be completely deduplicated.
+
+```diff
++import "./index.compiled.css";
+-import { ax, ix, CC, CS } from '@compiled/react/runtime';
++import { ax, ix } from "@compiled/react/runtime";
+-const _8 = '._syazu67f{color:#fff}';
+-const _7 = '._bfhk1d6m{background-color:#333}';
+-const _6 = '._bfhkr75e{background-color:#eee}';
+-const _5 = '._19bvftgi{padding-left:8px}';
+-const _4 = '._n3tdftgi{padding-bottom:8px}';
+-const _3 = '._u5f3ftgi{padding-right:8px}';
+-const _2 = '._ca0qftgi{padding-top:8px}';
+-const _ = '._1wybckbl{font-size:3pc}';
+var largeTextStyles = null;
+var invertedStyles = null;
+export const LargeText = ({ inverted, children }) => {
+  return (
+-    <CC>
+-      <CS>{[_, _2, _3, _4, _5, _6, _7, _8]}</CS>
+    <span
+      className={ax([
+        '_1wybckbl _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi _bfhkr75e',
+        inverted && '_bfhk1d6m _syazu67f',
+      ])}>
+      {children}
+    </span>
+-    </CC>
+  );
+};
+```
+
+For reference, the atomic stylesheet is created just as before, now in `index.compiled.css`, and with
+the bundler config, these `*.compiled.css` files will be merged together with duplicates removed, resulting
+in a drastically smaller CSS payload to the customer.
+
+These `*.compiled.css` files could be distributed via NPM or collected and bundled to customers.
+
+<!-- prettier-ignore -->
+```css
+._19bvftgi{padding-left:8px}
+._1wybckbl{font-size:3pc}
+._bfhk1d6m{background-color:#333}
+._bfhkr75e{background-color:#eee}
+._ca0qftgi{padding-top:8px}
+._n3tdftgi{padding-bottom:8px}
+._syazu67f{color:#fff}
+._u5f3ftgi{padding-right:8px}
+```
