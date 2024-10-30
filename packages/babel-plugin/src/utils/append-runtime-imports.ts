@@ -16,8 +16,8 @@ const importSpecifier = (name: string, localName?: string): t.ImportSpecifier =>
 };
 
 // Runtime function `ac` is less performant than `ax`, so we only want to import `ac` if classNameCompressionMap is provided.
-const COMPILED_RUNTIME_IMPORTS_WITH_COMPRESSION = ['ac', 'ix', 'CC', 'CS'];
-const COMPILED_RUNTIME_IMPORTS_WITHOUT_COMPRESSION = ['ax', 'ix', 'CC', 'CS'];
+const COMPILED_RUNTIME_IMPORTS_WITH_COMPRESSION = ['ac', 'ix', 'CC', 'CS', 'injectCss'];
+const COMPILED_RUNTIME_IMPORTS_WITHOUT_COMPRESSION = ['ax', 'ix', 'CC', 'CS', 'injectCss'];
 const COMPILED_RUNTIME_MODULE = '@compiled/react/runtime';
 
 /**

@@ -21,6 +21,7 @@ import type { State } from './types';
 import { appendRuntimeImports } from './utils/append-runtime-imports';
 import { buildCodeFrameError } from './utils/ast';
 import { Cache } from './utils/cache';
+import { buildCss } from './utils/css-builders';
 import {
   isCompiledCSSCallExpression,
   isCompiledCSSTaggedTemplateExpression,
@@ -32,6 +33,7 @@ import {
 } from './utils/is-compiled';
 import { isTransformedJsxFunction } from './utils/is-jsx-function';
 import { normalizePropsUsage } from './utils/normalize-props-usage';
+import { transformCssItems } from './utils/transform-css-items';
 import { visitXcssPropPath } from './xcss-prop';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -272,19 +274,23 @@ export default declare<State>((api) => {
             return;
           }
 
-          (['styled', 'ClassNames', 'css', 'keyframes', 'cssMap'] as const).forEach((apiName) => {
-            if (
-              state.compiledImports &&
-              t.isIdentifier(specifier.node?.imported) &&
-              specifier.node?.imported.name === apiName
-            ) {
-              // Enable the API with the local name
-              const apiArray = state.compiledImports[apiName] || [];
-              apiArray.push(specifier.node.local.name);
-              state.compiledImports[apiName] = apiArray;
-              specifier.remove();
+          (['styled', 'ClassNames', 'css', 'keyframes', 'cssMap', 'injectCss'] as const).forEach(
+            (apiName) => {
+              if (
+                state.compiledImports &&
+                t.isIdentifier(specifier.node?.imported) &&
+                specifier.node?.imported.name === apiName
+              ) {
+                // Enable the API with the local name
+                // @ts-expect-error
+                const apiArray = state.compiledImports[apiName] || [];
+                apiArray.push(specifier.node.local.name);
+                // @ts-expect-error
+                state.compiledImports[apiName] = apiArray;
+                specifier.remove();
+              }
             }
-          });
+          );
         });
 
         if (path.node.specifiers.length === 0) {
@@ -344,6 +350,19 @@ Reasons this might happen:
         if (isCompiledComponent) {
           visitStyledPath(path, { context: 'root', state, parentPath: path });
           return;
+        }
+
+        // @ts-expect-error
+        if (t.isCallExpression(path.node) && path.node.callee.name === `globalCss`) {
+          const meta = { context: 'root', state, parentPath: path };
+          // @ts-expect-error
+          const cssOutput = buildCss(path.node.arguments[0], meta);
+          // @ts-expect-error
+          const { sheets } = transformCssItems(cssOutput.css, meta);
+          const newNode = t.callExpression(t.identifier('injectCss'), [
+            t.arrayExpression(sheets.map((item) => t.stringLiteral(item))),
+          ]);
+          path.parentPath.replaceWith(newNode);
         }
       },
       JSXElement(path, state) {
