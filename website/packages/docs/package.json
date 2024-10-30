@@ -9,8 +9,8 @@
   "dependencies": {
     "@babel/core": "^7.24.5",
     "@babel/preset-typescript": "^7.24.1",
-    "@compiled/babel-plugin": "^0.28.8",
-    "@compiled/react": "^0.17.1",
+    "@compiled/babel-plugin": "latest",
+    "@compiled/react": "latest",
     "@compiled/website-examples": "^1.0.0",
     "@compiled/website-ui": "^1.0.0",
     "@mdx-js/loader": "^1.6.22",

@@ -9,8 +9,8 @@
     "start": "webpack serve"
   },
   "dependencies": {
-    "@compiled/react": "^0.17.1",
-    "@compiled/webpack-loader": "^0.12.7",
+    "@compiled/react": "latest",
+    "@compiled/webpack-loader": "latest",
     "@compiled/website-examples": "^1.0.0",
     "@compiled/website-ui": "^1.0.0",
     "@mdx-js/loader": "^1.6.22",

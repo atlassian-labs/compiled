@@ -8,7 +8,7 @@ import { CompositionIdentifier } from './css-prop-composition-identifier';
 import { CustomColorText as CssPropCompositionIncorrect } from './css-prop-composition-incorrect';
 import { CompositionMultiple } from './css-prop-composition-multiple';
 import { CustomColorText as CssPropCompositionNoStyle } from './css-prop-composition-no-style';
-import { Lozenge as CssPropConditionalRules } from './css-prop-conditional-rules';
+import { LargeText as CssPropConditionalRules } from './css-prop-conditional-rules';
 import { EmphasisText as CssPropDynamic } from './css-prop-dynamic-decl';
 import { EmphasisText as CssPropObj } from './css-prop-obj';
 import { EmphasisText as CssPropString } from './css-prop-string';

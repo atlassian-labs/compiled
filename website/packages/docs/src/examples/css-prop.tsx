@@ -1,5 +1,6 @@
 import { cssProp } from '@compiled/website-examples';
 import { Example } from '@compiled/website-ui';
+import { Fragment } from 'react';
 
 export const CssPropObj = (): JSX.Element => {
   return (
@@ -116,7 +117,7 @@ export const CssPropCompositionNoStyle = (): JSX.Element => {
 export const CssPropConditionalRules = (): JSX.Element => {
   return (
     <Example
-      exampleCode="<Lozenge primary>Arrange</Lozenge>"
+      exampleCode="<LargeText>Hello</LargeText><LargeText inverted>world</LargeText>"
       before={
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         require('!!raw-loader!@compiled/website-examples/dist/jsx/css-prop-conditional-rules.js')
@@ -127,7 +128,10 @@ export const CssPropConditionalRules = (): JSX.Element => {
         require('!!raw-loader!@compiled/website-examples/dist/js/css-prop-conditional-rules.js')
           .default
       }>
-      <cssProp.CssPropConditionalRules primary>Arrange</cssProp.CssPropConditionalRules>
+      <Fragment>
+        <cssProp.CssPropConditionalRules>Hello</cssProp.CssPropConditionalRules>
+        <cssProp.CssPropConditionalRules inverted>world</cssProp.CssPropConditionalRules>
+      </Fragment>
     </Example>
   );
 };
