@@ -104,15 +104,18 @@ export const transformCss = (
   }
 };
 
+// @ts-ignore
 const groupGlobalRules = ({ callback }): Plugin => {
   return {
     postcssPlugin: 'group-global-rules',
 
     OnceExit(root) {
-      const uniqueName = hash(root.source?.input.css);
+      // @ts-ignore
+      const uniqueName = '_' + hash(root.source?.input.css);
       const nodes = [];
+      // @ts-ignore
       const orphanDecls = [];
-      callback('.' + uniqueName);
+      callback(uniqueName);
 
       root.each((node) => {
         switch (node.type) {
@@ -141,6 +144,7 @@ const groupGlobalRules = ({ callback }): Plugin => {
         nodes.unshift(
           rule({
             raws: { before: '', after: '', between: '', selector: { raw: '', value: '' } },
+            // @ts-ignore
             nodes: orphanDecls,
             selector: '.' + uniqueName,
           })

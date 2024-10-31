@@ -67,7 +67,9 @@ export const visitCssMapPath = (
     if (
       !t.isObjectExpression(arg) ||
       arg.properties.length > 1 ||
+      // @ts-ignore
       !t.isIdentifier(arg.properties[0].key) ||
+      // @ts-ignore
       !t.isBooleanLiteral(arg.properties[0].value)
     ) {
       throw buildCodeFrameError(
@@ -77,6 +79,7 @@ export const visitCssMapPath = (
       );
     }
 
+    // @ts-ignore
     isGlobalCssMap = arg.properties[0].value.value;
   }
 
