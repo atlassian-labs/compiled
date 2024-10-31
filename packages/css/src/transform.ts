@@ -1,7 +1,6 @@
-import { createError, unique, hash } from '@compiled/utils';
+import { createError, unique } from '@compiled/utils';
 import autoprefixer from 'autoprefixer';
-import postcss, { rule } from 'postcss';
-import type { Plugin } from 'postcss';
+import postcss from 'postcss';
 import nested from 'postcss-nested';
 import whitespace from 'postcss-normalize-whitespace';
 
@@ -10,6 +9,7 @@ import { discardDuplicates } from './plugins/discard-duplicates';
 import { discardEmptyRules } from './plugins/discard-empty-rules';
 import { expandShorthands } from './plugins/expand-shorthands';
 import { extractStyleSheets } from './plugins/extract-stylesheets';
+import { groupGlobalRules } from './plugins/global-css';
 import { increaseSpecificity } from './plugins/increase-specificity';
 import { normalizeCSS } from './plugins/normalize-css';
 import { parentOrphanedPseudos } from './plugins/parent-orphaned-pseudos';
@@ -37,9 +37,6 @@ export const transformCss = (
 ): { sheets: string[]; classNames: string[] } => {
   const sheets: string[] = [];
   const classNames: string[] = [];
-
-  console.log('css', css);
-
   try {
     const result = postcss([
       discardDuplicates(),
@@ -102,56 +99,4 @@ export const transformCss = (
   Exception: ${message}`
     );
   }
-};
-
-// @ts-ignore
-const groupGlobalRules = ({ callback }): Plugin => {
-  return {
-    postcssPlugin: 'group-global-rules',
-
-    OnceExit(root) {
-      // @ts-ignore
-      const uniqueName = '_' + hash(root.source?.input.css);
-      const nodes = [];
-      // @ts-ignore
-      const orphanDecls = [];
-      callback(uniqueName);
-
-      root.each((node) => {
-        switch (node.type) {
-          case 'decl':
-            orphanDecls.push(node);
-            break;
-
-          case 'rule':
-            nodes.push(
-              node.clone({
-                selector: `.${uniqueName} ${node.selector}`,
-              })
-            );
-            break;
-
-          case 'comment':
-            node.remove();
-            break;
-
-          default:
-            break;
-        }
-      });
-
-      if (orphanDecls.length) {
-        nodes.unshift(
-          rule({
-            raws: { before: '', after: '', between: '', selector: { raw: '', value: '' } },
-            // @ts-ignore
-            nodes: orphanDecls,
-            selector: '.' + uniqueName,
-          })
-        );
-      }
-
-      root.nodes = nodes;
-    },
-  };
 };
