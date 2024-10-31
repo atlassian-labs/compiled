@@ -1,6 +1,7 @@
-import { createError, unique } from '@compiled/utils';
+import { createError, unique, hash } from '@compiled/utils';
 import autoprefixer from 'autoprefixer';
-import postcss from 'postcss';
+import postcss, { rule } from 'postcss';
+import type { Plugin } from 'postcss';
 import nested from 'postcss-nested';
 import whitespace from 'postcss-normalize-whitespace';
 
@@ -31,10 +32,13 @@ export interface TransformOpts {
  */
 export const transformCss = (
   css: string,
-  opts: TransformOpts
+  opts: TransformOpts,
+  isGlobal = false
 ): { sheets: string[]; classNames: string[] } => {
   const sheets: string[] = [];
   const classNames: string[] = [];
+
+  console.log('css', css);
 
   try {
     const result = postcss([
@@ -47,11 +51,22 @@ export const transformCss = (
       }),
       ...normalizeCSS(opts),
       expandShorthands(),
-      atomicifyRules({
-        classNameCompressionMap: opts.classNameCompressionMap,
-        callback: (className: string) => classNames.push(className),
-        classHashPrefix: opts.classHashPrefix,
-      }),
+      ...(isGlobal
+        ? [
+            groupGlobalRules({
+              callback: (className: string) => classNames.push(className),
+            }),
+          ]
+        : []),
+      ...(!isGlobal
+        ? [
+            atomicifyRules({
+              classNameCompressionMap: opts.classNameCompressionMap,
+              callback: (className: string) => classNames.push(className),
+              classHashPrefix: opts.classHashPrefix,
+            }),
+          ]
+        : []),
       ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
       sortAtomicStyleSheet({
         sortAtRulesEnabled: opts.sortAtRules,
@@ -87,4 +102,52 @@ export const transformCss = (
   Exception: ${message}`
     );
   }
+};
+
+const groupGlobalRules = ({ callback }): Plugin => {
+  return {
+    postcssPlugin: 'group-global-rules',
+
+    OnceExit(root) {
+      const uniqueName = hash(root.source?.input.css);
+      const nodes = [];
+      const orphanDecls = [];
+      callback('.' + uniqueName);
+
+      root.each((node) => {
+        switch (node.type) {
+          case 'decl':
+            orphanDecls.push(node);
+            break;
+
+          case 'rule':
+            nodes.push(
+              node.clone({
+                selector: `.${uniqueName} ${node.selector}`,
+              })
+            );
+            break;
+
+          case 'comment':
+            node.remove();
+            break;
+
+          default:
+            break;
+        }
+      });
+
+      if (orphanDecls.length) {
+        nodes.unshift(
+          rule({
+            raws: { before: '', after: '', between: '', selector: { raw: '', value: '' } },
+            nodes: orphanDecls,
+            selector: '.' + uniqueName,
+          })
+        );
+      }
+
+      root.nodes = nodes;
+    },
+  };
 };

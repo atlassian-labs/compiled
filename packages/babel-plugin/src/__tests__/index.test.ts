@@ -411,13 +411,36 @@ describe('babel plugin', () => {
     const actual = transform(
       `
         import {cssMap, globalCss} from '@compiled/react';
+
         const styles = cssMap({
           base: {
             color: 'red',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            '.ProseMirror hr': {
+              background: 'red',
+            }
+          },
+          icon: {
+            color: 'red',
+            fontWeight: 'bold',
+            '.ProseMirror .icon': {
+              background: 'red',
+            }
+          }
+        }, {global: true});
+
+        const styles2 = cssMap({
+          base: {
+            display: 'block',
+            background: 'red',
+            color: 'red',
+            fontWeight: 'bold',
           }
         });
+
         globalCss([styles.base]);
+
+        <div css={styles2.base}></div>
       `
     );
     expect(actual).toBe(false);

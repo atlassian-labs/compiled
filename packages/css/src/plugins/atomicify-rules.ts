@@ -301,6 +301,7 @@ export const atomicifyRules = (opts: PluginOpts = {}): Plugin => {
             break;
 
           case 'decl':
+            console.log(`decl`, node);
             node.replaceWith(atomicifyDecl(node, opts));
             break;
 

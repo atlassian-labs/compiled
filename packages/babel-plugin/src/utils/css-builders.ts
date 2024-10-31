@@ -858,7 +858,11 @@ const extractArray = (node: t.ArrayExpression | t.Expression[], meta: Metadata) 
  * @param node Node we're interested in extracting CSS from.
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
-export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): CSSOutput => {
+export const buildCss = (
+  node: t.Expression | t.Expression[],
+  meta: Metadata,
+  isGlobal = false
+): CSSOutput => {
   if (Array.isArray(node)) {
     return extractArray(node, meta);
   }
@@ -868,7 +872,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
   }
 
   if (t.isTSAsExpression(node)) {
-    return buildCss(node.expression, meta);
+    return buildCss(node.expression, meta, isGlobal);
   }
 
   if (t.isTemplateLiteral(node)) {
@@ -920,7 +924,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
       );
     }
 
-    const result = buildCss(resolvedBinding.node, resolvedBinding.meta);
+    const result = buildCss(resolvedBinding.node, resolvedBinding.meta, isGlobal);
 
     assertNoImportedCssVariables(node, meta, resolvedBinding, result);
 
@@ -933,7 +937,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
 
   if (t.isLogicalExpression(node)) {
     const expression = node.left;
-    const result = buildCss(node.right, meta);
+    const result = buildCss(node.right, meta, isGlobal);
     const css = result.css.map((item) => {
       if (item.type === 'logical') {
         return {
@@ -966,11 +970,11 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
   }
 
   if (isCompiledCSSTaggedTemplateExpression(node, meta.state)) {
-    return buildCss(node.quasi, meta);
+    return buildCss(node.quasi, meta, isGlobal);
   }
 
   if (isCompiledCSSCallExpression(node, meta.state)) {
-    return buildCss(node.arguments[0] as t.ObjectExpression, meta);
+    return buildCss(node.arguments[0] as t.ObjectExpression, meta, isGlobal);
   }
 
   const areCompiledAPIsEnabled =
