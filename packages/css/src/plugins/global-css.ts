@@ -1,21 +1,26 @@
 import { hash } from '@compiled/utils';
-import { type Plugin, rule } from 'postcss';
+import { rule } from 'postcss';
+import type { Container, Declaration, Plugin, Rule } from 'postcss';
 
 interface PluginOpts {
+  classNameCompressionMap?: Record<string, string>;
   callback?: (className: string) => void;
+  selectors?: string[];
+  atRule?: string;
+  parentNode?: Container;
+  classHashPrefix?: string;
 }
 
-export const groupGlobalRules = ({ callback }: PluginOpts): Plugin => {
+export const groupGlobalRules = (opts: PluginOpts): Plugin => {
   return {
     postcssPlugin: 'group-global-rules',
 
     OnceExit(root) {
+      // console.log('LOL root', root);
       // @ts-ignore
       const uniqueName = '_' + hash(root.source?.input.css);
-      const nodes = [];
-      // @ts-ignore
-      const orphanDecls = [];
-      callback && callback(uniqueName);
+      const rules: Rule[] = [];
+      const orphanDecls: Declaration[] = [];
 
       root.each((node) => {
         switch (node.type) {
@@ -25,7 +30,7 @@ export const groupGlobalRules = ({ callback }: PluginOpts): Plugin => {
             break;
 
           case 'rule':
-            nodes.push(
+            rules.push(
               node.clone({
                 selector: `.${uniqueName} ${node.selector}`,
               })
@@ -41,21 +46,25 @@ export const groupGlobalRules = ({ callback }: PluginOpts): Plugin => {
         }
       });
 
-      if (orphanDecls.length) {
-        console.log('orphanDecls', orphanDecls);
-        nodes.unshift(
-          rule({
-            raws: { before: '', after: '', between: '', selector: { raw: '', value: '' } },
-            // @ts-ignore
-            nodes: orphanDecls,
-            selector: '.' + uniqueName,
-          })
-        );
+      const groupRule = groupDeclIntoRule(orphanDecls, `.${uniqueName}`, {
+        parentNode: root,
+      });
+      if (opts.callback) {
+        opts.callback(uniqueName);
       }
-
-      root.nodes = nodes;
+      root.nodes = [groupRule, ...rules];
     },
   };
+};
+
+const groupDeclIntoRule = (decls: Declaration[], selector: string, opts: PluginOpts) => {
+  const newRule = rule({
+    raws: { before: '', after: '', between: '', selector: { raw: '', value: '' } },
+    nodes: decls,
+    selector,
+  });
+  newRule.parent = opts.parentNode!;
+  return newRule;
 };
 
 export const postcss = true;

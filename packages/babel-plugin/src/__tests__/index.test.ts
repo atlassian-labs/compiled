@@ -445,7 +445,7 @@ describe('babel plugin', () => {
       `
     );
     expect(actual).toIncludeMultiple([
-      '._3wo5z2{color:red;font-weight:bold}',
+      '._3wo5z1{color:red;font-weight:bold}',
       '._3wo5z1 .ProseMirror hr{background-color:red}',
       '._196cdez{color:red;font-weight:bold}',
       '._196cdez .ProseMirror .icon{background-color:red}',
@@ -472,8 +472,8 @@ describe('babel plugin', () => {
       `
     );
     expect(actual).toIncludeMultiple([
-      '._3wo5z1{color:red;font-weight:bold;-webkit-user-select:none;-moz-user-select:none;user-select:none}',
-      '._3wo5z1 .ProseMirror hr{background-color:red}',
+      '._1b8ccx6{color:red;font-weight:bold;-webkit-user-select:none;-moz-user-select:none;user-select:none}',
+      '._1b8ccx6 .ProseMirror hr{background-color:red}',
     ]);
   });
 });
