@@ -30,11 +30,11 @@ export const groupGlobalRules = (opts: PluginOpts): Plugin => {
             break;
 
           case 'rule':
-            rules.push(
-              node.clone({
-                selector: `.${uniqueName} ${node.selector}`,
-              })
-            );
+            const newNode = node.clone({
+              selector: `.${uniqueName} ${node.selector}`,
+            });
+            newNode.parent = root;
+            rules.push(newNode);
             break;
 
           case 'comment':

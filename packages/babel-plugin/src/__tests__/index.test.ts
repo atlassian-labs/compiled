@@ -463,17 +463,18 @@ describe('babel plugin', () => {
             fontWeight: 'bold',
             userSelect: 'none',
             '.ProseMirror hr': {
+              userSelect: 'none',
               background: 'red',
             }
-          },
+          }
         }, {global: true});
 
         globalCss([styles.base]);
       `
     );
     expect(actual).toIncludeMultiple([
-      '._1b8ccx6{color:red;font-weight:bold;-webkit-user-select:none;-moz-user-select:none;user-select:none}',
-      '._1b8ccx6 .ProseMirror hr{background-color:red}',
+      '._170jb0f{color:red;font-weight:bold;-webkit-user-select:none;-moz-user-select:none;user-select:none}',
+      '._170jb0f .ProseMirror hr{-webkit-user-select:none;-moz-user-select:none;user-select:none;background-color:red}',
     ]);
   });
 });
