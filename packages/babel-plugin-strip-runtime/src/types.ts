@@ -35,7 +35,7 @@ export interface PluginOptions {
   /**
    * Whether to sort shorthand and longhand properties,
    * eg. `margin` before `margin-top` for enforced determinism.
-   * Defaults to `false`.
+   * Defaults to `true`.
    */
   sortShorthand?: boolean;
 }

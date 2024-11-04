@@ -122,9 +122,7 @@ describe('styled component behaviour', () => {
       ]);
     `);
 
-    expect(actual).toInclude('{font-size:12px}');
-    expect(actual).toInclude('{color:blue}');
-    expect(actual).toInclude('{font-weight:500}');
+    expect(actual).toIncludeMultiple(['{font-size:12px}', '{color:blue}', '{font-weight:500}']);
   });
 
   it('should not destructure valid html attributes from props', () => {
@@ -256,8 +254,10 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('{color:var(--_63bh2t)}');
-    expect(actual).toInclude('"--_63bh2t":ix((()=>{return __cmplp.color;})())');
+    expect(actual).toIncludeMultiple([
+      '{color:var(--_63bh2t)}',
+      '"--_63bh2t":ix((()=>{return __cmplp.color;})())',
+    ]);
   });
 
   it('should transform an arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
@@ -269,9 +269,11 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('{font-size:var(--_1eiw442)}');
-    expect(actual).toInclude('const{textSize,...__cmpldp}=__cmplp;');
-    expect(actual).toInclude('"--_1eiw442":ix((()=>{return __cmplp.textSize;})())');
+    expect(actual).toIncludeMultiple([
+      '{font-size:var(--_1eiw442)}',
+      'const{textSize,...__cmpldp}=__cmplp;',
+      '"--_1eiw442":ix((()=>{return __cmplp.textSize;})())',
+    ]);
   });
 
   it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE', () => {
@@ -283,8 +285,10 @@ describe('styled component behaviour', () => {
       });
     `);
 
-    expect(actual).toInclude('{content:var(--_63bh2t)}');
-    expect(actual).toInclude('"--_63bh2t":ix((()=>{return __cmplp.color;})(),"\\"","\\"")');
+    expect(actual).toIncludeMultiple([
+      '{content:var(--_63bh2t)}',
+      '"--_63bh2t":ix((()=>{return __cmplp.color;})(),"\\"","\\"")',
+    ]);
   });
 
   it('should collect args as styles', () => {
@@ -531,7 +535,7 @@ describe('styled component behaviour', () => {
       '._ca0qftgi{padding-top:8px}',
       '._19itlf8h{border:2px solid blue}',
       '._1wyb1ul9{font-size:30px}',
-      'ax(["_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi",__cmplp.isPrimary?"_syaz13q2":"_syaz5scu",__cmplp.isDone?"_1hms1911":"_1hmsglyw",__cmplp.isClamped?"_1yyj11wp":"_1yyjkb7n",__cmplp.className])',
+      'ax(["_19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi _1wyb1ul9",__cmplp.isPrimary?"_syaz13q2":"_syaz5scu",__cmplp.isDone?"_1hms1911":"_1hmsglyw",__cmplp.isClamped?"_1yyj11wp":"_1yyjkb7n",__cmplp.className])',
     ]);
   });
 
@@ -624,11 +628,8 @@ describe('styled component behaviour', () => {
       '._syaz5scu{color:red}',
       '._syaz13q2{color:blue}',
       '._1wyb1ul9{font-size:30px}',
+      `ax([\"_1wyb1ul9\",__cmplp.isPrimary?\"_syaz13q2\":\"_syaz5scu\",__cmplp.isPrimary?\"_19it1nsd\":\"_19it107e\",__cmplp.className]`,
     ]);
-
-    expect(actual).toInclude(
-      `ax([\"_1wyb1ul9\",__cmplp.isPrimary?\"_syaz13q2\":\"_syaz5scu\",__cmplp.isPrimary?\"_19it1nsd\":\"_19it107e\",__cmplp.className]`
-    );
   });
 
   it('should apply conditional CSS with nested ternary operators', () => {
@@ -653,7 +654,7 @@ describe('styled component behaviour', () => {
       '._syaz5scu{color:red}',
       '._syaz13q2{color:blue}',
       '._syaz11x8{color:black}',
-      `ax([\"_1wyb1ul9 _19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi\",__cmplp.isPrimary?__cmplp.isDisabled?\"_syaz11x8\":\"_syaz13q2\":\"_syaz5scu\",__cmplp.className])`,
+      `ax([\"_19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi _1wyb1ul9\",__cmplp.isPrimary?__cmplp.isDisabled?\"_syaz11x8\":\"_syaz13q2\":\"_syaz5scu\",__cmplp.className])`,
     ]);
   });
 
@@ -674,11 +675,8 @@ describe('styled component behaviour', () => {
       '._19it7fe6{border:3px solid yellow}',
       '._bfhk1x77{background-color:white}',
       '._syaz5scu{color:red}',
+      'className={ax(["_bfhk1x77 _19it7fe6 _syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}',
     ]);
-
-    expect(actual).toInclude(
-      'className={ax(["_syaz5scu _bfhk1x77 _19it7fe6",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}'
-    );
   });
 
   it('should apply conditional CSS with template literal and nested ternary operators', () => {
@@ -733,11 +731,8 @@ describe('styled component behaviour', () => {
       '._k48p8n31{font-weight:bold}',
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
+      'className={ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.isBolded&&"_k48p8n31",__cmplp.className])}',
     ]);
-
-    expect(actual).toInclude(
-      'className={ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.isBolded&&"_k48p8n31",__cmplp.className])}'
-    );
   });
 
   it('should not allow a logical statement with a conditional right-hand side', () => {
@@ -838,11 +833,8 @@ describe('styled component behaviour', () => {
       '._19it7fe6{border:3px solid yellow}',
       '._bfhk1x77{background-color:white}',
       '._syaz5scu{color:red}',
+      '{ax(["_bfhk1x77 _19it7fe6 _syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}',
     ]);
-
-    expect(actual).toInclude(
-      '{ax(["_syaz5scu _bfhk1x77 _19it7fe6",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}'
-    );
   });
 
   it('should apply unconditional after a conditional css rule with template literal', () => {
@@ -862,11 +854,8 @@ describe('styled component behaviour', () => {
       '._bfhk1x77{background-color:white}',
       '._syaz5scu{color:red}',
       '._19it7fe6{border:3px solid yellow}',
+      '{ax(["_19it7fe6 _bfhk1x77 _syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}',
     ]);
-
-    expect(actual).toInclude(
-      '{ax(["_19it7fe6 _syaz5scu _bfhk1x77",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}'
-    );
   });
 
   it('should apply unconditional CSS with props', () => {
@@ -881,9 +870,8 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       'const _="._syaz1q2z{color:var(--_1r7cl4y)}"',
       '"--_1r7cl4y":ix(__cmplp.primary)',
+      'className={ax(["_syaz1q2z",__cmplp.className])}',
     ]);
-
-    expect(actual).toInclude('className={ax(["_syaz1q2z",__cmplp.className])}');
   });
 
   it('should apply unconditional CSS with and without props', () => {
@@ -900,9 +888,8 @@ describe('styled component behaviour', () => {
       '._syaz1q2z{color:var(--_1r7cl4y)}',
       '._bfhk5scu{background-color:red}',
       '--_1r7cl4y":ix(__cmplp.primary)}',
+      'className={ax(["_bfhk5scu _syaz1q2z",__cmplp.className])}',
     ]);
-
-    expect(actual).toInclude('className={ax(["_bfhk5scu _syaz1q2z",__cmplp.className])}');
   });
 
   it('should apply conditional CSS with object styles', () => {
@@ -915,11 +902,11 @@ describe('styled component behaviour', () => {
       );
     `);
 
-    expect(actual).toIncludeMultiple(['._syaz13q2{color:blue}', '._syaz5scu{color:red}']);
-
-    expect(actual).toInclude(
-      'className={ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}'
-    );
+    expect(actual).toIncludeMultiple([
+      '._syaz13q2{color:blue}',
+      '._syaz5scu{color:red}',
+      'className={ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}',
+    ]);
   });
 
   it('should apply conditional CSS with object styles and multiple props lines', () => {
@@ -937,11 +924,8 @@ describe('styled component behaviour', () => {
       '._k48p8n31{font-weight:bold}',
       '._syaz13q2{color:blue}',
       '._syaz5scu{color:red}',
+      'className={ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.isBolded&&"_k48p8n31",__cmplp.className])}',
     ]);
-
-    expect(actual).toInclude(
-      'className={ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.isBolded&&"_k48p8n31",__cmplp.className])}'
-    );
   });
 
   it('should apply unconditional before and after a conditional css rule with object styles', () => {
@@ -955,15 +939,12 @@ describe('styled component behaviour', () => {
       );
     `);
 
-    expect.toIncludeMultiple([
+    expect(actual).toIncludeMultiple([
       '._syaz13q2{color:blue}',
       '._19it97hw{border:1px solid black}',
       '._syaz5scu{color:red}',
+      '{ax(["_19it97hw _syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}',
     ]);
-
-    expect(actual).toInclude(
-      '{ax(["_syaz5scu _19it97hw",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}'
-    );
   });
 
   it('should apply conditional CSS with object styles regardless declaration order', () => {
@@ -976,11 +957,12 @@ describe('styled component behaviour', () => {
       );
     `);
 
-    expect(actual).toIncludeMultiple(['._syaz5scu{color:red}', '._syaz13q2{color:blue}']);
+    expect(actual).toIncludeMultiple([
+      '._syaz5scu{color:red}',
+      '._syaz13q2{color:blue}',
 
-    expect(actual).toInclude(
-      'className={ax(["_syaz13q2",__cmplp.isPrimary&&"_syaz5scu",__cmplp.className])}'
-    );
+      'className={ax(["_syaz13q2",__cmplp.isPrimary&&"_syaz5scu",__cmplp.className])}',
+    ]);
   });
 
   it('should apply multi conditional logical expression', () => {
@@ -993,11 +975,11 @@ describe('styled component behaviour', () => {
       );
     `);
 
-    expect(actual).toIncludeMultiple(['._syaz13q2{color:blue}', '._syaz5scu{color:red}']);
-
-    expect(actual).toInclude(
-      '{ax(["_syaz5scu",(__cmplp.isPrimary||__cmplp.isMaybe)&&"_syaz13q2",__cmplp.className])}'
-    );
+    expect(actual).toIncludeMultiple([
+      '._syaz13q2{color:blue}',
+      '._syaz5scu{color:red}',
+      '{ax(["_syaz5scu",(__cmplp.isPrimary||__cmplp.isMaybe)&&"_syaz13q2",__cmplp.className])}',
+    ]);
   });
 
   it('should apply multi conditional logical expression with different props lines and syntax styles', () => {
@@ -1030,11 +1012,11 @@ describe('styled component behaviour', () => {
       );
     `);
 
-    expect(actual).toIncludeMultiple(['._syaz13q2{color:blue}', '._syaz5scu{color:red}']);
-
-    expect(actual).toInclude(
-      '{ax(["_syaz5scu",__cmplp.isPrimary&&(__cmplp.isBolded||__cmplp.isFoo)&&"_syaz13q2",__cmplp.className])}'
-    );
+    expect(actual).toIncludeMultiple([
+      '._syaz13q2{color:blue}',
+      '._syaz5scu{color:red}',
+      '{ax(["_syaz5scu",__cmplp.isPrimary&&(__cmplp.isBolded||__cmplp.isFoo)&&"_syaz13q2",__cmplp.className])}',
+    ]);
   });
 
   it('should apply conditional CSS with ternary and boolean in the same line', () => {
@@ -1070,9 +1052,8 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '._bfhk1x77{background-color:white}',
       '._syazruxl{color:orange}',
+      'className={ax(["_bfhk1x77 _syazruxl",__cmplp.className])}',
     ]);
-
-    expect(actual).toInclude('className={ax(["_syazruxl _bfhk1x77",__cmplp.className])}');
   });
 
   it('should only add falsy condition when truthy condition has no value', () => {
@@ -1087,7 +1068,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '._syazbf54{color:green}',
       '._bfhk11x8{background-color:black}',
-      'className={ax(["",!__cmplp.isPrimary&&"_syazbf54 _bfhk11x8",__cmplp.className])}',
+      'className={ax(["",!__cmplp.isPrimary&&"_bfhk11x8 _syazbf54",__cmplp.className])}',
     ]);
   });
 
@@ -1103,7 +1084,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '._syazbf54{color:green}',
       '._bfhk11x8{background-color:black}',
-      'className={ax(["",__cmplp.isPrimary&&"_syazbf54 _bfhk11x8",__cmplp.className])}',
+      'className={ax(["",__cmplp.isPrimary&&"_bfhk11x8 _syazbf54",__cmplp.className])}',
     ]);
   });
 
