@@ -54,17 +54,14 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
       singleQuote: true,
     })
   ).toMatchInlineSnapshot(`
-    "._1wyb12am {
+    "._19itlf8h {
+      border: 2px solid blue;
+    }
+    ._1wyb12am {
       font-size: 50px;
     }
     ._syaz13q2 {
       color: blue;
-    }
-    ._19bv1vi7 {
-      padding-left: 32px;
-    }
-    ._19itlf8h {
-      border: 2px solid blue;
     }
     ._19pk1ul9 {
       margin-top: 30px;
@@ -83,6 +80,9 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
     }
     ._u5f31vi7 {
       padding-right: 32px;
+    }
+    ._19bv1vi7 {
+      padding-left: 32px;
     }
     "
   `);
