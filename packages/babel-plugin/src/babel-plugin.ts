@@ -274,7 +274,7 @@ export default declare<State>((api) => {
             return;
           }
 
-          (['styled', 'ClassNames', 'css', 'keyframes', 'cssMap', 'injectCss'] as const).forEach(
+          (['styled', 'ClassNames', 'css', 'keyframes', 'cssMap', 'globalCss'] as const).forEach(
             (apiName) => {
               if (
                 state.compiledImports &&
