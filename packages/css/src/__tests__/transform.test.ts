@@ -409,10 +409,10 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
-        "._18u0idpf{margin-left:0}
+        "._1h6d1r31{border-color:currentColor}
+        ._18u0idpf{margin-left:0}
         ._1sb21e8g{content:"hello"}
         ._syaz15td{color:#639}
-        ._1h6d1r31{border-color:currentColor}
         ._bfhk1r31{background-color:currentColor}
         ._5wra1r31{border-left-color:currentColor}"
       `);
