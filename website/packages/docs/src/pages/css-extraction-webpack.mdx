@@ -138,7 +138,7 @@ For more configuration options see the [loader package docs](/pkg-webpack-loader
 
 ### CSS configuration
 
-Add loaders to handle and extract found styles. We support and recommend [`mini-css-extract-plugin`](https://github.com/webpack-contrib/mini-css-extract-plugin/); we don't currently support other CSS loaders.
+Add loaders to handle and extract found styles. We support and recommend [`mini-css-extract-plugin`](https://github.com/webpack-contrib/mini-css-extract-plugin/); we don't currently support other CSS loaders. Note: `mini-css-extract-plugin` dropped support for Webpack v4 in 2.0.0, Webpack v4 users will need to use `mini-css-extract-plugin@1.6.2`.
 
 ```bash
 npm i css-loader mini-css-extract-plugin --save-dev
