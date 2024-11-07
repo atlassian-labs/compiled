@@ -23,6 +23,7 @@ export default declare<PluginPass>((api) => {
     name: '@compiled/babel-plugin-strip-runtime',
     pre() {
       this.styleRules = [];
+      this.global = false;
     },
     visitor: {
       Program: {
@@ -61,7 +62,9 @@ export default declare<PluginPass>((api) => {
 
           if (this.opts.extractStylesToDirectory && this.styleRules.length > 0) {
             // Build and sanitize filename of the css file
-            const cssFilename = `${parse(filename).name}.compiled.css`;
+            const cssFilename = this.global
+              ? `${parse(filename).name}.global.css`
+              : `${parse(filename).name}.compiled.css`;
 
             if (!file.opts.generatorOpts?.sourceFileName) {
               throw new Error(`Source filename was not defined`);
@@ -105,7 +108,10 @@ export default declare<PluginPass>((api) => {
       },
 
       ImportSpecifier(path) {
-        if (t.isIdentifier(path.node.imported) && ['CC', 'CS'].includes(path.node.imported.name)) {
+        if (
+          t.isIdentifier(path.node.imported) &&
+          ['CC', 'CS', 'injectCss'].includes(path.node.imported.name)
+        ) {
           path.remove();
         }
       },
@@ -167,12 +173,17 @@ export default declare<PluginPass>((api) => {
             return;
           }
 
+          const globalStyleRules: string[] = [];
           children.node.elements.forEach((element) => {
             if (!t.isStringLiteral(element)) {
               return;
             }
-            this.styleRules.push(element.value);
+            globalStyleRules.push(element.value);
           });
+          if (globalStyleRules.length > 0) {
+            this.global = true;
+            this.styleRules.push(...globalStyleRules);
+          }
           // remove injectCss() call from the code
           path.remove();
           return;
