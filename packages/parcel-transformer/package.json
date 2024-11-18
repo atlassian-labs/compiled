@@ -25,7 +25,7 @@
     "@compiled/babel-plugin": "^0.32.1",
     "@compiled/babel-plugin-strip-runtime": "^0.32.0",
     "@compiled/utils": "^0.13.0",
-    "@parcel/plugin": "^2.8.3",
+    "@parcel/plugin": "^2.13.0",
     "@parcel/source-map": "^2.1.1",
     "@parcel/utils": "^2.8.3",
     "enhanced-resolve": "^5.15.0"
