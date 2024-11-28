@@ -7,6 +7,11 @@ const CSS_PROPERTIES: string[] = [
     .flat()
     .filter((value): value is string => typeof value === 'string'),
   'color',
+  'display',
+  'text-transform',
+  'align-items',
+  'content',
+  'height',
 ];
 
 export const errorIfInvalidProperties = (properties: string[]): void => {
