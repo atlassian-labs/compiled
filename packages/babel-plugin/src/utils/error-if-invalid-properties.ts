@@ -6,6 +6,7 @@ const CSS_PROPERTIES: string[] = [
   ...Object.values(shorthandFor)
     .flat()
     .filter((value): value is string => typeof value === 'string'),
+  'color',
 ];
 
 export const errorIfInvalidProperties = (properties: string[]): void => {
