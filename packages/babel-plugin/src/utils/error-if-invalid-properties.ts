@@ -510,10 +510,15 @@ export const errorIfInvalidProperties = (properties: string[]): void => {
   // TODO: can we make this not O(n^2) ???
   for (const property of properties) {
     // Forbid invalid CSS properties
-    if (!CSS_PROPERTIES.includes(property) && !property.startsWith('--')) {
+    if (
+      !CSS_PROPERTIES.includes(property) &&
+      !property.startsWith('--') &&
+      !property.startsWith('-moz-') &&
+      !property.startsWith('-webkit-')
+    ) {
       // TODO: can we give more debugging info for the developer?
       //       like the name of the component, the file the error was from...
-      throw new Error(`Detected invalid CSS property ${property}`);
+      console.error(`Detected invalid CSS property: ${property}`);
     }
 
     // Forbid mixing shorthand and longhand properties
@@ -523,7 +528,7 @@ export const errorIfInvalidProperties = (properties: string[]): void => {
       // TODO: can we give more debugging info for the developer?
       //       like the name of the component, the file the error was from...
       if (Array.isArray(longhands) && longhands.includes(potentialLonghand)) {
-        throw new Error(
+        console.error(
           `Detected shorthand property and longhand property were mixed: ${property} and ${potentialLonghand}.`
         );
       }
