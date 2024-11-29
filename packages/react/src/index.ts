@@ -13,7 +13,7 @@ export type {
 } from './create-strict-api/types';
 export { default as css } from './css';
 export { default as cssMap } from './css-map';
-export { keyframes } from './keyframes';
+export { keyframes, type KeyframeSteps } from './keyframes';
 export { styled, StyledProps } from './styled';
 export type {
   CSSProperties,
