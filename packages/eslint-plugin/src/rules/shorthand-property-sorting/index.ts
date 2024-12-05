@@ -7,6 +7,7 @@ import {
 import type { Rule } from 'eslint';
 import estraverse from 'estraverse';
 import type {
+  Node,
   ArrayExpression,
   CallExpression,
   ConditionalExpression,
@@ -21,10 +22,11 @@ type NodeParentExtension = {
   parent: Rule.Node;
 };
 
-type PropertyArray = (string | PropertyArray)[];
+type PropertyInfo = { name: string; node: Node };
+type PropertyArray = (PropertyInfo | PropertyArray)[];
 type PropertiesValid = {
   isValid: boolean;
-  invalidProperties: string[];
+  invalidProperties: [PropertyInfo, PropertyInfo][];
 };
 
 const getVariableDefinition = (
@@ -61,7 +63,7 @@ const getObjectCSSProperties = (
       // Property is DEFINITELY a selector.
       properties.push(getObjectCSSProperties(context, prop.value));
     } else if (prop.key.type === 'Identifier') {
-      properties.push(prop.key.name);
+      properties.push({ name: prop.key.name, node: prop.key });
     } else {
       // Property key is dynamic -- it may be a weird selector?
       // We can't parse this either way.
@@ -122,32 +124,41 @@ const parseCssArrayElement = (
 };
 
 const arePropertiesValid = (properties: PropertyArray): PropertiesValid => {
-  let isValid = true;
-  const invalidProperties: string[] = [];
-  for (let i = 0; i < properties.length; i++) {
-    const property = properties[i];
+  let isValid: PropertiesValid['isValid'] = true;
+  const invalidProperties: PropertiesValid['invalidProperties'] = [];
 
-    if (Array.isArray(property)) {
+  for (let i = 0; i < properties.length; i++) {
+    const propertiesI = properties[i];
+
+    if (Array.isArray(propertiesI)) {
       const { isValid: nestedIsValid, invalidProperties: nestedInvalidProperties } =
-        arePropertiesValid(property);
+        arePropertiesValid(propertiesI);
       isValid = isValid && nestedIsValid;
       invalidProperties.push(...nestedInvalidProperties);
     } else {
-      const propertyA = kebabCase(property) as ShorthandProperties;
+      const propertyA = kebabCase(propertiesI.name) as ShorthandProperties;
       const depthA = shorthandBuckets[propertyA] ?? Infinity;
 
       for (let j = i + 1; j < properties.length; j++) {
         const propertiesJ = properties[j];
 
-        if (properties[i] === properties[j]) {
-          continue;
-        }
-
         if (Array.isArray(propertiesJ)) {
           continue;
         }
-        const propertyB = kebabCase(propertiesJ) as ShorthandProperties;
+
+        if (propertiesI.name === propertiesJ.name) {
+          continue;
+        }
+
+        const propertyB = kebabCase(propertiesJ.name) as ShorthandProperties;
         const depthB = shorthandBuckets[propertyB] ?? Infinity;
+
+        if (depthA >= depthB && shorthandFor[propertyB] === true) {
+          // propertyB === 'all', which is a property that should come before every other property.
+          isValid = false;
+          invalidProperties.push([propertiesI, propertiesJ]);
+          break;
+        }
 
         const longhandsForPropA: string[] = [
           propertyA,
@@ -157,7 +168,6 @@ const arePropertiesValid = (properties: PropertyArray): PropertiesValid => {
           propertyB,
           ...(Array.isArray(shorthandFor[propertyB]) ? (shorthandFor[propertyB] as string[]) : []),
         ];
-        // TODO: test `all`
 
         if (Array.isArray(longhandsForPropA) && Array.isArray(longhandsForPropB)) {
           // find intersection between objects
@@ -165,7 +175,7 @@ const arePropertiesValid = (properties: PropertyArray): PropertiesValid => {
 
           if (intersectionAB.length > 0 && depthA >= depthB) {
             isValid = false;
-            invalidProperties.push(propertyA, propertyB);
+            invalidProperties.push([propertiesI, propertiesJ]);
             break;
           }
         }
@@ -325,17 +335,43 @@ const parseStyled = (context: Rule.RuleContext, node: CallExpression): PropertyA
   return properties;
 };
 
+const reportProblem = (
+  context: Rule.RuleContext,
+  invalidProperties: PropertiesValid['invalidProperties']
+) => {
+  for (const [propertyA, propertyB] of invalidProperties) {
+    context.report({
+      node: propertyA.node,
+      messageId: 'shorthand-first',
+      data: {
+        propertyA: propertyA.name,
+        propertyB: propertyB.name,
+      },
+    });
+    context.report({
+      node: propertyB.node,
+      messageId: 'shorthand-first',
+      data: {
+        propertyA: propertyA.name,
+        propertyB: propertyB.name,
+      },
+    });
+  }
+};
+
 export const shorthandFirst: Rule.RuleModule = {
   meta: {
     docs: {
       description:
-        'Prevent unwanted side-effects by ensuring shorthand properties are always defined before their related longhands.',
+        'Prevent unwanted side-effects by ensuring shorthand properties are always defined before their corresponding longhand properties.',
       recommended: true,
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/shorthand-property-sorting',
     },
     messages: {
       'shorthand-first':
-        'If the intention is to override a shorthand property with a longhand property, the longhand should come afterwards. Otherwise, it is redundant and may cause unwanted side effects with stylesheet extraction. Please remove the longhand if it is not your intention to override the shorthand.',
+        'CSS shorthand properties should come before its corresponding non-shorthand property equivalents, or else your source code will not match runtime behavior.\n\n' +
+        "Here, '{{propertyB}}' should come before '{{propertyA}}'.\n\n" +
+        "Please expand the shorthand property '{{propertyB}}' so that it matches '{{propertyA}}'. For example, 'padding' can be expanded to paddingTop, paddingBottom, paddingLeft, and paddingRight. If this is not possible, please change the order so that the shorthand property comes before the non-shorthand property.",
     },
     type: 'problem',
   },
@@ -369,26 +405,18 @@ export const shorthandFirst: Rule.RuleModule = {
           properties.push(...parseCssArrayElement(context, expression));
         }
 
-        const { isValid, invalidProperties: _invalidProperties } = arePropertiesValid(properties);
+        const { isValid, invalidProperties: invalidProperties } = arePropertiesValid(properties);
         if (!isValid) {
-          context.report({
-            // TODO: maybe point to the specific Property node instead of the whole object?
-            node,
-            messageId: 'shorthand-first',
-          });
+          reportProblem(context, invalidProperties);
         }
       },
 
       CallExpression: (node: CallExpression & NodeParentExtension) => {
         const properties = parseStyled(context, node);
 
-        const { isValid, invalidProperties: _invalidProperties } = arePropertiesValid(properties);
+        const { isValid, invalidProperties } = arePropertiesValid(properties);
         if (!isValid) {
-          context.report({
-            // TODO: maybe point to the specific Property node instead of the whole object?
-            node,
-            messageId: 'shorthand-first',
-          });
+          reportProblem(context, invalidProperties);
         }
       },
     };

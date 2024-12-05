@@ -5,21 +5,6 @@ import { shorthandFirst } from '../index';
 
 const includedImports = ['@compiled/react', '@atlaskit/css'] as const;
 
-// TODO: test padding and paddingTop, non-border shorthand properties
-
-// TODO: write test for when a styled usage is imported
-//       import { BaseComponent } from './other';
-//       const Component = styled(BaseComponent)({ ... });
-
-// TODO: write test for weird / complicated styled usages
-
-// TODO: extend tests so they also support @atlaskit/css
-
-// TODO: check whether nested selectors are tested adequately
-
-// TODO: write test for a styled(BaseComponent)({ ... }) function call in a function scope,
-// while the BaseComponent is in a global scope.
-
 tester.run('shorthand-property-sorting', shorthandFirst, {
   valid: includedImports.flatMap((imp) => [
     //
@@ -301,7 +286,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         });
         export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
     {
       name: `incorrect property ordering with two shorthand properties (cssMap, ${imp})`,
@@ -319,7 +304,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         });
         export const EmphasisText = ({ children, status }) => <span css={styles[status]}>{children}</span>;
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
     {
       name: `incorrect property ordering with two shorthand properties (styled, @compiled/react)`,
@@ -330,7 +315,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
           border: '#00b8d9',
         });
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
 
     //
@@ -347,14 +332,15 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         });
         export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
-    // TODO: write tests for cssMap and styled
 
-    // TODO: do we need extra tests for different APIs for the below?
+    //
+    // incorrect property ordering with multiple css calls
+    //
 
     {
-      name: `incorrect property ordering with multiple css calls`,
+      name: 'incorrect property ordering with multiple css calls',
       code: outdent`
         import { css } from '@compiled/react';
 
@@ -368,11 +354,15 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         const world = true;
         export const EmphasisText = ({ children }) => <span css={[hello && styles, !world && styles2]}>{children}</span>;
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
 
+    //
+    // incorrect property ordering with css and cssMap calls
+    //
+
     {
-      name: `incorrect property ordering with css and cssMap calls`,
+      name: 'incorrect property ordering with css and cssMap calls',
       code: outdent`
         import { css, cssMap } from '@compiled/react';
 
@@ -387,11 +377,15 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         const world = true;
         export const EmphasisText = ({ children, status }) => <span css={[hello && styles, paddingMap[status]]}>{children}</span>;
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
 
+    //
+    // incorrect property ordering with padding
+    //
+
     {
-      name: `incorrect property ordering with padding (css, @compiled/react)`,
+      name: `incorrect property ordering with padding (css, ${imp})`,
       code: outdent`
         import { css } from '@compiled/react';
         const styles = css({
@@ -400,10 +394,15 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         });
         export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
+
+    //
+    // shorthands in different selectors are not supported
+    //
+
     {
-      name: 'shorthands in different selectors are not supported',
+      name: 'shorthands in different selectors are not supported (styled, @compiled/react)',
       code: outdent`
         import { styled } from '@compiled/react';
         const BaseComponent = styled.div({
@@ -413,7 +412,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
           border: '...',
         });
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
 
     //
@@ -433,7 +432,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
           })
         );
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
 
     {
@@ -446,7 +445,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
           { padding: '...' },
         );
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
 
     //
@@ -464,9 +463,40 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       });
       export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
     `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
-    // TODO: cssMap, styled
+    {
+      name: `incorrect property ordering -> 3 properties (cssMap, ${imp})`,
+      code: outdent`
+        import { cssMap } from '${imp}';
+        const styles = cssMap({
+          normal: {
+            padding: '5px',
+          },
+          warning: {
+            // incorrect ordering here
+            borderColor: '#00b8d9', // 2
+            font: '#00b8d9', // 1
+            border: '#00b8d9', // 1
+          },
+        });
+
+        export const EmphasisText = ({ children, status }) => <span css={styles[status]}>{children}</span>;
+      `,
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
+    },
+    {
+      name: `incorrect property ordering -> 3 properties (styled, @compiled/react)`,
+      code: outdent`
+        import { styled } from '@compiled/react';
+        export const Component = styled.div({
+          borderColor: '#00b8d9', // 2
+          font: '#00b8d9', // 1
+          border: '#00b8d9', // 1
+        });
+      `,
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
+    },
 
     //
     // incorrect property ordering -> inline
@@ -480,7 +510,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
           css({ borderTop: '1px solid #00b8d9', border: '#00b8d9' })
         }>{children}</span>;
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
 
     //
@@ -497,9 +527,8 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         });
         export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
-    // TODO: cssMap, styled
 
     //
     // incorrect property ordering -> 6 reordering errors
@@ -520,9 +549,8 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         });
         export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
-    // TODO: styled, cssMap
 
     //
     // includes pseudo-selectors -> pseudo is out of order
@@ -545,9 +573,13 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
 
         const Component = <div css={styles} />;
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+      ],
     },
-    // TODO: styled, cssMap
 
     //
     // includes pseudo-selectors -> non-pseudo selectors is out of order
@@ -556,23 +588,33 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
     {
       name: `includes pseudo-selectors -> non-pseudo selectors are out of order (css, ${imp})`,
       code: outdent`
-      import { css } from '${imp}';
-      const styles = css({
-        '&:hover': {
-          border: '1px solid #00b8d9', // 1
-          borderColor: 'red', // 2
+        import { css } from '${imp}';
+        const styles = css({
+          '&:hover': {
+            border: '1px solid #00b8d9', // 1
+            borderColor: 'red', // 2
+            borderTop: '1px solid #00b8d9', // 4
+          },
           borderTop: '1px solid #00b8d9', // 4
-        },
-        borderTop: '1px solid #00b8d9', // 4
-        borderColor: 'red', // 2
-        border: '1px solid #00b8d9', // 1
-      });
+          borderColor: 'red', // 2
+          border: '1px solid #00b8d9', // 1
+        });
 
-      const Component = <div css={styles} />;
-      `,
-      errors: [{ messageId: 'shorthand-first' }],
+        const Component = <div css={styles} />;
+        `,
+      errors: [
+        // Four violations, because
+        //
+        // * borderTop and border out of order
+        // * borderColor and borderTop out of order
+        //
+        // and two violations for EACH pair that is out of order.
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+      ],
     },
-    // TODO: styled, cssMap
 
     //
     // includes pseudo-selectors -> pseudo and non-pseudo selectors is out of order
@@ -581,23 +623,31 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
     {
       name: `includes pseudo-selectors -> pseudo and non-pseudo are out of order (css, ${imp})`,
       code: outdent`
-      import { css } from '${imp}';
-      const styles = css({
-        '&:hover': {
-            borderTop: '1px solid #00b8d9', // 4
-            borderColor: 'red', // 2
-            border: '1px solid #00b8d9', // 1
-        },
-        borderTop: '1px solid #00b8d9', // 4
-        borderColor: 'red', // 2
-        border: '1px solid #00b8d9', // 1
-      });
+        import { css } from '${imp}';
+        const styles = css({
+          '&:hover': {
+              borderTop: '1px solid #00b8d9', // 4
+              borderColor: 'red', // 2
+              border: '1px solid #00b8d9', // 1
+          },
+          borderTop: '1px solid #00b8d9', // 4
+          borderColor: 'red', // 2
+          border: '1px solid #00b8d9', // 1
+        });
 
-      const Component = <div css={styles} />;
+        const Component = <div css={styles} />;
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+      ],
     },
-    // TODO: styled, cssMap
 
     //
     // works with cx
@@ -617,7 +667,12 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
 
         <div css={cx(styles.root, styles.success)} />
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+      ],
     },
     {
       // https://atlassian.design/components/css/overview#cx
@@ -635,7 +690,12 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
 
         <Box xcss={cx(styles.root, styles.success)} />
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+        { messageId: 'shorthand-first' },
+      ],
     },
 
     //
@@ -656,7 +716,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         });
         export const EmphasisText = ({ children, appearance }) => <span css={styles[appearance]}>{children}</span>;
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
     {
       // this is a false positive, but making an exception for this would involve
@@ -676,7 +736,24 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         });
         export const EmphasisText = ({ children, appearance }) => <span css={styles[appearance]}>{children}</span>;
       `,
-      errors: [{ messageId: 'shorthand-first' }],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
+    },
+
+    //
+    // 'all' property should come before any other property
+    //
+
+    {
+      name: `'all' property should come before any other property (css, ${imp})`,
+      code: outdent`
+        import { css } from '${imp}';
+        const styles = css({
+          paddingRight: '...',
+          all: '...',
+        });
+        export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
+      `,
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
   ]),
 });
