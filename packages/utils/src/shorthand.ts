@@ -251,9 +251,6 @@ export const shorthandFor: Record<ShorthandProperties, true | readonly string[]>
     'border-right-width',
   ],
   'border-left': [
-    'border-inline-end-color',
-    'border-inline-end-style',
-    'border-inline-end-width',
     'border-inline-start-color',
     'border-inline-start-style',
     'border-inline-start-width',
@@ -272,9 +269,6 @@ export const shorthandFor: Record<ShorthandProperties, true | readonly string[]>
     'border-top-right-radius',
   ],
   'border-right': [
-    'border-inline-start-color',
-    'border-inline-start-style',
-    'border-inline-start-width',
     'border-inline-end-color',
     'border-inline-end-style',
     'border-inline-end-width',
@@ -295,9 +289,6 @@ export const shorthandFor: Record<ShorthandProperties, true | readonly string[]>
     'border-top-style',
   ],
   'border-top': [
-    'border-block-end-color',
-    'border-block-end-style',
-    'border-block-end-width',
     'border-block-start-color',
     'border-block-start-style',
     'border-block-start-width',
