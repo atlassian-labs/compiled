@@ -14,6 +14,7 @@ import type {
   Identifier,
   LogicalExpression,
   ObjectExpression,
+  Literal,
 } from 'estree';
 
 import { isCss, isCssMap, isCxFunction, isStyled } from '../../utils';
@@ -22,8 +23,49 @@ type NodeParentExtension = {
   parent: Rule.Node;
 };
 
+// node is used to determine what part of the code
+// to which the ESLint violation should apply
 type PropertyInfo = { name: string; node: Node };
+
+// We use the PropertyArray type to represent all the properties that are applied to a component,
+// thus giving us a way to check whether the properties are in order.
+//
+// Given a function call like this:
+//
+//     const Component = styled.div({
+//         paddingTop: '...',
+//         margin: '...',
+//         padding: '...',
+//         '&:hover': {
+//             color: '...',
+//             textAlign: '...',
+//         },
+//         color: '...',
+//         border: '...',
+//     });
+//
+// We can expect PropertyInfo to look something like this:
+//
+//     [
+//         { name: 'paddingTop', node: Node },
+//         { name: 'margin', node: Node },
+//         { name: 'padding', node: Node },
+//
+//         // vvvvvv the below array represents a nested selector
+//         [
+//             { name: 'color', node: Node },
+//             { name: 'textAlign', node: Node },
+//         ],
+//
+//         { name: 'color', node: Node },
+//         { name: 'border', node: Node },
+//     ]
+//
+// Then, we would traverse through PropertyInfo and compare the property names.
+// Whenever we encounter an array inside PropertyInfo (i.e. styles defined inside a nested
+// selector), we traverse and check that separately.
 type PropertyArray = (PropertyInfo | PropertyArray)[];
+
 type PropertiesValid = {
   isValid: boolean;
   invalidProperties: [PropertyInfo, PropertyInfo][];
@@ -107,7 +149,32 @@ const parseCssArrayElement = (
       return [];
     }
 
-    return parseCssMap(context, functionCall);
+    if (element.property.type === 'Identifier') {
+      // Suppose we have a cssMap call that looks like
+      //     const styles = cssMap({ ... });
+      //
+      // cssMapUsesStaticKey would be true for cases like
+      //
+      //    styles.hello
+      //
+      // but would be false for cases like
+      //
+      //    styles[hello]
+      const cssMapUsesStaticKey = !element.computed;
+      return parseCssMap(context, {
+        node: functionCall,
+        key: cssMapUsesStaticKey ? element.property.name : undefined,
+      });
+    } else if (element.property.type === 'Literal') {
+      // This covers the case
+      //     styles['hello']
+      return parseCssMap(context, {
+        node: functionCall,
+        key: element.property.value,
+      });
+    }
+
+    return [];
   } else if (element.type === 'CallExpression' && isCss(element.callee as Rule.Node, references)) {
     functionCall = element;
   } else {
@@ -204,7 +271,10 @@ const parseCss = (context: Rule.RuleContext, node: CallExpression): PropertyArra
   return getObjectCSSProperties(context, objectExpression);
 };
 
-const parseCssMap = (context: Rule.RuleContext, node: CallExpression): PropertyArray => {
+const parseCssMap = (
+  context: Rule.RuleContext,
+  { node, key }: { node: CallExpression; key?: string | Literal['value'] }
+): PropertyArray => {
   const properties: PropertyArray = [];
   const { references } = context.sourceCode.getScope(node);
   if (!isCssMap(node.callee as Rule.Node, references)) {
@@ -229,13 +299,27 @@ const parseCssMap = (context: Rule.RuleContext, node: CallExpression): PropertyA
       continue;
     }
 
-    // Unconditionally traverse through the whole cssMap object, for simplicity.
-    //
-    // Not very performant and can give false positives, but considering that
-    // the cssMap key can be dynamic, we at least avoid any false negatives.
-    //
-    // (https://compiledcssinjs.com/docs/api-cssmap#dynamic-declarations)
-    properties.push(...getObjectCSSProperties(context, property.value));
+    if (key) {
+      // If we know what key in the cssMap function call to traverse,
+      // we can make sure we only traverse that.
+      if (property.key.type === 'Literal' && key === property.key.value) {
+        properties.push(...getObjectCSSProperties(context, property.value));
+        break;
+      } else if (property.key.type === 'Identifier' && key === property.key.name) {
+        properties.push(...getObjectCSSProperties(context, property.value));
+        break;
+      }
+    } else {
+      // We cannot determine which key in the cssMap function call to traverse,
+      // so we have no choice but to unconditionally traverse through the whole
+      // cssMap object.
+      //
+      // Not very performant and can give false positives, but considering that
+      // the cssMap key can be dynamic, we at least avoid any false negatives.
+      //
+      // (https://compiledcssinjs.com/docs/api-cssmap#dynamic-declarations)
+      properties.push(...getObjectCSSProperties(context, property.value));
+    }
   }
 
   return properties;

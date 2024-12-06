@@ -514,6 +514,72 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
     },
 
     //
+    // incorrect property ordering -> two cssMap function calls
+    //
+
+    {
+      name: `incorrect property ordering -> two cssMap function calls (${imp})`,
+      code: outdent`
+        import { cssMap } from '${imp}';
+        const paddingMap = cssMap({
+          normal: { padding: '2px' },
+          warning: { paddingTop: '2px' },
+        })
+        const otherMap = cssMap({
+          normal: { padding: '2px' },
+          warning: { paddingTop: '2px' },
+        })
+        export const EmphasisText = ({ children }) => <span css={[paddingMap.warning, otherMap.normal]}>{children}</span>;
+      `,
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
+    },
+
+    //
+    // incorrect property ordering -> two references to one cssMap
+    //
+
+    {
+      name: `incorrect property ordering -> two references to one cssMap (${imp})`,
+      code: outdent`
+        import { cssMap } from '${imp}';
+        const paddingMap = cssMap({
+          normal: { padding: '2px' },
+          warning: { paddingTop: '2px' },
+        })
+        export const EmphasisText = ({ children }) => <span css={[paddingMap.warning, paddingMap.normal]}>{children}</span>;
+      `,
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
+    },
+
+    //
+    // incorrect property ordering -> css and cssMap
+    //
+
+    {
+      name: `incorrect property ordering -> css and cssMap (${imp})`,
+      code: outdent`
+        import { css, cssMap } from '${imp}';
+        const styles = cssMap({
+          root: {
+            paddingTop: '5px',
+          },
+          warning: {
+            // ...
+          },
+        });
+
+        const extraPadding = css({
+          padding: '5px',
+        });
+
+        const Component = ({ children }) => {
+          return <div css={[styles.root, extraPadding]}>{children}</div>;
+        };
+      `,
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
+    },
+
+    //
     // incorrect property ordering -> borderTop and borderColor
     //
 
@@ -659,20 +725,15 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
       code: outdent`
         import { cssMap, cx } from '@atlaskit/css';
         const styles = cssMap({
-          root: { paddingTop: '...' },
           success: {
             padding: '...',
           },
+          root: { paddingTop: '...' },
         });
 
         <div css={cx(styles.root, styles.success)} />
       `,
-      errors: [
-        { messageId: 'shorthand-first' },
-        { messageId: 'shorthand-first' },
-        { messageId: 'shorthand-first' },
-        { messageId: 'shorthand-first' },
-      ],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
     {
       // https://atlassian.design/components/css/overview#cx
@@ -682,20 +743,15 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         import { Box } from '@atlaskit/primitives';
 
         const styles = cssMap({
-          root: { paddingTop: '...' },
           success: {
             padding: '...',
           },
+          root: { paddingTop: '...' },
         });
 
         <Box xcss={cx(styles.root, styles.success)} />
       `,
-      errors: [
-        { messageId: 'shorthand-first' },
-        { messageId: 'shorthand-first' },
-        { messageId: 'shorthand-first' },
-        { messageId: 'shorthand-first' },
-      ],
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
     },
 
     //
@@ -703,7 +759,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
     //
 
     {
-      name: `false positive: shorthands in different selectors for cssMap (${imp})`,
+      name: `false positive: shorthands in different selectors for cssMap if key not static (${imp})`,
       code: outdent`
         import { cssMap } from '${imp}';
         const styles = cssMap({
@@ -721,7 +777,7 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
     {
       // this is a false positive, but making an exception for this would involve
       // some extra logic... maybe we can revisit this if it becomes a common situation.
-      name: `false positive, if depth in correct order for shorthand properties in the same bucket for cssMap (${imp})`,
+      name: `false positive, if depth in correct order for shorthand properties in the same bucket for cssMap AND if key not static (${imp})`,
       code: outdent`
         import { cssMap } from '${imp}';
         const styles = cssMap({

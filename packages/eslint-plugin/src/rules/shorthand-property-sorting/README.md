@@ -44,6 +44,31 @@ const Component = ({ children }) => {
 };
 ```
 
+Note that if you are using style composition (applying several `css` calls or `cssMap` objects to a component), the ordering of CSS properties is applied across the `css` and `cssMap` function call.
+
+For example, the following code will cause an ESLint violation. This is because in `Component`, `paddingTop` is being applied before `padding`, which is the incorrect order.
+
+```tsx
+import { css, cssMap } from '@compiled/react';
+
+const styles = cssMap({
+  root: {
+    paddingTop: '5px',
+  },
+  warning: {
+    // ...
+  },
+});
+
+const extraPadding = css({
+  padding: '5px',
+});
+
+const Component = ({ children }) => {
+  return <div css={[styles.root, extraPadding]}>{children}</div>;
+};
+```
+
 ## How do I fix this?
 
 ### \[Recommended\] Expand the shorthand property
