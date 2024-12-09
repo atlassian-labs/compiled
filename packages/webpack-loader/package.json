@@ -26,7 +26,7 @@
     "@compiled/babel-plugin-strip-runtime": "^0.32.2",
     "@compiled/css": "^0.17.0",
     "@compiled/utils": "^0.13.0",
-    "enhanced-resolve": "^5.15.0",
+    "enhanced-resolve": "^5.17.1",
     "loader-utils": "^2.0.4",
     "webpack-sources": "^3.2.3"
   },
