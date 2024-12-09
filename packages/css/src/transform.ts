@@ -19,6 +19,8 @@ export interface TransformOpts {
   classNameCompressionMap?: Record<string, string>;
   increaseSpecificity?: boolean;
   sortAtRules?: boolean;
+  sortShorthand?: boolean;
+  classHashPrefix?: string;
 }
 
 /**
@@ -48,9 +50,13 @@ export const transformCss = (
       atomicifyRules({
         classNameCompressionMap: opts.classNameCompressionMap,
         callback: (className: string) => classNames.push(className),
+        classHashPrefix: opts.classHashPrefix,
       }),
       ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
-      sortAtomicStyleSheet(opts.sortAtRules ?? true),
+      sortAtomicStyleSheet({
+        sortAtRulesEnabled: opts.sortAtRules,
+        sortShorthandEnabled: opts.sortShorthand,
+      }),
       ...(process.env.AUTOPREFIXER === 'off' ? [] : [autoprefixer()]),
       whitespace(),
       extractStyleSheets({ callback: (sheet: string) => sheets.push(sheet) }),

@@ -66,7 +66,7 @@ describe('<Style />', () => {
     });
   });
 
-  it('should warn in dev when using a dangerous pseduo selector', () => {
+  it('should warn in dev when using a dangerous pseudo selector', () => {
     createIsolatedTest((Style) => {
       process.env.NODE_ENV = 'development';
 
@@ -118,6 +118,50 @@ describe('<Style />', () => {
         <style>._a1234567:hover{ color: red; }</style>
         <style>._b1234567:active{ color: blue; }</style>
         <style>@media (max-width: 800px){ ._e1234567{ color: yellow; } }</style>
+        "
+      `);
+      expect(console.error).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should render shorthands in buckets', () => {
+    // Our buckets don't actually support mixing pseudo-selectors with shorthand
+    // properties, so the pseudo-selector buckets don't have correct shorthand
+    // property order...
+    createIsolatedTest((Style) => {
+      render(
+        <Style>
+          {[
+            `._a1234567:hover{ all: revert; }`,
+            `._a1234567{ all: unset; }`,
+            `._b1234567{ border: solid 1px blue; }`,
+            `._c1234567{ border-block: solid 2px blue; }`,
+            `._d1234567{ border-block-end: solid 3px blue; }`,
+            `._e1234567{ border-bottom: solid 4px blue; }`,
+            `._g1234567{ border-inline: solid 5px blue; }`,
+            `._h1234567{ border-top: solid 6px blue; }`,
+            `._i1234567{ border-top-color: pink; }`,
+            `._j1234567{ padding: 5px; }`,
+            `._k1234567{ padding-block: 6px; }`,
+            `._l1234567{ padding-inline: 7px; }`,
+            `._m1234567{ padding-top: 8px; }`,
+
+            `._g1234567:hover{ border-inline: solid 5px blue; }`,
+            `._k1234567:hover{ padding-block: 6px; }`,
+            `._l1234567:hover{ padding-inline: 7px; }`,
+            `._j1234567:hover{ padding: 5px; }`,
+          ]}
+        </Style>
+      );
+      expect(document.head.innerHTML.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
+        "<style>._a1234567{ all: unset; }</style>
+        <style>._b1234567{ border: solid 1px blue; }._j1234567{ padding: 5px; }</style>
+        <style>._k1234567{ padding-block: 6px; }._l1234567{ padding-inline: 7px; }</style>
+        <style>._c1234567{ border-block: solid 2px blue; }._g1234567{ border-inline: solid 5px blue; }</style>
+        <style>._e1234567{ border-bottom: solid 4px blue; }._h1234567{ border-top: solid 6px blue; }</style>
+        <style>._d1234567{ border-block-end: solid 3px blue; }</style>
+        <style>._i1234567{ border-top-color: pink; }._m1234567{ padding-top: 8px; }</style>
+        <style>._a1234567:hover{ all: revert; }._g1234567:hover{ border-inline: solid 5px blue; }._k1234567:hover{ padding-block: 6px; }._l1234567:hover{ padding-inline: 7px; }._j1234567:hover{ padding: 5px; }</style>
         "
       `);
       expect(console.error).not.toHaveBeenCalled();

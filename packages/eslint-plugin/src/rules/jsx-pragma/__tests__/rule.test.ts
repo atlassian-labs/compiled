@@ -82,13 +82,22 @@ tester.run('jsx-pragma', jsxPragmaRule, {
       options: [{ runtime: 'classic' }],
     },
     {
-      name: 'should be valid if runtime = classic and classic jsx pragma is used with css function call found in importSources',
+      name: 'should be valid if runtime = classic and classic jsx pragma is used with css function call for @atlaskit/css',
       code: outdent`
         /** @jsx jsx */
         import { css, jsx } from '@atlaskit/css';
         <div css={css({ display: 'block' })} />
       `,
-      options: [{ runtime: 'classic', importSources: ['@atlaskit/css'] }],
+      options: [{ runtime: 'classic' }],
+    },
+    {
+      name: 'should be valid if runtime = classic and classic jsx pragma is used with css function call found in importSources',
+      code: outdent`
+        /** @jsx jsx */
+        import { css, jsx } from '@other/css';
+        <div css={css({ display: 'block' })} />
+      `,
+      options: [{ runtime: 'classic', importSources: ['@other/css'] }],
     },
     {
       name: "when onlyRunIfImportingCompiled is true and Compiled is not imported, don't override with Compiled",
@@ -127,27 +136,33 @@ tester.run('jsx-pragma', jsxPragmaRule, {
     {
       name: 'jsxImportSource should be valid when using an available import source',
       code: outdent`
-        /** @jsxImportSource @atlaskit/css */
-        import { css } from '@atlaskit/css';
+        /** @jsxImportSource @other/css */
+        import { css } from '@other/css';
         <div css={css({ display: 'block' })} />
       `,
-      options: [{ importSources: ['@atlaskit/css'] }],
+      options: [{ importSources: ['@other/css'] }],
     },
     {
-      name: "jsxImportSource should error if using an import source that isn't imported",
+      name: "jsxImportSource shouldn't using an import source that isn't imported",
       code: outdent`
-        /** @jsxImportSource @atlaskit/css */
+        /** @jsxImportSource @other/css */
         <div css={css({ display: 'block' })} />
       `,
-      options: [{ importSources: ['@atlaskit/css'] }],
+      options: [{ importSources: ['@other/css'] }],
     },
     {
-      name: 'jsxImportSource should valid with importSources defined and not imported',
+      name: 'jsxImportSource should be valid with @compiled/react by default',
       code: outdent`
         /** @jsxImportSource @compiled/react */
         <div css={{ display: 'block' }} />
       `,
-      options: [{ importSources: ['@atlaskit/css'] }],
+    },
+    {
+      name: 'jsxImportSource should be valid with @atlaskit/css by default',
+      code: outdent`
+        /** @jsxImportSource @atlaskit/css */
+        <div css={{ display: 'block' }} />
+      `,
     },
     {
       name: 'when importSources is non-empty, onlyRunIfImportingCompiled should automatically be set to true',
@@ -157,12 +172,12 @@ tester.run('jsx-pragma', jsxPragmaRule, {
         import { css, jsx } from '@emotion/react';
         <div css={css({ display: 'block' })} />
       `,
-      options: [{ importSources: ['@atlaskit/css'] }],
+      options: [{ importSources: ['@other/css'] }],
     },
     {
       name: 'should not add jsx pragma or Compiled import if neither are there with importSources (sets onlyRunIfImportingCompiled=true)',
       code: outdent`<div css={{ display: 'block' }} />`,
-      options: [{ runtime: 'classic', importSources: ['@atlaskit/css'] }],
+      options: [{ runtime: 'classic', importSources: ['@other/css'] }],
     },
   ],
   invalid: [
@@ -216,7 +231,7 @@ tester.run('jsx-pragma', jsxPragmaRule, {
         <div css={{ display: 'block' }} />
       `,
       options: [
-        { runtime: 'classic', importSources: ['@atlaskit/css'], onlyRunIfImportingCompiled: false },
+        { runtime: 'classic', importSources: ['@other/css'], onlyRunIfImportingCompiled: false },
       ],
       errors: [
         {
@@ -243,7 +258,7 @@ tester.run('jsx-pragma', jsxPragmaRule, {
       ],
     },
     {
-      name: 'should replace automatic jsx pragma with classic pragma using the importSource, if runtime = classic',
+      name: 'should replace automatic jsx pragma with classic pragma using @atlaskit/css, if runtime = classic',
       code: outdent`
         /** @jsxImportSource @atlaskit/css */
         <div css={{ display: 'block' }} />
@@ -253,7 +268,25 @@ tester.run('jsx-pragma', jsxPragmaRule, {
         import { jsx } from '@atlaskit/css';
         <div css={{ display: 'block' }} />
       `,
-      options: [{ runtime: 'classic', importSources: ['@atlaskit/css'] }],
+      options: [{ runtime: 'classic' }],
+      errors: [
+        {
+          messageId: 'preferJsx',
+        },
+      ],
+    },
+    {
+      name: 'should replace automatic jsx pragma with classic pragma using the importSource, if runtime = classic',
+      code: outdent`
+        /** @jsxImportSource @other/css */
+        <div css={{ display: 'block' }} />
+      `,
+      output: outdent`
+        /** @jsx jsx */
+        import { jsx } from '@other/css';
+        <div css={{ display: 'block' }} />
+      `,
+      options: [{ runtime: 'classic', importSources: ['@other/css'] }],
       errors: [
         {
           messageId: 'preferJsx',
@@ -280,7 +313,7 @@ tester.run('jsx-pragma', jsxPragmaRule, {
       ],
     },
     {
-      name: 'should replace automatic jsx pragma with classic pragma, if runtime = classic (with css function call) using an importSource',
+      name: 'should replace automatic jsx pragma with classic pragma, if runtime = classic (with css function call) using @atlaskit/css',
       code: outdent`
         /** @jsxImportSource @atlaskit/css */
         import { css } from '@atlaskit/css';
@@ -291,7 +324,26 @@ tester.run('jsx-pragma', jsxPragmaRule, {
         import { css, jsx } from '@atlaskit/css';
         <div css={css({ display: 'block' })} />
       `,
-      options: [{ runtime: 'classic', importSources: ['@atlaskit/css'] }],
+      options: [{ runtime: 'classic' }],
+      errors: [
+        {
+          messageId: 'preferJsx',
+        },
+      ],
+    },
+    {
+      name: 'should replace automatic jsx pragma with classic pragma, if runtime = classic (with css function call) using an importSource',
+      code: outdent`
+        /** @jsxImportSource @other/css */
+        import { css } from '@other/css';
+        <div css={css({ display: 'block' })} />
+      `,
+      output: outdent`
+        /** @jsx jsx */
+        import { css, jsx } from '@other/css';
+        <div css={css({ display: 'block' })} />
+      `,
+      options: [{ runtime: 'classic', importSources: ['@other/css'] }],
       errors: [
         {
           messageId: 'preferJsx',
@@ -360,7 +412,7 @@ tester.run('jsx-pragma', jsxPragmaRule, {
       ],
     },
     {
-      name: 'should add automatic jsx pragma if css function call is used using the importSource',
+      name: 'should add automatic jsx pragma if css function call is used using @atlaskit/css',
       code: outdent`
         import { css } from '@atlaskit/css';
         <div css={css({ display: 'block' })} />
@@ -370,7 +422,26 @@ tester.run('jsx-pragma', jsxPragmaRule, {
         import { css } from '@atlaskit/css';
         <div css={css({ display: 'block' })} />
       `,
-      options: [{ importSources: ['@atlaskit/css'] }],
+      errors: [
+        // check the raw message, not the messageId, to ensure that this
+        // says "jsxImportSource pragma" and not "jsx pragma"
+        {
+          message: 'To use the `css` prop you must set the jsxImportSource pragma.',
+        },
+      ],
+    },
+    {
+      name: 'should add automatic jsx pragma if css function call is used using the importSource',
+      code: outdent`
+        import { css } from '@other/css';
+        <div css={css({ display: 'block' })} />
+      `,
+      output: outdent`
+        /** @jsxImportSource @other/css */
+        import { css } from '@other/css';
+        <div css={css({ display: 'block' })} />
+      `,
+      options: [{ importSources: ['@other/css'] }],
       errors: [
         // check the raw message, not the messageId, to ensure that this
         // says "jsxImportSource pragma" and not "jsx pragma"
@@ -719,15 +790,29 @@ tester.run('jsx-pragma', jsxPragmaRule, {
       ],
     },
     {
-      name: 'should error if Emotion css and Compiled styled are used (with importSources)',
+      name: 'should error if Emotion css and Compiled styled are used (with @atlaskit/css)',
       code: outdent`
         import { css } from '@emotion/react';
         import { styled } from '@atlaskit/css';
         <div css={css({ display: 'block' })} />
       `,
+      options: [{ onlyRunIfImportingCompiled: true }],
+      errors: [
+        {
+          messageId: 'emotionAndCompiledConflict',
+        },
+      ],
+    },
+    {
+      name: 'should error if Emotion css and Compiled styled are used (with importSources)',
+      code: outdent`
+        import { css } from '@emotion/react';
+        import { styled } from '@other/css';
+        <div css={css({ display: 'block' })} />
+      `,
       options: [
         {
-          importSources: ['@atlaskit/css'],
+          importSources: ['@other/css'],
           onlyRunIfImportingCompiled: true,
         },
       ],
@@ -738,7 +823,7 @@ tester.run('jsx-pragma', jsxPragmaRule, {
       ],
     },
     {
-      name: 'should consider libraries in importSources to be Compiled imports',
+      name: 'should consider @atlaskit/css to be Compiled imports by default',
       code: outdent`
         import { css } from '@atlaskit/css';
 
@@ -752,9 +837,31 @@ tester.run('jsx-pragma', jsxPragmaRule, {
         const styles = css({ display: 'block' });
         <div css={styles} />
       `,
+      options: [{ onlyRunIfImportingCompiled: true }],
+      errors: [
+        {
+          messageId: 'missingPragma',
+        },
+      ],
+    },
+    {
+      name: 'should consider libraries in importSources to be Compiled imports',
+      code: outdent`
+        import { css } from '@other/css';
+
+        const styles = css({ display: 'block' });
+        <div css={styles} />
+      `,
+      output: outdent`
+        /** @jsxImportSource @other/css */
+        import { css } from '@other/css';
+
+        const styles = css({ display: 'block' });
+        <div css={styles} />
+      `,
       options: [
         {
-          importSources: ['@atlaskit/css'],
+          importSources: ['@other/css'],
           onlyRunIfImportingCompiled: true,
         },
       ],

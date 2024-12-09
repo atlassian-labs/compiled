@@ -1,11 +1,14 @@
 {
   "name": "@compiled/ssr-app",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
     "build": "razzle build",
     "start": "razzle start",
     "start:prod": "NODE_ENV=production node build/server.js"
+  },
+  "resolutions": {
+    "path-to-regexp": "^0.1.10"
   },
   "dependencies": {
     "@babel/helper-builder-react-jsx": "^7.19.0",

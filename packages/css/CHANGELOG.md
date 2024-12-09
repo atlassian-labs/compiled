@@ -1,5 +1,51 @@
 # @compiled/css
 
+## 0.17.1
+
+### Patch Changes
+
+- 124243cd: Fix sortShorthand when mixed with multi-property classes such as `._1jmq18uv{-webkit-text-decoration-color:initial;text-decoration-color:initial}` (previously, these broke sorting as they exited early).
+
+## 0.17.0
+
+### Minor Changes
+
+- 9b960009: Fix shorthand sorting not working most of the time, when stylesheet extraction is turned on.
+
+## 0.16.0
+
+### Minor Changes
+
+- 4fb5c6e1: Adds a new option that can be passed to the babel plugin called `classHashPrefix`. Its value is used to add a prefix to the class names when generating their hashes.
+
+### Patch Changes
+
+- Updated dependencies [2750e288]
+  - @compiled/utils@0.13.0
+
+## 0.15.0
+
+### Minor Changes
+
+- 9a15e742: Sort shorthand properties so that they come before longhand properties.
+
+  When using Compiled, one of the following will happen:
+
+  Option 1. If stylesheet extraction is turned off ("runtime mode"): shorthand properties will be sorted before longhand properties, as long as they are not in a pseudo-selector like `:hover` or `:active`. This is enabled by default and cannot be turned off.
+
+  Option 2. If stylesheet extraction is turned on and one of the below is true:
+
+  - You are using Webpack
+  - You are using Parcel AND you are running in production mode
+
+  ... shorthand properties will only be sorted if `sortShorthand: true` is passed to `CompiledExtractPlugin` (Webpack), or `sortShorthand: true` is passed to your Compiled config file like `.compiledcssrc` (Parcel). When sorting shorthand properties using this method (option 2), shorthand properties will always be sorted before longhand properties, taking precedence over pseudo-selectors like `:hover` or `:active`.
+
+### Patch Changes
+
+- Updated dependencies [9a15e742]
+- Updated dependencies [9a15e742]
+  - @compiled/utils@0.12.0
+
 ## 0.14.0
 
 ### Minor Changes

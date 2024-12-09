@@ -1,8 +1,8 @@
+import { COMPILED_IMPORT } from '@compiled/utils';
 import type { Rule } from 'eslint';
 import type { ImportSpecifier, ImportDeclaration } from 'estree';
 
 import { buildImportDeclaration, buildNamedImport } from '../../utils/ast-to-string';
-import { COMPILED_IMPORT } from '../../utils/constants';
 
 const ALLOWED_EMOTION_IMPORTS = ['css', 'keyframes', 'ClassNames', 'jsx'];
 
@@ -29,6 +29,7 @@ export const noEmotionCssRule: Rule.RuleModule = {
     fixable: 'code',
     type: 'problem',
     docs: {
+      description: 'Disallows `@emotion` usages',
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-emotion-css',
     },
     messages: {
@@ -51,7 +52,7 @@ export const noEmotionCssRule: Rule.RuleModule = {
             },
             loc: pragma.loc!,
             fix(fixer) {
-              return fixer.replaceText(pragma as any, '/** @jsxImportSource @compiled/react */');
+              return fixer.replaceText(pragma as any, `/** @jsxImportSource ${COMPILED_IMPORT} */`);
             },
           });
         }

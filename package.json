@@ -144,7 +144,7 @@
     },
     {
       "path": "./packages/react/dist/browser/runtime/style.js",
-      "limit": "482B",
+      "limit": "1000B",
       "import": "CS",
       "ignore": [
         "react"
@@ -152,7 +152,7 @@
     },
     {
       "path": "./packages/react/dist/browser/runtime/style-cache.js",
-      "limit": "99B",
+      "limit": "118B",
       "import": "CC",
       "ignore": [
         "react"

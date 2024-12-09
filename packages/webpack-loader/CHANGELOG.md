@@ -1,5 +1,71 @@
 # @compiled/webpack-loader
 
+## 0.18.1
+
+### Patch Changes
+
+- Updated dependencies [9b960009]
+  - @compiled/css@0.17.0
+  - @compiled/babel-plugin@0.32.2
+  - @compiled/babel-plugin-strip-runtime@0.32.2
+
+## 0.18.0
+
+### Minor Changes
+
+- c1655312: Throw an error when mixing `extract: true` and `classHashPrefix` configuration options to avoid unsupported usage and bundle size bloat.
+
+### Patch Changes
+
+- c1655312: Documents what happens when mixing extraction and classHashPrefix
+- c1655312: fix: webpack loader wasn't passing classHashPrefix option down to babel plugin
+- Updated dependencies [c1655312]
+  - @compiled/babel-plugin@0.32.1
+
+## 0.17.0
+
+### Minor Changes
+
+- 4fb5c6e1: Adds a new option that can be passed to the babel plugin called `classHashPrefix`. Its value is used to add a prefix to the class names when generating their hashes.
+- 2750e288: Make support for `@atlaskit/css` as a first-class import consistently default. This means the same functionality of parsing JSX pragmas, linting specific imports, and extracting styles should all work from `@compiled/react` and `@atlaskit/css` equally without the `importSources: ['@atlaskit/css']` config we use internally.
+
+  This was already the default in about 1/3rd of the code, but not consistent. Now it's consistent and I've cleaned up duplicated import patterns.
+
+### Patch Changes
+
+- Updated dependencies [4fb5c6e1]
+- Updated dependencies [2750e288]
+  - @compiled/babel-plugin@0.32.0
+  - @compiled/css@0.16.0
+  - @compiled/utils@0.13.0
+  - @compiled/babel-plugin-strip-runtime@0.32.0
+
+## 0.16.0
+
+### Minor Changes
+
+- 9a15e742: Sort shorthand properties so that they come before longhand properties.
+
+  When using Compiled, one of the following will happen:
+
+  Option 1. If stylesheet extraction is turned off ("runtime mode"): shorthand properties will be sorted before longhand properties, as long as they are not in a pseudo-selector like `:hover` or `:active`. This is enabled by default and cannot be turned off.
+
+  Option 2. If stylesheet extraction is turned on and one of the below is true:
+
+  - You are using Webpack
+  - You are using Parcel AND you are running in production mode
+
+  ... shorthand properties will only be sorted if `sortShorthand: true` is passed to `CompiledExtractPlugin` (Webpack), or `sortShorthand: true` is passed to your Compiled config file like `.compiledcssrc` (Parcel). When sorting shorthand properties using this method (option 2), shorthand properties will always be sorted before longhand properties, taking precedence over pseudo-selectors like `:hover` or `:active`.
+
+### Patch Changes
+
+- Updated dependencies [9a15e742]
+- Updated dependencies [9a15e742]
+  - @compiled/babel-plugin-strip-runtime@0.31.0
+  - @compiled/utils@0.12.0
+  - @compiled/css@0.15.0
+  - @compiled/babel-plugin@0.31.0
+
 ## 0.15.0
 
 ### Minor Changes

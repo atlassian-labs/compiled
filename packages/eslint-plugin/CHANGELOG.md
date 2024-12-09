@@ -1,5 +1,39 @@
 # @compiled/eslint-plugin
 
+## 0.17.0
+
+### Minor Changes
+
+- 6fc00de6: Add `shorthand-property-sorting` to recommended ESLint rules
+
+## 0.16.0
+
+### Minor Changes
+
+- e8b09ecd: Adding flat config preset for `@compiled/eslint-plugin` and adding missing descriptions to ESLint rules
+
+## 0.15.0
+
+### Minor Changes
+
+- 2750e288: Make support for `@atlaskit/css` as a first-class import consistently default. This means the same functionality of parsing JSX pragmas, linting specific imports, and extracting styles should all work from `@compiled/react` and `@atlaskit/css` equally without the `importSources: ['@atlaskit/css']` config we use internally.
+
+  This was already the default in about 1/3rd of the code, but not consistent. Now it's consistent and I've cleaned up duplicated import patterns.
+
+### Patch Changes
+
+- c786a445: Adding eslint rule to enforce shorthand css properties come before longhand
+- Updated dependencies [2750e288]
+  - @compiled/utils@0.13.0
+
+## 0.14.1
+
+### Patch Changes
+
+- Updated dependencies [9a15e742]
+- Updated dependencies [9a15e742]
+  - @compiled/utils@0.12.0
+
 ## 0.14.0
 
 ### Minor Changes

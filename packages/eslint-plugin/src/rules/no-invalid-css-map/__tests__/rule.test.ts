@@ -24,6 +24,24 @@ tester.run('css-map', noInvalidCssMapRule, {
       `,
     },
     {
+      name: 'example valid css map with @atlaskit/css',
+      code: outdent`
+        import React from 'react';
+        import { cssMap } from '@atlaskit/css';
+
+        const styles = cssMap({
+          danger: {
+            color: 'red',
+            backgroundColor: 'red',
+          },
+          success: {
+            color: 'green',
+            backgroundColor: 'green',
+          },
+        });
+      `,
+    },
+    {
       name: 'valid css map with valid function calls',
       options: [{ allowedFunctionCalls: [['@atlaskit/token', 'token']] }],
       code: outdent`
@@ -147,6 +165,21 @@ tester.run('css-map', noInvalidCssMapRule, {
               padding: \`1px \${bap}\`,
           },
         });
+      `,
+    },
+    {
+      name: 'ignores from a package not in scope',
+      code: outdent`
+        import React from 'react';
+        import { cssMap } from '@other/css';
+
+        const foo = {
+          bar: cssMap({
+            danger: {
+              color: 'red'
+            },
+          }),
+        };
       `,
     },
   ],

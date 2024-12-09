@@ -1,3 +1,4 @@
+import { COMPILED_IMPORT } from '@compiled/utils';
 import type { TSESTree, TSESLint } from '@typescript-eslint/utils';
 
 import {
@@ -141,7 +142,7 @@ class NoCssPropWithoutCssFunctionRunner {
         // Import not found, add a new one
         yield fixer.insertTextAfter(
           source.ast.body[0],
-          `\n${buildImportDeclaration('css', '@compiled/react')}`
+          `\n${buildImportDeclaration('css', COMPILED_IMPORT)}`
         );
       }
 
@@ -221,7 +222,7 @@ export const noCssPropWithoutCssFunctionRule: TSESLint.RuleModule<string> = {
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-css-prop-without-css-function',
       recommended: 'error',
       description:
-        'Disallows `css` prop usages without wrapping in the `css` import from `@compiled/react`. Also forbids `css` prop usages where Compiled cannot determine whether the `css` import is included at build time.',
+        'Disallows `css` prop usages where it is either not wrapped in the `css` import from `@compiled/react` or where `@compiled` cannot determine whether the `css` import is included at build time.',
     },
     messages: {
       noCssFunction: 'css prop values are required to use the css import from @compiled/react',

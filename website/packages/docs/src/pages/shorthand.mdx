@@ -1,0 +1,156 @@
+---
+section: 50-Guides
+name: Shorthand properties
+---
+
+# Shorthand properties
+
+Shorthand properties are properties that are used to set the values of several other properties ("longhand properties"). Examples include the shorthand property `font`, which can be used to set the longhand properties `fontWeight`, `fontStyle`, `fontFamily`, and so on.
+
+We **do not** recommend mixing shorthand properties and longhand properties in the same component, as the precedence of the properties may not be what you expect.
+
+## How does Compiled handle shorthand and longhand properties?
+
+By default, Compiled expands a few common properties, like `margin` and `padding`, but this is complex and not done for all properties.
+
+If shorthand sorting is enabled, then all shorthand properties in Compiled will come before their longhand forms. For example, `font` will come before `fontWeight` and `fontStyle`. The order your CSS properties appear in your source code is **ignored**.
+
+Whether shorthand sorting is enabled depends on whether stylesheet extraction is turned on or not -- see below for more details.
+
+The exact sorting method used differs, depending on whether you have stylesheet extraction enabled or not, i.e. you have set `extract: true` in your Webpack or Parcel configuration. We recommend turning on stylesheet extraction if possible.
+
+Note that there is a bug where [stylesheet extraction cannot be used for Parcel](https://github.com/atlassian-labs/compiled/issues/1306) when running in local development. (Production is okay)
+
+## Stylesheet extraction turned on
+
+If stylesheet extraction is turned on, then shorthand property sorting is controlled by the `sortShorthand` option. This is set to `true` by default, meaning that if stylesheet extraction is turned on, shorthand properties will not be sorted in any way by default.
+
+If you are using Webpack, you can set this as an option like `new CompiledExtractPlugin({ sortShorthand: true })`. If you are using Parcel, set `sortShorthand: true` in your Compiled configuration file (e.g. `.compiledcssrc`), but note that stylesheet extraction won't work unless you are in production mode [due to a bug](https://github.com/atlassian-labs/compiled/issues/1306).
+
+With `sortShorthand` not set to `false`, shorthand properties will be sorted deterministically, with more specific shorthand properties taking precedence over less specific shorthand properties. Shorthand property sorting takes precedence over the sorting of pseudo-selectors. For example, given the following example:
+
+```tsx
+/** @jsxAutomaticRuntime @compiled/react */
+import { css } from '@compiled/react';
+import React from 'react';
+
+const styles = css({
+  border: '4.5px solid blue',
+  '&:hover': {
+    borderColor: 'pink',
+    border: '5px dashed yellow',
+  },
+  '&:active': {
+    border: '3px solid green',
+  },
+  '@media (max-width: 300px)': {
+    border: '7px solid orange',
+    borderColor: 'teal',
+  },
+});
+
+const styles2 = css({
+  borderColor: 'pink',
+  '&:active': {
+    border: '2px solid yellow',
+  },
+  '@media (max-width: 300px)': {
+    border: '9px solid orange',
+  },
+  '@media (max-width: 500px)': {
+    border: '4px solid yellow',
+    borderColor: 'pink',
+  },
+});
+
+export const App = () => (
+  <>
+    <div css={styles}>hi</div>
+    <div css={styles2}>hi</div>
+  </>
+);
+```
+
+The generated CSS stylesheet will look like:
+
+```css
+/*
+ * At rule sorting
+ * (e.g. ensuring @media comes after other styles)
+ * takes precedence over shorthand property sorting
+ * (e.g. ensuring border comes before border-color),
+ * which takes precedence over pseudo-selector sorting
+ * (ensuring :hover comes before :active).
+*/
+._19ityspe {
+  border: 4.5px solid blue;
+}
+._bfw71ye4:hover {
+  border: 5px dashed yellow;
+}
+._n7dwtm4l:active {
+  border: 2px solid yellow;
+}
+._n7dw10b9:active {
+  border: 3px solid green;
+}
+._1h6d32ev {
+  border-color: pink;
+}
+._4cvx32ev:hover {
+  border-color: pink;
+}
+@media (max-width: 300px) {
+  ._15bwas8u {
+    border: 9px solid orange;
+  }
+  ._15bw16ui {
+    border: 7px solid orange;
+  }
+  ._r0v71my7 {
+    border-color: teal;
+  }
+}
+@media (max-width: 500px) {
+  ._3x4x1glk {
+    border: 4px solid yellow;
+  }
+  ._118v32ev {
+    border-color: pink;
+  }
+}
+```
+
+## Stylesheet extraction turned off
+
+> We recommend turning on stylesheet extraction to fully gain the de-duplication benefits of atomic CSS.
+
+If stylesheet extraction is turned off, shorthand property sorting becomes a bit more rudimentary.
+
+Similarly to when stylesheet extraction is turned on, shorthand properties here are sorted before longhand properties. However, they are no longer guaranteed to be sorted when they are used in a pseudo-selector (especially when you have more than one component), e.g.
+
+```tsx
+/** @jsxAutomaticRuntime @compiled/react */
+import { css } from '@compiled/react';
+import React from 'react';
+
+const styles = css({
+  // Can guarantee that `borderColor: pink` will come after `border: 4px solid yellow`
+  border: '4px solid yellow',
+  borderColor: 'pink',
+  '&:active': {
+    // If there are other Compiled components in the app, we
+    // CANNOT guarantee that `borderColor: green` will come after `border: 2px solid yellow`
+    border: '2px solid yellow',
+    borderColor: 'green',
+  },
+});
+
+export const App = () => (
+  <>
+    <div css={styles}>hi</div>
+  </>
+);
+```
+
+We recommend that you turn on stylesheet extraction to prevent this. However, note the caveat that in Parcel, when in development mode, [stylesheet extraction will not work unless you switch to production mode](https://github.com/atlassian-labs/compiled/issues/1306).

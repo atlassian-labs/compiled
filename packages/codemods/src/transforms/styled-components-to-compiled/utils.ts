@@ -1,4 +1,4 @@
-import { kebabCase } from '@compiled/utils';
+import { COMPILED_IMPORT, kebabCase } from '@compiled/utils';
 import type {
   JSCodeshift,
   Collection,
@@ -18,7 +18,6 @@ import type {
   ASTPath,
 } from 'jscodeshift';
 
-import { COMPILED_IMPORT_PATH } from '../../constants';
 import type { CodemodPluginInstance } from '../../plugins/types';
 
 type StyledAttributesDeclarationNode = ASTPath<VariableDeclaration | TaggedTemplateExpression>;
@@ -387,7 +386,7 @@ export const getCompiledLocalStyledName = (
 
   styledImports.forEach((styledImport) => {
     const isCompiledImport =
-      styledImport?.parentPath?.parentPath.value.source.value === COMPILED_IMPORT_PATH;
+      styledImport?.parentPath?.parentPath.value.source.value === COMPILED_IMPORT;
 
     if (isCompiledImport) {
       compiledLocalStyledName = styledImport.value.local?.name || 'styled';

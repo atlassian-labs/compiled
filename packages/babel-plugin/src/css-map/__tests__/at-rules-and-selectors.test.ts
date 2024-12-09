@@ -239,8 +239,7 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
       '._14jq32ev color{color:pink}',
       '._1wsc13q2 fontSize{background-color:blue}',
       '._1wyb12am{font-size:50px}',
-
-      'const styles={success:"_syazjafr _1wyb12am _14jq32ev _1wsc13q2"}',
+      'const styles={success:"_syazjafr _1wyb12am _1wsc13q2 _14jq32ev"}',
     ]);
   });
 

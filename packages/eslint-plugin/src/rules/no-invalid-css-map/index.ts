@@ -1,8 +1,8 @@
+import { DEFAULT_IMPORT_SOURCES } from '@compiled/utils';
 import type { Rule } from 'eslint';
 import type { CallExpression as ESCallExpression } from 'estree';
 
 import { CssMapObjectChecker, getCssMapObject, isCssMap, validateDefinition } from '../../utils';
-import { COMPILED_IMPORT } from '../../utils/constants';
 
 type CallExpression = ESCallExpression & Rule.NodeParentExtension;
 
@@ -40,7 +40,9 @@ const reportIfNotTopLevelScope = (node: CallExpression, context: Rule.RuleContex
 
 const createCssMapRule = (context: Rule.RuleContext): Rule.RuleListener => {
   const { text } = context.getSourceCode();
-  if (!text.includes(COMPILED_IMPORT)) {
+
+  // Bail out if this is not one of the imports we care about (eg. not from @compiled/react)
+  if (DEFAULT_IMPORT_SOURCES.every((source) => !text.includes(source))) {
     return {};
   }
 
@@ -67,6 +69,7 @@ const createCssMapRule = (context: Rule.RuleContext): Rule.RuleListener => {
 export const noInvalidCssMapRule: Rule.RuleModule = {
   meta: {
     docs: {
+      recommended: true,
       description:
         "Checks the validity of a CSS map created through cssMap. This is intended to be used alongside TypeScript's type-checking.",
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-invalid-css-map',

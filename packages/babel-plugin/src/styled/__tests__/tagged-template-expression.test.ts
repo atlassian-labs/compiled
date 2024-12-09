@@ -869,7 +869,7 @@ describe('styled tagged template expression', () => {
 
       const color = 'red';
       const color2 = 'blue';
-      
+
       const ListItem = styled.div\`
         background: linear-gradient(
             \${\`var(--my-variable, \${color})\`},
@@ -889,7 +889,7 @@ describe('styled tagged template expression', () => {
 
       const color = 'red';
       const interpolation = \`1px solid \${\`var(--my-variable, \${color})\`}\`;
-      
+
       const ListItem = styled.div\`
         border: \${interpolation};
       \`;
@@ -1062,7 +1062,7 @@ describe('styled tagged template expression', () => {
       '._1wybgktf{font-size:20px}',
       '._2rko1l7b{border-radius:3px}',
       '._syaz1qjj{color:var(--_pvyxdf)}',
-      '{ax(["_1wybgktf _2rko1l7b _syaz1qjj", __cmplp.className])}',
+      '{ax(["_2rko1l7b _1wybgktf _syaz1qjj", __cmplp.className])}',
     ]);
   });
 
@@ -1084,7 +1084,7 @@ describe('styled tagged template expression', () => {
       '._syaz1qjj{color:var(--_pvyxdf)}',
       '._1wybgktf{font-size:20px}',
       '._2rko1l7b{border-radius:3px}',
-      '{ax(["_syaz1qjj _1wybgktf _2rko1l7b", __cmplp.className])}',
+      '{ax(["_2rko1l7b _syaz1qjj _1wybgktf", __cmplp.className])}',
     ]);
   });
 });

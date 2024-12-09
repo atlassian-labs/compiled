@@ -1,3 +1,4 @@
+import { COMPILED_IMPORT, DEFAULT_IMPORT_SOURCES } from '@compiled/utils';
 import type { Rule, SourceCode } from 'eslint';
 import type { ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifier } from 'estree';
 
@@ -7,7 +8,6 @@ import {
   usesCompiledAPI,
 } from '../../utils/ast';
 import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-to-string';
-import { COMPILED_IMPORT } from '../../utils/constants';
 import {
   findJsxImportSourcePragma,
   findJsxPragma,
@@ -66,10 +66,7 @@ const findReactDeclarationWithDefaultImport = (
 };
 
 function createFixer(context: Rule.RuleContext, source: SourceCode, options: Options) {
-  const compiledImports = findLibraryImportDeclarations(context, [
-    COMPILED_IMPORT,
-    ...options.importSources,
-  ]);
+  const compiledImports = findLibraryImportDeclarations(context, options.importSources);
   const defaultCompiledImport = getDefaultCompiledImport(compiledImports);
 
   return function* fix(fixer: Rule.RuleFixer) {
@@ -117,6 +114,7 @@ function createFixer(context: Rule.RuleContext, source: SourceCode, options: Opt
 export const jsxPragmaRule: Rule.RuleModule = {
   meta: {
     docs: {
+      description: 'Enforces a jsx pragma when using the `css` prop',
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/jsx-pragma',
     },
     fixable: 'code',
@@ -165,16 +163,13 @@ export const jsxPragmaRule: Rule.RuleModule = {
       onlyRunIfImportingCompiled:
         optionsRaw.onlyRunIfImportingCompiled ?? !!optionsRaw.importSources?.length,
       runtime: optionsRaw.runtime ?? 'automatic',
-      importSources: optionsRaw.importSources ?? [],
+      importSources: [...DEFAULT_IMPORT_SOURCES, ...(optionsRaw.importSources ?? [])],
     };
 
     const source = context.getSourceCode();
     const comments = source.getAllComments();
 
-    const compiledImports = findLibraryImportDeclarations(context, [
-      COMPILED_IMPORT,
-      ...options.importSources,
-    ]);
+    const compiledImports = findLibraryImportDeclarations(context, options.importSources);
     const otherLibraryImports = getOtherLibraryImports(context);
     const jsxPragma = findJsxPragma(comments, compiledImports);
     const jsxImportSourcePragma = findJsxImportSourcePragma(comments, options.importSources);
@@ -229,8 +224,8 @@ export const jsxPragmaRule: Rule.RuleModule = {
 
                 yield fixer.replaceText(firstCompiledImport, specifiersString);
               } else {
-                const jsxImportSourceName = [...options.importSources, COMPILED_IMPORT].find(
-                  (name) => jsxImportSourcePragma.value.includes(`@jsxImportSource ${name}`)
+                const jsxImportSourceName = options.importSources.find((name) =>
+                  jsxImportSourcePragma.value.includes(`@jsxImportSource ${name}`)
                 );
 
                 yield fixer.insertTextBefore(
