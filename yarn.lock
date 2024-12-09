@@ -4075,6 +4075,13 @@
     "@types/estree" "*"
     "@types/json-schema" "*"
 
+"@types/estraverse@^5.1.7":
+  version "5.1.7"
+  resolved "https://registry.yarnpkg.com/@types/estraverse/-/estraverse-5.1.7.tgz#d0e45194ba425cf31f3740ee8cc46ca8aa768a7c"
+  integrity sha512-JRVtdKYZz7VkNp7hMC/WKoiZ8DS3byw20ZGoMZ1R8eBrBPIY7iBaDAS1zcrnXQCwK44G4vbXkimeU7R0VLG8UQ==
+  dependencies:
+    "@types/estree" "*"
+
 "@types/estree-jsx@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@types/estree-jsx/-/estree-jsx-1.0.2.tgz#758bcb4f35f2a970362b2bd2b7021fe2ae6e8509"
