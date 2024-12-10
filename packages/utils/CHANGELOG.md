@@ -1,5 +1,11 @@
 # @compiled/utils
 
+## 0.13.1
+
+### Patch Changes
+
+- 88bbe382: Remove superfluous border-block-_ and border-inline-_ from being listed as shorthand properties of border-top / border-bottom / border-left / border-right
+
 ## 0.13.0
 
 ### Minor Changes

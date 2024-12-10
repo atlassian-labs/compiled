@@ -1,5 +1,16 @@
 # @compiled/eslint-plugin
 
+## 0.18.0
+
+### Minor Changes
+
+- 88bbe382: Fix shorthand-property-sorting not detecting lint violations, and extend the rule to support almost all Compiled APIs
+
+### Patch Changes
+
+- Updated dependencies [88bbe382]
+  - @compiled/utils@0.13.1
+
 ## 0.17.0
 
 ### Minor Changes
