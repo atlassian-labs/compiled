@@ -269,6 +269,23 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         export const EmphasisText = ({ children, status }) => <span css={containerAppearance[status]}>{children}</span>;
       `,
     },
+
+    //
+    // has a valid sorting for borderInlineStart and borderInlineEnd
+    //
+
+    {
+      name: 'has a valid sorting for borderInlineStart and borderInlineEnd',
+      code: `
+        import { styled } from '@compiled/react';
+
+        const Bap = styled.div({
+          borderTop: 'none',
+          borderInlineStart: 'none',
+          borderInlineEnd: 'none',
+        });
+      `,
+    },
   ]),
 
   invalid: includedImports.flatMap((imp) => [
