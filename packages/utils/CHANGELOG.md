@@ -1,5 +1,11 @@
 # @compiled/utils
 
+## 0.13.2
+
+### Patch Changes
+
+- 6fb28946: Fix border-inline-start and border-inline-end not having any valid ordering in the shorthand-property-sorting ESLint rule
+
 ## 0.13.1
 
 ### Patch Changes

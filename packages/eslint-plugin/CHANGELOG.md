@@ -1,5 +1,13 @@
 # @compiled/eslint-plugin
 
+## 0.18.1
+
+### Patch Changes
+
+- 6fb28946: Fix border-inline-start and border-inline-end not having any valid ordering in the shorthand-property-sorting ESLint rule
+- Updated dependencies [6fb28946]
+  - @compiled/utils@0.13.2
+
 ## 0.18.0
 
 ### Minor Changes
