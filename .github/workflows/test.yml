@@ -30,9 +30,6 @@ jobs:
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - name: Set ignore engines
-        run: yarn config set ignore-engines true
-
       - uses: actions/cache@v3
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
@@ -73,7 +70,6 @@ jobs:
 
       # Borrowed from https://github.com/yarnpkg/berry/issues/4976#issue-1415019789
       - name: Run yarn lint:yarn-dedupe
-        if: ${{ success() || failure() }}
         run: |
           if ! yarn lint:yarn-dedupe; then
             echo ''

@@ -13,7 +13,6 @@ storybook-static
 
 # https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
 .yarn/*
-!.yarn/cache
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
@@ -21,7 +20,6 @@ storybook-static
 !.yarn/versions
 
 website/.yarn/*
-!website/.yarn/cache
 !website/.yarn/patches
 !website/.yarn/plugins
 !website/.yarn/releases

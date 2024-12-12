@@ -36,7 +36,6 @@ jobs:
 
       # Borrowed from https://github.com/yarnpkg/berry/issues/4976#issue-1415019789
       - name: Run yarn lint:yarn-dedupe
-        if: ${{ success() || failure() }}
         working-directory: './website'
         run: |
           if ! yarn lint:yarn-dedupe; then
