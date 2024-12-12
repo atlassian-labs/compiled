@@ -18,6 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: enable corepack
+        run: corepack enable
+
       - name: Setup node
         uses: actions/setup-node@v3
         with:
@@ -28,6 +31,7 @@ jobs:
         run: yarn
 
       - name: Validate
+        working-directory: './website'
         run: yarn build
 
       # Borrowed from https://github.com/yarnpkg/berry/issues/4976#issue-1415019789
