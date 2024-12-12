@@ -19,3 +19,11 @@ storybook-static
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+website/.yarn/*
+!website/.yarn/cache
+!website/.yarn/patches
+!website/.yarn/plugins
+!website/.yarn/releases
+!website/.yarn/sdks
+!website/.yarn/versions

@@ -1,0 +1,47 @@
+name: Website
+
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install packages
+        working-directory: './website'
+        run: yarn
+
+      - name: Validate
+        run: yarn build
+
+      # Borrowed from https://github.com/yarnpkg/berry/issues/4976#issue-1415019789
+      - name: Run yarn lint:yarn-dedupe
+        if: ${{ success() || failure() }}
+        working-directory: './website'
+        run: |
+          if ! yarn lint:yarn-dedupe; then
+            echo ''
+            echo ''
+            echo 'ℹ️ ℹ️ ℹ️'
+            echo 'Some dependencies can be deduplicated, which will make yarn.lock'
+            echo 'lighter and potentially save us from unexplainable bugs.'
+            echo 'Please run `yarn fix:yarn-dedupe` locally and commit yarn.lock.'
+            echo 'ℹ️ ℹ️ ℹ️'
+            exit 1
+          fi

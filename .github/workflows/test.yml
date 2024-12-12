@@ -67,3 +67,18 @@ jobs:
 
       - name: Run parcel tests
         run: yarn test:parcel
+
+      # Borrowed from https://github.com/yarnpkg/berry/issues/4976#issue-1415019789
+      - name: Run yarn lint:yarn-dedupe
+        if: ${{ success() || failure() }}
+        run: |
+          if ! yarn lint:yarn-dedupe; then
+            echo ''
+            echo ''
+            echo 'ℹ️ ℹ️ ℹ️'
+            echo 'Some dependencies can be deduplicated, which will make yarn.lock'
+            echo 'lighter and potentially save us from unexplainable bugs.'
+            echo 'Please run `yarn fix:yarn-dedupe` locally and commit yarn.lock.'
+            echo 'ℹ️ ℹ️ ℹ️'
+            exit 1
+          fi
