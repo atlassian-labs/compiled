@@ -28,7 +28,7 @@ jobs:
 
       - name: Install packages
         working-directory: './website'
-        run: yarn
+        run: yarn install --immutable
 
       - name: Validate
         working-directory: './website'
