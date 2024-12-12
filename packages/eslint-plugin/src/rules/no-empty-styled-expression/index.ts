@@ -1,6 +1,7 @@
 import type { Rule } from 'eslint';
 import type { CallExpression, MemberExpression } from 'estree';
 
+import { getScope } from '../../utils/context-compat';
 import { isStyledImportSpecifier } from '../../utils/styled-import';
 
 type RuleModule = Rule.RuleModule;
@@ -25,7 +26,7 @@ const createNoEmptyStyledExpressionRule =
     return {
       'CallExpression[callee.type="MemberExpression"]': (node: CallExpression) => {
         const membEx: MemberExpression = node.callee as MemberExpression;
-        const { references } = context.getScope();
+        const { references } = getScope(context, node);
 
         const isStyledImported =
           membEx.object.type === 'Identifier' &&

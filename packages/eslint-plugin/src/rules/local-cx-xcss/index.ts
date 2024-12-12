@@ -1,6 +1,7 @@
 import type { Rule } from 'eslint';
 
 import { isCxFunction } from '../../utils';
+import { getScope } from '../../utils/context-compat';
 
 function getParentJSXAttribute(node: Rule.Node) {
   let parent: Rule.Node | null = node.parent;
@@ -34,7 +35,7 @@ export const localCXXCSSRule: Rule.RuleModule = {
       'CallExpression[callee.name="cx"]': (node: Rule.Node) => {
         if (
           node.type === 'CallExpression' &&
-          isCxFunction(node.callee as Rule.Node, context.getScope().references)
+          isCxFunction(node.callee as Rule.Node, getScope(context, node).references)
         ) {
           const parentJSXAttribute = getParentJSXAttribute(node);
           const propName = parentJSXAttribute?.name.name.toString();

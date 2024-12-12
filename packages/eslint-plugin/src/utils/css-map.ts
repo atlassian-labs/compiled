@@ -1,6 +1,8 @@
 import type { Rule, Scope } from 'eslint';
 import type { CallExpression, Expression, ObjectExpression, Property, Super } from 'estree';
 
+import { getScope } from './context-compat';
+
 type Reference = Scope.Reference;
 type WhitelistedFunction = [packageName: string, functionName: string];
 
@@ -47,7 +49,7 @@ export class CssMapObjectChecker {
     this.cssMapObject = cssMapObject;
 
     this.report = context.report;
-    this.references = context.getScope().references;
+    this.references = getScope(context, cssMapObject).references;
   }
 
   private isNotWhitelistedFunction(callee: Expression | Super) {

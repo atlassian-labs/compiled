@@ -1,5 +1,7 @@
 import type { Rule } from 'eslint';
 
+import { getFilename } from '../../utils/context-compat';
+
 export const noJavaScriptXCSSRule: Rule.RuleModule = {
   meta: {
     docs: {
@@ -17,7 +19,7 @@ export const noJavaScriptXCSSRule: Rule.RuleModule = {
   create(context) {
     return {
       'JSXAttribute[name.name=/[xX]css$/]': (node: Rule.Node) => {
-        if (node.type === 'JSXAttribute' && !context.getFilename().endsWith('.tsx')) {
+        if (node.type === 'JSXAttribute' && !getFilename(context).endsWith('.tsx')) {
           context.report({
             node: node.name,
             messageId: 'no-js-xcss',

@@ -8,6 +8,7 @@ import {
   usesCompiledAPI,
 } from '../../utils/ast';
 import { addImportToDeclaration, removeImportFromDeclaration } from '../../utils/ast-to-string';
+import { getDeclaredVariables, getSourceCode } from '../../utils/context-compat';
 import {
   findJsxImportSourcePragma,
   findJsxPragma,
@@ -75,7 +76,7 @@ function createFixer(context: Rule.RuleContext, source: SourceCode, options: Opt
     const reactImport = findReactDeclarationWithDefaultImport(source);
     if (reactImport) {
       const [declaration, defaultImport] = reactImport;
-      const [defaultImportVariable] = context.getDeclaredVariables(defaultImport);
+      const [defaultImportVariable] = getDeclaredVariables(context, defaultImport);
 
       if (defaultImportVariable && defaultImportVariable.references.length === 0) {
         if (declaration.specifiers.length === 1) {
@@ -166,7 +167,7 @@ export const jsxPragmaRule: Rule.RuleModule = {
       importSources: [...DEFAULT_IMPORT_SOURCES, ...(optionsRaw.importSources ?? [])],
     };
 
-    const source = context.getSourceCode();
+    const source = getSourceCode(context);
     const comments = source.getAllComments();
 
     const compiledImports = findLibraryImportDeclarations(context, options.importSources);

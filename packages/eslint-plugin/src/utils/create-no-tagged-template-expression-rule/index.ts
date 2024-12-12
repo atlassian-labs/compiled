@@ -1,5 +1,7 @@
 import type { Rule, Scope } from 'eslint';
 
+import { getScope, getSourceCode } from '../context-compat';
+
 import { generate } from './generate';
 import { getTaggedTemplateExpressionOffset } from './get-tagged-template-expression-offset';
 import { toArguments } from './to-arguments';
@@ -16,7 +18,7 @@ export const createNoTaggedTemplateExpressionRule =
   ): RuleModule['create'] =>
   (context) => ({
     TaggedTemplateExpression(node) {
-      const { references } = context.getScope();
+      const { references } = getScope(context, node);
       if (!isUsage(node.tag as Rule.Node, references)) {
         return;
       }
@@ -26,7 +28,7 @@ export const createNoTaggedTemplateExpressionRule =
         node,
         *fix(fixer: RuleFixer) {
           const { quasi } = node;
-          const source = context.getSourceCode();
+          const source = getSourceCode(context);
 
           // TODO Eventually handle comments instead of skipping them
           // Skip auto-fixing comments

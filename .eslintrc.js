@@ -10,7 +10,7 @@ module.exports = {
         ecmaFeatures: {
           jsx: true,
         },
-        ecmaVersion: 2018,
+        ecmaVersion: 2020,
         sourceType: 'module',
       },
       plugins: ['react-hooks'],
@@ -48,6 +48,8 @@ module.exports = {
           },
         ],
         'import/no-unresolved': 'off',
+        // TypeScript takes care of this for us (https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/namespace.md)
+        'import/namespace': 'off',
         'import/order': [
           'error',
           {

@@ -3,6 +3,7 @@ import type { Rule } from 'eslint';
 import type { ImportSpecifier, ImportDeclaration } from 'estree';
 
 import { buildImportDeclaration, buildNamedImport } from '../../utils/ast-to-string';
+import { getSourceCode } from '../../utils/context-compat';
 
 const ALLOWED_EMOTION_IMPORTS = ['css', 'keyframes', 'ClassNames', 'jsx'];
 
@@ -18,8 +19,7 @@ const isEmotionImport = (node: ImportDeclaration) =>
  * @returns {Rule.Node} The `@compiled/react` node or undefined
  */
 const getCompiledNode = (context: Rule.RuleContext) => {
-  return context
-    .getSourceCode()
+  return getSourceCode(context)
     .ast.body.filter((node): node is ImportDeclaration => node.type === 'ImportDeclaration')
     .find((node) => node.source.value === COMPILED_IMPORT);
 };
@@ -39,8 +39,7 @@ export const noEmotionCssRule: Rule.RuleModule = {
   create(context) {
     return {
       Program() {
-        const pragma = context
-          .getSourceCode()
+        const pragma = getSourceCode(context)
           .getAllComments()
           .find((n) => n.value.includes('@jsxImportSource @emotion/react'));
 

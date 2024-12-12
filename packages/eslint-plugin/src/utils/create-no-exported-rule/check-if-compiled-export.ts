@@ -1,5 +1,7 @@
 import type { Rule, Scope as ScopeNamespace } from 'eslint';
 
+import { getScope, getSourceCode } from '../context-compat';
+
 import { isStyledComponent } from './is-styled-component';
 
 type Node = Rule.Node;
@@ -13,7 +15,7 @@ type Stack = {
 };
 
 const getStack = (context: RuleContext, node: Node) => {
-  const { scopeManager } = context.getSourceCode();
+  const { scopeManager } = getSourceCode(context);
   const stack: Omit<Stack, 'scope'> = {
     nodes: [],
     root: node,
@@ -51,7 +53,7 @@ const getStack = (context: RuleContext, node: Node) => {
 
   return {
     ...stack,
-    scope: scope ?? context.getScope(),
+    scope: scope ?? getScope(context, node),
   };
 };
 
@@ -111,7 +113,7 @@ type IsCompiledExport = Yes | No;
 export const checkIfCompiledExport = (
   context: RuleContext,
   node: Node,
-  scope: Scope = context.getScope()
+  scope: Scope = getScope(context, node)
 ): IsCompiledExport => {
   // Ignore any expression defined outside of the global or module scope as we have no way of statically analysing them
   if (scope.type !== 'global' && scope.type !== 'module') {

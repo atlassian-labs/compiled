@@ -3,13 +3,7 @@ import type { TSESTree, TSESLint } from '@typescript-eslint/utils';
 import type { Rule } from 'eslint';
 import type { ImportDeclaration, ImportSpecifier } from 'estree';
 
-// WARNING
-// context.getSourceCode() is deprecated, but we still use it here because
-// the newer alternative, context.sourceCode, is not supported below
-// ESLint 8.40.
-//
-// We can replace this with context.sourceCode once we are certain that
-// all Compiled users are using ESLint 8.40+.
+import { getSourceCode } from './context-compat';
 
 /**
  * Given a rule, return all imports from the libraries defined in `source`
@@ -26,14 +20,12 @@ export const findLibraryImportDeclarations = (
   context: Rule.RuleContext,
   sources = DEFAULT_IMPORT_SOURCES
 ): ImportDeclaration[] => {
-  return context
-    .getSourceCode()
-    .ast.body.filter(
-      (node): node is ImportDeclaration =>
-        node.type === 'ImportDeclaration' &&
-        typeof node.source.value === 'string' &&
-        sources.includes(node.source.value)
-    );
+  return getSourceCode(context).ast.body.filter(
+    (node): node is ImportDeclaration =>
+      node.type === 'ImportDeclaration' &&
+      typeof node.source.value === 'string' &&
+      sources.includes(node.source.value)
+  );
 };
 
 /**

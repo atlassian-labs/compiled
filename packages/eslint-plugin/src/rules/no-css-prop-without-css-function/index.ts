@@ -11,6 +11,7 @@ import {
   buildImportDeclaration,
   getImportedName,
 } from '../../utils/ast-to-string';
+import { getScope, getSourceCode } from '../../utils/context-compat';
 
 type Q<T> = T extends TSESLint.Scope.Definition
   ? T['type'] extends 'Variable'
@@ -39,7 +40,7 @@ class NoCssPropWithoutCssFunctionRunner {
 
   constructor(private baseNode: TSESTree.JSXExpressionContainer, private context: Context) {
     this.jsxElement = traverseUpToJSXOpeningElement(this.baseNode);
-    this.references = context.getScope().references;
+    this.references = getScope(context, baseNode).references;
 
     this.ignoreIfImported = [];
     this.excludeReactComponents = false;
@@ -125,7 +126,7 @@ class NoCssPropWithoutCssFunctionRunner {
   private fixWrapper(node: CSSValue, context: Context) {
     function* fix(fixer: TSESLint.RuleFixer) {
       const compiledImports = findTSLibraryImportDeclarations(context);
-      const source = context.getSourceCode();
+      const source = getSourceCode(context);
 
       // The string that `css` from `@compiled/css` is imported as
       const cssImportName = getImportedName(compiledImports, 'css');
@@ -220,7 +221,6 @@ export const noCssPropWithoutCssFunctionRule: TSESLint.RuleModule<string> = {
   meta: {
     docs: {
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-css-prop-without-css-function',
-      recommended: 'error',
       description:
         'Disallows `css` prop usages where it is either not wrapped in the `css` import from `@compiled/react` or where `@compiled` cannot determine whether the `css` import is included at build time.',
     },

@@ -1,11 +1,13 @@
 import type { Rule } from 'eslint';
 
+import { getSourceCode } from '../../utils/context-compat';
+
 function nodeIsTypeSuppressed(context: Rule.RuleContext, node: Rule.Node) {
   if (!node.loc) {
     return;
   }
 
-  const comments = context.getSourceCode().getAllComments();
+  const comments = getSourceCode(context).getAllComments();
 
   for (const comment of comments) {
     if (!comment.loc) {
