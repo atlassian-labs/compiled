@@ -12,7 +12,8 @@ import type { PluginPass, PluginOptions, BabelFileMetadata } from './types';
 import { isAutomaticRuntime } from './utils/is-automatic-runtime';
 import { isCCComponent } from './utils/is-cc-component';
 import { isCreateElement } from './utils/is-create-element';
-import { isInjectGlobalCss } from './utils/is-inject-globalcss';
+import { isInjectCompiledCss } from './utils/is-inject-css';
+import { isInjectGlobalCss } from './utils/is-inject-global-css';
 import { removeStyleDeclarations } from './utils/remove-style-declarations';
 import { toURIComponent } from './utils/to-uri-component';
 
@@ -110,7 +111,7 @@ export default declare<PluginPass>((api) => {
       ImportSpecifier(path) {
         if (
           t.isIdentifier(path.node.imported) &&
-          ['CC', 'CS', 'injectCss'].includes(path.node.imported.name)
+          ['CC', 'CS', 'injectGlobalCss'].includes(path.node.imported.name)
         ) {
           path.remove();
         }
@@ -166,7 +167,7 @@ export default declare<PluginPass>((api) => {
           return;
         }
 
-        if (isInjectGlobalCss(path.node)) {
+        if (isInjectCompiledCss(path.node) || isInjectGlobalCss(path.node)) {
           const [children] = path.get('arguments');
 
           if (children.node.type !== 'ArrayExpression') {
@@ -180,11 +181,14 @@ export default declare<PluginPass>((api) => {
             }
             globalStyleRules.push(element.value);
           });
+
           if (globalStyleRules.length > 0) {
-            this.global = true;
+            if (isInjectGlobalCss(path.node)) {
+              this.global = true;
+            }
             this.styleRules.push(...globalStyleRules);
           }
-          // remove injectCss() call from the code
+          // remove injectGlobalCss() call from the code
           path.remove();
           return;
         }
