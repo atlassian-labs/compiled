@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.18.2
+
+### Patch Changes
+
+- a90961b3: Fix shorthand-property-sorting crashing when variable in css prop is not initialised
+
 ## 0.18.1
 
 ### Patch Changes
