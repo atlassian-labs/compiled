@@ -85,7 +85,7 @@ const getVariableDefinition = (
     functionCall &&
     functionCall.defs.length &&
     functionCall.defs[0].node.type === 'VariableDeclarator' &&
-    functionCall.defs[0].node.init.type === 'CallExpression'
+    functionCall.defs[0].node.init?.type === 'CallExpression'
   ) {
     return functionCall.defs[0].node.init as CallExpression;
   }
