@@ -286,6 +286,30 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
         });
       `,
     },
+
+    //
+    // styles is not defined
+    //
+
+    {
+      // People really should not be doing this, so no point in handling this case.
+      //
+      // This test case is just to make sure the rule does not crash when it encounters
+      // this kind of edge case.
+      name: 'styles is not defined',
+      code: `
+        import { css, jsx } from '@compiled/react';
+
+        let styles;
+        const someCondition = true;
+        if (someCondition) {
+          styles = css({ top: 0 });
+        } else {
+          styles = css({ top: '2px' });
+        }
+        export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
+      `,
+    },
   ]),
 
   invalid: includedImports.flatMap((imp) => [
