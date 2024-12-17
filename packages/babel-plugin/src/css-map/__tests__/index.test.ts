@@ -22,11 +22,18 @@ describe('css map basic functionality', () => {
       import { cssMap } from '@compiled/react';
 
       const styles = cssMap(${styles});
+
+      const Component = () => <div>
+        <span css={styles.danger} />
+        <span css={styles.success} />
+      </div>
     `);
 
-    expect(actual).toInclude(
-      'const styles={danger:"_syaz5scu _bfhk5scu",success:"_syazbf54 _bfhkbf54"};'
-    );
+    expect(actual).toIncludeMultiple([
+      'const styles={danger:"_syaz5scu _bfhk5scu",success:"_syazbf54 _bfhkbf54"};',
+      '<span className={ax([styles.danger])}/>',
+      '<span className={ax([styles.success])}/>',
+    ]);
   });
 
   it('should transform css map even with an empty object', () => {
@@ -43,6 +50,42 @@ describe('css map basic functionality', () => {
       `);
 
     expect(actual).toInclude('const styles={danger:"",success:"_syazbf54 _bfhkbf54"};');
+  });
+
+  it('should transform ternary-based conditional referencing cssMap declarations', () => {
+    const actual = transform(`
+      import { cssMap } from '@compiled/react';
+
+      const styles = cssMap({
+        root: { display: 'block' },
+        positive: { background: 'white', color: 'black' },
+        negative: { background: 'green', color: 'red' },
+        bold: { fontWeight: 'bold' },
+        normal: { fontWeight: 'normal' },
+      });
+
+      const Component = ({ isPrimary, weight }) => (
+        <div
+          css={[
+            styles.root,
+            weight in styles ? styles[weight] : styles.normal,
+            isPrimary ? styles.positive : styles.negative,
+          ]}
+        />
+      );
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '._1e0c1ule{display:block}',
+      '._bfhk1x77{background-color:white}',
+      '._syaz11x8{color:black}',
+      '._bfhkbf54{background-color:green}',
+      '._syaz5scu{color:red}',
+      '._k48p8n31{font-weight:bold}',
+      '._k48p4jg8{font-weight:normal}',
+      'const styles={root:"_1e0c1ule",positive:"_bfhk1x77 _syaz11x8",negative:"_bfhkbf54 _syaz5scu",bold:"_k48p8n31",normal:"_k48p4jg8"}',
+      '<div className={ax([styles.root,weight in styles?styles[weight]:styles.normal,isPrimary?styles.positive:styles.negative])}/>',
+    ]);
   });
 
   it('should error out if variants are not defined at the top-most scope of the module.', () => {
