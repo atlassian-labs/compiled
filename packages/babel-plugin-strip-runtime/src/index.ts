@@ -111,7 +111,7 @@ export default declare<PluginPass>((api) => {
       ImportSpecifier(path) {
         if (
           t.isIdentifier(path.node.imported) &&
-          ['CC', 'CS', 'injectGlobalCss'].includes(path.node.imported.name)
+          ['CC', 'CS', 'injectGlobalCss', 'injectCompiledCss'].includes(path.node.imported.name)
         ) {
           path.remove();
         }
