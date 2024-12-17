@@ -5,6 +5,7 @@ import { unique } from '@compiled/utils';
 import type { Metadata } from '../types';
 import { buildCodeFrameError } from '../utils/ast';
 import { buildCss } from '../utils/css-builders';
+import { getRuntimeClassNameLibrary } from '../utils/get-runtime-class-name-library';
 import { transformCssItems } from '../utils/transform-css-items';
 
 const getPathToAddInsertCss = (path: NodePath<t.CallExpression>, meta: Metadata): NodePath => {
@@ -48,6 +49,9 @@ export const visitVanillaCssPath = (path: NodePath<t.CallExpression>, meta: Meta
   const pathToAddInsertCss = getPathToAddInsertCss(path, meta);
   pathToAddInsertCss.insertBefore(injectCompiledCssNode);
 
-  const newNode = t.callExpression(t.identifier('ax'), path.node.arguments);
+  const newNode = t.callExpression(
+    t.identifier(getRuntimeClassNameLibrary(meta)),
+    path.node.arguments
+  );
   path.replaceWith(newNode);
 };

@@ -293,10 +293,8 @@ export default declare<State>((api) => {
               specifier.node?.imported.name === apiName
             ) {
               // Enable the API with the local name
-              // @ts-expect-error
               const apiArray = state.compiledImports[apiName] || [];
               apiArray.push(specifier.node.local.name);
-              // @ts-expect-error
               state.compiledImports[apiName] = apiArray;
               specifier.remove();
             }
