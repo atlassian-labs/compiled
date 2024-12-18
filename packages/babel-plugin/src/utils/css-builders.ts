@@ -382,7 +382,7 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
     } else if (t.isConditionalExpression(pathNode)) {
       cssOutput = extractConditionalExpression(pathNode, meta);
     } else if (t.isMemberExpression(pathNode)) {
-      cssOutput = extractMemberExpression(pathNode, meta);
+      cssOutput = extractMemberExpression(pathNode, meta, false);
     }
 
     if (cssOutput) {
@@ -670,8 +670,23 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
  *
  * @param node Node we're interested in extracting CSS from.
  * @param meta {Metadata} Useful metadata that can be used during the transformation
+ * @param fallbackToEvaluate {Boolean} Whether to fallback to re-evaluating the expression if it's not a cssMap identifier
  */
-const extractMemberExpression = (node: t.MemberExpression, meta: Metadata): CSSOutput => {
+function extractMemberExpression(
+  node: t.MemberExpression,
+  meta: Metadata,
+  fallbackToEvaluate?: true
+): CSSOutput;
+function extractMemberExpression(
+  node: t.MemberExpression,
+  meta: Metadata,
+  fallbackToEvaluate: false
+): CSSOutput | undefined;
+function extractMemberExpression(
+  node: t.MemberExpression,
+  meta: Metadata,
+  fallbackToEvaluate = true
+): CSSOutput | undefined {
   const bindingIdentifier = findBindingIdentifier(node);
   if (bindingIdentifier && meta.state.cssMap[bindingIdentifier.name]) {
     return {
@@ -679,9 +694,14 @@ const extractMemberExpression = (node: t.MemberExpression, meta: Metadata): CSSO
       variables: [],
     };
   }
-  const { value, meta: updatedMeta } = evaluateExpression(node, meta);
-  return buildCss(value, updatedMeta);
-};
+
+  if (fallbackToEvaluate) {
+    const { value, meta: updatedMeta } = evaluateExpression(node, meta);
+    return buildCss(value, updatedMeta);
+  }
+
+  return undefined;
+}
 
 /**
  * Extracts CSS data from a template literal node.
@@ -914,6 +934,10 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
 
     if (t.isConditionalExpression(node.body)) {
       return extractConditionalExpression(node.body, meta);
+    }
+
+    if (t.isMemberExpression(node.body)) {
+      return extractMemberExpression(node.body, meta);
     }
   }
 

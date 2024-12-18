@@ -908,7 +908,7 @@ describe('styled tagged template expression', () => {
         props.isPrimary
           ? \`
             background-color: \${({ isLoading }) => (isLoading ? colors.N20 : colors.N40)};
-            color: \${({ loading: l }) => (l ? colors.N50 : colors.N10)};
+            color: \${({ loading }) => (loading ? colors.N50 : colors.N10)};
             border-color: \${(propz) => (propz.loading ? colors.N100 : colors.N200)};
           \` : 'color: black'
         };
