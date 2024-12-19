@@ -3,8 +3,6 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
     "target": "es2017",
     "plugins": [
       {
