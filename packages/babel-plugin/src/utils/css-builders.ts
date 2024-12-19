@@ -381,6 +381,8 @@ const extractConditionalExpression = (node: t.ConditionalExpression, meta: Metad
       }
     } else if (t.isConditionalExpression(pathNode)) {
       cssOutput = extractConditionalExpression(pathNode, meta);
+    } else if (t.isMemberExpression(pathNode)) {
+      cssOutput = extractMemberExpression(pathNode, meta, false);
     }
 
     if (cssOutput) {
@@ -664,6 +666,44 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 };
 
 /**
+ * Extracts CSS data from a member expression node (eg. `styles.primary`)
+ *
+ * @param node Node we're interested in extracting CSS from.
+ * @param meta {Metadata} Useful metadata that can be used during the transformation
+ * @param fallbackToEvaluate {Boolean} Whether to fallback to re-evaluating the expression if it's not a cssMap identifier
+ */
+function extractMemberExpression(
+  node: t.MemberExpression,
+  meta: Metadata,
+  fallbackToEvaluate?: true
+): CSSOutput;
+function extractMemberExpression(
+  node: t.MemberExpression,
+  meta: Metadata,
+  fallbackToEvaluate: false
+): CSSOutput | undefined;
+function extractMemberExpression(
+  node: t.MemberExpression,
+  meta: Metadata,
+  fallbackToEvaluate = true
+): CSSOutput | undefined {
+  const bindingIdentifier = findBindingIdentifier(node);
+  if (bindingIdentifier && meta.state.cssMap[bindingIdentifier.name]) {
+    return {
+      css: [{ type: 'map', expression: node, name: bindingIdentifier.name, css: '' }],
+      variables: [],
+    };
+  }
+
+  if (fallbackToEvaluate) {
+    const { value, meta: updatedMeta } = evaluateExpression(node, meta);
+    return buildCss(value, updatedMeta);
+  }
+
+  return undefined;
+}
+
+/**
  * Extracts CSS data from a template literal node.
  *
  * @param node Node we're interested in extracting CSS from.
@@ -880,15 +920,7 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
   }
 
   if (t.isMemberExpression(node)) {
-    const bindingIdentifier = findBindingIdentifier(node);
-    if (bindingIdentifier && meta.state.cssMap[bindingIdentifier.name]) {
-      return {
-        css: [{ type: 'map', expression: node, name: bindingIdentifier.name, css: '' }],
-        variables: [],
-      };
-    }
-    const { value, meta: updatedMeta } = evaluateExpression(node, meta);
-    return buildCss(value, updatedMeta);
+    return extractMemberExpression(node, meta);
   }
 
   if (t.isArrowFunctionExpression(node)) {
@@ -902,6 +934,10 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
 
     if (t.isConditionalExpression(node.body)) {
       return extractConditionalExpression(node.body, meta);
+    }
+
+    if (t.isMemberExpression(node.body)) {
+      return extractMemberExpression(node.body, meta);
     }
   }
 

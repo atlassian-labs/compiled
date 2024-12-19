@@ -1,5 +1,11 @@
 # @compiled/ssr-app
 
+## 1.3.0
+
+### Minor Changes
+
+- c9e45a11: Bump express in SSR example
+
 ## 1.2.0
 
 ### Minor Changes

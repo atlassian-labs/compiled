@@ -1,5 +1,20 @@
 # @compiled/babel-plugin
 
+## 0.34.0
+
+### Minor Changes
+
+- 0ebbfc15: Fix supporting ternaries referencing cssMap style objects when extracting styles.
+
+## 0.33.0
+
+### Patch Changes
+
+- Updated dependencies [88bbe382]
+- Updated dependencies [f63b99d4]
+  - @compiled/utils@0.13.1
+  - @compiled/css@0.18.0
+
 ## 0.32.2
 
 ### Patch Changes

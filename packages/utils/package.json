@@ -1,6 +1,6 @@
 {
   "name": "@compiled/utils",
-  "version": "0.13.0",
+  "version": "0.13.2",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "homepage": "https://compiledcssinjs.com",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",

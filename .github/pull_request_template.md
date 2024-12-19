@@ -20,3 +20,4 @@ I have...
 
 - [ ] Updated or added applicable tests
 - [ ] Updated the documentation in `website/`
+- [ ] Added a changeset (if making any changes that affect Compiled's behaviour)
