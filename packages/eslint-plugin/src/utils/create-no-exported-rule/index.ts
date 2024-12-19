@@ -1,6 +1,8 @@
 import { COMPILED_IMPORT } from '@compiled/utils';
 import type { Rule, Scope } from 'eslint';
 
+import { getScope, getSourceCode } from '../context-compat';
+
 import { checkIfCompiledExport } from './check-if-compiled-export';
 
 type Node = Rule.Node;
@@ -13,14 +15,14 @@ export const createNoExportedRule =
     messageId: string
   ): RuleModule['create'] =>
   (context) => {
-    const { text } = context.getSourceCode();
+    const { text } = getSourceCode(context);
     if (!text.includes(COMPILED_IMPORT)) {
       return {};
     }
 
     return {
       CallExpression(node) {
-        const { references } = context.getScope();
+        const { references } = getScope(context, node);
         if (!isUsage(node.callee as Rule.Node, references)) {
           return;
         }
@@ -36,7 +38,7 @@ export const createNoExportedRule =
         });
       },
       TaggedTemplateExpression(node) {
-        const { references } = context.getScope();
+        const { references } = getScope(context, node);
         if (!isUsage(node.tag as Rule.Node, references)) {
           return;
         }

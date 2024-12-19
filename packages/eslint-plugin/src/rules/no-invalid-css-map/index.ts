@@ -3,6 +3,7 @@ import type { Rule } from 'eslint';
 import type { CallExpression as ESCallExpression } from 'estree';
 
 import { CssMapObjectChecker, getCssMapObject, isCssMap, validateDefinition } from '../../utils';
+import { getScope, getSourceCode } from '../../utils/context-compat';
 
 type CallExpression = ESCallExpression & Rule.NodeParentExtension;
 
@@ -39,7 +40,7 @@ const reportIfNotTopLevelScope = (node: CallExpression, context: Rule.RuleContex
 };
 
 const createCssMapRule = (context: Rule.RuleContext): Rule.RuleListener => {
-  const { text } = context.getSourceCode();
+  const { text } = getSourceCode(context);
 
   // Bail out if this is not one of the imports we care about (eg. not from @compiled/react)
   if (DEFAULT_IMPORT_SOURCES.every((source) => !text.includes(source))) {
@@ -48,7 +49,7 @@ const createCssMapRule = (context: Rule.RuleContext): Rule.RuleListener => {
 
   return {
     CallExpression(node) {
-      const references = context.getScope().references;
+      const references = getScope(context, node).references;
 
       if (!isCssMap(node.callee as Rule.Node, references)) {
         return;
