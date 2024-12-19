@@ -2,8 +2,7 @@
   "extends": "../tsconfig.options.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist",
-    "module": "commonjs"
+    "outDir": "dist"
   },
   "references": [{ "path": "../utils" }]
 }
