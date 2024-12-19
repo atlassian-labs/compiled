@@ -1,6 +1,6 @@
 {
   "name": "@compiled/ssr-app",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "private": true,
   "scripts": {
     "build": "razzle build",
@@ -14,7 +14,7 @@
     "@babel/helper-builder-react-jsx": "^7.19.0",
     "@babel/helper-builder-react-jsx-experimental": "^7.12.11",
     "@compiled/react": "*",
-    "express": "4.20.0",
+    "express": "4.21.2",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },

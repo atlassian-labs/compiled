@@ -1,5 +1,30 @@
 # @compiled/eslint-plugin
 
+## 0.18.2
+
+### Patch Changes
+
+- a90961b3: Fix shorthand-property-sorting crashing when variable in css prop is not initialised
+
+## 0.18.1
+
+### Patch Changes
+
+- 6fb28946: Fix border-inline-start and border-inline-end not having any valid ordering in the shorthand-property-sorting ESLint rule
+- Updated dependencies [6fb28946]
+  - @compiled/utils@0.13.2
+
+## 0.18.0
+
+### Minor Changes
+
+- 88bbe382: Fix shorthand-property-sorting not detecting lint violations, and extend the rule to support almost all Compiled APIs
+
+### Patch Changes
+
+- Updated dependencies [88bbe382]
+  - @compiled/utils@0.13.1
+
 ## 0.17.0
 
 ### Minor Changes
