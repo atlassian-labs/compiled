@@ -36,6 +36,25 @@ describe('css map basic functionality', () => {
     ]);
   });
 
+  it('should transform css map even when the styles are defined below the component', () => {
+    const actual = transform(`
+      import { cssMap } from '@compiled/react';
+
+      const Component = () => <div>
+        <span css={styles.danger} />
+        <span css={styles.success} />
+      </div>
+
+      const styles = cssMap(${styles});
+    `);
+
+    expect(actual).toIncludeMultiple([
+      'const styles={danger:"_syaz5scu _bfhk5scu",success:"_syazbf54 _bfhkbf54"};',
+      '<span className={ax([styles.danger])}/>',
+      '<span className={ax([styles.success])}/>',
+    ]);
+  });
+
   it('should transform css map even with an empty object', () => {
     const actual = transform(`
         import { css, cssMap } from '@compiled/react';
