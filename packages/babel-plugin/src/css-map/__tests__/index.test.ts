@@ -107,6 +107,19 @@ describe('css map basic functionality', () => {
     ]);
   });
 
+  it('should error out if the root cssMap object is being directly called', () => {
+    expect(() => {
+      transform(`
+      import { cssMap } from '@compiled/react';
+
+      const styles = cssMap(${styles});
+
+      // Eg. we expect 'styles.danger' here instead of 'styles'
+      <div css={styles} />
+    `);
+    }).toThrow(ErrorMessages.USE_VARIANT_OF_CSS_MAP);
+  });
+
   it('should error out if variants are not defined at the top-most scope of the module.', () => {
     expect(() => {
       transform(`

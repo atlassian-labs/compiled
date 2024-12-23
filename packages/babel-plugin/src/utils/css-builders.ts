@@ -9,6 +9,7 @@ import type { Metadata } from '../types';
 
 import { buildCodeFrameError } from './ast';
 import { CONDITIONAL_PATHS } from './constants';
+import { createErrorMessage, ErrorMessages } from './css-map';
 import { evaluateExpression } from './evaluate-expression';
 import {
   isCompiledCSSCallExpression,
@@ -990,6 +991,14 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     if (!t.isExpression(resolvedBinding.node)) {
       throw buildCodeFrameError(
         `${resolvedBinding.node.type} isn't a supported CSS type - try using an object or string`,
+        node,
+        meta.parentPath
+      );
+    }
+
+    if (meta.state.cssMap[node.name]) {
+      throw buildCodeFrameError(
+        createErrorMessage(ErrorMessages.USE_VARIANT_OF_CSS_MAP),
         node,
         meta.parentPath
       );
