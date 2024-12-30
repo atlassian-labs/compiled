@@ -14,7 +14,7 @@
     "react-dom": "17.0.2"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-decorators": "^7.22.15",
+    "@babel/plugin-proposal-decorators": "^7.25.9",
     "@compiled/parcel-config": "*",
     "@compiled/parcel-transformer": "*",
     "@compiled/parcel-transformer-external": "*",
