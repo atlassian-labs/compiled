@@ -112,10 +112,21 @@ describe('css map basic functionality', () => {
       transform(`
       import { cssMap } from '@compiled/react';
 
-      const styles = cssMap(${styles});
+      const styles = cssMap({ root: { color: 'red' } });
 
-      // Eg. we expect 'styles.danger' here instead of 'styles'
+      // Eg. we expect 'styles.root' here instead of 'styles'
       <div css={styles} />
+    `);
+    }).toThrow(ErrorMessages.USE_VARIANT_OF_CSS_MAP);
+
+    expect(() => {
+      transform(`
+      import { cssMap } from '@compiled/react';
+
+      // Eg. we expect 'styles.root' here instead of 'styles'
+      <div css={styles} />
+
+      const styles = cssMap({ root: { color: 'red' } });
     `);
     }).toThrow(ErrorMessages.USE_VARIANT_OF_CSS_MAP);
   });
