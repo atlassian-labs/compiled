@@ -40,63 +40,6 @@ const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
 
 let globalCache: Cache | undefined;
 
-const buildCompiledImportsCache: Visitor<State> = {
-  ImportDeclaration(path, state) {
-    const userLandModule = path.node.source.value;
-    const isCompiledModule = this.importSources.some((compiledModuleOrigin) => {
-      if (compiledModuleOrigin === userLandModule) {
-        return true;
-      }
-
-      if (
-        state.filename &&
-        userLandModule[0] === '.' &&
-        userLandModule.endsWith(basename(compiledModuleOrigin))
-      ) {
-        // Relative import that might be a match, resolve the relative path and compare.
-        const fullpath = resolve(dirname(state.filename), userLandModule);
-        return fullpath === compiledModuleOrigin;
-      }
-
-      return false;
-    });
-
-    if (!isCompiledModule) {
-      return;
-    }
-
-    // The presence of the module enables CSS prop
-    state.compiledImports = state.compiledImports || {};
-
-    // Go through each import and enable each found API
-    path.get('specifiers').forEach((specifier) => {
-      if (!state.compiledImports || !specifier.isImportSpecifier()) {
-        // Bail out early
-        return;
-      }
-
-      (['styled', 'ClassNames', 'css', 'keyframes', 'cssMap'] as const).forEach((apiName) => {
-        if (
-          state.compiledImports &&
-          t.isIdentifier(specifier.node?.imported) &&
-          specifier.node?.imported.name === apiName
-        ) {
-          // Enable the API with the local name
-          const apiArray = state.compiledImports[apiName] || [];
-          apiArray.push(specifier.node.local.name);
-          state.compiledImports[apiName] = apiArray;
-
-          specifier.remove();
-        }
-      });
-    });
-
-    if (path.node.specifiers.length === 0) {
-      path.remove();
-    }
-  },
-};
-
 const findClassicJsxPragmaImport: Visitor<State> = {
   ImportSpecifier(path, state) {
     const specifier = path.node;
@@ -122,15 +65,6 @@ const findClassicJsxPragmaImport: Visitor<State> = {
   },
 };
 
-const buildCssMapState: Visitor<State> = {
-  CallExpression(path, state) {
-    if (isCompiledCSSMapCallExpression(path.node, state)) {
-      visitCssMapPath(path, { context: 'root', state, parentPath: path });
-      return;
-    }
-  },
-};
-
 export default declare<State>((api) => {
   api.assertVersion(7);
 
@@ -142,6 +76,7 @@ export default declare<State>((api) => {
 
       this.sheets = {};
       this.cssMap = {};
+      this.ignoreMemberExpressions = {};
       let cache: Cache;
 
       if (this.opts.cache === true) {
@@ -244,11 +179,6 @@ export default declare<State>((api) => {
               );
             }
           }
-
-          // Build our `state.compiledImports[…]` state now that we've traversed JSX pragmas
-          path.traverse<State>(buildCompiledImportsCache, this);
-          // Build our `state.cssMap[…]` before we traverse the JSXElements which consume it
-          path.traverse<State>(buildCssMapState, this);
         },
         exit(path, state) {
           if (!state.compiledImports && !state.usesXcss) {
@@ -308,6 +238,60 @@ export default declare<State>((api) => {
           });
         },
       },
+      ImportDeclaration(path, state) {
+        const userLandModule = path.node.source.value;
+        const isCompiledModule = this.importSources.some((compiledModuleOrigin) => {
+          if (compiledModuleOrigin === userLandModule) {
+            return true;
+          }
+
+          if (
+            state.filename &&
+            userLandModule[0] === '.' &&
+            userLandModule.endsWith(basename(compiledModuleOrigin))
+          ) {
+            // Relative import that might be a match, resolve the relative path and compare.
+            const fullpath = resolve(dirname(state.filename), userLandModule);
+            return fullpath === compiledModuleOrigin;
+          }
+
+          return false;
+        });
+
+        if (!isCompiledModule) {
+          return;
+        }
+
+        // The presence of the module enables CSS prop
+        state.compiledImports = state.compiledImports || {};
+
+        // Go through each import and enable each found API
+        path.get('specifiers').forEach((specifier) => {
+          if (!state.compiledImports || !specifier.isImportSpecifier()) {
+            // Bail out early
+            return;
+          }
+
+          (['styled', 'ClassNames', 'css', 'keyframes', 'cssMap'] as const).forEach((apiName) => {
+            if (
+              state.compiledImports &&
+              t.isIdentifier(specifier.node?.imported) &&
+              specifier.node?.imported.name === apiName
+            ) {
+              // Enable the API with the local name
+              const apiArray = state.compiledImports[apiName] || [];
+              apiArray.push(specifier.node.local.name);
+              state.compiledImports[apiName] = apiArray;
+
+              specifier.remove();
+            }
+          });
+        });
+
+        if (path.node.specifiers.length === 0) {
+          path.remove();
+        }
+      },
       'TaggedTemplateExpression|CallExpression'(
         path: NodePath<t.TaggedTemplateExpression> | NodePath<t.CallExpression>,
         state: State
@@ -327,6 +311,11 @@ Reasons this might happen:
             path.parentPath.node,
             path.parentPath
           );
+        }
+
+        if (isCompiledCSSMapCallExpression(path.node, state)) {
+          visitCssMapPath(path, { context: 'root', state, parentPath: path });
+          return;
         }
 
         const hasStyles =

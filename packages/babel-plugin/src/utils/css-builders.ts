@@ -1,8 +1,10 @@
 import generate from '@babel/generator';
+import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { addUnitIfNeeded, cssAffixInterpolation } from '@compiled/css';
 import { hash, kebabCase } from '@compiled/utils';
 
+import { visitCssMapPath } from '../css-map';
 import type { Metadata } from '../types';
 
 import { buildCodeFrameError } from './ast';
@@ -10,6 +12,7 @@ import { CONDITIONAL_PATHS } from './constants';
 import { evaluateExpression } from './evaluate-expression';
 import {
   isCompiledCSSCallExpression,
+  isCompiledCSSMapCallExpression,
   isCompiledCSSTaggedTemplateExpression,
   isCompiledKeyframesCallExpression,
   isCompiledKeyframesTaggedTemplateExpression,
@@ -688,11 +691,47 @@ function extractMemberExpression(
   fallbackToEvaluate = true
 ): CSSOutput | undefined {
   const bindingIdentifier = findBindingIdentifier(node);
-  if (bindingIdentifier && meta.state.cssMap[bindingIdentifier.name]) {
-    return {
-      css: [{ type: 'map', expression: node, name: bindingIdentifier.name, css: '' }],
-      variables: [],
-    };
+
+  if (bindingIdentifier) {
+    /**
+     * If we don't yet have a `meta.state.cssMap[…]` built yet, build it and cache it, eg. in this scenario:
+     * ```tsx
+     * const Component = () => <div css={styles.root} />
+     * const styles = cssMap({ root: { padding: 0 } });
+     * ```
+     *
+     * If we don't hit this, we put it into `ignoreMemberExpressions` to ignore on future runs.
+     */
+    if (
+      !meta.state.cssMap[bindingIdentifier.name] &&
+      !meta.state.ignoreMemberExpressions[bindingIdentifier.name]
+    ) {
+      const resolved = resolveBinding(bindingIdentifier.name, meta, evaluateExpression);
+      if (resolved && isCompiledCSSMapCallExpression(resolved.node, meta.state)) {
+        let resolvedCallPath = resolved.path.get('init');
+        if (Array.isArray(resolvedCallPath)) {
+          resolvedCallPath = resolvedCallPath[0];
+        }
+
+        if (t.isCallExpression(resolvedCallPath.node)) {
+          visitCssMapPath(resolvedCallPath as NodePath<t.CallExpression>, {
+            context: 'root',
+            state: meta.state,
+            parentPath: resolved.path,
+          });
+        }
+      }
+    }
+
+    if (meta.state.cssMap[bindingIdentifier.name]) {
+      return {
+        css: [{ type: 'map', expression: node, name: bindingIdentifier.name, css: '' }],
+        variables: [],
+      };
+    }
+
+    // If this cannot be found, it's likely not a `cssMap` identifier and we shouldn't parse it again on future runs…
+    meta.state.ignoreMemberExpressions[bindingIdentifier.name] = true;
   }
 
   if (fallbackToEvaluate) {

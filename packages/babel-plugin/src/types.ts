@@ -195,6 +195,11 @@ export interface State extends PluginPass {
   cssMap: Record<string, string[]>;
 
   /**
+   * Holdings a record of member expression names to ignore
+   */
+  ignoreMemberExpressions: Record<string, true>;
+
+  /**
    * A custom resolver used to statically evaluate import declarations
    */
   resolver?: Resolver;
