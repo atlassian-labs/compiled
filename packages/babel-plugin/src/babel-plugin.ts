@@ -76,6 +76,7 @@ export default declare<State>((api) => {
 
       this.sheets = {};
       this.cssMap = {};
+      this.ignoreMemberExpressions = {};
       let cache: Cache;
 
       if (this.opts.cache === true) {
@@ -239,7 +240,6 @@ export default declare<State>((api) => {
       },
       ImportDeclaration(path, state) {
         const userLandModule = path.node.source.value;
-
         const isCompiledModule = this.importSources.some((compiledModuleOrigin) => {
           if (compiledModuleOrigin === userLandModule) {
             return true;
@@ -282,6 +282,7 @@ export default declare<State>((api) => {
               const apiArray = state.compiledImports[apiName] || [];
               apiArray.push(specifier.node.local.name);
               state.compiledImports[apiName] = apiArray;
+
               specifier.remove();
             }
           });
@@ -311,6 +312,7 @@ Reasons this might happen:
             path.parentPath
           );
         }
+
         if (isCompiledCSSMapCallExpression(path.node, state)) {
           visitCssMapPath(path, { context: 'root', state, parentPath: path });
           return;

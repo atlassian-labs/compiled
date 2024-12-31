@@ -36,6 +36,25 @@ describe('css map basic functionality', () => {
     ]);
   });
 
+  it('should transform css map even when the styles are defined below the component', () => {
+    const actual = transform(`
+      import { cssMap } from '@compiled/react';
+
+      const Component = () => <div>
+        <span css={styles.danger} />
+        <span css={styles.success} />
+      </div>
+
+      const styles = cssMap(${styles});
+    `);
+
+    expect(actual).toIncludeMultiple([
+      'const styles={danger:"_syaz5scu _bfhk5scu",success:"_syazbf54 _bfhkbf54"};',
+      '<span className={ax([styles.danger])}/>',
+      '<span className={ax([styles.success])}/>',
+    ]);
+  });
+
   it('should transform css map even with an empty object', () => {
     const actual = transform(`
         import { css, cssMap } from '@compiled/react';
@@ -86,6 +105,30 @@ describe('css map basic functionality', () => {
       'const styles={root:"_1e0c1ule",positive:"_bfhk1x77 _syaz11x8",negative:"_bfhkbf54 _syaz5scu",bold:"_k48p8n31",normal:"_k48p4jg8"}',
       '<div className={ax([styles.root,weight in styles?styles[weight]:styles.normal,isPrimary?styles.positive:styles.negative])}/>',
     ]);
+  });
+
+  it('should error out if the root cssMap object is being directly called', () => {
+    expect(() => {
+      transform(`
+      import { cssMap } from '@compiled/react';
+
+      const styles = cssMap({ root: { color: 'red' } });
+
+      // Eg. we expect 'styles.root' here instead of 'styles'
+      <div css={styles} />
+    `);
+    }).toThrow(ErrorMessages.USE_VARIANT_OF_CSS_MAP);
+
+    expect(() => {
+      transform(`
+      import { cssMap } from '@compiled/react';
+
+      // Eg. we expect 'styles.root' here instead of 'styles'
+      <div css={styles} />
+
+      const styles = cssMap({ root: { color: 'red' } });
+    `);
+    }).toThrow(ErrorMessages.USE_VARIANT_OF_CSS_MAP);
   });
 
   it('should error out if variants are not defined at the top-most scope of the module.', () => {
