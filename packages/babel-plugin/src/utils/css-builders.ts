@@ -9,6 +9,7 @@ import type { Metadata } from '../types';
 
 import { buildCodeFrameError } from './ast';
 import { CONDITIONAL_PATHS } from './constants';
+import { createErrorMessage, ErrorMessages } from './css-map';
 import { evaluateExpression } from './evaluate-expression';
 import {
   isCompiledCSSCallExpression,
@@ -669,6 +670,45 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 };
 
 /**
+ * If we don't yet have a `meta.state.cssMap[node.name]` built yet, try to build and cache it, eg. in this scenario:
+ * ```tsx
+ * const Component = () => <div css={styles.root} />
+ * const styles = cssMap({ root: { padding: 0 } });
+ * ```
+ *
+ * If we don't find this is a `cssMap()` call, we put it into `ignoreMemberExpressions` to ignore on future runs.
+ *
+ * @returns {Boolean} Whether the cache was generated
+ */
+const generateCacheForCSSMap = (node: t.Identifier, meta: Metadata): void => {
+  if (meta.state.cssMap[node.name] || meta.state.ignoreMemberExpressions[node.name]) {
+    return;
+  }
+
+  const resolved = resolveBinding(node.name, meta, evaluateExpression);
+  if (resolved && isCompiledCSSMapCallExpression(resolved.node, meta.state)) {
+    let resolvedCallPath = resolved.path.get('init');
+    if (Array.isArray(resolvedCallPath)) {
+      resolvedCallPath = resolvedCallPath[0];
+    }
+
+    if (t.isCallExpression(resolvedCallPath.node)) {
+      // This visits the cssMap path and caches the styles
+      visitCssMapPath(resolvedCallPath as NodePath<t.CallExpression>, {
+        context: 'root',
+        state: meta.state,
+        parentPath: resolved.path,
+      });
+    }
+  }
+
+  if (!meta.state.cssMap[node.name]) {
+    // If this cannot be found, it's likely not a `cssMap` identifier and we shouldn't parse it again on future runs…
+    meta.state.ignoreMemberExpressions[node.name] = true;
+  }
+};
+
+/**
  * Extracts CSS data from a member expression node (eg. `styles.primary`)
  *
  * @param node Node we're interested in extracting CSS from.
@@ -693,45 +733,14 @@ function extractMemberExpression(
   const bindingIdentifier = findBindingIdentifier(node);
 
   if (bindingIdentifier) {
-    /**
-     * If we don't yet have a `meta.state.cssMap[…]` built yet, build it and cache it, eg. in this scenario:
-     * ```tsx
-     * const Component = () => <div css={styles.root} />
-     * const styles = cssMap({ root: { padding: 0 } });
-     * ```
-     *
-     * If we don't hit this, we put it into `ignoreMemberExpressions` to ignore on future runs.
-     */
-    if (
-      !meta.state.cssMap[bindingIdentifier.name] &&
-      !meta.state.ignoreMemberExpressions[bindingIdentifier.name]
-    ) {
-      const resolved = resolveBinding(bindingIdentifier.name, meta, evaluateExpression);
-      if (resolved && isCompiledCSSMapCallExpression(resolved.node, meta.state)) {
-        let resolvedCallPath = resolved.path.get('init');
-        if (Array.isArray(resolvedCallPath)) {
-          resolvedCallPath = resolvedCallPath[0];
-        }
-
-        if (t.isCallExpression(resolvedCallPath.node)) {
-          visitCssMapPath(resolvedCallPath as NodePath<t.CallExpression>, {
-            context: 'root',
-            state: meta.state,
-            parentPath: resolved.path,
-          });
-        }
-      }
-    }
-
+    // In some cases, the `state.cssMap` is not warmed yet, so run it:
+    generateCacheForCSSMap(bindingIdentifier, meta);
     if (meta.state.cssMap[bindingIdentifier.name]) {
       return {
         css: [{ type: 'map', expression: node, name: bindingIdentifier.name, css: '' }],
         variables: [],
       };
     }
-
-    // If this cannot be found, it's likely not a `cssMap` identifier and we shouldn't parse it again on future runs…
-    meta.state.ignoreMemberExpressions[bindingIdentifier.name] = true;
   }
 
   if (fallbackToEvaluate) {
@@ -990,6 +999,16 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
     if (!t.isExpression(resolvedBinding.node)) {
       throw buildCodeFrameError(
         `${resolvedBinding.node.type} isn't a supported CSS type - try using an object or string`,
+        node,
+        meta.parentPath
+      );
+    }
+
+    // In some cases, the `state.cssMap` is not warmed yet, so run it:
+    generateCacheForCSSMap(node, meta);
+    if (meta.state.cssMap[node.name]) {
+      throw buildCodeFrameError(
+        createErrorMessage(ErrorMessages.USE_VARIANT_OF_CSS_MAP),
         node,
         meta.parentPath
       );

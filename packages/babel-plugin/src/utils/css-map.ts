@@ -86,6 +86,7 @@ export enum ErrorMessages {
   STATIC_PROPERTY_KEY = 'Property key may only be a static string.',
   SELECTOR_BLOCK_WRONG_PLACE = '`selector` key was defined in the wrong place.',
   USE_SELECTORS_WITH_AMPERSAND = 'This selector is applied to the parent element, and so you need to specify the ampersand symbol (&) directly before it. For example, `:hover` should be written as `&:hover`.',
+  USE_VARIANT_OF_CSS_MAP = 'You must use the variant of a CSS Map object (eg. `styles.root`), not the root object itself, eg. `styles`.',
 }
 
 export const createErrorMessage = (message: string): string => {

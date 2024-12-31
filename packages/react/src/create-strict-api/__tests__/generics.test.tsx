@@ -19,7 +19,7 @@ describe('createStrictAPI()', () => {
   });
 
   it('should mark all styles as optional in cssMap()', () => {
-    const styles = cssMap({
+    const stylesMap = cssMap({
       nested: {
         '&:hover': {},
         '&:active': {},
@@ -28,7 +28,7 @@ describe('createStrictAPI()', () => {
       },
     });
 
-    const { getByTestId } = render(<div css={styles.nested} data-testid="div" />);
+    const { getByTestId } = render(<div css={stylesMap.nested} data-testid="div" />);
 
     expect(getByTestId('div')).toBeDefined();
   });
@@ -96,7 +96,7 @@ describe('createStrictAPI()', () => {
     });
 
     it('should violate types for cssMap()', () => {
-      const styles = cssMap({
+      const stylesMap = cssMap({
         primary: {
           // @ts-expect-error — Type '""' is not assignable to type ...
           color: '',
@@ -129,7 +129,7 @@ describe('createStrictAPI()', () => {
         },
       });
 
-      const { getByTestId } = render(<div css={styles.primary} data-testid="div" />);
+      const { getByTestId } = render(<div css={stylesMap.primary} data-testid="div" />);
 
       expect(getByTestId('div')).toBeDefined();
     });
@@ -224,7 +224,7 @@ describe('createStrictAPI()', () => {
     });
 
     it('should pass type check for cssMap()', () => {
-      const styles = cssMap({
+      const stylesMap = cssMap({
         primary: {
           color: 'var(--ds-text)',
           backgroundColor: 'var(--ds-bold)',
@@ -258,7 +258,7 @@ describe('createStrictAPI()', () => {
         },
       });
 
-      const { getByTestId } = render(<div css={styles.primary} data-testid="div" />);
+      const { getByTestId } = render(<div css={stylesMap.primary} data-testid="div" />);
 
       expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
     });
