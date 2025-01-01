@@ -1,5 +1,37 @@
 # @compiled/babel-plugin
 
+## 0.35.0
+
+### Minor Changes
+
+- 34e5339a: Fix `@compiled/babel-plugin` to not require `cssMap()` to be called prior to use.
+
+  Example, this failed before for no reason other than the fact that our `state.cssMap` was generated _after_ `JSXElement` and `JSXOpeningElement` were ran.
+
+  ```tsx
+  import { cssMap } from '@compiled/react';
+  export default () => <div css={styles.root} />;
+  const styles = cssMap({ root: { padding: 8 } });
+  ```
+
+- 34e5339a: Throw an error when compiling a `cssMap` object where we expect a `css` or nested `cssMap` object.
+
+  Example of code that silently fails today, using `styles` directly:
+
+  ```tsx
+  import { cssMap } from '@compiled/react';
+  const styles = cssMap({ root: { padding: 8 } });
+  export default () => <div css={styles} />;
+  ```
+
+  What we expect to see instead, using `styles.root` instead:
+
+  ```tsx
+  import { cssMap } from '@compiled/react';
+  const styles = cssMap({ root: { padding: 8 } });
+  export default () => <div css={styles.root} />;
+  ```
+
 ## 0.34.0
 
 ### Minor Changes
