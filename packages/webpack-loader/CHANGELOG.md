@@ -1,5 +1,13 @@
 # @compiled/webpack-loader
 
+## 0.19.2
+
+### Patch Changes
+
+- Updated dependencies [34e5339a]
+- Updated dependencies [34e5339a]
+  - @compiled/babel-plugin@0.35.0
+
 ## 0.19.1
 
 ### Patch Changes

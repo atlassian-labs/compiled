@@ -1,5 +1,13 @@
 # @compiled/parcel-transformer
 
+## 0.18.3
+
+### Patch Changes
+
+- Updated dependencies [34e5339a]
+- Updated dependencies [34e5339a]
+  - @compiled/babel-plugin@0.35.0
+
 ## 0.18.2
 
 ### Patch Changes
