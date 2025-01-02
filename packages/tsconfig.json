@@ -11,7 +11,7 @@
     { "path": "parcel-optimizer/tsconfig.json" },
     { "path": "parcel-transformer/tsconfig.json" },
     { "path": "parcel-transformer-external/tsconfig.json" },
-    { "path": "react/tsconfig.json" },
+    { "path": "react/tsconfig.cjs.json" },
     { "path": "utils/tsconfig.json" },
     { "path": "webpack-loader/tsconfig.json" }
   ]

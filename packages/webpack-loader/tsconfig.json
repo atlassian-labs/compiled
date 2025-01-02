@@ -3,9 +3,9 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "module": "commonjs",
     "target": "es2017"
   },
+  "exclude": ["src/__fixtures__"],
   "references": [
     { "path": "../babel-plugin" },
     { "path": "../babel-plugin-strip-runtime" },
