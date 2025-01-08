@@ -174,12 +174,10 @@ const parseCssArrayElement = (
   } else if (element.type === 'ConditionalExpression') {
     // Covers the case:
     //     someCondition ? someStyles : someOtherStyles
-    return [
-      ...union(
-        parseCssArrayElement(context, element.consequent),
-        parseCssArrayElement(context, element.alternate)
-      ),
-    ];
+    return union(
+      parseCssArrayElement(context, element.consequent),
+      parseCssArrayElement(context, element.alternate)
+    );
   } else if (element.type === 'MemberExpression' && element.object.type === 'Identifier') {
     // Covers cssMap usages
     functionCall = getVariableDefinition(context, element.object);
