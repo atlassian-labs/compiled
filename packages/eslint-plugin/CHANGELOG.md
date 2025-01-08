@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.19.1
+
+### Patch Changes
+
+- d75db858: Fix some false positives in `shorthand-property-sorting` with css and cssMap
+
 ## 0.19.0
 
 ### Minor Changes
