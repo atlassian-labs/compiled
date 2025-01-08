@@ -271,6 +271,88 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
     },
 
     //
+    // styles from ternary operators should not cause false positives, if the same properties
+    // are defined in each style object
+    //
+
+    {
+      name: `styles from ternary operators should not cause false positive, if the same properties are defined (css, ${imp})`,
+      code: `
+        import { css } from '${imp}';
+        const oldStyles = css({
+          font: '...',
+          fontWeight: '...',
+        });
+        const newStyles = css({
+          font: '...',
+          fontWeight: '...',
+        });
+        const someCondition = true;
+        export const EmphasisText = ({ children }) => <span css={[someCondition ? oldStyles : newStyles]}>{children}</span>;
+      `,
+    },
+    {
+      name: `pseudo-classes from ternary operators should not cause false positive, if the same properties are defined (css, ${imp})`,
+      code: `
+        import { css } from '${imp}';
+        const oldStyles = css({
+          '&:hover': {
+            font: '...',
+            fontWeight: '...',
+          }
+        });
+        const newStyles = css({
+          '&:hover': {
+            font: '...',
+            fontWeight: '...',
+          },
+        });
+        const someCondition = true;
+        export const EmphasisText = ({ children }) => <span css={[someCondition ? oldStyles : newStyles]}>{children}</span>;
+      `,
+    },
+    {
+      name: `styles from ternary operators should not cause false positive, if the same properties are defined (cssMap, ${imp})`,
+      code: `
+        import { css } from '${imp}';
+        const myMap = cssMap({
+          warning: {
+            font: '...',
+            fontWeight: '...',
+          },
+          normal: {
+            font: '...',
+            fontWeight: '...',
+          }
+        });
+        const someCondition = true;
+        export const EmphasisText = ({ appearance, children }) => <span css={myMap[apperance]}>{children}</span>;
+      `,
+    },
+    {
+      name: `pseudo-classes from ternary operators should not cause false positive, if the same properties are defined (cssMap, ${imp})`,
+      code: `
+        import { cssMap } from '${imp}';
+        const myMap = cssMap({
+          warning: {
+            '&:hover': {
+              font: '...',
+              fontWeight: '...',
+            },
+          },
+          normal: {
+            '&:hover': {
+              font: '...',
+              fontWeight: '...',
+            },
+          }
+        });
+        const someCondition = true;
+        export const EmphasisText = ({ appearance, children }) => <span css={myMap[apperance]}>{children}</span>;
+      `,
+    },
+
+    //
     // has a valid sorting for borderInlineStart and borderInlineEnd
     //
 
@@ -308,6 +390,54 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
           styles = css({ top: '2px' });
         }
         export const EmphasisText = ({ children }) => <span css={styles}>{children}</span>;
+      `,
+    },
+
+    // false negative: styles in pseudo-classes are not checked when using style composition
+
+    {
+      // Currently not handled due to the added complexity of handling selectors.
+      // Feel free to update the rule to handle this, if it becomes a problem
+      name: `false negative: styles in pseudo-classes are not checked when using style composition (css, ${imp})`,
+      code: `
+        import { css } from '${imp}';
+        const baseStyles = css({
+          '&:hover': {
+            paddingLeft: '...',
+          }
+        });
+        const newStyles = css({
+          '&:hover': {
+            padding: '...',
+          }
+        });
+        export const EmphasisText = ({ children }) => <span css={[baseStyles, newStyles]}>{children}</span>;
+      `,
+    },
+
+    //
+    // depth in correct order for shorthand properties in the same bucket for cssMap AND if key not static
+    //
+
+    {
+      name: `depth in correct order for shorthand properties in the same bucket for cssMap AND if key not static (${imp})`,
+      code: outdent`
+        import { cssMap } from '${imp}';
+        const styles = cssMap({
+          warning: {
+            borderColor: '...', // 2
+            borderTop: '...', // 1
+          },
+          debug: {
+            borderColor: '...', // 2
+            borderTop: '...', // 1
+          },
+          normal: {
+            borderColor: '...', // 2
+            borderTop: '...', // 1
+          },
+        });
+        export const EmphasisText = ({ children, appearance }) => <span css={styles[appearance]}>{children}</span>;
       `,
     },
   ]),
@@ -796,7 +926,30 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
     },
 
     //
-    // false positives for cssMap
+    // known false positives for css
+    //
+
+    {
+      // I don't see a good way for the ESLint rule to handle this, without running the
+      // rule multiple times to handle each branch of the ternary operator (which can be
+      // exponentially expensive the more ternary operators we have)
+      name: 'false positive: styles from ternary operators, if different properties are defined',
+      code: `
+        import { css } from '${imp}';
+        const oldStyles = css({
+          fontWeight: '...',
+        });
+        const newStyles = css({
+          font: '...',
+        });
+        const someCondition = true;
+        export const EmphasisText = ({ children }) => <span css={[someCondition ? oldStyles : newStyles]}>{children}</span>;
+      `,
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
+    },
+
+    //
+    // known false positives for cssMap
     //
 
     {
@@ -809,26 +962,6 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
           },
           normal: {
             border: '...',
-          }
-        });
-        export const EmphasisText = ({ children, appearance }) => <span css={styles[appearance]}>{children}</span>;
-      `,
-      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
-    },
-    {
-      // this is a false positive, but making an exception for this would involve
-      // some extra logic... maybe we can revisit this if it becomes a common situation.
-      name: `false positive, if depth in correct order for shorthand properties in the same bucket for cssMap AND if key not static (${imp})`,
-      code: outdent`
-        import { cssMap } from '${imp}';
-        const styles = cssMap({
-          warning: {
-            borderColor: '...', // 2
-            borderTop: '...', // 1
-          },
-          normal: {
-            borderColor: '...', // 2
-            borderTop: '...', // 1
           }
         });
         export const EmphasisText = ({ children, appearance }) => <span css={styles[appearance]}>{children}</span>;
