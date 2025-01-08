@@ -120,15 +120,15 @@ const getObjectCSSProperties = (
 // repeated properties are de-duplicated.
 //
 // Nested arrays (nested selectors, pseudo-selectors, etc.) are not de-duplicated.
-const union = (...otherArrays: PropertyArray[]): PropertyArray => {
+const union = (...arrays: PropertyArray[]): PropertyArray => {
   const newArray = [];
-  const propertiesInArrayA = new Set<string>();
 
-  if (otherArrays.length === 0) {
+  if (arrays.length === 0) {
     return [];
   }
 
-  const arrayA = otherArrays[0];
+  const arrayA = arrays[0];
+  const propertiesInArrayA = new Set<string>();
 
   for (const elementA of arrayA) {
     newArray.push(elementA);
@@ -137,7 +137,7 @@ const union = (...otherArrays: PropertyArray[]): PropertyArray => {
     }
   }
 
-  for (const arrayB of otherArrays.slice(1)) {
+  for (const arrayB of arrays.slice(1)) {
     for (const elementB of arrayB) {
       if (Array.isArray(elementB)) {
         newArray.push(elementB);
