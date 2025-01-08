@@ -1,5 +1,18 @@
 # @compiled/eslint-plugin
 
+## 0.19.1
+
+### Patch Changes
+
+- d75db858: Fix some false positives in `shorthand-property-sorting` with css and cssMap
+
+## 0.19.0
+
+### Minor Changes
+
+- e6d57ea1: add engines to formalize supported node versions - ^16.0.0 || >= 18.0.0
+- e6d57ea1: support eslint v9
+
 ## 0.18.2
 
 ### Patch Changes

@@ -11,7 +11,7 @@
     "path-to-regexp": "^0.1.10"
   },
   "dependencies": {
-    "@babel/helper-builder-react-jsx": "^7.19.0",
+    "@babel/helper-builder-react-jsx": "^7.25.9",
     "@babel/helper-builder-react-jsx-experimental": "^7.12.11",
     "@compiled/react": "*",
     "express": "4.21.2",

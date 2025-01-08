@@ -116,6 +116,45 @@ const getObjectCSSProperties = (
   return properties;
 };
 
+// Given two (or more) arrays of properties, concatenate them in such a way that any
+// repeated properties are de-duplicated.
+//
+// Nested arrays (nested selectors, pseudo-selectors, etc.) are not de-duplicated.
+const union = (...arrays: PropertyArray[]): PropertyArray => {
+  const newArray = [];
+
+  if (arrays.length === 0) {
+    return [];
+  }
+
+  const arrayA = arrays[0];
+  const propertiesInArrayA = new Set<string>();
+
+  for (const elementA of arrayA) {
+    newArray.push(elementA);
+    if (!Array.isArray(elementA)) {
+      propertiesInArrayA.add(elementA.name);
+    }
+  }
+
+  for (const arrayB of arrays.slice(1)) {
+    for (const elementB of arrayB) {
+      if (Array.isArray(elementB)) {
+        newArray.push(elementB);
+        continue;
+      }
+
+      if (propertiesInArrayA.has(elementB.name)) {
+        continue;
+      }
+
+      newArray.push(elementB);
+    }
+  }
+
+  return newArray;
+};
+
 const parseCssArrayElement = (
   context: Rule.RuleContext,
   element: ArrayExpression['elements'][number]
@@ -135,10 +174,10 @@ const parseCssArrayElement = (
   } else if (element.type === 'ConditionalExpression') {
     // Covers the case:
     //     someCondition ? someStyles : someOtherStyles
-    return [
-      ...parseCssArrayElement(context, element.consequent),
-      ...parseCssArrayElement(context, element.alternate),
-    ];
+    return union(
+      parseCssArrayElement(context, element.consequent),
+      parseCssArrayElement(context, element.alternate)
+    );
   } else if (element.type === 'MemberExpression' && element.object.type === 'Identifier') {
     // Covers cssMap usages
     functionCall = getVariableDefinition(context, element.object);
@@ -275,7 +314,7 @@ const parseCssMap = (
   context: Rule.RuleContext,
   { node, key }: { node: CallExpression; key?: string | Literal['value'] }
 ): PropertyArray => {
-  const properties: PropertyArray = [];
+  const properties: PropertyArray[] = [];
   const { references } = context.sourceCode.getScope(node);
   if (!isCssMap(node.callee as Rule.Node, references)) {
     return [];
@@ -303,26 +342,24 @@ const parseCssMap = (
       // If we know what key in the cssMap function call to traverse,
       // we can make sure we only traverse that.
       if (property.key.type === 'Literal' && key === property.key.value) {
-        properties.push(...getObjectCSSProperties(context, property.value));
-        break;
+        return getObjectCSSProperties(context, property.value);
       } else if (property.key.type === 'Identifier' && key === property.key.name) {
-        properties.push(...getObjectCSSProperties(context, property.value));
-        break;
+        return getObjectCSSProperties(context, property.value);
       }
-    } else {
-      // We cannot determine which key in the cssMap function call to traverse,
-      // so we have no choice but to unconditionally traverse through the whole
-      // cssMap object.
-      //
-      // Not very performant and can give false positives, but considering that
-      // the cssMap key can be dynamic, we at least avoid any false negatives.
-      //
-      // (https://compiledcssinjs.com/docs/api-cssmap#dynamic-declarations)
-      properties.push(...getObjectCSSProperties(context, property.value));
     }
+
+    // We cannot determine which key in the cssMap function call to traverse,
+    // so we have no choice but to unconditionally traverse through the whole
+    // cssMap object.
+    //
+    // Not very performant and can give false positives, but considering that
+    // the cssMap key can be dynamic, we at least avoid any false negatives.
+    //
+    // (https://compiledcssinjs.com/docs/api-cssmap#dynamic-declarations)
+    properties.push(getObjectCSSProperties(context, property.value));
   }
 
-  return properties;
+  return union(...properties);
 };
 
 const parseStyled = (context: Rule.RuleContext, node: CallExpression): PropertyArray => {
