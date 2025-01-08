@@ -1,9 +1,8 @@
 {
   "extends": "../tsconfig.options.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "outDir": "dist"
   },
   "references": [{ "path": "../benchmark" }, { "path": "../css" }, { "path": "../utils" }]
 }
