@@ -43,7 +43,14 @@ export const transformCss = (
       parentOrphanedPseudos(),
       nested({
         bubble: ['container', '-moz-document', 'layer', 'else', 'when'],
-        unwrap: ['color-profile', 'counter-style', 'font-palette-values', 'page', 'property'],
+        unwrap: [
+          'color-profile',
+          'counter-style',
+          'font-palette-values',
+          'page',
+          'property',
+          'starting-style',
+        ],
       }),
       ...normalizeCSS(opts),
       expandShorthands(),

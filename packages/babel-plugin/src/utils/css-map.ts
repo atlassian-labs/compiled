@@ -20,7 +20,9 @@ const atRules: Record<AtRules, boolean> = {
   '@namespace': true,
   '@page': true,
   '@property': true,
+  '@scope': true,
   '@scroll-timeline': true,
+  '@starting-style': true,
   '@supports': true,
   '@viewport': true,
 };

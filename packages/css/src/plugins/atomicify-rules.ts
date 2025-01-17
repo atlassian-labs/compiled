@@ -188,6 +188,7 @@ const canAtomicifyAtRule = (node: AtRule): boolean => {
     'else',
     'layer',
     'media',
+    'starting-style',
     'supports',
     'when',
   ];
