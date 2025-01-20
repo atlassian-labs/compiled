@@ -65,7 +65,7 @@ module.exports = {
   plugins: [
     ...(extractCSS
       ? [
-          new MiniCssExtractPlugin({ filename: '[name].css' }),
+          new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' }),
           new CompiledExtractPlugin({ sortShorthand: true }),
         ]
       : []),
