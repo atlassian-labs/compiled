@@ -1,7 +1,8 @@
 # Contributing to Compiled
 
-Thank you for considering to contribute to Compiled!
-Pull requests, issues and comments are welcome.
+Thank you for considering a contribution to Compiled! Pull requests, issues and comments are welcome.
+
+However, please note that we do not officially support using Compiled outside of Atlassian products and the Atlassian ecosystem. As such, support will likely be limited if you use Compiled for products unrelated to Atlassian.
 
 ## Contribution Standards
 
@@ -15,11 +16,19 @@ Pull requests, issues and comments are welcome.
 
 See the [existing issues](https://github.com/atlassian-labs/compiled/issues) for things to start contributing.
 
-For bigger changes,
-please make sure you start a discussion first by creating an issue and explaining the intended change.
+For bigger changes, please make sure you start a discussion first by creating an issue and explaining the intended change.
 
-Atlassian requires contributors to sign a Contributor License Agreement,
-known as a CLA.
+### If you are an Atlassian employee
+
+You do not need to sign a Contributor License Agreement (CLA).
+
+Instead, you should link your GitHub account to your `@atlassian.com` Atlassian account, so that your GitHub account is recognised as belonging to an Atlassian employee.
+
+Please search for the "Link your Github & Atlassian accounts" page on the internal wiki for instructions on how to do this.
+
+### If you don't work for Atlassian
+
+Atlassian requires contributors to sign a Contributor License Agreement (CLA).
 This serves as a record stating that the contributor is entitled to contribute the code/documentation/translation
 to the project and is willing to have it used in distributions and derivative works (or is willing to transfer ownership).
 
