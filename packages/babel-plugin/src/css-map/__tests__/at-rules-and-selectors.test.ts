@@ -277,6 +277,31 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
     }
   });
 
+  it('should parse the @starting-style at-rule', () => {
+    const actual = transform(`
+        import { cssMap } from '@compiled/react';
+
+        const styles = cssMap({
+          success: {
+            color: 'red',
+            '@starting-style': {
+              color: 'blue'
+            },
+          },
+        });
+
+        ${EXAMPLE_USAGE}
+      `);
+
+    expect(actual).toIncludeMultiple([
+      '._syaz5scu{color:red}',
+      // TODO: work out why this is failing. The below line is actually being output as '@starting-style color: blue{}'
+      '@starting-style {._syaz5scu{color:blue}}',
+
+      'const styles={success:"_syaz5scu"}',
+    ]);
+  });
+
   it('should error if more than one selectors key passed', () => {
     expect(() => {
       transform(`
