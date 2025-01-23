@@ -9,7 +9,7 @@ export default {
   title: 'atomic/starting style',
 };
 
-type SideNavState = 'flyout-open' | 'expanded' | 'collapsed' | 'flyout-collapsed';
+type SideNavState = 'expanded' | 'collapsed' | 'flyout-open' | 'flyout-collapsed';
 
 export const Example = (): JSX.Element => {
   const [sideNavState, setSideNavState] = useState<SideNavState>('expanded');
@@ -94,26 +94,42 @@ const sidebarStyles = cssMap({
     display: 'none',
   },
   flyoutAnimation: {
-    transitionProperty: 'transform, display',
-    transitionDuration: '0.2s',
-    transitionBehavior: 'allow-discrete',
+    // Disabling animations for Firefox, as it doesn't support the close animation
+    '@supports not (-moz-appearance: none)': {
+      // Disabling animations if user has opting for reduced motion
+      '@media (prefers-reduced-motion: no-preference)': {
+        transitionProperty: 'transform, display',
+        transitionDuration: '0.2s',
+        transitionBehavior: 'allow-discrete',
+      },
+    },
   },
   flyoutOpen: {
     gridArea: 'main',
     // z-index is to overlay over main
     zIndex: 1,
-    '@media (prefers-reduced-motion: no-preference)': {
-      '@starting-style': {
-        transform: 'translateX(-100%)',
+    // Disabling animations for Firefox, as it doesn't support the close animation
+    '@supports not (-moz-appearance: none)': {
+      // Disabling animations if user has opting for reduced motion
+      '@media (prefers-reduced-motion: no-preference)': {
+        // Because we're transitioning from display: none, we need to define the starting values for when
+        // the element is first displayed, so the transition animation knows where to start from.
+        '@starting-style': {
+          transform: 'translateX(-100%)',
+        },
       },
     },
   },
   flyoutClosed: {
     display: 'none',
-    '@media (prefers-reduced-motion: no-preference)': {
-      transform: 'translateX(-100%)',
-      // use main's grid area to allow main to take side-nav's place in grid
-      gridArea: 'main',
+    // Disabling animations for Firefox, as it doesn't support the close animation
+    '@supports not (-moz-appearance: none)': {
+      // Disabling animations if user has opting for reduced motion
+      '@media (prefers-reduced-motion: no-preference)': {
+        transform: 'translateX(-100%)',
+        // Use main's grid area to allow main to take side-nav's place in grid
+        gridArea: 'main',
+      },
     },
   },
 });
