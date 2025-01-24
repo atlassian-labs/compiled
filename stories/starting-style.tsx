@@ -41,7 +41,7 @@ export const Example = (): JSX.Element => {
           onClick={handleSidebarToggle}
           onMouseEnter={handleToggleButtonMouseEnter}
           onMouseLeave={handleToggleButtonMouseLeave}>
-          🍔
+          ☰
         </button>
       </div>
 
