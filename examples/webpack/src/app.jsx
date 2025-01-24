@@ -10,6 +10,7 @@ import {
   CustomFileExtensionStyled,
   customFileExtensionCss,
 } from './ui/custom-file-extension.customjsx';
+import { StartingStyleExample } from './ui/starting-style';
 import { TypeScript } from './ui/typescript';
 
 const AsyncComponent = lazy(() => import('./ui/async'));
@@ -27,5 +28,6 @@ export const App = () => (
     <div css={customFileExtensionCss}>Custom File Extension CSS</div>
     <Annotated />
     <CSSMap variant="danger">CSS Map</CSSMap>
+    <StartingStyleExample />
   </>
 );
