@@ -42,7 +42,17 @@ export const transformCss = (
       discardEmptyRules(),
       parentOrphanedPseudos(),
       nested({
-        bubble: ['container', '-moz-document', 'layer', 'else', 'when'],
+        bubble: [
+          'container',
+          '-moz-document',
+          'layer',
+          'else',
+          'when',
+          // postcss-nested bubbles `starting-style` by default in versions from 6.0.2 onwards:
+          // https://github.com/postcss/postcss-nested?tab=readme-ov-file#bubble
+          // When we upgrade to a version that includes this change, we can remove this from the list.
+          'starting-style',
+        ],
         unwrap: ['color-profile', 'counter-style', 'font-palette-values', 'page', 'property'],
       }),
       ...normalizeCSS(opts),

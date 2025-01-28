@@ -277,6 +277,35 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
     }
   });
 
+  // TODO: add a unit test for the `@starting-style` at-rule when it is NOT nested. This is currently not working as
+  // Compiled only supports processing at-rules that have two "halves", e.g. `@media screen`
+  // When nested, the at-rule is not processed like an at-rule - it is processed like a CSS selector.
+  it('should parse the @starting-style at-rule when nested', () => {
+    const actual = transform(`
+        import { cssMap } from '@compiled/react';
+
+        const styles = cssMap({
+          success: {
+            color: 'red',
+            '@media (prefers-reduced-motion: no-preference)': {
+              '@starting-style': {
+                color: 'blue'
+              },
+            },
+          },
+        });
+
+        ${EXAMPLE_USAGE}
+      `);
+
+    expect(actual).toIncludeMultiple([
+      '._syaz5scu{color:red}',
+      '@media (prefers-reduced-motion:no-preference){@starting-style{._ff1013q2{color:blue}}}',
+
+      'const styles={success:"_syaz5scu _ff1013q2"}',
+    ]);
+  });
+
   it('should error if more than one selectors key passed', () => {
     expect(() => {
       transform(`
