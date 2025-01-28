@@ -1,5 +1,16 @@
 # @compiled/babel-plugin
 
+## 0.36.0
+
+### Minor Changes
+
+- 0f64c39f: Added support for the @starting-style at-rule.
+
+### Patch Changes
+
+- Updated dependencies [0f64c39f]
+  - @compiled/css@0.19.0
+
 ## 0.35.0
 
 ### Minor Changes
