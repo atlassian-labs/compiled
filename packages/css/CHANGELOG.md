@@ -1,5 +1,11 @@
 # @compiled/css
 
+## 0.19.0
+
+### Minor Changes
+
+- 0f64c39f: Added support for the @starting-style at-rule.
+
 ## 0.18.0
 
 ### Minor Changes
