@@ -52,3 +52,4 @@ jobs:
         with:
           name: visual-regression-screenshots
           path: .loki
+          include-hidden-files: true
