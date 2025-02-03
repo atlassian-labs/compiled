@@ -6,9 +6,9 @@ section: 50-Guides
 
 The architecture or design of Compiled prevents some things that are possible with runtime libraries. There are also some features we would like to add to Compiled in the future that we have not yet.
 
-## Runtime styles
+## Dynamic selectors
 
-Styles can't be created at runtime which includes dynamic selectors as well.
+Styles with dynamic selectors can't be created (at runtime or extraction) and may result in missing styles. If the variable is a local static value instead it should work!
 
 ```jsx
 /** @jsxImportSource @compiled/react */
@@ -25,7 +25,32 @@ const styles = css({
 <div css={styles} />;
 ```
 
-If a dynamic value resolves to a static constant value however, it will work!
+## Mixing dynamic styles and indirect selectors
+
+You cannot mix dynamic styles and indirect selectors (eg. `div + label` or `div ~ label`) as the dynamic value will not be applied to the indirect selector.
+
+Example, this will result in `label` not having the inline `props.margin` applied as it will not have access to the CSS variable we inject:
+
+```jsx
+export default (props) => {
+  const styles = css({
+    '& + label': {
+      margin: `8px ${props.margin}`,
+    },
+  });
+
+  return (
+    <div>
+      <span css={styles}>Hello</span>
+      <label>world</label>
+    </div>
+  );
+};
+```
+
+Additionally, this currently happens with certain non-dynamic styles in a typical babel setup for certain target outputs, but this may be less common.
+
+For more details, refer to the [Github Issue](https://github.com/atlassian-labs/compiled/issues/1789).
 
 ## Overlapping styles, caused by media queries and other at-rules
 
@@ -34,36 +59,6 @@ Media queries and other at-rules are sorted deterministically when stylesheet ex
 ## Unsupported features
 
 Below is a non-exhaustive list of features that Compiled does not support. Some are features we would like to add to Compiled at some point in the future, while others are features that we don't plan to implement.
-
-### Ternary operators
-
-There is a bug where ternary operators in the `css` prop won't work:
-
-```tsx
-/** @jsxImportSource @compiled/react */
-import { css } from '@compiled/react';
-
-const styles = css({ color: 'blue' });
-const otherStyles = css({ color: 'red' });
-
-// build-time error
-const Component = <div css={isPrimary ? styles : otherStyles}>Hello</div>;
-```
-
-A workaround is to use the `&&` operator, which is supported:
-
-```tsx
-/** @jsxImportSource @compiled/react */
-import { css } from '@compiled/react';
-
-const styles = css({ color: 'blue' });
-const otherStyles = css({ color: 'red' });
-
-// build-time error
-const Component = <div css={[isPrimary && styles, !isPrimary && otherStyles]}>Hello</div>;
-```
-
-There is a [bug report on GitHub](https://github.com/atlassian-labs/compiled/issues/389) if you would like to stay updated.
 
 ### Theming
 
