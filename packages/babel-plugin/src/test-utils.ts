@@ -11,6 +11,7 @@ export type TransformOptions = PluginOptions & {
   filename?: string;
   pretty?: boolean;
   snippet?: boolean;
+  presets?: any;
 };
 
 export const transform = (code: string, options: TransformOptions = {}): string => {
@@ -31,10 +32,11 @@ export const transform = (code: string, options: TransformOptions = {}): string 
     filename,
     highlightCode,
     plugins: [[babelPlugin, { optimizeCss, ...pluginOptions }]],
-    presets:
-      pluginOptions.importReact === false
-        ? [['@babel/preset-react', { runtime: 'automatic' }]]
-        : [],
+    presets: options.presets
+      ? options.presets
+      : pluginOptions.importReact === false
+      ? [['@babel/preset-react', { runtime: 'automatic' }]]
+      : [],
     parserOpts: {
       plugins: pluginOptions.parserBabelPlugins ?? DEFAULT_PARSER_BABEL_PLUGINS,
     },

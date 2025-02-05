@@ -1,9 +1,89 @@
 import type { TransformOptions } from '../test-utils';
 import { transform as transformCode } from '../test-utils';
 
+const es5Browsers = [
+  'last 1 chrome versions',
+  // support last non-chrome-based version of edge
+  'edge >= 18',
+  'last 1 firefox versions',
+  'last 1 safari versions',
+  'last 1 and_chr versions',
+  'last 1 ios_saf versions',
+  // Temporarily putting this back to fix the Confluence es5-check and satisfy Jira's "limited" IE11 support
+  'ie 11',
+];
+
 describe('babel plugin', () => {
   const transform = (code: string, opts: TransformOptions = {}) =>
     transformCode(code, { comments: true, ...opts });
+
+  describe('babel-env with old browsers as targets', () => {
+    it.only('fails to parse dyanamic object property', () => {
+      const t = () => {
+        transform(
+          `
+      import { css } from '@compiled/react';
+
+      const media = "@media print"
+
+      const style = css({
+        [media]: {
+          color: "red"
+        },
+      });
+
+      <div css={style} />
+    `,
+          {
+            presets: [
+              [
+                '@babel/env',
+                {
+                  modules: 'commonjs',
+                  targets: es5Browsers,
+                },
+              ],
+            ],
+          }
+        );
+      };
+
+      expect(t).toThrow('This CallExpression was unable to have its styles extracted');
+    });
+
+    it.only('fails to evulate template string', () => {
+      const actual = transform(
+        `
+      import { css } from '@compiled/react';
+
+      const inlineMargin = '16px';
+      const styles = css({
+        '& + label': {
+          margin: \`8px \${inlineMargin}\`,
+        },
+      });
+
+      <div>
+        <span css={styles}>Hello</span>
+        <label>world</label>
+      </div>
+    `,
+        {
+          presets: [
+            [
+              '@babel/env',
+              {
+                modules: 'commonjs',
+                targets: es5Browsers,
+              },
+            ],
+          ],
+        }
+      );
+
+      expect(actual).toInclude('"--_g70wcu": (0, _runtime.ix)("8px ".concat(inlineMargin))');
+    });
+  });
 
   it('should not change code where there is no compiled components', () => {
     const actual = transform(`const one = 1;`);
