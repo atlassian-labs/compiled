@@ -28,7 +28,6 @@ import {
 import {
   objectPropertyToString,
   expressionToString,
-  isStringConcatExpression,
   canBeStaticallyConcatenated,
 } from './object-property-to-string';
 import { resolveBinding } from './resolve-binding';
@@ -499,11 +498,7 @@ const isCustomPropertyName = (value: string): boolean => value.startsWith('--');
  * @param node Node we're interested in extracting CSS from.
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
-const extractObjectExpression = (
-  node: t.ObjectExpression,
-  meta: Metadata,
-  parentKeys: string[] = []
-): CSSOutput => {
+const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSOutput => {
   const css: CSSOutput['css'] = [];
   const variables: CSSOutput['variables'] = [];
 
