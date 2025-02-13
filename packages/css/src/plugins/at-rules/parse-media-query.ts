@@ -45,7 +45,7 @@ const length_ = /(?<length>-?\d*\.?\d+)(?<lengthUnit>ch|em|ex|px|rem)?\s*/;
  * @param params The original media query, as a string
  * @returns The extracted and parsed breakpoints from the media query
  */
-export const parseAtRule = (params: string): ParsedAtRule[] => {
+export const parseMediaQuery = (params: string): ParsedAtRule[] => {
   // Inspired by previous work from
   // https://github.com/OlehDutchenko/sort-css-media-queries/blob/master/lib/create-sort.js
 
