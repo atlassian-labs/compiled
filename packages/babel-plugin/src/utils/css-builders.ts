@@ -1004,9 +1004,11 @@ export const buildCss = (node: t.Expression | t.Expression[], meta: Metadata): C
       );
     }
 
-    // In some cases, the `state.cssMap` is not warmed yet, so run it:
-    generateCacheForCSSMap(node, meta);
     if (meta.state.cssMap[node.name]) {
+      // it doesn't cover the case where styles are defined after its consumer.
+      // e.g.
+      // <div css={styles} />
+      // const styles = cssMap({ root: { color: 'red' } });
       throw buildCodeFrameError(
         createErrorMessage(ErrorMessages.USE_VARIANT_OF_CSS_MAP),
         node,
