@@ -128,7 +128,9 @@ describe('css map basic functionality', () => {
 
       const styles = cssMap({ root: { color: 'red' } });
     `);
-    }).toThrow(ErrorMessages.USE_VARIANT_OF_CSS_MAP);
+    }).toThrow(
+      'This CallExpression was unable to have its styles extracted — try to define them statically using Compiled APIs instead'
+    );
   });
 
   it('should error out if variants are not defined at the top-most scope of the module.', () => {
