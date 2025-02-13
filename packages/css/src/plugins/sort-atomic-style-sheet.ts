@@ -59,7 +59,10 @@ export const sortAtomicStyleSheet = (config: {
           case 'rule': {
             if (node.first?.type === 'atrule') {
               atRules.push({
-                parsed: sortAtRulesEnabled ? parseAtRule(node.first.params) : [],
+                parsed:
+                  sortAtRulesEnabled && node.first.name === 'media'
+                    ? parseAtRule(node.first.params)
+                    : [],
                 node,
                 atRuleName: node.first.name,
                 query: node.first.params,
@@ -73,7 +76,7 @@ export const sortAtomicStyleSheet = (config: {
 
           case 'atrule': {
             atRules.push({
-              parsed: sortAtRulesEnabled ? parseAtRule(node.params) : [],
+              parsed: sortAtRulesEnabled && node.name === 'media' ? parseAtRule(node.params) : [],
               node,
               atRuleName: node.name,
               query: node.params,
