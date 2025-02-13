@@ -2,7 +2,7 @@ import type { ChildNode, Rule, Plugin, AtRule } from 'postcss';
 
 import { sortPseudoSelectors } from '../utils/sort-pseudo-selectors';
 
-import { parseAtRule } from './at-rules/parse-at-rule';
+import { parseMediaQuery } from './at-rules/parse-media-query';
 import { sortAtRules } from './at-rules/sort-at-rules';
 import type { AtRuleInfo } from './at-rules/types';
 import { sortShorthandDeclarations } from './sort-shorthand-declarations';
@@ -59,7 +59,10 @@ export const sortAtomicStyleSheet = (config: {
           case 'rule': {
             if (node.first?.type === 'atrule') {
               atRules.push({
-                parsed: sortAtRulesEnabled ? parseAtRule(node.first.params) : [],
+                parsed:
+                  sortAtRulesEnabled && node.first.name === 'media'
+                    ? parseMediaQuery(node.first.params)
+                    : [],
                 node,
                 atRuleName: node.first.name,
                 query: node.first.params,
@@ -73,7 +76,8 @@ export const sortAtomicStyleSheet = (config: {
 
           case 'atrule': {
             atRules.push({
-              parsed: sortAtRulesEnabled ? parseAtRule(node.params) : [],
+              parsed:
+                sortAtRulesEnabled && node.name === 'media' ? parseMediaQuery(node.params) : [],
               node,
               atRuleName: node.name,
               query: node.params,

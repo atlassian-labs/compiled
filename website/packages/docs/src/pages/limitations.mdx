@@ -56,6 +56,27 @@ For more details, refer to the [Github Issue](https://github.com/atlassian-labs/
 
 Media queries and other at-rules are sorted deterministically when stylesheet extraction is turned on. See [this page](/media-queries-and-other-at-rules) for more details of how the sorting works and what its limitations are.
 
+## Returning static values from a dynamic property
+
+Styled components that use functions to dynamically assign properties, such as in the example below, may face issues where these properties are incorrectly resolved to a static value based on the first return statement:
+
+```jsx
+const Component = styled.li({
+  boxShadow: (props) => {
+    if (props.isSelected) {
+      return '0 0 0 1px magenta';
+    }
+    return '0 0 0 1px green';
+  },
+});
+```
+
+In this scenario, the result will always include a box shadow with the first static value `'0 0 0 1px magenta'`, and the function itself will not be executed at runtime. Consequently, any logic defined within the function will be ignored. This behavior occurs specifically when the function's first return statement provides a static value (e.g., a plain string).
+
+The simplest workaround is migrating to a ternary, eg. `props.isSelected ? '0 0 0 1px magenta' : '0 0 0 1px green'`, but in general the usage of dynamic styles is effectively deprecated, see [no-dynamic-styles eslint rule](https://atlassian.design/components/eslint-plugin-ui-styling-standard/no-dynamic-styles/usage) for better practices.
+
+For more details, refer to the [Github Issue](https://github.com/atlassian-labs/compiled/issues/1794).
+
 ## Unsupported features
 
 Below is a non-exhaustive list of features that Compiled does not support. Some are features we would like to add to Compiled at some point in the future, while others are features that we don't plan to implement.
