@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.36.1
+
+### Patch Changes
+
+- 8a824525: Stop checking if styles are cssMap if being used as `css={styles}`. This is to improve build performance.
+
 ## 0.36.0
 
 ### Minor Changes
