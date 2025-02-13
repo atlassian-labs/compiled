@@ -1,5 +1,11 @@
 # @compiled/css
 
+## 0.19.1
+
+### Patch Changes
+
+- 9a483f6a: Fix height property in non-media query causing Compiled to crash
+
 ## 0.19.0
 
 ### Minor Changes
