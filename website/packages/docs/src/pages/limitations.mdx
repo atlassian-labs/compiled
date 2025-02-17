@@ -31,6 +31,8 @@ You cannot mix dynamic styles and indirect selectors (eg. `div + label` or `div 
 
 Example, this will result in `label` not having the inline `props.margin` applied as it will not have access to the CSS variable we inject:
 
+This should throw an error
+
 ```jsx
 export default (props) => {
   const styles = css({
@@ -48,9 +50,7 @@ export default (props) => {
 };
 ```
 
-Additionally, this currently happens with certain non-dynamic styles in a typical babel setup for certain target outputs, but this may be less common.
-
-For more details, refer to the [Github Issue](https://github.com/atlassian-labs/compiled/issues/1789).
+This might happen with static code in certain scenarios when parsed by Babel in ways our Compiled plugin doesn't handle, best to inspect your code (even in Babel pre-Compiled transformation) if you receive this error.
 
 ## Overlapping styles, caused by media queries and other at-rules
 
