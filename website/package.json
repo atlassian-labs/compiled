@@ -22,7 +22,7 @@
     "start:landing": "cd packages/landing && yarn start"
   },
   "dependencies": {
-    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-env": "^7.26.9",
     "@babel/preset-react": "^7.26.3",
     "@babel/preset-typescript": "^7.26.0",
     "prettier": "^3.2.5",
