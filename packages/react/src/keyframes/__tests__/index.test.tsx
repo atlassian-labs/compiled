@@ -1,6 +1,6 @@
 /** @jsxImportSource @compiled/react */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { keyframes, styled } from '@compiled/react';
+import { keyframes, styled, css } from '@compiled/react';
 import { render } from '@testing-library/react';
 
 import defaultFadeOut, { namedFadeOut, fadeOut as shadowedFadeOut } from '../__fixtures__';
@@ -178,6 +178,32 @@ describe('keyframes', () => {
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'korwhog');
         expect(getKeyframe('korwhog')).toMatchInlineSnapshot(
           `"@keyframes korwhog{0%{opacity:1}to{opacity:0}}"`
+        );
+      });
+
+      it('containing css variables', () => {
+        const variable = '--opacity';
+        const fadeOut = keyframes({
+          from: {
+            [variable]: 1,
+          },
+          to: {
+            '--opacity': 0,
+          },
+        });
+        const styles = css({
+          animationName: fadeOut,
+          opacity: `var(${variable})`,
+        });
+
+        const { getByText } = render(<div css={styles}>hello world</div>);
+
+        expect(getByText('hello world')).toHaveCompiledCss({
+          animationName: 'k1sm7npi',
+          opacity: 'var(--opacity)',
+        });
+        expect(getKeyframe('k1sm7npi')).toMatchInlineSnapshot(
+          `"@keyframes k1sm7npi{0%{--opacity:1px}to{--opacity:0}}"`
         );
       });
     });
