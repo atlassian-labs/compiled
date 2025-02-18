@@ -1,7 +1,15 @@
 import type { BasicTemplateInterpolations, CSSProps } from '../types';
 import { createSetupError } from '../utils/error';
 
-export type KeyframeSteps = string | Record<string, CSSProps<void>>;
+export type KeyframeSteps =
+  // `string` would just be an arbitrary CSS-like string such as `keyframes('from{opacity:1;}to{opacity:0;}')`
+  | string
+  | Record<
+      'from' | 'to' | string,
+      // We allow basically all CSSProperties here and CSS Variables mapping to their values.
+      // eg. `{ display: 'block', '--var': 'block' }` — but likely it just becomes `'--var': any`
+      CSSProps<void> | { [key: `--${string}`]: CSSProps<void>[keyof CSSProps<void>] }
+    >;
 
 /**
  * ## Keyframes
