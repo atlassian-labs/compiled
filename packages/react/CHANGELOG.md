@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.18.2
+
+### Patch Changes
+
+- 162210d8: Improve the types to the `keyframes()` function to handle CSS variables.
+
 ## 0.18.1
 
 ### Patch Changes
