@@ -1,5 +1,11 @@
 # @compiled/css
 
+## 0.20.0
+
+### Minor Changes
+
+- 197512fa: Properly handle flex keywords such as 'flex:initial', 'flex:revert', etc, rather than defaulting to 'flex:auto' on any keyword.
+
 ## 0.19.1
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @compiled/parcel-transformer
 
+## 0.18.6
+
+### Patch Changes
+
+- @compiled/babel-plugin@0.37.1
+- @compiled/babel-plugin-strip-runtime@0.37.1
+
 ## 0.18.5
 
 ### Patch Changes
