@@ -27,22 +27,51 @@ export const flex: ConversionFunction = (value) => {
 
   switch (value.nodes.length) {
     case 1: {
-      if (left.type === 'word' && left.value == 'none') {
-        // none is equivalent to 0 0 auto
-        return [
-          { prop: 'flex-grow', value: 0 },
-          { prop: 'flex-shrink', value: 0 },
-          { prop: 'flex-basis', value: 'auto' },
-        ];
+      if (left.type === 'word') {
+        if (left.value === 'auto') {
+          // `flex: 'auto'` is equivalent to `flex: '1 1 auto'`
+          return [
+            { prop: 'flex-grow', value: 1 },
+            { prop: 'flex-shrink', value: 1 },
+            { prop: 'flex-basis', value: 'auto' },
+          ];
+        }
+        if (left.value === 'none') {
+          // `flex: 'none'` is equivalent to `flex: '0 0 auto'`
+          return [
+            { prop: 'flex-grow', value: 0 },
+            { prop: 'flex-shrink', value: 0 },
+            { prop: 'flex-basis', value: 'auto' },
+          ];
+        }
+        if (left.value === 'initial') {
+          // `flex: 'initial'` is equivalent to `flex: '0 1 auto'`
+          return [
+            { prop: 'flex-grow', value: 0 },
+            { prop: 'flex-shrink', value: 1 },
+            { prop: 'flex-basis', value: 'auto' },
+          ];
+        }
+
+        if (
+          left.value === 'revert' ||
+          left.value === 'revert-layer' ||
+          left.value === 'unset' ||
+          left.value === 'inherit'
+        ) {
+          // Early exit, simply `flex: 'inherit'` (etc)
+          // NOTE: This doesn't even take this `value`, simply omitting the `prop` key is the early exit
+          return [{ value: left.value }];
+        }
       } else if (isFlexNumber(left)) {
-        // flex grow
+        // the value should map to `flex-grow`
         return [
           { prop: 'flex-grow', value: left.value },
           { prop: 'flex-shrink', value: 1 },
           { prop: 'flex-basis', value: flexBasisDefaultValue },
         ];
       } else if (isFlexBasis(left)) {
-        // flex basis
+        // we assume that the value should map to `flex-basis`
         return [
           { prop: 'flex-grow', value: 1 },
           { prop: 'flex-shrink', value: 1 },
