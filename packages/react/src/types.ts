@@ -104,7 +104,7 @@ export type CSSPseudos = CSSPseudoElements | CSSPseudoClasses;
  * excess property check doesn't enable makers to circumvent the
  * system and pass in values they shouldn't.
  */
-export type CSSProperties = Readonly<CSS.Properties<(string & object) | number>>;
+export type CSSProperties = Readonly<CSS.Properties<(string & NonNullable<unknown>) | number>>;
 
 /**
  * A stricter subset of the {@link CSSProperties} type that excludes
