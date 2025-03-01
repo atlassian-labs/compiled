@@ -24,7 +24,7 @@
     "estraverse": "^5.3.0"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.26.5",
+    "@babel/eslint-parser": "^7.26.8",
     "@types/estraverse": "^5.1.7",
     "@types/estree": "^1.0.3",
     "@types/estree-jsx": "^1.0.2",
