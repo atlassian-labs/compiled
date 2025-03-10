@@ -17,6 +17,7 @@ import {
   isCompiledCSSTaggedTemplateExpression,
   isCompiledKeyframesCallExpression,
   isCompiledKeyframesTaggedTemplateExpression,
+  isCompiledStyleCall,
 } from './is-compiled';
 import { isEmptyValue } from './is-empty';
 import {
@@ -591,7 +592,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
 
       if (t.isArrowFunctionExpression(propValue)) {
         /*
-          Given statments like:
+          Given statements like:
           fontWeight: (props) => props.isBold ? 'bold': 'normal',
           marginTop: (props) => `${props.isLast ? 5 : 10}px`,
 
@@ -645,6 +646,17 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
         variables.push(...result.variables);
 
         return;
+      }
+
+      if (isCompiledStyleCall(propValue, updatedMeta.state)) {
+        throw new Error(
+          "You can't use Compiled APIs like this within an object.\n\n" +
+            `This is the invalid code: ${generate(node).code}\n\n` +
+            "Usually this happens because you're referencing some styles using syntax like `styles['someString']`. We don't support this for `css` function calls. Instead, you should either:\n" +
+            '- change it to not use square brackets, like `styles.hello`\n' +
+            '- if you need to use square brackets (e.g. you are styling something like `styles[someKey]`), use the cssMap API instead -- https://compiledcssinjs.com/docs/api-cssmap\n\n' +
+            'If you triggered this error through another way, we want to know about it! Please report this error message and your code to us, either (for Atlassian employees) on #help-compiled or (non-employees) on GitHub.'
+        );
       }
 
       const { expression, variableName } = getVariableDeclaratorValueForOwnPath(
