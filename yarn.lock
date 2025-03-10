@@ -8819,10 +8819,10 @@ expand-brackets@^2.1.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-expect-type@^0.17.3:
-  version "0.17.3"
-  resolved "https://registry.yarnpkg.com/expect-type/-/expect-type-0.17.3.tgz#30623b0c66f6483e89b31272848776db662778e6"
-  integrity sha512-K0ZdZJ97jiAtaOwhEHHz/f0N6Xbj5reRz5g6+5BO7+OvqQ7PMQz0/c8bFSJs1zPotNJL5HJaC6t6lGPEAtGyOw==
+expect-type@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/expect-type/-/expect-type-0.20.0.tgz#be0db937492df1db368ad772b977336f3395a152"
+  integrity sha512-uHaC9LYNv6BcW+8SvXcwUUDCrrUxt3GSa61DFvTHj8JC+M0hekMFBwMlCarLQDk5bbpZ2vStpnQPIwRuV98YMw==
 
 expect@^24.1.0:
   version "24.9.0"
