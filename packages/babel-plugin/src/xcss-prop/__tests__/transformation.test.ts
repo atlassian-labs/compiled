@@ -7,7 +7,7 @@ describe('xcss prop transformation', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      "import * as React from "react";
+      "import React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ = "._syaz5scu{color:red}";
       <CC>
@@ -44,7 +44,7 @@ describe('xcss prop transformation', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      "import * as React from "react";
+      "import React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ = "._syaz5scu{color:red}";
       <CC>
@@ -67,7 +67,7 @@ describe('xcss prop transformation', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      "import * as React from "react";
+      "import React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ = "._syaz5scu{color:red}";
       const styles = {
@@ -94,7 +94,7 @@ describe('xcss prop transformation', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      "import * as React from "react";
+      "import React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _2 = "._syaz13q2{color:blue}";
       const _ = "._syaz5scu{color:red}";
@@ -123,7 +123,7 @@ describe('xcss prop transformation', () => {
     `);
 
     expect(result).toMatchInlineSnapshot(`
-      "import * as React from "react";
+      "import React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import { j } from "@compiled/react";
       const _2 = "._syaz13q2{color:blue}";
@@ -158,7 +158,7 @@ describe('xcss prop transformation', () => {
     );
 
     expect(result).toMatchInlineSnapshot(`
-      "import * as React from "react";
+      "import React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ = "._syaz5scu{color:red}";
       const styles = {
@@ -180,7 +180,7 @@ describe('xcss prop transformation', () => {
     );
 
     expect(result).toMatchInlineSnapshot(`
-      "import * as React from "react";
+      "import React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       <CC>
         <CS>{[]}</CS>
@@ -231,7 +231,7 @@ describe('xcss prop transformation', () => {
     );
 
     expect(result).toMatchInlineSnapshot(`
-      "import * as React from "react";
+      "import React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import Button from "@atlaskit/button";
       const _2 = "._syaz13q2{color:blue}";
@@ -282,7 +282,7 @@ describe('xcss prop transformation', () => {
 
     // Here, xcss runs at runtime
     expect(result).toMatchInlineSnapshot(`
-      "import * as React from "react";
+      "import React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import { Box, xcss } from "@atlaskit/primitives";
       import Button from "@atlaskit/button";
@@ -399,7 +399,7 @@ describe('xcss prop interacting with other libraries', () => {
     );
 
     expect(result).toMatchInlineSnapshot(`
-      "import * as React from "react";
+      "import React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import { css, jsx } from "@emotion/react";
       import { Box } from "@atlaskit/primitives";
@@ -451,7 +451,7 @@ describe('xcss prop interacting with other libraries', () => {
     );
 
     expect(result).toMatchInlineSnapshot(`
-      "import * as React from "react";
+      "import React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import styled from "styled-components";
       import Button from "@atlaskit/button";
