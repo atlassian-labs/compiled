@@ -50,7 +50,8 @@ describe('ax', () => {
       ['hello_there', 'hello_world', '_aaaabbbb'],
       'hello_there hello_world _aaaabbbb',
     ],
-  ])('%s', (_, params, result) => {
-    expect(result).toEqual(ax(params));
+    ['should remove duplicate custom class names', ['a', 'a'], 'a'],
+  ])('%s', (_, params, expected) => {
+    expect(ax(params)).toEqual(expected);
   });
 });
