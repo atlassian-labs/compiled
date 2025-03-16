@@ -67,5 +67,6 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
     return;
   }
 
+  // Return all our classnames as a single string, with all classnames separated by a space
   return Array.from(map.values()).join(' ');
 }
