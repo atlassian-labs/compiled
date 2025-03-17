@@ -40,6 +40,8 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
     return classNames[0];
   }
 
+  // Using an object rather than a `Map` as it performed better in our benchmarks.
+  // Would be happy to move to `Map` if it proved to be better under real conditions.
   const map: Record<string, string> = {};
 
   // Note: using loops to minimize iterations over the collection
@@ -83,9 +85,12 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
   for (const key in map) {
     result += map[key] + ' ';
   }
-  // The `map` will always contain at least one value,
-  // so we don't need to return `undefined` if `result` is empty string.
 
-  // remove last " " from the string
+  // If we have an empty string, then our `map` was empty.
+  if (!result) {
+    return;
+  }
+
+  // remove last " " from the result (we added " " at the end of every value)
   return result.trimEnd();
 }
