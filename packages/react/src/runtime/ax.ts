@@ -71,34 +71,18 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
     }
   }
 
-  // return Object.values(map).join(' ');
+  // We are converting the map into a string.
+  // The simple way to do this would be Object.values(map).join(' ').
+  // However, the approach below did perform 10%-20% better in benchmarks.
+  // For `ax()` it feels like to squeeze as much runtime performance out as we can.
 
   let result: string = '';
   for (const key in map) {
     result += map[key] + ' ';
   }
-  if (!result) {
-    return;
-  }
+  // The `map` will always contain at least one value,
+  // so we don't need to return `undefined` if `result` is empty string.
+
   // remove last " " from the string
   return result.trimEnd();
-
-  // const values = Object.values(map);
-
-  // if (!values.length) {
-  //   return;
-  // }
-  // return values.join(' ');
-
-  // // It turns out this is a bit faster than leveraging Object.values()
-  // const result: string[] = [];
-  // for (const key in map) {
-  //   result.push(map[key]);
-  // }
-
-  // if (!result.length) {
-  //   return;
-  // }
-
-  // return result.join(' ');
 }
