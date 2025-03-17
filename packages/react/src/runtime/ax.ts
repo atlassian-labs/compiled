@@ -42,7 +42,6 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
     return classNames[0];
   }
 
-  // Map<Group, Value>
   const map = new Map<string, string>();
 
   // Note: using loops to minimize iterations over the collection
