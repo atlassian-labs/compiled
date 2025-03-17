@@ -5,7 +5,10 @@
 const ATOMIC_GROUP_LENGTH = 5;
 
 /**
- * Create a classname string which contains only a _single_ classname for each atomic _group_, and that the _last_ atomic definition _value_ remains.
+ * Create a single string containing all the classnames provided, separated by a space (`" "`).
+ * The result will only contain a _single_ classname for each `group` of atomic style classnames.
+ * Only the _last_ atomic style classname for a given `group` will remain.
+ *
  *
  * ```ts
  * ax(['_aaaabbbb', '_aaaacccc']);
@@ -13,9 +16,15 @@ const ATOMIC_GROUP_LENGTH = 5;
  * '_aaaacccc'
  * ```
  *
- * **Notes**
- * - Atomic style declarations take the form of `_{group}{value}`, where `group` and `value` are four characters long
- * - This function will preserve any non atomic style declarations (eg "my-cool-class")
+ * Format of Atomic style classnames: `_{group}{value}` (`_\w{4}\w{4}`)
+ *
+ * `ax` will preserve any non atomic style classnames (eg "border-red")
+ *
+ * ```ts
+ * ax(['_aaaabbbb', '_aaaacccc', 'border-red']);
+ * // output
+ * '_aaaacccc border-red'
+ * ```
  */
 export default function ax(classNames: (string | undefined | null | false)[]): string | undefined {
   // Shortcut: nothing to do
@@ -48,12 +57,12 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
 
     for (const className of list) {
       /**
-       * For atomic style declarations: the `key` is the `group`
+       * For atomic style classnames: the `key` is the `group`
        *
-       * - Later atomic declarations with the same `group` will override earlier ones
+       * - Later atomic classnames with the same `group` will override earlier ones
        *   (which is what we want).
-       * - Assumes atomic declarations are the only things that start with `_`
-       * - Could use a regex to ensure that atomic declarations are structured how we expect,
+       * - Assumes atomic classnames are the only things that start with `_`
+       * - Could use a regex to ensure that atomic classnames are structured how we expect,
        *   but did not add that for now as it did slow things down a bit.
        *
        * For other classnames: the `key` is the whole classname
