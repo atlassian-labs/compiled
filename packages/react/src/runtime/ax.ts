@@ -71,11 +71,14 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
     }
   }
 
-  // We are converting the map into a string.
-  // The simple way to do this would be Object.values(map).join(' ').
-  // However, the approach below did perform 10%-20% better in benchmarks.
-  // For `ax()` it feels like to squeeze as much runtime performance out as we can.
-
+  /**
+   * We are converting the `map` into a string.
+   *
+   * The simple way to do this would be `Object.values(map).join(' ')`.
+   * However, the approach below performs 10%-20% better in benchmarks.
+   *
+   * For `ax()` it feels right to squeeze as much runtime performance out as we can.
+   */
   let result: string = '';
   for (const key in map) {
     result += map[key] + ' ';
