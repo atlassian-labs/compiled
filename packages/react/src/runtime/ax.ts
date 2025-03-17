@@ -36,6 +36,7 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
   // Map<Group, Value>
   const map = new Map<string, string>();
 
+  // Note: using loops to minimize iterations over the collection
   for (const value of classNames) {
     // Exclude all falsy values, which leaves us with populated strings
     if (!value) {
@@ -49,9 +50,10 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
       /**
        * For atomic style declarations: the `key` is the `group`
        *
-       * - Later entries for a `group` will override earlier ones (which is what we want).
+       * - Later atomic declarations with the same `group` will override earlier ones
+       *   (which is what we want).
        * - Assumes atomic declarations are the only things that start with `_`
-       * - Could use a Regex to ensure that atomic declarations are structured how we expect,
+       * - Could use a regex to ensure that atomic declarations are structured how we expect,
        *   but did not add that for now as it did slow things down a bit.
        *
        * For other classnames: the `key` is the whole classname
