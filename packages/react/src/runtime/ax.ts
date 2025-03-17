@@ -40,7 +40,7 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
     return classNames[0];
   }
 
-  const map = new Map<string, string>();
+  const map: Record<string, string> = {};
 
   // Note: using loops to minimize iterations over the collection
   for (const value of classNames) {
@@ -67,7 +67,8 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
        *
        * */
       const key = className.startsWith('_') ? className.slice(0, ATOMIC_GROUP_LENGTH) : className;
-      map.set(key, className);
+      map[key] = className;
+      // map.set(key, className);
     }
   }
 
@@ -76,5 +77,6 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
   }
 
   // Return all our classnames as a single string, with all classnames separated by a space
-  return Array.from(map.values()).join(' ');
+  // return Array.from(map.values()).join(' ');
+  return Object.values(map).join(' ');
 }
