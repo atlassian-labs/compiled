@@ -68,15 +68,14 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
        * */
       const key = className.startsWith('_') ? className.slice(0, ATOMIC_GROUP_LENGTH) : className;
       map[key] = className;
-      // map.set(key, className);
     }
   }
 
-  if (!map.size) {
+  const values = Object.values(map);
+
+  if (!values.length) {
     return;
   }
 
-  // Return all our classnames as a single string, with all classnames separated by a space
-  // return Array.from(map.values()).join(' ');
-  return Object.values(map).join(' ');
+  return values.join(' ');
 }
