@@ -6,9 +6,7 @@ const ATOMIC_GROUP_LENGTH = 5;
 
 /**
  * Create a single string containing all the classnames provided, separated by a space (`" "`).
- * The result will only contain a _single_ classname for each `group` of atomic style classnames.
- * Only the _last_ atomic style classname for a given `group` will remain.
- *
+ * The result will only contain the _last_ atomic style classname for each atomic `group`.
  *
  * ```ts
  * ax(['_aaaabbbb', '_aaaacccc']);
@@ -18,7 +16,7 @@ const ATOMIC_GROUP_LENGTH = 5;
  *
  * Format of Atomic style classnames: `_{group}{value}` (`_\w{4}\w{4}`)
  *
- * `ax` will preserve any non atomic style classnames (eg "border-red")
+ * `ax` will preserve any non atomic style classnames (eg `"border-red"`)
  *
  * ```ts
  * ax(['_aaaabbbb', '_aaaacccc', 'border-red']);
