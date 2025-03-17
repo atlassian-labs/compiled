@@ -71,11 +71,34 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
     }
   }
 
-  const values = Object.values(map);
+  // return Object.values(map).join(' ');
 
-  if (!values.length) {
+  let result: string = '';
+  for (const key in map) {
+    result += map[key] + ' ';
+  }
+  if (!result) {
     return;
   }
+  // remove last " " from the string
+  return result.trimEnd();
 
-  return values.join(' ');
+  // const values = Object.values(map);
+
+  // if (!values.length) {
+  //   return;
+  // }
+  // return values.join(' ');
+
+  // // It turns out this is a bit faster than leveraging Object.values()
+  // const result: string[] = [];
+  // for (const key in map) {
+  //   result.push(map[key]);
+  // }
+
+  // if (!result.length) {
+  //   return;
+  // }
+
+  // return result.join(' ');
 }
