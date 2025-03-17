@@ -20,8 +20,8 @@
     "src"
   ],
   "dependencies": {
-    "@babel/core": "^7.26.9",
-    "@babel/parser": "^7.26.9",
+    "@babel/core": "^7.26.10",
+    "@babel/parser": "^7.26.10",
     "@compiled/babel-plugin": "^0.37.1",
     "@compiled/babel-plugin-strip-runtime": "^0.37.1",
     "@compiled/css": "^0.20.0",
