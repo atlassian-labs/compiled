@@ -6,6 +6,7 @@ describe('ax', () => {
   it.each([
     ['should handle empty array', [], undefined],
     ['should handle array with undefined', [undefined], undefined],
+    ['should handle array with falsy values', [undefined, null, false as const, ''], undefined],
     ['should join single classes together', ['foo', 'bar'], 'foo bar'],
     ['should join multi classes together', ['foo baz', 'bar'], 'foo baz bar'],
     ['should remove undefined', ['foo', 'bar', undefined], 'foo bar'],
@@ -50,7 +51,8 @@ describe('ax', () => {
       ['hello_there', 'hello_world', '_aaaabbbb'],
       'hello_there hello_world _aaaabbbb',
     ],
-  ])('%s', (_, params, result) => {
-    expect(result).toEqual(ax(params));
+    ['should remove duplicate custom class names', ['a', 'a'], 'a'],
+  ])('%s', (_, params, expected) => {
+    expect(ax(params)).toEqual(expected);
   });
 });
