@@ -30,7 +30,7 @@ describe('import specifiers', () => {
       \`;
     `);
 
-    expect(actual).toInclude('import * as React from "react"');
+    expect(actual).toInclude('import React from "react"');
   });
 
   it('should do nothing if react default import is already defined', () => {
@@ -57,7 +57,7 @@ describe('import specifiers', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      `import * as React from "react";`,
+      `import React from "react";`,
       `import { useState } from "react";`,
     ]);
   });
@@ -73,7 +73,7 @@ describe('import specifiers', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
-      import * as React from "react";
+      import React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ = "._1wybgktf{font-size:20px}";
       const ListItem = forwardRef(
