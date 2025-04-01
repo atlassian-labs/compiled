@@ -1,6 +1,7 @@
 /** @jsxImportSource @compiled/react */
 
 import { cssProp, styled as styledExamples, classNames } from '@compiled/website-examples';
+import { CompiledLogo } from '@compiled/website-ui/src/assets';
 import {
   Hero,
   Heading,
@@ -138,23 +139,27 @@ export default (): JSX.Element => (
       <Content>
         <HeaderSpacing aria-hidden="true" />
         <VerticalStack spacing={7} gap={5}>
-          <Heading
-            look="h100"
-            css={{
-              maxWidth: '80%',
-            }}>
-            <span
+          <div css={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem' }}>
+            <img src={CompiledLogo} alt="Compiled CSS Logo" css={{ width: '200px', height: '200px' }} />
+            <Heading
+              look="h100"
               css={{
-                color: 'rgba(255, 255, 255, 0.75)',
+                maxWidth: '80%',
+                textAlign: 'center',
               }}>
-              A{' '}
-              <HideSmall>
-                familiar and performant
-                <br />
-              </HideSmall>
-              compile time CSS-in-JS library for React.
-            </span>
-          </Heading>
+              <span
+                css={{
+                  color: 'rgba(255, 255, 255, 0.75)',
+                }}>
+                A{' '}
+                <HideSmall>
+                  familiar and performant
+                  <br />
+                </HideSmall>
+                compile time CSS-in-JS library for React.
+              </span>
+            </Heading>
+          </div>
           <CodeExamples />
         </VerticalStack>
       </Content>

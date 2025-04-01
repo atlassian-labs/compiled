@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle representing compilation/transformation -->
+  <circle cx="100" cy="100" r="90" fill="#1E1E1E" />
+  
+  <!-- CSS curly brace left -->
+  <path d="M70 50 C60 50, 60 75, 70 75 L70 85 C60 85, 60 100, 70 100 C60 100, 60 115, 70 115 L70 125 C60 125, 60 150, 70 150" 
+        stroke="#61DAFB" fill="none" stroke-width="8"/>
+  
+  <!-- CSS curly brace right -->
+  <path d="M130 50 C140 50, 140 75, 130 75 L130 85 C140 85, 140 100, 130 100 C140 100, 140 115, 130 115 L130 125 C140 125, 140 150, 130 150" 
+        stroke="#61DAFB" fill="none" stroke-width="8"/>
+  
+  <!-- JS arrow suggesting compilation/transformation -->
+  <path d="M85 75 L115 100 L85 125" stroke="#F7DF1E" fill="none" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Compiled text -->
+  <text x="100" y="180" font-family="Arial, sans-serif" font-size="24" fill="#FFFFFF" text-anchor="middle">compiled</text>
+</svg>

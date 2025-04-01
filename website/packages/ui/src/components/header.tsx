@@ -1,6 +1,7 @@
 /** @jsxImportSource @compiled/react */
 import { styled } from '@compiled/react';
 
+import { CompiledLogoSmall } from '../assets';
 import { Heading } from './heading';
 
 const height = '9rem';
@@ -39,7 +40,8 @@ export const Header = ({ children, variant = 'default', ...props }: HeaderProps)
 
   return (
     <StyledHeader variant={variant} color={color} {...props}>
-      <a href="/" css={{ textDecoration: 'none', color: 'currentColor' }}>
+      <a href="/" css={{ textDecoration: 'none', color: 'currentColor', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <img src={CompiledLogoSmall} alt="" css={{ width: '32px', height: '32px' }} />
         <Heading look="h300" as="span">
           Compiled
         </Heading>
