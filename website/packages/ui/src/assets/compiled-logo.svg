@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main circle representing compilation/transformation -->
+  <circle cx="100" cy="100" r="90" fill="none" stroke="#0052CC" stroke-width="8"/>
+  
+  <!-- Left bracket { -->
+  <path d="M80 60 Q70 100 80 140" fill="none" stroke="#0052CC" stroke-width="8" stroke-linecap="round"/>
+  
+  <!-- Right bracket } -->
+  <path d="M120 60 Q130 100 120 140" fill="none" stroke="#0052CC" stroke-width="8" stroke-linecap="round"/>
+  
+  <!-- CSS waves representing styles -->
+  <path d="M60 100 Q80 90 100 100 Q120 110 140 100" fill="none" stroke="#36B37E" stroke-width="6" stroke-linecap="round"/>
+  
+  <!-- Dot representing the compilation point -->
+  <circle cx="100" cy="100" r="8" fill="#36B37E"/>
+</svg>

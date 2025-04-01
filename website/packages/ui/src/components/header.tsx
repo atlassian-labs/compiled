@@ -2,6 +2,7 @@
 import { styled } from '@compiled/react';
 
 import { Heading } from './heading';
+import CompiledLogo from '../assets/compiled-logo.svg';
 
 const height = '9rem';
 
@@ -39,7 +40,8 @@ export const Header = ({ children, variant = 'default', ...props }: HeaderProps)
 
   return (
     <StyledHeader variant={variant} color={color} {...props}>
-      <a href="/" css={{ textDecoration: 'none', color: 'currentColor' }}>
+      <a href="/" css={{ textDecoration: 'none', color: 'currentColor', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <img src={CompiledLogo} alt="Compiled Logo" css={{ height: '2.5rem', width: 'auto' }} />
         <Heading look="h300" as="span">
           Compiled
         </Heading>
