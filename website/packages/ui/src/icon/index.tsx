@@ -1,5 +1,6 @@
 /** @jsxImportSource @compiled/react */
 import { Github } from './github';
+import { Logo } from './logo';
 import { Npm } from './npm';
 
 interface IconProps {
@@ -8,6 +9,7 @@ interface IconProps {
 
 const iconMap = {
   github: Github,
+  logo: Logo,
   npm: Npm,
 };
 
@@ -20,3 +22,5 @@ export const Icon = (props: IconProps): JSX.Element => {
     </span>
   );
 };
+
+export { Logo } from './logo';

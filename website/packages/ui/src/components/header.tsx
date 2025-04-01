@@ -1,6 +1,7 @@
 /** @jsxImportSource @compiled/react */
 import { styled } from '@compiled/react';
 
+import { Logo } from '../icon/logo';
 import { Heading } from './heading';
 
 const height = '9rem';
@@ -40,9 +41,7 @@ export const Header = ({ children, variant = 'default', ...props }: HeaderProps)
   return (
     <StyledHeader variant={variant} color={color} {...props}>
       <a href="/" css={{ textDecoration: 'none', color: 'currentColor' }}>
-        <Heading look="h300" as="span">
-          Compiled
-        </Heading>
+        <Logo css={{ height: '2.5rem', width: 'auto' }} />
       </a>
       {children}
     </StyledHeader>
