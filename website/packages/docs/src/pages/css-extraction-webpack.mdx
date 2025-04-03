@@ -173,6 +173,9 @@ module.exports = {
 		],
 	},
 	plugins: [
+// Hash your files unless it's explicitly unnecessary in your build system.
+// To achieve this, pass the filename option to the MiniCssExtractPlugin,
+// including [contenthash] in the name.
 +		new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' }),
 		new CompiledExtractPlugin(),
 	],
@@ -215,29 +218,13 @@ module.exports = {
 		],
 	},
 	plugins: [
-+		new MiniCssExtractPlugin(),
+		new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' }),
 		new CompiledExtractPlugin(),
 	],
 };
 ```
 
 All extracted styles will be placed in a file called `compiled-css.css`.
-
-### Production optimization
-
-#### Filename
-
-Some production environments may require you to include a hash in the filename to allow the stylesheet to be cached correctly.
-
-To do this, pass the `filename` option to the extract plugin, including `[contenthash]` in the name.
-
-```diff
-// webpack.config.js
--new MiniCssExtractPlugin()
-+new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' })
-```
-
-See the [`mini-css-extract-plugin` docs](https://github.com/webpack-contrib/mini-css-extract-plugin/#long-term-caching) for more information on the available options.
 
 ### CSS minification
 
