@@ -1,5 +1,15 @@
 # @compiled/react
 
+## 0.18.4
+
+### Patch Changes
+
+- c321da7: Reducing bundle size and improving runtime performance of the `ax` runtime function.
+
+  ```ts
+  import { ax } from '@compiled/react/runtime';
+  ```
+
 ## 0.18.3
 
 ### Patch Changes
