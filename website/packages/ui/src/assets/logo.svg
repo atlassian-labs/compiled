@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main circle representing the "C" -->
+  <path d="M400 256C400 339.411 332.548 407.273 249.137 407.273C165.726 407.273 98.2737 339.411 98.2737 256C98.2737 172.589 165.726 104.727 249.137 104.727" 
+        stroke="#0052CC" 
+        stroke-width="48" 
+        stroke-linecap="round"/>
+  
+  <!-- Curly brace -->
+  <path d="M290 104.727C320 104.727 340 124.727 340 154.727V184.727C340 214.727 360 234.727 390 234.727H400M290 407.273C320 407.273 340 387.273 340 357.273V327.273C340 297.273 360 277.273 390 277.273H400" 
+        stroke="#0065FF" 
+        stroke-width="36" 
+        stroke-linecap="round"/>
+  
+  <!-- Lightning bolt -->
+  <path d="M249.137 170L180 280H260L220 390L320 250H240L249.137 170Z" 
+        fill="#FFAB00"/>
+</svg>

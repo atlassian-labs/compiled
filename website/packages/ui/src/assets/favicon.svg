@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main circle representing the "C" -->
+  <path d="M25 16C25 21.2132 20.7843 25.4545 15.5711 25.4545C10.3579 25.4545 6.14211 21.2132 6.14211 16C6.14211 10.7868 10.3579 6.54545 15.5711 6.54545" 
+        stroke="#0052CC" 
+        stroke-width="3" 
+        stroke-linecap="round"/>
+  
+  <!-- Lightning bolt -->
+  <path d="M15.5711 10.625L11.25 17.5H16.25L13.75 24.375L20 15.625H15L15.5711 10.625Z" 
+        fill="#FFAB00"/>
+</svg>

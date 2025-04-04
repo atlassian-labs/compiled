@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main circle representing the "C" -->
+  <path d="M25 16C25 21.2132 20.7843 25.4545 15.5711 25.4545C10.3579 25.4545 6.14211 21.2132 6.14211 16C6.14211 10.7868 10.3579 6.54545 15.5711 6.54545" 
+        stroke="#0052CC" 
+        stroke-width="3" 
+        stroke-linecap="round"/>
+  
+  <!-- Curly brace -->
+  <path d="M18.125 6.54545C20 6.54545 21.25 7.79545 21.25 9.67045V11.5455C21.25 13.4205 22.5 14.6705 24.375 14.6705H25M18.125 25.4545C20 25.4545 21.25 24.2045 21.25 22.3295V20.4545C21.25 18.5795 22.5 17.3295 24.375 17.3295H25" 
+        stroke="#0065FF" 
+        stroke-width="2.25" 
+        stroke-linecap="round"/>
+  
+  <!-- Lightning bolt -->
+  <path d="M15.5711 10.625L11.25 17.5H16.25L13.75 24.375L20 15.625H15L15.5711 10.625Z" 
+        fill="#FFAB00"/>
+</svg>
