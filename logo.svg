@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <!-- Main circular C shape -->
+    <path d="M160 100c0 33.137-26.863 60-60 60-33.137 0-60-26.863-60-60s26.863-60 60-60c33.137 0 60 26.863 60 60" 
+          fill="none" 
+          stroke="#0052CC" 
+          stroke-width="20"
+          stroke-dasharray="270,90"/>
+    
+    <!-- CSS symbol -->
+    <text x="85" y="115" 
+          font-family="Monaco, monospace" 
+          font-size="40" 
+          fill="#FF5630">
+        {
+    </text>
+    
+    <!-- JS symbol -->
+    <text x="85" y="85" 
+          font-family="Monaco, monospace" 
+          font-size="40" 
+          fill="#36B37E">
+        ()
+    </text>
+    
+    <!-- Atomic dots -->
+    <circle cx="140" cy="70" r="8" fill="#6554C0"/>
+    <circle cx="140" cy="130" r="8" fill="#6554C0"/>
+    <circle cx="60" cy="100" r="8" fill="#6554C0"/>
+</svg>
