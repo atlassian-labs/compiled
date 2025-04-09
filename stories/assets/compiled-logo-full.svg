@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="50" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon -->
+  <g transform="translate(10,10)">
+    <path d="M15 0C6.716 0 0 6.716 0 15c0 8.284 6.716 15 15 15 8.284 0 15-6.716 15-15C30 6.716 23.284 0 15 0z" fill="#0052CC"/>
+    <path d="M15 5c-5.523 0-10 4.477-10 10s4.477 10 10 10 10-4.477 10-10S20.523 5 15 5z" fill="#DEEBFF"/>
+    <path d="M15 10c-2.761 0-5 2.239-5 5s2.239 5 5 5 5-2.239 5-5-2.239-5-5-5z" fill="#0052CC"/>
+  </g>
+  <!-- Text -->
+  <g transform="translate(50,30)">
+    <text font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#172B4D">
+      compiled
+    </text>
+  </g>
+  <!-- CSS Brackets -->
+  <g transform="translate(160,15)" fill="#0052CC">
+    <path d="M0 0v20h5v-3h-2v-14h2v-3z"/>
+    <path d="M10 0v20h5v-3h-2v-14h2v-3z" transform="scale(-1,1) translate(-25,0)"/>
+  </g>
+</svg>
