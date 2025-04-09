@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="50" viewBox="0 0 200 50" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <!-- CSS Bracket -->
+  <path d="M30 10 L10 25 L30 40" stroke="#FFFFFF" stroke-width="3" fill="none"/>
+  <path d="M50 10 L70 25 L50 40" stroke="#FFFFFF" stroke-width="3" fill="none"/>
+  
+  <!-- Code Dots -->
+  <circle cx="25" cy="25" r="2" fill="#FFFFFF"/>
+  <circle cx="55" cy="25" r="2" fill="#FFFFFF"/>
+  
+  <!-- Text -->
+  <text x="85" y="35" font-family="Arial" font-size="24" font-weight="bold" fill="#FFFFFF">
+    Compiled
+  </text>
+  
+  <!-- Decorative Line -->
+  <line x1="10" y1="45" x2="190" y2="45" stroke="#FFFFFF" stroke-width="1"/>
+</svg>
