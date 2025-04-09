@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="60" viewBox="0 0 200 60" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background rectangle -->
+  <rect x="0" y="0" width="200" height="60" fill="none"/>
+  
+  <!-- Main text "COMPILED" -->
+  <text x="60" y="40" font-family="Arial Black, sans-serif" font-size="28" font-weight="bold" fill="#0052CC">
+    COMPILED
+  </text>
+  
+  <!-- Stylized "C" icon -->
+  <path d="M 40 15 
+           A 15 15 0 1 0 40 45
+           A 15 15 0 1 0 40 15
+           M 40 20
+           A 10 10 0 1 1 40 40
+           A 10 10 0 1 1 40 20" 
+        fill="#0065FF"/>
+  
+  <!-- Code brackets decoration -->
+  <path d="M 25 25 L 15 30 L 25 35" stroke="#2684FF" stroke-width="2" fill="none"/>
+  <path d="M 55 25 L 65 30 L 55 35" stroke="#2684FF" stroke-width="2" fill="none"/>
+</svg>
