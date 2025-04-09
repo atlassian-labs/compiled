@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="50" viewBox="0 0 200 50" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main container -->
+  <g fill="none" fill-rule="evenodd">
+    <!-- Icon part -->
+    <g transform="translate(10,10)" fill="#0052CC">
+      <path d="M15,0 L25,5 L25,15 L15,20 L5,15 L5,5 L15,0 Z" />
+      <path d="M15,5 L20,7.5 L20,12.5 L15,15 L10,12.5 L10,7.5 L15,5 Z" fill="white"/>
+    </g>
+    <!-- Text part -->
+    <text x="45" y="27" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#172B4D">
+      compiled
+    </text>
+  </g>
+</svg>
