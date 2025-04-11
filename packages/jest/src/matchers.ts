@@ -132,7 +132,7 @@ export function toHaveCompiledCss(
   const stylesToFind = mapProperties(properties);
   const foundStyles: string[] = [];
   const similarStyles: string[] = [];
-  const classNames = element.className.split(' ');
+  const classNames = element.classList;
 
   for (const styleElement of styleElements) {
     let css = styleElement.textContent || '';
