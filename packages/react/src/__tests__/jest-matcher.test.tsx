@@ -18,6 +18,19 @@ describe('toHaveCompliedCss', () => {
     expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
   });
 
+  it('should detect styles (SVG)', () => {
+    const { getByText } = render(
+      <svg
+        css={{
+          fontSize: '12px',
+        }}>
+        hello world
+      </svg>
+    );
+
+    expect(getByText('hello world')).toHaveCompiledCss('font-size', '12px');
+  });
+
   it('should detect missing styles', () => {
     const { getByText } = render(<div css={{ fontSize: '12px' }}>hello world</div>);
 
