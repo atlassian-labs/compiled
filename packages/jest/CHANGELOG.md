@@ -1,5 +1,11 @@
 # @compiled/jest
 
+## 0.10.6
+
+### Patch Changes
+
+- b3b4b34: Fix `toHaveCompiledCss` in @compiled/jest crashing on SVG elements due to lack of className property and expands tests in `@compiled/react`.
+
 ## 0.10.5
 
 ### Patch Changes

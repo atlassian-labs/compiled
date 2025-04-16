@@ -1,5 +1,17 @@
 # @compiled/react
 
+## 0.18.4
+
+### Patch Changes
+
+- c321da7: Reducing bundle size and improving runtime performance of the `ax` runtime function.
+
+  ```ts
+  import { ax } from '@compiled/react/runtime';
+  ```
+
+- b3b4b34: Fix `toHaveCompiledCss` in @compiled/jest crashing on SVG elements due to lack of className property and expands tests in `@compiled/react`.
+
 ## 0.18.3
 
 ### Patch Changes
