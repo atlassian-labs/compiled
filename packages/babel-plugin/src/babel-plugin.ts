@@ -198,7 +198,7 @@ export default declare<State>((api) => {
 
           if (!pragma.jsxImportSource && shouldImportReact && !path.scope.getBinding('React')) {
             // React is missing - add it in at the last moment!
-            path.unshiftContainer('body', template.ast(`import * as React from 'react'`));
+            path.unshiftContainer('body', template.ast(`import React from 'react'`));
           }
 
           if (state.compiledImports?.styled && !path.scope.getBinding('forwardRef')) {
