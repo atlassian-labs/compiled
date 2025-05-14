@@ -4,7 +4,7 @@ import * as t from '@babel/types';
 import type { Metadata } from '../types';
 import { buildCodeFrameError, getPathOfNode } from '../utils/ast';
 import { compiledTemplate } from '../utils/build-compiled-component';
-import { buildCss } from '../utils/css-builders';
+import { buildCss, generateCacheForCSSMap } from '../utils/css-builders';
 import { transformCssItems } from '../utils/transform-css-items';
 
 function getJsxAttributeExpressionContainer(path?: NodePath<t.JSXAttribute>) {
@@ -29,13 +29,15 @@ function staticObjectInvariant(expression: t.ObjectExpression, meta: Metadata) {
   );
 }
 
-function collectPathMemberExpressionIdentifiers(propPath: NodePath<t.JSXAttribute>): string[] {
-  const identifiers: string[] = [];
+function collectPathMemberExpressionIdentifiers(
+  propPath: NodePath<t.JSXAttribute>
+): t.Identifier[] {
+  const identifiers: t.Identifier[] = [];
 
   propPath.traverse({
     MemberExpression(node) {
       if (node.node.object.type === 'Identifier') {
-        identifiers.push(node.node.object.name);
+        identifiers.push(node.node.object);
       }
     },
   });
@@ -112,7 +114,13 @@ export const visitXcssPropPath = (path: NodePath<t.JSXOpeningElement>, meta: Met
     // 1. Dot notation, such as "styles.text"
     // 2. Bracket notation, such as "styles[appearance]"
     const identifiers = collectPathMemberExpressionIdentifiers(propPath);
-    const sheets = collectPassStyles(meta, identifiers);
+    identifiers.forEach((identifier) => {
+      generateCacheForCSSMap(identifier, meta);
+    });
+    const sheets = collectPassStyles(
+      meta,
+      identifiers.map((identifier) => identifier.name)
+    );
 
     if (sheets.length === 0) {
       // No sheets were extracted — bail out from the transform.

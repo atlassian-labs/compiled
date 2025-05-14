@@ -36,6 +36,37 @@ describe('css map basic functionality', () => {
     ]);
   });
 
+  it('should transform css map when the styles are defined below the component and the component uses xcss prop', () => {
+    const actual = transform(
+      `
+      import { cssMap } from '@compiled/react';
+
+      <Box xcss={styles.danger} />
+
+      const styles = cssMap(${styles});
+    `,
+      { pretty: true }
+    );
+
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _4 = "._bfhkbf54{background-color:green}";
+      const _3 = "._syazbf54{color:green}";
+      const _2 = "._bfhk5scu{background-color:red}";
+      const _ = "._syaz5scu{color:red}";
+      <CC>
+        <CS>{[_, _2, _3, _4]}</CS>
+        {<Box xcss={styles.danger} />}
+      </CC>;
+      const styles = {
+        danger: "_syaz5scu _bfhk5scu",
+        success: "_syazbf54 _bfhkbf54",
+      };
+      "
+    `);
+  });
+
   it('should transform css map even when the styles are defined below the component', () => {
     const actual = transform(`
       import { cssMap } from '@compiled/react';
