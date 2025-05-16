@@ -112,6 +112,13 @@ export interface PluginOptions {
    * or `extract: true` in Webpack loaders or Parcel tranformers.
    */
   classHashPrefix?: string;
+
+  /**
+   * Whether to flatten multiple selectors into separate rules to better deduplicate and sort styles.
+   *
+   * Default to `false`.
+   */
+  flattenMultipleSelectors?: boolean;
 }
 
 export interface State extends PluginPass {
