@@ -225,8 +225,8 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
       singleQuote: true,
     })
   ).toMatchInlineSnapshot(`
-    "._19itlf8h {
-      border: 2px solid blue;
+    "._19it1vrj {
+      border: 2px solid transparent;
     }
     ._1wyb12am {
       font-size: 50px;
@@ -255,6 +255,21 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
     ._19bv1vi7 {
       padding-left: 32px;
     }
+    ._f8pj1x77:focus {
+      color: white;
+    }
+    ._jomr13q2:focus {
+      background-color: blue;
+    }
+    ._4cvx13q2:hover {
+      border-color: blue;
+    }
+    ._30l31x77:hover {
+      color: white;
+    }
+    ._irr313q2:hover {
+      background-color: blue;
+    }
     "
   `);
 
@@ -273,7 +288,7 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
             style: __cmpls,
             ref: __cmplr,
             className: (0, _runtime.ax)([
-                "_19itlf8h _ca0q1vi7 _u5f31vi7 _n3td1vi7 _19bv1vi7 _syaz13q2 _1wyb1ul9",
+                "_19it1vrj _ca0q1vi7 _u5f31vi7 _n3td1vi7 _19bv1vi7 _syaz13q2 _1wyb1ul9 _4cvx13q2 _irr313q2 _30l31x77 _jomr13q2 _f8pj1x77",
                 __cmplp.className
             ])
         }));

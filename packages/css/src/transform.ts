@@ -9,11 +9,11 @@ import { discardDuplicates } from './plugins/discard-duplicates';
 import { discardEmptyRules } from './plugins/discard-empty-rules';
 import { expandShorthands } from './plugins/expand-shorthands';
 import { extractStyleSheets } from './plugins/extract-stylesheets';
+import { flattenMultipleSelectors } from './plugins/flatten-multiple-selectors';
 import { increaseSpecificity } from './plugins/increase-specificity';
 import { normalizeCSS } from './plugins/normalize-css';
 import { parentOrphanedPseudos } from './plugins/parent-orphaned-pseudos';
 import { sortAtomicStyleSheet } from './plugins/sort-atomic-style-sheet';
-
 export interface TransformOpts {
   optimizeCss?: boolean;
   classNameCompressionMap?: Record<string, string>;
@@ -21,6 +21,7 @@ export interface TransformOpts {
   sortAtRules?: boolean;
   sortShorthand?: boolean;
   classHashPrefix?: string;
+  flattenMultipleSelectors?: boolean;
 }
 
 /**
@@ -62,6 +63,7 @@ export const transformCss = (
         callback: (className: string) => classNames.push(className),
         classHashPrefix: opts.classHashPrefix,
       }),
+      ...(opts.flattenMultipleSelectors ? [flattenMultipleSelectors(), discardDuplicates()] : []),
       ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
       sortAtomicStyleSheet({
         sortAtRulesEnabled: opts.sortAtRules,

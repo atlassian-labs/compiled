@@ -4,7 +4,10 @@
     ["@babel/preset-react", { "runtime": "automatic" }]
   ],
   "plugins": [
-    ["@compiled/babel-plugin", { "importReact": false, "optimizeCss": false }],
+    [
+      "@compiled/babel-plugin",
+      { "importReact": false, "optimizeCss": false, "flattenMultipleSelectors": true }
+    ],
     [
       "@compiled/babel-plugin-strip-runtime",
       { "extractStylesToDirectory": { "source": "src", "dest": "dist" } }

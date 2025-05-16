@@ -1,7 +1,7 @@
 import { transformCss as transform, type TransformOpts } from '../transform';
 
-const transformCss = (code: string, opts: TransformOpts = { optimizeCss: false }) =>
-  transform(code, opts);
+const defaultOpts: TransformOpts = { optimizeCss: false, flattenMultipleSelectors: true };
+const transformCss = (code: string, opts: TransformOpts = defaultOpts) => transform(code, opts);
 
 describe('#css-transform', () => {
   it('should generate the same selectors even if white space is different', () => {
@@ -87,9 +87,10 @@ describe('#css-transform', () => {
     `
       );
 
-      expect(actual.join('\n')).toMatchInlineSnapshot(
-        `"._f8pj1q9v:focus, ._1sfm1q9v:hover div{color:hotpink}"`
-      );
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._f8pj1q9v:focus{color:hotpink}
+        ._1sfm1q9v:hover div{color:hotpink}"
+      `);
     });
 
     it('should parent multiple pseudos in a group in a group of multiple', () => {
@@ -109,18 +110,18 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n').split(',').join(',\n')).toMatchInlineSnapshot(`
-        "._kq2v1q9v .bar div div,
-         ._11eb1q9v .bar div span,
-         ._1sbr1q9v .bar div:first-child,
-         ._15h31q9v .bar div:last-child,
-         ._ppxs1q9v .foo div,
-         ._1fa31q9v .foo span,
-         ._t7rc1q9v .foo:first-child,
-         ._1pdx1q9v .foo:last-child,
-         ._1z9o1q9v .qwe div,
-         ._1qid1q9v .qwe span,
-         ._1g8a1q9v .qwe:first-child,
-         ._1j9g1q9v .qwe:last-child{color:hotpink}"
+        "._kq2v1q9v .bar div div{color:hotpink}
+        ._11eb1q9v .bar div span{color:hotpink}
+        ._1sbr1q9v .bar div:first-child{color:hotpink}
+        ._15h31q9v .bar div:last-child{color:hotpink}
+        ._ppxs1q9v .foo div{color:hotpink}
+        ._1fa31q9v .foo span{color:hotpink}
+        ._t7rc1q9v .foo:first-child{color:hotpink}
+        ._1pdx1q9v .foo:last-child{color:hotpink}
+        ._1z9o1q9v .qwe div{color:hotpink}
+        ._1qid1q9v .qwe span{color:hotpink}
+        ._1g8a1q9v .qwe:first-child{color:hotpink}
+        ._1j9g1q9v .qwe:last-child{color:hotpink}"
       `);
     });
 
@@ -183,7 +184,7 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(
-        `"@media (max-width:400px){@supports (display:grid){._jbdf1q9v:first-child, ._ex911q9v div{color:hotpink}}}"`
+        `"@media (max-width:400px){@supports (display:grid){._jbdf1q9v:first-child{color:hotpink}._ex911q9v div{color:hotpink}}}"`
       );
     });
 
@@ -286,7 +287,7 @@ describe('#css-transform', () => {
     `);
 
     expect(actual.join('\n')).toMatchInlineSnapshot(
-      `"@media (max-width:400px){._buol1gy6:link{color:yellow}._st8p11x8:visited{color:black}._4h7jtwqo:focus-within{color:grey}._6i6132ev:focus{color:pink}._is8y1x77:focus-visible{color:white}._axlybf54:hover{color:green}._1i6q5scu:active, ._buol5scu:link{color:red}}"`
+      `"@media (max-width:400px){._buol1gy6:link{color:yellow}._st8p11x8:visited{color:black}._4h7jtwqo:focus-within{color:grey}._6i6132ev:focus{color:pink}._is8y1x77:focus-visible{color:white}._axlybf54:hover{color:green}._1i6q5scu:active{color:red}._buol5scu:link{color:red}}"`
     );
   });
 
@@ -382,13 +383,13 @@ describe('#css-transform', () => {
         `
         border: green solid 2px;
       `,
-        { optimizeCss: true }
+        { ...defaultOpts, optimizeCss: true }
       );
       const { sheets: actualTwo } = transformCss(
         `
         border: 2px solid green;
       `,
-        { optimizeCss: true }
+        { ...defaultOpts, optimizeCss: true }
       );
 
       expect(actualOne.join('\n')).toEqual(actualTwo.join('\n'));
@@ -405,7 +406,7 @@ describe('#css-transform', () => {
         border-left-color: current-color;
 
       `,
-        { optimizeCss: true }
+        { ...defaultOpts, optimizeCss: true }
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
@@ -425,7 +426,7 @@ describe('#css-transform', () => {
         margin-top: 0px;
         margin-bottom: 0;
       `,
-        { optimizeCss: true }
+        { ...defaultOpts, optimizeCss: true }
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
@@ -493,6 +494,51 @@ describe('#css-transform', () => {
         "div ._kqan5scu:not(#\\#){color:red}
         div:hover ._12hc5scu:not(#\\#){color:red}
         div ._wntz5scu:not(#\\#):hover{color:red}"
+      `);
+    });
+  });
+
+  describe('flatten multiple selectors', () => {
+    it('should flatten multiple selectors when configured (by default in this test)', () => {
+      const { sheets: actual } = transformCss(`div, span { color: red; }`);
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._65g05scu div{color:red}
+        ._1tjq5scu span{color:red}"
+      `);
+    });
+
+    it('should not flatten multiple selectors when not configured', () => {
+      const { sheets: actual } = transformCss(`div, span { color: red; }`, {
+        ...defaultOpts,
+        flattenMultipleSelectors: false,
+      });
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(
+        `"._65g05scu div, ._1tjq5scu span{color:red}"`
+      );
+    });
+
+    it('should deduplicate flattened selectors', () => {
+      const { sheets: actual } = transformCss(`
+        div, div {
+          color: red;
+        }
+        div {
+          color: red;
+        }
+        &:hover { color: blue ;}
+        &:hover, &:focus { color: blue ;}
+      `);
+
+      // WARNING: This does not actually work, but it could.
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._65g05scu div{color:red}
+        ._65g05scu div{color:red}
+        ._65g05scu div{color:red}
+        ._30l313q2:hover{color:blue}
+        ._f8pj13q2:focus{color:blue}
+        ._30l313q2:hover{color:blue}"
       `);
     });
   });
