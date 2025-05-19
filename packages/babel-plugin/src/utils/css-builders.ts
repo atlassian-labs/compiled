@@ -698,7 +698,7 @@ const extractObjectExpression = (node: t.ObjectExpression, meta: Metadata): CSSO
  *
  * @returns {Boolean} Whether the cache was generated
  */
-const generateCacheForCSSMap = (node: t.Identifier, meta: Metadata): void => {
+export const generateCacheForCSSMap = (node: t.Identifier, meta: Metadata): void => {
   if (meta.state.cssMap[node.name] || meta.state.ignoreMemberExpressions[node.name]) {
     return;
   }
