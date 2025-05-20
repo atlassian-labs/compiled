@@ -135,3 +135,22 @@ export const isCompiledStyledTaggedTemplateExpression = (
   t.isTaggedTemplateExpression(node) &&
   (isCompiledStyledMemberExpression(node.tag, state) ||
     isCompiledStyledCompositionCallExpression(node.tag, state));
+
+/** Returns true if and only if the current node is one of the following:
+ * - A usage of the `css` API from Compiled
+ * - A usage
+ * - A usage of the `styled` API from Compiled
+ * - IS NOT a usage of the `keyframes` API from Compiled
+ */
+export const isCompiledStyleCall = (node: t.Expression, state: State): boolean => {
+  const checkers = [
+    isCompiledCSSCallExpression,
+    isCompiledCSSTaggedTemplateExpression,
+    isCompiledCSSMapCallExpression,
+    isCompiledStyledCompositionCallExpression,
+    isCompiledStyledCallExpression,
+    isCompiledStyledTaggedTemplateExpression,
+  ];
+
+  return checkers.some((checker) => checker(node, state));
+};
