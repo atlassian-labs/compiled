@@ -82,7 +82,7 @@ describe('keyframes', () => {
             const _3 = "._j7hqb4f3{animation-name:k1wmcptp}";
             const _2 = "._5sagymdr{animation-duration:2s}";
             const _ =
-              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes k1wmcptp{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
@@ -100,7 +100,7 @@ describe('keyframes', () => {
           expect(actual).toMatchInlineSnapshot(`
             "const _2 = "._y44vjvcp{animation:k1wmcptp 2s ease-in-out}";
             const _ =
-              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes k1wmcptp{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
@@ -857,7 +857,7 @@ describe('keyframes', () => {
             const _3 = "._j7hqb4f3{animation-name:k1wmcptp}";
             const _2 = "._5sagymdr{animation-duration:2s}";
             const _ =
-              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes k1wmcptp{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
@@ -875,7 +875,7 @@ describe('keyframes', () => {
           expect(actual).toMatchInlineSnapshot(`
             "const _2 = "._y44vjvcp{animation:k1wmcptp 2s ease-in-out}";
             const _ =
-              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes k1wmcptp{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
@@ -918,7 +918,7 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _4 =
-              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes k1wmcptp{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const _3 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
             const _2 = "._j7hqb4f3{animation-name:k1wmcptp}";
             const _ = "._5sagymdr{animation-duration:2s}";
@@ -952,7 +952,7 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _2 =
-              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes k1wmcptp{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const _ = "._y44vjvcp{animation:k1wmcptp 2s ease-in-out}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
@@ -1028,7 +1028,7 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _4 =
-              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes k1wmcptp{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const _3 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
             const _2 = "._j7hqb4f3{animation-name:k1wmcptp}";
             const _ = "._5sagymdr{animation-duration:2s}";
@@ -1062,7 +1062,7 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _2 =
-              "@keyframes k1wmcptp{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes k1wmcptp{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const _ = "._y44vjvcp{animation:k1wmcptp 2s ease-in-out}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
@@ -1191,7 +1191,7 @@ describe('keyframes', () => {
             const _3 = "._j7hq1c6j{animation-name:khheuil}";
             const _2 = "._5sagymdr{animation-duration:2s}";
             const _ =
-              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes khheuil{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
@@ -1209,7 +1209,7 @@ describe('keyframes', () => {
           expect(actual).toMatchInlineSnapshot(`
             "const _2 = "._y44v1go4{animation:khheuil 2s ease-in-out}";
             const _ =
-              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes khheuil{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
@@ -1255,7 +1255,7 @@ describe('keyframes', () => {
             const _3 = "._j7hq1c6j{animation-name:khheuil}";
             const _2 = "._5sagymdr{animation-duration:2s}";
             const _ =
-              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes khheuil{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2, _3, _4]}</CS>
@@ -1273,7 +1273,7 @@ describe('keyframes', () => {
           expect(actual).toMatchInlineSnapshot(`
             "const _2 = "._y44v1go4{animation:khheuil 2s ease-in-out}";
             const _ =
-              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes khheuil{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const fadeOut = null;
             <CC>
               <CS>{[_, _2]}</CS>
@@ -1316,7 +1316,7 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _4 =
-              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes khheuil{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const _3 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
             const _2 = "._j7hq1c6j{animation-name:khheuil}";
             const _ = "._5sagymdr{animation-duration:2s}";
@@ -1350,7 +1350,7 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _2 =
-              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes khheuil{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const _ = "._y44v1go4{animation:khheuil 2s ease-in-out}";
             const fadeOut = null;
             const StyledComponent = forwardRef(
@@ -1426,7 +1426,7 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _4 =
-              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes khheuil{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const _3 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
             const _2 = "._j7hq1c6j{animation-name:khheuil}";
             const _ = "._5sagymdr{animation-duration:2s}";
@@ -1460,7 +1460,7 @@ describe('keyframes', () => {
 
           expect(actual).toMatchInlineSnapshot(`
             "const _2 =
-              "@keyframes khheuil{0%,25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
+              "@keyframes khheuil{0%{opacity:1}25%{opacity:1}25%{opacity:0.75}50%{opacity:0.5}to{opacity:0}}";
             const _ = "._y44v1go4{animation:khheuil 2s ease-in-out}";
             const fadeOut = null;
             const StyledComponent = forwardRef(

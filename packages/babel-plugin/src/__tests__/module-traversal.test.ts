@@ -366,9 +366,11 @@ describe('module traversal', () => {
       </BackgroundWithSelector>;
     `);
 
-    expect(actual).toInclude(
-      '._15rzbf54 #joined-selector, ._1khrbf54 .red{background-color:green}'
-    );
+    // This gets split into two rules due to flattenMultipleSelectors
+    expect(actual).toIncludeMultiple([
+      '._15rzbf54 #joined-selector{background-color:green}',
+      '._1khrbf54 .red{background-color:green}',
+    ]);
   });
 
   describe('should call onIncludedFiles with the filepath', () => {

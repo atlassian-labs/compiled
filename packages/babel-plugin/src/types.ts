@@ -23,7 +23,7 @@ export interface PluginOptions {
    * Will import the React namespace if it is missing.
    * When using the `'automatic'` jsx runtime set this to `false`.
    *
-   * Defaults to `true`.
+   * Defaults to `true`
    */
   importReact?: boolean;
 
@@ -45,7 +45,7 @@ export interface PluginOptions {
   /**
    * Will run additional cssnano plugins to normalize CSS during build.
    *
-   * Default to `true`.
+   * Defaults to `true`
    */
   optimizeCss?: boolean;
 
@@ -69,7 +69,7 @@ export interface PluginOptions {
   /**
    * Add the component name as class name to DOM in non-production environment if styled is used
    *
-   * Default to `false`
+   * Defults to `false`
    */
   addComponentName?: boolean;
 
@@ -77,7 +77,7 @@ export interface PluginOptions {
    * A map holds the key-value pairs between full Atomic class names and the compressed ones
    * i.e. { '_aaaabbbb': 'a' }
    *
-   * Default to `undefined`
+   * Defults to `undefined`
    */
   classNameCompressionMap?: { [index: string]: string };
 
@@ -85,7 +85,7 @@ export interface PluginOptions {
    * Whether Compiled should process usages of xcss in the codebase.
    * Disable this if xcss is not implemented in your codebase using Compiled's xcss functionality.
    *
-   * Default to `true`
+   * Defults to `true`
    */
   processXcss?: boolean;
 
@@ -94,13 +94,13 @@ export interface PluginOptions {
    * Generally you would only use this for migration purposes when mixing two or more styling
    * solutions.
    *
-   * Default to `false`.
+   * Defults to `false`
    */
   increaseSpecificity?: boolean;
 
   /**
    * Whether to sort at-rules, including media queries.
-   * Defaults to `true`.
+   * Defaults to `true`
    */
   sortAtRules?: boolean;
 
@@ -116,7 +116,7 @@ export interface PluginOptions {
   /**
    * Whether to flatten multiple selectors into separate rules to better deduplicate and sort styles.
    *
-   * Default to `false`.
+   * Defults to `true`.
    */
   flattenMultipleSelectors?: boolean;
 }

@@ -94,13 +94,14 @@ describe('browser', () => {
     render(<StyledLink href="https://atlassian.design">Atlassian Design System</StyledLink>);
 
     expect(document.head.innerHTML.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
-      "<style nonce="k0Mp1lEd">._1e0c1txw{display:flex}._1wyb12am{font-size:50px}._syaz1cnh{color:purple}._v0vw1x77:focus-visible, ._ysv71x77:link{color:white}</style>
-      <style nonce="k0Mp1lEd">._ysv75scu:link{color:red}</style>
+      "<style nonce="k0Mp1lEd">._1e0c1txw{display:flex}._1wyb12am{font-size:50px}._syaz1cnh{color:purple}</style>
+      <style nonce="k0Mp1lEd">._ysv75scu:link{color:red}._ysv71x77:link{color:white}</style>
       <style nonce="k0Mp1lEd">._105332ev:visited{color:pink}</style>
       <style nonce="k0Mp1lEd">._f8pjbf54:focus{color:green}</style>
+      <style nonce="k0Mp1lEd">._v0vw1x77:focus-visible{color:white}</style>
       <style nonce="k0Mp1lEd">._30l31gy6:hover{color:yellow}</style>
       <style nonce="k0Mp1lEd">._9h8h13q2:active{color:blue}</style>
-      <style nonce="k0Mp1lEd">@media (max-width:800px){._1o8z1gy6:focus{color:yellow}._jbabtwqo:focus-visible, ._6146twqo:hover{color:grey}._1cld11x8:active{color:black}}@supports (display:grid){._1df61gy6:focus{color:yellow}._7okp11x8:active{color:black}}</style>
+      <style nonce="k0Mp1lEd">@media (max-width:800px){._1o8z1gy6:focus{color:yellow}._jbabtwqo:focus-visible{color:grey}._6146twqo:hover{color:grey}._1cld11x8:active{color:black}}@supports (display:grid){._1df61gy6:focus{color:yellow}._7okp11x8:active{color:black}}</style>
       "
     `);
   });

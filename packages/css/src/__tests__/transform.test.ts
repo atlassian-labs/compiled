@@ -1,6 +1,6 @@
 import { transformCss as transform, type TransformOpts } from '../transform';
 
-const defaultOpts: TransformOpts = { optimizeCss: false, flattenMultipleSelectors: true };
+const defaultOpts: TransformOpts = { optimizeCss: false };
 const transformCss = (code: string, opts: TransformOpts = defaultOpts) => transform(code, opts);
 
 describe('#css-transform', () => {
@@ -499,7 +499,7 @@ describe('#css-transform', () => {
   });
 
   describe('flatten multiple selectors', () => {
-    it('should flatten multiple selectors when configured (by default in this test)', () => {
+    it('should flatten multiple selectors when configured (by default)', () => {
       const { sheets: actual } = transformCss(`div, span { color: red; }`);
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
@@ -508,7 +508,7 @@ describe('#css-transform', () => {
       `);
     });
 
-    it('should not flatten multiple selectors when not configured', () => {
+    it('should not flatten multiple selectors when disabled', () => {
       const { sheets: actual } = transformCss(`div, span { color: red; }`, {
         ...defaultOpts,
         flattenMultipleSelectors: false,

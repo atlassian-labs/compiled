@@ -37,6 +37,9 @@ export const transformCss = (
   const sheets: string[] = [];
   const classNames: string[] = [];
 
+  // This is defaulted to `true` unless set
+  const flattenMultipleSelectorsOption = opts.flattenMultipleSelectors ?? true;
+
   try {
     const result = postcss([
       discardDuplicates(),
@@ -63,7 +66,7 @@ export const transformCss = (
         callback: (className: string) => classNames.push(className),
         classHashPrefix: opts.classHashPrefix,
       }),
-      ...(opts.flattenMultipleSelectors ? [flattenMultipleSelectors(), discardDuplicates()] : []),
+      ...(flattenMultipleSelectorsOption ? [flattenMultipleSelectors(), discardDuplicates()] : []),
       ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
       sortAtomicStyleSheet({
         sortAtRulesEnabled: opts.sortAtRules,

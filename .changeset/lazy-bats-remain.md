@@ -3,10 +3,14 @@
 '@compiled/babel-component-extracted-fixture': none
 '@compiled/parcel-transformer': none
 '@compiled/babel-component-fixture': none
-'@compiled/css': patch
+'@compiled/css': minor
 ---
 
-Flatten multiple selectors into separate rules to better deduplicate and sort styles, eg.:
+Adds a possibly breaking change to flatten multiple selectors into separate rules to better deduplicate and sort styles.
+
+You can disable this by setting `flattenMultipleSelectors: false` in Babel and other config.
+
+For example:
 
 ```tsx
 css({
@@ -24,7 +28,5 @@ css({
   '&:focus': { color: 'red' },
 });
 ```
-
-This will be enabled by default in a future minor release once impact is validated.
 
 Without this, pseudo-selectors aren't sorted properly in some scenarios.
