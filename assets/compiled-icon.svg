@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- Minimal icon version -->
+  <style>
+    .bracket { fill: #0052CC; }
+    .dot { fill: #0065FF; }
+  </style>
+  
+  <!-- Left bracket -->
+  <path class="bracket" d="M20,10 L30,10 L30,50 L20,50 Q15,50 15,45 L15,15 Q15,10 20,10" />
+  
+  <!-- Right bracket -->
+  <path class="bracket" d="M50,10 L40,10 L40,50 L50,50 Q55,50 55,45 L55,15 Q55,10 50,10" />
+  
+  <!-- Center dot -->
+  <circle class="dot" cx="35" cy="30" r="5" />
+</svg>
