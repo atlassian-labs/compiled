@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark theme logo -->
+  <g fill="none" fill-rule="evenodd">
+    <!-- Letter C -->
+    <path d="M20 15 Q10 30 20 45 L25 45 Q15 30 25 15 Z" fill="#4C9AFF"/>
+    <!-- Letters "ompiled" -->
+    <text x="35" y="38" font-family="Arial" font-size="32" font-weight="bold" fill="#FFFFFF">
+      ompiled
+    </text>
+    <!-- Decorative element -->
+    <circle cx="180" cy="30" r="8" fill="#4C9AFF"/>
+  </g>
+</svg>
