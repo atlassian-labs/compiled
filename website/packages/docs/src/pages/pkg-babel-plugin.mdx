@@ -50,6 +50,7 @@ If you choose to configure Compiled through Webpack or Parcel (recommended), you
 - `classHashPrefix`
 - `classNameCompressionMap`
 - `extensions`
+- `flattenMultipleSelectors`
 - `importReact`
 - `importSources`
 - `increaseSpecificity`
@@ -104,6 +105,30 @@ Extensions that we should consider code. We use these to identify if a file shou
 
 - Type: `string[]`
 - Default: `['.js', '.jsx', '.ts', '.tsx']`
+
+#### flattenMultipleSelectors
+
+Flatten multiple selectors into separate rules to better deduplicate and sort styles, eg.:
+
+```tsx
+css({
+  '&:hover, &:focus': {
+    color: 'red',
+  },
+});
+```
+
+Is transformed into the same code as this would be:
+
+```tsx
+css({
+  '&:hover': { color: 'red' },
+  '&:focus': { color: 'red' },
+});
+```
+
+- Type: `boolean`
+- Default: `true`
 
 #### importReact
 

@@ -3,5 +3,10 @@
     ["@babel/preset-env", { "targets": { "browsers": "last 1 version" } }],
     ["@babel/preset-react", { "runtime": "automatic" }]
   ],
-  "plugins": [["@compiled/babel-plugin", { "importReact": false, "optimizeCss": false }]]
+  "plugins": [
+    [
+      "@compiled/babel-plugin",
+      { "importReact": false, "optimizeCss": false, "flattenMultipleSelectors": true }
+    ]
+  ]
 }
