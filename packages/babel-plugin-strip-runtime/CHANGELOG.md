@@ -1,5 +1,12 @@
 # @compiled/babel-plugin-strip-runtime
 
+## 0.38.0
+
+### Patch Changes
+
+- Updated dependencies [9a66324]
+  - @compiled/css@0.21.0
+
 ## 0.37.1
 
 ### Patch Changes
