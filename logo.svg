@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="60" viewBox="0 0 200 60" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background code brackets -->
+  <path d="M20,10 L40,30 L20,50" fill="none" stroke="#E9EBF0" stroke-width="4" stroke-linecap="round"/>
+  <path d="M180,10 L160,30 L180,50" fill="none" stroke="#E9EBF0" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Main text -->
+  <text x="50" y="38" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#0052CC">
+    Compiled
+  </text>
+  
+  <!-- CSS decoration -->
+  <path d="M45,42 L155,42" stroke="#4C9AFF" stroke-width="2" stroke-dasharray="4,4"/>
+  
+  <!-- Compilation arrow -->
+  <path d="M165,30 L175,30 L170,35 L165,30 L170,25 L175,30" fill="#36B37E"/>
+</svg>

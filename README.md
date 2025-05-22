@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.svg" width="400" alt="Compiled logo">
+</p>
+
 # Compiled
 
 A familiar and performant compile time [CSS-in-JS](https://reactjs.org/docs/faq-styling.html#what-is-css-in-js) library for [React](https://reactjs.org/).
