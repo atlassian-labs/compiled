@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <!-- Main circle representing compilation -->
+    <circle cx="100" cy="100" r="90" fill="none" stroke="#FFFFFF" stroke-width="8"/>
+    
+    <!-- CSS brackets -->
+    <path d="M70 60 L90 60 L90 140 L70 140" fill="none" stroke="#FFFFFF" stroke-width="8"/>
+    <path d="M130 60 L110 60 L110 140 L130 140" fill="none" stroke="#FFFFFF" stroke-width="8"/>
+    
+    <!-- Central arrow representing compilation -->
+    <path d="M85 100 L115 100 L105 90 M115 100 L105 110" fill="none" stroke="#FFFFFF" stroke-width="8"/>
+</svg>
