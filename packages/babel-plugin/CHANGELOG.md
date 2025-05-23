@@ -1,5 +1,17 @@
 # @compiled/babel-plugin
 
+## 0.38.0
+
+### Minor Changes
+
+- 9a66324: Adds option `flattenMultipleSelectors` (defaults to `true`) to allow flattening of multiple selectors into separate rules to better deduplicate and sort styles.
+
+### Patch Changes
+
+- cceffda: Resolve an issue where cssMap was being defined after its consumer, which relies on the xcss prop.
+- Updated dependencies [9a66324]
+  - @compiled/css@0.21.0
+
 ## 0.37.1
 
 ### Patch Changes
