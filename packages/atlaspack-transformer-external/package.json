@@ -1,0 +1,34 @@
+{
+  "name": "@compiled/atlaspack-transformer-external",
+  "version": "0.1.0",
+  "description": "A familiar and performant compile time CSS-in-JS library for React.",
+  "homepage": "https://compiledcssinjs.com/docs/pkg-atlaspack-transformer",
+  "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlassian-labs/compiled.git",
+    "directory": "packages/atlaspack-transformer-external"
+  },
+  "license": "Apache-2.0",
+  "author": "Michael Dougall",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "dependencies": {
+    "@atlaspack/plugin": "^2.14.7",
+    "@parcel/source-map": "^2.1.1"
+  },
+  "devDependencies": {
+    "@atlaspack/core": "^2.14.7",
+    "@atlaspack/fs": "^2.14.7",
+    "prettier": "^2.8.8"
+  },
+  "engines": {
+    "atlaspack": "^2.0.0"
+  }
+}

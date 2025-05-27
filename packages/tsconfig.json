@@ -8,9 +8,9 @@
     { "path": "css/tsconfig.json" },
     { "path": "eslint-plugin/tsconfig.json" },
     { "path": "jest/tsconfig.json" },
-    { "path": "parcel-optimizer/tsconfig.json" },
-    { "path": "parcel-transformer/tsconfig.json" },
-    { "path": "parcel-transformer-external/tsconfig.json" },
+    { "path": "atlaspack-optimizer/tsconfig.json" },
+    { "path": "atlaspack-transformer/tsconfig.json" },
+    { "path": "atlaspack-transformer-external/tsconfig.json" },
     { "path": "react/tsconfig.cjs.json" },
     { "path": "utils/tsconfig.json" },
     { "path": "webpack-loader/tsconfig.json" }

@@ -1,0 +1,38 @@
+{
+  "name": "@compiled/atlaspack-optimizer",
+  "version": "0.6.3",
+  "description": "A familiar and performant compile time CSS-in-JS library for React.",
+  "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlassian-labs/compiled.git",
+    "directory": "packages/atlaspack-optimizer"
+  },
+  "license": "Apache-2.0",
+  "author": "Michael Dougall",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "dependencies": {
+    "@atlaspack/plugin": "^2.14.7",
+    "@compiled/css": "^0.21.0",
+    "@compiled/utils": "^0.13.1",
+    "posthtml": "^0.16.6",
+    "posthtml-insert-at": "^0.2.7"
+  },
+  "devDependencies": {
+    "@atlaspack/core": "^2.14.7",
+    "@atlaspack/fs": "^2.14.7",
+    "@atlaspack/types": "^2.14.7",
+    "@babel/types": "^7.26.10",
+    "prettier": "^2.8.8"
+  },
+  "engines": {
+    "atlaspack": "^2.0.0"
+  }
+}
