@@ -1,7 +1,4 @@
-import generate from '@babel/generator';
-import template from '@babel/template';
 import * as t from '@babel/types';
-import { unique } from '@compiled/utils';
 
 import type { Metadata } from '../types';
 
@@ -12,6 +9,10 @@ import { hoistSheet } from './hoist-sheet';
 import { transformCssItems } from './transform-css-items';
 import type { CSSOutput } from './types';
 
+const WHITESPACE_TEXT_NODES = {
+  leading: t.jsxText('\n  '),
+  trailing: t.jsxText('\n'),
+};
 /**
  * Will return a generated AST for a Compiled Component.
  * This is primarily used for CSS prop and ClassNames apis.
@@ -21,24 +22,37 @@ import type { CSSOutput } from './types';
  * @param meta {Metadata} Useful metadata that can be used during the transformation
  */
 export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Metadata): t.Node => {
-  const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
-
+  const nonce = meta.state.opts.nonce;
+  const nonceAttribute = nonce
+    ? t.jsxAttribute(t.jsxIdentifier('nonce'), t.jsxExpressionContainer(t.identifier(nonce)))
+    : null;
   const [keyAttribute] = getJSXAttribute(node, 'key');
 
-  return template(
-    `
-  <CC ${keyAttribute ? generate(keyAttribute).code : ''}>
-    <CS ${nonceAttribute}>{%%cssNode%%}</CS>
-    {%%jsxNode%%}
-  </CC>
-  `,
-    {
-      plugins: ['jsx'],
-    }
-  )({
-    jsxNode: node,
-    cssNode: t.arrayExpression(unique(sheets).map((sheet: string) => hoistSheet(sheet, meta))),
-  }) as t.Node;
+  return t.jsxElement(
+    t.jsxOpeningElement(
+      t.jsxIdentifier('CC'),
+      keyAttribute ? [t.jsxAttribute(t.jsxIdentifier('key'), keyAttribute.value)] : [],
+      false
+    ),
+    t.jsxClosingElement(t.jsxIdentifier('CC')),
+    [
+      WHITESPACE_TEXT_NODES.leading,
+      t.jsxElement(
+        t.jsxOpeningElement(t.jsxIdentifier('CS'), nonceAttribute ? [nonceAttribute] : [], false),
+        t.jsxClosingElement(t.jsxIdentifier('CS')),
+        [
+          t.jsxExpressionContainer(
+            t.arrayExpression(
+              Array.from(new Set(sheets)).map((sheet: string) => hoistSheet(sheet, meta))
+            )
+          ),
+        ]
+      ),
+      WHITESPACE_TEXT_NODES.leading,
+      t.jsxExpressionContainer(node),
+      WHITESPACE_TEXT_NODES.trailing,
+    ]
+  );
 };
 
 /**
