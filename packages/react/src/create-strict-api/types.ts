@@ -1,9 +1,8 @@
 import type {
   StrictCSSProperties,
-  CSSPseudoClasses,
   CSSPseudoElements,
   CSSPseudos,
-  FlattenedChainedCSSPseudos,
+  AllCSSPseudoClasses,
 } from '../types';
 
 /**
@@ -12,7 +11,7 @@ import type {
  * and pseudo elements.
  */
 export type CompiledSchemaShape = StrictCSSProperties & {
-  [Q in CSSPseudoClasses | FlattenedChainedCSSPseudos]?: StrictCSSProperties;
+  [Q in AllCSSPseudoClasses]?: StrictCSSProperties;
 };
 
 export type PseudosDeclarations = { [Q in CSSPseudos]?: StrictCSSProperties };
@@ -28,7 +27,7 @@ export type AllowedStyles<TMediaQuery extends string> = StrictCSSProperties &
 export type ApplySchemaValue<
   TSchema,
   TKey extends keyof StrictCSSProperties,
-  TPseudoKey extends CSSPseudoClasses | FlattenedChainedCSSPseudos | ''
+  TPseudoKey extends AllCSSPseudoClasses | ''
 > = TKey extends keyof TSchema
   ? // TKey is a valid property on the schema
     TPseudoKey extends keyof TSchema
@@ -47,15 +46,11 @@ export type ApplySchemaValue<
  * value if present, else fallback to its value from {@link StrictCSSProperties}. If
  * the property isn't a known property its value will be resolved to `never`.
  */
-export type ApplySchema<
-  TObject,
-  TSchema,
-  TPseudoKey extends CSSPseudoClasses | FlattenedChainedCSSPseudos | '' = ''
-> = {
+export type ApplySchema<TObject, TSchema, TPseudoKey extends AllCSSPseudoClasses | '' = ''> = {
   [TKey in keyof TObject]?: TKey extends keyof StrictCSSProperties
     ? // TKey is a valid CSS property, try to resolve its value.
       ApplySchemaValue<TSchema, TKey, TPseudoKey>
-    : TKey extends CSSPseudoClasses | FlattenedChainedCSSPseudos
+    : TKey extends AllCSSPseudoClasses
     ? // TKey is a valid pseudo class, recursively resolve its child properties
       // while passing down the parent pseudo key to resolve any specific schema types.
       ApplySchema<TObject[TKey], TSchema, TKey>

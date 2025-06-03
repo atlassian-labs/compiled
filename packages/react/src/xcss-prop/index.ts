@@ -2,20 +2,14 @@ import type * as CSS from 'csstype';
 
 import type { ApplySchemaValue } from '../create-strict-api/types';
 import { ax } from '../runtime';
-import type {
-  CSSPseudos,
-  CSSPseudoClasses,
-  CSSProperties,
-  StrictCSSProperties,
-  FlattenedChainedCSSPseudos,
-} from '../types';
+import type { CSSPseudos, CSSProperties, StrictCSSProperties, AllCSSPseudoClasses } from '../types';
 
 type MarkAsRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
 type XCSSValue<
   TStyleDecl extends keyof CSSProperties,
   TSchema,
-  TPseudoKey extends CSSPseudoClasses | FlattenedChainedCSSPseudos | ''
+  TPseudoKey extends AllCSSPseudoClasses | ''
 > = {
   [Q in keyof StrictCSSProperties]: Q extends TStyleDecl
     ? ApplySchemaValue<TSchema, Q, TPseudoKey>
@@ -30,11 +24,7 @@ type XCSSPseudo<
 > = {
   [Q in CSSPseudos]?: Q extends TAllowedPseudos
     ? MarkAsRequired<
-        XCSSValue<
-          TAllowedProperties,
-          TSchema,
-          Q extends CSSPseudoClasses | FlattenedChainedCSSPseudos ? Q : ''
-        >,
+        XCSSValue<TAllowedProperties, TSchema, Q extends AllCSSPseudoClasses ? Q : ''>,
         TRequiredProperties['requiredProperties']
       >
     : never;
