@@ -150,7 +150,7 @@ describe('createStrictAPI()', () => {
         return <div data-testid="div" />;
       }
 
-      const { getByTestId } = render(
+      const { getAllByTestId } = render(
         <div>
           <Component
             // @ts-expect-error — Invalid token
@@ -239,7 +239,7 @@ describe('createStrictAPI()', () => {
         </div>
       );
 
-      expect(getByTestId('div')).toBeDefined();
+      expect(getAllByTestId('div')).toHaveLength(6);
     });
   });
 
