@@ -260,4 +260,35 @@ describe('xcss prop', () => {
       />
     ).toBeObject();
   });
+
+  it('should allow chained pseudo elements', () => {
+    function CSSPropComponent({ xcss }: { xcss: XCSSProp<XCSSAllProperties, '&:hover::after'> }) {
+      return <div className={xcss}>foo</div>;
+    }
+
+    const styles = cssMap({
+      redColor: { color: 'red', '&:hover::after': { backgroundColor: 'green' } },
+    });
+
+    const { getByText } = render(<CSSPropComponent xcss={styles.redColor} />);
+
+    expect(getByText('foo')).toHaveCompiledCss('color', 'red');
+  });
+
+  it('should type error when given a chained pseudo element and none are allowed', () => {
+    function CSSPropComponent({ xcss }: { xcss: XCSSProp<XCSSAllProperties, '&:hover'> }) {
+      return <div className={xcss}>foo</div>;
+    }
+
+    const styles = cssMap({
+      redColor: { color: 'red', '&:hover::after': { backgroundColor: 'green' } },
+    });
+
+    expectTypeOf(
+      <CSSPropComponent
+        // @ts-expect-error — Types of property '"&:hover::after"' are incompatible.
+        xcss={styles.redColor}
+      />
+    ).toBeObject();
+  });
 });
