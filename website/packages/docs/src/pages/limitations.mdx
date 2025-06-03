@@ -77,6 +77,25 @@ The simplest workaround is migrating to a ternary, eg. `props.isSelected ? '0 0 
 
 For more details, refer to the [Github Issue](https://github.com/atlassian-labs/compiled/issues/1794).
 
+## Jest Coverage and Compiled Errors
+
+When running Jest in coverage collection mode (e.g., using the command jest --coverage), you might encounter an error like the following:
+
+```
+SyntaxError:
+    CSS Map must be declared at the top-most scope of the module.
+    Check out our documentation for cssMap examples: https://compiledcssinjs.com/docs/api-cssmap
+
+> 41 | const styles = cssMap({
+         |            ^
+```
+
+This issue typically does not occur when running the tests in non-coverage mode. By default, Jest uses Istanbul to instrument the code, which transforms it before @compiled/babel-plugin is applied. As a result, the plugin fails to correctly interpret certain syntax, causing the error.
+
+To resolve this issue, you can switch Jest's coverage provider to v8 instead of the default Istanbul.
+
+For more details about configuring Jest's coverage settings, refer to the official Jest documentation: [Jest Configuration - collectCoverage](https://jestjs.io/docs/configuration#collectcoverage-boolean).
+
 ## Unsupported features
 
 Below is a non-exhaustive list of features that Compiled does not support. Some are features we would like to add to Compiled at some point in the future, while others are features that we don't plan to implement.
