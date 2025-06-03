@@ -69,6 +69,10 @@ describe('createStrictAPI()', () => {
           color: '',
           // @ts-expect-error — Type '""' is not assignable to type ...
           backgroundColor: '',
+          '&::after': {
+            // @ts-expect-error — Type '"none"' is not assignable to type ...
+            padding: 'none',
+          },
         },
         '&:active': {
           // @ts-expect-error — Type '""' is not assignable to type ...
@@ -138,7 +142,7 @@ describe('createStrictAPI()', () => {
       function Component(_: {
         xcss: ReturnType<
           typeof XCSSProp<
-            'backgroundColor' | 'color',
+            'backgroundColor' | 'color' | 'display',
             '&:hover' | '&:active' | '&::before' | '&::after'
           >
         >;
@@ -147,38 +151,92 @@ describe('createStrictAPI()', () => {
       }
 
       const { getByTestId } = render(
-        <Component
-          xcss={{
-            // @ts-expect-error — Type '""' is not assignable to type ...
-            color: '',
-            // @ts-expect-error — Type '""' is not assignable to type ...
-            backgroundColor: '',
-            '&:hover': {
-              // @ts-expect-error — Type '""' is not assignable to type ...
-              color: 'var(--ds-text)',
-              // @ts-expect-error — Type '""' is not assignable to type ...
-              backgroundColor: 'var(--ds-success)',
-            },
-            '&:active': {
-              // @ts-expect-error — Type '""' is not assignable to type ...
-              color: 'var(--ds-text)',
-              // @ts-expect-error — Type '""' is not assignable to type ...
-              backgroundColor: 'var(--ds-success)',
-            },
-            '&::before': {
-              // @ts-expect-error — Type '""' is not assignable to type ...
-              color: '',
-              // @ts-expect-error — Type '""' is not assignable to type ...
-              backgroundColor: '',
-            },
-            '&::after': {
-              // @ts-expect-error — Type '""' is not assignable to type ...
-              color: '',
-              // @ts-expect-error — Type '""' is not assignable to type ...
-              backgroundColor: '',
-            },
-          }}
-        />
+        <div>
+          <Component
+            // @ts-expect-error — Invalid token
+            xcss={{ color: 'var(--ds-color)' }}
+          />
+          <Component
+            // @ts-expect-error — Disallowed property
+            xcss={{ padding: '0px' }}
+          />
+          <Component
+            xcss={{
+              '&:hover': {
+                // @ts-expect-error — Should be a hovered state
+                color: 'var(--ds-text)',
+                // @ts-expect-error — Should be a hovered state
+                backgroundColor: 'var(--ds-success)',
+              },
+              '&:active': {
+                // @ts-expect-error — Should be a hovered state
+                color: 'var(--ds-text)',
+                // @ts-expect-error — Should be a hovered state
+                backgroundColor: 'var(--ds-success)',
+              },
+            }}
+          />
+          <Component
+            xcss={{
+              '&:hover': {
+                // @ts-expect-error – Bad nesting
+                '&:focus': {
+                  display: 'none',
+                },
+              },
+              '&:active': {
+                // @ts-expect-error – Bad nesting
+                '&:focus': {
+                  display: 'none',
+                },
+              },
+            }}
+          />
+          <Component
+            xcss={{
+              '&::before': {
+                // @ts-expect-error — Type '""' is not assignable to type ...
+                color: '',
+                // @ts-expect-error — Type '""' is not assignable to type ...
+                backgroundColor: '',
+              },
+              '&::after': {
+                // @ts-expect-error — Type '""' is not assignable to type ...
+                color: '',
+                // @ts-expect-error — Type '""' is not assignable to type ...
+                backgroundColor: '',
+              },
+            }}
+          />
+          <Component
+            xcss={{
+              '&:hover': {
+                // @ts-expect-error – Bad nesting
+                '&:focus': {
+                  display: 'none',
+                },
+              },
+              '&:active': {
+                // @ts-expect-error — Type '""' is not assignable to type ...
+                color: 'var(--ds-text)',
+                // @ts-expect-error — Type '""' is not assignable to type ...
+                backgroundColor: 'var(--ds-success)',
+              },
+              '&::before': {
+                // @ts-expect-error — Type '""' is not assignable to type ...
+                color: '',
+                // @ts-expect-error — Type '""' is not assignable to type ...
+                backgroundColor: '',
+              },
+              '&::after': {
+                // @ts-expect-error — Type '""' is not assignable to type ...
+                color: '',
+                // @ts-expect-error — Type '""' is not assignable to type ...
+                backgroundColor: '',
+              },
+            }}
+          />
+        </div>
       );
 
       expect(getByTestId('div')).toBeDefined();
@@ -197,6 +255,12 @@ describe('createStrictAPI()', () => {
           padding: '10px',
           color: 'var(--ds-text-hovered)',
           backgroundColor: 'var(--ds-bold-hovered)',
+          '&::after': {
+            display: 'block',
+            content: '"Hello world"',
+            color: 'var(--ds-text)',
+            backgroundColor: 'var(--ds-bold)',
+          },
         },
         '&:active': {
           // @ts-expect-error — should be a value from the schema
@@ -236,6 +300,12 @@ describe('createStrictAPI()', () => {
             padding: '10px',
             color: 'var(--ds-text-hovered)',
             backgroundColor: 'var(--ds-bold-hovered)',
+            '&::after': {
+              display: 'block',
+              content: '"Hello world"',
+              color: 'var(--ds-text)',
+              backgroundColor: 'var(--ds-bold)',
+            },
           },
           '&:active': {
             // @ts-expect-error — should be a value from the schema
@@ -258,7 +328,24 @@ describe('createStrictAPI()', () => {
         },
       });
 
-      const { getByTestId } = render(<div css={stylesMap.primary} data-testid="div" />);
+      const stylesMap2 = cssMap({
+        primary: {
+          '&::after': {
+            display: 'block',
+            content: '"Hello world"',
+            color: 'var(--ds-text)',
+            backgroundColor: 'var(--ds-bold)',
+            // @ts-expect-error -- Does not allow nested `&::after &:hover`
+            '&:hover': {
+              color: 'var(--ds-text-hovered)',
+            },
+          },
+        },
+      });
+
+      const { getByTestId } = render(
+        <div css={[stylesMap.primary, stylesMap2.primary]} data-testid="div" />
+      );
 
       expect(getByTestId('div')).toHaveCompiledCss('color', 'var(--ds-text)');
     });
@@ -285,6 +372,10 @@ describe('createStrictAPI()', () => {
             '&:hover': {
               color: 'var(--ds-text-hovered)',
               backgroundColor: 'var(--ds-bold-hovered)',
+              '&::after': {
+                color: 'var(--ds-text)',
+                backgroundColor: 'var(--ds-bold)',
+              },
             },
             '&:active': {
               color: 'var(--ds-text-pressed)',
