@@ -24,9 +24,15 @@ interface PressedProperties {
   backgroundColor: BackgroundPressed;
 }
 
+interface ChainedProperties {
+  color: ColorPressed;
+  backgroundColor: BackgroundPressed;
+}
+
 interface CSSPropertiesSchema extends Properties {
   '&:hover': HoveredProperties;
   '&:active': PressedProperties;
+  '&:hover::after': ChainedProperties;
 }
 
 const { css, cssMap, cx, XCSSProp } = createStrictAPI<CSSPropertiesSchema>();

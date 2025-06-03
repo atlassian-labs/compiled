@@ -89,7 +89,7 @@ export type CSSPseudoClasses =
   | '&:valid'
   | '&:visited';
 
-type FlattenedChainedCSSPseudos =
+export type FlattenedChainedCSSPseudos =
   | '&:visited:active'
   | '&:visited:hover'
   | '&:active:visited'
