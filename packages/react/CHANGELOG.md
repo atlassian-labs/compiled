@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.18.5
+
+### Patch Changes
+
+- e2b408a: Allow for flattened chained pseudo-selectors, eg. `&:hover::after` in our type syntaxes
+
 ## 0.18.4
 
 ### Patch Changes
