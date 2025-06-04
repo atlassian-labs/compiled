@@ -51,6 +51,16 @@ export type CSSPseudoElements =
   | '&::target-text'
   | '&::view-transition';
 
+export type FlattenedChainedCSSPseudosClasses =
+  | '&:visited:active'
+  | '&:visited:hover'
+  | '&:active:visited'
+  | '&:hover::before'
+  | '&:hover::after'
+  | '&:focus-visible::before'
+  | '&:focus-visible::after'
+  | '&:focus:not(:focus-visible)';
+
 export type CSSPseudoClasses =
   | '&:active'
   | '&:autofill'
@@ -89,14 +99,16 @@ export type CSSPseudoClasses =
   | '&:valid'
   | '&:visited';
 
+export type AllCSSPseudoClasses = CSSPseudoClasses | FlattenedChainedCSSPseudosClasses;
+
 /*
- * This list of pseudo-classes and pseudo-elements are from csstype
+ * This list of pseudo-classes, chained pseudo-classes, and pseudo-elements are from csstype
  * but with & added to the front. Compiled supports both &-ful
  * and &-less forms and both will target the current element
  * (`&:hover` <==> `:hover`), however we force the use of the
  * &-ful form for consistency with the nested spec for new APIs.
  */
-export type CSSPseudos = CSSPseudoElements | CSSPseudoClasses;
+export type CSSPseudos = CSSPseudoElements | AllCSSPseudoClasses;
 
 /**
  * The XCSSProp must be given all known available properties even
