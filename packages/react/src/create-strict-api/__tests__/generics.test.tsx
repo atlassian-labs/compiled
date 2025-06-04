@@ -9,6 +9,7 @@ describe('createStrictAPI()', () => {
     const styles = css({
       '&:hover': {},
       '&:active': {},
+      '&:hover::after': {},
       '&::before': {},
       '&::after': {},
     });
@@ -23,6 +24,7 @@ describe('createStrictAPI()', () => {
       nested: {
         '&:hover': {},
         '&:active': {},
+        '&:hover::after': {},
         '&::before': {},
         '&::after': {},
       },
@@ -40,7 +42,7 @@ describe('createStrictAPI()', () => {
       xcss: ReturnType<
         typeof XCSSProp<
           'backgroundColor' | 'color',
-          '&:hover' | '&:active' | '&::before' | '&::after'
+          '&:hover' | '&:active' | '&::before' | '&::after' | '&:hover::after'
         >
       >;
     }) {
@@ -49,7 +51,13 @@ describe('createStrictAPI()', () => {
 
     const { getByTestId } = render(
       <Component
-        xcss={{ '&:hover': {}, '&:active': {}, '&::before': {}, '&::after': {} }}
+        xcss={{
+          '&:hover': {},
+          '&:active': {},
+          '&::before': {},
+          '&::after': {},
+          '&:hover::after': {},
+        }}
         data-testid="div"
       />
     );
@@ -71,6 +79,12 @@ describe('createStrictAPI()', () => {
           backgroundColor: '',
         },
         '&:active': {
+          // @ts-expect-error — Type '""' is not assignable to type ...
+          color: '',
+          // @ts-expect-error — Type '""' is not assignable to type ...
+          backgroundColor: '',
+        },
+        '&:hover::after': {
           // @ts-expect-error — Type '""' is not assignable to type ...
           color: '',
           // @ts-expect-error — Type '""' is not assignable to type ...
@@ -114,6 +128,12 @@ describe('createStrictAPI()', () => {
             // @ts-expect-error — Type '""' is not assignable to type ...
             backgroundColor: '',
           },
+          '&:hover::after': {
+            // @ts-expect-error — Type '""' is not assignable to type ...
+            color: '',
+            // @ts-expect-error — Type '""' is not assignable to type ...
+            backgroundColor: '',
+          },
           '&::before': {
             // @ts-expect-error — Type '""' is not assignable to type ...
             color: '',
@@ -139,7 +159,7 @@ describe('createStrictAPI()', () => {
         xcss: ReturnType<
           typeof XCSSProp<
             'backgroundColor' | 'color',
-            '&:hover' | '&:active' | '&::before' | '&::after'
+            '&:hover' | '&:active' | '&::before' | '&::after' | '&:hover::after'
           >
         >;
       }) {
@@ -160,6 +180,12 @@ describe('createStrictAPI()', () => {
               backgroundColor: 'var(--ds-success)',
             },
             '&:active': {
+              // @ts-expect-error — Type '""' is not assignable to type ...
+              color: 'var(--ds-text)',
+              // @ts-expect-error — Type '""' is not assignable to type ...
+              backgroundColor: 'var(--ds-success)',
+            },
+            '&:hover::after': {
               // @ts-expect-error — Type '""' is not assignable to type ...
               color: 'var(--ds-text)',
               // @ts-expect-error — Type '""' is not assignable to type ...
@@ -197,6 +223,12 @@ describe('createStrictAPI()', () => {
           padding: '10px',
           color: 'var(--ds-text-hovered)',
           backgroundColor: 'var(--ds-bold-hovered)',
+        },
+        '&:hover::after': {
+          // @ts-expect-error — should be a value from the schema
+          padding: '10px',
+          color: 'var(--ds-text-pressed)',
+          backgroundColor: 'var(--ds-bold-pressed)',
         },
         '&:active': {
           // @ts-expect-error — should be a value from the schema
@@ -243,6 +275,12 @@ describe('createStrictAPI()', () => {
             color: 'var(--ds-text-pressed)',
             backgroundColor: 'var(--ds-bold-pressed)',
           },
+          '&:hover::after': {
+            // @ts-expect-error — should be a value from the schema
+            padding: '10px',
+            color: 'var(--ds-text-pressed)',
+            backgroundColor: 'var(--ds-bold-pressed)',
+          },
           '&::before': {
             // @ts-expect-error — should be a value from the schema
             padding: '10px',
@@ -270,7 +308,7 @@ describe('createStrictAPI()', () => {
         xcss: ReturnType<
           typeof XCSSProp<
             'backgroundColor' | 'color',
-            '&:hover' | '&:active' | '&::before' | '&::after'
+            '&:hover' | '&:active' | '&::before' | '&::after' | '&:hover::after'
           >
         >;
       }) {
@@ -287,6 +325,10 @@ describe('createStrictAPI()', () => {
               backgroundColor: 'var(--ds-bold-hovered)',
             },
             '&:active': {
+              color: 'var(--ds-text-pressed)',
+              backgroundColor: 'var(--ds-bold-pressed)',
+            },
+            '&:hover::after': {
               color: 'var(--ds-text-pressed)',
               backgroundColor: 'var(--ds-bold-pressed)',
             },
