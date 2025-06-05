@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 0.38.1
+
+### Patch Changes
+
+- 8ab02df: Babel template string replaced with it's AST node counterparts - Minorly improving performance
+
 ## 0.38.0
 
 ### Minor Changes
