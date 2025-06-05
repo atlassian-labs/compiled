@@ -794,11 +794,11 @@ describe('css prop object literal', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import*as React from'react';import{ax,ix,CC,CS}from"@compiled/react/runtime";const _4="._19bv1ylp{padding-left:40px}";const _3="._n3td1ul9{padding-bottom:30px}";const _2="._u5f3gktf{padding-right:20px}";const _="._ca0q19bv{padding-top:10px}";const morePadding=true;<CC>
-          <CS>{[_,_2,_3,_4]}</CS>
-          {<div className={ax(["_ca0q19bv _u5f3gktf _n3td1ul9 _19bv1ylp"])}>
+        <CS>{[_,_2,_3,_4]}</CS>
+        {<div className={ax(["_ca0q19bv _u5f3gktf _n3td1ul9 _19bv1ylp"])}>
             Hello world
           </div>}
-        </CC>;"
+      </CC>;"
     `);
   });
 });
