@@ -51,7 +51,7 @@ export type CSSPseudoElements =
   | '&::target-text'
   | '&::view-transition';
 
-export type FlattenedChainedCSSPseudosClasses =
+export type CSSFlattenedChainedPsuedos =
   | '&:visited:active'
   | '&:visited:hover'
   | '&:visited:focus'
@@ -106,7 +106,7 @@ export type CSSPseudoClasses =
   | '&:valid'
   | '&:visited';
 
-export type AllCSSPseudoClasses = CSSPseudoClasses | FlattenedChainedCSSPseudosClasses;
+export type AllCSSPseudoClasses = CSSPseudoClasses | CSSFlattenedChainedPsuedos;
 
 /*
  * This list of pseudo-classes, chained pseudo-classes, and pseudo-elements are from csstype
