@@ -54,11 +54,18 @@ export type CSSPseudoElements =
 export type FlattenedChainedCSSPseudosClasses =
   | '&:visited:active'
   | '&:visited:hover'
+  | '&:visited:focus'
+  | '&:visited:focus-visible'
+  | '&:visited:focus-within'
   | '&:active:visited'
   | '&:hover::before'
   | '&:hover::after'
   | '&:focus-visible::before'
   | '&:focus-visible::after'
+  | '&:focus::before'
+  | '&:focus::after'
+  | '&:focus-within::before'
+  | '&:focus-within::after'
   | '&:focus:not(:focus-visible)';
 
 export type CSSPseudoClasses =
