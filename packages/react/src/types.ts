@@ -51,14 +51,21 @@ export type CSSPseudoElements =
   | '&::target-text'
   | '&::view-transition';
 
-export type FlattenedChainedCSSPseudosClasses =
+export type CSSFlattenedChainedPsuedos =
   | '&:visited:active'
   | '&:visited:hover'
+  | '&:visited:focus'
+  | '&:visited:focus-visible'
+  | '&:visited:focus-within'
   | '&:active:visited'
   | '&:hover::before'
   | '&:hover::after'
   | '&:focus-visible::before'
   | '&:focus-visible::after'
+  | '&:focus::before'
+  | '&:focus::after'
+  | '&:focus-within::before'
+  | '&:focus-within::after'
   | '&:focus:not(:focus-visible)';
 
 export type CSSPseudoClasses =
@@ -99,7 +106,7 @@ export type CSSPseudoClasses =
   | '&:valid'
   | '&:visited';
 
-export type AllCSSPseudoClasses = CSSPseudoClasses | FlattenedChainedCSSPseudosClasses;
+export type AllCSSPseudoClasses = CSSPseudoClasses | CSSFlattenedChainedPsuedos;
 
 /*
  * This list of pseudo-classes, chained pseudo-classes, and pseudo-elements are from csstype
