@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.18.6
+
+### Patch Changes
+
+- 693200b: Add more chained pseudos to type
+
 ## 0.18.5
 
 ### Patch Changes
