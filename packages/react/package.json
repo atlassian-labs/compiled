@@ -1,6 +1,6 @@
 {
   "name": "@compiled/react",
-  "version": "0.18.5",
+  "version": "0.18.6",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "keywords": [
     "compiled",
