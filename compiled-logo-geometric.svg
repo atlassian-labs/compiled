@@ -1,0 +1,25 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer circle representing the compilation process -->
+  <circle cx="60" cy="60" r="50" fill="#6366F1" opacity="0.1"/>
+  
+  <!-- Central compilation symbol - hexagon transforming to square -->
+  <g transform="translate(60, 60)">
+    <!-- Input hexagon (CSS-in-JS) -->
+    <polygon points="-15,-8.66 -7.5,-15 7.5,-15 15,-8.66 15,8.66 7.5,15 -7.5,15 -15,8.66" 
+             fill="#6366F1" opacity="0.8"/>
+    
+    <!-- Transformation arrows -->
+    <path d="M20 -3 L28 0 L20 3" stroke="#10B981" stroke-width="2" fill="none"/>
+    <path d="M20 -8 L28 -5 L20 -2" stroke="#10B981" stroke-width="1.5" fill="none" opacity="0.6"/>
+    <path d="M20 2 L28 5 L20 8" stroke="#10B981" stroke-width="1.5" fill="none" opacity="0.6"/>
+    
+    <!-- Output square (Atomic CSS) -->
+    <rect x="32" y="-8" width="16" height="16" fill="#10B981" rx="2"/>
+  </g>
+  
+  <!-- Atomic particles around the edge -->
+  <circle cx="30" cy="30" r="2" fill="#6366F1" opacity="0.6"/>
+  <circle cx="90" cy="30" r="2" fill="#10B981" opacity="0.6"/>
+  <circle cx="90" cy="90" r="2" fill="#6366F1" opacity="0.6"/>
+  <circle cx="30" cy="90" r="2" fill="#10B981" opacity="0.6"/>
+</svg>

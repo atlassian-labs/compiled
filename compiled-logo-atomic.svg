@@ -1,0 +1,32 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="45" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/>
+  
+  <!-- Grid of atomic blocks representing atomic CSS classes -->
+  <g transform="translate(35, 35)">
+    <!-- Row 1 -->
+    <rect x="0" y="0" width="12" height="12" fill="#6366F1" rx="2"/>
+    <rect x="18" y="0" width="12" height="12" fill="#10B981" rx="2"/>
+    <rect x="36" y="0" width="12" height="12" fill="#6366F1" opacity="0.6" rx="2"/>
+    
+    <!-- Row 2 -->
+    <rect x="0" y="18" width="12" height="12" fill="#10B981" opacity="0.7" rx="2"/>
+    <rect x="18" y="18" width="12" height="12" fill="#6366F1" rx="2"/>
+    <rect x="36" y="18" width="12" height="12" fill="#10B981" rx="2"/>
+    
+    <!-- Row 3 -->
+    <rect x="0" y="36" width="12" height="12" fill="#6366F1" opacity="0.5" rx="2"/>
+    <rect x="18" y="36" width="12" height="12" fill="#10B981" opacity="0.8" rx="2"/>
+    <rect x="36" y="36" width="12" height="12" fill="#6366F1" rx="2"/>
+  </g>
+  
+  <!-- Compilation indicator - small gear/cog -->
+  <g transform="translate(85, 25)">
+    <circle cx="0" cy="0" r="8" fill="#F59E0B"/>
+    <circle cx="0" cy="0" r="4" fill="#FFFFFF"/>
+    <rect x="-1" y="-10" width="2" height="4" fill="#F59E0B"/>
+    <rect x="-1" y="6" width="2" height="4" fill="#F59E0B"/>
+    <rect x="-10" y="-1" width="4" height="2" fill="#F59E0B"/>
+    <rect x="6" y="-1" width="4" height="2" fill="#F59E0B"/>
+  </g>
+</svg>
