@@ -1,5 +1,11 @@
 # @compiled/parcel-optimizer
 
+## 0.6.4
+
+### Patch Changes
+
+- d7b0505: Use Array.isArray instead of instanceof for more reliable check.
+
 ## 0.6.3
 
 ### Patch Changes
