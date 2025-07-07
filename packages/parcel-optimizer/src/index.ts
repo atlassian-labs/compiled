@@ -52,7 +52,7 @@ export default new Optimizer<ParcelOptimizerOpts, unknown>({
           return;
         }
 
-        assert(rules instanceof Array);
+        assert(Array.isArray(rules));
 
         for (const rule of rules) {
           styleRules.add(rule as string);
