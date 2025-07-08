@@ -1,0 +1,40 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="atomGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Atomic CSS structure concept -->
+  <g transform="translate(60,60)">
+    <!-- Central compilation core -->
+    <circle cx="0" cy="0" r="8" fill="url(#atomGrad)"/>
+    
+    <!-- Atomic nodes (representing atomic CSS classes) -->
+    <circle cx="-30" cy="-20" r="5" fill="#667eea" opacity="0.8"/>
+    <circle cx="30" cy="-20" r="5" fill="#667eea" opacity="0.8"/>
+    <circle cx="-35" cy="15" r="5" fill="#667eea" opacity="0.8"/>
+    <circle cx="35" cy="15" r="5" fill="#667eea" opacity="0.8"/>
+    <circle cx="0" cy="-35" r="5" fill="#667eea" opacity="0.8"/>
+    <circle cx="0" cy="35" r="5" fill="#667eea" opacity="0.8"/>
+    
+    <!-- Connection lines (showing atomic relationships) -->
+    <line x1="0" y1="0" x2="-30" y2="-20" stroke="#764ba2" stroke-width="1.5" opacity="0.5"/>
+    <line x1="0" y1="0" x2="30" y2="-20" stroke="#764ba2" stroke-width="1.5" opacity="0.5"/>
+    <line x1="0" y1="0" x2="-35" y2="15" stroke="#764ba2" stroke-width="1.5" opacity="0.5"/>
+    <line x1="0" y1="0" x2="35" y2="15" stroke="#764ba2" stroke-width="1.5" opacity="0.5"/>
+    <line x1="0" y1="0" x2="0" y2="-35" stroke="#764ba2" stroke-width="1.5" opacity="0.5"/>
+    <line x1="0" y1="0" x2="0" y2="35" stroke="#764ba2" stroke-width="1.5" opacity="0.5"/>
+    
+    <!-- Orbital rings suggesting optimization/compilation -->
+    <circle cx="0" cy="0" r="25" stroke="#764ba2" stroke-width="1" fill="none" opacity="0.3"/>
+    <circle cx="0" cy="0" r="40" stroke="#667eea" stroke-width="1" fill="none" opacity="0.2"/>
+    
+    <!-- Small optimization indicators -->
+    <circle cx="-20" cy="0" r="2" fill="#F7DF1E" opacity="0.7"/>
+    <circle cx="20" cy="0" r="2" fill="#F7DF1E" opacity="0.7"/>
+    <circle cx="0" cy="-20" r="2" fill="#F7DF1E" opacity="0.7"/>
+    <circle cx="0" cy="20" r="2" fill="#F7DF1E" opacity="0.7"/>
+  </g>
+</svg>

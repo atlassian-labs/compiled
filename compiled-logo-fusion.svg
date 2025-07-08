@@ -1,0 +1,32 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cssGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1572B6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#33A9DC;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="jsGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F7DF1E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F0DB4F;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- CSS-in-JS fusion concept -->
+  <g transform="translate(60,60)">
+    <!-- CSS symbol (stylized bracket) -->
+    <path d="M -35 -25 Q -45 -25 -45 -15 L -45 -5 Q -50 0 -45 5 L -45 15 Q -45 25 -35 25" 
+          stroke="url(#cssGrad)" stroke-width="6" fill="none" stroke-linecap="round"/>
+    
+    <!-- JS symbol (stylized curly brace) -->
+    <path d="M 35 -25 Q 45 -25 45 -15 L 45 -5 Q 50 0 45 5 L 45 15 Q 45 25 35 25" 
+          stroke="url(#jsGrad)" stroke-width="6" fill="none" stroke-linecap="round"/>
+    
+    <!-- Fusion center - compilation point -->
+    <circle cx="0" cy="0" r="12" fill="#667eea" opacity="0.9"/>
+    <circle cx="0" cy="0" r="6" fill="#ffffff" opacity="0.8"/>
+    
+    <!-- Energy/compilation lines -->
+    <path d="M -25 0 Q -12 -8 0 0 Q 12 8 25 0" stroke="#764ba2" stroke-width="2" fill="none" opacity="0.6"/>
+    <path d="M -20 -15 Q -6 -8 0 0" stroke="#764ba2" stroke-width="1.5" fill="none" opacity="0.4"/>
+    <path d="M 20 15 Q 6 8 0 0" stroke="#764ba2" stroke-width="1.5" fill="none" opacity="0.4"/>
+  </g>
+</svg>
