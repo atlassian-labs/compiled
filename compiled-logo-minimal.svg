@@ -1,0 +1,21 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Minimal C letterform with transformation elements -->
+  <g transform="translate(32, 32)">
+    <!-- Main C shape -->
+    <path d="M8 -16 C16 -16 20 -12 20 -4 L20 4 C20 12 16 16 8 16" 
+          stroke="#0052CC" 
+          stroke-width="4" 
+          stroke-linecap="round" 
+          fill="none"/>
+    
+    <!-- Transformation dots (representing compilation process) -->
+    <circle cx="24" cy="-8" r="1.5" fill="#36B37E"/>
+    <circle cx="26" cy="-4" r="1.5" fill="#36B37E"/>
+    <circle cx="24" cy="0" r="1.5" fill="#36B37E"/>
+    <circle cx="26" cy="4" r="1.5" fill="#36B37E"/>
+    <circle cx="24" cy="8" r="1.5" fill="#36B37E"/>
+    
+    <!-- Subtle accent line -->
+    <line x1="-20" y1="0" x2="-16" y2="0" stroke="#FFAB00" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>

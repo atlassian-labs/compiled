@@ -1,0 +1,21 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="#0052CC" stroke="#FFFFFF" stroke-width="2"/>
+  
+  <!-- Transformation arrows/shapes representing compilation -->
+  <g transform="translate(16, 20)">
+    <!-- Input shape (complex) -->
+    <rect x="0" y="0" width="8" height="8" fill="#FFFFFF" rx="1"/>
+    <rect x="0" y="10" width="8" height="6" fill="#FFFFFF" rx="1"/>
+    <rect x="0" y="18" width="8" height="4" fill="#FFFFFF" rx="1"/>
+    
+    <!-- Arrow -->
+    <path d="M12 12 L20 12 M17 9 L20 12 L17 15" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Output shape (atomic/optimized) -->
+    <circle cx="26" cy="8" r="2" fill="#36B37E"/>
+    <circle cx="30" cy="12" r="2" fill="#36B37E"/>
+    <circle cx="26" cy="16" r="2" fill="#36B37E"/>
+    <circle cx="22" cy="12" r="2" fill="#36B37E"/>
+  </g>
+</svg>

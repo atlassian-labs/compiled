@@ -1,0 +1,22 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main container -->
+  <rect width="64" height="64" rx="12" fill="#0052CC"/>
+  
+  <!-- Atomic structure representing atomic CSS -->
+  <g transform="translate(32, 32)">
+    <!-- Central nucleus -->
+    <circle cx="0" cy="0" r="4" fill="#FFFFFF"/>
+    
+    <!-- Electron orbits -->
+    <circle cx="0" cy="0" r="12" stroke="#36B37E" stroke-width="1.5" fill="none" opacity="0.8"/>
+    <circle cx="0" cy="0" r="20" stroke="#36B37E" stroke-width="1.5" fill="none" opacity="0.6"/>
+    
+    <!-- Electrons -->
+    <circle cx="12" cy="0" r="2" fill="#36B37E"/>
+    <circle cx="-12" cy="0" r="2" fill="#36B37E"/>
+    <circle cx="0" cy="20" r="2" fill="#36B37E"/>
+    <circle cx="0" cy="-20" r="2" fill="#36B37E"/>
+    <circle cx="14" cy="14" r="1.5" fill="#FFAB00"/>
+    <circle cx="-14" cy="-14" r="1.5" fill="#FFAB00"/>
+  </g>
+</svg>
