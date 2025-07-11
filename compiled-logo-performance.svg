@@ -1,0 +1,36 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer ring representing optimization -->
+  <circle cx="60" cy="60" r="50" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+  
+  <!-- Speed/performance indicators -->
+  <path d="M20 60 Q40 40, 60 60 Q80 40, 100 60" fill="none" stroke="url(#grad3)" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Central compilation symbol -->
+  <polygon points="45,45 75,45 85,60 75,75 45,75 35,60" fill="url(#grad4)" opacity="0.9"/>
+  
+  <!-- Inner efficiency symbol -->
+  <polygon points="52,52 68,52 72,60 68,68 52,68 48,60" fill="white"/>
+  
+  <!-- Performance dots -->
+  <circle cx="30" cy="45" r="3" fill="url(#grad3)"/>
+  <circle cx="90" cy="45" r="3" fill="url(#grad3)"/>
+  <circle cx="105" cy="75" r="3" fill="url(#grad3)"/>
+  <circle cx="15" cy="75" r="3" fill="url(#grad3)"/>
+  
+  <!-- Speed lines -->
+  <line x1="25" y1="35" x2="35" y2="25" stroke="url(#grad3)" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <line x1="85" y1="25" x2="95" y2="35" stroke="url(#grad3)" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <line x1="95" y1="85" x2="85" y2="95" stroke="url(#grad3)" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <line x1="35" y1="95" x2="25" y2="85" stroke="url(#grad3)" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+</svg>
