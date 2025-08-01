@@ -1,4 +1,5 @@
 const path = require('path');
+
 const swc = require('@swc/core');
 
 const pluginPath = path.resolve(
@@ -20,7 +21,6 @@ const transformCode = async (code) => {
   });
 };
 
-
 describe('styled component behaviour', () => {
   beforeAll(() => {
     process.env.AUTOPREFIXER = 'off';
@@ -30,10 +30,10 @@ describe('styled component behaviour', () => {
     delete process.env.AUTOPREFIXER;
   });
 
-  const transform = (code, opts = {}) =>
-    transformCode(code, { pretty: false, ...opts });
+  const transform = async (code, opts = {}) =>
+    await transformCode(code, { pretty: false, ...opts });
 
-  it('should generate styled object call expression component code', () => {
+  it('should generate styled object call expression component code', async () => {
     const code = `
       import { styled } from '@compiled/react';
 
@@ -42,7 +42,7 @@ describe('styled component behaviour', () => {
       });
     `;
 
-    const actual = transform(code, { pretty: true });
+    const actual = await transform(code, { pretty: true });
 
     expect(actual).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
@@ -74,7 +74,7 @@ describe('styled component behaviour', () => {
     `);
   });
 
-  it('should generate styled tagged template expression component code', () => {
+  it('should generate styled tagged template expression component code', async () => {
     const code = `
       import { styled } from '@compiled/react';
 
@@ -83,7 +83,7 @@ describe('styled component behaviour', () => {
       \`;
     `;
 
-    const actual = transform(code, { pretty: true });
+    const actual = await transform(code, { pretty: true });
 
     expect(actual).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
@@ -115,7 +115,7 @@ describe('styled component behaviour', () => {
     `);
   });
 
-  it('should add an identifier nonce to the style element', () => {
+  it('should add an identifier nonce to the style element', async () => {
     const code = `
       import { styled } from '@compiled/react';
 
@@ -124,13 +124,13 @@ describe('styled component behaviour', () => {
       \`;
     `;
 
-    const actual = transform(code, { nonce: '__webpack_nonce__' });
+    const actual = await transform(code, { nonce: '__webpack_nonce__' });
 
     expect(actual).toInclude('<CS nonce={__webpack_nonce__}');
   });
 
-  it('should compose CSS from multiple sources', () => {
-    const actual = transform(`
+  it('should compose CSS from multiple sources', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const styles = { fontSize: 12 };
@@ -1386,8 +1386,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('does not conflict conditional CSS with below selectors', () => {
-    const actual = transform(`
+  it('does not conflict conditional CSS with below selectors', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -1404,7 +1404,6 @@ describe('styled component behaviour', () => {
         }
       \`;
     `);
-
     expect(actual).toIncludeMultiple([
       '._1oey5scu >span:first-type-of{color:red}',
       '._irr31i1c:hover{background-color:cyan}',

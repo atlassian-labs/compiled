@@ -10,8 +10,7 @@
   "scripts": {
     "build": "cargo build-wasip1 --release",
     "example": "node example.js",
-    "prepublishOnly": "cargo build-wasip1 --release",
-    "test": "jest"
+    "prepublishOnly": "cargo build-wasip1 --release"
   },
   "dependencies": {
     "@swc/core": "^1.3.0"
