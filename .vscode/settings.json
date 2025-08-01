@@ -1,3 +1,6 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "debug.javascript.defaultRuntimeExecutable": {
+    "pwa-node": "/Users/hsinha/.local/share/mise/shims/node"
+  }
 }
