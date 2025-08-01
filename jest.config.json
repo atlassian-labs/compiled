@@ -6,7 +6,7 @@
   },
   "setupFilesAfterEnv": ["jest-extended", "./test/setup.ts"],
   "testEnvironment": "jsdom",
-  "testMatch": ["**/src/**/*.test.{ts,tsx}"],
+  "testMatch": ["**/src/**/*.test.{ts,tsx,js}"],
   "testPathIgnorePatterns": ["__perf__"],
   "transformIgnorePatterns": ["node_modules/(?!(@compiled|@parcel|ordered-binary))"],
   "watchPathIgnorePatterns": ["dist/"],
