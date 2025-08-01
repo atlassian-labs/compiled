@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 
-const swc = require('@swc/core');
 const path = require('path');
 
+const swc = require('@swc/core');
+
 async function runExample() {
-  const pluginPath = path.resolve(__dirname, 'target/wasm32-wasip1/release/swc_plugin_compiled.wasm');
-  
+  const pluginPath = path.resolve(
+    __dirname,
+    'target/wasm32-wasip1/release/swc_plugin_compiled.wasm'
+  );
+
   console.log('SWC Plugin Example');
   console.log('==================');
   console.log();
@@ -13,24 +17,24 @@ async function runExample() {
   const testCases = [
     {
       name: 'Basic strict equality',
-      code: 'if (user === "admin") { console.log("access granted"); }'
+      code: 'if (user === "admin") { console.log("access granted"); }',
     },
     {
       name: 'Multiple comparisons',
-      code: 'name === "john" && age === 25;'
+      code: 'name === "john" && age === 25;',
     },
     {
       name: 'Mixed operators (only === should transform)',
-      code: 'if (a == b && c === d && e !== f) { console.log("its all true"); }'
+      code: 'if (a == b && c === d && e !== f) { console.log("its all true"); }',
     },
     {
       name: 'Function call as left operand',
-      code: 'const result = getValue() === expectedValue;'
+      code: 'const result = getValue() === expectedValue;',
     },
     {
       name: 'JSX with strict equality',
-      code: 'const element = <div>{status === "active" ? "ON" : "OFF"}</div>;'
-    }
+      code: 'const element = <div>{status === "active" ? "ON" : "OFF"}</div>;',
+    },
   ];
 
   for (const testCase of testCases) {

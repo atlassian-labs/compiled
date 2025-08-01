@@ -9,9 +9,9 @@
   "files": [],
   "scripts": {
     "build": "cargo build-wasip1 --release",
+    "example": "node example.js",
     "prepublishOnly": "cargo build-wasip1 --release",
-    "test": "jest",
-    "example": "node example.js"
+    "test": "jest"
   },
   "devDependencies": {
     "@swc/core": "^1.3.0",
