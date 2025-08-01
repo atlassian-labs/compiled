@@ -1,63 +1,77 @@
-use swc_core::ecma::{
-    ast::Program,
-    transforms::testing::test_inline,
-    visit::VisitMut,
-};
-use swc_core::plugin::{plugin_transform, proxies::TransformPluginProgramMetadata};
-use swc_core::ecma::ast::Ident;
-use swc_core::ecma::ast::BinExpr;
-use swc_core::common::Spanned;
-use swc_core::ecma::ast::op;
-use swc_core::ecma::visit::VisitMutWith;
+use serde::Deserialize;
+use swc_core::ecma::ast::*;
+use swc_core::ecma::visit::FoldWith;
+use swc_core::plugin::{plugin_transform, metadata::TransformPluginProgramMetadata};
+use std::path::Path;
+
+mod hash;
+mod transformer;
 
 pub struct TransformVisitor;
 
-impl VisitMut for TransformVisitor {
-    // Implement necessary visit_mut_* methods for actual custom transform.
-    // A comprehensive list of possible visitor methods can be found here:
-    // https://rustdoc.swc.rs/swc_ecma_visit/trait.VisitMut.html
+// Plugin context struct - currently unused due to API changes
+#[allow(dead_code)]
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct PluginContext {
+    filename: Option<String>,
+    env_name: String,
+}
 
-    fn visit_mut_bin_expr(&mut self, e: &mut BinExpr) {
-        e.visit_mut_children_with(self);
+#[derive(Deserialize)]
+#[serde(rename_all = "kebab-case")]
+enum EmotionJsAutoLabel {
+    Never,
+    DevOnly,
+    Always,
+}
 
-        if e.op == op!("===") {
-            e.left = Box::new(Ident::new_no_ctxt("kdy1".into(), e.left.span()).into());
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct EmotionJsOptions {
+    source_map: Option<bool>,
+    auto_label: Option<EmotionJsAutoLabel>,
+    label_format: Option<String>,
+}
+
+// This config transformation has to be the same as https://github.com/vercel/next.js/blob/9fe2f2637c8384ae7939d5a4a30f1557a4262acb/packages/next/build/swc/options.js#L115-L140
+impl EmotionJsOptions {
+    fn to_emotion_options(self, env_name: &str) -> transformer::EmotionOptions {
+        transformer::EmotionOptions {
+            enabled: Some(true),
+            sourcemap: Some(match env_name {
+                "development" => self.source_map.unwrap_or(true),
+                _ => false,
+            }),
+            auto_label: Some(
+                match self.auto_label.unwrap_or(EmotionJsAutoLabel::DevOnly) {
+                    EmotionJsAutoLabel::Always => true,
+                    EmotionJsAutoLabel::Never => false,
+                    EmotionJsAutoLabel::DevOnly => match env_name {
+                        "development" => true,
+                        _ => false,
+                    },
+                },
+            ),
+            label_format: Some(self.label_format.unwrap_or("[local]".to_string())),
         }
     }
 }
 
-/// An example plugin function with macro support.
-/// `plugin_transform` macro interop pointers into deserialized structs, as well
-/// as returning ptr back to host.
-///
-/// It is possible to opt out from macro by writing transform fn manually
-/// if plugin need to handle low-level ptr directly via
-/// `__transform_plugin_process_impl(
-///     ast_ptr: *const u8, ast_ptr_len: i32,
-///     unresolved_mark: u32, should_enable_comments_proxy: i32) ->
-///     i32 /*  0 for success, fail otherwise.
-///             Note this is only for internal pointer interop result,
-///             not actual transform result */`
-///
-/// This requires manual handling of serialization / deserialization from ptrs.
-/// Refer swc_plugin_macro to see how does it work internally.
 #[plugin_transform]
-pub fn process_transform(program: Program, _metadata: TransformPluginProgramMetadata) -> Program {
-    let mut program = program;
-    program.visit_mut_with(&mut TransformVisitor);
+pub fn process_transform(program: Program, data: TransformPluginProgramMetadata) -> Program {
+    // Use default configuration since plugin_config and transform_context are not available in this API version
+    let config = EmotionJsOptions {
+        source_map: Some(true),
+        auto_label: Some(EmotionJsAutoLabel::DevOnly),  
+        label_format: Some("[local]".to_string()),
+    }.to_emotion_options("development");
+    
+    let file_name = "".to_string(); // Default filename since context is not available
+    let path = Path::new(&file_name);
+    let source_map = std::sync::Arc::new(data.source_map);
+
+    let program = program.fold_with(&mut transformer::emotion(config, path, source_map, data.comments));
+    
     program
 }
-
-// An example to test plugin transform.
-// Recommended strategy to test plugin's transform is verify
-// the Visitor's behavior, instead of trying to run `process_transform` with mocks
-// unless explicitly required to do so.
-test_inline!(
-    Default::default(),
-    |_| TransformVisitor,
-    boo,
-    // Input codes
-    r#"console.log("transform");"#,
-    // Output codes after transformed with plugin
-    r#"console.log("transform");"#
-);
