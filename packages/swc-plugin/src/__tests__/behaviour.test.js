@@ -1437,7 +1437,6 @@ describe('styled component behaviour', () => {
     `);
 
 
-    console.log("-->", actual);
 
     expect(actual).toIncludeMultiple([
       '._1oey5scu >span:first-type-of{color:red}',
