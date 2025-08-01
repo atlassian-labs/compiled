@@ -6,3 +6,4 @@ homepage = "https://github.com/atlassian-labs/compiled"
 license  = "Apache-2.0"
 
 [dependencies]
+swc_core = ">=15.0.0, <27.0.0"
