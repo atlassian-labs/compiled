@@ -4,7 +4,7 @@ const swc = require('@swc/core');
 
 const pluginPath = path.resolve(
   __dirname,
-  '../target/wasm32-wasip1/release/swc_plugin_compiled.wasm'
+  '../../target/wasm32-wasip1/release/swc_plugin_compiled.wasm'
 );
 
 const transformCode = async (code) => {
@@ -30,8 +30,10 @@ describe('styled component behaviour', () => {
     delete process.env.AUTOPREFIXER;
   });
 
-  const transform = async (code, opts = {}) =>
-    await transformCode(code, { pretty: false, ...opts });
+  const transform = async (code, opts = {}) => {
+    const result = await transformCode(code, { pretty: false, ...opts })
+    return result.code;
+  };
 
   it('should generate styled object call expression component code', async () => {
     const code = `
@@ -43,6 +45,8 @@ describe('styled component behaviour', () => {
     `;
 
     const actual = await transform(code, { pretty: true });
+
+    console.log("-->", actual);
 
     expect(actual).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
@@ -145,8 +149,8 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple(['{font-size:12px}', '{color:blue}', '{font-weight:500}']);
   });
 
-  it('should not destructure valid html attributes from props', () => {
-    const actual = transform(`
+  it('should not destructure valid html attributes from props', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const ListItem = styled.font({
@@ -158,8 +162,8 @@ describe('styled component behaviour', () => {
     expect(actual).not.toInclude('const{color, ...__cmpldp}=__cmplp;');
   });
 
-  it('should destructure invalid html attributes from props', () => {
-    const actual = transform(`
+  it('should destructure invalid html attributes from props', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div({
@@ -175,8 +179,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should shortcircuit props with suffix to a empty string to avoid undefined in css', () => {
-    const actual = transform(`
+  it('should shortcircuit props with suffix to a empty string to avoid undefined in css', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div\`
@@ -187,8 +191,8 @@ describe('styled component behaviour', () => {
     expect(actual).toInclude('"--_8t6091":ix(__cmplp.textSize,"px")');
   });
 
-  it('should prefix interpolation', () => {
-    const actual = transform(`
+  it('should prefix interpolation', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div\`
@@ -199,8 +203,8 @@ describe('styled component behaviour', () => {
     expect(actual).toInclude('"--_8t6091-":ix(__cmplp.textSize,"px","-")');
   });
 
-  it('creates a separate var name for positive and negative values of the same interpolation', () => {
-    const actual = transform(`
+  it('creates a separate var name for positive and negative values of the same interpolation', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
       const random = Math.random;
 
@@ -219,8 +223,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should compose a component using tagged template expression', () => {
-    const actual = transform(`
+  it('should compose a component using tagged template expression', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -235,8 +239,8 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple(['as:C=Component', '<C{...__cmplp}']);
   });
 
-  it('should compose a component using object call expression', () => {
-    const actual = transform(`
+  it('should compose a component using object call expression', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div({
@@ -251,8 +255,8 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple(['as:C=Component', '<C{...__cmplp}']);
   });
 
-  it('should inline constant identifier string literal', () => {
-    const actual = transform(`
+  it('should inline constant identifier string literal', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const fontSize = '20px';
@@ -265,8 +269,8 @@ describe('styled component behaviour', () => {
     expect(actual).toInclude('{font-size:20px}');
   });
 
-  it('should transform an arrow function with a body into an IIFE', () => {
-    const actual = transform(`
+  it('should transform an arrow function with a body into an IIFE', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div({
@@ -280,8 +284,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should transform an arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
-    const actual = transform(`
+  it('should transform an arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div({
@@ -296,8 +300,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE', () => {
-    const actual = transform(`
+  it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div({
@@ -311,8 +315,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should collect args as styles', () => {
-    const actual = transform(`
+  it('should collect args as styles', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div(
@@ -328,7 +332,7 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should not throw when template literal CSS has no terminating semicolon', () => {
+  it('should not throw when template literal CSS has no terminating semicolon', async () => {
     expect(() => {
       transform(`
         import { styled } from '@compiled/react';
@@ -341,7 +345,7 @@ describe('styled component behaviour', () => {
     }).not.toThrow();
   });
 
-  it('should handle destructuring in interpolation functions', () => {
+  it('should handle destructuring in interpolation functions', async () => {
     const code = `
       import { styled } from '@compiled/react';
       import colors from 'colors';
@@ -355,7 +359,7 @@ describe('styled component behaviour', () => {
       \`;
     `;
 
-    const actual = transform(code, { pretty: true });
+    const actual = await transform(code, { pretty: true });
 
     expect(actual).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
@@ -414,8 +418,8 @@ describe('styled component behaviour', () => {
     `);
   });
 
-  it('should handle an animation that references an inline @keyframes', () => {
-    const actual = transform(`
+  it('should handle an animation that references an inline @keyframes', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div\`
@@ -443,7 +447,7 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should not blow up with an expanding property', () => {
+  it('should not blow up with an expanding property', async () => {
     expect(() =>
       transform(`
         import { styled } from '@compiled/react';
@@ -455,8 +459,8 @@ describe('styled component behaviour', () => {
     ).not.toThrow();
   });
 
-  it('should omit classes on rules with no value in string literal', () => {
-    const actual = transform(`
+  it('should omit classes on rules with no value in string literal', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -476,8 +480,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should omit classes on rules with no value in object', () => {
-    const actual = transform(`
+  it('should omit classes on rules with no value in object', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div({
@@ -496,8 +500,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply no classes when styles have no value inside selector', () => {
-    const actual = transform(`
+  it('should apply no classes when styles have no value inside selector', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div({
@@ -510,8 +514,8 @@ describe('styled component behaviour', () => {
     expect(actual).toInclude('className={ax(["",__cmplp.className])}');
   });
 
-  it('should omit styles with no value inside selector', () => {
-    const actual = transform(`
+  it('should omit styles with no value inside selector', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div({
@@ -528,8 +532,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with ternary operator', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with ternary operator', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.button\`
@@ -559,8 +563,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with ternary operators and suffix', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with ternary operators and suffix', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const ListItem = styled.div\`
@@ -575,8 +579,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with ternary operator for object styles', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with ternary operator for object styles', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.button({
@@ -597,8 +601,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with ternary operator and tagged templates branches', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with ternary operator and tagged templates branches', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.button\`
@@ -613,8 +617,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with ternary operators, template literal branches containing props', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with ternary operators, template literal branches containing props', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
       import { CUSTOM_WIDTH } from './constants';
 
@@ -631,8 +635,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with multiple ternary operators', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with multiple ternary operators', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.button\`
@@ -652,8 +656,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with nested ternary operators', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with nested ternary operators', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.button\`
@@ -678,8 +682,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with template literal', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with template literal', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -699,8 +703,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with template literal and nested ternary operators', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with template literal and nested ternary operators', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -717,8 +721,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with template literal, nested ternary operators, and different types', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with template literal, nested ternary operators, and different types', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -736,8 +740,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with template literal and multiple props lines', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with template literal and multiple props lines', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -755,7 +759,7 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should not allow a logical statement with a conditional right-hand side', () => {
+  it('should not allow a logical statement with a conditional right-hand side', async () => {
     expect(() =>
       transform(`
       import { styled } from '@compiled/react';
@@ -769,8 +773,8 @@ describe('styled component behaviour', () => {
     );
   });
 
-  it('should apply conditional CSS when using "key: value" in string form', () => {
-    const actual = transform(`
+  it('should apply conditional CSS when using "key: value" in string form', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -785,8 +789,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply nested conditional CSS when using "key: value" in string form', () => {
-    const actual = transform(`
+  it('should apply nested conditional CSS when using "key: value" in string form', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -802,8 +806,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS when using "key: value; key: value; ..." in string form', () => {
-    const actual = transform(`
+  it('should apply conditional CSS when using "key: value; key: value; ..." in string form', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -820,8 +824,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS when using inline mixins', () => {
-    const actual = transform(`
+  it('should apply conditional CSS when using inline mixins', async () => {
+    const actual = await transform(`
       import { styled, css } from '@compiled/react';
 
       const Component = styled.div\`
@@ -836,8 +840,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply unconditional before and after a conditional css rule with template literal', () => {
-    const actual = transform(`
+  it('should apply unconditional before and after a conditional css rule with template literal', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -857,8 +861,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply unconditional after a conditional css rule with template literal', () => {
-    const actual = transform(`
+  it('should apply unconditional after a conditional css rule with template literal', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -878,8 +882,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply unconditional CSS with props', () => {
-    const actual = transform(`
+  it('should apply unconditional CSS with props', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
@@ -894,8 +898,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply unconditional CSS with and without props', () => {
-    const actual = transform(`
+  it('should apply unconditional CSS with and without props', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
@@ -912,8 +916,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with object styles', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with object styles', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
@@ -929,8 +933,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with object styles and multiple props lines', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with object styles and multiple props lines', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
@@ -948,8 +952,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply unconditional before and after a conditional css rule with object styles', () => {
-    const actual = transform(`
+  it('should apply unconditional before and after a conditional css rule with object styles', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
@@ -967,8 +971,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with object styles regardless declaration order', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with object styles regardless declaration order', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
@@ -985,8 +989,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply multi conditional logical expression', () => {
-    const actual = transform(`
+  it('should apply multi conditional logical expression', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
@@ -1002,8 +1006,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply multi conditional logical expression with different props lines and syntax styles', () => {
-    const actual = transform(`
+  it('should apply multi conditional logical expression with different props lines and syntax styles', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
@@ -1022,8 +1026,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply the same CSS property with unconditional as default and multiple logical expressions', () => {
-    const actual = transform(`
+  it('should apply the same CSS property with unconditional as default and multiple logical expressions', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
@@ -1039,8 +1043,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS with ternary and boolean in the same line', () => {
-    const actual = transform(`
+  it('should apply conditional CSS with ternary and boolean in the same line', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
@@ -1057,8 +1061,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should only evaluate the last unconditional CSS rule for each property', () => {
-    const actual = transform(`
+  it('should only evaluate the last unconditional CSS rule for each property', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
@@ -1076,8 +1080,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should only add falsy condition when truthy condition has no value', () => {
-    const actual = transform(`
+  it('should only add falsy condition when truthy condition has no value', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
@@ -1092,8 +1096,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should only add truthy condition when falsy condition has no value', () => {
-    const actual = transform(`
+  it('should only add truthy condition when falsy condition has no value', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div(
@@ -1108,8 +1112,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply logical test to class when a conditional branch contains undefined value', () => {
-    const actual = transform(`
+  it('should apply logical test to class when a conditional branch contains undefined value', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -1123,8 +1127,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply logical test to class when a conditional branch contains null value', () => {
-    const actual = transform(`
+  it('should apply logical test to class when a conditional branch contains null value', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div({
@@ -1138,8 +1142,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply logical test to class when a conditional branch contains empty string value', () => {
-    const actual = transform(`
+  it('should apply logical test to class when a conditional branch contains empty string value', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div({
@@ -1153,8 +1157,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply logical test to class when a conditional branch contains empty value inside selector', () => {
-    const actual = transform(`
+  it('should apply logical test to class when a conditional branch contains empty value inside selector', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div({
@@ -1170,8 +1174,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply logical test to class when a conditional branch contains empty value inside selector', () => {
-    const actual = transform(`
+  it('should apply logical test to class when a conditional branch contains empty value inside selector', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div({
@@ -1187,8 +1191,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply no classes when both conditional branches contains empty values', () => {
-    const actual = transform(`
+  it('should apply no classes when both conditional branches contains empty values', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div({
@@ -1199,8 +1203,8 @@ describe('styled component behaviour', () => {
     expect(actual).toInclude('className={ax(["",__cmplp.className])}');
   });
 
-  it('should conditionally apply CSS mixins', () => {
-    const actual = transform(`
+  it('should conditionally apply CSS mixins', async () => {
+    const actual = await transform(`
       import { styled, css } from '@compiled/react';
 
       const dark = css\`
@@ -1229,8 +1233,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('falls back to using CSS variable when conditional is not sole expression in statement', () => {
-    const actual = transform(`
+  it('falls back to using CSS variable when conditional is not sole expression in statement', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
       const gutter = 10;
 
@@ -1246,8 +1250,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('falls back to using CSS variable when conditional followed by another expression in statement', () => {
-    const actual = transform(`
+  it('falls back to using CSS variable when conditional followed by another expression in statement', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
       const gutter = 10;
 
@@ -1263,8 +1267,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('falls back to using CSS variable when conditional is inside quotes', () => {
-    const actual = transform(`
+  it('falls back to using CSS variable when conditional is inside quotes', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -1281,8 +1285,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS to related selector', () => {
-    const actual = transform(`
+  it('should apply conditional CSS to related selector', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -1305,8 +1309,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS to related selector with object styles', () => {
-    const actual = transform(`
+  it('should apply conditional CSS to related selector with object styles', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div({
@@ -1326,8 +1330,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('should apply conditional CSS to related nested selector', () => {
-    const actual = transform(`
+  it('should apply conditional CSS to related nested selector', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -1358,8 +1362,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('does not conflict conditional CSS with above selectors', () => {
-    const actual = transform(`
+  it('does not conflict conditional CSS with above selectors', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -1413,8 +1417,8 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('does not conflict conditional CSS with surrounding selectors', () => {
-    const actual = transform(`
+  it('does not conflict conditional CSS with surrounding selectors', async () => {
+    const actual = await transform(`
       import { styled } from '@compiled/react';
 
       const Component = styled.div\`
@@ -1431,6 +1435,9 @@ describe('styled component behaviour', () => {
         }
       \`;
     `);
+
+
+    console.log("-->", actual);
 
     expect(actual).toIncludeMultiple([
       '._1oey5scu >span:first-type-of{color:red}',
