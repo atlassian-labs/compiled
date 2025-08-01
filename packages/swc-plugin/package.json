@@ -1,0 +1,14 @@
+{
+  "name": "@compiled/swc-plugin",
+  "version": "0.1.0",
+  "keywords": [
+    "swc-plugin"
+  ],
+  "license": "Apache-2.0",
+  "main": "target/wasm32-wasip1/release/swc_plugin_compiled.wasm",
+  "files": [],
+  "scripts": {
+    "prepublishOnly": "cargo build-wasip1 --release"
+  },
+  "preferUnplugged": true
+}

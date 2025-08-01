@@ -1,9 +1,20 @@
 [package]
-name     = "swc_plugin_compiled"
-version  = "0.1.0"
-edition  = "2024"
+name = "swc-plugin-compiled"
+version = "0.1.0"
+edition = "2021"
 homepage = "https://github.com/atlassian-labs/compiled"
 license  = "Apache-2.0"
 
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+
 [dependencies]
-swc_core = ">=15.0.0, <27.0.0"
+serde = "1"
+swc_core = { version = "34.0.*", features = ["ecma_plugin_transform"] }
+
+# .cargo/config.toml defines few alias to build plugin.
+# cargo build-wasip1 generates wasm32-wasip1 binary
+# cargo build-wasm32 generates wasm32-unknown-unknown binary.
