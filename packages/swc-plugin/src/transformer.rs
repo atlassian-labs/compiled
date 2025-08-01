@@ -28,44 +28,19 @@ use crate::hash;
 static EMOTION_OFFICIAL_LIBRARIES: Lazy<Vec<EmotionModuleConfig>> = Lazy::new(|| {
     vec![
         EmotionModuleConfig {
-            module_name: "@emotion/styled".into(),
-            exported_names: vec![],
-            default_export: Some(ExprKind::Styled),
-        },
-        EmotionModuleConfig {
-            module_name: "@emotion/react".into(),
+            module_name: "@compiled/react".into(),
             exported_names: vec![
+                ExportItem {
+                    name: "styled".to_owned(),
+                    kind: ExprKind::Styled,
+                },
                 ExportItem {
                     name: "css".to_owned(),
                     kind: ExprKind::Css,
                 },
-                ExportItem {
-                    name: "keyframes".to_owned(),
-                    kind: ExprKind::Css,
-                },
-                ExportItem {
-                    name: "Global".to_owned(),
-                    kind: ExprKind::GlobalJSX,
-                },
             ],
             ..Default::default()
-        },
-        EmotionModuleConfig {
-            module_name: "@emotion/primitives".into(),
-            exported_names: vec![ExportItem {
-                name: "css".to_owned(),
-                kind: ExprKind::Css,
-            }],
-            default_export: Some(ExprKind::Styled),
-        },
-        EmotionModuleConfig {
-            module_name: "@emotion/native".into(),
-            exported_names: vec![ExportItem {
-                name: "css".to_owned(),
-                kind: ExprKind::Css,
-            }],
-            default_export: Some(ExprKind::Styled),
-        },
+        }
     ]
 });
 

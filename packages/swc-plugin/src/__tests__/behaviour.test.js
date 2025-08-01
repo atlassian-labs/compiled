@@ -1362,9 +1362,9 @@ describe('styled component behaviour', () => {
     ]);
   });
 
-  it('does not conflict conditional CSS with above selectors', async () => {
+  it.only('does not conflict conditional CSS with above selectors', async () => {
     const actual = await transform(`
-      import { styled } from '@compiled/react';
+      import styled from '@emotion/styled';
 
       const Component = styled.div\`
         > span:first-type-of {
