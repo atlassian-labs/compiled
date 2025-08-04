@@ -27,6 +27,11 @@ jobs:
         with:
           node-version: ${{ steps.nvm.outputs.NVMRC }}
 
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip1
+
       - name: Install Dependencies
         run: yarn
 
