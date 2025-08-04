@@ -44,7 +44,7 @@
     "start:webpack": "yarn build:babel-fixture && ttsc --build examples/webpack/tsconfig.json && yarn workspace @compiled/webpack-app start",
     "start:webpack:extract": "EXTRACT_TO_CSS=true yarn start:webpack",
     "test": "jest --no-cache && yarn test:swc",
-    "test:cover": "yarn test --collectCoverage",
+    "test:cover": "jest --no-cache --collectCoverage --ci && yarn test:swc",
     "test:imports": "node test/test-imports",
     "test:parcel": "jest --testMatch '**/src/**/*.parceltest.{ts,tsx}' --testEnvironment=node",
     "test:swc": "yarn workspace @compiled/swc-plugin test && yarn workspace @compiled/swc-plugin test:ts",

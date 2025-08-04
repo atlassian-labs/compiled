@@ -65,7 +65,7 @@ jobs:
         # Needs to run after `yarn build` so that `packages/webpack-loader/`
         # tests can resolve `@compiled/react/runtime` correctly.
       - name: Run tests
-        run: yarn test:cover --ci
+        run: yarn test:cover
 
       - name: Run import test
         run: yarn test:imports
