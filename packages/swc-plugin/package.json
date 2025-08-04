@@ -1,0 +1,61 @@
+{
+  "name": "@compiled/swc-plugin",
+  "version": "0.1.0",
+  "description": "A performant SWC plugin for Compiled CSS-in-JS library for React.",
+  "keywords": [
+    "swc",
+    "plugin",
+    "css-in-js",
+    "compiled",
+    "react",
+    "wasm",
+    "rust",
+    "performance"
+  ],
+  "homepage": "https://compiledcssinjs.com/docs/pkg-swc-plugin",
+  "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlassian-labs/compiled.git",
+    "directory": "packages/swc-plugin"
+  },
+  "license": "Apache-2.0",
+  "author": "Shanon Jackson",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "compiled_swc.wasm",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "npm run build:rust && npm run build:ts && npm run copy-wasm",
+    "build:dev": "cargo build --target wasm32-wasip1",
+    "build:rust": "cargo build --target wasm32-wasip1 --release",
+    "build:ts": "tsc",
+    "check": "cargo check",
+    "clean": "cargo clean && rm -rf dist",
+    "clippy": "cargo clippy",
+    "copy-wasm": "cp target/wasm32-wasip1/release/compiled_swc.wasm ./compiled_swc.wasm",
+    "fmt": "cargo fmt",
+    "prepare": "npm run build && npm run copy-wasm",
+    "test": "cargo test --lib --bins --tests",
+    "test:ts": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@swc/core": "^1.7.35",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "@swc/core": ">=1.3.0",
+    "react": ">=16.8.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "swc": {
+    "plugin": "./target/wasm32-wasip1/release/compiled_swc.wasm"
+  }
+}
