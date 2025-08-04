@@ -28,6 +28,11 @@ jobs:
         with:
           targets: wasm32-wasip1
 
+      - name: Verify Rust targets
+        run: |
+          rustup target list --installed
+          rustup target add wasm32-wasip1 --toolchain stable
+
       - name: Get yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
