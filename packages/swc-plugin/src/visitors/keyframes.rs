@@ -126,6 +126,7 @@ fn generate_unique_keyframes_var_name() -> String {
 }
 
 /// Create expression for keyframe name (just the string literal)
+#[allow(dead_code)]
 fn create_keyframe_name_expr(name: &str) -> CallExpr {
     // We need to replace the entire call expression with just a string literal
     // But since this function returns CallExpr, we'll create a minimal one

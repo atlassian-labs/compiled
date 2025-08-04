@@ -498,6 +498,7 @@ impl CompiledTransform {
     }
 
     /// Try to resolve a call expression (like colorMixin())
+    #[allow(dead_code)]
     fn try_resolve_call_expr(&mut self, call: &CallExpr) -> Option<Expr> {
         // Check if this is a simple function call with no arguments
         if call.args.is_empty() {
@@ -523,6 +524,7 @@ impl CompiledTransform {
     }
 
     /// Try to resolve a member expression (like colors.primary or obj.prop)
+    #[allow(dead_code)]
     fn try_resolve_member_expr(&mut self, member_expr: &MemberExpr) -> Option<Expr> {
         // Handle simple property access like obj.prop
         if let Expr::Ident(obj_ident) = member_expr.obj.as_ref() {
@@ -609,6 +611,7 @@ impl CompiledTransform {
     }
 
     /// Try to resolve a template literal with imported variables
+    #[allow(dead_code)]
     fn try_resolve_template_literal(&mut self, tpl: &Tpl) -> Option<String> {
         if tpl.exprs.len() == 1 && tpl.quasis.len() == 2 {
             // Simple case: `prefix${variable}suffix`

@@ -175,6 +175,7 @@ fn collect_css_from_expr(
 }
 
 /// Recursively find css() calls in expressions with parameter name
+#[allow(dead_code)]
 fn collect_css_from_expr_with_param(
     expr: &Expr,
     css_outputs: &mut Vec<CSSOutput>,
@@ -298,11 +299,13 @@ fn is_css_call(call: &CallExpr) -> bool {
 }
 
 /// Check if a call expression is a css() call with specific parameter name
+#[allow(dead_code)]
 fn is_css_call_with_param(call: &CallExpr, param_name: &str) -> bool {
     is_call_to_function(call, param_name)
 }
 
 /// Extract CSS parameter name from render prop function
+#[allow(dead_code)]
 fn extract_css_param_name(expr: &Expr) -> String {
     match expr {
         Expr::Arrow(arrow) => {

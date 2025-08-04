@@ -81,6 +81,7 @@ pub struct PragmaState {
 
 /// Information about a styled component tag
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct Tag {
     /// Name of the component
     pub name: String,
@@ -90,6 +91,7 @@ pub struct Tag {
 
 /// Type of component
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub enum ComponentType {
     InBuiltComponent,
     UserDefinedComponent,
@@ -105,6 +107,7 @@ pub enum TransformContext {
 
 /// Result of a transformation
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct TransformResult {
     /// Files that have been included in this transformation
     pub included_files: Vec<String>,
@@ -129,6 +132,7 @@ pub struct CssDeclaration {
 
 /// Metadata for CSS transformations
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct CssMetadata {
     pub context: TransformContext,
     pub state: TransformState,
