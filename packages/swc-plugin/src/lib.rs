@@ -415,7 +415,7 @@ impl CompiledTransform {
         
         // Check what types of React imports already exist
         let mut has_react_namespace_or_default = false;
-        let mut has_react_named_imports = false;
+        let mut _has_react_named_imports = false;
         let mut has_forwardref_import = false;
         
         for item in &module.body {
@@ -427,7 +427,7 @@ impl CompiledTransform {
                                 has_react_namespace_or_default = true;
                             }
                             ImportSpecifier::Named(named) => {
-                                has_react_named_imports = true;
+                                _has_react_named_imports = true;
                                 if named.local.sym.as_ref() == "forwardRef" {
                                     has_forwardref_import = true;
                                 }

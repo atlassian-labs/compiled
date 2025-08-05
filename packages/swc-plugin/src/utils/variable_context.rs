@@ -47,11 +47,6 @@ pub fn build_variable_context_from_module_with_mutations(module: &Module, mutate
     context
 }
 
-/// Extract variable declarations from a statement
-fn extract_variable_declarations_from_stmt(stmt: &ModuleItem, context: &mut VariableContext) {
-    extract_variable_declarations_from_stmt_with_mutations(stmt, context, &std::collections::HashSet::new())
-}
-
 /// Extract variable declarations from a statement, excluding mutated variables
 fn extract_variable_declarations_from_stmt_with_mutations(stmt: &ModuleItem, context: &mut VariableContext, mutated_variables: &std::collections::HashSet<String>) {
     match stmt {
@@ -60,11 +55,6 @@ fn extract_variable_declarations_from_stmt_with_mutations(stmt: &ModuleItem, con
         }
         _ => {} // Skip imports, exports, etc. for now
     }
-}
-
-/// Extract variable declarations from a statement (inner)
-fn extract_variable_declarations_from_stmt_inner(stmt: &Stmt, context: &mut VariableContext) {
-    extract_variable_declarations_from_stmt_inner_with_mutations(stmt, context, &std::collections::HashSet::new())
 }
 
 /// Extract variable declarations from a statement (inner), excluding mutated variables
@@ -97,7 +87,6 @@ fn extract_variable_declarations_from_stmt_inner_with_mutations(stmt: &Stmt, con
 #[cfg(test)]
 mod tests {
     use super::*;
-    use swc_core::ecma::ast::*;
     use swc_core::common::DUMMY_SP;
 
     #[test]

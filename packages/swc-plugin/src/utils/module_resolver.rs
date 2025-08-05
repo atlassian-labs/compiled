@@ -133,6 +133,7 @@ impl ModuleResolver {
     /// # Examples
     /// 
     /// ```rust
+    /// use compiled_swc::utils::module_resolver::ModuleResolver;
     /// let resolver = ModuleResolver::new("src/components");
     /// // Relative imports like "./colors" will be resolved as "src/components/colors"
     /// ```
@@ -161,6 +162,7 @@ impl ModuleResolver {
     /// # Examples
     /// 
     /// ```rust
+    /// use compiled_swc::utils::module_resolver::ModuleResolver;
     /// let mut resolver = ModuleResolver::new("src");
     /// 
     /// // Resolve a relative import
@@ -409,6 +411,7 @@ impl ModuleResolver {
     /// # Examples
     /// 
     /// ```rust
+    /// use compiled_swc::utils::module_resolver::{ModuleResolver, ExportValue};
     /// let mut resolver = ModuleResolver::new("src");
     /// 
     /// // Get a named export: export const primaryColor = "red"
@@ -445,6 +448,7 @@ impl ModuleResolver {
     /// # Examples
     /// 
     /// ```rust
+    /// use compiled_swc::utils::module_resolver::{ModuleResolver, ExportValue};
     /// let mut resolver = ModuleResolver::new("src");
     /// 
     /// // Get default export: export default { theme: "dark" }

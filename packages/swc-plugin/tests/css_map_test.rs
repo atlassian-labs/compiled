@@ -1,4 +1,4 @@
-use compiled_swc::{test_utils::{transform_with_compiled, TestTransformOptions, TestAssertions}, assert_includes, assert_includes_multiple};
+use compiled_swc::{test_utils::{transform_with_compiled, TestTransformOptions, TestAssertions}, assert_includes_multiple};
 
 #[cfg(test)]
 mod css_map_tests {
