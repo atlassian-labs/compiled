@@ -271,6 +271,15 @@ fn generate_css_variable_name(expr: &Expr) -> String {
     format!("--_{}", hash.chars().take(8).collect::<String>())
 }
 
+/// Converts a CSS object expression to CSS string with variable support and state (includes mutated let variable check)
+pub fn object_expression_to_css_with_state(obj_expr: &ObjectLit, state: &TransformState) -> (String, Vec<Variable>) {
+    // Check for actually mutated let variables first
+    crate::utils::expression_evaluator::check_for_mutated_let_variables(&Expr::Object(obj_expr.clone()), &state.variable_declaration_kinds, &state.mutated_variables);
+    
+    // If no mutated let variables found, proceed with normal processing
+    object_expression_to_css_with_variables_and_context(obj_expr, &state.variable_context)
+}
+
 /// Converts a CSS object expression to CSS string with variable support and context
 pub fn object_expression_to_css_with_variables_and_context(obj_expr: &ObjectLit, context: &VariableContext) -> (String, Vec<Variable>) {
     let mut css = String::new();
@@ -570,6 +579,15 @@ pub fn build_atomic_css_from_object(obj_expr: &ObjectLit) -> Option<AtomicCSSOut
         class_names: atomic_classes,
         css_sheets,
     })
+}
+
+/// Builds CSS output from an expression with state (includes mutated let variable check)
+pub fn build_css_from_expression_with_state(expr: &Expr, state: &TransformState) -> Option<CSSOutput> {
+    // Check for actually mutated let variables first
+    crate::utils::expression_evaluator::check_for_mutated_let_variables(expr, &state.variable_declaration_kinds, &state.mutated_variables);
+    
+    // If no mutated let variables found, proceed with normal processing
+    build_css_from_expression_with_context(expr, &state.variable_context)
 }
 
 /// Builds CSS output from an expression with variable support (with context)

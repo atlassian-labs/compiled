@@ -118,6 +118,72 @@ impl Default for CompiledOptions {
     }
 }
 
+
+
+/// Visitor for collecting variable information only (no CSS processing)
+struct VariableInfoCollector<'a> {
+    state: &'a mut TransformState,
+    current_var_decl_kind: Option<VarDeclKind>,
+}
+
+impl<'a> VariableInfoCollector<'a> {
+    fn new(state: &'a mut TransformState) -> Self {
+        Self {
+            state,
+            current_var_decl_kind: None,
+        }
+    }
+}
+
+impl<'a> VisitMut for VariableInfoCollector<'a> {
+    fn visit_mut_var_decl(&mut self, n: &mut VarDecl) {
+        // Set the current variable declaration kind
+        self.current_var_decl_kind = Some(n.kind);
+        
+        n.visit_mut_children_with(self);
+        
+        // Clear the current variable declaration kind
+        self.current_var_decl_kind = None;
+    }
+
+    fn visit_mut_var_declarator(&mut self, n: &mut VarDeclarator) {
+        // Track variable declarations
+        if let Pat::Ident(ident) = &n.name {
+            let var_name = ident.id.sym.to_string();
+            
+            // Track the declaration kind
+            if let Some(decl_kind) = self.current_var_decl_kind {
+                self.state.variable_declaration_kinds.insert(var_name.clone(), decl_kind);
+            }
+        }
+        
+        n.visit_mut_children_with(self);
+    }
+
+    fn visit_mut_assign_expr(&mut self, n: &mut AssignExpr) {
+        // Track mutations
+        match &n.left {
+            AssignTarget::Simple(SimpleAssignTarget::Ident(ident)) => {
+                let var_name = ident.id.sym.to_string();
+                self.state.mutated_variables.insert(var_name);
+            }
+            _ => {}
+        }
+        
+        n.visit_mut_children_with(self);
+    }
+
+    fn visit_mut_update_expr(&mut self, n: &mut UpdateExpr) {
+        // Track mutations
+        if let Expr::Ident(ident) = &*n.arg {
+            let var_name = ident.sym.to_string();
+            self.state.mutated_variables.insert(var_name);
+        }
+        
+        n.visit_mut_children_with(self);
+    }
+}
+
 /// Main transformation context for the Compiled SWC plugin.
 /// 
 /// This struct maintains the state throughout the transformation process,
@@ -133,6 +199,8 @@ pub struct CompiledTransform {
     pub state: TransformState,
     /// Whether any transformations were applied
     pub had_transformations: bool,
+    /// Current variable declaration kind (let, const, var) being processed
+    pub current_var_decl_kind: Option<VarDeclKind>,
 }
 
 impl CompiledTransform {
@@ -163,6 +231,12 @@ impl CompiledTransform {
         // JSX pragma comment parsing is handled in test_utils.rs for test compatibility
         // In a real-world scenario, this would parse comments from the SWC AST
         // For now, we rely on the string-based approach in the test infrastructure
+    }
+
+    /// Collect variable declarations and mutations without processing CSS
+    fn collect_variable_info(&mut self, module: &mut Module) {
+        let mut collector = VariableInfoCollector::new(&mut self.state);
+        module.visit_mut_with(&mut collector);
     }
 
     /// Process imports and pragmas from the module
@@ -903,10 +977,16 @@ impl VisitMut for CompiledTransform {
     }
 
     fn visit_mut_module(&mut self, n: &mut Module) {
-        // First pass: Check for JSX pragmas and compiled imports
+        // Check for JSX pragmas and compiled imports
         self.process_imports_and_pragmas(n);
         
-        // Second pass: Process child nodes for transformations
+        // First pass: collect variable declarations and mutations without processing CSS
+        self.collect_variable_info(n);
+        
+        // Rebuild the variable context excluding mutated variables
+        self.state.variable_context = crate::utils::variable_context::build_variable_context_from_module_with_mutations(n, &self.state.mutated_variables);
+        
+        // Second pass: process child nodes for transformations with correct variable context
         n.visit_mut_children_with(self);
         
         // Finalize the module
@@ -932,7 +1012,7 @@ impl VisitMut for CompiledTransform {
         // Handle different types of tagged templates
         if visitors::styled::visit_styled_tagged_template(n, &mut self.state, &mut self.collected_css_sheets) {
             self.had_transformations = true;
-        } else if visitors::keyframes::visit_keyframes_tagged_template(n, &mut self.state) {
+        } else if visitors::keyframes::visit_keyframes_tagged_template(n, &mut self.state, &mut self.collected_css_sheets) {
             self.had_transformations = true;
         }
         
@@ -952,11 +1032,30 @@ impl VisitMut for CompiledTransform {
         n.visit_mut_children_with(self);
     }
 
+    fn visit_mut_var_decl(&mut self, n: &mut VarDecl) {
+        // Store the current variable declaration kind
+        self.current_var_decl_kind = Some(n.kind);
+        
+        // Visit children (including declarators)
+        n.visit_mut_children_with(self);
+        
+        // Clear the current variable declaration kind
+        self.current_var_decl_kind = None;
+    }
+
     fn visit_mut_var_declarator(&mut self, n: &mut VarDeclarator) {
         // Track local variables before visiting children
         if let Pat::Ident(ident) = &n.name {
             if let Some(init_expr) = &n.init {
                 let var_name = ident.id.sym.to_string();
+                
+                // Track the declaration kind
+                if let Some(decl_kind) = self.current_var_decl_kind {
+                    self.state.variable_declaration_kinds.insert(var_name.clone(), decl_kind);
+                }
+                
+                // Track all variables for static analysis initially
+                // We'll filter out actually mutated ones during evaluation
                 self.track_local_variable(&var_name, init_expr);
             }
         }
@@ -969,6 +1068,34 @@ impl VisitMut for CompiledTransform {
             self.fix_css_map_calls(&mut **init_expr);
         }
     }
+
+    /// Track assignments to variables (mutations)
+    fn visit_mut_assign_expr(&mut self, n: &mut AssignExpr) {
+        // Check if this is an assignment to a variable
+        match &n.left {
+            AssignTarget::Simple(SimpleAssignTarget::Ident(ident)) => {
+                let var_name = ident.id.sym.to_string();
+                // Mark this variable as mutated
+                self.state.mutated_variables.insert(var_name);
+            }
+            _ => {}
+        }
+        
+        n.visit_mut_children_with(self);
+    }
+
+    /// Track update expressions (mutations like var++, ++var, var--, --var)
+    fn visit_mut_update_expr(&mut self, n: &mut UpdateExpr) {
+        if let Expr::Ident(ident) = &*n.arg {
+            let var_name = ident.sym.to_string();
+            // Mark this variable as mutated
+            self.state.mutated_variables.insert(var_name);
+        }
+        
+        n.visit_mut_children_with(self);
+    }
+
+
 
 
 }
@@ -989,6 +1116,7 @@ pub fn process_transform(program: Program, metadata: TransformPluginProgramMetad
         css_content_to_var: HashMap::new(),
         state,
         had_transformations: false,
+        current_var_decl_kind: None,
     };
     
     program.fold_with(&mut as_folder(&mut transform))

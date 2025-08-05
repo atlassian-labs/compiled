@@ -5,7 +5,7 @@ use std::collections::HashMap;
 #[derive(Debug, Clone)]
 pub struct VariableContext {
     /// Maps variable names to their constant values
-    bindings: HashMap<String, Expr>,
+    pub bindings: HashMap<String, Expr>,
 }
 
 impl VariableContext {
@@ -33,10 +33,15 @@ impl VariableContext {
 
 /// Extract variable declarations from a module and build a context
 pub fn build_variable_context_from_module(module: &Module) -> VariableContext {
+    build_variable_context_from_module_with_mutations(module, &std::collections::HashSet::new())
+}
+
+/// Extract variable declarations from a module and build a context, excluding mutated variables
+pub fn build_variable_context_from_module_with_mutations(module: &Module, mutated_variables: &std::collections::HashSet<String>) -> VariableContext {
     let mut context = VariableContext::new();
     
     for stmt in &module.body {
-        extract_variable_declarations_from_stmt(stmt, &mut context);
+        extract_variable_declarations_from_stmt_with_mutations(stmt, &mut context, mutated_variables);
     }
     
     context
@@ -44,9 +49,14 @@ pub fn build_variable_context_from_module(module: &Module) -> VariableContext {
 
 /// Extract variable declarations from a statement
 fn extract_variable_declarations_from_stmt(stmt: &ModuleItem, context: &mut VariableContext) {
+    extract_variable_declarations_from_stmt_with_mutations(stmt, context, &std::collections::HashSet::new())
+}
+
+/// Extract variable declarations from a statement, excluding mutated variables
+fn extract_variable_declarations_from_stmt_with_mutations(stmt: &ModuleItem, context: &mut VariableContext, mutated_variables: &std::collections::HashSet<String>) {
     match stmt {
         ModuleItem::Stmt(stmt) => {
-            extract_variable_declarations_from_stmt_inner(stmt, context);
+            extract_variable_declarations_from_stmt_inner_with_mutations(stmt, context, mutated_variables);
         }
         _ => {} // Skip imports, exports, etc. for now
     }
@@ -54,14 +64,21 @@ fn extract_variable_declarations_from_stmt(stmt: &ModuleItem, context: &mut Vari
 
 /// Extract variable declarations from a statement (inner)
 fn extract_variable_declarations_from_stmt_inner(stmt: &Stmt, context: &mut VariableContext) {
+    extract_variable_declarations_from_stmt_inner_with_mutations(stmt, context, &std::collections::HashSet::new())
+}
+
+/// Extract variable declarations from a statement (inner), excluding mutated variables
+fn extract_variable_declarations_from_stmt_inner_with_mutations(stmt: &Stmt, context: &mut VariableContext, mutated_variables: &std::collections::HashSet<String>) {
     match stmt {
         Stmt::Decl(Decl::Var(var_decl)) => {
-            // Only process const declarations for now
-            if matches!(var_decl.kind, VarDeclKind::Const) {
-                for decl in &var_decl.decls {
-                    if let Pat::Ident(ident) = &decl.name {
+            for decl in &var_decl.decls {
+                if let Pat::Ident(ident) = &decl.name {
+                    let var_name = ident.id.sym.to_string();
+                    
+                    // Exclude mutated variables from static context to prevent them from being resolved to literals
+                    if !mutated_variables.contains(&var_name) {
                         if let Some(init) = &decl.init {
-                            context.add_binding(ident.id.sym.to_string(), (**init).clone());
+                            context.add_binding(var_name, (**init).clone());
                         }
                     }
                 }
@@ -70,7 +87,7 @@ fn extract_variable_declarations_from_stmt_inner(stmt: &Stmt, context: &mut Vari
         Stmt::Block(block) => {
             // Process nested statements
             for stmt in &block.stmts {
-                extract_variable_declarations_from_stmt_inner(stmt, context);
+                extract_variable_declarations_from_stmt_inner_with_mutations(stmt, context, mutated_variables);
             }
         }
         _ => {} // Other statement types don't contain variable declarations we care about

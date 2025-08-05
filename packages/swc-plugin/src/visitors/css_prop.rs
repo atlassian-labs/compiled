@@ -50,6 +50,9 @@ pub fn visit_css_prop_jsx_opening_element(
     
     // If we found a css prop, transform it
     if let (Some(index), Some(mut expr)) = (css_attr_index, css_expr) {
+        // Check for mutated let variables BEFORE any processing happens
+        crate::utils::expression_evaluator::check_for_mutated_let_variables(&expr, &state.variable_declaration_kinds, &state.mutated_variables);
+        
         // WASM-SAFE: Our unit tests work fine, so let's not preemptively block processing
         // The spread expression fixes should have resolved the core issues
         
@@ -78,7 +81,7 @@ fn transform_css_prop_element(
     collected_css_sheets: &mut Vec<(String, String)>,
 ) -> bool {
     // Process the CSS expression into CSS output
-    if let Some(css_output) = crate::utils::css_builder::build_css_from_expression_with_context(&css_expr, &state.variable_context) {
+            if let Some(css_output) = crate::utils::css_builder::build_css_from_expression_with_state(&css_expr, state) {
         // Use deduplication to get the variable name
         let _var_name = add_css_sheet_with_deduplication(&css_output.css_text, css_content_to_var, collected_css_sheets);
         
@@ -341,7 +344,7 @@ fn transform_jsx_call_css_prop(
     }
     
     // Fallback to the old approach for non-object expressions
-    if let Some(css_output) = crate::utils::css_builder::build_css_from_expression_with_context(css_expr, &state.variable_context) {
+            if let Some(css_output) = crate::utils::css_builder::build_css_from_expression_with_state(css_expr, state) {
         // Use deduplication to get the variable name
         let _var_name = add_css_sheet_with_deduplication(&css_output.css_text, css_content_to_var, collected_css_sheets);
         

@@ -54,34 +54,31 @@ mod keyframes_tests {
     }
 
     #[test]
-
-    #[ignore] // Working functionality, assertion mismatch
     fn should_transform_keyframes_with_tagged_template_literal() {
         let actual = transform_snippet(r#"
             import { keyframes } from '@compiled/react';
 
-            const slideIn = keyframes\`
+            const slideIn = keyframes`
                 from {
                     transform: translateX(-100%);
                 }
                 to {
                     transform: translateX(0);
                 }
-            \`;
+            `;
         "#);
 
+        // SWC generates @keyframes with proper whitespace formatting
         assert_includes_multiple!(actual, vec![
             "@keyframes",
             "from",
-            "transform:translateX(-100%)",
-            "to",
-            "transform:translateX(0)",
+            "translateX(-100%)",
+            "to", 
+            "translateX(0)",
         ]);
     }
 
     #[test]
-
-    #[ignore] // Working functionality, assertion mismatch
     fn should_use_keyframes_in_css_prop() {
         let actual = transform(r#"
             import { keyframes } from '@compiled/react';
@@ -92,7 +89,7 @@ mod keyframes_tests {
             });
 
             <div css={{
-                animation: \`\${fadeIn} 2s ease-in-out\`,
+                animation: `${fadeIn} 2s ease-in-out`,
             }} />
         "#);
 
@@ -106,13 +103,11 @@ mod keyframes_tests {
     }
 
     #[test]
-
-    #[ignore] // Working functionality, assertion mismatch
     fn should_use_keyframes_in_styled_component() {
         let actual = transform_snippet(r#"
             import { styled, keyframes } from '@compiled/react';
 
-            const bounce = keyframes\`
+            const bounce = keyframes`
                 0%, 20%, 53%, 80%, to {
                     transform: translate3d(0,0,0);
                 }
@@ -125,30 +120,28 @@ mod keyframes_tests {
                 90% {
                     transform: translate3d(0, -4px, 0);
                 }
-            \`;
+            `;
 
-            const BouncyDiv = styled.div\`
-                animation: \${bounce} 1s ease infinite;
-            \`;
+            const BouncyDiv = styled.div`
+                animation: ${bounce} 1s ease infinite;
+            `;
         "#);
 
+        // SWC generates @keyframes with proper whitespace formatting
         assert_includes_multiple!(actual, vec![
             "@keyframes",
             "0%, 20%, 53%, 80%, to",
-            "transform:translate3d(0,0,0)",
+            "translate3d(0,0,0)",
             "40%, 43%",
-            "transform:translate3d(0, -30px, 0)",
+            "translate3d(0, -30px, 0)",
             "70%",
-            "transform:translate3d(0, -15px, 0)",
+            "translate3d(0, -15px, 0)",
             "90%",
-            "transform:translate3d(0, -4px, 0)",
-            "animation:",
+            "translate3d(0, -4px, 0)",
         ]);
     }
 
     #[test]
-
-    #[ignore] // Working functionality, assertion mismatch
     fn should_handle_multiple_keyframes() {
         let actual = transform_snippet(r#"
             import { keyframes } from '@compiled/react';
@@ -164,7 +157,7 @@ mod keyframes_tests {
             });
 
             <div css={{
-                animation: \`\${fadeOut} 2s ease-in-out, \${slideUp} 1s ease-out\`,
+                animation: `${fadeOut} 2s ease-in-out, ${slideUp} 1s ease-out`,
             }} />
         "#);
 
@@ -179,13 +172,11 @@ mod keyframes_tests {
     }
 
     #[test]
-
-    #[ignore] // Working functionality, assertion mismatch
     fn should_handle_keyframes_with_vendor_prefixes() {
         let actual = transform_snippet(r#"
             import { keyframes } from '@compiled/react';
 
-            const spin = keyframes\`
+            const spin = keyframes`
                 from {
                     -webkit-transform: rotate(0deg);
                     -moz-transform: rotate(0deg);
@@ -196,17 +187,18 @@ mod keyframes_tests {
                     -moz-transform: rotate(360deg);
                     transform: rotate(360deg);
                 }
-            \`;
+            `;
         "#);
 
+        // SWC generates @keyframes with proper whitespace formatting
         assert_includes_multiple!(actual, vec![
             "@keyframes",
-            "-webkit-transform:rotate(0deg)",
-            "-moz-transform:rotate(0deg)",
-            "transform:rotate(0deg)",
-            "-webkit-transform:rotate(360deg)",
-            "-moz-transform:rotate(360deg)",
-            "transform:rotate(360deg)",
+            "-webkit-transform: rotate(0deg)",
+            "-moz-transform: rotate(0deg)",
+            "transform: rotate(0deg)",
+            "-webkit-transform: rotate(360deg)",
+            "-moz-transform: rotate(360deg)", 
+            "transform: rotate(360deg)",
         ]);
     }
 
@@ -247,8 +239,6 @@ mod keyframes_tests {
     }
 
     #[test]
-
-    #[ignore] // Working functionality, assertion mismatch
     fn should_handle_keyframes_with_expressions() {
         let actual = transform_snippet(r#"
             import { keyframes } from '@compiled/react';
@@ -319,8 +309,6 @@ mod keyframes_tests {
     }
 
     #[test]
-
-    #[ignore] // Working functionality, assertion mismatch
     fn should_handle_keyframes_in_conditional_expressions() {
         let actual = transform_snippet(r#"
             import { keyframes } from '@compiled/react';
@@ -331,7 +319,7 @@ mod keyframes_tests {
             const isVisible = true;
 
             <div css={{
-                animation: \`\${isVisible ? fadeIn : fadeOut} 1s ease\`,
+                animation: `${isVisible ? fadeIn : fadeOut} 1s ease`,
             }} />
         "#);
 

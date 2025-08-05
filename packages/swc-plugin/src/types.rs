@@ -1,5 +1,5 @@
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use crate::utils::module_resolver::{ModuleResolver, ExportValue};
 use crate::utils::variable_context::VariableContext;
 use swc_core::ecma::ast::*;
@@ -56,6 +56,12 @@ pub struct TransformState {
     
     /// Local variables in the current scope (for static analysis)
     pub local_variables: HashMap<String, ExportValue>,
+    
+    /// Variable declaration kinds (let, const, var) for let variable detection
+    pub variable_declaration_kinds: HashMap<String, VarDeclKind>,
+    
+    /// Variables that have been actually mutated (assigned to after declaration)
+    pub mutated_variables: HashSet<String>,
     
     /// Variable context for expression evaluation
     pub variable_context: VariableContext,
@@ -162,6 +168,8 @@ impl Default for TransformState {
             resolved_expressions: HashMap::new(),
             css_expressions_to_resolve: Vec::new(),
             local_variables: HashMap::new(),
+            variable_declaration_kinds: HashMap::new(),
+            mutated_variables: HashSet::new(),
             variable_context: VariableContext::new(),
             debug_messages: Vec::new(),
         }

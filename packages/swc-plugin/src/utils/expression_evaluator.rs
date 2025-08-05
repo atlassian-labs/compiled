@@ -1,10 +1,101 @@
 use swc_core::ecma::ast::*;
 use crate::utils::variable_context::VariableContext;
+use crate::types::TransformState;
+use std::collections::HashMap;
+
+/// Check if an expression contains any actually mutated let variables
+/// Panics with a helpful error message if a mutated let variable is found  
+pub fn check_for_mutated_let_variables(expr: &Expr, variable_declaration_kinds: &HashMap<String, VarDeclKind>, mutated_variables: &std::collections::HashSet<String>) {
+    match expr {
+        Expr::Ident(ident) => {
+            let var_name = ident.sym.to_string();
+            // Only panic if it's a let variable AND it has been mutated
+            if let Some(decl_kind) = variable_declaration_kinds.get(&var_name) {
+                if matches!(decl_kind, VarDeclKind::Let) && mutated_variables.contains(&var_name) {
+                    panic!("Mutable variable '{}' cannot be used in CSS expressions. Compiled only supports constant values in CSS at compile time. Consider using CSS variables or move the dynamic logic to a style prop.", var_name);
+                }
+            }
+        }
+        Expr::Bin(bin_expr) => {
+            check_for_mutated_let_variables(&bin_expr.left, variable_declaration_kinds, mutated_variables);
+            check_for_mutated_let_variables(&bin_expr.right, variable_declaration_kinds, mutated_variables);
+        }
+        Expr::Unary(unary_expr) => {
+            check_for_mutated_let_variables(&unary_expr.arg, variable_declaration_kinds, mutated_variables);
+        }
+        Expr::Cond(cond_expr) => {
+            check_for_mutated_let_variables(&cond_expr.test, variable_declaration_kinds, mutated_variables);
+            check_for_mutated_let_variables(&cond_expr.cons, variable_declaration_kinds, mutated_variables);
+            check_for_mutated_let_variables(&cond_expr.alt, variable_declaration_kinds, mutated_variables);
+        }
+        Expr::Member(member_expr) => {
+            check_for_mutated_let_variables(&member_expr.obj, variable_declaration_kinds, mutated_variables);
+            if let MemberProp::Computed(computed) = &member_expr.prop {
+                check_for_mutated_let_variables(&computed.expr, variable_declaration_kinds, mutated_variables);
+            }
+        }
+        Expr::Tpl(tpl) => {
+            for expr in &tpl.exprs {
+                check_for_mutated_let_variables(expr, variable_declaration_kinds, mutated_variables);
+            }
+        }
+        Expr::Call(call_expr) => {
+            if let Callee::Expr(expr) = &call_expr.callee {
+                check_for_mutated_let_variables(expr, variable_declaration_kinds, mutated_variables);
+            }
+            for arg in &call_expr.args {
+                check_for_mutated_let_variables(&arg.expr, variable_declaration_kinds, mutated_variables);
+            }
+        }
+        Expr::Object(obj_lit) => {
+            for prop in &obj_lit.props {
+                if let PropOrSpread::Prop(prop_box) = prop {
+                    match &**prop_box {
+                        Prop::KeyValue(kv) => {
+                            if let PropName::Computed(computed) = &kv.key {
+                                check_for_mutated_let_variables(&computed.expr, variable_declaration_kinds, mutated_variables);
+                            }
+                            check_for_mutated_let_variables(&kv.value, variable_declaration_kinds, mutated_variables);
+                        }
+                        Prop::Method(method) => {
+                            if let PropName::Computed(computed) = &method.key {
+                                check_for_mutated_let_variables(&computed.expr, variable_declaration_kinds, mutated_variables);
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+        Expr::Array(arr_lit) => {
+            for elem in &arr_lit.elems {
+                if let Some(expr_or_spread) = elem {
+                    check_for_mutated_let_variables(&expr_or_spread.expr, variable_declaration_kinds, mutated_variables);
+                }
+            }
+        }
+        // Literal values are safe
+        Expr::Lit(_) => {}
+        // Other expressions we don't need to check deeply
+        _ => {}
+    }
+}
 
 /// Attempts to statically evaluate an expression to a literal value
 /// Returns Some(Expr) if evaluation was successful, None otherwise
 pub fn evaluate_expression(expr: &Expr) -> Option<Expr> {
     evaluate_expression_with_context(expr, &VariableContext::new())
+}
+
+/// Attempts to statically evaluate an expression with a transform state
+/// Checks for mutated let variables first and panics if found
+/// Returns Some(Expr) if evaluation was successful, None otherwise
+pub fn evaluate_expression_with_state(expr: &Expr, state: &TransformState) -> Option<Expr> {
+    // Check for actually mutated let variables first and panic if found
+    check_for_mutated_let_variables(expr, &state.variable_declaration_kinds, &state.mutated_variables);
+    
+    // If no mutated let variables, proceed with normal evaluation
+    evaluate_expression_with_context(expr, &state.variable_context)
 }
 
 /// Attempts to statically evaluate an expression with a variable context

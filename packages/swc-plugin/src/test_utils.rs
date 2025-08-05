@@ -125,9 +125,6 @@ pub fn transform_with_compiled(code: &str, mut options: TestTransformOptions) ->
         state.compiled_imports = Some(crate::types::CompiledImports::new());
     }
     
-    // Build variable context from the module
-    state.variable_context = crate::utils::variable_context::build_variable_context_from_module(&module);
-
     // Create our Compiled transformation instance
     let mut compiled_transform = CompiledTransform {
         options: compiled_opts,
@@ -135,6 +132,7 @@ pub fn transform_with_compiled(code: &str, mut options: TestTransformOptions) ->
         css_content_to_var: HashMap::new(),
         state,
         had_transformations: false,
+        current_var_decl_kind: None,
     };
     
     // Apply our Compiled transformation
