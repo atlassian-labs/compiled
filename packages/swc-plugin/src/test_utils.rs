@@ -104,6 +104,9 @@ pub fn transform_with_compiled(code: &str, options: TestTransformOptions) -> Str
     // Initialize state
     let mut state = crate::types::TransformState::default();
     state.import_sources = compiled_opts.import_sources.clone();
+    
+    // Build variable context from the module
+    state.variable_context = crate::utils::variable_context::build_variable_context_from_module(&module);
 
     // Apply our Compiled transformation
     let transformed = module

@@ -60,7 +60,7 @@ pub fn visit_css_prop_jsx_opening_element(
             return transform_css_prop_variable_reference(elem, index, expr);
         } else {
             // Handle object literals, arrays, etc.
-            return transform_css_prop_element(elem, index, expr, collected_css_sheets);
+            return transform_css_prop_element(elem, index, expr, state, collected_css_sheets);
         }
     }
     
@@ -72,10 +72,11 @@ fn transform_css_prop_element(
     elem: &mut JSXOpeningElement,
     css_attr_index: usize,
     css_expr: Expr,
+    state: &TransformState,
     collected_css_sheets: &mut Vec<(String, String)>,
 ) -> bool {
     // Process the CSS expression into CSS output
-    if let Some(css_output) = build_css_from_expression(&css_expr) {
+    if let Some(css_output) = crate::utils::css_builder::build_css_from_expression_with_context(&css_expr, &state.variable_context) {
         // Generate a variable name for the CSS sheet
         let var_name = format!("_{}", generate_unique_css_var_name());
         
@@ -267,7 +268,7 @@ pub fn visit_jsx_call_expr(
         }
         
         if let Some((css_prop_index, css_expr)) = css_info {
-            return transform_jsx_call_css_prop(object_lit, css_prop_index, &css_expr, collected_css_sheets);
+            return transform_jsx_call_css_prop(object_lit, css_prop_index, &css_expr, state, collected_css_sheets);
         }
     }
     
@@ -279,6 +280,7 @@ fn transform_jsx_call_css_prop(
     object_lit: &mut ObjectLit,
     css_prop_index: usize,
     css_expr: &Expr,
+    state: &TransformState,
     collected_css_sheets: &mut Vec<(String, String)>,
 ) -> bool {
     // Check if this is an object that we can process atomically
@@ -323,7 +325,7 @@ fn transform_jsx_call_css_prop(
     }
     
     // Fallback to the old approach for non-object expressions
-    if let Some(css_output) = build_css_from_expression(css_expr) {
+            if let Some(css_output) = crate::utils::css_builder::build_css_from_expression_with_context(css_expr, &state.variable_context) {
         // Generate a variable name for the CSS sheet
         let var_name = format!("_{}", generate_unique_css_var_name());
         

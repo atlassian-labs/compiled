@@ -1,6 +1,7 @@
 
 use std::collections::HashMap;
 use crate::utils::module_resolver::{ModuleResolver, ExportValue};
+use crate::utils::variable_context::VariableContext;
 use swc_core::ecma::ast::*;
 
 /// Information about a CSS expression that needs import resolution
@@ -55,6 +56,9 @@ pub struct TransformState {
     
     /// Local variables in the current scope (for static analysis)
     pub local_variables: HashMap<String, ExportValue>,
+    
+    /// Variable context for expression evaluation
+    pub variable_context: VariableContext,
     
     /// Debug messages to inject into the output JS
     pub debug_messages: Vec<String>,
@@ -157,6 +161,7 @@ impl Default for TransformState {
             resolved_expressions: HashMap::new(),
             css_expressions_to_resolve: Vec::new(),
             local_variables: HashMap::new(),
+            variable_context: VariableContext::new(),
             debug_messages: Vec::new(),
         }
     }

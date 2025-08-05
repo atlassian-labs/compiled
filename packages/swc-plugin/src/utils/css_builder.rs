@@ -1,6 +1,7 @@
 use crate::types::*;
 use std::collections::HashMap;
 use swc_core::ecma::ast::*;
+use crate::utils::VariableContext;
 
 /// Utilities for building and processing CSS
 
@@ -270,8 +271,8 @@ fn generate_css_variable_name(expr: &Expr) -> String {
     format!("--_{}", hash.chars().take(8).collect::<String>())
 }
 
-/// Converts a CSS object expression to CSS string with variable support
-pub fn object_expression_to_css_with_variables(obj_expr: &ObjectLit) -> (String, Vec<Variable>) {
+/// Converts a CSS object expression to CSS string with variable support and context
+pub fn object_expression_to_css_with_variables_and_context(obj_expr: &ObjectLit, context: &VariableContext) -> (String, Vec<Variable>) {
     let mut css = String::new();
     let mut variables = Vec::new();
     
@@ -314,15 +315,46 @@ pub fn object_expression_to_css_with_variables(obj_expr: &ObjectLit) -> (String,
                         process_nested_css_object(&key, nested_obj, &mut css);
                     }
                     _ => {
-                        // Dynamic value - create CSS variable
-                        let variable_name = generate_css_variable_name(&kv.value);
-                        variables.push(Variable {
-                            name: variable_name.clone(),
-                            expression: (*kv.value).clone(),
-                            suffix: None,
-                            prefix: None,
-                        });
-                        css.push_str(&format!("{}:var({});", key, variable_name));
+                        // Try to evaluate the expression first
+                        if let Some(evaluated) = crate::utils::expression_evaluator::evaluate_expression_with_context(&kv.value, context) {
+                            match &evaluated {
+                                Expr::Lit(Lit::Str(s)) => {
+                                    // Evaluated to static string value
+                                    css.push_str(&format!("{}:{};", key, s.value));
+                                }
+                                Expr::Lit(Lit::Num(n)) => {
+                                    // Evaluated to static numeric value
+                                    let prop_name_lower = key.to_lowercase();
+                                    let value = if is_unitless_property(&prop_name_lower) {
+                                        n.value.to_string()
+                                    } else {
+                                        format!("{}px", n.value)
+                                    };
+                                    css.push_str(&format!("{}:{};", key, value));
+                                }
+                                _ => {
+                                    // Evaluated to something else, fall back to CSS variable
+                                    let variable_name = generate_css_variable_name(&kv.value);
+                                    variables.push(Variable {
+                                        name: variable_name.clone(),
+                                        expression: (*kv.value).clone(),
+                                        suffix: None,
+                                        prefix: None,
+                                    });
+                                    css.push_str(&format!("{}:var({});", key, variable_name));
+                                }
+                            }
+                        } else {
+                            // Could not evaluate - create CSS variable
+                            let variable_name = generate_css_variable_name(&kv.value);
+                            variables.push(Variable {
+                                name: variable_name.clone(),
+                                expression: (*kv.value).clone(),
+                                suffix: None,
+                                prefix: None,
+                            });
+                            css.push_str(&format!("{}:var({});", key, variable_name));
+                        }
                     }
                 }
                 }
@@ -332,7 +364,7 @@ pub fn object_expression_to_css_with_variables(obj_expr: &ObjectLit) -> (String,
                 match &*spread.expr {
                     Expr::Object(spread_obj) => {
                         // Flatten the spread object properties into current CSS
-                        let (spread_css, spread_vars) = object_expression_to_css_with_variables(spread_obj);
+                        let (spread_css, spread_vars) = object_expression_to_css_with_variables_and_context(spread_obj, context);
                         css.push_str(&spread_css);
                         variables.extend(spread_vars);
                     }
@@ -347,6 +379,12 @@ pub fn object_expression_to_css_with_variables(obj_expr: &ObjectLit) -> (String,
     }
     
     (css, variables)
+}
+
+/// Backward-compatible wrapper for object_expression_to_css_with_variables
+pub fn object_expression_to_css_with_variables(obj_expr: &ObjectLit) -> (String, Vec<Variable>) {
+    let context = VariableContext::new();
+    object_expression_to_css_with_variables_and_context(obj_expr, &context)
 }
 
 /// Process nested CSS objects (pseudo-selectors, media queries, etc.)
@@ -534,11 +572,11 @@ pub fn build_atomic_css_from_object(obj_expr: &ObjectLit) -> Option<AtomicCSSOut
     })
 }
 
-/// Builds CSS output from an expression with variable support
-pub fn build_css_from_expression(expr: &Expr) -> Option<CSSOutput> {
+/// Builds CSS output from an expression with variable support (with context)
+pub fn build_css_from_expression_with_context(expr: &Expr, context: &VariableContext) -> Option<CSSOutput> {
     match expr {
         Expr::Object(obj) => {
-            let (css_string, variables) = object_expression_to_css_with_variables(obj);
+            let (css_string, variables) = object_expression_to_css_with_variables_and_context(obj, context);
             if css_string.is_empty() {
                 return None;
             }
@@ -564,7 +602,7 @@ pub fn build_css_from_expression(expr: &Expr) -> Option<CSSOutput> {
                         match &*expr_or_spread.expr {
                             Expr::Object(_) => {
                                 // Direct object
-                                if let Some(css_output) = build_css_from_expression(&expr_or_spread.expr) {
+                                if let Some(css_output) = build_css_from_expression_with_context(&expr_or_spread.expr, context) {
                                     let css_content = extract_css_content_from_output(&css_output);
                                     combined_css.push_str(&css_content);
                                     found_styles = true;
@@ -599,4 +637,10 @@ pub fn build_css_from_expression(expr: &Expr) -> Option<CSSOutput> {
         }
         _ => None,
     }
+}
+
+/// Backward-compatible wrapper for build_css_from_expression
+pub fn build_css_from_expression(expr: &Expr) -> Option<CSSOutput> {
+    let context = VariableContext::new();
+    build_css_from_expression_with_context(expr, &context)
 }
