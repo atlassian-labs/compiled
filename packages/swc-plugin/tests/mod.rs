@@ -15,3 +15,5 @@ mod module_resolver_test;
 mod react_createElement_test;
 mod hash_compatibility_test;
 mod lib_integration_test;
+mod rule_hoisting_test;
+mod module_imports_test;

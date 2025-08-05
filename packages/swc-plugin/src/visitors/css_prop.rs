@@ -9,6 +9,7 @@ use crate::{types::*, utils::{ast::*, css_builder::*, debug::inject_debug_commen
 pub fn visit_css_prop_jsx_opening_element(
     elem: &mut JSXOpeningElement,
     state: &mut TransformState,
+    css_content_to_var: &mut std::collections::HashMap<String, String>,
     collected_css_sheets: &mut Vec<(String, String)>,
 ) -> bool {
     // Only process CSS props if compiled imports are enabled
@@ -60,7 +61,7 @@ pub fn visit_css_prop_jsx_opening_element(
             return transform_css_prop_variable_reference(elem, index, expr);
         } else {
             // Handle object literals, arrays, etc.
-            return transform_css_prop_element(elem, index, expr, state, collected_css_sheets);
+            return transform_css_prop_element(elem, index, expr, state, css_content_to_var, collected_css_sheets);
         }
     }
     
@@ -73,15 +74,13 @@ fn transform_css_prop_element(
     css_attr_index: usize,
     css_expr: Expr,
     state: &TransformState,
+    css_content_to_var: &mut std::collections::HashMap<String, String>,
     collected_css_sheets: &mut Vec<(String, String)>,
 ) -> bool {
     // Process the CSS expression into CSS output
     if let Some(css_output) = crate::utils::css_builder::build_css_from_expression_with_context(&css_expr, &state.variable_context) {
-        // Generate a variable name for the CSS sheet
-        let var_name = format!("_{}", generate_unique_css_var_name());
-        
-        // Add the CSS sheet to the collection
-        collected_css_sheets.push((var_name.clone(), css_output.css_text.clone()));
+        // Use deduplication to get the variable name
+        let _var_name = add_css_sheet_with_deduplication(&css_output.css_text, css_content_to_var, collected_css_sheets);
         
         // Remove the css attribute
         elem.attrs.remove(css_attr_index);
@@ -94,6 +93,27 @@ fn transform_css_prop_element(
     }
     
     false
+}
+
+/// Add CSS sheet with deduplication - returns the variable name to use
+fn add_css_sheet_with_deduplication(
+    css_content: &str,
+    css_content_to_var: &mut std::collections::HashMap<String, String>,
+    collected_css_sheets: &mut Vec<(String, String)>,
+) -> String {
+    // Check if this CSS content already exists
+    if let Some(existing_var_name) = css_content_to_var.get(css_content) {
+        return existing_var_name.clone();
+    }
+    
+    // Generate a new variable name
+    let var_name = format!("_css_{}", collected_css_sheets.len());
+    
+    // Store the mapping and add to collected sheets
+    css_content_to_var.insert(css_content.to_string(), var_name.clone());
+    collected_css_sheets.push((var_name.clone(), css_content.to_string()));
+    
+    var_name
 }
 
 /// Create className attribute with ax([class_name])
@@ -122,13 +142,7 @@ fn create_class_name_attr(class_name: &str) -> JSXAttrOrSpread {
     })
 }
 
-/// Generate a unique variable name for CSS
-fn generate_unique_css_var_name() -> String {
-    use std::sync::atomic::{AtomicUsize, Ordering};
-    static COUNTER: AtomicUsize = AtomicUsize::new(0);
-    let count = COUNTER.fetch_add(1, Ordering::SeqCst);
-    format!("css_{}", count)
-}
+
 
 /// Check if an expression is a variable reference (e.g., styles.danger, myVar, etc.)
 fn is_variable_reference(expr: &Expr) -> bool {
@@ -212,6 +226,7 @@ fn create_css_object_from_string(css_str: &str) -> Expr {
 pub fn visit_jsx_call_expr(
     call: &mut CallExpr,
     state: &mut TransformState,
+    css_content_to_var: &mut std::collections::HashMap<String, String>,
     collected_css_sheets: &mut Vec<(String, String)>,
 ) -> bool {
     // Only process CSS props if compiled imports are enabled
@@ -268,7 +283,7 @@ pub fn visit_jsx_call_expr(
         }
         
         if let Some((css_prop_index, css_expr)) = css_info {
-            return transform_jsx_call_css_prop(object_lit, css_prop_index, &css_expr, state, collected_css_sheets);
+            return transform_jsx_call_css_prop(object_lit, css_prop_index, &css_expr, state, css_content_to_var, collected_css_sheets);
         }
     }
     
@@ -281,15 +296,16 @@ fn transform_jsx_call_css_prop(
     css_prop_index: usize,
     css_expr: &Expr,
     state: &TransformState,
+    css_content_to_var: &mut std::collections::HashMap<String, String>,
     collected_css_sheets: &mut Vec<(String, String)>,
 ) -> bool {
     // Check if this is an object that we can process atomically
     if let Expr::Object(obj) = css_expr {
         // Use atomic CSS generation like Babel
         if let Some(atomic_output) = build_atomic_css_from_object(obj) {
-            // Add all atomic CSS sheets to the collection
-            for (var_name, css_rule) in atomic_output.css_sheets {
-                collected_css_sheets.push((var_name, css_rule));
+            // Add all atomic CSS sheets to the collection with deduplication
+            for (_, css_rule) in atomic_output.css_sheets {
+                let _var_name = add_css_sheet_with_deduplication(&css_rule, css_content_to_var, collected_css_sheets);
             }
             
             // Remove the css property
@@ -325,12 +341,9 @@ fn transform_jsx_call_css_prop(
     }
     
     // Fallback to the old approach for non-object expressions
-            if let Some(css_output) = crate::utils::css_builder::build_css_from_expression_with_context(css_expr, &state.variable_context) {
-        // Generate a variable name for the CSS sheet
-        let var_name = format!("_{}", generate_unique_css_var_name());
-        
-        // Add the CSS sheet to the collection
-        collected_css_sheets.push((var_name.clone(), css_output.css_text.clone()));
+    if let Some(css_output) = crate::utils::css_builder::build_css_from_expression_with_context(css_expr, &state.variable_context) {
+        // Use deduplication to get the variable name
+        let _var_name = add_css_sheet_with_deduplication(&css_output.css_text, css_content_to_var, collected_css_sheets);
         
         // Remove the css property
         object_lit.props.remove(css_prop_index);

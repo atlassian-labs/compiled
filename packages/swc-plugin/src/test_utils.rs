@@ -6,7 +6,7 @@ use swc_core::{
         visit::{as_folder, FoldWith},
     },
 };
-use std::sync::Arc;
+use std::{sync::Arc, collections::HashMap};
 
 use crate::{CompiledOptions, CompiledTransform};
 
@@ -32,7 +32,7 @@ impl Default for TestTransformOptions {
             pretty: false,
             snippet: false,
             import_react: true,
-            import_sources: vec!["@compiled/react".to_string()],
+            import_sources: vec!["@compiled/react".to_string(), "@atlaskit/css".to_string()],
             optimize_css: true,
             highlight_code: false,
             compiled_options: CompiledOptions::default(),
@@ -62,7 +62,22 @@ impl TestAssertions for String {
 }
 
 /// Transform code using our SWC plugin for testing
-pub fn transform_with_compiled(code: &str, options: TestTransformOptions) -> String {
+pub fn transform_with_compiled(code: &str, mut options: TestTransformOptions) -> String {
+    // Check for JSX pragma comments in the code string (for test compatibility)
+    if code.contains("@jsxImportSource") {
+        // Extract the import source from the pragma
+        if let Some(pragma_start) = code.find("@jsxImportSource") {
+            let remaining = &code[pragma_start + "@jsxImportSource".len()..];
+            let source = remaining.trim().split_whitespace().next();
+            
+            if let Some(import_source) = source {
+                // Add the pragma import source to enable transformation
+                if !options.import_sources.contains(&import_source.to_string()) {
+                    options.import_sources.push(import_source.to_string());
+                }
+            }
+        }
+    }
     let syntax = Syntax::Typescript(TsSyntax {
         tsx: true,
         decorators: false,
@@ -105,6 +120,11 @@ pub fn transform_with_compiled(code: &str, options: TestTransformOptions) -> Str
     let mut state = crate::types::TransformState::default();
     state.import_sources = compiled_opts.import_sources.clone();
     
+    // If we detected a pragma comment, enable compiled imports
+    if code.contains("@jsxImportSource") {
+        state.compiled_imports = Some(crate::types::CompiledImports::new());
+    }
+    
     // Build variable context from the module
     state.variable_context = crate::utils::variable_context::build_variable_context_from_module(&module);
 
@@ -113,6 +133,7 @@ pub fn transform_with_compiled(code: &str, options: TestTransformOptions) -> Str
         .fold_with(&mut as_folder(CompiledTransform {
             options: compiled_opts,
             collected_css_sheets: Vec::new(),
+        css_content_to_var: HashMap::new(),
             state,
             had_transformations: false,
         }));

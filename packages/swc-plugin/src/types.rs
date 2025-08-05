@@ -155,6 +155,7 @@ impl Default for TransformState {
             import_sources: vec![
                 "@compiled/react".to_string(),
                 "compiled-react".to_string(),
+                "@atlaskit/css".to_string(),
             ],
             module_resolver: None,
             external_imports: HashMap::new(),
