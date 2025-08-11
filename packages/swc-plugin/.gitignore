@@ -1,27 +1,5 @@
-# Rust build artifacts
-/target/
-Cargo.lock
+target/
+dist/
+compiled_swc_plugin.wasm
+compiled_swc_plugin2.wasm
 
-# Generated WASM files
-compiled_rust_swc.wasm
-compiled_swc.wasm
-
-# Node.js
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Temporary files
-*.tmp
-*.log

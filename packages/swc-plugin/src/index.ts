@@ -1,5 +1,5 @@
 /**
- * SWC Plugin for @compiled/react
+ * SWC Plugin2 for @compiled/react - focused on xcss-prop functionality
  * High-performance CSS-in-JS transformations using Rust and WebAssembly
  */
 
@@ -54,20 +54,30 @@ export interface CompiledSwcPluginOptions {
    * @default undefined
    */
   classHashPrefix?: string;
+
+  /**
+   * Whether to process xcss usages
+   * @default true
+   */
+  processXcss?: boolean;
 }
 
 /**
  * Get the path to the WASM plugin file
  */
 export function getWasmPluginPath(): string {
-  // First try the root of the package (for npm published version)
-  const rootPath = path.join(__dirname, '..', 'compiled_swc.wasm');
-  if (fs.existsSync(rootPath)) {
-    return rootPath;
-  }
-
-  // Fallback to target directory (for development)
-  return path.join(__dirname, '..', 'target', 'wasm32-wasip1', 'release', 'compiled_swc.wasm');
+  // Prefer packaged WASM at package root (production)
+  const packaged = path.join(__dirname, '..', 'compiled_swc_plugin.wasm');
+  if (fs.existsSync(packaged)) return packaged;
+  // Fallback to target directory (development)
+  return path.join(
+    __dirname,
+    '..',
+    'target',
+    'wasm32-wasip1',
+    'release',
+    'compiled_swc_plugin.wasm'
+  );
 }
 
 /**
@@ -92,6 +102,7 @@ export function createPluginConfig(
     addComponentName: options.addComponentName || false,
     classNameCompressionMap: options.classNameCompressionMap,
     classHashPrefix: options.classHashPrefix,
+    processXcss: options.processXcss !== false,
   };
 }
 

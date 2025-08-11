@@ -1,86 +1,216 @@
-use swc_core::ecma::ast::*;
-use crate::{types::*, utils::{ast::*, css_builder::*}};
+use crate::types::TransformState;
+use crate::CompiledOptions;
+use crate::utils::{css_builder, ast};
+use swc_core::{
+    common::DUMMY_SP,
+    ecma::ast::*,
+};
+use std::collections::HashMap;
 
-/// Handles transformation of cssMap() calls
-/// Transforms cssMap({...}) into optimized CSS maps
+pub fn is_css_map_call(call: &CallExpr, state: &TransformState) -> bool {
+    if let Some(ref imports) = state.compiled_imports {
+        if let Some(ref css_map_imports) = imports.css_map {
+            match &call.callee {
+                Callee::Expr(expr) => {
+                    match expr.as_ref() {
+                        Expr::Ident(ident) => {
+                            css_map_imports.contains(&ident.sym.to_string())
+                        }
+                        _ => false,
+                    }
+                }
+                _ => false,
+            }
+        } else {
+            false
+        }
+    } else {
+        match &call.callee {
+            Callee::Expr(expr) => match expr.as_ref() {
+                Expr::Ident(ident) => ident.sym.as_ref() == "cssMap",
+                _ => false,
+            },
+            _ => false,
+        }
+    }
+}
+
+pub fn is_static_css_map_strict(obj: &ObjectLit) -> Result<(), String> {
+    for prop in &obj.props {
+        match prop {
+            PropOrSpread::Prop(prop_box) => {
+                match prop_box.as_ref() {
+                    Prop::KeyValue(kv) => {
+                        match &*kv.value {
+                            Expr::Object(variant_obj) => {
+                                is_static_variant_object_strict(variant_obj)?;
+                            }
+                            _ => {
+                                return Err("cssMap variants must be objects in strict mode".to_string());
+                            }
+                        }
+                    }
+                    _ => {
+                        return Err("Only key-value properties are supported in cssMap strict mode".to_string());
+                    }
+                }
+            }
+            PropOrSpread::Spread(_) => {
+                return Err("Spread syntax is not supported in cssMap strict mode".to_string());
+            }
+        }
+    }
+    Ok(())
+}
+
+pub fn is_static_variant_object_strict(obj: &ObjectLit) -> Result<(), String> {
+    for prop in &obj.props {
+        match prop {
+            PropOrSpread::Prop(prop_box) => {
+                match prop_box.as_ref() {
+                    Prop::KeyValue(kv) => {
+                        match &*kv.value {
+                            Expr::Lit(_) => continue, // Literals are allowed
+                            Expr::Object(nested_obj) => {
+                                is_static_variant_object_strict(nested_obj)?;
+                            }
+                            Expr::Ident(_) => {
+                                return Err("Dynamic variables are not supported in cssMap strict mode".to_string());
+                            }
+                            Expr::Call(_) => {
+                                return Err("Function calls are not supported in cssMap strict mode".to_string());
+                            }
+                            Expr::Member(_) => {
+                                return Err("Member expressions are not supported in cssMap strict mode".to_string());
+                            }
+                            Expr::Bin(_) => {
+                                return Err("Binary expressions are not supported in cssMap strict mode".to_string());
+                            }
+                            Expr::Cond(_) => {
+                                return Err("Conditional expressions are not supported in cssMap strict mode".to_string());
+                            }
+                            _ => {
+                                return Err(format!("Expression type not supported in cssMap strict mode: {:?}", kv.value));
+                            }
+                        }
+                    }
+                    _ => {
+                        return Err("Only key-value properties are supported in cssMap variant strict mode".to_string());
+                    }
+                }
+            }
+            PropOrSpread::Spread(_) => {
+                return Err("Spread syntax is not supported in cssMap variant strict mode".to_string());
+            }
+        }
+    }
+    Ok(())
+}
+
+#[allow(dead_code)]
 pub fn visit_css_map_call_expr(
     call: &mut CallExpr,
-    _state: &mut TransformState,
+    state: &mut TransformState,
     collected_css_sheets: &mut Vec<(String, String)>,
+    options: &CompiledOptions,
 ) -> bool {
-    // Check if this is a cssMap() call
-    if !is_css_map_call(call) {
+    if !is_css_map_call(call, state) {
         return false;
     }
     
-    // Extract the cssMap object argument
-    if let Some(first_arg) = call.args.first() {
-        if let Expr::Object(obj) = &*first_arg.expr {
-            // Transform the cssMap object
-            let new_object = transform_css_map_object(obj, collected_css_sheets);
-            
-            // Replace the call with the transformed object
-            // Create a special marker to be post-processed like keyframes
-            *call = CallExpr {
-                span: call.span,
-                callee: Callee::Expr(Box::new(Expr::Object(new_object))),
-                args: vec![],
-                type_args: None,
-            };
-            
-            return true;
+    if call.args.len() != 1 {
+        panic!("cssMap() must receive exactly one argument");
+    }
+    
+    let css_map_arg = &call.args[0].expr;
+    
+    let obj = match css_map_arg.as_ref() {
+        Expr::Object(obj) => obj,
+        _ => {
+            panic!("cssMap() argument must be an object");
+        }
+    };
+    
+    if options.strict_mode {
+        if let Err(error_msg) = is_static_css_map_strict(obj) {
+            panic!("Strict mode error in cssMap(): {}", error_msg);
         }
     }
     
-    false
-}
-
-fn is_css_map_call(call: &CallExpr) -> bool {
-    match &call.callee {
-        Callee::Expr(expr) => {
-            match expr.as_ref() {
-                Expr::Ident(ident) => ident.sym.as_ref() == "cssMap",
-                _ => false,
-            }
-        }
-        _ => false,
-    }
-}
-
-/// Transform a cssMap object into an object of class names
-fn transform_css_map_object(obj: &ObjectLit, collected_css_sheets: &mut Vec<(String, String)>) -> ObjectLit {
-    let mut new_props = Vec::new();
+    let mut variant_map = HashMap::new();
     
     for prop in &obj.props {
-        if let PropOrSpread::Prop(prop) = prop {
-            if let Prop::KeyValue(kv) = &**prop {
-                // Get the key name (variant name)
-                let key_name = match &kv.key {
+        if let PropOrSpread::Prop(prop_box) = prop {
+            if let Prop::KeyValue(kv) = prop_box.as_ref() {
+                let variant_name = match &kv.key {
                     PropName::Ident(ident) => ident.sym.to_string(),
-                    PropName::Str(s) => s.value.to_string(),
+                    PropName::Str(str_lit) => str_lit.value.to_string(),
                     _ => continue,
                 };
                 
-                // Process the CSS for this variant
-                if let Some(css_output) = build_css_from_expression(&kv.value) {
-                    // Generate a variable name for this CSS sheet
-                    let var_name = format!("_cssMap_{}_{}", key_name, collected_css_sheets.len());
-                    collected_css_sheets.push((var_name.clone(), css_output.css_text.clone()));
-                    
-                    // Create a new property with the class name
-                    let new_prop = PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp {
-                        key: kv.key.clone(),
-                        value: Box::new(Expr::Lit(Lit::Str(create_str_lit(&css_output.class_name)))),
-                    })));
-                    
-                    new_props.push(new_prop);
+                if let Expr::Object(variant_obj) = &*kv.value {
+                    let atomic_rules = css_builder::build_atomic_rules_from_object(variant_obj);
+                    if !atomic_rules.is_empty() {
+                        let (sheets, class_names) = css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
+                        
+                        for sheet in sheets {
+                            let _var_name = add_css_sheet_with_deduplication(
+                                &mut HashMap::new(), // We don't deduplicate cssMap sheets
+                                collected_css_sheets,
+                                &sheet
+                            );
+                        }
+                        
+                        let combined_class_names = class_names.join(" ");
+                        variant_map.insert(variant_name.clone(), combined_class_names);
+                        
+                        state.css_map.insert(variant_name, class_names);
+                    } else {
+                        variant_map.insert(variant_name.clone(), "".to_string());
+                        state.css_map.insert(variant_name, vec![]);
+                    }
                 }
             }
         }
     }
     
-    ObjectLit {
-        span: obj.span,
-        props: new_props,
+    let variant_props: Vec<PropOrSpread> = variant_map
+        .into_iter()
+        .map(|(variant_name, class_names)| {
+            PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp {
+                key: PropName::Ident(ast::create_ident(&variant_name)),
+                value: Box::new(Expr::Lit(Lit::Str(ast::create_str_lit(&class_names)))),
+            })))
+        })
+        .collect();
+    
+    *call = CallExpr {
+        span: call.span,
+        callee: Callee::Expr(Box::new(Expr::Object(ObjectLit {
+            span: DUMMY_SP,
+            props: variant_props,
+        }))),
+        args: vec![],
+        type_args: None,
+    };
+    
+    true
+}
+
+fn add_css_sheet_with_deduplication(
+    css_content_to_var: &mut HashMap<String, String>,
+    collected_css_sheets: &mut Vec<(String, String)>,
+    css_content: &str,
+) -> String {
+    if let Some(existing_var_name) = css_content_to_var.get(css_content) {
+        return existing_var_name.clone();
     }
+    
+    let index = collected_css_sheets.len();
+    let var_name = if index == 0 { "_".to_string() } else { format!("_{}", index + 1) };
+    
+    css_content_to_var.insert(css_content.to_string(), var_name.clone());
+    collected_css_sheets.push((var_name.clone(), css_content.to_string()));
+    
+    var_name
 }

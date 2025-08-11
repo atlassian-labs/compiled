@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "benchmark": "jest --config benchmark.config.json",
-    "build": "yarn build:babel-fixture && yarn build:swc-plugin && yarn build:browser && yarn build:cjs && yarn build:esm && yarn postbuild",
+    "build": "yarn build:babel-fixture && yarn build:browser && yarn build:cjs && yarn build:esm && yarn postbuild",
     "postbuild": "scripts/postbuild.sh",
     "build:babel-fixture": "yarn workspace @compiled/babel-component-fixture build && yarn workspace @compiled/babel-component-extracted-fixture build",
     "build:browser": "ttsc --build packages/tsconfig.browser.json",
@@ -21,7 +21,6 @@
     "build:parcel": "ttsc --build examples/parcel/tsconfig.json && yarn workspace @compiled/parcel-app build",
     "build:ssr": "CI=false && ttsc --build examples/ssr/tsconfig.json && yarn workspace @compiled/ssr-app build",
     "build:storybook": "build-storybook",
-    "build:swc-plugin": "yarn workspace @compiled/swc-plugin build",
     "build:webpack": "yarn build:babel-fixture && ttsc --build examples/webpack/tsconfig.json && yarn workspace @compiled/webpack-app build",
     "build:webpack:extract": "EXTRACT_TO_CSS=true yarn build:webpack",
     "bundlesize": "yarn build && size-limit",
@@ -43,11 +42,10 @@
     "start:ssr": "ttsc --build examples/ssr/tsconfig.json && yarn workspace @compiled/ssr-app start",
     "start:webpack": "yarn build:babel-fixture && ttsc --build examples/webpack/tsconfig.json && yarn workspace @compiled/webpack-app start",
     "start:webpack:extract": "EXTRACT_TO_CSS=true yarn start:webpack",
-    "test": "jest --no-cache && yarn test:swc",
-    "test:cover": "jest --no-cache --collectCoverage --ci && yarn test:swc",
+    "test": "jest --no-cache",
+    "test:cover": "yarn test --collectCoverage",
     "test:imports": "node test/test-imports",
     "test:parcel": "jest --testMatch '**/src/**/*.parceltest.{ts,tsx}' --testEnvironment=node",
-    "test:swc": "yarn workspace @compiled/swc-plugin test && yarn workspace @compiled/swc-plugin test:ts",
     "test:vr": "yarn loki --host host.docker.internal",
     "test:watch": "jest --no-cache --watch",
     "website:build": "cd website/ && NODE_ENV=production yarn build",
@@ -130,7 +128,6 @@
       }
     }
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
   "size-limit": [
     {
       "path": "./packages/react/dist/browser/runtime/css-custom-property.js",

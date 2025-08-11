@@ -1,18 +1,19 @@
 [package]
-name = "compiled-swc"
+name = "compiled-swc-plugin"
 version = "0.1.0"
 edition = "2021"
-description = "A SWC implementation of the Compiled CSS-in-JS library"
+description = "A SWC implementation of the Compiled CSS-in-JS library focusing on xcss-prop functionality"
 license = "Apache-2.0"
 
 [package.metadata.swc]
 plugin = true
 
 [lib]
+name = "compiled_swc_plugin"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-swc_core = { version = "0.96", features = [
+swc_core = { version = "0.90", features = [
   "ecma_plugin_transform",
   "ecma_utils",
   "ecma_visit",
@@ -30,7 +31,7 @@ regex = "1.10"
 # No special dependencies needed for wasm32-wasip1
 
 [dev-dependencies]
-swc_core = { version = "0.96", features = [
+swc_core = { version = "0.90", features = [
   "testing_transform",
   "__parser",
   "ecma_parser",

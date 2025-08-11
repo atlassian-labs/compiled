@@ -8,82 +8,57 @@ use swc_core::{
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-
 mod types;
 mod visitors;
 pub mod utils;
 
-pub mod test_utils;
-
 use types::*;
 
-use utils::module_resolver::{ModuleResolver, ExportValue};
-
-/// Configuration options for the Compiled SWC plugin.
-/// 
-/// This struct defines all the available options for customizing the behavior
-/// of the Compiled CSS-in-JS transformation plugin.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CompiledOptions {
-    /// Whether to use the cache or not
     #[serde(default)]
     pub cache: Option<bool>,
     
-    /// Whether to import the React namespace if it is missing
     #[serde(default = "default_import_react")]
     pub import_react: bool,
     
-    /// Security nonce for inline style elements
     pub nonce: Option<String>,
     
-    /// Custom module origins that Compiled should compile
     #[serde(default, rename = "importSources")]
     pub import_sources: Vec<String>,
     
-    /// Whether to run additional cssnano plugins
     #[serde(default = "default_optimize_css")]
     pub optimize_css: bool,
     
-    /// Custom resolver for static evaluation
     pub resolver: Option<String>,
     
-    /// File extensions to traverse as code
     #[serde(default)]
     pub extensions: Vec<String>,
     
-    /// Add component name as class name in non-production
-    #[serde(default)]
+    #[serde(default, rename = "addComponentName")]
     pub add_component_name: bool,
     
-    /// Class name compression map
-    #[serde(default)]
+    #[serde(default, rename = "classNameCompressionMap")]
     pub class_name_compression_map: HashMap<String, String>,
     
-    /// Whether to process xcss usages
-    #[serde(default = "default_process_xcss")]
+    #[serde(default = "default_process_xcss", rename = "processXcss")]
     pub process_xcss: bool,
     
-    /// Increase specificity of styles
+    #[serde(default, rename = "strictMode")]
+    pub strict_mode: bool,
+    
     #[serde(default)]
     pub increase_specificity: bool,
     
-    /// Whether to sort at-rules
     #[serde(default = "default_sort_at_rules")]
     pub sort_at_rules: bool,
     
-    /// Class hash prefix
     pub class_hash_prefix: Option<String>,
     
-    /// Whether to flatten multiple selectors
     #[serde(default = "default_flatten_multiple_selectors")]
     pub flatten_multiple_selectors: bool,
     
-    /// Current filename being processed
     pub filename: Option<String>,
-    
-    /// Resolved imports provided by the bundler environment (bypasses WASM limitations)
-    #[serde(default)]
-    pub resolved_imports: HashMap<String, serde_json::Value>,
 }
 
 fn default_import_react() -> bool { true }
@@ -108,210 +83,69 @@ impl Default for CompiledOptions {
             add_component_name: false,
             class_name_compression_map: HashMap::new(),
             process_xcss: true,
+            strict_mode: false,
             increase_specificity: false,
             sort_at_rules: true,
             class_hash_prefix: None,
             flatten_multiple_selectors: true,
             filename: None,
-            resolved_imports: HashMap::new(),
         }
     }
 }
 
-
-
-/// Visitor for collecting variable information only (no CSS processing)
-struct VariableInfoCollector<'a> {
-    state: &'a mut TransformState,
-    current_var_decl_kind: Option<VarDeclKind>,
-}
-
-impl<'a> VariableInfoCollector<'a> {
-    fn new(state: &'a mut TransformState) -> Self {
-        Self {
-            state,
-            current_var_decl_kind: None,
-        }
-    }
-}
-
-impl<'a> VisitMut for VariableInfoCollector<'a> {
-    fn visit_mut_var_decl(&mut self, n: &mut VarDecl) {
-        // Set the current variable declaration kind
-        self.current_var_decl_kind = Some(n.kind);
-        
-        n.visit_mut_children_with(self);
-        
-        // Clear the current variable declaration kind
-        self.current_var_decl_kind = None;
-    }
-
-    fn visit_mut_var_declarator(&mut self, n: &mut VarDeclarator) {
-        // Track variable declarations
-        if let Pat::Ident(ident) = &n.name {
-            let var_name = ident.id.sym.to_string();
-            
-            // Track the declaration kind
-            if let Some(decl_kind) = self.current_var_decl_kind {
-                self.state.variable_declaration_kinds.insert(var_name.clone(), decl_kind);
-            }
-        }
-        
-        n.visit_mut_children_with(self);
-    }
-
-    fn visit_mut_assign_expr(&mut self, n: &mut AssignExpr) {
-        // Track mutations
-        match &n.left {
-            AssignTarget::Simple(SimpleAssignTarget::Ident(ident)) => {
-                let var_name = ident.id.sym.to_string();
-                self.state.mutated_variables.insert(var_name);
-            }
-            _ => {}
-        }
-        
-        n.visit_mut_children_with(self);
-    }
-
-    fn visit_mut_update_expr(&mut self, n: &mut UpdateExpr) {
-        // Track mutations
-        if let Expr::Ident(ident) = &*n.arg {
-            let var_name = ident.sym.to_string();
-            self.state.mutated_variables.insert(var_name);
-        }
-        
-        n.visit_mut_children_with(self);
-    }
-}
-
-/// Main transformation context for the Compiled SWC plugin.
-/// 
-/// This struct maintains the state throughout the transformation process,
-/// including configuration options, collected CSS sheets, and transformation state.
 pub struct CompiledTransform {
-    /// Plugin configuration options
     pub options: CompiledOptions,
-    /// Collected CSS sheets during transformation (variable_name, css_text)
     pub collected_css_sheets: Vec<(String, String)>,
-    /// Map from CSS content to variable name for deduplication
     pub css_content_to_var: HashMap<String, String>,
-    /// Current transformation state
     pub state: TransformState,
-    /// Whether any transformations were applied
     pub had_transformations: bool,
-    /// Current variable declaration kind (let, const, var) being processed
-    pub current_var_decl_kind: Option<VarDeclKind>,
 }
 
 impl CompiledTransform {
-    /// Add CSS sheet with deduplication - returns the variable name to use
     pub fn add_css_sheet_with_deduplication(&mut self, css_content: &str) -> String {
-        // Check if this CSS content already exists
         if let Some(existing_var_name) = self.css_content_to_var.get(css_content) {
             return existing_var_name.clone();
         }
         
-        // Generate a new variable name
-        let var_name = format!("_{}", self.generate_unique_css_var_name());
+            let index = self.collected_css_sheets.len();
+            let var_name = if index == 0 { "_".to_string() } else { format!("_{}", index + 1) };
         
-        // Store the mapping and add to collected sheets
         self.css_content_to_var.insert(css_content.to_string(), var_name.clone());
         self.collected_css_sheets.push((var_name.clone(), css_content.to_string()));
         
         var_name
     }
     
-    /// Generate a unique variable name for CSS
-    fn generate_unique_css_var_name(&self) -> String {
-        format!("css_{}", self.collected_css_sheets.len())
-    }
-
-    /// Process JSX pragma comments to detect custom import sources
-    fn process_jsx_pragma_comments(&mut self, _module: &Module) {
-        // JSX pragma comment parsing is handled in test_utils.rs for test compatibility
-        // In a real-world scenario, this would parse comments from the SWC AST
-        // For now, we rely on the string-based approach in the test infrastructure
-    }
-
-    /// Collect variable declarations and mutations without processing CSS
-    fn collect_variable_info(&mut self, module: &mut Module) {
-        let mut collector = VariableInfoCollector::new(&mut self.state);
-        module.visit_mut_with(&mut collector);
-    }
-
-    /// Process imports and pragmas from the module
+    #[allow(dead_code)]
+    fn generate_unique_css_var_name(&self) -> String { format!("css_{}", self.collected_css_sheets.len()) }
+    
     fn process_imports_and_pragmas(&mut self, module: &mut Module) {
         let mut imports_to_remove = Vec::new();
         
-        // Initialize module resolver for WASM compatibility
-        if self.state.module_resolver.is_none() {
-            // Use current directory as default for WASM compatibility
-            self.state.module_resolver = Some(ModuleResolver::new("."));
-        }
         
-        // Check for JSX pragma comments
-        self.process_jsx_pragma_comments(module);
-        
-        // Process import declarations
         for (i, item) in module.body.iter().enumerate() {
             if let ModuleItem::ModuleDecl(ModuleDecl::Import(import_decl)) = item {
                 let source = import_decl.src.value.as_ref();
                 
-                // Check if this is a compiled module (but not runtime)
+                
                 let is_compiled_module = self.state.import_sources.iter().any(|import_source| {
-                    if import_source == source {
-                        return true;
-                    }
-                    
-                    // Handle relative imports for WASM compatibility  
-                    if source.starts_with('.') && source.contains(import_source) {
-                        return true;
-                    }
-                    
-                    false
+                    import_source == source
                 }) && !source.ends_with("/runtime"); // Don't process runtime imports
                 
-                // Check if this is a compiled module
                 
                 if !is_compiled_module {
-                    // Track external imports for potential resolution (now WASM-safe)
-                    for specifier in &import_decl.specifiers {
-                        match specifier {
-                            ImportSpecifier::Named(named) => {
-                                let local_name = named.local.sym.to_string();
-                                // Track external import for resolution
-                                self.state.external_imports.insert(local_name, source.to_string());
-                            }
-                            ImportSpecifier::Default(default) => {
-                                let local_name = default.local.sym.to_string();
-                                self.state.external_imports.insert(local_name, source.to_string());
-                            }
-                            ImportSpecifier::Namespace(namespace) => {
-                                let local_name = namespace.local.sym.to_string();
-                                self.state.external_imports.insert(local_name, source.to_string());
-                            }
-                        }
-                    }
-                    
                     continue;
                 }
                 
-                // Process compiled import
-                
-                // Initialize compiled imports if not already done
                 if self.state.compiled_imports.is_none() {
                     self.state.compiled_imports = Some(CompiledImports::new());
                 }
                 
-                // Mark that we found a compiled import
                 self.had_transformations = true;
                 
-                // Process each import specifier
                 let mut should_remove_import = true;
 
-                // If there are no specifiers (e.g., import '@compiled/react'), enable CSS prop
                 if import_decl.specifiers.is_empty() {
-                    // This is a side-effect import that enables CSS prop
                     should_remove_import = true;
                 } else {
                     for specifier in &import_decl.specifiers {
@@ -324,32 +158,13 @@ impl CompiledTransform {
                             
                             let local_name = named.local.sym.to_string();
                             
-                            // Track the import
                             if let Some(ref mut imports) = self.state.compiled_imports {
                                 match imported_name {
-                                    "styled" => {
-                                        if imports.styled.is_none() {
-                                            imports.styled = Some(Vec::new());
-                                        }
-                                        imports.styled.as_mut().unwrap().push(local_name);
-                                    }
                                     "css" => {
                                         if imports.css.is_none() {
                                             imports.css = Some(Vec::new());
                                         }
                                         imports.css.as_mut().unwrap().push(local_name);
-                                    }
-                                    "ClassNames" => {
-                                        if imports.class_names.is_none() {
-                                            imports.class_names = Some(Vec::new());
-                                        }
-                                        imports.class_names.as_mut().unwrap().push(local_name);
-                                    }
-                                    "keyframes" => {
-                                        if imports.keyframes.is_none() {
-                                            imports.keyframes = Some(Vec::new());
-                                        }
-                                        imports.keyframes.as_mut().unwrap().push(local_name);
                                     }
                                     "cssMap" => {
                                         if imports.css_map.is_none() {
@@ -358,13 +173,11 @@ impl CompiledTransform {
                                         imports.css_map.as_mut().unwrap().push(local_name);
                                     }
                                     _ => {
-                                        // Unknown import, don't remove
                                         should_remove_import = false;
                                     }
                                 }
                             }
                         } else {
-                            // Other types of imports (default, namespace) - don't remove for now
                             should_remove_import = false;
                         }
                     }
@@ -376,47 +189,25 @@ impl CompiledTransform {
             }
         }
         
-        // Remove processed imports in reverse order  
         for &index in imports_to_remove.iter().rev() {
             module.body.remove(index);
         }
     }
     
-    /// Finalize the module with runtime imports
     fn finalize_module(&mut self, module: &mut Module) {
-        // Only proceed if we had compiled imports or transformations
         if self.state.compiled_imports.is_none() && !self.had_transformations {
             return;
         }
         
-        // Add file comment at the top
-        self.add_file_comment(module);
-        
-        // Add runtime imports
         self.add_runtime_imports(module);
         
-        // Add React import if needed
         self.add_react_imports_if_needed(module);
     }
     
-    /// Add file comment at the top of the module
-    fn add_file_comment(&self, _module: &mut Module) {
-        // File comment generation is handled post-transformation in test utilities
-        // This method is kept for consistency but doesn't need to do anything
-        // since SWC comment handling is complex and we handle it differently
-    }
-    
-    /// Add React imports if needed  
     fn add_react_imports_if_needed(&self, module: &mut Module) {
         let should_import_react = self.options.import_react;
-        let has_styled = self.state.compiled_imports.as_ref()
-            .and_then(|imports| imports.styled.as_ref())
-            .map_or(false, |styled| !styled.is_empty());
         
-        // Check what types of React imports already exist
         let mut has_react_namespace_or_default = false;
-        let mut _has_react_named_imports = false;
-        let mut has_forwardref_import = false;
         
         for item in &module.body {
             if let ModuleItem::ModuleDecl(ModuleDecl::Import(import)) = item {
@@ -426,19 +217,13 @@ impl CompiledTransform {
                             ImportSpecifier::Default(_) | ImportSpecifier::Namespace(_) => {
                                 has_react_namespace_or_default = true;
                             }
-                            ImportSpecifier::Named(named) => {
-                                _has_react_named_imports = true;
-                                if named.local.sym.as_ref() == "forwardRef" {
-                                    has_forwardref_import = true;
-                                }
-                            }
+                            _ => {}
                         }
                     }
                 }
             }
         }
         
-        // Add namespace React import if needed
         if should_import_react && !has_react_namespace_or_default {
             let react_import = ModuleItem::ModuleDecl(ModuleDecl::Import(ImportDecl {
                 span: Default::default(),
@@ -453,79 +238,9 @@ impl CompiledTransform {
             }));
             module.body.insert(0, react_import);
         }
-        
-        // Add forwardRef import if needed (only if we have styled components and no existing forwardRef)
-        if has_styled && !has_forwardref_import {
-            let forward_ref_import = ModuleItem::ModuleDecl(ModuleDecl::Import(ImportDecl {
-                span: Default::default(),
-                specifiers: vec![ImportSpecifier::Named(ImportNamedSpecifier {
-                    span: Default::default(),
-                    local: utils::ast::create_ident("forwardRef"),
-                    imported: None,
-                    is_type_only: false,
-                })],
-                src: Box::new(utils::ast::create_str_lit("react")),
-                type_only: false,
-                with: None,
-                phase: Default::default(),
-            }));
-            module.body.insert(0, forward_ref_import);
-        }
-    }
-
-    /// Fix keyframes call expressions to remove () from string literals
-    fn fix_keyframes_calls(&mut self, expr: &mut Expr) {
-        match expr {
-            Expr::Call(call) => {
-                // Check if this is a keyframes call that was transformed
-                if let Callee::Expr(callee_expr) = &call.callee {
-                    if let Expr::Lit(Lit::Str(str_lit)) = callee_expr.as_ref() {
-                        // If the callee is a string that starts with 'k' (keyframe name)
-                        if str_lit.value.starts_with('k') && call.args.is_empty() {
-                            // Replace the entire call expression with just the string literal
-                            *expr = Expr::Lit(Lit::Str(str_lit.clone()));
-                            return;
-                        }
-                    }
-                }
-                // Recursively check arguments
-                for arg in &mut call.args {
-                    self.fix_keyframes_calls(&mut arg.expr);
-                }
-            }
-            // Recursively check other expression types as needed
-            _ => {}
-        }
     }
     
-    /// Fix CSS map call expressions to remove () from object literals
-    fn fix_css_map_calls(&mut self, expr: &mut Expr) {
-        match expr {
-            Expr::Call(call) => {
-                // Check if this is a CSS map call that was transformed
-                if let Callee::Expr(callee_expr) = &call.callee {
-                    if let Expr::Object(obj_lit) = callee_expr.as_ref() {
-                        // If the callee is an object and args are empty (CSS map pattern)
-                        if call.args.is_empty() {
-                            // Replace the entire call expression with just the object literal
-                            *expr = Expr::Object(obj_lit.clone());
-                            return;
-                        }
-                    }
-                }
-                // Recursively check arguments
-                for arg in &mut call.args {
-                    self.fix_css_map_calls(&mut arg.expr);
-                }
-            }
-            // Recursively check other expression types as needed
-            _ => {}
-        }
-    }
-    
-    /// Add runtime imports to the module if transformations occurred
     fn add_runtime_imports(&mut self, module: &mut Module) {
-        // Add CSS variable declarations first
         for (var_name, css_text) in &self.collected_css_sheets {
             let css_declaration = ModuleItem::Stmt(Stmt::Decl(Decl::Var(Box::new(VarDecl {
                 span: Default::default(),
@@ -545,7 +260,6 @@ impl CompiledTransform {
             module.body.insert(0, css_declaration);
         }
         
-        // Check if we need to add runtime imports
         if self.state.compiled_imports.is_some() || !self.collected_css_sheets.is_empty() {
             let runtime_import = ModuleItem::ModuleDecl(ModuleDecl::Import(ImportDecl {
                 span: Default::default(),
@@ -581,523 +295,186 @@ impl CompiledTransform {
                 phase: Default::default(),
             }));
             
-            // Add the runtime import at the beginning
             module.body.insert(0, runtime_import);
-        }
-    }
-
-    /// Try to resolve an identifier to a static value using the module resolver
-    fn try_resolve_identifier(&mut self, ident_name: &str) -> Option<Expr> {
-        // First check if this identifier was pre-resolved by the bundler
-        if let Some(resolved_value) = self.options.resolved_imports.get(ident_name) {
-            if let Some(expr) = json_value_to_expr(resolved_value) {
-                return Some(expr);
-            }
-        }
-        
-        // Then check if this is a local variable
-        if let Some(local_value) = self.state.local_variables.get(ident_name) {
-            return local_value.to_expr();
-        }
-        
-        // Finally check module resolver (for fixture data in tests)
-        if let Some(import_path) = self.state.external_imports.get(ident_name) {
-            if let Some(module_resolver) = &mut self.state.module_resolver {
-                if let Some(export_value) = module_resolver.get_export(import_path, ident_name) {
-                    return export_value.to_expr();
-                }
-            }
-        }
-        
-        None
-    }
-
-    /// Try to resolve a call expression (like colorMixin())
-    #[allow(dead_code)]
-    fn try_resolve_call_expr(&mut self, call: &CallExpr) -> Option<Expr> {
-        // Check if this is a simple function call with no arguments
-        if call.args.is_empty() {
-            if let Callee::Expr(callee_expr) = &call.callee {
-                if let Expr::Ident(ident) = callee_expr.as_ref() {
-                    let func_name = ident.sym.to_string();
-                    
-                    // Check if this is an imported function
-                    if let Some(import_path) = self.state.external_imports.get(&func_name) {
-                        if let Some(module_resolver) = &mut self.state.module_resolver {
-                            if let Some(export_value) = module_resolver.get_export(import_path, &func_name) {
-                                if let ExportValue::Function(_) = export_value {
-                                    return export_value.to_expr();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        None
-    }
-
-    /// Try to resolve a member expression (like colors.primary or obj.prop)
-    #[allow(dead_code)]
-    fn try_resolve_member_expr(&mut self, member_expr: &MemberExpr) -> Option<Expr> {
-        // Handle simple property access like obj.prop
-        if let Expr::Ident(obj_ident) = member_expr.obj.as_ref() {
-            let obj_name = obj_ident.sym.to_string();
-            
-            if let MemberProp::Ident(prop_ident) = &member_expr.prop {
-                let prop_name = prop_ident.sym.to_string();
-                
-                // Check local variables first
-                if let Some(local_value) = self.state.local_variables.get(&obj_name) {
-                    if let ExportValue::Object(obj_map) = local_value {
-                        if let Some(prop_value) = obj_map.get(&prop_name) {
-                            return prop_value.to_expr();
-                        }
-                    }
-                }
-                
-                // Check imported variables
-                if let Some(import_path) = self.state.external_imports.get(&obj_name) {
-                    if let Some(module_resolver) = &mut self.state.module_resolver {
-                        if let Some(export_value) = module_resolver.get_export(import_path, &obj_name) {
-                            if let ExportValue::Object(obj_map) = export_value {
-                                if let Some(prop_value) = obj_map.get(&prop_name) {
-                                    return prop_value.to_expr();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        None
-    }
-
-    /// Track local variable declarations for static analysis
-    fn track_local_variable(&mut self, name: &str, value: &Expr) {
-        let export_value = match value {
-            Expr::Lit(Lit::Str(s)) => {
-                ExportValue::String(s.value.to_string())
-            }
-            Expr::Lit(Lit::Num(n)) => {
-                ExportValue::Number(n.value)
-            }
-            Expr::Lit(Lit::Bool(b)) => {
-                ExportValue::Boolean(b.value)
-            }
-            Expr::Object(obj_lit) => {
-                let mut obj_map = HashMap::new();
-                
-                for prop in &obj_lit.props {
-                    if let PropOrSpread::Prop(prop_box) = prop {
-                        if let Prop::KeyValue(kv) = prop_box.as_ref() {
-                            if let PropName::Ident(key_ident) = &kv.key {
-                                let key_name = key_ident.sym.to_string();
-                                
-                                match kv.value.as_ref() {
-                                    Expr::Lit(Lit::Str(s)) => {
-                                        obj_map.insert(key_name, ExportValue::String(s.value.to_string()));
-                                    }
-                                    Expr::Lit(Lit::Num(n)) => {
-                                        obj_map.insert(key_name, ExportValue::Number(n.value));
-                                    }
-                                    Expr::Lit(Lit::Bool(b)) => {
-                                        obj_map.insert(key_name, ExportValue::Boolean(b.value));
-                                    }
-                                    _ => {
-                                        obj_map.insert(key_name, ExportValue::Dynamic);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                ExportValue::Object(obj_map)
-            }
-            _ => {
-                ExportValue::Dynamic
-            }
-        };
-        
-        self.state.local_variables.insert(name.to_string(), export_value);
-    }
-
-    /// Try to resolve a template literal with imported variables
-    #[allow(dead_code)]
-    fn try_resolve_template_literal(&mut self, tpl: &Tpl) -> Option<String> {
-        if tpl.exprs.len() == 1 && tpl.quasis.len() == 2 {
-            // Simple case: `prefix${variable}suffix`
-            let prefix = &tpl.quasis[0].raw;
-            let suffix = &tpl.quasis[1].raw;
-            
-            if let Expr::Ident(ident) = tpl.exprs[0].as_ref() {
-                let ident_name = ident.sym.to_string();
-                
-                if let Some(resolved_expr) = self.try_resolve_identifier(&ident_name) {
-                    if let Expr::Lit(Lit::Str(str_lit)) = resolved_expr {
-                        return Some(format!("{}{}{}", prefix, str_lit.value, suffix));
-                    }
-                }
-            }
-        }
-        None
-    }
-
-
-
-    /// Recursively resolve imports in an expression
-    fn resolve_expression_imports(&mut self, expr: Expr) -> Option<Expr> {
-        match expr {
-            Expr::Ident(ident) => {
-                let ident_name = ident.sym.to_string();
-                
-                if let Some(resolved) = self.try_resolve_identifier(&ident_name) {
-                    Some(resolved)
-                } else {
-                    Some(Expr::Ident(ident))
-                }
-            }
-            _ => Some(expr),
-        }
-    }
-
-    /// Check if an expression needs import resolution
-    fn expression_needs_resolution(&self, expr: &Expr) -> bool {
-        match expr {
-            Expr::Ident(ident) => {
-                let ident_name = ident.sym.to_string();
-                // Check if this identifier is in our local variables or external imports
-                self.state.local_variables.contains_key(&ident_name) ||
-                self.state.external_imports.contains_key(&ident_name) ||
-                self.options.resolved_imports.contains_key(&ident_name)
-            }
-            _ => false,
-        }
-    }
-
-    /// Generate a unique ID for CSS expressions
-    fn generate_expression_id(&self) -> String {
-        use std::sync::atomic::{AtomicUsize, Ordering};
-        static EXPRESSION_COUNTER: AtomicUsize = AtomicUsize::new(0);
-        
-        let id = EXPRESSION_COUNTER.fetch_add(1, Ordering::Relaxed);
-        format!("css_expr_{}", id)
-    }
-
-    /// First pass: collect CSS expressions that might need import resolution
-    fn collect_css_expressions_pass(&mut self, program: &Program) {
-        match program {
-            Program::Module(module) => self.collect_css_expressions_from_module(module),
-            Program::Script(_) => {}, // Scripts not supported for now
-        }
-    }
-
-    /// Collect CSS expressions from a module
-    fn collect_css_expressions_from_module(&mut self, module: &Module) {
-        for item in &module.body {
-            self.collect_css_expressions_from_module_item(item);
-        }
-    }
-
-    /// Collect CSS expressions from a module item
-    fn collect_css_expressions_from_module_item(&mut self, item: &ModuleItem) {
-        match item {
-            ModuleItem::Stmt(stmt) => self.collect_css_expressions_from_stmt(stmt),
-            ModuleItem::ModuleDecl(_) => {}, // Import/export declarations handled separately
-        }
-    }
-
-    /// Collect CSS expressions from a statement
-    fn collect_css_expressions_from_stmt(&mut self, stmt: &Stmt) {
-        match stmt {
-            Stmt::Decl(decl) => {
-                match decl {
-                    Decl::Var(var_decl) => {
-                        for declarator in &var_decl.decls {
-                            if let Some(init) = &declarator.init {
-                                self.collect_css_expressions_from_expr(init);
-                            }
-                            
-                            // Also track local variables during collection
-                            if let Some(init) = &declarator.init {
-                                if let Pat::Ident(ident) = &declarator.name {
-                                    let var_name = ident.id.sym.to_string();
-                                    self.track_local_variable(&var_name, init);
-                                }
-                            }
-                        }
-                    }
-                    _ => {}
-                }
-            }
-            _ => {}
-        }
-    }
-
-    /// Collect CSS expressions from an expression
-    fn collect_css_expressions_from_expr(&mut self, expr: &Expr) {
-        match expr {
-            Expr::JSXElement(jsx_elem) => {
-                self.collect_css_expressions_from_jsx_element(jsx_elem);
-            }
-            _ => {}
-        }
-    }
-
-    /// Collect CSS expressions from a JSX element
-    fn collect_css_expressions_from_jsx_element(&mut self, jsx_elem: &JSXElement) {
-        // Check for css prop in opening element
-        for attr in &jsx_elem.opening.attrs {
-            if let JSXAttrOrSpread::JSXAttr(jsx_attr) = attr {
-                if let JSXAttrName::Ident(ident) = &jsx_attr.name {
-                    if ident.sym.as_ref() == "css" {
-                        // Found a css prop - check if it needs resolution
-                        if let Some(JSXAttrValue::JSXExprContainer(container)) = &jsx_attr.value {
-                            if let JSXExpr::Expr(expr) = &container.expr {
-                                if self.expression_needs_resolution(expr) {
-                                    // Collect this expression for resolution
-                                    let id = self.generate_expression_id();
-                                    let location = format!("JSX css prop at line {:?}", jsx_elem.span.lo);
-                                    
-                                    self.state.css_expressions_to_resolve.push(CssExpressionToResolve {
-                                        id,
-                                        expression: (**expr).clone(),
-                                        location,
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Recursively check children
-        for child in &jsx_elem.children {
-            if let JSXElementChild::JSXElement(child_elem) = child {
-                self.collect_css_expressions_from_jsx_element(child_elem);
-            }
-        }
-    }
-}
-
-/// Convert a JSON value from the bundler to a SWC expression
-fn json_value_to_expr(value: &serde_json::Value) -> Option<Expr> {
-    use swc_core::common::DUMMY_SP;
-    
-    match value {
-        serde_json::Value::String(s) => Some(Expr::Lit(Lit::Str(Str {
-            span: DUMMY_SP,
-            value: s.clone().into(),
-            raw: None,
-        }))),
-        serde_json::Value::Number(n) => {
-            if let Some(f) = n.as_f64() {
-                Some(Expr::Lit(Lit::Num(Number {
-                    span: DUMMY_SP,
-                    value: f,
-                    raw: None,
-                })))
-            } else {
-                None
-            }
-        }
-        serde_json::Value::Bool(b) => Some(Expr::Lit(Lit::Bool(Bool {
-            span: DUMMY_SP,
-            value: *b,
-        }))),
-        serde_json::Value::Object(obj) => {
-            let mut props = Vec::new();
-            for (key, value) in obj {
-                if let Some(value_expr) = json_value_to_expr(value) {
-                    props.push(PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp {
-                        key: PropName::Ident(Ident::new(key.clone().into(), DUMMY_SP)),
-                        value: Box::new(value_expr),
-                    }))));
-                }
-            }
-            Some(Expr::Object(ObjectLit {
-                span: DUMMY_SP,
-                props,
-            }))
-        }
-        serde_json::Value::Array(arr) => {
-            let mut elems = Vec::new();
-            for value in arr {
-                if let Some(value_expr) = json_value_to_expr(value) {
-                    elems.push(Some(ExprOrSpread {
-                        spread: None,
-                        expr: Box::new(value_expr),
-                    }));
-                }
-            }
-            Some(Expr::Array(ArrayLit {
-                span: DUMMY_SP,
-                elems,
-            }))
-        }
-        serde_json::Value::Null => Some(Expr::Lit(Lit::Null(Null {
-            span: DUMMY_SP,
-        }))),
-    }
-}
-
-impl CompiledTransform {
-    /// Resolve all collected import expressions (called after first pass)
-    fn resolve_import_expressions(&mut self) {
-        // Clone the expressions to resolve to avoid borrowing conflicts
-        let expressions_to_resolve: Vec<_> = self.state.css_expressions_to_resolve.drain(..).collect();
-        
-        for css_expr in expressions_to_resolve {
-            if let Some(resolved) = self.resolve_expression_imports(css_expr.expression) {
-                self.state.resolved_expressions.insert(css_expr.id, resolved);
-            }
         }
     }
 }
 
 impl VisitMut for CompiledTransform {
-    fn visit_mut_program(&mut self, n: &mut Program) {
-        // Initialize transformation state 
-        if let Program::Module(module) = n {
-            // Process imports and pragmas first
-            self.process_imports_and_pragmas(module);
-            // Collect CSS expressions that need resolution
-            self.collect_css_expressions_pass(n);
-            
-            // Resolve import expressions
-            self.resolve_import_expressions();
-        }
-        
-        // Continue with normal transformation
-        n.visit_mut_children_with(self);
-    }
-
     fn visit_mut_module(&mut self, n: &mut Module) {
-        // Check for JSX pragmas and compiled imports
         self.process_imports_and_pragmas(n);
         
-        // First pass: collect variable declarations and mutations without processing CSS
-        self.collect_variable_info(n);
-        
-        // Rebuild the variable context excluding mutated variables
-        self.state.variable_context = crate::utils::variable_context::build_variable_context_from_module_with_mutations(n, &self.state.mutated_variables);
-        
-        // Second pass: process child nodes for transformations with correct variable context
         n.visit_mut_children_with(self);
         
-        // Finalize the module
-        self.finalize_module(n);
+        if self.had_transformations {
+            self.finalize_module(n);
+        }
     }
-
+    
     fn visit_mut_call_expr(&mut self, n: &mut CallExpr) {
-        // Handle different types of call expressions
-        if visitors::styled::visit_styled_call_expr(n, &mut self.state, &mut self.collected_css_sheets) {
-            self.had_transformations = true;
-        } else if visitors::css_map::visit_css_map_call_expr(n, &mut self.state, &mut self.collected_css_sheets) {
-            self.had_transformations = true;
-        } else if visitors::keyframes::visit_keyframes_call_expr(n, &mut self.state, &mut self.collected_css_sheets) {
-            self.had_transformations = true;
-        } else if visitors::css_prop::visit_jsx_call_expr(n, &mut self.state, &mut self.css_content_to_var, &mut self.collected_css_sheets) {
-            self.had_transformations = true;
-        }
-        
-        n.visit_mut_children_with(self);
-    }
-    
-    fn visit_mut_tagged_tpl(&mut self, n: &mut TaggedTpl) {
-        // Handle different types of tagged templates
-        if visitors::styled::visit_styled_tagged_template(n, &mut self.state, &mut self.collected_css_sheets) {
-            self.had_transformations = true;
-        } else if visitors::keyframes::visit_keyframes_tagged_template(n, &mut self.state, &mut self.collected_css_sheets) {
-            self.had_transformations = true;
-        }
-        
-        n.visit_mut_children_with(self);
-    }
-    
-    fn visit_mut_jsx_element(&mut self, n: &mut JSXElement) {
-        // Process ClassNames components first
-        if visitors::class_names::visit_class_names_jsx_element(n, &mut self.state, &mut self.collected_css_sheets) {
-            self.had_transformations = true;
-        }
-        // Process CSS props in JSX elements
-        else if visitors::css_prop::visit_css_prop_jsx_opening_element(&mut n.opening, &mut self.state, &mut self.css_content_to_var, &mut self.collected_css_sheets) {
-            self.had_transformations = true;
-        }
-        
-        n.visit_mut_children_with(self);
-    }
-
-    fn visit_mut_var_decl(&mut self, n: &mut VarDecl) {
-        // Store the current variable declaration kind
-        self.current_var_decl_kind = Some(n.kind);
-        
-        // Visit children (including declarators)
-        n.visit_mut_children_with(self);
-        
-        // Clear the current variable declaration kind
-        self.current_var_decl_kind = None;
-    }
-
-    fn visit_mut_var_declarator(&mut self, n: &mut VarDeclarator) {
-        // Track local variables before visiting children
-        if let Pat::Ident(ident) = &n.name {
-            if let Some(init_expr) = &n.init {
-                let var_name = ident.id.sym.to_string();
-                
-                // Track the declaration kind
-                if let Some(decl_kind) = self.current_var_decl_kind {
-                    self.state.variable_declaration_kinds.insert(var_name.clone(), decl_kind);
+        let mut handled_css_prop = false;
+        let is_react_jsx_like = match &n.callee {
+            Callee::Expr(callee_expr) => match callee_expr.as_ref() {
+                Expr::Member(MemberExpr { prop, .. }) => {
+                    matches!(prop, MemberProp::Ident(id) if id.sym.as_ref() == "createElement")
                 }
-                
-                // Track all variables for static analysis initially
-                // We'll filter out actually mutated ones during evaluation
-                self.track_local_variable(&var_name, init_expr);
+                Expr::Ident(id) => id.sym.as_ref() == "jsx" || id.sym.as_ref() == "jsxs",
+                _ => false,
+            },
+            _ => false,
+        };
+        if is_react_jsx_like && n.args.len() >= 2 {
+            if let Expr::Object(props_obj) = n.args[1].expr.as_ref() {
+                let mut css_prop_index: Option<usize> = None;
+                let mut css_expr: Option<Box<Expr>> = None;
+                for (i, prop) in props_obj.props.iter().enumerate() {
+                    if let PropOrSpread::Prop(p) = prop {
+                        if let Prop::KeyValue(kv) = p.as_ref() {
+                            if matches!(&kv.key, PropName::Ident(id) if id.sym.as_ref() == "css") {
+                                css_prop_index = Some(i);
+                                css_expr = Some(kv.value.clone());
+                                break;
+                            }
+                        }
+                    }
+                }
+                if let (Some(idx), Some(expr_box)) = (css_prop_index, css_expr) {
+                    if matches!(expr_box.as_ref(), Expr::Member(_) | Expr::Ident(_)) {
+                        let ax_call = Expr::Call(CallExpr {
+                            span: Default::default(),
+                            callee: Callee::Expr(Box::new(Expr::Ident(utils::ast::create_ident("ax")))),
+                            args: vec![ExprOrSpread {
+                                spread: None,
+                                expr: Box::new(Expr::Array(ArrayLit { span: Default::default(), elems: vec![Some(ExprOrSpread { spread: None, expr: expr_box })] })),
+                            }],
+                            type_args: None,
+                        });
+                        if let Expr::Object(obj_mut) = n.args[1].expr.as_mut() {
+                            obj_mut.props.remove(idx);
+                            obj_mut.props.push(PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp {
+                                key: PropName::Ident(utils::ast::create_ident("className")),
+                                value: Box::new(ax_call),
+                            }))));
+                        }
+                        handled_css_prop = true;
+                    } else {
+                        if self.options.strict_mode {
+                            if let Err(msg) = visitors::css::is_static_expression_strict(expr_box.as_ref()) {
+                                panic!("Strict mode error in css prop: {}", msg);
+                            }
+                        }
+                        let atomic_rules = utils::css_builder::build_atomic_rules_from_expression(expr_box.as_ref());
+                        if !atomic_rules.is_empty() {
+                            let (sheets, class_names) = utils::css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
+                            for sheet in sheets { let _ = self.add_css_sheet_with_deduplication(&sheet); }
+                            if !class_names.is_empty() {
+                                let ax_call = Expr::Call(CallExpr {
+                                    span: Default::default(),
+                                    callee: Callee::Expr(Box::new(Expr::Ident(utils::ast::create_ident("ax")))),
+                                    args: vec![ExprOrSpread { spread: None, expr: Box::new(Expr::Array(ArrayLit { span: Default::default(), elems: class_names.into_iter().map(|cn| Some(ExprOrSpread { spread: None, expr: Box::new(Expr::Lit(Lit::Str(utils::ast::create_str_lit(&cn)))) })).collect() })) }],
+                                    type_args: None,
+                                });
+                                if let Expr::Object(obj_mut) = n.args[1].expr.as_mut() {
+                                    obj_mut.props.remove(idx);
+                                    obj_mut.props.push(PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp { key: PropName::Ident(utils::ast::create_ident("className")), value: Box::new(ax_call) }))));
+                                }
+                            } else if let Expr::Object(obj_mut) = n.args[1].expr.as_mut() {
+                                obj_mut.props.remove(idx);
+                            }
+                            handled_css_prop = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if handled_css_prop {
+            self.had_transformations = true;
+            return;
+        }
+
+
+        n.visit_mut_children_with(self);
+    }
+
+    fn visit_mut_expr(&mut self, n: &mut Expr) {
+        if let Expr::Call(call) = n {
+            if visitors::css::is_css_call(call, &self.state) {
+                if self.options.strict_mode {
+                    if let Some(first) = call.args.get(0) {
+                        if let Err(msg) = visitors::css::is_static_expression_strict(&first.expr) {
+                            panic!("Strict mode error in css(): {}", msg);
+                        }
+                    }
+                }
+                if let Some(first) = call.args.get(0) {
+                    let atomic_rules = utils::css_builder::build_atomic_rules_from_expression(&first.expr);
+                    if !atomic_rules.is_empty() {
+                        let (sheets, _class_names) = utils::css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
+                        for sheet in sheets { let _ = self.add_css_sheet_with_deduplication(&sheet); }
+                        *n = Expr::Lit(Lit::Null(Null { span: Default::default() }));
+                        self.had_transformations = true;
+                        return;
+                    }
+                }
+            }
+            if visitors::css_map::is_css_map_call(call, &self.state) {
+                if call.args.len() != 1 { panic!("cssMap() must receive exactly one argument"); }
+                let obj = match call.args[0].expr.as_ref() { Expr::Object(o) => o, _ => panic!("cssMap() argument must be an object") };
+                if self.options.strict_mode {
+                    if let Err(msg) = visitors::css_map::is_static_css_map_strict(obj) { panic!("Strict mode error in cssMap(): {}", msg); }
+                }
+                let mut props_out: Vec<PropOrSpread> = Vec::new();
+                for prop in &obj.props {
+                    if let PropOrSpread::Prop(p) = prop {
+                        if let Prop::KeyValue(kv) = p.as_ref() {
+                            let key_name = match &kv.key { PropName::Ident(i) => i.sym.to_string(), PropName::Str(s) => s.value.to_string(), _ => continue };
+                            if let Expr::Object(variant_obj) = &*kv.value {
+                                let atomic_rules = utils::css_builder::build_atomic_rules_from_object(variant_obj);
+                                if !atomic_rules.is_empty() {
+                                    let (sheets, class_names) = utils::css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
+                                    for sheet in sheets { let _ = self.add_css_sheet_with_deduplication(&sheet); }
+                                    let combined = class_names.join(" ");
+                                    props_out.push(PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp { key: PropName::Ident(utils::ast::create_ident(&key_name)), value: Box::new(Expr::Lit(Lit::Str(utils::ast::create_str_lit(&combined)))) }))));
+                                } else {
+                                    props_out.push(PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp { key: PropName::Ident(utils::ast::create_ident(&key_name)), value: Box::new(Expr::Lit(Lit::Str(utils::ast::create_str_lit("")))) }))));
+                                }
+                            }
+                        }
+                    }
+                }
+                *n = Expr::Object(ObjectLit { span: Default::default(), props: props_out });
+                self.had_transformations = true;
+                return;
+            }
+        }
+        n.visit_mut_children_with(self);
+    }
+    
+    fn visit_mut_jsx_opening_element(&mut self, n: &mut JSXOpeningElement) {
+        if visitors::css::visit_css_prop_jsx_element(
+            n, 
+            &mut self.state, 
+            &mut self.css_content_to_var, 
+            &mut self.collected_css_sheets,
+            &self.options
+        ) {
+            self.had_transformations = true;
+        }
+        else if self.options.process_xcss {
+            if visitors::xcss_prop::visit_xcss_prop_jsx_opening_element(
+                n, 
+                &mut self.state, 
+                &mut self.css_content_to_var, 
+                &mut self.collected_css_sheets,
+                &self.options
+            ) {
+                self.had_transformations = true;
             }
         }
         
         n.visit_mut_children_with(self);
-        
-        // Post-process keyframes and CSS map call expressions to fix format
-        if let Some(init_expr) = &mut n.init {
-            self.fix_keyframes_calls(&mut **init_expr);
-            self.fix_css_map_calls(&mut **init_expr);
-        }
     }
-
-    /// Track assignments to variables (mutations)
-    fn visit_mut_assign_expr(&mut self, n: &mut AssignExpr) {
-        // Check if this is an assignment to a variable
-        match &n.left {
-            AssignTarget::Simple(SimpleAssignTarget::Ident(ident)) => {
-                let var_name = ident.id.sym.to_string();
-                // Mark this variable as mutated
-                self.state.mutated_variables.insert(var_name);
-            }
-            _ => {}
-        }
-        
-        n.visit_mut_children_with(self);
-    }
-
-    /// Track update expressions (mutations like var++, ++var, var--, --var)
-    fn visit_mut_update_expr(&mut self, n: &mut UpdateExpr) {
-        if let Expr::Ident(ident) = &*n.arg {
-            let var_name = ident.sym.to_string();
-            // Mark this variable as mutated
-            self.state.mutated_variables.insert(var_name);
-        }
-        
-        n.visit_mut_children_with(self);
-    }
-
-
-
-
 }
 
 #[plugin_transform]
@@ -1116,8 +493,9 @@ pub fn process_transform(program: Program, metadata: TransformPluginProgramMetad
         css_content_to_var: HashMap::new(),
         state,
         had_transformations: false,
-        current_var_decl_kind: None,
     };
     
-    program.fold_with(&mut as_folder(&mut transform))
+    let transformed = program.fold_with(&mut as_folder(&mut transform));
+    
+    transformed
 }

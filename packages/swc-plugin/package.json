@@ -1,7 +1,7 @@
 {
   "name": "@compiled/swc-plugin",
   "version": "0.1.0",
-  "description": "A performant SWC plugin for Compiled CSS-in-JS library for React.",
+  "description": "A performant SWC plugin for Compiled CSS-in-JS library focusing on xcss-prop functionality.",
   "keywords": [
     "swc",
     "plugin",
@@ -10,7 +10,8 @@
     "react",
     "wasm",
     "rust",
-    "performance"
+    "performance",
+    "xcss-prop"
   ],
   "homepage": "https://compiledcssinjs.com/docs/pkg-swc-plugin",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -26,7 +27,7 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "compiled_swc.wasm",
+    "compiled_swc_plugin.wasm",
     "README.md"
   ],
   "scripts": {
@@ -35,16 +36,17 @@
     "build:rust": "cargo build --target wasm32-wasip1 --release",
     "build:ts": "tsc",
     "check": "cargo check",
-    "clean": "cargo clean && rm -rf dist",
+    "clean": "cargo clean && rm -rf dist compiled_swc_plugin.wasm",
     "clippy": "cargo clippy",
-    "copy-wasm": "cp target/wasm32-wasip1/release/compiled_swc.wasm ./compiled_swc.wasm",
+    "copy-wasm": "cp target/wasm32-wasip1/release/compiled_swc_plugin.wasm ./compiled_swc_plugin.wasm",
     "fmt": "cargo fmt",
-    "prepare": "npm run build && npm run copy-wasm",
-    "test": "cargo test --lib --bins --tests",
+    "prepare": "npm run build",
+    "pretest": "npm run build:rust && npm run copy-wasm",
+    "test": "jest --no-cache --config ./jest.config.js",
     "test:ts": "tsc --noEmit"
   },
   "devDependencies": {
-    "@swc/core": "^1.7.35",
+    "@swc/core": "1.3.107",
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0"
   },
@@ -56,6 +58,6 @@
     "node": ">=16.0.0"
   },
   "swc": {
-    "plugin": "./target/wasm32-wasip1/release/compiled_swc.wasm"
+    "plugin": "./target/wasm32-wasip1/release/compiled_swc_plugin.wasm"
   }
 }
