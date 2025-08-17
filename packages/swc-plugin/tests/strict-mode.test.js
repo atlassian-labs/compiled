@@ -494,7 +494,7 @@ describe('Strict Mode - SWC Plugin', () => {
       `);
     });
 
-    it('should not transform styled components', async () => {
+    it('should error on styled tagged template usage', async () => {
       const code = `
         import { styled } from '@compiled/react';
         
@@ -502,37 +502,11 @@ describe('Strict Mode - SWC Plugin', () => {
           color: red;
         \`;
       `;
-
-      const out = await transformResultString(code);
-      expect(out).toMatchInlineSnapshot(`
-        "function _tagged_template_literal(strings, raw) {
-            if (!raw) {
-                raw = strings.slice(0);
-            }
-            return Object.freeze(Object.defineProperties(strings, {
-                raw: {
-                    value: Object.freeze(raw)
-                }
-            }));
-        }
-        function _templateObject() {
-            var data = _tagged_template_literal([
-                "\\n          color: red;\\n        "
-            ]);
-            _templateObject = function _templateObject() {
-                return data;
-            };
-            return data;
-        }
-        import * as React from "react";
-        import { ax, ix, CC, CS } from "@compiled/react/runtime";
-        import { styled } from "@compiled/react";
-        var Button = styled.div(_templateObject());
-        "
-      `);
+      const error = await expectToThrow(code);
+      expectToContain(String(error), 'RuntimeError: unreachable');
     });
 
-    it('should not transform styled component calls', async () => {
+    it('should error on styled component factory calls', async () => {
       const code = `
         import { styled } from '@compiled/react';
         
@@ -540,17 +514,8 @@ describe('Strict Mode - SWC Plugin', () => {
           color: 'red'
         });
       `;
-
-      const out = await transformResultString(code);
-      expect(out).toMatchInlineSnapshot(`
-        "import * as React from "react";
-        import { ax, ix, CC, CS } from "@compiled/react/runtime";
-        import { styled } from "@compiled/react";
-        var Button = styled("div")({
-            color: "red"
-        });
-        "
-      `);
+      const error = await expectToThrow(code);
+      expectToContain(String(error), 'RuntimeError: unreachable');
     });
   });
 

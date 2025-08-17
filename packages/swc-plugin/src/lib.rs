@@ -172,6 +172,12 @@ impl CompiledTransform {
                                         }
                                         imports.css_map.as_mut().unwrap().push(local_name);
                                     }
+                                    "styled" => {
+                                        if imports.styled.is_none() {
+                                            imports.styled = Some(Vec::new());
+                                        }
+                                        imports.styled.as_mut().unwrap().push(local_name);
+                                    }
                                     _ => {
                                         should_remove_import = false;
                                     }
@@ -312,6 +318,27 @@ impl VisitMut for CompiledTransform {
     }
     
     fn visit_mut_call_expr(&mut self, n: &mut CallExpr) {
+        // Error on any styled usage (styled.tag`...` or styled(tag)(...))
+        if let Some(ref imports) = self.state.compiled_imports {
+            if let Some(ref styled_locals) = imports.styled {
+                // Check for styled("div")(...) pattern or styled.tag(...) pattern
+                let is_styled_call = match &n.callee {
+                    Callee::Expr(expr) => match expr.as_ref() {
+                        Expr::Ident(ident) => styled_locals.contains(&ident.sym.to_string()),
+                        Expr::Member(MemberExpr { obj, .. }) => match obj.as_ref() {
+                            Expr::Ident(ident) => styled_locals.contains(&ident.sym.to_string()),
+                            _ => false,
+                        },
+                        _ => false,
+                    },
+                    _ => false,
+                };
+                if is_styled_call {
+                    panic!("styled API is not supported by the SWC plugin. Please use css/cssMap or the Babel plugin.");
+                }
+            }
+        }
+
         let mut handled_css_prop = false;
         let is_react_jsx_like = match &n.callee {
             Callee::Expr(callee_expr) => match callee_expr.as_ref() {
@@ -398,6 +425,20 @@ impl VisitMut for CompiledTransform {
     }
 
     fn visit_mut_expr(&mut self, n: &mut Expr) {
+        // Error on any styled tagged template usage like styled.div`...`
+        if let Expr::TaggedTpl(tagged) = n {
+            if let Expr::Member(MemberExpr { obj, .. }) = tagged.tag.as_ref() {
+                if let Expr::Ident(ident) = obj.as_ref() {
+                    if let Some(ref imports) = self.state.compiled_imports {
+                        if let Some(ref styled_locals) = imports.styled {
+                            if styled_locals.contains(&ident.sym.to_string()) {
+                                panic!("styled API is not supported by the SWC plugin. Please use css/cssMap or the Babel plugin.");
+                            }
+                        }
+                    }
+                }
+            }
+        }
         if let Expr::Call(call) = n {
             if visitors::css::is_css_call(call, &self.state) {
                 if self.options.strict_mode {

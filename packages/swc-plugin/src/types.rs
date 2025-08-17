@@ -17,6 +17,7 @@ pub struct TransformState {
 pub struct CompiledImports {
     pub css: Option<Vec<String>>,
     pub css_map: Option<Vec<String>>,
+    pub styled: Option<Vec<String>>,
 }
 
 impl CompiledImports {
@@ -24,6 +25,7 @@ impl CompiledImports {
         Self {
             css: None,
             css_map: None,
+            styled: None,
         }
     }
 }
