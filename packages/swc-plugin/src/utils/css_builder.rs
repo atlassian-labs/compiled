@@ -128,7 +128,9 @@ fn number_to_css_value(property_name: &str, num_lit: &Number) -> String {
     } else {
         format!("{}", num_lit.value)
     };
-    if needs_px_unit(property_name) && !value.contains("px") {
+    // Mirror semantics from our JS implementation: only add 'px' for numeric values
+    // that are non-zero and not unitless for the given property.
+    if num_lit.value != 0.0 && needs_px_unit(property_name) && !value.contains("px") {
         format!("{}px", value)
     } else {
         value
@@ -196,12 +198,60 @@ pub fn build_atomic_rules_from_object(obj: &ObjectLit) -> Vec<AtomicRule> {
 }
 
 fn needs_px_unit(property: &str) -> bool {
-    matches!(property, 
-        "width" | "height" | "top" | "right" | "bottom" | "left" | 
-        "margin" | "marginTop" | "marginRight" | "marginBottom" | "marginLeft" |
-        "padding" | "paddingTop" | "paddingRight" | "paddingBottom" | "paddingLeft" |
-        "fontSize" | "borderWidth" | "borderRadius" | "maxWidth" | "maxHeight" |
-        "minWidth" | "minHeight"
+    !is_unitless_property(property)
+}
+
+// Based on React's isUnitlessNumber list and aligned with our TS implementation
+// at packages/css/src/utils/css-property.ts
+fn is_unitless_property(property: &str) -> bool {
+    matches!(property,
+        // Core/unitless numbers
+        "animationIterationCount" |
+        "basePalette" |
+        "borderImageOutset" |
+        "borderImageSlice" |
+        "borderImageWidth" |
+        "boxFlex" |
+        "boxFlexGroup" |
+        "boxOrdinalGroup" |
+        "columnCount" |
+        "columns" |
+        "flex" |
+        "flexGrow" |
+        "flexPositive" |
+        "flexShrink" |
+        "flexNegative" |
+        "flexOrder" |
+        "fontSizeAdjust" |
+        "fontWeight" |
+        "gridArea" |
+        "gridRow" |
+        "gridRowEnd" |
+        "gridRowSpan" |
+        "gridRowStart" |
+        "gridColumn" |
+        "gridColumnEnd" |
+        "gridColumnSpan" |
+        "gridColumnStart" |
+        "lineClamp" |
+        "lineHeight" |
+        "opacity" |
+        "order" |
+        "orphans" |
+        "tabSize" |
+        "WebkitLineClamp" |
+        "widows" |
+        "zIndex" |
+        "zoom" |
+        // SVG-related properties
+        "fillOpacity" |
+        "floodOpacity" |
+        "stopOpacity" |
+        "strokeDasharray" |
+        "strokeDashoffset" |
+        "strokeMiterlimit" |
+        "strokeOpacity" |
+        "strokeWidth"
     )
 }
 
@@ -239,4 +289,96 @@ pub fn transform_atomic_rules_to_sheets(rules: &[AtomicRule]) -> (Vec<String>, V
 pub fn transform_atomic_rules_for_xcss(rules: &[AtomicRule]) -> (Vec<String>, Vec<String>) {
     let (sheets, class_names) = transform_atomic_rules_to_sheets(rules);
     (sheets, class_names)
+}
+
+// Sorting logic to match Babel/TS pipeline behaviour in packages/css:
+// - Non @-rules come first, sorted by pseudo-selector LVFHA ordering
+// - Then @-rules, sorted by at-rule name then query (basic alphabetical)
+//   Note: Advanced media query numeric sorting is not implemented here yet.
+pub fn sort_atomic_rules(rules: &mut Vec<AtomicRule>, sort_at_rules_enabled: bool) {
+    // Style order per packages/css/src/utils/style-ordering.ts
+    const STYLE_ORDER: [&str; 7] = [
+        ":link",
+        ":visited",
+        ":focus-within",
+        ":focus",
+        ":focus-visible",
+        ":hover",
+        ":active",
+    ];
+
+    fn pseudo_score(selector_suffix: &Option<String>) -> i32 {
+        if let Some(suffix) = selector_suffix {
+            for (idx, pseudo) in STYLE_ORDER.iter().enumerate() {
+                if suffix.ends_with(pseudo) {
+                    return (idx as i32) + 1;
+                }
+            }
+        }
+        0
+    }
+
+    fn parse_at_rule(at_rule: &str) -> (String, String) {
+        // Expect formats like "@media screen" or "@supports (display:grid)"
+        if !at_rule.starts_with('@') {
+            return (String::new(), String::new());
+        }
+        let mut name = String::new();
+        let mut rest = String::new();
+        let mut seen_space = false;
+        for ch in at_rule.chars().skip(1) { // skip '@'
+            if !seen_space {
+                if ch.is_whitespace() || ch == '{' {
+                    seen_space = true;
+                } else {
+                    name.push(ch);
+                }
+            } else {
+                if ch == '{' { break; }
+                rest.push(ch);
+            }
+        }
+        (name, rest.trim().to_string())
+    }
+
+    // Partition into non-at and at rules
+    let mut non_at_rules: Vec<AtomicRule> = Vec::new();
+    let mut at_rules: Vec<AtomicRule> = Vec::new();
+    for r in rules.iter().cloned() {
+        if r.at_rule.is_some() { at_rules.push(r); } else { non_at_rules.push(r); }
+    }
+
+    // Sort non-at rules so that base rules (score 0) come first, then pseudos in DESC LVFHA order.
+    non_at_rules.sort_by(|a, b| {
+        let sa = pseudo_score(&a.selector_suffix);
+        let sb = pseudo_score(&b.selector_suffix);
+        match (sa == 0, sb == 0) {
+            (true, true) => std::cmp::Ordering::Equal,
+            (true, false) => std::cmp::Ordering::Less,
+            (false, true) => std::cmp::Ordering::Greater,
+            _ => sb.cmp(&sa), // higher scores first
+        }
+    });
+
+    // Sort at-rules
+    if sort_at_rules_enabled {
+        at_rules.sort_by(|a, b| {
+            let a_rule = a.at_rule.as_deref().unwrap_or("");
+            let b_rule = b.at_rule.as_deref().unwrap_or("");
+            let (a_name, a_query) = parse_at_rule(a_rule);
+            let (b_name, b_query) = parse_at_rule(b_rule);
+            match a_name.cmp(&b_name) {
+                std::cmp::Ordering::Equal => match a_query.cmp(&b_query) {
+                    std::cmp::Ordering::Equal => pseudo_score(&a.selector_suffix).cmp(&pseudo_score(&b.selector_suffix)),
+                    other => other,
+                },
+                other => other,
+            }
+        });
+    }
+
+    // Rebuild input vector
+    rules.clear();
+    rules.extend(non_at_rules.into_iter());
+    rules.extend(at_rules.into_iter());
 }

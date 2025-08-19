@@ -639,5 +639,57 @@ describe('Strict Mode - SWC Plugin', () => {
         "
       `);
     });
+
+    it('should match Babel sorting: base, pseudo (LVFHA), then at-rules', async () => {
+      const code = `
+        import '@compiled/react';
+        <div css={{
+          color: 'black',
+          ':focus': { color: 'green' },
+          ':hover': { color: 'blue' },
+          ':active': { color: 'purple' },
+          '@media screen': { color: 'red' },
+        }} />
+      `;
+      const out = await transformResultString(code);
+      // In emitted code, declarations are inserted in reverse, so we expect:
+      // @media block first, then :focus, then :hover, then :active, then base rule last.
+      const baseIdx = out.indexOf('{color:black}');
+      const focusIdx = out.indexOf(':focus{color:green}');
+      const hoverIdx = out.indexOf(':hover{color:blue}');
+      const activeIdx = out.indexOf(':active{color:purple}');
+      const mediaIdx = out.indexOf('@media screen{');
+
+      expect(mediaIdx).toBeGreaterThan(-1);
+      expect(focusIdx).toBeGreaterThan(mediaIdx);
+      expect(hoverIdx).toBeGreaterThan(focusIdx);
+      expect(activeIdx).toBeGreaterThan(hoverIdx);
+      expect(baseIdx).toBeGreaterThan(activeIdx);
+    });
+
+    it('should emit atomic CSS and deduplicate identical declarations', async () => {
+      const code = `
+        import '@compiled/react';
+        <> 
+          <div css={{ color: 'black', fontSize: 12 }} />
+          <div css={{ color: 'black', fontSize: 12 }} />
+        </>
+      `;
+
+      // Transform with SWC
+      const swcOut = await transformResultString(code);
+
+      // Basic atomic shape expectations (no combined rule)
+      expectNotToContain(swcOut, '{color:black;font-size:12px}');
+      expectToContain(swcOut, ['{color:black}', '{font-size:12px}']);
+
+      // Count occurrences for SWC
+      const swcColorCount = (swcOut.match(/\{color:black\}/g) || []).length;
+      const swcFontSizeCount = (swcOut.match(/\{font-size:12px\}/g) || []).length;
+
+      // SWC should dedupe: each unique declaration should appear only once
+      expect(swcColorCount).toBe(1);
+      expect(swcFontSizeCount).toBe(1);
+    });
   });
 });

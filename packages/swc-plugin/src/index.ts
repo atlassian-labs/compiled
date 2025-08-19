@@ -9,7 +9,7 @@ import * as path from 'path';
 export interface CompiledSwcPluginOptions {
   /**
    * Import sources to transform CSS-in-JS from
-   * @default ["@compiled/react"]
+   * @default ["@compiled/react", "@atlaskit/css"]
    */
   importSources?: string[];
 
@@ -94,7 +94,7 @@ export function createPluginConfig(
   options: CompiledSwcPluginOptions = {}
 ): CompiledSwcPluginOptions {
   return {
-    importSources: options.importSources || ['@compiled/react'],
+    importSources: options.importSources || ['@compiled/react', '@atlaskit/css'],
     development: options.development || false,
     runtimeImport: options.runtimeImport || '@compiled/react/runtime',
     classNamePrefix: options.classNamePrefix || '_',

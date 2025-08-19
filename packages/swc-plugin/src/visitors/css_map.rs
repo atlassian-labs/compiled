@@ -149,7 +149,8 @@ pub fn visit_css_map_call_expr(
                 };
                 
                 if let Expr::Object(variant_obj) = &*kv.value {
-                    let atomic_rules = css_builder::build_atomic_rules_from_object(variant_obj);
+                    let mut atomic_rules = css_builder::build_atomic_rules_from_object(variant_obj);
+                    css_builder::sort_atomic_rules(&mut atomic_rules, options.sort_at_rules);
                     if !atomic_rules.is_empty() {
                         let (sheets, class_names) = css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
                         

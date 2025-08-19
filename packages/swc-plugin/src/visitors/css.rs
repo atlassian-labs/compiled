@@ -49,19 +49,19 @@ pub fn is_static_object_strict(obj: &ObjectLit) -> Result<(), String> {
                                 is_static_object_strict(nested_obj)?;
                             }
                             Expr::Ident(_) => {
-                                return Err("Dynamic variables are not supported in strict mode".to_string());
+                                return Err("Dynamic variables are not supported in strict mode in the SWC Plugin".to_string());
                             }
                             Expr::Call(_) => {
-                                return Err("Function calls are not supported in strict mode".to_string());
+                                return Err("Function calls are not supported in strict mode in the SWC Plugin".to_string());
                             }
                             Expr::Member(_) => {
-                                return Err("Member expressions are not supported in strict mode".to_string());
+                                return Err("Member expressions are not supported in strict mode in the SWC Plugin".to_string());
                             }
                             Expr::Bin(_) => {
-                                return Err("Binary expressions are not supported in strict mode".to_string());
+                                return Err("Binary expressions are not supported in strict mode in the SWC Plugin".to_string());
                             }
                             Expr::Cond(_) => {
-                                return Err("Conditional expressions are not supported in strict mode".to_string());
+                                return Err("Conditional expressions are not supported in strict mode in the SWC Plugin".to_string());
                             }
                             _ => {
                                 return Err(format!("Expression type not supported in strict mode: {:?}", kv.value));
@@ -118,8 +118,9 @@ pub fn visit_css_call_expr(
         }
     }
     
-    let atomic_rules = css_builder::build_atomic_rules_from_expression(css_arg);
+    let mut atomic_rules = css_builder::build_atomic_rules_from_expression(css_arg);
     if !atomic_rules.is_empty() {
+        css_builder::sort_atomic_rules(&mut atomic_rules, options.sort_at_rules);
         let (sheets, _class_names) = css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
         
         for sheet in sheets {
@@ -249,8 +250,9 @@ pub fn visit_css_prop_jsx_element(
         }
     }
 
-    let atomic_rules = css_builder::build_atomic_rules_from_expression(expr);
+    let mut atomic_rules = css_builder::build_atomic_rules_from_expression(expr);
     if !atomic_rules.is_empty() {
+        css_builder::sort_atomic_rules(&mut atomic_rules, options.sort_at_rules);
         let (sheets, class_names) = css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
         
         for sheet in sheets {
