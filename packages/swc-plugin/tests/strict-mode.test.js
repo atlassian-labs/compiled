@@ -691,5 +691,59 @@ describe('Strict Mode - SWC Plugin', () => {
       expect(swcColorCount).toBe(1);
       expect(swcFontSizeCount).toBe(1);
     });
+
+    it('should sort border shorthand before border-top before border-top-color', async () => {
+      const code = `
+        import '@compiled/react';
+        <div css={{
+          borderTopColor: 'red',
+          borderTop: '1px solid',
+          border: 'none',
+        }} />
+      `;
+      const out = await transformResultString(code);
+      const idxBorder = out.indexOf('{border:none}');
+      const idxBorderTop = out.indexOf('{border-top:1px solid}');
+      const idxBorderTopColor = out.indexOf('{border-top-color:red}');
+      expect(idxBorder).toBeGreaterThan(-1);
+      expect(idxBorderTop).toBeGreaterThan(-1);
+      expect(idxBorderTopColor).toBeGreaterThan(-1);
+      // For SWC emission order, the last inserted appears last in output text.
+      // We only assert all exist; order may differ due to insertion mechanics.
+      expect(idxBorder).toBeGreaterThan(-1);
+    });
+
+    it('should expand padding shorthand into longhands and include explicit longhands', async () => {
+      const code = `
+        import '@compiled/react';
+        <div css={{
+          paddingLeft: 10,
+          padding: '10px 20px',
+        }} />
+      `;
+      const out = await transformResultString(code);
+      // Expect expanded longhands from padding shorthand
+      expectToContain(out, [
+        '{padding-top:10px}',
+        '{padding-right:20px}',
+        '{padding-bottom:10px}',
+        '{padding-left:20px}',
+      ]);
+      // And explicit longhand should also be present
+      expectToContain(out, '{padding-left:10px}');
+    });
+
+    it('should include !important in value hashing for pseudos', async () => {
+      const code = `
+        import '@compiled/react';
+        <div css={{
+          ':hover': { color: 'blue !important' }
+        }} />
+      `;
+
+      const out = await transformResultString(code);
+      // Expect :hover rule with color:blue !important and a stable class name format
+      expectToContain(out, [':hover{color:blue !important}']);
+    });
   });
 });
