@@ -1,0 +1,40 @@
+[package]
+name = "compiled-swc-plugin2"
+version = "0.0.1"
+edition = "2024"
+description = "SWC plugin v2 for Compiled CSS-in-JS focusing on css/cssMap"
+license = "Apache-2.0"
+
+[package.metadata.swc]
+plugin = true
+
+[lib]
+name = "compiled_swc_plugin2"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+swc_core = { version = "0.90", features = [
+  "ecma_plugin_transform",
+  "ecma_utils",
+  "ecma_visit",
+  "ecma_codegen",
+  "__parser",
+  "ecma_parser",
+] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+regex = "1.10"
+
+[dev-dependencies]
+swc_core = { version = "0.90", features = [
+  "testing_transform",
+  "__parser",
+  "ecma_parser",
+  "ecma_codegen",
+] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = "z"
+

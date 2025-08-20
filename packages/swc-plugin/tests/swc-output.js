@@ -48,15 +48,23 @@ async function transformResultString(code, options = {}) {
 function normalizeOutput(str) {
   return str.replace(
     /packages\/swc-plugin\/compiled_swc_plugin\.wasm/g,
-    'packages/swc-plugin2/compiled_swc_plugin2.wasm'
+    'packages/swc-plugin/compiled_swc_plugin.wasm'
   );
 }
 
 const code = `
-    import '@compiled/react';
-    <div css={{
-      '&:hover': { color: 'blue !important' }
-    }} />
+  import { css } from '@compiled/react';
+
+  const styles = css({
+    color: 'red',
+    '& + label ~ div': {
+        color: 'blue'
+    },
+  });
+
+  <div
+    css={[styles]}
+  />
 `;
 const out = await transformResultString(code);
 console.log(out);
