@@ -1,48 +1,35 @@
 use swc_core::ecma::ast::*;
 use crate::types::TransformState;
+use blake3;
 
-fn to_base36(mut num: u32) -> String {
-    if num == 0 { return "0".to_string(); }
-    let digits = b"0123456789abcdefghijklmnopqrstuvwxyz";
-    let mut result = Vec::new();
-    while num > 0 { result.push(digits[(num % 36) as usize] as char); num /= 36; }
-    result.reverse();
-    result.into_iter().collect()
+fn base36_bytes(mut v: u128) -> String {
+    const DIGITS: &[u8; 36] = b"0123456789abcdefghijklmnopqrstuvwxyz";
+    let mut buf = [0u8; 32];
+    let mut i = buf.len();
+    if v == 0 { return "0".to_string(); }
+    while v > 0 {
+        let rem = (v % 36) as usize;
+        v /= 36;
+        i -= 1;
+        buf[i] = DIGITS[rem];
+    }
+    String::from_utf8(buf[i..].to_vec()).unwrap()
 }
 
-pub fn hash(input: &str) -> String { hash_murmurhash2(input, 0) }
-
-pub fn generate_css_hash(input: &str) -> String { format!("_{}", hash(input)) }
-
-fn hash_murmurhash2(s: &str, seed: u32) -> String {
-    let utf16_chars: Vec<u16> = s.encode_utf16().collect();
-    let mut l = utf16_chars.len() as u32;
-    let mut h = seed ^ l;
-    let mut i = 0;
-    while l >= 4 {
-        let mut k = (utf16_chars[i] as u32 & 0xff)
-            | ((utf16_chars[i + 1] as u32 & 0xff) << 8)
-            | ((utf16_chars[i + 2] as u32 & 0xff) << 16)
-            | ((utf16_chars[i + 3] as u32 & 0xff) << 24);
-        k = (k & 0xffff).wrapping_mul(0x5bd1e995)
-            .wrapping_add(((k >> 16).wrapping_mul(0x5bd1e995) & 0xffff) << 16);
-        k ^= k >> 24;
-        k = (k & 0xffff).wrapping_mul(0x5bd1e995)
-            .wrapping_add(((k >> 16).wrapping_mul(0x5bd1e995) & 0xffff) << 16);
-        h = (h & 0xffff).wrapping_mul(0x5bd1e995)
-            .wrapping_add(((h >> 16).wrapping_mul(0x5bd1e995) & 0xffff) << 16);
-        h ^= k;
-        l -= 4;
-        i += 4;
-    }
-    match l {
-        3 => { h ^= (utf16_chars[i + 2] as u32 & 0xff) << 16; h ^= (utf16_chars[i + 1] as u32 & 0xff) << 8; h ^= utf16_chars[i] as u32 & 0xff; h = (h & 0xffff).wrapping_mul(0x5bd1e995).wrapping_add(((h >> 16).wrapping_mul(0x5bd1e995) & 0xffff) << 16); }
-        2 => { h ^= (utf16_chars[i + 1] as u32 & 0xff) << 8; h ^= utf16_chars[i] as u32 & 0xff; h = (h & 0xffff).wrapping_mul(0x5bd1e995).wrapping_add(((h >> 16).wrapping_mul(0x5bd1e995) & 0xffff) << 16); }
-        1 => { h ^= utf16_chars[i] as u32 & 0xff; h = (h & 0xffff).wrapping_mul(0x5bd1e995).wrapping_add(((h >> 16).wrapping_mul(0x5bd1e995) & 0xffff) << 16); }
-        _ => {}
-    }
-    h ^= h >> 13; h = (h & 0xffff).wrapping_mul(0x5bd1e995).wrapping_add(((h >> 16).wrapping_mul(0x5bd1e995) & 0xffff) << 16); h ^= h >> 15; to_base36(h)
+fn blake3_base36(input: &str, out_len: usize) -> String {
+    let hash = blake3::hash(input.as_bytes());
+    // take 16 bytes (128 bits) then encode base36
+    let mut arr = [0u8; 16];
+    arr.copy_from_slice(&hash.as_bytes()[..16]);
+    let v = u128::from_be_bytes(arr);
+    let mut s = base36_bytes(v);
+    if s.len() > out_len { s.truncate(out_len); }
+    s
 }
+
+pub fn hash(input: &str) -> String { blake3_base36(input, 8) }
+
+pub fn generate_css_hash(input: &str) -> String { format!("_{}", blake3_base36(input, 8)) }
 
 pub fn build_class_name(hash: &str, prefix: Option<&str>) -> String { match prefix { Some(p) => format!("{}{}", p, hash), None => hash.to_string(), } }
 
