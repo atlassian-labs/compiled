@@ -13,9 +13,9 @@ describe('swc-plugin2 snapshots', () => {
     const out = await transformResultString(code);
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      var _2 = "._1ez813q2:hover{color:blue}";
-      var _ = "._9ad05scu{color:red}";
-      var styles = null;
+      const _2 = "._1ez813q2:hover{color:blue}";
+      const _ = "._9ad05scu{color:red}";
+      const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
               "_9ad05scu _1ez813q2"
@@ -36,9 +36,9 @@ describe('swc-plugin2 snapshots', () => {
     const out = await transformResultString(code);
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      var _2 = "._9ad013q2{color:blue}";
-      var _ = "._9ad05scu{color:red}";
-      var variants = {
+      const _2 = "._9ad013q2{color:blue}";
+      const _ = "._9ad05scu{color:red}";
+      const variants = {
           primary: "_9ad05scu",
           secondary: "_9ad013q2"
       };
@@ -58,9 +58,9 @@ describe('swc-plugin2 snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      var _2 = "._1tv213q2+label~div{color:blue}";
-      var _ = "._9ad0191l{color:red!important}";
-      var styles = null;
+      const _2 = "._1tv213q2+label~div{color:blue}";
+      const _ = "._9ad0191l{color:red!important}";
+      const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
               "_9ad0191l",
@@ -85,9 +85,9 @@ describe('swc-plugin2 snapshots', () => {
     const out = await transformResultString(code, { extract: false });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      var _2 = "._1tv213q2+label~div{color:blue}";
-      var _ = "._9ad0191l{color:red!important}";
-      var styles = null;
+      const _2 = "._1tv213q2+label~div{color:blue}";
+      const _ = "._9ad0191l{color:red!important}";
+      const styles = null;
       /*#__PURE__*/ /*#__PURE__*/ React.createElement(CC, null, /*#__PURE__*/ React.createElement(CS, null, [
           _,
           _2
@@ -125,11 +125,11 @@ describe('swc-plugin2 snapshots', () => {
     const out = await transformResultString(code, { extract: false });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      var _2 = "._1z0o13q2:hover+label{color:blue}";
-      var _ = "._9ad0191l{color:red!important}";
-      import React from "react";
-      var styles = null;
-      var Button = function() {
+      const _2 = "._1z0o13q2:hover+label{color:blue}";
+      const _ = "._9ad0191l{color:red!important}";
+      import React from 'react';
+      const styles = null;
+      const Button = ()=>{
           return /*#__PURE__*/ React.createElement("div", null, /*#__PURE__*/ React.createElement(CC, null, /*#__PURE__*/ React.createElement(CS, null, [
               _,
               _2
@@ -167,10 +167,10 @@ describe('swc-plugin2 snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      var _3 = "@media screen{._1fjmexct{font-size:16px}}";
-      var _2 = "@media screen{._iapw13q2{color:blue}}";
-      var _ = "._9ad05scu{color:red}";
-      var styles = null;
+      const _3 = "@media screen{._1fjmexct{font-size:16px}}";
+      const _2 = "@media screen{._iapw13q2{color:blue}}";
+      const _ = "._9ad05scu{color:red}";
+      const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
               "_9ad05scu",
@@ -197,9 +197,9 @@ describe('swc-plugin2 snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      var _2 = "@media screen{._1fjmexct{font-size:16px}}";
-      var _ = "@media screen{._iapw5scu{color:red}}";
-      var variants = {
+      const _2 = "@media screen{._1fjmexct{font-size:16px}}";
+      const _ = "@media screen{._iapw5scu{color:red}}";
+      const variants = {
           primary: "_iapw5scu",
           secondary: "_1fjmexct"
       };
@@ -220,10 +220,10 @@ describe('swc-plugin2 snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      var _3 = "._5f6oidpf{margin-top:0}";
-      var _2 = "._185qcs5v{line-height:2}";
-      var _ = "._1knuexct{font-size:16px}";
-      var styles = null;
+      const _3 = "._5f6oidpf{margin-top:0}";
+      const _2 = "._185qcs5v{line-height:2}";
+      const _ = "._1knuexct{font-size:16px}";
+      const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
               "_1knuexct",
@@ -246,11 +246,11 @@ describe('swc-plugin2 snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      var _4 = "._1d4pgktf{padding-left:20px}";
-      var _3 = "._udmg19bv{padding-bottom:10px}";
-      var _2 = "._1k6rgktf{padding-right:20px}";
-      var _ = "._8pk819bv{padding-top:10px}";
-      var styles = null;
+      const _4 = "._1d4pgktf{padding-left:20px}";
+      const _3 = "._udmg19bv{padding-bottom:10px}";
+      const _2 = "._1k6rgktf{padding-right:20px}";
+      const _ = "._8pk819bv{padding-top:10px}";
+      const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
               "_8pk819bv",
@@ -275,12 +275,12 @@ describe('swc-plugin2 snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      var _5 = "._1d4p1y44{padding-left:4px}";
-      var _4 = "._1d4pgktf{padding-left:20px}";
-      var _3 = "._udmg19bv{padding-bottom:10px}";
-      var _2 = "._1k6rgktf{padding-right:20px}";
-      var _ = "._8pk819bv{padding-top:10px}";
-      var styles = null;
+      const _5 = "._1d4p1y44{padding-left:4px}";
+      const _4 = "._1d4pgktf{padding-left:20px}";
+      const _3 = "._udmg19bv{padding-bottom:10px}";
+      const _2 = "._1k6rgktf{padding-right:20px}";
+      const _ = "._8pk819bv{padding-top:10px}";
+      const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
               "_8pk819bv",
@@ -292,6 +292,26 @@ describe('swc-plugin2 snapshots', () => {
       });
       "
     `);
+  });
+
+  it('styled basic object call (extract:true) without CC/CS', async () => {
+    const code = `
+      import { styled } from '@compiled/react';
+      const Button = styled.div({ color: 'red' });
+    `;
+    const out = await transformResultString(code, { extract: true });
+    expect(out).toContain('const _ = "._9ad05scu{color:red}"');
+    expect(out).toContain('forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>');
+    expect(out).toContain('className: ax([');
+  });
+
+  it('styled basic object call (extract:false) wraps with CC/CS', async () => {
+    const code = `
+      import { styled } from '@compiled/react';
+      const Button = styled.div({ color: 'red' });
+    `;
+    const out = await transformResultString(code, { extract: false });
+    expect(out).toContain('import { ax, ix, CC, CS } from');
   });
 
   it('deduplicates identical styles across multiple elements', async () => {
@@ -307,9 +327,9 @@ describe('swc-plugin2 snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      var _ = "._9ad05scu{color:red}";
-      var a = null;
-      var b = null;
+      const _ = "._9ad05scu{color:red}";
+      const a = null;
+      const b = null;
       /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("div", {
           className: ax([
               "_9ad05scu"

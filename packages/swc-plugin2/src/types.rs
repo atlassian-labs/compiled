@@ -12,11 +12,12 @@ pub struct TransformState {
 pub struct CompiledImports {
 	pub css: Option<Vec<String>>,   // local names for css
 	pub css_map: Option<Vec<String>>, // local names for cssMap
+	pub styled: Option<Vec<String>>, // local names for styled
 }
 
 impl CompiledImports {
 	pub fn new() -> Self {
-		Self { css: None, css_map: None }
+		Self { css: None, css_map: None, styled: None }
 	}
 }
 

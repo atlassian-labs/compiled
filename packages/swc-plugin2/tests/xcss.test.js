@@ -7,10 +7,10 @@ describe('xcss prop (swc-plugin2)', () => {
     `;
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
-      "/*#__PURE__*/ import { ax, ix } from \"@compiled/react/runtime\";
-      var _ = \"._9ad05scu{color:red}\";
+      "/*#__PURE__*/ import { ax, ix } from "@compiled/react/runtime";
+      const _ = "._9ad05scu{color:red}";
       React.createElement(Component, {
-          xcss: \"_9ad05scu\"
+          xcss: "_9ad05scu"
       });
       "
     `);
@@ -31,10 +31,10 @@ describe('xcss prop (swc-plugin2)', () => {
     `;
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
-      "/*#__PURE__*/ import { ax, ix } from \"@compiled/react/runtime\";
-      var _ = \"._9ad05scu{color:red}\";
+      "/*#__PURE__*/ import { ax, ix } from "@compiled/react/runtime";
+      const _ = "._9ad05scu{color:red}";
       React.createElement(Component, {
-          innerXcss: \"_9ad05scu\"
+          innerXcss: "_9ad05scu"
       });
       "
     `);
@@ -48,10 +48,10 @@ describe('xcss prop (swc-plugin2)', () => {
     `;
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
-      "import { ax, ix } from \"@compiled/react/runtime\";
-      var _ = \"._9ad05scu{color:red}\";
-      var styles = {
-          primary: \"_9ad05scu\"
+      "import { ax, ix } from "@compiled/react/runtime";
+      const _ = "._9ad05scu{color:red}";
+      const styles = {
+          primary: "_9ad05scu"
       };
       /*#__PURE__*/ React.createElement(Component, {
           xcss: styles.primary
@@ -68,12 +68,12 @@ describe('xcss prop (swc-plugin2)', () => {
     `;
     const out = await transformResultString(code, { extract: false });
     expect(out).toMatchInlineSnapshot(`
-      "import { ax, ix, CC, CS } from \"@compiled/react/runtime\";
-      var _2 = \"._9ad013q2{color:blue}\";
-      var _ = \"._9ad05scu{color:red}\";
-      var styles = {
-          primary: \"_9ad05scu\",
-          secondary: \"_9ad013q2\"
+      "import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _2 = "._9ad013q2{color:blue}";
+      const _ = "._9ad05scu{color:red}";
+      const styles = {
+          primary: "_9ad05scu",
+          secondary: "_9ad013q2"
       };
       /*#__PURE__*/ /*#__PURE__*/ React.createElement(CC, null, /*#__PURE__*/ React.createElement(CS, null, [
           _,
@@ -93,13 +93,13 @@ describe('xcss prop (swc-plugin2)', () => {
     `;
     const out = await transformResultString(code, { extract: false });
     expect(out).toMatchInlineSnapshot(`
-      "import { ax, ix, CC, CS } from \"@compiled/react/runtime\";
-      var _2 = \"._9ad013q2{color:blue}\";
-      var _ = \"._9ad05scu{color:red}\";
-      import { cssMap, j } from \"@compiled/react\";
-      var styles = {
-          primary: \"_9ad05scu\",
-          secondary: \"_9ad013q2\"
+      "import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _2 = "._9ad013q2{color:blue}";
+      const _ = "._9ad05scu{color:red}";
+      import { cssMap, j } from '@compiled/react';
+      const styles = {
+          primary: "_9ad05scu",
+          secondary: "_9ad013q2"
       };
       /*#__PURE__*/ React.createElement(Component, {
           xcss: j(isPrimary && styles.primary, !isPrimary && styles.secondary)
@@ -116,10 +116,10 @@ describe('xcss prop (swc-plugin2)', () => {
     `;
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
-      "import { ax, ix } from \"@compiled/react/runtime\";
-      var _ = \"._9ad05scu{color:red}\";
-      var styles = {
-          primary: \"_9ad05scu\"
+      "import { ax, ix } from "@compiled/react/runtime";
+      const _ = "._9ad05scu{color:red}";
+      const styles = {
+          primary: "_9ad05scu"
       };
       /*#__PURE__*/ React.createElement(Component, {
           xcss: styles.primary
@@ -148,10 +148,10 @@ describe('xcss prop (swc-plugin2)', () => {
     `;
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
-      "import { Box, xcss } from \"@atlaskit/primitives\";
+      "import { Box, xcss } from '@atlaskit/primitives';
       /*#__PURE__*/ React.createElement(Box, {
           xcss: xcss({
-              color: \"red\"
+              color: 'red'
           })
       });
       "
@@ -175,15 +175,15 @@ describe('xcss prop (swc-plugin2)', () => {
     `;
     const out = await transformResultString(code, { extract: false });
     expect(out).toMatchInlineSnapshot(`
-      "import { ax, ix, CC, CS } from \"@compiled/react/runtime\";
-      var _2 = \"._9ad013q2{color:blue}\";
-      var _ = \"._9ad05scu{color:red}\";
-      import Button from \"@atlaskit/button\";
-      var stylesOne = {
-          text: \"_9ad05scu\"
+      "import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _2 = "._9ad013q2{color:blue}";
+      const _ = "._9ad05scu{color:red}";
+      import Button from '@atlaskit/button';
+      const stylesOne = {
+          text: "_9ad05scu"
       };
-      var stylesTwo = {
-          text: \"_9ad013q2\"
+      const stylesTwo = {
+          text: "_9ad013q2"
       };
       export function Mixed() {
           return /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement(CC, null, /*#__PURE__*/ React.createElement(CS, null, [
@@ -217,18 +217,18 @@ describe('xcss prop (swc-plugin2)', () => {
     `;
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
-      "/** @jsx jsx */ import { ax, ix } from \"@compiled/react/runtime\";
-      var _ = \"._9ad032ev{color:pink}\";
-      import { jsx } from \"@emotion/react\";
-      import { Box, xcss } from \"@atlaskit/primitives\";
+      "/** @jsx jsx */ import { ax, ix } from "@compiled/react/runtime";
+      const _ = "._9ad032ev{color:pink}";
+      import { jsx } from '@emotion/react';
+      import { Box, xcss } from '@atlaskit/primitives';
       export function Mixed() {
           return /*#__PURE__*/ jsx(React.Fragment, null, /*#__PURE__*/ jsx(Box, {
               xcss: xcss({
-                  color: \"red\"
+                  color: 'red'
               })
-          }), /*#__PURE__*/ jsx(\"div\", {
+          }), /*#__PURE__*/ jsx("div", {
               className: ax([
-                  \"_9ad032ev\"
+                  "_9ad032ev"
               ])
           }));
       }
@@ -252,17 +252,17 @@ describe('xcss prop (swc-plugin2)', () => {
     `;
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
-      "/** @jsx jsx */ import { ax, ix } from \"@compiled/react/runtime\";
-      var _2 = \"._9ad032ev{color:pink}\";
-      var _ = \"._9ad05scu{color:red}\";
-      import { jsx } from \"@emotion/react\";
-      import { Box } from \"@atlaskit/primitives\";
+      "/** @jsx jsx */ import { ax, ix } from "@compiled/react/runtime";
+      const _2 = "._9ad032ev{color:pink}";
+      const _ = "._9ad05scu{color:red}";
+      import { jsx } from '@emotion/react';
+      import { Box } from '@atlaskit/primitives';
       export function Mixed() {
           return /*#__PURE__*/ jsx(React.Fragment, null, /*#__PURE__*/ jsx(Box, {
-              xcss: \"_9ad05scu\"
-          }), /*#__PURE__*/ jsx(\"div\", {
+              xcss: "_9ad05scu"
+          }), /*#__PURE__*/ jsx("div", {
               className: ax([
-                  \"_9ad032ev\"
+                  "_9ad032ev"
               ])
           }));
       }

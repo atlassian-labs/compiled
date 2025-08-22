@@ -12,6 +12,8 @@ async function transform(code, options = {}) {
   const result = await swc.transform(code, {
     filename: 'test.tsx',
     jsc: {
+      target: 'es2020',
+      externalHelpers: true,
       parser: { syntax: 'typescript', tsx: true },
       experimental: { plugins: [[wasmPath, pluginOptions]] },
     },

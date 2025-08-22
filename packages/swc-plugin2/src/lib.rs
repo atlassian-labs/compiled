@@ -13,6 +13,7 @@ mod visitors;
 pub mod utils;
 
 use types::*;
+// (No AssignTarget imports needed after removing displayName injection for now)
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CompiledOptions2 {
@@ -42,6 +43,7 @@ pub struct Transform2 {
     pub css_content_to_var: HashMap<String, String>,
     pub state: TransformState,
     pub had_transformations: bool,
+    pub used_styled: bool,
 }
 
 impl Transform2 {
@@ -97,7 +99,13 @@ impl Transform2 {
                                         if imports.css_map.is_none() { imports.css_map = Some(Vec::new()); }
                                         imports.css_map.as_mut().unwrap().push(local_name);
                                     }
-                                    // No styled support
+                                    "styled" => {
+                                        if self.state.compiled_imports.is_none() { self.state.compiled_imports = Some(CompiledImports::new()); }
+                                        if self.state.compiled_imports.as_ref().unwrap().styled.is_none() { self.state.compiled_imports.as_mut().unwrap().styled = Some(Vec::new()); }
+                                        self.state.compiled_imports.as_mut().unwrap().styled.as_mut().unwrap().push(local_name);
+                                        // Keep the import in place
+                                        should_remove_import = false;
+                                    }
                                     _ => { should_remove_import = false; }
                                 }
                             }
@@ -153,6 +161,19 @@ impl Transform2 {
             }));
             module.body.insert(0, runtime_import);
         }
+
+        // If styled components were generated, import forwardRef from react
+        if self.used_styled {
+            let fr_import = ModuleItem::ModuleDecl(ModuleDecl::Import(ImportDecl {
+                span: Default::default(),
+                specifiers: vec![ImportSpecifier::Named(ImportNamedSpecifier { span: Default::default(), local: utils::ast::create_ident("forwardRef"), imported: None, is_type_only: false })],
+                src: Box::new(utils::ast::create_str_lit("react")),
+                type_only: false,
+                with: None,
+                phase: Default::default(),
+            }));
+            module.body.insert(0, fr_import);
+        }
     }
 }
 
@@ -169,9 +190,9 @@ impl VisitMut for Transform2 {
     }
 
     fn visit_mut_expr(&mut self, n: &mut Expr) {
-        if let Expr::Call(call) = n {
+        if let Expr::Call(call) = n.clone() {
             // Handle css()
-            if visitors::css::is_css_call(call, &self.state) {
+            if visitors::css::is_css_call(&call, &self.state) {
                 if let Some(first) = call.args.get(0) {
                     let atomic_rules = utils::css_builder::build_atomic_rules_from_expression(&first.expr);
                     if !atomic_rules.is_empty() {
@@ -183,8 +204,17 @@ impl VisitMut for Transform2 {
                     }
                 }
             }
+            // Handle styled.div({...}) or styled(Component)({...}) or styled('div')({...})
+            if visitors::styled::is_styled_call(&call, &self.state) {
+                let (did, used_styled) = visitors::styled::transform_styled_call(n, &call, &mut self.state, &mut self.css_content_to_var, &mut self.collected_css_sheets, self.options.extract);
+                if did {
+                    if used_styled { self.used_styled = true; }
+                    self.had_transformations = true;
+                    return;
+                }
+            }
             // Handle cssMap()
-            if visitors::css_map::is_css_map_call(call, &self.state) {
+            if visitors::css_map::is_css_map_call(&call, &self.state) {
                 if call.args.len() == 1 {
                     if let Expr::Object(obj) = call.args[0].expr.as_ref() {
                         let mut props_out: Vec<PropOrSpread> = Vec::new();
@@ -219,6 +249,33 @@ impl VisitMut for Transform2 {
     fn visit_mut_var_declarator(&mut self, n: &mut VarDeclarator) {
         // Track `const styles = css({...})` to map identifier -> class names
         if let Some(init_expr) = &mut n.init {
+            // After other transforms, attach displayName to styled components created via forwardRef
+            // Detect init as forwardRef call and wrap in IIFE to set displayName in dev
+            // Inject displayName in development for styled forwardRef outputs
+            if let Expr::Call(call) = init_expr.as_ref() {
+                let is_forward_ref = matches!(&call.callee, Callee::Expr(expr) if matches!(expr.as_ref(), Expr::Ident(id) if id.sym.as_ref()=="forwardRef"));
+                if is_forward_ref {
+                    if let Pat::Ident(binding) = &n.name {
+                        let comp_name = binding.id.sym.to_string();
+                        let tmp_ident = utils::ast::create_ident("__cmplc");
+                        let inner_call_expr = (*init_expr.clone()).clone();
+                        // const __cmplc = forwardRef(...)
+                        let decl = Stmt::Decl(Decl::Var(Box::new(VarDecl { span: Default::default(), kind: VarDeclKind::Const, declare: false, decls: vec![VarDeclarator { span: Default::default(), name: Pat::Ident(BindingIdent { id: tmp_ident.clone(), type_ann: None }), init: Some(Box::new(inner_call_expr)), definite: false }] })));
+                        // if (process.env.NODE_ENV !== 'production') { Object.defineProperty(__cmplc, 'displayName', { value: '<Name>' }); }
+                        let prod_check = Expr::Bin(BinExpr { span: Default::default(), op: BinaryOp::NotEqEq, left: Box::new(Expr::Member(MemberExpr { span: Default::default(), obj: Box::new(Expr::Member(MemberExpr { span: Default::default(), obj: Box::new(Expr::Ident(utils::ast::create_ident("process"))), prop: MemberProp::Ident(utils::ast::create_ident("env")) })), prop: MemberProp::Ident(utils::ast::create_ident("NODE_ENV")) })), right: Box::new(Expr::Lit(Lit::Str(utils::ast::create_str_lit("production")))) });
+                        let define_prop_call = Expr::Call(CallExpr { span: Default::default(), callee: Callee::Expr(Box::new(Expr::Member(MemberExpr { span: Default::default(), obj: Box::new(Expr::Ident(utils::ast::create_ident("Object"))), prop: MemberProp::Ident(utils::ast::create_ident("defineProperty")) }))), args: vec![
+                            ExprOrSpread { spread: None, expr: Box::new(Expr::Ident(tmp_ident.clone())) },
+                            ExprOrSpread { spread: None, expr: Box::new(Expr::Lit(Lit::Str(utils::ast::create_str_lit("displayName")))) },
+                            ExprOrSpread { spread: None, expr: Box::new(Expr::Object(ObjectLit { span: Default::default(), props: vec![PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp { key: PropName::Ident(utils::ast::create_ident("value")), value: Box::new(Expr::Lit(Lit::Str(utils::ast::create_str_lit(&comp_name)))) })))] })) },
+                        ], type_args: None });
+                        let if_stmt = Stmt::If(IfStmt { span: Default::default(), test: Box::new(prod_check), cons: Box::new(Stmt::Block(BlockStmt { span: Default::default(), stmts: vec![Stmt::Expr(ExprStmt { span: Default::default(), expr: Box::new(define_prop_call) })] })), alt: None });
+                        let ret = Stmt::Return(ReturnStmt { span: Default::default(), arg: Some(Box::new(Expr::Ident(tmp_ident.clone()))) });
+                        let body = BlockStmt { span: Default::default(), stmts: vec![decl, if_stmt, ret] };
+                        let iife = Expr::Call(CallExpr { span: Default::default(), callee: Callee::Expr(Box::new(Expr::Arrow(ArrowExpr { span: Default::default(), params: vec![], body: Box::new(BlockStmtOrExpr::BlockStmt(body)), is_async: false, is_generator: false, type_params: None, return_type: None }))), args: vec![], type_args: None });
+                        *init_expr = Box::new(iife);
+                    }
+                }
+            }
             // First pass: extract info without mutating borrowed init_expr
             let mut css_assignment: Option<(Vec<String>, Vec<String>)> = None;
             let mut css_map_assignment: Option<(Vec<PropOrSpread>, std::collections::HashMap<String, types::CssMapVariantInfo>)> = None;
@@ -527,6 +584,7 @@ pub fn process_transform(program: Program, metadata: TransformPluginProgramMetad
         css_content_to_var: HashMap::new(),
         state,
         had_transformations: false,
+        used_styled: false,
     };
 
     let transformed = program.fold_with(&mut as_folder(&mut transform));
