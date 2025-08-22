@@ -93,6 +93,10 @@ fn fold_static_expr(expr: &Expr, state: &TransformState) -> Expr {
     match expr {
         Expr::Lit(Lit::Str(_)) | Expr::Lit(Lit::Num(_)) | Expr::Object(_) => expr.clone(),
         Expr::Ident(id) => {
+            // If identifier references a compiled keyframes binding, inline its name
+            if let Some(info) = state.keyframes_by_ident.get(&id.sym.to_string()) {
+                return Expr::Lit(Lit::Str(Str { span: id.span, value: info.name.clone().into(), raw: None }));
+            }
             let resolved = resolve_identifier(id, state);
             fold_static_expr(resolved, state)
         }
@@ -155,7 +159,14 @@ fn collect_atomic_rules_from_object(obj: &ObjectLit, parent_selector: Option<Str
         match prop {
             PropOrSpread::Prop(prop_box) => if let Prop::KeyValue(kv) = prop_box.as_ref() {
             let key_name = match &kv.key { PropName::Ident(ident) => ident.sym.to_string(), PropName::Str(str_lit) => str_lit.value.to_string(), _ => continue };
-            let base_expr: &Expr = match &*kv.value { Expr::Ident(id) => resolve_identifier(id, state), other => other };
+            let base_expr: &Expr = match &*kv.value {
+                Expr::Ident(id) => {
+                    // If this ident is a keyframes reference, keep as Ident so folding can inline name
+                    if state.keyframes_by_ident.contains_key(&id.sym.to_string()) { &*kv.value }
+                    else { resolve_identifier(id, state) }
+                }
+                other => other
+            };
             let folded_expr = fold_static_expr(base_expr, state);
             match &folded_expr {
                 Expr::Lit(Lit::Str(str_lit)) => {
@@ -283,7 +294,7 @@ pub fn transform_atomic_rules_to_sheets(rules: &[AtomicRule]) -> (Vec<String>, V
     (sheets, class_names)
 }
 
-fn compact_declaration(decl: &str) -> String {
+pub fn compact_declaration(decl: &str) -> String {
     // Remove spaces around ':' and before '!important'
     // Example: "color: red !important" -> "color:red!important"
     let mut out = String::new();
@@ -306,6 +317,36 @@ fn normalize_value_important(val: &str) -> String {
         format!("{}!important", base.trim_end())
     } else {
         trimmed.to_string()
+    }
+}
+
+pub fn should_quote_content_value(raw: &str) -> bool {
+    let v = raw.trim();
+    if v.is_empty() { return true; }
+    let first = v.chars().next().unwrap();
+    let last = v.chars().last().unwrap();
+    if (first == '\'' && last == '\'') || (first == '"' && last == '"') { return false; }
+    // Keywords/functions that should not be quoted
+    let lower = v.to_lowercase();
+    let keywords = [
+        "none", "inherit", "initial", "revert", "unset",
+        "open-quote", "close-quote", "no-open-quote", "no-close-quote",
+    ];
+    if keywords.iter().any(|k| lower == *k) { return false; }
+    let fn_prefixes = [
+        "url(", "image-set(", "linear-gradient(", "counter(", "counters(", "attr("
+    ];
+    if fn_prefixes.iter().any(|p| lower.starts_with(p)) { return false; }
+    // If value contains open-quote + counter(...) combined, do not quote
+    if lower.contains("counter(") && lower.contains("open-quote") { return false; }
+    true
+}
+
+pub fn maybe_quote_content_value(raw: &str) -> String {
+    if should_quote_content_value(raw) {
+        format!("\"{}\"", raw)
+    } else {
+        raw.to_string()
     }
 }
 

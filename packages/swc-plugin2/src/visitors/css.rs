@@ -1,5 +1,6 @@
 use crate::types::TransformState;
 use crate::utils::{css_builder, ast};
+use crate::types::KeyframeVarSpec;
 use swc_core::{
     common::DUMMY_SP,
     ecma::ast::*,

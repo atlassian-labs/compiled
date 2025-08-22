@@ -216,8 +216,17 @@ pub fn transform_styled_call(
                             out_vars.push((var_name.clone(), call_expr, suffix, prefix));
                             new_props.push(PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp { key: kv.key.clone(), value: Box::new(Expr::Lit(Lit::Str(Str { span: Default::default(), value: css_var_ref.into(), raw: None }))) }))));
                         }
-                        Expr::Lit(Lit::Str(_)) | Expr::Lit(Lit::Num(_)) => {
-                            // keep as-is
+                        Expr::Lit(Lit::Str(s)) => {
+                            let key_lower = key_name.to_lowercase();
+                            if key_lower == "content" {
+                                let val = s.value.to_string();
+                                let quoted = crate::utils::css_builder::maybe_quote_content_value(&val);
+                                new_props.push(PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp { key: kv.key.clone(), value: Box::new(Expr::Lit(Lit::Str(Str { span: s.span, value: quoted.into(), raw: None }))) }))));
+                            } else {
+                                new_props.push(p.clone());
+                            }
+                        }
+                        Expr::Lit(Lit::Num(_)) => {
                             new_props.push(p.clone());
                         }
                         _ => {

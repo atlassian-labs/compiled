@@ -106,6 +106,12 @@ impl Transform2 {
                                         // Keep the import in place
                                         should_remove_import = false;
                                     }
+                                    "keyframes" => {
+                                        if self.state.compiled_imports.is_none() { self.state.compiled_imports = Some(CompiledImports::new()); }
+                                        if self.state.compiled_imports.as_ref().unwrap().keyframes.is_none() { self.state.compiled_imports.as_mut().unwrap().keyframes = Some(Vec::new()); }
+                                        self.state.compiled_imports.as_mut().unwrap().keyframes.as_mut().unwrap().push(local_name);
+                                        // Remove import specifier to match Babel behavior
+                                    }
                                     _ => { should_remove_import = false; }
                                 }
                             }
@@ -206,6 +212,16 @@ impl VisitMut for Transform2 {
 
     fn visit_mut_expr(&mut self, n: &mut Expr) {
         if let Expr::Call(call) = n.clone() {
+            // keyframes() call handling: transform arg to @keyframes sheet and replace with null
+            if visitors::keyframes::is_keyframes_call(&call, &self.state) {
+                if let Some((sheet_text, kf_name, _var_specs)) = visitors::keyframes::transform_keyframes_call(&call, &mut self.state) {
+                    let var_name = self.add_css_sheet_with_deduplication(&sheet_text);
+                    // Replace with string literal of the animation-name
+                    *n = Expr::Lit(Lit::Str(utils::ast::create_str_lit(&kf_name)));
+                    self.had_transformations = true;
+                    return;
+                }
+            }
             // Handle css()
             if visitors::css::is_css_call(&call, &self.state) {
                 if let Some(first) = call.args.get(0) {
@@ -296,6 +312,18 @@ impl VisitMut for Transform2 {
             let mut css_assignment: Option<(Vec<String>, Vec<String>)> = None;
             let mut css_map_assignment: Option<(Vec<PropOrSpread>, std::collections::HashMap<String, types::CssMapVariantInfo>)> = None;
             if let Expr::Call(call) = init_expr.as_mut() {
+                // keyframes recorded when assigned to const
+                if visitors::keyframes::is_keyframes_call(call, &self.state) {
+                    if let Some((sheet_text, kf_name, var_specs)) = visitors::keyframes::transform_keyframes_call(call, &mut self.state) {
+                        let sheet_var = self.add_css_sheet_with_deduplication(&sheet_text);
+                        if let Pat::Ident(binding) = &n.name {
+                            self.state.keyframes_by_ident.insert(binding.id.sym.to_string(), types::KeyframesInfo { name: kf_name.clone(), sheet_var_name: Some(sheet_var.clone()), var_assignments: var_specs });
+                        }
+                        *init_expr = Box::new(Expr::Lit(Lit::Null(Null { span: Default::default() })));
+                        self.had_transformations = true;
+                        return;
+                    }
+                }
                 if visitors::css::is_css_call(call, &self.state) {
                     if let Some(first) = call.args.get(0) {
                         let atomic_rules = utils::css_builder::build_atomic_rules_from_expression_with_state(&first.expr, &self.state);
@@ -487,12 +515,38 @@ impl VisitMut for Transform2 {
                 }
 
                 if !class_names.is_empty() {
+                    // Merge keyframe variable assignments into style if css references animationName or animation shorthand contains keyframes name
+                    let mut style_props: Vec<PropOrSpread> = Vec::new();
+                    // Spread existing style
+                    style_props.push(PropOrSpread::Spread(SpreadElement { dot3_token: Default::default(), expr: Box::new(Expr::Ident(utils::ast::create_ident("__cmpls"))) }));
+                    // Build ix() for any keyframes var specs if animationName references a known keyframe ident
+                    if let JSXAttrOrSpread::JSXAttr(a) = &n.opening.attrs[idx] {
+                        if let Some(JSXAttrValue::JSXExprContainer(container)) = &a.value {
+                            if let JSXExpr::Expr(expr) = &container.expr {
+                                if let Expr::Ident(id) = expr.as_ref() {
+                                    if let Some(kf) = self.state.keyframes_by_ident.get(&id.sym.to_string()) {
+                                        for spec in &kf.var_assignments {
+                                            let mut ix_args: Vec<ExprOrSpread> = vec![ExprOrSpread { spread: None, expr: spec.value_expr.clone() }];
+                                            if let Some(suf) = &spec.suffix { ix_args.push(ExprOrSpread { spread: None, expr: Box::new(Expr::Lit(Lit::Str(utils::ast::create_str_lit(suf)))) }); }
+                                            if let Some(pre) = &spec.prefix { ix_args.push(ExprOrSpread { spread: None, expr: Box::new(Expr::Lit(Lit::Str(utils::ast::create_str_lit(pre)))) }); }
+                                            let ix_call = Expr::Call(CallExpr { span: Default::default(), callee: Callee::Expr(Box::new(Expr::Ident(utils::ast::create_ident("ix")))), args: ix_args, type_args: None });
+                                            style_props.push(PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp { key: PropName::Str(Str { span: Default::default(), value: format!("--{}", spec.var_name).into(), raw: None }), value: Box::new(ix_call) }))));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                     // Build className attr with ax([...])
                     let elems: Vec<Option<ExprOrSpread>> = class_names.iter().map(|cn| Some(ExprOrSpread { spread: None, expr: Box::new(Expr::Lit(Lit::Str(utils::ast::create_str_lit(cn)))) })).collect();
                     let ax_call = Expr::Call(CallExpr { span: Default::default(), callee: Callee::Expr(Box::new(Expr::Ident(utils::ast::create_ident("ax")))), args: vec![ExprOrSpread { spread: None, expr: Box::new(Expr::Array(ArrayLit { span: Default::default(), elems: elems })) }], type_args: None });
                     // Replace css attr with className
                     n.opening.attrs.remove(idx);
                     n.opening.attrs.push(JSXAttrOrSpread::JSXAttr(JSXAttr { span: Default::default(), name: JSXAttrName::Ident(utils::ast::create_ident("className")), value: Some(JSXAttrValue::JSXExprContainer(JSXExprContainer { span: Default::default(), expr: JSXExpr::Expr(Box::new(ax_call)) })) }));
+                    if style_props.len() > 1 {
+                        let style_obj = Expr::Object(ObjectLit { span: Default::default(), props: style_props });
+                        n.opening.attrs.push(JSXAttrOrSpread::JSXAttr(JSXAttr { span: Default::default(), name: JSXAttrName::Ident(utils::ast::create_ident("style")), value: Some(JSXAttrValue::JSXExprContainer(JSXExprContainer { span: Default::default(), expr: JSXExpr::Expr(Box::new(style_obj)) })) }));
+                    }
 
                     // Build <CS>{[sheet_vars]}</CS>
                     let cs_open = JSXOpeningElement { span: Default::default(), name: utils::ast::create_jsx_element_name("CS"), attrs: vec![], self_closing: false, type_args: None }; 
