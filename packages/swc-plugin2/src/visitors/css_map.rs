@@ -28,7 +28,7 @@ pub fn visit_css_map_call_expr(
         if let PropOrSpread::Prop(p) = prop { if let Prop::KeyValue(kv) = p.as_ref() {
             let key_name = match &kv.key { PropName::Ident(ident) => ident.sym.to_string(), PropName::Str(str_lit) => str_lit.value.to_string(), _ => continue };
             if let Expr::Object(variant_obj) = &*kv.value {
-                let atomic_rules = css_builder::build_atomic_rules_from_object(variant_obj);
+                let atomic_rules = css_builder::build_atomic_rules_from_object_with_state(variant_obj, state);
                 if !atomic_rules.is_empty() {
                     let (sheets, class_names) = css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
                     for sheet in sheets { collected_css_sheets.push(("_".to_string(), sheet)); }

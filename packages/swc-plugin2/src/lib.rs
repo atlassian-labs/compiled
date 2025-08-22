@@ -189,12 +189,27 @@ impl VisitMut for Transform2 {
         n.visit_mut_children_with(self);
     }
 
+    fn visit_mut_var_decl(&mut self, n: &mut VarDecl) {
+        // Record only const bindings for simple literals/objects/arrays
+        if n.kind == VarDeclKind::Const {
+            for d in &n.decls {
+                if let (Pat::Ident(binding), Some(init)) = (&d.name, &d.init) {
+                    // Record any const initializer expression for potential static folding later
+                    self.state
+                        .const_bindings
+                        .insert(binding.id.sym.to_string(), Box::new(init.as_ref().clone()));
+                }
+            }
+        }
+        n.visit_mut_children_with(self);
+    }
+
     fn visit_mut_expr(&mut self, n: &mut Expr) {
         if let Expr::Call(call) = n.clone() {
             // Handle css()
             if visitors::css::is_css_call(&call, &self.state) {
                 if let Some(first) = call.args.get(0) {
-                    let atomic_rules = utils::css_builder::build_atomic_rules_from_expression(&first.expr);
+                    let atomic_rules = utils::css_builder::build_atomic_rules_from_expression_with_state(&first.expr, &self.state);
                     if !atomic_rules.is_empty() {
                         let (sheets, _class_names) = utils::css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
                         for sheet in sheets { let _ = self.add_css_sheet_with_deduplication(&sheet); }
@@ -223,7 +238,7 @@ impl VisitMut for Transform2 {
                                 if let Prop::KeyValue(kv) = p.as_ref() {
                                     let key_name = match &kv.key { PropName::Ident(i) => i.sym.to_string(), PropName::Str(s) => s.value.to_string(), _ => continue };
                                     if let Expr::Object(variant_obj) = &*kv.value {
-                                        let atomic_rules = utils::css_builder::build_atomic_rules_from_object(variant_obj);
+                                        let atomic_rules = utils::css_builder::build_atomic_rules_from_object_with_state(variant_obj, &self.state);
                                         if !atomic_rules.is_empty() {
                                             let (sheets, class_names) = utils::css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
                                             for sheet in sheets { let _ = self.add_css_sheet_with_deduplication(&sheet); }
@@ -276,13 +291,14 @@ impl VisitMut for Transform2 {
                     }
                 }
             }
+
             // First pass: extract info without mutating borrowed init_expr
             let mut css_assignment: Option<(Vec<String>, Vec<String>)> = None;
             let mut css_map_assignment: Option<(Vec<PropOrSpread>, std::collections::HashMap<String, types::CssMapVariantInfo>)> = None;
             if let Expr::Call(call) = init_expr.as_mut() {
                 if visitors::css::is_css_call(call, &self.state) {
                     if let Some(first) = call.args.get(0) {
-                        let atomic_rules = utils::css_builder::build_atomic_rules_from_expression(&first.expr);
+                        let atomic_rules = utils::css_builder::build_atomic_rules_from_expression_with_state(&first.expr, &self.state);
                         if !atomic_rules.is_empty() {
                             let (sheets, class_names) = utils::css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
                             let mut sheet_vars: Vec<String> = Vec::new();
@@ -301,7 +317,7 @@ impl VisitMut for Transform2 {
                                     if let Prop::KeyValue(kv) = p.as_ref() {
                                         let key_name = match &kv.key { PropName::Ident(i) => i.sym.to_string(), PropName::Str(s) => s.value.to_string(), _ => continue };
                                         if let Expr::Object(variant_obj) = &*kv.value {
-                                            let atomic_rules = utils::css_builder::build_atomic_rules_from_object(variant_obj);
+                                            let atomic_rules = utils::css_builder::build_atomic_rules_from_object_with_state(variant_obj, &self.state);
                                             if !atomic_rules.is_empty() {
                                                 let (sheets, class_names) = utils::css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
                                                 let mut sheet_vars: Vec<String> = Vec::new();
@@ -373,7 +389,7 @@ impl VisitMut for Transform2 {
                                         true
                                     }
                                     if !is_static_object(obj) { panic!("Object given to the xcss prop must be static"); }
-                                    let atomic_rules = utils::css_builder::build_atomic_rules_from_object(obj);
+                                    let atomic_rules = utils::css_builder::build_atomic_rules_from_object_with_state(obj, &self.state);
                                     if !atomic_rules.is_empty() {
                                         let (sheets, class_names) = utils::css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
                                         // Add sheets and ignore returned var names here; wrapping will collect again if needed
@@ -438,7 +454,7 @@ impl VisitMut for Transform2 {
                                         }
                                     }
                                     Expr::Object(obj) => {
-                                        let atomic_rules = utils::css_builder::build_atomic_rules_from_object(obj);
+                                        let atomic_rules = utils::css_builder::build_atomic_rules_from_object_with_state(obj, &self.state);
                                         if !atomic_rules.is_empty() {
                                             let (sheets, classes) = utils::css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
                                             for sheet in sheets { let var = self.add_css_sheet_with_deduplication(&sheet); sheet_vars.push(var); }
@@ -446,7 +462,7 @@ impl VisitMut for Transform2 {
                                         }
                                     }
                                     Expr::Lit(Lit::Str(s)) => {
-                                        let rules = utils::css_builder::build_atomic_rules_from_expression(&Expr::Lit(Lit::Str(s.clone())));
+                                        let rules = utils::css_builder::build_atomic_rules_from_expression_with_state(&Expr::Lit(Lit::Str(s.clone())), &self.state);
                                         if !rules.is_empty() {
                                             let (sheets, classes) = utils::css_builder::transform_atomic_rules_to_sheets(&rules);
                                             for sheet in sheets { let var = self.add_css_sheet_with_deduplication(&sheet); sheet_vars.push(var); }
@@ -460,7 +476,7 @@ impl VisitMut for Transform2 {
                         }
                     }
                     Some(JSXAttrValue::Lit(Lit::Str(s))) => {
-                        let rules = utils::css_builder::build_atomic_rules_from_expression(&Expr::Lit(Lit::Str(s.clone())));
+                        let rules = utils::css_builder::build_atomic_rules_from_expression_with_state(&Expr::Lit(Lit::Str(s.clone())), &self.state);
                         if !rules.is_empty() {
                             let (sheets, classes) = utils::css_builder::transform_atomic_rules_to_sheets(&rules);
                             for sheet in sheets { let var = self.add_css_sheet_with_deduplication(&sheet); sheet_vars.push(var); }
@@ -523,7 +539,7 @@ impl VisitMut for Transform2 {
                                 // If inline object, compute sheets now and replace with class string
                                 let mut handled_inline = false;
                                 if let Expr::Object(obj) = expr.as_mut() {
-                                    let atomic_rules = utils::css_builder::build_atomic_rules_from_object(obj);
+                                    let atomic_rules = utils::css_builder::build_atomic_rules_from_object_with_state(obj, &self.state);
                                     if !atomic_rules.is_empty() {
                                         let (sheets, class_names) = utils::css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
                                         for sheet in sheets { let var = self.add_css_sheet_with_deduplication(&sheet); sheet_vars.push(var); }

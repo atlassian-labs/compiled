@@ -46,6 +46,61 @@ describe('swc-plugin2 snapshots', () => {
     `);
   });
 
+  it('css supports const identifier inside object', async () => {
+    const code = `
+      import { css } from '@compiled/react';
+      const myColor = 'red';
+      const styles = css({ color: myColor });
+      <div css={styles} />
+    `;
+    const out = await transformResultString(code);
+    expect(out).toMatchInlineSnapshot(`
+      "import { ax, ix } from "@compiled/react/runtime";
+      const _ = "._9ad05scu{color:red}";
+      const myColor = 'red';
+      const styles = null;
+      /*#__PURE__*/ React.createElement("div", {
+          className: ax([
+              "_9ad05scu"
+          ])
+      });
+      "
+    `);
+  });
+
+  it('css supports const template literal in value', async () => {
+    const code = [
+      "import { css } from '@compiled/react';",
+      'const size = 10;',
+      'const styles = css({ fontSize: `${size}px` });',
+      '<div css={styles} />',
+    ].join('\n');
+    const out = await transformResultString(code);
+    expect(out).toContain('font-size:10px');
+  });
+
+  it('css supports const binary + operator for strings', async () => {
+    const code = `
+      import { css } from '@compiled/react';
+      const cls = 're' + 'd';
+      const styles = css({ color: cls });
+      <div css={styles} />
+    `;
+    const out = await transformResultString(code);
+    expect(out).toContain('color:red');
+  });
+
+  it('css supports const binary + operator for numbers', async () => {
+    const code = `
+      import { css } from '@compiled/react';
+      const a = 5; const b = 5;
+      const styles = css({ lineHeight: a + b });
+      <div css={styles} />
+    `;
+    const out = await transformResultString(code);
+    expect(out).toContain('line-height:10');
+  });
+
   it('css supports complex selectors and !important', async () => {
     const code = `
       import { css } from '@compiled/react';

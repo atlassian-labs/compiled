@@ -597,6 +597,49 @@ describe('styled (swc-plugin2)', () => {
     `);
   });
 
+  it('supports const variable values inside styled object', async () => {
+    const code = `
+      import { styled } from '@compiled/react';
+      const primary = 'red';
+      const C = styled.div({ color: primary });
+    `;
+    const out = await transformResultString(code, { extract: true });
+    expect(out).toMatchInlineSnapshot(`
+      "import { forwardRef } from \"react\";
+      import { ax, ix } from \"@compiled/react/runtime\";
+      const _ = \"._9ad05scu{color:red}\";
+      import { styled } from '@compiled/react';
+      const primary = 'red';
+      const C = /*#__PURE__*/ forwardRef(({ as: C = \"div\", style: __cmpls, ...__cmplp }, __cmplr)=>{
+          if (__cmplp.innerRef) {
+              throw new Error(\"Please use 'ref' instead of 'innerRef'.\");
+          }
+          return /*#__PURE__*/ React.createElement(C, {
+              className: ax([
+                  \"_9ad05scu\",
+                  __cmplp.className
+              ]),
+              style: {
+                  ...__cmpls
+              },
+              ref: __cmplr,
+              ...__cmplp
+          });
+      });
+      "
+    `);
+  });
+
+  it('throws on mutable let variable used in styled object', async () => {
+    const code = `
+      import { styled } from '@compiled/react';
+      let color = 'red';
+      const C = styled.div({ color });
+    `;
+    const out = await transformResultString(code, { extract: true });
+    expect(out).toContain('failed to invoke plugin');
+  });
+
   it('supports arrow function body (IIFE) for value', async () => {
     const code = `
       import { styled } from '@compiled/react';

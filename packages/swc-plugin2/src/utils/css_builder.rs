@@ -1,4 +1,5 @@
 use swc_core::ecma::ast::*;
+use crate::types::TransformState;
 
 fn to_base36(mut num: u32) -> String {
     if num == 0 { return "0".to_string(); }
@@ -94,11 +95,82 @@ fn number_to_css_value(property_name: &str, num_lit: &Number) -> String {
     if num_lit.value != 0.0 && needs_px_unit(property_name) && !value.contains("px") { format!("{}px", value) } else { value }
 }
 
-fn collect_atomic_rules_from_object(obj: &ObjectLit, parent_selector: Option<String>, parent_at_rule: Option<String>, out: &mut Vec<AtomicRule>) {
+fn resolve_identifier<'a>(id: &Ident, state: &'a TransformState) -> &'a Expr {
+    if let Some(expr) = state.const_bindings.get(&id.sym.to_string()) {
+        return expr.as_ref();
+    }
+    panic!("Only local const variables are supported for CSS values");
+}
+
+fn fold_static_expr(expr: &Expr, state: &TransformState) -> Expr {
+    match expr {
+        Expr::Lit(Lit::Str(_)) | Expr::Lit(Lit::Num(_)) | Expr::Object(_) => expr.clone(),
+        Expr::Ident(id) => {
+            let resolved = resolve_identifier(id, state);
+            fold_static_expr(resolved, state)
+        }
+        Expr::Tpl(tpl) => {
+            // Concatenate if all parts are statically resolvable to strings
+            let mut out = String::new();
+            let mut ok = true;
+            for (i, quasis) in tpl.quasis.iter().enumerate() {
+                // In our swc version, raw is a JsWord (Atom) and cooked is Option<JsWord>
+                out.push_str(&quasis.raw.to_string());
+                if let Some(expr_item) = tpl.exprs.get(i) {
+                    let folded = fold_static_expr(expr_item, state);
+                    match folded {
+                        Expr::Lit(Lit::Str(s)) => out.push_str(&s.value),
+                        Expr::Lit(Lit::Num(n)) => {
+                            let v = if n.value.fract() == 0.0 { format!("{}", n.value as i64) } else { format!("{}", n.value) };
+                            out.push_str(&v);
+                        }
+                        _ => { ok = false; break; }
+                    }
+                }
+            }
+            if ok { Expr::Lit(Lit::Str(Str { span: tpl.span, value: out.into(), raw: None })) } else { expr.clone() }
+        }
+        Expr::Bin(bin) => {
+            if bin.op == BinaryOp::Add {
+                let left = fold_static_expr(&bin.left, state);
+                let right = fold_static_expr(&bin.right, state);
+                match (&left, &right) {
+                    (Expr::Lit(Lit::Num(a)), Expr::Lit(Lit::Num(b))) => {
+                        let v = a.value + b.value;
+                        return Expr::Lit(Lit::Num(Number { span: bin.span, value: v, raw: None }));
+                    }
+                    _ => {
+                        // Try string concatenation
+                        let to_string = |e: &Expr| -> Option<String> {
+                            match e {
+                                Expr::Lit(Lit::Str(s)) => Some(s.value.to_string()),
+                                Expr::Lit(Lit::Num(n)) => Some(if n.value.fract() == 0.0 { format!("{}", n.value as i64) } else { format!("{}", n.value) }),
+                                _ => None,
+                            }
+                        };
+                        if let (Some(ls), Some(rs)) = (to_string(&left), to_string(&right)) {
+                            return Expr::Lit(Lit::Str(Str { span: bin.span, value: format!("{}{}", ls, rs).into(), raw: None }));
+                        }
+                        expr.clone()
+                    }
+                }
+            } else {
+                expr.clone()
+            }
+        }
+        Expr::Paren(p) => fold_static_expr(&p.expr, state),
+        _ => expr.clone(),
+    }
+}
+
+fn collect_atomic_rules_from_object(obj: &ObjectLit, parent_selector: Option<String>, parent_at_rule: Option<String>, out: &mut Vec<AtomicRule>, state: &TransformState) {
     for prop in &obj.props {
-        if let PropOrSpread::Prop(prop_box) = prop { if let Prop::KeyValue(kv) = prop_box.as_ref() {
+        match prop {
+            PropOrSpread::Prop(prop_box) => if let Prop::KeyValue(kv) = prop_box.as_ref() {
             let key_name = match &kv.key { PropName::Ident(ident) => ident.sym.to_string(), PropName::Str(str_lit) => str_lit.value.to_string(), _ => continue };
-            match &*kv.value {
+            let base_expr: &Expr = match &*kv.value { Expr::Ident(id) => resolve_identifier(id, state), other => other };
+            let folded_expr = fold_static_expr(base_expr, state);
+            match &folded_expr {
                 Expr::Lit(Lit::Str(str_lit)) => {
                     let css_property = camel_to_kebab_case(&key_name);
                     let value_str = str_lit.value.to_string();
@@ -132,19 +204,34 @@ fn collect_atomic_rules_from_object(obj: &ObjectLit, parent_selector: Option<Str
                     }
                 }
                 Expr::Object(nested_obj) => {
-                    if key_name.starts_with("&:") { let pseudo = &key_name[1..]; let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, pseudo)), None => Some(pseudo.to_string()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out); }
-                    else if key_name.starts_with('&') { let suffix = &key_name[1..]; let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, suffix)), None => Some(suffix.to_string()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out); }
-                    else if key_name.starts_with(":") { let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, key_name)), None => Some(key_name.clone()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out); }
-                    else if key_name.starts_with("@") { let next_at = match &parent_at_rule { Some(ar) => Some(format!("{}{{{}}}", key_name, ar)), None => Some(key_name.clone()), }; collect_atomic_rules_from_object(nested_obj, parent_selector.clone(), next_at, out); }
-                    else { collect_atomic_rules_from_object(nested_obj, parent_selector.clone(), parent_at_rule.clone(), out); }
+                    if key_name.starts_with("&:") { let pseudo = &key_name[1..]; let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, pseudo)), None => Some(pseudo.to_string()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state); }
+                    else if key_name.starts_with('&') { let suffix = &key_name[1..]; let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, suffix)), None => Some(suffix.to_string()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state); }
+                    else if key_name.starts_with(":") { let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, key_name)), None => Some(key_name.clone()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state); }
+                    else if key_name.starts_with("@") { let next_at = match &parent_at_rule { Some(ar) => Some(format!("{}{{{}}}", key_name, ar)), None => Some(key_name.clone()), }; collect_atomic_rules_from_object(nested_obj, parent_selector.clone(), next_at, out, state); }
+                    else { collect_atomic_rules_from_object(nested_obj, parent_selector.clone(), parent_at_rule.clone(), out, state); }
                 }
                 _ => { continue; }
             }
-        }}
+        }
+            PropOrSpread::Spread(spread) => {
+                // Support spreading of const object values
+                match spread.expr.as_ref() {
+                    Expr::Ident(id) => {
+                        let resolved = resolve_identifier(id, state);
+                        if let Expr::Object(inner) = resolved {
+                            collect_atomic_rules_from_object(inner, parent_selector.clone(), parent_at_rule.clone(), out, state);
+                        } else {
+                            panic!("Only object constants can be spread into CSS objects");
+                        }
+                    }
+                    _ => panic!("Only identifiers can be spread in CSS objects"),
+                }
+            }
+        }
     }
 }
 
-pub fn build_atomic_rules_from_object(obj: &ObjectLit) -> Vec<AtomicRule> { let mut out = Vec::new(); collect_atomic_rules_from_object(obj, None, None, &mut out); out }
+pub fn build_atomic_rules_from_object_with_state(obj: &ObjectLit, state: &TransformState) -> Vec<AtomicRule> { let mut out = Vec::new(); collect_atomic_rules_from_object(obj, None, None, &mut out, state); out }
 
 fn needs_px_unit(property: &str) -> bool { !is_unitless_property(property) }
 
@@ -159,9 +246,13 @@ fn is_unitless_property(property: &str) -> bool {
     )
 }
 
-pub fn build_atomic_rules_from_expression(expr: &Expr) -> Vec<AtomicRule> {
+pub fn build_atomic_rules_from_expression_with_state(expr: &Expr, state: &TransformState) -> Vec<AtomicRule> {
     match expr {
-        Expr::Object(obj) => build_atomic_rules_from_object(obj),
+        Expr::Ident(id) => {
+            let resolved = resolve_identifier(id, state);
+            build_atomic_rules_from_expression_with_state(resolved, state)
+        }
+        Expr::Object(obj) => build_atomic_rules_from_object_with_state(obj, state),
         Expr::Lit(Lit::Str(str_lit)) => {
             let mut rules = Vec::new();
             for part in str_lit.value.split(';') {

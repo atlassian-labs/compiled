@@ -37,7 +37,7 @@ pub fn visit_css_prop_jsx_element(
     if is_string_literal {
         if let JSXAttrOrSpread::JSXAttr(attr) = &opening_elem.attrs[css_attr_index] {
             let str_lit = match &attr.value { Some(JSXAttrValue::Lit(Lit::Str(s))) => s.clone(), _ => unreachable!() };
-            let rules = css_builder::build_atomic_rules_from_expression(&Expr::Lit(Lit::Str(str_lit.clone())));
+            let rules = css_builder::build_atomic_rules_from_expression_with_state(&Expr::Lit(Lit::Str(str_lit.clone())), state);
             if !rules.is_empty() {
                 let (sheets, class_names) = css_builder::transform_atomic_rules_to_sheets(&rules);
                 for sheet in sheets { let _ = add_css_sheet_with_deduplication(css_content_to_var, collected_css_sheets, &sheet); }
@@ -118,7 +118,7 @@ pub fn visit_css_prop_jsx_element(
         return true;
     }
 
-    let atomic_rules = css_builder::build_atomic_rules_from_expression(expr);
+    let atomic_rules = css_builder::build_atomic_rules_from_expression_with_state(expr, state);
     if !atomic_rules.is_empty() {
         let (sheets, class_names) = css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
         for sheet in sheets { let _ = add_css_sheet_with_deduplication(css_content_to_var, collected_css_sheets, &sheet); }

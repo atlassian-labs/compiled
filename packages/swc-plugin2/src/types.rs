@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use swc_core::ecma::ast::Expr;
 
 #[derive(Debug, Clone)]
 pub struct TransformState {
@@ -6,6 +7,7 @@ pub struct TransformState {
 	pub import_sources: Vec<String>,
 	pub css_map: HashMap<String, HashMap<String, CssMapVariantInfo>>, // ident -> variant -> info
 	pub css_classes_by_ident: HashMap<String, CssInfo>, // identifier -> classes + sheet var names
+    pub const_bindings: HashMap<String, Box<Expr>>, // local const identifier -> initializer expr (Object/Array/String/etc.)
 }
 
 #[derive(Debug, Clone)]
@@ -34,6 +36,7 @@ impl Default for TransformState {
 			import_sources: vec!["@compiled/react".to_string(), "@atlaskit/css".to_string()],
 			css_map: HashMap::new(),
 			css_classes_by_ident: HashMap::new(),
+            const_bindings: HashMap::new(),
 		}
 	}
 }

@@ -127,15 +127,23 @@ pub fn transform_styled_call(
         counter: &mut i32,
         out_vars: &mut Vec<(String, Expr, Option<String>, Option<String>)>,
         referenced_props: &mut HashSet<String>,
+        state: &TransformState,
     ) -> ObjectLit {
         let mut new_props: Vec<PropOrSpread> = Vec::new();
         for p in &obj.props {
             if let PropOrSpread::Prop(pb) = p {
                 if let Prop::KeyValue(kv) = pb.as_ref() {
                     let key_name = match &kv.key { PropName::Ident(i) => i.sym.to_string(), PropName::Str(s) => s.value.to_string(), _ => { new_props.push(p.clone()); continue; } };
-                    match kv.value.as_ref() {
+                    let value_expr: &Expr = match kv.value.as_ref() {
+                        Expr::Ident(id) => {
+                            // resolve only local consts
+                            state.const_bindings.get(&id.sym.to_string()).map(|e| e.as_ref()).unwrap_or_else(|| panic!("Only local const variables are supported in styled objects"))
+                        }
+                        other => other,
+                    };
+                    match value_expr {
                         Expr::Object(inner) => {
-                            let replaced = rewrite_object_for_dynamic(inner, props_ident, counter, out_vars, referenced_props);
+                            let replaced = rewrite_object_for_dynamic(&inner, props_ident, counter, out_vars, referenced_props, state);
                             new_props.push(PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp { key: kv.key.clone(), value: Box::new(Expr::Object(replaced)) }))));
                         }
                         Expr::Arrow(a) => {
@@ -208,9 +216,39 @@ pub fn transform_styled_call(
                             out_vars.push((var_name.clone(), call_expr, suffix, prefix));
                             new_props.push(PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp { key: kv.key.clone(), value: Box::new(Expr::Lit(Lit::Str(Str { span: Default::default(), value: css_var_ref.into(), raw: None }))) }))));
                         }
+                        Expr::Lit(Lit::Str(_)) | Expr::Lit(Lit::Num(_)) => {
+                            // keep as-is
+                            new_props.push(p.clone());
+                        }
                         _ => {
                             new_props.push(p.clone());
                         }
+                    }
+                } else if let Prop::Shorthand(id) = pb.as_ref() {
+                    // Handle shorthand: { color } -> key "color" with value from identifier
+                    let key_name = id.sym.to_string();
+                    // Resolve only consts
+                    let resolved = state
+                        .const_bindings
+                        .get(&key_name)
+                        .map(|e| e.as_ref())
+                        .unwrap_or_else(|| panic!("Only local const variables are supported in styled objects"));
+                    match resolved {
+                        Expr::Lit(Lit::Str(_)) | Expr::Lit(Lit::Num(_)) => {
+                            new_props.push(PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp {
+                                key: PropName::Ident(Ident::new(key_name.clone().into(), Default::default())),
+                                value: Box::new(resolved.clone()),
+                            }))));
+                        }
+                        Expr::Object(inner) => {
+                            // Treat as nested object under this key
+                            let replaced = rewrite_object_for_dynamic(&inner, props_ident, counter, out_vars, referenced_props, state);
+                            new_props.push(PropOrSpread::Prop(Box::new(Prop::KeyValue(KeyValueProp {
+                                key: PropName::Ident(Ident::new(key_name.clone().into(), Default::default())),
+                                value: Box::new(Expr::Object(replaced)),
+                            }))));
+                        }
+                        _ => panic!("Unsupported shorthand value in styled object"),
                     }
                 } else {
                     new_props.push(p.clone());
@@ -226,10 +264,10 @@ pub fn transform_styled_call(
     let mut counter = 0;
     let mut dynamic_vars: Vec<(String, Expr, Option<String>, Option<String>)> = Vec::new();
     let mut referenced_props: HashSet<String> = HashSet::new();
-    let rewritten_obj = rewrite_object_for_dynamic(styles_obj, &props_ident, &mut counter, &mut dynamic_vars, &mut referenced_props);
+    let rewritten_obj = rewrite_object_for_dynamic(styles_obj, &props_ident, &mut counter, &mut dynamic_vars, &mut referenced_props, _state);
 
     // Build atomic rules from rewritten object (includes var(--..) placeholders) and transform to sheets/classes
-    let atomic_rules = crate::utils::css_builder::build_atomic_rules_from_object(&rewritten_obj);
+    let atomic_rules = crate::utils::css_builder::build_atomic_rules_from_object_with_state(&rewritten_obj, _state);
     if atomic_rules.is_empty() { return (false, false); }
     let (sheets, class_names) = crate::utils::css_builder::transform_atomic_rules_to_sheets(&atomic_rules);
             let mut sheet_vars: Vec<String> = Vec::new();
