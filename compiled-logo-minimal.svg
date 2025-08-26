@@ -1,0 +1,14 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main C shape -->
+  <path d="M32 8 C45.255 8 56 18.745 56 32 C56 45.255 45.255 56 32 56 C24.5 56 17.8 52.2 13.5 46.5" 
+        stroke="#0052CC" stroke-width="4" stroke-linecap="round" fill="none"/>
+  
+  <!-- Compilation transformation indicator -->
+  <path d="M13.5 46.5 L8 52 L13.5 57.5" 
+        stroke="#FF5630" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Performance dots -->
+  <circle cx="32" cy="32" r="2" fill="#0052CC"/>
+  <circle cx="40" cy="32" r="1.5" fill="#0052CC" opacity="0.6"/>
+  <circle cx="24" cy="32" r="1.5" fill="#0052CC" opacity="0.6"/>
+</svg>

@@ -1,0 +1,20 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Central nucleus -->
+  <circle cx="32" cy="32" r="6" fill="#0052CC"/>
+  
+  <!-- Orbital rings -->
+  <circle cx="32" cy="32" r="16" stroke="#0052CC" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <circle cx="32" cy="32" r="24" stroke="#0052CC" stroke-width="1" fill="none" opacity="0.2"/>
+  
+  <!-- Atomic particles -->
+  <circle cx="48" cy="32" r="3" fill="#FF5630"/>
+  <circle cx="16" cy="32" r="3" fill="#FF5630"/>
+  <circle cx="32" cy="8" r="2.5" fill="#36B37E"/>
+  <circle cx="32" cy="56" r="2.5" fill="#36B37E"/>
+  
+  <!-- Diagonal particles -->
+  <circle cx="43.3" cy="20.7" r="2" fill="#FFAB00"/>
+  <circle cx="20.7" cy="43.3" r="2" fill="#FFAB00"/>
+  <circle cx="43.3" cy="43.3" r="2" fill="#FFAB00"/>
+  <circle cx="20.7" cy="20.7" r="2" fill="#FFAB00"/>
+</svg>

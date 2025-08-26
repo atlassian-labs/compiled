@@ -1,0 +1,17 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer transformation ring -->
+  <circle cx="32" cy="32" r="28" stroke="#0052CC" stroke-width="2" fill="none" opacity="0.3"/>
+  
+  <!-- Central compilation core -->
+  <rect x="20" y="20" width="24" height="24" rx="4" fill="#0052CC"/>
+  
+  <!-- Inner atomic elements -->
+  <circle cx="26" cy="26" r="2" fill="white"/>
+  <circle cx="38" cy="26" r="2" fill="white"/>
+  <circle cx="26" cy="38" r="2" fill="white"/>
+  <circle cx="38" cy="38" r="2" fill="white"/>
+  
+  <!-- Transformation arrows -->
+  <path d="M8 32 L16 28 L16 36 Z" fill="#FF5630"/>
+  <path d="M56 32 L48 28 L48 36 Z" fill="#FF5630"/>
+</svg>
