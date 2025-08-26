@@ -1,0 +1,37 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="atomicGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Central compilation core -->
+  <circle cx="60" cy="60" r="12" fill="url(#atomicGrad)"/>
+  
+  <!-- Atomic elements orbiting around core -->
+  <!-- Top orbit -->
+  <circle cx="60" cy="25" r="6" fill="#3b82f6" opacity="0.8"/>
+  <circle cx="85" cy="35" r="5" fill="#06b6d4" opacity="0.7"/>
+  <circle cx="95" cy="60" r="6" fill="#3b82f6" opacity="0.8"/>
+  <circle cx="85" cy="85" r="5" fill="#06b6d4" opacity="0.7"/>
+  <circle cx="60" cy="95" r="6" fill="#3b82f6" opacity="0.8"/>
+  <circle cx="35" cy="85" r="5" fill="#06b6d4" opacity="0.7"/>
+  <circle cx="25" cy="60" r="6" fill="#3b82f6" opacity="0.8"/>
+  <circle cx="35" cy="35" r="5" fill="#06b6d4" opacity="0.7"/>
+  
+  <!-- Connection lines showing atomic relationships -->
+  <path d="M60 48 L60 37" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/>
+  <path d="M72 60 L83 60" stroke="#06b6d4" stroke-width="1.5" opacity="0.4"/>
+  <path d="M60 72 L60 83" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/>
+  <path d="M48 60 L37 60" stroke="#06b6d4" stroke-width="1.5" opacity="0.4"/>
+  
+  <!-- Diagonal connections -->
+  <path d="M69 51 L77 43" stroke="#3b82f6" stroke-width="1" opacity="0.3"/>
+  <path d="M69 69 L77 77" stroke="#06b6d4" stroke-width="1" opacity="0.3"/>
+  <path d="M51 69 L43 77" stroke="#3b82f6" stroke-width="1" opacity="0.3"/>
+  <path d="M51 51 L43 43" stroke="#06b6d4" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Outer orbital ring -->
+  <circle cx="60" cy="60" r="40" fill="none" stroke="url(#atomicGrad)" stroke-width="1" opacity="0.2" stroke-dasharray="3,3"/>
+</svg>
