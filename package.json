@@ -46,6 +46,13 @@
     "test:cover": "yarn test --collectCoverage",
     "test:imports": "node test/test-imports",
     "test:parcel": "jest --testMatch '**/src/**/*.parceltest.{ts,tsx}' --testEnvironment=node",
+    "pretest:parcel:swc": "yarn workspace @compiled/swc-plugin2 build && yarn workspace @compiled/parcel-transformer-swc build",
+    "test:parcel:swc": "jest --no-cache --testMatch '**/packages/parcel-transformer-swc/src/**/transformer.parceltest.ts' --runInBand --verbose",
+    "test:parcel:swc:watch": "jest --no-cache --watch --testMatch '**/packages/parcel-transformer-swc/src/**/transformer.parceltest.ts' --runInBand --verbose",
+    "watch:parcel-transformer-swc": "tsc -w -p packages/parcel-transformer-swc/tsconfig.json",
+    "build:swc2": "yarn workspace @compiled/swc-plugin2 run build",
+    "pack:swc2": "cd packages/swc-plugin2 && npm pack --silent && mv -f compiled-swc-plugin2-0.0.1.tgz compiled-swc-plugin2-v0.0.1.tgz || true",
+    "refresh:swc2": "yarn build:swc2 && yarn pack:swc2 && yarn install --force",
     "test:vr": "yarn loki --host host.docker.internal",
     "test:watch": "jest --no-cache --watch",
     "website:build": "cd website/ && NODE_ENV=production yarn build",
@@ -63,7 +70,9 @@
     "semver": "^7.6.3",
     "typescript": "^4.9.5"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@compiled/swc-plugin2": "file:packages/swc-plugin2"
+  },
   "devDependencies": {
     "@babel/preset-env": "^7.26.9",
     "@babel/preset-react": "^7.26.3",

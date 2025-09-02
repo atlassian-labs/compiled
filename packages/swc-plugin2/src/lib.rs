@@ -7,6 +7,8 @@ use swc_core::{
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::fs;
+use std::path::{Path, PathBuf};
 
 mod types;
 mod visitors;
@@ -25,6 +27,15 @@ pub struct CompiledOptions2 {
 
     #[serde(default)]
     pub extract: bool,
+
+    #[serde(default, rename = "extractStylesToDirectory")]
+    pub extract_styles_to_directory: Option<ExtractStylesToDirectory>,
+
+    #[serde(default)]
+    pub filename: Option<String>,
+
+    #[serde(default, rename = "sourceFileName")]
+    pub source_file_name: Option<String>,
 }
 
 impl Default for CompiledOptions2 {
@@ -33,8 +44,17 @@ impl Default for CompiledOptions2 {
             import_sources: vec!["@compiled/react".to_string(), "@atlaskit/css".to_string()],
             development: false,
             extract: true,
+            extract_styles_to_directory: None,
+            filename: None,
+            source_file_name: None,
         }
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ExtractStylesToDirectory {
+    pub source: String,
+    pub dest: String,
 }
 
 pub struct Transform2 {
@@ -130,21 +150,82 @@ impl Transform2 {
     fn finalize_module(&mut self, module: &mut Module) {
         if self.state.compiled_imports.is_none() && !self.had_transformations { return; }
 
-        // Emit extracted sheets as consts
-        for (var_name, css_text) in &self.collected_css_sheets {
-            let var_decl = VarDecl {
+        // Emit extracted sheets
+        // - If extractStylesToDirectory is configured (and extract is true), write a .compiled.css file via WASI FS.
+        // - Otherwise (including extract:false), emit const declarations as before.
+        let should_write_css_file = self.options.extract
+            && self.options.extract_styles_to_directory.is_some()
+            && !self.collected_css_sheets.is_empty();
+
+        if should_write_css_file {
+            // Compute CSS filename from provided filename option
+            let provided_filename = self.options.filename.clone().unwrap_or_else(|| "file.tsx".to_string());
+            let base_name = Path::new(&provided_filename)
+                .file_stem()
+                .map(|s| s.to_string_lossy().to_string())
+                .unwrap_or_else(|| "file".to_string());
+            let css_filename = format!("{}.compiled.css", base_name);
+
+            // Validate source directory presence in source_file_name
+            let esd = self.options.extract_styles_to_directory.as_ref().unwrap();
+            let source_file_name = self.options.source_file_name.clone().unwrap_or_else(|| provided_filename.clone());
+            if !source_file_name.contains(&esd.source) {
+                panic!(
+                    "{}: Source directory '{}' was not found relative to source file ('{}')",
+                    source_file_name,
+                    esd.source,
+                    source_file_name
+                );
+            }
+
+            let idx = source_file_name.find(&esd.source).unwrap();
+            let rel_after_source = &source_file_name[idx + esd.source.len()..];
+            let rel_dir = Path::new(rel_after_source).parent().unwrap_or(Path::new(""));
+
+            // Build target path under WASI mount `/cwd`
+            let mut target_path = PathBuf::from("/cwd");
+            target_path = target_path.join(&esd.dest);
+            // Avoid absolute reset by stripping any leading separators
+            let rel_dir_clean = rel_dir.to_string_lossy().trim_start_matches(['/','\\']).to_string();
+            if !rel_dir_clean.is_empty() { target_path = target_path.join(rel_dir_clean); }
+            target_path = target_path.join(&css_filename);
+
+            // Concatenate CSS rules in collected order
+            let mut css_content: Vec<String> = Vec::new();
+            for (_var_name, css_text) in &self.collected_css_sheets { css_content.push(css_text.clone()); }
+            let css_joined = css_content.join("\n");
+
+            // Write file (create directories as needed)
+            if let Some(parent) = target_path.parent() { let _ = fs::create_dir_all(parent); }
+            let _ = fs::write(&target_path, css_joined);
+
+            // Add `import './<name>.compiled.css'` to the module
+            let css_import = ModuleItem::ModuleDecl(ModuleDecl::Import(ImportDecl {
                 span: Default::default(),
-                kind: VarDeclKind::Const,
-                declare: false,
-                decls: vec![VarDeclarator {
+                specifiers: vec![],
+                src: Box::new(utils::ast::create_str_lit(&format!("./{}", css_filename))),
+                type_only: false,
+                with: None,
+                phase: Default::default(),
+            }));
+            module.body.insert(0, css_import);
+        } else {
+            // Emit extracted sheets as consts
+            for (var_name, css_text) in &self.collected_css_sheets {
+                let var_decl = VarDecl {
                     span: Default::default(),
-                    name: Pat::Ident(BindingIdent { id: utils::ast::create_ident(var_name), type_ann: None }),
-                    init: Some(Box::new(Expr::Lit(Lit::Str(utils::ast::create_str_lit(css_text))))),
-                    definite: false,
-                }],
-            };
-            let css_declaration = ModuleItem::Stmt(Stmt::Decl(Decl::Var(Box::new(var_decl))));
-            module.body.insert(0, css_declaration);
+                    kind: VarDeclKind::Const,
+                    declare: false,
+                    decls: vec![VarDeclarator {
+                        span: Default::default(),
+                        name: Pat::Ident(BindingIdent { id: utils::ast::create_ident(var_name), type_ann: None }),
+                        init: Some(Box::new(Expr::Lit(Lit::Str(utils::ast::create_str_lit(css_text))))),
+                        definite: false,
+                    }],
+                };
+                let css_declaration = ModuleItem::Stmt(Stmt::Decl(Decl::Var(Box::new(var_decl))));
+                module.body.insert(0, css_declaration);
+            }
         }
 
         // Always import runtime ax/ix and when extract is false also import CC/CS

@@ -10,6 +10,12 @@
       "@compiled/parcel-transformer-external": [
         "packages/parcel-transformer-external/src/index.ts"
       ],
+      "@compiled/parcel-transformer-swc": [
+        "packages/parcel-transformer-swc/src/index.ts"
+      ],
+      "@compiled/swc-plugin2": [
+        "packages/swc-plugin2/src/index.ts"
+      ],
       "@compiled/react": ["packages/react/src/index.ts"],
       "@compiled/react/jsx-dev-runtime": ["packages/react/src/jsx/jsx-dev-runtime.ts"],
       "@compiled/react/jsx-runtime": ["packages/react/src/jsx/jsx-runtime.ts"],
