@@ -1,0 +1,6 @@
+{
+  "importReact": false,
+  "extract": true,
+  "optimizeCss": false,
+  "inlineCss": true
+}

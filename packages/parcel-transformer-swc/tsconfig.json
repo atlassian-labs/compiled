@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.options.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "target": "es2017"
+  },
+  "references": [
+    { "path": "../utils" }
+  ]
+}
+
+

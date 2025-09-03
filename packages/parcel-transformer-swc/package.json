@@ -1,0 +1,46 @@
+{
+  "name": "@compiled/parcel-transformer-swc",
+  "version": "0.0.1",
+  "description": "Parcel transformer using @compiled/swc-plugin2",
+  "homepage": "https://compiledcssinjs.com/docs/pkg-parcel-transformer-swc",
+  "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlassian-labs/compiled.git",
+    "directory": "packages/parcel-transformer-swc"
+  },
+  "license": "Apache-2.0",
+  "author": "Shanon Jackson",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@compiled/swc-plugin2": "*",
+    "@compiled/utils": "^0.13.1",
+    "@parcel/plugin": "^2.8.3",
+    "@parcel/source-map": "^2.1.1",
+    "@swc/core": "1.3.107"
+  },
+  "devDependencies": {
+    "@parcel/core": "^2.8.3",
+    "@parcel/fs": "^2.8.3",
+    "@parcel/types": "^2.8.3",
+    "jest-extended": "^4.0.2",
+    "prettier": "^2.8.8",
+    "source-map": "^0.7.4",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "parcel": "^2.0.0"
+  }
+}
+
+
