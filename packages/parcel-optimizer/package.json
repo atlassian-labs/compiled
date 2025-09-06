@@ -1,6 +1,6 @@
 {
   "name": "@compiled/parcel-optimizer",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
