@@ -23,7 +23,6 @@ describe('swc-plugin with stylesheet extraction (extractStylesToDirectory)', () 
 
     expect(actual).toContain('import "./test.compiled.css"');
     const cssPath = path.join(process.cwd(), 'dist', 'test.compiled.css');
-    console.log('CHECKING CSS PATH', cssPath);
     expect(fs.existsSync(cssPath)).toBe(true);
     const css = fs.readFileSync(cssPath, 'utf8');
     expect(css).toMatch(/\._[A-Za-z0-9_-]+\{font-size:12px\}/);

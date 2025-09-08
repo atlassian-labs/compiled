@@ -1,4 +1,4 @@
-const { transformResultString } = require('./swc-output');
+import { transformResultString } from './swc-output';
 
 describe('keyframes (swc-plugin)', () => {
   it('inlines animation-name for css prop object call expression', async () => {

@@ -1,4 +1,4 @@
-const { transformResultString } = require('./swc-output');
+import { transformResultString } from './swc-output';
 
 describe('xcss prop (swc-plugin)', () => {
   it('transforms static inline object (extract:true)', async () => {

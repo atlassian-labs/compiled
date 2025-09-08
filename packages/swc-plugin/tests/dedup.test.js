@@ -1,4 +1,4 @@
-const { transformResultString } = require('./swc-output');
+import { transformResultString } from './swc-output';
 
 describe('deduplication (swc-plugin)', () => {
   it('deduplicates identical css() rules across multiple usages', async () => {

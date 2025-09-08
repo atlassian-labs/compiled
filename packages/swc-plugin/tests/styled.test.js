@@ -1,4 +1,4 @@
-const { transformResultString } = require('./swc-output');
+import { transformResultString } from './swc-output';
 
 describe('styled (swc-plugin)', () => {
   it('only transforms @compiled/react usages', async () => {

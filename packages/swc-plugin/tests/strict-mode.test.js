@@ -1,4 +1,4 @@
-const { transformResultString } = require('./swc-output');
+import { transformResultString } from './swc-output';
 
 describe('swc-plugin snapshots', () => {
   it('css prop basic extraction with selector', async () => {

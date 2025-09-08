@@ -1,4 +1,5 @@
 const base = require('../../jest.config.json');
+const path = require('path');
 
 module.exports = {
   ...base,
@@ -11,5 +12,10 @@ module.exports = {
     '^@compiled/react/(.*)$': '<rootDir>/../react/src/jsx/$1.ts',
     '^@compiled/(.*)$': '<rootDir>/../$1/src/index.ts',
   },
-  transform: {},
+  transform: {
+    '^.+\\.(t|j)sx?$': [
+      require.resolve('babel-jest'),
+      { configFile: path.join(__dirname, '../../babel.config.json') },
+    ],
+  },
 };

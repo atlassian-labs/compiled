@@ -1,9 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 
-const swc = require('@swc/core');
+import * as swc from '@swc/core';
 
-const lib = require('..');
+import * as lib from '..';
 
 async function transform(code, options = {}) {
   const wasmPath = path.join(__dirname, '..', 'compiled_swc_plugin2.wasm');
@@ -14,14 +14,9 @@ async function transform(code, options = {}) {
   };
   // Only enable the plugin when the code includes configured import sources
   const hasCssLikeJsx = /\b(?:css|[A-Za-z]*xcss)\s*=/i.test(code);
-  const hasApiCalls = /(cssMap|styled|keyframes)\s*\(/.test(code);
-  const hasImports = lib.shouldEnableForCode2
-    ? lib.shouldEnableForCode2(code, pluginOptions)
-    : pluginOptions.importSources.some((s) => code.includes(s));
+  const hasApiCalls = /(cssMap|keyframes)\s*\(|styled\s*(\.|\()/.test(code);
   const enablePlugin =
-    options.forceEnable !== undefined
-      ? !!options.forceEnable
-      : hasImports || hasCssLikeJsx || hasApiCalls;
+    options.forceEnable !== undefined ? !!options.forceEnable : hasCssLikeJsx || hasApiCalls;
 
   const swcOptions = {
     filename: 'test.tsx',
@@ -70,4 +65,4 @@ function normalizeOutput(str) {
   );
 }
 
-module.exports = { transform, transformResultString };
+export { transform, transformResultString };

@@ -1,8 +1,8 @@
-const path = require('path');
+import * as path from 'path';
 
-const swc = require('@swc/core');
+import * as swc from '@swc/core';
 
-const { transform } = require('./swc-output');
+import { transform } from './swc-output';
 
 describe('misc non-compiled files', () => {
   it('does not transform unrelated files without compiled imports', async () => {
