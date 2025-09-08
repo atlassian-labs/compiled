@@ -77,7 +77,7 @@ export default new Transformer<ParcelTransformerSwcOpts>({
 
     // Resolve at runtime to avoid TS type resolution during build graph
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const getSwcPlugin2: any = require('@compiled/swc-plugin2').getSwcPlugin2;
+    const getSwcPlugin2: any = require('@compiled/swc-plugin').getSwcPlugin2;
     const [wasmPath, pluginConfig] = getSwcPlugin2(swcPluginOptions);
     const enablePlugin = hasCompiledImport || hasApiUsage;
     const swcResult: any = await transform(code, {
@@ -89,7 +89,10 @@ export default new Transformer<ParcelTransformerSwcOpts>({
         externalHelpers: true,
         parser: {
           syntax: asset.type === 'ts' || asset.type === 'tsx' ? 'typescript' : 'ecmascript',
-          tsx: asset.type === 'tsx' || asset.filePath.endsWith('.tsx') || asset.filePath.endsWith('.jsx'),
+          tsx:
+            asset.type === 'tsx' ||
+            asset.filePath.endsWith('.tsx') ||
+            asset.filePath.endsWith('.jsx'),
           jsx: asset.filePath.endsWith('.jsx') || asset.filePath.endsWith('.tsx'),
         } as any,
         transform: {
@@ -122,7 +125,6 @@ export default new Transformer<ParcelTransformerSwcOpts>({
       ];
     }
 
-    
     asset.setCode(swcResult.code);
 
     if (swcResult.map && asset.env.sourceMap) {
@@ -136,5 +138,3 @@ export default new Transformer<ParcelTransformerSwcOpts>({
     return [asset];
   },
 });
-
-

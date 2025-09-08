@@ -13,7 +13,9 @@ describe('misc non-compiled files', () => {
       };
     `;
     const out = await transform(input, { extract: true });
-    expect(out.code || out).toContain('(_a = shorthandBuckets[shorthand]) !== null && _a !== void 0 ? _a : null');
+    expect(out.code || out).toContain(
+      '(_a = shorthandBuckets[shorthand]) !== null && _a !== void 0 ? _a : null'
+    );
     expect(out.code || out).not.toMatch(/= this\)/);
   });
 
@@ -119,5 +121,3 @@ export const getShorthandDepth = (shorthand: string): Depths | null => {
     expect(mod.exports.getShorthandDepth('not-a-shorthand')).toBe(null);
   });
 });
-
-

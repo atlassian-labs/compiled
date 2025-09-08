@@ -1,7 +1,7 @@
 {
   "name": "@compiled/parcel-transformer-swc",
   "version": "0.0.1",
-  "description": "Parcel transformer using @compiled/swc-plugin2",
+  "description": "Parcel transformer using @compiled/swc-plugin",
   "homepage": "https://compiledcssinjs.com/docs/pkg-parcel-transformer-swc",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
@@ -23,7 +23,7 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@compiled/swc-plugin2": "*",
+    "@compiled/swc-plugin": "*",
     "@compiled/utils": "^0.13.1",
     "@parcel/plugin": "^2.8.3",
     "@parcel/source-map": "^2.1.1",
@@ -42,5 +42,3 @@
     "parcel": "^2.0.0"
   }
 }
-
-

@@ -1,6 +1,6 @@
 const { transformResultString } = require('./swc-output');
 
-describe('styled (swc-plugin2)', () => {
+describe('styled (swc-plugin)', () => {
   it('only transforms @compiled/react usages', async () => {
     const code = `
       import { styled as styled2 } from '@compiled/react';
@@ -641,7 +641,7 @@ describe('styled (swc-plugin2)', () => {
       "Error: failed to handle: failed to invoke plugin: failed to invoke plugin on 'Some("test.tsx")'
 
       Caused by:
-          0: failed to invoke \`/Users/sjackson3/Documents/atlassian/compiled-perf-fork/packages/swc-plugin2/compiled_swc_plugin2.wasm\` as js transform plugin at /Users/sjackson3/Documents/atlassian/compiled-perf-fork/packages/swc-plugin2/compiled_swc_plugin2.wasm
+          0: failed to invoke \`/Users/sjackson3/Documents/atlassian/compiled-perf-fork/packages/swc-plugin/compiled_swc_plugin2.wasm\` as js transform plugin at /Users/sjackson3/Documents/atlassian/compiled-perf-fork/packages/swc-plugin/compiled_swc_plugin2.wasm
           1: RuntimeError: unreachable"
     `);
   });

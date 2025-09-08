@@ -1,8 +1,5 @@
-target/
-dist/
-compiled_swc_plugin.wasm
-
-# SWC build cache
-.swc/
-tests/.swc/
+dist
+node_modules
+compiled_swc_plugin2.wasm
+target
 

@@ -1,7 +1,7 @@
 {
   "name": "@compiled/swc-plugin",
-  "version": "0.1.0",
-  "description": "A performant SWC plugin for Compiled CSS-in-JS library focusing on xcss-prop functionality.",
+  "version": "0.0.1",
+  "description": "Experimental SWC plugin for @compiled/react focusing on css and cssMap with extraction.",
   "keywords": [
     "swc",
     "plugin",
@@ -9,9 +9,7 @@
     "compiled",
     "react",
     "wasm",
-    "rust",
-    "performance",
-    "xcss-prop"
+    "rust"
   ],
   "homepage": "https://compiledcssinjs.com/docs/pkg-swc-plugin",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -27,7 +25,7 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "compiled_swc_plugin.wasm",
+    "compiled_swc_plugin2.wasm",
     "README.md"
   ],
   "scripts": {
@@ -36,9 +34,9 @@
     "build:rust": "cargo build --target wasm32-wasip1 --release",
     "build:ts": "tsc",
     "check": "cargo check",
-    "clean": "cargo clean && rm -rf dist compiled_swc_plugin.wasm",
+    "clean": "cargo clean && rm -rf dist compiled_swc_plugin2.wasm",
     "clippy": "cargo clippy",
-    "copy-wasm": "cp target/wasm32-wasip1/release/compiled_swc_plugin.wasm ./compiled_swc_plugin.wasm",
+    "copy-wasm": "cp target/wasm32-wasip1/release/compiled_swc_plugin2.wasm ./compiled_swc_plugin2.wasm",
     "fmt": "cargo fmt",
     "prepare": "npm run build",
     "pretest": "npm run build:rust && npm run copy-wasm",
@@ -48,6 +46,7 @@
   "devDependencies": {
     "@swc/core": "1.3.107",
     "@types/node": "^20.0.0",
+    "jest-extended": "^4.0.2",
     "typescript": "^5.0.0"
   },
   "peerDependencies": {
@@ -58,6 +57,6 @@
     "node": ">=16.0.0"
   },
   "swc": {
-    "plugin": "./target/wasm32-wasip1/release/compiled_swc_plugin.wasm"
+    "plugin": "./target/wasm32-wasip1/release/compiled_swc_plugin2.wasm"
   }
 }

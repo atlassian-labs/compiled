@@ -1,136 +1,67 @@
-/**
- * SWC Plugin2 for @compiled/react - focused on xcss-prop functionality
- * High-performance CSS-in-JS transformations using Rust and WebAssembly
- */
-
 import * as fs from 'fs';
 import * as path from 'path';
 
-export interface CompiledSwcPluginOptions {
-  /**
-   * Import sources to transform CSS-in-JS from
-   * @default ["@compiled/react", "@atlaskit/css"]
-   */
-  importSources?: string[];
-
-  /**
-   * Enable development mode features like display names and better error messages
-   * @default false
-   */
+export interface PluginOptions2 {
+  importSources?: string[]; // default ['@compiled/react', '@atlaskit/css']
   development?: boolean;
-
-  /**
-   * Custom runtime import path for compiled utilities
-   * @default "@compiled/react/runtime"
-   */
-  runtimeImport?: string;
-
-  /**
-   * Prefix for generated CSS class names
-   * @default "_"
-   */
-  classNamePrefix?: string;
-
-  /**
-   * Enable CSS minification
-   * @default true
-   */
-  minifyCss?: boolean;
-
-  /**
-   * Add component names as class names in development
-   * @default false
-   */
-  addComponentName?: boolean;
-
-  /**
-   * Class name compression map for smaller bundles
-   * @default undefined
-   */
-  classNameCompressionMap?: { [key: string]: string };
-
-  /**
-   * Prefix for generated classes' hashes
-   * @default undefined
-   */
-  classHashPrefix?: string;
-
-  /**
-   * Whether to process xcss usages
-   * @default true
-   */
-  processXcss?: boolean;
+  runtimeImport?: string; // '@compiled/react/runtime'
+  extract?: boolean; // when true remove CC/CS and emit sheets as consts
+  extractStylesToDirectory?: { source: string; dest: string };
+  filename?: string;
+  sourceFileName?: string;
 }
 
-/**
- * Get the path to the WASM plugin file
- */
-export function getWasmPluginPath(): string {
-  // Prefer packaged WASM at package root (production)
-  const packaged = path.join(__dirname, '..', 'compiled_swc_plugin.wasm');
+export function getWasmPluginPath2(): string {
+  const packaged = path.join(__dirname, '..', 'compiled_swc_plugin2.wasm');
   if (fs.existsSync(packaged)) return packaged;
-  // Fallback to target directory (development)
   return path.join(
     __dirname,
     '..',
     'target',
     'wasm32-wasip1',
     'release',
-    'compiled_swc_plugin.wasm'
+    'compiled_swc_plugin2.wasm'
   );
 }
 
-/**
- * Check if the WASM plugin exists
- */
-export function isWasmPluginAvailable(): boolean {
-  return fs.existsSync(getWasmPluginPath());
+export function isWasmPluginAvailable2(): boolean {
+  return fs.existsSync(getWasmPluginPath2());
 }
 
-/**
- * Create SWC plugin configuration with sensible defaults
- */
-export function createPluginConfig(
-  options: CompiledSwcPluginOptions = {}
-): CompiledSwcPluginOptions {
+export function createPluginConfig2(options: PluginOptions2 = {}): Required<PluginOptions2> {
   return {
     importSources: options.importSources || ['@compiled/react', '@atlaskit/css'],
     development: options.development || false,
     runtimeImport: options.runtimeImport || '@compiled/react/runtime',
-    classNamePrefix: options.classNamePrefix || '_',
-    minifyCss: options.minifyCss !== false,
-    addComponentName: options.addComponentName || false,
-    classNameCompressionMap: options.classNameCompressionMap,
-    classHashPrefix: options.classHashPrefix,
-    processXcss: options.processXcss !== false,
+    extract: options.extract ?? true,
+    extractStylesToDirectory: options.extractStylesToDirectory || (undefined as any),
+    filename: options.filename || '',
+    sourceFileName: options.sourceFileName || '',
   };
 }
 
 /**
- * Get the SWC plugin configuration for use with @swc/core
- * Returns [wasmPath, pluginOptions] tuple for use in SWC experimental.plugins
+ * Returns true if the given code string should be transformed by the plugin,
+ * based on the presence of any configured import sources.
  */
-export function getSwcPlugin(
-  options: CompiledSwcPluginOptions = {}
-): [string, CompiledSwcPluginOptions] {
-  const wasmPath = getWasmPluginPath();
+export function shouldEnableForCode2(code: string, options: PluginOptions2 = {}): boolean {
+  const cfg = createPluginConfig2(options);
+  return cfg.importSources.some((s) => code.includes(s));
+}
 
-  if (!isWasmPluginAvailable()) {
+export function getSwcPlugin2(options: PluginOptions2 = {}): [string, Required<PluginOptions2>] {
+  const wasmPath = getWasmPluginPath2();
+  if (!isWasmPluginAvailable2()) {
     throw new Error(`SWC plugin WASM file not found at: ${wasmPath}`);
   }
-
-  const config = createPluginConfig(options);
-
+  const config = createPluginConfig2(options);
   return [wasmPath, config];
 }
 
-// Re-export types for convenience
-export type { CompiledSwcPluginOptions as PluginOptions };
-
-// Default export for easy importing
 export default {
-  getWasmPluginPath,
-  isWasmPluginAvailable,
-  createPluginConfig,
-  getSwcPlugin,
+  getWasmPluginPath2,
+  isWasmPluginAvailable2,
+  createPluginConfig2,
+  shouldEnableForCode2,
+  getSwcPlugin2,
 };

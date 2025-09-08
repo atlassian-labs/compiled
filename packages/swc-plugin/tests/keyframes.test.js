@@ -1,6 +1,6 @@
 const { transformResultString } = require('./swc-output');
 
-describe('keyframes (swc-plugin2)', () => {
+describe('keyframes (swc-plugin)', () => {
   it('inlines animation-name for css prop object call expression', async () => {
     const code = `
       import { css, keyframes } from '@compiled/react';

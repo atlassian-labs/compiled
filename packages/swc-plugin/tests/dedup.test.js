@@ -1,6 +1,6 @@
 const { transformResultString } = require('./swc-output');
 
-describe('deduplication (swc-plugin2)', () => {
+describe('deduplication (swc-plugin)', () => {
   it('deduplicates identical css() rules across multiple usages', async () => {
     const code = `
       import { css } from '@compiled/react';

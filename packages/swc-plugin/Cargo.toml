@@ -1,15 +1,15 @@
 [package]
-name = "compiled-swc-plugin"
-version = "0.1.0"
+name = "compiled-swc-plugin2"
+version = "0.0.1"
 edition = "2024"
-description = "A SWC implementation of the Compiled CSS-in-JS library focusing on xcss-prop functionality"
+description = "SWC plugin v2 for Compiled CSS-in-JS focusing on css/cssMap"
 license = "Apache-2.0"
 
 [package.metadata.swc]
 plugin = true
 
 [lib]
-name = "compiled_swc_plugin"
+name = "compiled_swc_plugin2"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
@@ -23,12 +23,9 @@ swc_core = { version = "0.90", features = [
 ] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-path-clean = "1.0"
-pathdiff = "0.2"
 regex = "1.10"
-
-# WASI target automatically supports getrandom
-# No special dependencies needed for wasm32-wasip1
+blake3 = "1.5"
+base64 = "0.22"
 
 [dev-dependencies]
 swc_core = { version = "0.90", features = [
@@ -42,3 +39,4 @@ swc_core = { version = "0.90", features = [
 lto = true
 codegen-units = 1
 opt-level = "z"
+

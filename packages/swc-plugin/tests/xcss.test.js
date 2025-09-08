@@ -1,6 +1,6 @@
 const { transformResultString } = require('./swc-output');
 
-describe('xcss prop (swc-plugin2)', () => {
+describe('xcss prop (swc-plugin)', () => {
   it('transforms static inline object (extract:true)', async () => {
     const code = `
       <Component xcss={{ color: 'red' }} />
@@ -269,5 +269,5 @@ describe('xcss prop (swc-plugin2)', () => {
       "
     `);
   });
-  // processXcss option is not supported in swc-plugin2
+  // processXcss option is not supported in swc-plugin
 });

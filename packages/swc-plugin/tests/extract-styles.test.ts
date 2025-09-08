@@ -1,9 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 
-const { transform } = require('./swc-output');
+import { transform } from './swc-output';
 
-describe('swc-plugin2 with stylesheet extraction (extractStylesToDirectory)', () => {
+describe('swc-plugin with stylesheet extraction (extractStylesToDirectory)', () => {
   const code = `
     import '@compiled/react';
 
@@ -23,7 +23,7 @@ describe('swc-plugin2 with stylesheet extraction (extractStylesToDirectory)', ()
 
     expect(actual).toContain('import "./test.compiled.css"');
     const cssPath = path.join(process.cwd(), 'dist', 'test.compiled.css');
-    console.log("CHECKING CSS PATH", cssPath);
+    console.log('CHECKING CSS PATH', cssPath);
     expect(fs.existsSync(cssPath)).toBe(true);
     const css = fs.readFileSync(cssPath, 'utf8');
     expect(css).toMatch(/\._[A-Za-z0-9_-]+\{font-size:12px\}/);
@@ -40,5 +40,3 @@ describe('swc-plugin2 with stylesheet extraction (extractStylesToDirectory)', ()
     ).rejects.toThrow();
   });
 });
-
-

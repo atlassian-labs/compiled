@@ -1,4 +1,4 @@
-@compiled/swc-plugin2
+@compiled/swc-plugin
 
 Experimental SWC plugin focused on `css` and `cssMap` extraction without styled/keyframes/module traversal.
 

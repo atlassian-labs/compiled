@@ -21,7 +21,7 @@
     "build:parcel": "ttsc --build examples/parcel/tsconfig.json && yarn workspace @compiled/parcel-app build",
     "build:ssr": "CI=false && ttsc --build examples/ssr/tsconfig.json && yarn workspace @compiled/ssr-app build",
     "build:storybook": "build-storybook",
-    "build:swc2": "yarn workspace @compiled/swc-plugin2 run build",
+    "build:swc2": "yarn workspace @compiled/swc-plugin run build",
     "build:webpack": "yarn build:babel-fixture && ttsc --build examples/webpack/tsconfig.json && yarn workspace @compiled/webpack-app build",
     "build:webpack:extract": "EXTRACT_TO_CSS=true yarn build:webpack",
     "bundlesize": "yarn build && size-limit",
@@ -33,7 +33,7 @@
     "postinstall": "scripts/postinstall.sh",
     "lint": "eslint --config .eslintrc.js --ext js,json,jsx,ts,tsx .",
     "lint:fix": "yarn lint -- --fix",
-    "pack:swc2": "cd packages/swc-plugin2 && npm pack --silent && mv -f compiled-swc-plugin2-0.0.1.tgz compiled-swc-plugin2-v0.0.1.tgz || true",
+    "pack:swc2": "cd packages/swc-plugin && npm pack --silent && mv -f compiled-swc-plugin-0.0.1.tgz compiled-swc-plugin-v0.0.1.tgz || true",
     "prettier:check": "prettier ./ --check",
     "prettier:fix": "prettier ./ --write",
     "refresh:swc2": "yarn build:swc2 && yarn pack:swc2 && yarn install --force",
@@ -49,7 +49,7 @@
     "test:cover": "yarn test --collectCoverage",
     "test:imports": "node test/test-imports",
     "test:parcel": "jest --testMatch '**/src/**/*.parceltest.{ts,tsx}' --testEnvironment=node",
-    "pretest:parcel:swc": "yarn workspace @compiled/swc-plugin2 build && yarn workspace @compiled/parcel-transformer-swc build",
+    "pretest:parcel:swc": "yarn workspace @compiled/swc-plugin build && yarn workspace @compiled/parcel-transformer-swc build",
     "test:parcel:swc": "jest --no-cache --testMatch '**/packages/parcel-transformer-swc/src/**/transformer.parceltest.ts' --runInBand --verbose",
     "test:parcel:swc:watch": "jest --no-cache --watch --testMatch '**/packages/parcel-transformer-swc/src/**/transformer.parceltest.ts' --runInBand --verbose",
     "test:vr": "yarn loki --host host.docker.internal",
@@ -71,7 +71,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@compiled/swc-plugin2": "file:packages/swc-plugin2"
+    "@compiled/swc-plugin": "file:packages/swc-plugin"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.26.9",
