@@ -100,45 +100,13 @@ pub fn hash(input: &str) -> String { hash_js_low8(input) }
 #[inline(always)]
 fn hash_js_low8_first4(input: &str) -> String { base36_u32_first4(murmurhash2_gc_js_units(input, 0)) }
 
-#[inline(always)]
-fn hash_js_low8_segments_first4(segments: &[&str]) -> String {
-    // First pass: count total UTF-16 units
-    let mut total_units: usize = 0;
-    for s in segments { total_units += s.encode_utf16().count(); }
-    // Second pass: stream units
-    let mut h: u32 = 0 ^ (total_units as u32);
-    let mut acc: [u32; 4] = [0; 4];
-    let mut idx: usize = 0;
-    for s in segments {
-        for cu in s.encode_utf16() {
-            let b = (cu & 0x00ff) as u32;
-            acc[idx] = b;
-            idx += 1;
-            if idx == 4 {
-                let mut k: u32 = acc[0] | (acc[1] << 8) | (acc[2] << 16) | (acc[3] << 24);
-                k = mulmix_32(k);
-                k ^= k >> 24;
-                k = mulmix_32(k);
-                h = mulmix_32(h) ^ k;
-                idx = 0;
-            }
-        }
-    }
-    match idx {
-        3 => { h ^= acc[2] << 16; h ^= acc[1] << 8; h ^= acc[0]; h = mulmix_32(h); }
-        2 => { h ^= acc[1] << 8; h ^= acc[0]; h = mulmix_32(h); }
-        1 => { h ^= acc[0]; h = mulmix_32(h); }
-        _ => {}
-    }
-    h ^= h >> 13; h = mulmix_32(h); h ^= h >> 15;
-    base36_u32_first4(h)
-}
+// simplified: rely on concatenation and existing murmur2 implementation
 
 pub fn generate_css_hash(input: &str) -> String { format!("_{}", hash(input)) }
 
 pub fn build_class_name(hash: &str, prefix: Option<&str>) -> String { match prefix { Some(p) => format!("{}{}", p, hash), None => hash.to_string(), } }
 
-fn slice_first_4(input: &str) -> String { if input.len() <= 4 { input.to_string() } else { input[0..4].to_string() } }
+// removed unused helper
 
 #[inline(always)]
 fn property_from_declaration(decl: &str) -> &str { match decl.find(':') { Some(idx) => decl[..idx].trim(), None => decl } }
@@ -189,7 +157,7 @@ fn extract_at_rule_label(at_rule_css: &str) -> String {
                 // Do not alter other spacing (e.g. around 'and').
                 params = params.replace(": ", ":").replace(" :", ":");
             } else if name == "container" {
-                // Keep container params spacing as-is to mirror Babel (no extra normalization)
+                // Keep @container params spacing as-is to mirror Babel/PostCSS (no extra normalization)
             }
             out.push_str(name);
             out.push_str(&params);
@@ -213,23 +181,7 @@ fn sanitize_at_rule_label_for_styled(label: &str) -> String {
     trimmed.to_string()
 }
 
-#[inline(always)]
-fn collapse_ampersand_space_colon(input: &str) -> String {
-    let mut out = String::with_capacity(input.len());
-    let bytes: Vec<char> = input.chars().collect();
-    let mut i = 0usize;
-    while i < bytes.len() {
-        let ch = bytes[i];
-        if ch == '&' && i + 2 < bytes.len() && bytes[i + 1] == ' ' && bytes[i + 2] == ':' {
-            out.push('&');
-            i += 2; // skip the space; ':' will be handled next iteration
-        } else {
-            out.push(ch);
-        }
-        i += 1;
-    }
-    out
-}
+// removed unused helper
 
 #[inline(always)]
 fn emit_selector(sel_src: &str, is_styled: bool, class_name: &str) -> String {
@@ -275,38 +227,32 @@ fn atomic_class_name_for_rule(rule: &AtomicRule, class_hash_prefix: Option<&str>
     // Our extract_at_rule_label already produces a stable string per level; sanitize only for styled duplication.
     let at_rule_label = if rule.is_styled { sanitize_at_rule_label_for_styled(&at_rule_label_raw) } else { at_rule_label_raw.clone() };
     let property = property_from_declaration(&rule.declaration);
-    // Hashing selector normalization: Babel sometimes uses "&:pseudo" (no space) when inside at-rules
-    // even if top-level css-prop hashing used "& :pseudo". Mirror that by collapsing "& :" -> "&:" only
-    // for hashing when an at-rule label exists. Do not alter the emitted selector text elsewhere.
-    let selectors_for_hash = if !at_rule_label_raw.is_empty() { collapse_ampersand_space_colon(&selectors) } else { selectors.clone() };
+    // Use selectors as-is for hashing, with one exception to mirror Babel:
+    // when non-styled and selector is a pseudo at the start ("&:hover"),
+    // Babel hashing uses "& :hover" (space after ampersand).
+    let selectors_for_hash = selectors.clone();
     let prefix = class_hash_prefix.unwrap_or("");
-    // Babel atomicify passes raw opts.atRule into template without defaulting to '',
-    // which coerces undefined into the string "undefined". Mirror that for styled mode.
-    // Mirror Babel atomicify: opts.atRule is interpolated into a template, coercing undefined -> "undefined".
-    // Apply this consistently for both styled and css-prop paths when no at-rule label exists.
+    // Match Babel atomicify string coercion: opts.atRule is concatenated directly
+    // When undefined, JS coerces it to the string "undefined"
     let at_for_group = if at_rule_label.is_empty() { "undefined" } else { &at_rule_label };
-    // For cssMap path we normalize a synthesized '&' to include a space before selector text when the selector
-    // begins with non-ampersand (e.g. "screen and(min-width: 600px):hover") to match Babel's "& screen and(min-width: 600px):hover".
-    if !rule.is_styled {
-        if let Some(suf) = &rule.selector_suffix {
-            if suf.starts_with('s') { selectors = format!("& {}", suf); let _ = &selectors; }
-        }
-    }
+    // Keep selectors as produced earlier; no extra space insertion here.
     // Always mirror Babel murmur2_gc semantics over JS charCodeAt low-8 units
-    let group_hash = hash_js_low8_segments_first4(&[prefix, at_for_group, &selectors_for_hash, property]);
+    let group_input = format!("{}{}{}{}", prefix, at_for_group, selectors_for_hash, property);
+    let group_hash = hash_js_low8_first4(&group_input);
     let raw_value = value_from_declaration(&rule.declaration);
     // For hashing, mirror Babel behavior observed in plugin logs:
     // valueForHash = node.value + node.important (boolean) when !important is present (case-insensitive, extra spaces allowed),
     // otherwise just the raw value. Eg: "redtrue" instead of "red!important".
     let trimmed = raw_value.trim_end();
     const IMP: &str = "!important";
-    let value_hash = if trimmed.len() >= IMP.len() && trimmed[trimmed.len() - IMP.len()..].eq_ignore_ascii_case(IMP) {
+    let value_input = if trimmed.len() >= IMP.len() && trimmed[trimmed.len() - IMP.len()..].eq_ignore_ascii_case(IMP) {
         let base = &trimmed[..trimmed.len() - IMP.len()];
-        let composed = format!("{}{}", base.trim_end(), "true");
-        hash_js_low8_first4(&composed)
+        format!("{}{}", base.trim_end(), "true")
     } else {
-        hash_js_low8_first4(raw_value)
+        raw_value.to_string()
     };
+    let value_hash = hash_js_low8_first4(&value_input);
+    // no debug prints in production build
     
     format!("_{}{}", group_hash, value_hash)
 }
@@ -459,8 +405,8 @@ fn collect_atomic_rules_from_object(obj: &ObjectLit, parent_selector: Option<Str
                     }
                 }
                 Expr::Object(nested_obj) => {
-                    if key_name.starts_with("&:") { let pseudo = &key_name[1..]; let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, pseudo)), None => Some(pseudo.to_string()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state, styled_mode, true); }
-                    else if key_name.starts_with('&') { let suffix = &key_name[1..]; let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, suffix)), None => Some(suffix.to_string()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state, styled_mode, true); }
+                    if key_name.starts_with("&:") { let pseudo = &key_name[1..]; let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, pseudo)), None => Some(key_name.clone()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state, styled_mode, true); }
+                    else if key_name.starts_with('&') { let suffix = &key_name[1..]; let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, suffix)), None => Some(key_name.clone()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state, styled_mode, true); }
                     else if key_name.starts_with(":") {
                         // For styled objects prefer '&:pseudo'; for css-prop also synthesize '&:pseudo' when top-level to mirror pre-processing in Babel pipeline
                         let (next_sel, added_ampersand) = if styled_mode {

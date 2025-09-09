@@ -518,6 +518,7 @@ describe('hash compatibility between Babel and SWC', () => {
 
     const b = extractHashes(babelOut);
     const s = extractHashes(swcOut);
+    // eslint-disable-next-line no-console
     expect(b.classes).toEqual(s.classes);
     expect(b.keyframes).toEqual(s.keyframes);
   });

@@ -5,8 +5,9 @@ import { transformSync as babelTransformSync } from '@babel/core';
 import { transformSyncFast as swcTransform } from './swc-output';
 
 const ITERATIONS = Number(process.env.PERF_ITERS || 200);
+const PERF_TIMEOUT_MS = Number(process.env.PERF_TIMEOUT_MS || 60000);
 
-jest.setTimeout(60000);
+jest.setTimeout(PERF_TIMEOUT_MS);
 
 type BenchResult = {
   name: string;

@@ -239,7 +239,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _3 = "._838l13q2:hover{color:blue}";
+      const _3 = "._30l313q2:hover{color:blue}";
       const _2 = "._1hwdbf54 + label ~ div{color:green}";
       const _ = "._syaz5scu{color:red}";
       import { styled } from '@compiled/react';
@@ -251,7 +251,7 @@ describe('styled (swc-plugin)', () => {
               className: ax([
                   "_syaz5scu",
                   "_1hwdbf54",
-                  "_838l13q2",
+                  "_30l313q2",
                   __cmplp.className
               ]),
               style: {
