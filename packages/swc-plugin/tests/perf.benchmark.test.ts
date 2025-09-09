@@ -13,6 +13,22 @@ type BenchResult = {
   opsPerSec: number;
 };
 
+async function benchAsync(
+  name: string,
+  runOnce: () => Promise<void>,
+  iters: number
+): Promise<BenchResult> {
+  const start = process.hrtime.bigint();
+  for (let i = 0; i < iters; i++) {
+    await runOnce();
+  }
+  const end = process.hrtime.bigint();
+  const ns = Number(end - start);
+  const secs = ns / 1e9;
+  const opsPerSec = iters / secs;
+  return { name, opsPerSec };
+}
+
 function benchSync(name: string, runOnce: () => void, iters: number): BenchResult {
   const start = process.hrtime.bigint();
   for (let i = 0; i < iters; i++) {
