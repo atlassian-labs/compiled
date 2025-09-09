@@ -26,6 +26,7 @@ serde_json = "1.0"
 regex = "1.10"
 blake3 = "1.5"
 base64 = "0.22"
+ahash = "0.8"
 
 [dev-dependencies]
 swc_core = { version = "0.90", features = [

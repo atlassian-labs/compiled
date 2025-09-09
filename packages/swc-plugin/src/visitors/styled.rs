@@ -39,7 +39,7 @@ pub fn transform_styled_call(
     n: &mut Expr,
     call: &CallExpr,
     _state: &mut TransformState,
-    css_content_to_var: &mut std::collections::HashMap<String, String>,
+    css_content_to_var: &mut ahash::AHashMap<String, String>,
     collected_css_sheets: &mut Vec<(String, String)>,
     extract: bool,
 ) -> (bool, bool) {

@@ -26,40 +26,45 @@ fn mulmix_32(x: u32) -> u32 {
 
 fn murmurhash2_gc_js_units(input: &str, seed: u32) -> u32 {
     // Port of garycourt murmurhash2_gc.js on JS UTF-16 code units with low-8 packing
-    let units: Vec<u16> = input.encode_utf16().collect();
-    let mut l: usize = units.len();
-    let mut h: u32 = seed ^ (l as u32);
-    let mut i: usize = 0;
-    while l >= 4 {
-        let b0 = (units[i] & 0x00ff) as u32;
-        let b1 = (units[i + 1] & 0x00ff) as u32;
-        let b2 = (units[i + 2] & 0x00ff) as u32;
-        let b3 = (units[i + 3] & 0x00ff) as u32;
-        let mut k: u32 = b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
-        k = mulmix_32(k);
-        k ^= k >> 24;
-        k = mulmix_32(k);
-        h = mulmix_32(h) ^ k;
-        i += 4;
-        l -= 4;
-    }
-    match l {
-        3 => {
-            h ^= ((units[i + 2] & 0x00ff) as u32) << 16;
-            h ^= ((units[i + 1] & 0x00ff) as u32) << 8;
-            h ^= (units[i] & 0x00ff) as u32;
-            h = mulmix_32(h);
+    // Streaming variant: avoids allocating the full Vec<u16>
+    let len_units: usize = input.encode_utf16().count();
+    let mut h: u32 = seed ^ (len_units as u32);
+
+    let mut iter = input.encode_utf16();
+    loop {
+        let u0 = match iter.next() { Some(u) => u, None => break };
+        let u1 = iter.next();
+        let u2 = iter.next();
+        let u3 = iter.next();
+        let b0 = (u0 & 0x00ff) as u32;
+        match (u1.map(|v| (v & 0x00ff) as u32), u2.map(|v| (v & 0x00ff) as u32), u3.map(|v| (v & 0x00ff) as u32)) {
+            (Some(b1), Some(b2), Some(b3)) => {
+                let mut k: u32 = b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
+                k = mulmix_32(k);
+                k ^= k >> 24;
+                k = mulmix_32(k);
+                h = mulmix_32(h) ^ k;
+            }
+            (Some(b1), Some(b2), None) => {
+                h ^= b2 << 16;
+                h ^= b1 << 8;
+                h ^= b0;
+                h = mulmix_32(h);
+                break;
+            }
+            (Some(b1), None, None) => {
+                h ^= b1 << 8;
+                h ^= b0;
+                h = mulmix_32(h);
+                break;
+            }
+            (None, None, None) => {
+                h ^= b0;
+                h = mulmix_32(h);
+                break;
+            }
+            _ => unreachable!(),
         }
-        2 => {
-            h ^= ((units[i + 1] & 0x00ff) as u32) << 8;
-            h ^= (units[i] & 0x00ff) as u32;
-            h = mulmix_32(h);
-        }
-        1 => {
-            h ^= (units[i] & 0x00ff) as u32;
-            h = mulmix_32(h);
-        }
-        _ => {}
     }
     h ^= h >> 13;
     h = mulmix_32(h);
@@ -194,9 +199,9 @@ fn atomic_class_name_for_rule(rule: &AtomicRule, class_hash_prefix: Option<&str>
     // otherwise just the raw value. Eg: "redtrue" instead of "red!important".
     let value_for_hash = {
         let trimmed = raw_value.trim_end();
-        let lower = trimmed.to_lowercase();
-        if lower.ends_with("!important") {
-            let base = &trimmed[..trimmed.len() - "!important".len()];
+        const IMP: &str = "!important";
+        if trimmed.len() >= IMP.len() && trimmed[trimmed.len() - IMP.len()..].eq_ignore_ascii_case(IMP) {
+            let base = &trimmed[..trimmed.len() - IMP.len()];
             format!("{}{}", base.trim_end(), "true")
         } else {
             raw_value.to_string()
@@ -213,8 +218,15 @@ fn pseudo_score(selector_suffix: &Option<String>) -> i32 {
 }
 
 pub fn camel_to_kebab_case(input: &str) -> String {
-    let mut result = String::new();
-    for ch in input.chars() { if ch.is_uppercase() { result.push('-'); result.push(ch.to_lowercase().next().unwrap()); } else { result.push(ch); } }
+    let mut result = String::with_capacity(input.len() + 4);
+    for ch in input.chars() {
+        if ch.is_ascii_uppercase() {
+            result.push('-');
+            result.push(ch.to_ascii_lowercase());
+        } else {
+            result.push(ch);
+        }
+    }
     result
 }
 
@@ -451,36 +463,34 @@ pub fn build_atomic_rules_from_expression_with_state(expr: &Expr, state: &Transf
 }
 
 pub fn transform_atomic_rules_to_sheets(rules: &[AtomicRule]) -> (Vec<String>, Vec<String>) {
-    let mut sheets = Vec::new();
-    let mut class_names = Vec::new();
-    // No rule sorting beyond pseudos grouping: maintain insertion order except ensure base before pseudos for stable output
-    for rule in rules.iter().filter(|r| r.at_rule.is_none() && pseudo_score(&r.selector_suffix) == 0) {
+    let mut base: Vec<(String, String)> = Vec::with_capacity(rules.len());
+    let mut pseudos: Vec<(String, String)> = Vec::new();
+    let mut at_rules: Vec<(String, String)> = Vec::new();
+
+    for rule in rules.iter() {
+        let is_at = rule.at_rule.is_some();
+        let is_pseudo = !is_at && pseudo_score(&rule.selector_suffix) != 0;
         let class_name = atomic_class_name_for_rule(rule, None);
-        let sel_raw = if rule.is_styled { rule.selector_suffix.clone().unwrap_or_default() } else { rule.selector_suffix.clone().unwrap_or_default().replace(' ', "") };
+        let sel_src = rule.selector_suffix.clone().unwrap_or_default();
+        let sel_raw = if rule.is_styled { sel_src } else { sel_src.replace(' ', "") };
         let selector = if sel_raw.contains('&') { sel_raw.replace("&", &format!(".{}", class_name)) } else { format!(".{}{}", class_name, sel_raw) };
         let core = format!("{}{{{}}}", selector, compact_declaration(&rule.declaration));
         let css_text = if let Some(ar) = &rule.at_rule { format!("{}{{{}}}", ar, core) } else { core };
-        sheets.push(css_text);
-        class_names.push(class_name);
+        if is_at {
+            at_rules.push((css_text, class_name));
+        } else if is_pseudo {
+            pseudos.push((css_text, class_name));
+        } else {
+            base.push((css_text, class_name));
+        }
     }
-    for rule in rules.iter().filter(|r| r.at_rule.is_none() && pseudo_score(&r.selector_suffix) != 0) {
-        let class_name = atomic_class_name_for_rule(rule, None);
-        let sel_raw = if rule.is_styled { rule.selector_suffix.clone().unwrap_or_default() } else { rule.selector_suffix.clone().unwrap_or_default().replace(' ', "") };
-        let selector = if sel_raw.contains('&') { sel_raw.replace("&", &format!(".{}", class_name)) } else { format!(".{}{}", class_name, sel_raw) };
-        let core = format!("{}{{{}}}", selector, compact_declaration(&rule.declaration));
-        let css_text = if let Some(ar) = &rule.at_rule { format!("{}{{{}}}", ar, core) } else { core };
-        sheets.push(css_text);
-        class_names.push(class_name);
-    }
-    for rule in rules.iter().filter(|r| r.at_rule.is_some()) {
-        let class_name = atomic_class_name_for_rule(rule, None);
-        let sel_raw = if rule.is_styled { rule.selector_suffix.clone().unwrap_or_default() } else { rule.selector_suffix.clone().unwrap_or_default().replace(' ', "") };
-        let selector = if sel_raw.contains('&') { sel_raw.replace("&", &format!(".{}", class_name)) } else { format!(".{}{}", class_name, sel_raw) };
-        let core = format!("{}{{{}}}", selector, compact_declaration(&rule.declaration));
-        let css_text = if let Some(ar) = &rule.at_rule { format!("{}{{{}}}", ar, core) } else { core };
-        sheets.push(css_text);
-        class_names.push(class_name);
-    }
+
+    let total = base.len() + pseudos.len() + at_rules.len();
+    let mut sheets: Vec<String> = Vec::with_capacity(total);
+    let mut class_names: Vec<String> = Vec::with_capacity(total);
+    for (css, cn) in base { sheets.push(css); class_names.push(cn); }
+    for (css, cn) in pseudos { sheets.push(css); class_names.push(cn); }
+    for (css, cn) in at_rules { sheets.push(css); class_names.push(cn); }
     (sheets, class_names)
 }
 
