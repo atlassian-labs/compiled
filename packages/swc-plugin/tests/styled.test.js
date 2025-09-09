@@ -13,7 +13,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3his2scz{color:blue}";
+      const _ = "._syaz13q2{color:blue}";
       import { styled as styled2 } from '@compiled/react';
       import styled from 'styled-components';
       const A = styled.div({
@@ -25,7 +25,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3his2scz",
+                  "_syaz13q2",
                   __cmplp.className
               ]),
               style: {
@@ -48,7 +48,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = '._8b1d13hi{content:""}';
+      const _ = '._1sb2b3bt{content:""}';
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -56,7 +56,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_8b1d13hi",
+                  "_1sb2b3bt",
                   __cmplp.className
               ]),
               style: {
@@ -79,7 +79,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = '._eof013hi:after{content:""}';
+      const _ = '._aetrb3bt:after{content:""}';
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -87,7 +87,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_eof013hi",
+                  "_aetrb3bt",
                   __cmplp.className
               ]),
               style: {
@@ -110,7 +110,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._eof05m30:after{content:''}";
+      const _ = "._aetr1yyf:after{content:''}";
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -118,7 +118,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_eof05m30",
+                  "_aetr1yyf",
                   __cmplp.className
               ]),
               style: {
@@ -141,7 +141,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = '._eof0eyfb:after{content:"😎"}';
+      const _ = '._aetrib82:after{content:"😎"}';
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -149,7 +149,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_eof0eyfb",
+                  "_aetrib82",
                   __cmplp.className
               ]),
               style: {
@@ -171,7 +171,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       import { styled } from '@compiled/react';
       const Button = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -179,7 +179,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3hisej0k",
+                  "_syaz5scu",
                   __cmplp.className
               ]),
               style: {
@@ -202,7 +202,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       import { styled } from '@compiled/react';
       const Button = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -212,7 +212,7 @@ describe('styled (swc-plugin)', () => {
               _
           ]), /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3hisej0k",
+                  "_syaz5scu",
                   __cmplp.className
               ]),
               style: {
@@ -239,9 +239,9 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _3 = "._3op32scz:hover{color:blue}";
-      const _2 = "._9rxa62o2+label~div{color:green}";
-      const _ = "._3hisej0k{color:red}";
+      const _3 = "._838l13q2:hover{color:blue}";
+      const _2 = "._1hwdbf54 + label ~ div{color:green}";
+      const _ = "._syaz5scu{color:red}";
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -249,9 +249,9 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3hisej0k",
-                  "_9rxa62o2",
-                  "_3op32scz",
+                  "_syaz5scu",
+                  "_1hwdbf54",
+                  "_838l13q2",
                   __cmplp.className
               ]),
               style: {
@@ -278,9 +278,9 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _3 = "._5mpx4k5u{margin-top:0}";
-      const _2 = "._6hxr7ngg{line-height:2}";
-      const _ = "._7ql18jm4{font-size:16px}";
+      const _3 = "._19pkidpf{margin-top:0}";
+      const _2 = "._vwz4cs5v{line-height:2}";
+      const _ = "._1wybexct{font-size:16px}";
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -288,9 +288,9 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_7ql18jm4",
-                  "_6hxr7ngg",
-                  "_5mpx4k5u",
+                  "_1wybexct",
+                  "_vwz4cs5v",
+                  "_19pkidpf",
                   __cmplp.className
               ]),
               style: {
@@ -313,10 +313,10 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _4 = "._7wlm154n{padding-left:20px}";
-      const _3 = "._da1ibjn1{padding-bottom:10px}";
-      const _2 = "._vhdx154n{padding-right:20px}";
-      const _ = "._8edybjn1{padding-top:10px}";
+      const _4 = "._19bvgktf{padding-left:20px}";
+      const _3 = "._n3td19bv{padding-bottom:10px}";
+      const _2 = "._u5f3gktf{padding-right:20px}";
+      const _ = "._ca0q19bv{padding-top:10px}";
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -324,10 +324,10 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_8edybjn1",
-                  "_vhdx154n",
-                  "_da1ibjn1",
-                  "_7wlm154n",
+                  "_ca0q19bv",
+                  "_u5f3gktf",
+                  "_n3td19bv",
+                  "_19bvgktf",
                   __cmplp.className
               ]),
               style: {
@@ -353,9 +353,9 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _3 = "@media screen{._93hc8jm4{font-size:16px}}";
-      const _2 = "@media screen{._aooa2scz{color:blue}}";
-      const _ = "._3hisej0k{color:red}";
+      const _3 = "@media screen{._1yzyexct{font-size:16px}}";
+      const _2 = "@media screen{._434713q2{color:blue}}";
+      const _ = "._syaz5scu{color:red}";
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -363,9 +363,9 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3hisej0k",
-                  "_aooa2scz",
-                  "_93hc8jm4",
+                  "_syaz5scu",
+                  "_434713q2",
+                  "_1yzyexct",
                   __cmplp.className
               ]),
               style: {
@@ -388,7 +388,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -396,7 +396,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3hisej0k",
+                  "_syaz5scu",
                   __cmplp.className
               ]),
               style: {
@@ -420,7 +420,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       import { styled } from '@compiled/react';
       const Base = (props)=>/*#__PURE__*/ React.createElement("span", props);
       const C = /*#__PURE__*/ forwardRef(({ as: C = Base, style: __cmpls, ...__cmplp }, __cmplr)=>{
@@ -429,7 +429,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3hisej0k",
+                  "_syaz5scu",
                   __cmplp.className
               ]),
               style: {
@@ -452,7 +452,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -462,7 +462,7 @@ describe('styled (swc-plugin)', () => {
               _
           ]), /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3hisej0k",
+                  "_syaz5scu",
                   __cmplp.className
               ]),
               style: {
@@ -486,7 +486,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       import { styled } from '@compiled/react';
       const Base = (props)=>/*#__PURE__*/ React.createElement("span", props);
       const C = /*#__PURE__*/ forwardRef(({ as: C = Base, style: __cmpls, ...__cmplp }, __cmplr)=>{
@@ -497,7 +497,7 @@ describe('styled (swc-plugin)', () => {
               _
           ]), /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3hisej0k",
+                  "_syaz5scu",
                   __cmplp.className
               ]),
               style: {
@@ -521,7 +521,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       import { styled } from '@compiled/react';
       const A = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -529,7 +529,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3hisej0k",
+                  "_syaz5scu",
                   __cmplp.className
               ]),
               style: {
@@ -545,7 +545,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3hisej0k",
+                  "_syaz5scu",
                   __cmplp.className
               ]),
               style: {
@@ -572,7 +572,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3his3dc4{color:var(--_v1)}";
+      const _ = "._syazchuz{color:var(--_v1)}";
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -582,7 +582,7 @@ describe('styled (swc-plugin)', () => {
           this = this;
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3his3dc4",
+                  "_syazchuz",
                   __cmplp.className
               ]),
               style: {
@@ -607,7 +607,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       import { styled } from '@compiled/react';
       const primary = 'red';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
@@ -616,7 +616,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3hisej0k",
+                  "_syaz5scu",
                   __cmplp.className
               ]),
               style: {
@@ -655,7 +655,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3his3dc4{color:var(--_v1)}";
+      const _ = "._syazchuz{color:var(--_v1)}";
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -663,7 +663,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3his3dc4",
+                  "_syazchuz",
                   __cmplp.className
               ]),
               style: {
@@ -689,7 +689,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3his3dc4{color:var(--_v1)}";
+      const _ = "._syazchuz{color:var(--_v1)}";
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "button", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -697,7 +697,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3his3dc4",
+                  "_syazchuz",
                   __cmplp.className
               ]),
               style: {
@@ -721,7 +721,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._7ql13dc4{font-size:var(--_v1)}";
+      const _ = "._1wybchuz{font-size:var(--_v1)}";
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -729,7 +729,7 @@ describe('styled (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_7ql13dc4",
+                  "_1wybchuz",
                   __cmplp.className
               ]),
               style: {
@@ -753,7 +753,7 @@ describe('styled (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3baj3dc4:hover{border:var(--_v1)}";
+      const _ = "._bfw7chuz:hover{border:var(--_v1)}";
       import { styled } from '@compiled/react';
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -763,7 +763,7 @@ describe('styled (swc-plugin)', () => {
           this = this;
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3baj3dc4",
+                  "_bfw7chuz",
                   __cmplp.className
               ]),
               style: {

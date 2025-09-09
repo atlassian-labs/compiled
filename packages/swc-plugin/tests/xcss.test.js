@@ -8,9 +8,9 @@ describe('xcss prop (swc-plugin)', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "/*#__PURE__*/ import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       React.createElement(Component, {
-          xcss: "_3hisej0k"
+          xcss: "_syaz5scu"
       });
       "
     `);
@@ -32,9 +32,9 @@ describe('xcss prop (swc-plugin)', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "/*#__PURE__*/ import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       React.createElement(Component, {
-          innerXcss: "_3hisej0k"
+          innerXcss: "_syaz5scu"
       });
       "
     `);
@@ -49,9 +49,9 @@ describe('xcss prop (swc-plugin)', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       const styles = {
-          primary: "_3hisej0k"
+          primary: "_syaz5scu"
       };
       /*#__PURE__*/ React.createElement(Component, {
           xcss: styles.primary
@@ -69,11 +69,11 @@ describe('xcss prop (swc-plugin)', () => {
     const out = await transformResultString(code, { extract: false });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = "._3his2scz{color:blue}";
-      const _ = "._3hisej0k{color:red}";
+      const _2 = "._syaz13q2{color:blue}";
+      const _ = "._syaz5scu{color:red}";
       const styles = {
-          primary: "_3hisej0k",
-          secondary: "_3his2scz"
+          primary: "_syaz5scu",
+          secondary: "_syaz13q2"
       };
       /*#__PURE__*/ /*#__PURE__*/ React.createElement(CC, null, /*#__PURE__*/ React.createElement(CS, null, [
           _,
@@ -94,12 +94,12 @@ describe('xcss prop (swc-plugin)', () => {
     const out = await transformResultString(code, { extract: false });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = "._3his2scz{color:blue}";
-      const _ = "._3hisej0k{color:red}";
+      const _2 = "._syaz13q2{color:blue}";
+      const _ = "._syaz5scu{color:red}";
       import { cssMap, j } from '@compiled/react';
       const styles = {
-          primary: "_3hisej0k",
-          secondary: "_3his2scz"
+          primary: "_syaz5scu",
+          secondary: "_syaz13q2"
       };
       /*#__PURE__*/ React.createElement(Component, {
           xcss: j(isPrimary && styles.primary, !isPrimary && styles.secondary)
@@ -117,9 +117,9 @@ describe('xcss prop (swc-plugin)', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       const styles = {
-          primary: "_3hisej0k"
+          primary: "_syaz5scu"
       };
       /*#__PURE__*/ React.createElement(Component, {
           xcss: styles.primary
@@ -176,14 +176,14 @@ describe('xcss prop (swc-plugin)', () => {
     const out = await transformResultString(code, { extract: false });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = "._3his2scz{color:blue}";
-      const _ = "._3hisej0k{color:red}";
+      const _2 = "._syaz13q2{color:blue}";
+      const _ = "._syaz5scu{color:red}";
       import Button from '@atlaskit/button';
       const stylesOne = {
-          text: "_3hisej0k"
+          text: "_syaz5scu"
       };
       const stylesTwo = {
-          text: "_3his2scz"
+          text: "_syaz13q2"
       };
       export function Mixed() {
           return /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement(CC, null, /*#__PURE__*/ React.createElement(CS, null, [
@@ -218,7 +218,7 @@ describe('xcss prop (swc-plugin)', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "/** @jsx jsx */ import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3his1qpg{color:pink}";
+      const _ = "._syaz32ev{color:pink}";
       import { jsx } from '@emotion/react';
       import { Box, xcss } from '@atlaskit/primitives';
       export function Mixed() {
@@ -228,7 +228,7 @@ describe('xcss prop (swc-plugin)', () => {
               })
           }), /*#__PURE__*/ jsx("div", {
               className: ax([
-                  "_3his1qpg"
+                  "_syaz32ev"
               ])
           }));
       }
@@ -253,16 +253,16 @@ describe('xcss prop (swc-plugin)', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "/** @jsx jsx */ import { ax, ix } from "@compiled/react/runtime";
-      const _2 = "._3his1qpg{color:pink}";
-      const _ = "._3hisej0k{color:red}";
+      const _2 = "._syaz32ev{color:pink}";
+      const _ = "._syaz5scu{color:red}";
       import { jsx } from '@emotion/react';
       import { Box } from '@atlaskit/primitives';
       export function Mixed() {
           return /*#__PURE__*/ jsx(React.Fragment, null, /*#__PURE__*/ jsx(Box, {
-              xcss: "_3hisej0k"
+              xcss: "_syaz5scu"
           }), /*#__PURE__*/ jsx("div", {
               className: ax([
-                  "_3his1qpg"
+                  "_syaz32ev"
               ])
           }));
       }

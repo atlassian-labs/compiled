@@ -1,5 +1,6 @@
-const base = require('../../jest.config.json');
 const path = require('path');
+
+const base = require('../../jest.config.json');
 
 module.exports = {
   ...base,

@@ -15,12 +15,12 @@ describe('keyframes (swc-plugin)', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _2 = "._8koknt6j{animation-name:k8xhyq9yh}";
-      const _ = "@keyframes k8xhyq9yh{0%{opacity:1}to{opacity:0}}";
+      const _2 = "._j7hq1sbx{animation-name:k1m8j3od}";
+      const _ = "@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}";
       const fadeOut = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
-              "_8koknt6j"
+              "_j7hq1sbx"
           ])
       });
       "
@@ -39,8 +39,8 @@ describe('keyframes (swc-plugin)', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _2 = "._a6933olu{animation:k71c0py4z 2s ease-in-out}";
-      const _ = "@keyframes k71c0py4z{0%{opacity:1}to{opacity:0}}";
+      const _2 = "._y44vonb9{animation:k1m8j3od 2s ease-in-out}";
+      const _ = "@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}";
       import { styled, keyframes } from '@compiled/react';
       const fadeOut = null;
       const C = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
@@ -49,7 +49,7 @@ describe('keyframes (swc-plugin)', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_a6933olu",
+                  "_y44vonb9",
                   __cmplp.className
               ]),
               style: {

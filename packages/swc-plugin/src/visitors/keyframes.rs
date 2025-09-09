@@ -62,10 +62,91 @@ pub fn transform_keyframes_call(
     }
     let arg = call.args[0].expr.as_ref();
     // Build rule body from object or string
-    // Derive a keyframes name based on a rough hash of input AST
-    let key_for_hash = format!("{:?}", arg);
-    let name_hash = crate::utils::css_builder::hash(&key_for_hash);
-    let kf_name = format!("k{}", &name_hash[..8.min(name_hash.len())]);
+    // Derive a keyframes name based on a canonical JS code string matching Babel's generator for common cases
+    fn number_to_js(n: &Number) -> String { if n.value.fract() == 0.0 { format!("{}", n.value as i64) } else { format!("{}", n.value) } }
+    fn ident_or_str_key(name: &PropName) -> Option<String> { match name { PropName::Ident(i) => Some(i.sym.to_string()), PropName::Str(s) => Some(format!("\"{}\"", s.value)), _ => None } }
+    fn expr_to_js_min(expr: &Expr) -> Option<String> {
+        match expr {
+            Expr::Lit(Lit::Str(s)) => Some(format!("\"{}\"", s.value)),
+            Expr::Lit(Lit::Num(n)) => Some(number_to_js(n)),
+            Expr::Object(o) => object_to_js_min(o),
+            _ => None,
+        }
+    }
+    fn object_to_js_min(obj: &ObjectLit) -> Option<String> {
+        let mut parts: Vec<String> = Vec::new();
+        for prop in &obj.props {
+            if let PropOrSpread::Prop(p) = prop { if let Prop::KeyValue(kv) = p.as_ref() {
+                if let Some(key) = ident_or_str_key(&kv.key) { if let Some(val) = expr_to_js_min(kv.value.as_ref()) { parts.push(format!("{}:{}", key, val)); } }
+            } }
+        }
+        Some(format!("{{{}}}", parts.join(",")))
+    }
+    fn expr_to_js_pretty(expr: &Expr, indent: usize) -> Option<String> {
+        match expr {
+            Expr::Lit(Lit::Str(s)) => Some(format!("\"{}\"", s.value)),
+            Expr::Lit(Lit::Num(n)) => Some(number_to_js(n)),
+            Expr::Object(o) => object_to_js_pretty(o, indent + 2),
+            _ => None,
+        }
+    }
+    fn object_to_js_pretty(obj: &ObjectLit, indent: usize) -> Option<String> {
+        let ind = " ".repeat(indent);
+        let ind2 = " ".repeat(indent + 2);
+        let mut out = String::new();
+        out.push_str("{\n");
+        // Collect key-value props in order
+        let mut kvs: Vec<(&PropName, &Expr)> = Vec::new();
+        for prop in &obj.props {
+            if let PropOrSpread::Prop(p) = prop {
+                if let Prop::KeyValue(kv) = p.as_ref() {
+                    kvs.push((&kv.key, kv.value.as_ref()));
+                }
+            }
+        }
+        for (idx, (key_node, val_expr)) in kvs.iter().enumerate() {
+            if let Some(key) = ident_or_str_key(key_node) {
+                out.push_str(&format!("{}{}: ", ind2, key));
+                match *val_expr {
+                    Expr::Object(inner) => {
+                        // Print nested object with its own braces and indentation
+                        if let Some(inner_str) = object_to_js_pretty(inner, indent + 2) {
+                            out.push_str(&inner_str);
+                        } else {
+                            out.push_str("{}");
+                        }
+                    }
+                    Expr::Lit(Lit::Str(s)) => out.push_str(&format!("\"{}\"", s.value)),
+                    Expr::Lit(Lit::Num(n)) => out.push_str(&number_to_js(n)),
+                    _ => return None,
+                }
+                if idx + 1 < kvs.len() { out.push(','); }
+                out.push('\n');
+            }
+        }
+        out.push_str(&format!("{}{}", ind, "}"));
+        Some(out)
+    }
+    let gen_code = match arg {
+        Expr::Object(o) => {
+            // Generate pretty-printed code to match Babel generator defaults
+            let pretty = object_to_js_pretty(o, 0).unwrap_or("{}".to_string());
+            format!("keyframes({})", pretty)
+        },
+        _ => {
+            // Fallback to simple display implementation
+            let s = format!("{:?}", arg);
+            format!("keyframes({})", s)
+        }
+    };
+    // Debug print always for now to ensure parity; adjust or gate via env if too noisy
+    let codes: Vec<u32> = gen_code.chars().map(|c| c as u32).collect();
+    eprintln!(
+        "[HASHDBG] {{\"tag\":\"HASHDBG\",\"where\":\"swc-keyframes\",\"genCode\":{:?},\"charCodes\":{:?}}}",
+        gen_code, codes
+    );
+    let name_hash = crate::utils::css_builder::hash(&gen_code);
+    let kf_name = format!("k{}", name_hash);
     let mut body = String::new();
     let mut var_specs: Vec<KeyframeVarSpec> = Vec::new();
     match arg {

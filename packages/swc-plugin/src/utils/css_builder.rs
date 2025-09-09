@@ -1,10 +1,9 @@
 use swc_core::ecma::ast::*;
 use crate::types::TransformState;
-use blake3;
 
-fn base36_bytes(mut v: u128) -> String {
+fn base36_u32(mut v: u32) -> String {
     const DIGITS: &[u8; 36] = b"0123456789abcdefghijklmnopqrstuvwxyz";
-    let mut buf = [0u8; 32];
+    let mut buf = [0u8; 16];
     let mut i = buf.len();
     if v == 0 { return "0".to_string(); }
     while v > 0 {
@@ -16,20 +15,93 @@ fn base36_bytes(mut v: u128) -> String {
     String::from_utf8(buf[i..].to_vec()).unwrap()
 }
 
-fn blake3_base36(input: &str, out_len: usize) -> String {
-    let hash = blake3::hash(input.as_bytes());
-    // take 16 bytes (128 bits) then encode base36
-    let mut arr = [0u8; 16];
-    arr.copy_from_slice(&hash.as_bytes()[..16]);
-    let v = u128::from_be_bytes(arr);
-    let mut s = base36_bytes(v);
-    if s.len() > out_len { s.truncate(out_len); }
-    s
+// MurmurHash2 (Gary Court JS port semantics) over bytes, seed=0, returning base36 string
+fn mulmix_32(x: u32) -> u32 {
+    // Equivalent to (x & 0xffff) * m + ((((x >>> 16) * m) & 0xffff) << 16) with u32 wrapping
+    let m: u32 = 0x5bd1e995;
+    let lo = (x & 0xffff).wrapping_mul(m);
+    let hi = (((x >> 16).wrapping_mul(m)) & 0xffff) << 16;
+    lo.wrapping_add(hi)
 }
 
-pub fn hash(input: &str) -> String { blake3_base36(input, 8) }
+fn murmurhash2_gc_js_units(input: &str, seed: u32) -> u32 {
+    // Port of garycourt murmurhash2_gc.js on JS UTF-16 code units with low-8 packing
+    let units: Vec<u16> = input.encode_utf16().collect();
+    let mut l: usize = units.len();
+    let mut h: u32 = seed ^ (l as u32);
+    let mut i: usize = 0;
+    while l >= 4 {
+        let b0 = (units[i] & 0x00ff) as u32;
+        let b1 = (units[i + 1] & 0x00ff) as u32;
+        let b2 = (units[i + 2] & 0x00ff) as u32;
+        let b3 = (units[i + 3] & 0x00ff) as u32;
+        let mut k: u32 = b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
+        k = mulmix_32(k);
+        k ^= k >> 24;
+        k = mulmix_32(k);
+        h = mulmix_32(h) ^ k;
+        i += 4;
+        l -= 4;
+    }
+    match l {
+        3 => {
+            h ^= ((units[i + 2] & 0x00ff) as u32) << 16;
+            h ^= ((units[i + 1] & 0x00ff) as u32) << 8;
+            h ^= (units[i] & 0x00ff) as u32;
+            h = mulmix_32(h);
+        }
+        2 => {
+            h ^= ((units[i + 1] & 0x00ff) as u32) << 8;
+            h ^= (units[i] & 0x00ff) as u32;
+            h = mulmix_32(h);
+        }
+        1 => {
+            h ^= (units[i] & 0x00ff) as u32;
+            h = mulmix_32(h);
+        }
+        _ => {}
+    }
+    h ^= h >> 13;
+    h = mulmix_32(h);
+    h ^= h >> 15;
+    h
+}
 
-pub fn generate_css_hash(input: &str) -> String { format!("_{}", blake3_base36(input, 8)) }
+fn hash_js_low8(input: &str) -> String { base36_u32(murmurhash2_gc_js_units(input, 0)) }
+
+fn hash_utf16le(input: &str) -> String {
+    // Hash the full UTF-16LE byte stream (2 bytes per code unit)
+    let mut bytes: Vec<u8> = Vec::with_capacity(input.len() * 2);
+    for cu in input.encode_utf16() { bytes.push((cu & 0x00ff) as u8); bytes.push((cu >> 8) as u8); }
+    // Reuse the same 32-bit pipeline over bytes by interpreting each 4 bytes as a u32 little-endian
+    let s = bytes;
+    let mut l: usize = s.len();
+    let mut h: u32 = 0 ^ (l as u32);
+    let mut i: usize = 0;
+    while l >= 4 {
+        let mut k: u32 = (s[i] as u32) | ((s[i + 1] as u32) << 8) | ((s[i + 2] as u32) << 16) | ((s[i + 3] as u32) << 24);
+        k = mulmix_32(k);
+        k ^= k >> 24;
+        k = mulmix_32(k);
+        h = mulmix_32(h) ^ k;
+        i += 4;
+        l -= 4;
+    }
+    match l {
+        3 => { h ^= (s[i + 2] as u32) << 16; h ^= (s[i + 1] as u32) << 8; h ^= s[i] as u32; h = mulmix_32(h); }
+        2 => { h ^= (s[i + 1] as u32) << 8; h ^= s[i] as u32; h = mulmix_32(h); }
+        1 => { h ^= s[i] as u32; h = mulmix_32(h); }
+        _ => {}
+    }
+    h ^= h >> 13;
+    h = mulmix_32(h);
+    h ^= h >> 15;
+    base36_u32(h)
+}
+
+pub fn hash(input: &str) -> String { hash_js_low8(input) }
+
+pub fn generate_css_hash(input: &str) -> String { format!("_{}", hash(input)) }
 
 pub fn build_class_name(hash: &str, prefix: Option<&str>) -> String { match prefix { Some(p) => format!("{}{}", p, hash), None => hash.to_string(), } }
 
@@ -39,27 +111,142 @@ fn property_from_declaration(decl: &str) -> &str { match decl.find(':') { Some(i
 
 fn value_from_declaration(decl: &str) -> &str { match decl.find(':') { Some(idx) => decl[idx + 1..].trim(), None => "" } }
 
-fn compact_selector_suffix(input: &str) -> String {
-    input.chars().filter(|c| !c.is_whitespace()).collect()
-}
-
 fn normalized_selectors(selector_suffix: &Option<String>) -> String {
     match selector_suffix {
-        Some(suf) if !suf.is_empty() => format!("&{}", compact_selector_suffix(suf)),
-        _ => "&".to_string(),
+        Some(suf) => {
+            let trimmed = suf.trim();
+            if trimmed.is_empty() { "&".to_string() }
+            else if trimmed.contains('&') { trimmed.to_string() }
+            else if trimmed.starts_with(':') { format!("& {}", trimmed) }
+            else { format!("& {}", trimmed) }
+        }
+        None => "&".to_string(),
     }
 }
 
+fn extract_at_rule_label(at_rule_css: &str) -> String {
+    // Convert a CSS at-rule chain like "@media screen and (min-width: 600px){...}"
+    // into a label string "mediascreen and (min-width: 600px)" like Babel's atomicify.
+    let mut out = String::new();
+    let bytes = at_rule_css.as_bytes();
+    let mut i = 0usize;
+    while i < bytes.len() {
+        if bytes[i] == b'@' {
+            i += 1;
+            let name_start = i;
+            while i < bytes.len() && ((bytes[i] as char).is_ascii_alphabetic() || bytes[i] == b'-') { i += 1; }
+            let name = &at_rule_css[name_start..i];
+            // skip spaces
+            while i < bytes.len() && (bytes[i] as char).is_ascii_whitespace() { i += 1; }
+            let params_start = i;
+            while i < bytes.len() && bytes[i] != b'{' { i += 1; }
+            let mut params = at_rule_css[params_start..i].to_string();
+            // Trim any whitespace at both ends similar to PostCSS serialization used by Babel
+            params = params.trim().to_string();
+            if name == "supports" {
+                // PostCSS normalizes some whitespace; match Babel label by stripping spaces
+                params = params.replace(' ', "");
+            } else if name == "media" {
+                // Match Babel label formatting for media params by removing spaces around ':' in features
+                // e.g. "screen and (min-width: 600px)" -> "screen and (min-width:600px)"
+                // Do not alter other spacing (e.g. around 'and').
+                params = params.replace(": ", ":").replace(" :", ":");
+            } else if name == "container" {
+                // Keep container params spacing as-is to mirror Babel (no extra normalization)
+            }
+            out.push_str(name);
+            out.push_str(&params);
+            if i < bytes.len() && bytes[i] == b'{' { i += 1; }
+        } else {
+            i += 1;
+        }
+    }
+    out
+}
+
+fn sanitize_at_rule_label_for_styled(label: &str) -> String {
+    let trimmed = label.trim_end_matches('}');
+    let len = trimmed.len();
+    if len > 0 && len % 2 == 0 {
+        let mid = len / 2;
+        let (a, b) = trimmed.split_at(mid);
+        if a == b { return a.to_string(); }
+    }
+    trimmed.to_string()
+}
+
 fn atomic_class_name_for_rule(rule: &AtomicRule, class_hash_prefix: Option<&str>) -> String {
-    let selectors = normalized_selectors(&rule.selector_suffix);
-    let at_rule = rule.at_rule.as_deref().unwrap_or("");
+    let mut selectors = normalized_selectors(&rule.selector_suffix);
+    // For css-prop path, normalize attribute selector spacing: '&[x]' -> '& [x]'
+    if !rule.is_styled && selectors.starts_with("&[") {
+        selectors = selectors.replacen("&[", "& [", 1);
+    }
+    // Keep '&:pseudo' as-is; Babel group hashing uses '&:pseudo' (no space)
+    let at_rule_label_raw = rule
+        .at_rule
+        .as_deref()
+        .map(extract_at_rule_label)
+        .unwrap_or_else(|| "".to_string());
+    // In Babel, label building for nested at-rules concatenates names/params in nesting order, e.g.
+    // supports(display:grid)media screen and (min-width: 600px)
+    // Our extract_at_rule_label already produces a stable string per level; sanitize only for styled duplication.
+    let at_rule_label = if rule.is_styled { sanitize_at_rule_label_for_styled(&at_rule_label_raw) } else { at_rule_label_raw.clone() };
     let property = property_from_declaration(&rule.declaration);
+    // Hashing selector normalization: Babel sometimes uses "&:pseudo" (no space) when inside at-rules
+    // even if top-level css-prop hashing used "& :pseudo". Mirror that by collapsing "& :" -> "&:" only
+    // for hashing when an at-rule label exists. Do not alter the emitted selector text elsewhere.
+    let selectors_for_hash = if !at_rule_label_raw.is_empty() {
+        selectors.replace("& :", "&:")
+    } else {
+        selectors.clone()
+    };
     let prefix = class_hash_prefix.unwrap_or("");
-    let group_input = format!("{}{}{}{}", prefix, at_rule, selectors, property);
+    // Babel atomicify passes raw opts.atRule into template without defaulting to '',
+    // which coerces undefined into the string "undefined". Mirror that for styled mode.
+    // Mirror Babel atomicify: opts.atRule is interpolated into a template, coercing undefined -> "undefined".
+    // Apply this consistently for both styled and css-prop paths when no at-rule label exists.
+    let at_for_group = if at_rule_label.is_empty() { "undefined" } else { &at_rule_label };
+    // For cssMap path we normalize a synthesized '&' to include a space before selector text when the selector
+    // begins with non-ampersand (e.g. "screen and(min-width: 600px):hover") to match Babel's "& screen and(min-width: 600px):hover".
+    if !rule.is_styled {
+        if let Some(suf) = &rule.selector_suffix {
+            if suf.starts_with('s') { selectors = format!("& {}", suf); }
+        }
+    }
+    let group_input = format!("{}{}{}{}", prefix, at_for_group, selectors_for_hash, property);
+    // Always mirror Babel murmur2_gc semantics over JS charCodeAt low-8 units
     let group_hash = slice_first_4(&hash(&group_input));
     let raw_value = value_from_declaration(&rule.declaration);
-    let normalized_value = normalize_value_important(raw_value);
-    let value_hash = slice_first_4(&hash(&normalized_value));
+    // For hashing, mirror Babel behavior observed in plugin logs:
+    // valueForHash = node.value + node.important (boolean) when !important is present (case-insensitive, extra spaces allowed),
+    // otherwise just the raw value. Eg: "redtrue" instead of "red!important".
+    let mut value_for_hash = {
+        let trimmed = raw_value.trim_end();
+        let lower = trimmed.to_lowercase();
+        if lower.ends_with("!important") {
+            let base = &trimmed[..trimmed.len() - "!important".len()];
+            format!("{}{}", base.trim_end(), "true")
+        } else {
+            raw_value.to_string()
+        }
+    };
+    let value_hash = slice_first_4(&hash(&value_for_hash));
+    {
+        let group_chars: Vec<u32> = group_input.chars().map(|c| c as u32).collect();
+        let value_chars: Vec<u32> = value_for_hash.chars().map(|c| c as u32).collect();
+        eprintln!(
+            "[HASHDBG] {{\"tag\":\"HASHDBG\",\"where\":\"swc-atomic\",\"property\":\"{}\",\"selectors\":\"{}\",\"atRuleLabel\":\"{}\",\"groupInput\":\"{}\",\"groupInputCharCodes\":{:?},\"groupHash\":\"{}\",\"valueForHash\":\"{}\",\"valueForHashCharCodes\":{:?},\"valueHash\":\"{}\"}}",
+            property,
+            selectors,
+            at_rule_label,
+            group_input,
+            group_chars,
+            group_hash,
+            value_for_hash,
+            value_chars,
+            value_hash
+        );
+    }
     format!("_{}{}", group_hash, value_hash)
 }
 
@@ -75,7 +262,7 @@ pub fn camel_to_kebab_case(input: &str) -> String {
 }
 
 #[derive(Debug, Clone)]
-pub struct AtomicRule { pub selector_suffix: Option<String>, pub at_rule: Option<String>, pub declaration: String }
+pub struct AtomicRule { pub selector_suffix: Option<String>, pub at_rule: Option<String>, pub declaration: String, pub is_styled: bool, pub from_ampersand: bool }
 
 fn number_to_css_value(property_name: &str, num_lit: &Number) -> String {
     let value = if num_lit.value.fract() == 0.0 { format!("{}", num_lit.value as i64) } else { format!("{}", num_lit.value) };
@@ -154,7 +341,7 @@ fn fold_static_expr(expr: &Expr, state: &TransformState) -> Expr {
     }
 }
 
-fn collect_atomic_rules_from_object(obj: &ObjectLit, parent_selector: Option<String>, parent_at_rule: Option<String>, out: &mut Vec<AtomicRule>, state: &TransformState) {
+fn collect_atomic_rules_from_object(obj: &ObjectLit, parent_selector: Option<String>, parent_at_rule: Option<String>, out: &mut Vec<AtomicRule>, state: &TransformState, styled_mode: bool, came_from_ampersand: bool) {
     for prop in &obj.props {
         match prop {
             PropOrSpread::Prop(prop_box) => if let Prop::KeyValue(kv) = prop_box.as_ref() {
@@ -178,11 +365,11 @@ fn collect_atomic_rules_from_object(obj: &ObjectLit, parent_selector: Option<Str
                         if let Some(expanded_vals) = maybe_expand_shorthand(&css_property, &value_norm) {
                             for (prop, val) in expanded_vals {
                                 let valn = normalize_value_important(&val);
-                                out.push(AtomicRule { selector_suffix: parent_selector.clone(), at_rule: parent_at_rule.clone(), declaration: format!("{}:{}", prop, valn) });
+                                out.push(AtomicRule { selector_suffix: parent_selector.clone(), at_rule: parent_at_rule.clone(), declaration: format!("{}:{}", prop, valn), is_styled: styled_mode, from_ampersand: came_from_ampersand });
                             }
                         }
                     } else {
-                        out.push(AtomicRule { selector_suffix: parent_selector.clone(), at_rule: parent_at_rule.clone(), declaration: format!("{}:{}", css_property, value_norm) });
+                        out.push(AtomicRule { selector_suffix: parent_selector.clone(), at_rule: parent_at_rule.clone(), declaration: format!("{}:{}", css_property, value_norm), is_styled: styled_mode, from_ampersand: came_from_ampersand });
                     }
                 }
                 Expr::Lit(Lit::Num(num_lit)) => {
@@ -193,20 +380,59 @@ fn collect_atomic_rules_from_object(obj: &ObjectLit, parent_selector: Option<Str
                         if let Some(expanded_vals) = maybe_expand_shorthand(&css_property, &value) {
                             for (prop, val) in expanded_vals {
                                 let valn = normalize_value_important(&val);
-                                out.push(AtomicRule { selector_suffix: parent_selector.clone(), at_rule: parent_at_rule.clone(), declaration: format!("{}:{}", prop, valn) });
+                                out.push(AtomicRule { selector_suffix: parent_selector.clone(), at_rule: parent_at_rule.clone(), declaration: format!("{}:{}", prop, valn), is_styled: styled_mode, from_ampersand: came_from_ampersand });
                             }
                         }
                     } else {
                         let valn = normalize_value_important(&value);
-                        out.push(AtomicRule { selector_suffix: parent_selector.clone(), at_rule: parent_at_rule.clone(), declaration: format!("{}:{}", css_property, valn) });
+                        out.push(AtomicRule { selector_suffix: parent_selector.clone(), at_rule: parent_at_rule.clone(), declaration: format!("{}:{}", css_property, valn), is_styled: styled_mode, from_ampersand: came_from_ampersand });
                     }
                 }
                 Expr::Object(nested_obj) => {
-                    if key_name.starts_with("&:") { let pseudo = &key_name[1..]; let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, pseudo)), None => Some(pseudo.to_string()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state); }
-                    else if key_name.starts_with('&') { let suffix = &key_name[1..]; let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, suffix)), None => Some(suffix.to_string()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state); }
-                    else if key_name.starts_with(":") { let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, key_name)), None => Some(key_name.clone()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state); }
-                    else if key_name.starts_with("@") { let next_at = match &parent_at_rule { Some(ar) => Some(format!("{}{{{}}}", key_name, ar)), None => Some(key_name.clone()), }; collect_atomic_rules_from_object(nested_obj, parent_selector.clone(), next_at, out, state); }
-                    else { collect_atomic_rules_from_object(nested_obj, parent_selector.clone(), parent_at_rule.clone(), out, state); }
+                    if key_name.starts_with("&:") { let pseudo = &key_name[1..]; let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, pseudo)), None => Some(pseudo.to_string()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state, styled_mode, true); }
+                    else if key_name.starts_with('&') { let suffix = &key_name[1..]; let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, suffix)), None => Some(suffix.to_string()), }; collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state, styled_mode, true); }
+                    else if key_name.starts_with(":") {
+                        // For styled objects prefer '&:pseudo'; for css-prop also synthesize '&:pseudo' when top-level to mirror pre-processing in Babel pipeline
+                        let (next_sel, added_ampersand) = if styled_mode {
+                            match &parent_selector {
+                                Some(ps) => (Some(format!("{}{}", ps, key_name)), false),
+                                None => (Some(format!("&{}", key_name)), true),
+                            }
+                        } else {
+                            match &parent_selector {
+                                Some(ps) => (Some(format!("{}{}", ps, key_name)), false),
+                                None => (Some(format!("&{}", key_name)), true),
+                            }
+                        };
+                        collect_atomic_rules_from_object(
+                            nested_obj,
+                            next_sel,
+                            parent_at_rule.clone(),
+                            out,
+                            state,
+                            styled_mode,
+                            came_from_ampersand || added_ampersand,
+                        );
+                    }
+                    else if key_name.starts_with("[") {
+                        // Attribute selector nesting, normalize like css-prop path to '& [attr=val]'
+                        let next_sel = match &parent_selector { Some(ps) => Some(format!("{}{}", ps, key_name)), None => Some(key_name.clone()) };
+                        collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state, styled_mode, false);
+                    }
+                    else if parent_at_rule.as_ref().map(|ar| ar.contains("@media")).unwrap_or(false) && !(key_name.starts_with('@') || key_name.starts_with(':') || key_name.starts_with('&') || key_name.starts_with('[')) {
+                        // In cssMap, keys under @media like 'screen and (min-width: 600px)' become part of the selector string
+                        let media_part = key_name.replace(" (", "(");
+                        let next_sel = match &parent_selector { Some(ps) => Some(format!("{} {}", ps, media_part)), None => Some(media_part) };
+                        collect_atomic_rules_from_object(nested_obj, next_sel, parent_at_rule.clone(), out, state, styled_mode, came_from_ampersand);
+                    }
+                    else if key_name.starts_with("@") {
+                        let next_at = match &parent_at_rule {
+                            Some(ar) => Some(format!("{}{{{}}}", ar, key_name)),
+                            None => Some(key_name.clone()),
+                        };
+                        collect_atomic_rules_from_object(nested_obj, parent_selector.clone(), next_at, out, state, styled_mode, came_from_ampersand);
+                    }
+                    else { collect_atomic_rules_from_object(nested_obj, parent_selector.clone(), parent_at_rule.clone(), out, state, styled_mode, came_from_ampersand); }
                 }
                 _ => { continue; }
             }
@@ -217,7 +443,7 @@ fn collect_atomic_rules_from_object(obj: &ObjectLit, parent_selector: Option<Str
                     Expr::Ident(id) => {
                         let resolved = resolve_identifier(id, state);
                         if let Expr::Object(inner) = resolved {
-                            collect_atomic_rules_from_object(inner, parent_selector.clone(), parent_at_rule.clone(), out, state);
+                            collect_atomic_rules_from_object(inner, parent_selector.clone(), parent_at_rule.clone(), out, state, styled_mode, came_from_ampersand);
                         } else {
                             panic!("Only object constants can be spread into CSS objects");
                         }
@@ -229,7 +455,7 @@ fn collect_atomic_rules_from_object(obj: &ObjectLit, parent_selector: Option<Str
     }
 }
 
-pub fn build_atomic_rules_from_object_with_state(obj: &ObjectLit, state: &TransformState) -> Vec<AtomicRule> { let mut out = Vec::new(); collect_atomic_rules_from_object(obj, None, None, &mut out, state); out }
+pub fn build_atomic_rules_from_object_with_state(obj: &ObjectLit, state: &TransformState) -> Vec<AtomicRule> { let mut out = Vec::new(); collect_atomic_rules_from_object(obj, None, None, &mut out, state, true, false); out }
 
 fn needs_px_unit(property: &str) -> bool { !is_unitless_property(property) }
 
@@ -250,12 +476,16 @@ pub fn build_atomic_rules_from_expression_with_state(expr: &Expr, state: &Transf
             let resolved = resolve_identifier(id, state);
             build_atomic_rules_from_expression_with_state(resolved, state)
         }
-        Expr::Object(obj) => build_atomic_rules_from_object_with_state(obj, state),
+        Expr::Object(obj) => {
+            let mut out = Vec::new();
+            collect_atomic_rules_from_object(obj, None, None, &mut out, state, false, false);
+            out
+        },
         Expr::Lit(Lit::Str(str_lit)) => {
             let mut rules = Vec::new();
             for part in str_lit.value.split(';') {
                 let trimmed = part.trim(); if trimmed.is_empty() { continue; }
-                rules.push(AtomicRule { selector_suffix: None, at_rule: None, declaration: trimmed.to_string() });
+                rules.push(AtomicRule { selector_suffix: None, at_rule: None, declaration: trimmed.to_string(), is_styled: false, from_ampersand: false });
             }
             rules
         }
@@ -269,24 +499,27 @@ pub fn transform_atomic_rules_to_sheets(rules: &[AtomicRule]) -> (Vec<String>, V
     // No rule sorting beyond pseudos grouping: maintain insertion order except ensure base before pseudos for stable output
     for rule in rules.iter().filter(|r| r.at_rule.is_none() && pseudo_score(&r.selector_suffix) == 0) {
         let class_name = atomic_class_name_for_rule(rule, None);
-        let selector_suffix = compact_selector_suffix(&rule.selector_suffix.clone().unwrap_or_default());
-        let core = format!(".{}{}{{{}}}", class_name, selector_suffix, compact_declaration(&rule.declaration));
+        let sel_raw = if rule.is_styled { rule.selector_suffix.clone().unwrap_or_default() } else { rule.selector_suffix.clone().unwrap_or_default().replace(' ', "") };
+        let selector = if sel_raw.contains('&') { sel_raw.replace("&", &format!(".{}", class_name)) } else { format!(".{}{}", class_name, sel_raw) };
+        let core = format!("{}{{{}}}", selector, compact_declaration(&rule.declaration));
         let css_text = if let Some(ar) = &rule.at_rule { format!("{}{{{}}}", ar, core) } else { core };
         sheets.push(css_text);
         class_names.push(class_name);
     }
     for rule in rules.iter().filter(|r| r.at_rule.is_none() && pseudo_score(&r.selector_suffix) != 0) {
         let class_name = atomic_class_name_for_rule(rule, None);
-        let selector_suffix = compact_selector_suffix(&rule.selector_suffix.clone().unwrap_or_default());
-        let core = format!(".{}{}{{{}}}", class_name, selector_suffix, compact_declaration(&rule.declaration));
+        let sel_raw = if rule.is_styled { rule.selector_suffix.clone().unwrap_or_default() } else { rule.selector_suffix.clone().unwrap_or_default().replace(' ', "") };
+        let selector = if sel_raw.contains('&') { sel_raw.replace("&", &format!(".{}", class_name)) } else { format!(".{}{}", class_name, sel_raw) };
+        let core = format!("{}{{{}}}", selector, compact_declaration(&rule.declaration));
         let css_text = if let Some(ar) = &rule.at_rule { format!("{}{{{}}}", ar, core) } else { core };
         sheets.push(css_text);
         class_names.push(class_name);
     }
     for rule in rules.iter().filter(|r| r.at_rule.is_some()) {
         let class_name = atomic_class_name_for_rule(rule, None);
-        let selector_suffix = compact_selector_suffix(&rule.selector_suffix.clone().unwrap_or_default());
-        let core = format!(".{}{}{{{}}}", class_name, selector_suffix, compact_declaration(&rule.declaration));
+        let sel_raw = if rule.is_styled { rule.selector_suffix.clone().unwrap_or_default() } else { rule.selector_suffix.clone().unwrap_or_default().replace(' ', "") };
+        let selector = if sel_raw.contains('&') { sel_raw.replace("&", &format!(".{}", class_name)) } else { format!(".{}{}", class_name, sel_raw) };
+        let core = format!("{}{{{}}}", selector, compact_declaration(&rule.declaration));
         let css_text = if let Some(ar) = &rule.at_rule { format!("{}{{{}}}", ar, core) } else { core };
         sheets.push(css_text);
         class_names.push(class_name);

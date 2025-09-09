@@ -13,12 +13,12 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code);
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _2 = "._3op32scz:hover{color:blue}";
-      const _ = "._3hisej0k{color:red}";
+      const _2 = "._838l13q2:hover{color:blue}";
+      const _ = "._syaz5scu{color:red}";
       const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
-              "_3hisej0k _3op32scz"
+              "_syaz5scu _838l13q2"
           ])
       });
       "
@@ -36,11 +36,11 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code);
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _2 = "._3his2scz{color:blue}";
-      const _ = "._3hisej0k{color:red}";
+      const _2 = "._syaz13q2{color:blue}";
+      const _ = "._syaz5scu{color:red}";
       const variants = {
-          primary: "_3hisej0k",
-          secondary: "_3his2scz"
+          primary: "_syaz5scu",
+          secondary: "_syaz13q2"
       };
       "
     `);
@@ -56,12 +56,12 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code);
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       const myColor = 'red';
       const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
-              "_3hisej0k"
+              "_syaz5scu"
           ])
       });
       "
@@ -78,12 +78,12 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code);
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._7ql1bjn1{font-size:10px}";
+      const _ = "._1wyb19bv{font-size:10px}";
       const size = 10;
       const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
-              "_7ql1bjn1"
+              "_1wyb19bv"
           ])
       });
       "
@@ -100,12 +100,12 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code);
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       const cls = 're' + 'd';
       const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
-              "_3hisej0k"
+              "_syaz5scu"
           ])
       });
       "
@@ -122,13 +122,13 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code);
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._6hxr5nrs{line-height:10}";
+      const _ = "._vwz4zo7u{line-height:10}";
       const a = 5;
       const b = 5;
       const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
-              "_6hxr5nrs"
+              "_vwz4zo7u"
           ])
       });
       "
@@ -147,13 +147,13 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _2 = "._9rxa2scz+label~div{color:blue}";
-      const _ = "._3hisatgm{color:red!important}";
+      const _2 = "._1hwd13q2+label~div{color:blue}";
+      const _ = "._syaz1qpq{color:red!important}";
       const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
-              "_3hisatgm",
-              "_9rxa2scz"
+              "_syaz1qpq",
+              "_1hwd13q2"
           ])
       });
       "
@@ -174,16 +174,16 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code, { extract: false });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = "._9rxa2scz+label~div{color:blue}";
-      const _ = "._3hisatgm{color:red!important}";
+      const _2 = "._1hwd13q2+label~div{color:blue}";
+      const _ = "._syaz1qpq{color:red!important}";
       const styles = null;
       /*#__PURE__*/ /*#__PURE__*/ React.createElement(CC, null, /*#__PURE__*/ React.createElement(CS, null, [
           _,
           _2
       ]), React.createElement("div", {
           className: ax([
-              "_3hisatgm",
-              "_9rxa2scz"
+              "_syaz1qpq",
+              "_1hwd13q2"
           ])
       }));
       "
@@ -214,8 +214,8 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code, { extract: false });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = "._e1q32scz:hover+label{color:blue}";
-      const _ = "._3hisatgm{color:red!important}";
+      const _2 = "._zi5i13q2:hover+label{color:blue}";
+      const _ = "._syaz1qpq{color:red!important}";
       import React from 'react';
       const styles = null;
       const Button = ()=>{
@@ -224,16 +224,16 @@ describe('swc-plugin snapshots', () => {
               _2
           ]), /*#__PURE__*/ React.createElement("div", {
               className: ax([
-                  "_3hisatgm",
-                  "_e1q32scz"
+                  "_syaz1qpq",
+                  "_zi5i13q2"
               ])
           })), /*#__PURE__*/ React.createElement(CC, null, /*#__PURE__*/ React.createElement(CS, null, [
               _,
               _2
           ]), /*#__PURE__*/ React.createElement("div", {
               className: ax([
-                  "_3hisatgm",
-                  "_e1q32scz"
+                  "_syaz1qpq",
+                  "_zi5i13q2"
               ])
           })));
       };
@@ -256,15 +256,15 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _3 = "@media screen{._93hc8jm4{font-size:16px}}";
-      const _2 = "@media screen{._aooa2scz{color:blue}}";
-      const _ = "._3hisej0k{color:red}";
+      const _3 = "@media screen{._1yzyexct{font-size:16px}}";
+      const _2 = "@media screen{._434713q2{color:blue}}";
+      const _ = "._syaz5scu{color:red}";
       const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
-              "_3hisej0k",
-              "_aooa2scz",
-              "_93hc8jm4"
+              "_syaz5scu",
+              "_434713q2",
+              "_1yzyexct"
           ])
       });
       "
@@ -286,11 +286,11 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _2 = "@media screen{._93hc8jm4{font-size:16px}}";
-      const _ = "@media screen{._aooaej0k{color:red}}";
+      const _2 = "@media screen{._1yzyexct{font-size:16px}}";
+      const _ = "@media screen{._43475scu{color:red}}";
       const variants = {
-          primary: "_aooaej0k",
-          secondary: "_93hc8jm4"
+          primary: "_43475scu",
+          secondary: "_1yzyexct"
       };
       "
     `);
@@ -309,15 +309,15 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _3 = "._5mpx4k5u{margin-top:0}";
-      const _2 = "._6hxr7ngg{line-height:2}";
-      const _ = "._7ql18jm4{font-size:16px}";
+      const _3 = "._19pkidpf{margin-top:0}";
+      const _2 = "._vwz4cs5v{line-height:2}";
+      const _ = "._1wybexct{font-size:16px}";
       const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
-              "_7ql18jm4",
-              "_6hxr7ngg",
-              "_5mpx4k5u"
+              "_1wybexct",
+              "_vwz4cs5v",
+              "_19pkidpf"
           ])
       });
       "
@@ -335,17 +335,17 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _4 = "._7wlm154n{padding-left:20px}";
-      const _3 = "._da1ibjn1{padding-bottom:10px}";
-      const _2 = "._vhdx154n{padding-right:20px}";
-      const _ = "._8edybjn1{padding-top:10px}";
+      const _4 = "._19bvgktf{padding-left:20px}";
+      const _3 = "._n3td19bv{padding-bottom:10px}";
+      const _2 = "._u5f3gktf{padding-right:20px}";
+      const _ = "._ca0q19bv{padding-top:10px}";
       const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
-              "_8edybjn1",
-              "_vhdx154n",
-              "_da1ibjn1",
-              "_7wlm154n"
+              "_ca0q19bv",
+              "_u5f3gktf",
+              "_n3td19bv",
+              "_19bvgktf"
           ])
       });
       "
@@ -364,19 +364,19 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _5 = "._7wlm9z5l{padding-left:4px}";
-      const _4 = "._7wlm154n{padding-left:20px}";
-      const _3 = "._da1ibjn1{padding-bottom:10px}";
-      const _2 = "._vhdx154n{padding-right:20px}";
-      const _ = "._8edybjn1{padding-top:10px}";
+      const _5 = "._19bv1y44{padding-left:4px}";
+      const _4 = "._19bvgktf{padding-left:20px}";
+      const _3 = "._n3td19bv{padding-bottom:10px}";
+      const _2 = "._u5f3gktf{padding-right:20px}";
+      const _ = "._ca0q19bv{padding-top:10px}";
       const styles = null;
       /*#__PURE__*/ React.createElement("div", {
           className: ax([
-              "_8edybjn1",
-              "_vhdx154n",
-              "_da1ibjn1",
-              "_7wlm154n",
-              "_7wlm9z5l"
+              "_ca0q19bv",
+              "_u5f3gktf",
+              "_n3td19bv",
+              "_19bvgktf",
+              "_19bv1y44"
           ])
       });
       "
@@ -392,7 +392,7 @@ describe('swc-plugin snapshots', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       import { styled } from '@compiled/react';
       const Button = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -400,7 +400,7 @@ describe('swc-plugin snapshots', () => {
           }
           return /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3hisej0k",
+                  "_syaz5scu",
                   __cmplp.className
               ]),
               style: {
@@ -423,7 +423,7 @@ describe('swc-plugin snapshots', () => {
     expect(out).toMatchInlineSnapshot(`
       "import { forwardRef } from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       import { styled } from '@compiled/react';
       const Button = /*#__PURE__*/ forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr)=>{
           if (__cmplp.innerRef) {
@@ -433,7 +433,7 @@ describe('swc-plugin snapshots', () => {
               _
           ]), /*#__PURE__*/ React.createElement(C, {
               className: ax([
-                  "_3hisej0k",
+                  "_syaz5scu",
                   __cmplp.className
               ]),
               style: {
@@ -460,16 +460,16 @@ describe('swc-plugin snapshots', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       const a = null;
       const b = null;
       /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("div", {
           className: ax([
-              "_3hisej0k"
+              "_syaz5scu"
           ])
       }), /*#__PURE__*/ React.createElement("div", {
           className: ax([
-              "_3hisej0k"
+              "_syaz5scu"
           ])
       }));
       "

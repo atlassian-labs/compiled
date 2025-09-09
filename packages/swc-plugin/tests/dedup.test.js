@@ -11,16 +11,16 @@ describe('deduplication (swc-plugin)', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       const a = null;
       const b = null;
       export const C = ()=>/*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("div", {
               className: ax([
-                  "_3hisej0k"
+                  "_syaz5scu"
               ])
           }), /*#__PURE__*/ React.createElement("div", {
               className: ax([
-                  "_3hisej0k"
+                  "_syaz5scu"
               ])
           }));
       "
@@ -39,14 +39,14 @@ describe('deduplication (swc-plugin)', () => {
     const out = await transformResultString(code, { extract: true });
     expect(out).toMatchInlineSnapshot(`
       "import { ax, ix } from "@compiled/react/runtime";
-      const _ = "._3hisej0k{color:red}";
+      const _ = "._syaz5scu{color:red}";
       export const C = ()=>/*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("div", {
               className: ax([
-                  "_3hisej0k"
+                  "_syaz5scu"
               ])
           }), /*#__PURE__*/ React.createElement("div", {
               className: ax([
-                  "_3hisej0k"
+                  "_syaz5scu"
               ])
           }));
       "
