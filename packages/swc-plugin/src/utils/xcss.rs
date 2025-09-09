@@ -60,7 +60,7 @@ fn split_member(member: &MemberExpr) -> Option<(String, String)> {
 }
 
 fn resolve_variant_info<'a>(
-    map: &'a std::collections::HashMap<String, CssMapVariantInfo>,
+    map: &'a ahash::AHashMap<String, CssMapVariantInfo>,
     key: String,
 ) -> Option<&'a CssMapVariantInfo> {
     map.get(&key)

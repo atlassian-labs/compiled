@@ -6,7 +6,7 @@ use swc_core::{
     plugin::{plugin_transform, proxies::TransformPluginProgramMetadata},
 };
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use ahash::AHashMap as HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -391,7 +391,7 @@ impl VisitMut for Transform2 {
 
             // First pass: extract info without mutating borrowed init_expr
             let mut css_assignment: Option<(Vec<String>, Vec<String>)> = None;
-            let mut css_map_assignment: Option<(Vec<PropOrSpread>, std::collections::HashMap<String, types::CssMapVariantInfo>)> = None;
+            let mut css_map_assignment: Option<(Vec<PropOrSpread>, ahash::AHashMap<String, types::CssMapVariantInfo>)> = None;
             if let Expr::Call(call) = init_expr.as_mut() {
                 // keyframes recorded when assigned to const
                 if visitors::keyframes::is_keyframes_call(call, &self.state) {
@@ -420,7 +420,7 @@ impl VisitMut for Transform2 {
                     if call.args.len() == 1 {
                         if let Expr::Object(obj) = call.args[0].expr.as_ref() {
                             let mut props_out: Vec<PropOrSpread> = Vec::new();
-                            let mut variant_info_map: std::collections::HashMap<String, types::CssMapVariantInfo> = std::collections::HashMap::new();
+                            let mut variant_info_map: ahash::AHashMap<String, types::CssMapVariantInfo> = ahash::AHashMap::new();
                             for prop in &obj.props {
                                 if let PropOrSpread::Prop(p) = prop {
                                     if let Prop::KeyValue(kv) = p.as_ref() {
