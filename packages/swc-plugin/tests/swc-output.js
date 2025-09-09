@@ -5,7 +5,7 @@ import * as swc from '@swc/core';
 
 import * as lib from '..';
 
-async function transform(code, options = {}) {
+function buildSwcOptions(code, options = {}) {
   const wasmPath = path.join(__dirname, '..', 'compiled_swc_plugin2.wasm');
   const pluginOptions = {
     importSources: ['@compiled/react'],
@@ -24,7 +24,7 @@ async function transform(code, options = {}) {
     jsc: {
       target: 'es2020',
       externalHelpers: true,
-      parser: { syntax: 'typescript', tsx: true },
+      parser: { syntax: 'typescript', tsx: false },
       experimental: enablePlugin
         ? {
             plugins: [
@@ -46,7 +46,16 @@ async function transform(code, options = {}) {
         : {},
     },
   };
-  const result = await swc.transform(code, swcOptions);
+  return swcOptions;
+}
+
+async function transform(code, options = {}) {
+  const result = await swc.transform(code, buildSwcOptions(code, options));
+  return result.code;
+}
+
+function transformSyncFast(code, options = {}) {
+  const result = swc.transformSync(code, buildSwcOptions(code, options));
   return result.code;
 }
 
@@ -66,3 +75,4 @@ function normalizeOutput(str) {
 }
 
 export { transform, transformResultString };
+export { transformSyncFast };

@@ -1,6 +1,7 @@
 use swc_core::ecma::ast::*;
 use crate::types::TransformState;
 
+#[inline(always)]
 fn base36_u32(mut v: u32) -> String {
     const DIGITS: &[u8; 36] = b"0123456789abcdefghijklmnopqrstuvwxyz";
     let mut buf = [0u8; 16];
@@ -15,6 +16,23 @@ fn base36_u32(mut v: u32) -> String {
     String::from_utf8(buf[i..].to_vec()).unwrap()
 }
 
+#[inline(always)]
+fn base36_u32_first4(mut v: u32) -> String {
+    const DIGITS: &[u8; 36] = b"0123456789abcdefghijklmnopqrstuvwxyz";
+    let mut buf = [0u8; 16];
+    let mut i = buf.len();
+    if v == 0 { return "0".to_string(); }
+    while v > 0 {
+        let rem = (v % 36) as usize;
+        v /= 36;
+        i -= 1;
+        buf[i] = DIGITS[rem];
+    }
+    let len = buf.len() - i;
+    let take = if len <= 4 { len } else { 4 };
+    String::from_utf8(buf[i..i+take].to_vec()).unwrap()
+}
+
 // MurmurHash2 (Gary Court JS port semantics) over bytes, seed=0, returning base36 string
 fn mulmix_32(x: u32) -> u32 {
     // Equivalent to (x & 0xffff) * m + ((((x >>> 16) * m) & 0xffff) << 16) with u32 wrapping
@@ -24,6 +42,7 @@ fn mulmix_32(x: u32) -> u32 {
     lo.wrapping_add(hi)
 }
 
+#[inline(always)]
 fn murmurhash2_gc_js_units(input: &str, seed: u32) -> u32 {
     // Port of garycourt murmurhash2_gc.js on JS UTF-16 code units with low-8 packing
     // Streaming variant: avoids allocating the full Vec<u16>
@@ -78,16 +97,56 @@ fn hash_js_low8(input: &str) -> String { base36_u32(murmurhash2_gc_js_units(inpu
 
 pub fn hash(input: &str) -> String { hash_js_low8(input) }
 
+#[inline(always)]
+fn hash_js_low8_first4(input: &str) -> String { base36_u32_first4(murmurhash2_gc_js_units(input, 0)) }
+
+#[inline(always)]
+fn hash_js_low8_segments_first4(segments: &[&str]) -> String {
+    // First pass: count total UTF-16 units
+    let mut total_units: usize = 0;
+    for s in segments { total_units += s.encode_utf16().count(); }
+    // Second pass: stream units
+    let mut h: u32 = 0 ^ (total_units as u32);
+    let mut acc: [u32; 4] = [0; 4];
+    let mut idx: usize = 0;
+    for s in segments {
+        for cu in s.encode_utf16() {
+            let b = (cu & 0x00ff) as u32;
+            acc[idx] = b;
+            idx += 1;
+            if idx == 4 {
+                let mut k: u32 = acc[0] | (acc[1] << 8) | (acc[2] << 16) | (acc[3] << 24);
+                k = mulmix_32(k);
+                k ^= k >> 24;
+                k = mulmix_32(k);
+                h = mulmix_32(h) ^ k;
+                idx = 0;
+            }
+        }
+    }
+    match idx {
+        3 => { h ^= acc[2] << 16; h ^= acc[1] << 8; h ^= acc[0]; h = mulmix_32(h); }
+        2 => { h ^= acc[1] << 8; h ^= acc[0]; h = mulmix_32(h); }
+        1 => { h ^= acc[0]; h = mulmix_32(h); }
+        _ => {}
+    }
+    h ^= h >> 13; h = mulmix_32(h); h ^= h >> 15;
+    base36_u32_first4(h)
+}
+
 pub fn generate_css_hash(input: &str) -> String { format!("_{}", hash(input)) }
 
 pub fn build_class_name(hash: &str, prefix: Option<&str>) -> String { match prefix { Some(p) => format!("{}{}", p, hash), None => hash.to_string(), } }
 
 fn slice_first_4(input: &str) -> String { if input.len() <= 4 { input.to_string() } else { input[0..4].to_string() } }
 
+#[inline(always)]
 fn property_from_declaration(decl: &str) -> &str { match decl.find(':') { Some(idx) => decl[..idx].trim(), None => decl } }
 
+#[inline(always)]
 fn value_from_declaration(decl: &str) -> &str { match decl.find(':') { Some(idx) => decl[idx + 1..].trim(), None => "" } }
 
+#[inline(always)]
 fn normalized_selectors(selector_suffix: &Option<String>) -> String {
     match selector_suffix {
         Some(suf) => {
@@ -101,6 +160,7 @@ fn normalized_selectors(selector_suffix: &Option<String>) -> String {
     }
 }
 
+#[inline(always)]
 fn extract_at_rule_label(at_rule_css: &str) -> String {
     // Convert a CSS at-rule chain like "@media screen and (min-width: 600px){...}"
     // into a label string "mediascreen and (min-width: 600px)" like Babel's atomicify.
@@ -141,6 +201,7 @@ fn extract_at_rule_label(at_rule_css: &str) -> String {
     out
 }
 
+#[inline(always)]
 fn sanitize_at_rule_label_for_styled(label: &str) -> String {
     let trimmed = label.trim_end_matches('}');
     let len = trimmed.len();
@@ -150,6 +211,51 @@ fn sanitize_at_rule_label_for_styled(label: &str) -> String {
         if a == b { return a.to_string(); }
     }
     trimmed.to_string()
+}
+
+#[inline(always)]
+fn collapse_ampersand_space_colon(input: &str) -> String {
+    let mut out = String::with_capacity(input.len());
+    let bytes: Vec<char> = input.chars().collect();
+    let mut i = 0usize;
+    while i < bytes.len() {
+        let ch = bytes[i];
+        if ch == '&' && i + 2 < bytes.len() && bytes[i + 1] == ' ' && bytes[i + 2] == ':' {
+            out.push('&');
+            i += 2; // skip the space; ':' will be handled next iteration
+        } else {
+            out.push(ch);
+        }
+        i += 1;
+    }
+    out
+}
+
+#[inline(always)]
+fn emit_selector(sel_src: &str, is_styled: bool, class_name: &str) -> String {
+    // Styled: keep spaces, substitute '&' with .class occurrences; if none, prefix .class
+    // Non-styled: strip ASCII spaces while scanning, substitute '&' similarly; if none, prefix .class
+    let mut out = String::with_capacity(sel_src.len() + class_name.len() + 2);
+    let mut saw_ampersand = false;
+    for ch in sel_src.chars() {
+        if ch == '&' {
+            saw_ampersand = true;
+            out.push('.');
+            out.push_str(class_name);
+        } else if !is_styled && ch == ' ' {
+            // skip
+        } else {
+            out.push(ch);
+        }
+    }
+    if !saw_ampersand {
+        let mut prefixed = String::with_capacity(1 + class_name.len() + out.len());
+        prefixed.push('.');
+        prefixed.push_str(class_name);
+        prefixed.push_str(&out);
+        return prefixed;
+    }
+    out
 }
 
 fn atomic_class_name_for_rule(rule: &AtomicRule, class_hash_prefix: Option<&str>) -> String {
@@ -172,11 +278,7 @@ fn atomic_class_name_for_rule(rule: &AtomicRule, class_hash_prefix: Option<&str>
     // Hashing selector normalization: Babel sometimes uses "&:pseudo" (no space) when inside at-rules
     // even if top-level css-prop hashing used "& :pseudo". Mirror that by collapsing "& :" -> "&:" only
     // for hashing when an at-rule label exists. Do not alter the emitted selector text elsewhere.
-    let selectors_for_hash = if !at_rule_label_raw.is_empty() {
-        selectors.replace("& :", "&:")
-    } else {
-        selectors.clone()
-    };
+    let selectors_for_hash = if !at_rule_label_raw.is_empty() { collapse_ampersand_space_colon(&selectors) } else { selectors.clone() };
     let prefix = class_hash_prefix.unwrap_or("");
     // Babel atomicify passes raw opts.atRule into template without defaulting to '',
     // which coerces undefined into the string "undefined". Mirror that for styled mode.
@@ -190,33 +292,32 @@ fn atomic_class_name_for_rule(rule: &AtomicRule, class_hash_prefix: Option<&str>
             if suf.starts_with('s') { selectors = format!("& {}", suf); let _ = &selectors; }
         }
     }
-    let group_input = format!("{}{}{}{}", prefix, at_for_group, selectors_for_hash, property);
     // Always mirror Babel murmur2_gc semantics over JS charCodeAt low-8 units
-    let group_hash = slice_first_4(&hash(&group_input));
+    let group_hash = hash_js_low8_segments_first4(&[prefix, at_for_group, &selectors_for_hash, property]);
     let raw_value = value_from_declaration(&rule.declaration);
     // For hashing, mirror Babel behavior observed in plugin logs:
     // valueForHash = node.value + node.important (boolean) when !important is present (case-insensitive, extra spaces allowed),
     // otherwise just the raw value. Eg: "redtrue" instead of "red!important".
-    let value_for_hash = {
-        let trimmed = raw_value.trim_end();
-        const IMP: &str = "!important";
-        if trimmed.len() >= IMP.len() && trimmed[trimmed.len() - IMP.len()..].eq_ignore_ascii_case(IMP) {
-            let base = &trimmed[..trimmed.len() - IMP.len()];
-            format!("{}{}", base.trim_end(), "true")
-        } else {
-            raw_value.to_string()
-        }
+    let trimmed = raw_value.trim_end();
+    const IMP: &str = "!important";
+    let value_hash = if trimmed.len() >= IMP.len() && trimmed[trimmed.len() - IMP.len()..].eq_ignore_ascii_case(IMP) {
+        let base = &trimmed[..trimmed.len() - IMP.len()];
+        let composed = format!("{}{}", base.trim_end(), "true");
+        hash_js_low8_first4(&composed)
+    } else {
+        hash_js_low8_first4(raw_value)
     };
-    let value_hash = slice_first_4(&hash(&value_for_hash));
     
     format!("_{}{}", group_hash, value_hash)
 }
 
+#[inline(always)]
 fn pseudo_score(selector_suffix: &Option<String>) -> i32 {
     const STYLE_ORDER: [&str; 7] = [":link", ":visited", ":focus-within", ":focus", ":focus-visible", ":hover", ":active"]; 
     if let Some(suffix) = selector_suffix { for (idx, pseudo) in STYLE_ORDER.iter().enumerate() { if suffix.ends_with(pseudo) { return (idx as i32) + 1; } } } 0
 }
 
+#[inline(always)]
 pub fn camel_to_kebab_case(input: &str) -> String {
     let mut result = String::with_capacity(input.len() + 4);
     for ch in input.chars() {
@@ -472,8 +573,7 @@ pub fn transform_atomic_rules_to_sheets(rules: &[AtomicRule]) -> (Vec<String>, V
         let is_pseudo = !is_at && pseudo_score(&rule.selector_suffix) != 0;
         let class_name = atomic_class_name_for_rule(rule, None);
         let sel_src = rule.selector_suffix.clone().unwrap_or_default();
-        let sel_raw = if rule.is_styled { sel_src } else { sel_src.replace(' ', "") };
-        let selector = if sel_raw.contains('&') { sel_raw.replace("&", &format!(".{}", class_name)) } else { format!(".{}{}", class_name, sel_raw) };
+        let selector = emit_selector(&sel_src, rule.is_styled, &class_name);
         let core = format!("{}{{{}}}", selector, compact_declaration(&rule.declaration));
         let css_text = if let Some(ar) = &rule.at_rule { format!("{}{{{}}}", ar, core) } else { core };
         if is_at {
@@ -494,6 +594,7 @@ pub fn transform_atomic_rules_to_sheets(rules: &[AtomicRule]) -> (Vec<String>, V
     (sheets, class_names)
 }
 
+#[inline(always)]
 pub fn compact_declaration(decl: &str) -> String {
     // Remove spaces around ':' and before '!important'
     // Example: "color: red !important" -> "color:red!important"
@@ -510,6 +611,7 @@ pub fn compact_declaration(decl: &str) -> String {
     decl.replace(' ', "")
 }
 
+#[inline(always)]
 fn normalize_value_important(val: &str) -> String {
     let trimmed = val.trim();
     if trimmed.ends_with("!important") {
