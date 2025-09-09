@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import { transformSync as babelTransformSync } from '@babel/core';
 
-import { transformSyncFast as swcTransform } from './swc-output';
+import { transform as swcTransform } from './swc-output';
 
 const ITERATIONS = Number(process.env.PERF_ITERS || 200);
 
@@ -109,51 +109,39 @@ const babelOptions = {
 describe('performance: swc-plugin vs babel-plugin', () => {
   it('reports ops/sec for css, cssMap, styled, keyframes', async () => {
     // Ensure transforms produce some output
-    const sanity = swcTransform(codeCss, { forceEnable: true, extract: true });
+    const sanity = await swcTransform(codeCss, { forceEnable: true, extract: true });
     expect(sanity.length).toBeGreaterThan(0);
     const sanityBabel = babelTransformSync(codeCss, babelOptions)!.code || '';
     expect(sanityBabel.length).toBeGreaterThan(0);
 
     const results: BenchResult[] = [];
 
-    // SWC benches (sync only)
+    // SWC benches (async)
     results.push(
-      benchSync(
+      await benchAsync(
         'swc css',
-        () => {
-          const out = swcTransform(codeCss, { forceEnable: true, extract: true });
-          if (!out) throw new Error('empty');
-        },
+        () => swcTransform(codeCss, { forceEnable: true, extract: true }),
         ITERATIONS
       )
     );
     results.push(
-      benchSync(
+      await benchAsync(
         'swc cssMap',
-        () => {
-          const out = swcTransform(codeCssMap, { forceEnable: true, extract: true });
-          if (!out) throw new Error('empty');
-        },
+        () => swcTransform(codeCssMap, { forceEnable: true, extract: true }),
         ITERATIONS
       )
     );
     results.push(
-      benchSync(
+      await benchAsync(
         'swc styled',
-        () => {
-          const out = swcTransform(codeStyled, { forceEnable: true, extract: true });
-          if (!out) throw new Error('empty');
-        },
+        () => swcTransform(codeStyled, { forceEnable: true, extract: true }),
         ITERATIONS
       )
     );
     results.push(
-      benchSync(
+      await benchAsync(
         'swc keyframes',
-        () => {
-          const out = swcTransform(codeKeyframes, { forceEnable: true, extract: true });
-          if (!out) throw new Error('empty');
-        },
+        () => swcTransform(codeKeyframes, { forceEnable: true, extract: true }),
         ITERATIONS
       )
     );
