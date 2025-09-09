@@ -1,4 +1,4 @@
-use ahash::AHashMap as HashMap;
+use std::collections::HashMap;
 use swc_core::ecma::ast::Expr;
 
 #[derive(Debug, Clone)]

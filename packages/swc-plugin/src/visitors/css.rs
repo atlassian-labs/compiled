@@ -21,7 +21,7 @@ pub fn is_css_call(call: &CallExpr, state: &TransformState) -> bool {
 pub fn visit_css_prop_jsx_element(
     opening_elem: &mut JSXOpeningElement,
     state: &mut TransformState,
-    css_content_to_var: &mut ahash::AHashMap<String, String>,
+    css_content_to_var: &mut std::collections::HashMap<String, String>,
     collected_css_sheets: &mut Vec<(String, String)>,
     extract: bool,
 ) -> bool {
@@ -153,7 +153,7 @@ fn create_ax_call(class_names: &[String]) -> Expr {
 }
 
 fn add_css_sheet_with_deduplication(
-    css_content_to_var: &mut ahash::AHashMap<String, String>,
+    css_content_to_var: &mut std::collections::HashMap<String, String>,
     collected_css_sheets: &mut Vec<(String, String)>,
     css_content: &str,
 ) -> String {
