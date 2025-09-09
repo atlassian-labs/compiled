@@ -61,8 +61,6 @@ it('extract:true stores styleRules and optimizer inlines CSS', async () => {
 
   const css = /<style>(.*?)<\/style>/.exec(outputHtml)?.pop();
   if (!css) throw new Error('No CSS is found.');
-  console.log(outputHtml)
-
   expect(
     format(css, {
       parser: 'css',
@@ -70,5 +68,3 @@ it('extract:true stores styleRules and optimizer inlines CSS', async () => {
     })
   ).toMatch(/font-size: 50px/);
 }, 50000);
-
-

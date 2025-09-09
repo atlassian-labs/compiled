@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "benchmark": "jest --config benchmark.config.json",
-    "build": "yarn build:babel-fixture && yarn build:browser && yarn build:cjs && yarn build:esm && yarn postbuild",
+    "build": "yarn build:swc && yarn build:babel-fixture && yarn build:browser && yarn build:cjs && yarn build:esm && yarn postbuild",
     "postbuild": "scripts/postbuild.sh",
     "build:babel-fixture": "yarn workspace @compiled/babel-component-fixture build && yarn workspace @compiled/babel-component-extracted-fixture build",
     "build:browser": "ttsc --build packages/tsconfig.browser.json",
@@ -43,7 +43,8 @@
     "start:ssr": "ttsc --build examples/ssr/tsconfig.json && yarn workspace @compiled/ssr-app start",
     "start:webpack": "yarn build:babel-fixture && ttsc --build examples/webpack/tsconfig.json && yarn workspace @compiled/webpack-app start",
     "start:webpack:extract": "EXTRACT_TO_CSS=true yarn start:webpack",
-    "test": "jest --no-cache",
+    "pretest": "yarn build:swc",
+    "test": "jest --no-cache --config jest.config.js",
     "test:cover": "yarn test --collectCoverage",
     "test:imports": "node test/test-imports",
     "test:parcel": "jest --testMatch '**/src/**/*.parceltest.{ts,tsx}' --testEnvironment=node",
