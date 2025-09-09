@@ -5,7 +5,8 @@
     "outDir": "dist",
     "target": "es2017"
   },
-  "exclude": ["src/__fixtures__"],
+  "include": ["src/**/*", "types/**/*.d.ts"],
+  "exclude": ["src/__fixtures__", "dist"],
   "references": [
     { "path": "../babel-plugin" },
     { "path": "../babel-plugin-strip-runtime" },
