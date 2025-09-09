@@ -69,35 +69,7 @@ fn murmurhash2_gc_js_units(input: &str, seed: u32) -> u32 {
 
 fn hash_js_low8(input: &str) -> String { base36_u32(murmurhash2_gc_js_units(input, 0)) }
 
-fn hash_utf16le(input: &str) -> String {
-    // Hash the full UTF-16LE byte stream (2 bytes per code unit)
-    let mut bytes: Vec<u8> = Vec::with_capacity(input.len() * 2);
-    for cu in input.encode_utf16() { bytes.push((cu & 0x00ff) as u8); bytes.push((cu >> 8) as u8); }
-    // Reuse the same 32-bit pipeline over bytes by interpreting each 4 bytes as a u32 little-endian
-    let s = bytes;
-    let mut l: usize = s.len();
-    let mut h: u32 = 0 ^ (l as u32);
-    let mut i: usize = 0;
-    while l >= 4 {
-        let mut k: u32 = (s[i] as u32) | ((s[i + 1] as u32) << 8) | ((s[i + 2] as u32) << 16) | ((s[i + 3] as u32) << 24);
-        k = mulmix_32(k);
-        k ^= k >> 24;
-        k = mulmix_32(k);
-        h = mulmix_32(h) ^ k;
-        i += 4;
-        l -= 4;
-    }
-    match l {
-        3 => { h ^= (s[i + 2] as u32) << 16; h ^= (s[i + 1] as u32) << 8; h ^= s[i] as u32; h = mulmix_32(h); }
-        2 => { h ^= (s[i + 1] as u32) << 8; h ^= s[i] as u32; h = mulmix_32(h); }
-        1 => { h ^= s[i] as u32; h = mulmix_32(h); }
-        _ => {}
-    }
-    h ^= h >> 13;
-    h = mulmix_32(h);
-    h ^= h >> 15;
-    base36_u32(h)
-}
+#[allow(dead_code)]
 
 pub fn hash(input: &str) -> String { hash_js_low8(input) }
 
@@ -210,7 +182,7 @@ fn atomic_class_name_for_rule(rule: &AtomicRule, class_hash_prefix: Option<&str>
     // begins with non-ampersand (e.g. "screen and(min-width: 600px):hover") to match Babel's "& screen and(min-width: 600px):hover".
     if !rule.is_styled {
         if let Some(suf) = &rule.selector_suffix {
-            if suf.starts_with('s') { selectors = format!("& {}", suf); }
+            if suf.starts_with('s') { selectors = format!("& {}", suf); let _ = &selectors; }
         }
     }
     let group_input = format!("{}{}{}{}", prefix, at_for_group, selectors_for_hash, property);
@@ -220,7 +192,7 @@ fn atomic_class_name_for_rule(rule: &AtomicRule, class_hash_prefix: Option<&str>
     // For hashing, mirror Babel behavior observed in plugin logs:
     // valueForHash = node.value + node.important (boolean) when !important is present (case-insensitive, extra spaces allowed),
     // otherwise just the raw value. Eg: "redtrue" instead of "red!important".
-    let mut value_for_hash = {
+    let value_for_hash = {
         let trimmed = raw_value.trim_end();
         let lower = trimmed.to_lowercase();
         if lower.ends_with("!important") {
@@ -231,22 +203,7 @@ fn atomic_class_name_for_rule(rule: &AtomicRule, class_hash_prefix: Option<&str>
         }
     };
     let value_hash = slice_first_4(&hash(&value_for_hash));
-    {
-        let group_chars: Vec<u32> = group_input.chars().map(|c| c as u32).collect();
-        let value_chars: Vec<u32> = value_for_hash.chars().map(|c| c as u32).collect();
-        eprintln!(
-            "[HASHDBG] {{\"tag\":\"HASHDBG\",\"where\":\"swc-atomic\",\"property\":\"{}\",\"selectors\":\"{}\",\"atRuleLabel\":\"{}\",\"groupInput\":\"{}\",\"groupInputCharCodes\":{:?},\"groupHash\":\"{}\",\"valueForHash\":\"{}\",\"valueForHashCharCodes\":{:?},\"valueHash\":\"{}\"}}",
-            property,
-            selectors,
-            at_rule_label,
-            group_input,
-            group_chars,
-            group_hash,
-            value_for_hash,
-            value_chars,
-            value_hash
-        );
-    }
+    
     format!("_{}{}", group_hash, value_hash)
 }
 

@@ -1,4 +1,4 @@
-use crate::types::{KeyframeVarSpec, KeyframesInfo, TransformState};
+use crate::types::{KeyframeVarSpec, TransformState};
 use crate::utils::css_builder;
 use swc_core::ecma::ast::*;
 
@@ -19,27 +19,7 @@ pub fn is_keyframes_call(call: &CallExpr, state: &TransformState) -> bool {
     }
 }
 
-pub fn is_keyframes_tagged_template(expr: &Expr, state: &TransformState) -> bool {
-    // We don't plan to support tagged template literals for keyframes in swc-plugin2 per requirements
-    // Always return false so it won't be transformed
-    match expr {
-        Expr::TaggedTpl(tagged) => match tagged.tag.as_ref() {
-            Expr::Ident(id) => {
-                let maybe = state
-                    .compiled_imports
-                    .as_ref()
-                    .and_then(|c| c.keyframes.as_ref());
-                if let Some(locals) = maybe {
-                    locals.contains(&id.sym.to_string())
-                } else {
-                    id.sym.as_ref() == "keyframes"
-                }
-            }
-            _ => false,
-        },
-        _ => false,
-    }
-}
+// Intentionally unused in current implementation: tagged templates for keyframes are not supported
 
 fn is_unitless_property(property: &str) -> bool {
     matches!(property,
@@ -54,7 +34,7 @@ fn is_unitless_property(property: &str) -> bool {
 
 pub fn transform_keyframes_call(
     call: &CallExpr,
-    state: &mut TransformState,
+    _state: &mut TransformState,
 ) -> Option<(String, String, Vec<KeyframeVarSpec>)> {
     // Expect keyframes(<object or string>) and return (sheet_var_name, keyframes_name)
     if call.args.len() != 1 {
@@ -65,31 +45,6 @@ pub fn transform_keyframes_call(
     // Derive a keyframes name based on a canonical JS code string matching Babel's generator for common cases
     fn number_to_js(n: &Number) -> String { if n.value.fract() == 0.0 { format!("{}", n.value as i64) } else { format!("{}", n.value) } }
     fn ident_or_str_key(name: &PropName) -> Option<String> { match name { PropName::Ident(i) => Some(i.sym.to_string()), PropName::Str(s) => Some(format!("\"{}\"", s.value)), _ => None } }
-    fn expr_to_js_min(expr: &Expr) -> Option<String> {
-        match expr {
-            Expr::Lit(Lit::Str(s)) => Some(format!("\"{}\"", s.value)),
-            Expr::Lit(Lit::Num(n)) => Some(number_to_js(n)),
-            Expr::Object(o) => object_to_js_min(o),
-            _ => None,
-        }
-    }
-    fn object_to_js_min(obj: &ObjectLit) -> Option<String> {
-        let mut parts: Vec<String> = Vec::new();
-        for prop in &obj.props {
-            if let PropOrSpread::Prop(p) = prop { if let Prop::KeyValue(kv) = p.as_ref() {
-                if let Some(key) = ident_or_str_key(&kv.key) { if let Some(val) = expr_to_js_min(kv.value.as_ref()) { parts.push(format!("{}:{}", key, val)); } }
-            } }
-        }
-        Some(format!("{{{}}}", parts.join(",")))
-    }
-    fn expr_to_js_pretty(expr: &Expr, indent: usize) -> Option<String> {
-        match expr {
-            Expr::Lit(Lit::Str(s)) => Some(format!("\"{}\"", s.value)),
-            Expr::Lit(Lit::Num(n)) => Some(number_to_js(n)),
-            Expr::Object(o) => object_to_js_pretty(o, indent + 2),
-            _ => None,
-        }
-    }
     fn object_to_js_pretty(obj: &ObjectLit, indent: usize) -> Option<String> {
         let ind = " ".repeat(indent);
         let ind2 = " ".repeat(indent + 2);
@@ -139,12 +94,7 @@ pub fn transform_keyframes_call(
             format!("keyframes({})", s)
         }
     };
-    // Debug print always for now to ensure parity; adjust or gate via env if too noisy
-    let codes: Vec<u32> = gen_code.chars().map(|c| c as u32).collect();
-    eprintln!(
-        "[HASHDBG] {{\"tag\":\"HASHDBG\",\"where\":\"swc-keyframes\",\"genCode\":{:?},\"charCodes\":{:?}}}",
-        gen_code, codes
-    );
+    
     let name_hash = crate::utils::css_builder::hash(&gen_code);
     let kf_name = format!("k{}", name_hash);
     let mut body = String::new();
@@ -210,10 +160,6 @@ pub fn transform_keyframes_call(
     }
     let sheet_text = format!("@keyframes {}{{{}}}", kf_name, body);
     Some((sheet_text, kf_name, var_specs))
-}
-
-pub fn record_keyframes_ident(name: &str, info: KeyframesInfo, state: &mut TransformState) {
-    state.keyframes_by_ident.insert(name.to_string(), info);
 }
 
 

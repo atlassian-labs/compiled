@@ -63,7 +63,7 @@ pub fn transform_styled_call(
                         match first_arg.expr.as_ref() {
                             Expr::Lit(Lit::Str(s)) => { tag_component = Some(JSXElementName::Ident(Ident::new(s.value.clone(), Default::default()))); }
                             Expr::Ident(id) => { tag_component = Some(JSXElementName::Ident(id.clone())); default_component_ident = Some(id.clone()); }
-                            Expr::Member(m) => { tag_component = Some(JSXElementName::JSXMemberExpr(JSXMemberExpr { obj: JSXObject::Ident(Ident::new("".into(), Default::default())), prop: Ident::new("".into(), Default::default()) })); }
+                            Expr::Member(_m) => { tag_component = Some(JSXElementName::Ident(Ident::new("div".into(), Default::default()))); }
                             _ => {}
                         }
                     }
@@ -297,7 +297,7 @@ pub fn transform_styled_call(
                 .iter()
         .map(|cn| Some(ExprOrSpread { spread: None, expr: Box::new(Expr::Lit(Lit::Str(Str { span: Default::default(), value: cn.clone().into(), raw: None }))) }))
                 .collect();
-            let ax_call = Expr::Call(CallExpr { span: Default::default(), callee: Callee::Expr(Box::new(Expr::Ident(Ident::new("ax".into(), Default::default())))), args: vec![ExprOrSpread { spread: None, expr: Box::new(Expr::Array(ArrayLit { span: Default::default(), elems: class_strs })) }], type_args: None });
+            let _ax_call = Expr::Call(CallExpr { span: Default::default(), callee: Callee::Expr(Box::new(Expr::Ident(Ident::new("ax".into(), Default::default())))), args: vec![ExprOrSpread { spread: None, expr: Box::new(Expr::Array(ArrayLit { span: Default::default(), elems: class_strs })) }], type_args: None });
 
     // Build style object with CSS variable assignments using ix() and merge __cmpls
     let mut style_props: Vec<PropOrSpread> = Vec::new();

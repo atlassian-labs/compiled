@@ -296,7 +296,7 @@ impl VisitMut for Transform2 {
             // keyframes() call handling: transform arg to @keyframes sheet and replace with null
             if visitors::keyframes::is_keyframes_call(&call, &self.state) {
                 if let Some((sheet_text, kf_name, _var_specs)) = visitors::keyframes::transform_keyframes_call(&call, &mut self.state) {
-                    let var_name = self.add_css_sheet_with_deduplication(&sheet_text);
+                    let _var_name = self.add_css_sheet_with_deduplication(&sheet_text);
                     // Replace with string literal of the animation-name
                     *n = Expr::Lit(Lit::Str(utils::ast::create_str_lit(&kf_name)));
                     self.had_transformations = true;
