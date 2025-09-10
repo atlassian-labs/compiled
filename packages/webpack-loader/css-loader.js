@@ -8,5 +8,7 @@ const path = require('path');
  * eng health week please find a better way to not have to do this.
  */
 module.exports = fs.existsSync(path.join(__dirname, 'dist'))
-  ? require('./dist/css-loader')
+  ? fs.existsSync(path.join(__dirname, 'dist', 'css-loader.js'))
+    ? require('./dist/css-loader')
+    : require('./src/css-loader')
   : require('./src/css-loader');

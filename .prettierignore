@@ -3,3 +3,9 @@ coverage
 dist
 storybook-static
 **/__fixtures__/*.css
+# Build artifacts and caches
+**/dist/
+**/target/
+.parcel-cache/
+**/.parcel-cache/
+packages/swc-plugin/target/

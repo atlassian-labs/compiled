@@ -1,0 +1,6 @@
+{
+  "importReact": false,
+  "extract": false,
+  "optimizeCss": false,
+  "swc": "auto"
+}

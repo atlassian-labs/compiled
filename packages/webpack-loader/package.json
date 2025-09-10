@@ -25,7 +25,9 @@
     "@compiled/babel-plugin": "^0.38.0",
     "@compiled/babel-plugin-strip-runtime": "^0.38.0",
     "@compiled/css": "^0.21.0",
+    "@compiled/swc-plugin": "*",
     "@compiled/utils": "^0.13.1",
+    "@swc/core": "1.3.107",
     "enhanced-resolve": "^5.18.1",
     "loader-utils": "^2.0.4",
     "webpack-sources": "^3.2.3"

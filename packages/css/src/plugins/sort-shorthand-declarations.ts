@@ -10,7 +10,7 @@ const findDeclaration = (node: ChildNode): Declaration | undefined => {
 
   if ('nodes' in node) {
     // Return the first node that is a declaration, if we find one
-    return node.nodes.find(nodeIsDeclaration);
+    return node.nodes?.find(nodeIsDeclaration);
   }
 
   return undefined;

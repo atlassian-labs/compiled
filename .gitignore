@@ -10,3 +10,5 @@ storybook-static
 
 *.log
 *.tsbuildinfo
+
+.swc/

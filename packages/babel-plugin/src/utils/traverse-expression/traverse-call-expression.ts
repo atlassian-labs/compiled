@@ -103,14 +103,17 @@ export const traverseCallExpression = (
       // Loop through the parameters. Right now only identifier `param` and object pattern `{ param }` or `{ param: p }`
       // are supported.
       params
-        .filter((param) => t.isIdentifier(param) || t.isObjectPattern(param))
+        .filter(
+          (param): param is t.Identifier | t.ObjectPattern =>
+            t.isIdentifier(param) || t.isObjectPattern(param)
+        )
         .forEach((param, index) => {
           const evaluatedArgument = evaluatedArguments[index];
 
           // Push evaluated args and params in the IIFE's scope by created a local variable
           // `const param = 'evaluated arg value'`
           arrowFunctionExpressionPath.scope.push({
-            id: param,
+            id: param as unknown as t.LVal,
             init: evaluatedArgument,
             kind: 'const',
           });
