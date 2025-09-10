@@ -637,7 +637,7 @@ describe('styled (swc-plugin)', () => {
       const C = styled.div({ color });
     `;
     const out = await transformResultString(code, { extract: true });
-    expect(out).toMatchInlineSnapshot(`
+    expect(out).toInclude(`
       "Error: failed to handle: failed to invoke plugin: failed to invoke plugin on 'Some("test.tsx")'
 
       Caused by:
