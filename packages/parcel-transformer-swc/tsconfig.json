@@ -5,9 +5,5 @@
     "outDir": "dist",
     "target": "es2017"
   },
-  "references": [
-    { "path": "../utils" }
-  ]
+  "references": [{ "path": "../utils" }]
 }
-
-
