@@ -64,11 +64,11 @@
   },
   "resolutions": {
     "@types/eslint-scope": "*",
+    "babel-jest": "^29.4.3",
     "css-what": ">=6.1.0",
     "nth-check": ">=2.1.1",
     "semver": "^7.6.3",
-    "typescript": "^4.9.5",
-    "babel-jest": "^29.4.3"
+    "typescript": "^4.9.5"
   },
   "dependencies": {},
   "devDependencies": {
