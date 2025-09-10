@@ -23,6 +23,9 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@babel/core": "^7.26.10",
+    "@compiled/babel-plugin": "*",
+    "@compiled/babel-plugin-strip-runtime": "*",
     "@compiled/swc-plugin": "*",
     "@compiled/utils": "^0.13.1",
     "@parcel/plugin": "^2.8.3",

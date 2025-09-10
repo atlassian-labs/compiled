@@ -112,6 +112,14 @@ export interface CompiledLoaderOptions {
    * or `extract: true` in Webpack loaders or Parcel tranformers.
    */
   classHashPrefix?: string;
+
+  /**
+   * EXPERIMENTAL: Use SWC instead of Babel for transformation.
+   * - true: always use SWC
+   * - false | undefined: use Babel
+   * - 'auto': try SWC, fall back to Babel on error
+   */
+  swc?: boolean | 'auto';
 }
 
 export interface CompiledExtractPluginOptions {

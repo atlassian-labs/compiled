@@ -8,9 +8,12 @@ import { CompiledExtractPlugin } from '../index';
 import type { ResolveOptions } from '../index';
 
 const nodeModulesPath = join(__dirname, '..', '..', '..', '..', 'node_modules');
+const reactDistPath = join(__dirname, '..', '..', '..', '..', 'packages', 'react', 'dist');
 
 export interface BundleOptions {
   extract?: boolean;
+  swc?: boolean;
+  ssr?: boolean;
   disableExtractPlugin?: boolean;
   requireResolveLoaderSyntax?: boolean;
   disableCacheGroup?: boolean;
@@ -24,6 +27,8 @@ export function bundle(
   entry: string,
   {
     extract = false,
+    swc = false,
+    ssr = false,
     disableExtractPlugin = false,
     requireResolveLoaderSyntax = false,
     disableCacheGroup = false,
@@ -41,7 +46,7 @@ export function bundle(
       rules: [
         {
           test: /\.[jt]sx?$/,
-          exclude: /node_modules/,
+          exclude: [/node_modules/, reactDistPath],
           use: [
             {
               loader: 'babel-loader',
@@ -57,6 +62,8 @@ export function bundle(
                 : '@compiled/webpack-loader',
               options: {
                 extract,
+                swc,
+                ssr,
                 importReact: false,
                 importSources,
                 optimizeCss: false,

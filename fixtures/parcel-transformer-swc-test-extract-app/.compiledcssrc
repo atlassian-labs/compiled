@@ -2,5 +2,6 @@
   "importReact": false,
   "extract": true,
   "optimizeCss": false,
-  "inlineCss": true
+  "inlineCss": true,
+  "swc": "auto",
 }

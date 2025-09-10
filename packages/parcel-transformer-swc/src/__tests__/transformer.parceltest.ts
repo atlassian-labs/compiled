@@ -43,6 +43,8 @@ it('transforms assets with swc plugin (extract:false-like output with CC/CS off 
   const code = await asset?.getCode();
   // For now, just assert compilation succeeded and produced JS output
   expect(code).toBeTruthy();
+  // SWC transformer should not inject runtime CSS requires (no styleSheetPath semantics)
+  expect(code).not.toMatch(/require\(.*\.compiled\.css\?style=/);
 }, 50000);
 
 it('extract:true stores styleRules and optimizer inlines CSS', async () => {
@@ -67,4 +69,10 @@ it('extract:true stores styleRules and optimizer inlines CSS', async () => {
       singleQuote: true,
     })
   ).toMatch(/font-size: 50px/);
+  // Ensure no JS requires of compiled.css were emitted
+  const jsAsset = Array.from(changedAssets.values()).find((asset) =>
+    (asset as any).filePath.endsWith('/src/index.jsx')
+  ) as Asset | undefined;
+  const jsCode = await jsAsset?.getCode();
+  expect(jsCode).not.toMatch(/require\(.*\.compiled\.css\?style=/);
 }, 50000);

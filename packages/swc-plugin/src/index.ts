@@ -9,6 +9,7 @@ export interface PluginOptions2 {
   extractStylesToDirectory?: { source: string; dest: string };
   filename?: string;
   sourceFileName?: string;
+  styleSheetPath?: string;
 }
 
 export function getWasmPluginPath2(): string {
@@ -37,6 +38,7 @@ export function createPluginConfig2(options: PluginOptions2 = {}): Required<Plug
     extractStylesToDirectory: options.extractStylesToDirectory || (undefined as any),
     filename: options.filename || '',
     sourceFileName: options.sourceFileName || '',
+    styleSheetPath: options.styleSheetPath || (undefined as any),
   };
 }
 

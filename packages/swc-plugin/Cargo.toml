@@ -27,6 +27,7 @@ regex = "1.10"
 blake3 = "1.5"
 base64 = "0.22"
 ahash = "0.8"
+urlencoding = "2.1"
 
 [dev-dependencies]
 swc_core = { version = "0.90", features = [

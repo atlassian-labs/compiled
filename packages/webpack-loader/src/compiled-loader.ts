@@ -7,6 +7,7 @@ import {
   DEFAULT_PARSER_BABEL_PLUGINS,
   toBoolean,
 } from '@compiled/utils';
+import { transformSync } from '@swc/core';
 import { getOptions } from 'loader-utils';
 import type { LoaderContext } from 'webpack';
 
@@ -32,6 +33,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     extensions = undefined,
     parserBabelPlugins = DEFAULT_PARSER_BABEL_PLUGINS,
     transformerBabelPlugins = [],
+    swc = false,
     [pluginName]: isPluginEnabled = false,
     ssr = false,
     optimizeCss = true,
@@ -51,6 +53,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           bake: {
             type: 'boolean',
           },
+          swc: { anyOf: [{ type: 'boolean' }, { enum: ['auto'] }] },
           extract: {
             type: 'boolean',
           },
@@ -111,6 +114,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     extensions,
     parserBabelPlugins,
     transformerBabelPlugins,
+    swc,
     [pluginName]: isPluginEnabled,
     ssr,
     optimizeCss,
@@ -148,7 +152,144 @@ export default async function compiledLoader(
   try {
     const includedFiles: string[] = [];
 
-    // Transform to an AST using the local babel config.
+    const swcMode = options.swc;
+    const shouldTrySwc = swcMode === true || swcMode === 'auto';
+
+    if (!shouldTrySwc) {
+      const ast = await parseAsync(code, {
+        filename: this.resourcePath,
+        babelrc: false,
+        configFile: false,
+        caller: { name: 'compiled' },
+        rootMode: 'upward-optional',
+        parserOpts: {
+          plugins: options.parserBabelPlugins,
+        },
+        plugins: options.transformerBabelPlugins ?? undefined,
+      });
+
+      const result = await transformFromAstAsync(ast!, code, {
+        babelrc: false,
+        configFile: false,
+        sourceMaps: true,
+        filename: this.resourcePath,
+        parserOpts: {
+          plugins: options.parserBabelPlugins,
+        },
+        plugins: [
+          ...(options.transformerBabelPlugins ?? []),
+          options.extract && [
+            '@compiled/babel-plugin-strip-runtime',
+            {
+              styleSheetPath: `@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${styleSheetName}.css`,
+              compiledRequireExclude: options.ssr,
+              extractStylesToDirectory: options.extractStylesToDirectory,
+            },
+          ],
+          options.bake && [
+            '@compiled/babel-plugin',
+            {
+              ...options,
+              classNameCompressionMap: options.extract && options.classNameCompressionMap,
+              onIncludedFiles: (files: string[]) => includedFiles.push(...files),
+              resolver: options.resolver
+                ? options.resolver
+                : createDefaultResolver({
+                    resolveOptions: resolve,
+                    webpackResolveOptions: this._compilation?.options.resolve,
+                  }),
+            },
+          ],
+        ].filter(toBoolean),
+      });
+
+      includedFiles.forEach((file) => {
+        this.addDependency(normalize(file));
+      });
+
+      return callback(null, result?.code || '', result?.map ?? undefined);
+    }
+
+    // SWC path
+    if (shouldTrySwc) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const getSwcPlugin2: any = require('@compiled/swc-plugin').getSwcPlugin2;
+        const extract = !!options.extract;
+        const [wasmPath, pluginConfig] = getSwcPlugin2({
+          importSources,
+          development: process.env.NODE_ENV !== 'production',
+          runtimeImport: '@compiled/react/runtime',
+          extract,
+          extractStylesToDirectory: options.extractStylesToDirectory,
+          filename: this.resourcePath,
+          sourceFileName: this.resourcePath,
+        });
+
+        const hasJsxPragma = /\/\*\*\s*@jsx\s+\w+\s*\*\//.test(code);
+        const swcResult: any = transformSync(code, {
+          filename: this.resourcePath,
+          sourceMaps: true,
+          cwd: process.cwd(),
+          jsc: {
+            target: 'esnext',
+            externalHelpers: true,
+            parser: {
+              syntax:
+                this.resourcePath.endsWith('.ts') || this.resourcePath.endsWith('.tsx')
+                  ? 'typescript'
+                  : 'ecmascript',
+              tsx: this.resourcePath.endsWith('.tsx') || this.resourcePath.endsWith('.jsx'),
+              jsx: this.resourcePath.endsWith('.jsx') || this.resourcePath.endsWith('.tsx'),
+            } as any,
+            transform: {
+              react: {
+                runtime: hasJsxPragma ? 'classic' : 'automatic',
+                pragma: hasJsxPragma ? 'jsx' : undefined,
+                pragmaFrag: hasJsxPragma ? 'Fragment' : undefined,
+                development: process.env.NODE_ENV !== 'production',
+                importSource: 'react',
+              },
+            },
+            experimental: {
+              plugins: [[wasmPath, pluginConfig]],
+            },
+          },
+          module: { type: 'es6' },
+        });
+
+        // Inject style requires to mimic strip-runtime
+        // Respect SSR flag (equivalent to compiledRequireExclude) by skipping require injection
+        if (extract && !options.ssr && swcResult && typeof swcResult.code === 'string') {
+          const styleRules: string[] = [];
+          const ruleRegex = /const\s+_[0-9]*\s*=\s*"([\s\S]*?)";/g;
+          let match: RegExpExecArray | null;
+          while ((match = ruleRegex.exec(swcResult.code)) !== null) {
+            const candidate = match[1];
+            if (candidate.includes('{') && candidate.includes('}')) {
+              styleRules.push(candidate);
+            }
+          }
+          for (const rule of styleRules) {
+            const params = encodeURIComponent(rule);
+            swcResult.code = `${swcResult.code}\n;require("@compiled/webpack-loader/css-loader!@compiled/webpack-loader/css-loader/${styleSheetName}.css?style=${params}");`;
+          }
+        }
+
+        const mapOut =
+          swcResult && typeof swcResult.map === 'string'
+            ? (JSON.parse(swcResult.map) as any)
+            : swcResult?.map ?? undefined;
+        return callback(null, swcResult?.code || '', mapOut);
+      } catch (err) {
+        if (swcMode === true) {
+          throw err;
+        }
+        // fall through to Babel when swcMode === 'auto'
+      }
+    }
+
+    // Babel fallback (or primary when swc is false/undefined)
     const ast = await parseAsync(code, {
       filename: this.resourcePath,
       babelrc: false,
@@ -161,7 +302,6 @@ export default async function compiledLoader(
       plugins: options.transformerBabelPlugins ?? undefined,
     });
 
-    // Transform using the Compiled Babel Plugin - we deliberately turn off using the local config.
     const result = await transformFromAstAsync(ast!, code, {
       babelrc: false,
       configFile: false,
@@ -184,7 +324,6 @@ export default async function compiledLoader(
           '@compiled/babel-plugin',
           {
             ...options,
-            // Turn off compressing class names if stylesheet extraction is off
             classNameCompressionMap: options.extract && options.classNameCompressionMap,
             onIncludedFiles: (files: string[]) => includedFiles.push(...files),
             resolver: options.resolver
@@ -202,7 +341,7 @@ export default async function compiledLoader(
       this.addDependency(normalize(file));
     });
 
-    callback(null, result?.code || '', result?.map ?? undefined);
+    return callback(null, result?.code || '', result?.map ?? undefined);
   } catch (e: unknown) {
     // @ts-expect-error Not checking for error type
     const error = createError('compiled-loader', 'Unhandled exception')(e.stack);

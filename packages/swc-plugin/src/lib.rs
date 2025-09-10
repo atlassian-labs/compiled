@@ -36,6 +36,9 @@ pub struct CompiledOptions2 {
 
     #[serde(default, rename = "sourceFileName")]
     pub source_file_name: Option<String>,
+
+    #[serde(default, rename = "styleSheetPath")]
+    pub style_sheet_path: Option<String>,
 }
 
 impl Default for CompiledOptions2 {
@@ -47,6 +50,7 @@ impl Default for CompiledOptions2 {
             extract_styles_to_directory: None,
             filename: None,
             source_file_name: None,
+            style_sheet_path: None,
         }
     }
 }
@@ -225,6 +229,22 @@ impl Transform2 {
                 };
                 let css_declaration = ModuleItem::Stmt(Stmt::Decl(Decl::Var(Box::new(var_decl))));
                 module.body.insert(0, css_declaration);
+            }
+        }
+
+        // If styleSheetPath is provided and not extracting to directory, inject require per rule (parity with strip-runtime)
+        if self.options.style_sheet_path.is_some() && !should_write_css_file {
+            let sheet_path = self.options.style_sheet_path.clone().unwrap();
+            // Add a require for each collected css sheet string
+            for (_var_name, css_text) in &self.collected_css_sheets {
+                let encoded = urlencoding::encode(css_text).into_owned();
+                let require_call = Expr::Call(CallExpr {
+                    span: Default::default(),
+                    callee: Callee::Expr(Box::new(Expr::Ident(utils::ast::create_ident("require")))),
+                    args: vec![ExprOrSpread { spread: None, expr: Box::new(Expr::Lit(Lit::Str(utils::ast::create_str_lit(&format!("{}?style={}", sheet_path, encoded))))) }],
+                    type_args: None,
+                });
+                module.body.insert(0, ModuleItem::Stmt(Stmt::Expr(ExprStmt { span: Default::default(), expr: Box::new(require_call) })));
             }
         }
 

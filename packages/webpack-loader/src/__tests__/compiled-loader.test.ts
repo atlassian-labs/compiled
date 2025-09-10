@@ -72,6 +72,31 @@ describe.each<'development' | 'production'>(['development', 'production'])(
       ]);
     });
 
+    it('SWC extract emits compiled-css asset by default and omits it with ssr=true', async () => {
+      const entry = join(fixturesPath, 'local-styles.tsx');
+
+      const assetsWithExtract = await bundle(entry, {
+        extract: true,
+        disableExtractPlugin: false,
+        swc: true,
+      });
+      const hasCompiledCss = Object.keys(assetsWithExtract).some((k) =>
+        /compiled-css.*\.css$/.test(k)
+      );
+      expect(hasCompiledCss).toBe(true);
+
+      const assetsWithoutExtract = await bundle(entry, {
+        extract: true,
+        disableExtractPlugin: false,
+        swc: true,
+        ssr: true,
+      });
+      const hasCompiledCssSSR = Object.keys(assetsWithoutExtract).some((k) =>
+        /compiled-css.*\.css$/.test(k)
+      );
+      expect(hasCompiledCssSSR).toBe(false);
+    });
+
     it('transforms styles imported through a relative import', async () => {
       const assets = await bundle(join(fixturesPath, 'relative-styles.tsx'));
 
