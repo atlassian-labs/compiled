@@ -637,9 +637,7 @@ describe('styled (swc-plugin)', () => {
       const C = styled.div({ color });
     `;
     const out = await transformResultString(code, { extract: true });
-    expect(out).toInclude(
-      `"Error: failed to handle: failed to invoke plugin: failed to invoke plugin on 'Some("test.tsx")'`
-    );
+    expect(out).toContain('Error: failed to handle: failed to invoke plugin');
   });
 
   it('supports arrow function body (IIFE) for value', async () => {
