@@ -637,13 +637,9 @@ describe('styled (swc-plugin)', () => {
       const C = styled.div({ color });
     `;
     const out = await transformResultString(code, { extract: true });
-    expect(out).toInclude(`
-      "Error: failed to handle: failed to invoke plugin: failed to invoke plugin on 'Some("test.tsx")'
-
-      Caused by:
-          0: failed to invoke \`/Users/sjackson3/Documents/atlassian/compiled-perf-fork/packages/swc-plugin/compiled_swc_plugin2.wasm\` as js transform plugin at /Users/sjackson3/Documents/atlassian/compiled-perf-fork/packages/swc-plugin/compiled_swc_plugin2.wasm
-          1: RuntimeError: unreachable"
-    `);
+    expect(out).toInclude(
+      `"Error: failed to handle: failed to invoke plugin: failed to invoke plugin on 'Some("test.tsx")'`
+    );
   });
 
   it('supports arrow function body (IIFE) for value', async () => {
