@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Compiled logo variation 3 - funnel to atomic grid">
+  <rect width="256" height="256" fill="none"/>
+  <!-- Source lines (styles before compilation) -->
+  <line x1="48" y1="96" x2="120" y2="96" stroke="#2684FF" stroke-width="10" stroke-linecap="round"/>
+  <line x1="48" y1="128" x2="120" y2="128" stroke="#2684FF" stroke-width="10" stroke-linecap="round"/>
+  <line x1="48" y1="160" x2="120" y2="160" stroke="#2684FF" stroke-width="10" stroke-linecap="round"/>
+  <!-- Compilation funnel (negative space inside) -->
+  <path d="M120 84 L184 128 L120 172 Z" fill="none" stroke="#2684FF" stroke-width="10" stroke-linejoin="round"/>
+  <!-- Atomic CSS grid output -->
+  <rect x="192" y="116" width="12" height="12" rx="2" fill="#00C7E6"/>
+  <rect x="208" y="116" width="12" height="12" rx="2" fill="#00C7E6"/>
+  <rect x="192" y="132" width="12" height="12" rx="2" fill="#00C7E6"/>
+  <rect x="208" y="132" width="12" height="12" rx="2" fill="#00C7E6"/>
+</svg>

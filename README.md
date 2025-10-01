@@ -1,5 +1,11 @@
 # Compiled
 
+<p align="center">
+  <img src="./COMPILED-LOGO-1.svg" height="96" alt="Compiled logo variation 1" />
+  <img src="./COMPILED-LOGO-2.svg" height="96" alt="Compiled logo variation 2" />
+  <img src="./COMPILED-LOGO-3.svg" height="96" alt="Compiled logo variation 3" />
+</p>
+
 A familiar and performant compile time [CSS-in-JS](https://reactjs.org/docs/faq-styling.html#what-is-css-in-js) library for [React](https://reactjs.org/).
 
 [![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](./LICENSE)

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Compiled logo - angle brackets with atomic square">
+  <rect width="256" height="256" fill="none"/>
+  <!-- Angle brackets representing JSX / transformation boundaries -->
+  <path d="M96 64 L64 128 L96 192" fill="none" stroke="#2684FF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M160 64 L192 128 L160 192" fill="none" stroke="#2684FF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Atomic CSS block -->
+  <rect x="120" y="120" width="16" height="16" rx="3" fill="#00C7E6"/>
+</svg>

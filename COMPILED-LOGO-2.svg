@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Compiled logo variation 2 - concentric C with atomic grid">
+  <rect width="256" height="256" fill="none"/>
+  <!-- Concentric arcs forming a stylized C (compile-time transformation) -->
+  <path d="M128 40 A88 88 0 1 0 128 216" fill="none" stroke="#2684FF" stroke-width="14" stroke-linecap="round"/>
+  <path d="M128 64 A64 64 0 1 0 128 192" fill="none" stroke="#00C7E6" stroke-width="8" stroke-linecap="round"/>
+  <!-- Atomic CSS grid -->
+  <rect x="152" y="116" width="12" height="12" rx="2" fill="#00C7E6"/>
+  <rect x="168" y="116" width="12" height="12" rx="2" fill="#00C7E6"/>
+  <rect x="152" y="132" width="12" height="12" rx="2" fill="#00C7E6"/>
+  <rect x="168" y="132" width="12" height="12" rx="2" fill="#00C7E6"/>
+</svg>
