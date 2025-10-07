@@ -1,0 +1,51 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradient definitions -->
+  <defs>
+    <linearGradient id="layerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00B8D4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0288D1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="compileGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="optimizeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFA726;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F57C00;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="120" height="120" fill="#FAFAFA"/>
+  
+  <!-- Layer concept: Source code layers being compiled into optimized output -->
+  <!-- Source layers (multiple CSS-in-JS components) -->
+  <rect x="20" y="25" width="45" height="8" rx="2" fill="url(#layerGradient)" opacity="0.4"/>
+  <rect x="25" y="35" width="40" height="8" rx="2" fill="url(#layerGradient)" opacity="0.6"/>
+  <rect x="30" y="45" width="35" height="8" rx="2" fill="url(#layerGradient)" opacity="0.8"/>
+  <rect x="22" y="55" width="43" height="8" rx="2" fill="url(#layerGradient)"/>
+  
+  <!-- Compilation process (central element) -->
+  <circle cx="60" cy="60" r="12" fill="url(#compileGradient)"/>
+  <polygon points="56,56 56,64 64,60" fill="white"/>
+  
+  <!-- Optimized output (atomic CSS) -->
+  <rect x="75" y="25" width="25" height="3" rx="1" fill="url(#optimizeGradient)"/>
+  <rect x="75" y="30" width="20" height="3" rx="1" fill="url(#optimizeGradient)"/>
+  <rect x="75" y="35" width="22" height="3" rx="1" fill="url(#optimizeGradient)"/>
+  <rect x="75" y="40" width="18" height="3" rx="1" fill="url(#optimizeGradient)"/>
+  <rect x="75" y="45" width="25" height="3" rx="1" fill="url(#optimizeGradient)"/>
+  <rect x="75" y="50" width="15" height="3" rx="1" fill="url(#optimizeGradient)"/>
+  <rect x="75" y="55" width="28" height="3" rx="1" fill="url(#optimizeGradient)"/>
+  <rect x="75" y="60" width="12" height="3" rx="1" fill="url(#optimizeGradient)"/>
+  <rect x="75" y="65" width="20" height="3" rx="1" fill="url(#optimizeGradient)"/>
+  <rect x="75" y="70" width="25" height="3" rx="1" fill="url(#optimizeGradient)"/>
+  
+  <!-- Performance indicator -->
+  <circle cx="25" cy="85" r="3" fill="#4CAF50"/>
+  <path d="M25 82 L25 88 M22 85 L28 85" stroke="white" stroke-width="1"/>
+  
+  <!-- Bundle size indicator -->
+  <rect x="40" y="82" width="16" height="6" rx="1" fill="#FF5722" opacity="0.3"/>
+  <rect x="40" y="82" width="6" height="6" rx="1" fill="#4CAF50"/>
+</svg>

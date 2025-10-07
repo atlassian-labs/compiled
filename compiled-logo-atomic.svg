@@ -1,0 +1,44 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <circle cx="60" cy="60" r="55" fill="#F8F9FA" stroke="#E1E5E9" stroke-width="1"/>
+  
+  <!-- Central compilation core -->
+  <circle cx="60" cy="60" r="8" fill="#1B1B1B"/>
+  
+  <!-- Atomic CSS concept: orbiting elements representing atomic classes -->
+  <!-- First orbit -->
+  <circle cx="60" cy="35" r="4" fill="#00B8D4">
+    <animateTransform attributeName="transform" type="rotate" values="0 60 60;360 60 60" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Second orbit -->
+  <circle cx="85" cy="60" r="4" fill="#4CAF50">
+    <animateTransform attributeName="transform" type="rotate" values="120 60 60;480 60 60" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Third orbit -->
+  <circle cx="60" cy="85" r="4" fill="#FFA726">
+    <animateTransform attributeName="transform" type="rotate" values="240 60 60;600 60 60" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Fourth orbit (smaller, faster) -->
+  <circle cx="45" cy="45" r="3" fill="#9C27B0">
+    <animateTransform attributeName="transform" type="rotate" values="0 60 60;-360 60 60" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="75" cy="45" r="3" fill="#FF5722">
+    <animateTransform attributeName="transform" type="rotate" values="90 60 60;-270 60 60" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="75" cy="75" r="3" fill="#607D8B">
+    <animateTransform attributeName="transform" type="rotate" values="180 60 60;-180 60 60" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="45" cy="75" r="3" fill="#E91E63">
+    <animateTransform attributeName="transform" type="rotate" values="270 60 60;-90 60 60" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Orbit paths (subtle) -->
+  <circle cx="60" cy="60" r="25" fill="none" stroke="#E1E5E9" stroke-width="1" opacity="0.3"/>
+  <circle cx="60" cy="60" r="18" fill="none" stroke="#E1E5E9" stroke-width="1" opacity="0.2"/>
+</svg>

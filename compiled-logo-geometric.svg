@@ -1,0 +1,25 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="55" fill="#1B1B1B" stroke="none"/>
+  
+  <!-- Compilation transformation concept: hexagon transforming to optimized squares -->
+  <!-- Input hexagon (source code) -->
+  <polygon points="30,30 50,20 70,30 70,50 50,60 30,50" fill="none" stroke="#00B8D4" stroke-width="2"/>
+  
+  <!-- Arrow indicating transformation -->
+  <path d="M75 40 L85 40 M82 37 L85 40 L82 43" stroke="#FFA726" stroke-width="2" fill="none"/>
+  
+  <!-- Output optimized grid (compiled atomic CSS) -->
+  <rect x="88" y="28" width="8" height="8" fill="#4CAF50"/>
+  <rect x="88" y="38" width="8" height="8" fill="#4CAF50"/>
+  <rect x="88" y="48" width="8" height="8" fill="#4CAF50"/>
+  <rect x="98" y="28" width="8" height="8" fill="#4CAF50"/>
+  <rect x="98" y="38" width="8" height="8" fill="#4CAF50"/>
+  <rect x="98" y="48" width="8" height="8" fill="#4CAF50"/>
+  
+  <!-- Bottom section: CSS extraction concept -->
+  <rect x="25" y="75" width="70" height="3" fill="#00B8D4" opacity="0.3"/>
+  <rect x="25" y="80" width="50" height="3" fill="#00B8D4" opacity="0.5"/>
+  <rect x="25" y="85" width="60" height="3" fill="#00B8D4" opacity="0.7"/>
+  <rect x="25" y="90" width="40" height="3" fill="#00B8D4"/>
+</svg>

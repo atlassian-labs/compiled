@@ -1,5 +1,9 @@
 # Compiled
 
+<img src="compiled-logo-geometric.svg" alt="Compiled Logo - Geometric" width="120" height="120">
+<img src="compiled-logo-atomic.svg" alt="Compiled Logo - Atomic" width="120" height="120">
+<img src="compiled-logo-layers.svg" alt="Compiled Logo - Layers" width="120" height="120">
+
 A familiar and performant compile time [CSS-in-JS](https://reactjs.org/docs/faq-styling.html#what-is-css-in-js) library for [React](https://reactjs.org/).
 
 [![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](./LICENSE)
