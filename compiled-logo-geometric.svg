@@ -1,0 +1,27 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle representing compilation process -->
+  <circle cx="60" cy="60" r="50" fill="#0052CC" opacity="0.1"/>
+  
+  <!-- Outer hexagon representing input (CSS-in-JS) -->
+  <polygon points="60,20 80,35 80,65 60,80 40,65 40,35" 
+           fill="none" 
+           stroke="#0052CC" 
+           stroke-width="2"/>
+  
+  <!-- Inner triangle representing compiled output -->
+  <polygon points="60,35 70,55 50,55" 
+           fill="#36B37E"/>
+  
+  <!-- Central dot representing the core -->
+  <circle cx="60" cy="60" r="3" fill="#0052CC"/>
+  
+  <!-- Transformation arrows -->
+  <path d="M 45 30 L 42 27 M 45 30 L 42 33" 
+        stroke="#FF5630" 
+        stroke-width="2" 
+        fill="none"/>
+  <path d="M 75 30 L 78 27 M 75 30 L 78 33" 
+        stroke="#FF5630" 
+        stroke-width="2" 
+        fill="none"/>
+</svg>

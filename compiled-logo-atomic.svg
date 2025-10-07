@@ -1,0 +1,32 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Large outer circle representing the compilation boundary -->
+  <circle cx="60" cy="60" r="45" fill="none" stroke="#0052CC" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Central nucleus representing the core compiler -->
+  <circle cx="60" cy="60" r="12" fill="#0052CC"/>
+  
+  <!-- Orbital rings representing CSS transformation -->
+  <ellipse cx="60" cy="60" rx="25" ry="15" 
+           fill="none" 
+           stroke="#36B37E" 
+           stroke-width="2" 
+           opacity="0.8"/>
+  
+  <ellipse cx="60" cy="60" rx="15" ry="25" 
+           fill="none" 
+           stroke="#FF5630" 
+           stroke-width="2" 
+           opacity="0.8"/>
+  
+  <!-- Atomic particles representing CSS rules being processed -->
+  <circle cx="85" cy="60" r="3" fill="#36B37E"/>
+  <circle cx="35" cy="60" r="3" fill="#36B37E"/>
+  <circle cx="60" cy="35" r="3" fill="#FF5630"/>
+  <circle cx="60" cy="85" r="3" fill="#FF5630"/>
+  
+  <!-- Small energy dots showing compilation activity -->
+  <circle cx="70" cy="45" r="1.5" fill="#0052CC" opacity="0.6"/>
+  <circle cx="50" cy="75" r="1.5" fill="#0052CC" opacity="0.6"/>
+  <circle cx="75" cy="70" r="1.5" fill="#36B37E" opacity="0.6"/>
+  <circle cx="45" cy="50" r="1.5" fill="#FF5630" opacity="0.6"/>
+</svg>

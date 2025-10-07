@@ -1,0 +1,27 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Left bracket representing input code -->
+  <path d="M 30 35 Q 25 35 25 40 L 25 80 Q 25 85 30 85" 
+        fill="none" 
+        stroke="#0052CC" 
+        stroke-width="4" 
+        stroke-linecap="round"/>
+  
+  <!-- Right bracket representing compiled output -->
+  <path d="M 90 35 Q 95 35 95 40 L 95 80 Q 95 85 90 85" 
+        fill="none" 
+        stroke="#36B37E" 
+        stroke-width="4" 
+        stroke-linecap="round"/>
+  
+  <!-- Transformation symbol in center -->
+  <circle cx="60" cy="60" r="8" fill="#FF5630"/>
+  
+  <!-- Compilation dots showing process -->
+  <circle cx="45" cy="50" r="2" fill="#0052CC" opacity="0.6"/>
+  <circle cx="50" cy="55" r="2" fill="#0052CC" opacity="0.7"/>
+  <circle cx="55" cy="60" r="2" fill="#0052CC" opacity="0.8"/>
+  
+  <circle cx="65" cy="60" r="2" fill="#36B37E" opacity="0.8"/>
+  <circle cx="70" cy="65" r="2" fill="#36B37E" opacity="0.7"/>
+  <circle cx="75" cy="70" r="2" fill="#36B37E" opacity="0.6"/>
+</svg>
