@@ -92,11 +92,16 @@ export default new Transformer<ParcelTransformerOpts>({
     if (
       // If neither Compiled (default) nor any of the additional import sources are found in the code, we bail out.
       [...DEFAULT_IMPORT_SOURCES, ...(config.importSources || [])].every(
-        (importSource) => !code.includes(importSource) || code.includes(importSource + '/runtime')
+        (importSource) => !code.includes(importSource)
       )
     ) {
       // We only want to parse files that are actually using Compiled.
       // For everything else we bail out.
+      return undefined;
+    }
+    if (code.includes('/* COMPILED_TRANSFORMED_ASSET */')) {
+      // If we're dealing with a pre-transformed asset, we bail out to avoid performing the expensive parse operation.
+      // We add this marker to the code to indicate that the asset has already been transformed.
       return undefined;
     }
 
