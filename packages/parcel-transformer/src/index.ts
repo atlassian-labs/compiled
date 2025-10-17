@@ -92,7 +92,7 @@ export default new Transformer<ParcelTransformerOpts>({
     if (
       // If neither Compiled (default) nor any of the additional import sources are found in the code, we bail out.
       [...DEFAULT_IMPORT_SOURCES, ...(config.importSources || [])].every(
-        (importSource) => !code.includes(importSource)
+        (importSource) => !code.includes(importSource) || code.includes(importSource + '/runtime')
       )
     ) {
       // We only want to parse files that are actually using Compiled.
