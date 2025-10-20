@@ -1,5 +1,11 @@
 # @compiled/parcel-transformer
 
+## 0.19.0
+
+### Minor Changes
+
+- f9bf2fb: Skip transformed code
+
 ## 0.18.7
 
 ### Patch Changes

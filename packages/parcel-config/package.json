@@ -1,6 +1,6 @@
 {
   "name": "@compiled/parcel-config",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "A familiar and performant compile time CSS-in-JS library for React.",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
   "repository": {
@@ -17,7 +17,7 @@
   ],
   "dependencies": {
     "@compiled/parcel-optimizer": "^0.6.0",
-    "@compiled/parcel-transformer": "^0.18.1",
+    "@compiled/parcel-transformer": "^0.19.0",
     "@compiled/parcel-transformer-external": "^0.1.0",
     "@parcel/plugin": "^2.8.3"
   },
