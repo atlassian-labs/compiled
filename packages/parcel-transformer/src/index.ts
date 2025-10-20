@@ -99,6 +99,11 @@ export default new Transformer<ParcelTransformerOpts>({
       // For everything else we bail out.
       return undefined;
     }
+    if (code.includes('/* COMPILED_TRANSFORMED_ASSET */')) {
+      // If we're dealing with a pre-transformed asset, we bail out to avoid performing the expensive parse operation.
+      // We add this marker to the code to indicate that the asset has already been transformed.
+      return undefined;
+    }
 
     const program = await parseAsync(code, {
       filename: asset.filePath,
