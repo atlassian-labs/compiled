@@ -1,3 +1,49 @@
+# Agent Rules
+
+1. **Public Repository Warning**: This is a PUBLIC repository. Never include internal/sensitive information in the project.
+
+2. **File Operations**:
+
+   - Always read files before editing them
+   - Always prefer editing existing files instead of creating new ones
+   - Always use specialized tools (read_files, edit, write) instead of bash commands where possible
+   - Never create documentation files unless directed
+
+3. **Communication Style**:
+
+   - Always be concise and technical
+   - Always output text directly to user, NOT via bash echo or comments
+   - Always request more information when necessary
+   - Never use emoji
+
+4. **Code Quality**:
+
+   - Always run relevant tests for the area of code being modified
+   - Always improve the test suite when fixing issues instead of just reading the code or using CLI
+   - Always format files after editing using the relevant tool
+   - Never use placeholders in code, always use real values or ask for them
+
+5. **Git Safety**:
+
+   - Never push or commit unless directed
+   - Never update git config
+   - Never force push to main/master
+   - Never use interactive git commands (`-i` flag)
+   - Never skip hooks (--no-verify, --no-gpg-sign)
+   - Never run destructive git commands unless directed
+   - Never create PRs unless directed
+
+6. **Task Management**:
+
+   - Always use the todo/task tool
+   - Always mark todos/tasks as complete immediately after finishing them
+   - Never work on multiple todos/tasks simultaneously
+
+7. **When stuck**:
+   - Check existing documentation
+   - Ask the developer for clarification
+   - Review recent commits for context
+
 # Project Overview
 
 Compiled is a **compile-time CSS-in-JS library** for React that transforms styled components into atomic CSS at build time via Babel AST transformations. Unlike runtime CSS-in-JS libraries, all styles are extracted and processed during compilation.
