@@ -1,4 +1,4 @@
-import { join } from 'path';
+import * as fs from 'fs';
 
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import type { PluginOptions as BabelPluginOptions } from '@compiled/babel-plugin';
@@ -6,16 +6,11 @@ import type {
   PluginOptions as BabelStripRuntimePluginOptions,
   BabelFileMetadata,
 } from '@compiled/babel-plugin-strip-runtime';
+import { sort } from '@compiled/css';
 import { DEFAULT_IMPORT_SOURCES, DEFAULT_PARSER_BABEL_PLUGINS, toBoolean } from '@compiled/utils';
 
-import type { CompiledVitePluginOptions } from './types';
-import { createDefaultResolver, collectDistributedStyles } from './utils';
-
-// Type for Vite's resolved config
-interface ResolvedConfig {
-  root?: string;
-  [key: string]: unknown;
-}
+import type { PluginOptions } from './types';
+import { createDefaultResolver } from './utils';
 
 /**
  * Compiled Vite plugin.
@@ -25,8 +20,8 @@ interface ResolvedConfig {
  * @param userOptions - Plugin configuration options
  * @returns Vite plugin object
  */
-export default function compiledVitePlugin(userOptions: CompiledVitePluginOptions = {}): any {
-  const options: CompiledVitePluginOptions = {
+export default function compiledVitePlugin(userOptions: PluginOptions = {}): any {
+  const options: PluginOptions = {
     bake: true,
     extract: false,
     importReact: true,
@@ -40,15 +35,30 @@ export default function compiledVitePlugin(userOptions: CompiledVitePluginOption
 
   // Storage for collected style rules during transformation
   const collectedStyleRules = new Set<string>();
-  let viteConfig: ResolvedConfig;
+  // Track the generated CSS filename for HTML injection
+  let generatedCssFileName: string | undefined;
 
   return {
     name: '@compiled/vite-plugin',
     enforce: 'pre', // Run before other plugins
 
-    configResolved(config: any) {
-      // Store the resolved Vite config for later use
-      viteConfig = config;
+    load(id: string) {
+      // Load .compiled.css files and collect their styles
+      if (id.endsWith('.compiled.css')) {
+        try {
+          if (fs.existsSync(id)) {
+            const cssContent = fs.readFileSync(id, 'utf-8');
+            // Split by newlines and add each rule to our collection
+            const rules = cssContent.split('\n').filter((rule) => rule.trim());
+            rules.forEach((rule: string) => collectedStyleRules.add(rule));
+          }
+        } catch (error) {
+          // File may not exist yet, that's ok
+        }
+        // Return empty module to prevent Vite from trying to process it
+        return { code: '', map: null };
+      }
+      return null;
     },
 
     async transform(code: string, id: string): Promise<any> {
@@ -166,14 +176,8 @@ export default function compiledVitePlugin(userOptions: CompiledVitePluginOption
       }
 
       try {
-        // Collect distributed styles from node_modules
-        const nodeModulesPaths: string[] = [];
-        if (viteConfig?.root) {
-          nodeModulesPaths.push(join(viteConfig.root, 'node_modules'));
-        }
-
-        const distributedStyles = collectDistributedStyles(nodeModulesPaths);
-        distributedStyles.forEach((rule: string) => collectedStyleRules.add(rule));
+        // Note: Distributed styles from node_modules are collected via the load() hook
+        // when .compiled.css files are imported, not by scanning the filesystem
 
         // Convert Set to array and sort for determinism
         const allRules = Array.from(collectedStyleRules).sort();
@@ -185,18 +189,17 @@ export default function compiledVitePlugin(userOptions: CompiledVitePluginOption
           sortShorthandEnabled: options.sortShorthand,
         };
 
-        // Import sort function dynamically to avoid build issues
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const { sort } = require('./sort-css');
         const sortedCss = sort(combinedCss, sortConfig);
 
-        // Emit the CSS file
-        const cssFileName = 'compiled.css';
-        this.emitFile({
+        // Emit the CSS file with content-based hashing
+        const fileRef = this.emitFile({
           type: 'asset',
-          fileName: cssFileName,
+          name: 'compiled.css',
           source: sortedCss,
         });
+
+        // Get the generated filename for HTML injection
+        generatedCssFileName = this.getFileName(fileRef);
       } catch (error) {
         const err = error as Error;
         this.warn({
@@ -218,12 +221,14 @@ export default function compiledVitePlugin(userOptions: CompiledVitePluginOption
         }
 
         // Return HTML transformation descriptor to inject CSS link
+        // Use the generated filename (with hash) if available
+        const href = generatedCssFileName ? `/${generatedCssFileName}` : '/compiled.css';
         return [
           {
             tag: 'link',
             attrs: {
               rel: 'stylesheet',
-              href: '/compiled.css',
+              href,
             },
             injectTo: 'head',
           },
@@ -233,5 +238,4 @@ export default function compiledVitePlugin(userOptions: CompiledVitePluginOption
   };
 }
 
-export { CompiledVitePluginOptions };
-export type { CompiledVitePluginOptions as VitePluginOptions };
+export type { PluginOptions as VitePluginOptions };
