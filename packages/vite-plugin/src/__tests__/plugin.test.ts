@@ -158,4 +158,189 @@ describe('compiledVitePlugin', () => {
 
     expect(result).toBeTruthy();
   });
+
+  it('should handle keyframes', async () => {
+    const plugin = compiledVitePlugin();
+    const code = `
+      import { keyframes, css } from '@compiled/react';
+
+      const fadeIn = keyframes({
+        from: { opacity: 0 },
+        to: { opacity: 1 },
+      });
+
+      export const Component = () => (
+        <div css={css({ animation: \`\${fadeIn} 0.3s ease-out\` })}>
+          Animated
+        </div>
+      );
+    `;
+
+    const result = await plugin.transform!(code, 'test.tsx');
+
+    expect(result).toBeTruthy();
+    if (result && typeof result === 'object' && 'code' in result) {
+      // Should contain keyframes reference
+      expect(result.code).toContain('keyframes');
+      expect(result.code).toContain('opacity');
+    }
+  });
+
+  it('should handle cssMap', async () => {
+    const plugin = compiledVitePlugin();
+    const code = `
+      import { cssMap } from '@compiled/react';
+
+      const styles = cssMap({
+        primary: { backgroundColor: '#0052CC', color: 'white' },
+        secondary: { backgroundColor: '#E0E0E0', color: 'black' },
+      });
+
+      export const Component = ({ variant }) => (
+        <div css={styles[variant]}>
+          Button
+        </div>
+      );
+    `;
+
+    const result = await plugin.transform!(code, 'test.tsx');
+
+    expect(result).toBeTruthy();
+    if (result && typeof result === 'object' && 'code' in result) {
+      // Should contain the color values (normalized to lowercase)
+      expect(result.code).toContain('#0052cc');
+      expect(result.code).toContain('#fff');
+    }
+  });
+
+  it('should handle ClassNames component', async () => {
+    const plugin = compiledVitePlugin();
+    const code = `
+      import { ClassNames } from '@compiled/react';
+
+      export const Component = () => (
+        <ClassNames>
+          {({ css, style }) => (
+            <div
+              style={style}
+              className={css({ fontSize: '20px', fontWeight: 'bold' })}
+            >
+              Dynamic
+            </div>
+          )}
+        </ClassNames>
+      );
+    `;
+
+    const result = await plugin.transform!(code, 'test.tsx');
+
+    expect(result).toBeTruthy();
+    if (result && typeof result === 'object' && 'code' in result) {
+      expect(result.code).toContain('font-size');
+      expect(result.code).toContain('font-weight');
+    }
+  });
+
+  it('should handle nested pseudo-selectors', async () => {
+    const plugin = compiledVitePlugin();
+    const code = `
+      import { css } from '@compiled/react';
+
+      export const Component = () => (
+        <div css={css({
+          color: 'blue',
+          ':hover': { color: 'red' },
+          ':focus': { outline: '2px solid blue' },
+        })}>
+          Interactive
+        </div>
+      );
+    `;
+
+    const result = await plugin.transform!(code, 'test.tsx');
+
+    expect(result).toBeTruthy();
+    if (result && typeof result === 'object' && 'code' in result) {
+      expect(result.code).toContain('color:blue');
+      expect(result.code).toContain(':hover');
+      expect(result.code).toContain('color:red');
+      expect(result.code).toContain(':focus');
+    }
+  });
+
+  it('should handle media queries', async () => {
+    const plugin = compiledVitePlugin();
+    const code = `
+      import { css } from '@compiled/react';
+
+      export const Component = () => (
+        <div css={css({
+          padding: '16px',
+          '@media (min-width: 768px)': {
+            padding: '32px',
+          },
+        })}>
+          Responsive
+        </div>
+      );
+    `;
+
+    const result = await plugin.transform!(code, 'test.tsx');
+
+    expect(result).toBeTruthy();
+    if (result && typeof result === 'object' && 'code' in result) {
+      expect(result.code).toContain('padding');
+      expect(result.code).toContain('@media');
+      expect(result.code).toContain('min-width');
+    }
+  });
+
+  it('should handle template literal styles', async () => {
+    const plugin = compiledVitePlugin();
+    const code = `
+      import { css } from '@compiled/react';
+
+      export const Component = () => (
+        <div css={css\`
+          color: purple;
+          font-size: 18px;
+          &:hover {
+            color: darkpurple;
+          }
+        \`}>
+          Styled
+        </div>
+      );
+    `;
+
+    const result = await plugin.transform!(code, 'test.tsx');
+
+    expect(result).toBeTruthy();
+    if (result && typeof result === 'object' && 'code' in result) {
+      expect(result.code).toContain('color:purple');
+      expect(result.code).toContain('font-size');
+    }
+  });
+
+  it('should handle styled component with template literal', async () => {
+    const plugin = compiledVitePlugin();
+    const code = `
+      import { styled } from '@compiled/react';
+
+      export const Card = styled.div\`
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      \`;
+    `;
+
+    const result = await plugin.transform!(code, 'test.tsx');
+
+    expect(result).toBeTruthy();
+    if (result && typeof result === 'object' && 'code' in result) {
+      expect(result.code).toContain('background');
+      expect(result.code).toContain('border-radius');
+      expect(result.code).toContain('box-shadow');
+    }
+  });
 });
