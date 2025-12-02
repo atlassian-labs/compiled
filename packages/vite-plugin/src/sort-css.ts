@@ -1,5 +1,6 @@
 // Separate module for CSS sorting to avoid bundling issues with Vite config
-/* eslint-disable import/no-extraneous-dependencies */
-import { sort } from '@compiled/css';
+// Uses require to avoid static resolution during Vite config bundling
+/* eslint-disable @typescript-eslint/no-var-requires, import/no-extraneous-dependencies */
 
-export { sort };
+const css = require('@compiled/css');
+export const sort = css.sort;

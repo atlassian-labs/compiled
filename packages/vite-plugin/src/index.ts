@@ -104,13 +104,6 @@ export default function compiledVitePlugin(userOptions: CompiledVitePluginOption
           },
           plugins: [
             ...(options.transformerBabelPlugins ?? []),
-            extract && [
-              '@compiled/babel-plugin-strip-runtime',
-              {
-                compiledRequireExclude: options.ssr,
-                extractStylesToDirectory: options.extractStylesToDirectory,
-              } as BabelStripRuntimePluginOptions,
-            ],
             options.bake && [
               '@compiled/babel-plugin',
               {
@@ -121,6 +114,13 @@ export default function compiledVitePlugin(userOptions: CompiledVitePluginOption
                 resolver: options.resolver ? options.resolver : createDefaultResolver(options),
                 cache: false,
               } as BabelPluginOptions,
+            ],
+            extract && [
+              '@compiled/babel-plugin-strip-runtime',
+              {
+                compiledRequireExclude: options.ssr || extract,
+                extractStylesToDirectory: options.extractStylesToDirectory,
+              } as BabelStripRuntimePluginOptions,
             ],
           ].filter(toBoolean),
           caller: {

@@ -10,6 +10,9 @@ export default defineConfig({
   plugins: [
     compiled({
       importReact: false, // Using automatic JSX runtime
+      extract: true, // Enable CSS extraction
+      sortAtRules: true,
+      sortShorthand: true,
     }),
     react(),
   ],

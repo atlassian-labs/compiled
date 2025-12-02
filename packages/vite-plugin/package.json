@@ -12,6 +12,14 @@
   "license": "Apache-2.0",
   "author": "Michael Dougall",
   "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -24,6 +32,7 @@
     "@babel/parser": "^7.26.10",
     "@compiled/babel-plugin": "^0.38.0",
     "@compiled/babel-plugin-strip-runtime": "^0.38.0",
+    "@compiled/css": "^0.21.0",
     "@compiled/utils": "^0.13.1",
     "enhanced-resolve": "^5.18.1"
   },
