@@ -34,6 +34,34 @@ Add the compiled preset to your [Parcel config](https://parceljs.org/features/pl
 
 See the [configuration package docs](/pkg-parcel-config) for configuration options.
 
+### Vite
+
+Install the [Vite](https://vitejs.dev/) plugin.
+
+```bash
+npm install @compiled/vite-plugin --save-dev
+```
+
+Add the plugin to your [Vite config](https://vitejs.dev/config/).
+Make sure the Compiled plugin is defined before the React plugin.
+
+```js
+// vite.config.js
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import compiled from '@compiled/vite-plugin';
+
+export default defineConfig({
+  plugins: [
+    // ↓↓ defined first ↓↓
+    compiled(),
+    react(),
+  ],
+});
+```
+
+See the [plugin package docs](/pkg-vite-plugin) for configuration options.
+
 ### Webpack
 
 > We recommend Parcel, as this will be more performant, and it aligns with the Atlassian recommended tech stack.

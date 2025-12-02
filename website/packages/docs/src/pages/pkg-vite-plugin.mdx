@@ -1,0 +1,231 @@
+---
+section: 99-Packages
+order: 3
+name: vite-plugin
+---
+
+# @compiled/vite-plugin
+
+import { Lozenge, HorizontalStack } from '@compiled/website-ui';
+
+<HorizontalStack gap={0.5} spacing={2}>
+  <Lozenge>Vite 4</Lozenge>
+  <Lozenge>Vite 5</Lozenge>
+</HorizontalStack>
+
+[Vite](https://vitejs.dev/) plugin used to transform your code.
+See [installation](/installation#vite) for setup instructions.
+
+```bash
+npm install @compiled/vite-plugin --save-dev
+```
+
+## Options
+
+Configure in your Vite config.
+
+```js
+// vite.config.js
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import compiled from '@compiled/vite-plugin';
+
+export default defineConfig({
+  plugins: [
+    compiled({
+      importReact: true,
+    }),
+    react(),
+  ],
+});
+```
+
+**Important:** The Compiled plugin must be placed **before** the React plugin in the plugins array.
+
+### Options used by `@compiled/vite-plugin`
+
+`@compiled/vite-plugin` accepts the following options:
+
+- `bake`
+- `extensions`
+- `extract`
+- `extractStylesToDirectory`
+- `parserBabelPlugins`
+- `sortAtRules`
+- `sortShorthand`
+- `ssr`
+- `transformerBabelPlugins`
+
+#### bake
+
+Turns on `@compiled/babel-plugin`.
+
+- Type: `boolean`
+- Default: `true`
+
+#### extensions
+
+Extensions that we should consider to be code. We use these to identify if a file should be parsed.
+
+If set, the value of `extensions` will be used in two places:
+
+1. If `resolver` is not set, then `extensions` will be passed to the default resolver, `enhanced-resolver`.
+2. This is also passed to `@compiled/babel-plugin` under the hood.
+
+- Type: `string[]`
+- Default: none, but note that `enhanced-resolver` and `@compiled/babel-plugin` have their own different defaults when the `extensions` option is not set.
+
+#### extract
+
+Enables extracting all styles to an atomic style sheet. This enables `@compiled/babel-plugin-strip-runtime` under the hood.
+
+When enabled in production builds, all styles will be extracted to a `compiled.css` file and automatically injected into your HTML. The CSS link will be added to the `<head>` of your HTML.
+
+Extraction is automatically disabled in development mode to ensure optimal Hot Module Replacement (HMR) performance.
+
+- Type: `boolean`
+- Default: `false`
+
+#### extractStylesToDirectory
+
+When set, extracts styles to an external CSS file. Read [babel-plugin-strip-runtime](/pkg-babel-plugin-strip-runtime) for more information.
+
+- Type: `{ source: string; dest: string }`
+- Default: `undefined`
+
+#### parserBabelPlugins
+
+Babel parser plugins to be used when parsing the source code. Define these to enable extra babel parsers (for example, typescript).
+See the [babel docs](https://babeljs.io/docs/en/plugins/#syntax-plugins) for more context.
+
+Example usage:
+
+```js
+// vite.config.js
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import compiled from '@compiled/vite-plugin';
+
+export default defineConfig({
+  plugins: [
+    compiled({
+      parserBabelPlugins: ['typescript'],
+    }),
+    react(),
+  ],
+});
+```
+
+This is also passed to `@compiled/babel-plugin` under the hood.
+
+- Type: `ParserPlugin[]`
+- Default: `['typescript', 'jsx']`
+
+#### sortAtRules
+
+Whether to sort at-rules, including media queries, when extraction is enabled.
+
+See [here](/media-queries-and-other-at-rules) for more information.
+
+- Type: `boolean`
+- Default: `true`
+
+#### sortShorthand
+
+Whether to sort shorthand properties so that they always come before longhand properties when extraction is enabled.
+
+For example, `border` will always come before `borderColor`, which will always come before `borderTopColor`.
+
+See [Shorthand properties](/shorthand) for more information.
+
+- Type: `boolean`
+- Default: `true`
+
+#### ssr
+
+To be used in conjunction with `extract: true` when having a different configuration for SSR.
+
+When set to true, `ssr` will prevent additional require (one import per rule) in the bundle during style sheet extraction.
+
+This is equivalent to setting `compiledRequireExclude` in `@compiled/babel-plugin-strip-runtime`.
+
+- Type: `boolean`
+- Default: `false`
+
+#### transformerBabelPlugins
+
+Babel transformer plugins to be applied to transformed files before the Compiled evaluation.
+
+Use this if you have some sort of babel plugin that should run before Compiled,
+likely because you have some sort of non-standard syntax in your code.
+See the [babel docs](https://babeljs.io/docs/en/plugins/#transform-plugins) for more context.
+
+Example usage:
+
+```js
+// vite.config.js
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import compiled from '@compiled/vite-plugin';
+
+export default defineConfig({
+  plugins: [
+    compiled({
+      transformerBabelPlugins: [
+        [
+          '@babel/plugin-proposal-decorators',
+          {
+            legacy: true,
+          },
+        ],
+      ],
+    }),
+    react(),
+  ],
+});
+```
+
+- Type: `PluginItem[]`
+- Default: `[]`
+
+### Options passed to `@compiled/babel-plugin`
+
+`@compiled/vite-plugin` also accepts the following options. These are not used in the plugin itself, but instead they are passed directly to the underlying `@compiled/babel-plugin`.
+
+- `addComponentName`
+- `classHashPrefix`
+- `classNameCompressionMap`
+- `importReact`
+- `importSources`
+- `nonce`
+- `optimizeCss`
+- `resolver`
+
+To avoid repetition, we have not included the descriptions here. Please refer to the [`@compiled/babel-plugin` documentation](/pkg-babel-plugin) for more information.
+
+## CSS Extraction
+
+When `extract` is set to `true`, the plugin will generate a `compiled.css` file containing all extracted styles. This file will be automatically linked in your HTML during production builds.
+
+```js
+// vite.config.js
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import compiled from '@compiled/vite-plugin';
+
+export default defineConfig({
+  plugins: [
+    compiled({
+      extract: true,
+    }),
+    react(),
+  ],
+});
+```
+
+The generated CSS file will include:
+
+- All styles from your application code that uses Compiled
+- Distributed styles from `node_modules` packages that use Compiled (e.g., `@compiled/react`)
+
+Styles are automatically sorted and deduplicated for optimal performance. In development mode, extraction is disabled to maintain fast HMR updates.
