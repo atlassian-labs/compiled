@@ -156,7 +156,7 @@ export default function compiledVitePlugin(userOptions: CompiledVitePluginOption
       }
     },
 
-    generateBundle(_outputOptions: any, bundle: any) {
+    generateBundle(_outputOptions: any, _bundle: any) {
       // Only generate CSS file if extraction is enabled
       const isDevelopment = process.env.NODE_ENV === 'development';
       const extract = options.extract && !isDevelopment;
@@ -197,33 +197,38 @@ export default function compiledVitePlugin(userOptions: CompiledVitePluginOption
           fileName: cssFileName,
           source: sortedCss,
         });
-
-        // Find the HTML file and inject the CSS link
-        for (const fileName in bundle) {
-          const file = bundle[fileName] as any;
-          if (file.type === 'asset' && fileName.endsWith('.html')) {
-            let html = file.source as string;
-
-            // Inject CSS link into the head
-            const cssLink = `  <link rel="stylesheet" href="/${cssFileName}">`;
-            if (html.includes('</head>')) {
-              html = html.replace('</head>', `${cssLink}\n  </head>`);
-            } else if (html.includes('<head>')) {
-              html = html.replace('<head>', `<head>\n${cssLink}`);
-            } else {
-              // If no head tag, add one
-              html = `<head>\n${cssLink}\n</head>\n${html}`;
-            }
-
-            file.source = html;
-          }
-        }
       } catch (error) {
         const err = error as Error;
         this.warn({
           message: `[@compiled/vite-plugin] Failed to generate CSS bundle: ${err.message}`,
         });
       }
+    },
+
+    transformIndexHtml: {
+      // Run after other plugins to ensure we inject after React plugin processes the HTML
+      order: 'post',
+      handler() {
+        // Only inject CSS link if extraction is enabled
+        const isDevelopment = process.env.NODE_ENV === 'development';
+        const extract = options.extract && !isDevelopment;
+
+        if (!extract || collectedStyleRules.size === 0) {
+          return [];
+        }
+
+        // Return HTML transformation descriptor to inject CSS link
+        return [
+          {
+            tag: 'link',
+            attrs: {
+              rel: 'stylesheet',
+              href: '/compiled.css',
+            },
+            injectTo: 'head',
+          },
+        ];
+      },
     },
   };
 }
