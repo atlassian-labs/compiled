@@ -1,7 +1,3 @@
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-
 import compiledVitePlugin from '../index';
 
 describe('CSS Extraction', () => {
@@ -58,67 +54,6 @@ describe('CSS Extraction', () => {
     });
   });
 
-  describe('transformIndexHtml hook', () => {
-    const originalEnv = process.env.NODE_ENV;
-
-    beforeEach(() => {
-      process.env.NODE_ENV = 'production';
-    });
-
-    afterEach(() => {
-      process.env.NODE_ENV = originalEnv;
-    });
-
-    it('should have transformIndexHtml hook with correct structure', () => {
-      const plugin = compiledVitePlugin({ extract: true });
-
-      expect(plugin.transformIndexHtml).toBeDefined();
-      expect(typeof plugin.transformIndexHtml).toBe('object');
-      expect(plugin.transformIndexHtml.order).toBe('post');
-      expect(typeof plugin.transformIndexHtml.handler).toBe('function');
-    });
-
-    it('should return empty array when extraction is disabled', () => {
-      const plugin = compiledVitePlugin({ extract: false });
-      const result = plugin.transformIndexHtml.handler();
-
-      expect(result).toEqual([]);
-    });
-
-    it('should return empty array in development mode', () => {
-      process.env.NODE_ENV = 'development';
-      const plugin = compiledVitePlugin({ extract: true });
-      const result = plugin.transformIndexHtml.handler();
-
-      expect(result).toEqual([]);
-    });
-
-    it('should return CSS link descriptor when extraction is enabled in production', async () => {
-      const plugin = compiledVitePlugin({ extract: true });
-
-      // First, transform some code to populate collectedStyleRules
-      const code = `
-        import { css } from '@compiled/react';
-        export const Component = () => <div css={css({ color: 'blue' })}>Test</div>;
-      `;
-      await plugin.transform!(code, 'test.tsx');
-
-      // Now check the HTML transformation
-      const result = plugin.transformIndexHtml.handler();
-
-      expect(result).toEqual([
-        {
-          tag: 'link',
-          attrs: {
-            rel: 'stylesheet',
-            href: '/compiled.css',
-          },
-          injectTo: 'head',
-        },
-      ]);
-    });
-  });
-
   describe('generateBundle hook', () => {
     const originalEnv = process.env.NODE_ENV;
 
@@ -137,7 +72,7 @@ describe('CSS Extraction', () => {
       expect(typeof plugin.generateBundle).toBe('function');
     });
 
-    it('should emit CSS file when extraction is enabled', async () => {
+    it('should emit extracted CSS file when extraction is enabled', async () => {
       const plugin = compiledVitePlugin({ extract: true });
       const emittedFiles: any[] = [];
 
@@ -145,6 +80,7 @@ describe('CSS Extraction', () => {
       const context = {
         emitFile: (file: any) => {
           emittedFiles.push(file);
+          return 'mock-ref';
         },
         warn: jest.fn(),
       };
@@ -156,14 +92,14 @@ describe('CSS Extraction', () => {
       `;
       await plugin.transform!(code, 'test.tsx');
 
-      // Call generateBundle
+      // Call generateBundle with empty bundle
       await plugin.generateBundle.call(context, {}, {});
 
-      // Check that CSS file was emitted
+      // Check that extracted CSS file was emitted
       expect(emittedFiles.length).toBe(1);
       expect(emittedFiles[0]).toMatchObject({
         type: 'asset',
-        name: 'compiled.css',
+        name: 'compiled-extracted.css',
       });
       expect(typeof emittedFiles[0].source).toBe('string');
       expect(emittedFiles[0].source.length).toBeGreaterThan(0);
@@ -213,9 +149,164 @@ describe('CSS Extraction', () => {
 
       expect(emittedFiles.length).toBe(0);
     });
+
+    it('should apply sorting and deduplication to CSS assets containing Compiled styles', async () => {
+      const plugin = compiledVitePlugin({ extract: true });
+
+      // Mock bundle with a CSS asset containing Compiled styles
+      const bundle = {
+        'index.css': {
+          type: 'asset',
+          fileName: 'index.css',
+          source: '._syaz13q2{color:blue}\n._syaz13q2{color:blue}\n._1wyb1fwx{font-size:12px}',
+        },
+      };
+
+      const context = {
+        emitFile: jest.fn(),
+        warn: jest.fn(),
+      };
+
+      // Call generateBundle
+      await plugin.generateBundle.call(context, {}, bundle);
+
+      // Check that the CSS was processed (duplicates removed and sorted)
+      const processedCss = bundle['index.css'].source as string;
+
+      // Should have removed duplicate
+      const blueColorMatches = (processedCss.match(/color:blue/g) || []).length;
+      expect(blueColorMatches).toBe(1);
+
+      // Should still contain both rules
+      expect(processedCss).toContain('color:blue');
+      expect(processedCss).toContain('font-size');
+    });
+
+    it('should not process CSS assets without Compiled atomic classes', async () => {
+      const plugin = compiledVitePlugin({ extract: true });
+
+      // Mock bundle with non-Compiled CSS
+      const originalCss = '.regular-class { color: red; }';
+      const bundle = {
+        'other.css': {
+          type: 'asset',
+          fileName: 'other.css',
+          source: originalCss,
+        },
+      };
+
+      const context = {
+        emitFile: jest.fn(),
+        warn: jest.fn(),
+      };
+
+      // Call generateBundle
+      await plugin.generateBundle.call(context, {}, bundle);
+
+      // CSS should remain unchanged (no atomic classes to process)
+      expect(bundle['other.css'].source).toBe(originalCss);
+    });
+
+    it('should sort pseudo-selectors in the correct order', async () => {
+      const plugin = compiledVitePlugin({ extract: true });
+
+      // Mock bundle with pseudo-selectors in wrong order
+      // Correct order: :link → :visited → :focus-within → :focus → :hover → :active
+      const bundle = {
+        'index.css': {
+          type: 'asset',
+          fileName: 'index.css',
+          source:
+            '._abc:active{color:red}._abc:hover{color:blue}._abc:focus{color:green}._abc:link{color:yellow}',
+        },
+      };
+
+      const context = {
+        emitFile: jest.fn(),
+        warn: jest.fn(),
+      };
+
+      // Call generateBundle
+      await plugin.generateBundle.call(context, {}, bundle);
+
+      const processedCss = bundle['index.css'].source as string;
+
+      // Check that pseudo-selectors are in the correct order
+      const linkIndex = processedCss.indexOf(':link');
+      const focusIndex = processedCss.indexOf(':focus');
+      const hoverIndex = processedCss.indexOf(':hover');
+      const activeIndex = processedCss.indexOf(':active');
+
+      expect(linkIndex).toBeLessThan(focusIndex);
+      expect(focusIndex).toBeLessThan(hoverIndex);
+      expect(hoverIndex).toBeLessThan(activeIndex);
+    });
+
+    it('should preserve duplicates in different at-rule contexts', async () => {
+      const plugin = compiledVitePlugin({ extract: true });
+
+      // Mock bundle with same rule in different contexts
+      const bundle = {
+        'index.css': {
+          type: 'asset',
+          fileName: 'index.css',
+          source: '@media(min-width:768px){._abc{color:red}}._abc{color:red}',
+        },
+      };
+
+      const context = {
+        emitFile: jest.fn(),
+        warn: jest.fn(),
+      };
+
+      // Call generateBundle
+      await plugin.generateBundle.call(context, {}, bundle);
+
+      const processedCss = bundle['index.css'].source as string;
+
+      // Both instances should be preserved (different cascade contexts)
+      const matches = (processedCss.match(/color:red/g) || []).length;
+      expect(matches).toBe(2);
+      expect(processedCss).toContain('@media');
+    });
+
+    it('should produce deterministic output across multiple runs', async () => {
+      const plugin1 = compiledVitePlugin({ extract: true });
+      const plugin2 = compiledVitePlugin({ extract: true });
+
+      const inputCss = '._z{z-index:1}._a{color:red}._m{margin:10px}._z{z-index:1}';
+
+      const bundle1 = {
+        'index.css': {
+          type: 'asset',
+          fileName: 'index.css',
+          source: inputCss,
+        },
+      };
+
+      const bundle2 = {
+        'index.css': {
+          type: 'asset',
+          fileName: 'index.css',
+          source: inputCss,
+        },
+      };
+
+      const context = {
+        emitFile: jest.fn(),
+        warn: jest.fn(),
+      };
+
+      // Process with two different plugin instances
+      await plugin1.generateBundle.call(context, {}, bundle1);
+      await plugin2.generateBundle.call(context, {}, bundle2);
+
+      // Output should be identical
+      expect(bundle1['index.css'].source).toBe(bundle2['index.css'].source);
+    });
   });
 
-  describe('load hook - distributed CSS', () => {
+  describe('HTML injection', () => {
     const originalEnv = process.env.NODE_ENV;
 
     beforeEach(() => {
@@ -226,172 +317,99 @@ describe('CSS Extraction', () => {
       process.env.NODE_ENV = originalEnv;
     });
 
-    it('should have a load hook', () => {
+    it('should inject extracted CSS into HTML', async () => {
       const plugin = compiledVitePlugin({ extract: true });
 
-      expect(plugin.load).toBeDefined();
-      expect(typeof plugin.load).toBe('function');
-    });
+      // Mock context for generateBundle
+      let emittedFileName = '';
+      const context = {
+        emitFile: (file: any) => {
+          // Simulate Vite's content hashing
+          emittedFileName = `assets/${file.name.replace('.css', '-abc123.css')}`;
+          return 'mock-ref-id';
+        },
+        warn: jest.fn(),
+      };
 
-    it('should intercept .compiled.css imports and return empty module', () => {
-      const plugin = compiledVitePlugin({ extract: true });
+      // Transform code to collect styles
+      const code = `
+        import { css } from '@compiled/react';
+        export const Component = () => <div css={css({ color: 'blue' })}>Test</div>;
+      `;
+      await plugin.transform!(code, 'test.tsx');
 
-      const result = plugin.load!('/node_modules/@atlaskit/button/dist/button.compiled.css');
+      // Call generateBundle to emit the CSS file
+      await plugin.generateBundle.call(context, {}, {});
 
-      expect(result).toEqual({
-        code: '',
-        map: null,
+      // Mock bundle with the emitted CSS
+      const bundle = {
+        [emittedFileName]: {
+          type: 'asset',
+          name: 'compiled-extracted.css',
+          fileName: emittedFileName,
+          source: '._syaz13q2{color:blue}',
+        },
+      };
+
+      const html = '<html><head></head><body></body></html>';
+      const ctx = { bundle };
+
+      // Call transformIndexHtml
+      const result = plugin.transformIndexHtml!(html, ctx);
+
+      // Should inject a link tag
+      expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBe(1);
+      expect(result[0]).toMatchObject({
+        tag: 'link',
+        attrs: {
+          rel: 'stylesheet',
+          href: '/assets/compiled-extracted-abc123.css',
+        },
+        injectTo: 'head',
       });
     });
 
-    it('should not intercept non-.compiled.css files', () => {
+    it('should not inject HTML if no styles were extracted', async () => {
       const plugin = compiledVitePlugin({ extract: true });
 
-      const result = plugin.load!('/some/file.js');
+      // Don't transform any code (no styles collected)
+      const html = '<html><head></head><body></body></html>';
+      const ctx = { bundle: {} };
 
-      expect(result).toBeNull();
+      // Call transformIndexHtml
+      const result = plugin.transformIndexHtml!(html, ctx);
+
+      // Should return empty array
+      expect(result).toEqual([]);
     });
 
-    it('should collect CSS from distributed .compiled.css files via load hook', async () => {
-      // Create a temporary CSS file to simulate distributed package
-      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'compiled-test-'));
-      const cssFilePath = path.join(tmpDir, 'button.compiled.css');
-      const distributedCss = '._syaz13q2{color:blue}\n._1wybgktf{padding:8px}';
-      fs.writeFileSync(cssFilePath, distributedCss);
-
-      try {
-        const plugin = compiledVitePlugin({ extract: true });
-        const emittedFiles: any[] = [];
-
-        // Mock context
-        const context = {
-          emitFile: (file: any) => {
-            emittedFiles.push(file);
-            return 'mock-ref';
-          },
-          getFileName: () => 'compiled.css',
-          warn: jest.fn(),
-        };
-
-        // Simulate loading the distributed CSS file
-        // This should collect the CSS rules internally
-        plugin.load!(cssFilePath);
-
-        // Also transform some local code
-        const code = `
-          import { css } from '@compiled/react';
-          export const Component = () => <div css={css({ margin: '10px' })}>Test</div>;
-        `;
-        await plugin.transform!(code, 'test.tsx');
-
-        // Generate bundle
-        await plugin.generateBundle.call(context, {}, {});
-
-        // Check that CSS was emitted
-        expect(emittedFiles.length).toBe(1);
-        const cssContent = emittedFiles[0].source as string;
-
-        // Should contain both distributed styles and local styles
-        expect(cssContent).toContain('color:blue'); // from distributed CSS
-        expect(cssContent).toContain('padding:8px'); // from distributed CSS
-        expect(cssContent).toContain('margin'); // from local code
-      } finally {
-        // Cleanup temp file
-        fs.rmSync(tmpDir, { recursive: true, force: true });
-      }
-    });
-
-    it('should handle missing distributed CSS files gracefully', () => {
+    it('should use content-hashed filenames for extracted CSS', async () => {
       const plugin = compiledVitePlugin({ extract: true });
+      const emittedFiles: any[] = [];
 
-      // Mock fs to simulate missing file
-      const mockExistsSync = jest.spyOn(fs, 'existsSync').mockReturnValue(false);
+      const context = {
+        emitFile: (file: any) => {
+          emittedFiles.push(file);
+          return 'mock-ref-id';
+        },
+        warn: jest.fn(),
+      };
 
-      // Should not throw
-      expect(() => {
-        plugin.load!('/node_modules/@atlaskit/button/dist/button.compiled.css');
-      }).not.toThrow();
-
-      mockExistsSync.mockRestore();
-    });
-
-    it('should handle complete platform extraction flow with package imports', async () => {
-      // This test simulates the complete flow:
-      // 1. User code imports from a distributed package
-      // 2. That package's JS includes a .compiled.css import
-      // 3. Our plugin collects both the package's styles and local styles
-
-      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'compiled-test-'));
-
-      // Simulate @atlaskit/button package structure
-      const buttonDir = path.join(tmpDir, 'node_modules', '@atlaskit', 'button', 'dist');
-      fs.mkdirSync(buttonDir, { recursive: true });
-
-      // Create the compiled CSS file that would be in the distributed package
-      const buttonCssPath = path.join(buttonDir, 'button.compiled.css');
-      const buttonCss = '._syaz5scu{color:red}\n._bfhk1if8{background-color:blue}';
-      fs.writeFileSync(buttonCssPath, buttonCss);
-
-      // Create a JS file that imports the CSS (simulating extracted package output)
-      const buttonJsPath = path.join(buttonDir, 'index.js');
-      const buttonJs = `
-        import './button.compiled.css';
-        export const Button = () => 'Button';
+      // Transform code to collect styles
+      const code = `
+        import { css } from '@compiled/react';
+        export const Component = () => <div css={css({ padding: '10px' })}>Test</div>;
       `;
-      fs.writeFileSync(buttonJsPath, buttonJs);
+      await plugin.transform!(code, 'test.tsx');
 
-      try {
-        const plugin = compiledVitePlugin({ extract: true });
-        const emittedFiles: any[] = [];
+      // Call generateBundle
+      await plugin.generateBundle.call(context, {}, {});
 
-        const context = {
-          emitFile: (file: any) => {
-            emittedFiles.push(file);
-            return 'mock-ref';
-          },
-          getFileName: () => 'compiled.css',
-          warn: jest.fn(),
-        };
-
-        // Step 1: Transform user code that imports the package
-        // (In real Vite, this would trigger loading the package's JS)
-        const userCode = `
-          import { css } from '@compiled/react';
-          import { Button } from '@atlaskit/button';
-          export const App = () => <div css={css({ fontSize: '14px' })}><Button /></div>;
-        `;
-        await plugin.transform!(userCode, 'App.tsx');
-
-        // Step 2: Simulate Vite loading the package's JS file
-        // The transform hook would skip this (it's in node_modules and doesn't have @compiled/react)
-        // but we can verify the behavior
-        const packageTransformResult = await plugin.transform!(buttonJs, buttonJsPath);
-        // Should return null because it doesn't contain @compiled/react
-        expect(packageTransformResult).toBeNull();
-
-        // Step 3: Simulate Vite encountering the .compiled.css import
-        // This is where our load hook comes in
-        const loadResult = plugin.load!(buttonCssPath);
-
-        // Should intercept and return empty module
-        expect(loadResult).toEqual({ code: '', map: null });
-
-        // Step 4: Generate the final bundle
-        await plugin.generateBundle.call(context, {}, {});
-
-        // Verify final CSS contains both sources
-        expect(emittedFiles.length).toBe(1);
-        const finalCss = emittedFiles[0].source as string;
-
-        // From distributed package
-        expect(finalCss).toContain('color:red');
-        expect(finalCss).toContain('background-color:blue');
-
-        // From local code
-        expect(finalCss).toContain('font-size');
-      } finally {
-        fs.rmSync(tmpDir, { recursive: true, force: true });
-      }
+      // Check that it uses 'name' (for content hashing) not 'fileName' (static name)
+      expect(emittedFiles.length).toBe(1);
+      expect(emittedFiles[0]).toHaveProperty('name', 'compiled-extracted.css');
+      expect(emittedFiles[0]).not.toHaveProperty('fileName');
     });
   });
 });

@@ -1,5 +1,3 @@
-import * as fs from 'fs';
-
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import type { PluginOptions as BabelPluginOptions } from '@compiled/babel-plugin';
 import type {
@@ -8,6 +6,7 @@ import type {
 } from '@compiled/babel-plugin-strip-runtime';
 import { sort } from '@compiled/css';
 import { DEFAULT_IMPORT_SOURCES, DEFAULT_PARSER_BABEL_PLUGINS, toBoolean } from '@compiled/utils';
+import type { OutputAsset, OutputBundle } from 'rollup';
 
 import type { PluginOptions } from './types';
 import { createDefaultResolver } from './utils';
@@ -35,31 +34,17 @@ export default function compiledVitePlugin(userOptions: PluginOptions = {}): any
 
   // Storage for collected style rules during transformation
   const collectedStyleRules = new Set<string>();
-  // Track the generated CSS filename for HTML injection
-  let generatedCssFileName: string | undefined;
+
+  // Store the emitted CSS filename for HTML injection
+  // This gets set in generateBundle after the file is emitted
+  let extractedCssFileName: string | undefined;
+
+  // Name used for the extracted CSS asset
+  const EXTRACTED_CSS_NAME = 'compiled-extracted.css';
 
   return {
     name: '@compiled/vite-plugin',
     enforce: 'pre', // Run before other plugins
-
-    load(id: string) {
-      // Load .compiled.css files and collect their styles
-      if (id.endsWith('.compiled.css')) {
-        try {
-          if (fs.existsSync(id)) {
-            const cssContent = fs.readFileSync(id, 'utf-8');
-            // Split by newlines and add each rule to our collection
-            const rules = cssContent.split('\n').filter((rule) => rule.trim());
-            rules.forEach((rule: string) => collectedStyleRules.add(rule));
-          }
-        } catch (error) {
-          // File may not exist yet, that's ok
-        }
-        // Return empty module to prevent Vite from trying to process it
-        return { code: '', map: null };
-      }
-      return null;
-    },
 
     async transform(code: string, id: string): Promise<any> {
       // Filter out node_modules (except for specific includes if needed)
@@ -166,74 +151,108 @@ export default function compiledVitePlugin(userOptions: PluginOptions = {}): any
       }
     },
 
-    generateBundle(_outputOptions: any, _bundle: any) {
-      // Only generate CSS file if extraction is enabled
+    generateBundle(_outputOptions: any, bundle: OutputBundle) {
+      // Post-process CSS assets to apply Compiled's sorting and deduplication
       const isDevelopment = process.env.NODE_ENV === 'development';
       const extract = options.extract && !isDevelopment;
 
-      if (!extract || collectedStyleRules.size === 0) {
-        return;
+      // Process each CSS asset in the bundle
+      for (const [fileName, output] of Object.entries(bundle)) {
+        // Only process CSS assets
+        if (!fileName.endsWith('.css') || output.type !== 'asset') {
+          continue;
+        }
+
+        const asset = output as OutputAsset;
+        const cssContent = asset.source as string;
+
+        // Check if this CSS contains Compiled atomic classes (starts with underscore)
+        // This is a heuristic to identify CSS that came from .compiled.css files
+        if (cssContent.includes('._')) {
+          try {
+            // Apply Compiled's CSS sorting and deduplication
+            const sortConfig = {
+              sortAtRulesEnabled: options.sortAtRules,
+              sortShorthandEnabled: options.sortShorthand,
+            };
+
+            const sortedCss = sort(cssContent, sortConfig);
+
+            // Update the asset with sorted CSS
+            asset.source = sortedCss;
+          } catch (error) {
+            const err = error as Error;
+            this.warn({
+              message: `[@compiled/vite-plugin] Failed to sort CSS in ${fileName}: ${err.message}`,
+            });
+          }
+        }
       }
 
-      try {
-        // Note: Distributed styles from node_modules are collected via the load() hook
-        // when .compiled.css files are imported, not by scanning the filesystem
+      // Also emit extracted styles if we collected any from local code
+      if (extract && collectedStyleRules.size > 0) {
+        try {
+          // Convert Set to array and sort for determinism
+          const allRules = Array.from(collectedStyleRules).sort();
 
-        // Convert Set to array and sort for determinism
-        const allRules = Array.from(collectedStyleRules).sort();
+          // Join all rules and apply CSS sorting
+          const combinedCss = allRules.join('\n');
+          const sortConfig = {
+            sortAtRulesEnabled: options.sortAtRules,
+            sortShorthandEnabled: options.sortShorthand,
+          };
 
-        // Join all rules and apply CSS sorting
-        const combinedCss = allRules.join('\n');
-        const sortConfig = {
-          sortAtRulesEnabled: options.sortAtRules,
-          sortShorthandEnabled: options.sortShorthand,
-        };
+          const sortedCss = sort(combinedCss, sortConfig);
 
-        const sortedCss = sort(combinedCss, sortConfig);
+          // Emit the CSS file with content-based naming
+          // Vite will add a content hash to the filename automatically
+          this.emitFile({
+            type: 'asset',
+            name: EXTRACTED_CSS_NAME,
+            source: sortedCss,
+          });
 
-        // Emit the CSS file with content-based hashing
-        const fileRef = this.emitFile({
-          type: 'asset',
-          name: 'compiled.css',
-          source: sortedCss,
-        });
-
-        // Get the generated filename for HTML injection
-        generatedCssFileName = this.getFileName(fileRef);
-      } catch (error) {
-        const err = error as Error;
-        this.warn({
-          message: `[@compiled/vite-plugin] Failed to generate CSS bundle: ${err.message}`,
-        });
+          // Mark that we've emitted the file so transformIndexHtml can inject it
+          // The actual filename will be determined in transformIndexHtml from the bundle
+          extractedCssFileName = EXTRACTED_CSS_NAME;
+        } catch (error) {
+          const err = error as Error;
+          this.warn({
+            message: `[@compiled/vite-plugin] Failed to generate CSS bundle: ${err.message}`,
+          });
+        }
       }
     },
 
-    transformIndexHtml: {
-      // Run after other plugins to ensure we inject after React plugin processes the HTML
-      order: 'post',
-      handler() {
-        // Only inject CSS link if extraction is enabled
-        const isDevelopment = process.env.NODE_ENV === 'development';
-        const extract = options.extract && !isDevelopment;
+    transformIndexHtml(
+      _html: string,
+      ctx: { bundle?: OutputBundle; [key: string]: any }
+    ): { tag: string; attrs: Record<string, string>; injectTo: string }[] {
+      // Inject the extracted CSS file into HTML if it was emitted
+      if (!extractedCssFileName || !ctx.bundle) {
+        return [];
+      }
 
-        if (!extract || collectedStyleRules.size === 0) {
-          return [];
-        }
+      // Find the emitted CSS asset in the bundle by its name
+      // The actual fileName will have a content hash added by Vite
+      const cssAsset = Object.values(ctx.bundle).find(
+        (asset): asset is OutputAsset => asset.type === 'asset' && asset.name === EXTRACTED_CSS_NAME
+      );
 
-        // Return HTML transformation descriptor to inject CSS link
-        // Use the generated filename (with hash) if available
-        const href = generatedCssFileName ? `/${generatedCssFileName}` : '/compiled.css';
-        return [
-          {
-            tag: 'link',
-            attrs: {
-              rel: 'stylesheet',
-              href,
-            },
-            injectTo: 'head',
+      if (!cssAsset) {
+        return [];
+      }
+
+      return [
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'stylesheet',
+            href: `/${cssAsset.fileName}`,
           },
-        ];
-      },
+          injectTo: 'head',
+        },
+      ];
     },
   };
 }
