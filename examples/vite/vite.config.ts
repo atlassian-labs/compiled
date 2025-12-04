@@ -10,7 +10,17 @@ export default defineConfig({
   plugins: [
     compiled({
       importReact: false, // Using automatic JSX runtime
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      transformerBabelPlugins: [['@babel/plugin-proposal-decorators', { legacy: true }]],
     }),
     react(),
   ],
+  optimizeDeps: {
+    // Pre-bundle CommonJS fixture packages to convert them to ESM
+    include: ['@compiled/babel-component-fixture', '@compiled/babel-component-extracted-fixture'],
+  },
+  resolve: {
+    // Ensure Vite can resolve the fixture packages in the monorepo
+    preserveSymlinks: true,
+  },
 });

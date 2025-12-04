@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@compiled/babel-component-extracted-fixture": "*",
+    "@compiled/babel-component-fixture": "*",
     "@compiled/react": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
