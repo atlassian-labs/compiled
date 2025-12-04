@@ -59,9 +59,13 @@
     }
   },
   "resolutions": {
+    "@babel/types": "7.26.10",
     "@types/eslint-scope": "*",
+    "@types/estree": "1.0.5",
     "css-what": ">=6.1.0",
+    "csstype": "3.1.3",
     "nth-check": ">=2.1.1",
+    "postcss": "8.4.31",
     "semver": "^7.6.3",
     "typescript": "^4.9.5"
   },
