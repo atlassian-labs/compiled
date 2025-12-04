@@ -21,7 +21,7 @@
     "build:parcel": "ttsc --build examples/parcel/tsconfig.json && yarn workspace @compiled/parcel-app build",
     "build:ssr": "CI=false && ttsc --build examples/ssr/tsconfig.json && yarn workspace @compiled/ssr-app build",
     "build:storybook": "build-storybook",
-    "build:vite": "ttsc --build examples/vite/tsconfig.json && yarn workspace @compiled/vite-app build",
+    "build:vite": "yarn workspace @compiled/vite-app build",
     "build:webpack": "yarn build:babel-fixture && ttsc --build examples/webpack/tsconfig.json && yarn workspace @compiled/webpack-app build",
     "build:webpack:extract": "EXTRACT_TO_CSS=true yarn build:webpack",
     "bundlesize": "yarn build && size-limit",

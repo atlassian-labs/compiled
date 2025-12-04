@@ -1,9 +1,16 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.options.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "skipLibCheck": true
   },
   "include": ["./src/**/*"],
-  "exclude": ["./src/__tests__/**/*"]
+  "exclude": ["./src/__tests__/**/*"],
+  "references": [
+    { "path": "../babel-plugin/tsconfig.json" },
+    { "path": "../babel-plugin-strip-runtime/tsconfig.json" },
+    { "path": "../css/tsconfig.json" },
+    { "path": "../utils/tsconfig.json" }
+  ]
 }

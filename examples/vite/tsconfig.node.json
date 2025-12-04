@@ -7,5 +7,5 @@
     "allowSyntheticDefaultImports": true,
     "types": []
   },
-  "include": ["vite.config.ts", "../../packages/vite-plugin/src/**/*"]
+  "include": ["vite.config.ts", "vite.config.extract.ts"]
 }
