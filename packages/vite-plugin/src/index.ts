@@ -21,14 +21,30 @@ import { createDefaultResolver } from './utils';
  */
 export default function compiledVitePlugin(userOptions: PluginOptions = {}): any {
   const options: PluginOptions = {
+    // Vite-specific
     bake: true,
     extract: false,
-    importReact: true,
+    transformerBabelPlugins: undefined,
     ssr: false,
-    optimizeCss: true,
-    addComponentName: false,
-    sortAtRules: true,
+    extractStylesToDirectory: undefined,
     sortShorthand: true,
+
+    // Babel-inherited
+    importReact: true,
+    nonce: undefined,
+    importSources: undefined,
+    optimizeCss: true,
+    resolver: undefined,
+    extensions: undefined,
+    parserBabelPlugins: undefined,
+    addComponentName: false,
+    classNameCompressionMap: undefined,
+    processXcss: undefined,
+    increaseSpecificity: undefined,
+    sortAtRules: true,
+    classHashPrefix: undefined,
+    flattenMultipleSelectors: undefined,
+
     ...userOptions,
   };
 
