@@ -22,7 +22,7 @@ export default defineConfig({
 });
 ```
 
-**Important:** The Compiled plugin must be placed **before** the React plugin.
+**Important:** The Compiled plugin must be placed **before** the React plugin. It is enforced by default via `pre` ordering.
 
 ## Configuration
 
