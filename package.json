@@ -21,6 +21,7 @@
     "build:parcel": "ttsc --build examples/parcel/tsconfig.json && yarn workspace @compiled/parcel-app build",
     "build:ssr": "CI=false && ttsc --build examples/ssr/tsconfig.json && yarn workspace @compiled/ssr-app build",
     "build:storybook": "build-storybook",
+    "build:vite": "yarn workspace @compiled/vite-app build",
     "build:webpack": "yarn build:babel-fixture && ttsc --build examples/webpack/tsconfig.json && yarn workspace @compiled/webpack-app build",
     "build:webpack:extract": "EXTRACT_TO_CSS=true yarn build:webpack",
     "bundlesize": "yarn build && size-limit",
@@ -40,6 +41,7 @@
     "start:parcel": "ttsc --build examples/parcel/tsconfig.json && yarn workspace @compiled/parcel-app start",
     "start:prod": "NODE_ENV=production yarn start",
     "start:ssr": "ttsc --build examples/ssr/tsconfig.json && yarn workspace @compiled/ssr-app start",
+    "start:vite": "ttsc --build examples/vite/tsconfig.json && yarn workspace @compiled/vite-app dev",
     "start:webpack": "yarn build:babel-fixture && ttsc --build examples/webpack/tsconfig.json && yarn workspace @compiled/webpack-app start",
     "start:webpack:extract": "EXTRACT_TO_CSS=true yarn start:webpack",
     "test": "jest --no-cache",
@@ -57,9 +59,13 @@
     }
   },
   "resolutions": {
+    "@babel/types": "7.26.10",
     "@types/eslint-scope": "*",
+    "@types/estree": "1.0.5",
     "css-what": ">=6.1.0",
+    "csstype": "3.1.3",
     "nth-check": ">=2.1.1",
+    "postcss": "8.4.31",
     "semver": "^7.6.3",
     "typescript": "^4.9.5"
   },
@@ -99,7 +105,7 @@
     "jest-environment-jsdom": "^29.4.3",
     "jest-extended": "^0.11.5",
     "jest-watch-typeahead": "^0.6.5",
-    "loki": "^0.32.0",
+    "loki": "^0.35.1",
     "prettier": "^2.8.8",
     "pretty-quick": "^3.1.3",
     "react": "^17.0.2",

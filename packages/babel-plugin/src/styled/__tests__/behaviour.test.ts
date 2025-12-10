@@ -342,7 +342,7 @@ describe('styled component behaviour', () => {
       import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import colors from "colors";
-      const _10 = "._tzy4kb7n{opacity:1}";
+      const _0 = "._tzy4kb7n{opacity:1}";
       const _9 = "._tzy4idpf{opacity:0}";
       const _8 = "._1e0c1kw7{display:inherit}";
       const _7 = "._1e0cglyw{display:none}";
@@ -360,7 +360,7 @@ describe('styled component behaviour', () => {
           const { isLoading, state, ...__cmpldp } = __cmplp;
           return (
             <CC>
-              <CS>{[_, _2, _3, _4, _5, _6, _7, _8, _9, _10]}</CS>
+              <CS>{[_, _2, _3, _4, _5, _6, _7, _8, _9, _0]}</CS>
               <C
                 {...__cmpldp}
                 style={{

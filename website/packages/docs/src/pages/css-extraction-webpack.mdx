@@ -10,23 +10,23 @@ Stylesheet extraction is **highly recommended** for all component libraries and 
 There are two types of stylesheet extraction:
 
 - Platform stylesheet extraction
-- Parcel / Webpack stylesheet extraction
+- Bundler stylesheet extraction (Parcel / Webpack / Vite)
 
 ## Which type should I use?
 
 If your package is a component library, use our **platform stylesheet extraction**. This includes Atlassian Design System packages like `@atlaskit/button` or any other package that is treated as a platform offering or used across products or repositories.
 
-If your package exists in the same codebase as, and is _directly consumed_ by, a Webpack or Parcel app, use **Parcel stylesheet extraction** or **Webpack stylesheet extraction** depending on what bundler your app uses.
+If your package exists in the same codebase as, and is _directly consumed_ by, a Webpack, Vite or Parcel app, use **Parcel stylesheet extraction**, **Vite stylesheet extraction** or **Webpack stylesheet extraction** depending on what bundler your app uses.
 
-Note that Parcel and Webpack are the only bundlers we support.
+Note that Parcel, Vite and Webpack are the only bundlers we support.
 
 ## Platform stylesheet extraction
 
 Platform stylesheet extraction only works if you use Babel to build your component library. Note that we do not recommend nor support using bundlers (e.g. Webpack or Parcel) to build your component library, because bundlers are appropriate for web apps (e.g. Jira) and not for component libraries.
 
 > **Warning**<br/>
-> Ensure that any apps that import your component library also have the Compiled Webpack or Parcel plugins installed (`@compiled/webpack-loader` or `@compiled/parcel-config`), otherwise the order in which the styles are applied will become unpredictable. This can be an issue if you have styles that overlap, e.g. if you mix `padding` and `paddingTop` in the same component, or have `@media` queries that potentially overlap.<br/><br/>
-> If the apps that import your component library use other bundlers like Vite or Next.js, or if your apps cannot install the Compiled Webpack or Parcel plugins, stylesheet extraction will still work! However, you must make sure that within each component, you should _never_ mix any CSS properties or styles that overlap.
+> Ensure that any apps that import your component library also have the Compiled Webpack, Vite or Parcel plugins installed (`@compiled/webpack-loader`, `@compiled/vite-plugin` or `@compiled/parcel-config`), otherwise the order in which the styles are applied will become unpredictable. This can be an issue if you have styles that overlap, e.g. if you mix `padding` and `paddingTop` in the same component, or have `@media` queries that potentially overlap.<br/><br/>
+> If the apps that import your component library use other bundlers like Next.js, or if your apps cannot install the Compiled Webpack, Vite or Parcel plugins, stylesheet extraction will still work! However, you must make sure that within each component, you should _never_ mix any CSS properties or styles that overlap.
 
 Add `@compiled/babel-plugin-strip-runtime` to your Babel configuration, with `extractStylesToDirectory` set as an option. Set `source` to the folder your component library's source code is defined in, and `dest` to the folder your component library's build output is generated to.
 
@@ -99,6 +99,34 @@ Then configure the `extract` plugin to `true` in your Compiled configuration. Fo
 Note that stylesheet extraction feature is disabled on local development due to a [known issue](https://github.com/atlassian-labs/compiled/issues/1306).
 
 See the [`@compiled/parcel-config` documentation](https://compiledcssinjs.com/docs/pkg-parcel-config#options) for information about other configuration options.
+
+## Vite stylesheet extraction
+
+If you are using a web app that uses Vite, first install the [Vite plugin](https://compiledcssinjs.com/docs/installation#vite).
+
+Then configure the `extract` option to `true` in the Vite plugin. For example:
+
+```js
+// vite.config.js
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import compiled from '@compiled/vite-plugin';
+
+export default defineConfig({
+  plugins: [
+    compiled({
+      extract: true, // <-- add this
+    }),
+    react(),
+  ],
+});
+```
+
+When extraction is enabled, all styles will be extracted to a `compiled.css` file during production builds. This file will be automatically injected into your HTML's `<head>` section.
+
+Note that stylesheet extraction is automatically disabled in development mode to ensure optimal Hot Module Replacement (HMR) performance.
+
+See the [`@compiled/vite-plugin` documentation](https://compiledcssinjs.com/docs/pkg-vite-plugin#options) for information about other configuration options.
 
 ## Webpack stylesheet extraction
 
