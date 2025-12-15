@@ -1,9 +1,9 @@
 import React from 'react';
-import { hydrate } from 'react-dom';
+import { hydrateRoot } from 'react-dom/client';
 
 import App from './app';
 
-hydrate(<App />, document.getElementById('root'));
+hydrateRoot(document.getElementById('root'), <App />);
 
 if (module.hot) {
   module.hot.accept();

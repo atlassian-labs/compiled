@@ -1,12 +1,11 @@
 import { StrictMode } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import LandingPage from './components/landing';
 import '@compiled/website-ui/global.css';
 
-render(
+createRoot(document.getElementById('app')!).render(
   <StrictMode>
     <LandingPage />
-  </StrictMode>,
-  document.getElementById('app')
+  </StrictMode>
 );
