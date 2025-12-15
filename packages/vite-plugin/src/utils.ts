@@ -2,16 +2,9 @@ import * as fs from 'fs';
 import { dirname } from 'path';
 
 import type { Resolver } from '@compiled/babel-plugin';
+import { CachedInputFileSystem, ResolverFactory } from 'enhanced-resolve';
 
 import type { PluginOptions } from './types';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const enhancedResolve = require('enhanced-resolve');
-
-// Handle both ESM and CJS imports
-const { CachedInputFileSystem, ResolverFactory } = enhancedResolve.CachedInputFileSystem
-  ? enhancedResolve
-  : enhancedResolve.default || enhancedResolve;
 
 /**
  * Creates a default resolver using enhanced-resolve.
@@ -23,6 +16,7 @@ const { CachedInputFileSystem, ResolverFactory } = enhancedResolve.CachedInputFi
  */
 export function createDefaultResolver(config: PluginOptions): Resolver {
   const resolver = ResolverFactory.createResolver({
+    // @ts-expect-error - enhanced-resolve CachedInputFileSystem types are not compatible with Node.js fs types, but work at runtime
     fileSystem: new CachedInputFileSystem(fs, 4000),
     ...(config.extensions && {
       extensions: config.extensions,
