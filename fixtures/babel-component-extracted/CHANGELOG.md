@@ -1,6 +1,6 @@
-# @compiled/vite-app
+# @compiled/babel-component-extracted-fixture
 
-## 1.1.0
+## 0.2.0
 
 ### Minor Changes
 
@@ -9,12 +9,4 @@
 ### Patch Changes
 
 - Updated dependencies [117eb47]
-  - @compiled/babel-component-extracted-fixture@0.2.0
-  - @compiled/babel-component-fixture@0.2.0
   - @compiled/react@0.19.0
-
-## 1.0.0
-
-### Major Changes
-
-- 979ad9d: Add new Vite plugin
