@@ -1,5 +1,11 @@
 # @compiled/vite-plugin
 
+## 1.1.1
+
+### Patch Changes
+
+- f54b4c9: Fix ESM support with require() call now that we distribute multiple versions
+
 ## 1.1.0
 
 ### Minor Changes
