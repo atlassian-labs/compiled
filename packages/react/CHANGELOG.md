@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.19.0
+
+### Minor Changes
+
+- 117eb47: Bump package dependencies to React 18 globally. Replace jsx and jsx-dev runtimes with modern syntax to circumvent `export \*` issues.
+
 ## 0.18.6
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @compiled/vite-plugin
 
+## 1.1.0
+
+### Minor Changes
+
+- 117eb47: Bump package dependencies to React 18 globally. Replace jsx and jsx-dev runtimes with modern syntax to circumvent `export \*` issues.
+
+### Patch Changes
+
+- 117eb47: Split CJS and ESM exports for the Vite Plugin
+
 ## 1.0.0
 
 ### Major Changes

@@ -1,5 +1,19 @@
 # @compiled/webpack-app
 
+## 1.4.0
+
+### Minor Changes
+
+- 117eb47: Bump package dependencies to React 18 globally. Replace jsx and jsx-dev runtimes with modern syntax to circumvent `export \*` issues.
+
+### Patch Changes
+
+- Updated dependencies [117eb47]
+  - @compiled/babel-component-extracted-fixture@0.2.0
+  - @compiled/babel-component-fixture@0.2.0
+  - @compiled/webpack-loader@0.20.0
+  - @compiled/react@0.19.0
+
 ## 1.3.1
 
 ### Patch Changes
