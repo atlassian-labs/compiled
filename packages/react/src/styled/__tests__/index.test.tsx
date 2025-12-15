@@ -236,7 +236,7 @@ describe('styled component', () => {
   });
 
   it('should inherit types from composed component', () => {
-    const Link = (props: { href: string }) => <a {...props} />;
+    const Link = (props: React.PropsWithChildren<{ href: string }>) => <a {...props} />;
     const StyledLink = styled(Link)({
       fontSize: 12,
     });

@@ -2,11 +2,9 @@
   "extends": "../tsconfig.options.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./dist/esm",
-    "module": "es6",
-    "moduleResolution": "node",
+    "outDir": "./dist/cjs",
     "skipLibCheck": true,
-    "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo"
+    "tsBuildInfoFile": "tsconfig.cjs.tsbuildinfo"
   },
   "include": ["./src/**/*"],
   "exclude": ["./src/__tests__/**/*"],

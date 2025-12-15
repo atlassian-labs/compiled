@@ -78,15 +78,15 @@
     "@compiled/benchmark": "^1.1.0",
     "@compiled/utils": "^0.13.0",
     "@fixture/strict-api-test": "*",
-    "@testing-library/react": "^12.1.5",
+    "@testing-library/react": "^16.1.0",
     "@types/jsdom": "^16.2.15",
-    "@types/react-dom": "^17.0.22",
+    "@types/react-dom": "^18.3.1",
     "expect-type": "^0.20.0",
     "jsdom": "^19.0.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "peerDependencies": {
-    "react": ">= 16.12.0"
+    "react": ">=18.0.0"
   }
 }

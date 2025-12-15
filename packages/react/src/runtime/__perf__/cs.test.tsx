@@ -2,7 +2,7 @@ import { runBenchmark } from '@compiled/benchmark';
 import { JSDOM } from 'jsdom';
 import * as React from 'react';
 import { memo } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 
 import { CC, CS } from '../index';
@@ -66,9 +66,8 @@ describe('CS benchmark', () => {
               renderToString(<>{Array.from({ length: 10 }).map((_, i) => jsx(i))}</>);
             }
           : (jsx: (key: number) => JSX.Element) => {
-              render(
-                <>{Array.from({ length: 10 }).map((_, i) => jsx(i))}</>,
-                globalThis.document.getElementById('root')
+              createRoot(globalThis.document.getElementById('root')!).render(
+                <>{Array.from({ length: 10 }).map((_, i) => jsx(i))}</>
               );
             };
 

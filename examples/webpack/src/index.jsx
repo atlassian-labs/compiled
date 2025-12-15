@@ -1,22 +1,21 @@
 import { StrictMode } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import { App } from './app';
 
 import './styles.css';
 
-function createRoot() {
+function createRootElement() {
   const element = document.createElement('div');
   element.id = 'root';
   document.body.appendChild(element);
   return element;
 }
 
-render(
+createRoot(document.getElementById('root') || createRootElement()).render(
   <StrictMode>
     <App />
-  </StrictMode>,
-  document.getElementById('root') || createRoot()
+  </StrictMode>
 );
 
 if (module.hot) {

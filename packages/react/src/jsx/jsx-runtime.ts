@@ -1,5 +1,6 @@
 export type { CompiledJSX as JSX } from './jsx-local-namespace';
 
-// Pass through the (automatic) jsx runtime.
-// Compiled currently doesn't define its own and uses this purely to enable a local jsx namespace.
-export * from 'react/jsx-runtime';
+import * as ReactJSXRuntime from 'react/jsx-runtime';
+export const Fragment = ReactJSXRuntime.Fragment;
+export const jsx: typeof ReactJSXRuntime.jsx = ReactJSXRuntime.jsx;
+export const jsxs: typeof ReactJSXRuntime.jsxs = ReactJSXRuntime.jsxs;

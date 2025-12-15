@@ -14,15 +14,14 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "default": "./dist/index.js"
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
   "files": [
     "dist",
     "src"
@@ -39,7 +38,7 @@
   "devDependencies": {
     "@compiled/react": "^0.18.0",
     "@types/babel__core": "^7.20.3",
-    "react": "^17.0.2",
+    "react": "^18.3.1",
     "vite": "^5.0.0"
   },
   "peerDependencies": {

@@ -17,6 +17,6 @@
     "@compiled/babel-plugin": "*"
   },
   "peerDependencies": {
-    "react": "^17.0.1"
+    "react": "^18.3.1"
   }
 }

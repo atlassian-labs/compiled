@@ -19,7 +19,7 @@ describe('<Style />', () => {
   });
 
   // We want to isolate the test to correctly mimic the environment being loaded in once
-  const createIsolatedTest = (callback: (Style: ComponentType) => void) => {
+  const createIsolatedTest = (callback: (Style: ComponentType<{ children: string[] }>) => void) => {
     jest.isolateModules(() => {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const Style = require('../style');

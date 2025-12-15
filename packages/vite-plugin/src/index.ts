@@ -19,7 +19,7 @@ import { createDefaultResolver } from './utils';
  * @param userOptions - Plugin configuration options
  * @returns Vite plugin object
  */
-export default function compiledVitePlugin(userOptions: PluginOptions = {}): any {
+function compiled(userOptions: PluginOptions = {}): any {
   const options: PluginOptions = {
     // Vite-specific
     bake: true,
@@ -273,4 +273,6 @@ export default function compiledVitePlugin(userOptions: PluginOptions = {}): any
   };
 }
 
+export { compiled };
 export type { PluginOptions as VitePluginOptions };
+export default compiled;
