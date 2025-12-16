@@ -2,7 +2,13 @@ import * as fs from 'fs';
 import { dirname } from 'path';
 
 import type { Resolver } from '@compiled/babel-plugin';
-import { CachedInputFileSystem, ResolverFactory } from 'enhanced-resolve';
+import * as EnhancedResolve from 'enhanced-resolve';
+
+// enhanced-resolve doesn't work well across CJS/ESM boundaries
+const { CachedInputFileSystem, ResolverFactory } =
+  typeof EnhancedResolve === 'object' && 'default' in EnhancedResolve && EnhancedResolve.default
+    ? EnhancedResolve.default
+    : EnhancedResolve;
 
 import type { PluginOptions } from './types';
 
