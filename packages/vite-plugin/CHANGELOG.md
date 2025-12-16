@@ -1,5 +1,11 @@
 # @compiled/vite-plugin
 
+## 1.1.2
+
+### Patch Changes
+
+- 86ff4e8: Fix vite-plugin with ESM (`v1.1.1` was a broken version for proper ESM)
+
 ## 1.1.1
 
 ### Patch Changes
