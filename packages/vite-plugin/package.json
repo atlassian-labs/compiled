@@ -1,6 +1,6 @@
 {
   "name": "@compiled/vite-plugin",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A familiar and performant compile time CSS-in-JS library for React - Vite plugin.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-vite-plugin",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
