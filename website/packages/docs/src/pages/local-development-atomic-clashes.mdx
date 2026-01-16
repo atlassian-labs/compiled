@@ -1,0 +1,210 @@
+---
+section: 50-Guides
+name: Local Development Atomic Clashes
+order: 21
+---
+
+# Local Development Atomic Clashes
+
+When consuming Compiled packages from npm in local development, you may encounter atomic class clashes that cause unexpected styling behavior.
+This happens when **runtime styles** (from your local code) mix with **extracted styles** (from npm packages), resulting in [atomic specificity conflicts](/how-it-works#extracted-styles).
+
+This page explains why these clashes occur and how to fix them in your configuration.
+
+## Understanding the problem
+
+### Compiled's atomic style ordering
+
+Compiled's atomic CSS system relies on a specific ordering of styles to work correctly.
+Without this ordering, CSS shorthand properties would override their longhand counterparts, and pseudo-selectors and media queries wouldn't apply as expected.
+
+The sorting order looks like this:
+
+1. `all` property
+2. Shorthand properties (e.g., `border`, `margin`, `padding`, `font`)
+3. More specific shorthands (e.g., `border-block`)
+4. Even more specific shorthands (e.g., `border-block-end`)
+5. Longhand properties (e.g., `color`, `border-block-end-color`, `font-weight`)
+6. Pseudo-selectors in LVFHA order:
+   - `&:link`
+   - `&:visited`
+   - `&:focus-within`
+   - `&:focus`
+   - `&:focus-visible`
+   - `&:hover`
+   - `&:active`
+7. At-rules like `@media` (sorted by breakpoint dimensions)
+8. Other at-rules (`@keyframes`, `@supports`, etc.)
+
+Within each at-rule group (like `@media` queries), the same property ordering is applied recursively, so `font` always comes before `font-weight`.
+
+This creates approximately 15–25 distinct atomic groups on average (technically infinite due to media query combinations).
+
+### Why ordering matters
+
+This ordering only works correctly when **all** Compiled styles are in a single sorted set.
+CSS cascade rules mean that when two rules have the same specificity, the last one defined wins.
+
+**Stylesheet extraction** combines and deduplicates all Compiled atomic classes from your codebase into `compiled.css` files. These files are then injected as `<style>` tags in your HTML's `<head>`, creating a single unified set of sorted styles. This is typically enabled in production builds for optimal performance.
+
+In development, extraction is usually disabled (for better HMR performance), and Compiled maintains the same ordering by inserting styles into multiple style buckets at runtime.
+
+This unified, sorted set of styles is what enables the atomic CSS system to work correctly.
+
+## The local development issue
+
+Compiled's atomic CSS ordering only works when **all Compiled styles are in a single sorted set**. This is what bundlers like Parcel and Webpack ensure in production.
+
+However, when running a local project in development mode while consuming production-built Compiled packages from npm, you have **two separate sets of Compiled styles**:
+
+- **Npm package styles**: Injected as `<style>` tags from their pre-built `compiled.css` files
+- **Your local code styles**: Injected as `<style>` buckets at runtime (extraction disabled by default in dev)
+
+These two sets are not sorted together as one unified stylesheet. Whichever set comes last in the document will take CSS cascade precedence, causing your local styles to unexpectedly override npm package styles.
+
+### What happens
+
+1. **Npm packages** are built with extraction enabled, so their styles are in `compiled.css` files that get injected as `<style>` tags when the package loads
+2. **Your local project** runs in development mode with extraction disabled (default in most bundlers), so Compiled uses [runtime styles](/how-it-works#runtime-styles-unperformant) injected into style buckets.
+3. Both sets of styles are injected as separate `<style>` tags in the document `<head>`, but they're **not sorted together as one unified set**
+4. Because Compiled uses the same deterministic algorithm to generate class names, both sources generate **identical class names** for identical CSS declarations
+5. **Result**: Your local runtime styles override npm package styles unexpectedly, breaking components from the npm packages
+
+### Example scenario
+
+Imagine you have a design system package from npm with this component:
+
+```jsx
+// From npm package: @your-org/design-system
+import { css } from '@compiled/react';
+
+const navStyles = css({
+  display: 'none', // Hidden by default
+  '@media (min-width: 768px)': {
+    display: 'flex', // Shown on larger screens
+  },
+});
+
+export const Nav = () => <nav css={navStyles}>Navigation</nav>;
+```
+
+In your local project, you create a component that also uses `display: none`:
+
+```jsx
+// Your local component
+import { css } from '@compiled/react';
+
+const modalStyles = css({
+  display: 'none',
+});
+
+export const Modal = () => <div css={modalStyles}>Modal</div>;
+```
+
+Both generate the same atomic class for `display: none` (e.g., `._1p2d3e4f`), since the hash is based on the CSS property and value.
+
+> **Style Buckets**: At runtime, Compiled organizes styles into multiple `<style>` buckets ordered by CSS property precedence (shorthands before longhands), pseudo-selectors, and at-rules. This ensures proper cascade order.
+
+In the browser, you'll see:
+
+```html
+<head>
+  <!-- From npm package (extracted styles injected as style tags) -->
+  <style>
+    ._1p2d3e4f { display: none; }
+  </style>
+  <style>
+    @media (min-width: 768px) { ._9q2r4s7t { display: flex; } }
+  </style>
+  
+  <!-- From your local development (runtime style buckets) -->
+  <style data-bucket="default">
+    ._1p2d3e4f { display: none; }
+  </style>
+</head>
+
+<body>
+  <nav class="_1p2d3e4f _9q2r4s7t">...</nav>
+  <!-- ❌ The local runtime bucket's ._1p2d3e4f comes last in document order,
+       so it takes CSS cascade precedence, breaking the media query -->
+  
+  <div class="_1p2d3e4f">...</div> <!-- ✅ display: none as expected -->
+</body>
+```
+
+The Nav component from the npm package is broken because you have two separate sets of Compiled styles that aren't sorted together. The local runtime style buckets come after the npm package's styles in document order, so due to CSS cascade rules (source order), the `display: none` from your local code overrides the npm package's rules, preventing the media query's `display: flex` from taking effect.
+
+## Potential Solution
+
+Use `classHashPrefix` in development to create different class names for your local project.
+This prevents your local runtime styles from colliding with extracted styles from npm packages.
+
+### Configuration
+
+In your `compiled.config.js`:
+
+```javascript
+const isLocalDev = process.env.NODE_ENV !== 'production';
+
+export default {
+  // Extraction should be disabled in development (default in most bundlers)
+  // and enabled in production to generate compiled.css
+  extract: !isLocalDev,
+  
+  // Add classHashPrefix in development to salt the atomic group hash
+  // This ensures your local classes have different names than npm package classes
+  classHashPrefix: isLocalDev ? 'my-app' : undefined,
+  
+  // Other recommended options
+  importReact: true,
+  sortShorthand: true,
+  addComponentName: true,
+  parserBabelPlugins: ['typescript', 'jsx'],
+};
+```
+
+### How it fixes the problem
+
+With `classHashPrefix: 'my-app'` in development, your local code generates different class names:
+
+- **Npm package** `display: none`: `._1p2d3e4f` (original atomic group hash)
+- **Your local** `display: none`: `._7x9w3e4f` (modified salt atomic group hash)
+
+Even though both use the same CSS declaration, the classHashPrefix reduces the likelihood of a hash collision.
+
+Since the two sets of styles aren't sorted together, having different class names means they can coexist without interfering:
+
+```html
+<head>
+  <!-- From npm package (extracted styles) -->
+  <style>
+    ._1p2d3e4f { display: none; }
+  </style>
+  <style>
+    @media (min-width: 768px) { ._9q2r4s7t { display: flex; } }
+  </style>
+  
+  <!-- From your local development (runtime style buckets) -->
+  <style data-bucket="default">
+    ._7x9w3e4f { display: none; }
+  </style>
+</head>
+
+<body>
+  <nav class="_1p2d3e4f _9q2r4s7t">...</nav>
+  <!-- ✅ display: flex (._9q2r4s7t from media query) -->
+  
+  <div class="_7x9w3e4f">...</div> <!-- ✅ display: none (local class) -->
+</body>
+```
+
+## Related issues
+
+- [Parcel doesn't pick up new CSS changes on local development when stylesheet extraction is enabled (Issue #1306)](https://github.com/atlassian-labs/compiled/issues/1306)
+
+## See also
+
+- [How it Works](/how-it-works) - Understanding runtime vs extracted styles
+- [Atomic CSS](/atomic-css) - Understanding Compiled's atomic CSS system
+- [CSS Extraction](/css-extraction-webpack) - How stylesheet extraction works in production
+- [Babel Plugin Configuration](/pkg-babel-plugin) - All available configuration options
