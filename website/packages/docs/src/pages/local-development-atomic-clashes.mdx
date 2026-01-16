@@ -111,15 +111,23 @@ In the browser, you'll see:
 <head>
   <!-- From npm package (extracted styles injected as style tags) -->
   <style>
-    ._1p2d3e4f { display: none; }
+    ._1p2d3e4f {
+      display: none;
+    }
   </style>
   <style>
-    @media (min-width: 768px) { ._9q2r4s7t { display: flex; } }
+    @media (min-width: 768px) {
+      ._9q2r4s7t {
+        display: flex;
+      }
+    }
   </style>
-  
+
   <!-- From your local development (runtime style buckets) -->
   <style data-bucket="default">
-    ._1p2d3e4f { display: none; }
+    ._1p2d3e4f {
+      display: none;
+    }
   </style>
 </head>
 
@@ -127,8 +135,9 @@ In the browser, you'll see:
   <nav class="_1p2d3e4f _9q2r4s7t">...</nav>
   <!-- ❌ The local runtime bucket's ._1p2d3e4f comes last in document order,
        so it takes CSS cascade precedence, breaking the media query -->
-  
-  <div class="_1p2d3e4f">...</div> <!-- ✅ display: none as expected -->
+
+  <div class="_1p2d3e4f">...</div>
+  <!-- ✅ display: none as expected -->
 </body>
 ```
 
@@ -151,11 +160,11 @@ export default {
   // Extraction should be disabled in development (default in some bundlers)
   // and enabled in production to generate compiled.css
   extract: !isLocalDev,
-  
+
   // Add classHashPrefix in development to salt the atomic group hash
   // This decreases the likelihood that local classes collide with npm package classes
   classHashPrefix: isLocalDev ? 'my-app' : undefined,
-  
+
   // Other recommended options
   importReact: true,
   sortShorthand: true,
@@ -179,23 +188,32 @@ Since the two sets of styles aren't sorted together, having different class name
 <head>
   <!-- From npm package (extracted styles) -->
   <style>
-    ._1p2d3e4f { display: none; }
+    ._1p2d3e4f {
+      display: none;
+    }
   </style>
   <style>
-    @media (min-width: 768px) { ._9q2r4s7t { display: flex; } }
+    @media (min-width: 768px) {
+      ._9q2r4s7t {
+        display: flex;
+      }
+    }
   </style>
-  
+
   <!-- From your local development (runtime style buckets) -->
   <style data-bucket="default">
-    ._7x9w3e4f { display: none; }
+    ._7x9w3e4f {
+      display: none;
+    }
   </style>
 </head>
 
 <body>
   <nav class="_1p2d3e4f _9q2r4s7t">...</nav>
   <!-- ✅ display: flex (._9q2r4s7t from media query) -->
-  
-  <div class="_7x9w3e4f">...</div> <!-- ✅ display: none (local class) -->
+
+  <div class="_7x9w3e4f">...</div>
+  <!-- ✅ display: none (local class) -->
 </body>
 ```
 
