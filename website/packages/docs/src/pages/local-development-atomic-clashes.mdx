@@ -65,7 +65,7 @@ These two sets are not sorted together as one unified stylesheet. Whichever set 
 ### What happens
 
 1. **Npm packages** are built with extraction enabled, so their styles are in `compiled.css` files that get injected as `<style>` tags when the package loads
-2. **Your local project** runs in development mode with extraction disabled (default in most bundlers), so Compiled uses [runtime styles](/how-it-works#runtime-styles-(unperformant)) injected into style buckets.
+2. **Your local project** runs in development mode with extraction disabled (default in most bundlers), so Compiled uses [runtime styles](</how-it-works#runtime-styles-(unperformant)>) injected into style buckets.
 3. Both sets of styles are injected as separate `<style>` tags in the document `<head>`, but they're **not sorted together as one unified set**
 4. Because Compiled uses the same deterministic algorithm to generate class names, both sources generate **identical class names** for identical CSS declarations
 5. **Result**: Your local runtime styles override npm package styles unexpectedly, breaking components from the npm packages
