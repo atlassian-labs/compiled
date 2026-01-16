@@ -144,15 +144,16 @@ This prevents your local runtime styles from colliding with extracted styles fro
 In your `compiled.config.js`:
 
 ```javascript
-const isLocalDev = process.env.NODE_ENV !== 'production';
+// Adjust based on your build tool
+const isLocalDev = process.env.NODE_ENV === 'development';
 
 export default {
-  // Extraction should be disabled in development (default in most bundlers)
+  // Extraction should be disabled in development (default in some bundlers)
   // and enabled in production to generate compiled.css
   extract: !isLocalDev,
   
   // Add classHashPrefix in development to salt the atomic group hash
-  // This ensures your local classes have different names than npm package classes
+  // This decreases the likelihood that local classes collide with npm package classes
   classHashPrefix: isLocalDev ? 'my-app' : undefined,
   
   // Other recommended options
@@ -170,7 +171,7 @@ With `classHashPrefix: 'my-app'` in development, your local code generates diffe
 - **Npm package** `display: none`: `._1p2d3e4f` (original atomic group hash)
 - **Your local** `display: none`: `._7x9w3e4f` (modified salt atomic group hash)
 
-Even though both use the same CSS declaration, the classHashPrefix reduces the likelihood of a hash collision.
+Even though both use the same CSS declaration, the `classHashPrefix` reduces the likelihood of a hash collision.
 
 Since the two sets of styles aren't sorted together, having different class names means they can coexist without interfering:
 
