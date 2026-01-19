@@ -148,6 +148,8 @@ The Nav component from the npm package is broken because you have two separate s
 Use `classHashPrefix` in development to create different class names for your local project.
 This prevents your local runtime styles from colliding with extracted styles from npm packages.
 
+> **⚠️ Development Only**: `classHashPrefix` should **ONLY** be used in development, never in production. Using it in production would generate different class names across packages, preventing deduplication and potentially massively increasing stylesheet size—defeating the core benefits of Compiled's atomic CSS system.
+
 ### Configuration
 
 In your `compiled.config.js`:
@@ -161,8 +163,8 @@ export default {
   // and enabled in production to generate compiled.css
   extract: !isLocalDev,
 
-  // Add classHashPrefix in development to salt the atomic group hash
-  // This decreases the likelihood that local classes collide with npm package classes
+  // ⚠️ CRITICAL: Only add classHashPrefix in development
+  // Using this in production defeats Compiled's deduplication benefits
   classHashPrefix: isLocalDev ? 'my-app' : undefined,
 
   // Other recommended options
@@ -175,14 +177,14 @@ export default {
 
 ### How it fixes the problem
 
-With `classHashPrefix: 'my-app'` in development, your local code generates different class names:
+With `classHashPrefix: 'my-app'` **in development only**, your local code generates different class names:
 
 - **Npm package** `display: none`: `._1p2d3e4f` (original atomic group hash)
 - **Your local** `display: none`: `._7x9w3e4f` (modified salt atomic group hash)
 
 Even though both use the same CSS declaration, the `classHashPrefix` reduces the likelihood of a hash collision.
 
-Since the two sets of styles aren't sorted together, having different class names means they can coexist without interfering:
+Since the two sets of styles aren't sorted together in local dev, having different class names means they can coexist without interfering:
 
 ```html
 <head>
@@ -216,6 +218,44 @@ Since the two sets of styles aren't sorted together, having different class name
   <!-- ✅ display: none (local class) -->
 </body>
 ```
+
+## Why not use classHashPrefix in production?
+
+Using `classHashPrefix` in production would break Compiled's core value proposition:
+
+**Without `classHashPrefix` (correct - production):**
+
+```css
+/* Package A */
+._1p2d3e4f {
+  display: none;
+}
+
+/* Package B */
+._1p2d3e4f {
+  display: none;
+} /* Same class! Deduplicated */
+```
+
+Result: 1 CSS rule, minimal stylesheet size ✅
+
+**With different `classHashPrefix` values (incorrect - production):**
+
+```css
+/* Package A with classHashPrefix: 'pkg-a' */
+._7x9w3e4f {
+  display: none;
+}
+
+/* Package B with classHashPrefix: 'pkg-b' */
+._2m5n8k1r {
+  display: none;
+} /* Different class! Duplicated */
+```
+
+Result: 2+ CSS rules for identical styles, bloated stylesheet ❌
+
+This defeats the entire purpose of atomic CSS. **Always set `classHashPrefix: undefined` in production.**
 
 ## Related issues
 
