@@ -181,6 +181,33 @@ describe('sorting rules inside at-rules (with atomic classes)', () => {
   });
 });
 
+describe('sortAtomicStyleSheet determinism', () => {
+  it('returns different output order when rules with equal pseudo-selector score are given in different input order', () => {
+    // Rules without LVFHA pseudo-selectors all get score 0 from getPseudoSelectorScore.
+    // sortPseudoSelectors uses a stable sort, so their relative order is preserved.
+    // Same rules in different input order => different output order.
+    const ruleA = '.a { color: red; }';
+    const ruleB = '.b { color: blue; }';
+
+    const orderAThenB = postcss([
+      sortAtomicStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
+    ]).process(ruleA + ruleB, { from: undefined }).css;
+
+    const orderBThenA = postcss([
+      sortAtomicStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
+    ]).process(ruleB + ruleA, { from: undefined }).css;
+
+    expect(orderAThenB).not.toBe(orderBThenA);
+    expect(orderAThenB).toContain('.a');
+    expect(orderAThenB).toContain('.b');
+    expect(orderBThenA).toContain('.a');
+    expect(orderBThenA).toContain('.b');
+    // Input order preserved: A then B => .a appears before .b; B then A => .b before .a
+    expect(orderAThenB.indexOf('.a')).toBeLessThan(orderAThenB.indexOf('.b'));
+    expect(orderBThenA.indexOf('.b')).toBeLessThan(orderBThenA.indexOf('.a'));
+  });
+});
+
 describe('sorting pseudo-selectors inside at-rules (without atomic classes)', () => {
   it('should leave unsorted rules in place', () => {
     const actual = transform`

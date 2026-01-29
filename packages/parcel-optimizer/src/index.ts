@@ -66,7 +66,7 @@ export default new Optimizer<ParcelOptimizerOpts, unknown>({
       sortAtRulesEnabled: config.sortAtRules,
       sortShorthandEnabled: config.sortShorthand,
     };
-    const stylesheet = sort(Array.from(styleRules).join(''), sortConfig);
+    const stylesheet = sort(Array.from(styleRules).sort().join(''), sortConfig);
 
     let newContents = '';
 
