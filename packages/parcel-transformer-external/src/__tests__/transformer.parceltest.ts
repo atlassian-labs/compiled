@@ -57,14 +57,14 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
     "._19it1vrj {
       border: 2px solid transparent;
     }
-    ._1wyb12am {
-      font-size: 50px;
-    }
-    ._syaz13q2 {
-      color: blue;
+    ._19bv1vi7 {
+      padding-left: 32px;
     }
     ._19pk1ul9 {
       margin-top: 30px;
+    }
+    ._1wyb12am {
+      font-size: 50px;
     }
     ._1wyb1ul9 {
       font-size: 30px;
@@ -78,11 +78,11 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
     ._n3td1vi7 {
       padding-bottom: 32px;
     }
+    ._syaz13q2 {
+      color: blue;
+    }
     ._u5f31vi7 {
       padding-right: 32px;
-    }
-    ._19bv1vi7 {
-      padding-left: 32px;
     }
     ._f8pj1x77:focus {
       color: white;
