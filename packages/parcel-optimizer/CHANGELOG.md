@@ -1,5 +1,11 @@
 # @compiled/parcel-optimizer
 
+## 0.6.5
+
+### Patch Changes
+
+- 91fb117: Ensure deterministic stylesheet output in parcel-optimizer
+
 ## 0.6.4
 
 ### Patch Changes
