@@ -1,5 +1,11 @@
 # @compiled/vite-plugin
 
+## 1.1.3
+
+### Patch Changes
+
+- a4c1ee8: Fix #1861 by adding extensions into @compiled/vite-plugin and @compiled/react packages to fix ESM support.
+
 ## 1.1.2
 
 ### Patch Changes
