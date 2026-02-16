@@ -4,6 +4,7 @@
  * on all relative import/export specifiers. Node's ESM loader requires explicit
  * extensions. Run after build:esm (e.g. in CI or as part of build). Exits 1 if
  * any relative specifier is missing an extension.
+ * Skips __tests__ and __perf__ (tests are run by Jest, not consumed as ESM).
  */
 
 const fs = require('fs');
@@ -74,6 +75,7 @@ function main() {
     if (!fs.existsSync(esmDir) || !fs.statSync(esmDir).isDirectory()) continue;
 
     for (const file of walkJsFiles(esmDir)) {
+      if (file.includes('__tests__') || file.includes('__perf__')) continue;
       const violations = validateFile(file);
       if (violations.length > 0) {
         failed += violations.length;
