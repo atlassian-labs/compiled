@@ -1,8 +1,13 @@
 import type * as CSS from 'csstype';
 
-import type { ApplySchemaValue } from '../create-strict-api/types';
-import { ax } from '../runtime';
-import type { CSSPseudos, CSSProperties, StrictCSSProperties, AllCSSPseudoClasses } from '../types';
+import type { ApplySchemaValue } from '../create-strict-api/types.js';
+import { ax } from '../runtime.js';
+import type {
+  CSSPseudos,
+  CSSProperties,
+  StrictCSSProperties,
+  AllCSSPseudoClasses,
+} from '../types.js';
 
 type MarkAsRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 

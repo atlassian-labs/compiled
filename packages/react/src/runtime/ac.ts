@@ -1,4 +1,4 @@
-import { isServerEnvironment } from './is-server-environment';
+import { isServerEnvironment } from './is-server-environment.js';
 
 const UNDERSCORE_UNICODE = 95;
 

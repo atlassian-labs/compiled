@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 
-import type { CssType, CssFunction } from '../types';
-import { createSetupError } from '../utils/error';
+import type { CssType, CssFunction } from '../types.js';
+import { createSetupError } from '../utils/error.js';
 
 /**
  * Extra props added to the output Styled Component.

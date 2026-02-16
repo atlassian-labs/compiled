@@ -16,7 +16,7 @@
     "build:babel-fixture": "yarn workspace @compiled/babel-component-fixture build && yarn workspace @compiled/babel-component-extracted-fixture build",
     "build:browser": "ttsc --build packages/tsconfig.browser.json",
     "build:cjs": "ttsc --build packages/tsconfig.json",
-    "build:esm": "ttsc --build packages/tsconfig.esm.json && node scripts/add-esm-js-extensions.js",
+    "build:esm": "ttsc --build packages/tsconfig.esm.json && node scripts/validate-esm-js-extensions.js",
     "build:inspect": "node --inspect-brk node_modules/typescript/lib/tsc.js --build packages",
     "build:parcel": "ttsc --build examples/parcel/tsconfig.json && yarn workspace @compiled/parcel-app build",
     "build:ssr": "CI=false && ttsc --build examples/ssr/tsconfig.json && yarn workspace @compiled/ssr-app build",

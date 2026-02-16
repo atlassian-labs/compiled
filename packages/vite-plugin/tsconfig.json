@@ -4,7 +4,7 @@
     "rootDir": "./src",
     "outDir": "./dist/esm",
     "module": "es6",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "skipLibCheck": true,
     "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo"
   },

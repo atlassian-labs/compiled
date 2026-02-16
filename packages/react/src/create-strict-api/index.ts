@@ -1,8 +1,8 @@
-import type { StrictCSSProperties, CSSPseudos, CSSProps } from '../types';
-import { createStrictSetupError } from '../utils/error';
-import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop';
+import type { StrictCSSProperties, CSSPseudos, CSSProps } from '../types.js';
+import { createStrictSetupError } from '../utils/error.js';
+import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop/index.js';
 
-import type { AllowedStyles, ApplySchema, ApplySchemaMap, CompiledSchemaShape } from './types';
+import type { AllowedStyles, ApplySchema, ApplySchemaMap, CompiledSchemaShape } from './types.js';
 
 export interface StrictOptions {
   media: string;

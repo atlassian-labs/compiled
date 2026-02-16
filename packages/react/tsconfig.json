@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "dist/esm",
     "module": "es6",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "tsBuildInfoFile": "tsconfig.esm.tsbuildinfo"
   },
   "references": [{ "path": "../benchmark" }, { "path": "../jest" }, { "path": "../utils" }]

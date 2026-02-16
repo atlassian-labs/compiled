@@ -1,7 +1,7 @@
 /* eslint-disable import/export */
 
-import type { CSSProps, CssObject, CssFunction } from '../types';
-import { createSetupError } from '../utils/error';
+import type { CSSProps, CssObject, CssFunction } from '../types.js';
+import { createSetupError } from '../utils/error.js';
 
 /**
  * ## CSS

@@ -1,8 +1,8 @@
 import type * as CSS from 'csstype';
 
-import type { CSSPseudos, CSSProperties } from '../types';
-import { createSetupError } from '../utils/error';
-import type { CompiledStyles } from '../xcss-prop';
+import type { CSSPseudos, CSSProperties } from '../types.js';
+import { createSetupError } from '../utils/error.js';
+import type { CompiledStyles } from '../xcss-prop/index.js';
 
 type AllPseudos = { [key in CSSPseudos]?: CSSProperties & AllPseudos };
 
