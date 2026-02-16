@@ -1,6 +1,6 @@
-import { isCacheDisabled } from './cache';
-import { getShorthandDepth } from './shorthand';
-import type { Bucket, StyleSheetOpts } from './types';
+import { isCacheDisabled } from './cache.js';
+import { getShorthandDepth } from './shorthand.js';
+import type { Bucket, StyleSheetOpts } from './types.js';
 
 /**
  * Ordered style buckets using their short pseudo name.

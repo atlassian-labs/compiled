@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { createContext, useContext } from 'react';
 
-import { isCacheDisabled } from './cache';
-import { isServerEnvironment } from './is-server-environment';
-import type { ProviderComponent, UseCacheHook } from './types';
+import { isCacheDisabled } from './cache.js';
+import { isServerEnvironment } from './is-server-environment.js';
+import type { ProviderComponent, UseCacheHook } from './types.js';
 
 /**
  * Cache to hold already used styles.

@@ -9,7 +9,7 @@ import { DEFAULT_IMPORT_SOURCES, DEFAULT_PARSER_BABEL_PLUGINS, toBoolean } from 
 import type { OutputAsset, OutputBundle } from 'rollup';
 
 import type { PluginOptions } from './types';
-import { createDefaultResolver } from './utils';
+import { createDefaultResolver } from './utils.js';
 
 /**
  * Compiled Vite plugin.

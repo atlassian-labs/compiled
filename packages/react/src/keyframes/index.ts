@@ -1,5 +1,5 @@
-import type { BasicTemplateInterpolations, CSSProps } from '../types';
-import { createSetupError } from '../utils/error';
+import type { BasicTemplateInterpolations, CSSProps } from '../types.js';
+import { createSetupError } from '../utils/error.js';
 
 export type KeyframeSteps =
   // `string` would just be an arbitrary CSS-like string such as `keyframes('from{opacity:1;}to{opacity:0;}')`

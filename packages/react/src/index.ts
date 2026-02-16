@@ -1,20 +1,20 @@
 import { createElement } from 'react';
 
-import type { CompiledJSX } from './jsx/jsx-local-namespace';
+import type { CompiledJSX } from './jsx/jsx-local-namespace.js';
 
-export { ClassNames } from './class-names';
-export { createStrictAPI } from './create-strict-api';
+export { ClassNames } from './class-names/index.js';
+export { createStrictAPI } from './create-strict-api/index.js';
 export type {
   PseudosDeclarations,
   MediaQueries,
   AllowedStyles,
   ApplySchema,
   ApplySchemaMap,
-} from './create-strict-api/types';
-export { default as css } from './css';
-export { default as cssMap } from './css-map';
-export { keyframes } from './keyframes';
-export { styled, StyledProps } from './styled';
+} from './create-strict-api/types.js';
+export { default as css } from './css/index.js';
+export { default as cssMap } from './css-map/index.js';
+export { keyframes } from './keyframes/index.js';
+export { styled, StyledProps } from './styled/index.js';
 export type {
   CSSProperties,
   CSSProps,
@@ -22,7 +22,7 @@ export type {
   CssFunction,
   CssType,
   StrictCSSProperties,
-} from './types';
+} from './types.js';
 export {
   type XCSSAllProperties,
   type XCSSAllPseudos,
@@ -30,7 +30,7 @@ export {
   type CompiledStyles,
   type Internal$XCSSProp,
   cx,
-} from './xcss-prop';
+} from './xcss-prop/index.js';
 
 // Pass through the (classic) jsx runtime.
 // Compiled currently doesn't define its own and uses this purely to enable a local jsx namespace.
