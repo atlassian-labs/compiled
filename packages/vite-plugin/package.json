@@ -1,6 +1,6 @@
 {
   "name": "@compiled/vite-plugin",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "A familiar and performant compile time CSS-in-JS library for React - Vite plugin.",
   "homepage": "https://compiledcssinjs.com/docs/pkg-vite-plugin",
   "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
@@ -29,14 +29,14 @@
   "dependencies": {
     "@babel/core": "^7.26.10",
     "@babel/parser": "^7.26.10",
-    "@compiled/babel-plugin": "^0.38.0",
+    "@compiled/babel-plugin": "^0.39.0",
     "@compiled/babel-plugin-strip-runtime": "^0.38.0",
     "@compiled/css": "^0.21.0",
     "@compiled/utils": "^0.13.1",
     "enhanced-resolve": "^5.18.1"
   },
   "devDependencies": {
-    "@compiled/react": "^0.19.1",
+    "@compiled/react": "^0.20.0",
     "@types/babel__core": "^7.20.3",
     "react": "^18.3.1",
     "vite": "^5.0.0"
