@@ -8,6 +8,7 @@ export const EXTENDED_SELECTORS_KEY = 'selectors';
 
 const atRules: Record<AtRules, boolean> = {
   '@charset': true,
+  '@container': true,
   '@counter-style': true,
   '@document': true,
   '@font-face': true,
@@ -19,12 +20,12 @@ const atRules: Record<AtRules, boolean> = {
   '@media': true,
   '@namespace': true,
   '@page': true,
+  '@position-try': true,
   '@property': true,
   '@scope': true,
-  '@scroll-timeline': true,
   '@starting-style': true,
   '@supports': true,
-  '@viewport': true,
+  '@view-transition': true,
 };
 
 type ObjectKeyWithLiteralValue = t.Identifier | t.StringLiteral;

@@ -49,4 +49,29 @@ describe('css map', () => {
 
     expect(getByText('hello world')).toHaveCompiledCss('color', 'red');
   });
+
+  it('should support popover-open pseudo-class', () => {
+    const popoverStyles = cssMap({
+      fade: {
+        opacity: 0,
+        transition:
+          'opacity 175ms cubic-bezier(0.15, 1, 0.3, 1), overlay 175ms allow-discrete, display 175ms allow-discrete',
+        '&:popover-open': {
+          opacity: 1,
+          transitionDuration: '350ms',
+        },
+      },
+    });
+
+    const Foo = () => <div css={popoverStyles.fade}>popover content</div>;
+    const { getByText } = render(<Foo />);
+
+    expect(getByText('popover content')).toHaveCompiledCss('opacity', '0');
+    expect(getByText('popover content')).toHaveCompiledCss('opacity', '1', {
+      target: ':popover-open',
+    });
+    expect(getByText('popover content')).toHaveCompiledCss('transition-duration', '350ms', {
+      target: ':popover-open',
+    });
+  });
 });
