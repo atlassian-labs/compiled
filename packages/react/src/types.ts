@@ -96,6 +96,7 @@ export type CSSPseudoClasses =
   | '&:picture-in-picture'
   | '&:placeholder-shown'
   | '&:playing'
+  | '&:popover-open'
   | '&:read-only'
   | '&:read-write'
   | '&:required'
