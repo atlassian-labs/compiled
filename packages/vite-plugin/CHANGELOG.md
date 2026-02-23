@@ -1,5 +1,12 @@
 # @compiled/vite-plugin
 
+## 1.1.4
+
+### Patch Changes
+
+- Updated dependencies [6429bfe]
+  - @compiled/babel-plugin@0.39.0
+
 ## 1.1.3
 
 ### Patch Changes
