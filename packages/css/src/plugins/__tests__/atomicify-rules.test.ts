@@ -476,6 +476,11 @@ describe('atomicify rules', () => {
 
       @page :left { margin-top: 4in; }
 
+      @position-try --top {
+        position-area: top;
+        margin-bottom: 10px;
+      }
+
       @property --radius {
         syntax: "<length>";
         inherits: false;
@@ -484,7 +489,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@color-profile --swop5c{src:url('https://example.org/SWOP2006_Coated5v2.icc')}@counter-style triangle{system:cyclic;symbols:‣;suffix:" "}@font-face{font-family:"Open Sans"}@font-palette-values --FontPalette{font-family:"Open Sans";base-palette:1}@-webkit-keyframes hello-world{from:{opacity:0}to{opacity:1}}@keyframes hello-world{from:{opacity:0}to{opacity:1}}@page :left{margin-top:4in}@property --radius{syntax:"<length>";inherits:false;initial-value:0px}"`
+      `"@color-profile --swop5c{src:url('https://example.org/SWOP2006_Coated5v2.icc')}@counter-style triangle{system:cyclic;symbols:‣;suffix:" "}@font-face{font-family:"Open Sans"}@font-palette-values --FontPalette{font-family:"Open Sans";base-palette:1}@-webkit-keyframes hello-world{from:{opacity:0}to{opacity:1}}@keyframes hello-world{from:{opacity:0}to{opacity:1}}@page :left{margin-top:4in}@position-try --top{position-area:top;margin-bottom:10px}@property --radius{syntax:"<length>";inherits:false;initial-value:0px}"`
     );
   });
 
