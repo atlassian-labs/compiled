@@ -344,4 +344,64 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
       `);
     }).toThrow(ErrorMessages.SELECTORS_BLOCK_VALUE_TYPE);
   });
+
+  it('should support @position-try global at-rule with nested syntax', () => {
+    const actual = transform(`
+      import { cssMap } from '@compiled/react';
+
+      const styles = cssMap({
+        arrow: {
+          '@position-try': {
+            '--ds-arrow-top': {
+              positionArea: 'top',
+              margin: 0,
+            },
+            '--ds-arrow-bottom': {
+              positionArea: 'bottom',
+              margin: 0,
+            },
+          },
+          color: 'blue',
+        },
+      });
+
+      ${EXAMPLE_USAGE}
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '"@position-try --ds-arrow-top{margin-top:0;margin-right:0;margin-bottom:0;margin-left:0;position-area:top}"',
+      '"@position-try --ds-arrow-bottom{margin-top:0;margin-right:0;margin-bottom:0;margin-left:0;position-area:bottom}"',
+      'color:blue',
+    ]);
+  });
+
+  it('should support @position-try global at-rule with flat syntax', () => {
+    const actual = transform(`
+      import { cssMap } from '@compiled/react';
+
+      const styles = cssMap({
+        arrowBlockStart: {
+          '@position-try --ds-arrow-block-start': {
+            positionArea: 'block-start',
+            margin: 0,
+            marginBlockEnd: 'var(--ds-arrow-size, 8px)',
+          },
+        },
+        arrowBlockEnd: {
+          '@position-try --ds-arrow-block-end': {
+            positionArea: 'block-end',
+            margin: 0,
+            marginBlockStart: 'var(--ds-arrow-size, 8px)',
+          },
+        },
+      });
+
+      ${EXAMPLE_USAGE}
+    `);
+
+    expect(actual).toIncludeMultiple([
+      '"@position-try --ds-arrow-block-start{margin-top:0;margin-right:0;margin-bottom:0;margin-left:0;position-area:block-start;margin-block-end:var(--ds-arrow-size,8px)}"',
+      '"@position-try --ds-arrow-block-end{margin-top:0;margin-right:0;margin-bottom:0;margin-left:0;position-area:block-end;margin-block-start:var(--ds-arrow-size,8px)}"',
+    ]);
+  });
 });

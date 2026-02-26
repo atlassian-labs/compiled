@@ -200,6 +200,7 @@ const canAtomicifyAtRule = (node: AtRule): boolean => {
     'font-palette-values',
     'keyframes',
     'page',
+    'position-try',
     'property',
   ];
 
