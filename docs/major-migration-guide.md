@@ -25,13 +25,13 @@ That preserves today's behavior.
 ### Babel
 
 ```js
-['@compiled/babel-plugin', { outputMode: 'compat' }]
+['@compiled/babel-plugin', { outputMode: 'compat' }];
 ```
 
 ### Vite
 
 ```ts
-compiled({ outputMode: 'compat' })
+compiled({ outputMode: 'compat' });
 ```
 
 ### Webpack loader
@@ -60,8 +60,11 @@ import { configureRuntime, configurePageRuntime } from '@compiled/react/compat-r
 
 configureRuntime({
   mode: 'stylex',
+  compareMode: 'shadow',
   compare(payload) {
-    console.log('[compiled-compare]', payload.operation, payload.result);
+    if (!payload.matched) {
+      console.log('[compiled-compare]', payload.operation, payload.mismatches);
+    }
   },
 });
 
@@ -73,8 +76,40 @@ configurePageRuntime(window, {
 Available controls in this slice:
 
 - `mode: 'compiled' | 'stylex'` — tracks the target semantics you are comparing against.
+- `compareMode: 'off' | 'shadow'` — `shadow` runs a secondary StyleX-like compare path where available and reports mismatches without changing primary behavior.
 - `enableRuntimeStyles: boolean` — can suppress compat runtime style emission for controlled experiments.
 - `compare(payload)` — called after compat runtime operations execute.
+
+### Compare payload shape
+
+```ts
+type RuntimeCompareMismatch = {
+  kind: 'result-mismatch' | 'style-emission-skipped' | 'shadow-unsupported' | 'shadow-error';
+  message: string;
+  details?: Record<string, unknown>;
+};
+
+type RuntimeComparePayload = {
+  operation: string;
+  args: unknown[];
+  result: unknown;
+  shadowResult?: unknown;
+  matched: boolean;
+  mismatches: RuntimeCompareMismatch[];
+  mode: 'compiled' | 'stylex';
+  compareMode: 'off' | 'shadow';
+  flags: CompiledRuntimeConfig;
+};
+```
+
+Current shadow coverage in this slice:
+
+- `ax`: real dual execution against a StyleX-like class merge model
+- `ix`: dual execution currently mirrors the existing runtime (mainly validating compare plumbing)
+- `ac`, `CC`: emit `shadow-unsupported` while the shadow runtime is still incomplete
+- `CS`: reports `style-emission-skipped` when compare mode is enabled but primary style emission has been disabled
+
+This is intentionally conservative: compare mode is observational only and defaults to `off`.
 
 ## Stage 3 — codemod handwritten runtime imports
 
@@ -91,6 +126,7 @@ Once your app is stable on:
 - compat-generated output,
 - compat runtime config,
 - codemodded manual runtime imports,
+- compare-mode mismatch reporting,
 
 ...the remaining work is to swap the compat implementation from Compiled-backed behavior to StyleX-backed behavior, while keeping the same runtime config surface.
 
@@ -101,12 +137,16 @@ Once your app is stable on:
 - compat runtime entrypoint
 - global and page-scoped runtime config APIs
 - comparison hook plumbing
+- structured mismatch taxonomy + compare payloads
+- shadow compare execution for `ax`
+- safe default compare behavior (`compareMode: 'off'`)
 - real codemod for manual runtime imports
 - tests for default output, compat output, override output, and runtime flags
 
 ## What is scaffolded / next
 
-- actual StyleX-backed compat runtime internals
+- actual StyleX-backed compat runtime internals (current compare path is StyleX-like/shadow, not the real runtime)
+- broader shadow coverage for `ac`, `CC`, and `CS`
 - page/component-scoped React provider APIs
 - broader codemod coverage for JSX/runtime edge cases
 - docs integrated into the public docs site

@@ -1,24 +1,44 @@
 export type RuntimeOutputMode = 'compiled' | 'stylex';
+export type RuntimeCompareMode = 'off' | 'shadow';
+export type RuntimeMismatchKind =
+  | 'result-mismatch'
+  | 'style-emission-skipped'
+  | 'shadow-unsupported'
+  | 'shadow-error';
 
-export type RuntimeComparePayload = {
+export interface RuntimeCompareMismatch {
+  kind: RuntimeMismatchKind;
+  message: string;
+  details?: Record<string, unknown>;
+}
+
+export interface RuntimeComparePayload {
   operation: string;
   args: unknown[];
   result: unknown;
   mode: RuntimeOutputMode;
   flags: CompiledRuntimeConfig;
-};
+  compareMode: RuntimeCompareMode;
+  shadowResult?: unknown;
+  mismatches: RuntimeCompareMismatch[];
+  matched: boolean;
+}
 
 export interface CompiledRuntimeConfig {
   mode?: RuntimeOutputMode;
   enableRuntimeStyles?: boolean;
+  compareMode?: RuntimeCompareMode;
   compare?: (payload: RuntimeComparePayload) => void;
 }
 
 const GLOBAL_CONFIG_KEY = '__COMPILED_RUNTIME_CONFIG__';
 
-const defaultConfig: Required<Pick<CompiledRuntimeConfig, 'mode' | 'enableRuntimeStyles'>> = {
+const defaultConfig: Required<
+  Pick<CompiledRuntimeConfig, 'mode' | 'enableRuntimeStyles' | 'compareMode'>
+> = {
   mode: 'compiled',
   enableRuntimeStyles: true,
+  compareMode: 'off',
 };
 
 type RuntimeConfigTarget = Record<string, unknown>;
@@ -98,18 +118,15 @@ export const runWithRuntimeConfig = <T>(config: CompiledRuntimeConfig, callback:
 };
 
 export const reportRuntimeComparison = (
-  operation: string,
-  args: unknown[],
-  result: unknown,
+  payload: Omit<RuntimeComparePayload, 'mode' | 'flags' | 'compareMode'>,
   target?: RuntimeConfigTarget
 ): void => {
   const config = getRuntimeConfig(target);
 
   config.compare?.({
-    operation,
-    args,
-    result,
+    ...payload,
     mode: config.mode ?? 'compiled',
     flags: config,
+    compareMode: config.compareMode ?? 'off',
   });
 };
