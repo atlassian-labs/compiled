@@ -8,15 +8,17 @@ export type {
 } from './plugins/types';
 
 import emotionToCompiled from './transforms/emotion-to-compiled';
+import runtimeToCompat from './transforms/runtime-to-compat';
 import styledComponentsInnerRefToRef from './transforms/styled-components-inner-ref-to-ref';
 import styledComponentsToCompiled from './transforms/styled-components-to-compiled';
 
-export { emotionToCompiled, styledComponentsToCompiled, styledComponentsInnerRefToRef };
+export { emotionToCompiled, styledComponentsToCompiled, styledComponentsInnerRefToRef, runtimeToCompat };
 
 export default {
   presets: {
     'emotion-to-compiled': emotionToCompiled,
     'styled-components-to-compiled': styledComponentsToCompiled,
     'styled-components-inner-ref-to-ref': styledComponentsInnerRefToRef,
+    'runtime-to-compat': runtimeToCompat,
   },
 };

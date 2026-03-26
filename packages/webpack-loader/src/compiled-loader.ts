@@ -41,6 +41,8 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     resolver = undefined,
     importSources = undefined,
     classHashPrefix = undefined,
+    runtimeImportSource = undefined,
+    outputMode = 'compiled',
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -99,6 +101,12 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           classHashPrefix: {
             type: 'string',
           },
+          runtimeImportSource: {
+            type: 'string',
+          },
+          outputMode: {
+            enum: ['compiled', 'compat'],
+          },
         },
       });
 
@@ -120,6 +128,8 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     resolver,
     importSources,
     classHashPrefix,
+    runtimeImportSource,
+    outputMode,
   };
 }
 

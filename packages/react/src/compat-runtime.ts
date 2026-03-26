@@ -1,0 +1,16 @@
+export {
+  CC,
+  CS,
+  ax,
+  ac,
+  clearAcCache,
+  ix,
+  configureRuntime,
+  configurePageRuntime,
+  getRuntimeConfig,
+  resetRuntimeConfig,
+  runWithRuntimeConfig,
+  type CompiledRuntimeConfig,
+  type RuntimeComparePayload,
+  type RuntimeOutputMode,
+} from './compat-runtime/index.js';

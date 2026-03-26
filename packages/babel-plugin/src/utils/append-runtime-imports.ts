@@ -18,7 +18,19 @@ const importSpecifier = (name: string, localName?: string): t.ImportSpecifier =>
 // Runtime function `ac` is less performant than `ax`, so we only want to import `ac` if classNameCompressionMap is provided.
 const COMPILED_RUNTIME_IMPORTS_WITH_COMPRESSION = ['ac', 'ix', 'CC', 'CS'];
 const COMPILED_RUNTIME_IMPORTS_WITHOUT_COMPRESSION = ['ax', 'ix', 'CC', 'CS'];
-const COMPILED_RUNTIME_MODULE = '@compiled/react/runtime';
+const DEFAULT_COMPILED_RUNTIME_MODULE = '@compiled/react/runtime';
+
+const getRuntimeModule = (state: State): string => {
+  if (state.opts.runtimeImportSource) {
+    return state.opts.runtimeImportSource;
+  }
+
+  if (state.opts.outputMode === 'compat') {
+    return '@compiled/react/compat-runtime';
+  }
+
+  return DEFAULT_COMPILED_RUNTIME_MODULE;
+};
 
 /**
  * Appends runtime import to code. If it is already present, it will append import specifiers
@@ -31,6 +43,7 @@ export const appendRuntimeImports = (path: NodePath<t.Program>, state: State): v
   const COMPILED_RUNTIME_IMPORTS = state.opts.classNameCompressionMap
     ? COMPILED_RUNTIME_IMPORTS_WITH_COMPRESSION
     : COMPILED_RUNTIME_IMPORTS_WITHOUT_COMPRESSION;
+  const runtimeModule = getRuntimeModule(state);
 
   // Check if we have any sibling runtime import
   const previouslyDeclaredRuntimeDeclaration = path
@@ -38,7 +51,7 @@ export const appendRuntimeImports = (path: NodePath<t.Program>, state: State): v
     .find((childPath): childPath is NodePath<t.ImportDeclaration> => {
       return (
         t.isImportDeclaration(childPath.node) &&
-        childPath.node.source.value === COMPILED_RUNTIME_MODULE
+        childPath.node.source.value === runtimeModule
       );
     });
 
@@ -69,7 +82,7 @@ export const appendRuntimeImports = (path: NodePath<t.Program>, state: State): v
       'body',
       t.importDeclaration(
         COMPILED_RUNTIME_IMPORTS.map((runtimeImportName) => importSpecifier(runtimeImportName)),
-        t.stringLiteral(COMPILED_RUNTIME_MODULE)
+        t.stringLiteral(runtimeModule)
       )
     );
   }

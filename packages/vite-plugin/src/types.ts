@@ -41,4 +41,9 @@ export interface PluginOptions extends BabelPluginOptions {
    * Defaults to `true`.
    */
   sortShorthand?: boolean;
+
+  /**
+   * Select the inserted runtime target.
+   */
+  outputMode?: 'compiled' | 'compat';
 }

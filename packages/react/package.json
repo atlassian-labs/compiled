@@ -39,6 +39,16 @@
         "./src/runtime.ts"
       ]
     },
+    "./compat-runtime": {
+      "import": [
+        "./dist/esm/compat-runtime.js",
+        "./src/compat-runtime.ts"
+      ],
+      "require": [
+        "./dist/cjs/compat-runtime.js",
+        "./src/compat-runtime.ts"
+      ]
+    },
     "./jsx-runtime": {
       "import": [
         "./dist/esm/jsx/jsx-runtime.js",
@@ -68,6 +78,7 @@
     "dist",
     "src",
     "runtime",
+    "compat-runtime",
     "jsx-runtime",
     "jsx-dev-runtime"
   ],

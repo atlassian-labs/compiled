@@ -112,6 +112,17 @@ export interface CompiledLoaderOptions {
    * or `extract: true` in Webpack loaders or Parcel tranformers.
    */
   classHashPrefix?: string;
+
+  /**
+   * Override the runtime import source inserted by the Compiled transform.
+   */
+  runtimeImportSource?: string;
+
+  /**
+   * Select the generated runtime target. `compiled` preserves today's output,
+   * while `compat` points the transform at `@compiled/react/compat-runtime`.
+   */
+  outputMode?: 'compiled' | 'compat';
 }
 
 export interface CompiledExtractPluginOptions {

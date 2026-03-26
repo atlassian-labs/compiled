@@ -44,6 +44,8 @@ function compiled(userOptions: PluginOptions = {}): any {
     sortAtRules: true,
     classHashPrefix: undefined,
     flattenMultipleSelectors: undefined,
+    runtimeImportSource: undefined,
+    outputMode: 'compiled',
 
     ...userOptions,
   };

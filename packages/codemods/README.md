@@ -19,6 +19,7 @@ npx @hypermod/cli --packages @compiled/codemods /Project/**/*.tsx
 1. [styled-components-to-compiled](./src/transforms/styled-components-to-compiled)
 2. [emotion-to-compiled](./src/transforms/emotion-to-compiled)
 3. [styled-components-inner-ref-to-ref](./src/transforms/styled-components-inner-ref-to-ref)
+4. [runtime-to-compat](./src/transforms/runtime-to-compat)
 
 ## Plugins
 

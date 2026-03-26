@@ -119,7 +119,24 @@ export interface PluginOptions {
    * Defults to `true`.
    */
   flattenMultipleSelectors?: boolean;
+
+  /**
+   * Override the runtime import source inserted by the Compiled transform.
+   *
+   * Defaults to `@compiled/react/runtime` for the legacy behavior.
+   */
+  runtimeImportSource?: string;
+
+  /**
+   * High level runtime output target. `compiled` preserves today's output.
+   * `compat` swaps inserted runtime imports to the compat runtime entrypoint, which
+   * preserves behavior while enabling migration instrumentation and feature flags.
+   *
+   * Defaults to `compiled`.
+   */
+  outputMode?: 'compiled' | 'compat';
 }
+
 
 export interface State extends PluginPass {
   /**
