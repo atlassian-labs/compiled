@@ -10,7 +10,6 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
 
-    # The permissions are required in order to access GitHub OIDC Provider.
     permissions:
       contents: read
       id-token: write
