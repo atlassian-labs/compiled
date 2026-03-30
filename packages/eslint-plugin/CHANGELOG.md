@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.19.2
+
+### Patch Changes
+
+- 213e6d5: Use publishing registry from repo root
+
 ## 0.19.1
 
 ### Patch Changes
