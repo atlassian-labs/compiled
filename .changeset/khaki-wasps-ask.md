@@ -2,4 +2,4 @@
 '@compiled/eslint-plugin': patch
 ---
 
-Update publishing registry
+Use publishing registry from repo root
