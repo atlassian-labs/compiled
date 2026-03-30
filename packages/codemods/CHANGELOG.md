@@ -1,5 +1,11 @@
 # @compiled/codemods
 
+## 0.10.1
+
+### Patch Changes
+
+- 2992a96: Change to trigger new publishing flow
+
 ## 0.10.0
 
 ### Minor Changes
