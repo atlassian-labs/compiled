@@ -67,21 +67,47 @@ const pseudosMap: Record<string, Bucket | undefined> = {
   // active
   ive: 'a',
 };
+/**
+ * Holds style buckets per custom container (e.g. a ShadowRoot), keyed by the
+ * container DOM node. Uses WeakMap so entries are garbage collected when the
+ * container is removed from the page.
+ */
+const styleBucketsByContainer = new WeakMap<
+  HTMLElement | ShadowRoot,
+  Partial<Record<Bucket, HTMLStyleElement>>
+>();
 
 /**
- * Lazily adds a `<style>` bucket to the `<head>`.
- * This will ensure that the style buckets are ordered.
+ * Lazily adds a `<style>` bucket to a container, defaulting to `the `<head>`
+ * when no container is provided in opts. Ensures style buckets are inserted in
+ * the correct order regardless of the target container.
  *
- * @param bucket Bucket to insert in the head.
+ * Each custom container (e.g. a ShadowRoot) gets its own independent set of
+ * buckets via the WeakMap — the main document singleton is unaffected.
+ *
+ * @param bucketName Bucket to insert into the container.
+ * @param opts StyleSheetOpts optionally including a custom container.
  */
-function lazyAddStyleBucketToHead(bucketName: Bucket, opts: StyleSheetOpts): HTMLStyleElement {
-  if (!styleBucketsInHead[bucketName]) {
+function lazyAddStyleBucketToContainer(bucketName: Bucket, opts: StyleSheetOpts): HTMLStyleElement {
+  const target = opts.container ?? document.head;
+
+  let buckets: Partial<Record<Bucket, HTMLStyleElement>>;
+  if (opts.container) {
+    if (!styleBucketsByContainer.has(opts.container)) {
+      styleBucketsByContainer.set(opts.container, {});
+    }
+    buckets = styleBucketsByContainer.get(opts.container)!;
+  } else {
+    buckets = styleBucketsInHead;
+  }
+
+  if (!buckets[bucketName]) {
     let currentBucketIndex = styleBucketOrdering.indexOf(bucketName) + 1;
-    let nextBucketFromCache = null;
+    let nextBucketFromCache: HTMLStyleElement | null = null;
 
     // Find the next bucket which we will add our new style bucket before.
     for (; currentBucketIndex < styleBucketOrdering.length; currentBucketIndex++) {
-      const nextBucket = styleBucketsInHead[styleBucketOrdering[currentBucketIndex]];
+      const nextBucket = buckets[styleBucketOrdering[currentBucketIndex]];
       if (nextBucket) {
         nextBucketFromCache = nextBucket;
         break;
@@ -91,16 +117,16 @@ function lazyAddStyleBucketToHead(bucketName: Bucket, opts: StyleSheetOpts): HTM
     const tag = document.createElement('style');
     opts.nonce && tag.setAttribute('nonce', opts.nonce);
     tag.appendChild(document.createTextNode(''));
-    document.head.insertBefore(tag, nextBucketFromCache);
+    target.insertBefore(tag, nextBucketFromCache);
 
     if (isCacheDisabled()) {
       return tag;
     }
 
-    styleBucketsInHead[bucketName] = tag;
+    buckets[bucketName] = tag;
   }
 
-  return styleBucketsInHead[bucketName]!;
+  return buckets[bucketName]!;
 }
 
 /**
@@ -154,13 +180,15 @@ export const getStyleBucketName = (sheet: string): Bucket => {
 
 /**
  * Used to move styles to the head of the application during runtime.
+ * When `opts.container` is provided, styles are inserted into that container
+ * instead of `document.head` — useful for Shadow DOM rendering.
  *
  * @param css string
  * @param opts StyleSheetOpts
  */
 export default function insertRule(css: string, opts: StyleSheetOpts): void {
   const bucketName = getStyleBucketName(css);
-  const style = lazyAddStyleBucketToHead(bucketName, opts);
+  const style = lazyAddStyleBucketToContainer(bucketName, opts);
 
   if (process.env.NODE_ENV === 'production') {
     const sheet = style.sheet as CSSStyleSheet;
