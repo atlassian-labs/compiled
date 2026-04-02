@@ -3,6 +3,8 @@ import { createElement } from 'react';
 import type { CompiledJSX } from './jsx/jsx-local-namespace.js';
 
 export { ClassNames } from './class-names/index.js';
+export { StyleContainerProvider } from './runtime/style.js';
+export type { StyleContainerConfig } from './runtime/style.js';
 export { createStrictAPI } from './create-strict-api/index.js';
 export type {
   PseudosDeclarations,
