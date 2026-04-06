@@ -78,7 +78,7 @@
     "@compiled/benchmark": "^1.1.0",
     "@compiled/utils": "^0.13.0",
     "@fixture/strict-api-test": "*",
-    "@testing-library/react": "^16.1.0",
+    "@testing-library/react": "^16.3.2",
     "@types/jsdom": "^16.2.15",
     "@types/react-dom": "^18.3.1",
     "expect-type": "^0.20.0",
