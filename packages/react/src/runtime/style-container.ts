@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { type ReactElement } from 'react';
 
 import { isServerEnvironment } from './is-server-environment.js';
 
@@ -18,14 +18,6 @@ export interface StyleContainerConfig {
 }
 
 /**
- * Server-side React context for SSR isolation.
- * On the client, a singleton is used instead — same pattern as style-cache.tsx.
- */
-const StyleContainerContext = isServerEnvironment()
-  ? createContext<StyleContainerConfig | null>(null)
-  : null;
-
-/**
  * Singleton holding the currently active style container config on the client.
  * Read directly by useStyleContainer().
  */
@@ -33,18 +25,19 @@ export let clientStyleContainer: StyleContainerConfig | null = null;
 
 /**
  * Returns the currently active style container config.
- * React Context on the server - singleton object on the client.
  */
 export const useStyleContainer = (): StyleContainerConfig | null => {
-  if (isServerEnvironment()) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useContext(StyleContainerContext!);
-  }
   return clientStyleContainer;
 };
 
 /**
  * Provides a custom DOM container for Compiled style injection within a React subtree.
+ *
+ * **Runtime mode only.** This provider is not supported in server environments or when
+ * using CSS extraction (`@compiled/babel-plugin-strip-runtime`). In extraction mode,
+ * `CS`/`CC` components are removed at build time, so there is nothing for this provider
+ * to intercept. Supporting Shadow DOM with extraction is a known limitation and is
+ * planned as future work.
  *
  * Use this when rendering Compiled components inside a Shadow DOM, where styles
  * inserted into the main document `<head>` are not visible to the shadow tree.
@@ -81,18 +74,15 @@ export const useStyleContainer = (): StyleContainerConfig | null => {
  * }
  * ```
  */
-const ServerContext = StyleContainerContext as React.Context<StyleContainerConfig | null>;
-
 export function StyleContainerProvider({
   container,
   cacheKey,
   children,
-}: StyleContainerConfig & { children: React.ReactNode }): JSX.Element {
+}: StyleContainerConfig & { children: React.ReactNode }): ReactElement {
   if (isServerEnvironment()) {
-    return (
-      <ServerContext.Provider value={{ container, cacheKey }}>
-        {children as JSX.Element}
-      </ServerContext.Provider>
+    throw new Error(
+      '@compiled/react: StyleContainerProvider is not supported in server environments. ' +
+        'It is only intended for client-side Shadow DOM use cases in runtime mode.'
     );
   }
 
@@ -115,5 +105,5 @@ export function StyleContainerProvider({
     };
   }, []);
 
-  return children as JSX.Element;
+  return children as ReactElement;
 }

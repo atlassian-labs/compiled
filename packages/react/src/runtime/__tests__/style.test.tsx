@@ -4,6 +4,7 @@ import type { ComponentType } from 'react';
 
 import StyleWithContainer from '../style';
 import { StyleContainerProvider } from '../style-container';
+import type * as StyleContainerModule from '../style-container';
 
 jest.mock('../is-server-environment', () => ({
   isServerEnvironment: () => false,
@@ -292,6 +293,33 @@ describe('<Style />', () => {
 
       expect(container.innerHTML).toInclude('nonce="abc123"');
       expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it('should throw when used in a server environment', () => {
+      jest.resetModules();
+      jest.doMock('../is-server-environment', () => ({
+        isServerEnvironment: () => true,
+      }));
+
+      // Re-require to pick up the new mock
+      const { StyleContainerProvider: ServerStyleContainerProvider } =
+        jest.requireActual<typeof StyleContainerModule>('../style-container');
+
+      // Suppress React's error boundary console output during this test
+      const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      expect(() => {
+        render(
+          <ServerStyleContainerProvider container={container} cacheKey="test">
+            <div />
+          </ServerStyleContainerProvider>
+        );
+      }).toThrow(
+        '@compiled/react: StyleContainerProvider is not supported in server environments.'
+      );
+
+      spy.mockRestore();
+      jest.resetModules();
     });
   });
 });
