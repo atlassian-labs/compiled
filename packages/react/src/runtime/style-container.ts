@@ -80,10 +80,14 @@ export function StyleContainerProvider({
   children,
 }: StyleContainerConfig & { children: React.ReactNode }): ReactElement {
   if (isServerEnvironment()) {
-    throw new Error(
-      '@compiled/react: StyleContainerProvider is not supported in server environments. ' +
-        'It is only intended for client-side Shadow DOM use cases in runtime mode.'
-    );
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        '@compiled/react: StyleContainerProvider has no effect in server environments. ' +
+          'Shadow DOM content should be rendered client-side only (e.g. inside a portal ' +
+          'guarded by useEffect/useState).'
+      );
+    }
+    return children as ReactElement;
   }
 
   // On the client, set the singleton synchronously during the render phase via
