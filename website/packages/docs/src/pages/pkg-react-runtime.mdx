@@ -39,7 +39,7 @@ where styles injected into the main document `<head>` are not visible to the sha
 > `CS`/`CC` components are removed at build time so there is nothing for this provider to intercept.
 > Supporting Shadow DOM with extraction is a known limitation and is planned as future work.
 >
-> It is also not supported in server environments and will throw if rendered server-side.
+> In server environments it has no effect.
 
 The `cacheKey` prop must be unique per container. It is used to namespace the style deduplication
 cache so each container tracks its own inserted styles independently.

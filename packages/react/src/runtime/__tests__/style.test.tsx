@@ -295,7 +295,7 @@ describe('<Style />', () => {
       expect(console.error).not.toHaveBeenCalled();
     });
 
-    it('should throw when used in a server environment', () => {
+    it('should warn in dev when used in a server environment', () => {
       jest.resetModules();
       jest.doMock('../is-server-environment', () => ({
         isServerEnvironment: () => true,
@@ -305,20 +305,23 @@ describe('<Style />', () => {
       const { StyleContainerProvider: ServerStyleContainerProvider } =
         jest.requireActual<typeof StyleContainerModule>('../style-container');
 
-      // Suppress React's error boundary console output during this test
-      const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      expect(() => {
-        render(
-          <ServerStyleContainerProvider container={container} cacheKey="test">
-            <div />
-          </ServerStyleContainerProvider>
-        );
-      }).toThrow(
-        '@compiled/react: StyleContainerProvider is not supported in server environments.'
+      const { container: renderContainer } = render(
+        <ServerStyleContainerProvider container={container} cacheKey="test">
+          <div />
+        </ServerStyleContainerProvider>
       );
 
-      spy.mockRestore();
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining(
+          '@compiled/react: StyleContainerProvider has no effect in server environments.'
+        )
+      );
+      // Children should still be rendered
+      expect(renderContainer.querySelector('div')).not.toBeNull();
+
+      warnSpy.mockRestore();
       jest.resetModules();
     });
   });
