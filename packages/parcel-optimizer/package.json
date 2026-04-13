@@ -22,7 +22,7 @@
     "@compiled/css": "^0.21.0",
     "@compiled/utils": "^0.13.1",
     "@parcel/plugin": "^2.8.3",
-    "posthtml": "^0.16.6",
+    "posthtml": "^0.16.7",
     "posthtml-insert-at": "^0.2.7"
   },
   "devDependencies": {
