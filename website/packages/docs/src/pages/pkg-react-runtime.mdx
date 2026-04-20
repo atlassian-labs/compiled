@@ -29,6 +29,54 @@ import { CS } from '@compiled/react/runtime';
 <CS>{['.foo{color:#ff5630;}']}</CS>;
 ```
 
+## StyleContainerProvider
+
+Redirects Compiled's `<style>` element injection into a custom DOM node instead of `document.head`.
+This is useful when rendering Compiled components inside a [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM),
+where styles injected into the main document `<head>` are not visible to the shadow tree.
+
+> **Runtime mode only** <br /> > `StyleContainerProvider` only works in runtime mode. When using [CSS extraction](/css-extraction-webpack),
+> `CS`/`CC` components are removed at build time so there is nothing for this provider to intercept.
+> Supporting Shadow DOM with extraction is a known limitation and is planned as future work.
+>
+> In server environments it has no effect.
+
+The `cacheKey` prop must be unique per container. It is used to namespace the style deduplication
+cache so each container tracks its own inserted styles independently.
+
+```tsx
+import { StyleContainerProvider } from '@compiled/react';
+import { createPortal } from 'react-dom';
+import { useEffect, useRef, useState } from 'react';
+
+function ShadowHost() {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null);
+
+  useEffect(() => {
+    if (hostRef.current && !hostRef.current.shadowRoot) {
+      setShadowRoot(hostRef.current.attachShadow({ mode: 'open' }));
+    }
+  }, []);
+
+  return (
+    <div ref={hostRef}>
+      {shadowRoot &&
+        createPortal(
+          <StyleContainerProvider container={shadowRoot} cacheKey="my-shadow-root">
+            <MyCompiledComponent />
+          </StyleContainerProvider>,
+          shadowRoot
+        )}
+    </div>
+  );
+}
+```
+
+> **Note** <br />
+> Nested `StyleContainerProvider` components are not supported.
+> Only a single provider should be active at a time.
+
 ## ax
 
 Concats class names together ensuring the uniqueness of atomic groups.

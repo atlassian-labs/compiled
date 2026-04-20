@@ -4,7 +4,11 @@ import { analyzeCssInDev } from './dev-warnings.js';
 import { isServerEnvironment } from './is-server-environment.js';
 import insertRule, { getStyleBucketName, styleBucketOrdering } from './sheet.js';
 import { useCache } from './style-cache.js';
+import { StyleContainerProvider, useStyleContainer } from './style-container.js';
 import type { Bucket, StyleSheetOpts } from './types.js';
+
+export { StyleContainerProvider };
+export type { StyleContainerConfig } from './style-container.js';
 
 interface StyleProps extends StyleSheetOpts {
   /**
@@ -16,6 +20,7 @@ interface StyleProps extends StyleSheetOpts {
 
 export default function Style(props: StyleProps): JSX.Element | null {
   const inserted = useCache();
+  const styleContainer = useStyleContainer();
 
   if (process.env.NODE_ENV === 'development') {
     props.children.forEach(analyzeCssInDev);
@@ -53,14 +58,21 @@ export default function Style(props: StyleProps): JSX.Element | null {
         />
       );
     } else {
+      const opts: StyleSheetOpts = styleContainer
+        ? { ...props, container: styleContainer.container, cacheKey: styleContainer.cacheKey }
+        : props;
+
       for (let i = 0; i < props.children.length; i++) {
         const sheet = props.children[i];
-        if (inserted[sheet]) {
+        // When a container is active, namespace the cache key so this container's
+        // inserted records are tracked independently from the main document cache.
+        const cacheKey = styleContainer ? `${styleContainer.cacheKey}:${sheet}` : sheet;
+        if (inserted[cacheKey]) {
           continue;
         }
 
-        inserted[sheet] = true;
-        insertRule(sheet, props);
+        inserted[cacheKey] = true;
+        insertRule(sheet, opts);
       }
     }
   }
