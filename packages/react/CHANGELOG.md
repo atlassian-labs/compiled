@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.21.0
+
+### Minor Changes
+
+- 8e70033: Add StyleContainerProvider to enable style injection into a custom DOM node (e.g. Shadow DOM) instead of document.head.
+
 ## 0.20.0
 
 ### Minor Changes
