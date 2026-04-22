@@ -308,6 +308,23 @@ export default declare<State>((api) => {
               specifier.remove();
             }
           });
+
+          // Vanilla-mode only: remove the user's `ax` specifier from
+          // `@compiled/vanilla`. Unlike the React package (which does not
+          // re-export `ax` from its main entry), `@compiled/vanilla` *does*
+          // re-export `ax` for ergonomic single-import use. After the plugin
+          // runs we always append `import { ax, insertSheets } from
+          // '@compiled/vanilla/runtime'`, so leaving the original specifier
+          // in place produces a duplicate `ax` import. Removing it here keeps
+          // the user's `ax(...)` call site intact (it now resolves against
+          // the appended runtime import, which uses the same local name).
+          if (
+            state.isVanilla &&
+            t.isIdentifier(specifier.node?.imported) &&
+            specifier.node?.imported.name === 'ax'
+          ) {
+            specifier.remove();
+          }
         });
 
         if (path.node.specifiers.length === 0) {

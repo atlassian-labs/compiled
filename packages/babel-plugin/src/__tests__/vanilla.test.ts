@@ -93,15 +93,18 @@ describe('@compiled/vanilla support in @compiled/babel-plugin', () => {
   });
 
   describe('ax', () => {
-    it('preserves a standalone ax import from @compiled/vanilla', () => {
-      // `ax` is a real runtime function (not a compile-time stub), so when it
-      // is the only specifier imported the plugin should leave the user-level
-      // call site alone — no rewriting of the call expression.
+    it('rewrites a standalone ax import from @compiled/vanilla to the runtime', () => {
+      // `ax` is a real runtime function (not a compile-time stub), so the
+      // user-level call site is preserved verbatim. However, the plugin
+      // rewrites the *import* from the package entry to the runtime entry
+      // so the bundle never references `@compiled/vanilla` directly — only
+      // `@compiled/vanilla/runtime`. This keeps the package entry purely
+      // build-time and ensures bundlers don't drag the stub package into
+      // production payloads.
       //
-      // The plugin still appends the vanilla runtime import (since
-      // `state.isVanilla` was set during the ImportDeclaration visit) and
-      // ships an unused `insertSheets` specifier in that import. That extra
-      // specifier is a known minor cost — bundlers will tree-shake it for
+      // The plugin currently also includes `insertSheets` in the appended
+      // specifier list even when no `cssMap` was transformed. That extra
+      // specifier is a known minor cost — bundlers tree-shake it for
       // production builds — and is acceptable for v1. A future optimisation
       // could narrow the appended specifier set to only what was actually
       // used by the file.
@@ -116,11 +119,12 @@ describe('@compiled/vanilla support in @compiled/babel-plugin', () => {
 
       // The user-level ax call is preserved verbatim.
       expect(actual).toInclude('ax(["foo", "bar"])');
-      // The original vanilla package import is kept so `ax` resolves through
-      // the package's re-export.
-      expect(actual).toInclude('from "@compiled/vanilla"');
-      // Vanilla runtime is the canonical source for `ax`; React runtime must
-      // never be pulled in for a vanilla-only file.
+      // The original `@compiled/vanilla` package import is removed; the
+      // runtime import is the sole source of `ax` in the bundle.
+      expect(actual).not.toInclude('from "@compiled/vanilla";');
+      expect(actual).toInclude('from "@compiled/vanilla/runtime"');
+      // Vanilla runtime is the canonical source for `ax`; the React runtime
+      // must never be pulled in for a vanilla-only file.
       expect(actual).not.toInclude('@compiled/react/runtime');
     });
 
