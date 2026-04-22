@@ -113,4 +113,26 @@ export const visitCssMapPath = (
 
   // We store sheets in the meta state so that we can use it later to generate Compiled component.
   meta.state.cssMap[path.parent.id.name] = totalSheets;
+
+  // Vanilla mode: there is no React component to host the sheets via
+  // `<CC><CS>`, so we emit an explicit `insertSheets([...])` call before the
+  // variable declaration holding the className map. The runtime helper inserts
+  // each rule into the document head exactly once.
+  //
+  // In production builds, `@compiled/babel-plugin-strip-runtime` removes this
+  // call entirely and writes the sheets to a sibling `.compiled.css` file
+  // (re-using the same extraction logic as `<CC><CS>`).
+  if (meta.state.isVanilla && totalSheets.length > 0) {
+    const declaration = meta.parentPath.findParent((parent) => parent.isVariableDeclaration());
+
+    if (declaration) {
+      declaration.insertBefore(
+        t.expressionStatement(
+          t.callExpression(t.identifier('insertSheets'), [
+            t.arrayExpression(totalSheets.map((sheet) => t.stringLiteral(sheet))),
+          ])
+        )
+      );
+    }
+  }
 };

@@ -145,6 +145,16 @@ export interface State extends PluginPass {
     cssMap?: string[];
   };
 
+  /**
+   * `true` when the module imports from `@compiled/vanilla`.
+   *
+   * In vanilla mode the plugin emits framework-agnostic output: no React
+   * import, no `forwardRef`, no `<CC><CS>` style components. CSS sheets are
+   * inserted at module-load time via `insertSheets` from
+   * `@compiled/vanilla/runtime`.
+   */
+  isVanilla?: boolean;
+
   usesXcss?: boolean;
 
   importedCompiledImports?: {

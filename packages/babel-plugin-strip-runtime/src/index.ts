@@ -104,7 +104,15 @@ export default declare<PluginPass>((api) => {
       },
 
       ImportSpecifier(path) {
-        if (t.isIdentifier(path.node.imported) && ['CC', 'CS'].includes(path.node.imported.name)) {
+        // Strip both the React-mode style components (`CC`, `CS`) and the
+        // vanilla-mode style inserter (`insertSheets`). After extraction
+        // these imports are dead code: their effect has been moved to a
+        // sibling `.compiled.css` file (or to `pass.styleRules` for SSR
+        // consumers).
+        if (
+          t.isIdentifier(path.node.imported) &&
+          ['CC', 'CS', 'insertSheets'].includes(path.node.imported.name)
+        ) {
           path.remove();
         }
       },
@@ -139,6 +147,32 @@ export default declare<PluginPass>((api) => {
 
       CallExpression(path, pass) {
         const callee = path.node.callee;
+
+        // Vanilla mode: hoist the rules out of `insertSheets([...])` into
+        // `pass.styleRules` (so they participate in extraction the same way as
+        // rules from `<CC><CS>`), then remove the call entirely.
+        if (
+          t.isIdentifier(callee) &&
+          callee.name === 'insertSheets' &&
+          path.node.arguments.length === 1 &&
+          t.isArrayExpression(path.node.arguments[0])
+        ) {
+          const sheets: string[] = [];
+          for (const element of path.node.arguments[0].elements) {
+            if (!t.isStringLiteral(element)) {
+              // Bail out — leave the call alone if the argument isn't a
+              // statically extractable string array. This keeps the runtime
+              // behaviour correct in the rare cases where an unrelated
+              // function happens to share the name `insertSheets`.
+              return;
+            }
+            sheets.push(element.value);
+          }
+          pass.styleRules.push(...sheets);
+          path.remove();
+          return;
+        }
+
         if (isCreateElement(callee)) {
           // We've found something that looks like React.createElement(...)
           // Now we want to check if it's from the Compiled Runtime and if it is - replace with its children.
