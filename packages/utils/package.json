@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "convert-source-map": "^2.0.0",
-    "source-map": "^0.7.4"
+    "source-map": "^0.7.6"
   },
   "devDependencies": {
     "@babel/traverse": "^7.26.10",
