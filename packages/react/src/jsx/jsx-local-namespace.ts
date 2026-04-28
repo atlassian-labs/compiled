@@ -71,6 +71,7 @@ export namespace CompiledJSX {
   // that created a circular reference through our own definition. React 19's @types/react removed that
   // indirection, breaking the old code. We avoid the issue entirely by not delegating to
   // ReactJSXLibraryManagedAttributes and instead intersecting P with { key?: React.Key } directly.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export type LibraryManagedAttributes<_C, P> = WithConditionalCSSProp<P> & P & { key?: React.Key };
   export type IntrinsicAttributes = ReactJSXIntrinsicAttributes;
   export type IntrinsicClassAttributes<T> = ReactJSXIntrinsicClassAttributes<T>;
