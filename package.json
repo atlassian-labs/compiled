@@ -136,6 +136,7 @@
       }
     }
   },
+  "packageManager": "yarn@1.22.22",
   "size-limit": [
     {
       "path": "./packages/react/dist/browser/runtime/css-custom-property.js",

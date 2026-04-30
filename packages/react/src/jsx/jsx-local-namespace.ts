@@ -56,7 +56,6 @@ type ReactJSXElement = JSX.Element;
 type ReactJSXElementClass = JSX.ElementClass;
 type ReactJSXElementAttributesProperty = JSX.ElementAttributesProperty;
 type ReactJSXElementChildrenAttribute = JSX.ElementChildrenAttribute;
-type ReactJSXLibraryManagedAttributes<C, P> = JSX.LibraryManagedAttributes<C, P>;
 type ReactJSXIntrinsicAttributes = JSX.IntrinsicAttributes;
 type ReactJSXIntrinsicClassAttributes<T> = JSX.IntrinsicClassAttributes<T>;
 type ReactJSXIntrinsicElements = JSX.IntrinsicElements;
@@ -67,8 +66,13 @@ export namespace CompiledJSX {
   export type ElementClass = ReactJSXElementClass;
   export type ElementAttributesProperty = ReactJSXElementAttributesProperty;
   export type ElementChildrenAttribute = ReactJSXElementChildrenAttribute;
-  export type LibraryManagedAttributes<C, P> = WithConditionalCSSProp<P> &
-    ReactJSXLibraryManagedAttributes<C, P>;
+  // In React 18's @types/react, ReactManagedAttributes delegated to GlobalJSXLibraryManagedAttributes
+  // which aliased back to JSX.LibraryManagedAttributes. When CompiledJSX is used as the JSX namespace
+  // that created a circular reference through our own definition. React 19's @types/react removed that
+  // indirection, breaking the old code. We avoid the issue entirely by not delegating to
+  // ReactJSXLibraryManagedAttributes and instead intersecting P with { key?: React.Key } directly.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  export type LibraryManagedAttributes<_C, P> = WithConditionalCSSProp<P> & P & { key?: React.Key };
   export type IntrinsicAttributes = ReactJSXIntrinsicAttributes;
   export type IntrinsicClassAttributes<T> = ReactJSXIntrinsicClassAttributes<T>;
   export type IntrinsicElements = {
