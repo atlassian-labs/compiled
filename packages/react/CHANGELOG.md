@@ -1,5 +1,11 @@
 # @compiled/react
 
+## 0.21.1
+
+### Patch Changes
+
+- 9a805f7: Fix JSX namespace types compatibility with React 19. `CompiledJSX.LibraryManagedAttributes` no longer delegates to `ReactJSXLibraryManagedAttributes`, which caused a circular reference when used with React 19's `@types/react`. The type now directly intersects component props with `{ key?: React.Key }`, which works correctly for both React 18 and React 19.
+
 ## 0.21.0
 
 ### Minor Changes
