@@ -9,6 +9,8 @@ import { transformCssItems } from '../utils/transform-css-items';
 
 import { mergeExtendedSelectorsIntoProperties } from './process-selectors';
 
+const KNOWN_OPTIONS = ['group'];
+
 /**
  * Takes `cssMap` function expression and then transforms it to a record of class names and sheets.
  *
@@ -52,8 +54,8 @@ export const visitCssMapPath = (
     );
   }
 
-  // We need to ensure cssMap receives only one argument.
-  if (path.node.arguments.length !== 1) {
+  // We need to ensure cssMap receives either one or two arguments.
+  if (path.node.arguments.length !== 1 && path.node.arguments.length !== 2) {
     throw buildCodeFrameError(
       createErrorMessage(ErrorMessages.NUMBER_OF_ARGUMENT),
       path.node,
@@ -68,6 +70,44 @@ export const visitCssMapPath = (
       path.node,
       meta.parentPath
     );
+  }
+
+  if (path.node.arguments[1] && !t.isObjectExpression(path.node.arguments[1])) {
+    throw buildCodeFrameError(
+      createErrorMessage(ErrorMessages.OPTS_ARGUMENT_TYPE),
+      path.node,
+      meta.parentPath
+    );
+  }
+
+  const optionsNode = path.node.arguments[1] as t.ObjectExpression | undefined;
+  const options: Record<string, boolean> = {};
+
+  if (optionsNode) {
+    optionsNode.properties.forEach((prop) => {
+      if (!t.isObjectProperty(prop) || !t.isIdentifier(prop.key)) {
+        throw buildCodeFrameError(createErrorMessage(ErrorMessages.OPTS_PROPERTY_TYPE), prop, path);
+      }
+
+      const optionName = prop.key.name;
+      if (!KNOWN_OPTIONS.includes(optionName)) {
+        throw buildCodeFrameError(
+          createErrorMessage(ErrorMessages.OPTS_PROPERTY_KNOWN_NAME),
+          prop.key,
+          path
+        );
+      }
+
+      if (!t.isBooleanLiteral(prop.value)) {
+        throw buildCodeFrameError(
+          createErrorMessage(ErrorMessages.OPTS_PROPERTY_VALUE_TYPE),
+          prop.value,
+          path
+        );
+      }
+
+      options[optionName] = prop.value.value;
+    });
   }
 
   const totalSheets: string[] = [];
@@ -95,7 +135,7 @@ export const visitCssMapPath = (
           );
         }
 
-        const { sheets, classNames } = transformCssItems(css, meta);
+        const { sheets, classNames } = transformCssItems(css, meta, options);
         totalSheets.push(...sheets);
 
         if (classNames.length > 1) {

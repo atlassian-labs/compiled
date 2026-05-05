@@ -36,6 +36,36 @@ describe('css map basic functionality', () => {
     ]);
   });
 
+  it('should transform css map with options', () => {
+    const actual = transform(`
+      import { cssMap } from '@compiled/react';
+
+      const styles = cssMap({
+        danger: {
+            'div span': {
+              color: 'red',
+              backgroundColor: 'red'
+            }
+        },
+        success: {
+          color: 'green',
+          backgroundColor: 'green'
+        }
+      }, {group: true});
+
+      const Component = () => <div>
+        <span css={styles.danger} />
+        <span css={styles.success} />
+      </div>
+    `);
+
+    expect(actual).toIncludeMultiple([
+      'const styles={danger:"_djei11uk",success:"_syazbf54 _bfhkbf54"};',
+      '<span className={ax([styles.danger])}/>',
+      '<span className={ax([styles.success])}/>',
+    ]);
+  });
+
   it('should transform css map when the styles are defined below the component and the component uses xcss prop', () => {
     const actual = transform(
       `
@@ -184,12 +214,12 @@ describe('css map basic functionality', () => {
     }).toThrow(ErrorMessages.DEFINE_MAP);
   });
 
-  it('should error out if cssMap receives more than one argument', () => {
+  it('should error out if cssMap receives more than two arguments', () => {
     expect(() => {
       transform(`
         import { cssMap } from '@compiled/react';
 
-        const styles = cssMap(${styles}, ${styles})
+        const styles = cssMap(${styles}, ${styles}, {})
       `);
     }).toThrow(ErrorMessages.NUMBER_OF_ARGUMENT);
   });
@@ -266,5 +296,66 @@ describe('css map basic functionality', () => {
         });
       `);
     }).toThrow(ErrorMessages.STATIC_VARIANT_OBJECT);
+  });
+
+  it('should error out if options argument is not an object', () => {
+    expect(() => {
+      transform(`
+        import { cssMap } from '@compiled/react';
+
+        const styles = cssMap(${styles}, 'invalid');
+      `);
+    }).toThrow(ErrorMessages.OPTS_ARGUMENT_TYPE);
+  });
+
+  it('should error out if options contain a spread element', () => {
+    expect(() => {
+      transform(`
+        import { cssMap } from '@compiled/react';
+
+        const opts = { group: true };
+        const styles = cssMap(${styles}, { ...opts });
+      `);
+    }).toThrow(ErrorMessages.OPTS_PROPERTY_TYPE);
+  });
+
+  it('should error out if options contain an object method', () => {
+    expect(() => {
+      transform(`
+        import { cssMap } from '@compiled/react';
+
+        const styles = cssMap(${styles}, { group() { return true; } });
+      `);
+    }).toThrow(ErrorMessages.OPTS_PROPERTY_TYPE);
+  });
+
+  it('should error out if options contain a computed property key', () => {
+    expect(() => {
+      transform(`
+        import { cssMap } from '@compiled/react';
+
+        const styles = cssMap(${styles}, { ['group']: true });
+      `);
+    }).toThrow(ErrorMessages.OPTS_PROPERTY_TYPE);
+  });
+
+  it('should error out if options contain an unknown property name', () => {
+    expect(() => {
+      transform(`
+        import { cssMap } from '@compiled/react';
+
+        const styles = cssMap(${styles}, { unknownOption: true });
+      `);
+    }).toThrow(ErrorMessages.OPTS_PROPERTY_KNOWN_NAME);
+  });
+
+  it('should error out if options property value is not a boolean', () => {
+    expect(() => {
+      transform(`
+        import { cssMap } from '@compiled/react';
+
+        const styles = cssMap(${styles}, { group: 'true' });
+      `);
+    }).toThrow(ErrorMessages.OPTS_PROPERTY_VALUE_TYPE);
   });
 });

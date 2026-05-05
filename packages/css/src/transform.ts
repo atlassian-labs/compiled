@@ -25,6 +25,32 @@ export interface TransformOpts {
 }
 
 /**
+ * As oppose to TransformOpts which are babel plugin level options,
+ * LocalTransformOptions control each individual transformation separately.
+ */
+export interface LocalTransformOptions {
+  /**
+   * When `true`, rules whose selector contains a CSS combinator (descendant ` `,
+   * child `>`, adjacent sibling `+`, general sibling `~`) are emitted as a
+   * single grouped rule with one class name instead of being split into one
+   * atomic class per declaration.
+   *
+   * This reduces the number of generated atomic classes for complex selectors
+   * but changes the runtime composition semantics: because a grouped rule maps
+   * multiple declarations to a single class, the `ax()`/`ac()` "last wins"
+   * atomic merging strategy cannot override individual declarations within the
+   * group. Two grouped rules that target the same combinator selector but differ
+   * in one declaration will both survive `ax()` (they carry different class
+   * hashes) and the final result is determined by CSS cascade order rather than
+   * by atomic composition. Consumers should be aware that per-property overrides
+   * are not possible for grouped rules.
+   *
+   * @default false
+   */
+  group?: boolean;
+}
+
+/**
  * Will transform CSS into multiple CSS sheets.
  *
  * @param css CSS string
@@ -32,7 +58,8 @@ export interface TransformOpts {
  */
 export const transformCss = (
   css: string,
-  opts: TransformOpts
+  opts: TransformOpts,
+  localOpts: LocalTransformOptions = {}
 ): { sheets: string[]; classNames: string[] } => {
   const sheets: string[] = [];
   const classNames: string[] = [];
@@ -65,6 +92,7 @@ export const transformCss = (
         classNameCompressionMap: opts.classNameCompressionMap,
         callback: (className: string) => classNames.push(className),
         classHashPrefix: opts.classHashPrefix,
+        group: !!localOpts.group,
       }),
       ...(flattenMultipleSelectorsOption ? [flattenMultipleSelectors(), discardDuplicates()] : []),
       ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
