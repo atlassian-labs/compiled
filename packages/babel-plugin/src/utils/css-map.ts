@@ -75,8 +75,12 @@ export function errorIfNotValidObjectProperty(
 
 export enum ErrorMessages {
   NO_TAGGED_TEMPLATE = 'cssMap function cannot be used as a tagged template expression.',
-  NUMBER_OF_ARGUMENT = 'cssMap function can only receive one argument.',
+  NUMBER_OF_ARGUMENT = 'cssMap function can only receive one or two arguments.',
   ARGUMENT_TYPE = 'cssMap function can only receive an object.',
+  OPTS_ARGUMENT_TYPE = 'cssMap options can only be an object.',
+  OPTS_PROPERTY_TYPE = 'cssMap options can only have properties, no methods or spread operators.',
+  OPTS_PROPERTY_KNOWN_NAME = 'cssMap options only allow known property names.',
+  OPTS_PROPERTY_VALUE_TYPE = 'cssMap options only allow boolean properties.',
   AT_RULE_VALUE_TYPE = 'Value of at-rule block must be an object.',
   SELECTORS_BLOCK_VALUE_TYPE = 'Value of `selectors` key must be an object.',
   DEFINE_MAP = 'CSS Map must be declared at the top-most scope of the module.',
