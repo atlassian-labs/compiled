@@ -98,6 +98,10 @@ type RemapMedia<TStyles> = {
   [Q in keyof TStyles as Q extends `@media ${string}` ? '@media [loose]' : Q]: TStyles[Q];
 };
 
+type TCssMapOptions = {
+  group?: boolean;
+};
+
 /**
  * ## CSS Map
  *
@@ -120,7 +124,8 @@ export default function cssMap<
     CSSProperties & WhitelistedSelector & ExtendedSelectors & LooseMediaQueries
   >
 >(
-  _styles: TStyles
+  _styles: TStyles,
+  _opts?: TCssMapOptions
 ): {
   readonly [P in keyof TStyles]: CompiledStyles<RemapMedia<TStyles[P]>>;
 } {

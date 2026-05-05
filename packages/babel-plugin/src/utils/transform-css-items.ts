@@ -7,6 +7,10 @@ import { compressClassNamesForRuntime } from './compress-class-names-for-runtime
 import { getItemCss } from './css-builders';
 import type { CssItem } from './types';
 
+type TransformOptions = {
+  group?: boolean;
+};
+
 /**
  * Splits a single item's styles into sheets and an expression that handles
  * className logic at runtime.
@@ -16,15 +20,16 @@ import type { CssItem } from './types';
  */
 const transformCssItem = (
   item: CssItem,
-  meta: Metadata
+  meta: Metadata,
+  opts: TransformOptions = {}
 ): {
   sheets: string[];
   classExpression?: t.Expression;
 } => {
   switch (item.type) {
     case 'conditional':
-      const consequent = transformCssItem(item.consequent, meta);
-      const alternate = transformCssItem(item.alternate, meta);
+      const consequent = transformCssItem(item.consequent, meta, opts);
+      const alternate = transformCssItem(item.alternate, meta, opts);
       const defaultExpression = t.identifier('undefined');
       const hasConsequentSheets = Boolean(consequent.sheets.length);
       const hasAlternateSheets = Boolean(alternate.sheets.length);
@@ -58,7 +63,7 @@ const transformCssItem = (
       };
 
     case 'logical':
-      const logicalCss = transformCss(getItemCss(item), meta.state.opts);
+      const logicalCss = transformCss(getItemCss(item), meta.state.opts, opts);
 
       return {
         sheets: logicalCss.sheets,
@@ -81,7 +86,7 @@ const transformCssItem = (
       };
 
     default:
-      const css = transformCss(getItemCss(item), meta.state.opts);
+      const css = transformCss(getItemCss(item), meta.state.opts, opts);
       const className = compressClassNamesForRuntime(
         css.classNames,
         meta.state.opts.classNameCompressionMap
@@ -102,13 +107,14 @@ const transformCssItem = (
  */
 export const transformCssItems = (
   cssItems: CssItem[],
-  meta: Metadata
+  meta: Metadata,
+  opts: TransformOptions = {}
 ): { sheets: string[]; classNames: t.Expression[] } => {
   const sheets: string[] = [];
   const classNames: t.Expression[] = [];
 
   cssItems.forEach((item) => {
-    const result = transformCssItem(item, meta);
+    const result = transformCssItem(item, meta, opts);
 
     sheets.push(...result.sheets);
     if (result.classExpression) {
