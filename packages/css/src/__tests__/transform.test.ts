@@ -1,7 +1,12 @@
-import { transformCss as transform, type TransformOpts } from '../transform';
+import { transformCss as transform } from '../transform';
+import type { LocalTransformOptions, TransformOpts } from '../transform';
 
 const defaultOpts: TransformOpts = { optimizeCss: false };
-const transformCss = (code: string, opts: TransformOpts = defaultOpts) => transform(code, opts);
+const transformCss = (
+  code: string,
+  opts: TransformOpts = defaultOpts,
+  localOpts: LocalTransformOptions = {}
+) => transform(code, opts, localOpts);
 
 describe('#css-transform', () => {
   it('should generate the same selectors even if white space is different', () => {
@@ -494,6 +499,332 @@ describe('#css-transform', () => {
         "div ._kqan5scu:not(#\\#){color:red}
         div:hover ._12hc5scu:not(#\\#){color:red}
         div ._wntz5scu:not(#\\#):hover{color:red}"
+      `);
+    });
+  });
+
+  describe('selectors with combinators', () => {
+    it('should handle descendent selectors', () => {
+      const { sheets: actual } = transformCss(`div span { color: red; font-weight: bold; }`);
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._8gsp5scu div span{color:red}
+        ._1w0n8n31 div span{font-weight:bold}"
+      `);
+    });
+
+    it('should not atomicize when group = true and descendent selector', () => {
+      const { sheets: actual } = transformCss(
+        `div span { color: red; font-weight: bold; }`,
+        {},
+        {
+          group: true,
+        }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(
+        `"._zoabrsr2 div span{color:red;font-weight:bold}"`
+      );
+    });
+
+    it('should not atomicize when group = true and child selector', () => {
+      const { sheets: actual } = transformCss(
+        `div > span { color: red; font-weight: bold; }`,
+        {},
+        {
+          group: true,
+        }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(
+        `"._u3ldrsr2 div>span{color:red;font-weight:bold}"`
+      );
+    });
+
+    it('should not atomicize when group = true and child selector inside at-rule', () => {
+      const { sheets: actual } = transformCss(
+        `
+        @media (min-width: 600px) {
+          div span {
+            color: red;
+            font-weight: bold;
+          }
+        }`,
+        {},
+        {
+          group: true,
+        }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(
+        `"@media (min-width:600px){._1k6vrsr2 div span{color:red;font-weight:bold}}"`
+      );
+    });
+
+    it('should not atomicize when group = true and sibling selector', () => {
+      const { sheets: actual } = transformCss(
+        `div + span { color: red; font-weight: bold; }`,
+        {},
+        {
+          group: true,
+        }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(
+        `"._1gwersr2 div+span{color:red;font-weight:bold}"`
+      );
+    });
+
+    it('should not atomicize when group = true and complex selector', () => {
+      const { sheets: actual } = transformCss(
+        `div + span > span span { color: red; font-weight: bold; }`,
+        {},
+        {
+          group: true,
+        }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(
+        `"._1yw3rsr2 div+span>span span{color:red;font-weight:bold}"`
+      );
+    });
+
+    it('should atomicize when group = true and no selectors with combinators', () => {
+      const { sheets: actual } = transformCss(
+        `div { color: red; font-weight: bold; }`,
+        {},
+        {
+          group: true,
+        }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._65g05scu div{color:red}
+        ._jbwy8n31 div{font-weight:bold}"
+      `);
+    });
+
+    it('should produce distinct class names for rules sharing a selector + first declaration when group = true', () => {
+      // Regression test for review item 1.5: previously the grouped class
+      // hash was derived from `decls[0].prop`/`decls[0].value` only, so two
+      // rules sharing a selector and first declaration but differing in any
+      // subsequent declaration collided on the class name even though their
+      // CSS bodies differed.
+      const { sheets: actual } = transformCss(
+        `
+        div span { color: red; font-weight: bold; }
+        div span { color: red; padding: 8px; }
+      `,
+        {},
+        {
+          group: true,
+        }
+      );
+
+      // Two distinct rules with two distinct class names.
+      expect(actual).toHaveLength(2);
+
+      const classNames = actual.map((sheet) => {
+        const match = sheet.match(/\._([\w-]+)/);
+        return match ? match[1] : '';
+      });
+      expect(classNames[0]).not.toBe(classNames[1]);
+      expect(classNames.every(Boolean)).toBe(true);
+    });
+
+    it('should drop non-declaration children (e.g. comments) when group = true', () => {
+      const { sheets: actual } = transformCss(
+        `
+        div span {
+          /* leading comment */
+          color: red;
+          /* trailing comment */
+          font-weight: bold;
+        }`,
+        {},
+        {
+          group: true,
+        }
+      );
+
+      const output = actual.join('\n');
+
+      expect(output).not.toContain('/*');
+      expect(output).toMatchInlineSnapshot(`"._zoabrsr2 div span{color:red;font-weight:bold}"`);
+    });
+
+    it('should remove the rule when group = true and it contains only comments (no declarations)', () => {
+      // Regression test for review item 1.8: when atomicifyRuleGrouped
+      // returns an empty array (no declarations survived), the call site
+      // should remove the original node explicitly rather than relying on
+      // replaceWith([]).
+      const { sheets: actual } = transformCss(
+        `
+        div span {
+          /* only a comment */
+        }`,
+        {},
+        { group: true }
+      );
+
+      expect(actual).toHaveLength(0);
+    });
+
+    it('should not treat :not(.a + .b) as combinator selectors', () => {
+      const { sheets: actual } = transformCss(
+        `div:not(.a + .b) { color: red; font-weight: bold; }`,
+        {},
+        { group: true }
+      );
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._1t2m5scu div:not(.a+.b){color:red}
+        ._boof8n31 div:not(.a+.b){font-weight:bold}"
+      `);
+    });
+
+    it('should not treat [rel~="next"] as combinator selectors', () => {
+      const { sheets: actual } = transformCss(
+        `a[rel~="next"] { color: red; font-weight: bold; }`,
+        {},
+        {
+          group: true,
+        }
+      );
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._9sot5scu a[rel~=next]{color:red}
+        ._ecq68n31 a[rel~=next]{font-weight:bold}"
+      `);
+    });
+
+    it('should emit one grouped rule per comma-separated branch when group = true and any branch has a combinator', () => {
+      const { sheets: actual } = transformCss(
+        `div, div span { color: red; font-weight: bold; }`,
+        {},
+        {
+          group: true,
+        }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._cacersr2 div{color:red;font-weight:bold}
+        ._zoabrsr2 div span{color:red;font-weight:bold}"
+      `);
+    });
+
+    it('should honor classHashPrefix when group = true', () => {
+      const { sheets: actual } = transformCss(
+        `div span { color: red; font-weight: bold; }`,
+        {
+          classHashPrefix: 'myprefix',
+        },
+        { group: true }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(
+        `"._1qhnrsr2 div span{color:red;font-weight:bold}"`
+      );
+    });
+
+    it('should apply classNameCompressionMap when group = true', () => {
+      // First, generate without compression to discover the grouped class name.
+      const { sheets: baseline } = transformCss(
+        `div span { color: red; font-weight: bold; }`,
+        {},
+        {
+          group: true,
+        }
+      );
+
+      // Extract the original class name (e.g. "_zoabrsr2" → "zoabrsr2").
+      const match = baseline[0].match(/\._([^\s{]+)/);
+      const originalClass = match![1];
+
+      // Build a compression map that maps the original class to a short alias.
+      const compressionMap: Record<string, string> = {
+        [originalClass]: 'cx',
+      };
+
+      const { sheets: compressed } = transformCss(
+        `div span { color: red; font-weight: bold; }`,
+        {
+          classNameCompressionMap: compressionMap,
+        },
+        { group: true }
+      );
+
+      expect(compressed.join('\n')).toMatchInlineSnapshot(
+        `".cx div span{color:red;font-weight:bold}"`
+      );
+    });
+
+    it('should work with sortShorthand when group = true', () => {
+      const { sheets: actual } = transformCss(
+        `div span { padding: 8px; padding-top: 4px; color: red; }`,
+        { sortShorthand: true },
+        { group: true }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(
+        `"._698hpyr1 div span{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px;padding-top:4px;color:red}"`
+      );
+    });
+
+    it('should preserve !important in grouped rules', () => {
+      const { sheets: actual } = transformCss(
+        `div span { color: red !important; font-weight: bold; }`,
+        {},
+        { group: true }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(
+        `"._zoabhope div span{color:red!important;font-weight:bold}"`
+      );
+    });
+
+    it('should produce identical class names for duplicate grouped rules', () => {
+      const { sheets: actual } = transformCss(
+        `
+        div span { color: red; font-weight: bold; }
+        div span { color: red; font-weight: bold; }
+        `,
+        {},
+        { group: true }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._zoabrsr2 div span{color:red;font-weight:bold}
+        ._zoabrsr2 div span{color:red;font-weight:bold}"
+      `);
+    });
+
+    it('should sort grouped rules by pseudo-class order', () => {
+      const { sheets: actual } = transformCss(
+        `
+        div span:hover { color: red; font-weight: bold; }
+        div span:focus { color: blue; font-weight: normal; }
+        `,
+        {},
+        { group: true }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._4q8w1fzh div span:focus{color:blue;font-weight:normal}
+        ._1uglrsr2 div span:hover{color:red;font-weight:bold}"
+      `);
+    });
+
+    it('should not group pseudo selectors without combinators when group = true', () => {
+      const { sheets: actual } = transformCss(
+        `div:hover { color: red; font-weight: bold; }`,
+        {},
+        {
+          group: true,
+        }
+      );
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._1tui5scu div:hover{color:red}
+        ._18kf8n31 div:hover{font-weight:bold}"
       `);
     });
   });
