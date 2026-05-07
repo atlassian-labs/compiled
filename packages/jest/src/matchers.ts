@@ -1,5 +1,5 @@
-import type { Media, StyleRules } from 'css';
-import CSS from 'css';
+import type { CssAtRuleAST, CssStylesheetAST } from '@adobe/css-tools';
+import { CssTypes, parse } from '@adobe/css-tools';
 
 import type { MatchFilter } from './types';
 
@@ -26,13 +26,13 @@ const mapProperties = (properties: Record<string, any>) =>
     return `${key}:${properties[property]}`;
   });
 
-const onlyRules = (rules?: StyleRules['rules']) => rules?.filter((r) => r.type === 'rule');
+const onlyRules = (rules?: CssAtRuleAST[]) => rules?.filter((r) => r.type === 'rule');
 
 const findMediaRules = (
-  allRules: StyleRules['rules'] = [],
+  allRules: CssAtRuleAST[] = [],
   media: string
-): Media['rules'] | undefined => {
-  const rules: Media['rules'] = [];
+): CssAtRuleAST[] | undefined => {
+  const rules: CssAtRuleAST[] = [];
 
   for (const rule of allRules) {
     if (!rule) {
@@ -52,7 +52,7 @@ const findMediaRules = (
   return rules;
 };
 
-const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) => {
+const getRules = (ast: CssStylesheetAST, filter: MatchFilter, className: string) => {
   const { media, target } = filter;
 
   // rules are present directly inside ast.stylesheet.rules
@@ -62,7 +62,7 @@ const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) =
     if (media) {
       return onlyRules(findMediaRules(ast.stylesheet?.rules, media));
     }
-    return ast.stylesheet?.rules.filter((r) => (r.type = 'rule')); // omit media objects
+    return ast.stylesheet?.rules.filter((r) => (r.type = CssTypes.rule)); // omit media objects
   };
 
   const allRules = getAllRules();
@@ -83,7 +83,7 @@ const getRules = (ast: CSS.Stylesheet, filter: MatchFilter, className: string) =
   });
 };
 
-const findStylesInRules = (styles: string[], rules: CSS.Rule[] | undefined) => {
+const findStylesInRules = (styles: string[], rules: CssAtRuleAST[] | undefined) => {
   const found: string[] = [];
   const similar: string[] = [];
 
@@ -151,7 +151,7 @@ export function toHaveCompiledCss(
       });
     }
 
-    const ast = CSS.parse(css);
+    const ast = parse(css);
     classNames.forEach((c) => {
       const rules = getRules(ast, matchFilter, c);
       const search = findStylesInRules(stylesToFind, rules);

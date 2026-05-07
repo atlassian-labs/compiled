@@ -20,10 +20,9 @@
     "src"
   ],
   "dependencies": {
-    "css": "^3.0.0"
+    "@adobe/css-tools": "^4.4.4"
   },
   "devDependencies": {
-    "@types/css": "^0.0.35",
     "csstype": "^3.2.3"
   }
 }
