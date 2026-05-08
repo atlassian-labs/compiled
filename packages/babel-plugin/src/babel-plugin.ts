@@ -240,20 +240,17 @@ export default declare<State>((api) => {
       },
       ImportDeclaration(path, state) {
         const userLandModule = path.node.source.value;
-        const isRelative = userLandModule[0] === '.';
-        const fileDir = state.filename ? dirname(state.filename) : '';
+        // Compute fileDir once — null signals "no filename, relative imports can't match".
+        const fileDir = state.filename ? dirname(state.filename) : null;
+        const isRelative = fileDir !== null && userLandModule[0] === '.';
         const isCompiledModule = this.importSources.some((compiledModuleOrigin) => {
           if (compiledModuleOrigin === userLandModule) {
             return true;
           }
 
-          if (
-            state.filename &&
-            isRelative &&
-            userLandModule.endsWith(basename(compiledModuleOrigin))
-          ) {
+          if (isRelative && userLandModule.endsWith(basename(compiledModuleOrigin))) {
             // Relative import that might be a match, resolve the relative path and compare.
-            const fullpath = resolve(fileDir, userLandModule);
+            const fullpath = resolve(fileDir!, userLandModule);
             return fullpath === compiledModuleOrigin;
           }
 
