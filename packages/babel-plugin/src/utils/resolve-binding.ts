@@ -297,7 +297,16 @@ export const resolveBinding = (
     }
 
     const extensions = meta.state.opts.extensions ?? DEFAULT_CODE_EXTENSIONS;
-    const modulePath = resolveRequest(moduleImportSource, extensions, meta);
+    // Cache module resolution. `resolve.sync` (and custom resolvers) walks
+    // node_modules and reads package.json files synchronously, which the CPU
+    // profile shows is one of the dominant costs in the plugin. The result is
+    // a deterministic function of (filename, request) so it is safe to cache
+    // for the lifetime of the build.
+    const modulePath = meta.state.cache.load({
+      namespace: 'resolve-request',
+      cacheKey: `${meta.state.filename}\u0000${moduleImportSource}`,
+      value: () => resolveRequest(moduleImportSource, extensions, meta),
+    });
 
     if (!extensions.some((extension) => modulePath.endsWith(extension))) {
       // Don't attempt to parse any files that are not configured as code

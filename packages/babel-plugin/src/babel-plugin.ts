@@ -240,6 +240,8 @@ export default declare<State>((api) => {
       },
       ImportDeclaration(path, state) {
         const userLandModule = path.node.source.value;
+        const isRelative = userLandModule[0] === '.';
+        const fileDir = state.filename ? dirname(state.filename) : '';
         const isCompiledModule = this.importSources.some((compiledModuleOrigin) => {
           if (compiledModuleOrigin === userLandModule) {
             return true;
@@ -247,11 +249,11 @@ export default declare<State>((api) => {
 
           if (
             state.filename &&
-            userLandModule[0] === '.' &&
+            isRelative &&
             userLandModule.endsWith(basename(compiledModuleOrigin))
           ) {
             // Relative import that might be a match, resolve the relative path and compare.
-            const fullpath = resolve(dirname(state.filename), userLandModule);
+            const fullpath = resolve(fileDir, userLandModule);
             return fullpath === compiledModuleOrigin;
           }
 
