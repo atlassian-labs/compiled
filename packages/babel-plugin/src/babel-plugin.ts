@@ -240,17 +240,18 @@ export default declare<State>((api) => {
       },
       ImportDeclaration(path, state) {
         const userLandModule = path.node.source.value;
-        // Compute fileDir once — null signals "no filename, relative imports can't match".
-        const fileDir = state.filename ? dirname(state.filename) : null;
-        const isRelative = fileDir !== null && userLandModule[0] === '.';
+        // Only relative imports need dirname resolution; compute it once upfront.
+        // null means "not a relative import or no filename" — skip resolution entirely.
+        const relativeFileDir =
+          state.filename && userLandModule[0] === '.' ? dirname(state.filename) : null;
         const isCompiledModule = this.importSources.some((compiledModuleOrigin) => {
           if (compiledModuleOrigin === userLandModule) {
             return true;
           }
 
-          if (isRelative && userLandModule.endsWith(basename(compiledModuleOrigin))) {
+          if (relativeFileDir && userLandModule.endsWith(basename(compiledModuleOrigin))) {
             // Relative import that might be a match, resolve the relative path and compare.
-            const fullpath = resolve(fileDir!, userLandModule);
+            const fullpath = resolve(relativeFileDir, userLandModule);
             return fullpath === compiledModuleOrigin;
           }
 
