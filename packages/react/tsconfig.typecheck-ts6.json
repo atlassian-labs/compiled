@@ -1,0 +1,47 @@
+{
+  "extends": "./tsconfig.options.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "resolveJsonModule": false,
+    "jsx": "react-jsx",
+    "jsxImportSource": "@compiled/react",
+    "ignoreDeprecations": "6.0",
+    "typeRoots": [
+      "../../node_modules/react19-types",
+      "../../node_modules/@types"
+    ],
+    "types": [
+      "jest"
+    ],
+    "paths": {
+      "react": [
+        "../../node_modules/react19-types"
+      ],
+      "react/jsx-runtime": [
+        "../../node_modules/react19-types/jsx-runtime"
+      ],
+      "@compiled/react": [
+        "./dist/esm/index.d.ts"
+      ],
+      "@compiled/react/jsx-runtime": [
+        "./dist/esm/jsx/jsx-runtime.d.ts"
+      ],
+      "@compiled/react/jsx-dev-runtime": [
+        "./dist/esm/jsx/jsx-dev-runtime.d.ts"
+      ],
+      "@compiled/utils": [
+        "../utils/src/index.ts"
+      ],
+      "expect-type": [
+        "../../node_modules/expect-type/dist/index.d.ts"
+      ]
+    },
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/jsx/__tests__/jsx-local-namespace-types.test.tsx"
+  ]
+}

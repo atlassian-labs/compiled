@@ -35,6 +35,28 @@ it('does not add css prop when className is absent', () => {
   expectTypeOf<HasCss>().toEqualTypeOf<false>();
 });
 
+it('custom components accept children via JSX children syntax (ElementChildrenAttribute)', () => {
+  // ElementChildrenAttribute = { children: {} } tells TypeScript which key is used for JSX children.
+  // If this is broken, passing children to custom components fails even when children is in props.
+  function Wrapper({ children }: { children: React.ReactNode }) {
+    return <div>{children}</div>;
+  }
+
+  const el = <Wrapper>hello</Wrapper>;
+  const nested = <Wrapper><span>nested</span></Wrapper>;
+  void el;
+  void nested;
+});
+
+it('intrinsic elements accept children', () => {
+  // ElementChildrenAttribute = { children: {} } must be correctly defined so that
+  // JSX children syntax works for both intrinsic and custom elements.
+  const el = <div>content</div>;
+  const nested = <div><span>nested</span></div>;
+  void el;
+  void nested;
+});
+
 it('accepts css prop on intrinsic elements', () => {
   const el = <div css={{ fontSize: '12px' }} />;
   void el;
@@ -159,3 +181,5 @@ it('correctly infers types for generic child components', () => {
   expectTypeOf<Managed>().toMatchTypeOf<{ items: { id: string }[] }>();
   expectTypeOf<Managed>().toMatchTypeOf<{ css?: unknown }>();
 });
+
+

@@ -72,9 +72,11 @@
     "jsx-dev-runtime"
   ],
   "scripts": {
-    "typecheck": "yarn typecheck:react18 && yarn typecheck:react19",
+    "typecheck": "yarn typecheck:react18 && yarn typecheck:react19 && yarn typecheck:ts6 && yarn typecheck:ts6-installed",
     "typecheck:react18": "tsc --noEmit --project tsconfig.typecheck-react18.json",
-    "typecheck:react19": "tsc --noEmit --project tsconfig.typecheck-react19.json"
+    "typecheck:react19": "tsc --noEmit --project tsconfig.typecheck-react19.json",
+    "typecheck:ts6": "node ../../node_modules/typescript6/bin/tsc --noEmit --project tsconfig.typecheck-ts6.json",
+    "typecheck:ts6-installed": "bash src/jsx/__tests__/ts6-installed/typecheck.sh"
   },
   "dependencies": {
     "csstype": "^3.2.3"
