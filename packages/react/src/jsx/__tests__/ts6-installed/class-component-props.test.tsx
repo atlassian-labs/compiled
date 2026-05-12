@@ -15,7 +15,9 @@ interface InfiniteScrollSelectProps {
 }
 
 class InfiniteScrollSelect extends React.Component<InfiniteScrollSelectProps> {
-  render() { return null; }
+  render() {
+    return null;
+  }
 }
 
 interface IntlConfig {
@@ -24,7 +26,9 @@ interface IntlConfig {
 }
 
 class IntlProvider extends React.Component<IntlConfig> {
-  render() { return this.props.children ?? null; }
+  render() {
+    return this.props.children ?? null;
+  }
 }
 
 const select = (

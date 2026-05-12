@@ -11,8 +11,5 @@
       }
     ]
   },
-  "exclude": [
-    "src/jsx/__tests__/ts6-installed",
-    "dist"
-  ]
+  "exclude": ["src/jsx/__tests__/ts6-installed", "dist"]
 }

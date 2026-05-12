@@ -43,7 +43,11 @@ it('custom components accept children via JSX children syntax (ElementChildrenAt
   }
 
   const el = <Wrapper>hello</Wrapper>;
-  const nested = <Wrapper><span>nested</span></Wrapper>;
+  const nested = (
+    <Wrapper>
+      <span>nested</span>
+    </Wrapper>
+  );
   void el;
   void nested;
 });
@@ -52,7 +56,11 @@ it('intrinsic elements accept children', () => {
   // ElementChildrenAttribute = { children: {} } must be correctly defined so that
   // JSX children syntax works for both intrinsic and custom elements.
   const el = <div>content</div>;
-  const nested = <div><span>nested</span></div>;
+  const nested = (
+    <div>
+      <span>nested</span>
+    </div>
+  );
   void el;
   void nested;
 });
@@ -181,5 +189,3 @@ it('correctly infers types for generic child components', () => {
   expectTypeOf<Managed>().toMatchTypeOf<{ items: { id: string }[] }>();
   expectTypeOf<Managed>().toMatchTypeOf<{ css?: unknown }>();
 });
-
-

@@ -14,7 +14,9 @@
     "baseUrl": ".",
     "paths": {
       "@compiled/react": ["./node_modules/@compiled/react/dist/esm/index.d.ts"],
-      "@compiled/react/jsx-runtime": ["./node_modules/@compiled/react/dist/esm/jsx/jsx-runtime.d.ts"],
+      "@compiled/react/jsx-runtime": [
+        "./node_modules/@compiled/react/dist/esm/jsx/jsx-runtime.d.ts"
+      ],
       "react": ["./node_modules/@types/react/index.d.ts"],
       "react/jsx-runtime": ["./node_modules/@types/react/jsx-runtime.d.ts"]
     }
