@@ -59,7 +59,7 @@
     }
   },
   "resolutions": {
-    "@babel/types": "7.26.10",
+    "@babel/types": "7.29.0",
     "@types/eslint-scope": "*",
     "@types/estree": "1.0.5",
     "@types/react": "^18.3.1",
@@ -73,9 +73,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@babel/preset-env": "^7.26.9",
-    "@babel/preset-react": "^7.26.3",
-    "@babel/preset-typescript": "^7.26.0",
+    "@babel/preset-env": "^7.29.5",
+    "@babel/preset-react": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
     "@changesets/cli": "^2.28.1",
     "@compiled-private/module-a": "*",
     "@compiled/babel-plugin": "*",
