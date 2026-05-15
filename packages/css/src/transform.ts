@@ -25,6 +25,22 @@ export interface TransformOpts {
 }
 
 /**
+ * As oppose to TransformOpts which are babel plugin level options,
+ * LocalTransformOptions control each individual transformation separately.
+ */
+export interface LocalTransformOptions {
+  /**
+   * When `true`, rules whose selector contains a CSS combinator (descendant ` `,
+   * child `>`, adjacent sibling `+`, general sibling `~`) are emitted as a
+   * single grouped rule with one class name instead of being split into one
+   * atomic class per declaration.
+   *
+   * @default false
+   */
+  group?: boolean;
+}
+
+/**
  * Will transform CSS into multiple CSS sheets.
  *
  * @param css CSS string
@@ -32,7 +48,8 @@ export interface TransformOpts {
  */
 export const transformCss = (
   css: string,
-  opts: TransformOpts
+  opts: TransformOpts,
+  localOpts: LocalTransformOptions = {}
 ): { sheets: string[]; classNames: string[] } => {
   const sheets: string[] = [];
   const classNames: string[] = [];
@@ -65,6 +82,7 @@ export const transformCss = (
         classNameCompressionMap: opts.classNameCompressionMap,
         callback: (className: string) => classNames.push(className),
         classHashPrefix: opts.classHashPrefix,
+        group: !!localOpts.group,
       }),
       ...(flattenMultipleSelectorsOption ? [flattenMultipleSelectors(), discardDuplicates()] : []),
       ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
