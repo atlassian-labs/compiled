@@ -20,15 +20,31 @@ const COMPILED_RUNTIME_IMPORTS_WITH_COMPRESSION = ['ac', 'ix', 'CC', 'CS'];
 const COMPILED_RUNTIME_IMPORTS_WITHOUT_COMPRESSION = ['ax', 'ix', 'CC', 'CS'];
 const COMPILED_RUNTIME_MODULE = '@compiled/react/runtime';
 
+// Vanilla mode is React-free: there is no JSX wrapper, so neither `CC` nor
+// `CS` is needed. `ix` is omitted because vanilla `cssMap` does not support
+// dynamic CSS variable interpolation today (the runtime helper for that lives
+// in `@compiled/react/runtime` and is JSX-shaped). When dynamic interpolation
+// is added to vanilla, `ix` should be re-introduced here.
+const COMPILED_VANILLA_RUNTIME_IMPORTS = ['ax', 'insertSheets'];
+const COMPILED_VANILLA_RUNTIME_MODULE = '@compiled/vanilla/runtime';
+
 /**
  * Appends runtime import to code. If it is already present, it will append import specifiers
  * to already imported declaration path else it will create fresh import declaration path
  * with runtime import specifiers.
  *
+ * In vanilla mode imports are sourced from `@compiled/vanilla/runtime` and the
+ * specifier set is reduced to `ax` (className merging) plus `insertSheets`
+ * (the helper that inserts the generated sheets into the document head).
+ *
  * @param path ImportDeclaration node path
  */
 export const appendRuntimeImports = (path: NodePath<t.Program>, state: State): void => {
-  const COMPILED_RUNTIME_IMPORTS = state.opts.classNameCompressionMap
+  const runtimeModule = state.isVanilla ? COMPILED_VANILLA_RUNTIME_MODULE : COMPILED_RUNTIME_MODULE;
+
+  const runtimeImports = state.isVanilla
+    ? COMPILED_VANILLA_RUNTIME_IMPORTS
+    : state.opts.classNameCompressionMap
     ? COMPILED_RUNTIME_IMPORTS_WITH_COMPRESSION
     : COMPILED_RUNTIME_IMPORTS_WITHOUT_COMPRESSION;
 
@@ -36,10 +52,7 @@ export const appendRuntimeImports = (path: NodePath<t.Program>, state: State): v
   const previouslyDeclaredRuntimeDeclaration = path
     .get('body')
     .find((childPath): childPath is NodePath<t.ImportDeclaration> => {
-      return (
-        t.isImportDeclaration(childPath.node) &&
-        childPath.node.source.value === COMPILED_RUNTIME_MODULE
-      );
+      return t.isImportDeclaration(childPath.node) && childPath.node.source.value === runtimeModule;
     });
 
   if (previouslyDeclaredRuntimeDeclaration) {
@@ -54,7 +67,7 @@ export const appendRuntimeImports = (path: NodePath<t.Program>, state: State): v
       .get('specifiers')
       .map((specifier) => specifier.node.local.name);
 
-    COMPILED_RUNTIME_IMPORTS.forEach((runtimeImportName) => {
+    runtimeImports.forEach((runtimeImportName) => {
       // Avoids duplicate imports from being appended if already present
       if (!localImportNames.includes(runtimeImportName)) {
         previouslyDeclaredRuntimeDeclaration.pushContainer(
@@ -68,8 +81,8 @@ export const appendRuntimeImports = (path: NodePath<t.Program>, state: State): v
     path.unshiftContainer(
       'body',
       t.importDeclaration(
-        COMPILED_RUNTIME_IMPORTS.map((runtimeImportName) => importSpecifier(runtimeImportName)),
-        t.stringLiteral(COMPILED_RUNTIME_MODULE)
+        runtimeImports.map((runtimeImportName) => importSpecifier(runtimeImportName)),
+        t.stringLiteral(runtimeModule)
       )
     );
   }

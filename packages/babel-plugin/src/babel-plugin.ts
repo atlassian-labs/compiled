@@ -11,6 +11,7 @@ import {
   JSX_ANNOTATION_REGEX,
   DEFAULT_IMPORT_SOURCES,
   COMPILED_IMPORT,
+  COMPILED_VANILLA_IMPORT,
 } from '@compiled/utils';
 
 import { visitClassNamesPath } from './class-names';
@@ -196,13 +197,25 @@ export default declare<State>((api) => {
 
           appendRuntimeImports(path, state);
 
-          if (!pragma.jsxImportSource && shouldImportReact && !path.scope.getBinding('React')) {
+          if (
+            !state.isVanilla &&
+            !pragma.jsxImportSource &&
+            shouldImportReact &&
+            !path.scope.getBinding('React')
+          ) {
             // React is missing - add it in at the last moment!
+            // Vanilla mode is framework-agnostic so we never inject React.
             path.unshiftContainer('body', template.ast(`import * as React from 'react'`));
           }
 
-          if (state.compiledImports?.styled && !path.scope.getBinding('forwardRef')) {
+          if (
+            !state.isVanilla &&
+            state.compiledImports?.styled &&
+            !path.scope.getBinding('forwardRef')
+          ) {
             // forwardRef is missing - add it in at the last moment!
+            // Vanilla mode does not support `styled` so this branch never fires
+            // for it, but the explicit guard documents the intent.
             path.unshiftContainer('body', template.ast(`import { forwardRef } from 'react'`));
           }
 
@@ -262,6 +275,15 @@ export default declare<State>((api) => {
           return;
         }
 
+        // Detect the framework-agnostic vanilla import source. In vanilla mode
+        // we change a handful of code-emission decisions later in the pass:
+        // sheets are inserted via `insertSheets` from
+        // `@compiled/vanilla/runtime`, no React or `forwardRef` import is
+        // added, and no `<CC><CS>` wrapper is generated.
+        if (userLandModule === COMPILED_VANILLA_IMPORT) {
+          state.isVanilla = true;
+        }
+
         // The presence of the module enables CSS prop
         state.compiledImports = state.compiledImports || {};
 
@@ -286,6 +308,23 @@ export default declare<State>((api) => {
               specifier.remove();
             }
           });
+
+          // Vanilla-mode only: remove the user's `ax` specifier from
+          // `@compiled/vanilla`. Unlike the React package (which does not
+          // re-export `ax` from its main entry), `@compiled/vanilla` *does*
+          // re-export `ax` for ergonomic single-import use. After the plugin
+          // runs we always append `import { ax, insertSheets } from
+          // '@compiled/vanilla/runtime'`, so leaving the original specifier
+          // in place produces a duplicate `ax` import. Removing it here keeps
+          // the user's `ax(...)` call site intact (it now resolves against
+          // the appended runtime import, which uses the same local name).
+          if (
+            state.isVanilla &&
+            t.isIdentifier(specifier.node?.imported) &&
+            specifier.node?.imported.name === 'ax'
+          ) {
+            specifier.remove();
+          }
         });
 
         if (path.node.specifiers.length === 0) {
