@@ -652,4 +652,50 @@ describe('emotion-to-compiled transformer', () => {
     `,
     'it removes the emotion import when an unsupported type is imported but never used'
   );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import { Interpolation } from '@emotion/core';
+    import { Interpolation as EmotionInterpolation } from '@emotion/core';
+
+    const a: Interpolation = {};
+    const b: EmotionInterpolation = {};
+    `,
+    `
+    /* TODO(@compiled/react codemod): Compiled does not provide an equivalent for "Interpolation" from "@emotion/core". This type has been replaced with \`any\` — replace it with a Compiled-compatible alternative when migrating. */
+    const a: any = {};
+    /* TODO(@compiled/react codemod): Compiled does not provide an equivalent for "Interpolation" from "@emotion/core". This type has been replaced with \`any\` — replace it with a Compiled-compatible alternative when migrating. */
+    const b: any = {};
+    `,
+    'it rewrites every alias when the same unsupported type is imported with multiple names'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import { Interpolation } from '@emotion/core';
+
+    function makeLocal() {
+      type Interpolation = string;
+      const value: Interpolation = 'ok';
+      return value;
+    }
+
+    const outer: Interpolation = {};
+    `,
+    `
+    function makeLocal() {
+      type Interpolation = string;
+      const value: Interpolation = 'ok';
+      return value;
+    }
+
+    /* TODO(@compiled/react codemod): Compiled does not provide an equivalent for "Interpolation" from "@emotion/core". This type has been replaced with \`any\` — replace it with a Compiled-compatible alternative when migrating. */
+    const outer: any = {};
+    `,
+    'it does not rewrite a locally shadowed type that happens to share the unsupported name'
+  );
 });

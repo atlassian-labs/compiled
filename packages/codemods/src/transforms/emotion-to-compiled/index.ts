@@ -7,6 +7,7 @@ import type {
   CommentLine,
   FileInfo,
   ImportDeclaration,
+  ImportSpecifier,
   ObjectPattern,
   Options,
   Program,
@@ -211,6 +212,53 @@ const handleClassNamesBehavior = (
     });
 };
 
+/**
+ * Returns true if the given type reference is shadowed by a local TS type
+ * declaration in an enclosing function/block/module scope. Used to avoid
+ * rewriting a local `type Interpolation = string` just because the file also
+ * happens to import `Interpolation` from `@emotion/*`.
+ */
+const isTypeNameShadowedInScope = (
+  j: core.JSCodeshift,
+  refPath: ASTPath<any>,
+  typeName: string
+): boolean => {
+  let cursor: ASTPath<any> | null = refPath.parent;
+  while (cursor) {
+    const node = cursor.node;
+    // Pull the statement list of any lexical scope we recognise.
+    let body: unknown = null;
+    if (j.BlockStatement.check(node)) {
+      body = node.body;
+    } else if (
+      (j.FunctionDeclaration.check(node) ||
+        j.FunctionExpression.check(node) ||
+        j.ArrowFunctionExpression.check(node)) &&
+      j.BlockStatement.check(node.body)
+    ) {
+      body = node.body.body;
+    } else if (j.TSModuleDeclaration.check(node) && j.TSModuleBlock.check(node.body)) {
+      body = node.body.body;
+    }
+
+    if (Array.isArray(body)) {
+      for (const stmt of body) {
+        if (
+          (j.TSTypeAliasDeclaration.check(stmt) || j.TSInterfaceDeclaration.check(stmt)) &&
+          stmt.id &&
+          stmt.id.type === 'Identifier' &&
+          stmt.id.name === typeName
+        ) {
+          return true;
+        }
+      }
+    }
+
+    cursor = cursor.parent;
+  }
+  return false;
+};
+
 const replaceUnsupportedEmotionTypes = (
   j: core.JSCodeshift,
   collection: Collection,
@@ -227,55 +275,67 @@ const replaceUnsupportedEmotionTypes = (
   }
 
   emotionUnsupportedTypeNames.forEach((emotionTypeName) => {
-    const localAlias = findImportSpecifierName({
-      j,
-      importDeclarationCollection,
-      importName: emotionTypeName,
+    // Collect every import specifier for this unsupported emotion type. Users
+    // can legitimately import the same name in multiple declarations with
+    // different local aliases, e.g.
+    //
+    //   import { Interpolation } from '@emotion/core';
+    //   import { Interpolation as Int } from '@emotion/core';
+    //
+    // Both aliases need their references replaced, and only the matching
+    // specifiers should be removed afterwards.
+    const matchingSpecifiers: { path: ASTPath<ImportSpecifier>; localName: string }[] = [];
+    importDeclarationCollection.find(j.ImportSpecifier).forEach((specPath) => {
+      const spec = specPath.node;
+      if (
+        spec.imported.type === 'Identifier' &&
+        spec.imported.name === emotionTypeName &&
+        spec.local
+      ) {
+        matchingSpecifiers.push({ path: specPath, localName: spec.local.name });
+      }
     });
 
-    if (localAlias == null) {
+    if (matchingSpecifiers.length === 0) {
       return;
     }
 
-    collection
-      .find(j.TSTypeReference)
-      .filter((path) => {
-        const typeName = path.node.typeName;
-        return typeName.type === 'Identifier' && typeName.name === localAlias;
-      })
-      .forEach((path) => {
-        // Attach the TODO to the closest enclosing statement so it lands above
-        // the code that owns the type — not above some intermediate type node
-        // that has no comment slot of its own.
-        let stmtPath: ASTPath<any> = path;
-        while (stmtPath.parent && !j.Statement.check(stmtPath.parent.node)) {
-          stmtPath = stmtPath.parent;
-        }
-        if (stmtPath.parent) {
-          addCommentBefore({
-            j,
-            collection: j(stmtPath.parent.node) as Collection<Program>,
-            message: `Compiled does not provide an equivalent for "${emotionTypeName}" from "${importPath}". This type has been replaced with \`any\` — replace it with a Compiled-compatible alternative when migrating.`,
-          });
-        }
-        j(path).replaceWith(j.tsAnyKeyword());
-      });
+    matchingSpecifiers.forEach(({ localName }) => {
+      collection
+        .find(j.TSTypeReference)
+        .filter((path) => {
+          const typeName = path.node.typeName;
+          if (typeName.type !== 'Identifier' || typeName.name !== localName) {
+            return false;
+          }
+          // Don't rewrite references that resolve to a local `type` or
+          // `interface` with the same name — those aren't the emotion import.
+          return !isTypeNameShadowedInScope(j, path, localName);
+        })
+        .forEach((path) => {
+          // Attach the TODO to the closest enclosing statement so it lands above
+          // the code that owns the type — not above some intermediate type node
+          // that has no comment slot of its own.
+          let stmtPath: ASTPath<any> = path;
+          while (stmtPath.parent && !j.Statement.check(stmtPath.parent.node)) {
+            stmtPath = stmtPath.parent;
+          }
+          if (stmtPath.parent) {
+            addCommentBefore({
+              j,
+              collection: j(stmtPath.parent.node) as Collection<Program>,
+              message: `Compiled does not provide an equivalent for "${emotionTypeName}" from "${importPath}". This type has been replaced with \`any\` — replace it with a Compiled-compatible alternative when migrating.`,
+            });
+          }
+          j(path).replaceWith(j.tsAnyKeyword());
+        });
+    });
 
-    // Drop the now-unused emotion type specifier so the developer ends up with
-    // either a smaller import or no emotion import at all.
-    importDeclarationCollection.forEach((importDeclPath: ASTPath<ImportDeclaration>) => {
-      const node = importDeclPath.node;
-      if (!node.specifiers) {
-        return;
-      }
-      node.specifiers = node.specifiers.filter(
-        (spec) =>
-          !(
-            spec.type === 'ImportSpecifier' &&
-            spec.imported.type === 'Identifier' &&
-            spec.imported.name === emotionTypeName
-          )
-      );
+    // Drop only the specifiers we just rewrote — leave any other specifiers
+    // on the same declaration untouched. (`convertMixedImportToNamedImport`
+    // runs after this and handles re-homing the supported ones.)
+    matchingSpecifiers.forEach(({ path }) => {
+      j(path).remove();
     });
   });
 
