@@ -55,4 +55,82 @@ describe('ax', () => {
   ])('%s', (_, params, expected) => {
     expect(ax(params)).toEqual(expected);
   });
+
+  describe('dev warning for non-string inputs', () => {
+    type AxFn = (input: unknown[]) => string | undefined;
+
+    const originalNodeEnv = process.env.NODE_ENV;
+    let consoleErrorSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      process.env.NODE_ENV = 'development';
+      consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      process.env.NODE_ENV = originalNodeEnv;
+      consoleErrorSpy.mockRestore();
+    });
+
+    // ax() itself still throws once execution reaches the existing
+    // string-only code path. That is intentional — the dev warning fires
+    // first to give the developer actionable context, and the original
+    // runtime behavior is unchanged in production (where the warning is
+    // tree-shaken out entirely).
+    const callAxIgnoringThrow = (axImpl: AxFn, input: unknown[]) => {
+      try {
+        axImpl(input);
+      } catch {
+        // expected for invalid inputs
+      }
+    };
+
+    // Each test runs ax in its own module scope so the dev-warning dedup
+    // state (`hasWarned`) does not leak between tests.
+    const withFreshAx = (body: (axImpl: AxFn) => void) => {
+      jest.isolateModules(() => {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const axImpl = require('../ax').default as AxFn;
+        body(axImpl);
+      });
+    };
+
+    it('warns when an object is passed where a className string is expected', () => {
+      withFreshAx((axImpl) => {
+        callAxIgnoringThrow(axImpl, [{ color: 'red' }]);
+      });
+
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+      const message = consoleErrorSpy.mock.calls[0][0] as string;
+      expect(message).toContain('ax() received an object');
+      expect(message).toContain('css({...})');
+    });
+
+    it('does not warn for valid inputs (string, undefined, null, false, empty string)', () => {
+      withFreshAx((axImpl) => {
+        axImpl(['_aaaabbbb', '_aaaacccc', undefined, null, false, '']);
+      });
+
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+    });
+
+    it('dedupes the warning so it does not spam on every render', () => {
+      withFreshAx((axImpl) => {
+        callAxIgnoringThrow(axImpl, [{ color: 'red' }]);
+        callAxIgnoringThrow(axImpl, [{ color: 'blue' }]);
+        callAxIgnoringThrow(axImpl, [{ color: 'green' }]);
+      });
+
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not warn in production builds', () => {
+      process.env.NODE_ENV = 'production';
+      withFreshAx((axImpl) => {
+        callAxIgnoringThrow(axImpl, [{ color: 'red' }]);
+      });
+
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+    });
+  });
 });

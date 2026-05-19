@@ -1,3 +1,5 @@
+import { analyzeAxInputInDev } from './dev-warnings.js';
+
 /**
  * This length includes the underscore,
  * e.g. `"_1s4A"` would be a valid atomic group hash.
@@ -25,6 +27,10 @@ const ATOMIC_GROUP_LENGTH = 5;
  * ```
  */
 export default function ax(classNames: (string | undefined | null | false)[]): string | undefined {
+  if (process.env.NODE_ENV === 'development') {
+    analyzeAxInputInDev(classNames);
+  }
+
   // Shortcut: nothing to do
   if (!classNames.length) {
     return;
