@@ -1,10 +1,12 @@
 import { COMPILED_IMPORT } from '@compiled/utils';
 import type {
   API,
+  ASTPath,
   Collection,
   CommentBlock,
   CommentLine,
   FileInfo,
+  ImportDeclaration,
   ObjectPattern,
   Options,
   Program,
@@ -24,6 +26,15 @@ import {
 } from '../../utils';
 
 import { addReactIdentifier, findImportSpecifierName, mergeImportSpecifiers } from './utils';
+
+/**
+ * Type-only imports from `@emotion/core` / `@emotion/react` that Compiled does
+ * not provide an equivalent for. The codemod replaces their usages with `any`
+ * and leaves a TODO so the developer can manually pick a Compiled-friendly
+ * replacement instead of being stuck with a half-migrated file that still
+ * pulls in `@emotion/*`.
+ */
+const emotionUnsupportedTypeNames = ['Interpolation', 'CSSProperties'];
 
 const imports = {
   compiledStyledImportName: 'styled',
@@ -200,6 +211,82 @@ const handleClassNamesBehavior = (
     });
 };
 
+const replaceUnsupportedEmotionTypes = (
+  j: core.JSCodeshift,
+  collection: Collection,
+  importPath: string
+) => {
+  const importDeclarationCollection = getImportDeclarationCollection({
+    j,
+    collection,
+    importPath,
+  });
+
+  if (importDeclarationCollection.length === 0) {
+    return;
+  }
+
+  emotionUnsupportedTypeNames.forEach((emotionTypeName) => {
+    const localAlias = findImportSpecifierName({
+      j,
+      importDeclarationCollection,
+      importName: emotionTypeName,
+    });
+
+    if (localAlias == null) {
+      return;
+    }
+
+    collection
+      .find(j.TSTypeReference)
+      .filter((path) => {
+        const typeName = path.node.typeName;
+        return typeName.type === 'Identifier' && typeName.name === localAlias;
+      })
+      .forEach((path) => {
+        // Attach the TODO to the closest enclosing statement so it lands above
+        // the code that owns the type — not above some intermediate type node
+        // that has no comment slot of its own.
+        let stmtPath: ASTPath<any> = path;
+        while (stmtPath.parent && !j.Statement.check(stmtPath.parent.node)) {
+          stmtPath = stmtPath.parent;
+        }
+        if (stmtPath.parent) {
+          addCommentBefore({
+            j,
+            collection: j(stmtPath.parent.node) as Collection<Program>,
+            message: `Compiled does not provide an equivalent for "${emotionTypeName}" from "${importPath}". This type has been replaced with \`any\` — replace it with a Compiled-compatible alternative when migrating.`,
+          });
+        }
+        j(path).replaceWith(j.tsAnyKeyword());
+      });
+
+    // Drop the now-unused emotion type specifier so the developer ends up with
+    // either a smaller import or no emotion import at all.
+    importDeclarationCollection.forEach((importDeclPath: ASTPath<ImportDeclaration>) => {
+      const node = importDeclPath.node;
+      if (!node.specifiers) {
+        return;
+      }
+      node.specifiers = node.specifiers.filter(
+        (spec) =>
+          !(
+            spec.type === 'ImportSpecifier' &&
+            spec.imported.type === 'Identifier' &&
+            spec.imported.name === emotionTypeName
+          )
+      );
+    });
+  });
+
+  // If the emotion declaration is now empty, remove it entirely.
+  importDeclarationCollection.forEach((importDeclPath: ASTPath<ImportDeclaration>) => {
+    if (!importDeclPath.node.specifiers || importDeclPath.node.specifiers.length === 0) {
+      j(importDeclPath).remove();
+    }
+  });
+};
+
 const mergeCompiledImportSpecifiers = (j: core.JSCodeshift, collection: Collection) => {
   const allowedCompiledNames = [
     imports.compiledStyledImportName,
@@ -264,6 +351,7 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
   }
 
   if (hasEmotionCoreImportDeclaration) {
+    replaceUnsupportedEmotionTypes(j, collection, imports.emotionCorePackageName);
     replaceEmotionCoreCSSTaggedTemplateExpression(j, collection, imports.emotionCorePackageName);
     handleClassNamesBehavior(j, collection, imports.emotionCorePackageName);
     convertMixedImportToNamedImport({
@@ -277,6 +365,7 @@ const transformer = (fileInfo: FileInfo, api: API, options: Options): string => 
   }
 
   if (hasEmotionReactImportDeclaration) {
+    replaceUnsupportedEmotionTypes(j, collection, imports.emotionReactPackageName);
     replaceEmotionCoreCSSTaggedTemplateExpression(j, collection, imports.emotionReactPackageName);
     handleClassNamesBehavior(j, collection, imports.emotionReactPackageName);
     convertMixedImportToNamedImport({

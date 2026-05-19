@@ -594,4 +594,62 @@ describe('emotion-to-compiled transformer', () => {
     "console.log('Bring back Netscape');\nimport { styled } from '@compiled/react';",
     'it should use the program visitor from the plugin'
   );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import { css, Interpolation } from '@emotion/core';
+
+    const styles: Interpolation = css\`color: red\`;
+    `,
+    `
+    import { css } from '@compiled/react';
+
+    /* TODO(@compiled/react codemod): Compiled does not provide an equivalent for "Interpolation" from "@emotion/core". This type has been replaced with \`any\` — replace it with a Compiled-compatible alternative when migrating. */
+    const styles: any = \`color: red\`;
+    `,
+    'it replaces Interpolation type usages with any when migrating @emotion/core'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import { CSSProperties } from '@emotion/react';
+
+    const sx: CSSProperties = { color: 'red' };
+    `,
+    `
+    /* TODO(@compiled/react codemod): Compiled does not provide an equivalent for "CSSProperties" from "@emotion/react". This type has been replaced with \`any\` — replace it with a Compiled-compatible alternative when migrating. */
+    const sx: any = { color: 'red' };
+    `,
+    'it removes the emotion import when only unsupported types were imported'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import { Interpolation as Int } from '@emotion/core';
+
+    const styles: Int = { color: 'red' };
+    `,
+    `
+    /* TODO(@compiled/react codemod): Compiled does not provide an equivalent for "Interpolation" from "@emotion/core". This type has been replaced with \`any\` — replace it with a Compiled-compatible alternative when migrating. */
+    const styles: any = { color: 'red' };
+    `,
+    'it follows the local alias when resolving the unsupported type name'
+  );
+
+  defineInlineTest(
+    { default: transformer, parser: 'tsx' },
+    { plugins: [] },
+    `
+    import { Interpolation } from '@emotion/core';
+    `,
+    `
+    `,
+    'it removes the emotion import when an unsupported type is imported but never used'
+  );
 });
