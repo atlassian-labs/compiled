@@ -128,6 +128,36 @@ const concatToString = (
   }, callee.object.value);
 };
 
+/**
+ * Returns a human-readable source-level name for an expression. Used in error
+ * messages so the developer sees the identifier they wrote (e.g.
+ * `theme.color.primary`) rather than an AST node type (`MemberExpression`).
+ */
+const expressionToReadableName = (expression: t.Expression | t.PrivateName): string => {
+  if (t.isIdentifier(expression)) {
+    return expression.name;
+  }
+  if (t.isPrivateName(expression)) {
+    return `#${expression.id.name}`;
+  }
+  if (t.isMemberExpression(expression)) {
+    const object = t.isExpression(expression.object)
+      ? expressionToReadableName(expression.object)
+      : expression.object.type;
+    if (expression.computed) {
+      if (t.isStringLiteral(expression.property) || t.isNumericLiteral(expression.property)) {
+        return `${object}[${JSON.stringify(expression.property.value)}]`;
+      }
+      return `${object}[…]`;
+    }
+    return `${object}.${expressionToReadableName(expression.property)}`;
+  }
+  if (t.isThisExpression(expression)) {
+    return 'this';
+  }
+  return expression.type;
+};
+
 export const expressionToString: ExpressionToString = (expression, meta) => {
   // handles {'key-name': 'value'} or {1: 'value'}
   if (t.isStringLiteral(expression) || t.isNumericLiteral(expression)) {
@@ -137,10 +167,15 @@ export const expressionToString: ExpressionToString = (expression, meta) => {
   if (t.isIdentifier(expression) || t.isMemberExpression(expression)) {
     const evaluatedExpression = evaluateExpression(expression, meta);
     if (evaluatedExpression.value === expression) {
+      const name = expressionToReadableName(expression);
       throw new Error(
-        `Cannot statically evaluate the value of "${
-          t.isIdentifier(expression) ? expression.name : expression.type
-        }`
+        `Cannot statically evaluate the value of "${name}" at build time.\n` +
+          `Compiled needs to know the value of object property keys at build time, but could not resolve "${name}". This commonly happens when:\n` +
+          `  - The value is re-exported through a barrel file (e.g. \`export * from './foo'\`). Try importing directly from the source module.\n` +
+          `  - The binding is declared with \`let\` or \`var\`, or is reassigned. Use \`const\` and avoid mutation.\n` +
+          `  - The value is produced at runtime (e.g. function calls, dynamic imports, values from \`process.env\`). Use a literal expression Compiled can read at build time.\n` +
+          `  - The value comes from a module Compiled cannot statically resolve. Check the import path and any custom resolver configuration.\n` +
+          `  - The expression relies on TypeScript-only constructs (e.g. \`as const\` widening) that Compiled does not yet evaluate.`
       );
     }
 

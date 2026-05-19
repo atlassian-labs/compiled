@@ -214,4 +214,69 @@ describe('objectPropertyToString', () => {
       }).toThrow();
     });
   });
+
+  describe('error messages when static evaluation fails', () => {
+    // When `evaluateExpression` cannot resolve the expression it returns the
+    // original node back, which is the signal `expressionToString` uses to
+    // throw. Returning the input identifier/member expression here simulates
+    // a failed static evaluation (e.g. a value imported through a barrel file).
+    const returnInputUnevaluated: typeof evaluateExpression = (expression, meta) => ({
+      value: expression as t.Expression,
+      meta,
+    });
+
+    it('includes the identifier name in the error so it can be located in source', () => {
+      evaluateExpressionMock.mockImplementation(returnInputUnevaluated);
+
+      expect(() => {
+        transform(`
+          import { UNSAFE_value } from './barrel';
+          const obj = { [UNSAFE_value]: "value" };
+        `);
+      }).toThrow(/Cannot statically evaluate the value of "UNSAFE_value" at build time\./);
+    });
+
+    it('reconstructs the dotted path for member expression keys instead of printing "MemberExpression"', () => {
+      evaluateExpressionMock.mockImplementation(returnInputUnevaluated);
+
+      expect(() => {
+        transform(`
+          import { UNSAFE_container } from './barrel';
+          const obj = { [UNSAFE_container.below.xs]: "value" };
+        `);
+      }).toThrow(
+        /Cannot statically evaluate the value of "UNSAFE_container\.below\.xs" at build time\./
+      );
+    });
+
+    it('renders computed string member access as bracket notation', () => {
+      evaluateExpressionMock.mockImplementation(returnInputUnevaluated);
+
+      expect(() => {
+        transform(`
+          import { theme } from './barrel';
+          const obj = { [theme['breakpoint-sm']]: "value" };
+        `);
+      }).toThrow(
+        /Cannot statically evaluate the value of "theme\["breakpoint-sm"\]" at build time\./
+      );
+    });
+
+    it('explains common causes (barrel files, mutation, runtime values) so the developer can self-diagnose', () => {
+      evaluateExpressionMock.mockImplementation(returnInputUnevaluated);
+
+      try {
+        transform(`
+          import { UNSAFE_value } from './barrel';
+          const obj = { [UNSAFE_value]: "value" };
+        `);
+        throw new Error('expected transform() to throw');
+      } catch (err) {
+        const message = (err as Error).message;
+        expect(message).toContain('barrel file');
+        expect(message).toContain('`let`');
+        expect(message).toContain('runtime');
+      }
+    });
+  });
 });
