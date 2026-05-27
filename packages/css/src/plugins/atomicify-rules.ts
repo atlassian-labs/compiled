@@ -35,13 +35,41 @@ const isCssIdentifierValid = (value: string): boolean => {
  * @param node CSS declaration
  * @param opts AtomicifyOpts
  */
+/**
+ * Collision-resistant group hash:
+ * - Start with a group hash of {@link START_HASH_LEN} characters.
+ * - Track the (group → full input key) mapping in {@link collisionMap}.
+ * - If a different input produces the same group, grow the hash length for that
+ *   one class by one character and retry, until no collision exists.
+ *
+ * The runtime `ax()` function strips the value suffix by length (the last
+ * {@link VALUE_HASH_LEN} characters), so variable-length groups still work
+ * correctly for atomic deduplication.
+ */
+const collisionMap: Record<string, string> = {};
+const START_HASH_LEN = 5;
+const VALUE_HASH_LEN = 4;
+
 const atomicClassName = (node: Declaration, opts: PluginOpts) => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
   const prefix = opts.classHashPrefix ?? '';
-  const group = hash(`${prefix}${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
+  const key = `${prefix}${opts.atRule}${selectors}${node.prop}`;
+  const fullGroupHash = hash(key);
+  let hashSize = START_HASH_LEN;
+  let group = fullGroupHash.slice(0, hashSize);
 
   const value = node.important ? node.value + node.important : node.value;
-  const valueHash = hash(value).slice(0, 4);
+  const valueHash = hash(value).slice(0, VALUE_HASH_LEN);
+
+  while (group in collisionMap) {
+    if (collisionMap[group] !== key) {
+      group = fullGroupHash.slice(0, ++hashSize);
+    } else {
+      break;
+    }
+  }
+
+  collisionMap[group] = key;
 
   return `_${group}${valueHash}`;
 };

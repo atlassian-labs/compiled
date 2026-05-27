@@ -1,8 +1,14 @@
 /**
- * This length includes the underscore,
- * e.g. `"_1s4A"` would be a valid atomic group hash.
+ * Length of the value hash suffix at the end of every atomic class name.
+ *
+ * Each atomic class name has the shape `_<groupHash><valueHash>`, where the
+ * group hash is variable length (≥ 5 chars — grows dynamically when the
+ * compiler needs to resolve a collision) and the value hash is always exactly
+ * {@link ATOMIC_VALUE_HASH_LENGTH} chars. So we compute the group key by
+ * stripping this known fixed-size value suffix from the end, rather than
+ * slicing a fixed prefix from the start.
  */
-const ATOMIC_GROUP_LENGTH = 5;
+const ATOMIC_VALUE_HASH_LENGTH = 4;
 
 /**
  * Create a single string containing all the classnames provided, separated by a space (`" "`).
@@ -68,7 +74,9 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
        * - Okay to remove duplicates as doing so does not impact specificity
        *
        * */
-      const key = className.startsWith('_') ? className.slice(0, ATOMIC_GROUP_LENGTH) : className;
+      const key = className.startsWith('_')
+        ? className.slice(0, className.length - ATOMIC_VALUE_HASH_LENGTH)
+        : className;
       map[key] = className;
     }
   }
