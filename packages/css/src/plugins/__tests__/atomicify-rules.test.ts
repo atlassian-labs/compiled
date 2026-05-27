@@ -23,7 +23,7 @@ describe('atomicify rules', () => {
       color: blue;
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._syaz13q2{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._tDYzynoA{color:blue}"`);
   });
 
   it('should prepend atomic class when nesting selector is prepended', () => {
@@ -33,7 +33,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"[data-look='h100']._mi0g1ule{display:block}"`);
+    expect(actual).toMatchInlineSnapshot(`"[data-look='h100']._4z38vLZJ{display:block}"`);
   });
 
   it('should should atomicify multiple declarations', () => {
@@ -42,7 +42,7 @@ describe('atomicify rules', () => {
       font-size: 12px;
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._syaz13q2{color:blue}._1wyb1fwx{font-size:12px}"`);
+    expect(actual).toMatchInlineSnapshot(`"._tDYzynoA{color:blue}._a3eErjyG{font-size:12px}"`);
   });
 
   it('should autoprefix atomic rules', () => {
@@ -50,7 +50,7 @@ describe('atomicify rules', () => {
 
     const result = transform`user-select: none;`;
 
-    expect(result).toMatchInlineSnapshot(`"._uiztglyw{-ms-user-select:none;user-select:none}"`);
+    expect(result).toMatchInlineSnapshot(`"._VacPYbGa{-ms-user-select:none;user-select:none}"`);
   });
 
   it('should double up class selector when two nesting selectors are found', () => {
@@ -60,7 +60,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(result).toMatchInlineSnapshot(`"._if291ule._if291ule{display:block}"`);
+    expect(result).toMatchInlineSnapshot(`"._mVT1vLZJ._mVT1vLZJ{display:block}"`);
   });
 
   it('should autoprefix atomic rules with multiple selectors', () => {
@@ -73,7 +73,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"._180hglyw:hover, ._1j5pglyw:focus{-ms-user-select:none;user-select:none}"`
+      `"._6HNJYbGa:hover, ._Iml2YbGa:focus{-ms-user-select:none;user-select:none}"`
     );
   });
 
@@ -87,7 +87,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._ufx4glyw{-ms-user-select:none;user-select:none}}"`
+      `"@media (min-width: 30rem){._zuBsYbGa{-ms-user-select:none;user-select:none}}"`
     );
   });
 
@@ -103,7 +103,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._195xglyw div{-ms-user-select:none;user-select:none}}"`
+      `"@media (min-width: 30rem){._OPj0YbGa div{-ms-user-select:none;user-select:none}}"`
     );
   });
 
@@ -119,7 +119,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result1).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){._uf5eglyw{-ms-user-select:none;user-select:none}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._u4aWYbGa{-ms-user-select:none;user-select:none}}}"`
     );
 
     const result2 = transform`
@@ -132,7 +132,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result2).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){@font-face{font-family:Arial;src:url(arial.woff)}._uf5eglyw{-ms-user-select:none;user-select:none}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){@font-face{font-family:Arial;src:url(arial.woff)}._u4aWYbGa{-ms-user-select:none;user-select:none}}}"`
     );
   });
 
@@ -165,12 +165,12 @@ describe('atomicify rules', () => {
 
     expect(classes).toMatchInlineSnapshot(`
       [
-        "_1e0c1ule",
-        "_y3gn1h6o",
-        "_uf5eglyw",
-        "_2a8pglyw",
-        "_18i0glyw",
-        "_9iqnglyw",
+        "_DTPbvLZJ",
+        "_wxA5DIqT",
+        "_u4aWYbGa",
+        "_lB87YbGa",
+        "_6fSlYbGa",
+        "_XsCUYbGa",
       ]
     `);
   });
@@ -182,7 +182,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._13ml13q2 div.primary{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._a1zwynoA div.primary{color:blue}"`);
   });
 
   it('should atomicify a nested multi selector rule', () => {
@@ -193,7 +193,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"._65g013q2 div, ._1tjq13q2 span, ._thoc13q2 li{color:blue}"`
+      `"._aDgwynoA div, ._eetJynoA span, ._G9WaynoA li{color:blue}"`
     );
   });
 
@@ -205,7 +205,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._30l313q2:hover, ._f8pj13q2:focus{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._lgaMynoA:hover, ._n1R5ynoA:focus{color:blue}"`);
   });
 
   it('should atomicify a nested tag rule', () => {
@@ -215,7 +215,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._65g013q2 div{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._aDgwynoA div{color:blue}"`);
   });
 
   it('should generate the same class hash for semantically same but different rules', () => {
@@ -245,8 +245,8 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual.split('}').join('}\n')).toMatchInlineSnapshot(`
-      "._169r1j6v._169r1j6v > *{margin-bottom:1rem}
-      ._1wzbidpf._1wzbidpf > *:last-child{margin-bottom:0}
+      "._YE9XQAma._YE9XQAma > *{margin-bottom:1rem}
+      ._h82wdnbC._h82wdnbC > *:last-child{margin-bottom:0}
       "
     `);
   });
@@ -259,7 +259,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._ngwg1q9v:first-child ._ngwg1q9v{color:hotpink}"`);
+    expect(actual).toMatchInlineSnapshot(`"._2rkaPFz6:first-child ._2rkaPFz6{color:hotpink}"`);
   });
 
   it('should reference the atomic class with the nesting selector', () => {
@@ -269,7 +269,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._prp213q2 :first-child{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._rW6EynoA :first-child{color:blue}"`);
   });
 
   it('should atomicify a double tag rule', () => {
@@ -279,7 +279,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._8gsp13q2 div span{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._E3HpynoA div span{color:blue}"`);
   });
 
   it('should atomicify a double tag with pseudos rule', () => {
@@ -289,7 +289,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._f1kd13q2 div:hover span:active{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._yGvwynoA div:hover span:active{color:blue}"`);
   });
 
   it('should atomicify a nested tag pseudo rule', () => {
@@ -299,7 +299,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._1tui13q2 div:hover{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._sbuEynoA div:hover{color:blue}"`);
   });
 
   it('should skip comments', () => {
@@ -317,7 +317,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"._1tui13q2 div:hover{color:blue}@media screen{._43475scu{color:red}}"`
+      `"._sbuEynoA div:hover{color:blue}@media screen{._IO46Gowl{color:red}}"`
     );
   });
 
@@ -349,7 +349,7 @@ describe('atomicify rules', () => {
       }
     );
 
-    expect(result.css).toMatchInlineSnapshot(`"._73mn1fwx div div{font-size:12px}"`);
+    expect(result.css).toMatchInlineSnapshot(`"._3xMurjyG div div{font-size:12px}"`);
   });
 
   it('should atomicify at-rule styles', () => {
@@ -391,7 +391,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@container (width > 300px){._eq985scu h2{color:red}}@when font-tech(color-COLRv1) and font-tech(variations){@font-face{font-family:test;src:url(test.woff2)}}@else font-tech(color-SVG){@font-face{font-family:test;src:url(test2.woff2)}}@else{@font-face{font-family:test;src:url(test3.woff2)}}@-moz-document url-prefix(){._qral13q2{color:blue}}@layer state{._8tgm6x50{background-color:brown}}@media (min-width: 30rem){._hi7c1ule{display:block}._1l5zgktf{font-size:20px}}@supports selector(h2 > p){._1ll732ev{color:pink}}@starting-style{._p77hbf54{color:green}}"`
+      `"@container (width > 300px){._gYJPGowl h2{color:red}}@when font-tech(color-COLRv1) and font-tech(variations){@font-face{font-family:test;src:url(test.woff2)}}@else font-tech(color-SVG){@font-face{font-family:test;src:url(test2.woff2)}}@else{@font-face{font-family:test;src:url(test3.woff2)}}@-moz-document url-prefix(){._uOr6ynoA{color:blue}}@layer state{._5jrFjO5s{background-color:brown}}@media (min-width: 30rem){._DmqJvLZJ{display:block}._VG2LSPN1{font-size:20px}}@supports selector(h2 > p){._EPTNy8mA{color:pink}}@starting-style{._7xNhJwxv{color:green}}"`
     );
   });
 
@@ -405,7 +405,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){._1l9l1ule{display:block}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._l9egvLZJ{display:block}}}"`
     );
   });
 
@@ -419,7 +419,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._1v9q1ule div{display:block}}"`
+      `"@media (min-width: 30rem){._he9hvLZJ div{display:block}}"`
     );
   });
 
@@ -435,7 +435,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){._1acs1ule div{display:block}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._GIuzvLZJ div{display:block}}}"`
     );
   });
 
@@ -500,7 +500,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"._syaz1qpq{color:red!important}._1wybit0u{font-size:var(--font-size)!important}"`
+      `"._tDYzDpLb{color:red!important}._a3eEXk0z{font-size:var(--font-size)!important}"`
     );
   });
 
@@ -510,7 +510,92 @@ describe('atomicify rules', () => {
       color: red;
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._syaz1qpq{color:red!important}._syaz5scu{color:red}"`);
+    expect(actual).toMatchInlineSnapshot(`"._tDYzDpLb{color:red!important}._tDYzGowl{color:red}"`);
+  });
+
+  describe('class name collision detection', () => {
+    it('should generate different class names for top-level and child-selector properties that collide with short hash', () => {
+      // Regression test: group hash collision between
+      //   top-level prop "margin-top"  (group hash input: "undefined&margin-top")
+      //   "& li" rule   "flex-shrink"  (group hash input: "undefined& liflex-shrink")
+      // Both produce group hash "19pk" when sliced to 4 chars from the murmurhash2 output,
+      // causing both to compile to "_19pkyh40" when value is "2px".
+      // The ax() runtime uses the group prefix to deduplicate classes, so a collision
+      // silently causes one property to clobber the other at runtime.
+      const snippetA = transform`
+        margin-top: 2px;
+      `;
+      const snippetB = transform`
+        & li { flex-shrink: 2px; }
+      `;
+
+      const classA = snippetA.match(/\._[a-zA-Z0-9]+/)?.[0];
+      const classB = snippetB.match(/\._[a-zA-Z0-9]+/)?.[0];
+
+      // Both class names must exist
+      expect(classA).toBeDefined();
+      expect(classB).toBeDefined();
+
+      // They must be different — same class name means ax() will incorrectly
+      // treat "margin-top" and "flex-shrink" as the same CSS property axis
+      expect(classA).not.toEqual(classB);
+    });
+
+    it('should generate different class names for the same value across different property+selector combos', () => {
+      // A broader check: collect all atomic class names generated from a realistic
+      // set of property/selector combinations that share the same value ("2px").
+      // None of them should collide, because each represents a distinct CSS axis.
+      const inputs = [
+        transform`margin-top: 2px;`,
+        transform`& li { flex-shrink: 2px; }`,
+        transform`outline-width: 2px;`,
+        transform`padding-bottom: 2px;`,
+        transform`border-bottom: 2px;`,
+        transform`width: 2px;`,
+        transform`& > span { padding-bottom: 2px; }`,
+        transform`& > span { outline-width: 2px; }`,
+        transform`& div { width: 2px; }`,
+        transform`& > span { border-bottom: 2px; }`,
+      ];
+
+      const classNames = inputs.map((css) => css.match(/\._[a-zA-Z0-9]+/)?.[0]);
+      const unique = new Set(classNames);
+
+      // Every input must produce a unique class name
+      expect(unique.size).toEqual(classNames.length);
+    });
+
+    it('should generate different group hashes for visually distinct property axes', () => {
+      // Verify the group portion (first 4 chars after the leading _) is unique
+      // per logical CSS axis (selector + property combination).
+      // Two different axes sharing the same group hash causes silent style override bugs.
+      const cases = [
+        { css: transform`margin-top: 2px;`, label: '& | margin-top' },
+        { css: transform`& li { flex-shrink: 2px; }`, label: '& li | flex-shrink' },
+        { css: transform`outline-width: 2px;`, label: '& | outline-width' },
+        { css: transform`padding-bottom: 2px;`, label: '& | padding-bottom' },
+        { css: transform`border-bottom: 2px;`, label: '& | border-bottom' },
+        { css: transform`& > span { padding-bottom: 2px; }`, label: '& > span | padding-bottom' },
+        { css: transform`& div { width: 2px; }`, label: '& div | width' },
+      ];
+
+      // Extract just the group portion: "_GGGGVVVV" -> "GGGG"
+      const groups = cases.map(({ css, label }) => {
+        const className = css.match(/\._([a-zA-Z0-9]{4})[a-zA-Z0-9]{4}/)?.[1];
+        return { label, group: className };
+      });
+
+      const groupValues = groups.map((g) => g.group);
+      const uniqueGroups = new Set(groupValues);
+
+      // Each CSS axis must have a unique group hash
+      if (uniqueGroups.size !== groupValues.length) {
+        const collisionReport = `Group hash collisions detected:\n${groups
+          .map((g) => `  ${g.group} <- ${g.label}`)
+          .join('\n')}`;
+        throw new Error(collisionReport);
+      }
+    });
   });
 
   it('should throw an error for unknown at-rules', () => {

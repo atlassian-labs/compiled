@@ -1,4 +1,4 @@
-import { hash } from '@compiled/utils';
+import { hashBase62 } from '@compiled/utils';
 import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
 import { rule } from 'postcss';
 
@@ -35,13 +35,19 @@ const isCssIdentifierValid = (value: string): boolean => {
  * @param node CSS declaration
  * @param opts AtomicifyOpts
  */
+// Number of base-62 characters used for each part of the atomic class name.
+// Increasing either value reduces collision probability at the cost of longer class names.
+// Collision space per part: 62^N (e.g. 62^4 = 14,776,336 — 8.8x more than base-36).
+const GROUP_HASH_LENGTH = 4;
+const VALUE_HASH_LENGTH = 4;
+
 const atomicClassName = (node: Declaration, opts: PluginOpts) => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
   const prefix = opts.classHashPrefix ?? '';
-  const group = hash(`${prefix}${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
+  const group = hashBase62(`${prefix}${opts.atRule}${selectors}${node.prop}`).padStart(6, '0').slice(-GROUP_HASH_LENGTH);
 
   const value = node.important ? node.value + node.important : node.value;
-  const valueHash = hash(value).slice(0, 4);
+  const valueHash = hashBase62(value).padStart(6, '0').slice(-VALUE_HASH_LENGTH);
 
   return `_${group}${valueHash}`;
 };
