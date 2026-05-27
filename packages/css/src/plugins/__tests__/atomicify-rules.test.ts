@@ -23,7 +23,7 @@ describe('atomicify rules', () => {
       color: blue;
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._syazs13q2{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._syaz13q2{color:blue}"`);
   });
 
   it('should prepend atomic class when nesting selector is prepended', () => {
@@ -33,7 +33,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"[data-look='h100']._mi0gz1ule{display:block}"`);
+    expect(actual).toMatchInlineSnapshot(`"[data-look='h100']._mi0g1ule{display:block}"`);
   });
 
   it('should should atomicify multiple declarations', () => {
@@ -42,7 +42,7 @@ describe('atomicify rules', () => {
       font-size: 12px;
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._syazs13q2{color:blue}._1wyb11fwx{font-size:12px}"`);
+    expect(actual).toMatchInlineSnapshot(`"._syaz13q2{color:blue}._1wyb1fwx{font-size:12px}"`);
   });
 
   it('should autoprefix atomic rules', () => {
@@ -50,7 +50,7 @@ describe('atomicify rules', () => {
 
     const result = transform`user-select: none;`;
 
-    expect(result).toMatchInlineSnapshot(`"._uiztiglyw{-ms-user-select:none;user-select:none}"`);
+    expect(result).toMatchInlineSnapshot(`"._uiztglyw{-ms-user-select:none;user-select:none}"`);
   });
 
   it('should double up class selector when two nesting selectors are found', () => {
@@ -60,7 +60,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(result).toMatchInlineSnapshot(`"._if29f1ule._if29f1ule{display:block}"`);
+    expect(result).toMatchInlineSnapshot(`"._if291ule._if291ule{display:block}"`);
   });
 
   it('should autoprefix atomic rules with multiple selectors', () => {
@@ -73,7 +73,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"._180hqglyw:hover, ._1j5pxglyw:focus{-ms-user-select:none;user-select:none}"`
+      `"._180hglyw:hover, ._1j5pglyw:focus{-ms-user-select:none;user-select:none}"`
     );
   });
 
@@ -87,7 +87,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._ufx4cglyw{-ms-user-select:none;user-select:none}}"`
+      `"@media (min-width: 30rem){._ufx4glyw{-ms-user-select:none;user-select:none}}"`
     );
   });
 
@@ -103,7 +103,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._195xxglyw div{-ms-user-select:none;user-select:none}}"`
+      `"@media (min-width: 30rem){._195xglyw div{-ms-user-select:none;user-select:none}}"`
     );
   });
 
@@ -119,7 +119,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result1).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){._uf5ehglyw{-ms-user-select:none;user-select:none}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._uf5eglyw{-ms-user-select:none;user-select:none}}}"`
     );
 
     const result2 = transform`
@@ -132,7 +132,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result2).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){@font-face{font-family:Arial;src:url(arial.woff)}._uf5ehglyw{-ms-user-select:none;user-select:none}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){@font-face{font-family:Arial;src:url(arial.woff)}._uf5eglyw{-ms-user-select:none;user-select:none}}}"`
     );
   });
 
@@ -165,12 +165,12 @@ describe('atomicify rules', () => {
 
     expect(classes).toMatchInlineSnapshot(`
       [
-        "_1e0ca1ule",
-        "_y3gnw1h6o",
-        "_uf5ehglyw",
-        "_2a8pdglyw",
-        "_18i0uglyw",
-        "_9iqnhglyw",
+        "_1e0c1ule",
+        "_y3gn1h6o",
+        "_uf5eglyw",
+        "_2a8pglyw",
+        "_18i0glyw",
+        "_9iqnglyw",
       ]
     `);
   });
@@ -182,7 +182,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._13mlx13q2 div.primary{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._13ml13q2 div.primary{color:blue}"`);
   });
 
   it('should atomicify a nested multi selector rule', () => {
@@ -193,7 +193,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"._65g0r13q2 div, ._1tjqh13q2 span, ._thocb13q2 li{color:blue}"`
+      `"._65g013q2 div, ._1tjq13q2 span, ._thoc13q2 li{color:blue}"`
     );
   });
 
@@ -205,7 +205,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._30l3p13q2:hover, ._f8pjp13q2:focus{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._30l313q2:hover, ._f8pj13q2:focus{color:blue}"`);
   });
 
   it('should atomicify a nested tag rule', () => {
@@ -215,7 +215,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._65g0r13q2 div{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._65g013q2 div{color:blue}"`);
   });
 
   it('should generate the same class hash for semantically same but different rules', () => {
@@ -245,8 +245,8 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual.split('}').join('}\n')).toMatchInlineSnapshot(`
-      "._169rl1j6v._169rl1j6v > *{margin-bottom:1rem}
-      ._1wzb7idpf._1wzb7idpf > *:last-child{margin-bottom:0}
+      "._169r1j6v._169r1j6v > *{margin-bottom:1rem}
+      ._1wzbidpf._1wzbidpf > *:last-child{margin-bottom:0}
       "
     `);
   });
@@ -259,7 +259,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._ngwg81q9v:first-child ._ngwg81q9v{color:hotpink}"`);
+    expect(actual).toMatchInlineSnapshot(`"._ngwg1q9v:first-child ._ngwg1q9v{color:hotpink}"`);
   });
 
   it('should reference the atomic class with the nesting selector', () => {
@@ -269,7 +269,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._prp2d13q2 :first-child{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._prp213q2 :first-child{color:blue}"`);
   });
 
   it('should atomicify a double tag rule', () => {
@@ -279,7 +279,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._8gspk13q2 div span{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._8gsp13q2 div span{color:blue}"`);
   });
 
   it('should atomicify a double tag with pseudos rule', () => {
@@ -289,7 +289,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._f1kdm13q2 div:hover span:active{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._f1kd13q2 div:hover span:active{color:blue}"`);
   });
 
   it('should atomicify a nested tag pseudo rule', () => {
@@ -299,7 +299,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._1tuig13q2 div:hover{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._1tui13q2 div:hover{color:blue}"`);
   });
 
   it('should skip comments', () => {
@@ -317,7 +317,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"._1tuig13q2 div:hover{color:blue}@media screen{._4347s5scu{color:red}}"`
+      `"._1tui13q2 div:hover{color:blue}@media screen{._43475scu{color:red}}"`
     );
   });
 
@@ -349,7 +349,7 @@ describe('atomicify rules', () => {
       }
     );
 
-    expect(result.css).toMatchInlineSnapshot(`"._73mn71fwx div div{font-size:12px}"`);
+    expect(result.css).toMatchInlineSnapshot(`"._73mn1fwx div div{font-size:12px}"`);
   });
 
   it('should atomicify at-rule styles', () => {
@@ -391,7 +391,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@container (width > 300px){._eq9835scu h2{color:red}}@when font-tech(color-COLRv1) and font-tech(variations){@font-face{font-family:test;src:url(test.woff2)}}@else font-tech(color-SVG){@font-face{font-family:test;src:url(test2.woff2)}}@else{@font-face{font-family:test;src:url(test3.woff2)}}@-moz-document url-prefix(){._qrala13q2{color:blue}}@layer state{._8tgmx6x50{background-color:brown}}@media (min-width: 30rem){._hi7ci1ule{display:block}._1l5zmgktf{font-size:20px}}@supports selector(h2 > p){._1ll7032ev{color:pink}}@starting-style{._p77hdbf54{color:green}}"`
+      `"@container (width > 300px){._eq985scu h2{color:red}}@when font-tech(color-COLRv1) and font-tech(variations){@font-face{font-family:test;src:url(test.woff2)}}@else font-tech(color-SVG){@font-face{font-family:test;src:url(test2.woff2)}}@else{@font-face{font-family:test;src:url(test3.woff2)}}@-moz-document url-prefix(){._qral13q2{color:blue}}@layer state{._8tgm6x50{background-color:brown}}@media (min-width: 30rem){._hi7c1ule{display:block}._1l5zgktf{font-size:20px}}@supports selector(h2 > p){._1ll732ev{color:pink}}@starting-style{._p77hbf54{color:green}}"`
     );
   });
 
@@ -405,7 +405,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){._1l9lq1ule{display:block}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._1l9l1ule{display:block}}}"`
     );
   });
 
@@ -419,7 +419,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._1v9qq1ule div{display:block}}"`
+      `"@media (min-width: 30rem){._1v9q1ule div{display:block}}"`
     );
   });
 
@@ -435,7 +435,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){._1acs11ule div{display:block}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._1acs1ule div{display:block}}}"`
     );
   });
 
@@ -500,7 +500,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"._syazs1qpq{color:red!important}._1wyb1it0u{font-size:var(--font-size)!important}"`
+      `"._syaz1qpq{color:red!important}._1wybit0u{font-size:var(--font-size)!important}"`
     );
   });
 
@@ -510,9 +510,7 @@ describe('atomicify rules', () => {
       color: red;
     `;
 
-    expect(actual).toMatchInlineSnapshot(
-      `"._syazs1qpq{color:red!important}._syazs5scu{color:red}"`
-    );
+    expect(actual).toMatchInlineSnapshot(`"._syaz1qpq{color:red!important}._syaz5scu{color:red}"`);
   });
 
   it('should throw an error for unknown at-rules', () => {

@@ -47,7 +47,7 @@ const isCssIdentifierValid = (value: string): boolean => {
  * correctly for atomic deduplication.
  */
 const collisionMap: Record<string, string> = {};
-const START_HASH_LEN = 5;
+const START_HASH_LEN = 4;
 const VALUE_HASH_LEN = 4;
 
 const atomicClassName = (node: Declaration, opts: PluginOpts) => {
