@@ -54,8 +54,6 @@ type WithConditionalCSSProp<TProps> = 'className' extends keyof TProps
 type ReactJSXElementType = string | React.JSXElementConstructor<any>;
 type ReactJSXElement = JSX.Element;
 type ReactJSXElementClass = JSX.ElementClass;
-type ReactJSXElementAttributesProperty = JSX.ElementAttributesProperty;
-type ReactJSXElementChildrenAttribute = JSX.ElementChildrenAttribute;
 type ReactJSXIntrinsicAttributes = JSX.IntrinsicAttributes;
 type ReactJSXIntrinsicClassAttributes<T> = JSX.IntrinsicClassAttributes<T>;
 type ReactJSXIntrinsicElements = JSX.IntrinsicElements;
@@ -64,13 +62,26 @@ export namespace CompiledJSX {
   export type ElementType = ReactJSXElementType;
   export type Element = ReactJSXElement;
   export type ElementClass = ReactJSXElementClass;
-  export type ElementAttributesProperty = ReactJSXElementAttributesProperty;
-  export type ElementChildrenAttribute = ReactJSXElementChildrenAttribute;
-  // In React 18's @types/react, ReactManagedAttributes delegated to GlobalJSXLibraryManagedAttributes
-  // which aliased back to JSX.LibraryManagedAttributes. When CompiledJSX is used as the JSX namespace
-  // that created a circular reference through our own definition. React 19's @types/react removed that
-  // indirection, breaking the old code. We avoid the issue entirely by not delegating to
-  // ReactJSXLibraryManagedAttributes and instead intersecting P with { key?: React.Key } directly.
+  // Inline the interface shapes directly instead of aliasing JSX.ElementAttributesProperty
+  // and JSX.ElementChildrenAttribute. Those are interfaces in the global JSX namespace, and
+  // aliasing them makes the .d.ts depend on whatever JSX.ElementAttributesProperty resolves to
+  // in the consumer's environment — which is not guaranteed when @compiled/react is used as
+  // jsxImportSource (since it replaces the global JSX namespace). Inlining makes CompiledJSX
+  // self-contained and correct regardless of the consumer's JSX namespace.
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  export interface ElementAttributesProperty {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    props: {};
+  }
+  export interface ElementChildrenAttribute {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    children: {};
+  }
+  // React 18's @types/react delegated ReactManagedAttributes to GlobalJSXLibraryManagedAttributes,
+  // which aliased back to JSX.LibraryManagedAttributes — creating a circular reference when
+  // CompiledJSX is the JSX namespace. React 19 removed that indirection. We avoid it entirely by
+  // intersecting P with { key?: React.Key } directly. With a correct ElementAttributesProperty,
+  // TypeScript pre-extracts the props type from class instances before passing P here.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export type LibraryManagedAttributes<_C, P> = WithConditionalCSSProp<P> & P & { key?: React.Key };
   export type IntrinsicAttributes = ReactJSXIntrinsicAttributes;
