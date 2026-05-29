@@ -1,8 +1,12 @@
 /**
- * This length includes the underscore,
- * e.g. `"_1s4A"` would be a valid atomic group hash.
+ * Length of the value hash suffix at the end of every atomic class name.
+ *
+ * Atomic classes have the shape `_<groupHash><valueHash>`, where the value hash
+ * is always exactly {@link ATOMIC_VALUE_HASH_LENGTH} chars. This lets us support
+ * variable-length group hashes by treating everything before the value suffix as
+ * the group key.
  */
-const ATOMIC_GROUP_LENGTH = 5;
+const ATOMIC_VALUE_HASH_LENGTH = 4;
 
 /**
  * Create a single string containing all the classnames provided, separated by a space (`" "`).
@@ -44,6 +48,14 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
   // Would be happy to move to `Map` if it proved to be better under real conditions.
   const map: Record<string, string> = {};
 
+  const removePrefixFamilyEntries = (key: string) => {
+    for (const existingKey in map) {
+      if (key.startsWith(existingKey)) {
+        delete map[existingKey];
+      }
+    }
+  };
+
   // Note: using loops to minimize iterations over the collection
   for (const value of classNames) {
     // Exclude all falsy values, which leaves us with populated strings
@@ -68,7 +80,15 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
        * - Okay to remove duplicates as doing so does not impact specificity
        *
        * */
-      const key = className.startsWith('_') ? className.slice(0, ATOMIC_GROUP_LENGTH) : className;
+      const isAtomic = className.startsWith('_');
+      const key = isAtomic
+        ? className.slice(0, className.length - ATOMIC_VALUE_HASH_LENGTH)
+        : className;
+
+      if (isAtomic) {
+        removePrefixFamilyEntries(key);
+      }
+
       map[key] = className;
     }
   }
