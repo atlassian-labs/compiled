@@ -53,7 +53,7 @@ describe('ax', () => {
       [
         'should treat non-standard shorter atomic-looking class names consistently with suffix parsing',
         ['_aaaabbbb', '_aaaaaaa', '_ddddbbb', '_ddddcccc'],
-        '_aaaabbbb _aaaaaaa _ddddcccc',
+        '_aaaaaaa _ddddcccc',
       ],
       [
         'should not remove any atomic declarations if there are no duplicate groups',
@@ -87,6 +87,16 @@ describe('ax', () => {
         ['_aaaabbbb', '_aaaa12cccc'],
         '_aaaa12cccc',
       ],
+      [
+        'should allow a shorter group to override its longer prefix family when order is flipped',
+        ['_aaaa12cccc', '_aaaabbbb'],
+        '_aaaabbbb',
+      ],
+      [
+        'should keep the most recent declaration when multiple prefix-family groups are provided',
+        ['_aaaabbbb', '_aaaa12cccc', '_aaaa1234dddd'],
+        '_aaaa1234dddd',
+      ],
     ])('%s', (_, params, expected) => {
       expect(ax(params)).toEqual(expected);
     });
@@ -103,6 +113,16 @@ describe('ax', () => {
         'should allow a variable-length longer group to override its legacy prefix family',
         ['_aaaabbbb', '_aaaa12cccc'],
         '_aaaa12cccc',
+      ],
+      [
+        'should allow a legacy group to override its variable-length prefix family when order is flipped',
+        ['_aaaa12cccc', '_aaaabbbb'],
+        '_aaaabbbb',
+      ],
+      [
+        'should keep the most recent declaration across legacy and multiple variable-length prefix-family groups',
+        ['_aaaabbbb', '_aaaa12cccc', '_aaaa1234dddd'],
+        '_aaaa1234dddd',
       ],
       [
         'should keep different variable-length families when no prefix relationship exists',

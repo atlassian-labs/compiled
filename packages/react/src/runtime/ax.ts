@@ -50,7 +50,7 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
 
   const removePrefixFamilyEntries = (key: string) => {
     for (const existingKey in map) {
-      if (key.startsWith(existingKey)) {
+      if (key.startsWith(existingKey) || existingKey.startsWith(key)) {
         delete map[existingKey];
       }
     }
