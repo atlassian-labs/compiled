@@ -51,9 +51,9 @@ describe('ax', () => {
         '_aaaaeeee',
       ],
       [
-        'should treat non-standard shorter atomic-looking class names consistently with suffix parsing',
+        'should treat non-standard shorter atomic-looking class names as independent groups',
         ['_aaaabbbb', '_aaaaaaa', '_ddddbbb', '_ddddcccc'],
-        '_aaaaaaa _ddddcccc',
+        '_aaaabbbb _aaaaaaa _ddddbbb _ddddcccc',
       ],
       [
         'should not remove any atomic declarations if there are no duplicate groups',
@@ -81,6 +81,11 @@ describe('ax', () => {
         'should keep variable-length classes with different groups',
         ['_aaaa12bbbb', '_bbbb12cccc'],
         '_aaaa12bbbb _bbbb12cccc',
+      ],
+      [
+        'should keep variable-length groups that share a legacy prefix but are not in the same prefix family',
+        ['_aabbcc1234', '_aabbdd1234'],
+        '_aabbcc1234 _aabbdd1234',
       ],
       [
         'should allow a longer group to override its shorter prefix family',

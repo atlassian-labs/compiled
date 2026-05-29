@@ -7,6 +7,7 @@
  * the group key.
  */
 const ATOMIC_VALUE_HASH_LENGTH = 4;
+const ATOMIC_LEGACY_GROUP_LENGTH = 5;
 
 /**
  * Create a single string containing all the classnames provided, separated by a space (`" "`).
@@ -47,14 +48,94 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
   // Using an object rather than a `Map` as it performed better in our benchmarks.
   // Would be happy to move to `Map` if it proved to be better under real conditions.
   const map: Record<string, string> = {};
+  const activeGroupKeysByLegacyPrefix: Record<string, string[]> = {};
 
-  const removePrefixFamilyEntries = (key: string) => {
-    for (const existingKey in map) {
-      if (key.startsWith(existingKey) || existingKey.startsWith(key)) {
-        delete map[existingKey];
+  // Two group keys belong to the same prefix family when one fully contains the
+  // other from the start. This is how a longer variable-length group hash can
+  // override its legacy 4-character ancestor, and vice versa.
+  const isSameFamily = (a: string, b: string): boolean => a.startsWith(b) || b.startsWith(a);
+
+  /**
+   * Bucketed setter (default).
+   *
+   * Records the latest atomic class for a group key, replacing any previous
+   * class from the same prefix family.
+   *
+   * Atomic group keys can be either:
+   * - legacy: exactly 4 characters after the leading `_` (e.g. `_aaaa`)
+   * - variable-length: 4 or more characters (e.g. `_aaaa12`)
+   *
+   * To support both formats together, we bucket active group keys by their
+   * legacy 5-character prefix. Only keys in the same bucket can possibly be in
+   * the same prefix family, so we only need to scan a small array per insert
+   * instead of the full result map.
+   *
+   * For runtime performance, the bucket is mutated in place using swap-and-pop
+   * so we avoid allocating a fresh array on every insert.
+   */
+  const setAtomicClassInGroupMapBucketed = (groupKey: string, className: string) => {
+    // Find the bucket of group keys that share this legacy prefix.
+    const legacyPrefix = groupKey.slice(0, ATOMIC_LEGACY_GROUP_LENGTH);
+    const activeGroupKeys = activeGroupKeysByLegacyPrefix[legacyPrefix];
+
+    if (!activeGroupKeys) {
+      // First group key seen for this legacy prefix.
+      activeGroupKeysByLegacyPrefix[legacyPrefix] = [groupKey];
+      map[groupKey] = className;
+      return;
+    }
+
+    // Drop any keys in the same prefix family so the new key wins.
+    // Unrelated keys that just happen to share the legacy prefix are kept
+    // (e.g. `_aabbcc` and `_aabbdd` share `_aabb` but are not prefix-family
+    // related).
+    for (let i = activeGroupKeys.length - 1; i >= 0; i--) {
+      const existingGroupKey = activeGroupKeys[i];
+      if (isSameFamily(groupKey, existingGroupKey)) {
+        delete map[existingGroupKey];
+        // Swap-and-pop: O(1) removal that preserves the rest of the bucket.
+        activeGroupKeys[i] = activeGroupKeys[activeGroupKeys.length - 1];
+        activeGroupKeys.pop();
       }
     }
+
+    activeGroupKeys.push(groupKey);
+    map[groupKey] = className;
   };
+
+  /**
+   * Simple-scan setter (alternative).
+   *
+   * Same prefix-family semantics as the bucketed version, but implemented as a
+   * direct scan over the full result map. Easier to read, but per-insert cost
+   * grows with the total map size rather than the small same-prefix bucket.
+   *
+   * Useful for comparison benchmarks or as a fallback if the bucketed version
+   * ever needs to be disabled.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const setAtomicClassInGroupMapSimpleScan = (groupKey: string, className: string) => {
+    for (const existingGroupKey in map) {
+      if (existingGroupKey.startsWith('_') && isSameFamily(groupKey, existingGroupKey)) {
+        delete map[existingGroupKey];
+      }
+    }
+    map[groupKey] = className;
+  };
+
+  // Original map setter, doesn't support mix of legacy group key and longer group key
+  const setAtomicClassInGroupMapDefault = (groupKey: string, className: string) => {
+    map[groupKey] = className;
+  };
+
+  const mapStrategy = {
+    default: setAtomicClassInGroupMapDefault,
+    simple: setAtomicClassInGroupMapSimpleScan,
+    bucket: setAtomicClassInGroupMapBucketed,
+  };
+
+  // Switch implementation here to compare strategies.
+  const setAtomicClassInGroupMap = mapStrategy['bucket'];
 
   // Note: using loops to minimize iterations over the collection
   for (const value of classNames) {
@@ -86,10 +167,11 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
         : className;
 
       if (isAtomic) {
-        removePrefixFamilyEntries(key);
+        // map[key] = className;
+        setAtomicClassInGroupMap(key, className);
+      } else {
+        map[key] = className;
       }
-
-      map[key] = className;
     }
   }
 
