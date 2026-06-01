@@ -1,5 +1,5 @@
 ---
-'@compiled/babel-plugin': minor
+'@compiled/babel-plugin': major
 '@compiled/css': minor
 '@compiled/react': minor
 ---
@@ -12,7 +12,7 @@ const styles = cssMap(
     one: { '> span': { paddingBottom: '2px' } },
     two: { outlineWidth: '2px' },
   },
-  { group: true },
+  { group: true }
 );
 ```
 
