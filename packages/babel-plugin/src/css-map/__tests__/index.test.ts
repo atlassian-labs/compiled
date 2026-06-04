@@ -51,7 +51,7 @@ describe('css map basic functionality', () => {
           color: 'green',
           backgroundColor: 'green'
         }
-      }, {group: true});
+      }, {hashStrategy: 'max'});
 
       const Component = () => <div>
         <span css={styles.danger} />
@@ -59,8 +59,11 @@ describe('css map basic functionality', () => {
       </div>
     `);
 
+    // With hashStrategy:'max', each property gets its own atomic class using
+    // the full base-62 encoded 32-bit hash (11-char classes: _GGGGGGVVVV).
+    // The nested selector `div span` is atomicified normally (no grouping).
     expect(actual).toIncludeMultiple([
-      'const styles={danger:"_djei11uk",success:"_syazbf54 _bfhkbf54"};',
+      'const styles={danger:"_0yE3HpGowl _3s43tFGowl",success:"_1UtDYzJwxv _0KLXruJwxv"};',
       '<span className={ax([styles.danger])}/>',
       '<span className={ax([styles.success])}/>',
     ]);
@@ -313,7 +316,7 @@ describe('css map basic functionality', () => {
       transform(`
         import { cssMap } from '@compiled/react';
 
-        const opts = { group: true };
+        const opts = { hashStrategy: 'max' };
         const styles = cssMap(${styles}, { ...opts });
       `);
     }).toThrow(ErrorMessages.OPTS_PROPERTY_TYPE);
@@ -324,7 +327,7 @@ describe('css map basic functionality', () => {
       transform(`
         import { cssMap } from '@compiled/react';
 
-        const styles = cssMap(${styles}, { group() { return true; } });
+        const styles = cssMap(${styles}, { hashStrategy() { return 'max'; } });
       `);
     }).toThrow(ErrorMessages.OPTS_PROPERTY_TYPE);
   });
@@ -334,7 +337,7 @@ describe('css map basic functionality', () => {
       transform(`
         import { cssMap } from '@compiled/react';
 
-        const styles = cssMap(${styles}, { ['group']: true });
+        const styles = cssMap(${styles}, { ['hashStrategy']: 'max' });
       `);
     }).toThrow(ErrorMessages.OPTS_PROPERTY_TYPE);
   });
@@ -344,17 +347,27 @@ describe('css map basic functionality', () => {
       transform(`
         import { cssMap } from '@compiled/react';
 
-        const styles = cssMap(${styles}, { unknownOption: true });
+        const styles = cssMap(${styles}, { unknownOption: 'max' });
       `);
     }).toThrow(ErrorMessages.OPTS_PROPERTY_KNOWN_NAME);
   });
 
-  it('should error out if options property value is not a boolean', () => {
+  it('should error out if options property value is not a string literal', () => {
     expect(() => {
       transform(`
         import { cssMap } from '@compiled/react';
 
-        const styles = cssMap(${styles}, { group: 'true' });
+        const styles = cssMap(${styles}, { hashStrategy: true });
+      `);
+    }).toThrow(ErrorMessages.OPTS_PROPERTY_VALUE_TYPE);
+  });
+
+  it('should error out if hashStrategy value is not a valid strategy', () => {
+    expect(() => {
+      transform(`
+        import { cssMap } from '@compiled/react';
+
+        const styles = cssMap(${styles}, { hashStrategy: 'invalid' });
       `);
     }).toThrow(ErrorMessages.OPTS_PROPERTY_VALUE_TYPE);
   });

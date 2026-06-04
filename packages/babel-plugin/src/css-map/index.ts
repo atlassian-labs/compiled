@@ -9,7 +9,9 @@ import { transformCssItems } from '../utils/transform-css-items';
 
 import { mergeExtendedSelectorsIntoProperties } from './process-selectors';
 
-const KNOWN_OPTIONS = ['group'];
+const KNOWN_OPTIONS = ['hashStrategy'];
+
+const VALID_HASH_STRATEGIES = ['default', 'enhanced', 'max', 'adaptive'];
 
 /**
  * Takes `cssMap` function expression and then transforms it to a record of class names and sheets.
@@ -81,7 +83,7 @@ export const visitCssMapPath = (
   }
 
   const optionsNode = path.node.arguments[1] as t.ObjectExpression | undefined;
-  const options: Record<string, boolean> = {};
+  const options: Record<string, string> = {};
 
   if (optionsNode) {
     optionsNode.properties.forEach((prop) => {
@@ -98,7 +100,15 @@ export const visitCssMapPath = (
         );
       }
 
-      if (!t.isBooleanLiteral(prop.value)) {
+      if (!t.isStringLiteral(prop.value)) {
+        throw buildCodeFrameError(
+          createErrorMessage(ErrorMessages.OPTS_PROPERTY_VALUE_TYPE),
+          prop.value,
+          path
+        );
+      }
+
+      if (optionName === 'hashStrategy' && !VALID_HASH_STRATEGIES.includes(prop.value.value)) {
         throw buildCodeFrameError(
           createErrorMessage(ErrorMessages.OPTS_PROPERTY_VALUE_TYPE),
           prop.value,

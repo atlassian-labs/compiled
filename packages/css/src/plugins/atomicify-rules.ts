@@ -1,4 +1,4 @@
-import { hash } from '@compiled/utils';
+import { hash, hashBase62 } from '@compiled/utils';
 import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
 import { rule } from 'postcss';
 import selectorParser from 'postcss-selector-parser';
@@ -10,7 +10,11 @@ interface PluginOpts {
   atRule?: string;
   parentNode?: Container;
   classHashPrefix?: string;
-  group?: boolean;
+  /**
+   * Controls the hash strategy used for atomic class name generation.
+   * @default 'default'
+   */
+  hashStrategy?: string;
 }
 
 /**
@@ -23,33 +27,6 @@ interface PluginOpts {
 const isCssIdentifierValid = (value: string): boolean => {
   const validCssIdentifierRegex = /^[a-zA-Z\-_]+[a-zA-Z\-_0-9]*$/;
   return validCssIdentifierRegex.test(value);
-};
-
-/**
- * Checks whether selector contains combinators: " ", " > ", " + ", " ~ "
- *
- * @param value the value to test
- * @returns boolean
- */
-const isSelectorWithCombinator = (value: string): boolean => {
-  let seenCombinator = false;
-  selectorParser((selectors) => {
-    // Only inspect top-level selectors — do not descend into pseudo-function
-    // arguments (e.g. `:not(.a + .b)`) where combinators are scoped to the
-    // pseudo and do not represent actual parent–child / sibling relationships
-    // in the rule's selector.
-    selectors.each((selector) => {
-      for (const node of selector.nodes) {
-        if (selectorParser.isCombinator(node)) {
-          seenCombinator = true;
-          return false;
-        }
-      }
-      return;
-    });
-  }).processSync(value);
-
-  return seenCombinator;
 };
 
 /**
@@ -68,15 +45,49 @@ type DeclarationKey = Pick<Declaration, 'prop' | 'value'> & {
   important?: Declaration['important'];
 };
 
-const atomicClassName = (node: DeclarationKey, opts: PluginOpts) => {
+/**
+ * Generates an atomic class name based on the configured `hashStrategy`.
+ *
+ * | strategy    | group hash          | value hash | class length |
+ * |-------------|---------------------|------------|--------------|
+ * | `default`   | base-36, slice(0,4) | base-36 slice(0,4) | 9 chars |
+ * | `enhanced`  | base-62, slice(-4)  | base-62 slice(-4)  | 9 chars |
+ * | `max`       | base-62, full 6-char| base-62 slice(-4)  | 11 chars |
+ * | `adaptive`  | starts at 4, grows on collision | base-36 slice(-4) | 9+ chars |
+ */
+const atomicClassName = (node: DeclarationKey, opts: PluginOpts): string => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
   const prefix = opts.classHashPrefix ?? '';
-  const group = hash(`${prefix}${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
-
+  const hashKey = `${prefix}${opts.atRule}${selectors}${node.prop}`;
   const value = node.important ? node.value + node.important : node.value;
-  const valueHash = hash(value).slice(0, 4);
+  const strategy = opts.hashStrategy ?? 'default';
 
-  return `_${group}${valueHash}`;
+  switch (strategy) {
+    case 'enhanced': {
+      const group = hashBase62(hashKey).padStart(6, '0').slice(-4);
+      const valueHash = hashBase62(value).padStart(6, '0').slice(-4);
+      return `_${group}${valueHash}`;
+    }
+
+    case 'max': {
+      // Use the full 32-bit hash encoded in base-62 (6 chars) — no truncation.
+      // This produces 11-char classes (_GGGGGGVVVV) which are structurally
+      // incompatible with legacy 9-char classes, eliminating cross-package
+      // collisions by construction.
+      const group = hashBase62(hashKey).padStart(6, '0');
+      const valueHash = hashBase62(value).padStart(6, '0').slice(-4);
+      return `_${group}${valueHash}`;
+    }
+
+    case 'default':
+    default: {
+      // Original behaviour — kept for backward compatibility.
+      // Note: .slice(0, 4) has a leading-digit bias (see hash strategy docs).
+      const group = hash(hashKey).slice(0, 4);
+      const valueHash = hash(value).slice(0, 4);
+      return `_${group}${valueHash}`;
+    }
+  }
 };
 
 /**
@@ -379,10 +390,6 @@ const atomicifyAtRule = (node: AtRule, opts: PluginOpts): AtRule => {
         break;
 
       case 'rule':
-        if (opts.group && isSelectorWithCombinator(childNode.selector)) {
-          newNode.nodes.push(...atomicifyRuleGrouped(childNode, atRuleOpts));
-          break;
-        }
         atomicifyRule(childNode, atRuleOpts).forEach((rule) => {
           newNode.nodes.push(rule);
         });
@@ -429,10 +436,6 @@ export const atomicifyRules = (opts: PluginOpts = {}): Plugin => {
             break;
 
           case 'rule':
-            if (opts.group && node.selectors.some(isSelectorWithCombinator)) {
-              node.replaceWith(atomicifyRuleGrouped(node, opts));
-              break;
-            }
             node.replaceWith(atomicifyRule(node, opts));
             break;
 

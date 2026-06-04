@@ -8,7 +8,7 @@ import { getItemCss } from './css-builders';
 import type { CssItem } from './types';
 
 type TransformOptions = {
-  group?: boolean;
+  hashStrategy?: string;
 };
 
 /**
