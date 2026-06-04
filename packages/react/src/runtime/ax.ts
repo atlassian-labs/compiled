@@ -1,8 +1,10 @@
 /**
- * This length includes the underscore,
- * e.g. `"_1s4A"` would be a valid atomic group hash.
+ * The value hash is always exactly 4 characters, so the group hash is
+ * everything before the last 4 characters of the class name.
+ * e.g. `"_1s4A1b2c"` → group `"_1s4A"`, value `"1b2c"`.
+ * With `hashStrategy: 'max'`, classes are 11 chars: `"_aBcDeF1b2c"` → group `"_aBcDeF"`, value `"1b2c"`.
  */
-const ATOMIC_GROUP_LENGTH = 5;
+const ATOMIC_VALUE_HASH_LENGTH = 4;
 
 /**
  * Create a single string containing all the classnames provided, separated by a space (`" "`).
@@ -14,7 +16,8 @@ const ATOMIC_GROUP_LENGTH = 5;
  * '_aaaacccc'
  * ```
  *
- * Format of Atomic style classnames: `_{group}{value}` (`_\w{4}\w{4}`)
+ * Format of Atomic style classnames: `_{group}{value}` where value is always 4 chars.
+ * Default/enhanced: `_\w{4}\w{4}` (9 chars total), max: `_\w{6}\w{4}` (11 chars total).
  *
  * `ax` will preserve any non atomic style classnames (eg `"border-red"`)
  *
@@ -68,7 +71,7 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
        * - Okay to remove duplicates as doing so does not impact specificity
        *
        * */
-      const key = className.startsWith('_') ? className.slice(0, ATOMIC_GROUP_LENGTH) : className;
+      const key = className.startsWith('_') ? className.slice(0, className.length - ATOMIC_VALUE_HASH_LENGTH) : className;
       map[key] = className;
     }
   }
