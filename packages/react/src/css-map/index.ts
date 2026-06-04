@@ -98,8 +98,18 @@ type RemapMedia<TStyles> = {
   [Q in keyof TStyles as Q extends `@media ${string}` ? '@media [loose]' : Q]: TStyles[Q];
 };
 
+/**
+ * Controls the hash strategy used when generating atomic class names for this cssMap call.
+ *
+ * - `'default'`  – Original behaviour: 4-char base-36 group hash with `.slice(0, 4)` bias (not recommended).
+ * - `'enhanced'` – Includes base-62 encoding (0-9, a-z, A-Z) for 8.8× more hash space.
+ * - `'max'`      – Full 32-bit hash encoded in base-62 (6-char group). Structurally incompatible with
+ *                  old 9-char classes, making cross-package collisions impossible by construction.
+ */
+type HashStrategy = 'default' | 'enhanced' | 'max';
+
 type TCssMapOptions = {
-  group?: boolean;
+  hashStrategy?: HashStrategy;
 };
 
 /**
