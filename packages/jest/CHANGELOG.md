@@ -1,5 +1,11 @@
 # @compiled/jest
 
+## 0.11.1
+
+### Patch Changes
+
+- f40290d: Replace the legacy `css` dependency with `@adobe/css-tools` to address ReDoS vulnerabilities in the transitive dependency chain. No behaviour change is expected from this swap.
+
 ## 0.11.0
 
 ### Minor Changes
