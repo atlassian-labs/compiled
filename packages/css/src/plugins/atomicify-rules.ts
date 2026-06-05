@@ -2,7 +2,7 @@ import { hash, hashBase62 } from '@compiled/utils';
 import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
 import { rule } from 'postcss';
 
-type HashStrategy = 'default' | 'enhanced' | 'max';
+import type { HashStrategy } from '../hash-strategy';
 
 interface PluginOpts {
   classNameCompressionMap?: Record<string, string>;

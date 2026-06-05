@@ -4,6 +4,7 @@ import postcss from 'postcss';
 import nested from 'postcss-nested';
 import whitespace from 'postcss-normalize-whitespace';
 
+import type { HashStrategy } from './hash-strategy';
 import { atomicifyRules } from './plugins/atomicify-rules';
 import { discardDuplicates } from './plugins/discard-duplicates';
 import { discardEmptyRules } from './plugins/discard-empty-rules';
@@ -30,61 +31,11 @@ export interface TransformOpts {
  */
 export interface LocalTransformOptions {
   /**
-   * Controls the algorithm used to generate the group portion of each atomic class name.
-   *
-   * ## Background
-   *
-   * Every atomic class name has the shape `_<group><value>` where:
-   * - `<group>` is a hash of the CSS property + selector, used by the `ax()` runtime to
-   *   identify which CSS axis (property + selector combination) a class belongs to.
-   * - `<value>` is a hash of the CSS value.
-   *
-   * The default implementation has a known bias: `.toString(36).slice(0, 4)` produces
-   * leading digits that are heavily skewed toward `'1'` (~50% of outputs), reducing the
-   * effective hash space from the theoretical 36⁴ = 1.68M to only ~93K unique groups.
-   * This causes silent style bugs when two different CSS properties in the same component
-   * produce the same group hash — `ax()` silently drops one of them.
-   *
-   * ## Strategies
-   *
-   * ### `'default'` (backward-compatible, not recommended for new code)
-   * Uses `hash(key).slice(0, 4)` — the original implementation.
-   * Produces 9-character class names (`_GGGGVVVV`).
-   * Suffers from leading-digit bias that reduces effective hash space to ~5.6% of
-   * the theoretical maximum. Kept only for backward compatibility.
-   *
-   * ### `'enhanced'` (recommended drop-in improvement)
-   * Uses base-62 encoding (`0-9`, `a-z`, `A-Z`) with `slice(-4)` to take the
-   * low-order digits, eliminating the leading-digit bias.
-   * Produces 9-character class names (`_GGGGVVVV`) — same shape as `'default'`,
-   * so existing CSS snapshots only change hash values, not structure.
-   * Provides 62⁴ = 14.8M unique group hashes — 8.8× more than `'default'`.
-   * Safe to mix with packages that were compiled with `'default'` because the
-   * same murmurhash2 input always produces the same base-62 output; the
-   * `ax()` runtime groups classes by stripping the last 4 characters as the
-   * value hash, so both formats are compatible.
-   *
-   * ### `'max'` (cross-package collision prevention)
-   * Uses the full 32-bit murmurhash2 output encoded in base-62 (6 characters)
-   * for the group hash, plus 4 base-62 characters for the value hash.
-   * Produces 11-character class names (`_GGGGGGVVVV`).
-   * Provides 62⁶ = 56.8B unique group hashes — effectively zero collision
-   * probability even for very large stylesheets.
-   * **Important:** The 11-char shape is structurally incompatible with the 9-char
-   * shape of `'default'` and `'enhanced'`. When using `xcss` overrides across
-   * package boundaries (e.g. `<Box xcss={customStyles} />`), both the consumer
-   * and the package being overridden must use the same hash strategy, otherwise
-   * `ax()` cannot correctly deduplicate the classes.
-   *
-   * ## Migration path
-   *
-   * 1. Opt individual `cssMap` calls into `'enhanced'` — zero risk, same class shape.
-   * 2. Once all packages in a deployment are rebuilt, flip to `'max'` for the strongest
-   *    collision guarantees.
-   *
+   * Controls the hash strategy used for atomic class name generation.
    * @default 'default'
+   * @experimental Not part of the public API. May change without notice.
    */
-  hashStrategy?: string;
+  hashStrategy?: HashStrategy;
 }
 
 /**
