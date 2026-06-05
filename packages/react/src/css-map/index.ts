@@ -99,20 +99,6 @@ type RemapMedia<TStyles> = {
 };
 
 /**
- * Controls the hash strategy used when generating atomic class names for this cssMap call.
- *
- * - `'default'`  – Original behaviour: 4-char base-36 group hash with `.slice(0, 4)` bias (not recommended).
- * - `'enhanced'` – Includes base-62 encoding (0-9, a-z, A-Z) for 8.8× more hash space.
- * - `'max'`      – Full 32-bit hash encoded in base-62 (6-char group). Structurally incompatible with
- *                  old 9-char classes, making cross-package collisions impossible by construction.
- */
-type HashStrategy = 'default' | 'enhanced' | 'max';
-
-type TCssMapOptions = {
-  hashStrategy?: HashStrategy;
-};
-
-/**
  * ## CSS Map
  *
  * Creates a collection of named styles that are statically typed and useable with other Compiled APIs.
@@ -134,8 +120,7 @@ export default function cssMap<
     CSSProperties & WhitelistedSelector & ExtendedSelectors & LooseMediaQueries
   >
 >(
-  _styles: TStyles,
-  _opts?: TCssMapOptions
+  _styles: TStyles
 ): {
   readonly [P in keyof TStyles]: CompiledStyles<RemapMedia<TStyles[P]>>;
 } {

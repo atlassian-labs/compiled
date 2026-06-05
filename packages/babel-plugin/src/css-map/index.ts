@@ -9,9 +9,14 @@ import { transformCssItems } from '../utils/transform-css-items';
 
 import { mergeExtendedSelectorsIntoProperties } from './process-selectors';
 
+/**
+ * @experimental Options for cssMap are not part of the public API and may change without notice.
+ * The `hashStrategy` option is intentionally omitted from the TypeScript type signature of cssMap.
+ * Internal consumers can opt in using `@ts-ignore`, it's highly risky.
+ */
 const KNOWN_OPTIONS = ['hashStrategy'];
 
-const VALID_HASH_STRATEGIES = ['default', 'enhanced', 'max', 'adaptive'];
+const VALID_HASH_STRATEGIES = ['default', 'enhanced', 'max'];
 
 /**
  * Takes `cssMap` function expression and then transforms it to a record of class names and sheets.

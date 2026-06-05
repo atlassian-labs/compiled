@@ -1,7 +1,8 @@
 import { hash, hashBase62 } from '@compiled/utils';
 import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
 import { rule } from 'postcss';
-import selectorParser from 'postcss-selector-parser';
+
+type HashStrategy = 'default' | 'enhanced' | 'max';
 
 interface PluginOpts {
   classNameCompressionMap?: Record<string, string>;
@@ -13,8 +14,9 @@ interface PluginOpts {
   /**
    * Controls the hash strategy used for atomic class name generation.
    * @default 'default'
+   * @experimental Not part of the public API. May change without notice.
    */
-  hashStrategy?: string;
+  hashStrategy?: HashStrategy;
 }
 
 /**
@@ -53,7 +55,6 @@ type DeclarationKey = Pick<Declaration, 'prop' | 'value'> & {
  * | `default`   | base-36, slice(0,4) | base-36 slice(0,4) | 9 chars |
  * | `enhanced`  | base-62, slice(-4)  | base-62 slice(-4)  | 9 chars |
  * | `max`       | base-62, full 6-char| base-62 slice(-4)  | 11 chars |
- * | `adaptive`  | starts at 4, grows on collision | base-36 slice(-4) | 9+ chars |
  */
 const atomicClassName = (node: DeclarationKey, opts: PluginOpts): string => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
