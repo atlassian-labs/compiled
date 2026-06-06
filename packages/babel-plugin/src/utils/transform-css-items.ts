@@ -1,14 +1,14 @@
 import * as t from '@babel/types';
 import { transformCss } from '@compiled/css';
 
-import type { Metadata } from '../types';
+import type { HashStrategy, Metadata } from '../types';
 
 import { compressClassNamesForRuntime } from './compress-class-names-for-runtime';
 import { getItemCss } from './css-builders';
 import type { CssItem } from './types';
 
 type TransformOptions = {
-  hashStrategy?: string;
+  hashStrategy?: HashStrategy;
 };
 
 /**

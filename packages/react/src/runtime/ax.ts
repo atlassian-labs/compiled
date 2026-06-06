@@ -70,8 +70,15 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
        * For other classnames: the `key` is the whole classname
        * - Okay to remove duplicates as doing so does not impact specificity
        *
+       * TODO: it doesn't support mixing short and long classes,
+       * as it'd results in different key because group hash is different.
+       * The algorithm assumes we have same length hash length, either long or short.
+       * This would be fixed in the future.
+       *
        * */
-      const key = className.startsWith('_') ? className.slice(0, className.length - ATOMIC_VALUE_HASH_LENGTH) : className;
+      const key = className.startsWith('_')
+        ? className.slice(0, className.length - ATOMIC_VALUE_HASH_LENGTH)
+        : className;
       map[key] = className;
     }
   }
