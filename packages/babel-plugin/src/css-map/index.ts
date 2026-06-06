@@ -1,13 +1,17 @@
 import type { NodePath } from '@babel/core';
 import * as t from '@babel/types';
 
-import type { Metadata } from '../types';
+import type { Metadata, HashStrategy } from '../types';
 import { buildCodeFrameError } from '../utils/ast';
 import { buildCss } from '../utils/css-builders';
 import { ErrorMessages, createErrorMessage, errorIfNotValidObjectProperty } from '../utils/css-map';
 import { transformCssItems } from '../utils/transform-css-items';
 
 import { mergeExtendedSelectorsIntoProperties } from './process-selectors';
+
+type CssMapOptions = {
+  hashStrategy?: HashStrategy;
+};
 
 /**
  * @experimental Options for cssMap are not part of the public API and may change without notice.
@@ -16,7 +20,7 @@ import { mergeExtendedSelectorsIntoProperties } from './process-selectors';
  */
 const KNOWN_OPTIONS = ['hashStrategy'];
 
-const VALID_HASH_STRATEGIES = ['default', 'enhanced', 'max'];
+const VALID_HASH_STRATEGIES: HashStrategy[] = ['default', 'enhanced', 'max'];
 
 /**
  * Takes `cssMap` function expression and then transforms it to a record of class names and sheets.
@@ -88,7 +92,7 @@ export const visitCssMapPath = (
   }
 
   const optionsNode = path.node.arguments[1] as t.ObjectExpression | undefined;
-  const options: Record<string, string> = {};
+  const options: CssMapOptions = {};
 
   if (optionsNode) {
     optionsNode.properties.forEach((prop) => {
@@ -113,7 +117,10 @@ export const visitCssMapPath = (
         );
       }
 
-      if (optionName === 'hashStrategy' && !VALID_HASH_STRATEGIES.includes(prop.value.value)) {
+      if (
+        optionName === 'hashStrategy' &&
+        !VALID_HASH_STRATEGIES.includes(prop.value.value as HashStrategy)
+      ) {
         throw buildCodeFrameError(
           createErrorMessage(ErrorMessages.OPTS_PROPERTY_VALUE_TYPE),
           prop.value,
@@ -121,7 +128,7 @@ export const visitCssMapPath = (
         );
       }
 
-      options[optionName] = prop.value.value;
+      options[optionName as keyof CssMapOptions] = prop.value.value as HashStrategy;
     });
   }
 

@@ -73,6 +73,7 @@ function toBase62(n: number): string {
  * Drop-in replacement for `hash()` that uses a larger character set, yielding
  * 8.8× more combinations per character (62^N vs 36^N).
  *
+ * @experimental not officially supported
  * @param str   Input string to hash.
  * @param seed  Optional seed (default 0).
  * @returns     Base-62 encoded hash string, up to 6 characters for 32-bit input.

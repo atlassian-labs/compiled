@@ -277,3 +277,5 @@ export interface TransformResult {
    */
   code: string | null | undefined;
 }
+
+export type HashStrategy = 'default' | 'enhanced' | 'max';

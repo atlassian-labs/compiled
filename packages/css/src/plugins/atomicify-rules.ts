@@ -43,26 +43,22 @@ const isCssIdentifierValid = (value: string): boolean => {
  * @param node CSS declaration
  * @param opts AtomicifyOpts
  */
-type DeclarationKey = Pick<Declaration, 'prop' | 'value'> & {
-  important?: Declaration['important'];
-};
-
-/**
- * Generates an atomic class name based on the configured `hashStrategy`.
- *
- * | strategy    | group hash          | value hash | class length |
- * |-------------|---------------------|------------|--------------|
- * | `default`   | base-36, slice(0,4) | base-36 slice(0,4) | 9 chars |
- * | `enhanced`  | base-62, slice(-4)  | base-62 slice(-4)  | 9 chars |
- * | `max`       | base-62, full 6-char| base-62 slice(-4)  | 11 chars |
- */
-const atomicClassName = (node: DeclarationKey, opts: PluginOpts): string => {
+const atomicClassName = (node: Declaration, opts: PluginOpts): string => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
   const prefix = opts.classHashPrefix ?? '';
   const hashKey = `${prefix}${opts.atRule}${selectors}${node.prop}`;
   const value = node.important ? node.value + node.important : node.value;
   const strategy = opts.hashStrategy ?? 'default';
 
+  /**
+   * Generates an atomic class name based on the configured `hashStrategy`.
+   *
+   * | strategy    | group hash          | value hash | class length |
+   * |-------------|---------------------|------------|--------------|
+   * | `default`   | base-36, slice(0,4) | base-36 slice(0,4) | 9 chars |
+   * | `enhanced`  | base-62, slice(-4)  | base-62 slice(-4)  | 9 chars |
+   * | `max`       | base-62, full 6-char| base-62 slice(-4)  | 11 chars |
+   */
   switch (strategy) {
     case 'enhanced': {
       const group = hashBase62(hashKey).padStart(6, '0').slice(-4);
@@ -133,7 +129,7 @@ const replaceNestingSelector = (selector: string, parentClassName: string) => {
  *
  * @param node
  */
-const buildAtomicSelector = (node: DeclarationKey, opts: PluginOpts) => {
+const buildAtomicSelector = (node: Declaration, opts: PluginOpts) => {
   const { classNameCompressionMap } = opts;
   const selectors: string[] = [];
 
