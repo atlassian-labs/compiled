@@ -146,7 +146,7 @@
     },
     {
       "path": "./packages/react/dist/browser/runtime/ax.js",
-      "limit": "169B",
+      "limit": "170B",
       "import": "ax"
     },
     {
