@@ -12,7 +12,6 @@ import { noExportedKeyframesRule } from './rules/no-exported-keyframes';
 import { noInvalidCssMapRule } from './rules/no-invalid-css-map';
 import { noJavaScriptXCSSRule } from './rules/no-js-xcss';
 import { noKeyframesTaggedTemplateExpressionRule } from './rules/no-keyframes-tagged-template-expression';
-import { noMixedCssMapOptionsRule } from './rules/no-mixed-css-map-options';
 import { noStyledTaggedTemplateExpressionRule } from './rules/no-styled-tagged-template-expression';
 import { noSuppressXCSS } from './rules/no-suppress-xcss';
 import { shorthandFirst } from './rules/shorthand-property-sorting';
@@ -29,7 +28,6 @@ export const rules = {
   'no-exported-css': noExportedCssRule,
   'no-exported-keyframes': noExportedKeyframesRule,
   'no-css-map-options': noCssMapOptionsRule,
-  'no-mixed-css-map-options': noMixedCssMapOptionsRule,
   'no-invalid-css-map': noInvalidCssMapRule,
   'no-js-xcss': noJavaScriptXCSSRule,
   'no-keyframes-tagged-template-expression': noKeyframesTaggedTemplateExpressionRule,
