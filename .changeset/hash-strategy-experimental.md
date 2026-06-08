@@ -1,5 +1,6 @@
 ---
 '@compiled/babel-plugin': minor
+'@compiled/eslint-plugin': minor
 '@compiled/css': patch
 '@compiled/react': minor
 '@compiled/utils': patch
@@ -29,3 +30,7 @@ Add experimental `hashStrategy` option to `cssMap` for **internal use only**, us
 
 - `ax` runtime updated to support variable-length atomic class names: the group key is now derived by stripping the last 4 characters (value hash) rather than using a fixed `ATOMIC_GROUP_LENGTH = 5`, correctly handling both 9-char (default/enhanced) and 11-char (max) class names.
 - `ax` does not support multi-group classes with different length anymore, because the group hash is no longer same.
+
+### `@compiled/eslint-plugin`
+
+- Added `no-css-map-options` eslint rule to recommended eslint rules, to prevent accidental use of experimental cssMap options.
