@@ -1,7 +1,7 @@
 ---
 '@compiled/babel-plugin': minor
 '@compiled/eslint-plugin': minor
-'@compiled/css': patch
+'@compiled/css': minor
 '@compiled/react': minor
 '@compiled/utils': patch
 ---
