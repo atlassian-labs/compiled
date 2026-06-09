@@ -14,7 +14,7 @@ export const noCssMapOptionsRule: Rule.RuleModule = {
     },
     messages: {
       noCssMapOptions:
-        'cssMap does not accept options. Configuration options like hashStrategy are experimental and for internal use only, only use with extream caution.',
+        'cssMap does not accept options. Configuration options like hashStrategy are experimental and for internal use only, only use with extreme caution.',
     },
     type: 'problem',
   },
