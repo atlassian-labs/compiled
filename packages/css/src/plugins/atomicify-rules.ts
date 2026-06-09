@@ -1,6 +1,7 @@
 import { hash } from '@compiled/utils';
 import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
 import { rule } from 'postcss';
+import selectorParser from 'postcss-selector-parser';
 
 interface PluginOpts {
   classNameCompressionMap?: Record<string, string>;
@@ -9,6 +10,7 @@ interface PluginOpts {
   atRule?: string;
   parentNode?: Container;
   classHashPrefix?: string;
+  group?: boolean;
 }
 
 /**
@@ -24,6 +26,33 @@ const isCssIdentifierValid = (value: string): boolean => {
 };
 
 /**
+ * Checks whether selector contains combinators: " ", " > ", " + ", " ~ "
+ *
+ * @param value the value to test
+ * @returns boolean
+ */
+const isSelectorWithCombinator = (value: string): boolean => {
+  let seenCombinator = false;
+  selectorParser((selectors) => {
+    // Only inspect top-level selectors — do not descend into pseudo-function
+    // arguments (e.g. `:not(.a + .b)`) where combinators are scoped to the
+    // pseudo and do not represent actual parent–child / sibling relationships
+    // in the rule's selector.
+    selectors.each((selector) => {
+      for (const node of selector.nodes) {
+        if (selectorParser.isCombinator(node)) {
+          seenCombinator = true;
+          return false;
+        }
+      }
+      return;
+    });
+  }).processSync(value);
+
+  return seenCombinator;
+};
+
+/**
  * Returns an atomic rule class name using this form:
  *
  * ```
@@ -35,7 +64,11 @@ const isCssIdentifierValid = (value: string): boolean => {
  * @param node CSS declaration
  * @param opts AtomicifyOpts
  */
-const atomicClassName = (node: Declaration, opts: PluginOpts) => {
+type DeclarationKey = Pick<Declaration, 'prop' | 'value'> & {
+  important?: Declaration['important'];
+};
+
+const atomicClassName = (node: DeclarationKey, opts: PluginOpts) => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
   const prefix = opts.classHashPrefix ?? '';
   const group = hash(`${prefix}${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
@@ -88,7 +121,7 @@ const replaceNestingSelector = (selector: string, parentClassName: string) => {
  *
  * @param node
  */
-const buildAtomicSelector = (node: Declaration, opts: PluginOpts) => {
+const buildAtomicSelector = (node: DeclarationKey, opts: PluginOpts) => {
   const { classNameCompressionMap } = opts;
   const selectors: string[] = [];
 
@@ -173,6 +206,99 @@ const atomicifyRule = (node: Rule, opts: PluginOpts): Rule[] => {
 };
 
 /**
+ * Builds a synthetic `Declaration`-shaped key that represents the entire
+ * group of declarations under a single combinator-rule. The key is fed into
+ * the existing `atomicClassName`/`buildAtomicSelector` pipeline so the
+ * generated class name hashes over **all** declarations rather than only the
+ * first one.
+ */
+const buildGroupedHashKey = (decls: Declaration[]): DeclarationKey => {
+  const props = decls.map((d) => d.prop).join(';');
+  const values = decls.map((d) => `${d.value}${d.important ? '!' : ''}`).join(';');
+  return { prop: props, value: values };
+};
+
+/**
+ * Opt-in optimisation (via `group: true`) for rules whose selector
+ * contains a CSS combinator (descendant, child `>`, adjacent sibling `+`,
+ * general sibling `~`). Instead of splitting into one atomic class per
+ * declaration, all declarations are emitted under a single class.
+ *
+ * Example:
+ * ```css
+ * div span { color: red; font-weight: bold; }
+ * ```
+ *
+ * `atomicifyRule` result (default):
+ * ```css
+ * ._hash1 div span { font-weight: bold; }
+ * ._hash2 div span { color: red; }
+ * ```
+ *
+ * `atomicifyRuleGrouped` result:
+ * ```css
+ * ._hash1 div span { color: red; font-weight: bold; }
+ * ```
+ *
+ * **Runtime composition trade-off:** Compiled's runtime (`ax`, `ac`) assumes
+ * atomic class names — one class per (atRule + selectors + property). A
+ * grouped class breaks that invariant. If two components both emit a grouped
+ * rule for the same combinator selector but with different declarations,
+ * both classes survive `ax()` (they carry different group hashes) and the
+ * CSS cascade — not atomic "last wins" — determines the final style. This
+ * means per-property overrides are **not** possible for grouped rules.
+ *
+ * @param node  The PostCSS `Rule` to group.
+ * @param opts  Plugin options forwarded from `atomicifyRules`.
+ */
+const atomicifyRuleGrouped = (node: Rule, opts: PluginOpts = {}): Rule[] => {
+  if (!node.nodes) {
+    return [];
+  }
+
+  for (const child of node.nodes) {
+    if (child.type === 'rule') {
+      throw child.error(
+        'Nested rules need to be flattened first - run the "postcss-nested" plugin before this.'
+      );
+    }
+  }
+
+  const decls = node.nodes.filter((child): child is Declaration => child.type === 'decl');
+
+  if (decls.length === 0) {
+    return [];
+  }
+
+  const groupedKey = buildGroupedHashKey(decls);
+
+  return node.selectors.map((branchSelector) => {
+    const selector = buildAtomicSelector(groupedKey, {
+      ...opts,
+      selectors: [branchSelector],
+    });
+
+    const newRule = rule({
+      raws: { before: '', after: '', between: '', selector: { raw: '', value: '' } },
+      selector,
+    });
+
+    const newDecls = decls.map((decl) => {
+      const newDecl = decl.clone({
+        raws: { before: '', value: { value: '', raw: '' }, between: '' },
+      });
+      newDecl.parent = newRule;
+      return newDecl;
+    });
+
+    newRule.parent = opts.parentNode!;
+    newRule.nodes = newDecls;
+
+    return newRule;
+  });
+};
+
+/**
  * Checks whether the given at-rule node can be
  * atomicified (transformed into atomic rules).
  *
@@ -253,6 +379,10 @@ const atomicifyAtRule = (node: AtRule, opts: PluginOpts): AtRule => {
         break;
 
       case 'rule':
+        if (opts.group && isSelectorWithCombinator(childNode.selector)) {
+          newNode.nodes.push(...atomicifyRuleGrouped(childNode, atRuleOpts));
+          break;
+        }
         atomicifyRule(childNode, atRuleOpts).forEach((rule) => {
           newNode.nodes.push(rule);
         });
@@ -299,6 +429,10 @@ export const atomicifyRules = (opts: PluginOpts = {}): Plugin => {
             break;
 
           case 'rule':
+            if (opts.group && node.selectors.some(isSelectorWithCombinator)) {
+              node.replaceWith(atomicifyRuleGrouped(node, opts));
+              break;
+            }
             node.replaceWith(atomicifyRule(node, opts));
             break;
 

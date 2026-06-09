@@ -196,3 +196,70 @@ const Component = ({ variant }) => <div css={[base, borderStyleMap[variant]]} />
 ```
 
 Read [composition](/composition) for more information around composing styles together.
+
+## Grouping selectors with combinators
+
+Atomic CSS is the default output. But for deeply nested selectors, this can lead to excessive CSS output:
+
+```jsx
+cssMap({
+  styles: {
+    '.long .selector': {
+      '&:hover': {
+        '.sub-selector': {
+          opacity: 0,
+          transitionDelay: '150ms',
+        },
+      },
+    },
+  },
+});
+```
+
+Produces the following CSS:
+
+```css
+._ay6b6ebc .long .selector:hover .sub-selector {
+  transition-delay: 0.15s;
+}
+._q7vcidpf .long .selector:hover .sub-selector {
+  opacity: 0;
+}
+```
+
+Optional grouping of selectors with combinators can be enabled by passing `{ group: true }` to `cssMap` as a second argument:
+
+```jsx
+cssMap(
+  {
+    styles: {
+      '.long .selector': {
+        '&:hover': {
+          '.sub-selector': {
+            opacity: 0,
+            transitionDelay: '150ms',
+          },
+        },
+      },
+    },
+  },
+  { group: true }
+);
+```
+
+Produces following CSS:
+
+```css
+._2t1oyj8x .long .selector:hover .sub-selector {
+  opacity: 0;
+  transition-delay: 0.15s;
+}
+```
+
+> Important: This only affects selectors with combinator, basic selectors still get the same Atomic CSS treatment.
+
+### Runtime composition trade-off:
+
+Grouped rules do not support per-property composition overrides. If two grouped classes target the same selector, both classes remain on the element and normal CSS cascade order decides the result.
+
+Use grouped selectors only when reducing generated CSS for combinator-heavy selectors is more important than atomic per-property overrides.
