@@ -318,9 +318,9 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = ".cc-tb117m{color:red}";
+      const _ = ".cc-aojfb{color:red}";
       const styles = {
-        danger: "cc-tb117m",
+        danger: "cc-aojfb",
       };
       const C = () => (
         <CC>
