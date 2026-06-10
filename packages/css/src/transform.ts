@@ -77,7 +77,7 @@ export const transformCss = (
       // The class name is derived from a hash of the CSS content so it's stable and
       // unique. No `_` prefix — ax() will treat it as a plain class and won't attempt
       // to deduplicate it by atomic group.
-      const className = `${NON_ATOMIC_CLASS_PREFIX}${hash(css).slice(0, 8)}`;
+      const className = `${NON_ATOMIC_CLASS_PREFIX}${hash(css)}`;
 
       const result = postcss([
         discardDuplicates(),
