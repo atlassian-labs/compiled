@@ -87,6 +87,18 @@ describe('non-atomicify rules', () => {
       expect(actual).toMatchInlineSnapshot(`".cc-test1234{color:red}"`);
     });
 
+    it('should throw if nested rules were not flattened first', () => {
+      // postcss-nested must run before nonAtomicifyRules.
+      // If a nested rule reaches the plugin, it throws to surface the misconfiguration.
+      expect(
+        () =>
+          postcss([nonAtomicifyRules({ className: FIXED_CLASS })]).process(
+            '.parent { .child { color: red; } }',
+            { from: undefined }
+          ).css
+      ).toThrow('Nested rules need to be flattened first');
+    });
+
     it('should strip CSS comments and still scope declarations correctly', () => {
       const actual = postcss([nonAtomicifyRules({ className: FIXED_CLASS }), whitespace()]).process(
         '/* before */ color: red; /* after */ font-size: 16px;',

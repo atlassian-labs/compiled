@@ -15,16 +15,34 @@ interface PluginOpts {
   callback?: (className: string) => void;
 }
 
-const scopeSelector = (selector: string, className: string): string => {
+/**
+ * Normalizes a selector so it always contains a `&` nesting reference —
+ * mirrors `normalizeSelector` from `atomicify-rules.ts`.
+ *
+ * `undefined` / empty → `'&'`  (top-level declaration, no selector context)
+ * `'.panel'`          → `'& .panel'`  (plain child, prepend nesting ref)
+ * `'&:hover'`         → `'&:hover'`   (already has `&`, leave as-is)
+ */
+const normalizeSelector = (selector: string | undefined): string => {
+  if (!selector) return '&';
   const trimmed = selector.trim();
-  // If the selector already has a nesting reference (&), replace it with the class.
-  // Otherwise prepend the class as a ancestor scope (e.g. `.cc-xxx .panel`).
-  return trimmed.includes('&')
-    ? trimmed.replace(/&/g, `.${className}`)
-    : `.${className} ${trimmed}`;
+  return trimmed.includes('&') ? trimmed : `& ${trimmed}`;
 };
 
+const scopeSelector = (selector: string | undefined, className: string): string =>
+  normalizeSelector(selector).replace(/&/g, `.${className}`);
+
 const scopeRule = (ruleNode: Rule, className: string): void => {
+  // Guard: postcss-nested must have been run before this plugin.
+  // Throw early if nested rules are still present to surface misconfiguration.
+  ruleNode.each((child) => {
+    if (child.type === 'rule') {
+      throw child.error(
+        'Nested rules need to be flattened first — run the "postcss-nested" plugin before this.'
+      );
+    }
+  });
+
   ruleNode.selectors = ruleNode.selectors.map((sel) => scopeSelector(sel, className));
   if (!ruleNode.nodes || ruleNode.nodes.length === 0) {
     ruleNode.remove();
