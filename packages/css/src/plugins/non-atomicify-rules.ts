@@ -34,13 +34,15 @@ const scopeSelector = (selector: string | undefined, className: string): string 
 
 const scopeRule = (ruleNode: Rule, className: string): void => {
   // Guard: postcss-nested must have been run before this plugin.
-  // Throw early if nested rules are still present to surface misconfiguration.
+  // Mirrors atomicifyRule's check — throw early to surface misconfiguration.
   ruleNode.each((child) => {
     if (child.type === 'rule') {
       throw child.error(
         'Nested rules need to be flattened first — run the "postcss-nested" plugin before this.'
       );
     }
+    // Non-decl children (comments etc.) inside a rule are left as-is —
+    // we only rewrite the rule's selector, not its children.
   });
 
   ruleNode.selectors = ruleNode.selectors.map((sel) => scopeSelector(sel, className));
