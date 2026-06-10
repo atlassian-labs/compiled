@@ -143,7 +143,7 @@ describe('non-atomicify rules', () => {
         @media (min-width: 768px) { @supports (display: grid) { color: blue; } }
       `;
       expect(actual).toMatchInlineSnapshot(
-        `"@media (min-width:768px){@supports (display:grid){.cc-test1234{color:blue}}}"`
+        `"@media (min-width: 768px){@supports (display: grid){.cc-test1234{color:blue}}}"`
       );
     });
 
