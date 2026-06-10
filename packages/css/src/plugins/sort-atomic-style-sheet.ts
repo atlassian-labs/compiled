@@ -1,11 +1,22 @@
 import type { ChildNode, Rule, Plugin, AtRule } from 'postcss';
 
+import { NON_ATOMIC_CLASS_PREFIX } from '../transform';
 import { sortPseudoSelectors } from '../utils/sort-pseudo-selectors';
 
 import { parseMediaQuery } from './at-rules/parse-media-query';
 import { sortAtRules } from './at-rules/sort-at-rules';
 import type { AtRuleInfo } from './at-rules/types';
 import { sortShorthandDeclarations } from './sort-shorthand-declarations';
+
+/**
+ * Returns true if the rule contains a non-atomic `cc-` class selector.
+ * Non-atomic rules must not be reordered by shorthand or pseudo-selector sorting —
+ * their cascade order is already correct by source order.
+ */
+const isNonAtomicRule = (node: ChildNode): boolean => {
+  if (node.type !== 'rule') return false;
+  return node.selector.includes(`.${NON_ATOMIC_CLASS_PREFIX}`);
+};
 
 const sortAtRulePseudoSelectors = (atRule: AtRule) => {
   const rules: Rule[] = [];
@@ -51,13 +62,18 @@ export const sortAtomicStyleSheet = (config: {
     postcssPlugin: 'sort-atomic-style-sheet',
     Once(root) {
       const catchAll: ChildNode[] = [];
-      const rules: Rule[] = [];
+      const atomicRules: Rule[] = [];
+      const nonAtomicRules: Rule[] = [];
       const atRules: AtRuleInfo[] = [];
 
       root.each((node) => {
         switch (node.type) {
           case 'rule': {
-            if (node.first?.type === 'atrule') {
+            if (isNonAtomicRule(node)) {
+              // Non-atomic cc- rules must not be sorted — their source order encodes
+              // correct CSS cascade. They are placed at the end after atomic rules.
+              nonAtomicRules.push(node);
+            } else if (node.first?.type === 'atrule') {
               atRules.push({
                 parsed:
                   sortAtRulesEnabled && node.first.name === 'media'
@@ -68,7 +84,7 @@ export const sortAtomicStyleSheet = (config: {
                 query: node.first.params,
               });
             } else {
-              rules.push(node);
+              atomicRules.push(node);
             }
 
             break;
@@ -92,14 +108,15 @@ export const sortAtomicStyleSheet = (config: {
       });
 
       if (sortShorthandEnabled) {
+        // Only sort atomic rules — non-atomic rules preserve source order
         sortShorthandDeclarations(catchAll);
-        sortShorthandDeclarations(rules);
+        sortShorthandDeclarations(atomicRules);
         sortShorthandDeclarations(atRules.map((atRule) => atRule.node));
       }
 
       // Pseudo-selector and at-rule sorting takes priority over shorthand
       // property sorting.
-      sortPseudoSelectors(rules);
+      sortPseudoSelectors(atomicRules);
       if (sortAtRulesEnabled) {
         atRules.sort(sortAtRules);
       }
@@ -112,7 +129,14 @@ export const sortAtomicStyleSheet = (config: {
         sortAtRulePseudoSelectors(node);
       }
 
-      root.nodes = [...catchAll, ...rules, ...atRules.map((atRule) => atRule.node)];
+      root.nodes = [
+        ...catchAll,
+        ...atomicRules,
+        ...atRules.map((atRule) => atRule.node),
+        // Non-atomic cc- rules are appended after atomic rules, preserving their
+        // original source order so that CSS cascade is correct.
+        ...nonAtomicRules,
+      ];
     },
   };
 };
