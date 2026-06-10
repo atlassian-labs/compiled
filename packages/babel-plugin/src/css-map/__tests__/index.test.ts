@@ -760,7 +760,7 @@ describe('css map — atomic: false option', () => {
         ".cc-1w23ozt{background:linear-gradient(var(--panel-gradient-angle),blue,pink)}";
       const _2 = ".cc-1w23ozt{--panel-gradient-angle:270deg}";
       const _ =
-        "@property --panel-gradient-angle{.cc-1w23ozt{syntax:'<angle>'}.cc-1w23ozt{initial-value:270deg}.cc-1w23ozt{inherits:false}}";
+        "@property --panel-gradient-angle{syntax:'<angle>';initial-value:270deg;inherits:false}";
       const styles = {
         gradientStyles: "cc-1w23ozt",
       };
@@ -774,12 +774,45 @@ describe('css map — atomic: false option', () => {
     `);
   });
 
+  it('should handle keyframes() reference in an atomic cssMap variant (comparison baseline)', () => {
+    // This test documents the CORRECT atomic behaviour for @keyframes:
+    // - @keyframes stops (0%, to) have NO class selector prefix
+    // - Only the animation property declarations get the atomic _ class
+    // The non-atomic test below should match this behaviour for @keyframes stops.
+    const actual = transformCode(
+      `
+      import { cssMap, keyframes } from '@compiled/react';
+      const spin = keyframes({ from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } });
+      const styles = cssMap({
+        animated: {
+          '.spinner': {
+            animationName: spin,
+            animationDuration: '2s',
+          },
+        },
+        static: { opacity: 1 },
+      });
+      const C = ({ isAnimated }) => <div css={[styles.static, isAnimated && styles.animated]} />;
+    `,
+      { pretty: true }
+    );
+
+    // Key assertion: @keyframes stops have NO class selector prefix
+    expect(actual).toContain(
+      '@keyframes k7rupus{0%{transform:rotate(0deg)}to{transform:rotate(360deg)}}'
+    );
+    // Animation declarations get the atomic _ class
+    expect(actual).toContain('.spinner{animation-name:k7rupus');
+  });
+
   it('should handle keyframes() reference and @keyframes inline in a non-atomic variant', () => {
     // keyframes() from @compiled/react can be used as a value inside cssMap —
     // the Babel plugin resolves it to a stable hash string at compile time.
-    // In non-atomic mode, the @keyframes rule and the animation declarations are
+    // In non-atomic mode, the @keyframes rule and animation declarations are
     // combined into a single CSS string so they all share ONE cc- class name.
-    // Both the @keyframes stops and the .spinner declarations are scoped under that class.
+    // @keyframes stops (0%, to) must NOT be prefixed with the cc- class —
+    // they are keyframe selectors, not element selectors. Only animation property
+    // declarations and child element selectors get the cc- class prefix.
     const actual = transformCode(
       `
       import { cssMap, keyframes } from '@compiled/react';
@@ -808,7 +841,7 @@ describe('css map — atomic: false option', () => {
       const _2 =
         ".cc-14qp4ua .spinner{animation-name:k7rupus;animation-duration:2s;animation-timing-function:linear;animation-iteration-count:infinite}";
       const _ =
-        "@keyframes k7rupus{.cc-14qp4ua 0%{transform:rotate(0deg)}.cc-14qp4ua to{transform:rotate(360deg)}}";
+        "@keyframes k7rupus{0%{transform:rotate(0deg)}to{transform:rotate(360deg)}}";
       const spin = null;
       const styles = {
         animated: "cc-14qp4ua",

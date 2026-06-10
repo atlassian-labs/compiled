@@ -92,7 +92,6 @@ export const transformCss = (
         nonAtomicifyRules({
           className,
           callback: (name: string) => classNames.push(name),
-          classHashPrefix: opts.classHashPrefix,
         }),
         ...(process.env.AUTOPREFIXER === 'off' ? [] : [autoprefixer()]),
         whitespace(),
