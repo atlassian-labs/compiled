@@ -1,7 +1,7 @@
 import type { Plugin, Rule, AtRule, Declaration } from 'postcss';
 import { rule } from 'postcss';
 
-import { SCOPEABLE_AT_RULES, PASSTHROUGH_AT_RULES } from './at-rule-lists';
+import { classifyAtRule } from './at-rule-lists';
 
 interface PluginOpts {
   /**
@@ -14,10 +14,6 @@ interface PluginOpts {
    */
   callback?: (className: string) => void;
 }
-
-// Convert to Sets for O(1) lookup
-const SCOPEABLE_SET = new Set<string>(SCOPEABLE_AT_RULES);
-const PASSTHROUGH_SET = new Set<string>(PASSTHROUGH_AT_RULES);
 
 const replaceNestingSelector = (selector: string, className: string): string =>
   selector.replace(/&/g, `.${className}`);
@@ -75,28 +71,28 @@ export const nonAtomicifyRules = (opts: PluginOpts): Plugin => {
         } else if (node.type === 'atrule') {
           const atRuleNode = node as AtRule;
 
-          if (PASSTHROUGH_SET.has(atRuleNode.name)) {
-            // @keyframes, @font-face, @property etc. — leave inner content untouched,
-            // just like atomicifyRules does. Their inner "selectors" (from/to/0%) are
-            // keyframe selectors, not element selectors.
+          const kind = classifyAtRule(atRuleNode.name);
+
+          if (kind === 'passthrough') {
+            // @keyframes, @font-face, @property etc. — leave inner content untouched.
+            // Their inner "selectors" (from/to/0%) are keyframe selectors, not element selectors.
             return;
+          } else if (kind === 'forbidden') {
+            throw new Error(`At-rule '@${atRuleNode.name}' cannot be used in CSS rules.`);
+          } else if (kind === 'unknown') {
+            throw new Error(`Unknown at-rule '@${atRuleNode.name}'.`);
           }
 
-          if (SCOPEABLE_SET.has(atRuleNode.name)) {
-            // @media, @supports, @container etc. — scope inner rules
-            atRuleNode.each((child) => {
-              if (child.type === 'rule') {
-                const childRule = child as Rule;
-                childRule.selectors = childRule.selectors.map((sel) =>
-                  scopeSelector(sel, className)
-                );
-              } else if (child.type === 'decl') {
-                // Top-level declaration inside at-rule (e.g. @media { color: red })
-                wrapDeclInRule(child as Declaration, className);
-              }
-            });
-          }
-          // Unknown at-rules are passed through unchanged (lenient vs atomicifyRules which throws)
+          // kind === 'scopeable': @media, @supports, @container etc. — scope inner rules
+          atRuleNode.each((child) => {
+            if (child.type === 'rule') {
+              const childRule = child as Rule;
+              childRule.selectors = childRule.selectors.map((sel) => scopeSelector(sel, className));
+            } else if (child.type === 'decl') {
+              // Top-level declaration inside at-rule (e.g. @media { color: red })
+              wrapDeclInRule(child as Declaration, className);
+            }
+          });
         } else if (node.type === 'decl') {
           // Top-level declaration (no selector) — wrap in `.className { … }`
           wrapDeclInRule(node as Declaration, className);

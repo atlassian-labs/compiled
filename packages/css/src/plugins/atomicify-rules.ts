@@ -2,7 +2,7 @@ import { hash } from '@compiled/utils';
 import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
 import { rule } from 'postcss';
 
-import { SCOPEABLE_AT_RULES, PASSTHROUGH_AT_RULES, FORBIDDEN_AT_RULES } from './at-rule-lists';
+import { classifyAtRule } from './at-rule-lists';
 
 interface PluginOpts {
   classNameCompressionMap?: Record<string, string>;
@@ -184,14 +184,15 @@ const atomicifyRule = (node: Rule, opts: PluginOpts): Rule[] => {
  * @param node
  */
 const canAtomicifyAtRule = (node: AtRule): boolean => {
-  if ((SCOPEABLE_AT_RULES as readonly string[]).includes(node.name)) {
+  const kind = classifyAtRule(node.name);
+  if (kind === 'scopeable') {
     return true;
-  } else if ((FORBIDDEN_AT_RULES as readonly string[]).includes(node.name)) {
+  } else if (kind === 'forbidden') {
     throw new Error(`At-rule '@${node.name}' cannot be used in CSS rules.`);
-  } else if (!(PASSTHROUGH_AT_RULES as readonly string[]).includes(node.name)) {
+  } else if (kind === 'unknown') {
     throw new Error(`Unknown at-rule '@${node.name}'.`);
   }
-
+  // 'passthrough' — @keyframes, @font-face, @property etc.
   return false;
 };
 
