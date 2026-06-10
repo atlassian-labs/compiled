@@ -138,6 +138,15 @@ describe('non-atomicify rules', () => {
       );
     });
 
+    it('should scope inner rules inside nested @media > @supports', () => {
+      const actual = transform`
+        @media (min-width: 768px) { @supports (display: grid) { color: blue; } }
+      `;
+      expect(actual).toMatchInlineSnapshot(
+        `"@media (min-width:768px){@supports (display:grid){.cc-test1234{color:blue}}}"`
+      );
+    });
+
     it('should scope inner rules inside @container', () => {
       const actual = transform`
         @container editor-area (max-width: 600px) { .panel { padding: 8px; } }

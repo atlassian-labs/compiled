@@ -119,12 +119,16 @@ const scopeAtRule = (atRuleNode: AtRule, className: string): void => {
       throw new Error(`Unknown at-rule '@${atRuleNode.name}'.`);
 
     case 'scopeable':
-      // @media, @supports, @container etc. — scope inner rules under the class
+      // @media, @supports, @container etc. — scope inner rules under the class.
+      // Handles nested at-rules recursively (e.g. @media { @supports { ... } }),
+      // mirroring the recursive atomicifyAtRule call in atomicify-rules.ts.
       atRuleNode.each((child) => {
         if (child.type === 'rule') {
           scopeRule(child as Rule, className);
         } else if (child.type === 'decl') {
           scopeDecl(child as Declaration, className);
+        } else if (child.type === 'atrule') {
+          scopeAtRule(child as AtRule, className);
         }
       });
   }
