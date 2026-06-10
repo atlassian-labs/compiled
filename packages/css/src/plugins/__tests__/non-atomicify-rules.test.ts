@@ -1,3 +1,4 @@
+import autoprefixer from 'autoprefixer';
 import postcss from 'postcss';
 import nested from 'postcss-nested';
 import whitespace from 'postcss-normalize-whitespace';
@@ -13,6 +14,7 @@ const transform = (css: TemplateStringsArray) => {
       unwrap: ['color-profile', 'counter-style', 'font-palette-values', 'page', 'property'],
     }),
     nonAtomicifyRules({ className: FIXED_CLASS }),
+    autoprefixer(),
     whitespace(),
   ]).process(css[0], { from: undefined });
 
@@ -178,6 +180,37 @@ describe('non-atomicify rules', () => {
   describe('unknown at-rules', () => {
     it('should throw for unrecognised at-rules', () => {
       expect(() => transform`@asdfghjkl { color: red; }`).toThrow("Unknown at-rule '@asdfghjkl'.");
+    });
+  });
+
+  describe('autoprefixer', () => {
+    beforeEach(() => {
+      process.env.BROWSERSLIST = 'last 1 version';
+    });
+
+    it('should autoprefix declarations scoped under the non-atomic class', () => {
+      const actual = transform`user-select: none;`;
+      expect(actual).toMatchInlineSnapshot(
+        `".cc-test1234{-webkit-user-select:none;-ms-user-select:none;user-select:none}"`
+      );
+    });
+
+    it('should autoprefix declarations inside @media scoped under the non-atomic class', () => {
+      const actual = transform`
+        @media (min-width: 30rem) { user-select: none; }
+      `;
+      expect(actual).toMatchInlineSnapshot(
+        `"@media (min-width: 30rem){.cc-test1234{-webkit-user-select:none;-ms-user-select:none;user-select:none}}"`
+      );
+    });
+
+    it('should autoprefix declarations inside a scoped child selector', () => {
+      const actual = transform`
+        .panel { user-select: none; }
+      `;
+      expect(actual).toMatchInlineSnapshot(
+        `".cc-test1234 .panel{-webkit-user-select:none;-ms-user-select:none;user-select:none}"`
+      );
     });
   });
 
