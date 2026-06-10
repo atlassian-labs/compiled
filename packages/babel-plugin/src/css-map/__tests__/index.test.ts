@@ -299,6 +299,29 @@ describe('css map — atomic: false option', () => {
       }
     }`;
 
+  it('should produce valid cc- class names even when filename is undefined', () => {
+    // When babel is invoked without a filename (e.g. in tests or programmatic usage),
+    // meta.state.filename is undefined. The class name falls back to
+    // hash('undefined:variantKey') which is still stable and valid.
+    const actual = transformCode(
+      `
+      import { cssMap } from '@compiled/react';
+      // @ts-expect-error -- atomic is an internal option, not part of the public API
+      const styles = cssMap({
+        danger: { color: 'red' },
+      }, { atomic: false });
+      const C = () => <div css={styles.danger} />;
+    `,
+      { pretty: false }
+      // Note: no filename passed — meta.state.filename will be undefined
+    );
+
+    // Class name is cc-<hash("undefined:danger")> — stable and valid despite no filename.
+    expect(actual).toMatch(/danger:"cc-[a-z0-9]+"/);
+    // The class is still properly scoped in the CSS sheet
+    expect(actual).toMatch(/\.cc-[a-z0-9]+\{color:red\}/);
+  });
+
   it('should produce one non-atomic cc- class per variant instead of multiple atomic _ classes', () => {
     const actual = transform(`
       import { cssMap } from '@compiled/react';
