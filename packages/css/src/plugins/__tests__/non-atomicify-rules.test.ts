@@ -78,6 +78,22 @@ describe('non-atomicify rules', () => {
       `;
       expect(actual).toMatchInlineSnapshot(`".cc-test1234{color:red}"`);
     });
+
+    it('should strip CSS comments', () => {
+      const actual = postcss([nonAtomicifyRules({ className: FIXED_CLASS }), whitespace()]).process(
+        '/* this is a comment */ color: red;',
+        { from: undefined }
+      ).css;
+      expect(actual).toMatchInlineSnapshot(`".cc-test1234{color:red}"`);
+    });
+
+    it('should strip CSS comments and still scope declarations correctly', () => {
+      const actual = postcss([nonAtomicifyRules({ className: FIXED_CLASS }), whitespace()]).process(
+        '/* before */ color: red; /* after */ font-size: 16px;',
+        { from: undefined }
+      ).css;
+      expect(actual).toMatchInlineSnapshot(`".cc-test1234{color:red}.cc-test1234{font-size:16px}"`);
+    });
   });
 
   describe('scopeable at-rules (@media, @supports, @container)', () => {

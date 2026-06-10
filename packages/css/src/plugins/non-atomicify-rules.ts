@@ -106,6 +106,9 @@ export const nonAtomicifyRules = (opts: PluginOpts): Plugin => {
           processAtRule(node as AtRule, className);
         } else if (node.type === 'decl') {
           wrapDeclInRule(node as Declaration, className);
+        } else if (node.type === 'comment') {
+          // Strip comments — same behaviour as atomicifyRules.
+          node.remove();
         }
       });
 
