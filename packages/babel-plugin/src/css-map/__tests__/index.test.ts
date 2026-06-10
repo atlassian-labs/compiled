@@ -280,8 +280,13 @@ describe('css map basic functionality', () => {
 });
 
 describe('css map — atomic: false option', () => {
+  // Use a stable filename so class names derived from hash(filename + variantKey)
+  // are deterministic and meaningful in tests, matching real-world build behaviour.
+  const FIXTURE_FILENAME = 'test/css-map-non-atomic.tsx';
   const transform = (code: string, opts: TransformOptions = {}) =>
-    transformCode(code, { pretty: false, ...opts });
+    transformCode(code, { pretty: false, filename: FIXTURE_FILENAME, ...opts });
+  const transformPretty = (code: string, opts: TransformOptions = {}) =>
+    transformCode(code, { pretty: true, filename: FIXTURE_FILENAME, ...opts });
 
   const styles = `{
       danger: {
@@ -332,7 +337,7 @@ describe('css map — atomic: false option', () => {
   });
 
   it('should scope pseudo-selectors under the single non-atomic class', () => {
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -348,12 +353,12 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _3 = ".cc-1dc5e1n{color:green}";
-      const _2 = ".cc-1vj392m:hover{color:darkred}";
-      const _ = ".cc-1vj392m{color:red}";
+      const _3 = ".cc-7yw089{color:green}";
+      const _2 = ".cc-aojfb:hover{color:darkred}";
+      const _ = ".cc-aojfb{color:red}";
       const styles = {
-        danger: "cc-1vj392m",
-        success: "cc-1dc5e1n",
+        danger: "cc-aojfb",
+        success: "cc-7yw089",
       };
       const C = () => (
         <CC>
@@ -366,7 +371,7 @@ describe('css map — atomic: false option', () => {
   });
 
   it('should preserve and correctly scope at-rules under the single non-atomic class', () => {
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -384,10 +389,10 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = "@media (min-width:768px){.cc-ptc0gn{color:blue}}";
-      const _ = ".cc-ptc0gn{color:red}";
+      const _2 = "@media (min-width:768px){.cc-12ll4nl{color:blue}}";
+      const _ = ".cc-12ll4nl{color:red}";
       const styles = {
-        root: "cc-ptc0gn",
+        root: "cc-12ll4nl",
       };
       const C = () => (
         <CC>
@@ -400,7 +405,7 @@ describe('css map — atomic: false option', () => {
   });
 
   it('should produce an empty string class name for an empty variant', () => {
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -416,10 +421,10 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = ".cc-wq229y{color:red}";
+      const _ = ".cc-1s78kp8{color:red}";
       const styles = {
-        empty: "cc-0",
-        solid: "cc-wq229y",
+        empty: "cc-qqt14v",
+        solid: "cc-1s78kp8",
       };
       const C = () => (
         <CC>
@@ -432,7 +437,7 @@ describe('css map — atomic: false option', () => {
   });
 
   it('should support dynamic variant selection via bracket notation', () => {
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -450,13 +455,13 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _4 = ".cc-rh43eu{background-color:lightgreen}";
-      const _3 = ".cc-rh43eu{color:green}";
-      const _2 = ".cc-gti80w{background-color:pink}";
-      const _ = ".cc-gti80w{color:red}";
+      const _4 = ".cc-7yw089{background-color:lightgreen}";
+      const _3 = ".cc-7yw089{color:green}";
+      const _2 = ".cc-aojfb{background-color:pink}";
+      const _ = ".cc-aojfb{color:red}";
       const styles = {
-        danger: "cc-gti80w",
-        success: "cc-rh43eu",
+        danger: "cc-aojfb",
+        success: "cc-7yw089",
       };
       const C = ({ variant }) => (
         <CC>
@@ -469,7 +474,7 @@ describe('css map — atomic: false option', () => {
   });
 
   it('should support conditional variant application via logical &&', () => {
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -488,11 +493,11 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = ".cc-1dc5e1n{color:green}";
-      const _ = ".cc-wq229y{color:red}";
+      const _2 = ".cc-7yw089{color:green}";
+      const _ = ".cc-aojfb{color:red}";
       const styles = {
-        danger: "cc-wq229y",
-        success: "cc-1dc5e1n",
+        danger: "cc-aojfb",
+        success: "cc-7yw089",
       };
       const C = ({ isDanger }) => (
         <CC>
@@ -505,7 +510,7 @@ describe('css map — atomic: false option', () => {
   });
 
   it('should support multiple conditional variants applied together', () => {
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -531,17 +536,17 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _7 = ".cc-y8lilm{opacity:0.5}";
-      const _6 = ".cc-dmm7lx{background-color:blue}";
-      const _5 = ".cc-1uj13gm{padding-left:8px}";
-      const _4 = ".cc-1uj13gm{padding-bottom:8px}";
-      const _3 = ".cc-1uj13gm{padding-right:8px}";
-      const _2 = ".cc-1uj13gm{padding-top:8px}";
-      const _ = ".cc-1uj13gm{color:red}";
+      const _7 = ".cc-1l611fe{opacity:0.5}";
+      const _6 = ".cc-hyeuh3{background-color:blue}";
+      const _5 = ".cc-1uu75r3{padding-left:8px}";
+      const _4 = ".cc-1uu75r3{padding-bottom:8px}";
+      const _3 = ".cc-1uu75r3{padding-right:8px}";
+      const _2 = ".cc-1uu75r3{padding-top:8px}";
+      const _ = ".cc-1uu75r3{color:red}";
       const styles = {
-        base: "cc-1uj13gm",
-        selected: "cc-dmm7lx",
-        disabled: "cc-y8lilm",
+        base: "cc-1uu75r3",
+        selected: "cc-hyeuh3",
+        disabled: "cc-1l611fe",
       };
       const C = ({ isSelected, isDisabled }) => (
         <CC>
@@ -566,7 +571,7 @@ describe('css map — atomic: false option', () => {
     // selectors (no top-level declarations). The container element receives the cc-
     // class, and all child elements are styled via ".cc-xxx .child-class { ... }".
     // This is how editor styles like panelStyles, tableSharedStyle, mentionNodeStyles work.
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -594,16 +599,16 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _6 = ".cc-o9delr .panel-title{color:red}";
-      const _5 = ".cc-o9delr .panel{background-color:pink}";
-      const _4 = ".cc-1c2j123 .panel-icon svg{fill:currentColor}";
-      const _3 = ".cc-1c2j123 .panel-icon{width:24px;height:24px}";
-      const _2 = ".cc-1c2j123 .panel-title{font-weight:bold;color:blue}";
+      const _6 = ".cc-oljnhh .panel-title{color:red}";
+      const _5 = ".cc-oljnhh .panel{background-color:pink}";
+      const _4 = ".cc-2ax5o6 .panel-icon svg{fill:currentColor}";
+      const _3 = ".cc-2ax5o6 .panel-icon{width:24px;height:24px}";
+      const _2 = ".cc-2ax5o6 .panel-title{font-weight:bold;color:blue}";
       const _ =
-        ".cc-1c2j123 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px;background-color:blue}";
+        ".cc-2ax5o6 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px;background-color:blue}";
       const styles = {
-        panelStyles: "cc-1c2j123",
-        dangerStyles: "cc-o9delr",
+        panelStyles: "cc-2ax5o6",
+        dangerStyles: "cc-oljnhh",
       };
       const C = ({ isDanger }) => (
         <CC>
@@ -622,7 +627,7 @@ describe('css map — atomic: false option', () => {
   it('should handle nested at-rules combined with nested selectors', () => {
     // Mirrors editor patterns like layoutResponsiveBaseStyles, layoutBaseStyles
     // where @media / @container rules contain further nested selectors.
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -650,17 +655,17 @@ describe('css map — atomic: false option', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _7 =
-        "@media (min-width:768px){.cc-ysli16{padding-top:8px}.cc-ysli16{padding-right:8px}.cc-ysli16{padding-bottom:8px}.cc-ysli16{padding-left:8px}}";
-      const _6 = ".cc-ysli16{padding-left:4px}";
-      const _5 = ".cc-ysli16{padding-bottom:4px}";
-      const _4 = ".cc-ysli16{padding-right:4px}";
-      const _3 = ".cc-ysli16{padding-top:4px}";
+        "@media (min-width:768px){.cc-1wyxr0k{padding-top:8px}.cc-1wyxr0k{padding-right:8px}.cc-1wyxr0k{padding-bottom:8px}.cc-1wyxr0k{padding-left:8px}}";
+      const _6 = ".cc-1wyxr0k{padding-left:4px}";
+      const _5 = ".cc-1wyxr0k{padding-bottom:4px}";
+      const _4 = ".cc-1wyxr0k{padding-right:4px}";
+      const _3 = ".cc-1wyxr0k{padding-top:4px}";
       const _2 =
-        "@media (min-width:768px){.cc-w9kp6g{width:50%}.cc-w9kp6g .inner{padding-top:16px;padding-right:16px;padding-bottom:16px;padding-left:16px}}";
-      const _ = ".cc-w9kp6g{width:100%}";
+        "@media (min-width:768px){.cc-ysa2s9{width:50%}.cc-ysa2s9 .inner{padding-top:16px;padding-right:16px;padding-bottom:16px;padding-left:16px}}";
+      const _ = ".cc-ysa2s9{width:100%}";
       const styles = {
-        layoutStyles: "cc-w9kp6g",
-        compactStyles: "cc-ysli16",
+        layoutStyles: "cc-ysa2s9",
+        compactStyles: "cc-1wyxr0k",
       };
       const C = ({ isCompact }) => (
         <CC>
@@ -680,7 +685,7 @@ describe('css map — atomic: false option', () => {
     // CSS variables (--custom-prop) are first-class declarations in non-atomic mode.
     // They are emitted as regular declarations inside the cc- class, just like any other property.
     // Consumers can then override them by applying a different variant.
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -704,15 +709,15 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _6 = ".cc-1o17xa6{background-color:var(--panel-bg)}";
-      const _5 = ".cc-1o17xa6{--panel-bg:pink}";
-      const _4 = ".cc-xafx8m{gap:var(--panel-gap)}";
-      const _3 = ".cc-xafx8m{background-color:var(--panel-bg)}";
-      const _2 = ".cc-xafx8m{--panel-gap:8px}";
-      const _ = ".cc-xafx8m{--panel-bg:blue}";
+      const _6 = ".cc-oljnhh{background-color:var(--panel-bg)}";
+      const _5 = ".cc-oljnhh{--panel-bg:pink}";
+      const _4 = ".cc-2ax5o6{gap:var(--panel-gap)}";
+      const _3 = ".cc-2ax5o6{background-color:var(--panel-bg)}";
+      const _2 = ".cc-2ax5o6{--panel-gap:8px}";
+      const _ = ".cc-2ax5o6{--panel-bg:blue}";
       const styles = {
-        panelStyles: "cc-xafx8m",
-        dangerStyles: "cc-1o17xa6",
+        panelStyles: "cc-2ax5o6",
+        dangerStyles: "cc-oljnhh",
       };
       const C = ({ isDanger }) => (
         <CC>
@@ -733,7 +738,7 @@ describe('css map — atomic: false option', () => {
     // initial value and inheritance flag. In non-atomic mode the declarations inside
     // @property are scoped under the cc- class (note: @property is technically a global
     // rule so the scoping here is a Compiled convention rather than native CSS behaviour).
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -757,12 +762,12 @@ describe('css map — atomic: false option', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _3 =
-        ".cc-1w23ozt{background:linear-gradient(var(--panel-gradient-angle),blue,pink)}";
-      const _2 = ".cc-1w23ozt{--panel-gradient-angle:270deg}";
+        ".cc-id7xhj{background:linear-gradient(var(--panel-gradient-angle),blue,pink)}";
+      const _2 = ".cc-id7xhj{--panel-gradient-angle:270deg}";
       const _ =
         "@property --panel-gradient-angle{syntax:'<angle>';initial-value:270deg;inherits:false}";
       const styles = {
-        gradientStyles: "cc-1w23ozt",
+        gradientStyles: "cc-id7xhj",
       };
       const C = () => (
         <CC>
@@ -779,7 +784,7 @@ describe('css map — atomic: false option', () => {
     // - @keyframes stops (0%, to) have NO class selector prefix
     // - Only the animation property declarations get the atomic _ class
     // The non-atomic test below should match this behaviour for @keyframes stops.
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap, keyframes } from '@compiled/react';
       const spin = keyframes({ from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } });
@@ -813,7 +818,7 @@ describe('css map — atomic: false option', () => {
     // @keyframes stops (0%, to) must NOT be prefixed with the cc- class —
     // they are keyframe selectors, not element selectors. Only animation property
     // declarations and child element selectors get the cc- class prefix.
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap, keyframes } from '@compiled/react';
       const spin = keyframes({ from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } });
@@ -837,15 +842,15 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _3 = ".cc-1anr5zy{opacity:1}";
+      const _3 = ".cc-zs6pa2{opacity:1}";
       const _2 =
-        ".cc-14qp4ua .spinner{animation-name:k7rupus;animation-duration:2s;animation-timing-function:linear;animation-iteration-count:infinite}";
+        ".cc-zs9m2x .spinner{animation-name:k7rupus;animation-duration:2s;animation-timing-function:linear;animation-iteration-count:infinite}";
       const _ =
         "@keyframes k7rupus{0%{transform:rotate(0deg)}to{transform:rotate(360deg)}}";
       const spin = null;
       const styles = {
-        animated: "cc-14qp4ua",
-        static: "cc-1anr5zy",
+        animated: "cc-zs9m2x",
+        static: "cc-zs6pa2",
       };
       const C = ({ isAnimated }) => (
         <CC>
@@ -861,7 +866,7 @@ describe('css map — atomic: false option', () => {
     // @supports is used in the editor for progressive enhancement / legacy fallbacks.
     // In non-atomic mode it is treated like any other at-rule — wrapped and scoped
     // under the single cc- class for the variant.
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -886,10 +891,10 @@ describe('css map — atomic: false option', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _2 =
-        '@supports not (display:flow-root){.cc-c6m3v1 .panel:after{content:"";display:table;clear:both}}';
-      const _ = ".cc-c6m3v1{display:block}";
+        '@supports not (display:flow-root){.cc-k2kv27 .panel:after{content:"";display:table;clear:both}}';
+      const _ = ".cc-k2kv27{display:block}";
       const styles = {
-        legacyStyles: "cc-c6m3v1",
+        legacyStyles: "cc-k2kv27",
       };
       const C = () => (
         <CC>
@@ -904,7 +909,7 @@ describe('css map — atomic: false option', () => {
   it('should handle @container queries (literal) in a non-atomic variant', () => {
     // @container queries are used extensively in the editor for responsive layout.
     // They are treated like @media rules — wrapped under the cc- class.
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -925,13 +930,13 @@ describe('css map — atomic: false option', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _5 =
-        "@container editor-area (max-width: 600px){.cc-11q3vk3 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}}";
-      const _4 = ".cc-11q3vk3{padding-left:16px}";
-      const _3 = ".cc-11q3vk3{padding-bottom:16px}";
-      const _2 = ".cc-11q3vk3{padding-right:16px}";
-      const _ = ".cc-11q3vk3{padding-top:16px}";
+        "@container editor-area (max-width: 600px){.cc-197u3x4 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}}";
+      const _4 = ".cc-197u3x4{padding-left:16px}";
+      const _3 = ".cc-197u3x4{padding-bottom:16px}";
+      const _2 = ".cc-197u3x4{padding-right:16px}";
+      const _ = ".cc-197u3x4{padding-top:16px}";
       const styles = {
-        responsiveStyles: "cc-11q3vk3",
+        responsiveStyles: "cc-197u3x4",
       };
       const C = () => (
         <CC>
@@ -947,7 +952,7 @@ describe('css map — atomic: false option', () => {
     // The editor defines container query strings as constants and uses them as
     // computed property keys: [editorAreaNarrowPageContainerQuery]: { ... }
     // Compiled resolves the variable binding at compile time.
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       const containerQuery = '@container editor-area (max-width: 760px)';
@@ -968,10 +973,10 @@ describe('css map — atomic: false option', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        "@container editor-area (max-width: 760px){.cc-1wcae6p .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}}";
+        "@container editor-area (max-width: 760px){.cc-197u3x4 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}}";
       const containerQuery = "@container editor-area (max-width: 760px)";
       const styles = {
-        responsiveStyles: "cc-1wcae6p",
+        responsiveStyles: "cc-197u3x4",
       };
       const C = () => (
         <CC>
@@ -987,7 +992,7 @@ describe('css map — atomic: false option', () => {
     // The editor spreads shared style objects (e.g. ...dangerBorderStyles) inside
     // cssMap variants using // eslint-disable no-unsafe-values suppression.
     // Compiled resolves the binding at compile time and inlines the declarations.
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       const dangerBorderStyles = { boxShadow: '0 0 0 1px red', borderColor: 'red' };
@@ -1010,13 +1015,13 @@ describe('css map — atomic: false option', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        ".cc-1wq9xmq .panel{box-shadow:0 0 0 1px red;border-color:red;padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}";
+        ".cc-oljnhh .panel{box-shadow:0 0 0 1px red;border-color:red;padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}";
       const dangerBorderStyles = {
         boxShadow: "0 0 0 1px red",
         borderColor: "red",
       };
       const styles = {
-        dangerStyles: "cc-1wq9xmq",
+        dangerStyles: "cc-oljnhh",
       };
       const C = () => (
         <CC>
@@ -1031,7 +1036,7 @@ describe('css map — atomic: false option', () => {
   it('should handle !important declarations in a non-atomic variant', () => {
     // The editor uses !important overrides in some cases (e.g. backgroundColor overrides).
     // In non-atomic mode !important is preserved as-is in the output CSS.
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -1053,9 +1058,9 @@ describe('css map — atomic: false option', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        ".cc-tkb64d .panel{background-color:blue!important;border-color:blue}";
+        ".cc-148sxnx .panel{background-color:blue!important;border-color:blue}";
       const styles = {
-        overrideStyles: "cc-tkb64d",
+        overrideStyles: "cc-148sxnx",
       };
       const C = () => (
         <CC>
@@ -1078,7 +1083,7 @@ describe('css map — atomic: false option', () => {
     //     isFullPage && isDense && styles.denseStyles,       ← compound boolean condition
     //     isFirefox && styles.firefoxStyles,                 ← browser detection gate
     //   ]}
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -1115,23 +1120,23 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _0 = ".cc-i9as85{scrollbar-width:thin}";
-      const _9 = ".cc-mowi26{line-height:1.2}";
-      const _8 = ".cc-1i8l5k3{font-family:serif}";
-      const _7 = ".cc-116z3w0{font-family:sans-serif}";
-      const _6 = ".cc-5f5vfj{max-width:1200px}";
-      const _5 = ".cc-1uj13gm{padding-left:8px}";
-      const _4 = ".cc-1uj13gm{padding-bottom:8px}";
-      const _3 = ".cc-1uj13gm{padding-right:8px}";
-      const _2 = ".cc-1uj13gm{padding-top:8px}";
-      const _ = ".cc-1uj13gm{color:red}";
+      const _0 = ".cc-cuh1m4{scrollbar-width:thin}";
+      const _9 = ".cc-1n67tsr{line-height:1.2}";
+      const _8 = ".cc-15lej18{font-family:serif}";
+      const _7 = ".cc-gv27a7{font-family:sans-serif}";
+      const _6 = ".cc-h2ubxs{max-width:1200px}";
+      const _5 = ".cc-2qfkyd{padding-left:8px}";
+      const _4 = ".cc-2qfkyd{padding-bottom:8px}";
+      const _3 = ".cc-2qfkyd{padding-right:8px}";
+      const _2 = ".cc-2qfkyd{padding-top:8px}";
+      const _ = ".cc-2qfkyd{color:red}";
       const styles = {
-        baseStyles: "cc-1uj13gm",
-        fullPageStyles: "cc-5f5vfj",
-        typographyUGC: "cc-116z3w0",
-        typographyDefault: "cc-1i8l5k3",
-        denseStyles: "cc-mowi26",
-        firefoxStyles: "cc-i9as85",
+        baseStyles: "cc-2qfkyd",
+        fullPageStyles: "cc-h2ubxs",
+        typographyUGC: "cc-gv27a7",
+        typographyDefault: "cc-15lej18",
+        denseStyles: "cc-1n67tsr",
+        firefoxStyles: "cc-cuh1m4",
       };
       const EditorContainer = ({
         isFullPage,

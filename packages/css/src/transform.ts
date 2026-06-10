@@ -42,6 +42,14 @@ export interface LocalTransformOptions {
    * @experimental Not part of the public API. May change without notice.
    */
   atomic?: boolean;
+  /**
+   * Pre-computed class name for non-atomic mode. When provided, avoids hashing
+   * the full CSS content string — use `NON_ATOMIC_CLASS_PREFIX + hash(filename + ':' + variantKey)`.
+   * Falls back to hashing the CSS content if not provided.
+   *
+   * @experimental Not part of the public API. May change without notice.
+   */
+  nonAtomicClassName?: string;
 }
 
 /**
@@ -74,10 +82,10 @@ export const transformCss = (
   try {
     if (!isAtomic) {
       // Non-atomic mode: wrap all declarations under a single generated class name.
-      // The class name is derived from a hash of the CSS content so it's stable and
-      // unique. No `_` prefix — ax() will treat it as a plain class and won't attempt
-      // to deduplicate it by atomic group.
-      const className = `${NON_ATOMIC_CLASS_PREFIX}${hash(css)}`;
+      // Use the pre-computed class name (hash of filename + variantKey) when available —
+      // this avoids hashing the full CSS content string for large cssMap variants.
+      // Falls back to hashing the CSS content for standalone transformCss() callers.
+      const className = localOpts.nonAtomicClassName ?? `${NON_ATOMIC_CLASS_PREFIX}${hash(css)}`;
 
       const result = postcss([
         discardDuplicates(),

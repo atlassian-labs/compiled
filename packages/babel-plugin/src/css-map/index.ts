@@ -1,5 +1,7 @@
 import type { NodePath } from '@babel/core';
 import * as t from '@babel/types';
+import { NON_ATOMIC_CLASS_PREFIX } from '@compiled/css';
+import { hash } from '@compiled/utils';
 
 import type { Metadata } from '../types';
 import { buildCodeFrameError } from '../utils/ast';
@@ -159,7 +161,22 @@ export const visitCssMapPath = (
           );
         }
 
-        const { sheets, classNames } = transformCssItems(css, meta, options);
+        // Pre-compute the non-atomic class name from filename + variantKey to avoid
+        // hashing the full CSS content string for potentially large cssMap variants.
+        const variantKey = t.isIdentifier(property.key)
+          ? property.key.name
+          : t.isStringLiteral(property.key)
+          ? property.key.value
+          : undefined;
+        const nonAtomicClassName =
+          options.atomic === false && variantKey !== undefined
+            ? `${NON_ATOMIC_CLASS_PREFIX}${hash(`${meta.state.filename ?? ''}:${variantKey}`)}`
+            : undefined;
+
+        const { sheets, classNames } = transformCssItems(css, meta, {
+          ...options,
+          nonAtomicClassName,
+        });
         totalSheets.push(...sheets);
 
         if (classNames.length > 1) {

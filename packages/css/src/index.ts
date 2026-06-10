@@ -1,5 +1,5 @@
 export { addUnitIfNeeded } from './utils/css-property';
-export { transformCss } from './transform';
+export { transformCss, NON_ATOMIC_CLASS_PREFIX } from './transform';
 export {
   cssAffixInterpolation,
   AfterInterpolation,

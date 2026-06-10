@@ -9,6 +9,12 @@ import type { CssItem } from './types';
 
 type TransformOptions = {
   atomic?: boolean;
+  /**
+   * Pre-computed class name for non-atomic mode (`atomic: false`).
+   * Should be `NON_ATOMIC_CLASS_PREFIX + hash(filename + ':' + variantKey)`.
+   * When provided, avoids hashing the full CSS content string.
+   */
+  nonAtomicClassName?: string;
 };
 
 /**
@@ -125,7 +131,10 @@ export const transformCssItems = (
       .map((item) => getItemCss(item))
       .join('\n');
 
-    const css = transformCss(combinedCss, meta.state.opts, opts);
+    const css = transformCss(combinedCss, meta.state.opts, {
+      atomic: opts.atomic,
+      nonAtomicClassName: opts.nonAtomicClassName,
+    });
     const sheets = css.sheets;
     const className = compressClassNamesForRuntime(
       css.classNames,
