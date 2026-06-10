@@ -1,7 +1,7 @@
 import type { NodePath } from '@babel/core';
 import * as t from '@babel/types';
 
-import type { Metadata, HashStrategy } from '../types';
+import type { Metadata } from '../types';
 import { buildCodeFrameError } from '../utils/ast';
 import { buildCss } from '../utils/css-builders';
 import { ErrorMessages, createErrorMessage, errorIfNotValidObjectProperty } from '../utils/css-map';
@@ -10,17 +10,20 @@ import { transformCssItems } from '../utils/transform-css-items';
 import { mergeExtendedSelectorsIntoProperties } from './process-selectors';
 
 type CssMapOptions = {
-  hashStrategy?: HashStrategy;
+  atomic?: boolean;
 };
 
 /**
  * @experimental Options for cssMap are not part of the public API and may change without notice.
- * The `hashStrategy` option is intentionally omitted from the TypeScript type signature of cssMap.
+ * The `atomic` option is intentionally omitted from the TypeScript type signature of cssMap.
  * Internal consumers can opt in using `@ts-ignore`, it's highly risky.
+ *
+ * When `atomic: false`, each variant is compiled to a single non-atomic CSS class
+ * (no `_` prefix) instead of one atomic class per declaration. This dramatically
+ * reduces the number of classes applied to a DOM element when a cssMap has many
+ * properties — at the cost of losing atomic deduplication semantics for that map.
  */
-const KNOWN_OPTIONS = ['hashStrategy'];
-
-const VALID_HASH_STRATEGIES: HashStrategy[] = ['default', 'enhanced', 'max'];
+const KNOWN_OPTIONS = ['atomic'];
 
 /**
  * Takes `cssMap` function expression and then transforms it to a record of class names and sheets.
@@ -109,26 +112,25 @@ export const visitCssMapPath = (
         );
       }
 
-      if (!t.isStringLiteral(prop.value)) {
-        throw buildCodeFrameError(
-          createErrorMessage(ErrorMessages.OPTS_PROPERTY_VALUE_TYPE),
-          prop.value,
-          path
-        );
+      if (optionName === 'atomic') {
+        // `atomic` must be a boolean literal
+        if (!t.isBooleanLiteral(prop.value)) {
+          throw buildCodeFrameError(
+            createErrorMessage(ErrorMessages.OPTS_PROPERTY_VALUE_TYPE),
+            prop.value,
+            path
+          );
+        }
+        options.atomic = prop.value.value;
+        return;
       }
 
-      if (
-        optionName === 'hashStrategy' &&
-        !VALID_HASH_STRATEGIES.includes(prop.value.value as HashStrategy)
-      ) {
-        throw buildCodeFrameError(
-          createErrorMessage(ErrorMessages.OPTS_PROPERTY_VALUE_TYPE),
-          prop.value,
-          path
-        );
-      }
-
-      options[optionName as keyof CssMapOptions] = prop.value.value as HashStrategy;
+      // Fallback: unknown option with wrong value type
+      throw buildCodeFrameError(
+        createErrorMessage(ErrorMessages.OPTS_PROPERTY_KNOWN_NAME),
+        prop.key,
+        path
+      );
     });
   }
 

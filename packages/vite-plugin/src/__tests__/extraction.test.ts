@@ -412,4 +412,111 @@ describe('CSS Extraction', () => {
       expect(emittedFiles[0]).not.toHaveProperty('fileName');
     });
   });
+
+  describe('non-atomic cssMap (atomic: false) extraction', () => {
+    it('should preserve cc- prefixed non-atomic classes unchanged in the bundle', async () => {
+      // Non-atomic classes (cc- prefix) do not need pseudo-selector sorting or
+      // atomic deduplication — they pass through the bundle untouched.
+      const plugin = compiledVitePlugin({ extract: true });
+
+      const nonAtomicCss =
+        '.cc-1c2j123 .panel{padding:8px;background-color:blue}' +
+        '.cc-1c2j123 .panel-title{font-weight:bold;color:blue}' +
+        '.cc-o9delr .panel{background-color:pink}' +
+        '.cc-o9delr .panel-title{color:red}';
+
+      const bundle = {
+        'index.css': {
+          type: 'asset' as const,
+          fileName: 'index.css',
+          source: nonAtomicCss,
+          name: 'index',
+          names: [],
+          needsCodeReference: false,
+        },
+      };
+
+      const context = { emitFile: jest.fn(), warn: jest.fn() };
+      await plugin.generateBundle.call(context, {}, bundle);
+
+      // CSS is preserved exactly — no sorting, no deduplication applied
+      expect(bundle['index.css'].source).toBe(nonAtomicCss);
+      // No warnings emitted
+      expect(context.warn).not.toHaveBeenCalled();
+    });
+
+    it('should handle a bundle with both atomic and non-atomic classes', async () => {
+      // A real app may have both: atomic classes from css()/styled() and
+      // non-atomic classes from cssMap with atomic: false.
+      // Only the atomic portion (._) triggers sorting; cc- classes pass through.
+      const plugin = compiledVitePlugin({ extract: true });
+
+      const mixedCss =
+        // atomic classes — should be sorted
+        '._abc:hover{color:blue}._abc:focus{color:green}._abc{color:red}' +
+        // non-atomic classes — should pass through unchanged
+        '.cc-1c2j123 .panel{padding:8px}.cc-o9delr .panel{background-color:pink}';
+
+      const bundle = {
+        'index.css': {
+          type: 'asset' as const,
+          fileName: 'index.css',
+          source: mixedCss,
+          name: 'index',
+          names: [],
+          needsCodeReference: false,
+        },
+      };
+
+      const context = { emitFile: jest.fn(), warn: jest.fn() };
+      await plugin.generateBundle.call(context, {}, bundle);
+
+      const result = bundle['index.css'].source as string;
+
+      // Atomic classes are still sorted (focus before hover)
+      expect(result.indexOf(':focus')).toBeLessThan(result.indexOf(':hover'));
+      // Non-atomic cc- classes are preserved in the output
+      expect(result).toContain('.cc-1c2j123 .panel{padding:8px}');
+      expect(result).toContain('.cc-o9delr .panel{background-color:pink}');
+    });
+
+    it('should transform cssMap with atomic: false and produce cc- classes in output', async () => {
+      // End-to-end: the vite plugin transform step compiles cssMap({ ... }, { atomic: false })
+      // and produces cc- prefixed classes instead of atomic _ classes in the JS output.
+      const plugin = compiledVitePlugin();
+
+      const code = `
+        import { cssMap } from '@compiled/react';
+
+        // @ts-ignore — atomic is an internal option
+        const styles = cssMap({
+          panelStyles: {
+            '.panel': { padding: '8px', backgroundColor: 'blue' },
+            '.panel-title': { fontWeight: 'bold', color: 'blue' },
+          },
+          dangerStyles: {
+            '.panel': { backgroundColor: 'pink' },
+            '.panel-title': { color: 'red' },
+          },
+        }, { atomic: false });
+
+        export const Component = ({ isDanger }) => (
+          <div css={[styles.panelStyles, isDanger && styles.dangerStyles]} />
+        );
+      `;
+
+      const result = await plugin.transform!(code, 'test.tsx');
+
+      expect(result).toBeTruthy();
+      if (result && typeof result === 'object' && 'code' in result) {
+        // Non-atomic: class names start with "cc-", not "_"
+        expect(result.code).toMatch(/cc-[a-z0-9]+/);
+        // No atomic _ class names generated for these variants
+        expect(result.code).not.toMatch(/"_[a-z0-9]{8}"/);
+        // The CSS sheets contain the nested child selectors scoped to cc- classes
+        expect(result.code).toContain('.panel');
+        expect(result.code).toContain('background-color');
+      }
+    });
+  });
 });

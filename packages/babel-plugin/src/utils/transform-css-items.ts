@@ -1,14 +1,14 @@
 import * as t from '@babel/types';
 import { transformCss } from '@compiled/css';
 
-import type { HashStrategy, Metadata } from '../types';
+import type { Metadata } from '../types';
 
 import { compressClassNamesForRuntime } from './compress-class-names-for-runtime';
 import { getItemCss } from './css-builders';
 import type { CssItem } from './types';
 
 type TransformOptions = {
-  hashStrategy?: HashStrategy;
+  atomic?: boolean;
 };
 
 /**
@@ -110,6 +110,34 @@ export const transformCssItems = (
   meta: Metadata,
   opts: TransformOptions = {}
 ): { sheets: string[]; classNames: t.Expression[] } => {
+  // In non-atomic mode, all CSS items for a variant must be combined into a single
+  // CSS string and transformed together so that exactly ONE class name is generated.
+  // This is required because a variant may produce multiple CssItems (e.g. a
+  // @keyframes item + a declaration item when keyframes() is used), and without
+  // combining them each item would get its own cc- hash — violating the invariant
+  // that non-atomic cssMap variants produce a single class.
+  if (opts.atomic === false) {
+    // Collect all unconditional CSS text from the items, ignoring conditional/map items.
+    // Conditional items (ternary) are handled by the cssMap compiler upstream before
+    // reaching here — each variant's items are always unconditional at this point.
+    const combinedCss = cssItems
+      .filter((item) => item.type !== 'conditional' && item.type !== 'map')
+      .map((item) => getItemCss(item))
+      .join('\n');
+
+    const css = transformCss(combinedCss, meta.state.opts, opts);
+    const sheets = css.sheets;
+    const className = compressClassNamesForRuntime(
+      css.classNames,
+      meta.state.opts.classNameCompressionMap
+    ).join(' ');
+
+    return {
+      sheets,
+      classNames: className.trim() ? [t.stringLiteral(className)] : [],
+    };
+  }
+
   const sheets: string[] = [];
   const classNames: t.Expression[] = [];
 

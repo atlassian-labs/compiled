@@ -1,8 +1,6 @@
-import { hash, hashBase62 } from '@compiled/utils';
+import { hash } from '@compiled/utils';
 import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
 import { rule } from 'postcss';
-
-import type { HashStrategy } from '../hash-strategy';
 
 interface PluginOpts {
   classNameCompressionMap?: Record<string, string>;
@@ -11,12 +9,6 @@ interface PluginOpts {
   atRule?: string;
   parentNode?: Container;
   classHashPrefix?: string;
-  /**
-   * Controls the hash strategy used for atomic class name generation.
-   * @default 'default'
-   * @experimental Not part of the public API. May change without notice.
-   */
-  hashStrategy?: HashStrategy;
 }
 
 /**
@@ -46,45 +38,12 @@ const isCssIdentifierValid = (value: string): boolean => {
 const atomicClassName = (node: Declaration, opts: PluginOpts): string => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
   const prefix = opts.classHashPrefix ?? '';
-  const hashKey = `${prefix}${opts.atRule}${selectors}${node.prop}`;
+  const group = hash(`${prefix}${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
+
   const value = node.important ? node.value + node.important : node.value;
-  const strategy = opts.hashStrategy ?? 'default';
+  const valueHash = hash(value).slice(0, 4);
 
-  /**
-   * Generates an atomic class name based on the configured `hashStrategy`.
-   *
-   * | strategy    | group hash          | value hash | class length |
-   * |-------------|---------------------|------------|--------------|
-   * | `default`   | base-36, slice(0,4) | base-36 slice(0,4) | 9 chars |
-   * | `enhanced`  | base-62, slice(-4)  | base-62 slice(-4)  | 9 chars |
-   * | `max`       | base-62, full 6-char| base-62 slice(-4)  | 11 chars |
-   */
-  switch (strategy) {
-    case 'enhanced': {
-      const group = hashBase62(hashKey).padStart(6, '0').slice(-4);
-      const valueHash = hashBase62(value).padStart(6, '0').slice(-4);
-      return `_${group}${valueHash}`;
-    }
-
-    case 'max': {
-      // Use the full 32-bit hash encoded in base-62 (6 chars) — no truncation.
-      // This produces 11-char classes (_GGGGGGVVVV) which are structurally
-      // incompatible with legacy 9-char classes, eliminating cross-package
-      // collisions by construction.
-      const group = hashBase62(hashKey).padStart(6, '0');
-      const valueHash = hashBase62(value).padStart(6, '0').slice(-4);
-      return `_${group}${valueHash}`;
-    }
-
-    case 'default':
-    default: {
-      // Original behaviour — kept for backward compatibility.
-      // Note: .slice(0, 4) has a leading-digit bias (see hash strategy docs).
-      const group = hash(hashKey).slice(0, 4);
-      const valueHash = hash(value).slice(0, 4);
-      return `_${group}${valueHash}`;
-    }
-  }
+  return `_${group}${valueHash}`;
 };
 
 /**

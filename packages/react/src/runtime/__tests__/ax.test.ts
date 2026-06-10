@@ -22,7 +22,7 @@ describe('ax - common', () => {
   });
 });
 
-describe('ax - default strategy', () => {
+describe('ax - atomic', () => {
   it.each([
     [
       'should ensure the last atomic declaration of a single group wins',
@@ -64,122 +64,51 @@ describe('ax - default strategy', () => {
   });
 });
 
-/**
- * @experimental not supported officially
- * Enhanced strategy classes are 9 chars (same as default: _GGGGVVVV),
- * but the group hash uses base-62 encoding (may include uppercase letters).
- * The same deduplication rules apply as for the default strategy.
- */
-describe('ax - enhanced strategy', () => {
+describe('ax - non-atomic', () => {
   it.each([
+    ['should pass through a single cc- class unchanged', ['cc-1c2j123'], 'cc-1c2j123'],
     [
-      'should ensure the last atomic declaration of a single group wins',
-      ['_aAbBcccc', '_aAbBdddd'],
-      '_aAbBdddd',
+      'should join multiple distinct cc- classes',
+      ['cc-1c2j123', 'cc-o9delr'],
+      'cc-1c2j123 cc-o9delr',
+    ],
+    ['should deduplicate identical cc- classes', ['cc-1c2j123', 'cc-1c2j123'], 'cc-1c2j123'],
+    [
+      'should handle a conditional cc- class evaluating to false',
+      // When isDanger is false, JS evaluates (isDanger && styles.danger) → false
+      // before passing to ax(). So ax() receives ['cc-1c2j123', false].
+      ['cc-1c2j123', false as const],
+      'cc-1c2j123',
     ],
     [
-      'should ensure the last atomic declaration of many single groups wins',
-      ['_aAbBcccc', '_aAbBdddd', '_aAbBeeee', '_aAbBffff'],
-      '_aAbBffff',
+      'should handle two cc- classes from a ternary expression',
+      // When fg_typography_ugc is true, JS evaluates the ternary to 'cc-116z3w0'
+      // before passing to ax(). So ax() receives ['cc-1c2j123', 'cc-116z3w0'].
+      ['cc-1c2j123', 'cc-116z3w0'],
+      'cc-1c2j123 cc-116z3w0',
     ],
     [
-      'should ensure the last atomic declaration of a multi group wins',
-      ['_aAbBcccc _aAbBdddd'],
-      '_aAbBdddd',
+      'should handle mixed atomic and non-atomic classes — cc- classes are preserved alongside _ classes',
+      // ax() can receive both atomic (_) classes from css()/styled() and non-atomic
+      // (cc-) classes from cssMap with atomic: false in the same call.
+      // Atomic group "aaaa" is deduped to its last value; cc- classes are all preserved.
+      ['_aaaabbbb', 'cc-1c2j123', '_aaaacccc', 'cc-o9delr'],
+      '_aaaacccc cc-1c2j123 cc-o9delr',
     ],
     [
-      'should ensure the last atomic declaration of many multi groups wins',
-      ['_aAbBcccc _aAbBdddd _aAbBeeee _aAbBffff'],
-      '_aAbBffff',
+      'should not treat cc- as an atomic group (different cc- classes are not deduped by prefix)',
+      // cc-1c2j123, cc-o9delr and cc-5f5vfj all start with "cc-" but each is a
+      // distinct variant with a unique full class name as key — none should be dropped.
+      ['cc-1c2j123', 'cc-o9delr', 'cc-5f5vfj'],
+      'cc-1c2j123 cc-o9delr cc-5f5vfj',
     ],
     [
-      'should ensure the last atomic declaration of many multi groups wins (same group length)',
-      ['_aAbBcccc', '_aAbBdddd', '_xXyYcccc', '_xXyYdddd'],
-      '_aAbBdddd _xXyYdddd',
-    ],
-    [
-      'should not remove any atomic declarations if there are no duplicate groups',
-      ['_aAbBcccc', '_xXyYcccc'],
-      '_aAbBcccc _xXyYcccc',
-    ],
-    [
-      'should ignore non atomic declarations when atomic declarations exist',
-      ['hello_there', 'hello_world', '_aAbBcccc'],
-      'hello_there hello_world _aAbBcccc',
-    ],
-  ])('%s', (_, params, expected) => {
-    expect(ax(params)).toEqual(expected);
-  });
-});
-
-/**
- * @experimental not supported officially
- * Max strategy classes are 11 chars (_GGGGGGVVVV — 6-char group, 4-char value).
- * The same deduplication rules apply as for the default strategy.
- */
-describe('ax - max strategy', () => {
-  it.each([
-    [
-      'should ensure the last atomic declaration of a single group wins',
-      ['_aAbBcCdddd', '_aAbBcCeeee'],
-      '_aAbBcCeeee',
-    ],
-    [
-      'should ensure the last atomic declaration of many single groups wins',
-      ['_aAbBcCdddd', '_aAbBcCeeee', '_aAbBcCffff', '_aAbBcCgggg'],
-      '_aAbBcCgggg',
-    ],
-    [
-      'should ensure the last atomic declaration of a multi group wins',
-      ['_aAbBcCdddd _aAbBcCeeee'],
-      '_aAbBcCeeee',
-    ],
-    [
-      'should ensure the last atomic declaration of many multi groups wins',
-      ['_aAbBcCdddd _aAbBcCeeee _aAbBcCffff _aAbBcCgggg'],
-      '_aAbBcCgggg',
-    ],
-    [
-      'should ensure the last atomic declaration of many multi groups wins (same group length)',
-      ['_aAbBcCdddd', '_aAbBcCeeee', '_xXyYzZdddd', '_xXyYzZeeee'],
-      '_aAbBcCeeee _xXyYzZeeee',
-    ],
-    [
-      'should not remove any atomic declarations if there are no duplicate groups',
-      ['_aAbBcCdddd', '_xXyYzZdddd'],
-      '_aAbBcCdddd _xXyYzZdddd',
-    ],
-    [
-      'should ignore non atomic declarations when atomic declarations exist',
-      ['hello_there', 'hello_world', '_aAbBcCdddd'],
-      'hello_there hello_world _aAbBcCdddd',
-    ],
-  ])('%s', (_, params, expected) => {
-    expect(ax(params)).toEqual(expected);
-  });
-});
-
-/**
- * @experimental not supported officially
- * When default (9-char) and max (11-char) classes share the same CSS property,
- * they will NOT deduplicate each other because their group keys differ in length.
- * Both classes are kept, with specificity order deciding which value takes effect.
- *
- * TODO: In a future PR, ax should correctly
- * deduplicate classes across different hash strategies (e.g. default vs. max),
- * making it safe to mix strategies across packages.
- */
-describe('ax - cross-strategy conflicts (known limitation)', () => {
-  it.each([
-    [
-      'should NOT deduplicate default (9-char) vs max (11-char) classes',
-      ['_aaaabbbb', '_aaaabbbbcccc'],
-      '_aaaabbbb _aaaabbbbcccc',
-    ],
-    [
-      'should NOT deduplicate max (11-char) vs default (9-char) classes',
-      ['_aAbBcCdddd', '_aAbBdddd'],
-      '_aAbBcCdddd _aAbBdddd',
+      'should handle the full editor pattern: always-on + conditional cc- classes',
+      // ax() receives the already-evaluated results of:
+      //   [styles.base, isFullPage && styles.fullPage, isDense && styles.dense]
+      // where isDense evaluated to false, so ax() gets ['cc-1uj13gm', 'cc-5f5vfj', false].
+      ['cc-1uj13gm', 'cc-5f5vfj', false as const],
+      'cc-1uj13gm cc-5f5vfj',
     ],
   ])('%s', (_, params, expected) => {
     expect(ax(params)).toEqual(expected);

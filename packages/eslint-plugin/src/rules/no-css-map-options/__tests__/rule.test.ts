@@ -34,13 +34,13 @@ tester.run('no-css-map-options', noCssMapOptionsRule, {
       code: outdent`
         import { css } from '@compiled/react';
 
-        const styles = css({ color: 'red' }, { hashStrategy: 'max' });
+        const styles = css({ color: 'red' }, { atomic: false });
       `,
     },
   ],
   invalid: [
     {
-      name: 'should error when cssMap is called with hashStrategy option',
+      name: 'should error when cssMap is called with atomic option',
       code: outdent`
         import { cssMap } from '@compiled/react';
 
@@ -48,7 +48,7 @@ tester.run('no-css-map-options', noCssMapOptionsRule, {
           danger: {
             color: 'red',
           },
-        }, { hashStrategy: 'max' });
+        }, { atomic: false });
       `,
       errors: [{ messageId: 'noCssMapOptions' }],
     },
@@ -74,7 +74,7 @@ tester.run('no-css-map-options', noCssMapOptionsRule, {
           danger: {
             color: 'red',
           },
-        }, { hashStrategy: 'max' });
+        }, { atomic: false });
       `,
       errors: [{ messageId: 'noCssMapOptions' }],
     },

@@ -513,106 +513,12 @@ describe('#css-transform', () => {
       `);
     });
 
-    it('should use enhanced hash strategy (base-62 slice(-4)) for more hash space', () => {
-      const { sheets: actual } = transformCss(
-        `div span { color: red; font-weight: bold; }`,
-        {},
-        { hashStrategy: 'enhanced' }
-      );
-
-      // enhanced strategy: base-62 with slice(-4) — 8.8× more hash space, same 9-char shape
-      expect(actual).toHaveLength(2);
-      // Class names use base-62 (may include uppercase letters)
-      actual.forEach((sheet) => {
-        expect(sheet).toMatch(/^\._[a-zA-Z0-9]{8} div span\{/);
-      });
-    });
-
-    it('should use max hash strategy (full base-62 6-char group) for cross-package collision safety', () => {
-      const { sheets: actual } = transformCss(
-        `div span { color: red; font-weight: bold; }`,
-        {},
-        { hashStrategy: 'max' }
-      );
-
-      // max strategy: full 32-bit base-62 group (6 chars) + 4-char value = 11-char classes
-      expect(actual).toHaveLength(2);
-      actual.forEach((sheet) => {
-        expect(sheet).toMatch(/^\._[a-zA-Z0-9]{10} div span\{/);
-      });
-    });
-
-    it('should honor classHashPrefix when using hashStrategy', () => {
-      const { sheets: actual } = transformCss(
-        `div span { color: red; font-weight: bold; }`,
-        {
-          classHashPrefix: 'myprefix',
-        },
-        { hashStrategy: 'enhanced' }
-      );
-
-      // enhanced strategy: classHashPrefix should change the class name
-      expect(actual.join('\n')).not.toContain('._5scu');
-      expect(actual).toHaveLength(2);
-    });
-
-    it('should apply classNameCompressionMap when using hashStrategy', () => {
-      // First, generate without compression to discover the class names.
-      const { sheets: baseline } = transformCss(
-        `div span { color: red; }`,
-        {},
-        { hashStrategy: 'enhanced' }
-      );
-
-      // Extract the original class name.
-      const match = baseline[0].match(/\._([^\s{]+)/);
-      const originalClass = match![1];
-
-      // Build a compression map that maps the original class to a short alias.
-      const compressionMap: Record<string, string> = {
-        [originalClass]: 'cx',
-      };
-
-      const { sheets: compressed } = transformCss(
-        `div span { color: red; }`,
-        { classNameCompressionMap: compressionMap },
-        { hashStrategy: 'enhanced' }
-      );
-
-      expect(compressed.join('\n')).toBe('.cx div span{color:red}');
-    });
-
-    it('should work with sortShorthand when using hashStrategy', () => {
-      const { sheets: actual } = transformCss(
-        `div span { padding: 8px; padding-top: 4px; color: red; }`,
-        { sortShorthand: true },
-        { hashStrategy: 'enhanced' }
-      );
-
-      // sortShorthand expands padding shorthand — all declarations are still atomic
-      expect(actual).toHaveLength(6);
-      actual.forEach((sheet) => expect(sheet).toContain('div span'));
-    });
-
-    it('should preserve !important when using hashStrategy', () => {
-      const { sheets: actual } = transformCss(
-        `div span { color: red !important; font-weight: bold; }`,
-        {},
-        { hashStrategy: 'enhanced' }
-      );
-
-      expect(actual.join('\n')).toContain('color:red!important');
-      expect(actual.join('\n')).toContain('font-weight:bold');
-    });
-
     it('should produce distinct class names for different combinator selector rules', () => {
       const { sheets: actual } = transformCss(
         `
         div span { color: red; font-weight: bold; }
         div > span { color: red; font-weight: bold; }
-        `,
-        {},
-        { hashStrategy: 'enhanced' }
+        `
       );
 
       // Different selectors → different group hashes
@@ -621,22 +527,36 @@ describe('#css-transform', () => {
       expect(classNames[0]).not.toBe(classNames[2]);
     });
 
-    it('should sort rules by pseudo-class order when using hashStrategy', () => {
-      const { sheets: actual } = transformCss(
-        `
-        div span:hover { color: red; font-weight: bold; }
-        div span:focus { color: blue; font-weight: normal; }
-        `,
+    it('should transform css to non-atomic output when atomic: false is passed', () => {
+      const { sheets, classNames } = transformCss(
+        `div span { color: red; font-weight: bold; }`,
         {},
-        { hashStrategy: 'enhanced' }
+        { atomic: false }
       );
 
-      expect(actual.join('\n')).toMatchInlineSnapshot(`
-        "._jmK1ynoA div span:focus{color:blue}
-        ._40uZzUZr div span:focus{font-weight:normal}
-        ._qCGyGowl div span:hover{color:red}
-        ._mFlYmmCn div span:hover{font-weight:bold}"
-      `);
+      // Non-atomic: a single sheet wrapping all declarations under one class
+      expect(classNames).toHaveLength(1);
+      expect(classNames[0]).toMatch(/^cc-[a-z0-9]+$/);
+      // No `_` prefix — not an atomic class
+      expect(classNames[0]).not.toMatch(/^_/);
+      // Both declarations are present in the CSS
+      expect(sheets.join('\n')).toContain('color:red');
+      expect(sheets.join('\n')).toContain('font-weight:bold');
+      // Both declarations are scoped under the single class
+      sheets.forEach((sheet) => expect(sheet).toContain(`.${classNames[0]}`));
+    });
+
+    it('should produce stable non-atomic class names (content-addressable)', () => {
+      const css = `div span { color: red; }`;
+      const { classNames: first } = transformCss(css, {}, { atomic: false });
+      const { classNames: second } = transformCss(css, {}, { atomic: false });
+      expect(first[0]).toBe(second[0]);
+    });
+
+    it('should produce distinct non-atomic class names for different CSS content', () => {
+      const { classNames: a } = transformCss(`div { color: red; }`, {}, { atomic: false });
+      const { classNames: b } = transformCss(`div { color: blue; }`, {}, { atomic: false });
+      expect(a[0]).not.toBe(b[0]);
     });
   });
 

@@ -9,12 +9,12 @@ export const noCssMapOptionsRule: Rule.RuleModule = {
     docs: {
       recommended: true,
       description:
-        'Disallows passing options to `cssMap`. Configuration options like `hashStrategy` are experimental and for internal use only.',
+        'Disallows passing options to `cssMap`. Configuration options like `atomic` are experimental and for internal use only.',
       url: 'https://github.com/atlassian-labs/compiled/tree/master/packages/eslint-plugin/src/rules/no-css-map-options',
     },
     messages: {
       noCssMapOptions:
-        'cssMap does not accept options. Configuration options like hashStrategy are experimental and for internal use only, only use with extreme caution.',
+        'cssMap does not accept options. Configuration options like atomic are experimental and for internal use only, only use with extreme caution.',
     },
     type: 'problem',
   },

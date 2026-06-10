@@ -1,5 +1,5 @@
 export { flatten, unique } from './array';
-export { hash, hashBase62 } from './hash';
+export { hash } from './hash';
 export { JSX_ANNOTATION_REGEX } from './jsx';
 export { kebabCase } from './kebab-case';
 export { toBoolean } from './to-boolean';

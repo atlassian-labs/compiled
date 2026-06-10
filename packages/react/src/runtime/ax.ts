@@ -2,7 +2,6 @@
  * The value hash is always exactly 4 characters, so the group hash is
  * everything before the last 4 characters of the class name.
  * e.g. `"_1s4A1b2c"` → group `"_1s4A"`, value `"1b2c"`.
- * With `hashStrategy: 'max'`, classes are 11 chars: `"_aBcDeF1b2c"` → group `"_aBcDeF"`, value `"1b2c"`.
  */
 const ATOMIC_VALUE_HASH_LENGTH = 4;
 
@@ -17,7 +16,7 @@ const ATOMIC_VALUE_HASH_LENGTH = 4;
  * ```
  *
  * Format of Atomic style classnames: `_{group}{value}` where value is always 4 chars.
- * Default/enhanced: `_\w{4}\w{4}` (9 chars total), max: `_\w{6}\w{4}` (11 chars total).
+ * Default: `_\w{4}\w{4}` (9 chars total).
  *
  * `ax` will preserve any non atomic style classnames (eg `"border-red"`)
  *
