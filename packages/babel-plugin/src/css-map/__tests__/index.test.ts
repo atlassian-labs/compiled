@@ -304,7 +304,7 @@ describe('css map — atomic: false option', () => {
     // When babel is invoked without a filename (e.g. in tests or programmatic usage),
     // meta.state.filename is undefined. The class name falls back to
     // hash('undefined:variantKey') which is still stable and valid.
-    const actual = transformCode(
+    const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
       // @ts-expect-error -- atomic is an internal option, not part of the public API
@@ -312,12 +312,9 @@ describe('css map — atomic: false option', () => {
         danger: { color: 'red' },
       }, { atomic: false });
       const C = () => <div css={styles.danger} />;
-    `,
-      { pretty: true }
-      // Note: no filename passed — meta.state.filename will be undefined
+    `
     );
 
-    // Class name is cc-<hash("undefined:danger")> — stable and valid despite no filename.
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";

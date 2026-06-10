@@ -11,20 +11,20 @@ import { transformCssItems } from '../utils/transform-css-items';
 
 import { mergeExtendedSelectorsIntoProperties } from './process-selectors';
 
-type CssMapOptions = {
-  atomic?: boolean;
-};
-
 /**
  * @experimental Options for cssMap are not part of the public API and may change without notice.
  * The `atomic` option is intentionally omitted from the TypeScript type signature of cssMap.
- * Internal consumers can opt in using `@ts-ignore`, it's highly risky.
+ * Internal consumers can opt in using `@ts-expect-error`, it's highly risky.
  *
  * When `atomic: false`, each variant is compiled to a single non-atomic CSS class
  * (no `_` prefix) instead of one atomic class per declaration. This dramatically
  * reduces the number of classes applied to a DOM element when a cssMap has many
  * properties — at the cost of losing atomic deduplication semantics for that map.
  */
+type CssMapOptions = {
+  atomic?: boolean;
+};
+
 const KNOWN_OPTIONS = ['atomic'];
 
 /**
@@ -127,7 +127,8 @@ export const visitCssMapPath = (
         return;
       }
 
-      // Fallback: unknown option with wrong value type
+      // Unreachable: all known options are handled above.
+      // This is a safety net in case KNOWN_OPTIONS is extended without adding a handler.
       throw buildCodeFrameError(
         createErrorMessage(ErrorMessages.OPTS_PROPERTY_KNOWN_NAME),
         prop.key,
