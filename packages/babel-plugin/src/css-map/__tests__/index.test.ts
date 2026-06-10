@@ -285,6 +285,7 @@ describe('css map — atomic: false option', () => {
   const FIXTURE_FILENAME = 'test/css-map-non-atomic.tsx';
   const transform = (code: string, opts: TransformOptions = {}) =>
     transformCode(code, { pretty: false, filename: FIXTURE_FILENAME, ...opts });
+
   const transformPretty = (code: string, opts: TransformOptions = {}) =>
     transformCode(code, { pretty: true, filename: FIXTURE_FILENAME, ...opts });
 
@@ -312,18 +313,33 @@ describe('css map — atomic: false option', () => {
       }, { atomic: false });
       const C = () => <div css={styles.danger} />;
     `,
-      { pretty: false }
+      { pretty: true }
       // Note: no filename passed — meta.state.filename will be undefined
     );
 
     // Class name is cc-<hash("undefined:danger")> — stable and valid despite no filename.
-    expect(actual).toMatch(/danger:"cc-[a-z0-9]+"/);
-    // The class is still properly scoped in the CSS sheet
-    expect(actual).toMatch(/\.cc-[a-z0-9]+\{color:red\}/);
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _ = ".cc-tb117m{color:red}";
+      const styles = {
+        danger: "cc-tb117m",
+      };
+      const C = () => (
+        <CC>
+          <CS>{[_]}</CS>
+          {<div className={ax([styles.danger])} />}
+        </CC>
+      );
+      "
+    `);
   });
 
   it('should produce one non-atomic cc- class per variant instead of multiple atomic _ classes', () => {
-    const actual = transform(`
+    // Each variant emits exactly ONE class with a "cc-" prefix (no "_" prefix).
+    // No "_" prefix means ax() treats it as an opaque plain string, not an atomic group.
+    // Different variants → different class names (different variant keys → different hashes).
+    const actual = transformPretty(`
       import { cssMap } from '@compiled/react';
 
       const styles = cssMap({
@@ -344,19 +360,31 @@ describe('css map — atomic: false option', () => {
       </div>
     `);
 
-    // Each variant emits exactly ONE class with a "cc-" prefix (no "_" prefix).
-    // No "_" prefix means ax() treats it as an opaque plain string, not an atomic group.
-    const dangerMatch = actual.match(/danger:"(cc-[^"]+)"/);
-    const successMatch = actual.match(/success:"(cc-[^"]+)"/);
-    expect(dangerMatch).toBeTruthy();
-    expect(successMatch).toBeTruthy();
-    // Different variants → different class names (different CSS content)
-    expect(dangerMatch![1]).not.toBe(successMatch![1]);
-    // ax() is still used at the call site (it safely ignores non-_ classes)
-    expect(actual).toIncludeMultiple([
-      '<span className={ax([styles.danger])}/>',
-      '<span className={ax([styles.success])}/>',
-    ]);
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _4 = ".cc-7yw089{background-color:green}";
+      const _3 = ".cc-7yw089{color:green}";
+      const _2 = ".cc-aojfb{background-color:red}";
+      const _ = ".cc-aojfb{color:red}";
+      const styles = {
+        danger: "cc-aojfb",
+        success: "cc-7yw089",
+      };
+      const Component = () => (
+        <div>
+          <CC>
+            <CS>{[_, _2, _3, _4]}</CS>
+            {<span className={ax([styles.danger])} />}
+          </CC>
+          <CC>
+            <CS>{[_, _2, _3, _4]}</CS>
+            {<span className={ax([styles.success])} />}
+          </CC>
+        </div>
+      );
+      "
+    `);
   });
 
   it('should scope pseudo-selectors under the single non-atomic class', () => {
