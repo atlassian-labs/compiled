@@ -29,6 +29,16 @@ const normalizeSelector = (selector: string | undefined): string => {
   return trimmed.includes('&') ? trimmed : `& ${trimmed}`;
 };
 
+/**
+ * Scopes a single selector string under `.className` by replacing all `&`
+ * nesting references with the class name.
+ *
+ * Delegates to `normalizeSelector` first to ensure `&` is always present,
+ * then performs the replacement — equivalent to calling `normalizeSelector`
+ * followed by `replaceNestingSelector` in `atomicify-rules.ts`.
+ *
+ * e.g. `undefined` → `.cc-xxx`, `'.panel'` → `.cc-xxx .panel`, `'&:hover'` → `.cc-xxx:hover`
+ */
 const scopeSelector = (selector: string | undefined, className: string): string =>
   normalizeSelector(selector).replace(/&/g, `.${className}`);
 
@@ -62,16 +72,16 @@ const scopeRule = (ruleNode: Rule, className: string): void => {
 };
 
 /**
- * Wraps a top-level declaration (one with no surrounding selector) in a new
- * rule scoped to `.className`.
+ * Wraps a bare declaration in a new rule scoped to `.className` —
+ * mirrors `atomicifyDecl` from `atomicify-rules.ts` but emits a single
+ * grouped rule instead of one atomic rule per declaration.
  *
  * e.g. `color: red` → `.cc-xxx { color: red }`
  *
- * This handles the case where `postcss-nested` has already unwrapped at-rules
- * like `@property` or `@font-face`, leaving bare declarations at the root level,
- * as well as direct top-level declarations inside a cssMap variant.
+ * Handles top-level declarations inside a cssMap variant, as well as
+ * bare declarations inside scopeable at-rules (e.g. `@media { color: red }`).
  */
-const wrapDeclInRule = (decl: Declaration, className: string): void => {
+const scopeDecl = (decl: Declaration, className: string): void => {
   decl.replaceWith(
     rule({
       selector: `.${className}`,
@@ -82,10 +92,10 @@ const wrapDeclInRule = (decl: Declaration, className: string): void => {
 };
 
 /**
- * Handles an at-rule node by classifying it and dispatching to the appropriate action:
+ * Scopes an at-rule node under `.className` by classifying it and dispatching:
  *
  * - `scopeable` (`@media`, `@supports`, `@container` etc.): scopes all inner rules
- *   and bare declarations under `.className`, mirrors `atomicifyAtRule`.
+ *   and bare declarations under `.className` — mirrors `atomicifyAtRule`.
  * - `passthrough` (`@keyframes`, `@font-face`, `@property` etc.): left completely
  *   untouched — their inner content is not composed of element selectors.
  * - `forbidden` (`@charset`, `@import`, `@namespace`): throws an error.
@@ -93,7 +103,7 @@ const wrapDeclInRule = (decl: Declaration, className: string): void => {
  *
  * Mirrors the `canAtomicifyAtRule` + `atomicifyAtRule` logic from `atomicify-rules.ts`.
  */
-const processAtRule = (atRuleNode: AtRule, className: string): void => {
+const scopeAtRule = (atRuleNode: AtRule, className: string): void => {
   const kind = classifyAtRule(atRuleNode.name);
 
   switch (kind) {
@@ -114,7 +124,7 @@ const processAtRule = (atRuleNode: AtRule, className: string): void => {
         if (child.type === 'rule') {
           scopeRule(child as Rule, className);
         } else if (child.type === 'decl') {
-          wrapDeclInRule(child as Declaration, className);
+          scopeDecl(child as Declaration, className);
         }
       });
   }
@@ -148,9 +158,9 @@ export const nonAtomicifyRules = (opts: PluginOpts): Plugin => {
         if (node.type === 'rule') {
           scopeRule(node as Rule, className);
         } else if (node.type === 'atrule') {
-          processAtRule(node as AtRule, className);
+          scopeAtRule(node as AtRule, className);
         } else if (node.type === 'decl') {
-          wrapDeclInRule(node as Declaration, className);
+          scopeDecl(node as Declaration, className);
         } else if (node.type === 'comment') {
           // Strip comments — same behaviour as atomicifyRules.
           node.remove();
