@@ -1,6 +1,8 @@
 import type { Plugin, Rule, AtRule, Declaration } from 'postcss';
 import { rule } from 'postcss';
 
+import { SCOPEABLE_AT_RULES, PASSTHROUGH_AT_RULES } from './at-rule-lists';
+
 interface PluginOpts {
   /**
    * The non-atomic class name to wrap all declarations under.
@@ -13,37 +15,9 @@ interface PluginOpts {
   callback?: (className: string) => void;
 }
 
-/**
- * At-rules whose inner rules should be scoped under `.className` —
- * mirrors the `canBeAtomified` list from `atomicify-rules.ts`.
- */
-const SCOPEABLE_AT_RULES = new Set([
-  'container',
-  '-moz-document',
-  'else',
-  'layer',
-  'media',
-  'starting-style',
-  'supports',
-  'when',
-]);
-
-/**
- * At-rules whose contents must NOT be prefixed with a class selector.
- * @keyframes stops are keyframe selectors (from/to/0%), not element selectors.
- * @font-face, @property, @counter-style etc. are global descriptors.
- * Mirrors the `ignored` list from `atomicify-rules.ts`.
- */
-const PASSTHROUGH_AT_RULES = new Set([
-  'color-profile',
-  'counter-style',
-  'font-face',
-  'font-palette-values',
-  'keyframes',
-  'page',
-  'position-try',
-  'property',
-]);
+// Convert to Sets for O(1) lookup
+const SCOPEABLE_SET = new Set<string>(SCOPEABLE_AT_RULES);
+const PASSTHROUGH_SET = new Set<string>(PASSTHROUGH_AT_RULES);
 
 const replaceNestingSelector = (selector: string, className: string): string =>
   selector.replace(/&/g, `.${className}`);
@@ -101,14 +75,14 @@ export const nonAtomicifyRules = (opts: PluginOpts): Plugin => {
         } else if (node.type === 'atrule') {
           const atRuleNode = node as AtRule;
 
-          if (PASSTHROUGH_AT_RULES.has(atRuleNode.name)) {
+          if (PASSTHROUGH_SET.has(atRuleNode.name)) {
             // @keyframes, @font-face, @property etc. — leave inner content untouched,
             // just like atomicifyRules does. Their inner "selectors" (from/to/0%) are
             // keyframe selectors, not element selectors.
             return;
           }
 
-          if (SCOPEABLE_AT_RULES.has(atRuleNode.name)) {
+          if (SCOPEABLE_SET.has(atRuleNode.name)) {
             // @media, @supports, @container etc. — scope inner rules
             atRuleNode.each((child) => {
               if (child.type === 'rule') {
