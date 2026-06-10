@@ -32,9 +32,19 @@ const normalizeSelector = (selector: string | undefined): string => {
 const scopeSelector = (selector: string | undefined, className: string): string =>
   normalizeSelector(selector).replace(/&/g, `.${className}`);
 
+/**
+ * Rewrites all selectors on a rule node to be scoped under `.className`.
+ *
+ * e.g. `.panel` → `.cc-xxx .panel`, `&:hover` → `.cc-xxx:hover`
+ *
+ * Unlike `atomicifyRule` which splits a rule into one atomic rule per declaration,
+ * `scopeRule` keeps the rule intact and only rewrites its selector — all child
+ * declarations remain grouped under the single scoped selector.
+ *
+ * Throws if un-flattened nested rules are found, mirroring the guard in
+ * `atomicifyRule`. Run `postcss-nested` before this plugin.
+ */
 const scopeRule = (ruleNode: Rule, className: string): void => {
-  // Guard: postcss-nested must have been run before this plugin.
-  // Mirrors atomicifyRule's check — throw early to surface misconfiguration.
   ruleNode.each((child) => {
     if (child.type === 'rule') {
       throw child.error(
@@ -51,6 +61,16 @@ const scopeRule = (ruleNode: Rule, className: string): void => {
   }
 };
 
+/**
+ * Wraps a top-level declaration (one with no surrounding selector) in a new
+ * rule scoped to `.className`.
+ *
+ * e.g. `color: red` → `.cc-xxx { color: red }`
+ *
+ * This handles the case where `postcss-nested` has already unwrapped at-rules
+ * like `@property` or `@font-face`, leaving bare declarations at the root level,
+ * as well as direct top-level declarations inside a cssMap variant.
+ */
 const wrapDeclInRule = (decl: Declaration, className: string): void => {
   decl.replaceWith(
     rule({
@@ -62,11 +82,16 @@ const wrapDeclInRule = (decl: Declaration, className: string): void => {
 };
 
 /**
- * Handles an at-rule node: classifies it and either passes it through unchanged,
- * throws for forbidden/unknown rules, or scopes its inner rules under `className`.
+ * Handles an at-rule node by classifying it and dispatching to the appropriate action:
  *
- * Mirrors the `canAtomicifyAtRule` + `atomicifyAtRule` logic from `atomicify-rules.ts`
- * but emits a single non-atomic class instead of individual atomic classes.
+ * - `scopeable` (`@media`, `@supports`, `@container` etc.): scopes all inner rules
+ *   and bare declarations under `.className`, mirrors `atomicifyAtRule`.
+ * - `passthrough` (`@keyframes`, `@font-face`, `@property` etc.): left completely
+ *   untouched — their inner content is not composed of element selectors.
+ * - `forbidden` (`@charset`, `@import`, `@namespace`): throws an error.
+ * - `unknown`: throws an error to surface unrecognised at-rules early.
+ *
+ * Mirrors the `canAtomicifyAtRule` + `atomicifyAtRule` logic from `atomicify-rules.ts`.
  */
 const processAtRule = (atRuleNode: AtRule, className: string): void => {
   const kind = classifyAtRule(atRuleNode.name);
