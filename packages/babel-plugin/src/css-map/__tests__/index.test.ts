@@ -1211,6 +1211,137 @@ describe('css map — atomic: false option', () => {
     `);
   });
 
+  it('should inject shared multi-selector sheet BEFORE individual override sheets — annotation styles cascade pattern (simple & selector)', () => {
+    // This is the critical editor annotation styles pattern:
+    // A shared base rule (border-bottom shorthand) must appear as the FIRST sheet
+    // in the CS array so that individual override rules (border-bottom-color) injected
+    // after it correctly win in CSS cascade.
+    // The shared rule uses a computed multi-selector key: ['&.blur, &.focus, &.draft, &.hover']
+    const actual = transformPretty(
+      `
+      import { cssMap } from '@compiled/react';
+      // @ts-expect-error -- atomic is an internal option, not part of the public API
+      const styles = cssMap({
+        annotationStyles: {
+          ['&.blur, &.focus, &.draft, &.hover']: {
+            borderBottom: '2px solid transparent',
+            cursor: 'pointer',
+          },
+          '&.focus': { background: 'yellow', borderBottomColor: 'orange' },
+          '&.draft': { background: 'gold', borderBottomColor: 'orange', cursor: 'auto' },
+          '&.blur': { background: 'lightyellow', borderBottomColor: 'orange' },
+          '&.hover': { background: 'gold', borderBottomColor: 'orange' },
+        },
+      }, { atomic: false });
+      const C = () => <div css={styles.annotationStyles} />;
+    `,
+      { pretty: true }
+    );
+
+    // The shared multi-selector rule (.blur,.focus,.draft,.hover) must be the FIRST
+    // sheet variable (lowest index, injected first = base styles).
+    // Individual override rules (.focus, .draft, .blur, .hover with border-bottom-color)
+    // must come AFTER so they win in cascade.
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _5 =
+        ".cc-15qii9c.hover{background-color:gold;border-bottom-color:orange}";
+      const _4 =
+        ".cc-15qii9c.blur{background-color:lightyellow;border-bottom-color:orange}";
+      const _3 =
+        ".cc-15qii9c.draft{background-color:gold;border-bottom-color:orange;cursor:auto}";
+      const _2 =
+        ".cc-15qii9c.focus{background-color:yellow;border-bottom-color:orange}";
+      const _ =
+        ".cc-15qii9c.blur,.cc-15qii9c.draft,.cc-15qii9c.focus,.cc-15qii9c.hover{border-bottom:2px solid transparent;cursor:pointer}";
+      const styles = {
+        annotationStyles: "cc-15qii9c",
+      };
+      const C = () => (
+        <CC>
+          <CS>{[_, _2, _3, _4, _5]}</CS>
+          {<div className={ax([styles.annotationStyles])} />}
+        </CC>
+      );
+      "
+    `);
+  });
+
+  it('should inject shared multi-selector sheet BEFORE individual override sheets — nested .ProseMirror pattern with template literal keys', () => {
+    // This mirrors the EXACT editor annotation styles pattern where:
+    // 1. Selectors are derived from constants via template literals
+    // 2. The styles are nested under a .ProseMirror parent selector
+    // 3. The shared multi-selector rule uses a computed template literal key
+    // The critical invariant: shared base sheet (border-bottom shorthand) must be
+    // injected BEFORE individual override sheets (border-bottom-color) in the CS array.
+    const blurClass = 'ak-editor-annotation-blur';
+    const focusClass = 'ak-editor-annotation-focus';
+    const draftClass = 'ak-editor-annotation-draft';
+    const hoverClass = 'ak-editor-annotation-hover';
+    const sharedSelector = `.${blurClass}, .${focusClass}, .${draftClass}, .${hoverClass}`;
+
+    const actual = transformPretty(
+      `
+      import { cssMap } from '@compiled/react';
+      const sharedSelector = '.ak-editor-annotation-blur, .ak-editor-annotation-focus, .ak-editor-annotation-draft, .ak-editor-annotation-hover';
+      // @ts-expect-error -- atomic is an internal option, not part of the public API
+      const styles = cssMap({
+        annotationStyles: {
+          '.ProseMirror': {
+            [sharedSelector]: {
+              borderBottom: '2px solid transparent',
+              cursor: 'pointer',
+            },
+            '.ak-editor-annotation-focus': { background: 'yellow', borderBottomColor: 'orange' },
+            '.ak-editor-annotation-draft': { background: 'gold', borderBottomColor: 'orange', cursor: 'auto' },
+            '.ak-editor-annotation-blur': { background: 'lightyellow', borderBottomColor: 'orange' },
+            '.ak-editor-annotation-hover': { background: 'gold', borderBottomColor: 'orange' },
+          },
+        },
+      }, { atomic: false });
+      const C = () => <div css={styles.annotationStyles} />;
+    `,
+      { pretty: true }
+    );
+
+    // The critical invariant: the CS injection array must have the shared base sheet (_)
+    // as the FIRST element, and individual override sheets (_2, _3...) AFTER.
+    // CSS injection order determines cascade: later = higher priority.
+    // So: shared base (border-bottom shorthand) must be injected first,
+    // individual overrides (border-bottom-color) must be injected after to win.
+    //
+    // Note: in the JS source, individual sheet variables are declared BEFORE the shared
+    // one (due to how transformCssItems processes cssItems). This is correct —
+    // the CS array [_, _2, _3] still injects _ first regardless of declaration order.
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _5 =
+        ".cc-15qii9c .ProseMirror .ak-editor-annotation-hover{background-color:gold;border-bottom-color:orange}";
+      const _4 =
+        ".cc-15qii9c .ProseMirror .ak-editor-annotation-blur{background-color:lightyellow;border-bottom-color:orange}";
+      const _3 =
+        ".cc-15qii9c .ProseMirror .ak-editor-annotation-draft{background-color:gold;border-bottom-color:orange;cursor:auto}";
+      const _2 =
+        ".cc-15qii9c .ProseMirror .ak-editor-annotation-focus{background-color:yellow;border-bottom-color:orange}";
+      const _ =
+        ".cc-15qii9c .ProseMirror .ak-editor-annotation-blur,.cc-15qii9c .ProseMirror .ak-editor-annotation-draft,.cc-15qii9c .ProseMirror .ak-editor-annotation-focus,.cc-15qii9c .ProseMirror .ak-editor-annotation-hover{border-bottom:2px solid transparent;cursor:pointer}";
+      const sharedSelector =
+        ".ak-editor-annotation-blur, .ak-editor-annotation-focus, .ak-editor-annotation-draft, .ak-editor-annotation-hover";
+      const styles = {
+        annotationStyles: "cc-15qii9c",
+      };
+      const C = () => (
+        <CC>
+          <CS>{[_, _2, _3, _4, _5]}</CS>
+          {<div className={ax([styles.annotationStyles])} />}
+        </CC>
+      );
+      "
+    `);
+  });
+
   it('should error out if options contain a spread element', () => {
     expect(() => {
       transform(`
