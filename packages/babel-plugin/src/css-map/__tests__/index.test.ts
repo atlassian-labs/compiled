@@ -360,10 +360,8 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _4 = ".cc-7yw089{background-color:green}";
-      const _3 = ".cc-7yw089{color:green}";
-      const _2 = ".cc-aojfb{background-color:red}";
-      const _ = ".cc-aojfb{color:red}";
+      const _2 = ".cc-7yw089{color:green}.cc-7yw089{background-color:green}";
+      const _ = ".cc-aojfb{color:red}.cc-aojfb{background-color:red}";
       const styles = {
         danger: "cc-aojfb",
         success: "cc-7yw089",
@@ -371,11 +369,11 @@ describe('css map — atomic: false option', () => {
       const Component = () => (
         <div>
           <CC>
-            <CS>{[_, _2, _3, _4]}</CS>
+            <CS>{[_, _2]}</CS>
             {<span className={ax([styles.danger])} />}
           </CC>
           <CC>
-            <CS>{[_, _2, _3, _4]}</CS>
+            <CS>{[_, _2]}</CS>
             {<span className={ax([styles.success])} />}
           </CC>
         </div>
@@ -401,16 +399,15 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _3 = ".cc-7yw089{color:green}";
-      const _2 = ".cc-aojfb:hover{color:darkred}";
-      const _ = ".cc-aojfb{color:red}";
+      const _2 = ".cc-7yw089{color:green}";
+      const _ = ".cc-aojfb{color:red}.cc-aojfb:hover{color:darkred}";
       const styles = {
         danger: "cc-aojfb",
         success: "cc-7yw089",
       };
       const C = () => (
         <CC>
-          <CS>{[_, _2, _3]}</CS>
+          <CS>{[_, _2]}</CS>
           {<div className={ax([styles.danger])} />}
         </CC>
       );
@@ -437,14 +434,14 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = "@media (min-width:768px){.cc-12ll4nl{color:blue}}";
-      const _ = ".cc-12ll4nl{color:red}";
+      const _ =
+        ".cc-12ll4nl{color:red}@media (min-width:768px){.cc-12ll4nl{color:blue}}";
       const styles = {
         root: "cc-12ll4nl",
       };
       const C = () => (
         <CC>
-          <CS>{[_, _2]}</CS>
+          <CS>{[_]}</CS>
           {<div className={ax([styles.root])} />}
         </CC>
       );
@@ -503,17 +500,15 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _4 = ".cc-7yw089{background-color:lightgreen}";
-      const _3 = ".cc-7yw089{color:green}";
-      const _2 = ".cc-aojfb{background-color:pink}";
-      const _ = ".cc-aojfb{color:red}";
+      const _2 = ".cc-7yw089{color:green}.cc-7yw089{background-color:lightgreen}";
+      const _ = ".cc-aojfb{color:red}.cc-aojfb{background-color:pink}";
       const styles = {
         danger: "cc-aojfb",
         success: "cc-7yw089",
       };
       const C = ({ variant }) => (
         <CC>
-          <CS>{[_, _2, _3, _4]}</CS>
+          <CS>{[_, _2]}</CS>
           {<div className={ax([styles[variant]])} />}
         </CC>
       );
@@ -584,13 +579,10 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _7 = ".cc-1l611fe{opacity:0.5}";
-      const _6 = ".cc-hyeuh3{background-color:blue}";
-      const _5 = ".cc-1uu75r3{padding-left:8px}";
-      const _4 = ".cc-1uu75r3{padding-bottom:8px}";
-      const _3 = ".cc-1uu75r3{padding-right:8px}";
-      const _2 = ".cc-1uu75r3{padding-top:8px}";
-      const _ = ".cc-1uu75r3{color:red}";
+      const _3 = ".cc-1l611fe{opacity:0.5}";
+      const _2 = ".cc-hyeuh3{background-color:blue}";
+      const _ =
+        ".cc-1uu75r3{color:red}.cc-1uu75r3{padding-top:8px}.cc-1uu75r3{padding-right:8px}.cc-1uu75r3{padding-bottom:8px}.cc-1uu75r3{padding-left:8px}";
       const styles = {
         base: "cc-1uu75r3",
         selected: "cc-hyeuh3",
@@ -598,7 +590,7 @@ describe('css map — atomic: false option', () => {
       };
       const C = ({ isSelected, isDisabled }) => (
         <CC>
-          <CS>{[_, _2, _3, _4, _5, _6, _7]}</CS>
+          <CS>{[_, _2, _3]}</CS>
           {
             <div
               className={ax([
@@ -647,20 +639,17 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _6 = ".cc-oljnhh .panel-title{color:red}";
-      const _5 = ".cc-oljnhh .panel{background-color:pink}";
-      const _4 = ".cc-2ax5o6 .panel-icon svg{fill:currentColor}";
-      const _3 = ".cc-2ax5o6 .panel-icon{width:24px;height:24px}";
-      const _2 = ".cc-2ax5o6 .panel-title{font-weight:bold;color:blue}";
+      const _2 =
+        ".cc-oljnhh .panel{background-color:pink}.cc-oljnhh .panel-title{color:red}";
       const _ =
-        ".cc-2ax5o6 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px;background-color:blue}";
+        ".cc-2ax5o6 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px;background-color:blue}.cc-2ax5o6 .panel-title{font-weight:bold;color:blue}.cc-2ax5o6 .panel-icon{width:24px;height:24px}.cc-2ax5o6 .panel-icon svg{fill:currentColor}";
       const styles = {
         panelStyles: "cc-2ax5o6",
         dangerStyles: "cc-oljnhh",
       };
       const C = ({ isDanger }) => (
         <CC>
-          <CS>{[_, _2, _3, _4, _5, _6]}</CS>
+          <CS>{[_, _2]}</CS>
           {
             <div
               className={ax([styles.panelStyles, isDanger && styles.dangerStyles])}
@@ -702,22 +691,17 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _7 =
-        "@media (min-width:768px){.cc-1wyxr0k{padding-top:8px}.cc-1wyxr0k{padding-right:8px}.cc-1wyxr0k{padding-bottom:8px}.cc-1wyxr0k{padding-left:8px}}";
-      const _6 = ".cc-1wyxr0k{padding-left:4px}";
-      const _5 = ".cc-1wyxr0k{padding-bottom:4px}";
-      const _4 = ".cc-1wyxr0k{padding-right:4px}";
-      const _3 = ".cc-1wyxr0k{padding-top:4px}";
       const _2 =
-        "@media (min-width:768px){.cc-ysa2s9{width:50%}.cc-ysa2s9 .inner{padding-top:16px;padding-right:16px;padding-bottom:16px;padding-left:16px}}";
-      const _ = ".cc-ysa2s9{width:100%}";
+        ".cc-1wyxr0k{padding-top:4px}.cc-1wyxr0k{padding-right:4px}.cc-1wyxr0k{padding-bottom:4px}.cc-1wyxr0k{padding-left:4px}@media (min-width:768px){.cc-1wyxr0k{padding-top:8px}.cc-1wyxr0k{padding-right:8px}.cc-1wyxr0k{padding-bottom:8px}.cc-1wyxr0k{padding-left:8px}}";
+      const _ =
+        ".cc-ysa2s9{width:100%}@media (min-width:768px){.cc-ysa2s9{width:50%}.cc-ysa2s9 .inner{padding-top:16px;padding-right:16px;padding-bottom:16px;padding-left:16px}}";
       const styles = {
         layoutStyles: "cc-ysa2s9",
         compactStyles: "cc-1wyxr0k",
       };
       const C = ({ isCompact }) => (
         <CC>
-          <CS>{[_, _2, _3, _4, _5, _6, _7]}</CS>
+          <CS>{[_, _2]}</CS>
           {
             <div
               className={ax([styles.layoutStyles, isCompact && styles.compactStyles])}
@@ -757,19 +741,17 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _6 = ".cc-oljnhh{background-color:var(--panel-bg)}";
-      const _5 = ".cc-oljnhh{--panel-bg:pink}";
-      const _4 = ".cc-2ax5o6{gap:var(--panel-gap)}";
-      const _3 = ".cc-2ax5o6{background-color:var(--panel-bg)}";
-      const _2 = ".cc-2ax5o6{--panel-gap:8px}";
-      const _ = ".cc-2ax5o6{--panel-bg:blue}";
+      const _2 =
+        ".cc-oljnhh{--panel-bg:pink}.cc-oljnhh{background-color:var(--panel-bg)}";
+      const _ =
+        ".cc-2ax5o6{--panel-bg:blue}.cc-2ax5o6{--panel-gap:8px}.cc-2ax5o6{background-color:var(--panel-bg)}.cc-2ax5o6{gap:var(--panel-gap)}";
       const styles = {
         panelStyles: "cc-2ax5o6",
         dangerStyles: "cc-oljnhh",
       };
       const C = ({ isDanger }) => (
         <CC>
-          <CS>{[_, _2, _3, _4, _5, _6]}</CS>
+          <CS>{[_, _2]}</CS>
           {
             <div
               className={ax([styles.panelStyles, isDanger && styles.dangerStyles])}
@@ -809,17 +791,14 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _3 =
-        ".cc-id7xhj{background:linear-gradient(var(--panel-gradient-angle),blue,pink)}";
-      const _2 = ".cc-id7xhj{--panel-gradient-angle:270deg}";
       const _ =
-        "@property --panel-gradient-angle{syntax:'<angle>';initial-value:270deg;inherits:false}";
+        "@property --panel-gradient-angle{syntax:'<angle>';initial-value:270deg;inherits:false}.cc-id7xhj{--panel-gradient-angle:270deg}.cc-id7xhj{background:linear-gradient(var(--panel-gradient-angle),blue,pink)}";
       const styles = {
         gradientStyles: "cc-id7xhj",
       };
       const C = () => (
         <CC>
-          <CS>{[_, _2, _3]}</CS>
+          <CS>{[_]}</CS>
           {<div className={ax([styles.gradientStyles])} />}
         </CC>
       );
@@ -890,11 +869,9 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _3 = ".cc-zs6pa2{opacity:1}";
-      const _2 =
-        ".cc-zs9m2x .spinner{animation-name:k7rupus;animation-duration:2s;animation-timing-function:linear;animation-iteration-count:infinite}";
+      const _2 = ".cc-zs6pa2{opacity:1}";
       const _ =
-        "@keyframes k7rupus{0%{transform:rotate(0deg)}to{transform:rotate(360deg)}}";
+        "@keyframes k7rupus{0%{transform:rotate(0deg)}to{transform:rotate(360deg)}}.cc-zs9m2x .spinner{animation-name:k7rupus;animation-duration:2s;animation-timing-function:linear;animation-iteration-count:infinite}";
       const spin = null;
       const styles = {
         animated: "cc-zs9m2x",
@@ -902,7 +879,7 @@ describe('css map — atomic: false option', () => {
       };
       const C = ({ isAnimated }) => (
         <CC>
-          <CS>{[_, _2, _3]}</CS>
+          <CS>{[_, _2]}</CS>
           {<div className={ax([styles.static, isAnimated && styles.animated])} />}
         </CC>
       );
@@ -938,15 +915,14 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 =
-        '@supports not (display:flow-root){.cc-k2kv27 .panel:after{content:"";display:table;clear:both}}';
-      const _ = ".cc-k2kv27{display:block}";
+      const _ =
+        '.cc-k2kv27{display:block}@supports not (display:flow-root){.cc-k2kv27 .panel:after{content:"";display:table;clear:both}}';
       const styles = {
         legacyStyles: "cc-k2kv27",
       };
       const C = () => (
         <CC>
-          <CS>{[_, _2]}</CS>
+          <CS>{[_]}</CS>
           {<div className={ax([styles.legacyStyles])} />}
         </CC>
       );
@@ -977,18 +953,14 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _5 =
-        "@container editor-area (max-width: 600px){.cc-197u3x4 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}}";
-      const _4 = ".cc-197u3x4{padding-left:16px}";
-      const _3 = ".cc-197u3x4{padding-bottom:16px}";
-      const _2 = ".cc-197u3x4{padding-right:16px}";
-      const _ = ".cc-197u3x4{padding-top:16px}";
+      const _ =
+        ".cc-197u3x4{padding-top:16px}.cc-197u3x4{padding-right:16px}.cc-197u3x4{padding-bottom:16px}.cc-197u3x4{padding-left:16px}@container editor-area (max-width: 600px){.cc-197u3x4 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}}";
       const styles = {
         responsiveStyles: "cc-197u3x4",
       };
       const C = () => (
         <CC>
-          <CS>{[_, _2, _3, _4, _5]}</CS>
+          <CS>{[_]}</CS>
           {<div className={ax([styles.responsiveStyles])} />}
         </CC>
       );
@@ -1168,16 +1140,13 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _0 = ".cc-cuh1m4{scrollbar-width:thin}";
-      const _9 = ".cc-1n67tsr{line-height:1.2}";
-      const _8 = ".cc-15lej18{font-family:serif}";
-      const _7 = ".cc-gv27a7{font-family:sans-serif}";
-      const _6 = ".cc-h2ubxs{max-width:1200px}";
-      const _5 = ".cc-2qfkyd{padding-left:8px}";
-      const _4 = ".cc-2qfkyd{padding-bottom:8px}";
-      const _3 = ".cc-2qfkyd{padding-right:8px}";
-      const _2 = ".cc-2qfkyd{padding-top:8px}";
-      const _ = ".cc-2qfkyd{color:red}";
+      const _6 = ".cc-cuh1m4{scrollbar-width:thin}";
+      const _5 = ".cc-1n67tsr{line-height:1.2}";
+      const _4 = ".cc-15lej18{font-family:serif}";
+      const _3 = ".cc-gv27a7{font-family:sans-serif}";
+      const _2 = ".cc-h2ubxs{max-width:1200px}";
+      const _ =
+        ".cc-2qfkyd{color:red}.cc-2qfkyd{padding-top:8px}.cc-2qfkyd{padding-right:8px}.cc-2qfkyd{padding-bottom:8px}.cc-2qfkyd{padding-left:8px}";
       const styles = {
         baseStyles: "cc-2qfkyd",
         fullPageStyles: "cc-h2ubxs",
@@ -1193,7 +1162,7 @@ describe('css map — atomic: false option', () => {
         fg_typography_ugc,
       }) => (
         <CC>
-          <CS>{[_, _2, _3, _4, _5, _6, _7, _8, _9, _0]}</CS>
+          <CS>{[_, _2, _3, _4, _5, _6]}</CS>
           {
             <div
               className={ax([
@@ -1245,22 +1214,14 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _5 =
-        ".cc-15qii9c.hover{background-color:gold;border-bottom-color:orange}";
-      const _4 =
-        ".cc-15qii9c.blur{background-color:lightyellow;border-bottom-color:orange}";
-      const _3 =
-        ".cc-15qii9c.draft{background-color:gold;border-bottom-color:orange;cursor:auto}";
-      const _2 =
-        ".cc-15qii9c.focus{background-color:yellow;border-bottom-color:orange}";
       const _ =
-        ".cc-15qii9c.blur,.cc-15qii9c.draft,.cc-15qii9c.focus,.cc-15qii9c.hover{border-bottom:2px solid transparent;cursor:pointer}";
+        ".cc-15qii9c.blur,.cc-15qii9c.draft,.cc-15qii9c.focus,.cc-15qii9c.hover{border-bottom:2px solid transparent;cursor:pointer}.cc-15qii9c.focus{background-color:yellow;border-bottom-color:orange}.cc-15qii9c.draft{background-color:gold;border-bottom-color:orange;cursor:auto}.cc-15qii9c.blur{background-color:lightyellow;border-bottom-color:orange}.cc-15qii9c.hover{background-color:gold;border-bottom-color:orange}";
       const styles = {
         annotationStyles: "cc-15qii9c",
       };
       const C = () => (
         <CC>
-          <CS>{[_, _2, _3, _4, _5]}</CS>
+          <CS>{[_]}</CS>
           {<div className={ax([styles.annotationStyles])} />}
         </CC>
       );
@@ -1317,16 +1278,8 @@ describe('css map — atomic: false option', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _5 =
-        ".cc-15qii9c .ProseMirror .ak-editor-annotation-hover{background-color:gold;border-bottom-color:orange}";
-      const _4 =
-        ".cc-15qii9c .ProseMirror .ak-editor-annotation-blur{background-color:lightyellow;border-bottom-color:orange}";
-      const _3 =
-        ".cc-15qii9c .ProseMirror .ak-editor-annotation-draft{background-color:gold;border-bottom-color:orange;cursor:auto}";
-      const _2 =
-        ".cc-15qii9c .ProseMirror .ak-editor-annotation-focus{background-color:yellow;border-bottom-color:orange}";
       const _ =
-        ".cc-15qii9c .ProseMirror .ak-editor-annotation-blur,.cc-15qii9c .ProseMirror .ak-editor-annotation-draft,.cc-15qii9c .ProseMirror .ak-editor-annotation-focus,.cc-15qii9c .ProseMirror .ak-editor-annotation-hover{border-bottom:2px solid transparent;cursor:pointer}";
+        ".cc-15qii9c .ProseMirror .ak-editor-annotation-blur,.cc-15qii9c .ProseMirror .ak-editor-annotation-draft,.cc-15qii9c .ProseMirror .ak-editor-annotation-focus,.cc-15qii9c .ProseMirror .ak-editor-annotation-hover{border-bottom:2px solid transparent;cursor:pointer}.cc-15qii9c .ProseMirror .ak-editor-annotation-focus{background-color:yellow;border-bottom-color:orange}.cc-15qii9c .ProseMirror .ak-editor-annotation-draft{background-color:gold;border-bottom-color:orange;cursor:auto}.cc-15qii9c .ProseMirror .ak-editor-annotation-blur{background-color:lightyellow;border-bottom-color:orange}.cc-15qii9c .ProseMirror .ak-editor-annotation-hover{background-color:gold;border-bottom-color:orange}";
       const sharedSelector =
         ".ak-editor-annotation-blur, .ak-editor-annotation-focus, .ak-editor-annotation-draft, .ak-editor-annotation-hover";
       const styles = {
@@ -1334,7 +1287,7 @@ describe('css map — atomic: false option', () => {
       };
       const C = () => (
         <CC>
-          <CS>{[_, _2, _3, _4, _5]}</CS>
+          <CS>{[_]}</CS>
           {<div className={ax([styles.annotationStyles])} />}
         </CC>
       );

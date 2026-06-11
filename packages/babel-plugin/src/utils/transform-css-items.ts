@@ -135,7 +135,10 @@ export const transformCssItems = (
       atomic: opts.atomic,
       nonAtomicClassName: opts.nonAtomicClassName,
     });
-    const sheets = css.sheets;
+    // Collapse all sheets for this variant into a single string:
+    // - Emits exactly one `const _N` variable per variant in the babel output
+    // - Results in exactly one insertNonAtomicRule() call at runtime → fewer DOM mutations
+    const sheets = css.sheets.length > 1 ? [css.sheets.join('')] : css.sheets;
     const className = compressClassNamesForRuntime(
       css.classNames,
       meta.state.opts.classNameCompressionMap
