@@ -153,6 +153,19 @@ export const getStyleBucketName = (sheet: string): Bucket => {
     return 'm';
   }
 
+  // Non-atomic rules (cc- prefix) contain multiple declarations per rule and must
+  // always go into the catch-all bucket. The shorthand bucket logic below assumes
+  // exactly one declaration per rule (atomic), and would incorrectly sort non-atomic
+  // rules by their first declaration only — breaking CSS cascade within a variant.
+  // Sheet starts with ".cc-" → charCodeAt(0)=46('.'), charCodeAt(1)=99('c'), charCodeAt(2)=99('c'), charCodeAt(3)=45('-')
+  if (
+    sheet.charCodeAt(1) === 99 /* "c" */ &&
+    sheet.charCodeAt(2) === 99 /* "c" */ &&
+    sheet.charCodeAt(3) === 45 /* "-" */
+  ) {
+    return '';
+  }
+
   const firstBracket = sheet.indexOf('{');
 
   /**
