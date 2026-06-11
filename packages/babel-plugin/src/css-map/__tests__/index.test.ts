@@ -1236,12 +1236,6 @@ describe('css map — atomic: false option', () => {
     // 3. The shared multi-selector rule uses a computed template literal key
     // The critical invariant: shared base sheet (border-bottom shorthand) must be
     // injected BEFORE individual override sheets (border-bottom-color) in the CS array.
-    const blurClass = 'ak-editor-annotation-blur';
-    const focusClass = 'ak-editor-annotation-focus';
-    const draftClass = 'ak-editor-annotation-draft';
-    const hoverClass = 'ak-editor-annotation-hover';
-    const sharedSelector = `.${blurClass}, .${focusClass}, .${draftClass}, .${hoverClass}`;
-
     const actual = transformPretty(
       `
       import { cssMap } from '@compiled/react';
