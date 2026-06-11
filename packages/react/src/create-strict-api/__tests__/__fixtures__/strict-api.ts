@@ -19,6 +19,9 @@ type MediaQuery =
   | '(prefers-color-scheme: dark)'
   | '(prefers-color-scheme: light)';
 
-const { css, XCSSProp, cssMap, cx } = createStrictAPI<CSSPropertiesSchema, { media: MediaQuery }>();
+const { css, XCSSProp, XCSSPropSchema, cssMap, cx } = createStrictAPI<
+  CSSPropertiesSchema,
+  { media: MediaQuery }
+>();
 
-export { css, XCSSProp, cssMap, cx };
+export { css, XCSSProp, XCSSPropSchema, cssMap, cx };

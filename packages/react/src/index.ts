@@ -29,6 +29,7 @@ export {
   type XCSSProp,
   type CompiledStyles,
   type Internal$XCSSProp,
+  type Internal$XCSSPropSchema,
   cx,
 } from './xcss-prop';
 

@@ -1,14 +1,20 @@
 import type * as CSS from 'csstype';
 
-import type { ApplySchemaValue } from '../create-strict-api/types';
+import type { ApplySchemaValue, CompiledSchemaShape } from '../create-strict-api/types';
 import { ax } from '../runtime';
-import type { CSSPseudos, CSSProperties, StrictCSSProperties, AllCSSPseudoClasses } from '../types';
+import type {
+  CSSPseudos,
+  CSSProperties,
+  StrictCSSProperties,
+  AllCSSPseudoClasses,
+  CompiledPropertyDeclarationReference,
+} from '../types';
 
 type MarkAsRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
 type XCSSValue<
   TStyleDecl extends keyof CSSProperties,
-  TSchema,
+  TSchema extends CompiledSchemaShape,
   TPseudoKey extends AllCSSPseudoClasses | ''
 > = {
   [Q in keyof StrictCSSProperties]: Q extends TStyleDecl
@@ -20,7 +26,7 @@ type XCSSPseudo<
   TAllowedProperties extends keyof StrictCSSProperties,
   TAllowedPseudos extends CSSPseudos,
   TRequiredProperties extends { requiredProperties: TAllowedProperties },
-  TSchema
+  TSchema extends CompiledSchemaShape
 > = {
   [Q in CSSPseudos]?: Q extends TAllowedPseudos
     ? MarkAsRequired<
@@ -30,15 +36,26 @@ type XCSSPseudo<
     : never;
 };
 
+type XCSSPseudoSchema<TSchema extends CompiledSchemaShape> = {
+  [Q in CSSPseudos]?: TSchema;
+};
+
 type XCSSMediaQuery<
   TAllowedProperties extends keyof StrictCSSProperties,
   TAllowedPseudos extends CSSPseudos,
   TAllowedMediaQueries extends string,
-  TSchema
+  TSchema extends CompiledSchemaShape
 > = {
   [Q in `@media ${TAllowedMediaQueries}`]?:
     | XCSSValue<TAllowedProperties, TSchema, ''>
     | XCSSPseudo<TAllowedProperties, TAllowedPseudos, never, TSchema>;
+};
+
+type XCSSMediaQuerySchema<
+  TSchema extends CompiledSchemaShape,
+  TAllowedMediaQueries extends string
+> = {
+  [Q in `@media ${TAllowedMediaQueries}`]?: TSchema | XCSSPseudoSchema<TSchema>;
 };
 
 /**
@@ -54,10 +71,6 @@ type BlockedRules<TMode extends 'loose' | 'strict'> = {
 } & {
   // We also block all type level at rule "objects" that are present on cssMap.
   [Q in CSS.AtRules]?: never;
-};
-
-type CompiledPropertyDeclarationReference = {
-  ['__COMPILED_PROPERTY_DECLARATION_REFERENCE_DO_NOT_WRITE_DIRECTLY__']: true;
 };
 
 /**
@@ -166,7 +179,7 @@ export type Internal$XCSSProp<
   TAllowedProperties extends keyof StrictCSSProperties,
   TAllowedPseudos extends CSSPseudos,
   TAllowedMediaQueries extends string,
-  TSchema,
+  TSchema extends CompiledSchemaShape,
   TRequiredProperties extends {
     requiredProperties: TAllowedProperties;
   },
@@ -179,6 +192,21 @@ export type Internal$XCSSProp<
       XCSSPseudo<TAllowedProperties, TAllowedPseudos, TRequiredProperties, TSchema> &
       XCSSMediaQuery<TAllowedProperties, TAllowedPseudos, TAllowedMediaQueries, TSchema> &
       BlockedRules<TMode>)
+  | false
+  | null
+  | undefined;
+
+export type XCSSPropSchema<TSchema extends CompiledSchemaShape = CompiledSchemaShape> =
+  Internal$XCSSPropSchema<TSchema, string>;
+
+export type Internal$XCSSPropSchema<
+  TSchema extends CompiledSchemaShape,
+  TAllowedMediaQueries extends string
+> =
+  | (TSchema &
+      XCSSPseudoSchema<TSchema> &
+      XCSSMediaQuerySchema<TSchema, TAllowedMediaQueries> &
+      BlockedRules<'strict'>)
   | false
   | null
   | undefined;
@@ -199,7 +227,7 @@ export type Internal$XCSSProp<
  * <Component xcss={cx(isPrimary && styles.text, !isPrimary && styles.primary)} />
  * ```
  */
-export const cx = <TStyles extends [...XCSSProp<any, any>[]]>(
+export const cx = <TStyles extends [...(XCSSProp<any, any> | XCSSPropSchema<any>)[]]>(
   ...styles: TStyles
 ): TStyles[number] => {
   // At runtime TStyles is resolved down to strings, but not at compile time.

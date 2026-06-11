@@ -1,6 +1,11 @@
 import type { StrictCSSProperties, CSSPseudos, CSSProps } from '../types';
 import { createStrictSetupError } from '../utils/error';
-import { type CompiledStyles, cx, type Internal$XCSSProp } from '../xcss-prop';
+import {
+  type CompiledStyles,
+  cx,
+  type Internal$XCSSProp,
+  type Internal$XCSSPropSchema,
+} from '../xcss-prop';
 
 import type { AllowedStyles, ApplySchema, ApplySchemaMap, CompiledSchemaShape } from './types';
 
@@ -151,6 +156,14 @@ export interface CompiledAPI<
     TRequiredProperties,
     'strict'
   >;
+  /**
+   * TODO: Document this.
+   * A full-schema version of `XCSSProp` that takes a full schema type.
+   */
+  XCSSPropSchema<CustomTSchema extends CompiledSchemaShape = TSchema>(): Internal$XCSSPropSchema<
+    CustomTSchema,
+    TAllowedMediaQueries
+  >;
 }
 
 /**
@@ -216,6 +229,9 @@ export function createStrictAPI<
     },
     cx,
     XCSSProp() {
+      throw createStrictSetupError();
+    },
+    XCSSPropSchema() {
       throw createStrictSetupError();
     },
   };
