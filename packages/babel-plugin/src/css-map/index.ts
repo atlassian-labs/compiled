@@ -12,56 +12,72 @@ import { transformCssItems } from '../utils/transform-css-items';
 import { mergeExtendedSelectorsIntoProperties } from './process-selectors';
 
 /**
- * @experimental Options for cssMap are not part of the public API and may change without notice.
- * The `atomic` option is intentionally omitted from the TypeScript type signature of cssMap.
- * Internal consumers can opt in using `@ts-expect-error`, it's highly risky.
+ * Derives a stable, deterministic non-atomic class name for a `cssMapScoped` variant.
+ * The class name is derived from `hash(filename + ':' + variantKey)` rather than the
+ * full CSS content, avoiding expensive hashing of large variant CSS strings at build time.
  *
- * When `atomic: false`, each variant is compiled to a single non-atomic CSS class
- * (no `_` prefix) instead of one atomic class per declaration. This dramatically
- * reduces the number of classes applied to a DOM element when a cssMap has many
- * properties — at the cost of losing atomic deduplication semantics for that map.
+ * Returns `undefined` if the variant key cannot be statically determined.
  */
-type CssMapOptions = {
-  atomic?: boolean;
+const getNonAtomicClassName = (
+  property: t.ObjectProperty,
+  filename: string | undefined
+): string | undefined => {
+  const variantKey = t.isIdentifier(property.key)
+    ? property.key.name
+    : t.isStringLiteral(property.key)
+    ? property.key.value
+    : undefined;
+
+  if (variantKey === undefined) return undefined;
+
+  return `${NON_ATOMIC_CLASS_PREFIX}${hash(`${filename ?? ''}:${variantKey}`)}`;
 };
 
-const KNOWN_OPTIONS = ['atomic'];
-
 /**
- * Takes `cssMap` function expression and then transforms it to a record of class names and sheets.
+ * Takes a `cssMap` or `cssMapScoped` function expression and transforms it to a record of
+ * class names and sheets.
  *
- * For example:
+ * For `cssMap` (atomic output):
  * ```
  * const styles = cssMap({
  *    none: { color: 'red' },
  *    solid: { color: 'green' },
  * });
+ * // → const styles = { none: "_syaz5scu", solid: "_syazbf54" };
  * ```
- * gets transformed to
+ *
+ * For `cssMapScoped` (non-atomic output):
  * ```
- * const styles = {
- *    danger: "_syaz5scu",
- *    success: "_syazbf54",
- * };
+ * // @ts-expect-error -- cssMapScoped is not in public @compiled/react types
+ * import { cssMapScoped } from '@compiled/react';
+ * const styles = cssMapScoped({
+ *    panel: { '.panel': { color: 'blue' } },
+ *    danger: { '.panel': { color: 'red' } },
+ * });
+ * // → const styles = { panel: "cc-abc123", danger: "cc-def456" };
  * ```
  *
  * @param path {NodePath} The path to be evaluated.
- * @param meta {Metadata} Useful metadata that can be used during the transformation
+ * @param meta {Metadata} Useful metadata that can be used during the transformation.
+ * @param isCssMapScoped {boolean} Whether this call is `cssMapScoped` (always non-atomic).
  */
 export const visitCssMapPath = (
   path: NodePath<t.CallExpression> | NodePath<t.TaggedTemplateExpression>,
-  meta: Metadata
+  meta: Metadata,
+  isCssMapScoped = false
 ): void => {
+  const fnName = isCssMapScoped ? 'cssMapScoped' : 'cssMap';
+
   // We don't support tagged template expressions.
   if (t.isTaggedTemplateExpression(path.node)) {
     throw buildCodeFrameError(
-      createErrorMessage(ErrorMessages.DEFINE_MAP),
+      createErrorMessage(`${fnName} ${ErrorMessages.NO_TAGGED_TEMPLATE}`),
       path.node,
       meta.parentPath
     );
   }
 
-  // We need to ensure CSS Map is declared at the top-most scope of the module.
+  // CSS Map must be declared at the top-most scope of the module.
   if (!t.isVariableDeclarator(path.parent) || !t.isIdentifier(path.parent.id)) {
     throw buildCodeFrameError(
       createErrorMessage(ErrorMessages.DEFINE_MAP),
@@ -70,71 +86,22 @@ export const visitCssMapPath = (
     );
   }
 
-  // We need to ensure cssMap receives either one or two arguments.
-  if (path.node.arguments.length !== 1 && path.node.arguments.length !== 2) {
+  // Both cssMap and cssMapScoped accept exactly one argument (the styles object).
+  if (path.node.arguments.length !== 1) {
     throw buildCodeFrameError(
-      createErrorMessage(ErrorMessages.NUMBER_OF_ARGUMENT),
+      createErrorMessage(`${fnName} ${ErrorMessages.NUMBER_OF_ARGUMENT}`),
       path.node,
       meta.parentPath
     );
   }
 
-  // We need to ensure the argument is an objectExpression.
+  // The argument must be an object expression.
   if (!t.isObjectExpression(path.node.arguments[0])) {
     throw buildCodeFrameError(
-      createErrorMessage(ErrorMessages.ARGUMENT_TYPE),
+      createErrorMessage(`${fnName} ${ErrorMessages.ARGUMENT_TYPE}`),
       path.node,
       meta.parentPath
     );
-  }
-
-  if (path.node.arguments[1] && !t.isObjectExpression(path.node.arguments[1])) {
-    throw buildCodeFrameError(
-      createErrorMessage(ErrorMessages.OPTS_ARGUMENT_TYPE),
-      path.node,
-      meta.parentPath
-    );
-  }
-
-  const optionsNode = path.node.arguments[1] as t.ObjectExpression | undefined;
-  const options: CssMapOptions = {};
-
-  if (optionsNode) {
-    optionsNode.properties.forEach((prop) => {
-      if (!t.isObjectProperty(prop) || !t.isIdentifier(prop.key)) {
-        throw buildCodeFrameError(createErrorMessage(ErrorMessages.OPTS_PROPERTY_TYPE), prop, path);
-      }
-
-      const optionName = prop.key.name;
-      if (!KNOWN_OPTIONS.includes(optionName)) {
-        throw buildCodeFrameError(
-          createErrorMessage(ErrorMessages.OPTS_PROPERTY_KNOWN_NAME),
-          prop.key,
-          path
-        );
-      }
-
-      if (optionName === 'atomic') {
-        // `atomic` must be a boolean literal
-        if (!t.isBooleanLiteral(prop.value)) {
-          throw buildCodeFrameError(
-            createErrorMessage(ErrorMessages.OPTS_PROPERTY_VALUE_TYPE),
-            prop.value,
-            path
-          );
-        }
-        options.atomic = prop.value.value;
-        return;
-      }
-
-      // Unreachable: all known options are handled above.
-      // This is a safety net in case KNOWN_OPTIONS is extended without adding a handler.
-      throw buildCodeFrameError(
-        createErrorMessage(ErrorMessages.OPTS_PROPERTY_KNOWN_NAME),
-        prop.key,
-        path
-      );
-    });
   }
 
   const totalSheets: string[] = [];
@@ -162,20 +129,12 @@ export const visitCssMapPath = (
           );
         }
 
-        // Pre-compute the non-atomic class name from filename + variantKey to avoid
-        // hashing the full CSS content string for potentially large cssMap variants.
-        const variantKey = t.isIdentifier(property.key)
-          ? property.key.name
-          : t.isStringLiteral(property.key)
-          ? property.key.value
+        const nonAtomicClassName = isCssMapScoped
+          ? getNonAtomicClassName(property as t.ObjectProperty, meta.state.filename)
           : undefined;
-        const nonAtomicClassName =
-          options.atomic === false && variantKey !== undefined
-            ? `${NON_ATOMIC_CLASS_PREFIX}${hash(`${meta.state.filename ?? ''}:${variantKey}`)}`
-            : undefined;
 
         const { sheets, classNames } = transformCssItems(css, meta, {
-          ...options,
+          atomic: !isCssMapScoped,
           nonAtomicClassName,
         });
         totalSheets.push(...sheets);
@@ -193,6 +152,6 @@ export const visitCssMapPath = (
     )
   );
 
-  // We store sheets in the meta state so that we can use it later to generate Compiled component.
+  // Store sheets in meta state so we can use them later to generate the Compiled component.
   meta.state.cssMap[path.parent.id.name] = totalSheets;
 };

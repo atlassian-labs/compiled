@@ -413,7 +413,7 @@ describe('CSS Extraction', () => {
     });
   });
 
-  describe('non-atomic cssMap (atomic: false) extraction', () => {
+  describe('cssMapScoped (non-atomic) extraction', () => {
     it('should preserve cc- prefixed non-atomic classes unchanged in the bundle', async () => {
       // Non-atomic classes (cc- prefix) do not need pseudo-selector sorting or
       // atomic deduplication — they pass through the bundle untouched.
@@ -447,7 +447,7 @@ describe('CSS Extraction', () => {
 
     it('should handle a bundle with both atomic and non-atomic classes', async () => {
       // A real app may have both: atomic classes from css()/styled() and
-      // non-atomic classes from cssMap with atomic: false.
+      // non-atomic classes from cssMapScoped.
       // Only the atomic portion (._) triggers sorting; cc- classes pass through.
       const plugin = compiledVitePlugin({ extract: true });
 
@@ -480,16 +480,16 @@ describe('CSS Extraction', () => {
       expect(result).toContain('.cc-o9delr .panel{background-color:pink}');
     });
 
-    it('should transform cssMap with atomic: false and produce cc- classes in output', async () => {
-      // End-to-end: the vite plugin transform step compiles cssMap({ ... }, { atomic: false })
+    it('should transform cssMapScoped and produce cc- classes in output', async () => {
+      // End-to-end: the vite plugin transform step compiles cssMapScoped({ ... })
       // and produces cc- prefixed classes instead of atomic _ classes in the JS output.
       const plugin = compiledVitePlugin();
 
       const code = `
-        import { cssMap } from '@compiled/react';
+        // @ts-expect-error -- cssMapScoped is not in public @compiled/react types
+        import { cssMapScoped } from '@compiled/react';
 
-        // @ts-ignore — atomic is an internal option
-        const styles = cssMap({
+        const styles = cssMapScoped({
           panelStyles: {
             '.panel': { padding: '8px', backgroundColor: 'blue' },
             '.panel-title': { fontWeight: 'bold', color: 'blue' },
@@ -498,7 +498,7 @@ describe('CSS Extraction', () => {
             '.panel': { backgroundColor: 'pink' },
             '.panel-title': { color: 'red' },
           },
-        }, { atomic: false });
+        });
 
         export const Component = ({ isDanger }) => (
           <div css={[styles.panelStyles, isDanger && styles.dangerStyles]} />

@@ -185,7 +185,7 @@ describe('<Style />', () => {
     });
   });
 
-  describe('non-atomic cc- rules (cssMap with atomic: false)', () => {
+  describe('non-atomic cc- rules (cssMapScoped)', () => {
     it('should inject cc- rules into the catch-all style bucket (not a shorthand bucket)', () => {
       createIsolatedTest((Style) => {
         // border-bottom is shorthand depth 4 → would normally go to s-4 bucket

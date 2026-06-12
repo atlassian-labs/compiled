@@ -19,7 +19,7 @@ describe('css map basic functionality', () => {
 
   it('should transform css map', () => {
     const actual = transform(`
-      import { cssMap } from '@compiled/react';
+      import { cssMap, cssMapScoped } from '@compiled/react';
 
       const styles = cssMap(${styles});
 
@@ -39,7 +39,7 @@ describe('css map basic functionality', () => {
   it('should transform css map when the styles are defined below the component and the component uses xcss prop', () => {
     const actual = transform(
       `
-      import { cssMap } from '@compiled/react';
+      import { cssMap, cssMapScoped } from '@compiled/react';
 
       <Box xcss={styles.danger} />
 
@@ -69,7 +69,7 @@ describe('css map basic functionality', () => {
 
   it('should transform css map even when the styles are defined below the component', () => {
     const actual = transform(`
-      import { cssMap } from '@compiled/react';
+      import { cssMap, cssMapScoped } from '@compiled/react';
 
       const Component = () => <div>
         <span css={styles.danger} />
@@ -104,7 +104,7 @@ describe('css map basic functionality', () => {
 
   it('should transform ternary-based conditional referencing cssMap declarations', () => {
     const actual = transform(`
-      import { cssMap } from '@compiled/react';
+      import { cssMap, cssMapScoped } from '@compiled/react';
 
       const styles = cssMap({
         root: { display: 'block' },
@@ -141,7 +141,7 @@ describe('css map basic functionality', () => {
   it('should error out if the root cssMap object is being directly called', () => {
     expect(() => {
       transform(`
-      import { cssMap } from '@compiled/react';
+      import { cssMap, cssMapScoped } from '@compiled/react';
 
       const styles = cssMap({ root: { color: 'red' } });
 
@@ -152,7 +152,7 @@ describe('css map basic functionality', () => {
 
     expect(() => {
       transform(`
-      import { cssMap } from '@compiled/react';
+      import { cssMap, cssMapScoped } from '@compiled/react';
 
       // Eg. we expect 'styles.root' here instead of 'styles'
       <div css={styles} />
@@ -167,7 +167,7 @@ describe('css map basic functionality', () => {
   it('should error out if variants are not defined at the top-most scope of the module.', () => {
     expect(() => {
       transform(`
-      import { cssMap } from '@compiled/react';
+      import { cssMap, cssMapScoped } from '@compiled/react';
 
       const styles = {
         map1: cssMap(${styles}),
@@ -177,7 +177,7 @@ describe('css map basic functionality', () => {
 
     expect(() => {
       transform(`
-      import { cssMap } from '@compiled/react';
+      import { cssMap, cssMapScoped } from '@compiled/react';
 
       const styles = () => cssMap(${styles})
     `);
@@ -187,21 +187,21 @@ describe('css map basic functionality', () => {
   it('should error out if cssMap receives more than two arguments', () => {
     expect(() => {
       transform(`
-        import { cssMap } from '@compiled/react';
+        import { cssMap, cssMapScoped } from '@compiled/react';
 
         const styles = cssMap(${styles}, ${styles}, {})
       `);
-    }).toThrow(ErrorMessages.NUMBER_OF_ARGUMENT);
+    }).toThrow(`cssMap ${ErrorMessages.NUMBER_OF_ARGUMENT}`);
   });
 
   it('should error out if cssMap does not receive an object', () => {
     expect(() => {
       transform(`
-        import { cssMap } from '@compiled/react';
+        import { cssMap, cssMapScoped } from '@compiled/react';
 
         const styles = cssMap('color: red')
       `);
-    }).toThrow(ErrorMessages.ARGUMENT_TYPE);
+    }).toThrow('cssMap ' + ErrorMessages.ARGUMENT_TYPE);
   });
 
   it('should error out if spread element is used', () => {
@@ -268,37 +268,34 @@ describe('css map basic functionality', () => {
     }).toThrow(ErrorMessages.STATIC_VARIANT_OBJECT);
   });
 
-  it('should error out if options argument is not an object', () => {
+  it('should error out if cssMap receives more than one argument', () => {
     expect(() => {
       transform(`
         import { cssMap } from '@compiled/react';
 
-        const styles = cssMap(${styles}, 'invalid');
+        const styles = cssMap(${styles}, { someOption: true });
       `);
-    }).toThrow(ErrorMessages.OPTS_ARGUMENT_TYPE);
+    }).toThrow(`cssMap ${ErrorMessages.NUMBER_OF_ARGUMENT}`);
+  });
+
+  it('should error out if cssMapScoped receives more than one argument', () => {
+    expect(() => {
+      transform(`
+        import { cssMapScoped } from '@compiled/react';
+
+        // @ts-expect-error -- cssMapScoped is not in public types
+        const styles = cssMapScoped(${styles}, { someOption: true });
+      `);
+    }).toThrow(`cssMapScoped ${ErrorMessages.NUMBER_OF_ARGUMENT}`);
   });
 });
 
-describe('css map — atomic: false option', () => {
+describe('css map — cssMapScoped (non-atomic)', () => {
   // Use a stable filename so class names derived from hash(filename + variantKey)
   // are deterministic and meaningful in tests, matching real-world build behaviour.
   const FIXTURE_FILENAME = 'test/css-map-non-atomic.tsx';
-  const transform = (code: string, opts: TransformOptions = {}) =>
-    transformCode(code, { pretty: false, filename: FIXTURE_FILENAME, ...opts });
-
   const transformPretty = (code: string, opts: TransformOptions = {}) =>
     transformCode(code, { pretty: true, filename: FIXTURE_FILENAME, ...opts });
-
-  const styles = `{
-      danger: {
-          color: 'red',
-          backgroundColor: 'red'
-      },
-      success: {
-        color: 'green',
-        backgroundColor: 'green'
-      }
-    }`;
 
   it('should produce valid cc- class names even when filename is undefined', () => {
     // When babel is invoked without a filename (e.g. in tests or programmatic usage),
@@ -306,11 +303,10 @@ describe('css map — atomic: false option', () => {
     // hash('undefined:variantKey') which is still stable and valid.
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         danger: { color: 'red' },
-      }, { atomic: false });
+      });
       const C = () => <div css={styles.danger} />;
     `
     );
@@ -337,9 +333,9 @@ describe('css map — atomic: false option', () => {
     // No "_" prefix means ax() treats it as an opaque plain string, not an atomic group.
     // Different variants → different class names (different variant keys → different hashes).
     const actual = transformPretty(`
-      import { cssMap } from '@compiled/react';
+      import { cssMap, cssMapScoped } from '@compiled/react';
 
-      const styles = cssMap({
+      const styles = cssMapScoped({
         danger: {
             color: 'red',
             backgroundColor: 'red'
@@ -348,8 +344,7 @@ describe('css map — atomic: false option', () => {
           color: 'green',
           backgroundColor: 'green'
         }
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      }, { atomic: false });
+      });
 
       const Component = () => <div>
         <span css={styles.danger} />
@@ -385,12 +380,11 @@ describe('css map — atomic: false option', () => {
   it('should scope pseudo-selectors under the single non-atomic class', () => {
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         danger: { color: 'red', '&:hover': { color: 'darkred' } },
         success: { color: 'green' },
-      }, { atomic: false });
+      });
       const C = () => <div css={styles.danger} />;
     `,
       { pretty: true }
@@ -418,14 +412,13 @@ describe('css map — atomic: false option', () => {
   it('should preserve and correctly scope at-rules under the single non-atomic class', () => {
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         root: {
           color: 'red',
           '@media (min-width: 768px)': { color: 'blue' },
         },
-      }, { atomic: false });
+      });
       const C = () => <div css={styles.root} />;
     `,
       { pretty: true }
@@ -452,12 +445,11 @@ describe('css map — atomic: false option', () => {
   it('should produce an empty string class name for an empty variant', () => {
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         empty: {},
         solid: { color: 'red' },
-      }, { atomic: false });
+      });
       const C = () => <div css={styles.solid} />;
     `,
       { pretty: true }
@@ -484,12 +476,11 @@ describe('css map — atomic: false option', () => {
   it('should support dynamic variant selection via bracket notation', () => {
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         danger: { color: 'red', backgroundColor: 'pink' },
         success: { color: 'green', backgroundColor: 'lightgreen' },
-      }, { atomic: false });
+      });
       const C = ({ variant }) => <div css={styles[variant]} />;
     `,
       { pretty: true }
@@ -519,12 +510,11 @@ describe('css map — atomic: false option', () => {
   it('should support conditional variant application via logical &&', () => {
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         danger: { color: 'red' },
         success: { color: 'green' },
-      }, { atomic: false });
+      });
       const C = ({ isDanger }) => <div css={isDanger && styles.danger} />;
     `,
       { pretty: true }
@@ -555,13 +545,12 @@ describe('css map — atomic: false option', () => {
   it('should support multiple conditional variants applied together', () => {
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         base: { color: 'red', padding: '8px' },
         selected: { backgroundColor: 'blue' },
         disabled: { opacity: 0.5 },
-      }, { atomic: false });
+      });
       const C = ({ isSelected, isDisabled }) => (
         <div css={[styles.base, isSelected && styles.selected, isDisabled && styles.disabled]} />
       );
@@ -613,9 +602,8 @@ describe('css map — atomic: false option', () => {
     // This is how editor styles like panelStyles, tableSharedStyle, mentionNodeStyles work.
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         panelStyles: {
           '.panel': { padding: '8px', backgroundColor: 'blue' },
           '.panel-title': { fontWeight: 'bold', color: 'blue' },
@@ -626,7 +614,7 @@ describe('css map — atomic: false option', () => {
           '.panel': { backgroundColor: 'pink' },
           '.panel-title': { color: 'red' },
         },
-      }, { atomic: false });
+      });
       const C = ({ isDanger }) => <div css={[styles.panelStyles, isDanger && styles.dangerStyles]} />;
     `,
       { pretty: true }
@@ -666,9 +654,8 @@ describe('css map — atomic: false option', () => {
     // where @media / @container rules contain further nested selectors.
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         layoutStyles: {
           width: '100%',
           '@media (min-width: 768px)': {
@@ -680,7 +667,7 @@ describe('css map — atomic: false option', () => {
           padding: '4px',
           '@media (min-width: 768px)': { padding: '8px' },
         },
-      }, { atomic: false });
+      });
       const C = ({ isCompact }) => <div css={[styles.layoutStyles, isCompact && styles.compactStyles]} />;
     `,
       { pretty: true }
@@ -719,9 +706,8 @@ describe('css map — atomic: false option', () => {
     // Consumers can then override them by applying a different variant.
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         panelStyles: {
           '--panel-bg': 'blue',
           '--panel-gap': '8px',
@@ -732,7 +718,7 @@ describe('css map — atomic: false option', () => {
           '--panel-bg': 'pink',
           backgroundColor: 'var(--panel-bg)',
         },
-      }, { atomic: false });
+      });
       const C = ({ isDanger }) => <div css={[styles.panelStyles, isDanger && styles.dangerStyles]} />;
     `,
       { pretty: true }
@@ -770,9 +756,8 @@ describe('css map — atomic: false option', () => {
     // rule so the scoping here is a Compiled convention rather than native CSS behaviour).
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         gradientStyles: {
           '@property --panel-gradient-angle': {
             syntax: "'<angle>'",
@@ -782,7 +767,7 @@ describe('css map — atomic: false option', () => {
           '--panel-gradient-angle': '270deg',
           background: 'linear-gradient(var(--panel-gradient-angle), blue, pink)',
         },
-      }, { atomic: false });
+      });
       const C = () => <div css={styles.gradientStyles} />;
     `,
       { pretty: true }
@@ -847,10 +832,9 @@ describe('css map — atomic: false option', () => {
     // declarations and child element selectors get the cc- class prefix.
     const actual = transformPretty(
       `
-      import { cssMap, keyframes } from '@compiled/react';
+      import { cssMapScoped, keyframes } from '@compiled/react';
       const spin = keyframes({ from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } });
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      const styles = cssMapScoped({
         animated: {
           '.spinner': {
             animationName: spin,
@@ -860,7 +844,7 @@ describe('css map — atomic: false option', () => {
           },
         },
         static: { opacity: 1 },
-      }, { atomic: false });
+      });
       const C = ({ isAnimated }) => <div css={[styles.static, isAnimated && styles.animated]} />;
     `,
       { pretty: true }
@@ -893,9 +877,8 @@ describe('css map — atomic: false option', () => {
     // under the single cc- class for the variant.
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         legacyStyles: {
           display: 'block',
           '@supports not (display: flow-root)': {
@@ -906,7 +889,7 @@ describe('css map — atomic: false option', () => {
             },
           },
         },
-      }, { atomic: false });
+      });
       const C = () => <div css={styles.legacyStyles} />;
     `,
       { pretty: true }
@@ -935,16 +918,15 @@ describe('css map — atomic: false option', () => {
     // They are treated like @media rules — wrapped under the cc- class.
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         responsiveStyles: {
           padding: '16px',
           '@container editor-area (max-width: 600px)': {
             '.panel': { padding: '8px' },
           },
         },
-      }, { atomic: false });
+      });
       const C = () => <div css={styles.responsiveStyles} />;
     `,
       { pretty: true }
@@ -974,16 +956,15 @@ describe('css map — atomic: false option', () => {
     // Compiled resolves the variable binding at compile time.
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
+      import { cssMap, cssMapScoped } from '@compiled/react';
       const containerQuery = '@container editor-area (max-width: 760px)';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      const styles = cssMapScoped({
         responsiveStyles: {
           [containerQuery]: {
             '.panel': { padding: '8px' },
           },
         },
-      }, { atomic: false });
+      });
       const C = () => <div css={styles.responsiveStyles} />;
     `,
       { pretty: true }
@@ -1014,10 +995,9 @@ describe('css map — atomic: false option', () => {
     // Compiled resolves the binding at compile time and inlines the declarations.
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
+      import { cssMap, cssMapScoped } from '@compiled/react';
       const dangerBorderStyles = { boxShadow: '0 0 0 1px red', borderColor: 'red' };
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      const styles = cssMapScoped({
         dangerStyles: {
           '.panel': {
             // eslint-disable-next-line @atlaskit/ui-styling-standard/no-unsafe-values
@@ -1025,7 +1005,7 @@ describe('css map — atomic: false option', () => {
             padding: '8px',
           },
         },
-      }, { atomic: false });
+      });
       const C = () => <div css={styles.dangerStyles} />;
     `,
       { pretty: true }
@@ -1058,9 +1038,8 @@ describe('css map — atomic: false option', () => {
     // In non-atomic mode !important is preserved as-is in the output CSS.
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         overrideStyles: {
           '.panel': {
             // eslint-disable-next-line @atlaskit/ui-styling-standard/no-important-styles
@@ -1068,7 +1047,7 @@ describe('css map — atomic: false option', () => {
             borderColor: 'blue',
           },
         },
-      }, { atomic: false });
+      });
       const C = () => <div css={styles.overrideStyles} />;
     `,
       { pretty: true }
@@ -1105,16 +1084,15 @@ describe('css map — atomic: false option', () => {
     //   ]}
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         baseStyles: { color: 'red', padding: '8px' },
         fullPageStyles: { maxWidth: '1200px' },
         typographyUGC: { fontFamily: 'sans-serif' },
         typographyDefault: { fontFamily: 'serif' },
         denseStyles: { lineHeight: 1.2 },
         firefoxStyles: { scrollbarWidth: 'thin' },
-      }, { atomic: false });
+      });
 
       const EditorContainer = ({ isFullPage, isFirefox, isDense, fg_typography_ugc }) => (
         <div css={[
@@ -1188,9 +1166,8 @@ describe('css map — atomic: false option', () => {
     // The shared rule uses a computed multi-selector key: ['&.blur, &.focus, &.draft, &.hover']
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      import { cssMap, cssMapScoped } from '@compiled/react';
+      const styles = cssMapScoped({
         annotationStyles: {
           ['&.blur, &.focus, &.draft, &.hover']: {
             borderBottom: '2px solid transparent',
@@ -1201,7 +1178,7 @@ describe('css map — atomic: false option', () => {
           '&.blur': { background: 'lightyellow', borderBottomColor: 'orange' },
           '&.hover': { background: 'gold', borderBottomColor: 'orange' },
         },
-      }, { atomic: false });
+      });
       const C = () => <div css={styles.annotationStyles} />;
     `,
       { pretty: true }
@@ -1238,10 +1215,9 @@ describe('css map — atomic: false option', () => {
     // injected BEFORE individual override sheets (border-bottom-color) in the CS array.
     const actual = transformPretty(
       `
-      import { cssMap } from '@compiled/react';
+      import { cssMap, cssMapScoped } from '@compiled/react';
       const sharedSelector = '.ak-editor-annotation-blur, .ak-editor-annotation-focus, .ak-editor-annotation-draft, .ak-editor-annotation-hover';
-      // @ts-expect-error -- atomic is an internal option, not part of the public API
-      const styles = cssMap({
+      const styles = cssMapScoped({
         annotationStyles: {
           '.ProseMirror': {
             [sharedSelector]: {
@@ -1254,7 +1230,7 @@ describe('css map — atomic: false option', () => {
             '.ak-editor-annotation-hover': { background: 'gold', borderBottomColor: 'orange' },
           },
         },
-      }, { atomic: false });
+      });
       const C = () => <div css={styles.annotationStyles} />;
     `,
       { pretty: true }
@@ -1289,65 +1265,100 @@ describe('css map — atomic: false option', () => {
     `);
   });
 
-  it('should error out if options contain a spread element', () => {
-    expect(() => {
-      transform(`
-        import { cssMap } from '@compiled/react';
+  it('should produce one non-atomic cc- class per variant — atomic cssMap baseline comparison', () => {
+    const actual = transformPretty(`
+      import { cssMapScoped } from '@compiled/react';
 
-        const opts = { atomic: false };
-        const styles = cssMap(${styles}, { ...opts });
-      `);
-    }).toThrow(ErrorMessages.OPTS_PROPERTY_TYPE);
+      const styles = cssMapScoped({
+        panelStyles: {
+          '.panel': { padding: '8px', backgroundColor: 'blue' },
+          '.panel-title': { fontWeight: 'bold', color: 'blue' },
+        },
+        dangerStyles: {
+          '.panel': { backgroundColor: 'pink' },
+          '.panel-title': { color: 'red' },
+        },
+      });
+      const C = ({ isDanger }) => <div css={[styles.panelStyles, isDanger && styles.dangerStyles]} />;
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _2 =
+        ".cc-oljnhh .panel{background-color:pink}.cc-oljnhh .panel-title{color:red}";
+      const _ =
+        ".cc-2ax5o6 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px;background-color:blue}.cc-2ax5o6 .panel-title{font-weight:bold;color:blue}";
+      const styles = {
+        panelStyles: "cc-2ax5o6",
+        dangerStyles: "cc-oljnhh",
+      };
+      const C = ({ isDanger }) => (
+        <CC>
+          <CS>{[_, _2]}</CS>
+          {
+            <div
+              className={ax([styles.panelStyles, isDanger && styles.dangerStyles])}
+            />
+          }
+        </CC>
+      );
+      "
+    `);
   });
 
-  it('should error out if options contain an object method', () => {
-    expect(() => {
-      transform(`
-        import { cssMap } from '@compiled/react';
+  it('should support pseudo-selectors, at-rules and conditional application', () => {
+    const actual = transformPretty(`
+      import { cssMapScoped } from '@compiled/react';
 
-        const styles = cssMap(${styles}, { atomic() { return false; } });
-      `);
-    }).toThrow(ErrorMessages.OPTS_PROPERTY_TYPE);
+      const styles = cssMapScoped({
+        base: {
+          color: 'red',
+          '&:hover': { color: 'darkred' },
+          '@media (min-width: 768px)': { color: 'blue' },
+        },
+        muted: { color: 'gray' },
+      });
+      const C = ({ isMuted }) => <div css={[styles.base, isMuted && styles.muted]} />;
+    `);
+
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _2 = ".cc-1lglvdp{color:gray}";
+      const _ =
+        ".cc-1uu75r3{color:red}.cc-1uu75r3:hover{color:darkred}@media (min-width:768px){.cc-1uu75r3{color:blue}}";
+      const styles = {
+        base: "cc-1uu75r3",
+        muted: "cc-1lglvdp",
+      };
+      const C = ({ isMuted }) => (
+        <CC>
+          <CS>{[_, _2]}</CS>
+          {<div className={ax([styles.base, isMuted && styles.muted])} />}
+        </CC>
+      );
+      "
+    `);
   });
 
-  it('should error out if options contain a computed property key', () => {
+  it('should error out if a second argument is passed to cssMapScoped', () => {
     expect(() => {
-      transform(`
-        import { cssMap } from '@compiled/react';
-
-        const styles = cssMap(${styles}, { ['atomic']: false });
+      transformPretty(`
+        import { cssMapScoped } from '@compiled/react';
+        const styles = cssMapScoped({ danger: { color: 'red' } }, { someOption: true });
       `);
-    }).toThrow(ErrorMessages.OPTS_PROPERTY_TYPE);
+    }).toThrow(`cssMapScoped ${ErrorMessages.NUMBER_OF_ARGUMENT}`);
   });
 
-  it('should error out if options contain an unknown property name', () => {
+  it('should error out if cssMapScoped is not declared at the top-most scope', () => {
     expect(() => {
-      transform(`
-        import { cssMap } from '@compiled/react';
-
-        const styles = cssMap(${styles}, { unknownOption: false });
+      transformPretty(`
+        import { cssMapScoped } from '@compiled/react';
+        const styles = {
+          map1: cssMapScoped({ danger: { color: 'red' } }),
+        };
       `);
-    }).toThrow(ErrorMessages.OPTS_PROPERTY_KNOWN_NAME);
-  });
-
-  it('should error out if atomic option value is not a boolean literal', () => {
-    expect(() => {
-      transform(`
-        import { cssMap } from '@compiled/react';
-
-        const styles = cssMap(${styles}, { atomic: 'false' });
-      `);
-    }).toThrow(ErrorMessages.OPTS_PROPERTY_VALUE_TYPE);
-  });
-
-  it('should error out if atomic option value is not a literal (variable)', () => {
-    expect(() => {
-      transform(`
-        import { cssMap } from '@compiled/react';
-
-        const isAtomic = false;
-        const styles = cssMap(${styles}, { atomic: isAtomic });
-      `);
-    }).toThrow(ErrorMessages.OPTS_PROPERTY_VALUE_TYPE);
+    }).toThrow(ErrorMessages.DEFINE_MAP);
   });
 });

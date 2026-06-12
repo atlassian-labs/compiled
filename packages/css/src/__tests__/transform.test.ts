@@ -527,7 +527,7 @@ describe('#css-transform', () => {
       expect(classNames[0]).not.toBe(classNames[2]);
     });
 
-    it('should transform css to non-atomic output when atomic: false is passed', () => {
+    it('should transform css to non-atomic output (used by cssMapScoped)', () => {
       const { sheets, classNames } = transformCss(
         `div span { color: red; font-weight: bold; }`,
         {},

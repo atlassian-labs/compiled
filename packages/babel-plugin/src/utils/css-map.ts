@@ -74,13 +74,9 @@ export function errorIfNotValidObjectProperty(
 // The messages are exported for testing.
 
 export enum ErrorMessages {
-  NO_TAGGED_TEMPLATE = 'cssMap function cannot be used as a tagged template expression.',
-  NUMBER_OF_ARGUMENT = 'cssMap function can only receive one or two arguments.',
-  ARGUMENT_TYPE = 'cssMap function can only receive an object.',
-  OPTS_ARGUMENT_TYPE = 'cssMap options can only be an object.',
-  OPTS_PROPERTY_TYPE = 'cssMap options can only have properties, no methods or spread operators.',
-  OPTS_PROPERTY_KNOWN_NAME = 'cssMap options only allow known property names.',
-  OPTS_PROPERTY_VALUE_TYPE = 'cssMap options only allow boolean properties.',
+  NO_TAGGED_TEMPLATE = 'function cannot be used as a tagged template expression.',
+  NUMBER_OF_ARGUMENT = 'function can only receive one argument.',
+  ARGUMENT_TYPE = 'function can only receive an object.',
   AT_RULE_VALUE_TYPE = 'Value of at-rule block must be an object.',
   SELECTORS_BLOCK_VALUE_TYPE = 'Value of `selectors` key must be an object.',
   DEFINE_MAP = 'CSS Map must be declared at the top-most scope of the module.',
@@ -89,7 +85,7 @@ export enum ErrorMessages {
   STATIC_VARIANT_OBJECT = 'The variant object must be statically defined.',
   DUPLICATE_AT_RULE = 'Cannot declare an at-rule more than once in CSS Map.',
   DUPLICATE_SELECTOR = 'Cannot declare a selector more than once in CSS Map.',
-  DUPLICATE_SELECTORS_BLOCK = 'Duplicate `selectors` key found in cssMap; expected either zero `selectors` keys or one.',
+  DUPLICATE_SELECTORS_BLOCK = 'Duplicate `selectors` key found; expected either zero `selectors` keys or one.',
   STATIC_PROPERTY_KEY = 'Property key may only be a static string.',
   SELECTOR_BLOCK_WRONG_PLACE = '`selector` key was defined in the wrong place.',
   USE_SELECTORS_WITH_AMPERSAND = 'This selector is applied to the parent element, and so you need to specify the ampersand symbol (&) directly before it. For example, `:hover` should be written as `&:hover`.',

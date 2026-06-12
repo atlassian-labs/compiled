@@ -2,7 +2,7 @@ import { flatRecommended } from './configs/flat-recommended';
 import { recommended } from './configs/recommended';
 import { jsxPragmaRule } from './rules/jsx-pragma';
 import { localCXXCSSRule } from './rules/local-cx-xcss';
-import { noCssMapOptionsRule } from './rules/no-css-map-options';
+import { noCssMapScopedRule } from './rules/no-css-map-scoped';
 import { noCssPropWithoutCssFunctionRule } from './rules/no-css-prop-without-css-function';
 import { noCssTaggedTemplateExpressionRule } from './rules/no-css-tagged-template-expression';
 import { noEmotionCssRule } from './rules/no-emotion-css';
@@ -27,7 +27,7 @@ export const rules = {
   'no-emotion-css': noEmotionCssRule,
   'no-exported-css': noExportedCssRule,
   'no-exported-keyframes': noExportedKeyframesRule,
-  'no-css-map-options': noCssMapOptionsRule,
+  'no-css-map-scoped': noCssMapScopedRule,
   'no-invalid-css-map': noInvalidCssMapRule,
   'no-js-xcss': noJavaScriptXCSSRule,
   'no-keyframes-tagged-template-expression': noKeyframesTaggedTemplateExpressionRule,

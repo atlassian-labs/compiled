@@ -5,33 +5,60 @@
 '@compiled/react': minor
 ---
 
-Add experimental `atomic` option to `cssMap` for **internal use only**, use with **extreme caution**.
+Introduces `cssMapScoped` — a new **experimental internal** API that produces non-atomic CSS output. It is intentionally not exported from the public `@compiled/react` TypeScript types. Consumers must use `@ts-expect-error` to import it and should only do so with explicit approval from the Compiled team.
 
-`atomic` is **not officially supported** and is intentionally omitted from the public `cssMap` type signature. It is not discoverable by external consumers and may change or be removed without notice.
+### Why `cssMapScoped`?
+
+Atomic CSS generates one class per declaration, which is optimal for most components. However, for large style objects with many nested selectors (e.g. rich text editor styles with 3,000+ atomic classes), atomic output causes excessive DOM class counts that trigger layout-recalculation performance regressions.
+
+`cssMapScoped` produces the same class-per-variant model as traditional BEM/CSS Modules, while retaining all Compiled benefits: static extraction, SSR support, and zero runtime overhead.
+
+### Output
+
+Instead of splitting each declaration into its own atomic `_xxx` class, `cssMapScoped` groups all declarations for a variant under a single `cc-<hash>` class:
+
+```tsx
+// @ts-expect-error -- cssMapScoped is not in public @compiled/react types
+import { cssMapScoped } from '@compiled/react';
+
+const cssMapScopedTyped = cssMapScoped as unknown as typeof cssMap;
+
+const styles = cssMapScopedTyped({
+  panelStyles: {
+    '.panel': { padding: '8px', backgroundColor: 'blue' },
+    '.panel-title': { fontWeight: 'bold', color: 'blue' },
+  },
+  dangerStyles: {
+    '.panel': { backgroundColor: 'pink' },
+    '.panel-title': { color: 'red' },
+  },
+});
+
+// Usage — identical to cssMap:
+<div css={[styles.panelStyles, isDanger && styles.dangerStyles]} />;
+// Renders: <div class="cc-2ax5o6 cc-oljnhh"> (2 classes, not 8+ atomic classes)
+```
 
 ### `@compiled/css`
 
-- Added `NON_ATOMIC_CLASS_PREFIX` constant (`'cc-'`) — the shared prefix for all non-atomic class names.
-- Added `atomic` option to `LocalTransformOptions` / `transformCss`. When `atomic: false`, all CSS declarations for a given cssMap variant are emitted under a **single non-atomic class** (prefixed `cc-<hash>`) instead of one atomic class per declaration.
-  - This dramatically reduces the number of classes applied to a DOM element for large `cssMap` objects (e.g. editor's 3 000-class map), eliminating the layout-recalculation performance regression caused by excessive class counts.
-  - The class name has **no `_` prefix**, so `ax()` treats it as a plain opaque class and does not attempt atomic deduplication on it.
-- Added `non-atomicify-rules` PostCSS plugin that wraps all declarations in a single `.cc-<hash> { … }` rule, preserving pseudo-selectors, at-rules (`@media`, `@supports`, `@container`, `@keyframes`, `@property`), nested class selectors, and CSS custom properties.
-  - Shares at-rule classification logic (`at-rule-lists.ts`) with `atomicify-rules` as a single source of truth.
-- Updated `sortAtomicStyleSheet` to skip sorting for `cc-` prefixed rules, preserving their source-order cascade (non-atomic rules contain multiple declarations per class and must not be reordered by shorthand depth).
+- Added `NON_ATOMIC_CLASS_PREFIX` constant (`'cc-'`) — the class prefix for all non-atomic variant classes.
+- Added `atomic` option to `LocalTransformOptions` / `transformCss`. When `atomic: false`, all CSS declarations for a variant are emitted under a single `cc-<hash>` class instead of individual atomic classes. The `cc-` prefix means `ax()` treats these as opaque strings and skips atomic deduplication.
+- Added `non-atomicify-rules.ts` PostCSS plugin that scopes all declarations under a single `.cc-<hash>` rule, supporting: pseudo-selectors, at-rules (`@media`, `@supports`, `@container`, `@keyframes`, `@property`), nested class selectors, and CSS custom properties.
+- Shared at-rule classification logic (`at-rule-lists.ts`) between `atomicify-rules` and `non-atomicify-rules` as a single source of truth.
+- Updated `sortAtomicStyleSheet` to skip reordering `cc-` prefixed rules, preserving their source-order cascade (non-atomic rules contain multiple declarations and must not be sorted by shorthand depth).
 
 ### `@compiled/babel-plugin`
 
-- `cssMap` now accepts an optional second argument `{ atomic: false }`, validated at compile time.
-  - `atomic` must be a **boolean literal** (not a variable). Non-boolean values throw a build-time error.
-  - Unknown option names throw a build-time error.
-- The class name for each non-atomic variant is derived from `hash(filename + ':' + variantKey)` — computed once per variant in the Babel plugin, avoiding the need to hash the full CSS content at build time. This is memory-efficient and stable across builds.
-- All CSS items for a non-atomic variant are combined into a single sheet string before injection, resulting in exactly one `const _N` variable per variant in the compiled JS output and one `insertNonAtomicRule()` call at runtime (fewer DOM mutations).
+- Added `cssMapScoped` as a known Compiled API — registered in the import tracker and Babel visitor.
+- `cssMapScoped` always produces non-atomic output. It does not accept a second argument (the `no-css-map-scoped` ESLint rule enforces this).
+- The class name for each non-atomic variant is derived from `hash(filename + ':' + variantKey)` — computed once in the Babel plugin, avoiding expensive full-CSS hashing at build time. Stable and deterministic across builds.
+- All CSS items for a non-atomic variant are combined into a single sheet string, resulting in exactly one `const _N` variable per variant in the compiled JS output and one `insertNonAtomicRule()` call at runtime.
 
 ### `@compiled/react`
 
-- Added `insertNonAtomicRule()` export to `sheet.ts` — injects a CSS rule directly into the catch-all `''` bucket, bypassing the shorthand-depth bucket sorting used for atomic classes.
+- Added `insertNonAtomicRule()` to `sheet.ts` — injects a CSS rule directly into the catch-all `''` bucket, bypassing the shorthand-depth bucket sorting used for atomic rules.
 - Updated `style.tsx` to detect `cc-` prefixed sheets via `isNonAtomicSheet()` and route them through `insertNonAtomicRule()` instead of `insertRule()`, in both client-side and SSR paths. This ensures non-atomic rules preserve their source-order cascade and are never split across multiple `<style>` buckets.
 
 ### `@compiled/eslint-plugin`
 
-- Added `no-css-map-options` ESLint rule to recommended rules to prevent accidental use of experimental `cssMap` options such as `atomic`.
+- Replaced `no-css-map-options` rule with `no-css-map-scoped` rule. The new rule flags **any use of `cssMapScoped`**, making it visible during code review and signalling that explicit Compiled team approval is required.

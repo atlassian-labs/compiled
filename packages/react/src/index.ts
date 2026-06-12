@@ -14,6 +14,10 @@ export type {
   ApplySchemaMap,
 } from './create-strict-api/types.js';
 export { default as css } from './css/index.js';
+// Note: `cssMapScoped` is intentionally not exported from the public API.
+// It is available in the compiled output but not exposed in TypeScript types,
+// so consumers must use `@ts-expect-error` to import it. This keeps the API
+// experimental and internal until the Compiled team decides to officially expose it.
 export { default as cssMap } from './css-map/index.js';
 export { keyframes } from './keyframes/index.js';
 export { styled, StyledProps } from './styled/index.js';

@@ -90,7 +90,7 @@ describe('ax - non-atomic', () => {
     [
       'should handle mixed atomic and non-atomic classes — cc- classes are preserved alongside _ classes',
       // ax() can receive both atomic (_) classes from css()/styled() and non-atomic
-      // (cc-) classes from cssMap with atomic: false in the same call.
+      // (cc-) classes from cssMapScoped in the same call.
       // Atomic group "aaaa" is deduped to its last value; cc- classes are all preserved.
       ['_aaaabbbb', 'cc-1c2j123', '_aaaacccc', 'cc-o9delr'],
       '_aaaacccc cc-1c2j123 cc-o9delr',

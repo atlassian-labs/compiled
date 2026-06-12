@@ -10,7 +10,7 @@ import type { CssItem } from './types';
 type TransformOptions = {
   atomic?: boolean;
   /**
-   * Pre-computed class name for non-atomic mode (`atomic: false`).
+   * Pre-computed class name for non-atomic mode (used by `cssMapScoped`).
    * Should be `NON_ATOMIC_CLASS_PREFIX + hash(filename + ':' + variantKey)`.
    * When provided, avoids hashing the full CSS content string.
    */
