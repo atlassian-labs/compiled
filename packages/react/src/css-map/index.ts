@@ -112,7 +112,7 @@ type RemapMedia<TStyles> = {
  *
  * `cssMapScoped` does not accept an options argument — it is always non-atomic.
  *
- * @experimental internal only, use with caution
+ * @experimental internal only, use with caution, and intentionally not exported in index.ts for public use.
  * @example
  * ```
  * const styles = cssMapScoped({

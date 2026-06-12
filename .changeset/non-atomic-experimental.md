@@ -18,7 +18,6 @@ Atomic CSS generates one class per declaration, which is optimal for most compon
 Instead of splitting each declaration into its own atomic `_xxx` class, `cssMapScoped` groups all declarations for a variant under a single `cc-<hash>` class:
 
 ```tsx
-// @ts-expect-error -- cssMapScoped is not in public @compiled/react types
 import { cssMapScoped } from '@compiled/react';
 
 const cssMapScopedTyped = cssMapScoped as unknown as typeof cssMap;
