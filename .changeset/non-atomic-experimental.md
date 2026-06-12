@@ -20,9 +20,7 @@ Instead of splitting each declaration into its own atomic `_xxx` class, `cssMapS
 ```tsx
 import { cssMapScoped } from '@compiled/react';
 
-const cssMapScopedTyped = cssMapScoped as unknown as typeof cssMap;
-
-const styles = cssMapScopedTyped({
+const styles = cssMapScoped({
   panelStyles: {
     '.panel': { padding: '8px', backgroundColor: 'blue' },
     '.panel-title': { fontWeight: 'bold', color: 'blue' },
@@ -50,7 +48,7 @@ const styles = cssMapScopedTyped({
 
 - Added `cssMapScoped` as a known Compiled API — registered in the import tracker and Babel visitor.
 - `cssMapScoped` always produces non-atomic output. It does not accept a second argument (the `no-css-map-scoped` ESLint rule enforces this).
-- The class name for each non-atomic variant is derived from `hash(filename + ':' + variantKey)` — computed once in the Babel plugin, avoiding expensive full-CSS hashing at build time. Stable and deterministic across builds.
+- The class name for each non-atomic variant is derived from `hash(relative(filename) + ':' + variableName + ':' + variantKey)` — mirroring CSS Modules' approach. Computed once in the Babel plugin (no full-CSS hashing). Stable and deterministic across CI and local builds since `relative(filename)` is resolved from the project root.
 - All CSS items for a non-atomic variant are combined into a single sheet string, resulting in exactly one `const _N` variable per variant in the compiled JS output and one `insertNonAtomicRule()` call at runtime.
 
 ### `@compiled/react`
