@@ -1,3 +1,5 @@
+import path from 'path';
+
 import type { NodePath } from '@babel/core';
 import * as t from '@babel/types';
 import { NON_ATOMIC_CLASS_PREFIX } from '@compiled/css';
@@ -13,14 +15,26 @@ import { mergeExtendedSelectorsIntoProperties } from './process-selectors';
 
 /**
  * Derives a stable, deterministic non-atomic class name for a `cssMapScoped` variant.
- * The class name is derived from `hash(filename + ':' + variantKey)` rather than the
- * full CSS content, avoiding expensive hashing of large variant CSS strings at build time.
+ *
+ * Uses a 3-part hash: `hash(relative(filename) + ':' + variableName + ':' + variantKey)`
+ * — mirroring the approach used by CSS Modules and Vanilla Extract:
+ *
+ * - `path.relative(cwd, filename)` — which file (relative path from cwd, stable across machines)
+ * - `variableName` — which `cssMapScoped` call (unique per file by JS/TS rules)
+ * - `variantKey` — which variant within that call
+ *
+ * This ensures:
+ * - Two `cssMapScoped` calls in the same file with the same variant key → different classes ✅
+ * - Two files with the same basename but different paths → different classes ✅
+ * - Same file + same variable + same key → same class (correct — it IS the same variant) ✅
+ * - Stable across CI and local (`path.relative(cwd)` is the same on all machines) ✅
  *
  * Returns `undefined` if the variant key cannot be statically determined.
  */
 const getNonAtomicClassName = (
   property: t.ObjectProperty,
-  filename: string | undefined
+  variableName: string,
+  filename: string | undefined | null
 ): string | undefined => {
   const variantKey = t.isIdentifier(property.key)
     ? property.key.name
@@ -30,7 +44,8 @@ const getNonAtomicClassName = (
 
   if (variantKey === undefined) return undefined;
 
-  return `${NON_ATOMIC_CLASS_PREFIX}${hash(`${filename ?? ''}:${variantKey}`)}`;
+  const fileRelative = filename ? path.relative(process.cwd(), filename) : '';
+  return `${NON_ATOMIC_CLASS_PREFIX}${hash(`${fileRelative}:${variableName}:${variantKey}`)}`;
 };
 
 /**
@@ -130,7 +145,12 @@ export const visitCssMapPath = (
         }
 
         const nonAtomicClassName = isCssMapScoped
-          ? getNonAtomicClassName(property as t.ObjectProperty, meta.state.filename)
+          ? getNonAtomicClassName(
+              property as t.ObjectProperty,
+              // path.parent is already validated as VariableDeclarator with Identifier id (line ~81)
+              (path.parent as t.VariableDeclarator & { id: t.Identifier }).id.name,
+              meta.state.filename
+            )
           : undefined;
 
         const { sheets, classNames } = transformCssItems(css, meta, {

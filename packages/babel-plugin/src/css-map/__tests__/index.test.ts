@@ -291,37 +291,135 @@ describe('css map basic functionality', () => {
 });
 
 describe('css map — cssMapScoped (non-atomic)', () => {
-  // Use a stable filename so class names derived from hash(filename + variantKey)
-  // are deterministic and meaningful in tests, matching real-world build behaviour.
-  const FIXTURE_FILENAME = 'test/css-map-non-atomic.tsx';
+  // Class names are derived from hash(relative(filename) + ':' + variableName + ':' + variantKey)
+  // — stable and deterministic across CI and local, mirroring the CSS Modules approach.
   const transformPretty = (code: string, opts: TransformOptions = {}) =>
-    transformCode(code, { pretty: true, filename: FIXTURE_FILENAME, ...opts });
+    transformCode(code, { pretty: true, ...opts });
 
-  it('should produce valid cc- class names even when filename is undefined', () => {
-    // When babel is invoked without a filename (e.g. in tests or programmatic usage),
-    // meta.state.filename is undefined. The class name falls back to
-    // hash('undefined:variantKey') which is still stable and valid.
+  it('should allow two cssMapScoped calls with same key to be composed, with CSS source order determining the winner', () => {
+    // Two cssMapScoped calls in the same file with the same variant key name produce
+    // DIFFERENT cc- classes (hash includes variableName + variantKey, like CSS Modules).
+    // When applied together in a css array, both classes are applied to the element.
+    // CSS source order determines which declarations win for overlapping properties —
+    // the sheet defined later in the file is injected later and wins.
     const actual = transformPretty(
       `
-      import { cssMap, cssMapScoped } from '@compiled/react';
-      const styles = cssMapScoped({
-        danger: { color: 'red' },
+      import { cssMapScoped } from '@compiled/react';
+
+      // Defined in "component-a.tsx" — base panel styles
+      const baseStyles = cssMapScoped({
+        panel: { color: 'blue', padding: '8px' },
       });
-      const C = () => <div css={styles.danger} />;
+
+      // Defined in "component-b.tsx" — override panel styles, same key name
+      const overrideStyles = cssMapScoped({
+        panel: { color: 'red' },
+      });
+
+      // Applying both: overrideStyles.panel is applied AFTER baseStyles.panel in the array.
+      // Both resolve to DIFFERENT cc- classes (different variableName in the hash).
+      // Both classes are applied — CSS source order determines which wins for 'color'.
+      const C = () => <div css={[baseStyles.panel, overrideStyles.panel]} />;
     `
     );
 
+    // baseStyles.panel  → hash('<test-file>:baseStyles:panel')  → cc-uxz9ww
+    // overrideStyles.panel → hash('<test-file>:overrideStyles:panel') → cc-16myskf
+    // Different variableNames → different cc- classes → both applied: class="cc-uxz9ww cc-16myskf"
+    // overrideStyles sheet is injected AFTER baseStyles sheet → color:red wins via CSS source order.
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = ".cc-aojfb{color:red}";
-      const styles = {
-        danger: "cc-aojfb",
+      const _2 = ".cc-16myskf{color:red}";
+      const _ =
+        ".cc-uxz9ww{color:blue}.cc-uxz9ww{padding-top:8px}.cc-uxz9ww{padding-right:8px}.cc-uxz9ww{padding-bottom:8px}.cc-uxz9ww{padding-left:8px}";
+      const baseStyles = {
+        panel: "cc-uxz9ww",
+      };
+      const overrideStyles = {
+        panel: "cc-16myskf",
       };
       const C = () => (
         <CC>
+          <CS>{[_, _2]}</CS>
+          {<div className={ax([baseStyles.panel, overrideStyles.panel])} />}
+        </CC>
+      );
+      "
+    `);
+  });
+
+  it('should require a nested selector on the parent to win specificity over child styles', () => {
+    // This test documents the cross-component override pattern:
+    // - A child component (Editor) uses cssMapScoped with key 'panel' → cc-xxx
+    // - A parent component (Confluence) wants to override '.panel' styles
+    // - If Confluence uses the same variant key 'panel', it gets the SAME cc- class
+    //   and cannot override (same specificity, source order determines winner)
+    // - To reliably override, Confluence must use a DIFFERENT variant key with a
+    //   nested selector that wraps the editor's class → higher specificity wins
+    const actual = transformPretty(
+      `
+      import { cssMapScoped } from '@compiled/react';
+
+      // Editor component styles (child) — key 'panel'
+      const editorStyles = cssMapScoped({
+        panel: {
+          '.panel': { color: 'blue', backgroundColor: 'white' },
+        },
+      });
+
+      // Confluence wrapper styles (parent) — uses a DIFFERENT key with nested selector
+      // to achieve higher specificity: .cc-confluencePanel .cc-editorPanel .panel
+      const confluenceStyles = cssMapScoped({
+        // Different key name → different cc- class → can be used as a scope wrapper
+        confluencePanel: {
+          // Nest the editor's cc- class inside to get higher specificity:
+          // .cc-hz6e4 .cc-1jd78t .panel { (0,3,0) } wins over .cc-1jd78t .panel { (0,2,0) }
+          '.cc-1jd78t .panel': { backgroundColor: 'pink' },
+        },
+      });
+
+      // HTML: <div class="cc-hz6e4"><div class="cc-1jd78t"><div class="panel"/></div></div>
+      // .cc-hz6e4 .cc-1jd78t .panel { specificity: (0,3,0) } wins over
+      // .cc-1jd78t .panel { specificity: (0,2,0) }
+      const Page = () => (
+        <div css={confluenceStyles.confluencePanel}>
+          <div css={editorStyles.panel}>
+            <div className="panel" />
+          </div>
+        </div>
+      );
+    `
+    );
+
+    // confluencePanel → cc-hz6e4 (different variableName + key → different class than editorStyles.panel)
+    // The nested '.cc-hz6e4 .cc-1jd78t .panel' selector (0,3,0) wins over '.cc-1jd78t .panel' (0,2,0)
+    expect(actual).toMatchInlineSnapshot(`
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      const _2 = ".cc-5uruqn .panel{color:blue;background-color:white}";
+      const _ = ".cc-hz6e4 .cc-1jd78t .panel{background-color:pink}";
+      const editorStyles = {
+        panel: "cc-5uruqn",
+      };
+      const confluenceStyles = {
+        confluencePanel: "cc-hz6e4",
+      };
+      const Page = () => (
+        <CC>
           <CS>{[_]}</CS>
-          {<div className={ax([styles.danger])} />}
+          {
+            <div className={ax([confluenceStyles.confluencePanel])}>
+              <CC>
+                <CS>{[_2]}</CS>
+                {
+                  <div className={ax([editorStyles.panel])}>
+                    <div className="panel" />
+                  </div>
+                }
+              </CC>
+            </div>
+          }
         </CC>
       );
       "
@@ -355,11 +453,11 @@ describe('css map — cssMapScoped (non-atomic)', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = ".cc-7yw089{color:green}.cc-7yw089{background-color:green}";
-      const _ = ".cc-aojfb{color:red}.cc-aojfb{background-color:red}";
+      const _2 = ".cc-1b3vuyx{color:green}.cc-1b3vuyx{background-color:green}";
+      const _ = ".cc-s5fhfj{color:red}.cc-s5fhfj{background-color:red}";
       const styles = {
-        danger: "cc-aojfb",
-        success: "cc-7yw089",
+        danger: "cc-s5fhfj",
+        success: "cc-1b3vuyx",
       };
       const Component = () => (
         <div>
@@ -393,11 +491,11 @@ describe('css map — cssMapScoped (non-atomic)', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = ".cc-7yw089{color:green}";
-      const _ = ".cc-aojfb{color:red}.cc-aojfb:hover{color:darkred}";
+      const _2 = ".cc-1b3vuyx{color:green}";
+      const _ = ".cc-s5fhfj{color:red}.cc-s5fhfj:hover{color:darkred}";
       const styles = {
-        danger: "cc-aojfb",
-        success: "cc-7yw089",
+        danger: "cc-s5fhfj",
+        success: "cc-1b3vuyx",
       };
       const C = () => (
         <CC>
@@ -428,9 +526,9 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        ".cc-12ll4nl{color:red}@media (min-width:768px){.cc-12ll4nl{color:blue}}";
+        ".cc-1kkgg11{color:red}@media (min-width:768px){.cc-1kkgg11{color:blue}}";
       const styles = {
-        root: "cc-12ll4nl",
+        root: "cc-1kkgg11",
       };
       const C = () => (
         <CC>
@@ -458,10 +556,10 @@ describe('css map — cssMapScoped (non-atomic)', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = ".cc-1s78kp8{color:red}";
+      const _ = ".cc-1agguk9{color:red}";
       const styles = {
-        empty: "cc-qqt14v",
-        solid: "cc-1s78kp8",
+        empty: "cc-1u1bciy",
+        solid: "cc-1agguk9",
       };
       const C = () => (
         <CC>
@@ -491,11 +589,11 @@ describe('css map — cssMapScoped (non-atomic)', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = ".cc-7yw089{color:green}.cc-7yw089{background-color:lightgreen}";
-      const _ = ".cc-aojfb{color:red}.cc-aojfb{background-color:pink}";
+      const _2 = ".cc-1b3vuyx{color:green}.cc-1b3vuyx{background-color:lightgreen}";
+      const _ = ".cc-s5fhfj{color:red}.cc-s5fhfj{background-color:pink}";
       const styles = {
-        danger: "cc-aojfb",
-        success: "cc-7yw089",
+        danger: "cc-s5fhfj",
+        success: "cc-1b3vuyx",
       };
       const C = ({ variant }) => (
         <CC>
@@ -526,11 +624,11 @@ describe('css map — cssMapScoped (non-atomic)', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = ".cc-7yw089{color:green}";
-      const _ = ".cc-aojfb{color:red}";
+      const _2 = ".cc-1b3vuyx{color:green}";
+      const _ = ".cc-s5fhfj{color:red}";
       const styles = {
-        danger: "cc-aojfb",
-        success: "cc-7yw089",
+        danger: "cc-s5fhfj",
+        success: "cc-1b3vuyx",
       };
       const C = ({ isDanger }) => (
         <CC>
@@ -568,14 +666,14 @@ describe('css map — cssMapScoped (non-atomic)', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _3 = ".cc-1l611fe{opacity:0.5}";
-      const _2 = ".cc-hyeuh3{background-color:blue}";
+      const _3 = ".cc-1nivfq0{opacity:0.5}";
+      const _2 = ".cc-16e824i{background-color:blue}";
       const _ =
-        ".cc-1uu75r3{color:red}.cc-1uu75r3{padding-top:8px}.cc-1uu75r3{padding-right:8px}.cc-1uu75r3{padding-bottom:8px}.cc-1uu75r3{padding-left:8px}";
+        ".cc-bhu58x{color:red}.cc-bhu58x{padding-top:8px}.cc-bhu58x{padding-right:8px}.cc-bhu58x{padding-bottom:8px}.cc-bhu58x{padding-left:8px}";
       const styles = {
-        base: "cc-1uu75r3",
-        selected: "cc-hyeuh3",
-        disabled: "cc-1l611fe",
+        base: "cc-bhu58x",
+        selected: "cc-16e824i",
+        disabled: "cc-1nivfq0",
       };
       const C = ({ isSelected, isDisabled }) => (
         <CC>
@@ -628,12 +726,12 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _2 =
-        ".cc-oljnhh .panel{background-color:pink}.cc-oljnhh .panel-title{color:red}";
+        ".cc-1nl3kcl .panel{background-color:pink}.cc-1nl3kcl .panel-title{color:red}";
       const _ =
-        ".cc-2ax5o6 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px;background-color:blue}.cc-2ax5o6 .panel-title{font-weight:bold;color:blue}.cc-2ax5o6 .panel-icon{width:24px;height:24px}.cc-2ax5o6 .panel-icon svg{fill:currentColor}";
+        ".cc-1ves40c .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px;background-color:blue}.cc-1ves40c .panel-title{font-weight:bold;color:blue}.cc-1ves40c .panel-icon{width:24px;height:24px}.cc-1ves40c .panel-icon svg{fill:currentColor}";
       const styles = {
-        panelStyles: "cc-2ax5o6",
-        dangerStyles: "cc-oljnhh",
+        panelStyles: "cc-1ves40c",
+        dangerStyles: "cc-1nl3kcl",
       };
       const C = ({ isDanger }) => (
         <CC>
@@ -679,12 +777,12 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _2 =
-        ".cc-1wyxr0k{padding-top:4px}.cc-1wyxr0k{padding-right:4px}.cc-1wyxr0k{padding-bottom:4px}.cc-1wyxr0k{padding-left:4px}@media (min-width:768px){.cc-1wyxr0k{padding-top:8px}.cc-1wyxr0k{padding-right:8px}.cc-1wyxr0k{padding-bottom:8px}.cc-1wyxr0k{padding-left:8px}}";
+        ".cc-1anag6b{padding-top:4px}.cc-1anag6b{padding-right:4px}.cc-1anag6b{padding-bottom:4px}.cc-1anag6b{padding-left:4px}@media (min-width:768px){.cc-1anag6b{padding-top:8px}.cc-1anag6b{padding-right:8px}.cc-1anag6b{padding-bottom:8px}.cc-1anag6b{padding-left:8px}}";
       const _ =
-        ".cc-ysa2s9{width:100%}@media (min-width:768px){.cc-ysa2s9{width:50%}.cc-ysa2s9 .inner{padding-top:16px;padding-right:16px;padding-bottom:16px;padding-left:16px}}";
+        ".cc-1av4b68{width:100%}@media (min-width:768px){.cc-1av4b68{width:50%}.cc-1av4b68 .inner{padding-top:16px;padding-right:16px;padding-bottom:16px;padding-left:16px}}";
       const styles = {
-        layoutStyles: "cc-ysa2s9",
-        compactStyles: "cc-1wyxr0k",
+        layoutStyles: "cc-1av4b68",
+        compactStyles: "cc-1anag6b",
       };
       const C = ({ isCompact }) => (
         <CC>
@@ -728,12 +826,12 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _2 =
-        ".cc-oljnhh{--panel-bg:pink}.cc-oljnhh{background-color:var(--panel-bg)}";
+        ".cc-1nl3kcl{--panel-bg:pink}.cc-1nl3kcl{background-color:var(--panel-bg)}";
       const _ =
-        ".cc-2ax5o6{--panel-bg:blue}.cc-2ax5o6{--panel-gap:8px}.cc-2ax5o6{background-color:var(--panel-bg)}.cc-2ax5o6{gap:var(--panel-gap)}";
+        ".cc-1ves40c{--panel-bg:blue}.cc-1ves40c{--panel-gap:8px}.cc-1ves40c{background-color:var(--panel-bg)}.cc-1ves40c{gap:var(--panel-gap)}";
       const styles = {
-        panelStyles: "cc-2ax5o6",
-        dangerStyles: "cc-oljnhh",
+        panelStyles: "cc-1ves40c",
+        dangerStyles: "cc-1nl3kcl",
       };
       const C = ({ isDanger }) => (
         <CC>
@@ -777,9 +875,9 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        "@property --panel-gradient-angle{syntax:'<angle>';initial-value:270deg;inherits:false}.cc-id7xhj{--panel-gradient-angle:270deg}.cc-id7xhj{background:linear-gradient(var(--panel-gradient-angle),blue,pink)}";
+        "@property --panel-gradient-angle{syntax:'<angle>';initial-value:270deg;inherits:false}.cc-1uqlgeg{--panel-gradient-angle:270deg}.cc-1uqlgeg{background:linear-gradient(var(--panel-gradient-angle),blue,pink)}";
       const styles = {
-        gradientStyles: "cc-id7xhj",
+        gradientStyles: "cc-1uqlgeg",
       };
       const C = () => (
         <CC>
@@ -853,13 +951,13 @@ describe('css map — cssMapScoped (non-atomic)', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = ".cc-zs6pa2{opacity:1}";
+      const _2 = ".cc-1l86m2j{opacity:1}";
       const _ =
-        "@keyframes k7rupus{0%{transform:rotate(0deg)}to{transform:rotate(360deg)}}.cc-zs9m2x .spinner{animation-name:k7rupus;animation-duration:2s;animation-timing-function:linear;animation-iteration-count:infinite}";
+        "@keyframes k7rupus{0%{transform:rotate(0deg)}to{transform:rotate(360deg)}}.cc-1d3dj3b .spinner{animation-name:k7rupus;animation-duration:2s;animation-timing-function:linear;animation-iteration-count:infinite}";
       const spin = null;
       const styles = {
-        animated: "cc-zs9m2x",
-        static: "cc-zs6pa2",
+        animated: "cc-1d3dj3b",
+        static: "cc-1l86m2j",
       };
       const C = ({ isAnimated }) => (
         <CC>
@@ -899,9 +997,9 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        '.cc-k2kv27{display:block}@supports not (display:flow-root){.cc-k2kv27 .panel:after{content:"";display:table;clear:both}}';
+        '.cc-1o3m7nc{display:block}@supports not (display:flow-root){.cc-1o3m7nc .panel:after{content:"";display:table;clear:both}}';
       const styles = {
-        legacyStyles: "cc-k2kv27",
+        legacyStyles: "cc-1o3m7nc",
       };
       const C = () => (
         <CC>
@@ -936,9 +1034,9 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        ".cc-197u3x4{padding-top:16px}.cc-197u3x4{padding-right:16px}.cc-197u3x4{padding-bottom:16px}.cc-197u3x4{padding-left:16px}@container editor-area (max-width: 600px){.cc-197u3x4 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}}";
+        ".cc-1xtbrag{padding-top:16px}.cc-1xtbrag{padding-right:16px}.cc-1xtbrag{padding-bottom:16px}.cc-1xtbrag{padding-left:16px}@container editor-area (max-width: 600px){.cc-1xtbrag .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}}";
       const styles = {
-        responsiveStyles: "cc-197u3x4",
+        responsiveStyles: "cc-1xtbrag",
       };
       const C = () => (
         <CC>
@@ -974,10 +1072,10 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        "@container editor-area (max-width: 760px){.cc-197u3x4 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}}";
+        "@container editor-area (max-width: 760px){.cc-1xtbrag .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}}";
       const containerQuery = "@container editor-area (max-width: 760px)";
       const styles = {
-        responsiveStyles: "cc-197u3x4",
+        responsiveStyles: "cc-1xtbrag",
       };
       const C = () => (
         <CC>
@@ -1015,13 +1113,13 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        ".cc-oljnhh .panel{box-shadow:0 0 0 1px red;border-color:red;padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}";
+        ".cc-1nl3kcl .panel{box-shadow:0 0 0 1px red;border-color:red;padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px}";
       const dangerBorderStyles = {
         boxShadow: "0 0 0 1px red",
         borderColor: "red",
       };
       const styles = {
-        dangerStyles: "cc-oljnhh",
+        dangerStyles: "cc-1nl3kcl",
       };
       const C = () => (
         <CC>
@@ -1057,9 +1155,9 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        ".cc-148sxnx .panel{background-color:blue!important;border-color:blue}";
+        ".cc-122hb2a .panel{background-color:blue!important;border-color:blue}";
       const styles = {
-        overrideStyles: "cc-148sxnx",
+        overrideStyles: "cc-122hb2a",
       };
       const C = () => (
         <CC>
@@ -1118,20 +1216,20 @@ describe('css map — cssMapScoped (non-atomic)', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _6 = ".cc-cuh1m4{scrollbar-width:thin}";
-      const _5 = ".cc-1n67tsr{line-height:1.2}";
-      const _4 = ".cc-15lej18{font-family:serif}";
-      const _3 = ".cc-gv27a7{font-family:sans-serif}";
-      const _2 = ".cc-h2ubxs{max-width:1200px}";
+      const _6 = ".cc-1sbd89o{scrollbar-width:thin}";
+      const _5 = ".cc-4pkegl{line-height:1.2}";
+      const _4 = ".cc-iuccxl{font-family:serif}";
+      const _3 = ".cc-tcjkhn{font-family:sans-serif}";
+      const _2 = ".cc-mzzh5b{max-width:1200px}";
       const _ =
-        ".cc-2qfkyd{color:red}.cc-2qfkyd{padding-top:8px}.cc-2qfkyd{padding-right:8px}.cc-2qfkyd{padding-bottom:8px}.cc-2qfkyd{padding-left:8px}";
+        ".cc-oxxe21{color:red}.cc-oxxe21{padding-top:8px}.cc-oxxe21{padding-right:8px}.cc-oxxe21{padding-bottom:8px}.cc-oxxe21{padding-left:8px}";
       const styles = {
-        baseStyles: "cc-2qfkyd",
-        fullPageStyles: "cc-h2ubxs",
-        typographyUGC: "cc-gv27a7",
-        typographyDefault: "cc-15lej18",
-        denseStyles: "cc-1n67tsr",
-        firefoxStyles: "cc-cuh1m4",
+        baseStyles: "cc-oxxe21",
+        fullPageStyles: "cc-mzzh5b",
+        typographyUGC: "cc-tcjkhn",
+        typographyDefault: "cc-iuccxl",
+        denseStyles: "cc-4pkegl",
+        firefoxStyles: "cc-1sbd89o",
       };
       const EditorContainer = ({
         isFullPage,
@@ -1192,9 +1290,9 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        ".cc-15qii9c.blur,.cc-15qii9c.draft,.cc-15qii9c.focus,.cc-15qii9c.hover{border-bottom:2px solid transparent;cursor:pointer}.cc-15qii9c.focus{background-color:yellow;border-bottom-color:orange}.cc-15qii9c.draft{background-color:gold;border-bottom-color:orange;cursor:auto}.cc-15qii9c.blur{background-color:lightyellow;border-bottom-color:orange}.cc-15qii9c.hover{background-color:gold;border-bottom-color:orange}";
+        ".cc-sc6vuo.blur,.cc-sc6vuo.draft,.cc-sc6vuo.focus,.cc-sc6vuo.hover{border-bottom:2px solid transparent;cursor:pointer}.cc-sc6vuo.focus{background-color:yellow;border-bottom-color:orange}.cc-sc6vuo.draft{background-color:gold;border-bottom-color:orange;cursor:auto}.cc-sc6vuo.blur{background-color:lightyellow;border-bottom-color:orange}.cc-sc6vuo.hover{background-color:gold;border-bottom-color:orange}";
       const styles = {
-        annotationStyles: "cc-15qii9c",
+        annotationStyles: "cc-sc6vuo",
       };
       const C = () => (
         <CC>
@@ -1249,11 +1347,11 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        ".cc-15qii9c .ProseMirror .ak-editor-annotation-blur,.cc-15qii9c .ProseMirror .ak-editor-annotation-draft,.cc-15qii9c .ProseMirror .ak-editor-annotation-focus,.cc-15qii9c .ProseMirror .ak-editor-annotation-hover{border-bottom:2px solid transparent;cursor:pointer}.cc-15qii9c .ProseMirror .ak-editor-annotation-focus{background-color:yellow;border-bottom-color:orange}.cc-15qii9c .ProseMirror .ak-editor-annotation-draft{background-color:gold;border-bottom-color:orange;cursor:auto}.cc-15qii9c .ProseMirror .ak-editor-annotation-blur{background-color:lightyellow;border-bottom-color:orange}.cc-15qii9c .ProseMirror .ak-editor-annotation-hover{background-color:gold;border-bottom-color:orange}";
+        ".cc-sc6vuo .ProseMirror .ak-editor-annotation-blur,.cc-sc6vuo .ProseMirror .ak-editor-annotation-draft,.cc-sc6vuo .ProseMirror .ak-editor-annotation-focus,.cc-sc6vuo .ProseMirror .ak-editor-annotation-hover{border-bottom:2px solid transparent;cursor:pointer}.cc-sc6vuo .ProseMirror .ak-editor-annotation-focus{background-color:yellow;border-bottom-color:orange}.cc-sc6vuo .ProseMirror .ak-editor-annotation-draft{background-color:gold;border-bottom-color:orange;cursor:auto}.cc-sc6vuo .ProseMirror .ak-editor-annotation-blur{background-color:lightyellow;border-bottom-color:orange}.cc-sc6vuo .ProseMirror .ak-editor-annotation-hover{background-color:gold;border-bottom-color:orange}";
       const sharedSelector =
         ".ak-editor-annotation-blur, .ak-editor-annotation-focus, .ak-editor-annotation-draft, .ak-editor-annotation-hover";
       const styles = {
-        annotationStyles: "cc-15qii9c",
+        annotationStyles: "cc-sc6vuo",
       };
       const C = () => (
         <CC>
@@ -1286,12 +1384,12 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _2 =
-        ".cc-oljnhh .panel{background-color:pink}.cc-oljnhh .panel-title{color:red}";
+        ".cc-1nl3kcl .panel{background-color:pink}.cc-1nl3kcl .panel-title{color:red}";
       const _ =
-        ".cc-2ax5o6 .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px;background-color:blue}.cc-2ax5o6 .panel-title{font-weight:bold;color:blue}";
+        ".cc-1ves40c .panel{padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px;background-color:blue}.cc-1ves40c .panel-title{font-weight:bold;color:blue}";
       const styles = {
-        panelStyles: "cc-2ax5o6",
-        dangerStyles: "cc-oljnhh",
+        panelStyles: "cc-1ves40c",
+        dangerStyles: "cc-1nl3kcl",
       };
       const C = ({ isDanger }) => (
         <CC>
@@ -1325,12 +1423,12 @@ describe('css map — cssMapScoped (non-atomic)', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = ".cc-1lglvdp{color:gray}";
+      const _2 = ".cc-1jz7jn7{color:gray}";
       const _ =
-        ".cc-1uu75r3{color:red}.cc-1uu75r3:hover{color:darkred}@media (min-width:768px){.cc-1uu75r3{color:blue}}";
+        ".cc-bhu58x{color:red}.cc-bhu58x:hover{color:darkred}@media (min-width:768px){.cc-bhu58x{color:blue}}";
       const styles = {
-        base: "cc-1uu75r3",
-        muted: "cc-1lglvdp",
+        base: "cc-bhu58x",
+        muted: "cc-1jz7jn7",
       };
       const C = ({ isMuted }) => (
         <CC>

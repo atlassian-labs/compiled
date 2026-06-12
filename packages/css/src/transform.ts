@@ -43,9 +43,10 @@ export interface LocalTransformOptions {
    */
   atomic?: boolean;
   /**
-   * Pre-computed class name for non-atomic mode. When provided, avoids hashing
-   * the full CSS content string — use `NON_ATOMIC_CLASS_PREFIX + hash(filename + ':' + variantKey)`.
-   * Falls back to hashing the CSS content if not provided.
+   * Pre-computed class name for non-atomic mode (`cssMapScoped`). When provided,
+   * avoids hashing the full CSS content string. The babel plugin computes this as
+   * `NON_ATOMIC_CLASS_PREFIX + hash(relative(filename) + ':' + variableName + ':' + variantKey)`.
+   * Falls back to hashing the full CSS content string if not provided.
    *
    * @experimental Not part of the public API. May change without notice.
    */
