@@ -39,7 +39,7 @@ const styles = cssMapScoped({
 ### `@compiled/css`
 
 - Added `NON_ATOMIC_CLASS_PREFIX` constant (`'cc-'`) — the class prefix for all non-atomic variant classes.
-- Added `atomic` option to `LocalTransformOptions` / `transformCss`. When `atomic: false`, all CSS declarations for a variant are emitted under a single `cc-<hash>` class instead of individual atomic classes. The `cc-` prefix means `ax()` treats these as opaque strings and skips atomic deduplication.
+- Added `nonAtomic` option to `LocalTransformOptions` / `transformCss`. When `nonAtomic: true`, all CSS declarations for a variant are emitted under a single `cc-<hash>` class instead of individual atomic classes. The `cc-` prefix means `ax()` treats these as opaque strings and skips atomic deduplication.
 - Added `non-atomicify-rules.ts` PostCSS plugin that scopes all declarations under a single `.cc-<hash>` rule, supporting: pseudo-selectors, at-rules (`@media`, `@supports`, `@container`, `@keyframes`, `@property`), nested class selectors, and CSS custom properties.
 - Shared at-rule classification logic (`at-rule-lists.ts`) between `atomicify-rules` and `non-atomicify-rules` as a single source of truth.
 - Updated `sortAtomicStyleSheet` to skip reordering `cc-` prefixed rules, preserving their source-order cascade (non-atomic rules contain multiple declarations and must not be sorted by shorthand depth).
