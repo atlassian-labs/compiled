@@ -413,8 +413,8 @@ describe('CSS Extraction', () => {
     });
   });
 
-  describe('cssMapScoped (non-atomic) extraction', () => {
-    it('should preserve cc- prefixed non-atomic classes unchanged in the bundle', async () => {
+  describe('cssMapScoped extraction', () => {
+    it('should preserve cssMapScoped variant classes unchanged — no sorting or deduplication applied', async () => {
       // Non-atomic classes (cc- prefix) do not need pseudo-selector sorting or
       // atomic deduplication — they pass through the bundle untouched.
       const plugin = compiledVitePlugin({ extract: true });
@@ -445,7 +445,7 @@ describe('CSS Extraction', () => {
       expect(context.warn).not.toHaveBeenCalled();
     });
 
-    it('should handle a bundle with both atomic and non-atomic classes', async () => {
+    it('should correctly extract a bundle containing both atomic cssMap and non-atomic cssMapScoped classes', async () => {
       // A real app may have both: atomic classes from css()/styled() and
       // non-atomic classes from cssMapScoped.
       // Only the atomic portion (._) triggers sorting; cc- classes pass through.
@@ -480,7 +480,7 @@ describe('CSS Extraction', () => {
       expect(result).toContain('.cc-o9delr .panel{background-color:pink}');
     });
 
-    it('should transform cssMapScoped and produce cc- classes in output', async () => {
+    it('should transform cssMapScoped source and write scoped variant classes to the extracted CSS file', async () => {
       // End-to-end: the vite plugin transform step compiles cssMapScoped({ ... })
       // and produces cc- prefixed classes instead of atomic _ classes in the JS output.
       const plugin = compiledVitePlugin();

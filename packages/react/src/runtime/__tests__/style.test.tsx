@@ -185,8 +185,8 @@ describe('<Style />', () => {
     });
   });
 
-  describe('non-atomic cc- rules (cssMapScoped)', () => {
-    it('should inject cc- rules into the catch-all style bucket (not a shorthand bucket)', () => {
+  describe('cssMapScoped — non-atomic style injection', () => {
+    it('should inject cssMapScoped rules into the catch-all style bucket, not a shorthand bucket', () => {
       createIsolatedTest((Style) => {
         // border-bottom is shorthand depth 4 → would normally go to s-4 bucket
         // but cc- rules must always go to the catch-all '' bucket
@@ -201,7 +201,7 @@ describe('<Style />', () => {
       });
     });
 
-    it('should preserve source order of cc- rules — shared base before individual overrides', () => {
+    it('should preserve source order — shared base rule before individual overrides', () => {
       createIsolatedTest((Style) => {
         // This mirrors the real annotation styles cascade issue:
         // shared multi-selector (border-bottom shorthand) must appear BEFORE
@@ -224,7 +224,7 @@ describe('<Style />', () => {
       });
     });
 
-    it('should keep cc- rules in the same bucket regardless of their first CSS property', () => {
+    it('should keep all rules for a variant in the same bucket regardless of their first CSS property', () => {
       createIsolatedTest((Style) => {
         // background → shorthand depth 1 → s-1 bucket (without fix)
         // border-bottom → shorthand depth 4 → s-4 bucket (without fix)
@@ -245,7 +245,7 @@ describe('<Style />', () => {
       });
     });
 
-    it('should correctly mix atomic and non-atomic rules in separate buckets', () => {
+    it('should inject atomic cssMap rules and cssMapScoped rules into separate buckets', () => {
       createIsolatedTest((Style) => {
         // atomic rule: border-bottom shorthand → s-4 bucket
         // non-atomic rule: cc- → '' catch-all bucket

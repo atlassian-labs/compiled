@@ -45,9 +45,9 @@ describe('ax - atomic', () => {
       '_aaaaeeee',
     ],
     [
-      'should ensure the last atomic declaration of many multi groups wins (same group length)',
-      ['_aaaabbbb', '_aaaacccc', '_ddddbbbb', '_ddddcccc'],
-      '_aaaacccc _ddddcccc',
+      'should ensure the last atomic declaration of many multi groups with short class name wins',
+      ['_aaaabbbb', '_aaaaaaa', '_ddddbbb', '_ddddcccc'],
+      '_aaaaaaa _ddddcccc',
     ],
     [
       'should not remove any atomic declarations if there are no duplicate groups',

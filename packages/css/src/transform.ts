@@ -75,46 +75,8 @@ export const transformCss = (
   const flattenMultipleSelectorsOption = opts.flattenMultipleSelectors ?? true;
 
   try {
-    // When used by `cssMapScoped`, all declarations for a variant are grouped under a single
-    // `cc-<hash>` class instead of individual atomic `_xxx` classes.
-    if (localOpts.nonAtomic) {
-      // Non-atomic mode: wrap all declarations under a single generated class name.
-      // Use the pre-computed class name (hash of filename + variantKey) when available —
-      // this avoids hashing the full CSS content string for large cssMap variants.
-      // Falls back to hashing the CSS content for standalone transformCss() callers.
-      const className = localOpts.nonAtomicClassName ?? `${NON_ATOMIC_CLASS_PREFIX}${hash(css)}`;
-
-      const result = postcss([
-        discardDuplicates(),
-        discardEmptyRules(),
-        parentOrphanedPseudos(),
-        nested({
-          bubble: ['container', '-moz-document', 'layer', 'else', 'when', 'starting-style'],
-          unwrap: ['color-profile', 'counter-style', 'font-palette-values', 'page', 'property'],
-        }),
-        ...normalizeCSS(opts),
-        expandShorthands(),
-        nonAtomicifyRules({
-          className,
-          callback: (name: string) => classNames.push(name),
-        }),
-        ...(process.env.AUTOPREFIXER === 'off' ? [] : [autoprefixer()]),
-        whitespace(),
-        extractStyleSheets({ callback: (sheet: string) => sheets.push(sheet) }),
-      ]).process(css, {
-        from: undefined,
-      });
-
-      // We need to access something to make the transformation happen.
-      result.css;
-
-      return {
-        sheets,
-        classNames: unique(classNames),
-      };
-    }
-
-    const result = postcss([
+    // Shared PostCSS plugins used by both atomic and non-atomic pipelines.
+    const sharedPlugins = [
       discardDuplicates(),
       discardEmptyRules(),
       parentOrphanedPseudos(),
@@ -134,26 +96,51 @@ export const transformCss = (
       }),
       ...normalizeCSS(opts),
       expandShorthands(),
-      atomicifyRules({
-        classNameCompressionMap: opts.classNameCompressionMap,
-        callback: (className: string) => classNames.push(className),
-        classHashPrefix: opts.classHashPrefix,
-      }),
-      ...(flattenMultipleSelectorsOption ? [flattenMultipleSelectors(), discardDuplicates()] : []),
-      ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
-      sortAtomicStyleSheet({
-        sortAtRulesEnabled: opts.sortAtRules,
-        sortShorthandEnabled: opts.sortShorthand,
-      }),
+    ];
+
+    // Shared tail plugins applied after the atomic/non-atomic transformation step.
+    const tailPlugins = [
       ...(process.env.AUTOPREFIXER === 'off' ? [] : [autoprefixer()]),
       whitespace(),
       extractStyleSheets({ callback: (sheet: string) => sheets.push(sheet) }),
-    ]).process(css, {
-      from: undefined,
-    });
+    ];
 
-    // We need to access something to make the transformation happen.
-    result.css;
+    // When used by `cssMapScoped`, all declarations for a variant are grouped under a single
+    // `cc-<hash>` class instead of individual atomic `_xxx` classes.
+    if (localOpts.nonAtomic) {
+      // Non-atomic mode: wrap all declarations under a single generated class name.
+      // Use the pre-computed class name (hash of filename + variantKey) when available —
+      // this avoids hashing the full CSS content string for large cssMap variants.
+      // Falls back to hashing the CSS content for standalone transformCss() callers.
+      const className = localOpts.nonAtomicClassName ?? `${NON_ATOMIC_CLASS_PREFIX}${hash(css)}`;
+
+      postcss([
+        ...sharedPlugins,
+        nonAtomicifyRules({
+          className,
+          callback: (name: string) => classNames.push(name),
+        }),
+        ...tailPlugins,
+      ]).process(css, { from: undefined }).css;
+    } else {
+      postcss([
+        ...sharedPlugins,
+        atomicifyRules({
+          classNameCompressionMap: opts.classNameCompressionMap,
+          callback: (className: string) => classNames.push(className),
+          classHashPrefix: opts.classHashPrefix,
+        }),
+        ...(flattenMultipleSelectorsOption
+          ? [flattenMultipleSelectors(), discardDuplicates()]
+          : []),
+        ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
+        sortAtomicStyleSheet({
+          sortAtRulesEnabled: opts.sortAtRules,
+          sortShorthandEnabled: opts.sortShorthand,
+        }),
+        ...tailPlugins,
+      ]).process(css, { from: undefined }).css;
+    }
 
     return {
       sheets,
