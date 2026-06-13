@@ -1,11 +1,11 @@
 import { outdent } from 'outdent';
 import postcss from 'postcss';
 
-import { sortAtomicStyleSheet } from '../sort-atomic-style-sheet';
+import { sortStyleSheet } from '../sort-style-sheet';
 
 const transform = (css: string, enabled = true) => {
   const result = postcss([
-    sortAtomicStyleSheet({ sortAtRulesEnabled: true, sortShorthandEnabled: enabled }),
+    sortStyleSheet({ sortAtRulesEnabled: true, sortShorthandEnabled: enabled }),
   ]).process(css, {
     from: undefined,
   });

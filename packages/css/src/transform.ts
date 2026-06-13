@@ -14,7 +14,7 @@ import { increaseSpecificity } from './plugins/increase-specificity';
 import { nonAtomicifyRules } from './plugins/non-atomicify-rules';
 import { normalizeCSS } from './plugins/normalize-css';
 import { parentOrphanedPseudos } from './plugins/parent-orphaned-pseudos';
-import { sortAtomicStyleSheet } from './plugins/sort-atomic-style-sheet';
+import { sortStyleSheet } from './plugins/sort-style-sheet';
 export interface TransformOpts {
   optimizeCss?: boolean;
   classNameCompressionMap?: Record<string, string>;
@@ -56,6 +56,7 @@ export interface LocalTransformOptions {
  * Unlike atomic classes (prefixed with `_`), the `cc-` prefix signals to `ax()` that this
  * is an opaque plain class and should not be treated as an atomic group for deduplication.
  */
+/** @internal — not part of public API, do not import from other packages */
 export const NON_ATOMIC_CLASS_PREFIX = 'cc-';
 
 /**
@@ -134,7 +135,7 @@ export const transformCss = (
           ? [flattenMultipleSelectors(), discardDuplicates()]
           : []),
         ...(opts.increaseSpecificity ? [increaseSpecificity()] : []),
-        sortAtomicStyleSheet({
+        sortStyleSheet({
           sortAtRulesEnabled: opts.sortAtRules,
           sortShorthandEnabled: opts.sortShorthand,
         }),

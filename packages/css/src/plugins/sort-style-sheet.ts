@@ -1,22 +1,12 @@
 import type { ChildNode, Rule, Plugin, AtRule } from 'postcss';
 
-import { NON_ATOMIC_CLASS_PREFIX } from '../transform';
+import { isNonAtomicNode } from '../utils/non-atomic';
 import { sortPseudoSelectors } from '../utils/sort-pseudo-selectors';
 
 import { parseMediaQuery } from './at-rules/parse-media-query';
 import { sortAtRules } from './at-rules/sort-at-rules';
 import type { AtRuleInfo } from './at-rules/types';
 import { sortShorthandDeclarations } from './sort-shorthand-declarations';
-
-/**
- * Returns true if the rule contains a non-atomic `cc-` class selector.
- * Non-atomic rules must not be reordered by shorthand or pseudo-selector sorting —
- * their cascade order is already correct by source order.
- */
-const isNonAtomicRule = (node: ChildNode): boolean => {
-  if (node.type !== 'rule') return false;
-  return node.selector.includes(`.${NON_ATOMIC_CLASS_PREFIX}`);
-};
 
 const sortAtRulePseudoSelectors = (atRule: AtRule) => {
   const rules: Rule[] = [];
@@ -51,7 +41,7 @@ const sortAtRulePseudoSelectors = (atRule: AtRule) => {
  *
  * Using Once due to the catchAll behaviour
  */
-export const sortAtomicStyleSheet = (config: {
+export const sortStyleSheet = (config: {
   sortAtRulesEnabled: boolean | undefined;
   sortShorthandEnabled: boolean | undefined;
 }): Plugin => {
@@ -59,22 +49,22 @@ export const sortAtomicStyleSheet = (config: {
   const sortShorthandEnabled = config.sortShorthandEnabled ?? true;
 
   return {
-    postcssPlugin: 'sort-atomic-style-sheet',
+    postcssPlugin: 'sort-style-sheet',
     Once(root) {
       const catchAll: ChildNode[] = [];
+      const nonAtomicStyles: ChildNode[] = [];
       const atomicRules: Rule[] = [];
-      const nonAtomicRules: Rule[] = [];
-      const atRules: AtRuleInfo[] = [];
+      const atomicAtRules: AtRuleInfo[] = [];
 
       root.each((node) => {
         switch (node.type) {
           case 'rule': {
-            if (isNonAtomicRule(node)) {
-              // Non-atomic cc- rules must not be sorted — their source order encodes
-              // correct CSS cascade. They are placed at the end after atomic rules.
-              nonAtomicRules.push(node);
+            if (isNonAtomicNode(node)) {
+              // Non-atomic cssMapScoped rules must preserve their source order —
+              // skip shorthand and pseudo-selector sorting entirely.
+              nonAtomicStyles.push(node);
             } else if (node.first?.type === 'atrule') {
-              atRules.push({
+              atomicAtRules.push({
                 parsed:
                   sortAtRulesEnabled && node.first.name === 'media'
                     ? parseMediaQuery(node.first.params)
@@ -86,18 +76,23 @@ export const sortAtomicStyleSheet = (config: {
             } else {
               atomicRules.push(node);
             }
-
             break;
           }
 
           case 'atrule': {
-            atRules.push({
-              parsed:
-                sortAtRulesEnabled && node.name === 'media' ? parseMediaQuery(node.params) : [],
-              node,
-              atRuleName: node.name,
-              query: node.params,
-            });
+            if (isNonAtomicNode(node)) {
+              // Non-atomic cssMapScoped rules wrapped in at-rules (e.g. @media { .cc-xxx { } })
+              // must preserve source order — skip sorting entirely.
+              nonAtomicStyles.push(node);
+            } else {
+              atomicAtRules.push({
+                parsed:
+                  sortAtRulesEnabled && node.name === 'media' ? parseMediaQuery(node.params) : [],
+                node,
+                atRuleName: node.name,
+                query: node.params,
+              });
+            }
             break;
           }
 
@@ -108,20 +103,19 @@ export const sortAtomicStyleSheet = (config: {
       });
 
       if (sortShorthandEnabled) {
-        // Only sort atomic rules — non-atomic rules preserve source order
         sortShorthandDeclarations(catchAll);
         sortShorthandDeclarations(atomicRules);
-        sortShorthandDeclarations(atRules.map((atRule) => atRule.node));
+        sortShorthandDeclarations(atomicAtRules.map((atRule) => atRule.node));
       }
 
       // Pseudo-selector and at-rule sorting takes priority over shorthand
       // property sorting.
       sortPseudoSelectors(atomicRules);
       if (sortAtRulesEnabled) {
-        atRules.sort(sortAtRules);
+        atomicAtRules.sort(sortAtRules);
       }
 
-      for (const atRule of atRules) {
+      for (const atRule of atomicAtRules) {
         const node = atRule.node;
         if (node.type !== 'atrule') {
           continue;
@@ -129,13 +123,13 @@ export const sortAtomicStyleSheet = (config: {
         sortAtRulePseudoSelectors(node);
       }
 
+      // Non-atomic cssMapScoped rules are appended first, preserving their
+      // original source order for correct CSS cascade.
       root.nodes = [
+        ...nonAtomicStyles,
         ...catchAll,
         ...atomicRules,
-        ...atRules.map((atRule) => atRule.node),
-        // Non-atomic cc- rules are appended after atomic rules, preserving their
-        // original source order so that CSS cascade is correct.
-        ...nonAtomicRules,
+        ...atomicAtRules.map((atRule) => atRule.node),
       ];
     },
   };

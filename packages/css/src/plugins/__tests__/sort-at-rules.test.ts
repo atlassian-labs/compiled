@@ -1,10 +1,10 @@
 import postcss from 'postcss';
 
-import { sortAtomicStyleSheet } from '../sort-atomic-style-sheet';
+import { sortStyleSheet } from '../sort-style-sheet';
 
 const transform = (css: string) => {
   const result = postcss([
-    sortAtomicStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
+    sortStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
   ]).process(css, {
     from: undefined,
   });

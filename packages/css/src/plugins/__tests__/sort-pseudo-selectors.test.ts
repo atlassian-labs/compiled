@@ -2,11 +2,11 @@ import postcss from 'postcss';
 import whitespace from 'postcss-normalize-whitespace';
 
 import { atomicifyRules } from '../atomicify-rules';
-import { sortAtomicStyleSheet } from '../sort-atomic-style-sheet';
+import { sortStyleSheet } from '../sort-style-sheet';
 
 const transform = (css: TemplateStringsArray) => {
   const result = postcss([
-    sortAtomicStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
+    sortStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
   ]).process(css[0], {
     from: undefined,
   });
@@ -17,7 +17,7 @@ const transform = (css: TemplateStringsArray) => {
 const transformWithAtomicClasses = (css: TemplateStringsArray) => {
   const result = postcss([
     atomicifyRules(),
-    sortAtomicStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
+    sortStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
     whitespace(),
   ]).process(css[0], {
     from: undefined,
@@ -181,7 +181,7 @@ describe('sorting rules inside at-rules (with atomic classes)', () => {
   });
 });
 
-describe('sortAtomicStyleSheet determinism', () => {
+describe('sortStyleSheet determinism', () => {
   it('returns different output order when rules with equal pseudo-selector score are given in different input order', () => {
     // Rules without LVFHA pseudo-selectors all get score 0 from getPseudoSelectorScore.
     // sortPseudoSelectors uses a stable sort, so their relative order is preserved.
@@ -190,11 +190,11 @@ describe('sortAtomicStyleSheet determinism', () => {
     const ruleB = '.b { color: blue; }';
 
     const orderAThenB = postcss([
-      sortAtomicStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
+      sortStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
     ]).process(ruleA + ruleB, { from: undefined }).css;
 
     const orderBThenA = postcss([
-      sortAtomicStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
+      sortStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
     ]).process(ruleB + ruleA, { from: undefined }).css;
 
     expect(orderAThenB).not.toBe(orderBThenA);

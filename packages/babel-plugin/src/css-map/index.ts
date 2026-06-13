@@ -2,7 +2,6 @@ import path from 'path';
 
 import type { NodePath } from '@babel/core';
 import * as t from '@babel/types';
-import { NON_ATOMIC_CLASS_PREFIX } from '@compiled/css';
 import { hash } from '@compiled/utils';
 
 import type { Metadata } from '../types';
@@ -12,6 +11,9 @@ import { ErrorMessages, createErrorMessage, errorIfNotValidObjectProperty } from
 import { transformCssItems } from '../utils/transform-css-items';
 
 import { mergeExtendedSelectorsIntoProperties } from './process-selectors';
+
+/** Must match the prefix used in `transform.ts` from `@compiled/css`. */
+const NON_ATOMIC_CLASS_PREFIX = 'cc-';
 
 /**
  * Derives a stable, deterministic non-atomic class name for a `cssMapScoped` variant.
