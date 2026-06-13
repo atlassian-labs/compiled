@@ -31,17 +31,15 @@ export interface TransformOpts {
  */
 export interface LocalTransformOptions {
   /**
-   * When `false`, styles are emitted as a single non-atomic class per variant
-   * rather than one atomic class per declaration. The class name is not prefixed
-   * with `_`, so `ax()` will treat it as a plain (non-atomic) class.
+   * When `true`, styles are emitted as a single non-atomic class per variant
+   * (via `cssMapScoped`) rather than one atomic class per declaration.
+   * The class name uses the `cc-` prefix so `ax()` treats it as a plain
+   * opaque class rather than an atomic group.
    *
-   * Use this when a large cssMap would otherwise generate thousands of atomic
-   * classes on a single element, hurting layout recalculation performance.
-   *
-   * @default true
+   * @default false
    * @experimental Not part of the public API. May change without notice.
    */
-  atomic?: boolean;
+  nonAtomic?: boolean;
   /**
    * Pre-computed class name for non-atomic mode (`cssMapScoped`). When provided,
    * avoids hashing the full CSS content string. The babel plugin computes this as
@@ -74,13 +72,12 @@ export const transformCss = (
   const sheets: string[] = [];
   const classNames: string[] = [];
 
-  // When used by `cssMapScoped`, all declarations for a variant are grouped under a single
-  // `cc-<hash>` class instead of individual atomic `_xxx` classes.
-  const isAtomic = localOpts.atomic !== false;
   const flattenMultipleSelectorsOption = opts.flattenMultipleSelectors ?? true;
 
   try {
-    if (!isAtomic) {
+    // When used by `cssMapScoped`, all declarations for a variant are grouped under a single
+    // `cc-<hash>` class instead of individual atomic `_xxx` classes.
+    if (localOpts.nonAtomic) {
       // Non-atomic mode: wrap all declarations under a single generated class name.
       // Use the pre-computed class name (hash of filename + variantKey) when available —
       // this avoids hashing the full CSS content string for large cssMap variants.

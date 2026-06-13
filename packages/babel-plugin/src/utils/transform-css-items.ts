@@ -8,10 +8,15 @@ import { getItemCss } from './css-builders';
 import type { CssItem } from './types';
 
 type TransformOptions = {
-  atomic?: boolean;
+  /**
+   * When `true`, outputs all declarations for a variant under a single `cc-<hash>` class
+   * instead of splitting into individual atomic `_xxx` classes. Used by `cssMapScoped`.
+   * @default false
+   */
+  nonAtomic?: boolean;
   /**
    * Pre-computed class name for non-atomic mode (used by `cssMapScoped`).
-   * Should be `NON_ATOMIC_CLASS_PREFIX + hash(filename + ':' + variantKey)`.
+   * Should be `NON_ATOMIC_CLASS_PREFIX + hash(relativeFilename + ':' + variableName + ':' + variantKey)`.
    * When provided, avoids hashing the full CSS content string.
    */
   nonAtomicClassName?: string;
@@ -122,7 +127,7 @@ export const transformCssItems = (
   // @keyframes item + a declaration item when keyframes() is used), and without
   // combining them each item would get its own cc- hash — violating the invariant
   // that non-atomic cssMap variants produce a single class.
-  if (opts.atomic === false) {
+  if (opts.nonAtomic) {
     // Collect all unconditional CSS text from the items, ignoring conditional/map items.
     // Conditional items (ternary) are handled by the cssMap compiler upstream before
     // reaching here — each variant's items are always unconditional at this point.
@@ -132,7 +137,7 @@ export const transformCssItems = (
       .join('\n');
 
     const css = transformCss(combinedCss, meta.state.opts, {
-      atomic: opts.atomic,
+      nonAtomic: true,
       nonAtomicClassName: opts.nonAtomicClassName,
     });
     // Collapse all sheets for this variant into a single string:

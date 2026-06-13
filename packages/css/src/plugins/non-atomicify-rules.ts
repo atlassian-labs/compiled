@@ -100,7 +100,7 @@ const scopeDecl = (decl: Declaration, className: string): void => {
  *   untouched — their inner content is not composed of element selectors.
  * - Throws for forbidden (`@charset`, `@import`, `@namespace`) or unknown at-rules.
  *
- * Mirrors the `canAtomicifyAtRule` + `atomicifyAtRule` logic from `atomicify-rules.ts`.
+ * Mirrors `atomicifyAtRule` from `atomicify-rules.ts`.
  */
 const scopeAtRule = (atRuleNode: AtRule, className: string): void => {
   if (!canProcessAtRule(atRuleNode.name)) {

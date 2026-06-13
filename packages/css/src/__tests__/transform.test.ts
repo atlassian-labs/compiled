@@ -531,7 +531,7 @@ describe('#css-transform', () => {
       const { sheets, classNames } = transformCss(
         `div span { color: red; font-weight: bold; }`,
         {},
-        { atomic: false }
+        { nonAtomic: true }
       );
 
       // Non-atomic: a single sheet wrapping all declarations under one class
@@ -548,14 +548,14 @@ describe('#css-transform', () => {
 
     it('should produce stable non-atomic class names (content-addressable)', () => {
       const css = `div span { color: red; }`;
-      const { classNames: first } = transformCss(css, {}, { atomic: false });
-      const { classNames: second } = transformCss(css, {}, { atomic: false });
+      const { classNames: first } = transformCss(css, {}, { nonAtomic: true });
+      const { classNames: second } = transformCss(css, {}, { nonAtomic: true });
       expect(first[0]).toBe(second[0]);
     });
 
     it('should produce distinct non-atomic class names for different CSS content', () => {
-      const { classNames: a } = transformCss(`div { color: red; }`, {}, { atomic: false });
-      const { classNames: b } = transformCss(`div { color: blue; }`, {}, { atomic: false });
+      const { classNames: a } = transformCss(`div { color: red; }`, {}, { nonAtomic: true });
+      const { classNames: b } = transformCss(`div { color: blue; }`, {}, { nonAtomic: true });
       expect(a[0]).not.toBe(b[0]);
     });
   });

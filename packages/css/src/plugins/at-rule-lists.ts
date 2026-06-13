@@ -3,7 +3,7 @@
  * `non-atomicify-rules` to determine how to handle each at-rule type.
  *
  * - `atomicify-rules` imports the raw constant arrays directly.
- * - `non-atomicify-rules` uses the `classifyAtRule` helper for a cleaner interface.
+ * - `non-atomicify-rules` uses `canProcessAtRule` to determine passthrough vs scopeable at-rules.
  *
  * Keep these lists in sync with the CSS spec and any new at-rules Compiled supports.
  */

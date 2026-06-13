@@ -405,3 +405,343 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
     ]);
   });
 });
+
+describe('cssMapScoped advanced functionality (at rules, nested selectors)', () => {
+  const transform = (code: string, opts: TransformOptions = {}) =>
+    transformCode(code, { pretty: false, ...opts });
+
+  it('should parse a mix of at rules and the selectors object', () => {
+    const actual = transform(`
+      import { cssMapScoped } from '@compiled/react';
+
+      const styles = cssMapScoped({
+        success: {
+          color: '#0b0',
+          '&:hover': {
+            color: '#060',
+          },
+          '@media': {
+            'screen and (min-width: 500px)': {
+              fontSize: '10vw',
+            },
+          },
+          selectors: {
+            span: {
+              color: 'lightgreen',
+              '&:hover': {
+                color: '#090',
+              },
+            },
+          },
+        },
+        danger: {
+          color: 'red',
+          '&:hover': {
+            color: 'darkred',
+          },
+          '@media': {
+            'screen and (min-width: 500px)': {
+              fontSize: '20vw',
+            },
+          },
+          selectors: {
+            span: {
+              color: 'orange',
+              '&:hover': {
+                color: 'pink',
+              },
+            },
+          },
+        },
+      });
+
+      ${EXAMPLE_USAGE}
+    `);
+
+    // Each variant gets a single cc- class — not split into atomic classes
+    expect(actual).toContain('const styles={success:"cc-');
+    expect(actual).toContain('danger:"cc-');
+    // Styles are scoped under the cc- class
+    expect(actual).toContain('.cc-');
+    expect(actual).toContain(':hover');
+    expect(actual).toContain('@media screen and (min-width:500px)');
+    expect(actual).toContain('span');
+  });
+
+  it('should parse selectors object', () => {
+    const actual = transform(`
+      import { cssMapScoped } from '@compiled/react';
+
+      const styles = cssMapScoped({
+        success: {
+          color: '#0b0',
+          '&:hover': {
+            color: '#060',
+          },
+        },
+        danger: {
+          color: 'red',
+          selectors: {
+            '&:first-of-type': {
+              color: 'lightgreen',
+              '&:hover': {
+                color: '#090',
+              },
+            },
+            '& :hover': {
+              color: 'orange',
+            },
+          },
+        },
+      });
+
+      ${EXAMPLE_USAGE}
+    `);
+
+    expect(actual).toContain('const styles={success:"cc-');
+    expect(actual).toContain('danger:"cc-');
+    expect(actual).toContain(':first-of-type');
+    expect(actual).toContain(':hover');
+  });
+
+  it('should error if duplicate selectors passed (inside selectors object and outside)', () => {
+    expect(() => {
+      transform(`
+        import { cssMapScoped } from '@compiled/react';
+
+        const styles = cssMapScoped({
+          success: {
+            color: '#0b0',
+            '&:hover': {
+              color: '#060',
+            },
+            selectors: {
+              '&:hover': {
+                color: '#ff0',
+              },
+            },
+          },
+        });
+      `);
+    }).toThrow(ErrorMessages.DUPLICATE_SELECTOR);
+  });
+
+  it('should error if duplicate selectors passed using different formats', () => {
+    expect(() => {
+      transform(`
+        import { cssMapScoped } from '@compiled/react';
+
+        const styles = cssMapScoped({
+          success: {
+            color: '#0b0',
+            div: {
+              color: '#060',
+            },
+            selectors: {
+              'div': {
+                color: '#ff0',
+              },
+            },
+          },
+        });
+      `);
+    }).toThrow(ErrorMessages.DUPLICATE_SELECTOR);
+  });
+
+  it('should error if selector targeting current element is passed without ampersand at front', () => {
+    expect(() => {
+      transform(`
+        import { cssMapScoped } from '@compiled/react';
+
+        const styles = cssMapScoped({
+          success: {
+            color: '#0b0',
+            selectors: {
+              ':hover': {
+                color: 'aquamarine',
+              },
+            },
+          },
+        });
+      `);
+    }).toThrow(ErrorMessages.USE_SELECTORS_WITH_AMPERSAND);
+  });
+
+  it('should parse an at rule (@media)', () => {
+    const permutations: string[] = [`screen`, `'screen'`];
+
+    for (const secondHalf of permutations) {
+      const actual = transform(`
+        import { cssMapScoped } from '@compiled/react';
+
+        const styles = cssMapScoped({
+          success: {
+            color: 'red',
+            '@media': {
+              'screen and (min-width: 500px)': {
+                color: 'blue',
+              },
+              ${secondHalf}: {
+                color: 'pink',
+              },
+            },
+          },
+        });
+
+        ${EXAMPLE_USAGE}
+      `);
+
+      expect(actual).toContain('const styles={success:"cc-');
+      expect(actual).toContain('@media screen and (min-width:500px)');
+      expect(actual).toContain('@media screen');
+    }
+  });
+
+  it('should parse the @starting-style at-rule when nested', () => {
+    const actual = transform(`
+      import { cssMapScoped } from '@compiled/react';
+
+      const styles = cssMapScoped({
+        success: {
+          color: 'red',
+          '@media (prefers-reduced-motion: no-preference)': {
+            '@starting-style': {
+              color: 'blue'
+            },
+          },
+        },
+      });
+
+      ${EXAMPLE_USAGE}
+    `);
+
+    expect(actual).toContain('const styles={success:"cc-');
+    expect(actual).toContain('@media (prefers-reduced-motion:no-preference)');
+    expect(actual).toContain('@starting-style');
+  });
+
+  it('should error if more than one selectors key passed', () => {
+    expect(() => {
+      transform(`
+        import { cssMapScoped } from '@compiled/react';
+
+        const styles = cssMapScoped({
+          success: {
+            color: 'red',
+            selectors: {
+              '&:hover': {
+                color: '#ff0',
+              },
+            },
+            selectors: {
+              '&:active': {
+                color: '#0ff',
+              },
+            },
+          },
+        });
+      `);
+    }).toThrow(ErrorMessages.DUPLICATE_SELECTORS_BLOCK);
+  });
+
+  it('should error if value of selectors key is not an object', () => {
+    expect(() => {
+      transform(`
+        import { cssMapScoped } from '@compiled/react';
+
+        const styles = cssMapScoped({
+          success: {
+            color: 'red',
+            selectors: 'blue',
+          },
+        });
+      `);
+    }).toThrow(ErrorMessages.SELECTORS_BLOCK_VALUE_TYPE);
+  });
+
+  it('should pass through @keyframes untouched (no cc- prefix on keyframe stops)', () => {
+    const actual = transform(`
+      import { cssMapScoped } from '@compiled/react';
+
+      const styles = cssMapScoped({
+        animated: {
+          '.spinner': {
+            animationName: 'spin',
+            animationDuration: '2s',
+            '@keyframes spin': {
+              from: { transform: 'rotate(0deg)' },
+              to: { transform: 'rotate(360deg)' },
+            },
+          },
+        },
+      });
+
+      ${EXAMPLE_USAGE}
+    `);
+
+    // @keyframes stops (from/to) must NOT have cc- prefix — only .spinner gets scoped
+    expect(actual).toContain('@keyframes spin{');
+    // .spinner IS scoped under cc- class
+    expect(actual).toContain('.cc-');
+    expect(actual).toContain('.spinner{');
+  });
+
+  it('should support @position-try global at-rule with nested syntax', () => {
+    const actual = transform(`
+      import { cssMapScoped } from '@compiled/react';
+
+      const styles = cssMapScoped({
+        arrow: {
+          '@position-try': {
+            '--ds-arrow-top': {
+              positionArea: 'top',
+              margin: 0,
+            },
+            '--ds-arrow-bottom': {
+              positionArea: 'bottom',
+              margin: 0,
+            },
+          },
+          color: 'blue',
+        },
+      });
+
+      ${EXAMPLE_USAGE}
+    `);
+
+    expect(actual).toContain('const styles={arrow:"cc-');
+    expect(actual).toContain('@position-try --ds-arrow-top');
+    expect(actual).toContain('@position-try --ds-arrow-bottom');
+    expect(actual).toContain('color:blue');
+  });
+
+  it('should support @position-try global at-rule with flat syntax', () => {
+    const actual = transform(`
+      import { cssMapScoped } from '@compiled/react';
+
+      const styles = cssMapScoped({
+        arrowBlockStart: {
+          '@position-try --ds-arrow-block-start': {
+            positionArea: 'block-start',
+            margin: 0,
+            marginBlockEnd: 'var(--ds-arrow-size, 8px)',
+          },
+        },
+        arrowBlockEnd: {
+          '@position-try --ds-arrow-block-end': {
+            positionArea: 'block-end',
+            margin: 0,
+            marginBlockStart: 'var(--ds-arrow-size, 8px)',
+          },
+        },
+      });
+
+      ${EXAMPLE_USAGE}
+    `);
+
+    expect(actual).toContain('arrowBlockStart:"cc-');
+    expect(actual).toContain('arrowBlockEnd:"cc-');
+    expect(actual).toContain('@position-try --ds-arrow-block-start');
+    expect(actual).toContain('@position-try --ds-arrow-block-end');
+  });
+});

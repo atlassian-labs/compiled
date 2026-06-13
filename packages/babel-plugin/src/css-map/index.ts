@@ -154,7 +154,7 @@ export const visitCssMapPath = (
           : undefined;
 
         const { sheets, classNames } = transformCssItems(css, meta, {
-          atomic: !isCssMapScoped,
+          nonAtomic: isCssMapScoped,
           nonAtomicClassName,
         });
         totalSheets.push(...sheets);

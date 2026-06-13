@@ -268,6 +268,36 @@ describe('css map basic functionality', () => {
     }).toThrow(ErrorMessages.STATIC_VARIANT_OBJECT);
   });
 
+  it('should handle keyframes() reference in an atomic cssMap variant', () => {
+    // Documents the CORRECT atomic behaviour for @keyframes:
+    // - @keyframes stops (0%, to) have NO class selector prefix
+    // - Only the animation property declarations get the atomic _ class
+    const actual = transformCode(
+      `
+      import { cssMap, keyframes } from '@compiled/react';
+      const spin = keyframes({ from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } });
+      const styles = cssMap({
+        animated: {
+          '.spinner': {
+            animationName: spin,
+            animationDuration: '2s',
+          },
+        },
+        static: { opacity: 1 },
+      });
+      const C = ({ isAnimated }) => <div css={[styles.static, isAnimated && styles.animated]} />;
+    `,
+      { pretty: true }
+    );
+
+    // @keyframes stops have NO class selector prefix
+    expect(actual).toContain(
+      '@keyframes k7rupus{0%{transform:rotate(0deg)}to{transform:rotate(360deg)}}'
+    );
+    // Animation declarations get the atomic _ class
+    expect(actual).toContain('.spinner{animation-name:k7rupus');
+  });
+
   it('should error out if cssMap receives more than one argument', () => {
     expect(() => {
       transform(`
@@ -426,120 +456,6 @@ describe('css map — cssMapScoped (non-atomic)', () => {
     `);
   });
 
-  it('should produce one non-atomic cc- class per variant instead of multiple atomic _ classes', () => {
-    // Each variant emits exactly ONE class with a "cc-" prefix (no "_" prefix).
-    // No "_" prefix means ax() treats it as an opaque plain string, not an atomic group.
-    // Different variants → different class names (different variant keys → different hashes).
-    const actual = transformPretty(`
-      import { cssMap, cssMapScoped } from '@compiled/react';
-
-      const styles = cssMapScoped({
-        danger: {
-            color: 'red',
-            backgroundColor: 'red'
-        },
-        success: {
-          color: 'green',
-          backgroundColor: 'green'
-        }
-      });
-
-      const Component = () => <div>
-        <span css={styles.danger} />
-        <span css={styles.success} />
-      </div>
-    `);
-
-    expect(actual).toMatchInlineSnapshot(`
-      "import * as React from "react";
-      import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = ".cc-1b3vuyx{color:green}.cc-1b3vuyx{background-color:green}";
-      const _ = ".cc-s5fhfj{color:red}.cc-s5fhfj{background-color:red}";
-      const styles = {
-        danger: "cc-s5fhfj",
-        success: "cc-1b3vuyx",
-      };
-      const Component = () => (
-        <div>
-          <CC>
-            <CS>{[_, _2]}</CS>
-            {<span className={ax([styles.danger])} />}
-          </CC>
-          <CC>
-            <CS>{[_, _2]}</CS>
-            {<span className={ax([styles.success])} />}
-          </CC>
-        </div>
-      );
-      "
-    `);
-  });
-
-  it('should scope pseudo-selectors under the single non-atomic class', () => {
-    const actual = transformPretty(
-      `
-      import { cssMap, cssMapScoped } from '@compiled/react';
-      const styles = cssMapScoped({
-        danger: { color: 'red', '&:hover': { color: 'darkred' } },
-        success: { color: 'green' },
-      });
-      const C = () => <div css={styles.danger} />;
-    `,
-      { pretty: true }
-    );
-
-    expect(actual).toMatchInlineSnapshot(`
-      "import * as React from "react";
-      import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = ".cc-1b3vuyx{color:green}";
-      const _ = ".cc-s5fhfj{color:red}.cc-s5fhfj:hover{color:darkred}";
-      const styles = {
-        danger: "cc-s5fhfj",
-        success: "cc-1b3vuyx",
-      };
-      const C = () => (
-        <CC>
-          <CS>{[_, _2]}</CS>
-          {<div className={ax([styles.danger])} />}
-        </CC>
-      );
-      "
-    `);
-  });
-
-  it('should preserve and correctly scope at-rules under the single non-atomic class', () => {
-    const actual = transformPretty(
-      `
-      import { cssMap, cssMapScoped } from '@compiled/react';
-      const styles = cssMapScoped({
-        root: {
-          color: 'red',
-          '@media (min-width: 768px)': { color: 'blue' },
-        },
-      });
-      const C = () => <div css={styles.root} />;
-    `,
-      { pretty: true }
-    );
-
-    expect(actual).toMatchInlineSnapshot(`
-      "import * as React from "react";
-      import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ =
-        ".cc-1kkgg11{color:red}@media (min-width:768px){.cc-1kkgg11{color:blue}}";
-      const styles = {
-        root: "cc-1kkgg11",
-      };
-      const C = () => (
-        <CC>
-          <CS>{[_]}</CS>
-          {<div className={ax([styles.root])} />}
-        </CC>
-      );
-      "
-    `);
-  });
-
   it('should produce an empty string class name for an empty variant', () => {
     const actual = transformPretty(
       `
@@ -599,41 +515,6 @@ describe('css map — cssMapScoped (non-atomic)', () => {
         <CC>
           <CS>{[_, _2]}</CS>
           {<div className={ax([styles[variant]])} />}
-        </CC>
-      );
-      "
-    `);
-  });
-
-  it('should support conditional variant application via logical &&', () => {
-    const actual = transformPretty(
-      `
-      import { cssMap, cssMapScoped } from '@compiled/react';
-      const styles = cssMapScoped({
-        danger: { color: 'red' },
-        success: { color: 'green' },
-      });
-      const C = ({ isDanger }) => <div css={isDanger && styles.danger} />;
-    `,
-      { pretty: true }
-    );
-
-    // When isDanger is false, ax([false]) → no class applied.
-    // When isDanger is true, ax(['cc-wq229y']) → 'cc-wq229y' applied.
-    // ax() safely passes non-_ classes through without any atomic deduplication.
-    expect(actual).toMatchInlineSnapshot(`
-      "import * as React from "react";
-      import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = ".cc-1b3vuyx{color:green}";
-      const _ = ".cc-s5fhfj{color:red}";
-      const styles = {
-        danger: "cc-s5fhfj",
-        success: "cc-1b3vuyx",
-      };
-      const C = ({ isDanger }) => (
-        <CC>
-          <CS>{[_, _2]}</CS>
-          {<div className={ax([isDanger && styles.danger])} />}
         </CC>
       );
       "
@@ -887,37 +768,6 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       );
       "
     `);
-  });
-
-  it('should handle keyframes() reference in an atomic cssMap variant (comparison baseline)', () => {
-    // This test documents the CORRECT atomic behaviour for @keyframes:
-    // - @keyframes stops (0%, to) have NO class selector prefix
-    // - Only the animation property declarations get the atomic _ class
-    // The non-atomic test below should match this behaviour for @keyframes stops.
-    const actual = transformPretty(
-      `
-      import { cssMap, keyframes } from '@compiled/react';
-      const spin = keyframes({ from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } });
-      const styles = cssMap({
-        animated: {
-          '.spinner': {
-            animationName: spin,
-            animationDuration: '2s',
-          },
-        },
-        static: { opacity: 1 },
-      });
-      const C = ({ isAnimated }) => <div css={[styles.static, isAnimated && styles.animated]} />;
-    `,
-      { pretty: true }
-    );
-
-    // Key assertion: @keyframes stops have NO class selector prefix
-    expect(actual).toContain(
-      '@keyframes k7rupus{0%{transform:rotate(0deg)}to{transform:rotate(360deg)}}'
-    );
-    // Animation declarations get the atomic _ class
-    expect(actual).toContain('.spinner{animation-name:k7rupus');
   });
 
   it('should handle keyframes() reference and @keyframes inline in a non-atomic variant', () => {
