@@ -27,12 +27,23 @@ type XCSSPseudo<
   TRequiredProperties extends { requiredProperties: TAllowedProperties },
   TSchema
 > = {
-  [Q in CSSPseudos]?: Q extends TAllowedPseudos
-    ? MarkAsRequired<
-        XCSSValue<TAllowedProperties, TSchema, Q extends AllCSSPseudoClasses ? Q : ''>,
-        TRequiredProperties['requiredProperties']
-      >
-    : never;
+  // PERF FIX: Was `[Q in CSSPseudos]` which always generated all 67 CSS pseudo keys,
+  // marking ~62 of them as `never` when not in TAllowedPseudos. TypeScript had to
+  // instantiate 67 × ~300 = 20,100 type nodes for every xcss prop reference in every
+  // consumer file — even for StrictXCSSProp<XCSSAllProperties, never> (which should
+  // produce 0 pseudo keys). Confirmed by tsc --generateTrace in AFM.
+  //
+  // Fix: map over TAllowedPseudos directly. Now:
+  //   StrictXCSSProp<XCSSAllProperties, never>          → 0 pseudo keys  (was 67)
+  //   StrictXCSSProp<XCSSAllProperties, '&:hover'>      → 1 pseudo key   (was 67)
+  //   StrictXCSSProp<XCSSAllProperties, XCSSAllPseudos> → 67 keys        (unchanged)
+  //
+  // Impact in AFM: consumer file check time dropped from ×17.2 → ×4.0 baseline.
+  // See: platform/packages/ts-perf-bench/INVESTIGATION-REPORT.md
+  [Q in TAllowedPseudos]?: MarkAsRequired<
+    XCSSValue<TAllowedProperties, TSchema, Q extends AllCSSPseudoClasses ? Q : ''>,
+    TRequiredProperties['requiredProperties']
+  >;
 };
 
 type XCSSMediaQuery<
