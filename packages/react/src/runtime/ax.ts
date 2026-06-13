@@ -1,9 +1,8 @@
 /**
- * The value hash is always exactly 4 characters, so the group hash is
- * everything before the last 4 characters of the class name.
- * e.g. `"_1s4A1b2c"` → group `"_1s4A"`, value `"1b2c"`.
+ * This length includes the underscore,
+ * e.g. `"_1s4A"` would be a valid atomic group hash.
  */
-const ATOMIC_VALUE_HASH_LENGTH = 4;
+const ATOMIC_GROUP_LENGTH = 5;
 
 /**
  * Create a single string containing all the classnames provided, separated by a space (`" "`).
@@ -15,8 +14,7 @@ const ATOMIC_VALUE_HASH_LENGTH = 4;
  * '_aaaacccc'
  * ```
  *
- * Format of Atomic style classnames: `_{group}{value}` where value is always 4 chars.
- * Default: `_\w{4}\w{4}` (9 chars total).
+ * Format of Atomic style classnames: `_{group}{value}` (`_\w{4}\w{4}`)
  *
  * `ax` will preserve any non atomic style classnames (eg `"border-red"`)
  *
@@ -69,15 +67,8 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
        * For other classnames: the `key` is the whole classname
        * - Okay to remove duplicates as doing so does not impact specificity
        *
-       * TODO: it doesn't support mixing short and long classes,
-       * as it'd results in different key because group hash is different.
-       * The algorithm assumes we have same length hash length, either long or short.
-       * This would be fixed in the future.
-       *
        * */
-      const key = className.startsWith('_')
-        ? className.slice(0, className.length - ATOMIC_VALUE_HASH_LENGTH)
-        : className;
+      const key = className.startsWith('_') ? className.slice(0, ATOMIC_GROUP_LENGTH) : className;
       map[key] = className;
     }
   }

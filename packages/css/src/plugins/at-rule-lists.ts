@@ -1,15 +1,19 @@
 /**
- * Shared at-rule classification lists and utilities used by both `atomicify-rules`
- * and `non-atomicify-rules` to determine how to handle each at-rule type.
+ * Shared at-rule classification constants used by both `atomicify-rules` and
+ * `non-atomicify-rules` to determine how to handle each at-rule type.
  *
- * Keep this in sync with the CSS spec and any new at-rules Compiled supports.
+ * - `atomicify-rules` imports the raw constant arrays directly.
+ * - `non-atomicify-rules` uses the `classifyAtRule` helper for a cleaner interface.
+ *
+ * Keep these lists in sync with the CSS spec and any new at-rules Compiled supports.
  */
 
 /**
- * At-rules whose child rules CAN be scoped under a generated class name.
+ * At-rules that are allowed to be processed — their child rules can be
+ * atomified or scoped under a generated class name.
  * e.g. `@media`, `@supports`, `@container`.
  */
-export const SCOPEABLE_AT_RULES = [
+export const ALLOWED_AT_RULES: string[] = [
   'container',
   '-moz-document',
   'else',
@@ -18,7 +22,7 @@ export const SCOPEABLE_AT_RULES = [
   'starting-style',
   'supports',
   'when',
-] as const;
+];
 
 /**
  * At-rules whose inner content must NOT be rewritten with a class selector.
@@ -26,7 +30,7 @@ export const SCOPEABLE_AT_RULES = [
  * (from/to/0%) are keyframe selectors, and `@font-face` / `@property` /
  * `@counter-style` are global descriptors.
  */
-export const PASSTHROUGH_AT_RULES = [
+export const PASSTHROUGH_AT_RULES: string[] = [
   'color-profile',
   'counter-style',
   'font-face',
@@ -35,32 +39,26 @@ export const PASSTHROUGH_AT_RULES = [
   'page',
   'position-try',
   'property',
-] as const;
+];
 
 /**
  * At-rules that are never valid inside a CSS rule and should throw an error.
  */
-export const FORBIDDEN_AT_RULES = ['charset', 'import', 'namespace'] as const;
-
-export type AtRuleKind = 'scopeable' | 'passthrough' | 'forbidden' | 'unknown';
-
-const SCOPEABLE_SET = new Set<string>(SCOPEABLE_AT_RULES);
-const PASSTHROUGH_SET = new Set<string>(PASSTHROUGH_AT_RULES);
-const FORBIDDEN_SET = new Set<string>(FORBIDDEN_AT_RULES);
+export const FORBIDDEN_AT_RULES: string[] = ['charset', 'import', 'namespace'];
 
 /**
- * Classifies an at-rule name into one of four categories:
- * - `'scopeable'`  — inner rules should be scoped under a generated class (e.g. @media)
- * - `'passthrough'` — inner content must NOT be prefixed (e.g. @keyframes, @property)
- * - `'forbidden'`  — cannot appear inside CSS rules, should throw (e.g. @charset)
- * - `'unknown'`    — not recognised; callers may throw or warn as appropriate
+ * Determines whether an at-rule can be processed (atomified or scoped) by
+ * both `atomicify-rules` and `non-atomicify-rules`.
  *
- * This is the shared implementation of `canAtomicifyAtRule` from `atomicify-rules.ts`,
- * extracted so that `non-atomicify-rules.ts` uses the same classification logic.
+ * Returns `true` if child rules should be processed under a generated class.
+ * Returns `false` if the at-rule is a passthrough (e.g. `@keyframes`, `@property`).
+ * Throws for forbidden at-rules (e.g. `@charset`) or unknown at-rules.
  */
-export const classifyAtRule = (name: string): AtRuleKind => {
-  if (SCOPEABLE_SET.has(name)) return 'scopeable';
-  if (PASSTHROUGH_SET.has(name)) return 'passthrough';
-  if (FORBIDDEN_SET.has(name)) return 'forbidden';
-  return 'unknown';
+export const canProcessAtRule = (name: string): boolean => {
+  if (ALLOWED_AT_RULES.includes(name)) return true;
+  if (FORBIDDEN_AT_RULES.includes(name))
+    throw new Error(`At-rule '@${name}' cannot be used in CSS rules.`);
+  if (!PASSTHROUGH_AT_RULES.includes(name)) throw new Error(`Unknown at-rule '@${name}'.`);
+  // passthrough — @keyframes, @font-face, @property etc.
+  return false;
 };

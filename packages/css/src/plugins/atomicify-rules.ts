@@ -2,7 +2,7 @@ import { hash } from '@compiled/utils';
 import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
 import { rule } from 'postcss';
 
-import { classifyAtRule } from './at-rule-lists';
+import { canProcessAtRule } from './at-rule-lists';
 
 interface PluginOpts {
   classNameCompressionMap?: Record<string, string>;
@@ -37,7 +37,7 @@ const isCssIdentifierValid = (value: string): boolean => {
  * @param node CSS declaration
  * @param opts AtomicifyOpts
  */
-const atomicClassName = (node: Declaration, opts: PluginOpts): string => {
+const atomicClassName = (node: Declaration, opts: PluginOpts) => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
   const prefix = opts.classHashPrefix ?? '';
   const group = hash(`${prefix}${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
@@ -183,18 +183,7 @@ const atomicifyRule = (node: Rule, opts: PluginOpts): Rule[] => {
  *
  * @param node
  */
-const canAtomicifyAtRule = (node: AtRule): boolean => {
-  const kind = classifyAtRule(node.name);
-  if (kind === 'scopeable') {
-    return true;
-  } else if (kind === 'forbidden') {
-    throw new Error(`At-rule '@${node.name}' cannot be used in CSS rules.`);
-  } else if (kind === 'unknown') {
-    throw new Error(`Unknown at-rule '@${node.name}'.`);
-  }
-  // 'passthrough' — @keyframes, @font-face, @property etc.
-  return false;
-};
+const canAtomicifyAtRule = (node: AtRule): boolean => canProcessAtRule(node.name);
 
 /**
  * Transforms an atrule into atomic rules.

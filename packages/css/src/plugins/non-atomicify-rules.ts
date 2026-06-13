@@ -1,7 +1,7 @@
 import type { Plugin, Rule, AtRule, Declaration } from 'postcss';
 import { rule } from 'postcss';
 
-import { classifyAtRule } from './at-rule-lists';
+import { canProcessAtRule } from './at-rule-lists';
 
 interface PluginOpts {
   /**
@@ -92,46 +92,35 @@ const scopeDecl = (decl: Declaration, className: string): void => {
 };
 
 /**
- * Scopes an at-rule node under `.className` by classifying it and dispatching:
+ * Scopes an at-rule node under `.className` using `canProcessAtRule`:
  *
- * - `scopeable` (`@media`, `@supports`, `@container` etc.): scopes all inner rules
+ * - Returns `true` (`@media`, `@supports`, `@container` etc.): scopes all inner rules
  *   and bare declarations under `.className` — mirrors `atomicifyAtRule`.
- * - `passthrough` (`@keyframes`, `@font-face`, `@property` etc.): left completely
+ * - Returns `false` (`@keyframes`, `@font-face`, `@property` etc.): left completely
  *   untouched — their inner content is not composed of element selectors.
- * - `forbidden` (`@charset`, `@import`, `@namespace`): throws an error.
- * - `unknown`: throws an error to surface unrecognised at-rules early.
+ * - Throws for forbidden (`@charset`, `@import`, `@namespace`) or unknown at-rules.
  *
  * Mirrors the `canAtomicifyAtRule` + `atomicifyAtRule` logic from `atomicify-rules.ts`.
  */
 const scopeAtRule = (atRuleNode: AtRule, className: string): void => {
-  const kind = classifyAtRule(atRuleNode.name);
-
-  switch (kind) {
-    case 'passthrough':
-      // @keyframes, @font-face, @property etc. — leave inner content untouched.
-      // Their inner "selectors" (from/to/0%) are keyframe selectors, not element selectors.
-      return;
-
-    case 'forbidden':
-      throw new Error(`At-rule '@${atRuleNode.name}' cannot be used in CSS rules.`);
-
-    case 'unknown':
-      throw new Error(`Unknown at-rule '@${atRuleNode.name}'.`);
-
-    case 'scopeable':
-      // @media, @supports, @container etc. — scope inner rules under the class.
-      // Handles nested at-rules recursively (e.g. @media { @supports { ... } }),
-      // mirroring the recursive atomicifyAtRule call in atomicify-rules.ts.
-      atRuleNode.each((child) => {
-        if (child.type === 'rule') {
-          scopeRule(child as Rule, className);
-        } else if (child.type === 'decl') {
-          scopeDecl(child as Declaration, className);
-        } else if (child.type === 'atrule') {
-          scopeAtRule(child as AtRule, className);
-        }
-      });
+  if (!canProcessAtRule(atRuleNode.name)) {
+    // passthrough — @keyframes, @font-face, @property etc.
+    // Their inner "selectors" (from/to/0%) are keyframe selectors, not element selectors.
+    return;
   }
+
+  // @media, @supports, @container etc. — scope inner rules under the class.
+  // Handles nested at-rules recursively (e.g. @media { @supports { ... } }),
+  // mirroring the recursive atomicifyAtRule call in atomicify-rules.ts.
+  atRuleNode.each((child) => {
+    if (child.type === 'rule') {
+      scopeRule(child as Rule, className);
+    } else if (child.type === 'decl') {
+      scopeDecl(child as Declaration, className);
+    } else if (child.type === 'atrule') {
+      scopeAtRule(child as AtRule, className);
+    }
+  });
 };
 
 /**
