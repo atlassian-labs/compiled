@@ -1,6 +1,4 @@
-import path from 'path';
-
-import type { NodePath } from '@babel/core';
+import type { NodePath, PluginPass } from '@babel/core';
 import * as t from '@babel/types';
 import { hash } from '@compiled/utils';
 
@@ -18,10 +16,10 @@ const NON_ATOMIC_CLASS_PREFIX = 'cc-';
 /**
  * Derives a stable, deterministic non-atomic class name for a `cssMapScoped` variant.
  *
- * Uses a 3-part hash: `hash(relative(filename) + ':' + variableName + ':' + variantKey)`
+ * Uses a 3-part hash: `hash(filename + ':' + variableName + ':' + variantKey)`
  * — mirroring the approach used by CSS Modules and Vanilla Extract:
  *
- * - `path.relative(cwd, filename)` — which file (relative path from cwd, stable across machines)
+ * - `filename` — which file (absolute path, unique per file)
  * - `variableName` — which `cssMapScoped` call (unique per file by JS/TS rules)
  * - `variantKey` — which variant within that call
  *
@@ -29,14 +27,14 @@ const NON_ATOMIC_CLASS_PREFIX = 'cc-';
  * - Two `cssMapScoped` calls in the same file with the same variant key → different classes ✅
  * - Two files with the same basename but different paths → different classes ✅
  * - Same file + same variable + same key → same class (correct — it IS the same variant) ✅
- * - Stable across CI and local (`path.relative(cwd)` is the same on all machines) ✅
+ * - Tests should pass a consistent `filename` to get stable class names ✅
  *
  * Returns `undefined` if the variant key cannot be statically determined.
  */
 const getNonAtomicClassName = (
   property: t.ObjectProperty,
   variableName: string,
-  filename: string | undefined | null
+  state: PluginPass
 ): string | undefined => {
   const variantKey = t.isIdentifier(property.key)
     ? property.key.name
@@ -46,8 +44,10 @@ const getNonAtomicClassName = (
 
   if (variantKey === undefined) return undefined;
 
-  const fileRelative = filename ? path.relative(process.cwd(), filename) : '';
-  return `${NON_ATOMIC_CLASS_PREFIX}${hash(`${fileRelative}:${variableName}:${variantKey}`)}`;
+  // Use the absolute filename for uniqueness per file. The filename is always
+  // the absolute path set by Babel.
+  const fileKey = state.filename ?? '';
+  return `${NON_ATOMIC_CLASS_PREFIX}${hash(`${fileKey}:${variableName}:${variantKey}`)}`;
 };
 
 /**
@@ -151,7 +151,7 @@ export const visitCssMapPath = (
               property as t.ObjectProperty,
               // path.parent is already validated as VariableDeclarator with Identifier id (line ~81)
               (path.parent as t.VariableDeclarator & { id: t.Identifier }).id.name,
-              meta.state.filename
+              meta.state
             )
           : undefined;
 
