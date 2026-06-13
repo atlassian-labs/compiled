@@ -128,13 +128,10 @@ export const transformCssItems = (
   // combining them each item would get its own cc- hash — violating the invariant
   // that non-atomic cssMap variants produce a single class.
   if (opts.nonAtomic) {
-    // Collect all unconditional CSS text from the items, ignoring conditional/map items.
-    // Conditional items (ternary) are handled by the cssMap compiler upstream before
-    // reaching here — each variant's items are always unconditional at this point.
-    const combinedCss = cssItems
-      .filter((item) => item.type !== 'conditional' && item.type !== 'map')
-      .map((item) => getItemCss(item))
-      .join('\n');
+    // Combine all CSS items for this variant into a single string.
+    // getItemCss handles all item types (unconditional, logical, conditional)
+    // by concatenating their CSS content.
+    const combinedCss = cssItems.map((item) => getItemCss(item)).join('\n');
 
     const css = transformCss(combinedCss, meta.state.opts, {
       nonAtomic: true,
