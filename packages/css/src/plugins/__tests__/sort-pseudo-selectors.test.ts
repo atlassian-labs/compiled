@@ -41,9 +41,7 @@ describe('sorting pseudo-selectors', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(`
-      "
-
-            .color-blue {
+      ".color-blue {
               color: blue;
             }
             @media screen {
@@ -95,9 +93,7 @@ describe('sorting pseudo-selectors', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(`
-      "
-
-            .first-child-color-grey:first-child {
+      ".first-child-color-grey:first-child {
               color: grey;
             }
 
@@ -226,8 +222,7 @@ describe('sorting pseudo-selectors inside at-rules (without atomic classes)', ()
     `;
 
     expect(actual).toMatchInlineSnapshot(`
-      "
-            @media (max-width: 400px) {
+      "@media (max-width: 400px) {
               display: block;
               color: red;
               ::disabled { display: block; }
@@ -257,8 +252,7 @@ describe('sorting pseudo-selectors inside at-rules (without atomic classes)', ()
     `;
 
     expect(actual).toMatchInlineSnapshot(`
-      "
-            @media (max-width: 400px) {
+      "@media (max-width: 400px) {
               :link { color: yellow; }
               :visited { color: black; }
               :focus-within { color: grey; }
@@ -292,8 +286,7 @@ describe('sorting pseudo-selectors inside at-rules (without atomic classes)', ()
     `;
 
     expect(actual).toMatchInlineSnapshot(`
-      "
-            @media (max-width: 400px) {
+      "@media (max-width: 400px) {
               @supports (display: grid) {
                 :hover { color: green; }
                 :active { color: red; }

@@ -1140,7 +1140,7 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        ".cc-sc6vuo.blur,.cc-sc6vuo.draft,.cc-sc6vuo.focus,.cc-sc6vuo.hover{border-bottom:2px solid transparent;cursor:pointer}.cc-sc6vuo.focus{background-color:yellow;border-bottom-color:orange}.cc-sc6vuo.draft{background-color:gold;border-bottom-color:orange;cursor:auto}.cc-sc6vuo.blur{background-color:lightyellow;border-bottom-color:orange}.cc-sc6vuo.hover{background-color:gold;border-bottom-color:orange}";
+        ".cc-sc6vuo.blur, .cc-sc6vuo.draft, .cc-sc6vuo.focus, .cc-sc6vuo.hover{border-bottom:2px solid transparent;cursor:pointer}.cc-sc6vuo.focus{background-color:yellow;border-bottom-color:orange}.cc-sc6vuo.draft{background-color:gold;border-bottom-color:orange;cursor:auto}.cc-sc6vuo.blur{background-color:lightyellow;border-bottom-color:orange}.cc-sc6vuo.hover{background-color:gold;border-bottom-color:orange}";
       const styles = {
         annotationStyles: "cc-sc6vuo",
       };
@@ -1197,7 +1197,7 @@ describe('css map — cssMapScoped (non-atomic)', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       const _ =
-        ".cc-sc6vuo .ProseMirror .ak-editor-annotation-blur,.cc-sc6vuo .ProseMirror .ak-editor-annotation-draft,.cc-sc6vuo .ProseMirror .ak-editor-annotation-focus,.cc-sc6vuo .ProseMirror .ak-editor-annotation-hover{border-bottom:2px solid transparent;cursor:pointer}.cc-sc6vuo .ProseMirror .ak-editor-annotation-focus{background-color:yellow;border-bottom-color:orange}.cc-sc6vuo .ProseMirror .ak-editor-annotation-draft{background-color:gold;border-bottom-color:orange;cursor:auto}.cc-sc6vuo .ProseMirror .ak-editor-annotation-blur{background-color:lightyellow;border-bottom-color:orange}.cc-sc6vuo .ProseMirror .ak-editor-annotation-hover{background-color:gold;border-bottom-color:orange}";
+        ".cc-sc6vuo .ProseMirror .ak-editor-annotation-blur, .cc-sc6vuo .ProseMirror .ak-editor-annotation-draft, .cc-sc6vuo .ProseMirror .ak-editor-annotation-focus, .cc-sc6vuo .ProseMirror .ak-editor-annotation-hover{border-bottom:2px solid transparent;cursor:pointer}.cc-sc6vuo .ProseMirror .ak-editor-annotation-focus{background-color:yellow;border-bottom-color:orange}.cc-sc6vuo .ProseMirror .ak-editor-annotation-draft{background-color:gold;border-bottom-color:orange;cursor:auto}.cc-sc6vuo .ProseMirror .ak-editor-annotation-blur{background-color:lightyellow;border-bottom-color:orange}.cc-sc6vuo .ProseMirror .ak-editor-annotation-hover{background-color:gold;border-bottom-color:orange}";
       const sharedSelector =
         ".ak-editor-annotation-blur, .ak-editor-annotation-focus, .ak-editor-annotation-draft, .ak-editor-annotation-hover";
       const styles = {

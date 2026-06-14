@@ -131,6 +131,13 @@ export const sortStyleSheet = (config: {
         ...atomicRules,
         ...atomicAtRules.map((atRule) => atRule.node),
       ];
+
+      // Clear raws.before on the first node to prevent a leading newline in the
+      // output when non-atomic rules (which may have raws.before='\n' from being
+      // mid-string in the joined input) are moved to the front of the stylesheet.
+      if (root.first) {
+        root.first.raws.before = '';
+      }
     },
   };
 };

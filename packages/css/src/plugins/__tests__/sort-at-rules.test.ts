@@ -29,8 +29,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (min-width: 200px) {
+        "@media (min-width: 200px) {
                   color: red;
                 }
                 @media (min-width: 400px) {
@@ -51,8 +50,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (max-width: 400px) {
+        "@media (max-width: 400px) {
                   color: red;
                 }
                 @media (max-width: 200px) {
@@ -85,8 +83,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (min-width: 150px) {
+        "@media (min-width: 150px) {
                   color: red;
                 }
                 @media (min-width: 200px) {
@@ -134,8 +131,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (200px < width) {
+        "@media (200px < width) {
                   color: red;
                 }
                 @media (width > 200px) {
@@ -213,8 +209,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (200px < width) {
+        "@media (200px < width) {
                   color: maroon;
                 }
                 @media (width > 200px) {
@@ -288,8 +283,7 @@ describe('sort at-rules', () => {
         }
       `);
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (300px < height <= 400px) {
+        "@media (300px < height <= 400px) {
                   color: red;
                 }
                 @media (300px <= height) {
@@ -326,8 +320,7 @@ describe('sort at-rules', () => {
         }
       `);
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (300px >= height) {
+        "@media (300px >= height) {
                   color: red;
                 }
                 @media (height <= 300px) {
@@ -357,8 +350,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (min-width: 200px) {
+        "@media (min-width: 200px) {
                   color: red;
                 }
                 @media (min-height: 200px) {
@@ -387,8 +379,7 @@ describe('sort at-rules', () => {
         }
       `);
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media all {
+        "@media all {
                   color: red;
                 }
                 @media print {
@@ -426,8 +417,7 @@ describe('sort at-rules', () => {
         }
       `);
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (color-index >= 1) {
+        "@media (color-index >= 1) {
                   color: purple;
                 }
                 @media (monochrome) {
@@ -475,8 +465,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (max-width: 200px) {
+        "@media (max-width: 200px) {
                   color: pink;
                 }
                 @media (max-height: 200px) {
@@ -555,8 +544,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (color-index >= 1) {
+        "@media (color-index >= 1) {
                   color: purple;
                 }
                 @media (monochrome) {
@@ -610,8 +598,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (calc(100px + 20px) > width) {
+        "@media (calc(100px + 20px) > width) {
                   color: green;
                 }
                 @media (max-width: calc(50px + 20px)) {
@@ -652,8 +639,7 @@ describe('sort at-rules', () => {
         }
       `);
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (width > 1000px) and (width < 500px) {
+        "@media (width > 1000px) and (width < 500px) {
                   color: red;
                 }
                 @media (width > 1000px) and (width < 200px) {
@@ -695,8 +681,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media screen and (width > 1000px) {
+        "@media screen and (width > 1000px) {
                   color: abc;
                 }
                 @media (width < 500px) {
@@ -741,8 +726,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @container (width > 400px) {
+        "@container (width > 400px) {
                   color: red;
                 }
                 @container sidebar (height > 200px) {
@@ -805,8 +789,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @layer module {
+        "@layer module {
                   p {
                     color: pink;
                   }
@@ -865,8 +848,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (width > 200px) {
+        "@media (width > 200px) {
                   color: abc;
                 }
                 @media (width > 12.5000001em) {
@@ -899,8 +881,7 @@ describe('sort at-rules', () => {
       `);
 
       expect(actual).toMatchInlineSnapshot(`
-        "
-                @media (width > 200px) {
+        "@media (width > 200px) {
                   color: abc;
                 }
                 @media (width > 26.1ch) {

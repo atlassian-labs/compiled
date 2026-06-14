@@ -26,8 +26,7 @@ describe('sort — cssMapScoped non-atomic rule handling', () => {
     `;
 
     expect(sort(input)).toMatchInlineSnapshot(`
-      "
-            .cc-1vlc911 .ProseMirror .blur,.cc-1vlc911 .ProseMirror .focus { border-bottom: 2px solid transparent; cursor: pointer }
+      ".cc-1vlc911 .ProseMirror .blur,.cc-1vlc911 .ProseMirror .focus { border-bottom: 2px solid transparent; cursor: pointer }
             .cc-1vlc911 .ProseMirror .focus { background: yellow; border-bottom-color: orange }
             .cc-1vlc911 .ProseMirror .blur { background: lightyellow; border-bottom-color: orange }
           "
@@ -53,8 +52,7 @@ describe('sort — cssMapScoped non-atomic rule handling', () => {
     `;
 
     expect(sort(input)).toMatchInlineSnapshot(`
-      "
-            .cc-1vlc911 .panel { background: blue; border-bottom-color: red }
+      ".cc-1vlc911 .panel { background: blue; border-bottom-color: red }
             ._bxs1q9b { border-bottom: 2px solid transparent }
             ._syaz1q9b { color: red }
             ._bbbk3bke { border-bottom-color: orange }
@@ -73,13 +71,19 @@ describe('sort — cssMapScoped non-atomic rule handling', () => {
     // atomic sortShorthandDeclarations would move border (shorthand) before border-bottom-color (longhand)
     // atomic sortPseudoSelectors would move :link before :hover (lvfha order)
     // neither should apply to non-atomic cc- rules — source order must be preserved exactly
+    // Note: leading whitespace on the first node is stripped (raws.before cleared) by sort-style-sheet.
     const input = `
     .cc-1vlc911 .panel:hover { border-bottom-color: orange }
     .cc-1vlc911 .panel:link { border: 2px solid blue }
     .cc-1vlc911 .panel { border-bottom-color: red; border: 2px solid transparent }
     `;
 
-    expect(sort(input)).toEqual(input);
+    expect(sort(input)).toMatchInlineSnapshot(`
+      ".cc-1vlc911 .panel:hover { border-bottom-color: orange }
+          .cc-1vlc911 .panel:link { border: 2px solid blue }
+          .cc-1vlc911 .panel { border-bottom-color: red; border: 2px solid transparent }
+          "
+    `);
   });
 
   it('should keep atomic and non-atomic rules correctly separated in mixed input', () => {
@@ -93,8 +97,7 @@ describe('sort — cssMapScoped non-atomic rule handling', () => {
     `;
 
     expect(sort(input)).toMatchInlineSnapshot(`
-      "
-            .cc-14qp4ua .panel { border-bottom: 2px solid transparent }
+      ".cc-14qp4ua .panel { border-bottom: 2px solid transparent }
             .cc-14qp4ua .panel:focus { border-bottom-color: orange }
             ._syaz1q9b { color: red }
             @media (min-width: 768px) { ._fpol1q9b { color: blue } }
@@ -113,8 +116,7 @@ describe('sort — cssMapScoped non-atomic rule handling', () => {
     `;
 
     expect(sort(input)).toMatchInlineSnapshot(`
-      "
-            .cc-14qp4ua .panel { padding: 8px }
+      ".cc-14qp4ua .panel { padding: 8px }
             @media (min-width: 768px) { .cc-14qp4ua .panel { color: blue } }
             @media (min-width: 1024px) { .cc-1vj392m .panel { color: red } }
             ._syaz1q9b { color: green }
@@ -133,12 +135,33 @@ describe('sort — cssMapScoped non-atomic rule handling', () => {
     `;
 
     expect(sort(input)).toMatchInlineSnapshot(`
-      "
-            .cc-14qp4ua .panel { padding: 8px }
+      ".cc-14qp4ua .panel { padding: 8px }
             .cc-14qp4ua .spinner { animation-name: cc-spin; animation-duration: 2s }
             ._syaz1q9b { color: red }
             @keyframes cc-spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
           "
+    `);
+  });
+
+  it('should not produce a leading newline when non-atomic rules are moved to the front', () => {
+    // Simulates babel-plugin-strip-runtime's styleRules.sort().join('\n') where
+    // non-atomic (.cc-) rules sort after atomic (._) rules lexicographically,
+    // but sort-style-sheet moves them to the front. The first node's raws.before
+    // must be cleared to prevent a leading newline in the output.
+    const input = [
+      '._1bahesu3{justify-content:flex-end}',
+      '._1e0c1txw{display:flex}',
+      '.cc-abc123 .test{position:relative}._16jlkb7n{flex-grow:1}',
+    ]
+      .sort()
+      .join('\n');
+
+    const result = sort(input);
+
+    expect(result).not.toMatch(/^\n/);
+    expect(result).toMatchInlineSnapshot(`
+      ".cc-abc123 .test{position:relative}._1bahesu3{justify-content:flex-end}
+      ._1e0c1txw{display:flex}._16jlkb7n{flex-grow:1}"
     `);
   });
 
@@ -152,8 +175,7 @@ describe('sort — cssMapScoped non-atomic rule handling', () => {
     `;
 
     expect(sort(input)).toMatchInlineSnapshot(`
-      "
-            .cc-14qp4ua .panel { padding: 8px }
+      ".cc-14qp4ua .panel { padding: 8px }
             @media (min-width: 768px) { @supports (display: grid) { .cc-14qp4ua .panel { color: blue } } }
             @media (min-width: 1024px) { @supports (display: grid) { .cc-1vj392m .panel { color: red } } }
             ._syaz1q9b { color: green }
