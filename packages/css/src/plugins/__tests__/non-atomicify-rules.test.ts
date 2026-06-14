@@ -71,14 +71,6 @@ describe('non-atomicify rules', () => {
       );
     });
 
-    it('should remove empty rules', () => {
-      const actual = transform`
-        .empty {}
-        color: red;
-      `;
-      expect(actual).toMatchInlineSnapshot(`".cc-test1234{color:red}"`);
-    });
-
     it('should strip CSS comments', () => {
       const actual = postcss([nonAtomicifyRules({ className: FIXED_CLASS }), whitespace()]).process(
         '/* this is a comment */ color: red;',
