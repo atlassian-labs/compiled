@@ -17,7 +17,7 @@ it('always includes an optional key prop', () => {
   type Props = { id: string };
   type Managed = ManagedProps<React.FC<Props>, Props>;
 
-  expectTypeOf<Managed>().toMatchTypeOf<{ key?: React.Key }>();
+  expectTypeOf<Managed['key']>().toEqualTypeOf<React.Key | null | undefined>();
 });
 
 it('adds css prop when className is declared', () => {
