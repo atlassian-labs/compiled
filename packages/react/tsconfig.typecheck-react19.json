@@ -9,7 +9,7 @@
     "jsx": "react-jsx",
     "jsxImportSource": "@compiled/react",
     "typeRoots": ["../../node_modules/react19-types", "../../node_modules/@types"],
-    "types": ["jest", "node"],
+    "types": ["jest"],
     "paths": {
       "react": ["../../node_modules/react19-types"],
       "react/jsx-runtime": ["../../node_modules/react19-types/jsx-runtime"],
