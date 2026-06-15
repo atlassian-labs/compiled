@@ -9,16 +9,30 @@ import type {
   AllCSSPseudoClasses,
 } from '../types.js';
 
-type MarkAsRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
+// `K` is intentionally `PropertyKey` (not `keyof T`) so this works with the key-remapped
+// `XCSSValue` whose `keyof` is a complex conditional union TypeScript can't cheaply prove a
+// required-property key belongs to. Required properties are always valid allowed properties,
+// so they resolve via the `P extends keyof T` branch; anything else resolves to `never`.
+type MarkAsRequired<T, K extends PropertyKey> = T & {
+  [P in K]-?: P extends keyof T ? T[P] : never;
+};
 
 type XCSSValue<
   TStyleDecl extends keyof CSSProperties,
   TSchema,
   TPseudoKey extends AllCSSPseudoClasses | ''
 > = {
-  [Q in keyof StrictCSSProperties]: Q extends TStyleDecl
-    ? ApplySchemaValue<TSchema, Q, TPseudoKey>
-    : never;
+  // Performance: use a key-remapping `as` clause to drop non-allowed properties from the
+  // key set entirely (rather than keeping ~490 keys with `never` values). This avoids
+  // instantiating a value for every property on every base/pseudo/media usage.
+  [Q in keyof StrictCSSProperties as Q extends TStyleDecl ? Q : never]: ApplySchemaValue<
+    TSchema,
+    Q,
+    TPseudoKey
+  >;
+} & {
+  // Correctness: keep blocking non-allowed properties so excess values remain violations.
+  [Q in keyof StrictCSSProperties as Q extends TStyleDecl ? never : Q]?: never;
 };
 
 type XCSSPseudo<
