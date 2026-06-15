@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.options.json",
+  "compilerOptions": {
+    "outDir": "dist/browser",
+    "module": "es6",
+    "moduleResolution": "node",
+    "tsBuildInfoFile": "tsconfig.browser.tsbuildinfo"
+  },
+  "references": [{ "path": "../utils" }, { "path": "../react" }]
+}

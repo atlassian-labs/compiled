@@ -1,0 +1,56 @@
+{
+  "name": "@compiled/vanilla",
+  "version": "0.1.0",
+  "description": "Framework-agnostic compile time CSS-in-JS API for Compiled. Use this in non-React code (e.g. ProseMirror node views, plain DOM utilities) where you need a class-name string but don't want to pull in React.",
+  "keywords": [
+    "compiled",
+    "css-in-js",
+    "vanilla",
+    "typescript"
+  ],
+  "homepage": "https://compiledcssinjs.com",
+  "bugs": "https://github.com/atlassian-labs/compiled/issues/new?assignees=&labels=bug&template=bug_report.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlassian-labs/compiled.git",
+    "directory": "packages/vanilla"
+  },
+  "license": "Apache-2.0",
+  "author": "Atlassian",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": [
+        "./dist/esm/index.js",
+        "./src/index.ts"
+      ],
+      "require": [
+        "./dist/cjs/index.js",
+        "./src/index.ts"
+      ]
+    },
+    "./runtime": {
+      "import": [
+        "./dist/esm/runtime.js",
+        "./src/runtime.ts"
+      ],
+      "require": [
+        "./dist/cjs/runtime.js",
+        "./src/runtime.ts"
+      ]
+    }
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "browser": "./dist/browser/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "runtime"
+  ],
+  "dependencies": {
+    "@compiled/react": "^0.21.0",
+    "csstype": "^3.2.3"
+  }
+}
