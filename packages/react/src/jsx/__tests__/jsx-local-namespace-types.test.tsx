@@ -17,7 +17,7 @@ it('always includes an optional key prop', () => {
   type Props = { id: string };
   type Managed = ManagedProps<React.FC<Props>, Props>;
 
-  expectTypeOf<Managed>().toMatchTypeOf<{ key?: React.Key }>();
+  expectTypeOf<Managed['key']>().toEqualTypeOf<React.Key | null | undefined>();
 });
 
 it('adds css prop when className is declared', () => {
@@ -188,4 +188,40 @@ it('correctly infers types for generic child components', () => {
 
   expectTypeOf<Managed>().toMatchTypeOf<{ items: { id: string }[] }>();
   expectTypeOf<Managed>().toMatchTypeOf<{ css?: unknown }>();
+});
+
+it('class components with defaultProps — props covered by defaultProps should be optional at call site', () => {
+  // Regression test for 9a805f7: using `P` directly instead of
+  // `React.JSX.LibraryManagedAttributes<C, P>` broke defaultProps stripping,
+  // causing TS2740 errors when class components with defaultProps were used
+  // without passing the defaulted props.
+  interface Props {
+    required: string;
+    withDefault: string;
+    className?: string;
+  }
+
+  class MyComponent extends React.Component<Props> {
+    static defaultProps = { withDefault: 'hello' };
+    render() {
+      return <div className={this.props.className}>{this.props.required}</div>;
+    }
+  }
+
+  type Managed = ManagedProps<typeof MyComponent, Props>;
+
+  // `withDefault` should be optional (covered by defaultProps)
+  expectTypeOf<Managed['withDefault']>().toEqualTypeOf<string | undefined>();
+
+  // `required` should stay required (no defaultProp)
+  expectTypeOf<Managed['required']>().toEqualTypeOf<string>();
+
+  // Should compile without error — `withDefault` is covered by defaultProps
+  const el = <MyComponent required="hello" />;
+  void el;
+
+  // key should still accept null
+  const nullableKey: React.Key | null = null;
+  const el2 = <MyComponent required="hello" key={nullableKey} />;
+  void el2;
 });

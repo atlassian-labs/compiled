@@ -83,7 +83,8 @@ export namespace CompiledJSX {
   // intersecting P with { key?: React.Key } directly. With a correct ElementAttributesProperty,
   // TypeScript pre-extracts the props type from class instances before passing P here.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  export type LibraryManagedAttributes<_C, P> = WithConditionalCSSProp<P> & P & { key?: React.Key };
+  export type LibraryManagedAttributes<C, P> = WithConditionalCSSProp<P> &
+    React.JSX.LibraryManagedAttributes<C, P> & { key?: React.Key | null };
   export type IntrinsicAttributes = ReactJSXIntrinsicAttributes;
   export type IntrinsicClassAttributes<T> = ReactJSXIntrinsicClassAttributes<T>;
   export type IntrinsicElements = {
