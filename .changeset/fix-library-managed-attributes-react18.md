@@ -4,8 +4,6 @@
 
 Fix `LibraryManagedAttributes` to restore React 18 compatibility and `defaultProps` stripping.
 
-Commit `9a805f7` introduced two regressions:
-
 1. `key` no longer accepted `null`, contradicting `React.Attributes` which defines `key?: Key | null | undefined`. This caused `TS2322` errors in React 18 codebases when passing a nullable key (e.g. `key={item?.id ?? null}`).
 
 2. Using `P` directly instead of `React.JSX.LibraryManagedAttributes<C, P>` broke `defaultProps` stripping for class components — props covered by `defaultProps` were no longer treated as optional at the call site (`TS2740`).
