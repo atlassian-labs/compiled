@@ -213,13 +213,15 @@ export default function insertRule(css: string, opts: StyleSheetOpts): void {
  */
 export function insertNonAtomicRule(css: string, opts: StyleSheetOpts): void {
   // Always use the catch-all '' bucket to preserve source-order cascade.
-  // Unlike atomic `insertRule`, we always use `insertRule` here (even in dev) rather than
-  // `appendChild` + `createTextNode` — non-atomic rules are few in number and using
-  // `insertRule` is faster and avoids unnecessary DOM text node creation.
+  // The css string may contain multiple CSS rules concatenated (cssMapScoped variants
+  // with nested selectors). `insertRule` only accepts a single rule per call, so we
+  // use `Text.appendData` instead — it appends to an existing text node in a single
+  // DOM mutation (no new text node creation, no parsing limits, accepts multi-rule).
   const style = lazyAddStyleBucketToContainer('', opts);
-  const sheet = style.sheet as CSSStyleSheet;
-
-  try {
-    sheet.insertRule(css, sheet.cssRules.length);
-  } catch {}
+  const text = style.firstChild as Text | null;
+  if (text) {
+    text.appendData(css);
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
 }
