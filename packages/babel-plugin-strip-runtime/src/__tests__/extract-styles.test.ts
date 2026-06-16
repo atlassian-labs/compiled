@@ -196,7 +196,7 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
           base: '_syaz13q2',
         };
         const scopedStyles = {
-          panel: 'cc-1bho011',
+          panel: 'cc-1m0qvev',
         };
         const Component = ({ variant }) =>
           /*#__PURE__*/ _jsx('div', {
@@ -244,8 +244,8 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
         import { ax, ix } from '@compiled/react/runtime';
         import { jsxs as _jsxs, jsx as _jsx } from 'react/jsx-runtime';
         const styles = {
-          panel: 'cc-6ffsw5',
-          danger: 'cc-tlj3g9',
+          panel: 'cc-16etyda',
+          danger: 'cc-1fdnvw3',
         };
         const Component = ({ isDanger }) =>
           /*#__PURE__*/ _jsx('div', {

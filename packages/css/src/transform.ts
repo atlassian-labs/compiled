@@ -115,16 +115,19 @@ export const transformCss = (
       // Falls back to hashing the CSS content for standalone transformCss() callers.
       const className = localOpts.nonAtomicClassName ?? `${NON_ATOMIC_CLASS_PREFIX}${hash(css)}`;
 
-      postcss([
+      const nonAtomicResult = postcss([
         ...sharedPlugins,
         nonAtomicifyRules({
           className,
           callback: (name: string) => classNames.push(name),
         }),
         ...tailPlugins,
-      ]).process(css, { from: undefined }).css;
+      ]).process(css, { from: undefined });
+
+      // We need to access something to make the transformation happen.
+      nonAtomicResult.css;
     } else {
-      postcss([
+      const atomicResult = postcss([
         ...sharedPlugins,
         atomicifyRules({
           classNameCompressionMap: opts.classNameCompressionMap,
@@ -140,7 +143,10 @@ export const transformCss = (
           sortShorthandEnabled: opts.sortShorthand,
         }),
         ...tailPlugins,
-      ]).process(css, { from: undefined }).css;
+      ]).process(css, { from: undefined });
+
+      // We need to access something to make the transformation happen.
+      atomicResult.css;
     }
 
     return {

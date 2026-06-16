@@ -16,10 +16,7 @@ import type { Bucket, StyleSheetOpts } from './types.js';
  * `cssMapScoped`. Non-atomic rules use the `cc-` class prefix
  * (i.e. the sheet starts with `.cc-`).
  */
-const isNonAtomicSheet = (sheet: string): boolean =>
-  sheet.charCodeAt(1) === 99 /* c */ &&
-  sheet.charCodeAt(2) === 99 /* c */ &&
-  sheet.charCodeAt(3) === 45; /* - */
+const isNonAtomicSheet = (sheet: string): boolean => sheet.startsWith('.cc-');
 
 export { StyleContainerProvider };
 export type { StyleContainerConfig } from './style-container.js';

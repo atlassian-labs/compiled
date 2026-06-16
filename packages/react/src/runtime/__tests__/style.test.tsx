@@ -186,6 +186,15 @@ describe('<Style />', () => {
   });
 
   describe('cssMapScoped — non-atomic style injection', () => {
+    // insertNonAtomicRule always uses insertRule (even in dev) for performance —
+    // so CSS is in cssRules, not innerHTML. Use this helper to get all injected CSS text.
+    const getAllCssText = () => {
+      return Array.from(document.head.querySelectorAll('style'))
+        .flatMap((style) => Array.from((style.sheet as CSSStyleSheet).cssRules))
+        .map((rule) => rule.cssText)
+        .join('');
+    };
+
     it('should inject cssMapScoped rules into the catch-all style bucket, not a shorthand bucket', () => {
       createIsolatedTest((Style) => {
         // border-bottom is shorthand depth 4 → would normally go to s-4 bucket
@@ -194,8 +203,8 @@ describe('<Style />', () => {
           '.cc-abc123 .ProseMirror .blur,.focus{border-bottom:2px solid transparent}';
         render(<Style>{[sharedRule]}</Style>);
 
-        // Rule should be injected into a style element in the head
-        expect(document.head.innerHTML).toInclude(sharedRule);
+        // Rule should be injected into cssRules (insertRule is always used for non-atomic)
+        expect(getAllCssText()).toInclude('.cc-abc123');
         // Should only be one style element (catch-all '' bucket), not split into s-4
         expect(document.head.querySelectorAll('style')).toHaveLength(1);
       });
@@ -213,13 +222,13 @@ describe('<Style />', () => {
 
         render(<Style>{[sharedRule, overrideRule]}</Style>);
 
-        const styleContent = document.head.innerHTML;
-        const sharedIdx = styleContent.indexOf('border-bottom:2px solid transparent');
-        const overrideIdx = styleContent.indexOf('border-bottom-color:orange');
+        const cssText = getAllCssText();
+        const sharedIdx = cssText.indexOf('border-bottom');
+        const overrideIdx = cssText.indexOf('border-bottom-color');
 
         expect(sharedIdx).toBeGreaterThan(-1);
         expect(overrideIdx).toBeGreaterThan(-1);
-        // Shared base must appear BEFORE individual override in the DOM
+        // Shared base must appear BEFORE individual override
         expect(sharedIdx).toBeLessThan(overrideIdx);
       });
     });
@@ -234,9 +243,9 @@ describe('<Style />', () => {
 
         render(<Style>{[bgRule, borderRule]}</Style>);
 
-        const styleContent = document.head.innerHTML;
-        const bgIdx = styleContent.indexOf('background:blue');
-        const borderIdx = styleContent.indexOf('border-bottom:1px solid red');
+        const cssText = getAllCssText();
+        const bgIdx = cssText.indexOf('background');
+        const borderIdx = cssText.indexOf('border-bottom');
 
         expect(bgIdx).toBeGreaterThan(-1);
         expect(borderIdx).toBeGreaterThan(-1);
@@ -247,16 +256,17 @@ describe('<Style />', () => {
 
     it('should inject atomic cssMap rules and cssMapScoped rules into separate buckets', () => {
       createIsolatedTest((Style) => {
-        // atomic rule: border-bottom shorthand → s-4 bucket
-        // non-atomic rule: cc- → '' catch-all bucket
+        // atomic rule: border-bottom shorthand → s-4 bucket (uses appendChild in dev)
+        // non-atomic rule: cc- → '' catch-all bucket (uses insertRule always)
         const atomicRule = '._1abc2def{border-bottom:2px solid blue}';
         const nonAtomicRule = '.cc-abc123 .panel{border-bottom:1px solid red;padding:8px}';
 
         render(<Style>{[atomicRule, nonAtomicRule]}</Style>);
 
-        const styleContent = document.head.innerHTML;
-        expect(styleContent).toInclude(atomicRule);
-        expect(styleContent).toInclude(nonAtomicRule);
+        // Atomic rule appears in innerHTML (appendChild in dev)
+        expect(document.head.innerHTML).toInclude(atomicRule);
+        // Non-atomic rule appears in cssRules (insertRule always)
+        expect(getAllCssText()).toInclude('.cc-abc123');
       });
     });
   });

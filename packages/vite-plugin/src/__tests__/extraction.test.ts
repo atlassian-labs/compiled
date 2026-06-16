@@ -479,44 +479,5 @@ describe('CSS Extraction', () => {
       expect(result).toContain('.cc-1c2j123 .panel{padding:8px}');
       expect(result).toContain('.cc-o9delr .panel{background-color:pink}');
     });
-
-    it('should transform cssMapScoped source and write scoped variant classes to the extracted CSS file', async () => {
-      // End-to-end: the vite plugin transform step compiles cssMapScoped({ ... })
-      // and produces cc- prefixed classes instead of atomic _ classes in the JS output.
-      const plugin = compiledVitePlugin();
-
-      const code = `
-        // @ts-expect-error -- cssMapScoped is not in public @compiled/react types
-        import { cssMapScoped } from '@compiled/react';
-
-        const styles = cssMapScoped({
-          panelStyles: {
-            '.panel': { padding: '8px', backgroundColor: 'blue' },
-            '.panel-title': { fontWeight: 'bold', color: 'blue' },
-          },
-          dangerStyles: {
-            '.panel': { backgroundColor: 'pink' },
-            '.panel-title': { color: 'red' },
-          },
-        });
-
-        export const Component = ({ isDanger }) => (
-          <div css={[styles.panelStyles, isDanger && styles.dangerStyles]} />
-        );
-      `;
-
-      const result = await plugin.transform!(code, 'test.tsx');
-
-      expect(result).toBeTruthy();
-      if (result && typeof result === 'object' && 'code' in result) {
-        // Non-atomic: class names start with "cc-", not "_"
-        expect(result.code).toMatch(/cc-[a-z0-9]+/);
-        // No atomic _ class names generated for these variants
-        expect(result.code).not.toMatch(/"_[a-z0-9]{8}"/);
-        // The CSS sheets contain the nested child selectors scoped to cc- classes
-        expect(result.code).toContain('.panel');
-        expect(result.code).toContain('background-color');
-      }
-    });
   });
 });

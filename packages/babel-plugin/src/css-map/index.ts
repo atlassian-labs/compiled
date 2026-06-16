@@ -1,3 +1,5 @@
+import path from 'path';
+
 import type { NodePath, PluginPass } from '@babel/core';
 import * as t from '@babel/types';
 import { hash } from '@compiled/utils';
@@ -16,10 +18,14 @@ const NON_ATOMIC_CLASS_PREFIX = 'cc-';
 /**
  * Derives a stable, deterministic non-atomic class name for a `cssMapScoped` variant.
  *
- * Uses a 3-part hash: `hash(filename + ':' + variableName + ':' + variantKey)`
+ * Uses a 3-part hash: `hash(relativeFilename + ':' + variableName + ':' + variantKey)`
  * — mirroring the approach used by CSS Modules and Vanilla Extract:
  *
- * - `filename` — which file (absolute path, unique per file)
+ * - `relativeFilename` — relative path from the Babel project root to the file.
+ *   Using a relative path (not absolute) ensures the hash is stable across all machines
+ *   and CI environments, regardless of where the monorepo is checked out.
+ *   Falls back to `path.basename(filename)` if the file is outside the project root
+ *   (e.g. test fixtures at arbitrary absolute paths).
  * - `variableName` — which `cssMapScoped` call (unique per file by JS/TS rules)
  * - `variantKey` — which variant within that call
  *
@@ -27,7 +33,7 @@ const NON_ATOMIC_CLASS_PREFIX = 'cc-';
  * - Two `cssMapScoped` calls in the same file with the same variant key → different classes ✅
  * - Two files with the same basename but different paths → different classes ✅
  * - Same file + same variable + same key → same class (correct — it IS the same variant) ✅
- * - Tests should pass a consistent `filename` to get stable class names ✅
+ * - Class names are identical on CI and local (relative path, not absolute) ✅
  *
  * Returns `undefined` if the variant key cannot be statically determined.
  */
@@ -44,9 +50,19 @@ const getNonAtomicClassName = (
 
   if (variantKey === undefined) return undefined;
 
-  // Use the absolute filename for uniqueness per file. The filename is always
-  // the absolute path set by Babel.
-  const fileKey = state.filename ?? '';
+  // Compute a project-root-relative path so the hash is stable across machines and CI.
+  // `state.file.opts.root` is the Babel-configured project root (same on all machines).
+  // If the filename is outside the project root (e.g. test fixtures), fall back to basename.
+  const filename = state.filename;
+  let fileKey: string;
+  if (filename) {
+    const root = state.file.opts.root ?? process.cwd();
+    const rel = path.relative(root, filename);
+    fileKey = rel.startsWith('..') ? path.basename(filename) : rel;
+  } else {
+    fileKey = '';
+  }
+
   return `${NON_ATOMIC_CLASS_PREFIX}${hash(`${fileKey}:${variableName}:${variantKey}`)}`;
 };
 
