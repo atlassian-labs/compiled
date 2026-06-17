@@ -1,5 +1,12 @@
 # @compiled/parcel-transformer-test-custom-resolver-app
 
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [60932d8]
+  - @compiled/react@0.22.0
+
 ## 0.2.2
 
 ### Patch Changes
