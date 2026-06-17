@@ -29,6 +29,7 @@ import {
   isCompiledStyledCallExpression,
   isCompiledStyledTaggedTemplateExpression,
   isCompiledCSSMapCallExpression,
+  isCompiledCSSMapScopedCallExpression,
 } from './utils/is-compiled';
 import { isTransformedJsxFunction } from './utils/is-jsx-function';
 import { normalizePropsUsage } from './utils/normalize-props-usage';
@@ -272,20 +273,22 @@ export default declare<State>((api) => {
             return;
           }
 
-          (['styled', 'ClassNames', 'css', 'keyframes', 'cssMap'] as const).forEach((apiName) => {
-            if (
-              state.compiledImports &&
-              t.isIdentifier(specifier.node?.imported) &&
-              specifier.node?.imported.name === apiName
-            ) {
-              // Enable the API with the local name
-              const apiArray = state.compiledImports[apiName] || [];
-              apiArray.push(specifier.node.local.name);
-              state.compiledImports[apiName] = apiArray;
+          (['styled', 'ClassNames', 'css', 'keyframes', 'cssMap', 'cssMapScoped'] as const).forEach(
+            (apiName) => {
+              if (
+                state.compiledImports &&
+                t.isIdentifier(specifier.node?.imported) &&
+                specifier.node?.imported.name === apiName
+              ) {
+                // Enable the API with the local name
+                const apiArray = state.compiledImports[apiName] || [];
+                apiArray.push(specifier.node.local.name);
+                state.compiledImports[apiName] = apiArray;
 
-              specifier.remove();
+                specifier.remove();
+              }
             }
-          });
+          );
         });
 
         if (path.node.specifiers.length === 0) {
@@ -314,7 +317,12 @@ Reasons this might happen:
         }
 
         if (isCompiledCSSMapCallExpression(path.node, state)) {
-          visitCssMapPath(path, { context: 'root', state, parentPath: path });
+          visitCssMapPath(path, { context: 'root', state, parentPath: path }, false);
+          return;
+        }
+
+        if (isCompiledCSSMapScopedCallExpression(path.node, state)) {
+          visitCssMapPath(path, { context: 'root', state, parentPath: path }, true);
           return;
         }
 

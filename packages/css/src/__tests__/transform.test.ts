@@ -1,7 +1,12 @@
-import { transformCss as transform, type TransformOpts } from '../transform';
+import { transformCss as transform } from '../transform';
+import type { LocalTransformOptions, TransformOpts } from '../transform';
 
 const defaultOpts: TransformOpts = { optimizeCss: false };
-const transformCss = (code: string, opts: TransformOpts = defaultOpts) => transform(code, opts);
+const transformCss = (
+  code: string,
+  opts: TransformOpts = defaultOpts,
+  localOpts: LocalTransformOptions = {}
+) => transform(code, opts, localOpts);
 
 describe('#css-transform', () => {
   it('should generate the same selectors even if white space is different', () => {
@@ -495,6 +500,63 @@ describe('#css-transform', () => {
         div:hover ._12hc5scu:not(#\\#){color:red}
         div ._wntz5scu:not(#\\#):hover{color:red}"
       `);
+    });
+  });
+
+  describe('selectors with combinators', () => {
+    it('should handle descendent selectors', () => {
+      const { sheets: actual } = transformCss(`div span { color: red; font-weight: bold; }`);
+
+      expect(actual.join('\n')).toMatchInlineSnapshot(`
+        "._8gsp5scu div span{color:red}
+        ._1w0n8n31 div span{font-weight:bold}"
+      `);
+    });
+
+    it('should produce distinct class names for different combinator selector rules', () => {
+      const { sheets: actual } = transformCss(
+        `
+        div span { color: red; font-weight: bold; }
+        div > span { color: red; font-weight: bold; }
+        `
+      );
+
+      // Different selectors → different group hashes
+      expect(actual).toHaveLength(4);
+      const classNames = actual.map((s) => s.match(/\._([a-zA-Z0-9]+)/)?.[1]);
+      expect(classNames[0]).not.toBe(classNames[2]);
+    });
+
+    it('should transform css to non-atomic output (used by cssMapScoped)', () => {
+      const { sheets, classNames } = transformCss(
+        `div span { color: red; font-weight: bold; }`,
+        {},
+        { nonAtomic: true }
+      );
+
+      // Non-atomic: a single sheet wrapping all declarations under one class
+      expect(classNames).toHaveLength(1);
+      expect(classNames[0]).toMatch(/^cc-[a-z0-9]+$/);
+      // No `_` prefix — not an atomic class
+      expect(classNames[0]).not.toMatch(/^_/);
+      // Both declarations are present in the CSS
+      expect(sheets.join('\n')).toContain('color:red');
+      expect(sheets.join('\n')).toContain('font-weight:bold');
+      // Both declarations are scoped under the single class
+      sheets.forEach((sheet) => expect(sheet).toContain(`.${classNames[0]}`));
+    });
+
+    it('should produce stable non-atomic class names (content-addressable)', () => {
+      const css = `div span { color: red; }`;
+      const { classNames: first } = transformCss(css, {}, { nonAtomic: true });
+      const { classNames: second } = transformCss(css, {}, { nonAtomic: true });
+      expect(first[0]).toBe(second[0]);
+    });
+
+    it('should produce distinct non-atomic class names for different CSS content', () => {
+      const { classNames: a } = transformCss(`div { color: red; }`, {}, { nonAtomic: true });
+      const { classNames: b } = transformCss(`div { color: blue; }`, {}, { nonAtomic: true });
+      expect(a[0]).not.toBe(b[0]);
     });
   });
 

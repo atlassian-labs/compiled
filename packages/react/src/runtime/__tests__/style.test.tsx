@@ -185,6 +185,148 @@ describe('<Style />', () => {
     });
   });
 
+  describe('cssMapScoped — non-atomic style injection', () => {
+    // Helper: read all CSS text from <style> tags via textContent (works for both
+    // appendData/appendChild text-node paths AND insertRule cssRules-based injection)
+    const getAllCssText = () =>
+      Array.from(document.head.querySelectorAll('style'))
+        .map((s) => {
+          const sheet = (s as HTMLStyleElement).sheet as CSSStyleSheet | null;
+          // Prefer cssRules (real browser path) — falls back to textContent (jsdom path)
+          if (sheet?.cssRules?.length) {
+            return Array.from(sheet.cssRules)
+              .map((r) => r.cssText)
+              .join('');
+          }
+          return s.textContent ?? '';
+        })
+        .join('');
+
+    it('should inject cssMapScoped rules into the catch-all style bucket, not a shorthand bucket', () => {
+      createIsolatedTest((Style) => {
+        // border-bottom is shorthand depth 4 → would normally go to s-4 bucket
+        // but cc- rules must always go to the catch-all '' bucket
+        const sharedRule =
+          '.cc-abc123 .ProseMirror .blur,.focus{border-bottom:2px solid transparent}';
+        render(<Style>{[sharedRule]}</Style>);
+
+        expect(getAllCssText()).toInclude('border-bottom');
+        // Should only be one style element (catch-all '' bucket), not split into s-4
+        expect(document.head.querySelectorAll('style')).toHaveLength(1);
+      });
+    });
+
+    it('should preserve source order — shared base rule before individual overrides', () => {
+      createIsolatedTest((Style) => {
+        // This mirrors the real annotation styles cascade issue:
+        // shared multi-selector (border-bottom shorthand) must appear BEFORE
+        // individual overrides (border-bottom-color longhand) in the style tag.
+        const sharedRule =
+          '.cc-abc123 .ProseMirror .blur,.focus{border-bottom:2px solid transparent}';
+        const overrideRule =
+          '.cc-abc123 .ProseMirror .focus{background:yellow;border-bottom-color:orange}';
+
+        render(<Style>{[sharedRule, overrideRule]}</Style>);
+
+        const text = getAllCssText();
+        const sharedIdx = text.indexOf('border-bottom:');
+        const overrideIdx = text.indexOf('border-bottom-color');
+
+        expect(sharedIdx).toBeGreaterThan(-1);
+        expect(overrideIdx).toBeGreaterThan(-1);
+        // Shared base must appear BEFORE individual override
+        expect(sharedIdx).toBeLessThan(overrideIdx);
+      });
+    });
+
+    it('should keep all rules for a variant in the same bucket regardless of their first CSS property', () => {
+      createIsolatedTest((Style) => {
+        // background → shorthand depth 1 → s-1 bucket (without fix)
+        // border-bottom → shorthand depth 4 → s-4 bucket (without fix)
+        // Both should land in '' catch-all bucket with the fix
+        const bgRule = '.cc-def456 .panel{background:blue;color:white}';
+        const borderRule = '.cc-def456 .title{border-bottom:1px solid red;font-weight:bold}';
+
+        render(<Style>{[bgRule, borderRule]}</Style>);
+
+        const text = getAllCssText();
+        const bgIdx = text.indexOf('background');
+        const borderIdx = text.indexOf('border-bottom');
+
+        expect(bgIdx).toBeGreaterThan(-1);
+        expect(borderIdx).toBeGreaterThan(-1);
+        // Both in same bucket → source order preserved
+        expect(bgIdx).toBeLessThan(borderIdx);
+      });
+    });
+
+    it('should inject a multi-rule joined sheet string from cssMapScoped (regression test)', () => {
+      // cssMapScoped joins all rules for a variant into ONE sheet string for perf.
+      // Runtime must handle multi-rule strings correctly — `insertRule` only accepts
+      // a SINGLE rule per call, so we use Text.appendData instead. This test exercises
+      // the exact format that broke runtime injection in production.
+      createIsolatedTest((Style) => {
+        const multiRuleSheet =
+          '.cc-multi .panel{color:blue;padding:8px}' +
+          '.cc-multi .title{font-weight:bold}' +
+          '.cc-multi .icon{width:24px}' +
+          '.cc-multi .icon svg{fill:currentColor}';
+
+        render(<Style>{[multiRuleSheet]}</Style>);
+
+        // Snapshot: the entire multi-rule string must be present, in order, intact.
+        // If `insertRule` was used (and silently failed on multi-rule input), the
+        // output would be empty. If a rule splitter mangled the input, the output
+        // would differ. This snapshot catches both regressions.
+        expect(getAllCssText()).toMatchInlineSnapshot(
+          `".cc-multi .panel {color: blue; padding: 8px;}.cc-multi .title {font-weight: bold;}.cc-multi .icon {width: 24px;}.cc-multi .icon svg {fill: currentColor;}"`
+        );
+      });
+    });
+
+    it('should append subsequent sheets to the same <style> element (single text node)', () => {
+      // Verifies the appendData fast path: first call creates a text node,
+      // subsequent calls append to the existing text node (no new nodes).
+      createIsolatedTest((Style) => {
+        const firstSheet = '.cc-first .panel{color:blue}';
+        const secondSheet = '.cc-second .panel{color:red}';
+
+        render(<Style>{[firstSheet, secondSheet]}</Style>);
+
+        // Only ONE <style> element (catch-all bucket)
+        const styles = document.head.querySelectorAll('style');
+        expect(styles).toHaveLength(1);
+
+        // Only ONE text node inside the <style> (appendData kept it as one node,
+        // not multiple separate text nodes from repeated appendChild)
+        const style = styles[0];
+        const textNodes = Array.from(style.childNodes).filter((n) => n.nodeType === Node.TEXT_NODE);
+        expect(textNodes).toHaveLength(1);
+
+        // Both sheets must be present in the text node
+        const text = getAllCssText();
+        expect(text).toInclude('.cc-first');
+        expect(text).toInclude('.cc-second');
+      });
+    });
+
+    it('should inject atomic cssMap rules and cssMapScoped rules into separate buckets', () => {
+      createIsolatedTest((Style) => {
+        // atomic rule: border-bottom shorthand → s-4 bucket
+        // non-atomic rule: cc- → '' catch-all bucket
+        const atomicRule = '._1abc2def{border-bottom:2px solid blue}';
+        const nonAtomicRule = '.cc-abc123 .panel{border-bottom:1px solid red;padding:8px}';
+
+        render(<Style>{[atomicRule, nonAtomicRule]}</Style>);
+
+        // Both rules must be present, even if in separate <style> buckets
+        const text = getAllCssText();
+        expect(text).toInclude('_1abc2def');
+        expect(text).toInclude('.cc-abc123 .panel');
+      });
+    });
+  });
+
   describe('StyleContainerProvider', () => {
     let container: HTMLDivElement;
 

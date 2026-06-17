@@ -19,5 +19,8 @@
       "@compiled/utils": ["../utils/src/index.ts"]
     }
   },
-  "include": ["src/jsx/__tests__/jsx-local-namespace-types.test.tsx"]
+  "include": [
+    "src/jsx/__tests__/jsx-local-namespace-types.test.tsx",
+    "src/css-map/__tests__/types.typecheck.ts"
+  ]
 }

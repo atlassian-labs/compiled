@@ -143,6 +143,7 @@ export interface State extends PluginPass {
     keyframes?: string[];
     styled?: string[];
     cssMap?: string[];
+    cssMapScoped?: string[];
   };
 
   usesXcss?: boolean;

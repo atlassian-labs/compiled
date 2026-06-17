@@ -1,5 +1,6 @@
 import type { ChildNode, Rule, Plugin, AtRule } from 'postcss';
 
+import { isNonAtomicNode } from '../utils/non-atomic';
 import { sortPseudoSelectors } from '../utils/sort-pseudo-selectors';
 
 import { parseMediaQuery } from './at-rules/parse-media-query';
@@ -40,7 +41,7 @@ const sortAtRulePseudoSelectors = (atRule: AtRule) => {
  *
  * Using Once due to the catchAll behaviour
  */
-export const sortAtomicStyleSheet = (config: {
+export const sortStyleSheet = (config: {
   sortAtRulesEnabled: boolean | undefined;
   sortShorthandEnabled: boolean | undefined;
 }): Plugin => {
@@ -48,17 +49,22 @@ export const sortAtomicStyleSheet = (config: {
   const sortShorthandEnabled = config.sortShorthandEnabled ?? true;
 
   return {
-    postcssPlugin: 'sort-atomic-style-sheet',
+    postcssPlugin: 'sort-style-sheet',
     Once(root) {
       const catchAll: ChildNode[] = [];
-      const rules: Rule[] = [];
-      const atRules: AtRuleInfo[] = [];
+      const nonAtomicStyles: ChildNode[] = [];
+      const atomicRules: Rule[] = [];
+      const atomicAtRules: AtRuleInfo[] = [];
 
       root.each((node) => {
         switch (node.type) {
           case 'rule': {
-            if (node.first?.type === 'atrule') {
-              atRules.push({
+            if (isNonAtomicNode(node)) {
+              // Non-atomic cssMapScoped rules must preserve their source order —
+              // skip shorthand and pseudo-selector sorting entirely.
+              nonAtomicStyles.push(node);
+            } else if (node.first?.type === 'atrule') {
+              atomicAtRules.push({
                 parsed:
                   sortAtRulesEnabled && node.first.name === 'media'
                     ? parseMediaQuery(node.first.params)
@@ -68,20 +74,25 @@ export const sortAtomicStyleSheet = (config: {
                 query: node.first.params,
               });
             } else {
-              rules.push(node);
+              atomicRules.push(node);
             }
-
             break;
           }
 
           case 'atrule': {
-            atRules.push({
-              parsed:
-                sortAtRulesEnabled && node.name === 'media' ? parseMediaQuery(node.params) : [],
-              node,
-              atRuleName: node.name,
-              query: node.params,
-            });
+            if (isNonAtomicNode(node)) {
+              // Non-atomic cssMapScoped rules wrapped in at-rules (e.g. @media { .cc-xxx { } })
+              // must preserve source order — skip sorting entirely.
+              nonAtomicStyles.push(node);
+            } else {
+              atomicAtRules.push({
+                parsed:
+                  sortAtRulesEnabled && node.name === 'media' ? parseMediaQuery(node.params) : [],
+                node,
+                atRuleName: node.name,
+                query: node.params,
+              });
+            }
             break;
           }
 
@@ -93,18 +104,18 @@ export const sortAtomicStyleSheet = (config: {
 
       if (sortShorthandEnabled) {
         sortShorthandDeclarations(catchAll);
-        sortShorthandDeclarations(rules);
-        sortShorthandDeclarations(atRules.map((atRule) => atRule.node));
+        sortShorthandDeclarations(atomicRules);
+        sortShorthandDeclarations(atomicAtRules.map((atRule) => atRule.node));
       }
 
       // Pseudo-selector and at-rule sorting takes priority over shorthand
       // property sorting.
-      sortPseudoSelectors(rules);
+      sortPseudoSelectors(atomicRules);
       if (sortAtRulesEnabled) {
-        atRules.sort(sortAtRules);
+        atomicAtRules.sort(sortAtRules);
       }
 
-      for (const atRule of atRules) {
+      for (const atRule of atomicAtRules) {
         const node = atRule.node;
         if (node.type !== 'atrule') {
           continue;
@@ -112,7 +123,21 @@ export const sortAtomicStyleSheet = (config: {
         sortAtRulePseudoSelectors(node);
       }
 
-      root.nodes = [...catchAll, ...rules, ...atRules.map((atRule) => atRule.node)];
+      // Non-atomic cssMapScoped rules are appended first, preserving their
+      // original source order for correct CSS cascade.
+      root.nodes = [
+        ...nonAtomicStyles,
+        ...catchAll,
+        ...atomicRules,
+        ...atomicAtRules.map((atRule) => atRule.node),
+      ];
+
+      // Clear raws.before on the first node to prevent a leading newline in the
+      // output when non-atomic rules (which may have raws.before='\n' from being
+      // mid-string in the joined input) are moved to the front of the stylesheet.
+      if (root.first) {
+        root.first.raws.before = '';
+      }
     },
   };
 };

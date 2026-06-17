@@ -7,6 +7,21 @@ import { compressClassNamesForRuntime } from './compress-class-names-for-runtime
 import { getItemCss } from './css-builders';
 import type { CssItem } from './types';
 
+type TransformOptions = {
+  /**
+   * When `true`, outputs all declarations for a variant under a single `cc-<hash>` class
+   * instead of splitting into individual atomic `_xxx` classes. Used by `cssMapScoped`.
+   * @default false
+   */
+  nonAtomic?: boolean;
+  /**
+   * Pre-computed class name for non-atomic mode (used by `cssMapScoped`).
+   * Should be `NON_ATOMIC_CLASS_PREFIX + hash(relativeFilename + ':' + variableName + ':' + variantKey)`.
+   * When provided, avoids hashing the full CSS content string.
+   */
+  nonAtomicClassName?: string;
+};
+
 /**
  * Splits a single item's styles into sheets and an expression that handles
  * className logic at runtime.
@@ -16,15 +31,16 @@ import type { CssItem } from './types';
  */
 const transformCssItem = (
   item: CssItem,
-  meta: Metadata
+  meta: Metadata,
+  opts: TransformOptions = {}
 ): {
   sheets: string[];
   classExpression?: t.Expression;
 } => {
   switch (item.type) {
     case 'conditional':
-      const consequent = transformCssItem(item.consequent, meta);
-      const alternate = transformCssItem(item.alternate, meta);
+      const consequent = transformCssItem(item.consequent, meta, opts);
+      const alternate = transformCssItem(item.alternate, meta, opts);
       const defaultExpression = t.identifier('undefined');
       const hasConsequentSheets = Boolean(consequent.sheets.length);
       const hasAlternateSheets = Boolean(alternate.sheets.length);
@@ -58,7 +74,7 @@ const transformCssItem = (
       };
 
     case 'logical':
-      const logicalCss = transformCss(getItemCss(item), meta.state.opts);
+      const logicalCss = transformCss(getItemCss(item), meta.state.opts, opts);
 
       return {
         sheets: logicalCss.sheets,
@@ -81,7 +97,7 @@ const transformCssItem = (
       };
 
     default:
-      const css = transformCss(getItemCss(item), meta.state.opts);
+      const css = transformCss(getItemCss(item), meta.state.opts, opts);
       const className = compressClassNamesForRuntime(
         css.classNames,
         meta.state.opts.classNameCompressionMap
@@ -102,13 +118,45 @@ const transformCssItem = (
  */
 export const transformCssItems = (
   cssItems: CssItem[],
-  meta: Metadata
+  meta: Metadata,
+  opts: TransformOptions = {}
 ): { sheets: string[]; classNames: t.Expression[] } => {
+  // In non-atomic mode, all CSS items for a variant must be combined into a single
+  // CSS string and transformed together so that exactly ONE class name is generated.
+  // This is required because a variant may produce multiple CssItems (e.g. a
+  // @keyframes item + a declaration item when keyframes() is used), and without
+  // combining them each item would get its own cc- hash — violating the invariant
+  // that non-atomic cssMap variants produce a single class.
+  if (opts.nonAtomic) {
+    // Combine all CSS items for this variant into a single string.
+    // getItemCss handles all item types (unconditional, logical, conditional)
+    // by concatenating their CSS content.
+    const combinedCss = cssItems.map((item) => getItemCss(item)).join('\n');
+
+    const css = transformCss(combinedCss, meta.state.opts, {
+      nonAtomic: true,
+      nonAtomicClassName: opts.nonAtomicClassName,
+    });
+    // Collapse all sheets for this variant into a single string:
+    // - Emits exactly one `const _N` variable per variant in the babel output
+    // - Results in exactly one insertNonAtomicRule() call at runtime → fewer DOM mutations
+    const sheets = css.sheets.length > 1 ? [css.sheets.join('')] : css.sheets;
+    const className = compressClassNamesForRuntime(
+      css.classNames,
+      meta.state.opts.classNameCompressionMap
+    ).join(' ');
+
+    return {
+      sheets,
+      classNames: className.trim() ? [t.stringLiteral(className)] : [],
+    };
+  }
+
   const sheets: string[] = [];
   const classNames: t.Expression[] = [];
 
   cssItems.forEach((item) => {
-    const result = transformCssItem(item, meta);
+    const result = transformCssItem(item, meta, opts);
 
     sheets.push(...result.sheets);
     if (result.classExpression) {

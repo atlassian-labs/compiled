@@ -412,4 +412,72 @@ describe('CSS Extraction', () => {
       expect(emittedFiles[0]).not.toHaveProperty('fileName');
     });
   });
+
+  describe('cssMapScoped extraction', () => {
+    it('should preserve cssMapScoped variant classes unchanged — no sorting or deduplication applied', async () => {
+      // Non-atomic classes (cc- prefix) do not need pseudo-selector sorting or
+      // atomic deduplication — they pass through the bundle untouched.
+      const plugin = compiledVitePlugin({ extract: true });
+
+      const nonAtomicCss =
+        '.cc-1c2j123 .panel{padding:8px;background-color:blue}' +
+        '.cc-1c2j123 .panel-title{font-weight:bold;color:blue}' +
+        '.cc-o9delr .panel{background-color:pink}' +
+        '.cc-o9delr .panel-title{color:red}';
+
+      const bundle = {
+        'index.css': {
+          type: 'asset' as const,
+          fileName: 'index.css',
+          source: nonAtomicCss,
+          name: 'index',
+          names: [],
+          needsCodeReference: false,
+        },
+      };
+
+      const context = { emitFile: jest.fn(), warn: jest.fn() };
+      await plugin.generateBundle.call(context, {}, bundle);
+
+      // CSS is preserved exactly — no sorting, no deduplication applied
+      expect(bundle['index.css'].source).toBe(nonAtomicCss);
+      // No warnings emitted
+      expect(context.warn).not.toHaveBeenCalled();
+    });
+
+    it('should correctly extract a bundle containing both atomic cssMap and non-atomic cssMapScoped classes', async () => {
+      // A real app may have both: atomic classes from css()/styled() and
+      // non-atomic classes from cssMapScoped.
+      // Only the atomic portion (._) triggers sorting; cc- classes pass through.
+      const plugin = compiledVitePlugin({ extract: true });
+
+      const mixedCss =
+        // atomic classes — should be sorted
+        '._abc:hover{color:blue}._abc:focus{color:green}._abc{color:red}' +
+        // non-atomic classes — should pass through unchanged
+        '.cc-1c2j123 .panel{padding:8px}.cc-o9delr .panel{background-color:pink}';
+
+      const bundle = {
+        'index.css': {
+          type: 'asset' as const,
+          fileName: 'index.css',
+          source: mixedCss,
+          name: 'index',
+          names: [],
+          needsCodeReference: false,
+        },
+      };
+
+      const context = { emitFile: jest.fn(), warn: jest.fn() };
+      await plugin.generateBundle.call(context, {}, bundle);
+
+      const result = bundle['index.css'].source as string;
+
+      // Atomic classes are still sorted (focus before hover)
+      expect(result.indexOf(':focus')).toBeLessThan(result.indexOf(':hover'));
+      // Non-atomic cc- classes are preserved in the output
+      expect(result).toContain('.cc-1c2j123 .panel{padding:8px}');
+      expect(result).toContain('.cc-o9delr .panel{background-color:pink}');
+    });
+  });
 });

@@ -99,6 +99,53 @@ type RemapMedia<TStyles> = {
 };
 
 /**
+ * ## CSS Map Scoped
+ *
+ * A non-atomic alternative to `cssMap`. Instead of splitting each CSS declaration
+ * into its own atomic class, `cssMapScoped` groups all declarations for a variant
+ * under a single generated CSS class (prefixed `cc-`). This reduces the number of
+ * classes applied to a DOM element — particularly useful for large style objects
+ * with many nested selectors (e.g. editor or rich-text component styles).
+ *
+ * The generated class acts as a scope for all nested rules, making it safe to
+ * target child elements with class selectors (`.panel`, `.panel-title`, etc).
+ *
+ * `cssMapScoped` does not accept an options argument — it is always non-atomic.
+ *
+ * @experimental internal only, use with caution, and intentionally not exported in index.ts for public use.
+ * @example
+ * ```
+ * const styles = cssMapScoped({
+ *   panelStyles: {
+ *     '.panel': { padding: '8px', backgroundColor: 'blue' },
+ *     '.panel-title': { fontWeight: 'bold' },
+ *   },
+ *   dangerStyles: {
+ *     '.panel': { backgroundColor: 'pink' },
+ *     '.panel-title': { color: 'red' },
+ *   },
+ * });
+ *
+ * <div css={styles.panelStyles} />
+ * // → <div class="cc-1vj392m" />
+ * ```
+ *
+ * For further details [read the documentation](https://compiledcssinjs.com/docs/api-cssmap).
+ */
+export function cssMapScoped<
+  TStyles extends Record<
+    string,
+    CSSProperties & WhitelistedSelector & ExtendedSelectors & LooseMediaQueries
+  >
+>(
+  _styles: TStyles
+): {
+  readonly [P in keyof TStyles]: CompiledStyles<RemapMedia<TStyles[P]>>;
+} {
+  throw createSetupError();
+}
+
+/**
  * ## CSS Map
  *
  * Creates a collection of named styles that are statically typed and useable with other Compiled APIs.

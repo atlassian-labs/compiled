@@ -31,6 +31,7 @@ const isCompiledOrAtlaskitImport = (name: string): CompiledNameChecker => {
 export const isCss = isCompiledOrAtlaskitImport('css');
 export const isCxFunction = isCompiledOrAtlaskitImport('cx');
 export const isCssMap = isCompiledOrAtlaskitImport('cssMap');
+export const isCssMapScoped = isCompiledOrAtlaskitImport('cssMapScoped');
 export const isKeyframes = isCompiledOrAtlaskitImport('keyframes');
 
 export const isStyled = (node: Node, references: Reference[]): boolean =>

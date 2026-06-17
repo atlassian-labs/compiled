@@ -1,5 +1,7 @@
 import type { AtRule, ChildNode, Plugin } from 'postcss';
 
+import { isNonAtomicNode } from '../utils/non-atomic';
+
 /**
  * Plugin to remove duplicate children found in at-rules.
  * Currently does not handle nested at-rules.
@@ -24,6 +26,10 @@ export const mergeDuplicateAtRules = (): Plugin => {
       const atRuleStore: Record<string, { node: AtRule; children: Record<string, ChildNode> }> = {};
       return {
         AtRule(atRule) {
+          // Skip non-atomic cssMapScoped at-rules — merging would break source-order cascade.
+          const hasNonAtomic = isNonAtomicNode(atRule);
+          if (hasNonAtomic) return;
+
           const name = atRule.name + atRule.params;
           if (!atRuleStore[name]) {
             atRuleStore[name] = {

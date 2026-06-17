@@ -1,11 +1,11 @@
 import { outdent } from 'outdent';
 import postcss from 'postcss';
 
-import { sortAtomicStyleSheet } from '../sort-atomic-style-sheet';
+import { sortStyleSheet } from '../sort-style-sheet';
 
 const transform = (css: string, enabled = true) => {
   const result = postcss([
-    sortAtomicStyleSheet({ sortAtRulesEnabled: true, sortShorthandEnabled: enabled }),
+    sortStyleSheet({ sortAtRulesEnabled: true, sortShorthandEnabled: enabled }),
   ]).process(css, {
     from: undefined,
   });
@@ -32,8 +32,7 @@ describe('sort shorthand vs. longhand declarations', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "
-      ._kkk21kw7{all:inherit}._zulph461{gap:3px}
+      "._kkk21kw7{all:inherit}._zulph461{gap:3px}
       ._y44v1tgl{background:red}
       ._bfhk1ayf{background-color:red}
       ._1jmq18uv{-webkit-text-decoration-color:initial;text-decoration-color:initial}
@@ -91,8 +90,7 @@ describe('sort shorthand vs. longhand declarations', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "
-      ._kkk21kw7{all:inherit}._zulph461{gap:var(--ds-space-050)}
+      "._kkk21kw7{all:inherit}._zulph461{gap:var(--ds-space-050)}
       ._y44v1tgl{animation:kbayob8 5s ease infinite}
       ._18s8paju{margin:var(--ds-space-150,9pt) auto 28px auto}
       ._y44v1syn{animation:kbpspdk 5s ease infinite}
@@ -254,8 +252,7 @@ describe('sort shorthand vs. longhand declarations', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "
-      .b:not(.a) {
+      ".b:not(.a) {
         font: 24px light;
         font-weight: bold;
       }
@@ -316,8 +313,7 @@ describe('sort shorthand vs. longhand declarations', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "
-      .a { border: 3px solid blue; }
+      ".a { border: 3px solid blue; }
       .b { border-width: 4px; }
       .c { border-style: dashed; }
       .d { border-color: pink; }
@@ -403,8 +399,7 @@ describe('sort shorthand vs. longhand declarations', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "
-      .a > .external {
+      ".a > .external {
         all: unset;
       }
       .a {
@@ -494,8 +489,7 @@ describe('sort shorthand vs. longhand declarations', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "
-      .a {
+      ".a {
         all: reset;
         border: 2px dashed;
         border-top: red;
@@ -534,8 +528,7 @@ describe('sort shorthand vs. longhand declarations', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "
-      ._ue5g1408{margin:0 var(--ds-space-800,4pc)}
+      "._ue5g1408{margin:0 var(--ds-space-800,4pc)}
       ._1yag1dzv{padding:var(--ds-space-100) var(--ds-space-150)}._oqicidpf{padding-top:0}
       ._1rmjidpf{padding-right:0}
       ._cjbtidpf{padding-bottom:0}
@@ -585,8 +578,7 @@ describe('sort shorthand vs. longhand declarations', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "
-      ._abcd1234 { border: none }
+      "._abcd1234 { border: none }
       ._abcd1234 { border-top: 1px solid }
       ._abcd1234 { border-top-color: red }
       ._abcd1234:hover { border: none }
@@ -700,8 +692,7 @@ describe('sort shorthand vs. longhand declarations', () => {
 
       // NOTE: There's still some default sorting, but not from this.
       expect(actual).toMatchInlineSnapshot(`
-        "
-        .b:not(.a) {
+        ".b:not(.a) {
           font-weight: bold;
           font: 24px light;
         }

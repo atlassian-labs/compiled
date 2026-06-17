@@ -2,6 +2,8 @@ import { hash } from '@compiled/utils';
 import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
 import { rule } from 'postcss';
 
+import { canProcessAtRule } from './at-rule-lists';
+
 interface PluginOpts {
   classNameCompressionMap?: Record<string, string>;
   callback?: (className: string) => void;
@@ -181,39 +183,7 @@ const atomicifyRule = (node: Rule, opts: PluginOpts): Rule[] => {
  *
  * @param node
  */
-const canAtomicifyAtRule = (node: AtRule): boolean => {
-  const canBeAtomificied = [
-    'container',
-    '-moz-document',
-    'else',
-    'layer',
-    'media',
-    'starting-style',
-    'supports',
-    'when',
-  ];
-  const forbidden = ['charset', 'import', 'namespace'];
-  const ignored = [
-    'color-profile',
-    'counter-style',
-    'font-face',
-    'font-palette-values',
-    'keyframes',
-    'page',
-    'position-try',
-    'property',
-  ];
-
-  if (canBeAtomificied.includes(node.name)) {
-    return true;
-  } else if (forbidden.includes(node.name)) {
-    throw new Error(`At-rule '@${node.name}' cannot be used in CSS rules.`);
-  } else if (!ignored.includes(node.name)) {
-    throw new Error(`Unknown at-rule '@${node.name}'.`);
-  }
-
-  return false;
-};
+const canAtomicifyAtRule = (node: AtRule): boolean => canProcessAtRule(node.name);
 
 /**
  * Transforms an atrule into atomic rules.
