@@ -40,18 +40,24 @@ export const sortStyleRulesForDeterministicOutput = (styleRules: string[]): stri
 
 /**
  * Build a deterministic stylesheet from multiple assets.
- * Assets are sorted by filePath for stable cross-file ordering.
- * Within each asset, rules are sorted via sortStyleRulesForDeterministicOutput
- * and then semantically sorted via @compiled/css sort().
+ * Assets are sorted by filePath for stable cross-file ordering, then
+ * rules are collected (deduplicated) into a single Set, partitioned into
+ * non-atomic (preserved order) and atomic (lexically sorted) buckets,
+ * and finally passed through @compiled/css sort() for semantic sorting.
  */
 export const buildDeterministicStylesheet = (
   assets: { filePath: string; rules: string[] }[],
   sortConfig: { sortAtRulesEnabled: boolean | undefined; sortShorthandEnabled: boolean | undefined }
 ): string => {
-  return [...assets]
-    .sort((a, b) => a.filePath.localeCompare(b.filePath))
-    .map(({ rules }) => sort(sortStyleRulesForDeterministicOutput(rules).join(''), sortConfig))
-    .join('');
+  const styleRules = new Set<string>();
+  [...assets]
+    .sort((a, b) => (a.filePath < b.filePath ? -1 : 1))
+    .forEach(({ rules }) => {
+      for (const rule of rules) {
+        styleRules.add(rule);
+      }
+    });
+  return sort(sortStyleRulesForDeterministicOutput(Array.from(styleRules)).join(''), sortConfig);
 };
 
 export default new Optimizer<ParcelOptimizerOpts, unknown>({
