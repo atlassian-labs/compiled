@@ -1,6 +1,12 @@
 // eslint-disable-next-line import/named -- cssMapScoped is not in public types
 import { styled, cssMapScoped } from '@compiled/react';
 import * as React from 'react';
+// @ts-expect-error -- cssMapScoped is not in public types
+const overrideStyles = cssMapScoped({
+  default: {
+    '.editor .panel': { backgroundColor: 'pink' },
+  },
+});
 
 const ComponentA = styled.div({
   color: 'red',
@@ -35,13 +41,6 @@ const ComponentD = styled.div({
 const baseStyles = cssMapScoped({
   default: {
     '.editor .panel': { backgroundColor: 'gray', padding: '8px' },
-  },
-});
-
-// @ts-expect-error -- cssMapScoped is not in public types
-const overrideStyles = cssMapScoped({
-  default: {
-    '.editor .panel': { backgroundColor: 'pink' },
   },
 });
 
