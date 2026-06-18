@@ -6,6 +6,16 @@ import { transform } from './transform';
 // We aren't processing the result anyway, so no need for specifying the response
 jest.mock('fs');
 
+/** Returns the CSS content written to app.compiled.css by the last transform call. */
+const getExtractedCss = (): string => {
+  // writeFileSync(filePath, cssContent) — find the call that wrote to app.compiled.css
+  const match = (writeFileSync as jest.Mock).mock.calls.find(([filePath]) =>
+    (filePath as string).includes('app.compiled.css')
+  );
+  const [, cssContent] = match ?? [];
+  return cssContent as string;
+};
+
 describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesToDirectory)', () => {
   describe('with the classic runtime', () => {
     const runtime = 'classic';
@@ -118,6 +128,7 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
 
   describe('with cssMapScoped (non-atomic)', () => {
     it('extracts atomic cssMap styles into app.compiled.css', () => {
+      (writeFileSync as jest.Mock).mockClear();
       const code = `
         /** @jsxImportSource @compiled/react */
         import { cssMap } from '@compiled/react';
@@ -155,11 +166,15 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
         "
       `);
 
-      // CSS output: atomic _xxx rules written to the compiled.css file
-      expect(writeFileSync).toBeCalledWith(
-        expect.stringContaining('app.compiled.css'),
-        expect.stringContaining('._')
-      );
+      // CSS output: atomic rules lexically sorted in the compiled.css file
+      expect(getExtractedCss()).toMatchInlineSnapshot(`
+        "._19bvftgi{padding-left:8px}
+        ._ca0qftgi{padding-top:8px}
+        ._n3tdftgi{padding-bottom:8px}
+        ._syaz13q2{color:blue}
+        ._syaz5scu{color:red}
+        ._u5f3ftgi{padding-right:8px}"
+      `);
     });
 
     it('extracts mixed atomic cssMap and non-atomic cssMapScoped styles into app.compiled.css', () => {
@@ -214,6 +229,42 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
         expect.stringContaining('app.compiled.css'),
         expect.stringContaining('.cc-')
       );
+    });
+
+    it('preserves non-atomic rule source order in extracted CSS', () => {
+      (writeFileSync as jest.Mock).mockClear();
+      // Use variable names that produce hashes where the override (zzOverride)
+      // lexically sorts BEFORE the base (aaBase) — proving that source order
+      // is preserved even when lexical sort would reorder them.
+      const code = `
+        /** @jsxImportSource @compiled/react */
+        import { cssMapScoped } from '@compiled/react';
+
+        const aaBase = cssMapScoped({
+          default: { '.editor .panel': { backgroundColor: 'gray' } },
+        });
+
+        const zzOverride = cssMapScoped({
+          default: { '.editor .panel': { backgroundColor: 'pink' } },
+        });
+
+        const Component = () => (
+          <div css={[aaBase.default, zzOverride.default]} />
+        );
+      `;
+
+      transform(code, {
+        run: 'both',
+        runtime: 'automatic',
+        extractStylesToDirectory: { source: 'src/', dest: 'dist/' },
+      });
+
+      // Snapshot the extracted CSS to lock down rule ordering.
+      // baseStyles (gray) must appear BEFORE overrideStyles (pink).
+      expect(getExtractedCss()).toMatchInlineSnapshot(`
+        ".cc-z3r7a0 .editor .panel{background-color:gray}
+        .cc-qr51l7 .editor .panel{background-color:pink}"
+      `);
     });
 
     it('extracts cc- scoped styles into app.compiled.css', () => {

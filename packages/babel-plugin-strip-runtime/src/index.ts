@@ -8,6 +8,27 @@ import * as t from '@babel/types';
 import { sort } from '@compiled/css';
 import { preserveLeadingComments } from '@compiled/utils';
 
+const NON_ATOMIC_CLASS_SELECTOR = '.cc-';
+
+/**
+ * Preserve non-atomic cssMapScoped rule source order (cascade-dependent),
+ * sort atomic rules lexically for deterministic output.
+ */
+const sortStyleRulesForDeterministicOutput = (styleRules: string[]): string[] => {
+  const nonAtomicRules: string[] = [];
+  const atomicRules: string[] = [];
+
+  for (const rule of styleRules) {
+    if (rule.includes(NON_ATOMIC_CLASS_SELECTOR)) {
+      nonAtomicRules.push(rule);
+    } else {
+      atomicRules.push(rule);
+    }
+  }
+
+  return [...nonAtomicRules, ...atomicRules.sort()];
+};
+
 import type { PluginPass, PluginOptions, BabelFileMetadata } from './types';
 import { isAutomaticRuntime } from './utils/is-automatic-runtime';
 import { isCCComponent } from './utils/is-cc-component';
@@ -92,7 +113,10 @@ export default declare<PluginPass>((api) => {
               sortShorthandEnabled: this.opts.sortShorthand,
             };
 
-            writeFileSync(cssFilePath, sort(this.styleRules.sort().join('\n'), sortConfig));
+            writeFileSync(
+              cssFilePath,
+              sort(sortStyleRulesForDeterministicOutput(this.styleRules).join('\n'), sortConfig)
+            );
 
             // Add css import to file
             path.unshiftContainer(
