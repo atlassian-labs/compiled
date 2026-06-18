@@ -16,6 +16,28 @@ const configFiles = [
   'compiledcss.config.js',
 ];
 
+// Keep this local to avoid expanding @compiled/css' public API for an optimizer-only concern.
+const NON_ATOMIC_CLASS_PREFIX = '.cc-';
+
+/**
+ * Keep non-atomic cssMapScoped rules in source order because their cascade
+ * depends on it, while preserving deterministic ordering for atomic rules.
+ */
+export const sortStyleRulesForDeterministicOutput = (styleRules: string[]): string[] => {
+  const nonAtomicRules: string[] = [];
+  const atomicRules: string[] = [];
+
+  for (const rule of styleRules) {
+    if (rule.includes(NON_ATOMIC_CLASS_PREFIX)) {
+      nonAtomicRules.push(rule);
+    } else {
+      atomicRules.push(rule);
+    }
+  }
+
+  return [...nonAtomicRules, ...atomicRules.sort()];
+};
+
 export default new Optimizer<ParcelOptimizerOpts, unknown>({
   async loadConfig({ config, options }) {
     const conf = await config.getConfigFrom(join(options.projectRoot, 'index'), configFiles, {
@@ -66,7 +88,10 @@ export default new Optimizer<ParcelOptimizerOpts, unknown>({
       sortAtRulesEnabled: config.sortAtRules,
       sortShorthandEnabled: config.sortShorthand,
     };
-    const stylesheet = sort(Array.from(styleRules).sort().join(''), sortConfig);
+    const stylesheet = sort(
+      sortStyleRulesForDeterministicOutput(Array.from(styleRules)).join(''),
+      sortConfig
+    );
 
     let newContents = '';
 
