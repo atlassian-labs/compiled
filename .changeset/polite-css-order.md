@@ -2,4 +2,4 @@
 '@compiled/parcel-optimizer': patch
 ---
 
-Preserve cssMapScoped rule order while keeping atomic stylesheet output deterministic.
+Sort assets by filePath for deterministic cross-file ordering. Within each asset, preserve cssMapScoped (non-atomic) rule source order and sort atomic rules lexically.
