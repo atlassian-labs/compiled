@@ -51,7 +51,9 @@ export const buildDeterministicStylesheet = (
 ): string => {
   const styleRules = new Set<string>();
   [...assets]
+    // sort assets by filePath, filePath is absolute file path including file name.
     .sort((a, b) => (a.filePath < b.filePath ? -1 : 1))
+    // collect styleRules from sorted assets
     .forEach(({ rules }) => {
       for (const rule of rules) {
         styleRules.add(rule);
