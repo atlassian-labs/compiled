@@ -54,7 +54,17 @@ describe('optimizer', () => {
         singleQuote: true,
       })
     ).toMatchInlineSnapshot(`
-      "._syaz5scu {
+      ".cc-97o8ng .editor .panel {
+        background-color: gray;
+        padding-top: 8px;
+        padding-right: 8px;
+        padding-bottom: 8px;
+        padding-left: 8px;
+      }
+      .cc-9z735k .editor .panel {
+        background-color: pink;
+      }
+      ._syaz5scu {
         color: red;
       }
       ._f8pjruxl:focus {
