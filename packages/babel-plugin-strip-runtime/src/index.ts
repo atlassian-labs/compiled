@@ -64,19 +64,20 @@ export default declare<PluginPass>((api) => {
 
           if (this.opts.styleSheetPath) {
             preserveLeadingComments(path);
-            this.styleRules.forEach((rule) => {
-              // Each found atomic rule will create a new import that uses the styleSheetPath provided.
-              // The benefit is two fold:
-              // (1) thread safe collection of styles
-              // (2) caching -- resulting in faster builds (one import per rule!)
-              const params = toURIComponent(rule);
-              path.unshiftContainer(
-                'body',
-                template.ast(`require("${this.opts.styleSheetPath}?style=${params}");`)
-              );
-              // We use require instead of import so it works with both ESM and CJS source.
-              // If we used ESM it would blow up with CJS source, unfortunately.
-            });
+            // Build all `require()` statements in source order then prepend
+            // them as a single batch — `unshiftContainer` preserves the array
+            // order, which downstream bundlers (Webpack's mini-css-extract,
+            // etc.) rely on to preserve `cssMapScoped` cascade.
+            // Each found atomic rule creates a new import that uses the styleSheetPath provided.
+            // The benefit is two fold:
+            // (1) thread safe collection of styles
+            // (2) caching -- resulting in faster builds (one import per rule!)
+            // We use require instead of import so it works with both ESM and CJS source.
+            // If we used ESM it would blow up with CJS source, unfortunately.
+            const requires = this.styleRules.map((rule) =>
+              template.ast(`require("${this.opts.styleSheetPath}?style=${toURIComponent(rule)}");`)
+            );
+            path.unshiftContainer('body', requires as unknown as t.Statement[]);
           }
 
           if (this.opts.extractStylesToDirectory && this.styleRules.length > 0) {

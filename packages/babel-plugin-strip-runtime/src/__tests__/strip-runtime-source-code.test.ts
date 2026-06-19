@@ -48,8 +48,8 @@ describe('babel-plugin-strip-runtime using source code', () => {
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual([
-          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
           `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
+          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
         ]);
       });
 
@@ -110,8 +110,8 @@ describe('babel-plugin-strip-runtime using source code', () => {
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual([
-          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
           `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
+          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
         ]);
       });
 
@@ -173,8 +173,8 @@ describe('babel-plugin-strip-runtime using source code', () => {
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual([
-          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
           `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
+          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
         ]);
       });
 
@@ -239,8 +239,8 @@ describe('babel-plugin-strip-runtime using source code', () => {
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual([
-          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
           `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
+          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
         ]);
       });
 
