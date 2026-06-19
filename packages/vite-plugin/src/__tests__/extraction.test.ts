@@ -445,6 +445,64 @@ describe('CSS Extraction', () => {
       expect(context.warn).not.toHaveBeenCalled();
     });
 
+    it('should preserve cross-file source order for cssMapScoped rules and sort atomic rules across files', async () => {
+      // Multi-file scenario: rules from different source files must be sorted
+      // by filePath deterministically. Within atomic rules, lexical sort applies.
+      // Non-atomic (cc-) rules preserve insertion order per file.
+      process.env.NODE_ENV = 'production';
+      const plugin = compiledVitePlugin({ extract: true });
+      const emittedFiles: any[] = [];
+      const context = {
+        emitFile: (file: any) => {
+          emittedFiles.push(file);
+          return 'mock-ref';
+        },
+        warn: jest.fn(),
+      };
+
+      // Transform z-file FIRST (out of filePath order) to verify sorting works
+      await plugin.transform!(
+        `
+        import { css, cssMapScoped } from '@compiled/react';
+        const zStyles = cssMapScoped({ base: { color: 'red' } });
+        const zAtomic = css({ padding: '4px' });
+        export const Z = () => <div css={[zStyles.base, zAtomic]} />;
+      `,
+        '/src/z-file.tsx'
+      );
+
+      // Transform a-file SECOND
+      await plugin.transform!(
+        `
+        import { css, cssMapScoped } from '@compiled/react';
+        const aStyles = cssMapScoped({ base: { background: 'gray' } });
+        const aAtomic = css({ margin: '8px' });
+        export const A = () => <div css={[aStyles.base, aAtomic]} />;
+      `,
+        '/src/a-file.tsx'
+      );
+
+      await plugin.generateBundle.call(context, {}, {});
+
+      expect(emittedFiles.length).toBe(1);
+      const css = emittedFiles[0].source as string;
+
+      // Inline snapshot locks down: a-file rules first (filePath sort),
+      // then z-file rules, then atomic rules at the bottom.
+      expect(css).toMatchInlineSnapshot(`
+        ".cc-zynl4g{background-color:gray}
+        .cc-xqwn6b{color:red}
+        ._18u0ftgi{margin-left:8px}
+        ._19bv1y44{padding-left:4px}
+        ._19pkftgi{margin-top:8px}
+        ._2hwxftgi{margin-right:8px}
+        ._ca0q1y44{padding-top:4px}
+        ._n3td1y44{padding-bottom:4px}
+        ._otyrftgi{margin-bottom:8px}
+        ._u5f31y44{padding-right:4px}"
+      `);
+    });
+
     it('should correctly extract a bundle containing both atomic cssMap and non-atomic cssMapScoped classes', async () => {
       // A real app may have both: atomic classes from css()/styled() and
       // non-atomic classes from cssMapScoped.

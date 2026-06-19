@@ -2,12 +2,14 @@
 '@compiled/parcel-optimizer': patch
 '@compiled/babel-plugin-strip-runtime': patch
 '@compiled/webpack-loader': patch
+'@compiled/vite-plugin': patch
 '@compiled/react': patch
 ---
 
-Make extracted CSS deterministic and preserve `cssMapScoped` source order:
+Make extracted CSS deterministic and preserve `cssMapScoped` source order across all supported bundlers.
 
-- `@compiled/parcel-optimizer`: sort assets by `filePath` for deterministic cross-file ordering. Within each asset, preserve cssMapScoped (non-atomic) rule source order and sort atomic rules lexically.
-- `@compiled/babel-plugin-strip-runtime`: apply the same atomic/non-atomic partitioning when writing extracted CSS files, so non-atomic rules preserve their source order within a single asset.
-- `@compiled/webpack-loader`: re-order cssMapScoped (non-atomic) rules in the merged CSS so they appear in source order at the top. mini-css-extract-plugin merges `.compiled.css` modules in a dependency order that can reverse the source order of non-atomic rules, breaking the cascade for cssMapScoped overrides.
+- `@compiled/babel-plugin-strip-runtime`: batch `unshiftContainer` so emitted `require()` statements preserve `styleRules` source order, and partition non-atomic vs atomic rules when writing extracted CSS files via `sortStyleRulesForDeterministicOutput`.
+- `@compiled/parcel-optimizer`: collect rules per asset, sort assets by `filePath` for cross-file determinism, then partition non-atomic vs atomic rules.
+- `@compiled/vite-plugin`: collect rules per source file (Map keyed by `filePath`), sort by `filePath` for cross-file determinism, then partition.
+- `@compiled/webpack-loader`: sort emitted CSS assets by name for deterministic output.
 - `@compiled/react`: fix `isNonAtomicSheet` to use `includes` instead of `startsWith` so at-rule-wrapped non-atomic rules (`@media`, `@container`) are correctly bucketed at runtime.

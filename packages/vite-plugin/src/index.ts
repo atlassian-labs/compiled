@@ -12,6 +12,34 @@ import type { PluginOptions } from './types';
 import { createDefaultResolver } from './utils.js';
 
 /**
+ * Partition style rules so that cssMapScoped (non-atomic, `.cc-`) rules come
+ * first in source order, followed by atomic rules sorted lexically. This
+ * ensures:
+ * - Non-atomic rules win the cascade over atomic rules (they appear later in
+ *   the cascade order WITHIN their bucket — but since they come earlier in
+ *   the output we rely on Compiled's sort() to handle final positioning).
+ *   Actually the key invariant here is: same source → same output (no churn).
+ * - Atomic rules are deterministic across builds, regardless of the order in
+ *   which assets were processed.
+ *
+ * The `.cc-` detection uses `includes` so it matches both bare class selectors
+ * (`.cc-xxx{...}`) AND at-rule-wrapped ones (`@media{.cc-xxx{...}}`).
+ */
+const sortStyleRulesForDeterministicOutput = (styleRules: string[]): string[] => {
+  const nonAtomicRules: string[] = [];
+  const atomicRules: string[] = [];
+  for (const rule of styleRules) {
+    if (rule.includes('.cc-')) {
+      nonAtomicRules.push(rule);
+    } else {
+      atomicRules.push(rule);
+    }
+  }
+  atomicRules.sort();
+  return [...nonAtomicRules, ...atomicRules];
+};
+
+/**
  * Compiled Vite plugin.
  *
  * Transforms CSS-in-JS to atomic CSS at build time using Babel.
@@ -49,7 +77,10 @@ function compiled(userOptions: PluginOptions = {}): any {
   };
 
   // Storage for collected style rules during transformation
-  const collectedStyleRules = new Set<string>();
+  // Map of filePath → array of style rules (in source order from the babel
+  // transform). We sort by filePath at extraction time for cross-file
+  // determinism, then partition + sort atomic rules for stable output.
+  const collectedStyleRulesByFile = new Map<string, string[]>();
 
   // Store the emitted CSS filename for HTML injection
   // This gets set in generateBundle after the file is emitted
@@ -142,9 +173,10 @@ function compiled(userOptions: PluginOptions = {}): any {
         // Store metadata for CSS extraction if enabled
         if (extract && result?.metadata) {
           const metadata = result.metadata as BabelFileMetadata;
-          // Collect style rules from this file
+          // Collect style rules from this file, keyed by filePath for
+          // cross-file deterministic ordering at extraction time.
           if (metadata.styleRules && metadata.styleRules.length > 0) {
-            metadata.styleRules.forEach((rule: string) => collectedStyleRules.add(rule));
+            collectedStyleRulesByFile.set(id, metadata.styleRules.slice());
           }
         }
 
@@ -206,10 +238,19 @@ function compiled(userOptions: PluginOptions = {}): any {
       }
 
       // Also emit extracted styles if we collected any from local code
-      if (extract && collectedStyleRules.size > 0) {
+      if (extract && collectedStyleRulesByFile.size > 0) {
         try {
-          // Convert Set to array and sort for determinism
-          const allRules = Array.from(collectedStyleRules).sort();
+          // Sort entries by filePath for stable cross-file ordering, then
+          // collect all rules. Deduplication happens downstream in `sort()`
+          // via `postcss-discard-duplicates`.
+          const sortedEntries = [...collectedStyleRulesByFile.entries()].sort(([keyA], [keyB]) =>
+            keyA > keyB ? 1 : -1
+          );
+          const collectedRules: string[] = [];
+          for (const [, rules] of sortedEntries) {
+            collectedRules.push(...rules);
+          }
+          const allRules = sortStyleRulesForDeterministicOutput(collectedRules);
 
           // Join all rules and apply CSS sorting
           const combinedCss = allRules.join('\n');
