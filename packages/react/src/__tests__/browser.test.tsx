@@ -3,6 +3,8 @@ import { styled } from '@compiled/react';
 import { render } from '@testing-library/react';
 import React from 'react';
 
+import Style from '../runtime/style';
+
 jest.mock('../runtime/is-server-environment', () => ({
   isServerEnvironment: () => false,
 }));
@@ -103,6 +105,33 @@ describe('browser', () => {
       <style nonce="k0Mp1lEd">._9h8h13q2:active{color:blue}</style>
       <style nonce="k0Mp1lEd">@media (max-width:800px){._1o8z1gy6:focus{color:yellow}._jbabtwqo:focus-visible{color:grey}._6146twqo:hover{color:grey}._1cld11x8:active{color:black}}@supports (display:grid){._1df61gy6:focus{color:yellow}._7okp11x8:active{color:black}}</style>
       "
+    `);
+  });
+
+  it('should inject at-rule-wrapped non-atomic rules into the catch-all bucket, not an at-rule bucket', () => {
+    // cc-zzzzzz sorts AFTER cc-aaaaaa lexically, but must appear FIRST (source order)
+    const baseMediaRule = '@media (min-width:1px){.cc-zzzzzz .panel{background:gray}}';
+    const overrideMediaRule = '@media (min-width:1px){.cc-aaaaaa .panel{background:pink}}';
+    const atomicMediaRule = '@media (min-width:1px){._bbbbbbbb{color:blue}}';
+
+    // Two <Style> components — one per cssMapScoped variant, like real usage
+    render(
+      <>
+        <Style>{[baseMediaRule]}</Style>
+        <Style>{[overrideMediaRule, atomicMediaRule]}</Style>
+      </>
+    );
+
+    // Non-atomic @media rules go to catch-all bucket in source order (cc-zzzzzz before cc-aaaaaa),
+    // atomic @media rule goes to a separate at-rule bucket.
+    const styleTexts = Array.from(document.head.querySelectorAll('style'))
+      .map((s) => s.textContent ?? '')
+      .filter((t) => t.length > 0);
+    expect(styleTexts).toMatchInlineSnapshot(`
+      [
+        "@media (min-width:1px){.cc-zzzzzz .panel{background:gray}}@media (min-width:1px){.cc-aaaaaa .panel{background:pink}}",
+        "@media (min-width:1px){._bbbbbbbb{color:blue}}",
+      ]
     `);
   });
 });
