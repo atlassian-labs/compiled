@@ -1,3 +1,5 @@
+import type { JSX } from 'react';
+
 import type { CssFunction } from '../types';
 
 type WithConditionalCSSProp<TProps> = 'className' extends keyof TProps

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createContext, useContext } from 'react';
+import { createContext, useContext, type JSX } from 'react';
 
 import { isCacheDisabled } from './cache.js';
 import { isServerEnvironment } from './is-server-environment.js';

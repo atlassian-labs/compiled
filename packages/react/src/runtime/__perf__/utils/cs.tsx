@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, type JSX } from 'react';
 
 const Cache = createContext<Record<string, true> | null>(null);
 

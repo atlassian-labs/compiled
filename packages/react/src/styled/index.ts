@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react';
+import type { ComponentType, JSX } from 'react';
 
 import type { CssType, CssFunction } from '../types.js';
 import { createSetupError } from '../utils/error.js';

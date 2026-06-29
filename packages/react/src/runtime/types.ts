@@ -1,4 +1,5 @@
 import type { Depths } from '@compiled/utils';
+import type { JSX } from 'react';
 
 export interface StyleSheetOpts {
   /**
