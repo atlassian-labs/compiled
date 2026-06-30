@@ -1,5 +1,5 @@
 import { styled } from '@compiled/react';
-import { useState } from 'react';
+import { useState, type JSX } from 'react';
 
 export default {
   title: 'edge cases/ordering',

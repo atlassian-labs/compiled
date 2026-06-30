@@ -1,5 +1,6 @@
 /** @jsxImportSource @compiled/react */
 import { css } from '@compiled/react';
+import type { JSX } from 'react';
 
 import caratDown from './assets/carat-down.svg';
 import caratUp from './assets/carat-up.svg';

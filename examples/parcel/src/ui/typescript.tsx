@@ -1,4 +1,6 @@
 /** @jsxImportSource @compiled/react */
+import type { JSX } from 'react';
+
 import { primary } from '../constants';
 
 interface TypeScriptProps {

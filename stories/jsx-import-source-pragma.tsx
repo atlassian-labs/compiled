@@ -1,4 +1,5 @@
 /** @jsxImportSource @compiled/react */
+import type { JSX } from 'react';
 
 export default {
   title: 'css prop/jsx import source pragma',

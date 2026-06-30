@@ -1,4 +1,5 @@
 import { css, keyframes, styled } from '@compiled/react';
+import type { JSX } from 'react';
 
 import './keyframes/globals';
 import { fadeOut as shadowedFadeOut } from './keyframes/tagged-template-literal';

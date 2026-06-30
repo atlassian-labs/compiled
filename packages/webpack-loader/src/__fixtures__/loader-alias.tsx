@@ -4,5 +4,6 @@
 import { jsx, css } from '@compiled/react';
 // @ts-expect-error
 import { styles } from 'loader-alias';
+import type { JSX } from 'react';
 
 export const App = (): JSX.Element => <div css={styles} />;

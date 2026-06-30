@@ -1,4 +1,5 @@
 import { css } from '@compiled/react';
+import type { JSX } from 'react';
 
 export default {
   title: 'css/combinators',

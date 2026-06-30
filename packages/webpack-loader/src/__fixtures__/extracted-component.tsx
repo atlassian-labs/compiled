@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx, css } from '@compiled/react';
-import { Fragment } from 'react';
+import { Fragment, type JSX } from 'react';
 
 import './extracted-component.compiled.css';
 

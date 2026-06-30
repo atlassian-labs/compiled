@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx, css, styled } from '@compiled/react';
-import { Fragment } from 'react';
+import { Fragment, type JSX } from 'react';
 
 import { blueviolet, blue, orange, purple, red, yellow } from './common/colors';
 // @ts-expect-error ↓↓↓ This should not have their styles extracted ↓↓↓
