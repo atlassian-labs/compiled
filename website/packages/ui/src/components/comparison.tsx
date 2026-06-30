@@ -1,4 +1,6 @@
 /** @jsxImportSource @compiled/react */
+import type { JSX } from 'react';
+
 import { CodeBlock } from './code-block';
 import { HorizontalStack } from './stack';
 

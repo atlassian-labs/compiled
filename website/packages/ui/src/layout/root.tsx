@@ -1,6 +1,6 @@
 /** @jsxImportSource @compiled/react */
 import { styled } from '@compiled/react';
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, type JSX } from 'react';
 
 import {
   Header,

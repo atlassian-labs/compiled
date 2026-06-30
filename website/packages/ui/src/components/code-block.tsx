@@ -1,5 +1,5 @@
 /** @jsxImportSource @compiled/react */
-import type { CSSProperties } from 'react';
+import type { CSSProperties, JSX } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-async';
 import codeTheme from 'react-syntax-highlighter/dist/esm/styles/prism/tomorrow';
 

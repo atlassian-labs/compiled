@@ -1,6 +1,7 @@
 /** @jsxImportSource @compiled/react */
 import { ClassNames } from '@compiled/react';
 import { ax } from '@compiled/react/runtime';
+import type { JSX } from 'react';
 
 type CustomColorTextProps = {
   color: string;

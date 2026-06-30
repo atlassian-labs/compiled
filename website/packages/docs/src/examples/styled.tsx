@@ -1,5 +1,6 @@
 import { styled } from '@compiled/website-examples';
 import { Example } from '@compiled/website-ui';
+import type { JSX } from 'react';
 
 export const StyledObj = (): JSX.Element => {
   return (

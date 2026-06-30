@@ -1,4 +1,5 @@
 import { CodeBlock } from '@compiled/website-ui';
+import type { JSX } from 'react';
 
 const after =
   // eslint-disable-next-line @typescript-eslint/no-var-requires

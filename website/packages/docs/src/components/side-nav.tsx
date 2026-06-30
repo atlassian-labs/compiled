@@ -1,6 +1,6 @@
 import { styled } from '@compiled/react';
 import { VerticalStack, Heading, colors, Text } from '@compiled/website-ui';
-import { cloneElement, Children } from 'react';
+import { cloneElement, Children, type JSX } from 'react';
 import { Link } from 'react-router-dom';
 
 interface SectionProps {

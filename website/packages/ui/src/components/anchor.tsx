@@ -1,7 +1,7 @@
 /** @jsxImportSource @compiled/react */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Text, colors } from '@compiled/website-ui';
-import type { Ref } from 'react';
+import type { Ref, JSX } from 'react';
 import {
   createContext,
   useContext,

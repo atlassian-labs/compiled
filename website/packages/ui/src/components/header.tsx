@@ -1,5 +1,6 @@
 /** @jsxImportSource @compiled/react */
 import { styled } from '@compiled/react';
+import type { JSX } from 'react';
 
 import { Heading } from './heading';
 

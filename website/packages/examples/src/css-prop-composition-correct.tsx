@@ -1,6 +1,6 @@
 /** @jsxImportSource @compiled/react */
 import { css } from '@compiled/react';
-import type { ReactNode } from 'react';
+import type { ReactNode, JSX } from 'react';
 
 type EmphasisTextProps = {
   children: ReactNode;

@@ -1,5 +1,5 @@
 /** @jsxImportSource @compiled/react */
-import type { ReactNode, DetailedHTMLProps, HTMLAttributes } from 'react';
+import type { ReactNode, DetailedHTMLProps, HTMLAttributes, JSX } from 'react';
 
 interface HeadingProps
   extends DetailedHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement> {

@@ -1,4 +1,6 @@
 /** @jsxImportSource @compiled/react */
+import type { JSX } from 'react';
+
 import { primary, textLight } from '../utils/colors';
 
 import { Text } from './text';

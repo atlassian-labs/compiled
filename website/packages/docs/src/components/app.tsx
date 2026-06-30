@@ -11,6 +11,7 @@ import {
   Text,
 } from '@compiled/website-ui';
 import { MDXProvider } from '@mdx-js/react';
+import type { JSX } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { titleCase } from '../utils/string';

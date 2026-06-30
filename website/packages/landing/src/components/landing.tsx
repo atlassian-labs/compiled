@@ -14,7 +14,7 @@ import {
   PageLink,
 } from '@compiled/website-ui';
 import { MDXProvider } from '@mdx-js/react';
-import React, { useState } from 'react';
+import React, { useState, type JSX } from 'react';
 
 import LandingPageContent from '../pages/landing-content.mdx';
 
