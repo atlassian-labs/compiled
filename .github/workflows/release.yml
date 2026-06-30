@@ -33,7 +33,7 @@ jobs:
           node-version: ${{ steps.nvm.outputs.NVMRC }}
 
       - name: Install Dependencies
-        run: yarn
+        run: yarn install --frozen-lockfile
 
       - name: Get Artifact Publish Token
         id: publish-token
