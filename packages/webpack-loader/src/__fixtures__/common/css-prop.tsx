@@ -1,5 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@compiled/react';
+import type { JSX } from 'react';
 
 import { coral } from './colors';
 

@@ -1,4 +1,5 @@
 import { styled, css } from '@compiled/react';
+import type { JSX } from 'react';
 
 import { spacing } from './mixins';
 

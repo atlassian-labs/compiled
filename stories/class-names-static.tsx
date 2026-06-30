@@ -1,4 +1,5 @@
 import { ClassNames } from '@compiled/react';
+import type { JSX } from 'react';
 
 export default {
   title: 'ClassNames/static',

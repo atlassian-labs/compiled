@@ -1,5 +1,5 @@
 import { styled } from '@compiled/react';
-import { useEffect } from 'react';
+import { useEffect, type JSX } from 'react';
 
 export default {
   title: 'edge cases/shadow variables',

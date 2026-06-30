@@ -1,5 +1,5 @@
 /** @jsxImportSource @compiled/react */
-import type { ReactNode } from 'react';
+import type { ReactNode, JSX } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Link } from 'react-router-dom';
 

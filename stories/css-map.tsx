@@ -1,5 +1,5 @@
 import { cssMap, css } from '@compiled/react';
-import { useState } from 'react';
+import { useState, type JSX } from 'react';
 
 export default {
   title: 'css map',

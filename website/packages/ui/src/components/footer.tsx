@@ -1,6 +1,7 @@
 /** @jsxImportSource @compiled/react */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Content, HorizontalStack, Text } from '@compiled/website-ui';
+import type { JSX } from 'react';
 
 export const Footer = (): JSX.Element => (
   <>

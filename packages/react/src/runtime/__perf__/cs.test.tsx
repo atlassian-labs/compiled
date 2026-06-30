@@ -1,7 +1,7 @@
 import { runBenchmark } from '@compiled/benchmark';
 import { JSDOM } from 'jsdom';
 import * as React from 'react';
-import { memo } from 'react';
+import { memo, type JSX } from 'react';
 import { createRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 

@@ -1,4 +1,5 @@
 import { styled } from '@compiled/react';
+import type { JSX } from 'react';
 
 import { ID_SELECTOR } from './mixins';
 

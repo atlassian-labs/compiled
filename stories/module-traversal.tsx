@@ -1,5 +1,6 @@
 import { styled } from '@compiled/react';
 import { colors, objectStyles } from '@compiled-private/module-a';
+import type { JSX } from 'react';
 
 import { hoverObjectLiteral } from './mixins';
 

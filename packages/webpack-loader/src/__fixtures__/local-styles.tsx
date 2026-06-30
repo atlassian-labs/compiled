@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx, styled } from '@compiled/react';
-import { Fragment } from 'react';
+import { Fragment, type JSX } from 'react';
 
 const Styled = styled.div({
   color: 'blue',

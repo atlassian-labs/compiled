@@ -1,4 +1,5 @@
 import { styled } from '@compiled/react';
+import type { JSX } from 'react';
 
 const Container = styled.div<{ color?: string }>`
   border: 1px solid ${(props) => props.color};

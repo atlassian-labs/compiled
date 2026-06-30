@@ -2,7 +2,7 @@
 import * as BabelComponentExtractedModule from '@compiled/babel-component-extracted-fixture/dist/index';
 import * as BabelComponentModule from '@compiled/babel-component-fixture';
 import { css } from '@compiled/react';
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, type JSX } from 'react';
 
 import { primary } from './constants';
 import Annotated from './ui/annotated';

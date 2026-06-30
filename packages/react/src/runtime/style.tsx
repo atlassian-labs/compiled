@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 
 import { analyzeCssInDev } from './dev-warnings.js';
 import { isServerEnvironment } from './is-server-environment.js';

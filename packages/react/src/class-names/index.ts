@@ -1,4 +1,4 @@
-import type { ReactNode, CSSProperties } from 'react';
+import type { ReactNode, CSSProperties, JSX } from 'react';
 
 import type { CssType, CssFunction } from '../types.js';
 import { createSetupError } from '../utils/error.js';

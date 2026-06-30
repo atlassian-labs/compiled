@@ -1,5 +1,6 @@
 /** @jsxImportSource @compiled/react */
 import { css } from '@compiled/react';
+import type { JSX } from 'react';
 
 type CustomColorTextProps = {
   children: React.ReactNode;

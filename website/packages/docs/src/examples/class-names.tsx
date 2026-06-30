@@ -1,5 +1,6 @@
 import { classNames } from '@compiled/website-examples';
 import { Example } from '@compiled/website-ui';
+import type { JSX } from 'react';
 
 export const ClassNamesObj = (): JSX.Element => {
   return (

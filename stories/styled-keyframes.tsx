@@ -1,4 +1,5 @@
 import { styled } from '@compiled/react';
+import type { JSX } from 'react';
 
 export default {
   title: 'styled/keyframes (inline)',

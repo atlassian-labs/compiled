@@ -2,7 +2,7 @@
 // @ts-expect-error cssMapScoped is not public api
 // eslint-disable-next-line import/named
 import { cssMapScoped, jsx, styled } from '@compiled/react';
-import { Fragment } from 'react';
+import { Fragment, type JSX } from 'react';
 
 import { Base } from './css-map-scoped-base';
 import { Override } from './css-map-scoped-override';

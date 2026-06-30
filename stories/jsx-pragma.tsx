@@ -4,6 +4,7 @@
 // using the pragmas above to use the classic runtime (referencing the jsx import).
 // @ts-ignore
 import { jsx } from '@compiled/react';
+import type { JSX } from 'react';
 
 export default {
   title: 'css prop/jsx pragma',

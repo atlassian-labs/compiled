@@ -1,4 +1,5 @@
 import { css, styled } from '@compiled/react';
+import type { JSX } from 'react';
 
 import { primaryTaggedTemplateExpression, secondaryTaggedTemplateExpression } from './mixins';
 

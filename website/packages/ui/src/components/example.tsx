@@ -3,7 +3,7 @@
 import { styled } from '@compiled/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CodeBlock, colors, Text } from '@compiled/website-ui';
-import { useState } from 'react';
+import { useState, type JSX } from 'react';
 
 interface ExampleProps {
   before: string;

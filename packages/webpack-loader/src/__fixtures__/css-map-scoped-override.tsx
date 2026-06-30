@@ -2,6 +2,7 @@
 // @ts-expect-error cssMapScoped is not public api
 // eslint-disable-next-line import/named
 import { cssMapScoped, jsx } from '@compiled/react';
+import type { JSX } from 'react';
 
 // Override panel styles (non-atomic) — must appear AFTER baseStyles in the
 // extracted CSS for cascade overrides to win.

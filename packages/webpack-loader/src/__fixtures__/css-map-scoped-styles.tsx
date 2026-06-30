@@ -2,6 +2,7 @@
 // @ts-expect-error cssMapScoped is not public api
 // eslint-disable-next-line import/named
 import { cssMapScoped, jsx } from '@compiled/react';
+import type { JSX } from 'react';
 
 // Two cssMapScoped declarations with overlapping selectors — second must override first.
 // In the extracted CSS, the override must come AFTER the base for cascade to work.

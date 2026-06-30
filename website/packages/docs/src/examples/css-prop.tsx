@@ -1,6 +1,6 @@
 import { cssProp } from '@compiled/website-examples';
 import { Example } from '@compiled/website-ui';
-import { Fragment } from 'react';
+import { Fragment, type JSX } from 'react';
 
 export const CssPropObj = (): JSX.Element => {
   return (
