@@ -40,17 +40,21 @@ export default function Style(props: StyleProps): JSX.Element | null {
 
   if (props.children.length) {
     if (isServerEnvironment()) {
+      // In jsdom, server-mode styles are React-owned DOM nodes. If one unmounts
+      // while an ancestor cache survives, the cache can outlive its style tag.
+      const shouldCache = typeof document === 'undefined';
       const bucketedSheets: Partial<Record<Bucket, string>> = {};
       let hasSheets = false;
 
       for (let i = 0; i < props.children.length; i++) {
         const sheet = props.children[i];
-        if (inserted[sheet]) {
+        if (shouldCache && inserted[sheet]) {
           continue;
-        } else {
+        } else if (shouldCache) {
           inserted[sheet] = true;
-          hasSheets = true;
         }
+
+        hasSheets = true;
 
         // Non-atomic rules (cc- prefix from cssMapScoped) must go into
         // the catch-all bucket to preserve source-order cascade.
