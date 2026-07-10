@@ -76,8 +76,8 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
       const actual = transform(code, { styleSheetPath: testStyleSheetPath, runtime });
 
       expect(actual.match(regexToFindRequireStatements)).toEqual([
-        `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
-        `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+        `require('${testStyleSheetPath}?style=._4ya3eErjyG%7Bfont-size%3A12px%7D');`,
+        `require('${testStyleSheetPath}?style=._1UtDYzynoA%7Bcolor%3Ablue%7D');`,
       ]);
     });
 
@@ -97,7 +97,7 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
       expect(actual.split('var Component = ')[1]).toMatchInlineSnapshot(`
         "() =>
           /*#__PURE__*/ (0, _jsxRuntime.jsx)('div', {
-            className: (0, _runtime.ax)(['_1wyb1fwx _syaz13q2']),
+            className: (0, _runtime.ax)(['_4ya3eErjyG _1UtDYzynoA']),
             children: 'hello world',
           });
         "
@@ -114,7 +114,7 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
         import { jsxs as _jsxs, jsx as _jsx } from 'react/jsx-runtime';
         var Component = () =>
           /*#__PURE__*/ _jsx('div', {
-            className: ax(['_1wyb1fwx _syaz13q2']),
+            className: ax(['_4ya3eErjyG _1UtDYzynoA']),
             children: 'hello world',
           });
         "
@@ -129,8 +129,8 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
       const actual = transform(code, { styleSheetPath: testStyleSheetPath, runtime });
 
       expect(actual.match(regexToFindRequireStatements)).toEqual([
-        `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
-        `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+        `require('${testStyleSheetPath}?style=._4ya3eErjyG%7Bfont-size%3A12px%7D');`,
+        `require('${testStyleSheetPath}?style=._1UtDYzynoA%7Bcolor%3Ablue%7D');`,
       ]);
     });
 
@@ -152,7 +152,7 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
           /*#__PURE__*/ React.createElement(
             'div',
             {
-              className: (0, _runtime.ax)(['_1wyb1fwx _syaz13q2']),
+              className: (0, _runtime.ax)(['_4ya3eErjyG _1UtDYzynoA']),
             },
             'hello world'
           );
@@ -171,7 +171,7 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
           /*#__PURE__*/ React.createElement(
             'div',
             {
-              className: ax(['_1wyb1fwx _syaz13q2']),
+              className: ax(['_4ya3eErjyG _1UtDYzynoA']),
             },
             'hello world'
           );

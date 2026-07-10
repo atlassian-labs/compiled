@@ -9,10 +9,10 @@ describe('xcss prop transformation', () => {
     expect(result).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._syaz5scu{color:red}";
+      const _ = "._1UtDYzGowl{color:red}";
       <CC>
         <CS>{[_]}</CS>
-        {<Component xcss={"_syaz5scu"} />}
+        {<Component xcss={"_1UtDYzGowl"} />}
       </CC>;
       "
     `);
@@ -46,10 +46,10 @@ describe('xcss prop transformation', () => {
     expect(result).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._syaz5scu{color:red}";
+      const _ = "._1UtDYzGowl{color:red}";
       <CC>
         <CS>{[_]}</CS>
-        {<Component innerXcss={"_syaz5scu"} />}
+        {<Component innerXcss={"_1UtDYzGowl"} />}
       </CC>;
       "
     `);
@@ -69,9 +69,9 @@ describe('xcss prop transformation', () => {
     expect(result).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._syaz5scu{color:red}";
+      const _ = "._1UtDYzGowl{color:red}";
       const styles = {
-        primary: "_syaz5scu",
+        primary: "_1UtDYzGowl",
       };
       <CC>
         <CS>{[_]}</CS>
@@ -96,11 +96,11 @@ describe('xcss prop transformation', () => {
     expect(result).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = "._syaz13q2{color:blue}";
-      const _ = "._syaz5scu{color:red}";
+      const _2 = "._1UtDYzynoA{color:blue}";
+      const _ = "._1UtDYzGowl{color:red}";
       const styles = {
-        primary: "_syaz5scu",
-        secondary: "_syaz13q2",
+        primary: "_1UtDYzGowl",
+        secondary: "_1UtDYzynoA",
       };
       <CC>
         <CS>{[_, _2]}</CS>
@@ -126,11 +126,11 @@ describe('xcss prop transformation', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import { j } from "@compiled/react";
-      const _2 = "._syaz13q2{color:blue}";
-      const _ = "._syaz5scu{color:red}";
+      const _2 = "._1UtDYzynoA{color:blue}";
+      const _ = "._1UtDYzGowl{color:red}";
       const styles = {
-        primary: "_syaz5scu",
-        secondary: "_syaz13q2",
+        primary: "_1UtDYzGowl",
+        secondary: "_1UtDYzynoA",
       };
       <CC>
         <CS>{[_, _2]}</CS>
@@ -160,9 +160,9 @@ describe('xcss prop transformation', () => {
     expect(result).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._syaz5scu{color:red}";
+      const _ = "._1UtDYzGowl{color:red}";
       const styles = {
-        primary: "_syaz5scu",
+        primary: "_1UtDYzGowl",
       };
       <CC>
         <CS>{[_]}</CS>
@@ -234,13 +234,13 @@ describe('xcss prop transformation', () => {
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import Button from "@atlaskit/button";
-      const _2 = "._syaz13q2{color:blue}";
-      const _ = "._syaz5scu{color:red}";
+      const _2 = "._1UtDYzynoA{color:blue}";
+      const _ = "._1UtDYzGowl{color:red}";
       const stylesOne = {
-        text: "_syaz5scu",
+        text: "_1UtDYzGowl",
       };
       const stylesTwo = {
-        text: "_syaz13q2",
+        text: "_1UtDYzynoA",
       };
       export function Mixed() {
         return (
@@ -286,9 +286,9 @@ describe('xcss prop transformation', () => {
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import { Box, xcss } from "@atlaskit/primitives";
       import Button from "@atlaskit/button";
-      const _ = "._syaz5scu{color:red}";
+      const _ = "._1UtDYzGowl{color:red}";
       const styles = {
-        text: "_syaz5scu",
+        text: "_1UtDYzGowl",
       };
       export function Mixed() {
         return (
@@ -403,13 +403,13 @@ describe('xcss prop interacting with other libraries', () => {
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import { css, jsx } from "@emotion/react";
       import { Box } from "@atlaskit/primitives";
-      const _ = "._syaz5scu{color:red}";
+      const _ = "._1UtDYzGowl{color:red}";
       export function Mixed() {
         return (
           <>
             <CC>
               <CS>{[_]}</CS>
-              {<Box xcss={"_syaz5scu"} />}
+              {<Box xcss={"_1UtDYzGowl"} />}
             </CC>
             <div
               css={{
@@ -455,14 +455,14 @@ describe('xcss prop interacting with other libraries', () => {
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import styled from "styled-components";
       import Button from "@atlaskit/button";
-      const _3 = "._syaz13q2{color:blue}";
-      const _2 = "._syaz5scu{color:red}";
-      const _ = "._syaz32ev{color:pink}";
+      const _3 = "._1UtDYzynoA{color:blue}";
+      const _2 = "._1UtDYzGowl{color:red}";
+      const _ = "._1UtDYzy8mA{color:pink}";
       const stylesOne = {
-        text: "_syaz5scu",
+        text: "_1UtDYzGowl",
       };
       const stylesTwo = {
-        text: "_syaz13q2",
+        text: "_1UtDYzynoA",
       };
       const Component = styled.div\`
         color: green;
@@ -472,7 +472,7 @@ describe('xcss prop interacting with other libraries', () => {
           <>
             <CC>
               <CS>{[_]}</CS>
-              {<div className={ax(["_syaz32ev"])} />}
+              {<div className={ax(["_1UtDYzy8mA"])} />}
             </CC>
             <CC>
               <CS>{[_2]}</CS>

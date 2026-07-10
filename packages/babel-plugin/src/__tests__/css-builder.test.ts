@@ -109,7 +109,7 @@ describe('css builder', () => {
       <div css={{ '@media screen': { color: 'red', fontSize: 20 } }} />
     `);
 
-    expect(actual).toInclude('@media screen{._43475scu{color:red}._1yzygktf{font-size:20px}}');
+    expect(actual).toInclude('@media screen{._0gIO46Gowl{color:red}._4Gx609SPN1{font-size:20px}}');
   });
 
   it('generates the correct style prop for shadowed runtime identifiers', () => {
@@ -131,15 +131,15 @@ describe('css builder', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = "._syaz1aj3{color:var(--_1ylxx6h)}";
-      const _ = "._bfhk8ruw{background-color:var(--_agotg1)}";
+      const _2 = "._1UtDYzpjc8{color:var(--_1ylxx6h)}";
+      const _ = "._0KLXruU0IR{background-color:var(--_agotg1)}";
       const getBackgroundColor = (color) => color;
       const color = baseColor;
       <CC>
         <CS>{[_, _2]}</CS>
         {
           <div
-            className={ax(["_bfhk8ruw _syaz1aj3"])}
+            className={ax(["_0KLXruU0IR _1UtDYzpjc8"])}
             style={{
               "--_agotg1": ix(getBackgroundColor(customBackgroundColor)),
               "--_1ylxx6h": ix(color),

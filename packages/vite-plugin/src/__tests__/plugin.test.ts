@@ -25,7 +25,7 @@ describe('compiledVitePlugin', () => {
     expect(result).toBeTruthy();
     if (result && typeof result === 'object' && 'code' in result) {
       // Check for the atomic class structure
-      expect(result.code).toContain('_syaz5scu');
+      expect(result.code).toContain('_1UtDYzGowl');
       expect(result.code).toContain('color:red');
       expect(result.code).toContain('font-size:9pt'); // 12px gets normalized to 9pt
     }

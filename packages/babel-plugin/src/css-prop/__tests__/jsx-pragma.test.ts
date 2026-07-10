@@ -10,10 +10,10 @@ describe('local jsx namespace', () => {
 
     expect(actual).toMatchInlineSnapshot(`
       "import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._syaz5scu{color:red}";
+      const _ = "._1UtDYzGowl{color:red}";
       <CC>
         <CS>{[_]}</CS>
-        {<div className={ax(["_syaz5scu"])}>hello</div>}
+        {<div className={ax(["_1UtDYzGowl"])}>hello</div>}
       </CC>;
       "
     `);
@@ -31,10 +31,10 @@ describe('local jsx namespace', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._syaz5scu{color:red}";
+      const _ = "._1UtDYzGowl{color:red}";
       <CC>
         <CS>{[_]}</CS>
-        {<div className={ax(["_syaz5scu"])}>hello</div>}
+        {<div className={ax(["_1UtDYzGowl"])}>hello</div>}
       </CC>;
       "
     `);

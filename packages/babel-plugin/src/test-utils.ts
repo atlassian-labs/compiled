@@ -57,5 +57,24 @@ export const transform = (code: string, options: TransformOptions = {}): string 
     codeSnippet = babelCode;
   }
 
-  return pretty ? format(codeSnippet, { parser: 'babel-ts' }) : codeSnippet;
+  if (!pretty) {
+    return codeSnippet;
+  }
+
+  const formatted = format(codeSnippet, { parser: 'babel-ts' });
+
+  // Longer atomic class names (11 chars under the base-62 hash scheme) can push
+  // `ax([...])` calls past prettier's default printWidth, causing them to wrap
+  // onto multiple lines. That wrapping is a purely cosmetic artifact of the test
+  // formatter — the real emitted code is single-line — so we collapse multi-line
+  // `ax([...])` calls back to a single line to keep generated-code assertions
+  // stable regardless of class-name length.
+  return formatted.replace(/ax\(\[\s*([\s\S]*?)\s*\]\)/g, (_match, inner: string) => {
+    const collapsed = inner
+      .split('\n')
+      .map((line) => line.trim())
+      .join(' ')
+      .replace(/,\s*$/, '');
+    return `ax([${collapsed}])`;
+  });
 };

@@ -18,10 +18,10 @@ describe('Keyframes', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1wybgktf{font-size:20px}',
-      '._2rko1l7b{border-radius:3px}',
-      '._y44v1bcx{animation:kfwl3rt}',
-      '{ax(["_2rko1l7b _y44v1bcx _1wybgktf", __cmplp.className])}',
+      '._4ya3eESPN1{font-size:20px}',
+      '._0bjKvD4Y4b{border-radius:3px}',
+      '._2fBhteNtNN{animation:kfwl3rt}',
+      '{ax(["_0bjKvD4Y4b _2fBhteNtNN _4ya3eESPN1", __cmplp.className])}',
     ]);
   });
 
@@ -42,10 +42,10 @@ describe('Keyframes', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._y44v178k{animation:kvif0b9}',
-      '._1wybgktf{font-size:20px}',
-      '._2rko1l7b{border-radius:3px}',
-      '{ax(["_y44v178k _2rko1l7b _1wybgktf", __cmplp.className])}',
+      '._2fBhteVXta{animation:kvif0b9}',
+      '._4ya3eESPN1{font-size:20px}',
+      '._0bjKvD4Y4b{border-radius:3px}',
+      '{ax(["_2fBhteVXta _0bjKvD4Y4b _4ya3eESPN1", __cmplp.className])}',
     ]);
   });
 
@@ -67,9 +67,9 @@ describe('Keyframes', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz5scu{color:red}',
-      '._y44v1bcx{animation:kfwl3rt}',
-      '{ax(["_y44v1bcx _syaz5scu", __cmplp.className])}',
+      '._1UtDYzGowl{color:red}',
+      '._2fBhteNtNN{animation:kfwl3rt}',
+      '{ax(["_2fBhteNtNN _1UtDYzGowl", __cmplp.className])}',
     ]);
   });
 
@@ -91,9 +91,9 @@ describe('Keyframes', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._y44v1bcx{animation:kfwl3rt}',
-      '._syaz5scu{color:red}',
-      '{ax(["_y44v1bcx _syaz5scu", __cmplp.className])}',
+      '._2fBhteNtNN{animation:kfwl3rt}',
+      '._1UtDYzGowl{color:red}',
+      '{ax(["_2fBhteNtNN _1UtDYzGowl", __cmplp.className])}',
     ]);
   });
 });

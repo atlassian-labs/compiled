@@ -1,4 +1,4 @@
-import { hash } from '@compiled/utils';
+import { hashBase62, ATOMIC_GROUP_HASH_LENGTH, ATOMIC_VALUE_HASH_LENGTH } from '@compiled/utils';
 import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
 import { rule } from 'postcss';
 
@@ -39,10 +39,13 @@ const isCssIdentifierValid = (value: string): boolean => {
 const atomicClassName = (node: Declaration, opts: PluginOpts) => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
   const prefix = opts.classHashPrefix ?? '';
-  const group = hash(`${prefix}${opts.atRule}${selectors}${node.prop}`).slice(0, 4);
+  const group = hashBase62(
+    `${prefix}${opts.atRule}${selectors}${node.prop}`,
+    ATOMIC_GROUP_HASH_LENGTH
+  );
 
   const value = node.important ? node.value + node.important : node.value;
-  const valueHash = hash(value).slice(0, 4);
+  const valueHash = hashBase62(value, ATOMIC_VALUE_HASH_LENGTH);
 
   return `_${group}${valueHash}`;
 };

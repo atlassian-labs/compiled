@@ -147,7 +147,7 @@ describe('sorting rules inside at-rules (with atomic classes)', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (max-width: 400px){._170d1gy6 :link{color:yellow}._19ov11x8 :visited{color:black}._17f1twqo :focus-within{color:grey}._nn1x32ev :focus{color:pink}._y65z1x77 :focus-visible{color:white}._gsnlbf54 :hover{color:green}._xs4x5scu :active, ._170d5scu :link{color:red}}"`
+      `"@media (max-width: 400px){._2Q057fFQV5 :link{color:yellow}._30YeKZbqW0 :visited{color:black}._2RFzKnokCM :focus-within{color:grey}._1yJNzTy8mA :focus{color:pink}._2fPATAaJpK :focus-visible{color:white}._16Jj9FJwxv :hover{color:green}._2eeISAGowl :active, ._2Q057fGowl :link{color:red}}"`
     );
   });
 
@@ -172,7 +172,7 @@ describe('sorting rules inside at-rules (with atomic classes)', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (max-width: 400px){@supports (display: grid){._sqs6bf54 :hover{color:green}._1jnp5scu :active{color:red}}@supports (display: table-cell){@media (max-width: 700px){._1gb81gy6 :link{color:yellow}._1q5y11x8 :focus{color:black}}._165z1gy6 :link{color:yellow}._burk11x8 :visited{color:black}}}"`
+      `"@media (max-width: 400px){@supports (display: grid){._1TCD8KJwxv :hover{color:green}._3FLbAbGowl :active{color:red}}@supports (display: table-cell){@media (max-width: 700px){._3s42NvFQV5 :link{color:yellow}._46o5h6bqW0 :focus{color:black}}._2My02lFQV5 :link{color:yellow}._0MvD5nbqW0 :visited{color:black}}}"`
     );
   });
 });

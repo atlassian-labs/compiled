@@ -49,7 +49,7 @@ describe('#css-transform', () => {
     `
       );
 
-      expect(actual.join('\n')).toMatchInlineSnapshot(`"._f8pj1q9v:focus{color:hotpink}"`);
+      expect(actual.join('\n')).toMatchInlineSnapshot(`"._10n1R5PFz6:focus{color:hotpink}"`);
     });
 
     it('should discard duplicates', () => {
@@ -60,7 +60,7 @@ describe('#css-transform', () => {
     `
       );
 
-      expect(actual.join('\n')).toMatchInlineSnapshot(`"._1e0c1txw{display:flex}"`);
+      expect(actual.join('\n')).toMatchInlineSnapshot(`"._3iDTPbQ4SZ{display:flex}"`);
     });
 
     it('should not reparent when parent has a combinator', () => {
@@ -77,8 +77,8 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
-        "._1xhg1j6v._1xhg1j6v>*{margin-bottom:1rem}
-        ._1ym1idpf._1ym1idpf>:last-child{margin-bottom:0}"
+        "._4Al40FQAma._4Al40FQAma>*{margin-bottom:1rem}
+        ._4EX0l2dnbC._4EX0l2dnbC>:last-child{margin-bottom:0}"
       `);
     });
 
@@ -93,8 +93,8 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
-        "._f8pj1q9v:focus{color:hotpink}
-        ._1sfm1q9v:hover div{color:hotpink}"
+        "._10n1R5PFz6:focus{color:hotpink}
+        ._4fFwuWPFz6:hover div{color:hotpink}"
       `);
     });
 
@@ -115,18 +115,18 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n').split(',').join(',\n')).toMatchInlineSnapshot(`
-        "._kq2v1q9v .bar div div{color:hotpink}
-        ._11eb1q9v .bar div span{color:hotpink}
-        ._1sbr1q9v .bar div:first-child{color:hotpink}
-        ._15h31q9v .bar div:last-child{color:hotpink}
-        ._ppxs1q9v .foo div{color:hotpink}
-        ._1fa31q9v .foo span{color:hotpink}
-        ._t7rc1q9v .foo:first-child{color:hotpink}
-        ._1pdx1q9v .foo:last-child{color:hotpink}
-        ._1z9o1q9v .qwe div{color:hotpink}
-        ._1qid1q9v .qwe span{color:hotpink}
-        ._1g8a1q9v .qwe:first-child{color:hotpink}
-        ._1j9g1q9v .qwe:last-child{color:hotpink}"
+        "._1mNZJXPFz6 .bar div div{color:hotpink}
+        ._2t28KTPFz6 .bar div span{color:hotpink}
+        ._4femD1PFz6 .bar div:first-child{color:hotpink}
+        ._2JIvyJPFz6 .bar div:last-child{color:hotpink}
+        ._1Hfy9BPFz6 .foo div{color:hotpink}
+        ._3nQn6lPFz6 .foo span{color:hotpink}
+        ._1VygW3PFz6 .foo:first-child{color:hotpink}
+        ._43cvTGPFz6 .foo:last-child{color:hotpink}
+        ._086gvoPFz6 .qwe div{color:hotpink}
+        ._47NrSpPFz6 .qwe span{color:hotpink}
+        ._3rJiwhPFz6 .qwe:first-child{color:hotpink}
+        ._3E8EPdPFz6 .qwe:last-child{color:hotpink}"
       `);
     });
 
@@ -139,7 +139,7 @@ describe('#css-transform', () => {
     `
       );
 
-      expect(actual.join('\n')).toMatchInlineSnapshot(`"._2pem1q9v:nth-child(3){color:hotpink}"`);
+      expect(actual.join('\n')).toMatchInlineSnapshot(`"._0b4tcXPFz6:nth-child(3){color:hotpink}"`);
     });
 
     it('should parent overlapping psuedos', () => {
@@ -154,7 +154,7 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(
-        `"._1kys1q9v :first-child:first-child{color:hotpink}"`
+        `"._3L6ZVVPFz6 :first-child:first-child{color:hotpink}"`
       );
     });
 
@@ -170,7 +170,7 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(
-        `"._99g41q9v :first-child:first-child ._99g41q9v :first-child{color:hotpink}"`
+        `"._0BTYbJPFz6 :first-child:first-child ._0BTYbJPFz6 :first-child{color:hotpink}"`
       );
     });
 
@@ -189,7 +189,7 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(
-        `"@media (max-width:400px){@supports (display:grid){._jbdf1q9v:first-child{color:hotpink}._ex911q9v div{color:hotpink}}}"`
+        `"@media (max-width:400px){@supports (display:grid){._1h2DG1PFz6:first-child{color:hotpink}._0Z4h9yPFz6 div{color:hotpink}}}"`
       );
     });
 
@@ -202,7 +202,9 @@ describe('#css-transform', () => {
     `
       );
 
-      expect(actual.join('\n')).toMatchInlineSnapshot(`"._129w1q9v >:first-child{color:hotpink}"`);
+      expect(actual.join('\n')).toMatchInlineSnapshot(
+        `"._2wCOKjPFz6 >:first-child{color:hotpink}"`
+      );
     });
   });
 
@@ -215,7 +217,7 @@ describe('#css-transform', () => {
     `
     );
 
-    expect(actual.join('\n')).toMatchInlineSnapshot(`"._65g01q9v div{color:hotpink}"`);
+    expect(actual.join('\n')).toMatchInlineSnapshot(`"._0paDgwPFz6 div{color:hotpink}"`);
   });
 
   it('should ignore parsing a data attribute selector with a comma in it', () => {
@@ -227,7 +229,7 @@ describe('#css-transform', () => {
     `
     );
 
-    expect(actual.join('\n')).toMatchInlineSnapshot(`"._qofj1q9v [data-foo=","]{color:hotpink}"`);
+    expect(actual.join('\n')).toMatchInlineSnapshot(`"._1LaDEBPFz6 [data-foo=","]{color:hotpink}"`);
   });
 
   it('should not build charset rules when minifying', () => {
@@ -245,11 +247,11 @@ describe('#css-transform', () => {
     );
 
     expect(actual.join('\n')).toMatchInlineSnapshot(`
-      "._kqswh2mm{position:relative}
-      ._1p1d1dk0{text-transform:capitalize}
-      ._aetr16l8:after{content:"›"}
-      ._18postnw:after{position:absolute}
-      ._32rxlgv5:after{right:-2rem}"
+      "._1mT5xdRAKS{position:relative}
+      ._41LZZBMRGa{text-transform:capitalize}
+      ._0GBAIrhvWj:after{content:"›"}
+      ._2WYcYGWVPG:after{position:absolute}
+      ._0cAGM7QLor:after{right:-2rem}"
     `);
   });
 
@@ -269,11 +271,11 @@ describe('#css-transform', () => {
 
     expect(classNames).toMatchInlineSnapshot(`
       [
-        "_kqswh2mm",
-        "_1p1d1dk0",
-        "_aetr16l8",
-        "_18postnw",
-        "_32rxlgv5",
+        "_1mT5xdRAKS",
+        "_41LZZBMRGa",
+        "_0GBAIrhvWj",
+        "_2WYcYGWVPG",
+        "_0cAGM7QLor",
       ]
     `);
   });
@@ -292,7 +294,7 @@ describe('#css-transform', () => {
     `);
 
     expect(actual.join('\n')).toMatchInlineSnapshot(
-      `"@media (max-width:400px){._buol1gy6:link{color:yellow}._st8p11x8:visited{color:black}._4h7jtwqo:focus-within{color:grey}._6i6132ev:focus{color:pink}._is8y1x77:focus-visible{color:white}._axlybf54:hover{color:green}._1i6q5scu:active{color:red}._buol5scu:link{color:red}}"`
+      `"@media (max-width:400px){._0Mv35WFQV5:link{color:yellow}._1TTXvZbqW0:visited{color:black}._0ik7zDokCM:focus-within{color:grey}._0qCirsy8mA:focus{color:pink}._1eRRpIaJpK:focus-visible{color:white}._0IJXWLJwxv:hover{color:green}._3zJNtiGowl:active{color:red}._0Mv35WGowl:link{color:red}}"`
     );
   });
 
@@ -301,7 +303,7 @@ describe('#css-transform', () => {
       color: red !important;
     `);
 
-    expect(actual.join('')).toMatchInlineSnapshot(`"._syaz1qpq{color:red!important}"`);
+    expect(actual.join('')).toMatchInlineSnapshot(`"._1UtDYzDpLb{color:red!important}"`);
   });
 
   it('shouldnt blow up when expanding', () => {
@@ -310,7 +312,7 @@ describe('#css-transform', () => {
     `);
 
     expect(actual.sheets.join('')).toMatchInlineSnapshot(
-      `"._16jlkb7n{flex-grow:1}._1o9zkb7n{flex-shrink:1}._i0dlf1ug{flex-basis:0%}"`
+      `"._2O5Vij7dHp{flex-grow:1}._3YEZNO7dHp{flex-shrink:1}._1bHrqEAEMG{flex-basis:0%}"`
     );
   });
 
@@ -330,7 +332,7 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('')).toMatchInlineSnapshot(
-        `"._2a8pglyw div{-webkit-user-select:none;-moz-user-select:none;user-select:none}"`
+        `"._09lB87YbGa div{-webkit-user-select:none;-moz-user-select:none;user-select:none}"`
       );
     });
 
@@ -346,7 +348,7 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('')).toMatchInlineSnapshot(
-        `"._2a8pglyw div{-ms-user-select:none;user-select:none}"`
+        `"._09lB87YbGa div{-ms-user-select:none;user-select:none}"`
       );
     });
 
@@ -361,7 +363,7 @@ describe('#css-transform', () => {
         `
       );
 
-      expect(actual.join('')).toMatchInlineSnapshot(`"._2a8pglyw div{user-select:none}"`);
+      expect(actual.join('')).toMatchInlineSnapshot(`"._09lB87YbGa div{user-select:none}"`);
     });
 
     it('should generate ms prefixes for grid', () => {
@@ -377,7 +379,7 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('')).toMatchInlineSnapshot(
-        `"._tkqh11p5 div{display:-ms-grid;display:grid}"`
+        `"._1X1ILOgBM8 div{display:-ms-grid;display:grid}"`
       );
     });
   });
@@ -415,12 +417,12 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
-        "._1h6d1r31{border-color:currentColor}
-        ._18u0idpf{margin-left:0}
-        ._1sb21e8g{content:"hello"}
-        ._syaz15td{color:#639}
-        ._bfhk1r31{background-color:currentColor}
-        ._5wra1r31{border-left-color:currentColor}"
+        "._3vBAKH98eZ{border-color:currentColor}
+        ._2XsHFMdnbC{margin-left:0}
+        ._4f9mo4z2Y9{content:"hello"}
+        ._1UtDYz7dn1{color:#639}
+        ._0KLXru98eZ{background-color:currentColor}
+        ._0obpEh98eZ{border-left-color:currentColor}"
       `);
     });
 
@@ -435,9 +437,9 @@ describe('#css-transform', () => {
       );
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
-        "._18u0idpf{margin-left:0}
-        ._19pkidpf{margin-top:0}
-        ._otyridpf{margin-bottom:0}"
+        "._2XsHFMdnbC{margin-left:0}
+        ._313842dnbC{margin-top:0}
+        ._1DCdHidnbC{margin-bottom:0}"
       `);
     });
   });
@@ -475,15 +477,15 @@ describe('#css-transform', () => {
       const { sheets: actual } = transformCss(styles, { increaseSpecificity: true });
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
-        "._ca0qftgi:not(#\\#){padding-top:8px}
-        ._u5f3ftgi:not(#\\#){padding-right:8px}
-        ._n3tdftgi:not(#\\#){padding-bottom:8px}
-        ._19bvftgi:not(#\\#){padding-left:8px}
-        ._syaz5scu:not(#\\#){color:red}
-        ._1kt9o5oc:not(#\\#):before{content:var(--hello-world)}
-        ._eid3ftgi:not(#\\#):before{margin-right:8px}
-        ._is0632ev:not(#\\#):before{color:pink}
-        ._14rn5scu:not(#\\#):after{color:red}"
+        "._0Of8r2Jg58:not(#\\#){padding-top:8px}
+        ._1ZnuxbJg58:not(#\\#){padding-right:8px}
+        ._1wydGWJg58:not(#\\#){padding-bottom:8px}
+        ._2Zuz6QJg58:not(#\\#){padding-left:8px}
+        ._1UtDYzGowl:not(#\\#){color:red}
+        ._3Ku51IR2z5:not(#\\#):before{content:var(--hello-world)}
+        ._0Xnm3eJg58:not(#\\#):before{margin-right:8px}
+        ._1eQ8NNy8mA:not(#\\#):before{color:pink}
+        ._2GPglyGowl:not(#\\#):after{color:red}"
       `);
     });
 
@@ -496,9 +498,9 @@ describe('#css-transform', () => {
       const { sheets: actual } = transformCss(styles, { increaseSpecificity: true });
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
-        "div ._kqan5scu:not(#\\#){color:red}
-        div:hover ._12hc5scu:not(#\\#){color:red}
-        div ._wntz5scu:not(#\\#):hover{color:red}"
+        "div ._1mPw0cGowl:not(#\\#){color:red}
+        div:hover ._2xt8pnGowl:not(#\\#){color:red}
+        div ._29EGgJGowl:not(#\\#):hover{color:red}"
       `);
     });
   });
@@ -508,8 +510,8 @@ describe('#css-transform', () => {
       const { sheets: actual } = transformCss(`div span { color: red; font-weight: bold; }`);
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
-        "._8gsp5scu div span{color:red}
-        ._1w0n8n31 div span{font-weight:bold}"
+        "._0yE3HpGowl div span{color:red}
+        ._4ukO8GmmCn div span{font-weight:bold}"
       `);
     });
 
@@ -565,8 +567,8 @@ describe('#css-transform', () => {
       const { sheets: actual } = transformCss(`div, span { color: red; }`);
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
-        "._65g05scu div{color:red}
-        ._1tjq5scu span{color:red}"
+        "._0paDgwGowl div{color:red}
+        ._4keetJGowl span{color:red}"
       `);
     });
 
@@ -577,7 +579,7 @@ describe('#css-transform', () => {
       });
 
       expect(actual.join('\n')).toMatchInlineSnapshot(
-        `"._65g05scu div, ._1tjq5scu span{color:red}"`
+        `"._0paDgwGowl div, ._4keetJGowl span{color:red}"`
       );
     });
 
@@ -595,12 +597,12 @@ describe('#css-transform', () => {
 
       // WARNING: This does not actually work, but it could.
       expect(actual.join('\n')).toMatchInlineSnapshot(`
-        "._65g05scu div{color:red}
-        ._65g05scu div{color:red}
-        ._65g05scu div{color:red}
-        ._30l313q2:hover{color:blue}
-        ._f8pj13q2:focus{color:blue}
-        ._30l313q2:hover{color:blue}"
+        "._0paDgwGowl div{color:red}
+        ._0paDgwGowl div{color:red}
+        ._0paDgwGowl div{color:red}
+        ._0clgaMynoA:hover{color:blue}
+        ._10n1R5ynoA:focus{color:blue}
+        ._0clgaMynoA:hover{color:blue}"
       `);
     });
   });

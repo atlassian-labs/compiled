@@ -18,9 +18,9 @@ describe('jsx automatic', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
-      const _ = "._syaz13q2{color:blue}";
+      const _ = "._1UtDYzynoA{color:blue}";
       const styles = {
-        root: "_syaz13q2",
+        root: "_1UtDYzynoA",
       };
       _jsxs(CC, {
         children: [
@@ -46,14 +46,14 @@ describe('jsx automatic', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
-      const _ = "._syaz13q2{color:blue}";
+      const _ = "._1UtDYzynoA{color:blue}";
       _jsxs(CC, {
         children: [
           _jsx(CS, {
             children: [_],
           }),
           _jsx("div", {
-            className: ax(["_syaz13q2"]),
+            className: ax(["_1UtDYzynoA"]),
           }),
         ],
       });
@@ -73,14 +73,14 @@ describe('jsx automatic', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-      const _ = "._syaz13q2{color:blue}";
+      const _ = "._1UtDYzynoA{color:blue}";
       _jsxs(CC, {
         children: [
           _jsx(CS, {
             children: [_],
           }),
           _jsx("div", {
-            className: ax(["_syaz13q2"]),
+            className: ax(["_1UtDYzynoA"]),
           }),
         ],
       });
@@ -101,7 +101,7 @@ describe('jsx automatic', () => {
       "import { forwardRef } from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-      const _ = "._syaz13q2{color:blue}";
+      const _ = "._1UtDYzynoA{color:blue}";
       forwardRef(({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
         if (__cmplp.innerRef) {
           throw new Error("Please use 'ref' instead of 'innerRef'.");
@@ -115,7 +115,7 @@ describe('jsx automatic', () => {
               ...__cmplp,
               style: __cmpls,
               ref: __cmplr,
-              className: ax(["_syaz13q2", __cmplp.className]),
+              className: ax(["_1UtDYzynoA", __cmplp.className]),
             }),
           ],
         });

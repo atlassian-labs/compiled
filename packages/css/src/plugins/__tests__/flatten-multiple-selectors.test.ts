@@ -43,7 +43,7 @@ describe('flatten multiple selectors', () => {
       color: blue;
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._syaz13q2{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._1UtDYzynoA{color:blue}"`);
   });
 
   it('should leave a nested selector alone', () => {
@@ -60,7 +60,7 @@ describe('flatten multiple selectors', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"[data-look='h100']._mi0g1ule{display:block}._tkqhglyw div{display:none}._1jaqglyw div span{display:none}"`
+      `"[data-look='h100']._1u4z38vLZJ{display:block}._1X1ILOYbGa div{display:none}._3EhJFYYbGa div span{display:none}"`
     );
   });
 
@@ -75,7 +75,7 @@ describe('flatten multiple selectors', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"._1e0cglyw{display:none}._if291ule._if291ule{display:block}"`
+      `"._3iDTPbYbGa{display:none}._1dmVT1vLZJ._1dmVT1vLZJ{display:block}"`
     );
   });
 
@@ -87,9 +87,9 @@ describe('flatten multiple selectors', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(`
-      "._65g013q2 div{color:blue}
-      ._1tjq13q2 span{color:blue}
-      ._thoc13q2 li{color:blue}"
+      "._0paDgwynoA div{color:blue}
+      ._4keetJynoA span{color:blue}
+      ._1WG9WaynoA li{color:blue}"
     `);
   });
 
@@ -102,8 +102,8 @@ describe('flatten multiple selectors', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(`
-      "._30l313q2:hover{color:blue}
-      ._f8pj13q2:focus{color:blue}"
+      "._0clgaMynoA:hover{color:blue}
+      ._10n1R5ynoA:focus{color:blue}"
     `);
   });
 
@@ -135,26 +135,26 @@ describe('flatten multiple selectors', () => {
     `;
 
     expect(actual.split('}').join('}\n')).toMatchInlineSnapshot(`
-      "._169r1j6v._169r1j6v > *{margin-bottom:1rem}
-      ._uw1v1j6v:is(h1, h2, h3){margin-bottom:1rem}
-      ._1oyy1j6v div{margin-bottom:1rem}
-      ._1axs1j6v:hover{margin-bottom:1rem}
-      ._hdj91j6v [data-content~="user,id"]{margin-bottom:1rem}
-      ._otyr1j6v{margin-bottom:1rem}
-      ._uw1v1j6v:is(h1, h2, h3){margin-bottom:1rem}
-      ._1l6u1j6v._1l6u1j6v{margin-bottom:1rem}
-      ._1xw41j6v._1xw41j6v:is(h1, h2, h3){margin-bottom:1rem}
-      @media (min-width: 768px){._yi8y1j6v._yi8y1j6v > *{margin-bottom:1rem}
-      ._syz31j6v:is(h1, h2, h3){margin-bottom:1rem}
-      ._h8sc1j6v div{margin-bottom:1rem}
-      ._1q9c1j6v:hover{margin-bottom:1rem}
-      ._q3671j6v [data-content~="user,id"]{margin-bottom:1rem}
+      "._2MYE9XQAma._2MYE9XQAma > *{margin-bottom:1rem}
+      ._22pbxRQAma:is(h1, h2, h3){margin-bottom:1rem}
+      ._41uVfTQAma div{margin-bottom:1rem}
+      ._364IRzQAma:hover{margin-bottom:1rem}
+      ._196sguQAma [data-content~="user,id"]{margin-bottom:1rem}
+      ._1DCdHiQAma{margin-bottom:1rem}
+      ._22pbxRQAma:is(h1, h2, h3){margin-bottom:1rem}
+      ._3M1DK5QAma._3M1DK5QAma{margin-bottom:1rem}
+      ._4C0jlvQAma._4C0jlvQAma:is(h1, h2, h3){margin-bottom:1rem}
+      @media (min-width: 768px){._2hcKcRQAma._2hcKcRQAma > *{margin-bottom:1rem}
+      ._1UymnWQAma:is(h1, h2, h3){margin-bottom:1rem}
+      ._18yZS6QAma div{margin-bottom:1rem}
+      ._46LQbUQAma:hover{margin-bottom:1rem}
+      ._1IKOAHQAma [data-content~="user,id"]{margin-bottom:1rem}
       }
-      @media (max-width: 768px){@supports (margin-bottom: 1rem){._1isd1j6v._1isd1j6v > *{margin-bottom:1rem}
-      ._1r2l1j6v:is(h1, h2, h3){margin-bottom:1rem}
-      ._9ykl1j6v div{margin-bottom:1rem}
-      ._co771j6v:hover{margin-bottom:1rem}
-      ._1n1h1j6v [data-content~="user,id"]{margin-bottom:1rem}
+      @media (max-width: 768px){@supports (margin-bottom: 1rem){._3CciXNQAma._3CciXNQAma > *{margin-bottom:1rem}
+      ._4a63YvQAma:is(h1, h2, h3){margin-bottom:1rem}
+      ._0EL2kBQAma div{margin-bottom:1rem}
+      ._0PR4fHQAma:hover{margin-bottom:1rem}
+      ._3TBi3jQAma [data-content~="user,id"]{margin-bottom:1rem}
       }
       }
       "
@@ -173,7 +173,7 @@ describe('flatten multiple selectors', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"._4zxh1q9v:first-child{color:hotpink}._18k61q9v:last-child{color:hotpink}._4zxh1q9v:first-child{color:hotpink}"`
+      `"._0ks3zfPFz6:first-child{color:hotpink}._2WlpiiPFz6:last-child{color:hotpink}._0ks3zfPFz6:first-child{color:hotpink}"`
     );
   });
 });

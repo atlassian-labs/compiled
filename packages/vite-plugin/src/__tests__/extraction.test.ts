@@ -30,7 +30,7 @@ describe('CSS Extraction', () => {
       if (result && typeof result === 'object' && 'code' in result) {
         // In extract mode, the code should not include the style rules inline
         // but should still have the class names
-        expect(result.code).toMatch(/_syaz|_1wyb/);
+        expect(result.code).toMatch(/_[0-9a-zA-Z]{10}/);
       }
     });
 
@@ -158,7 +158,8 @@ describe('CSS Extraction', () => {
         'index.css': {
           type: 'asset',
           fileName: 'index.css',
-          source: '._syaz13q2{color:blue}\n._syaz13q2{color:blue}\n._1wyb1fwx{font-size:12px}',
+          source:
+            '._1UtDYzynoA{color:blue}\n._1UtDYzynoA{color:blue}\n._4ya3eErjyG{font-size:12px}',
         },
       };
 
@@ -347,7 +348,7 @@ describe('CSS Extraction', () => {
           type: 'asset',
           name: 'compiled-extracted.css',
           fileName: emittedFileName,
-          source: '._syaz13q2{color:blue}',
+          source: '._1UtDYzynoA{color:blue}',
         },
       };
 
@@ -492,14 +493,14 @@ describe('CSS Extraction', () => {
       expect(css).toMatchInlineSnapshot(`
         ".cc-zynl4g{background-color:gray}
         .cc-xqwn6b{color:red}
-        ._18u0ftgi{margin-left:8px}
-        ._19bv1y44{padding-left:4px}
-        ._19pkftgi{margin-top:8px}
-        ._2hwxftgi{margin-right:8px}
-        ._ca0q1y44{padding-top:4px}
-        ._n3td1y44{padding-bottom:4px}
-        ._otyrftgi{margin-bottom:8px}
-        ._u5f31y44{padding-right:4px}"
+        ._0Of8r2UNDJ{padding-top:4px}
+        ._0adFHsJg58{margin-right:8px}
+        ._1DCdHiJg58{margin-bottom:8px}
+        ._1ZnuxbUNDJ{padding-right:4px}
+        ._1wydGWUNDJ{padding-bottom:4px}
+        ._2XsHFMJg58{margin-left:8px}
+        ._2Zuz6QUNDJ{padding-left:4px}
+        ._313842Jg58{margin-top:8px}"
       `);
     });
 

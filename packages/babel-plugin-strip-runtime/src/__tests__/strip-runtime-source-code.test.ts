@@ -33,7 +33,7 @@ describe('babel-plugin-strip-runtime using source code', () => {
           import { jsxs as _jsxs, jsx as _jsx } from 'react/jsx-runtime';
           const Component = () =>
             /*#__PURE__*/ _jsx('div', {
-              className: ax(['_1wyb1fwx _syaz13q2']),
+              className: ax(['_4ya3eErjyG _1UtDYzynoA']),
               children: 'hello world',
             });
           "
@@ -48,8 +48,8 @@ describe('babel-plugin-strip-runtime using source code', () => {
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual([
-          `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
-          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+          `require('${testStyleSheetPath}?style=._4ya3eErjyG%7Bfont-size%3A12px%7D');`,
+          `require('${testStyleSheetPath}?style=._1UtDYzynoA%7Bcolor%3Ablue%7D');`,
         ]);
       });
 
@@ -75,7 +75,7 @@ describe('babel-plugin-strip-runtime using source code', () => {
         const metadata = actual?.metadata as BabelFileMetadata;
 
         expect(metadata).toEqual({
-          styleRules: ['._1wyb1fwx{font-size:12px}', '._syaz13q2{color:blue}'],
+          styleRules: ['._4ya3eErjyG{font-size:12px}', '._1UtDYzynoA{color:blue}'],
         });
       });
     });
@@ -94,7 +94,7 @@ describe('babel-plugin-strip-runtime using source code', () => {
             /*#__PURE__*/ React.createElement(
               'div',
               {
-                className: ax(['_1wyb1fwx _syaz13q2']),
+                className: ax(['_4ya3eErjyG _1UtDYzynoA']),
               },
               'hello world'
             );
@@ -110,8 +110,8 @@ describe('babel-plugin-strip-runtime using source code', () => {
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual([
-          `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
-          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+          `require('${testStyleSheetPath}?style=._4ya3eErjyG%7Bfont-size%3A12px%7D');`,
+          `require('${testStyleSheetPath}?style=._1UtDYzynoA%7Bcolor%3Ablue%7D');`,
         ]);
       });
 
@@ -137,7 +137,7 @@ describe('babel-plugin-strip-runtime using source code', () => {
         const metadata = actual?.metadata as BabelFileMetadata;
 
         expect(metadata).toEqual({
-          styleRules: ['._1wyb1fwx{font-size:12px}', '._syaz13q2{color:blue}'],
+          styleRules: ['._4ya3eErjyG{font-size:12px}', '._1UtDYzynoA{color:blue}'],
         });
       });
     });
@@ -157,7 +157,7 @@ describe('babel-plugin-strip-runtime using source code', () => {
           import { jsxs as _jsxs, jsx as _jsx } from 'react/jsx-runtime';
           const Component = () =>
             /*#__PURE__*/ _jsx('div', {
-              className: ax(['_1wyb1fwx _syaz13q2']),
+              className: ax(['_4ya3eErjyG _1UtDYzynoA']),
               children: 'hello world',
             });
           "
@@ -173,8 +173,8 @@ describe('babel-plugin-strip-runtime using source code', () => {
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual([
-          `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
-          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+          `require('${testStyleSheetPath}?style=._4ya3eErjyG%7Bfont-size%3A12px%7D');`,
+          `require('${testStyleSheetPath}?style=._1UtDYzynoA%7Bcolor%3Ablue%7D');`,
         ]);
       });
 
@@ -202,7 +202,7 @@ describe('babel-plugin-strip-runtime using source code', () => {
         const metadata = actual?.metadata as BabelFileMetadata;
 
         expect(metadata).toEqual({
-          styleRules: ['._1wyb1fwx{font-size:12px}', '._syaz13q2{color:blue}'],
+          styleRules: ['._4ya3eErjyG{font-size:12px}', '._1UtDYzynoA{color:blue}'],
         });
       });
     });
@@ -222,7 +222,7 @@ describe('babel-plugin-strip-runtime using source code', () => {
             /*#__PURE__*/ React.createElement(
               'div',
               {
-                className: ax(['_1wyb1fwx _syaz13q2']),
+                className: ax(['_4ya3eErjyG _1UtDYzynoA']),
               },
               'hello world'
             );
@@ -239,8 +239,8 @@ describe('babel-plugin-strip-runtime using source code', () => {
         });
 
         expect(actual.match(regexToFindRequireStatements)).toEqual([
-          `require('${testStyleSheetPath}?style=._1wyb1fwx%7Bfont-size%3A12px%7D');`,
-          `require('${testStyleSheetPath}?style=._syaz13q2%7Bcolor%3Ablue%7D');`,
+          `require('${testStyleSheetPath}?style=._4ya3eErjyG%7Bfont-size%3A12px%7D');`,
+          `require('${testStyleSheetPath}?style=._1UtDYzynoA%7Bcolor%3Ablue%7D');`,
         ]);
       });
 
@@ -268,7 +268,7 @@ describe('babel-plugin-strip-runtime using source code', () => {
         const metadata = actual?.metadata as BabelFileMetadata;
 
         expect(metadata).toEqual({
-          styleRules: ['._1wyb1fwx{font-size:12px}', '._syaz13q2{color:blue}'],
+          styleRules: ['._4ya3eErjyG{font-size:12px}', '._1UtDYzynoA{color:blue}'],
         });
       });
     });

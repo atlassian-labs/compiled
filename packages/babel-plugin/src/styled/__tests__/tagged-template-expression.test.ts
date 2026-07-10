@@ -24,7 +24,7 @@ describe('styled tagged template expression', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = "._syaz13q2{color:blue}";
+      "const _ = "._1UtDYzynoA{color:blue}";
       const StyledComponent = styled.div\`
         color: blue;
       \`;
@@ -40,7 +40,7 @@ describe('styled tagged template expression', () => {
                 {...__cmplp}
                 style={__cmpls}
                 ref={__cmplr}
-                className={ax(["_syaz13q2", __cmplp.className])}
+                className={ax(["_1UtDYzynoA", __cmplp.className])}
               />
             </CC>
           );
@@ -68,7 +68,7 @@ describe('styled tagged template expression', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = "._1wybexct{font-size:16px}";
+      "const _ = "._4ya3eE50T1{font-size:16px}";
       const fontSize = 16;
       const StyledComponent = styled.div\`
         font-size: \${fontSize}px;
@@ -86,7 +86,7 @@ describe('styled tagged template expression', () => {
                 {...__cmplp}
                 style={__cmpls}
                 ref={__cmplr}
-                className={ax(["_1wybexct", __cmplp.className])}
+                className={ax(["_4ya3eE50T1", __cmplp.className])}
               />
             </CC>
           );
@@ -945,8 +945,8 @@ describe('styled tagged template expression', () => {
     );
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _2 = "._syazj09m{color:var(--my-variable,blue)}";
-      const _ = "._syaz5scu{color:red}";
+      "const _2 = "._1UtDYzMnd7{color:var(--my-variable,blue)}";
+      const _ = "._1UtDYzGowl{color:red}";
       const color = "red";
       const color2 = "blue";
       const ListItem = forwardRef(
@@ -962,11 +962,7 @@ describe('styled tagged template expression', () => {
                 {...__cmpldp}
                 style={__cmpls}
                 ref={__cmplr}
-                className={ax([
-                  "",
-                  __cmplp.ruleEnabled ? "_syaz5scu" : "_syazj09m",
-                  __cmplp.className,
-                ])}
+                className={ax(["", __cmplp.ruleEnabled ? "_1UtDYzGowl" : "_1UtDYzMnd7", __cmplp.className])}
               />
             </CC>
           );
@@ -1009,7 +1005,7 @@ describe('styled tagged template expression', () => {
     );
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = "._bfhkkqce{background-color:var(--_hudwc7)}";
+      "const _ = "._0KLXruPRlU{background-color:var(--_hudwc7)}";
       const color = "red";
       const color2 = "blue";
       const ListItem = forwardRef(
@@ -1034,7 +1030,7 @@ describe('styled tagged template expression', () => {
                   ),
                 }}
                 ref={__cmplr}
-                className={ax(["_bfhkkqce", __cmplp.className])}
+                className={ax(["_0KLXruPRlU", __cmplp.className])}
               />
             </CC>
           );
@@ -1059,10 +1055,10 @@ describe('styled tagged template expression', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1wybgktf{font-size:20px}',
-      '._2rko1l7b{border-radius:3px}',
-      '._syaz1qjj{color:var(--_pvyxdf)}',
-      '{ax(["_2rko1l7b _1wybgktf _syaz1qjj", __cmplp.className])}',
+      '._4ya3eESPN1{font-size:20px}',
+      '._0bjKvD4Y4b{border-radius:3px}',
+      '._1UtDYzVJi8{color:var(--_pvyxdf)}',
+      '{ax(["_0bjKvD4Y4b _4ya3eESPN1 _1UtDYzVJi8", __cmplp.className])}',
     ]);
   });
 
@@ -1081,10 +1077,10 @@ describe('styled tagged template expression', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz1qjj{color:var(--_pvyxdf)}',
-      '._1wybgktf{font-size:20px}',
-      '._2rko1l7b{border-radius:3px}',
-      '{ax(["_2rko1l7b _syaz1qjj _1wybgktf", __cmplp.className])}',
+      '._1UtDYzVJi8{color:var(--_pvyxdf)}',
+      '._4ya3eESPN1{font-size:20px}',
+      '._0bjKvD4Y4b{border-radius:3px}',
+      '{ax(["_0bjKvD4Y4b _1UtDYzVJi8 _4ya3eESPN1", __cmplp.className])}',
     ]);
   });
 });

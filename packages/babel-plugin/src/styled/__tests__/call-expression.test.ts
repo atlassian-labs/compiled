@@ -20,7 +20,7 @@ describe('styled object call expression', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = "._syaz13q2{color:blue}";
+      "const _ = "._1UtDYzynoA{color:blue}";
       const StyledComponent = styled.div({
         color: "blue",
       });
@@ -36,7 +36,7 @@ describe('styled object call expression', () => {
                 {...__cmplp}
                 style={__cmpls}
                 ref={__cmplr}
-                className={ax(["_syaz13q2", __cmplp.className])}
+                className={ax(["_1UtDYzynoA", __cmplp.className])}
               />
             </CC>
           );
@@ -616,8 +616,8 @@ describe('styled object call expression', () => {
 
     // We currently don't statically evaluate color, color2, or size here
     expect(actual).toMatchInlineSnapshot(`
-      "const _2 = "._16qs1j0n{box-shadow:var(--my-other-variable,blue)}";
-      const _ = "._16qslfrr{box-shadow:0 5px var(--my-variable,red)}";
+      "const _2 = "._2OUyjt8zWx{box-shadow:var(--my-other-variable,blue)}";
+      const _ = "._2OUyjtJ3zD{box-shadow:0 5px var(--my-variable,red)}";
       const color = "red";
       const color2 = "blue";
       const size = 5;
@@ -634,11 +634,7 @@ describe('styled object call expression', () => {
                 {...__cmpldp}
                 style={__cmpls}
                 ref={__cmplr}
-                className={ax([
-                  "",
-                  __cmplp.isActive ? "_16qslfrr" : "_16qs1j0n",
-                  __cmplp.className,
-                ])}
+                className={ax(["", __cmplp.isActive ? "_2OUyjtJ3zD" : "_2OUyjt8zWx", __cmplp.className])}
               />
             </CC>
           );
@@ -658,7 +654,7 @@ describe('styled object call expression', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = "._1yt414tu{padding:var(--_1hhnq9y)}";
+      "const _ = "._4FKVYE4O4J{padding:var(--_1hhnq9y)}";
       const Container = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           if (__cmplp.innerRef) {
@@ -675,7 +671,7 @@ describe('styled object call expression', () => {
                   "--_1hhnq9y": ix(__cmplp.customPadding),
                 }}
                 ref={__cmplr}
-                className={ax(["_1yt414tu", __cmplp.className])}
+                className={ax(["_4FKVYE4O4J", __cmplp.className])}
               />
             </CC>
           );
@@ -695,11 +691,11 @@ describe('styled object call expression', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _5 = "._19bvftgi{padding-left:8px}";
-      const _4 = "._n3td1y44{padding-bottom:4px}";
-      const _3 = "._u5f3ftgi{padding-right:8px}";
-      const _2 = "._ca0q1y44{padding-top:4px}";
-      const _ = "._1yt41v0o{padding:var(--_1dm0vu2)}";
+      "const _5 = "._2Zuz6QJg58{padding-left:8px}";
+      const _4 = "._1wydGWUNDJ{padding-bottom:4px}";
+      const _3 = "._1ZnuxbJg58{padding-right:8px}";
+      const _2 = "._0Of8r2UNDJ{padding-top:4px}";
+      const _ = "._4FKVYEfpjR{padding:var(--_1dm0vu2)}";
       const Container = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           if (__cmplp.innerRef) {
@@ -716,13 +712,7 @@ describe('styled object call expression', () => {
                   "--_1dm0vu2": ix(__cmplp.morePadding),
                 }}
                 ref={__cmplr}
-                className={ax([
-                  "",
-                  __cmplp.morePadding
-                    ? "_1yt41v0o"
-                    : "_ca0q1y44 _u5f3ftgi _n3td1y44 _19bvftgi",
-                  __cmplp.className,
-                ])}
+                className={ax(["", __cmplp.morePadding ? "_4FKVYEfpjR" : "_0Of8r2UNDJ _1ZnuxbJg58 _1wydGWUNDJ _2Zuz6QJg58", __cmplp.className])}
               />
             </CC>
           );

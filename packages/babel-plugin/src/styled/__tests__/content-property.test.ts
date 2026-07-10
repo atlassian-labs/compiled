@@ -27,7 +27,7 @@ describe('handling of values for CSS `content` property', () => {
     `;
 
     const actual = transform(code, { pretty: true });
-    expect(actual).toContain('._1sb2b3bt{content:""}');
+    expect(actual).toContain('._4f9mo4ogpp{content:""}');
   });
 
   it('should handle blank content (variant #1)', () => {
@@ -40,7 +40,7 @@ describe('handling of values for CSS `content` property', () => {
     `;
 
     const actual = transform(code, { pretty: true });
-    expect(actual).toContain('._1sb2b3bt{content:""}');
+    expect(actual).toContain('._4f9mo4ogpp{content:""}');
   });
 
   it('should handle blank content (variant #2)', () => {
@@ -54,7 +54,7 @@ describe('handling of values for CSS `content` property', () => {
     `;
 
     const actual = transform(code, { pretty: true });
-    expect(actual).toContain('._1sb2b3bt{content:""}');
+    expect(actual).toContain('._4f9mo4ogpp{content:""}');
   });
 
   it('should handle blank content (variant #2)', () => {
@@ -68,7 +68,7 @@ describe('handling of values for CSS `content` property', () => {
     `;
 
     const actual = transform(code, { pretty: true });
-    expect(actual).toContain('._1sb21icm{content:"this is a string"}');
+    expect(actual).toContain('._4f9mo4phYs{content:"this is a string"}');
   });
 
   it('should add quotes to custom content values', () => {
@@ -81,7 +81,7 @@ describe('handling of values for CSS `content` property', () => {
     `;
 
     const actual = transform(code, { pretty: true });
-    expect(actual).toContain('._1sb21e8g{content:"hello"}');
+    expect(actual).toContain('._4f9mo4z2Y9{content:"hello"}');
   });
 
   it('should not add quotes if they exist already', () => {
@@ -94,7 +94,7 @@ describe('handling of values for CSS `content` property', () => {
     `;
 
     const actual = transform(code, { pretty: true });
-    expect(actual).toContain("._1sb25hbz{content:'hello'}");
+    expect(actual).toContain("._4f9mo4qHCK{content:'hello'}");
   });
 
   it('should not add quotes if they exist already (variant)', () => {
@@ -107,7 +107,7 @@ describe('handling of values for CSS `content` property', () => {
     `;
 
     const actual = transform(code, { pretty: true });
-    expect(actual).toContain('._1sb21e8g{content:"hello"}');
+    expect(actual).toContain('._4f9mo4z2Y9{content:"hello"}');
   });
 
   it("should not add quotes to content values that shouldn't accept them", () => {
@@ -148,26 +148,26 @@ describe('handling of values for CSS `content` property', () => {
 
     const actual = transform(code, { pretty: true });
     const expectedStrings = [
-      '._20 ._dqocn7od{content:unset}',
-      '._19 ._kyq719ly{content:revert}',
-      '._18 ._ox6v18uv{content:initial}',
-      '._17 ._1do11kw7{content:inherit}',
-      '._16 ._17yjbbkt{content:open-quote counter(chapter_counter)}',
-      '._15 ._13gv16xt{content:no-close-quote}',
-      '._14 ._1gw4qmeg{content:no-open-quote}',
-      '._13 ._1erv1lzr{content:close-quote}',
-      '._12 ._yz5n12u0{content:open-quote}',
-      '._11 ._1sv1f7m1{content:attr(value string)}',
-      '._10 ._11jd1td3{content:counters(section_counter,".",decimal-leading-zero)}',
-      '._09 ._1vjjgvpy{content:counters(section_counter,".")}',
-      '._08 ._tc0r17sh{content:counter(chapter_counter,upper-roman)}',
-      '._07 ._1g4mlfyt{content:counter(chapter_counter)}',
-      '._06 ._4g5v1dlo{content:"prefix"}',
-      '._05 ._10o677hy{content:url("http://www.example.com/test.png") /"This is the alt text"}',
-      '._04 ._124v19iq{content:image-set("image1x.png" 1x,"image2x.png" 2x)}',
-      '._03 ._qi2v1f55{content:linear-gradient(#e66465,#9198e5)}',
-      '._02 ._1gdz1dgq{content:url("http://www.example.com/test.png")}',
-      '._01 ._1sagglyw{content:none}',
+      '._20 ._0UeemBZqHV{content:unset}',
+      '._19 ._1nMWnyDHe6{content:revert}',
+      '._18 ._1DYWSVyL8i{content:initial}',
+      '._17 ._3hffmTOLYo{content:inherit}',
+      '._16 ._2TT1EYhMVv{content:open-quote counter(chapter_counter)}',
+      '._15 ._2BvCKXI4D5{content:no-close-quote}',
+      '._14 ._3urm9xWkBK{content:no-open-quote}',
+      '._13 ._3lLWKajuZP{content:close-quote}',
+      '._12 ._2j7U2ZUvkW{content:open-quote}',
+      '._11 ._4hqdKsfirL{content:attr(value string)}',
+      '._10 ._2tBJ3btuW2{content:counters(section_counter,".",decimal-leading-zero)}',
+      '._09 ._4socCz4UE8{content:counters(section_counter,".")}',
+      '._08 ._1W2j05cjsh{content:counter(chapter_counter,upper-roman)}',
+      '._07 ._3rjrnPKr1F{content:counter(chapter_counter)}',
+      '._06 ._0icKuuYu2d{content:"prefix"}',
+      '._05 ._2q3Vi0uOJ8{content:url("http://www.example.com/test.png") /"This is the alt text"}',
+      '._04 ._2w3quqh0cj{content:image-set("image1x.png" 1x,"image2x.png" 2x)}',
+      '._03 ._1KrS9whwQU{content:linear-gradient(#e66465,#9198e5)}',
+      '._02 ._3snqGkpO9r{content:url("http://www.example.com/test.png")}',
+      '._01 ._4f5dQzYbGa{content:none}',
     ];
 
     for (const expected of expectedStrings) {

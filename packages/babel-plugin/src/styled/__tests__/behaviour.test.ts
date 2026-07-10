@@ -28,7 +28,7 @@ describe('styled component behaviour', () => {
       "import { forwardRef } from "react";
       import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._1wybgktf{font-size:20px}";
+      const _ = "._4ya3eESPN1{font-size:20px}";
       const ListItem = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           if (__cmplp.innerRef) {
@@ -41,7 +41,7 @@ describe('styled component behaviour', () => {
                 {...__cmplp}
                 style={__cmpls}
                 ref={__cmplr}
-                className={ax(["_1wybgktf", __cmplp.className])}
+                className={ax(["_4ya3eESPN1", __cmplp.className])}
               />
             </CC>
           );
@@ -69,7 +69,7 @@ describe('styled component behaviour', () => {
       "import { forwardRef } from "react";
       import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._1wybgktf{font-size:20px}";
+      const _ = "._4ya3eESPN1{font-size:20px}";
       const ListItem = forwardRef(
         ({ as: C = "div", style: __cmpls, ...__cmplp }, __cmplr) => {
           if (__cmplp.innerRef) {
@@ -82,7 +82,7 @@ describe('styled component behaviour', () => {
                 {...__cmplp}
                 style={__cmpls}
                 ref={__cmplr}
-                className={ax(["_1wybgktf", __cmplp.className])}
+                className={ax(["_4ya3eESPN1", __cmplp.className])}
               />
             </CC>
           );
@@ -191,11 +191,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._2hwxjtuq{margin-right:var(--_1hnpmp1-)}',
-      '._18u01s7m{margin-left:var(--_1hnpmp1)}',
+      '._0adFHs8SIF{margin-right:var(--_1hnpmp1-)}',
+      '._2XsHFMLg0e{margin-left:var(--_1hnpmp1)}',
       '"--_1hnpmp1-":ix(random()*5,"px","-")',
       '"--_1hnpmp1":ix(random()*5,"px")',
-      'ax(["_2hwxjtuq _18u01s7m",__cmplp.className]',
+      'ax(["_0adFHs8SIF _2XsHFMLg0e",__cmplp.className]',
     ]);
   });
 
@@ -304,7 +304,7 @@ describe('styled component behaviour', () => {
     expect(actual).toIncludeMultiple([
       '{color:darkorchid}',
       '{font-size:12px}',
-      'ax(["_syaz1paq _1wyb1fwx",__cmplp.className])',
+      'ax(["_1UtDYzPXoT _4ya3eErjyG",__cmplp.className])',
     ]);
   });
 
@@ -342,16 +342,16 @@ describe('styled component behaviour', () => {
       import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
       import colors from "colors";
-      const _0 = "._tzy4kb7n{opacity:1}";
-      const _9 = "._tzy4idpf{opacity:0}";
-      const _8 = "._1e0c1kw7{display:inherit}";
-      const _7 = "._1e0cglyw{display:none}";
-      const _6 = "._1h6d1qzc{border-color:var(--_96ptk)}";
-      const _5 = "._1h6d1c5w{border-color:var(--_5rpikm)}";
-      const _4 = "._syazs2l2{color:var(--_1oii75x)}";
-      const _3 = "._syaz1c44{color:var(--_1ytezyk)}";
-      const _2 = "._bfhk1lco{background-color:var(--_kcgnsd)}";
-      const _ = "._bfhkhk3l{background-color:var(--_16ldrz5)}";
+      const _0 = "._1YKVNs7dHp{opacity:1}";
+      const _9 = "._1YKVNsdnbC{opacity:0}";
+      const _8 = "._3iDTPbOLYo{display:inherit}";
+      const _7 = "._3iDTPbYbGa{display:none}";
+      const _6 = "._3vBAKHJ3AW{border-color:var(--_96ptk)}";
+      const _5 = "._3vBAKH5L05{border-color:var(--_5rpikm)}";
+      const _4 = "._1UtDYzS68z{color:var(--_1oii75x)}";
+      const _3 = "._1UtDYzT6Pb{color:var(--_1ytezyk)}";
+      const _2 = "._0KLXruGOWH{background-color:var(--_kcgnsd)}";
+      const _ = "._0KLXruZK1F{background-color:var(--_16ldrz5)}";
       export const BadgeSkeleton = forwardRef(
         ({ as: C = "span", style: __cmpls, ...__cmplp }, __cmplr) => {
           if (__cmplp.innerRef) {
@@ -373,15 +373,7 @@ describe('styled component behaviour', () => {
                   "--_96ptk": ix(colors.N200),
                 }}
                 ref={__cmplr}
-                className={ax([
-                  "",
-                  __cmplp.isLoading ? "_bfhkhk3l" : "_bfhk1lco",
-                  __cmplp.loading ? "_syaz1c44" : "_syazs2l2",
-                  __cmplp.loading ? "_1h6d1c5w" : "_1h6d1qzc",
-                  __cmplp.state.loading ? "_1e0cglyw" : "_1e0c1kw7",
-                  __cmplp.isLoading ? "_tzy4idpf" : "_tzy4kb7n",
-                  __cmplp.className,
-                ])}
+                className={ax(["", __cmplp.isLoading ? "_0KLXruZK1F" : "_0KLXruGOWH", __cmplp.loading ? "_1UtDYzT6Pb" : "_1UtDYzS68z", __cmplp.loading ? "_3vBAKH5L05" : "_3vBAKHJ3AW", __cmplp.state.loading ? "_3iDTPbYbGa" : "_3iDTPbOLYo", __cmplp.isLoading ? "_1YKVNsdnbC" : "_1YKVNs7dHp", __cmplp.className])}
               />
             </CC>
           );
@@ -416,10 +408,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      'const _="._y44vk4ag{animation:fadeOut 2s ease-in-out}"',
+      'const _="._2fBhtekqVl{animation:fadeOut 2s ease-in-out}"',
       'const _2="@keyframes fadeOut{0%{opacity:1}50%{opacity:0.5}to{opacity:0}}"',
       '<CS>{[_,_2]}</CS>',
-      'className={ax(["_y44vk4ag",__cmplp.className])}',
+      'className={ax(["_2fBhtekqVl",__cmplp.className])}',
     ]);
   });
 
@@ -451,8 +443,8 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      "_aetr1yyf:after{content:''}",
-      'className={ax(["_aetr1yyf",__cmplp.className])}',
+      "_0GBAIrmjHx:after{content:''}",
+      'className={ax(["_0GBAIrmjHx",__cmplp.className])}',
     ]);
   });
 
@@ -471,8 +463,8 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '_aetrb3bt:after{content:\\"\\"}',
-      'className={ax(["_aetrb3bt",__cmplp.className])}',
+      '_0GBAIrogpp:after{content:\\"\\"}',
+      'className={ax(["_0GBAIrogpp",__cmplp.className])}',
     ]);
   });
 
@@ -503,8 +495,8 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._30l35scu:hover{color:red}',
-      'className={ax(["_30l35scu",__cmplp.className])}',
+      '._0clgaMGowl:hover{color:red}',
+      'className={ax(["_0clgaMGowl",__cmplp.className])}',
     ]);
   });
 
@@ -523,19 +515,19 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz5scu{color:red}',
-      '._syaz13q2{color:blue}',
-      '._1hms1911{text-decoration-line:line-through}',
-      '._1hmsglyw{text-decoration-line:none}',
-      '._1yyj11wp{-webkit-line-clamp:3}',
-      '._1yyjkb7n{-webkit-line-clamp:1}',
-      '._19bvftgi{padding-left:8px}',
-      '._n3tdftgi{padding-bottom:8px}',
-      '._u5f3ftgi{padding-right:8px}',
-      '._ca0qftgi{padding-top:8px}',
-      '._19itlf8h{border:2px solid blue}',
-      '._1wyb1ul9{font-size:30px}',
-      'ax(["_19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi _1wyb1ul9",__cmplp.isPrimary?"_syaz13q2":"_syaz5scu",__cmplp.isDone?"_1hms1911":"_1hmsglyw",__cmplp.isClamped?"_1yyj11wp":"_1yyjkb7n",__cmplp.className])',
+      '._1UtDYzGowl{color:red}',
+      '._1UtDYzynoA{color:blue}',
+      '._3xtjKNgje0{text-decoration-line:line-through}',
+      '._3xtjKNYbGa{text-decoration-line:none}',
+      '._4Gn54R7LI7{-webkit-line-clamp:3}',
+      '._4Gn54R7dHp{-webkit-line-clamp:1}',
+      '._2Zuz6QJg58{padding-left:8px}',
+      '._1wydGWJg58{padding-bottom:8px}',
+      '._1ZnuxbJg58{padding-right:8px}',
+      '._0Of8r2Jg58{padding-top:8px}',
+      '._30huDKFhCC{border:2px solid blue}',
+      '._4ya3eEuNcX{font-size:30px}',
+      'ax(["_30huDKFhCC _0Of8r2Jg58 _1ZnuxbJg58 _1wydGWJg58 _2Zuz6QJg58 _4ya3eEuNcX",__cmplp.isPrimary?"_1UtDYzynoA":"_1UtDYzGowl",__cmplp.isDone?"_3xtjKNgje0":"_3xtjKNYbGa",__cmplp.isClamped?"_4Gn54R7LI7":"_4Gn54R7dHp",__cmplp.className])',
     ]);
   });
 
@@ -549,9 +541,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._2rko19el{border-radius:10px!important}',
-      '._2rko1aa3{border-radius:1px!important}',
-      `ax([\"\",__cmplp.isRounded?\"_2rko19el\":\"_2rko1aa3\",__cmplp.className])`,
+      '._0bjKvDNKBH{border-radius:10px!important}',
+      '._0bjKvDnQo4{border-radius:1px!important}',
+      `ax([\"\",__cmplp.isRounded?\"_0bjKvDNKBH\":\"_0bjKvDnQo4\",__cmplp.className])`,
     ]);
   });
 
@@ -567,13 +559,13 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz5scu{color:red}',
-      '._syaz13q2{color:blue}',
-      '._18u014y2{margin-left:5px}',
-      '._18u019bv{margin-left:10px}',
-      '._2hwx14y2{margin-right:5px}',
-      '._2hwx19bv{margin-right:10px}',
-      'ax(["",__cmplp.isPrimary?"_syaz13q2":"_syaz5scu",__cmplp.isLast?"_18u014y2":"_18u019bv",__cmplp.isLast?"_2hwx14y2":"_2hwx19bv",__cmplp.className])',
+      '._1UtDYzGowl{color:red}',
+      '._1UtDYzynoA{color:blue}',
+      '._2XsHFMyrFs{margin-left:5px}',
+      '._2XsHFMuFDC{margin-left:10px}',
+      '._0adFHsyrFs{margin-right:5px}',
+      '._0adFHsuFDC{margin-right:10px}',
+      'ax(["",__cmplp.isPrimary?"_1UtDYzynoA":"_1UtDYzGowl",__cmplp.isLast?"_2XsHFMyrFs":"_2XsHFMuFDC",__cmplp.isLast?"_0adFHsyrFs":"_0adFHsuFDC",__cmplp.className])',
     ]);
   });
 
@@ -587,9 +579,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz5scu{color:red}',
-      '._syaz13q2{color:blue}',
-      `ax([\"\",__cmplp.isPrimary?\"_syaz13q2\":\"_syaz5scu\",__cmplp.className])`,
+      '._1UtDYzGowl{color:red}',
+      '._1UtDYzynoA{color:blue}',
+      `ax([\"\",__cmplp.isPrimary?\"_1UtDYzynoA\":\"_1UtDYzGowl\",__cmplp.className])`,
     ]);
   });
 
@@ -604,10 +596,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsb1osq{width:100%}',
-      '._1bsby2bc{width:var(--_znisgh)}',
+      '._39xV02N91d{width:100%}',
+      '._39xV02os7J{width:var(--_znisgh)}',
       'style={{...__cmpls,"--_znisgh":ix(CUSTOM_WIDTH,"px")}}',
-      `ax([\"\",__cmplp.useCustomWidth?\"_1bsby2bc\":\"_1bsb1osq\",__cmplp.className])`,
+      `ax([\"\",__cmplp.useCustomWidth?\"_39xV02os7J\":\"_39xV02N91d\",__cmplp.className])`,
     ]);
   });
 
@@ -623,12 +615,12 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._19it107e{border:1px solid red}',
-      '._19it1nsd{border:1px solid blue}',
-      '._syaz5scu{color:red}',
-      '._syaz13q2{color:blue}',
-      '._1wyb1ul9{font-size:30px}',
-      `ax([\"_1wyb1ul9\",__cmplp.isPrimary?\"_syaz13q2\":\"_syaz5scu\",__cmplp.isPrimary?\"_19it1nsd\":\"_19it107e\",__cmplp.className]`,
+      '._30huDK9HCG{border:1px solid red}',
+      '._30huDKEM5s{border:1px solid blue}',
+      '._1UtDYzGowl{color:red}',
+      '._1UtDYzynoA{color:blue}',
+      '._4ya3eEuNcX{font-size:30px}',
+      `ax([\"_4ya3eEuNcX\",__cmplp.isPrimary?\"_1UtDYzynoA\":\"_1UtDYzGowl\",__cmplp.isPrimary?\"_30huDKEM5s\":\"_30huDK9HCG\",__cmplp.className]`,
     ]);
   });
 
@@ -645,16 +637,16 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._19bvftgi{padding-left:8px}',
-      '._n3tdftgi{padding-bottom:8px}',
-      '._u5f3ftgi{padding-right:8px}',
-      '._ca0qftgi{padding-top:8px}',
-      '._19itlf8h{border:2px solid blue}',
-      '._1wyb1ul9{font-size:30px}',
-      '._syaz5scu{color:red}',
-      '._syaz13q2{color:blue}',
-      '._syaz11x8{color:black}',
-      `ax([\"_19itlf8h _ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi _1wyb1ul9\",__cmplp.isPrimary?__cmplp.isDisabled?\"_syaz11x8\":\"_syaz13q2\":\"_syaz5scu\",__cmplp.className])`,
+      '._2Zuz6QJg58{padding-left:8px}',
+      '._1wydGWJg58{padding-bottom:8px}',
+      '._1ZnuxbJg58{padding-right:8px}',
+      '._0Of8r2Jg58{padding-top:8px}',
+      '._30huDKFhCC{border:2px solid blue}',
+      '._4ya3eEuNcX{font-size:30px}',
+      '._1UtDYzGowl{color:red}',
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzbqW0{color:black}',
+      `ax([\"_30huDKFhCC _0Of8r2Jg58 _1ZnuxbJg58 _1wydGWJg58 _2Zuz6QJg58 _4ya3eEuNcX\",__cmplp.isPrimary?__cmplp.isDisabled?\"_1UtDYzbqW0\":\"_1UtDYzynoA\":\"_1UtDYzGowl\",__cmplp.className])`,
     ]);
   });
 
@@ -671,11 +663,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz13q2{color:blue}',
-      '._19it7fe6{border:3px solid yellow}',
-      '._bfhk1x77{background-color:white}',
-      '._syaz5scu{color:red}',
-      'className={ax(["_bfhk1x77 _19it7fe6 _syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}',
+      '._1UtDYzynoA{color:blue}',
+      '._30huDKoshS{border:3px solid yellow}',
+      '._0KLXruaJpK{background-color:white}',
+      '._1UtDYzGowl{color:red}',
+      'className={ax(["_0KLXruaJpK _30huDKoshS _1UtDYzGowl",__cmplp.isPrimary&&"_1UtDYzynoA",__cmplp.className])}',
     ]);
   });
 
@@ -690,10 +682,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._bfhk1x77{background-color:white}',
-      '._syaz11x8{color:black}',
-      '._syaz13q2{color:blue}',
-      '._syaz5scu{color:red}',
+      '._0KLXruaJpK{background-color:white}',
+      '._1UtDYzbqW0{color:black}',
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzGowl{color:red}',
     ]);
   });
 
@@ -708,11 +700,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._bfhk1x77{background-color:white}',
-      '._syaz11x8{color:black}',
-      '._syaz13q2{color:blue}',
-      '._syaz5scu{color:red}',
-      'className={ax(["_bfhk1x77",__cmplp.isPrimary?__cmplp.isDisabled?"_syaz11x8":"_syaz13q2":"_syaz5scu",__cmplp.className])}',
+      '._0KLXruaJpK{background-color:white}',
+      '._1UtDYzbqW0{color:black}',
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzGowl{color:red}',
+      'className={ax(["_0KLXruaJpK",__cmplp.isPrimary?__cmplp.isDisabled?"_1UtDYzbqW0":"_1UtDYzynoA":"_1UtDYzGowl",__cmplp.className])}',
     ]);
   });
 
@@ -728,10 +720,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._k48p8n31{font-weight:bold}',
-      '._syaz13q2{color:blue}',
-      '._syaz5scu{color:red}',
-      'className={ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.isBolded&&"_k48p8n31",__cmplp.className])}',
+      '._1kk5TkmmCn{font-weight:bold}',
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzGowl{color:red}',
+      'className={ax(["_1UtDYzGowl",__cmplp.isPrimary&&"_1UtDYzynoA",__cmplp.isBolded&&"_1kk5TkmmCn",__cmplp.className])}',
     ]);
   });
 
@@ -759,9 +751,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syazbf54{color:green}',
-      '._syaz5scu{color:red}',
-      'className={ax(["",__cmplp.isPrimary?"_syazbf54":"_syaz5scu",__cmplp.className])}',
+      '._1UtDYzJwxv{color:green}',
+      '._1UtDYzGowl{color:red}',
+      'className={ax(["",__cmplp.isPrimary?"_1UtDYzJwxv":"_1UtDYzGowl",__cmplp.className])}',
     ]);
   });
 
@@ -775,10 +767,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syazbf54{color:green}',
-      '._syaz13q2{color:blue}',
-      '._syaz5scu{color:red}',
-      'className={ax(["",__cmplp.isPrimary?"_syaz13q2":__cmplp.isGreen?"_syazbf54":"_syaz5scu",__cmplp.className])}',
+      '._1UtDYzJwxv{color:green}',
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzGowl{color:red}',
+      'className={ax(["",__cmplp.isPrimary?"_1UtDYzynoA":__cmplp.isGreen?"_1UtDYzJwxv":"_1UtDYzGowl",__cmplp.className])}',
     ]);
   });
 
@@ -792,11 +784,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syazbf54{color:green}',
-      '._syaz5scu{color:red}',
-      '._1wyb1fwx{font-size:12px}',
-      '._1wybexct{font-size:16px}',
-      'className={ax(["",__cmplp.isPrimary?"_syazbf54 _1wyb1fwx":"_syaz5scu _1wybexct",__cmplp.className])}',
+      '._1UtDYzJwxv{color:green}',
+      '._1UtDYzGowl{color:red}',
+      '._4ya3eErjyG{font-size:12px}',
+      '._4ya3eE50T1{font-size:16px}',
+      'className={ax(["",__cmplp.isPrimary?"_1UtDYzJwxv _4ya3eErjyG":"_1UtDYzGowl _4ya3eE50T1",__cmplp.className])}',
     ]);
   });
 
@@ -810,9 +802,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syazbf54{color:green}',
-      '._syaz5scu{color:red}',
-      'className={ax(["",__cmplp.isPrimary?"_syazbf54":"_syaz5scu",__cmplp.className])}',
+      '._1UtDYzJwxv{color:green}',
+      '._1UtDYzGowl{color:red}',
+      'className={ax(["",__cmplp.isPrimary?"_1UtDYzJwxv":"_1UtDYzGowl",__cmplp.className])}',
     ]);
   });
 
@@ -829,11 +821,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz13q2{color:blue}',
-      '._19it7fe6{border:3px solid yellow}',
-      '._bfhk1x77{background-color:white}',
-      '._syaz5scu{color:red}',
-      '{ax(["_bfhk1x77 _19it7fe6 _syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}',
+      '._1UtDYzynoA{color:blue}',
+      '._30huDKoshS{border:3px solid yellow}',
+      '._0KLXruaJpK{background-color:white}',
+      '._1UtDYzGowl{color:red}',
+      '{ax(["_0KLXruaJpK _30huDKoshS _1UtDYzGowl",__cmplp.isPrimary&&"_1UtDYzynoA",__cmplp.className])}',
     ]);
   });
 
@@ -850,11 +842,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz13q2{color:blue}',
-      '._bfhk1x77{background-color:white}',
-      '._syaz5scu{color:red}',
-      '._19it7fe6{border:3px solid yellow}',
-      '{ax(["_19it7fe6 _bfhk1x77 _syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}',
+      '._1UtDYzynoA{color:blue}',
+      '._0KLXruaJpK{background-color:white}',
+      '._1UtDYzGowl{color:red}',
+      '._30huDKoshS{border:3px solid yellow}',
+      '{ax(["_30huDKoshS _0KLXruaJpK _1UtDYzGowl",__cmplp.isPrimary&&"_1UtDYzynoA",__cmplp.className])}',
     ]);
   });
 
@@ -868,9 +860,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      'const _="._syaz1q2z{color:var(--_1r7cl4y)}"',
+      'const _="._1UtDYz36Yi{color:var(--_1r7cl4y)}"',
       '"--_1r7cl4y":ix(__cmplp.primary)',
-      'className={ax(["_syaz1q2z",__cmplp.className])}',
+      'className={ax(["_1UtDYz36Yi",__cmplp.className])}',
     ]);
   });
 
@@ -885,10 +877,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz1q2z{color:var(--_1r7cl4y)}',
-      '._bfhk5scu{background-color:red}',
+      '._1UtDYz36Yi{color:var(--_1r7cl4y)}',
+      '._0KLXruGowl{background-color:red}',
       '--_1r7cl4y":ix(__cmplp.primary)}',
-      'className={ax(["_bfhk5scu _syaz1q2z",__cmplp.className])}',
+      'className={ax(["_0KLXruGowl _1UtDYz36Yi",__cmplp.className])}',
     ]);
   });
 
@@ -903,9 +895,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz13q2{color:blue}',
-      '._syaz5scu{color:red}',
-      'className={ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}',
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzGowl{color:red}',
+      'className={ax(["_1UtDYzGowl",__cmplp.isPrimary&&"_1UtDYzynoA",__cmplp.className])}',
     ]);
   });
 
@@ -921,10 +913,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._k48p8n31{font-weight:bold}',
-      '._syaz13q2{color:blue}',
-      '._syaz5scu{color:red}',
-      'className={ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.isBolded&&"_k48p8n31",__cmplp.className])}',
+      '._1kk5TkmmCn{font-weight:bold}',
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzGowl{color:red}',
+      'className={ax(["_1UtDYzGowl",__cmplp.isPrimary&&"_1UtDYzynoA",__cmplp.isBolded&&"_1kk5TkmmCn",__cmplp.className])}',
     ]);
   });
 
@@ -940,10 +932,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz13q2{color:blue}',
-      '._19it97hw{border:1px solid black}',
-      '._syaz5scu{color:red}',
-      '{ax(["_19it97hw _syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.className])}',
+      '._1UtDYzynoA{color:blue}',
+      '._30huDK2Tva{border:1px solid black}',
+      '._1UtDYzGowl{color:red}',
+      '{ax(["_30huDK2Tva _1UtDYzGowl",__cmplp.isPrimary&&"_1UtDYzynoA",__cmplp.className])}',
     ]);
   });
 
@@ -958,10 +950,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz5scu{color:red}',
-      '._syaz13q2{color:blue}',
+      '._1UtDYzGowl{color:red}',
+      '._1UtDYzynoA{color:blue}',
 
-      'className={ax(["_syaz13q2",__cmplp.isPrimary&&"_syaz5scu",__cmplp.className])}',
+      'className={ax(["_1UtDYzynoA",__cmplp.isPrimary&&"_1UtDYzGowl",__cmplp.className])}',
     ]);
   });
 
@@ -976,9 +968,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz13q2{color:blue}',
-      '._syaz5scu{color:red}',
-      '{ax(["_syaz5scu",(__cmplp.isPrimary||__cmplp.isMaybe)&&"_syaz13q2",__cmplp.className])}',
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzGowl{color:red}',
+      '{ax(["_1UtDYzGowl",(__cmplp.isPrimary||__cmplp.isMaybe)&&"_1UtDYzynoA",__cmplp.className])}',
     ]);
   });
 
@@ -994,11 +986,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._k48p8n31{font-weight:bold}',
-      '._k48p4jg8{font-weight:normal}',
-      '._syaz13q2{color:blue}',
-      '._syaz5scu{color:red}',
-      '{ax(["_syaz5scu",__cmplp.isPrimary&&"_syaz13q2",__cmplp.isBolded?"_k48p8n31":"_k48p4jg8",__cmplp.className])}/>',
+      '._1kk5TkmmCn{font-weight:bold}',
+      '._1kk5TkzUZr{font-weight:normal}',
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzGowl{color:red}',
+      '{ax(["_1UtDYzGowl",__cmplp.isPrimary&&"_1UtDYzynoA",__cmplp.isBolded?"_1kk5TkmmCn":"_1kk5TkzUZr",__cmplp.className])}/>',
     ]);
   });
 
@@ -1013,9 +1005,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz13q2{color:blue}',
-      '._syaz5scu{color:red}',
-      '{ax(["_syaz5scu",__cmplp.isPrimary&&(__cmplp.isBolded||__cmplp.isFoo)&&"_syaz13q2",__cmplp.className])}',
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzGowl{color:red}',
+      '{ax(["_1UtDYzGowl",__cmplp.isPrimary&&(__cmplp.isBolded||__cmplp.isFoo)&&"_1UtDYzynoA",__cmplp.className])}',
     ]);
   });
 
@@ -1030,10 +1022,10 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz13q2{color:blue}',
-      '._syaz5scu{color:red}',
-      '._1wybgktf{font-size:20px}',
-      'className={ax(["_1wybgktf",__cmplp.isPrimary&&__cmplp.isBolded?"_syaz13q2":"_syaz5scu",__cmplp.className])}/',
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzGowl{color:red}',
+      '._4ya3eESPN1{font-size:20px}',
+      'className={ax(["_4ya3eESPN1",__cmplp.isPrimary&&__cmplp.isBolded?"_1UtDYzynoA":"_1UtDYzGowl",__cmplp.className])}/',
     ]);
   });
 
@@ -1050,9 +1042,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._bfhk1x77{background-color:white}',
-      '._syazruxl{color:orange}',
-      'className={ax(["_bfhk1x77 _syazruxl",__cmplp.className])}',
+      '._0KLXruaJpK{background-color:white}',
+      '._1UtDYz0axx{color:orange}',
+      'className={ax(["_0KLXruaJpK _1UtDYz0axx",__cmplp.className])}',
     ]);
   });
 
@@ -1066,9 +1058,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syazbf54{color:green}',
-      '._bfhk11x8{background-color:black}',
-      'className={ax(["",!__cmplp.isPrimary&&"_bfhk11x8 _syazbf54",__cmplp.className])}',
+      '._1UtDYzJwxv{color:green}',
+      '._0KLXrubqW0{background-color:black}',
+      'className={ax(["",!__cmplp.isPrimary&&"_0KLXrubqW0 _1UtDYzJwxv",__cmplp.className])}',
     ]);
   });
 
@@ -1082,9 +1074,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syazbf54{color:green}',
-      '._bfhk11x8{background-color:black}',
-      'className={ax(["",__cmplp.isPrimary&&"_bfhk11x8 _syazbf54",__cmplp.className])}',
+      '._1UtDYzJwxv{color:green}',
+      '._0KLXrubqW0{background-color:black}',
+      'className={ax(["",__cmplp.isPrimary&&"_0KLXrubqW0 _1UtDYzJwxv",__cmplp.className])}',
     ]);
   });
 
@@ -1098,8 +1090,8 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syazbf54{color:green}',
-      'className={ax(["",__cmplp.isPrimary&&"_syazbf54",__cmplp.className])}',
+      '._1UtDYzJwxv{color:green}',
+      'className={ax(["",__cmplp.isPrimary&&"_1UtDYzJwxv",__cmplp.className])}',
     ]);
   });
 
@@ -1113,8 +1105,8 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syazbf54{color:green}',
-      'className={ax(["",!__cmplp.isPrimary&&"_syazbf54",__cmplp.className])}',
+      '._1UtDYzJwxv{color:green}',
+      'className={ax(["",!__cmplp.isPrimary&&"_1UtDYzJwxv",__cmplp.className])}',
     ]);
   });
 
@@ -1128,8 +1120,8 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syazbf54{color:green}',
-      'className={ax(["",!__cmplp.isPrimary&&"_syazbf54",__cmplp.className])}',
+      '._1UtDYzJwxv{color:green}',
+      'className={ax(["",!__cmplp.isPrimary&&"_1UtDYzJwxv",__cmplp.className])}',
     ]);
   });
 
@@ -1145,8 +1137,8 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._30l3bf54:hover{color:green}',
-      'className={ax(["",__cmplp.isPrimary&&"_30l3bf54",__cmplp.className])}',
+      '._0clgaMJwxv:hover{color:green}',
+      'className={ax(["",__cmplp.isPrimary&&"_0clgaMJwxv",__cmplp.className])}',
     ]);
   });
 
@@ -1162,8 +1154,8 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._30l3bf54:hover{color:green}',
-      'className={ax(["",__cmplp.isPrimary&&"_30l3bf54",__cmplp.className])}',
+      '._0clgaMJwxv:hover{color:green}',
+      'className={ax(["",__cmplp.isPrimary&&"_0clgaMJwxv",__cmplp.className])}',
     ]);
   });
 
@@ -1200,12 +1192,12 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz11x8{color:black}',
-      '._bfhk1x77{background-color:white}',
-      '._syaz1x77{color:white}',
-      '_bfhk11x8{background-color:black}',
-      '_1wyb1ul9{font-size:30px}',
-      'className={ax(["_1wyb1ul9",__cmplp.isDark?"_bfhk11x8 _syaz1x77":"_bfhk1x77 _syaz11x8",__cmplp.className])}',
+      '._1UtDYzbqW0{color:black}',
+      '._0KLXruaJpK{background-color:white}',
+      '._1UtDYzaJpK{color:white}',
+      '_0KLXrubqW0{background-color:black}',
+      '_4ya3eEuNcX{font-size:30px}',
+      'className={ax(["_4ya3eEuNcX",__cmplp.isDark?"_0KLXrubqW0 _1UtDYzaJpK":"_0KLXruaJpK _1UtDYzbqW0",__cmplp.className])}',
     ]);
   });
 
@@ -1220,9 +1212,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsb1dlf{width:calc(10px + var(--_1e9pbah))}',
+      '._39xV02WUwJ{width:calc(10px + var(--_1e9pbah))}',
       '"--_1e9pbah":ix(__cmplp.isLarge?100:50,"px")',
-      '{ax(["_1bsb1dlf",__cmplp.className])}',
+      '{ax(["_39xV02WUwJ",__cmplp.className])}',
     ]);
   });
 
@@ -1237,9 +1229,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsb5cma{width:calc(var(--_1e9pbah) - 10px)}',
+      '._39xV02Tu3f{width:calc(var(--_1e9pbah) - 10px)}',
       '"--_1e9pbah":ix(__cmplp.isLarge?100:50,"px")',
-      '{ax(["_1bsb5cma",__cmplp.className])}',
+      '{ax(["_39xV02Tu3f",__cmplp.className])}',
     ]);
   });
 
@@ -1255,9 +1247,9 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1kt91xca:before{content:var(--_8txsa8)}',
+      '._3Ku51IKCJE:before{content:var(--_8txsa8)}',
       '"--_8txsa8":ix(__cmplp.isOpen?\'show less\':\'show more\',"\'","\'")',
-      '{ax(["_1kt91xca",__cmplp.className])}',
+      '{ax(["_3Ku51IKCJE",__cmplp.className])}',
     ]);
   });
 
@@ -1276,12 +1268,12 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      "._11q7qm1v{background:url('data:image/svg+xml; ... ')}",
-      '._syaz13q2{color:blue}',
-      '._syaz1gy6{color:yellow}',
-      '._bfw71j9v:hover{border:1px solid white}',
-      '_bfw7l468:hover{border:2px solid black}',
-      '{ax(["_11q7qm1v",__cmplp.isSelected?"_syaz13q2":"_syaz1gy6",__cmplp.isHover?"_bfw71j9v":"_bfw7l468",__cmplp.className])}',
+      "._2uo31fTS0E{background:url('data:image/svg+xml; ... ')}",
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzFQV5{color:yellow}',
+      '._0KOPe2bJcw:hover{border:1px solid white}',
+      '_0KOPe2pjH2:hover{border:2px solid black}',
+      '{ax(["_2uo31fTS0E",__cmplp.isSelected?"_1UtDYzynoA":"_1UtDYzFQV5",__cmplp.isHover?"_0KOPe2bJcw":"_0KOPe2pjH2",__cmplp.className])}',
     ]);
   });
 
@@ -1298,11 +1290,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz13q2{color:blue}',
-      '._syaz1gy6{color:yellow}',
-      '._bfw71j9v:hover{border:1px solid white}',
-      '_bfw7l468:hover{border:2px solid black}',
-      '{ax(["",__cmplp.isSelected?"_syaz13q2":"_syaz1gy6",__cmplp.isHover?"_bfw71j9v":"_bfw7l468",__cmplp.className])}',
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzFQV5{color:yellow}',
+      '._0KOPe2bJcw:hover{border:1px solid white}',
+      '_0KOPe2pjH2:hover{border:2px solid black}',
+      '{ax(["",__cmplp.isSelected?"_1UtDYzynoA":"_1UtDYzFQV5",__cmplp.isHover?"_0KOPe2bJcw":"_0KOPe2pjH2",__cmplp.className])}',
     ]);
   });
 
@@ -1326,15 +1318,15 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz13q2{color:blue}',
-      '._syaz1gy6{color:yellow}',
-      '._bfw71j9v:hover{border:1px solid white}',
-      '_bfw7l468:hover{border:2px solid black}',
-      '._irr31i1c:hover{background-color:cyan}',
-      '._vw871qok:hover:before{content:\\"Don\'t break closure parsing }\\"}',
-      '._1jly1kw7:hover:before{display:inherit}',
-      '._1jly1nu9:hover:before{display:inline}',
-      '{ax(["_irr31i1c _vw871qok",__cmplp.isSelected?"_syaz13q2":"_syaz1gy6",__cmplp.isHover?"_bfw71j9v":"_bfw7l468",__cmplp.isBefore?"_1jly1kw7":"_1jly1nu9",__cmplp.className])}',
+      '._1UtDYzynoA{color:blue}',
+      '._1UtDYzFQV5{color:yellow}',
+      '._0KOPe2bJcw:hover{border:1px solid white}',
+      '_0KOPe2pjH2:hover{border:2px solid black}',
+      '._1eOmH67Qsp:hover{background-color:cyan}',
+      '._26w8i9v5RY:hover:before{content:\\"Don\'t break closure parsing }\\"}',
+      '._3FyRtpOLYo:hover:before{display:inherit}',
+      '._3FyRtpS8kF:hover:before{display:inline}',
+      '{ax(["_1eOmH67Qsp _26w8i9v5RY",__cmplp.isSelected?"_1UtDYzynoA":"_1UtDYzFQV5",__cmplp.isHover?"_0KOPe2bJcw":"_0KOPe2pjH2",__cmplp.isBefore?"_3FyRtpOLYo":"_3FyRtpS8kF",__cmplp.className])}',
     ]);
   });
 
@@ -1358,11 +1350,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1oey5scu >span:first-type-of{color:red}',
-      '._irr31i1c:hover{background-color:cyan}',
-      '._vn891l7b:focus{border-radius:3px}',
-      '._vn89yh40:focus{border-radius:2px}',
-      '{ax(["_1oey5scu _irr31i1c",__cmplp.isFocus?"_vn891l7b":"_vn89yh40",__cmplp.className])}',
+      '._3Ze5iJGowl >span:first-type-of{color:red}',
+      '._1eOmH67Qsp:hover{background-color:cyan}',
+      '._25uIpA4Y4b:focus{border-radius:3px}',
+      '._25uIpA4Jdh:focus{border-radius:2px}',
+      '{ax(["_3Ze5iJGowl _1eOmH67Qsp",__cmplp.isFocus?"_25uIpA4Y4b":"_25uIpA4Jdh",__cmplp.className])}',
     ]);
   });
 
@@ -1386,11 +1378,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1oey5scu >span:first-type-of{color:red}',
-      '._irr31i1c:hover{background-color:cyan}',
-      '._vn891l7b:focus{border-radius:3px}',
-      '._vn89yh40:focus{border-radius:2px}',
-      '{ax(["_1oey5scu _irr31i1c",__cmplp.isFocus?"_vn891l7b":"_vn89yh40",__cmplp.className])}',
+      '._3Ze5iJGowl >span:first-type-of{color:red}',
+      '._1eOmH67Qsp:hover{background-color:cyan}',
+      '._25uIpA4Y4b:focus{border-radius:3px}',
+      '._25uIpA4Jdh:focus{border-radius:2px}',
+      '{ax(["_3Ze5iJGowl _1eOmH67Qsp",__cmplp.isFocus?"_25uIpA4Y4b":"_25uIpA4Jdh",__cmplp.className])}',
     ]);
   });
 
@@ -1414,11 +1406,11 @@ describe('styled component behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1oey5scu >span:first-type-of{color:red}',
-      '._irr31i1c:hover{background-color:cyan}',
-      '._vn891l7b:focus{border-radius:3px}',
-      '._vn89yh40:focus{border-radius:2px}',
-      '{ax(["_1oey5scu _irr31i1c",__cmplp.isFocus?"_vn891l7b":"_vn89yh40",__cmplp.className])}',
+      '._3Ze5iJGowl >span:first-type-of{color:red}',
+      '._1eOmH67Qsp:hover{background-color:cyan}',
+      '._25uIpA4Y4b:focus{border-radius:3px}',
+      '._25uIpA4Jdh:focus{border-radius:2px}',
+      '{ax(["_3Ze5iJGowl _1eOmH67Qsp",__cmplp.isFocus?"_25uIpA4Y4b":"_25uIpA4Jdh",__cmplp.className])}',
     ]);
   });
 });

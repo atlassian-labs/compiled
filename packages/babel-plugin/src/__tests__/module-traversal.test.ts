@@ -345,7 +345,7 @@ describe('module traversal', () => {
       </BackgroundWithSelector>;
     `);
 
-    expect(actual).toInclude('._tcqlbf54 #id-selector{background-color:green}');
+    expect(actual).toInclude('._1W7mBQJwxv #id-selector{background-color:green}');
   });
 
   it('handles template literal with imported selectors from external modules with substitution', () => {
@@ -368,8 +368,8 @@ describe('module traversal', () => {
 
     // This gets split into two rules due to flattenMultipleSelectors
     expect(actual).toIncludeMultiple([
-      '._15rzbf54 #joined-selector{background-color:green}',
-      '._1khrbf54 .red{background-color:green}',
+      '._2KXnDfJwxv #joined-selector{background-color:green}',
+      '._3JaZpbJwxv .red{background-color:green}',
     ]);
   });
 
