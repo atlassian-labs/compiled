@@ -53,6 +53,43 @@ describe('compiledVitePlugin', () => {
     expect(result).toBeNull();
   });
 
+  it('should sort extracted Compiled CSS during transformation', async () => {
+    const plugin = compiledVitePlugin();
+    const code =
+      '@media (min-width: 768px) { ._fpol1q9b { color: blue } }' +
+      '._bbbk3bke { border-bottom-color: orange }' +
+      '._syaz1q9b { color: red }' +
+      '._bxs1q9b { border: 2px solid transparent }';
+
+    const result = await plugin.transform!(
+      code,
+      '/node_modules/@atlaskit/example/dist/styles.compiled.css'
+    );
+
+    expect(result).toEqual({
+      code:
+        '._bxs1q9b { border: 2px solid transparent }' +
+        '._bbbk3bke { border-bottom-color: orange }' +
+        '._syaz1q9b { color: red }' +
+        '@media (min-width: 768px) { ._fpol1q9b { color: blue } }',
+      map: null,
+    });
+  });
+
+  it('should preserve invalid extracted Compiled CSS when sorting fails', async () => {
+    const plugin = compiledVitePlugin();
+    const context = { warn: jest.fn() };
+    const code = '._syaz1q9b { color: red';
+    const id = '/node_modules/@atlaskit/example/dist/styles.compiled.css';
+
+    const result = await plugin.transform!.call(context, code, id);
+
+    expect(result).toBeNull();
+    expect(context.warn).toHaveBeenCalledWith({
+      message: expect.stringContaining(`Failed to sort CSS in ${id}`),
+    });
+  });
+
   it('should skip node_modules/@compiled/react', async () => {
     const plugin = compiledVitePlugin();
     const code = `

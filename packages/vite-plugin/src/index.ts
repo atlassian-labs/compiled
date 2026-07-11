@@ -76,6 +76,12 @@ function compiled(userOptions: PluginOptions = {}): any {
     ...userOptions,
   };
 
+  const sortCompiledCss = (css: string): string =>
+    sort(css, {
+      sortAtRulesEnabled: options.sortAtRules,
+      sortShorthandEnabled: options.sortShorthand,
+    });
+
   // Storage for collected style rules during transformation
   // Map of filePath → array of style rules (in source order from the babel
   // transform). We sort by filePath at extraction time for cross-file
@@ -94,6 +100,21 @@ function compiled(userOptions: PluginOptions = {}): any {
     enforce: 'pre', // Run before other plugins
 
     async transform(code: string, id: string): Promise<any> {
+      if (id.endsWith('.compiled.css') && code.includes('._')) {
+        try {
+          return {
+            code: sortCompiledCss(code),
+            map: null,
+          };
+        } catch (error) {
+          const err = error as Error;
+          this.warn({
+            message: `[@compiled/vite-plugin] Failed to sort CSS in ${id}: ${err.message}`,
+          });
+          return null;
+        }
+      }
+
       // Filter out node_modules (except for specific includes if needed)
       if (id.includes('/node_modules/@compiled/react')) {
         return null;
@@ -218,16 +239,8 @@ function compiled(userOptions: PluginOptions = {}): any {
         // This is a heuristic to identify CSS that came from .compiled.css files
         if (cssContent.includes('._')) {
           try {
-            // Apply Compiled's CSS sorting and deduplication
-            const sortConfig = {
-              sortAtRulesEnabled: options.sortAtRules,
-              sortShorthandEnabled: options.sortShorthand,
-            };
-
-            const sortedCss = sort(cssContent, sortConfig);
-
             // Update the asset with sorted CSS
-            asset.source = sortedCss;
+            asset.source = sortCompiledCss(cssContent);
           } catch (error) {
             const err = error as Error;
             this.warn({
@@ -254,19 +267,13 @@ function compiled(userOptions: PluginOptions = {}): any {
 
           // Join all rules and apply CSS sorting
           const combinedCss = allRules.join('\n');
-          const sortConfig = {
-            sortAtRulesEnabled: options.sortAtRules,
-            sortShorthandEnabled: options.sortShorthand,
-          };
-
-          const sortedCss = sort(combinedCss, sortConfig);
 
           // Emit the CSS file with content-based naming
           // Vite will add a content hash to the filename automatically
           this.emitFile({
             type: 'asset',
             name: EXTRACTED_CSS_NAME,
-            source: sortedCss,
+            source: sortCompiledCss(combinedCss),
           });
 
           // Mark that we've emitted the file so transformIndexHtml can inject it
