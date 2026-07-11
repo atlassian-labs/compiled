@@ -893,5 +893,32 @@ describe('sort at-rules', () => {
               "
       `);
     });
+
+    it('should sort media queries nested inside another at-rule', () => {
+      const actual = transform(`
+        @supports not (height: 1lh) {
+          color: red;
+          @media (prefers-reduced-motion: no-preference) and (width > 1500px) {
+            color: blue;
+          }
+          @media (prefers-reduced-motion: no-preference) {
+            color: green;
+          }
+        }
+      `);
+
+      expect(actual).toMatchInlineSnapshot(`
+        "@supports not (height: 1lh) {
+                  color: red;
+                  @media (prefers-reduced-motion: no-preference) {
+                    color: green;
+                  }
+                  @media (prefers-reduced-motion: no-preference) and (width > 1500px) {
+                    color: blue;
+                  }
+                }
+              "
+      `);
+    });
   });
 });
