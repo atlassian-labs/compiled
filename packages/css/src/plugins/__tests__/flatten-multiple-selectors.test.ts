@@ -22,7 +22,7 @@ const transform = (css: TemplateStringsArray) => {
       ],
       unwrap: ['color-profile', 'counter-style', 'font-palette-values', 'page', 'property'],
     }),
-    atomicifyRules(),
+    atomicifyRules({ collisionResistantHash: true }),
     flattenMultipleSelectors(),
     whitespace(),
     autoprefixer(),

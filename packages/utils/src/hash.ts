@@ -93,7 +93,7 @@ export const ATOMIC_VALUE_HASH_LENGTH = 4;
  *
  * Produces significantly better collision resistance than the base-36 `hash`:
  * base-62 with 6 characters represents the full 32-bit hash with no truncation,
- * whereas the old base-36 `.slice(0, 4)` collapsed the space to ~93K effective values.
+ * whereas the old base-36 `.slice(0, 4)` had a severely constrained effective space due to leading-digit bias.
  *
  * @param str - the string to hash
  * @param length - the desired fixed output length (zero-padded)

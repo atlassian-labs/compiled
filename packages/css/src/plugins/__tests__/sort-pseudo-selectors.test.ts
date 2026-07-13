@@ -16,7 +16,7 @@ const transform = (css: TemplateStringsArray) => {
 
 const transformWithAtomicClasses = (css: TemplateStringsArray) => {
   const result = postcss([
-    atomicifyRules(),
+    atomicifyRules({ collisionResistantHash: true }),
     sortStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
     whitespace(),
   ]).process(css[0], {

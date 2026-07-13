@@ -1,7 +1,9 @@
 import { transformCss as transform } from '../transform';
 import type { LocalTransformOptions, TransformOpts } from '../transform';
 
-const defaultOpts: TransformOpts = { optimizeCss: false };
+// Tests assert collision-resistant (base-62, 11-char) output. Shipped default is
+// legacy 9-char — see the legacy regression suite in atomicify-rules.test.ts.
+const defaultOpts: TransformOpts = { optimizeCss: false, collisionResistantHash: true };
 const transformCss = (
   code: string,
   opts: TransformOpts = defaultOpts,
@@ -454,8 +456,14 @@ describe('#css-transform', () => {
         color: pink;
       }
     `;
-    const actual = transformCss(styles, { increaseSpecificity: true });
-    const expected = transformCss(styles, { increaseSpecificity: false });
+    const actual = transformCss(styles, {
+      increaseSpecificity: true,
+      collisionResistantHash: true,
+    });
+    const expected = transformCss(styles, {
+      increaseSpecificity: false,
+      collisionResistantHash: true,
+    });
 
     expect(actual.classNames).toEqual(expected.classNames);
   });
@@ -474,7 +482,10 @@ describe('#css-transform', () => {
           color: red;
         }
       `;
-      const { sheets: actual } = transformCss(styles, { increaseSpecificity: true });
+      const { sheets: actual } = transformCss(styles, {
+        increaseSpecificity: true,
+        collisionResistantHash: true,
+      });
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
         "._0Of8r2Jg58:not(#\\#){padding-top:8px}
@@ -495,7 +506,10 @@ describe('#css-transform', () => {
         div:hover & { color: red; }
         div &:hover { color: red; }
       `;
-      const { sheets: actual } = transformCss(styles, { increaseSpecificity: true });
+      const { sheets: actual } = transformCss(styles, {
+        increaseSpecificity: true,
+        collisionResistantHash: true,
+      });
 
       expect(actual.join('\n')).toMatchInlineSnapshot(`
         "div ._1mPw0cGowl:not(#\\#){color:red}

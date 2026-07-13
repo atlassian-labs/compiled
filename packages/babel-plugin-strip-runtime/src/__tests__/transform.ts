@@ -29,7 +29,18 @@ export const transformSync = (code: string, opts: TransformOptions): BabelFileRe
     },
     plugins: [
       ...(bake
-        ? [[compiledBabelPlugin, { importReact: runtime === 'classic', optimizeCss: false }]]
+        ? [
+            [
+              compiledBabelPlugin,
+              {
+                importReact: runtime === 'classic',
+                optimizeCss: false,
+                // Tests assert the collision-resistant (base-62, 11-char) output.
+                // Shipped default is legacy 9-char — see atomicify-rules legacy suite.
+                collisionResistantHash: true,
+              },
+            ],
+          ]
         : []),
       ...(extract
         ? [

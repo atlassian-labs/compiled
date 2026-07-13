@@ -9,7 +9,7 @@ describe('compiledVitePlugin', () => {
   });
 
   it('should transform code with Compiled imports', async () => {
-    const plugin = compiledVitePlugin();
+    const plugin = compiledVitePlugin({ collisionResistantHash: true });
     const code = `
       import { css } from '@compiled/react';
 

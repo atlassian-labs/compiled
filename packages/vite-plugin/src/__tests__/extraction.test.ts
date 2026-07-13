@@ -13,7 +13,7 @@ describe('CSS Extraction', () => {
     });
 
     it('should transform code with extraction enabled', async () => {
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
       const code = `
         import { css } from '@compiled/react';
 
@@ -35,7 +35,7 @@ describe('CSS Extraction', () => {
     });
 
     it('should collect style rules during transformation', async () => {
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
       const code = `
         import { css } from '@compiled/react';
 
@@ -66,14 +66,14 @@ describe('CSS Extraction', () => {
     });
 
     it('should have generateBundle hook', () => {
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
 
       expect(plugin.generateBundle).toBeDefined();
       expect(typeof plugin.generateBundle).toBe('function');
     });
 
     it('should emit extracted CSS file when extraction is enabled', async () => {
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
       const emittedFiles: any[] = [];
 
       // Mock context with emitFile
@@ -129,7 +129,7 @@ describe('CSS Extraction', () => {
 
     it('should not emit CSS file in development mode', async () => {
       process.env.NODE_ENV = 'development';
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
       const emittedFiles: any[] = [];
 
       const context = {
@@ -151,7 +151,7 @@ describe('CSS Extraction', () => {
     });
 
     it('should apply sorting and deduplication to CSS assets containing Compiled styles', async () => {
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
 
       // Mock bundle with a CSS asset containing Compiled styles
       const bundle = {
@@ -184,7 +184,7 @@ describe('CSS Extraction', () => {
     });
 
     it('should not process CSS assets without Compiled atomic classes', async () => {
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
 
       // Mock bundle with non-Compiled CSS
       const originalCss = '.regular-class { color: red; }';
@@ -209,7 +209,7 @@ describe('CSS Extraction', () => {
     });
 
     it('should sort pseudo-selectors in the correct order', async () => {
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
 
       // Mock bundle with pseudo-selectors in wrong order
       // Correct order: :link → :visited → :focus-within → :focus → :hover → :active
@@ -244,7 +244,7 @@ describe('CSS Extraction', () => {
     });
 
     it('should preserve duplicates in different at-rule contexts', async () => {
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
 
       // Mock bundle with same rule in different contexts
       const bundle = {
@@ -272,8 +272,8 @@ describe('CSS Extraction', () => {
     });
 
     it('should produce deterministic output across multiple runs', async () => {
-      const plugin1 = compiledVitePlugin({ extract: true });
-      const plugin2 = compiledVitePlugin({ extract: true });
+      const plugin1 = compiledVitePlugin({ extract: true, collisionResistantHash: true });
+      const plugin2 = compiledVitePlugin({ extract: true, collisionResistantHash: true });
 
       const inputCss = '._z{z-index:1}._a{color:red}._m{margin:10px}._z{z-index:1}';
 
@@ -319,7 +319,7 @@ describe('CSS Extraction', () => {
     });
 
     it('should inject extracted CSS into HTML', async () => {
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
 
       // Mock context for generateBundle
       let emittedFileName = '';
@@ -372,7 +372,7 @@ describe('CSS Extraction', () => {
     });
 
     it('should not inject HTML if no styles were extracted', async () => {
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
 
       // Don't transform any code (no styles collected)
       const html = '<html><head></head><body></body></html>';
@@ -386,7 +386,7 @@ describe('CSS Extraction', () => {
     });
 
     it('should use content-hashed filenames for extracted CSS', async () => {
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
       const emittedFiles: any[] = [];
 
       const context = {
@@ -418,7 +418,7 @@ describe('CSS Extraction', () => {
     it('should preserve cssMapScoped variant classes unchanged — no sorting or deduplication applied', async () => {
       // Non-atomic classes (cc- prefix) do not need pseudo-selector sorting or
       // atomic deduplication — they pass through the bundle untouched.
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
 
       const nonAtomicCss =
         '.cc-1c2j123 .panel{padding:8px;background-color:blue}' +
@@ -451,7 +451,7 @@ describe('CSS Extraction', () => {
       // by filePath deterministically. Within atomic rules, lexical sort applies.
       // Non-atomic (cc-) rules preserve insertion order per file.
       process.env.NODE_ENV = 'production';
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
       const emittedFiles: any[] = [];
       const context = {
         emitFile: (file: any) => {
@@ -508,7 +508,7 @@ describe('CSS Extraction', () => {
       // A real app may have both: atomic classes from css()/styled() and
       // non-atomic classes from cssMapScoped.
       // Only the atomic portion (._) triggers sorting; cc- classes pass through.
-      const plugin = compiledVitePlugin({ extract: true });
+      const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
 
       const mixedCss =
         // atomic classes — should be sorted

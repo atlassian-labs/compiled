@@ -5,8 +5,13 @@ import whitespace from 'postcss-normalize-whitespace';
 
 import { atomicifyRules } from '../atomicify-rules';
 
+// These tests assert the collision-resistant (base-62, 11-char) output.
+// The SHIPPED default is legacy 9-char — see the "legacy hash (default)"
+// describe block at the bottom of this file for the default-path regression tests.
+const CR = { collisionResistantHash: true } as const;
+
 const transform = (css: TemplateStringsArray) => {
-  const result = postcss([atomicifyRules(), whitespace(), autoprefixer()]).process(css[0], {
+  const result = postcss([atomicifyRules(CR), whitespace(), autoprefixer()]).process(css[0], {
     from: undefined,
   });
 
@@ -142,7 +147,7 @@ describe('atomicify rules', () => {
       classes.push(className);
     };
 
-    const result = postcss([atomicifyRules({ callback }), whitespace()]).process(
+    const result = postcss([atomicifyRules({ callback, ...CR }), whitespace()]).process(
       `
         display:block;
         text-align:center;
@@ -336,7 +341,7 @@ describe('atomicify rules', () => {
   });
 
   it('should not blow up if a doubly nested rule was found after nested plugin', () => {
-    const result = postcss([nested(), atomicifyRules(), whitespace(), autoprefixer()]).process(
+    const result = postcss([nested(), atomicifyRules(CR), whitespace(), autoprefixer()]).process(
       `
       div {
         div {
@@ -533,5 +538,79 @@ describe('atomicify rules', () => {
       }
     `
     ).toThrow("Unknown at-rule '@asdfghjkl'.");
+  });
+});
+
+/**
+ * Regression suite for the SHIPPED default behaviour.
+ *
+ * The `collisionResistantHash` option defaults to `false`. In that mode the
+ * atomic class names MUST remain byte-for-byte identical to the historical
+ * base-36, 9-character format (`_` + 4-char group + 4-char value). These tests
+ * guard against accidentally changing the default output during the migration
+ * period — any change here is a breaking change for every un-migrated consumer.
+ *
+ * The companion `collision-resistant hash (opt-in)` block asserts the new
+ * base-62, 11-character format produced when the flag is enabled. Together they
+ * document exactly how output differs between the two modes.
+ */
+describe('hash strategy', () => {
+  const run = (css: string, collisionResistantHash: boolean) =>
+    postcss([atomicifyRules({ collisionResistantHash }), whitespace()]).process(css, {
+      from: undefined,
+    }).css;
+
+  describe('legacy hash (default, collisionResistantHash: false)', () => {
+    it.each([
+      ['color: red;', '_syaz5scu'],
+      ['font-size: 14px;', '_1wybdlk8'],
+      ['margin-top: 0;', '_19pkidpf'],
+      ['color: red !important;', '_syaz1qpq'],
+    ])('emits the legacy 9-char class for `%s`', (css, expected) => {
+      const output = run(css, false);
+      expect(output).toContain(`.${expected}`);
+      // Legacy classes are always exactly 9 characters (`_` + 4 + 4).
+      expect(expected).toHaveLength(9);
+    });
+
+    it('emits a legacy 9-char class for pseudo selectors', () => {
+      expect(run(':hover { color: blue; }', false)).toContain('._838l13q2');
+    });
+
+    it('is the default when no option is passed', () => {
+      const withoutOption = postcss([atomicifyRules(), whitespace()]).process('color: red;', {
+        from: undefined,
+      }).css;
+      expect(withoutOption).toContain('._syaz5scu');
+    });
+  });
+
+  describe('collision-resistant hash (opt-in, collisionResistantHash: true)', () => {
+    it.each([
+      ['color: red;', '_1UtDYzGowl'],
+      ['font-size: 14px;', '_4ya3eEEbN9'],
+      ['margin-top: 0;', '_313842dnbC'],
+      ['color: red !important;', '_1UtDYzDpLb'],
+    ])('emits the base-62 11-char class for `%s`', (css, expected) => {
+      const output = run(css, true);
+      expect(output).toContain(`.${expected}`);
+      // Collision-resistant classes are always exactly 11 characters (`_` + 6 + 4).
+      expect(expected).toHaveLength(11);
+    });
+
+    it('emits an 11-char class for pseudo selectors', () => {
+      expect(run(':hover { color: blue; }', true)).toContain('._0x6viiynoA');
+    });
+
+    it('only uses base-62 characters (0-9a-zA-Z) in the hash body', () => {
+      const output = run('color: red;', true);
+      const className = output.match(/\.(_[0-9a-zA-Z]+)/)?.[1] ?? '';
+      // No `-` or `_` in the hash body (only the leading `_` prefix is allowed).
+      expect(className.slice(1)).toMatch(/^[0-9a-zA-Z]+$/);
+    });
+  });
+
+  it('produces different class names for the same rule under each strategy', () => {
+    expect(run('color: red;', false)).not.toEqual(run('color: red;', true));
   });
 });

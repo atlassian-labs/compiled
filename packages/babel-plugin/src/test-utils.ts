@@ -21,6 +21,12 @@ export const transform = (code: string, options: TransformOptions = {}): string 
     pretty = true,
     snippet,
     optimizeCss = false,
+    // Tests default to the collision-resistant hash (base-62, 11-char classes)
+    // so fixtures document the target output. NOTE: the SHIPPED default is
+    // `false` (legacy 9-char classes) — see the dedicated legacy regression
+    // suite in `atomicify-rules.test.ts`. Pass `collisionResistantHash: false`
+    // explicitly to assert legacy output.
+    collisionResistantHash = true,
     ...pluginOptions
   } = options;
   const fileResult = transformSync(code, {
@@ -30,7 +36,7 @@ export const transform = (code: string, options: TransformOptions = {}): string 
     configFile: false,
     filename,
     highlightCode,
-    plugins: [[babelPlugin, { optimizeCss, ...pluginOptions }]],
+    plugins: [[babelPlugin, { optimizeCss, collisionResistantHash, ...pluginOptions }]],
     presets:
       pluginOptions.importReact === false
         ? [['@babel/preset-react', { runtime: 'automatic' }]]

@@ -1,8 +1,19 @@
-import { hashBase62, ATOMIC_GROUP_HASH_LENGTH, ATOMIC_VALUE_HASH_LENGTH } from '@compiled/utils';
+import {
+  hash,
+  hashBase62,
+  ATOMIC_GROUP_HASH_LENGTH,
+  ATOMIC_VALUE_HASH_LENGTH,
+} from '@compiled/utils';
 import type { Plugin, ChildNode, Declaration, Container, Rule, AtRule } from 'postcss';
 import { rule } from 'postcss';
 
 import { canProcessAtRule } from './at-rule-lists';
+
+/**
+ * Number of characters taken from the legacy base-36 hash for the group and
+ * value segments. Legacy atomic classes are `_` + 4 + 4 = 9 characters.
+ */
+const LEGACY_HASH_SLICE_LENGTH = 4;
 
 interface PluginOpts {
   callback?: (className: string) => void;
@@ -10,6 +21,18 @@ interface PluginOpts {
   atRule?: string;
   parentNode?: Container;
   classHashPrefix?: string;
+  /**
+   * When `true`, atomic class names are generated with the collision-resistant
+   * hash: base-62 encoding, zero-padded to a fixed width (6-char group + 4-char
+   * value = 11-char class). When `false` (the default), the legacy base-36
+   * `.slice(0, 4)` hash is used (9-char class), preserving existing output.
+   *
+   * This is a migration flag. Once every consumer has migrated, the legacy
+   * branch will be removed and this becomes unconditional.
+   *
+   * @default false
+   */
+  collisionResistantHash?: boolean;
 }
 
 /**
@@ -39,14 +62,19 @@ const isCssIdentifierValid = (value: string): boolean => {
 const atomicClassName = (node: Declaration, opts: PluginOpts) => {
   const selectors = opts.selectors ? opts.selectors.join('') : '';
   const prefix = opts.classHashPrefix ?? '';
-  const group = hashBase62(
-    `${prefix}${opts.atRule}${selectors}${node.prop}`,
-    ATOMIC_GROUP_HASH_LENGTH
-  );
-
+  const groupKey = `${prefix}${opts.atRule}${selectors}${node.prop}`;
   const value = node.important ? node.value + node.important : node.value;
-  const valueHash = hashBase62(value, ATOMIC_VALUE_HASH_LENGTH);
 
+  if (opts.collisionResistantHash) {
+    // Collision-resistant: base-62, zero-padded fixed width (6 + 4 = 11-char class).
+    const group = hashBase62(groupKey, ATOMIC_GROUP_HASH_LENGTH);
+    const valueHash = hashBase62(value, ATOMIC_VALUE_HASH_LENGTH);
+    return `_${group}${valueHash}`;
+  }
+
+  // Legacy: base-36 truncated to 4 chars each (9-char class). Preserves existing output.
+  const group = hash(groupKey).slice(0, LEGACY_HASH_SLICE_LENGTH);
+  const valueHash = hash(value).slice(0, LEGACY_HASH_SLICE_LENGTH);
   return `_${group}${valueHash}`;
 };
 

@@ -111,6 +111,25 @@ export interface PluginOptions {
    * Defults to `true`.
    */
   flattenMultipleSelectors?: boolean;
+
+  /**
+   * When `true`, atomic class names are generated with a collision-resistant
+   * hash: base-62 encoding, zero-padded to a fixed width, producing 11-character
+   * class names (`_` + 6-char group + 4-char value). When `false` (the default),
+   * the legacy base-36 hash truncated to 4 characters is used, producing
+   * 9-character class names — preserving existing output.
+   *
+   * This is a migration flag. It can be driven per-product by an environment
+   * variable or feature gate in the build config. Once every consumer has
+   * migrated, the default will flip to `true` and the legacy branch removed.
+   *
+   * The runtime `ax()` handles both class formats simultaneously (via
+   * length-based group-key extraction), so mixing old and new classes on a
+   * page is safe.
+   *
+   * @default false
+   */
+  collisionResistantHash?: boolean;
 }
 
 export interface State extends PluginPass {
