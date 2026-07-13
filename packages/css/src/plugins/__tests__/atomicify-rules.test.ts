@@ -614,3 +614,60 @@ describe('hash strategy', () => {
     expect(run('color: red;', false)).not.toEqual(run('color: red;', true));
   });
 });
+
+/**
+ * Real-world collision regression tests.
+ *
+ * These use confirmed collision pairs identified from large production CSS bundles.
+ * They document:
+ *   1. That the legacy hash DOES produce group collisions on real CSS properties.
+ *   2. That the collision-resistant hash eliminates those collisions.
+ *
+ * A "group collision" means two unrelated CSS properties share the same 4-char
+ * group hash — causing ax() to silently drop one of them from the DOM.
+ */
+describe('real-world collision regression', () => {
+  const getGroup = (css: string, cr: boolean): string => {
+    const result = postcss([atomicifyRules({ collisionResistantHash: cr }), whitespace()]).process(
+      css,
+      { from: undefined }
+    );
+    const match = result.css.match(/\.(_[0-9a-zA-Z]+)/);
+    const className = match?.[1] ?? '';
+    // Group = everything except the last 4 chars (value hash)
+    return className.slice(0, className.length - 4);
+  };
+
+  describe('legacy hash (collisionResistantHash: false) — group collisions on real CSS properties', () => {
+    it('scrollbar-width and text-anchor collide on group hash (confirmed production collision, group _1fjg)', () => {
+      const groupA = getGroup('scrollbar-width: auto;', false);
+      const groupB = getGroup('text-anchor: start;', false);
+      // These ARE the same — this is the confirmed bug.
+      expect(groupA).toBe(groupB);
+      expect(groupA).toBe('_1fjg');
+    });
+  });
+
+  describe('collision-resistant hash (collisionResistantHash: true) — no collisions', () => {
+    it('scrollbar-width and text-anchor do NOT collide with base-62 6-char hash', () => {
+      const groupA = getGroup('scrollbar-width: auto;', true);
+      const groupB = getGroup('text-anchor: start;', true);
+      expect(groupA).not.toBe(groupB);
+    });
+
+    it('no two properties from the confirmed collision table share a group hash', () => {
+      // All properties involved in confirmed production property-hash collisions
+      const collisionPairs = [
+        ['scrollbar-width: auto;', 'text-anchor: start;'],
+        ['box-sizing: border-box;', 'outline-offset: 2px;'],
+        ['align-self: center;', 'color: red;'],
+      ];
+
+      for (const [cssA, cssB] of collisionPairs) {
+        const groupA = getGroup(cssA, true);
+        const groupB = getGroup(cssB, true);
+        expect(groupA).not.toBe(groupB);
+      }
+    });
+  });
+});
