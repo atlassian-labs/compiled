@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 import { transform } from '../../test-utils';
 
 describe('xcss prop transformation', () => {
@@ -81,31 +83,51 @@ describe('xcss prop transformation', () => {
     `);
   });
 
-  it('should not throw when primitive xcss uses unresolved responsive imports', () => {
-    expect(() => {
-      transform(
-        `
-        import { Box as AkBox, xcss as akXcss } from '@atlaskit/primitives';
-        import { media as akMedia } from '@atlaskit/primitives/responsive';
+  it('should resolve primitive xcss imports relative to the transformed file', () => {
+    // Use a fixture package instead of the real Atlaskit package so this test
+    // only verifies source-file-relative package resolution, not dependency setup.
+    const result = transform(
+      `
+      import { Box as AkBox, xcss as akXcss } from '@atlaskit/primitives';
+      import { media as akMedia } from '@compiled-private/source-relative-responsive';
 
-        export const CheckboxList = ({ testId = 'checkbox-list' }) => (
-          <AkBox
-            xcss={akXcss({
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              flexWrap: 'wrap',
-              flexDirection: 'column',
-              [akMedia.above.sm]: {
-                flexWrap: 'nowrap',
-              },
-            })}
-            testId={testId}
-          />
-        );
-      `,
-        { filename: 'checkbox-list.jsx' }
+      export const CheckboxList = ({ testId = 'checkbox-list' }) => (
+        <AkBox
+          xcss={akXcss({
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            flexWrap: 'wrap',
+            flexDirection: 'column',
+            [akMedia.above.sm]: {
+              flexWrap: 'nowrap',
+            },
+          })}
+          testId={testId}
+        />
       );
-    }).not.toThrow();
+    `,
+      { filename: join(__dirname, '__fixtures__', 'checkbox-list.jsx') }
+    );
+
+    expect(result).toMatchInlineSnapshot(`
+      "import { Box as AkBox, xcss as akXcss } from "@atlaskit/primitives";
+      import { media as akMedia } from "@compiled-private/source-relative-responsive";
+      export const CheckboxList = ({ testId = "checkbox-list" }) => (
+        <AkBox
+          xcss={akXcss({
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            flexWrap: "wrap",
+            flexDirection: "column",
+            [akMedia.above.sm]: {
+              flexWrap: "nowrap",
+            },
+          })}
+          testId={testId}
+        />
+      );
+      "
+    `);
   });
 
   it('should allow ternaries', () => {

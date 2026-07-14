@@ -2,4 +2,4 @@
 '@compiled/babel-plugin': patch
 ---
 
-Treat unresolved module imports as dynamic values when resolving bindings.
+Resolve module imports relative to the transformed file when resolving bindings.

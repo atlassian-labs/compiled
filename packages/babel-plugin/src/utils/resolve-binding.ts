@@ -183,9 +183,8 @@ const resolveRequest = (request: string, extensions: string[], meta: Metadata) =
   }
 
   if (!resolver) {
-    const id = request.charAt(0) === '.' ? join(dirname(filename), request) : request;
-
-    return resolve.sync(id, {
+    return resolve.sync(request, {
+      basedir: dirname(filename),
       extensions,
     });
   }
@@ -297,15 +296,7 @@ export const resolveBinding = (
     }
 
     const extensions = meta.state.opts.extensions ?? DEFAULT_CODE_EXTENSIONS;
-    let modulePath: string;
-
-    try {
-      modulePath = resolveRequest(moduleImportSource, extensions, meta);
-    } catch {
-      // Treat unresolved userland imports as dynamic values when they are unavailable
-      // from the Compiled plugin's module resolution context.
-      return;
-    }
+    const modulePath = resolveRequest(moduleImportSource, extensions, meta);
 
     if (!extensions.some((extension) => modulePath.endsWith(extension))) {
       // Don't attempt to parse any files that are not configured as code
