@@ -85,6 +85,28 @@ describe('ax - atomic', () => {
       '_syaz13q2 _1UtDYzynoA',
     ],
     [
+      'should correctly dedup within legacy format (9-char, 4-char group)',
+      // Two legacy-format color classes — same 4-char group (_syaz), last wins
+      // CLEANUP: remove this test when collisionResistantHash becomes the default
+      ['_syaz13q2', '_syaz5scu'],
+      '_syaz5scu',
+    ],
+    [
+      'should correctly dedup within new format (11-char, 6-char group)',
+      // Two new-format color classes — same 6-char group (_1UtDYz), last wins
+      ['_1UtDYzynoA', '_1UtDYzGowl'],
+      '_1UtDYzGowl',
+    ],
+    [
+      'should not cross-dedup legacy 9-char and new 11-char classes for the same property',
+      // During version-skew, ax() receives old 9-char classes from pre-built packages
+      // and new 11-char classes from the app's own styles in the same call.
+      // Different group key lengths mean they never falsely dedup each other.
+      // CLEANUP: remove this test when collisionResistantHash becomes the default
+      ['_syaz13q2', '_1UtDYzynoA'],
+      '_syaz13q2 _1UtDYzynoA',
+    ],
+    [
       'should ignore non atomic declarations when atomic declarations exist',
       ['hello_there', 'hello_world', '_1UtDYzGowl'],
       'hello_there hello_world _1UtDYzGowl',

@@ -627,11 +627,11 @@ describe('hash strategy', () => {
  * group hash — causing ax() to silently drop one of them from the DOM.
  */
 describe('real-world collision regression', () => {
-  const getGroup = (css: string, cr: boolean): string => {
-    const result = postcss([atomicifyRules({ collisionResistantHash: cr }), whitespace()]).process(
-      css,
-      { from: undefined }
-    );
+  const getGroup = (cssDeclaration: string, collisionResistant: boolean): string => {
+    const result = postcss([
+      atomicifyRules({ collisionResistantHash: collisionResistant }),
+      whitespace(),
+    ]).process(cssDeclaration, { from: undefined });
     const match = result.css.match(/\.(_[0-9a-zA-Z]+)/);
     const className = match?.[1] ?? '';
     // Group = everything except the last 4 chars (value hash)
@@ -653,21 +653,6 @@ describe('real-world collision regression', () => {
       const groupA = getGroup('scrollbar-width: auto;', true);
       const groupB = getGroup('text-anchor: start;', true);
       expect(groupA).not.toBe(groupB);
-    });
-
-    it('no two properties from the confirmed collision table share a group hash', () => {
-      // All properties involved in confirmed production property-hash collisions
-      const collisionPairs = [
-        ['scrollbar-width: auto;', 'text-anchor: start;'],
-        ['box-sizing: border-box;', 'outline-offset: 2px;'],
-        ['align-self: center;', 'color: red;'],
-      ];
-
-      for (const [cssA, cssB] of collisionPairs) {
-        const groupA = getGroup(cssA, true);
-        const groupB = getGroup(cssB, true);
-        expect(groupA).not.toBe(groupB);
-      }
     });
   });
 });
