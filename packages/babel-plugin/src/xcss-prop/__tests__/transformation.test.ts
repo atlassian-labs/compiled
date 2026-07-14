@@ -81,6 +81,33 @@ describe('xcss prop transformation', () => {
     `);
   });
 
+  it('should not throw when primitive xcss uses unresolved responsive imports', () => {
+    expect(() => {
+      transform(
+        `
+        import { Box as AkBox, xcss as akXcss } from '@atlaskit/primitives';
+        import { media as akMedia } from '@atlaskit/primitives/responsive';
+
+        export const CheckboxList = ({ testId = 'checkbox-list' }) => (
+          <AkBox
+            xcss={akXcss({
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              flexWrap: 'wrap',
+              flexDirection: 'column',
+              [akMedia.above.sm]: {
+                flexWrap: 'nowrap',
+              },
+            })}
+            testId={testId}
+          />
+        );
+      `,
+        { filename: 'checkbox-list.jsx' }
+      );
+    }).not.toThrow();
+  });
+
   it('should allow ternaries', () => {
     const result = transform(`
       import { cssMap } from '@compiled/react';
