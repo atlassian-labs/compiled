@@ -30,7 +30,7 @@ describe('CSS Extraction', () => {
       if (result && typeof result === 'object' && 'code' in result) {
         // In extract mode, the code should not include the style rules inline
         // but should still have the class names
-        expect(result.code).toMatch(/_[0-9a-zA-Z]{10}/);
+        expect(result.code).toMatch(/_[0-9a-zA-Z]{10}\b/);
       }
     });
 

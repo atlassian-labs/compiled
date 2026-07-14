@@ -207,7 +207,6 @@ describe('babel plugin', () => {
 
   it('should add a prefix to style hash classHashPrefix is present', () => {
     // changes to css/src/plugins/atomicify-rules can break this due to how the class name is hashed
-    // Updated for base-62 6-char group hash (was '_1lv61fwx' with base-36 4-char group)
     const hashedClassName = '_3ONivYrjyG';
     const actual = transform(
       `
