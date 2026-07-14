@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { dirname, join } from 'path';
+import { dirname } from 'path';
 
 import { parse } from '@babel/parser';
 import type { NodePath, Binding } from '@babel/traverse';
@@ -184,8 +184,35 @@ const resolveRequest = (request: string, extensions: string[], meta: Metadata) =
 
   if (!resolver) {
     return resolve.sync(request, {
+      // Resolve imports from the file being transformed, not from this plugin's package.
       basedir: dirname(filename),
       extensions,
+      // Make root package imports use simple string exports, e.g. `import '@pkg'` -> exports['.'].
+      packageFilter(pkg) {
+        const packageExports = pkg.exports as Record<string, unknown> | undefined;
+        const rootExport = packageExports?.['.'];
+
+        if (typeof rootExport === 'string') {
+          return {
+            ...pkg,
+            main: rootExport,
+          };
+        }
+
+        return pkg;
+      },
+      // Make package subpath imports use simple string exports, e.g. `import '@pkg/foo'` -> exports['./foo'].
+      pathFilter(pkg, _path, relativePath) {
+        const packageExports = pkg.exports as Record<string, unknown> | undefined;
+        const packageExport =
+          packageExports?.[relativePath] ?? packageExports?.[`./${relativePath}`];
+
+        if (typeof packageExport === 'string') {
+          return packageExport;
+        }
+
+        return relativePath;
+      },
     });
   }
 

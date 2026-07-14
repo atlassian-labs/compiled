@@ -83,13 +83,14 @@ describe('xcss prop transformation', () => {
     `);
   });
 
-  it('should resolve primitive xcss imports relative to the transformed file', () => {
+  it('should resolve primitive xcss imports from package exports relative to the transformed file', () => {
     // Use a fixture package instead of the real Atlaskit package so this test
     // only verifies source-file-relative package resolution, not dependency setup.
     const result = transform(
       `
       import { Box as AkBox, xcss as akXcss } from '@atlaskit/primitives';
-      import { media as akMedia } from '@compiled-private/source-relative-responsive';
+      import { media as rootMedia } from '@compiled-private/source-relative-responsive';
+      import { media as subpathMedia } from '@compiled-private/source-relative-responsive/media';
 
       export const CheckboxList = ({ testId = 'checkbox-list' }) => (
         <AkBox
@@ -98,8 +99,11 @@ describe('xcss prop transformation', () => {
             gridTemplateColumns: '1fr 1fr',
             flexWrap: 'wrap',
             flexDirection: 'column',
-            [akMedia.above.sm]: {
+            [rootMedia.above.sm]: {
               flexWrap: 'nowrap',
+            },
+            [subpathMedia.above.sm]: {
+              display: 'flex',
             },
           })}
           testId={testId}
@@ -111,7 +115,8 @@ describe('xcss prop transformation', () => {
 
     expect(result).toMatchInlineSnapshot(`
       "import { Box as AkBox, xcss as akXcss } from "@atlaskit/primitives";
-      import { media as akMedia } from "@compiled-private/source-relative-responsive";
+      import { media as rootMedia } from "@compiled-private/source-relative-responsive";
+      import { media as subpathMedia } from "@compiled-private/source-relative-responsive/media";
       export const CheckboxList = ({ testId = "checkbox-list" }) => (
         <AkBox
           xcss={akXcss({
@@ -119,8 +124,11 @@ describe('xcss prop transformation', () => {
             gridTemplateColumns: "1fr 1fr",
             flexWrap: "wrap",
             flexDirection: "column",
-            [akMedia.above.sm]: {
+            [rootMedia.above.sm]: {
               flexWrap: "nowrap",
+            },
+            [subpathMedia.above.sm]: {
+              display: "flex",
             },
           })}
           testId={testId}
