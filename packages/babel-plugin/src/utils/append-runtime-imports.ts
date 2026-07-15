@@ -1,8 +1,6 @@
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 
-import type { State } from '../types';
-
 /**
  * Wrapper to make defining import specifiers easier.
  * If `localName` is defined it will rename the import to it,
@@ -15,9 +13,7 @@ const importSpecifier = (name: string, localName?: string): t.ImportSpecifier =>
   return t.importSpecifier(t.identifier(name), t.identifier(localName || name));
 };
 
-// Runtime function `ac` is less performant than `ax`, so we only want to import `ac` if classNameCompressionMap is provided.
-const COMPILED_RUNTIME_IMPORTS_WITH_COMPRESSION = ['ac', 'ix', 'CC', 'CS'];
-const COMPILED_RUNTIME_IMPORTS_WITHOUT_COMPRESSION = ['ax', 'ix', 'CC', 'CS'];
+const COMPILED_RUNTIME_IMPORTS = ['ax', 'ix', 'CC', 'CS'];
 const COMPILED_RUNTIME_MODULE = '@compiled/react/runtime';
 
 /**
@@ -27,11 +23,7 @@ const COMPILED_RUNTIME_MODULE = '@compiled/react/runtime';
  *
  * @param path ImportDeclaration node path
  */
-export const appendRuntimeImports = (path: NodePath<t.Program>, state: State): void => {
-  const COMPILED_RUNTIME_IMPORTS = state.opts.classNameCompressionMap
-    ? COMPILED_RUNTIME_IMPORTS_WITH_COMPRESSION
-    : COMPILED_RUNTIME_IMPORTS_WITHOUT_COMPRESSION;
-
+export const appendRuntimeImports = (path: NodePath<t.Program>): void => {
   // Check if we have any sibling runtime import
   const previouslyDeclaredRuntimeDeclaration = path
     .get('body')

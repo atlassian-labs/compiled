@@ -195,7 +195,7 @@ export default declare<State>((api) => {
 
           preserveLeadingComments(path);
 
-          appendRuntimeImports(path, state);
+          appendRuntimeImports(path);
 
           if (!pragma.jsxImportSource && shouldImportReact && !path.scope.getBinding('React')) {
             // React is missing - add it in at the last moment!

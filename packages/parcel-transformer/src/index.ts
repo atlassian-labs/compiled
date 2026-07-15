@@ -49,26 +49,6 @@ export default new Transformer<ParcelTransformerOpts>({
         config.invalidateOnStartup();
       }
 
-      // Use `classNameCompressionMapFilePath` to get classNameCompressionMap
-      // Note `classNameCompressionMap` and `classNameCompressionMapFilePath` are mutually exclusive.
-      // If both are provided, classNameCompressionMap takes precedence.
-      if (!conf.contents.classNameCompressionMap && conf.contents.classNameCompressionMapFilePath) {
-        // Use `getConfigFrom` from Parcel so the contents are cached at `.parcel-cache`
-        const configClassNameCompressionMap = await config.getConfigFrom(
-          join(options.projectRoot, 'index'),
-          [conf.contents.classNameCompressionMapFilePath],
-          {
-            packageKey,
-          }
-        );
-
-        if (configClassNameCompressionMap?.contents) {
-          Object.assign(contents, {
-            classNameCompressionMap: configClassNameCompressionMap?.contents,
-          });
-        }
-      }
-
       Object.assign(contents, conf.contents);
     }
 
@@ -165,7 +145,6 @@ export default new Transformer<ParcelTransformerOpts>({
           '@compiled/babel-plugin',
           {
             ...config,
-            classNameCompressionMap: config.extract && config.classNameCompressionMap,
             onIncludedFiles: (files: string[]) => includedFiles.push(...files),
             resolver: config.resolver ? config.resolver : createDefaultResolver(config),
             cache: false,

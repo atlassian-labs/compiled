@@ -66,7 +66,6 @@ function compiled(userOptions: PluginOptions = {}): any {
     extensions: undefined,
     parserBabelPlugins: undefined,
     addComponentName: false,
-    classNameCompressionMap: undefined,
     processXcss: undefined,
     increaseSpecificity: undefined,
     sortAtRules: true,
@@ -150,8 +149,6 @@ function compiled(userOptions: PluginOptions = {}): any {
               '@compiled/babel-plugin',
               {
                 ...options,
-                // Turn off compressing class names if stylesheet extraction is off
-                classNameCompressionMap: extract && options.classNameCompressionMap,
                 onIncludedFiles: (files: string[]) => includedFiles.push(...files),
                 resolver: options.resolver ? options.resolver : createDefaultResolver(options),
                 cache: false,

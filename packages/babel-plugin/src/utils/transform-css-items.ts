@@ -3,7 +3,6 @@ import { transformCss } from '@compiled/css';
 
 import type { Metadata } from '../types';
 
-import { compressClassNamesForRuntime } from './compress-class-names-for-runtime';
 import { getItemCss } from './css-builders';
 import type { CssItem } from './types';
 
@@ -81,12 +80,7 @@ const transformCssItem = (
         classExpression: t.logicalExpression(
           item.operator,
           item.expression,
-          t.stringLiteral(
-            compressClassNamesForRuntime(
-              logicalCss.classNames,
-              meta.state.opts.classNameCompressionMap
-            ).join(' ')
-          )
+          t.stringLiteral(logicalCss.classNames.join(' '))
         ),
       };
 
@@ -98,10 +92,7 @@ const transformCssItem = (
 
     default:
       const css = transformCss(getItemCss(item), meta.state.opts, opts);
-      const className = compressClassNamesForRuntime(
-        css.classNames,
-        meta.state.opts.classNameCompressionMap
-      ).join(' ');
+      const className = css.classNames.join(' ');
 
       return {
         sheets: css.sheets,
@@ -141,10 +132,7 @@ export const transformCssItems = (
     // - Emits exactly one `const _N` variable per variant in the babel output
     // - Results in exactly one insertNonAtomicRule() call at runtime → fewer DOM mutations
     const sheets = css.sheets.length > 1 ? [css.sheets.join('')] : css.sheets;
-    const className = compressClassNamesForRuntime(
-      css.classNames,
-      meta.state.opts.classNameCompressionMap
-    ).join(' ');
+    const className = css.classNames.join(' ');
 
     return {
       sheets,
