@@ -80,14 +80,6 @@ export interface CompiledLoaderOptions {
   addComponentName?: boolean;
 
   /**
-   * A map holds the key-value pairs between full Atomic class names and the compressed ones,
-   * i.e. { '_aaaabbbb': 'a' }.
-   *
-   * Default to `undefined`
-   */
-  classNameCompressionMap?: object;
-
-  /**
    * When set, extract styles to an external CSS file.
    */
   extractStylesToDirectory?: { source: string; dest: string };

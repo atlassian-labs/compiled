@@ -47,23 +47,6 @@ export interface ParcelTransformerOpts extends BabelPluginOpts {
   addComponentName?: boolean;
 
   /**
-   * A map holds the key-value pairs between full Atomic class names and the compressed ones
-   * i.e. { '_aaaabbbb': 'a' }
-   *
-   * Default to `undefined`
-   */
-  classNameCompressionMap?: { [index: string]: string };
-
-  /**
-   * File path to classNameCompressionMap. It's relative to project root.
-   * Note `classNameCompressionMap` and `classNameCompressionMapFilePath` are mutually exclusive.
-   * If both are provided, classNameCompressionMap takes precedence.
-   *
-   * Default to `undefined`
-   */
-  classNameCompressionMapFilePath?: string;
-
-  /**
    * When set, extract styles to an external CSS file
    */
   extractStylesToDirectory?: { source: string; dest: string };

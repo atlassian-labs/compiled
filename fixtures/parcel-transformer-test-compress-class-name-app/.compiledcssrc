@@ -1,7 +1,0 @@
-{
-  "importReact": false,
-  "extract": true,
-  "optimizeCss": false,
-  "inlineCss": true,
-  "classNameCompressionMapFilePath": "./class-name-compression-map.json"
-}

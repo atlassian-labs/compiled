@@ -5,7 +5,6 @@ import { rule } from 'postcss';
 import { canProcessAtRule } from './at-rule-lists';
 
 interface PluginOpts {
-  classNameCompressionMap?: Record<string, string>;
   callback?: (className: string) => void;
   selectors?: string[];
   atRule?: string;
@@ -91,7 +90,6 @@ const replaceNestingSelector = (selector: string, parentClassName: string) => {
  * @param node
  */
 const buildAtomicSelector = (node: Declaration, opts: PluginOpts) => {
-  const { classNameCompressionMap } = opts;
   const selectors: string[] = [];
 
   (opts.selectors || ['']).forEach((selector) => {
@@ -101,15 +99,7 @@ const buildAtomicSelector = (node: Declaration, opts: PluginOpts) => {
       selectors: [normalizedSelector],
     });
 
-    const compressedClassName =
-      classNameCompressionMap && classNameCompressionMap[fullClassName.slice(1)];
-
-    if (compressedClassName) {
-      // Use compressed class name if compressedClassName is available
-      selectors.push(replaceNestingSelector(normalizedSelector, compressedClassName));
-    } else {
-      selectors.push(replaceNestingSelector(normalizedSelector, fullClassName));
-    }
+    selectors.push(replaceNestingSelector(normalizedSelector, fullClassName));
 
     if (opts.callback) {
       opts.callback(fullClassName);

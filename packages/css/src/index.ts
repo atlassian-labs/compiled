@@ -6,4 +6,3 @@ export {
   BeforeInterpolation,
 } from './utils/css-affix-interpolation';
 export { sort } from './sort';
-export { generateCompressionMap } from './generate-compression-map';

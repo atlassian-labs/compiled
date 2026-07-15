@@ -16,9 +16,7 @@ import type { Metadata, Tag } from '../types';
 
 import { pickFunctionBody } from './ast';
 import { buildCssVariables } from './build-css-variables';
-import { compressClassNamesForRuntime } from './compress-class-names-for-runtime';
 import { getItemCss } from './css-builders';
-import { getRuntimeClassNameLibrary } from './get-runtime-class-name-library';
 import { hoistSheet } from './hoist-sheet';
 import { applySelectors, transformCssItems } from './transform-css-items';
 import type { CSSOutput, CssItem } from './types';
@@ -181,9 +179,7 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
           {...${hasInvalidDomProps ? DOM_PROPS_IDENTIFIER_NAME : PROPS_IDENTIFIER_NAME}}
           style={%%styleProp%%}
           ref={${REF_IDENTIFIER_NAME}}
-          className={${getRuntimeClassNameLibrary(
-            meta
-          )}([${classNames} ${PROPS_IDENTIFIER_NAME}.className])}
+          className={ax([${classNames} ${PROPS_IDENTIFIER_NAME}.className])}
         />
       </CC>
     );
@@ -252,14 +248,7 @@ export const buildStyledComponent = (tag: Tag, cssOutput: CSSOutput, meta: Metad
 
   const sheets = [...uniqueUnconditionalCssOutput.sheets, ...conditionalCssOutput.sheets];
   const classNames = [
-    ...[
-      t.stringLiteral(
-        compressClassNamesForRuntime(
-          uniqueUnconditionalCssOutput.classNames,
-          meta.state.opts.classNameCompressionMap
-        ).join(' ')
-      ),
-    ],
+    ...[t.stringLiteral(uniqueUnconditionalCssOutput.classNames.join(' '))],
     ...conditionalCssOutput.classNames,
   ];
 
