@@ -1,18 +1,19 @@
 import fs from 'fs';
-import { dirname } from 'path';
 
 import { parse } from '@babel/parser';
 import type { NodePath, Binding } from '@babel/traverse';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
 import { DEFAULT_PARSER_BABEL_PLUGINS } from '@compiled/utils';
-import resolve from 'resolve';
 
 import { DEFAULT_CODE_EXTENSIONS } from '../constants';
-import type { Metadata } from '../types';
+import type { Metadata, Resolver } from '../types';
 
 import { getDefaultExport, getNamedExport, setImportedCompiledImports } from './traversers';
 import type { PartialBindingWithMeta, EvaluateExpression } from './types';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const defaultResolver = require('../resolver/resolver') as Resolver;
 
 /**
  * Will recursively checks if identifier name is coming from destructuring. If yes,
@@ -183,37 +184,7 @@ const resolveRequest = (request: string, extensions: string[], meta: Metadata) =
   }
 
   if (!resolver) {
-    return resolve.sync(request, {
-      // Resolve imports from the file being transformed, not from this plugin's package.
-      basedir: dirname(filename),
-      extensions,
-      // Make root package imports use simple string exports, e.g. `import '@pkg'` -> exports['.'].
-      packageFilter(pkg) {
-        const packageExports = pkg.exports as Record<string, unknown> | undefined;
-        const rootExport = packageExports?.['.'];
-
-        if (typeof rootExport === 'string') {
-          return {
-            ...pkg,
-            main: rootExport,
-          };
-        }
-
-        return pkg;
-      },
-      // Make package subpath imports use simple string exports, e.g. `import '@pkg/foo'` -> exports['./foo'].
-      pathFilter(pkg, _path, relativePath) {
-        const packageExports = pkg.exports as Record<string, unknown> | undefined;
-        const packageExport =
-          packageExports?.[relativePath] ?? packageExports?.[`./${relativePath}`];
-
-        if (typeof packageExport === 'string') {
-          return packageExport;
-        }
-
-        return relativePath;
-      },
-    });
+    return defaultResolver.resolveSync(filename, request);
   }
 
   return resolver.resolveSync(filename, request);
