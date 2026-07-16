@@ -13,7 +13,7 @@ import { getDefaultExport, getNamedExport, setImportedCompiledImports } from './
 import type { PartialBindingWithMeta, EvaluateExpression } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const defaultResolver = require('../resolver/resolver') as Resolver;
+const defaultResolver = require('../resolver') as Resolver;
 
 /**
  * Will recursively checks if identifier name is coming from destructuring. If yes,
