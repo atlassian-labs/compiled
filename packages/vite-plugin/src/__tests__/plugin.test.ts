@@ -6,6 +6,69 @@ describe('compiledVitePlugin', () => {
 
     expect(plugin.name).toBe('@compiled/vite-plugin');
     expect(plugin.enforce).toBe('pre');
+    expect(Array.isArray(plugin)).toBe(false);
+  });
+
+  it('only proxies client-side script imports while serving', async () => {
+    const plugin: any = compiledVitePlugin();
+    const context = {
+      resolve: jest.fn().mockResolvedValue({
+        id: '/project/styles.compiled.css',
+      }),
+    };
+    const resolveOptions = {
+      attributes: {},
+      isEntry: false,
+    };
+
+    plugin.configResolved({ base: '/', command: 'serve' });
+
+    const proxyId = await plugin.resolveId.call(
+      context,
+      './styles.compiled.css',
+      '/project/entry.ts',
+      resolveOptions
+    );
+    expect(proxyId).toMatch(/^\0virtual:@compiled\/vite-plugin\/css-proxy:.*\.js$/);
+    expect(context.resolve).toHaveBeenCalledWith(
+      './styles.compiled.css',
+      '/project/entry.ts',
+      expect.objectContaining({ skipSelf: true })
+    );
+
+    await expect(
+      plugin.resolveId.call(context, './styles.compiled.css', '/project/entry.ts', {
+        ...resolveOptions,
+        ssr: true,
+      })
+    ).resolves.toBeNull();
+    await expect(
+      plugin.resolveId.call(context, './styles.compiled.css', '/project/entry.ts', {
+        ...resolveOptions,
+        scan: true,
+      })
+    ).resolves.toBeNull();
+    await expect(
+      plugin.resolveId.call(
+        context,
+        './styles.compiled.css',
+        '/project/importer.css',
+        resolveOptions
+      )
+    ).resolves.toBeNull();
+    await expect(
+      plugin.resolveId.call(
+        context,
+        './styles.compiled.css?inline',
+        '/project/entry.ts',
+        resolveOptions
+      )
+    ).resolves.toBeNull();
+
+    plugin.configResolved({ base: '/', command: 'build' });
+    await expect(
+      plugin.resolveId.call(context, './styles.compiled.css', '/project/entry.ts', resolveOptions)
+    ).resolves.toBeNull();
   });
 
   it('should transform code with Compiled imports', async () => {

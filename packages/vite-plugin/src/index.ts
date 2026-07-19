@@ -7,7 +7,9 @@ import type {
 import { sort } from '@compiled/css';
 import { DEFAULT_IMPORT_SOURCES, DEFAULT_PARSER_BABEL_PLUGINS, toBoolean } from '@compiled/utils';
 import type { OutputAsset, OutputBundle } from 'rollup';
+import type { HtmlTagDescriptor, Plugin } from 'vite';
 
+import { createDevCssHooks, isCompiledCssRequest } from './dev-css.js';
 import type { PluginOptions } from './types';
 import { createDefaultResolver } from './utils.js';
 
@@ -47,7 +49,7 @@ const sortStyleRulesForDeterministicOutput = (styleRules: string[]): string[] =>
  * @param userOptions - Plugin configuration options
  * @returns Vite plugin object
  */
-function compiled(userOptions: PluginOptions = {}): any {
+function compiled(userOptions: PluginOptions = {}): Plugin {
   const options: PluginOptions = {
     // Vite-specific
     bake: true,
@@ -96,11 +98,12 @@ function compiled(userOptions: PluginOptions = {}): any {
   const EXTRACTED_CSS_NAME = 'compiled-extracted.css';
 
   return {
+    ...createDevCssHooks(sortCompiledCss),
     name: '@compiled/vite-plugin',
     enforce: 'pre', // Run before other plugins
 
     async transform(code: string, id: string): Promise<any> {
-      if (id.endsWith('.compiled.css') && code.includes('._')) {
+      if (isCompiledCssRequest(id) && code.includes('._')) {
         try {
           return {
             code: sortCompiledCss(code),
@@ -289,7 +292,7 @@ function compiled(userOptions: PluginOptions = {}): any {
     transformIndexHtml(
       _html: string,
       ctx: { bundle?: OutputBundle; [key: string]: any }
-    ): { tag: string; attrs: Record<string, string>; injectTo: string }[] {
+    ): HtmlTagDescriptor[] {
       // Inject the extracted CSS file into HTML if it was emitted
       if (!extractedCssFileName || !ctx.bundle) {
         return [];

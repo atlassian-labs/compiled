@@ -1,0 +1,15 @@
+._base {
+  display: none;
+}
+
+._font {
+  font: normal 400 14px/20px sans-serif;
+}
+
+._border {
+  border: 0;
+}
+
+._asset {
+  background-image: url('./asset.svg');
+}
