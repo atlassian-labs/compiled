@@ -2,4 +2,4 @@
 '@compiled/vite-plugin': patch
 ---
 
-Sort extracted Compiled styles during Vite development transforms.
+Combine and sort active extracted Compiled styles across Vite development modules so cross-file cascade ordering matches production.
