@@ -150,11 +150,6 @@
       "import": "ax"
     },
     {
-      "path": "./packages/react/dist/browser/runtime/ac.js",
-      "limit": "332B",
-      "import": "ac, { clearCache }"
-    },
-    {
       "path": "./packages/react/dist/browser/runtime/style.js",
       "limit": "1140B",
       "import": "CS",

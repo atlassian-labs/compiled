@@ -41,7 +41,6 @@ Through the Compiled configuration file (e.g. `.compiledcssrc`), you can set opt
 
 `@compiled/parcel-transformer` accepts the following options:
 
-- `classNameCompressionMapFilePath`
 - `extensions`
 - `extract`
 - `extractFromDistributedCode`
@@ -52,14 +51,6 @@ Through the Compiled configuration file (e.g. `.compiledcssrc`), you can set opt
 - `ssr`
 - `styleSheetPath`
 - `transformerBabelPlugins`
-
-#### classNameCompressionMapFilePath
-
-Don't use this!
-
-This is an alternative to `classNameCompressionMap`, where instead of providing the compression map itself, you can provide a file path to the compression map. If both are provided, `classNameCompressionMap` will take precedence over `classNameCompressionMapFilePath`.
-
-Note that this is enabled only if `extract` is set to `true`.
 
 #### extensions
 
@@ -208,7 +199,6 @@ The following options are passed directly to `@compiled/babel-plugin`:
 
 - `addComponentName`
 - `classHashPrefix`
-- `classNameCompressionMap`
 - `importReact`
 - `importSources`
 - `optimizeCss`

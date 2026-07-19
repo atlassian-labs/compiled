@@ -17,7 +17,6 @@ import { parentOrphanedPseudos } from './plugins/parent-orphaned-pseudos';
 import { sortStyleSheet } from './plugins/sort-style-sheet';
 export interface TransformOpts {
   optimizeCss?: boolean;
-  classNameCompressionMap?: Record<string, string>;
   increaseSpecificity?: boolean;
   sortAtRules?: boolean;
   sortShorthand?: boolean;
@@ -130,7 +129,6 @@ export const transformCss = (
       const atomicResult = postcss([
         ...sharedPlugins,
         atomicifyRules({
-          classNameCompressionMap: opts.classNameCompressionMap,
           callback: (className: string) => classNames.push(className),
           classHashPrefix: opts.classHashPrefix,
         }),

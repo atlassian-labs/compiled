@@ -74,14 +74,6 @@ export interface PluginOptions {
   addComponentName?: boolean;
 
   /**
-   * A map holds the key-value pairs between full Atomic class names and the compressed ones
-   * i.e. { '_aaaabbbb': 'a' }
-   *
-   * Defults to `undefined`
-   */
-  classNameCompressionMap?: { [index: string]: string };
-
-  /**
    * Whether Compiled should process usages of xcss in the codebase.
    * Disable this if xcss is not implemented in your codebase using Compiled's xcss functionality.
    *

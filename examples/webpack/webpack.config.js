@@ -7,8 +7,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
 
-const classNameCompressionMap = require('./class-name-compression-map.json');
-
 const extractCSS = process.env.EXTRACT_TO_CSS === 'true';
 
 console.log('Stylesheet extraction enabled?', extractCSS);
@@ -43,7 +41,6 @@ module.exports = {
               extensions: ['.js', '.jsx', '.ts', '.tsx', '.customjsx'],
               transformerBabelPlugins: [['@babel/plugin-proposal-decorators', { legacy: true }]],
               optimizeCss: false,
-              classNameCompressionMap,
             },
           },
         ],

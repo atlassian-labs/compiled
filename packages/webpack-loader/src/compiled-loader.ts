@@ -36,7 +36,6 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     ssr = false,
     optimizeCss = true,
     addComponentName = false,
-    classNameCompressionMap = undefined,
     extractStylesToDirectory = undefined,
     resolver = undefined,
     importSources = undefined,
@@ -84,9 +83,6 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           addComponentName: {
             type: 'boolean',
           },
-          classNameCompressionMap: {
-            type: 'object',
-          },
           extractStylesToDirectory: {
             type: 'object',
           },
@@ -115,7 +111,6 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     ssr,
     optimizeCss,
     addComponentName,
-    classNameCompressionMap,
     extractStylesToDirectory,
     resolver,
     importSources,
@@ -184,8 +179,6 @@ export default async function compiledLoader(
           '@compiled/babel-plugin',
           {
             ...options,
-            // Turn off compressing class names if stylesheet extraction is off
-            classNameCompressionMap: options.extract && options.classNameCompressionMap,
             onIncludedFiles: (files: string[]) => includedFiles.push(...files),
             resolver: options.resolver
               ? options.resolver
