@@ -26,38 +26,68 @@ describe('ax - atomic', () => {
   it.each([
     [
       'should ensure the last atomic declaration of a single group wins',
-      ['_aaaabbbb', '_aaaacccc'],
-      '_aaaacccc',
+      // _1UtDYzynoA and _1UtDYzGowl both target `color` (same 6-char group _1UtDYz)
+      ['_1UtDYzynoA', '_1UtDYzGowl'],
+      '_1UtDYzGowl',
     ],
     [
       'should ensure the last atomic declaration of many single groups wins',
-      ['_aaaabbbb', '_aaaacccc', '_aaaadddd', '_aaaaeeee'],
-      '_aaaaeeee',
+      // All four target `color` (group _1UtDYz) — last one wins
+      ['_1UtDYzynoA', '_1UtDYzGowl', '_1UtDYzDpLb', '_1UtDYzpjc8'],
+      '_1UtDYzpjc8',
     ],
     [
       'should ensure the last atomic declaration of a multi group wins',
-      ['_aaaabbbb _aaaacccc'],
-      '_aaaacccc',
+      // Two color classes in a single string — last one wins
+      ['_1UtDYzynoA _1UtDYzGowl'],
+      '_1UtDYzGowl',
     ],
     [
       'should ensure the last atomic declaration of many multi groups wins',
-      ['_aaaabbbb _aaaacccc _aaaadddd _aaaaeeee'],
-      '_aaaaeeee',
+      // Four color classes in a single string — last one wins
+      ['_1UtDYzynoA _1UtDYzGowl _1UtDYzDpLb _1UtDYzpjc8'],
+      '_1UtDYzpjc8',
     ],
     [
-      'should ensure the last atomic declaration of many multi groups with short class name wins',
-      ['_aaaabbbb', '_aaaaaaa', '_ddddbbb', '_ddddcccc'],
-      '_aaaaaaa _ddddcccc',
+      'should ensure the last atomic declaration of many multi groups with new-format class names wins',
+      // New-format atomic classes: `_` + 6-char group + 4-char value = 11 chars total
+      // Group key is extracted via `className.length - 4` = first 7 chars
+      // _1UtDYz* = color group, _4ya3eE* = font-size group — each deduped independently
+      ['_1UtDYzynoA', '_1UtDYzGowl', '_4ya3eErjyG', '_4ya3eEEbN9'],
+      '_1UtDYzGowl _4ya3eEEbN9',
     ],
     [
       'should not remove any atomic declarations if there are no duplicate groups',
-      ['_aaaabbbb', '_bbbbcccc'],
-      '_aaaabbbb _bbbbcccc',
+      // _1UtDYzGowl = color, _4ya3eErjyG = font-size — different groups, both survive
+      ['_1UtDYzGowl', '_4ya3eErjyG'],
+      '_1UtDYzGowl _4ya3eErjyG',
+    ],
+    [
+      'should correctly dedup within legacy format (9-char, 4-char group)',
+      // Two legacy-format color classes — same 4-char group (_syaz), last wins
+      // CLEANUP: remove this test when collisionResistantHash becomes the default
+      ['_syaz13q2', '_syaz5scu'],
+      '_syaz5scu',
+    ],
+    [
+      'should correctly dedup within new format (11-char, 6-char group)',
+      // Two new-format color classes — same 6-char group (_1UtDYz), last wins
+      ['_1UtDYzynoA', '_1UtDYzGowl'],
+      '_1UtDYzGowl',
+    ],
+    [
+      'should not cross-dedup legacy 9-char and new 11-char classes for the same property',
+      // During version-skew, ax() receives old 9-char classes from pre-built packages
+      // and new 11-char classes from the app's own styles in the same call.
+      // Different group key lengths mean they never falsely dedup each other.
+      // CLEANUP: remove this test when collisionResistantHash becomes the default
+      ['_syaz13q2', '_1UtDYzynoA'],
+      '_syaz13q2 _1UtDYzynoA',
     ],
     [
       'should ignore non atomic declarations when atomic declarations exist',
-      ['hello_there', 'hello_world', '_aaaabbbb'],
-      'hello_there hello_world _aaaabbbb',
+      ['hello_there', 'hello_world', '_1UtDYzGowl'],
+      'hello_there hello_world _1UtDYzGowl',
     ],
   ])('%s', (_, params, expected) => {
     expect(ax(params)).toEqual(expected);
@@ -91,9 +121,9 @@ describe('ax - non-atomic', () => {
       'should handle mixed atomic and non-atomic classes — cc- classes are preserved alongside _ classes',
       // ax() can receive both atomic (_) classes from css()/styled() and non-atomic
       // (cc-) classes from cssMapScoped in the same call.
-      // Atomic group "aaaa" is deduped to its last value; cc- classes are all preserved.
-      ['_aaaabbbb', 'cc-1c2j123', '_aaaacccc', 'cc-o9delr'],
-      '_aaaacccc cc-1c2j123 cc-o9delr',
+      // _1UtDYzynoA and _1UtDYzGowl both target color — deduped to last; cc- classes preserved.
+      ['_1UtDYzynoA', 'cc-1c2j123', '_1UtDYzGowl', 'cc-o9delr'],
+      '_1UtDYzGowl cc-1c2j123 cc-o9delr',
     ],
     [
       'should not treat cc- as an atomic group (different cc- classes are not deduped by prefix)',
