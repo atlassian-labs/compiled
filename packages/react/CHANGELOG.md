@@ -1,5 +1,30 @@
 # @compiled/react
 
+## 1.0.0
+
+### Major Changes
+
+- f34e80d: Remove the unused class name compression feature (`classNameCompressionMap`).
+
+  This removes the `classNameCompressionMap` / `classNameCompressionMapFilePath` options across the
+  babel plugin, CSS transform, and all bundler integrations (Parcel, webpack, Vite), along with the
+  `ac` runtime (and `clearAcCache`) from `@compiled/react/runtime` and the `generateCompressionMap`
+  export from `@compiled/css`. Compiled components now always use the `ax` runtime for class name
+  merging. The feature was unused in practice and its removal simplifies the codebase and reduces
+  runtime bundle size.
+
+### Minor Changes
+
+- bab22a2: Update the `ax()` runtime to extract the atomic group key using length-based slicing
+  (`className.length - 4`) instead of a hardcoded offset.
+
+  This makes `ax()` forward-compatible with longer atomic class names: it now correctly
+  deduplicates both the current 9-char format (`_` + 4-char group + 4-char value) and the
+  upcoming 11-char format (`_` + 6-char group + 4-char value). Because the two formats
+  produce group keys of different lengths, they are structurally disjoint and never falsely
+  deduplicate each other — so old and new class names can safely coexist on the same element
+  during a migration. Behaviour for existing 9-char class names is unchanged.
+
 ## 0.22.2
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @compiled/parcel-config
 
+## 0.5.7
+
+### Patch Changes
+
+- Updated dependencies [f34e80d]
+  - @compiled/parcel-transformer@1.0.0
+  - @compiled/parcel-optimizer@0.6.8
+
 ## 0.5.6
 
 ### Patch Changes
