@@ -3,21 +3,27 @@ import { runBenchmark } from '@compiled/benchmark';
 import { ax } from '../index';
 
 describe('ax benchmark', () => {
-  const chunks: string[] = ['aaaa', 'bbbb', 'cccc', 'dddd', 'eeee', 'ffff', 'gggg'];
-  const uniques: string[] = chunks.map((chunk) => `_${chunk}${chunk}`);
+  // Real 6-char base-62 group prefixes from actual Compiled output (various CSS properties)
+  // Each chunk is a 6-char group; values are 4-char suffixes — together forming 11-char classes
+  const groups: string[] = ['1UtDYz', '4ya3eE', '3iDTPb', '1DCdHi', '30huDK', '3ONivY', '09lB87'];
+  const values: string[] = ['ynoA', 'rjyG', 'vLZJ', 'Jg58', 'tfxT', 'rjyG', 'YbGa'];
+  const uniques: string[] = groups.map((g, i) => `_${g}${values[i]}`);
   const withClashes: string[] = [
-    ...Array.from({ length: 4 }, () => `_${chunks[0]}${chunks[0]}`),
-    ...Array.from({ length: 6 }, () => `_${chunks[0]}${chunks[1]}`),
-    ...Array.from({ length: 8 }, () => `_${chunks[0]}${chunks[2]}`),
+    ...Array.from({ length: 4 }, () => `_${groups[0]}${values[0]}`),
+    ...Array.from({ length: 6 }, () => `_${groups[0]}${values[1]}`),
+    ...Array.from({ length: 8 }, () => `_${groups[0]}${values[2]}`),
   ];
 
   const getRandomRules = (() => {
-    function randomChunk() {
-      return chunks[Math.floor(Math.random() * chunks.length)];
+    function randomGroup() {
+      return groups[Math.floor(Math.random() * groups.length)];
+    }
+    function randomValue() {
+      return values[Math.floor(Math.random() * values.length)];
     }
 
     return function create(): string[] {
-      return Array.from({ length: 20 }, () => `_${randomChunk()}${randomChunk()}`);
+      return Array.from({ length: 20 }, () => `_${randomGroup()}${randomValue()}`);
     };
   })();
 
@@ -25,7 +31,7 @@ describe('ax benchmark', () => {
     const benchmark = await runBenchmark('ax', [
       {
         name: 'ax() single',
-        fn: () => ax(['_aaaabbbb']),
+        fn: () => ax(['_1UtDYzynoA']),
       },
       {
         name: 'ax() uniques (array)',

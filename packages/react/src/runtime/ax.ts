@@ -1,17 +1,25 @@
 /**
- * This length includes the underscore,
- * e.g. `"_1s4A"` would be a valid atomic group hash.
+ * The length of the value hash portion of an atomic class name.
+ * Atomic class names have the format: `_<group><value>`
+ * where group is ATOMIC_GROUP_HASH_LENGTH chars and value is ATOMIC_VALUE_HASH_LENGTH chars.
+ *
+ * We extract the group key using: `className.slice(0, className.length - ATOMIC_VALUE_HASH_LENGTH)`
+ *
+ * We support both old-format classes (9 chars: `_` + 4 group + 4 value) and
+ * new-format classes (11 chars: `_` + 6 group + 4 value) by using length-based
+ * extraction rather than a hardcoded offset — old and new format group keys
+ * are different lengths so they are structurally disjoint and never alias each other.
  */
-const ATOMIC_GROUP_LENGTH = 5;
+const ATOMIC_VALUE_HASH_LENGTH = 4;
 
 /**
  * Create a single string containing all the classnames provided, separated by a space (`" "`).
  * The result will only contain the _last_ atomic style classname for each atomic `group`.
  *
  * ```ts
- * ax(['_aaaabbbb', '_aaaacccc']);
+ * ax(['_aaaaaabbbb', '_aaaaaacccc']);
  * // output
- * '_aaaacccc'
+ * '_aaaaaacccc'
  * ```
  *
  * Format of Atomic style classnames: `_{group}{value}` (`_\w{4}\w{4}`)
@@ -19,9 +27,9 @@ const ATOMIC_GROUP_LENGTH = 5;
  * `ax` will preserve any non atomic style classnames (eg `"border-red"`)
  *
  * ```ts
- * ax(['_aaaabbbb', '_aaaacccc', 'border-red']);
+ * ax(['_aaaaaabbbb', '_aaaaaacccc', 'border-red']);
  * // output
- * '_aaaacccc border-red'
+ * '_aaaaaacccc border-red'
  * ```
  */
 export default function ax(classNames: (string | undefined | null | false)[]): string | undefined {
@@ -68,7 +76,9 @@ export default function ax(classNames: (string | undefined | null | false)[]): s
        * - Okay to remove duplicates as doing so does not impact specificity
        *
        * */
-      const key = className.startsWith('_') ? className.slice(0, ATOMIC_GROUP_LENGTH) : className;
+      const key = className.startsWith('_')
+        ? className.slice(0, className.length - ATOMIC_VALUE_HASH_LENGTH)
+        : className;
       map[key] = className;
     }
   }
