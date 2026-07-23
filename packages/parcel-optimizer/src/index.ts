@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { join, basename } from 'path';
+import { join } from 'path';
 
 import { sort } from '@compiled/css';
 import { hash } from '@compiled/utils';
