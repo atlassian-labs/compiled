@@ -30,7 +30,7 @@ describe('css map basic functionality', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      'const styles={danger:"_syaz5scu _bfhk5scu",success:"_syazbf54 _bfhkbf54"};',
+      'const styles={danger:"_1UtDYzGowl _0KLXruGowl",success:"_1UtDYzJwxv _0KLXruJwxv"};',
       '<span className={ax([styles.danger])}/>',
       '<span className={ax([styles.success])}/>',
     ]);
@@ -51,17 +51,17 @@ describe('css map basic functionality', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _4 = "._bfhkbf54{background-color:green}";
-      const _3 = "._syazbf54{color:green}";
-      const _2 = "._bfhk5scu{background-color:red}";
-      const _ = "._syaz5scu{color:red}";
+      const _4 = "._0KLXruJwxv{background-color:green}";
+      const _3 = "._1UtDYzJwxv{color:green}";
+      const _2 = "._0KLXruGowl{background-color:red}";
+      const _ = "._1UtDYzGowl{color:red}";
       <CC>
         <CS>{[_, _2, _3, _4]}</CS>
         {<Box xcss={styles.danger} />}
       </CC>;
       const styles = {
-        danger: "_syaz5scu _bfhk5scu",
-        success: "_syazbf54 _bfhkbf54",
+        danger: "_1UtDYzGowl _0KLXruGowl",
+        success: "_1UtDYzJwxv _0KLXruJwxv",
       };
       "
     `);
@@ -80,7 +80,7 @@ describe('css map basic functionality', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      'const styles={danger:"_syaz5scu _bfhk5scu",success:"_syazbf54 _bfhkbf54"};',
+      'const styles={danger:"_1UtDYzGowl _0KLXruGowl",success:"_1UtDYzJwxv _0KLXruJwxv"};',
       '<span className={ax([styles.danger])}/>',
       '<span className={ax([styles.success])}/>',
     ]);
@@ -99,7 +99,7 @@ describe('css map basic functionality', () => {
         });
       `);
 
-    expect(actual).toInclude('const styles={danger:"",success:"_syazbf54 _bfhkbf54"};');
+    expect(actual).toInclude('const styles={danger:"",success:"_1UtDYzJwxv _0KLXruJwxv"};');
   });
 
   it('should transform ternary-based conditional referencing cssMap declarations', () => {
@@ -126,14 +126,14 @@ describe('css map basic functionality', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1e0c1ule{display:block}',
-      '._bfhk1x77{background-color:white}',
-      '._syaz11x8{color:black}',
-      '._bfhkbf54{background-color:green}',
-      '._syaz5scu{color:red}',
-      '._k48p8n31{font-weight:bold}',
-      '._k48p4jg8{font-weight:normal}',
-      'const styles={root:"_1e0c1ule",positive:"_bfhk1x77 _syaz11x8",negative:"_bfhkbf54 _syaz5scu",bold:"_k48p8n31",normal:"_k48p4jg8"}',
+      '._3iDTPbvLZJ{display:block}',
+      '._0KLXruaJpK{background-color:white}',
+      '._1UtDYzbqW0{color:black}',
+      '._0KLXruJwxv{background-color:green}',
+      '._1UtDYzGowl{color:red}',
+      '._1kk5TkmmCn{font-weight:bold}',
+      '._1kk5TkzUZr{font-weight:normal}',
+      'const styles={root:"_3iDTPbvLZJ",positive:"_0KLXruaJpK _1UtDYzbqW0",negative:"_0KLXruJwxv _1UtDYzGowl",bold:"_1kk5TkmmCn",normal:"_1kk5TkzUZr"}',
       '<div className={ax([styles.root,weight in styles?styles[weight]:styles.normal,isPrimary?styles.positive:styles.negative])}/>',
     ]);
   });
@@ -561,11 +561,7 @@ describe('css map — cssMapScoped (non-atomic)', () => {
           <CS>{[_, _2, _3]}</CS>
           {
             <div
-              className={ax([
-                styles.base,
-                isSelected && styles.selected,
-                isDisabled && styles.disabled,
-              ])}
+              className={ax([styles.base, isSelected && styles.selected, isDisabled && styles.disabled])}
             />
           }
         </CC>
@@ -1091,13 +1087,7 @@ describe('css map — cssMapScoped (non-atomic)', () => {
           <CS>{[_, _2, _3, _4, _5, _6]}</CS>
           {
             <div
-              className={ax([
-                styles.baseStyles,
-                isFullPage && styles.fullPageStyles,
-                fg_typography_ugc ? styles.typographyUGC : styles.typographyDefault,
-                isFullPage && isDense && styles.denseStyles,
-                isFirefox && styles.firefoxStyles,
-              ])}
+              className={ax([styles.baseStyles, isFullPage && styles.fullPageStyles, fg_typography_ugc ? styles.typographyUGC : styles.typographyDefault, isFullPage && isDense && styles.denseStyles, isFirefox && styles.firefoxStyles])}
             />
           }
         </CC>

@@ -47,7 +47,7 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
             /*#__PURE__*/ React.createElement(
               'div',
               {
-                className: ax(['_1wyb1fwx _syaz13q2']),
+                className: ax(['_4ya3eErjyG _1UtDYzynoA']),
               },
               'hello world'
             );
@@ -56,7 +56,7 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
 
         expect(writeFileSync).toBeCalledWith(
           expect.stringContaining('app.compiled.css'),
-          '._1wyb1fwx{font-size:12px}\n._syaz13q2{color:blue}'
+          '._1UtDYzynoA{color:blue}\n._4ya3eErjyG{font-size:12px}'
         );
       });
 
@@ -108,7 +108,7 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
             /*#__PURE__*/ React.createElement(
               'div',
               {
-                className: ax(['_1wyb1fwx _syaz13q2']),
+                className: ax(['_4ya3eErjyG _1UtDYzynoA']),
               },
               'hello world 2'
             );
@@ -116,7 +116,7 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
             /*#__PURE__*/ React.createElement(
               'div',
               {
-                className: ax(['_1wyb1fwx _syaz32ev']),
+                className: ax(['_4ya3eErjyG _1UtDYzy8mA']),
               },
               'hello world 2'
             );
@@ -156,8 +156,8 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
         import { ax, ix } from '@compiled/react/runtime';
         import { jsxs as _jsxs, jsx as _jsx } from 'react/jsx-runtime';
         const styles = {
-          panel: '_ca0qftgi _u5f3ftgi _n3tdftgi _19bvftgi _syaz13q2',
-          danger: '_syaz5scu',
+          panel: '_0Of8r2Jg58 _1ZnuxbJg58 _1wydGWJg58 _2Zuz6QJg58 _1UtDYzynoA',
+          danger: '_1UtDYzGowl',
         };
         const Component = ({ isDanger }) =>
           /*#__PURE__*/ _jsx('div', {
@@ -168,12 +168,12 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
 
       // CSS output: atomic rules lexically sorted in the compiled.css file
       expect(getExtractedCss()).toMatchInlineSnapshot(`
-        "._19bvftgi{padding-left:8px}
-        ._ca0qftgi{padding-top:8px}
-        ._n3tdftgi{padding-bottom:8px}
-        ._syaz13q2{color:blue}
-        ._syaz5scu{color:red}
-        ._u5f3ftgi{padding-right:8px}"
+        "._0Of8r2Jg58{padding-top:8px}
+        ._1UtDYzGowl{color:red}
+        ._1UtDYzynoA{color:blue}
+        ._1ZnuxbJg58{padding-right:8px}
+        ._1wydGWJg58{padding-bottom:8px}
+        ._2Zuz6QJg58{padding-left:8px}"
       `);
     });
 
@@ -208,7 +208,7 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
         import { ax, ix } from '@compiled/react/runtime';
         import { jsxs as _jsxs, jsx as _jsx } from 'react/jsx-runtime';
         const atomicStyles = {
-          base: '_syaz13q2',
+          base: '_1UtDYzynoA',
         };
         const scopedStyles = {
           panel: 'cc-1m0qvev',
@@ -346,12 +346,12 @@ describe('babel-plugin-strip-runtime with stylesheet extraction (extractStylesTo
           import { jsxs as _jsxs, jsx as _jsx } from 'react/jsx-runtime';
           const Component = () =>
             /*#__PURE__*/ _jsx('div', {
-              className: ax(['_1wyb1fwx _syaz13q2']),
+              className: ax(['_4ya3eErjyG _1UtDYzynoA']),
               children: 'hello world 2',
             });
           const Component2 = () =>
             /*#__PURE__*/ _jsx('div', {
-              className: ax(['_1wyb1fwx _syaz32ev']),
+              className: ax(['_4ya3eErjyG _1UtDYzy8mA']),
               children: 'hello world 2',
             });
           "

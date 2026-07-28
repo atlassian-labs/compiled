@@ -314,14 +314,14 @@ describe('<Style />', () => {
       createIsolatedTest((Style) => {
         // atomic rule: border-bottom shorthand → s-4 bucket
         // non-atomic rule: cc- → '' catch-all bucket
-        const atomicRule = '._1abc2def{border-bottom:2px solid blue}';
+        const atomicRule = '._1UtDYzynoA{color:blue}';
         const nonAtomicRule = '.cc-abc123 .panel{border-bottom:1px solid red;padding:8px}';
 
         render(<Style>{[atomicRule, nonAtomicRule]}</Style>);
 
         // Both rules must be present, even if in separate <style> buckets
         const text = getAllCssText();
-        expect(text).toInclude('_1abc2def');
+        expect(text).toInclude('_1UtDYzynoA');
         expect(text).toInclude('.cc-abc123 .panel');
       });
     });

@@ -5,8 +5,13 @@ import whitespace from 'postcss-normalize-whitespace';
 
 import { atomicifyRules } from '../atomicify-rules';
 
+// These tests assert the collision-resistant (base-62, 11-char) output.
+// The SHIPPED default is legacy 9-char — see the "legacy hash (default)"
+// describe block at the bottom of this file for the default-path regression tests.
+const CR = { collisionResistantHash: true } as const;
+
 const transform = (css: TemplateStringsArray) => {
-  const result = postcss([atomicifyRules(), whitespace(), autoprefixer()]).process(css[0], {
+  const result = postcss([atomicifyRules(CR), whitespace(), autoprefixer()]).process(css[0], {
     from: undefined,
   });
 
@@ -23,7 +28,7 @@ describe('atomicify rules', () => {
       color: blue;
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._syaz13q2{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._1UtDYzynoA{color:blue}"`);
   });
 
   it('should prepend atomic class when nesting selector is prepended', () => {
@@ -33,7 +38,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"[data-look='h100']._mi0g1ule{display:block}"`);
+    expect(actual).toMatchInlineSnapshot(`"[data-look='h100']._1u4z38vLZJ{display:block}"`);
   });
 
   it('should should atomicify multiple declarations', () => {
@@ -42,7 +47,7 @@ describe('atomicify rules', () => {
       font-size: 12px;
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._syaz13q2{color:blue}._1wyb1fwx{font-size:12px}"`);
+    expect(actual).toMatchInlineSnapshot(`"._1UtDYzynoA{color:blue}._4ya3eErjyG{font-size:12px}"`);
   });
 
   it('should autoprefix atomic rules', () => {
@@ -50,7 +55,7 @@ describe('atomicify rules', () => {
 
     const result = transform`user-select: none;`;
 
-    expect(result).toMatchInlineSnapshot(`"._uiztglyw{-ms-user-select:none;user-select:none}"`);
+    expect(result).toMatchInlineSnapshot(`"._20VacPYbGa{-ms-user-select:none;user-select:none}"`);
   });
 
   it('should double up class selector when two nesting selectors are found', () => {
@@ -60,7 +65,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(result).toMatchInlineSnapshot(`"._if291ule._if291ule{display:block}"`);
+    expect(result).toMatchInlineSnapshot(`"._1dmVT1vLZJ._1dmVT1vLZJ{display:block}"`);
   });
 
   it('should autoprefix atomic rules with multiple selectors', () => {
@@ -73,7 +78,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"._180hglyw:hover, ._1j5pglyw:focus{-ms-user-select:none;user-select:none}"`
+      `"._2U6HNJYbGa:hover, ._3DIml2YbGa:focus{-ms-user-select:none;user-select:none}"`
     );
   });
 
@@ -87,7 +92,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._ufx4glyw{-ms-user-select:none;user-select:none}}"`
+      `"@media (min-width: 30rem){._20zuBsYbGa{-ms-user-select:none;user-select:none}}"`
     );
   });
 
@@ -103,7 +108,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._195xglyw div{-ms-user-select:none;user-select:none}}"`
+      `"@media (min-width: 30rem){._2YOPj0YbGa div{-ms-user-select:none;user-select:none}}"`
     );
   });
 
@@ -119,7 +124,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result1).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){._uf5eglyw{-ms-user-select:none;user-select:none}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._20u4aWYbGa{-ms-user-select:none;user-select:none}}}"`
     );
 
     const result2 = transform`
@@ -132,7 +137,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(result2).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){@font-face{font-family:Arial;src:url(arial.woff)}._uf5eglyw{-ms-user-select:none;user-select:none}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){@font-face{font-family:Arial;src:url(arial.woff)}._20u4aWYbGa{-ms-user-select:none;user-select:none}}}"`
     );
   });
 
@@ -142,7 +147,7 @@ describe('atomicify rules', () => {
       classes.push(className);
     };
 
-    const result = postcss([atomicifyRules({ callback }), whitespace()]).process(
+    const result = postcss([atomicifyRules({ callback, ...CR }), whitespace()]).process(
       `
         display:block;
         text-align:center;
@@ -165,12 +170,12 @@ describe('atomicify rules', () => {
 
     expect(classes).toMatchInlineSnapshot(`
       [
-        "_1e0c1ule",
-        "_y3gn1h6o",
-        "_uf5eglyw",
-        "_2a8pglyw",
-        "_18i0glyw",
-        "_9iqnglyw",
+        "_3iDTPbvLZJ",
+        "_2fwxA5DIqT",
+        "_20u4aWYbGa",
+        "_09lB87YbGa",
+        "_2W6fSlYbGa",
+        "_0CXsCUYbGa",
       ]
     `);
   });
@@ -182,7 +187,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._13ml13q2 div.primary{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._2Ca1zwynoA div.primary{color:blue}"`);
   });
 
   it('should atomicify a nested multi selector rule', () => {
@@ -193,7 +198,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"._65g013q2 div, ._1tjq13q2 span, ._thoc13q2 li{color:blue}"`
+      `"._0paDgwynoA div, ._4keetJynoA span, ._1WG9WaynoA li{color:blue}"`
     );
   });
 
@@ -205,7 +210,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._30l313q2:hover, ._f8pj13q2:focus{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._0clgaMynoA:hover, ._10n1R5ynoA:focus{color:blue}"`);
   });
 
   it('should atomicify a nested tag rule', () => {
@@ -215,7 +220,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._65g013q2 div{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._0paDgwynoA div{color:blue}"`);
   });
 
   it('should generate the same class hash for semantically same but different rules', () => {
@@ -245,8 +250,8 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual.split('}').join('}\n')).toMatchInlineSnapshot(`
-      "._169r1j6v._169r1j6v > *{margin-bottom:1rem}
-      ._1wzbidpf._1wzbidpf > *:last-child{margin-bottom:0}
+      "._2MYE9XQAma._2MYE9XQAma > *{margin-bottom:1rem}
+      ._4yh82wdnbC._4yh82wdnbC > *:last-child{margin-bottom:0}
       "
     `);
   });
@@ -259,7 +264,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._ngwg1q9v:first-child ._ngwg1q9v{color:hotpink}"`);
+    expect(actual).toMatchInlineSnapshot(`"._1y2rkaPFz6:first-child ._1y2rkaPFz6{color:hotpink}"`);
   });
 
   it('should reference the atomic class with the nesting selector', () => {
@@ -269,7 +274,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._prp213q2 :first-child{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._1HrW6EynoA :first-child{color:blue}"`);
   });
 
   it('should atomicify a double tag rule', () => {
@@ -279,7 +284,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._8gsp13q2 div span{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._0yE3HpynoA div span{color:blue}"`);
   });
 
   it('should atomicify a double tag with pseudos rule', () => {
@@ -289,7 +294,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._f1kd13q2 div:hover span:active{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._0ZyGvwynoA div:hover span:active{color:blue}"`);
   });
 
   it('should atomicify a nested tag pseudo rule', () => {
@@ -299,7 +304,7 @@ describe('atomicify rules', () => {
       }
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._1tui13q2 div:hover{color:blue}"`);
+    expect(actual).toMatchInlineSnapshot(`"._4lsbuEynoA div:hover{color:blue}"`);
   });
 
   it('should skip comments', () => {
@@ -317,7 +322,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"._1tui13q2 div:hover{color:blue}@media screen{._43475scu{color:red}}"`
+      `"._4lsbuEynoA div:hover{color:blue}@media screen{._0gIO46Gowl{color:red}}"`
     );
   });
 
@@ -336,7 +341,7 @@ describe('atomicify rules', () => {
   });
 
   it('should not blow up if a doubly nested rule was found after nested plugin', () => {
-    const result = postcss([nested(), atomicifyRules(), whitespace(), autoprefixer()]).process(
+    const result = postcss([nested(), atomicifyRules(CR), whitespace(), autoprefixer()]).process(
       `
       div {
         div {
@@ -349,7 +354,7 @@ describe('atomicify rules', () => {
       }
     );
 
-    expect(result.css).toMatchInlineSnapshot(`"._73mn1fwx div div{font-size:12px}"`);
+    expect(result.css).toMatchInlineSnapshot(`"._0t3xMurjyG div div{font-size:12px}"`);
   });
 
   it('should atomicify at-rule styles', () => {
@@ -391,7 +396,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@container (width > 300px){._eq985scu h2{color:red}}@when font-tech(color-COLRv1) and font-tech(variations){@font-face{font-family:test;src:url(test.woff2)}}@else font-tech(color-SVG){@font-face{font-family:test;src:url(test2.woff2)}}@else{@font-face{font-family:test;src:url(test3.woff2)}}@-moz-document url-prefix(){._qral13q2{color:blue}}@layer state{._8tgm6x50{background-color:brown}}@media (min-width: 30rem){._hi7c1ule{display:block}._1l5zgktf{font-size:20px}}@supports selector(h2 > p){._1ll732ev{color:pink}}@starting-style{._p77hbf54{color:green}}"`
+      `"@container (width > 300px){._0YgYJPGowl h2{color:red}}@when font-tech(color-COLRv1) and font-tech(variations){@font-face{font-family:test;src:url(test.woff2)}}@else font-tech(color-SVG){@font-face{font-family:test;src:url(test2.woff2)}}@else{@font-face{font-family:test;src:url(test3.woff2)}}@-moz-document url-prefix(){._1LuOr6ynoA{color:blue}}@layer state{._0A5jrFjO5s{background-color:brown}}@media (min-width: 30rem){._19DmqJvLZJ{display:block}._3LVG2LSPN1{font-size:20px}}@supports selector(h2 > p){._3NEPTNy8mA{color:pink}}@starting-style{._1F7xNhJwxv{color:green}}"`
     );
   });
 
@@ -405,7 +410,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){._1l9l1ule{display:block}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._3Ml9egvLZJ{display:block}}}"`
     );
   });
 
@@ -419,7 +424,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){._1v9q1ule div{display:block}}"`
+      `"@media (min-width: 30rem){._4rhe9hvLZJ div{display:block}}"`
     );
   });
 
@@ -435,7 +440,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"@media (min-width: 30rem){@media (min-width: 20rem){._1acs1ule div{display:block}}}"`
+      `"@media (min-width: 30rem){@media (min-width: 20rem){._33GIuzvLZJ div{display:block}}}"`
     );
   });
 
@@ -500,7 +505,7 @@ describe('atomicify rules', () => {
     `;
 
     expect(actual).toMatchInlineSnapshot(
-      `"._syaz1qpq{color:red!important}._1wybit0u{font-size:var(--font-size)!important}"`
+      `"._1UtDYzDpLb{color:red!important}._4ya3eEXk0z{font-size:var(--font-size)!important}"`
     );
   });
 
@@ -510,7 +515,9 @@ describe('atomicify rules', () => {
       color: red;
     `;
 
-    expect(actual).toMatchInlineSnapshot(`"._syaz1qpq{color:red!important}._syaz5scu{color:red}"`);
+    expect(actual).toMatchInlineSnapshot(
+      `"._1UtDYzDpLb{color:red!important}._1UtDYzGowl{color:red}"`
+    );
   });
 
   it('should throw an error for unknown at-rules', () => {
@@ -531,5 +538,121 @@ describe('atomicify rules', () => {
       }
     `
     ).toThrow("Unknown at-rule '@asdfghjkl'.");
+  });
+});
+
+/**
+ * Regression suite for the SHIPPED default behaviour.
+ *
+ * The `collisionResistantHash` option defaults to `false`. In that mode the
+ * atomic class names MUST remain byte-for-byte identical to the historical
+ * base-36, 9-character format (`_` + 4-char group + 4-char value). These tests
+ * guard against accidentally changing the default output during the migration
+ * period — any change here is a breaking change for every un-migrated consumer.
+ *
+ * The companion `collision-resistant hash (opt-in)` block asserts the new
+ * base-62, 11-character format produced when the flag is enabled. Together they
+ * document exactly how output differs between the two modes.
+ */
+describe('hash strategy', () => {
+  const run = (css: string, collisionResistantHash: boolean) =>
+    postcss([atomicifyRules({ collisionResistantHash }), whitespace()]).process(css, {
+      from: undefined,
+    }).css;
+
+  describe('legacy hash (default, collisionResistantHash: false)', () => {
+    it.each([
+      ['color: red;', '_syaz5scu'],
+      ['font-size: 14px;', '_1wybdlk8'],
+      ['margin-top: 0;', '_19pkidpf'],
+      ['color: red !important;', '_syaz1qpq'],
+    ])('emits the legacy 9-char class for `%s`', (css, expected) => {
+      const output = run(css, false);
+      expect(output).toContain(`.${expected}`);
+      // Legacy classes are always exactly 9 characters (`_` + 4 + 4).
+      expect(expected).toHaveLength(9);
+    });
+
+    it('emits a legacy 9-char class for pseudo selectors', () => {
+      expect(run(':hover { color: blue; }', false)).toContain('._838l13q2');
+    });
+
+    it('is the default when no option is passed', () => {
+      const withoutOption = postcss([atomicifyRules(), whitespace()]).process('color: red;', {
+        from: undefined,
+      }).css;
+      expect(withoutOption).toContain('._syaz5scu');
+    });
+  });
+
+  describe('collision-resistant hash (opt-in, collisionResistantHash: true)', () => {
+    it.each([
+      ['color: red;', '_1UtDYzGowl'],
+      ['font-size: 14px;', '_4ya3eEEbN9'],
+      ['margin-top: 0;', '_313842dnbC'],
+      ['color: red !important;', '_1UtDYzDpLb'],
+    ])('emits the base-62 11-char class for `%s`', (css, expected) => {
+      const output = run(css, true);
+      expect(output).toContain(`.${expected}`);
+      // Collision-resistant classes are always exactly 11 characters (`_` + 6 + 4).
+      expect(expected).toHaveLength(11);
+    });
+
+    it('emits an 11-char class for pseudo selectors', () => {
+      expect(run(':hover { color: blue; }', true)).toContain('._0x6viiynoA');
+    });
+
+    it('only uses base-62 characters (0-9a-zA-Z) in the hash body', () => {
+      const output = run('color: red;', true);
+      const className = output.match(/\.(_[0-9a-zA-Z]+)/)?.[1] ?? '';
+      // No `-` or `_` in the hash body (only the leading `_` prefix is allowed).
+      expect(className.slice(1)).toMatch(/^[0-9a-zA-Z]+$/);
+    });
+  });
+
+  it('produces different class names for the same rule under each strategy', () => {
+    expect(run('color: red;', false)).not.toEqual(run('color: red;', true));
+  });
+});
+
+/**
+ * Real-world collision regression tests.
+ *
+ * These use confirmed collision pairs identified from large production CSS bundles.
+ * They document:
+ *   1. That the legacy hash DOES produce group collisions on real CSS properties.
+ *   2. That the collision-resistant hash eliminates those collisions.
+ *
+ * A "group collision" means two unrelated CSS properties share the same 4-char
+ * group hash — causing ax() to silently drop one of them from the DOM.
+ */
+describe('real-world collision regression', () => {
+  const getGroup = (cssDeclaration: string, collisionResistant: boolean): string => {
+    const result = postcss([
+      atomicifyRules({ collisionResistantHash: collisionResistant }),
+      whitespace(),
+    ]).process(cssDeclaration, { from: undefined });
+    const match = result.css.match(/\.(_[0-9a-zA-Z]+)/);
+    const className = match?.[1] ?? '';
+    // Group = everything except the last 4 chars (value hash)
+    return className.slice(0, className.length - 4);
+  };
+
+  describe('legacy hash (collisionResistantHash: false) — group collisions on real CSS properties', () => {
+    it('scrollbar-width and text-anchor collide on group hash (confirmed production collision, group _1fjg)', () => {
+      const groupA = getGroup('scrollbar-width: auto;', false);
+      const groupB = getGroup('text-anchor: start;', false);
+      // These ARE the same — this is the confirmed bug.
+      expect(groupA).toBe(groupB);
+      expect(groupA).toBe('_1fjg');
+    });
+  });
+
+  describe('collision-resistant hash (collisionResistantHash: true) — no collisions', () => {
+    it('scrollbar-width and text-anchor do NOT collide with base-62 6-char hash', () => {
+      const groupA = getGroup('scrollbar-width: auto;', true);
+      const groupB = getGroup('text-anchor: start;', true);
+      expect(groupA).not.toBe(groupB);
+    });
   });
 });

@@ -22,6 +22,14 @@ export interface TransformOpts {
   sortShorthand?: boolean;
   classHashPrefix?: string;
   flattenMultipleSelectors?: boolean;
+  /**
+   * When `true`, atomic class names use the collision-resistant base-62 hash
+   * (11-char classes) instead of the legacy base-36 `.slice(0, 4)` hash
+   * (9-char classes). Migration flag — defaults to `false` (legacy output).
+   *
+   * @default false
+   */
+  collisionResistantHash?: boolean;
 }
 
 /**
@@ -131,6 +139,7 @@ export const transformCss = (
         atomicifyRules({
           callback: (className: string) => classNames.push(className),
           classHashPrefix: opts.classHashPrefix,
+          collisionResistantHash: opts.collisionResistantHash,
         }),
         ...(flattenMultipleSelectorsOption
           ? [flattenMultipleSelectors(), discardDuplicates()]

@@ -37,5 +37,8 @@
     "@types/autoprefixer": "^10.2.0",
     "@types/cssnano": "^5.0.0",
     "outdent": "^0.8.0"
+  },
+  "peerDependencies": {
+    "@compiled/react": ">=1.0.0"
   }
 }

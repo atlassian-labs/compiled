@@ -20,6 +20,7 @@
             "nonce": "\"k0Mp1lEd\"",
             "importReact": false,
             "optimizeCss": false,
+            "collisionResistantHash": true,
             "importSources": [
               "./packages/react/src/create-strict-api/__tests__/__fixtures__/strict-api",
               "./packages/react/src/create-strict-api/__tests__/__fixtures__/strict-api-recursive",

@@ -140,7 +140,7 @@ describe('css prop behaviour', () => {
       <div className="foobar" css={{ display: 'block' }}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={ax(["_1e0c1ule","foobar"])}');
+    expect(actual).toInclude('className={ax(["_3iDTPbvLZJ","foobar"])}');
   });
 
   it('should pass through spread props', () => {
@@ -152,7 +152,7 @@ describe('css prop behaviour', () => {
       <div css={{ fontSize: 20 }} {...props} />
     `);
 
-    expect(actual).toInclude('<div{...props}className={ax(["_1wybgktf"])}/>');
+    expect(actual).toInclude('<div{...props}className={ax(["_4ya3eESPN1"])}/>');
   });
 
   it('should pass through static props', () => {
@@ -162,7 +162,7 @@ describe('css prop behaviour', () => {
       <div css={{ fontSize: 20 }} role="menu" />
     `);
 
-    expect(actual).toInclude('<div role="menu"className={ax(["_1wybgktf"])}/>');
+    expect(actual).toInclude('<div role="menu"className={ax(["_4ya3eESPN1"])}/>');
   });
 
   it('should concat explicit use of class name prop from an identifier on an element', () => {
@@ -174,7 +174,7 @@ describe('css prop behaviour', () => {
       <div className={className} css={{ display: 'block' }} />
     `);
 
-    expect(actual).toInclude('className={ax(["_1e0c1ule",className])}');
+    expect(actual).toInclude('className={ax(["_3iDTPbvLZJ",className])}');
   });
 
   it('should pick up array composition', () => {
@@ -188,9 +188,9 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz5scu{color:red}',
-      '._syaz11x8{color:black}',
-      '<div className={ax(["_syaz11x8","_syaz5scu"])}>hello world</div>',
+      '._1UtDYzGowl{color:red}',
+      '._1UtDYzbqW0{color:black}',
+      '<div className={ax(["_1UtDYzbqW0","_1UtDYzGowl"])}>hello world</div>',
     ]);
   });
 
@@ -205,11 +205,11 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._1bsb12am{width:50px}',
-      '._1wyb1fwx{font-size:12px}',
-      '._syaz11x8{color:black}',
-      '._1e0c1o8l{display:inline-block}',
-      '<div className={ax(["_1e0c1o8l _syaz11x8","_1wyb1fwx _1bsb12am"])}>hello world</div>',
+      '._39xV02HMkp{width:50px}',
+      '._4ya3eErjyG{font-size:12px}',
+      '._1UtDYzbqW0{color:black}',
+      '._3iDTPbvbI6{display:inline-block}',
+      '<div className={ax(["_3iDTPbvbI6 _1UtDYzbqW0","_4ya3eErjyG _39xV02HMkp"])}>hello world</div>',
     ]);
   });
 
@@ -222,7 +222,7 @@ describe('css prop behaviour', () => {
 
     expect(actual).toInclude(`{color:blue}`);
     expect(actual).toInclude(
-      `<div style={{display:'block'}}className={ax([\"_syaz13q2\"])}>hello world</div>`
+      `<div style={{display:'block'}}className={ax([\"_1UtDYzynoA\"])}>hello world</div>`
     );
   });
 
@@ -259,7 +259,7 @@ describe('css prop behaviour', () => {
       <div css={{ display: 'block' }} className={getFoo()}>hello world</div>
     `);
 
-    expect(actual).toInclude('className={ax(["_1e0c1ule",getFoo()])}');
+    expect(actual).toInclude('className={ax(["_3iDTPbvLZJ",getFoo()])}');
   });
 
   it('should allow inlined expressions as property values', () => {
@@ -450,9 +450,9 @@ describe('css prop behaviour', () => {
 
     expect(actual).toIncludeMultiple([
       'const _2="@keyframes fadeOut{0%{opacity:1}50%{opacity:0.5}to{opacity:0}}"',
-      'const _="._y44vk4ag{animation:fadeOut 2s ease-in-out}"',
+      'const _="._2fBhtekqVl{animation:fadeOut 2s ease-in-out}"',
       '<CS>{[_,_2]}</CS>',
-      'className={ax(["_y44vk4ag"])}',
+      'className={ax(["_2fBhtekqVl"])}',
     ]);
   });
 
@@ -472,7 +472,7 @@ describe('css prop behaviour', () => {
       );
     `);
 
-    expect(actual).toInclude('className={ax([props.isPrimary&&"_syaz13q2 _1wybgktf"])}');
+    expect(actual).toInclude('className={ax([props.isPrimary&&"_1UtDYzynoA _4ya3eESPN1"])}');
   });
 
   it('should apply inverse conditional logical expression object spread', () => {
@@ -491,7 +491,7 @@ describe('css prop behaviour', () => {
       );
     `);
 
-    expect(actual).toInclude('className={ax([props.isPrimary||"_syaz13q2 _1wybgktf"])}');
+    expect(actual).toInclude('className={ax([props.isPrimary||"_1UtDYzynoA _4ya3eESPN1"])}');
   });
 
   it('should apply conditional logical expression object styles', () => {
@@ -510,7 +510,7 @@ describe('css prop behaviour', () => {
       );
     `);
 
-    expect(actual).toInclude('className={ax([props.isPrimary&&"_30l313q2 _e915gktf"])}');
+    expect(actual).toInclude('className={ax([props.isPrimary&&"_0clgaMynoA _0WjAIgSPN1"])}');
   });
 
   it('should combine conditional logical expressions', () => {
@@ -532,7 +532,7 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toInclude(
-      'className={ax([props.isPrimary&&"_30l313q2",props.isPrimary&&props.isBold&&"_79b11fw0"])}'
+      'className={ax([props.isPrimary&&"_0clgaMynoA",props.isPrimary&&props.isBold&&"_0tHyJKkKjW"])}'
     );
   });
 
@@ -552,7 +552,7 @@ describe('css prop behaviour', () => {
       );
     `);
 
-    expect(actual).toInclude('ax([(props.isPrimary||props.isMaybe)&&"_syaz13q2 _1wybgktf"])');
+    expect(actual).toInclude('ax([(props.isPrimary||props.isMaybe)&&"_1UtDYzynoA _4ya3eESPN1"])');
   });
 
   it('should apply array logical-based conditional css', () => {
@@ -573,7 +573,7 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toInclude(
-      'ax(["_1wyb1ylp",(props.isPrimary||props.isMaybe)&&"_syaz13q2 _1wybgktf"])'
+      'ax(["_4ya3eEUF4f",(props.isPrimary||props.isMaybe)&&"_1UtDYzynoA _4ya3eESPN1"])'
     );
   });
 
@@ -594,12 +594,12 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._bfhk1x77{background-color:white}',
-      '._syaz11x8{color:black}',
-      '._bfhkbf54{background-color:green}',
-      '._syaz5scu{color:red}',
-      '._1wyb1fwx{font-size:12px}',
-      '<div className={ax([isPrimary?"_bfhk1x77 _syaz11x8":"_bfhkbf54 _syaz5scu","_1wyb1fwx"])}/>',
+      '._0KLXruaJpK{background-color:white}',
+      '._1UtDYzbqW0{color:black}',
+      '._0KLXruJwxv{background-color:green}',
+      '._1UtDYzGowl{color:red}',
+      '._4ya3eErjyG{font-size:12px}',
+      '<div className={ax([isPrimary?"_0KLXruaJpK _1UtDYzbqW0":"_0KLXruJwxv _1UtDYzGowl","_4ya3eErjyG"])}/>',
     ]);
   });
 
@@ -624,12 +624,12 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._bfhk1x77{background-color:white}',
-      '._syaz11x8{color:black}',
-      '._bfhkbf54{background-color:green}',
-      '._syaz5scu{color:red}',
-      '._1wyb1fwx{font-size:12px}',
-      '<div className={ax([isPrimary?"_bfhk1x77 _syaz11x8":"_bfhkbf54 _syaz5scu","_1wyb1fwx"])}/>',
+      '._0KLXruaJpK{background-color:white}',
+      '._1UtDYzbqW0{color:black}',
+      '._0KLXruJwxv{background-color:green}',
+      '._1UtDYzGowl{color:red}',
+      '._4ya3eErjyG{font-size:12px}',
+      '<div className={ax([isPrimary?"_0KLXruaJpK _1UtDYzbqW0":"_0KLXruJwxv _1UtDYzGowl","_4ya3eErjyG"])}/>',
     ]);
   });
 
@@ -652,7 +652,7 @@ describe('css prop behaviour', () => {
       );
     `);
 
-    expect(actual).toInclude('ax([props.isPrimary&&"_syaz13q2 _1wybgktf","_19it97hw"])');
+    expect(actual).toInclude('ax([props.isPrimary&&"_1UtDYzynoA _4ya3eESPN1","_30huDK2Tva"])');
   });
 
   it('should apply unconditional before and after a conditional css rule', () => {
@@ -673,7 +673,7 @@ describe('css prop behaviour', () => {
     `);
 
     expect(actual).toInclude(
-      'ax(["_1wybo7ao",props.isPrimary&&"_syaz13q2 _1wybgktf","_19it97hw"])'
+      'ax(["_4ya3eE2sAl",props.isPrimary&&"_1UtDYzynoA _4ya3eESPN1","_30huDK2Tva"])'
     );
   });
 
@@ -693,7 +693,7 @@ describe('css prop behaviour', () => {
       );
     `);
 
-    expect(actual).toInclude('ax([isPrimary&&"_syaz13q2 _1wybgktf"])');
+    expect(actual).toInclude('ax([isPrimary&&"_1UtDYzynoA _4ya3eESPN1"])');
   });
 
   it('should retain keys for mapped react components', () => {

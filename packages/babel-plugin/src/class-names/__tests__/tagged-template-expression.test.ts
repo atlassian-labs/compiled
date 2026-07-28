@@ -14,8 +14,8 @@ describe('ClassNames used with a css tagged template expression', () => {
       `);
 
       expect(actual).toIncludeMultiple([
-        'const _ = "._1wybgktf{font-size:20px}"',
-        'className={ax(["_1wybgktf"])}',
+        'const _ = "._4ya3eESPN1{font-size:20px}"',
+        'className={ax(["_4ya3eESPN1"])}',
       ]);
     });
 

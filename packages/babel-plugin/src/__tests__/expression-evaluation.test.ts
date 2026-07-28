@@ -340,7 +340,7 @@ describe('import specifiers', () => {
       }
     `);
 
-    expect(actual).toInclude('@media screen{._434713q2{color:blue}}');
+    expect(actual).toInclude('@media screen{._0gIO46ynoA{color:blue}}');
   });
 
   it('handles the computed object property, where the variable in property is defined inside `as const` expression', () => {
@@ -359,7 +359,7 @@ describe('import specifiers', () => {
       }
     );
 
-    expect(actual).toInclude('@media screen{._434713q2{color:blue}}');
+    expect(actual).toInclude('@media screen{._0gIO46ynoA{color:blue}}');
   });
 
   it('uses fallback node when evaluating a non expression returning a non static value', () => {
@@ -374,8 +374,8 @@ describe('import specifiers', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._vwz41rme{line-height:var(--_12w6gfj)',
-      'ax(["_vwz41rme"])',
+      '._26BoRwlzf6{line-height:var(--_12w6gfj)',
+      'ax(["_26BoRwlzf6"])',
       '"--_12w6gfj": ix(getLineHeight())',
     ]);
   });
@@ -390,7 +390,7 @@ describe('import specifiers', () => {
         <div css={{ marginTop: spacing * 2 }} />
       `);
 
-      expect(actual).toIncludeMultiple(['._19pkexct{margin-top:16px}', 'ax(["_19pkexct"])']);
+      expect(actual).toIncludeMultiple(['._31384250T1{margin-top:16px}', 'ax(["_31384250T1"])']);
     });
 
     it('statically evaluates calculated value with nested binary', () => {
@@ -402,7 +402,7 @@ describe('import specifiers', () => {
         <div css={{ marginTop: spacing * 2 / 2 }} />
       `);
 
-      expect(actual).toIncludeMultiple(['._19pkftgi{margin-top:8px}', 'ax(["_19pkftgi"])']);
+      expect(actual).toIncludeMultiple(['._313842Jg58{margin-top:8px}', 'ax(["_313842Jg58"])']);
     });
 
     it('statically evaluates calculated value with multiple identifiers', () => {
@@ -416,7 +416,7 @@ describe('import specifiers', () => {
         <div css={{ marginTop: one + two - three }} />
       `);
 
-      expect(actual).toIncludeMultiple(['._19pkidpf{margin-top:0}', 'ax(["_19pkidpf"])']);
+      expect(actual).toIncludeMultiple(['._313842dnbC{margin-top:0}', 'ax(["_313842dnbC"])']);
     });
 
     it('statically evaluates calculated value within calc utility', () => {
@@ -429,8 +429,8 @@ describe('import specifiers', () => {
       `);
 
       expect(actual).toIncludeMultiple([
-        '._1bsbj0q6{width:calc(100% - 16px)}',
-        'ax(["_1bsbj0q6"])',
+        '._39xV02PBZn{width:calc(100% - 16px)}',
+        'ax(["_39xV02PBZn"])',
       ]);
     });
 
@@ -443,7 +443,7 @@ describe('import specifiers', () => {
         <div css={{ marginTop: stringSpacing * 2 }} />
       `);
 
-      expect(actual).toIncludeMultiple(['._19pkexct{margin-top:16px}', 'ax(["_19pkexct"])']);
+      expect(actual).toIncludeMultiple(['._31384250T1{margin-top:16px}', 'ax(["_31384250T1"])']);
     });
 
     it('statically evaluates calculated value with unary expression', () => {
@@ -455,7 +455,7 @@ describe('import specifiers', () => {
         <div css={{ marginTop: -getSpacing() * 2 }} />
       `);
 
-      expect(actual).toIncludeMultiple(['._19pk4h84{margin-top:-16px}', 'ax(["_19pk4h84"])']);
+      expect(actual).toIncludeMultiple(['._313842keTB{margin-top:-16px}', 'ax(["_313842keTB"])']);
     });
 
     it('falls back to dynamic evaluation when non static value used', () => {
@@ -468,9 +468,9 @@ describe('import specifiers', () => {
       `);
 
       expect(actual).toIncludeMultiple([
-        '._19pk19vg{margin-top:var(--_lb6tu)}',
+        '._313842IFgC{margin-top:var(--_lb6tu)}',
         '"--_lb6tu": ix(getSpacing() * 2)',
-        'ax(["_19pk19vg"])',
+        'ax(["_313842IFgC"])',
       ]);
     });
 
@@ -488,7 +488,7 @@ describe('import specifiers', () => {
         }
       );
 
-      expect(actual).toIncludeMultiple(['._syaz5scu{color:red}', 'ax(["_syaz5scu"])']);
+      expect(actual).toIncludeMultiple(['._1UtDYzGowl{color:red}', 'ax(["_1UtDYzGowl"])']);
     });
 
     it('statically evaluates a TS const expression in a resolved binding', () => {
@@ -510,8 +510,8 @@ describe('import specifiers', () => {
       );
 
       expect(actual).toIncludeMultiple([
-        '._1rwq5scu input{background-color:red}',
-        'ax(["_1rwq5scu", __cmplp.className]',
+        '._4dwsQeGowl input{background-color:red}',
+        'ax(["_4dwsQeGowl", __cmplp.className]',
       ]);
     });
 

@@ -21,6 +21,12 @@ export const transform = (code: string, options: TransformOptions = {}): string 
     pretty = true,
     snippet,
     optimizeCss = false,
+    // Tests default to the collision-resistant hash (base-62, 11-char classes)
+    // so fixtures document the target output. NOTE: the SHIPPED default is
+    // `false` (legacy 9-char classes) — see the dedicated legacy regression
+    // suite in `atomicify-rules.test.ts`. Pass `collisionResistantHash: false`
+    // explicitly to assert legacy output.
+    collisionResistantHash = true,
     ...pluginOptions
   } = options;
   const fileResult = transformSync(code, {
@@ -30,7 +36,7 @@ export const transform = (code: string, options: TransformOptions = {}): string 
     configFile: false,
     filename,
     highlightCode,
-    plugins: [[babelPlugin, { optimizeCss, ...pluginOptions }]],
+    plugins: [[babelPlugin, { optimizeCss, collisionResistantHash, ...pluginOptions }]],
     presets:
       pluginOptions.importReact === false
         ? [['@babel/preset-react', { runtime: 'automatic' }]]
@@ -57,5 +63,24 @@ export const transform = (code: string, options: TransformOptions = {}): string 
     codeSnippet = babelCode;
   }
 
-  return pretty ? format(codeSnippet, { parser: 'babel-ts' }) : codeSnippet;
+  if (!pretty) {
+    return codeSnippet;
+  }
+
+  const formatted = format(codeSnippet, { parser: 'babel-ts' });
+
+  // Longer atomic class names (11 chars under the base-62 hash scheme) can push
+  // `ax([...])` calls past prettier's default printWidth, causing them to wrap
+  // onto multiple lines. That wrapping is a purely cosmetic artifact of the test
+  // formatter — the real emitted code is single-line — so we collapse multi-line
+  // `ax([...])` calls back to a single line to keep generated-code assertions
+  // stable regardless of class-name length.
+  return formatted.replace(/ax\(\[\s*([\s\S]*?)\s*\]\)/g, (_match, inner: string) => {
+    const collapsed = inner
+      .split('\n')
+      .map((line) => line.trim())
+      .join(' ')
+      .replace(/,\s*$/, '');
+    return `ax([${collapsed}])`;
+  });
 };

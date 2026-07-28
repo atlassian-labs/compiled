@@ -16,17 +16,17 @@ describe('rule hoisting', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _2 = "._1wyb1tcg{font-size:24px}";
-      const _ = "._1wyb1fwx{font-size:12px}";
+      const _2 = "._4ya3eEoWWg{font-size:24px}";
+      const _ = "._4ya3eErjyG{font-size:12px}";
       const Component = () => (
         <>
           <CC>
             <CS>{[_]}</CS>
-            {<div className={ax(["_1wyb1fwx"])}>hello world</div>}
+            {<div className={ax(["_4ya3eErjyG"])}>hello world</div>}
           </CC>
           <CC>
             <CS>{[_2]}</CS>
-            {<div className={ax(["_1wyb1tcg"])}>hello world</div>}
+            {<div className={ax(["_4ya3eEoWWg"])}>hello world</div>}
           </CC>
         </>
       );
@@ -49,16 +49,16 @@ describe('rule hoisting', () => {
     expect(actual).toMatchInlineSnapshot(`
       "import * as React from "react";
       import { ax, ix, CC, CS } from "@compiled/react/runtime";
-      const _ = "._1wyb1fwx{font-size:12px}";
+      const _ = "._4ya3eErjyG{font-size:12px}";
       const Component = () => (
         <>
           <CC>
             <CS>{[_]}</CS>
-            {<div className={ax(["_1wyb1fwx"])}>hello world</div>}
+            {<div className={ax(["_4ya3eErjyG"])}>hello world</div>}
           </CC>
           <CC>
             <CS>{[_]}</CS>
-            {<div className={ax(["_1wyb1fwx"])}>hello world</div>}
+            {<div className={ax(["_4ya3eErjyG"])}>hello world</div>}
           </CC>
         </>
       );

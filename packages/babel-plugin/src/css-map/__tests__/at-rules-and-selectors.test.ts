@@ -59,20 +59,20 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
 
     expect(actual).toIncludeMultiple([
       // Styles from success variant
-      '._syazjafr{color:#0b0}',
-      '._30l3aebp:hover{color:#060}',
-      '@media screen and (min-width:500px){._1takoyl8{font-size:10vw}}',
-      '._1tjq1v9d span{color:lightgreen}',
-      '._yzbcy77s span:hover{color:#090}',
+      '._1UtDYzW391{color:#0b0}',
+      '._0clgaMy3n9:hover{color:#060}',
+      '@media screen and (min-width:500px){._4jbzM08O8r{font-size:10vw}}',
+      '._4keetJeHQz span{color:lightgreen}',
+      '._2j91gUWZxS span:hover{color:#090}',
 
       // Styles from danger variant
-      '._syaz5scu{color:red}',
-      '._30l3qaj3:hover{color:darkred}',
-      '@media screen and (min-width:500px){._1taki9ra{font-size:20vw}}',
-      '._1tjqruxl span{color:orange}',
-      '._yzbc32ev span:hover{color:pink}',
+      '._1UtDYzGowl{color:red}',
+      '._0clgaMZine:hover{color:darkred}',
+      '@media screen and (min-width:500px){._4jbzM0LxYj{font-size:20vw}}',
+      '._4keetJ0axx span{color:orange}',
+      '._2j91gUy8mA span:hover{color:pink}',
 
-      'const styles={success:"_syazjafr _1tjq1v9d _yzbcy77s _30l3aebp _1takoyl8",danger:"_syaz5scu _1tjqruxl _yzbc32ev _30l3qaj3 _1taki9ra"}',
+      'const styles={success:"_1UtDYzW391 _4keetJeHQz _2j91gUWZxS _0clgaMy3n9 _4jbzM08O8r",danger:"_1UtDYzGowl _4keetJ0axx _2j91gUy8mA _0clgaMZine _4jbzM0LxYj"}',
     ]);
   });
 
@@ -109,16 +109,16 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
 
     expect(actual).toIncludeMultiple([
       // Styles from success variant
-      '._syazjafr{color:#0b0}',
-      '._30l3aebp:hover{color:#060}',
+      '._1UtDYzW391{color:#0b0}',
+      '._0clgaMy3n9:hover{color:#060}',
 
       // Styles from danger variant
-      '._syaz5scu{color:red}',
-      '._pnmb1v9d:first-of-type{color:lightgreen}',
-      '._p685y77s:first-of-type:hover{color:#090}',
-      '._838lruxl :hover{color:orange}',
+      '._1UtDYzGowl{color:red}',
+      '._1GZd6UeHQz:first-of-type{color:lightgreen}',
+      '._1F0D3lWZxS:first-of-type:hover{color:#090}',
+      '._0x6vii0axx :hover{color:orange}',
 
-      'const styles={success:"_syazjafr _30l3aebp",danger:"_syaz5scu _pnmb1v9d _p685y77s _838lruxl"}',
+      'const styles={success:"_1UtDYzW391 _0clgaMy3n9",danger:"_1UtDYzGowl _1GZd6UeHQz _1F0D3lWZxS _0x6vii0axx"}',
     ]);
   });
 
@@ -235,11 +235,11 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      '._syazjafr{color:#0b0}',
-      '._14jq32ev color{color:pink}',
-      '._1wsc13q2 fontSize{background-color:blue}',
-      '._1wyb12am{font-size:50px}',
-      'const styles={success:"_syazjafr _1wyb12am _1wsc13q2 _14jq32ev"}',
+      '._1UtDYzW391{color:#0b0}',
+      '._2FVy3uy8mA color{color:pink}',
+      '._4xu6EWynoA fontSize{background-color:blue}',
+      '._4ya3eEHMkp{font-size:50px}',
+      'const styles={success:"_1UtDYzW391 _4ya3eEHMkp _4xu6EWynoA _2FVy3uy8mA"}',
     ]);
   });
 
@@ -268,11 +268,11 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
       `);
 
       expect(actual).toIncludeMultiple([
-        '._syaz5scu{color:red}',
-        '@media screen and (min-width:500px){._1qhm13q2{color:blue}}',
-        '@media screen{._434732ev{color:pink}}',
+        '._1UtDYzGowl{color:red}',
+        '@media screen and (min-width:500px){._00ceskynoA{color:blue}}',
+        '@media screen{._0gIO46y8mA{color:pink}}',
 
-        'const styles={success:"_syaz5scu _434732ev _1qhm13q2"}',
+        'const styles={success:"_1UtDYzGowl _0gIO46y8mA _00ceskynoA"}',
       ]);
     }
   });
@@ -299,10 +299,10 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
       `);
 
     expect(actual).toIncludeMultiple([
-      '._syaz5scu{color:red}',
-      '@media (prefers-reduced-motion:no-preference){@starting-style{._ff1013q2{color:blue}}}',
+      '._1UtDYzGowl{color:red}',
+      '@media (prefers-reduced-motion:no-preference){@starting-style{._115yFoynoA{color:blue}}}',
 
-      'const styles={success:"_syaz5scu _ff1013q2"}',
+      'const styles={success:"_1UtDYzGowl _115yFoynoA"}',
     ]);
   });
 

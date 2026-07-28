@@ -25,11 +25,11 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = "._1wybgktf{font-size:20px}";
+      "const _ = "._4ya3eESPN1{font-size:20px}";
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
-          {<div className={ax(["_1wybgktf"])}>hello, world!</div>}
+          {<div className={ax(["_4ya3eESPN1"])}>hello, world!</div>}
         </CC>
       );
       "
@@ -50,12 +50,12 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = "._1wybgktf{font-size:20px}";
+      "const _ = "._4ya3eESPN1{font-size:20px}";
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
           {(() => {
-            return <div className={ax(["_1wybgktf"])}>hello, world!</div>;
+            return <div className={ax(["_4ya3eESPN1"])}>hello, world!</div>;
           })()}
         </CC>
       );
@@ -97,11 +97,11 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = "._1wybgktf{font-size:20px}";
+      "const _ = "._4ya3eESPN1{font-size:20px}";
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
-          {<div className={ax(["_1wybgktf"])}>hello, world!</div>}
+          {<div className={ax(["_4ya3eESPN1"])}>hello, world!</div>}
         </CC>
       );
       "
@@ -154,10 +154,10 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _5 = "._y44vonb9{animation:k1m8j3od 2s ease-in-out}";
-      const _4 = "._1pgl1ytf{animation-timing-function:ease-in-out}";
-      const _3 = "._j7hq1sbx{animation-name:k1m8j3od}";
-      const _2 = "._5sagymdr{animation-duration:2s}";
+      "const _5 = "._2fBhteRkJR{animation:k1m8j3od 2s ease-in-out}";
+      const _4 = "._43vdfTN8t6{animation-timing-function:ease-in-out}";
+      const _3 = "._1gBibyfsJg{animation-name:k1m8j3od}";
+      const _2 = "._0nFVCGFSlo{animation-duration:2s}";
       const _ = "@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}";
       const fadeOut = null;
       const Component = () => (
@@ -165,16 +165,16 @@ describe('class names behaviour', () => {
           <CS>{[_, _2, _3, _4, _5]}</CS>
           {
             <>
-              <div className={ax(["_5sagymdr _j7hq1sbx _1pgl1ytf"])}>
+              <div className={ax(["_0nFVCGFSlo _1gBibyfsJg _43vdfTN8t6"])}>
                 longhand object call expression
               </div>
-              <div className={ax(["_y44vonb9"])}>
+              <div className={ax(["_2fBhteRkJR"])}>
                 shorthand object call expression
               </div>
-              <div className={ax(["_5sagymdr _j7hq1sbx _1pgl1ytf"])}>
+              <div className={ax(["_0nFVCGFSlo _1gBibyfsJg _43vdfTN8t6"])}>
                 longhand tagged template expression
               </div>
-              <div className={ax(["_y44vonb9"])}>
+              <div className={ax(["_2fBhteRkJR"])}>
                 shorthand tagged template expression
               </div>
             </>
@@ -241,11 +241,11 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = "._1wybgktf{font-size:20px}";
+      "const _ = "._4ya3eESPN1{font-size:20px}";
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
-          {<div className={ax(["_1wybgktf"])}>hello, world!</div>}
+          {<div className={ax(["_4ya3eESPN1"])}>hello, world!</div>}
         </CC>
       );
       "
@@ -270,17 +270,17 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _3 = "._syaz13q2{color:blue}";
-      const _2 = "._1wybgktf{font-size:20px}";
-      const _ = "._syaz5scu{color:red}";
+      "const _3 = "._1UtDYzynoA{color:blue}";
+      const _2 = "._4ya3eESPN1{font-size:20px}";
+      const _ = "._1UtDYzGowl{color:red}";
       const ListItem = () => (
         <CC>
           <CS>{[_, _2, _3]}</CS>
           {
             <div
               className={{
-                button: ax(["_syaz5scu _1wybgktf"]),
-                container: ax(["_syaz13q2 _1wybgktf"]),
+                button: ax(["_1UtDYzGowl _4ya3eESPN1"]),
+                container: ax(["_1UtDYzynoA _4ya3eESPN1"]),
               }}
             >
               hello, world!
@@ -304,11 +304,11 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = "._1wybgktf{font-size:20px}";
+      "const _ = "._4ya3eESPN1{font-size:20px}";
       const ListItem = () => (
         <CC>
           <CS>{[_]}</CS>
-          {<div className={ax(["_1wybgktf"])}>hello, world!</div>}
+          {<div className={ax(["_4ya3eESPN1"])}>hello, world!</div>}
         </CC>
       );
       "
@@ -343,11 +343,11 @@ describe('class names behaviour', () => {
    `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = "._1wybgktf{font-size:20px}";
+      "const _ = "._4ya3eESPN1{font-size:20px}";
       const ListItem = ({ children }) => (
         <CC>
           <CS>{[_]}</CS>
-          {children(ax(["_1wybgktf"]))}
+          {children(ax(["_4ya3eESPN1"]))}
         </CC>
       );
       "
@@ -365,7 +365,7 @@ describe('class names behaviour', () => {
     );
   `);
 
-    expect(actual).toInclude(`<div className={ax([\"_1wyb1fwx\"])} /`);
+    expect(actual).toInclude(`<div className={ax([\"_4ya3eErjyG\"])} /`);
   });
 
   it('should replace style identifier with undefined', () => {
@@ -394,7 +394,7 @@ describe('class names behaviour', () => {
   `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _ = "._syaz1aj3{color:var(--_1ylxx6h)}";
+      "const _ = "._1UtDYzpjc8{color:var(--_1ylxx6h)}";
       const Component = ({ children, color }) => (
         <CC>
           <CS>{[_]}</CS>
@@ -403,7 +403,7 @@ describe('class names behaviour', () => {
               style={{
                 "--_1ylxx6h": ix(color),
               }}
-              className={ax(["_syaz1aj3"])}
+              className={ax(["_1UtDYzpjc8"])}
             />
           }
         </CC>
@@ -462,15 +462,15 @@ describe('class names behaviour', () => {
     `);
 
     expect(actual).toMatchInlineSnapshot(`
-      "const _2 = "._syaz5scu{color:red}";
-      const _ = "._1wyb19bv{font-size:10px}";
+      "const _2 = "._1UtDYzGowl{color:red}";
+      const _ = "._4ya3eEuFDC{font-size:10px}";
       const ListItem = () => (
         <CC>
           <CS>{[_, _2]}</CS>
           {(() => {
             const { css: c, style: styl } = arg;
             return (
-              <div style={undefined} className={ax(["_1wyb19bv _syaz5scu"])}>
+              <div style={undefined} className={ax(["_4ya3eEuFDC _1UtDYzGowl"])}>
                 hello world
               </div>
             );
@@ -496,7 +496,7 @@ describe('class names behaviour', () => {
       );
     `);
 
-    expect(actual).toInclude('className={ax([props.isPrimary && "_syaz13q2 _1wybgktf"])}');
+    expect(actual).toInclude('className={ax([props.isPrimary && "_1UtDYzynoA _4ya3eESPN1"])}');
   });
 
   it('should apply array logical-based conditional css', () => {
@@ -520,7 +520,7 @@ describe('class names behaviour', () => {
     );
 
     expect(actual).toInclude(
-      'className={ax(["_1wyb1ylp",(props.isPrimary||props.isMaybe)&&"_syaz13q2 _1wybgktf"])}'
+      'className={ax(["_4ya3eEUF4f",(props.isPrimary||props.isMaybe)&&"_1UtDYzynoA _4ya3eESPN1"])}'
     );
   });
 
@@ -544,7 +544,7 @@ describe('class names behaviour', () => {
     );
 
     expect(actual).toInclude(
-      'className={ax([props.isPrimary?"_bfhk1x77 _syaz11x8":"_bfhkbf54 _syaz5scu","_1wyb1fwx"])}'
+      'className={ax([props.isPrimary?"_0KLXruaJpK _1UtDYzbqW0":"_0KLXruJwxv _1UtDYzGowl","_4ya3eErjyG"])}'
     );
   });
 });
