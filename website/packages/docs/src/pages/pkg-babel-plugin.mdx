@@ -48,6 +48,7 @@ If you choose to configure Compiled through Webpack, Vite or Parcel (recommended
 - `addComponentName`
 - `cache`
 - `classHashPrefix`
+- `collisionResistantHash`
 - `extensions`
 - `flattenMultipleSelectors`
 - `importReact`
@@ -89,6 +90,24 @@ The currently accepted regex for this value is `^[a-zA-Z\-_]+[a-zA-Z\-_0-9]*$`.
 
 - Type: `string`
 - Default: `undefined`
+
+#### collisionResistantHash
+
+Generates atomic class names using a different hash algorithm that is more resistant to className collision. This is a **migration flag** for moving Compiled onto a new hashing scheme.
+
+- When `false` (the default), the legacy base-36 hash truncated to 4 characters is used, producing **9-character** class names (`_` + 4-char group + 4-char value). This preserves existing output.
+- When `true`, a base-62 encoded, zero-padded hash is used, producing **11-character** class names (`_` + 6-char group + 4-char value). The wider hash space makes accidental collisions between distinct declarations effectively impossible.
+
+Because the two formats produce group keys of different lengths, they are structurally disjoint and never falsely deduplicate each other. The runtime [`ax()`](/pkg-react-runtime) handles both formats simultaneously (via length-based group-key extraction), so mixing old and new classes on the same page is safe during a migration — this most commonly occurs when consuming CSS from distributed npm packages.
+
+> **Runtime requirement:** enabling this option emits class names that only a compatible runtime can correctly merge. Consumers must be on `@compiled/react@>=1.0.0` (enforced via `peerDependencies`). An older runtime mis-parses 11-character class names and will merge styles incorrectly.
+
+Once every consumer has migrated, the default is expected to flip to `true` and the legacy branch removed.
+
+See the [Collision-resistant hashing](/collision-resistant-hash) guide for the full migration walkthrough and pitfalls.
+
+- Type: `boolean`
+- Default: `false`
 
 #### extensions
 

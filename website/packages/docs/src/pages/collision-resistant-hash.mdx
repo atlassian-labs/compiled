@@ -1,0 +1,64 @@
+---
+section: 50-Guides
+name: Collision-resistant hashing
+order: 22
+---
+
+# Collision-resistant hashing
+
+Compiled generates a short, deterministic **atomic class name** for every unique CSS declaration. The `collisionResistantHash` option changes the algorithm used to produce those class names so that accidental collisions between two _different_ declarations become effectively impossible.
+
+This is a **migration flag**. This page explains what it changes, why it exists, and what you must do to adopt it safely.
+
+## What a class name looks like
+
+Every atomic class is `_` + a **group key** (derived from the property/context) + a **value hash** (derived from the value):
+
+| Mode                      | Encoding                      | Character set                       | Format                                           | Example        |
+| ------------------------- | ----------------------------- | ----------------------------------- | ------------------------------------------------ | -------------- |
+| Legacy (`false`, default) | base-36, truncated to 4 chars | `0-9a-z` (lowercase only)           | `_` + 4-char group + 4-char value = **9 chars**  | `_1a2b3c4d`    |
+| New (`true`)              | base-62, zero-padded          | `0-9A-Za-z` (**uppercase allowed**) | `_` + 6-char group + 4-char value = **11 chars** | `_1A2bC3d4E5f` |
+
+Note the new format is **case-sensitive**: base-62 uses upper- and lowercase letters, so `_1A2bC3d4E5f` and `_1a2bc3d4e5f` are different class names. Any tooling that lowercases class names must not be applied to Compiled output.
+
+The legacy hash truncates to a small space, so two unrelated declarations can occasionally hash to the **same** class name. When that happens the runtime merges them as if they were the same style, and one silently wins — a hard-to-debug visual bug. The new base-62, full-width hash widens the space enough that this no longer happens in practice.
+
+## Why it is safe to mix old and new class names
+
+During a migration, if consuming style from other sources via npm, your page could inevitably contain **both** formats at once. This most commonly happens when CSS is **consumed via distributed npm packages** — for example, a pre-built dependency that was published while still on the legacy hash, rendered on the same page as freshly compiled app CSS that already uses the new hash. (Within a single build that compiles everything from source, all output uses whichever mode you configured, so no mix occurs.)
+
+This is safe by construction:
+
+- The two formats produce group keys of **different lengths** (5 vs 7 characters including the `_`). They are therefore structurally disjoint and can never be mistaken for one another.
+- The runtime [`ax()`](/pkg-react-runtime) extracts the group key using **length-based slicing** (`className.length - 4`), so it correctly de-duplicates both 9-character and 11-character classes, and never falsely merges one format with the other.
+
+Because of this, adopting the new hash does not require a coordinated "big bang" switch across every package at once.
+
+## Runtime requirement (important)
+
+Enabling `collisionResistantHash` emits class names that **only a compatible runtime can merge correctly**.
+
+> Consumers must be on **`@compiled/react@>=1.0.0`**. This is enforced automatically through `peerDependencies` on `@compiled/babel-plugin` and `@compiled/css`, so your package manager will surface an error if the floor is not met.
+
+An older `@compiled/react` runtime uses a fixed-offset slice that mis-parses 11-character class names, which breaks de-duplication and produces incorrect styles. There is no runtime fallback for this — the fix is always to upgrade the runtime.
+
+## How to adopt it
+
+1. **Upgrade the runtime first.** Ensure your app (and any dependency that emits Compiled styles) resolves `@compiled/react@>=1.0.0`. In a monorepo you may want a resolution/override to guarantee a single runtime version.
+2. **Enable the flag** in your build config (see [`@compiled/babel-plugin` options](/pkg-babel-plugin#collisionresistanthash)). It can be driven by an environment variable or feature gate so you can roll it out gradually.
+3. **Re-run extraction / rebuild** so your extracted `compiled.css` reflects the new class names.
+4. **Verify.** New atomic classes should now be 11 characters. Existing pages should look unchanged — only class names change, never the declarations themselves.
+
+## What to watch out for
+
+- **Do not enable the flag while any consumer is still below the runtime floor.** The `peerDependencies` check is your safety net, but a stray `resolutions`/override that pins an old runtime can bypass it — audit those if you use them.
+- **Custom-property (`--_xxx`) and `@keyframes` names are unaffected.** They continue to use the untouched base-36 hash, so animations and CSS variables remain stable across the migration.
+- **Publishing new-hash output is a breaking change for a package.** If you ship pre-built CSS that uses the new hash, bump a major version and declare the `@compiled/react@>=1.0.0` peer so your own consumers are forced onto a compatible runtime.
+- **`classHashPrefix` is orthogonal.** It still applies on top of whichever hash mode is active; it is not a substitute for this option.
+
+## See also
+
+- [Babel Plugin Configuration](/pkg-babel-plugin#collisionresistanthash) - the `collisionResistantHash` option reference
+- [Atomic CSS](/atomic-css) - how Compiled's atomic class names work
+- [Local Development Atomic Clashes](/local-development-atomic-clashes) - a related class-name clash caused by dev vs extracted ordering
+- [How it Works](/how-it-works) - runtime vs extracted styles
