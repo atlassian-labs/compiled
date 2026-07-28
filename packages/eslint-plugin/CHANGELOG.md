@@ -1,5 +1,12 @@
 # @compiled/eslint-plugin
 
+## 0.20.1
+
+### Patch Changes
+
+- Updated dependencies [b0dacb1]
+  - @compiled/utils@0.14.0
+
 ## 0.20.0
 
 ### Minor Changes
