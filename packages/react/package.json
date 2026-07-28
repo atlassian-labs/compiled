@@ -83,7 +83,7 @@
   },
   "devDependencies": {
     "@compiled/benchmark": "^1.1.0",
-    "@compiled/utils": "^0.13.0",
+    "@compiled/utils": "^0.14.0",
     "@fixture/strict-api-test": "*",
     "@testing-library/react": "^16.3.2",
     "@types/jsdom": "^16.2.15",
