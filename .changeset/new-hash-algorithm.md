@@ -1,7 +1,6 @@
 ---
-'@compiled/babel-plugin': minor
-'@compiled/css': minor
-'@compiled/react': minor
+'@compiled/babel-plugin': major
+'@compiled/css': major
 '@compiled/utils': minor
 ---
 
@@ -20,17 +19,27 @@ encoding of the full 32-bit MurmurHash2 value:
 - **Value hash**: 4 characters (fixed width)
 - Atomic class names change from 9 characters (`_1e0c1ule`) to 11 characters (`_3iDTPbvLZJ`)
 
-The option is a **migration flag**. It defaults to `false`, so this release is additive and
-non-breaking — existing output is byte-for-byte identical. Products can enable it incrementally
-(for example via an environment variable or feature gate in their build config), roll back instantly
-by turning it off and rebuilding, and a future major release will flip the default to `true` and
-remove the legacy branch.
+The option is a **migration flag**. It defaults to `false`, so the generated CSS is unchanged by
+default — existing output is byte-for-byte identical. Products can enable it incrementally (for
+example via an environment variable or feature gate in their build config), roll back instantly by
+turning it off and rebuilding, and a future major release will flip the default to `true` and remove
+the legacy branch.
 
-`ax()` extracts the group key using `className.slice(0, className.length - 4)` — a fast,
-fixed-offset slice that handles both the legacy 9-character and new 11-character class names. Because
-the two formats produce different-length group keys, they are structurally disjoint and never
-falsely deduplicate each other, so mixing old and new class names on a page (during the migration
-window, or between pre-built dependency CSS and freshly compiled app CSS) is safe.
+**Breaking:** `@compiled/babel-plugin` and `@compiled/css` now declare `@compiled/react` `>=1.0.0`
+as a peer dependency. Because these packages can emit the new 11-character atomic class names, the
+consuming app must run a runtime whose `ax()` can parse them (older runtimes use a fixed slice
+offset and corrupt deduplication of 11-character classes). Declaring the floor makes this
+install-time enforced: adopting a plugin version capable of the new hash forces the consumer onto
+`@compiled/react@>=1.0.0`, preventing a new-hash-output / old-runtime mismatch. This is the primary
+guardrail for consumers outside AFM (inside AFM the floor is additionally guaranteed by the root
+`resolutions` + `alignedDependencies` pin).
+
+Mixing legacy 9-character and new 11-character class names on a page is safe: the `>=1.0.0`
+runtime's `ax()` extracts the group key with `className.slice(0, className.length - 4)`, so the two
+formats produce different-length group keys, are structurally disjoint, and never falsely
+deduplicate each other (whether during the migration window or between pre-built dependency CSS and
+freshly compiled app CSS). This forward-compatible `ax()` behaviour already shipped in
+`@compiled/react@1.0.0` — which is exactly why it is the peer-dependency floor.
 
 The new `hashBase62` encoding is byte-for-byte compatible with the atlaspack SWC transformer's
 `to_base62`, ensuring class names are identical across the babel plugin and SWC toolchains.
