@@ -60,8 +60,8 @@ describe('CompiledExtractPlugin', () => {
     const actual = await bundle(join(fixturesPath, 'local-styles.tsx'));
 
     expect(actual).toMatchInlineSnapshot(`
-      "._syaz13q2{color:blue}
-      ._1wybdlk8{font-size:14px}
+      "._1UtDYzynoA{color:blue}
+      ._4ya3eEEbN9{font-size:14px}
       "
     `);
   }, 10000);
@@ -72,12 +72,12 @@ describe('CompiledExtractPlugin', () => {
     // This should not contain any styles from the unused relative import ./common/css-prop, which includes
     // {color:coral} or {border:2px solid coral}
     expect(actual).toMatchInlineSnapshot(`
-      "._syazmu8g{color:blueviolet}
-      ._syaz5scu{color:red}
-      ._f8pj1cnh:focus{color:purple}
-      ._f8pjruxl:focus{color:orange}
-      ._30l313q2:hover{color:blue}
-      ._30l31gy6:hover{color:yellow}
+      "._1UtDYzsHik{color:blueviolet}
+      ._1UtDYzGowl{color:red}
+      ._10n1R55CUP:focus{color:purple}
+      ._10n1R50axx:focus{color:orange}
+      ._0clgaMynoA:hover{color:blue}
+      ._0clgaMFQV5:hover{color:yellow}
       "
     `);
   }, 10000);
@@ -86,7 +86,7 @@ describe('CompiledExtractPlugin', () => {
     const assets = await bundle(join(fixturesPath, 'webpack-alias.tsx'));
 
     expect(assets).toMatchInlineSnapshot(`
-      "._syaz13q2{color:blue}
+      "._1UtDYzynoA{color:blue}
       "
     `);
   }, 10000);
@@ -102,7 +102,7 @@ describe('CompiledExtractPlugin', () => {
     });
 
     expect(assets).toMatchInlineSnapshot(`
-      "._syaz1if8{color:indigo}
+      "._1UtDYzHKf3{color:indigo}
       "
     `);
   }, 10000);
@@ -119,8 +119,8 @@ describe('CompiledExtractPlugin', () => {
 
     // Extract the styles into said bundle
     expect(assets[cssFiles[0]]).toMatchInlineSnapshot(`
-      "._19it1e35{border:2px solid coral}
-      ._syaz1vyr{color:coral}
+      "._30huDKXFvJ{border:2px solid coral}
+      ._1UtDYz7xde{color:coral}
       "
     `);
   }, 10000);
@@ -144,8 +144,8 @@ describe('CompiledExtractPlugin', () => {
     const actual = await bundle(join(fixturesPath, 'important-styles.tsx'));
 
     expect(actual).toMatchInlineSnapshot(`
-      "._1wybc038{font-size:12!important}
-      ._syaz13q2{color:blue}
+      "._4ya3eE79Ad{font-size:12!important}
+      ._1UtDYzynoA{color:blue}
       "
     `);
   }, 10000);
@@ -154,29 +154,29 @@ describe('CompiledExtractPlugin', () => {
     const actual = await bundle(join(fixturesPath, 'binding-not-found.tsx'));
 
     expect(actual).toMatchInlineSnapshot(`
-      "._n7zl1l01{border-bottom:1px solid rgba(135,119,217,0.2)}
-      ._n7zl17qw{border-bottom:1px solid transparent}._ca0qidpf{padding-top:0}
-      ._u5f31wto{padding-right:3rem}
-      ._n3tdidpf{padding-bottom:0}
-      ._19bv1wto{padding-left:3rem}
-      ._19pkidpf{margin-top:0}
-      ._2hwx1wug{margin-right:auto}
-      ._otyridpf{margin-bottom:0}
-      ._18u01wug{margin-left:auto}
-      ._4t3i1jdh{height:9rem}
-      ._1e0c1txw{display:flex}
-      ._4cvr1h6o{align-items:center}
-      ._1pbykb7n{z-index:1}
-      ._kqswstnw{position:absolute}
-      ._154iidpf{top:0}
-      ._1ltvidpf{left:0}
-      ._1xi2idpf{right:0}
-      ._p12f1us4{max-width:140rem}
-      ._syaz1cj8{color:var(--_xexnhp)}
-      ._4bfu1r31{text-decoration-color:currentColor}
-      ._1hmsglyw{text-decoration-line:none}
-      ._ajmmnqa1{text-decoration-style:solid}
-      ._syaz1r31{color:currentColor}
+      "._1x1D3gfOPB{border-bottom:1px solid rgba(135,119,217,0.2)}
+      ._1x1D3g1bzP{border-bottom:1px solid transparent}._0Of8r2dnbC{padding-top:0}
+      ._1ZnuxbDuDI{padding-right:3rem}
+      ._1wydGWdnbC{padding-bottom:0}
+      ._2Zuz6QDuDI{padding-left:3rem}
+      ._313842dnbC{margin-top:0}
+      ._0adFHsIZbP{margin-right:auto}
+      ._1DCdHidnbC{margin-bottom:0}
+      ._2XsHFMIZbP{margin-left:auto}
+      ._0jFU0VB34T{height:9rem}
+      ._3iDTPbQ4SZ{display:flex}
+      ._0hPCNLDIqT{align-items:center}
+      ._42Yu6B7dHp{z-index:1}
+      ._1mT5xdWVPG{position:absolute}
+      ._2IhTondnbC{top:0}
+      ._3OE6xYdnbC{left:0}
+      ._4ApkO2dnbC{right:0}
+      ._1EqgXlh2MB{max-width:140rem}
+      ._1UtDYzBz3j{color:var(--_xexnhp)}
+      ._00uqCY98eZ{text-decoration-color:currentColor}
+      ._3xtjKNYbGa{text-decoration-line:none}
+      ._0H9qDF6wH8{text-decoration-style:solid}
+      ._1UtDYz98eZ{color:currentColor}
       "
     `);
   }, 10000);
@@ -184,8 +184,11 @@ describe('CompiledExtractPlugin', () => {
   it('should handle extracted styles', async () => {
     const actual = await bundle(join(fixturesPath, 'extracted-component.tsx'));
 
+    // Pre-built `.compiled.css` still uses legacy 9-char classes; local styles use the
+    // collision-resistant 11-char hash (test default). Both formats coexist.
     expect(actual).toMatchInlineSnapshot(`
-      "._19itlf8h{border:2px solid blue}._1wyb1fwx{font-size:12px}
+      "._19itlf8h{border:2px solid blue}._4ya3eErjyG{font-size:12px}
+      ._1UtDYzynoA{color:blue}
       ._19bv1vi7{padding-left:32px}
       ._19pk1ul9{margin-top:30px}
       ._1wyb1ul9{font-size:30px}
@@ -222,13 +225,14 @@ describe('CompiledExtractPlugin', () => {
     //    (Proves cross-file non-atomic source order is preserved and mini-css-extract reversal is fixed)
     // 2. Include the pre-built `.compiled.css` atomic rules from the import
     //    (._19itlf8h, ._19bv1vi7, etc. from extracted-component.compiled.css)
-    // 3. Include local atomic rules from this file (._1wyb12am, ._syaz13q2)
+    // 3. Include local atomic rules from this file (new-hash ._4ya3eEEbN9, ._1UtDYzynoA)
+    // Pre-built `.compiled.css` rules remain on the legacy hash.
     expect(actual).toMatchInlineSnapshot(`
       ".cc-puo21d .editor .toolbar{background-color:yellow}
       .cc-1fqt6gw .editor .panel{background-color:gray}
       .cc-nyinpf .editor .panel{background-color:pink}
-      ._19itlf8h{border:2px solid blue}
-      ._1wybdlk8{font-size:14px}
+      ._19itlf8h{border:2px solid blue}._1UtDYzynoA{color:blue}
+      ._4ya3eEEbN9{font-size:14px}
       ._19bv1vi7{padding-left:32px}
       ._19pk1ul9{margin-top:30px}
       ._1wyb1ul9{font-size:30px}

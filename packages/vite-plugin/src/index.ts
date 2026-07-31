@@ -70,6 +70,7 @@ function compiled(userOptions: PluginOptions = {}): any {
     increaseSpecificity: undefined,
     sortAtRules: true,
     classHashPrefix: undefined,
+    collisionResistantHash: undefined,
     flattenMultipleSelectors: undefined,
 
     ...userOptions,

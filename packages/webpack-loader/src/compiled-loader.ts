@@ -40,6 +40,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     resolver = undefined,
     importSources = undefined,
     classHashPrefix = undefined,
+    collisionResistantHash = undefined,
   }: CompiledLoaderOptions = typeof context.getOptions === 'undefined'
     ? // Webpack v4 flow
       getOptions(context)
@@ -95,6 +96,9 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
           classHashPrefix: {
             type: 'string',
           },
+          collisionResistantHash: {
+            type: 'boolean',
+          },
         },
       });
 
@@ -115,6 +119,7 @@ function getLoaderOptions(context: LoaderContext<CompiledLoaderOptions>) {
     resolver,
     importSources,
     classHashPrefix,
+    collisionResistantHash,
   };
 }
 

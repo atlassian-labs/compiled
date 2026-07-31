@@ -56,10 +56,10 @@ describe.each<'development' | 'production'>(['development', 'production'])(
 
       expect(assets['main.js']).not.toInclude('{margin:0}');
       expect(assets['main.js']).toIncludeMultiple([
-        '._19pkidpf{margin-top:0}',
-        '._2hwxidpf{margin-right:0}',
-        '._otyridpf{margin-bottom:0}',
-        '._18u0idpf{margin-left:0}',
+        '._313842dnbC{margin-top:0}',
+        '._0adFHsdnbC{margin-right:0}',
+        '._1DCdHidnbC{margin-bottom:0}',
+        '._2XsHFMdnbC{margin-left:0}',
       ]);
     });
 
@@ -67,21 +67,35 @@ describe.each<'development' | 'production'>(['development', 'production'])(
       const assets = await bundle(join(fixturesPath, 'local-styles.tsx'));
 
       expect(assets['main.js']).toIncludeMultiple([
+        '._4ya3eEEbN9{font-size:14px}',
+        '._1UtDYzynoA{color:blue}',
+      ]);
+    });
+
+    // CLEANUP: remove when collisionResistantHash becomes the shipped default
+    it('forwards collisionResistantHash: false (legacy hash) to the babel plugin', async () => {
+      const assets = await bundle(join(fixturesPath, 'local-styles.tsx'), {
+        collisionResistantHash: false,
+      });
+
+      expect(assets['main.js']).toIncludeMultiple([
         '._1wybdlk8{font-size:14px}',
         '._syaz13q2{color:blue}',
       ]);
+      expect(assets['main.js']).not.toInclude('._4ya3eEEbN9{font-size:14px}');
+      expect(assets['main.js']).not.toInclude('._1UtDYzynoA{color:blue}');
     });
 
     it('transforms styles imported through a relative import', async () => {
       const assets = await bundle(join(fixturesPath, 'relative-styles.tsx'));
 
       expect(assets['main.js']).toIncludeMultiple([
-        '._syaz5scu{color:red}',
-        '._syazmu8g{color:blueviolet}',
-        '._f8pjruxl:focus{color:orange}',
-        '._f8pj1cnh:focus{color:purple}',
-        '._30l31gy6:hover{color:yellow}',
-        '._30l313q2:hover{color:blue}',
+        '._1UtDYzGowl{color:red}',
+        '._1UtDYzsHik{color:blueviolet}',
+        '._10n1R50axx:focus{color:orange}',
+        '._10n1R55CUP:focus{color:purple}',
+        '._0clgaMFQV5:hover{color:yellow}',
+        '._0clgaMynoA:hover{color:blue}',
       ]);
 
       // not.toIncludeMultiple does not work as intended
@@ -92,7 +106,7 @@ describe.each<'development' | 'production'>(['development', 'production'])(
     it('transforms styles imported through a webpack alias', async () => {
       const assets = await bundle(join(fixturesPath, 'webpack-alias.tsx'));
 
-      expect(assets['main.js']).toInclude('._syaz13q2{color:blue}');
+      expect(assets['main.js']).toInclude('._1UtDYzynoA{color:blue}');
     });
 
     it('transforms styles imported through an overridden resolve configuration', async () => {
@@ -105,7 +119,7 @@ describe.each<'development' | 'production'>(['development', 'production'])(
         },
       });
 
-      expect(assets['main.js']).toInclude('._syaz1if8{color:indigo}');
+      expect(assets['main.js']).toInclude('._1UtDYzHKf3{color:indigo}');
     });
 
     it('transforms styles imported through an overridden resolver', async () => {
@@ -113,7 +127,7 @@ describe.each<'development' | 'production'>(['development', 'production'])(
         resolver: '@compiled-private/resolver-webpack',
       });
 
-      expect(assets['main.js']).toInclude('._syaz8p1k{color:very-very red color');
+      expect(assets['main.js']).toInclude('._1UtDYzAaGC{color:very-very red color');
     });
 
     it('fails when using unrecognised compiled syntax', async () => {

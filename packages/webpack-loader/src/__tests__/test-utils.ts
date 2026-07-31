@@ -18,6 +18,7 @@ export interface BundleOptions {
   resolve?: ResolveOptions;
   resolver?: string;
   importSources?: string[];
+  collisionResistantHash?: boolean;
 }
 
 export function bundle(
@@ -31,6 +32,11 @@ export function bundle(
     resolve = {},
     resolver,
     importSources,
+    // Tests default to the collision-resistant hash (base-62, 11-char classes)
+    // so fixtures document the target output. NOTE: the SHIPPED default is
+    // `false` (legacy 9-char classes). Pass `collisionResistantHash: false`
+    // explicitly to assert legacy output.
+    collisionResistantHash = true,
   }: BundleOptions
 ): Promise<Record<string, string>> {
   const outputPath = join(__dirname, 'dist');
@@ -62,6 +68,7 @@ export function bundle(
                 optimizeCss: false,
                 resolve,
                 resolver,
+                collisionResistantHash,
               },
             },
           ],
