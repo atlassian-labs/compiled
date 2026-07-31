@@ -65,9 +65,9 @@ it('transforms assets with babel plugin', async () => {
   const code = await asset?.getCode();
   const appCode = code?.slice(code.indexOf('var _3'));
   expect(appCode).toMatchInlineSnapshot(`
-    "var _3 = "._0KLXruJwxv{background-color:green}";
-    var _2 = "._1UtDYzGowl{color:red}";
-    var _ = "._4ya3eEHMkp{font-size:50px}";
+    "var _3 = "._bfhkbf54{background-color:green}";
+    var _2 = "._syaz5scu{color:red}";
+    var _ = "._1wyb12am{font-size:50px}";
     console.log("File START");
     var styles = null;
     var App = function() {
@@ -83,8 +83,8 @@ it('transforms assets with babel plugin', async () => {
                     }),
                     /*#__PURE__*/ (0, _jsxRuntime.jsx)("div", {
                         className: (0, _runtime.ax)([
-                            "_4ya3eEHMkp _1UtDYzGowl",
-                            "_0KLXruJwxv"
+                            "_1wyb12am _syaz5scu",
+                            "_bfhkbf54"
                         ]),
                         children: "hello from parcel"
                     })
@@ -190,7 +190,7 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
             children: [
                 /*#__PURE__*/ (0, _jsxRuntime.jsx)("div", {
                     className: (0, _runtime.ax)([
-                        "_4ya3eEHMkp _1UtDYzynoA"
+                        "_1wyb12am _syaz13q2"
                     ]),
                     children: "CSS prop"
                 }),
@@ -234,14 +234,11 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
     ._19pk1ul9 {
       margin-top: 30px;
     }
-    ._1UtDYzynoA {
-      color: blue;
+    ._1wyb12am {
+      font-size: 50px;
     }
     ._1wyb1ul9 {
       font-size: 30px;
-    }
-    ._4ya3eEHMkp {
-      font-size: 50px;
     }
     ._bfhk1gy6 {
       background-color: yellow;
@@ -287,54 +284,25 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
     "var Button = (0, _react.forwardRef)(function(_ref, __cmplr) {
         var _ref$as = _ref.as, C = _ref$as === void 0 ? "button" : _ref$as, __cmpls = _ref.style, __cmplp = _objectWithoutProperties(_ref, _excluded);
         if (__cmplp.innerRef) throw new Error("Please use 'ref' instead of 'innerRef'.");
-        return /*#__PURE__*/ (0, _jsxRuntime.jsxs)(_runtime.CC, {
-            children: [
-                /*#__PURE__*/ (0, _jsxRuntime.jsx)(_runtime.CS, {
-                    children: [
-                        _,
-                        _2,
-                        _3,
-                        _4,
-                        _5,
-                        _6,
-                        _7,
-                        _8,
-                        _9,
-                        _0,
-                        _1,
-                        _10
-                    ]
-                }),
-                /*#__PURE__*/ (0, _jsxRuntime.jsx)(C, _objectSpread(_objectSpread({}, __cmplp), {}, {
-                    style: __cmpls,
-                    ref: __cmplr,
-                    className: (0, _runtime.ax)([
-                        "_19it1vrj _ca0q1vi7 _u5f31vi7 _n3td1vi7 _19bv1vi7 _syaz13q2 _1wyb1ul9 _4cvx13q2 _irr313q2 _30l31x77 _jomr13q2 _f8pj1x77",
-                        __cmplp.className
-                    ])
-                }))
-            ]
-        });
+        return /*#__PURE__*/ (0, _jsxRuntime.jsx)(C, _objectSpread(_objectSpread({}, __cmplp), {}, {
+            style: __cmpls,
+            ref: __cmplr,
+            className: (0, _runtime.ax)([
+                "_19it1vrj _ca0q1vi7 _u5f31vi7 _n3td1vi7 _19bv1vi7 _syaz13q2 _1wyb1ul9 _4cvx13q2 _irr313q2 _30l31x77 _jomr13q2 _f8pj1x77",
+                __cmplp.className
+            ])
+        }));
     });
     Button.displayName = "Button";
     function BabelComponent(_ref2) {
         var children = _ref2.children;
-        return /*#__PURE__*/ (0, _jsxRuntime.jsxs)(_runtime.CC, {
-            children: [
-                /*#__PURE__*/ (0, _jsxRuntime.jsx)(_runtime.CS, {
-                    children: [
-                        _11
-                    ]
-                }),
-                /*#__PURE__*/ (0, _jsxRuntime.jsx)("div", {
-                    className: (0, _runtime.ax)([
-                        "_19pk1ul9"
-                    ]),
-                    children: /*#__PURE__*/ (0, _jsxRuntime.jsx)(Button, {
-                        children: children
-                    })
-                })
-            ]
+        return /*#__PURE__*/ (0, _jsxRuntime.jsx)("div", {
+            className: (0, _runtime.ax)([
+                "_19pk1ul9"
+            ]),
+            children: /*#__PURE__*/ (0, _jsxRuntime.jsx)(Button, {
+                children: children
+            })
         });
     }"
   `);

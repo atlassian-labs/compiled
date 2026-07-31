@@ -1,6 +1,5 @@
 {
   "importReact": false,
   "extract": false,
-  "optimizeCss": false,
-  "collisionResistantHash": true
+  "optimizeCss": false
 }

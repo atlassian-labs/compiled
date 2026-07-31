@@ -2,6 +2,5 @@
   "importReact": false,
   "extract": true,
   "optimizeCss": false,
-  "inlineCss": true,
-  "collisionResistantHash": true
+  "inlineCss": true
 }
