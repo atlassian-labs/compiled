@@ -104,6 +104,15 @@ export interface CompiledLoaderOptions {
    * or `extract: true` in Webpack loaders or Parcel tranformers.
    */
   classHashPrefix?: string;
+
+  /**
+   * When `true`, generates atomic class names using a collision-resistant base-62
+   * hash (11 characters: `_` + 6-char group + 4-char value) instead of the legacy
+   * base-36 hash (9 characters: `_` + 4-char group + 4-char value).
+   *
+   * Passed through to @compiled/babel-plugin. Defaults to `false`.
+   */
+  collisionResistantHash?: boolean;
 }
 
 export interface CompiledExtractPluginOptions {

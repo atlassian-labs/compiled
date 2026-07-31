@@ -1,5 +1,3 @@
-import { join } from 'path';
-
 import { parseAsync, transformFromAstAsync } from '@babel/core';
 import generate from '@babel/generator';
 import type { PluginOptions as BabelPluginOptions } from '@compiled/babel-plugin';
@@ -29,14 +27,14 @@ const packageKey = '@compiled/parcel-transformer';
  * Compiled parcel transformer.
  */
 export default new Transformer<ParcelTransformerOpts>({
-  async loadConfig({ config, options }) {
-    const conf = await config.getConfigFrom<ParcelTransformerOpts>(
-      join(options.projectRoot, 'index'),
-      configFiles,
-      {
-        packageKey,
-      }
-    );
+  async loadConfig({ config }) {
+    // Search upward from the entry/config path (config.searchPath), not from
+    // options.projectRoot. In yarn/npm workspaces projectRoot is the monorepo
+    // root (where the lockfile lives), so starting there would skip per-package
+    // `.compiledcssrc` files under packages/ or test fixtures/.
+    const conf = await config.getConfig<ParcelTransformerOpts>(configFiles, {
+      packageKey,
+    });
 
     const contents: ParcelTransformerOpts = {
       extract: false,

@@ -63,11 +63,14 @@ it('transforms assets with compiled and extraction babel plugins', async () => {
     ._19pk1ul9 {
       margin-top: 30px;
     }
-    ._1wyb12am {
-      font-size: 50px;
+    ._1UtDYzynoA {
+      color: blue;
     }
     ._1wyb1ul9 {
       font-size: 30px;
+    }
+    ._4ya3eEHMkp {
+      font-size: 50px;
     }
     ._bfhk1gy6 {
       background-color: yellow;

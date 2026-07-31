@@ -63,8 +63,12 @@ export const buildDeterministicStylesheet = (
 };
 
 export default new Optimizer<ParcelOptimizerOpts, unknown>({
-  async loadConfig({ config, options }) {
-    const conf = await config.getConfigFrom(join(options.projectRoot, 'index'), configFiles, {
+  async loadConfig({ config }) {
+    // Search upward from the entry/config path (config.searchPath), not from
+    // options.projectRoot. In yarn/npm workspaces projectRoot is the monorepo
+    // root (where the lockfile lives), so starting there would skip per-package
+    // `.compiledcssrc` files under packages/ or test fixtures/.
+    const conf = await config.getConfig(configFiles, {
       packageKey: '@compiled/parcel-optimizer',
     });
 
