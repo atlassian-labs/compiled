@@ -7,7 +7,9 @@ import type {
 import { sort } from '@compiled/css';
 import { DEFAULT_IMPORT_SOURCES, DEFAULT_PARSER_BABEL_PLUGINS, toBoolean } from '@compiled/utils';
 import type { OutputAsset, OutputBundle } from 'rollup';
+import type { HtmlTagDescriptor, Plugin } from 'vite';
 
+import { createDevCssHooks, isCompiledCssRequest } from './dev-css.js';
 import type { PluginOptions } from './types';
 import { createDefaultResolver } from './utils.js';
 
@@ -47,7 +49,7 @@ const sortStyleRulesForDeterministicOutput = (styleRules: string[]): string[] =>
  * @param userOptions - Plugin configuration options
  * @returns Vite plugin object
  */
-function compiled(userOptions: PluginOptions = {}): any {
+function compiled(userOptions: PluginOptions = {}): Plugin {
   const options: PluginOptions = {
     // Vite-specific
     bake: true,
@@ -76,6 +78,12 @@ function compiled(userOptions: PluginOptions = {}): any {
     ...userOptions,
   };
 
+  const sortCompiledCss = (css: string): string =>
+    sort(css, {
+      sortAtRulesEnabled: options.sortAtRules,
+      sortShorthandEnabled: options.sortShorthand,
+    });
+
   // Storage for collected style rules during transformation
   // Map of filePath → array of style rules (in source order from the babel
   // transform). We sort by filePath at extraction time for cross-file
@@ -90,10 +98,26 @@ function compiled(userOptions: PluginOptions = {}): any {
   const EXTRACTED_CSS_NAME = 'compiled-extracted.css';
 
   return {
+    ...createDevCssHooks(sortCompiledCss),
     name: '@compiled/vite-plugin',
     enforce: 'pre', // Run before other plugins
 
     async transform(code: string, id: string): Promise<any> {
+      if (isCompiledCssRequest(id) && code.includes('._')) {
+        try {
+          return {
+            code: sortCompiledCss(code),
+            map: null,
+          };
+        } catch (error) {
+          const err = error as Error;
+          this.warn({
+            message: `[@compiled/vite-plugin] Failed to sort CSS in ${id}: ${err.message}`,
+          });
+          return null;
+        }
+      }
+
       // Filter out node_modules (except for specific includes if needed)
       if (id.includes('/node_modules/@compiled/react')) {
         return null;
@@ -216,16 +240,8 @@ function compiled(userOptions: PluginOptions = {}): any {
         // This is a heuristic to identify CSS that came from .compiled.css files
         if (cssContent.includes('._')) {
           try {
-            // Apply Compiled's CSS sorting and deduplication
-            const sortConfig = {
-              sortAtRulesEnabled: options.sortAtRules,
-              sortShorthandEnabled: options.sortShorthand,
-            };
-
-            const sortedCss = sort(cssContent, sortConfig);
-
             // Update the asset with sorted CSS
-            asset.source = sortedCss;
+            asset.source = sortCompiledCss(cssContent);
           } catch (error) {
             const err = error as Error;
             this.warn({
@@ -252,19 +268,13 @@ function compiled(userOptions: PluginOptions = {}): any {
 
           // Join all rules and apply CSS sorting
           const combinedCss = allRules.join('\n');
-          const sortConfig = {
-            sortAtRulesEnabled: options.sortAtRules,
-            sortShorthandEnabled: options.sortShorthand,
-          };
-
-          const sortedCss = sort(combinedCss, sortConfig);
 
           // Emit the CSS file with content-based naming
           // Vite will add a content hash to the filename automatically
           this.emitFile({
             type: 'asset',
             name: EXTRACTED_CSS_NAME,
-            source: sortedCss,
+            source: sortCompiledCss(combinedCss),
           });
 
           // Mark that we've emitted the file so transformIndexHtml can inject it
@@ -282,7 +292,7 @@ function compiled(userOptions: PluginOptions = {}): any {
     transformIndexHtml(
       _html: string,
       ctx: { bundle?: OutputBundle; [key: string]: any }
-    ): { tag: string; attrs: Record<string, string>; injectTo: string }[] {
+    ): HtmlTagDescriptor[] {
       // Inject the extracted CSS file into HTML if it was emitted
       if (!extractedCssFileName || !ctx.bundle) {
         return [];
