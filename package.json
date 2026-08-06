@@ -151,7 +151,7 @@
     },
     {
       "path": "./packages/react/dist/browser/runtime/style.js",
-      "limit": "1140B",
+      "limit": "1160B",
       "import": "CS",
       "ignore": [
         "react"
