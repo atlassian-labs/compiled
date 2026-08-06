@@ -29,13 +29,17 @@ const transform = (options = {}) =>
 describe('module traversal cache benchmark', () => {
   it('transforms the code correctly', () => {
     expect(transform()).toMatchInlineSnapshot(`
-      "const _4 = \\"._19ith012{border:3px solid pink}\\";
-      const _3 = \\"._bfhk32ev{background-color:pink}\\";
-      const _2 = \\"._syaz5scu{color:red}\\";
-      const _ = \\"._1wybo7ao{font-size:15px}\\";
+      "import * as React from "react";
+      import { ax, ix, CC, CS } from "@compiled/react/runtime";
+      import { colorMixin } from "../__fixtures__/mixins/objects";
+      import { secondary } from "../__fixtures__/mixins/simple";
+      const _4 = "._0KLXruy8mA{background-color:pink}";
+      const _3 = "._1UtDYzGowl{color:red}";
+      const _2 = "._4ya3eE2sAl{font-size:15px}";
+      const _ = "._30huDKzh4V{border:3px solid pink}";
       <CC>
         <CS>{[_, _2, _3, _4]}</CS>
-        {<div className={ax([\\"_1wybo7ao _syaz5scu _bfhk32ev _19ith012\\"])} />}
+        {<div className={ax(["_30huDKzh4V _4ya3eE2sAl _1UtDYzGowl _0KLXruy8mA"])} />}
       </CC>;
       "
     `);

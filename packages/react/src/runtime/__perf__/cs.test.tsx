@@ -2,7 +2,8 @@ import { runBenchmark } from '@compiled/benchmark';
 import { JSDOM } from 'jsdom';
 import * as React from 'react';
 import { memo, type JSX } from 'react';
-import { createRoot } from 'react-dom/client';
+import { flushSync } from 'react-dom';
+import { createRoot, type Root } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 
 import { CC, CS } from '../index';
@@ -16,6 +17,12 @@ describe('CS benchmark', () => {
     const document = globalThis.document;
     const window = globalThis.window;
 
+    // A React 18 root may only be created once per container — recreating it on
+    // every iteration warns and leaves renders pending after teardown. The root
+    // is kept for the whole suite so each iteration measures a re-render, which
+    // is what the legacy `ReactDOM.render(el, container)` benchmark measured.
+    let root: Root | undefined;
+
     beforeAll(() => {
       if (env === 'server') {
         // @ts-expect-error
@@ -27,37 +34,49 @@ describe('CS benchmark', () => {
         globalThis.document = dom.window.document;
         // @ts-expect-error
         globalThis.window = dom.window;
+        root = createRoot(globalThis.document.getElementById('root')!);
       }
     });
 
     afterAll(() => {
+      // Unmount before the globals are restored, otherwise React commits
+      // against a `window` that no longer exists.
+      root && flushSync(() => root!.unmount());
+      root = undefined;
       globalThis.document = document;
       globalThis.window = window;
     });
 
+    // On the client the number of children dominates: a single concatenated
+    // sheet means one cache lookup per re-render, whereas the array variant
+    // walks every rule. Memoisation is not the differentiator — re-rendering
+    // `CS` is already free once its sheets are cached, so `memo` only adds a
+    // comparator call.
     const fastest =
       env === 'server'
         ? ['StyleBucketFromArray', 'StyleBucketFromString']
-        : ['MemoCS (1 array element)', 'MemoCS (n array elements)'];
+        : ['CS (1 array element)', 'MemoCS (1 array element)'];
 
     it(`completes with [${fastest.join(', ')}] as the fastest`, async () => {
+      // Collision-resistant (11-char) atomic sheets from `transformCss()`.
       const stylesArr = [
-        '._s7n4jp4b{vertical-align:top}',
-        '._1reo15vq{overflow-x:hidden}',
-        '._18m915vq{overflow-y:hidden}',
-        '._1bto1l2s{text-overflow:ellipsis}',
-        '._o5721q9c{white-space:nowrap}',
-        '._ca0qidpf{padding-top:0}',
-        '._u5f31y44{padding-right:4px}',
-        '._n3tdidpf{padding-bottom:0}',
-        '._19bv1y44{padding-left:4px}',
-        '._p12f12xx{max-width:100px}',
-        '._1bsb1osq{width:100%}',
+        '._1RrJLiBwqQ{vertical-align:top}',
+        '._4bt5LAnQyn{overflow-x:hidden}',
+        '._2WAcuGnQyn{overflow-y:hidden}',
+        '._39HuIbz8Lp{text-overflow:ellipsis}',
+        '._1ANEUSLRg7{white-space:nowrap}',
+        '._0Of8r2dnbC{padding-top:0}',
+        '._1ZnuxbUNDJ{padding-right:4px}',
+        '._1wydGWdnbC{padding-bottom:0}',
+        '._2Zuz6QUNDJ{padding-left:4px}',
+        '._1EqgXlmauj{max-width:100px}',
+        '._39xV02N91d{width:100%}',
       ];
 
       const stylesStr = stylesArr.join('');
 
-      const className = stylesArr.map((rule) => rule.slice(1, 10)).join(' ');
+      // Length-agnostic: class sits between `.` and `{` (9- or 11-char).
+      const className = stylesArr.map((rule) => rule.slice(1, rule.indexOf('{'))).join(' ');
       const nonce = 'k0Mp1lEd';
 
       const renderJSX =
@@ -66,9 +85,12 @@ describe('CS benchmark', () => {
               renderToString(<>{Array.from({ length: 10 }).map((_, i) => jsx(i))}</>);
             }
           : (jsx: (key: number) => JSX.Element) => {
-              createRoot(globalThis.document.getElementById('root')!).render(
-                <>{Array.from({ length: 10 }).map((_, i) => jsx(i))}</>
-              );
+              // `flushSync` keeps the commit inside the timed function; without
+              // it the benchmark only measures scheduling and the work lands
+              // after the suite has torn down its JSDOM globals.
+              flushSync(() => {
+                root!.render(<>{Array.from({ length: 10 }).map((_, i) => jsx(i))}</>);
+              });
             };
 
       const tests = [
