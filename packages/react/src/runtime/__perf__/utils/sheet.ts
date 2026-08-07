@@ -114,15 +114,23 @@ const getStyleBucketName = (sheet: string): string => {
     return 'm';
   }
 
+  const firstBracket = sheet.indexOf('{');
+
   /**
-   * We assume that classname will always be 9 character long,
-   * using this the 10th character could be a pseudo declaration.
+   * Atomic class names are either 9 chars (legacy hash) or 11 chars
+   * (collisionResistantHash). Detect the width from the boundary character —
+   * index 10 is `:`/`{` for a 9-char class, otherwise the boundary is index 12
+   * for the 11-char hash — and read the pseudo relative to it. Keep this aligned
+   * with `packages/react/src/runtime/sheet.ts`.
    */
-  if (sheet.charCodeAt(10) === 58 /* ":" */) {
+  const classEnd =
+    sheet.charCodeAt(10) === 58 /* ":" */ || sheet.charCodeAt(10) === 123 /* "{" */ ? 10 : 12;
+
+  if (sheet.charCodeAt(classEnd) === 58 /* ":" */) {
     // We send through a subset of the string instead of the full pseudo name.
     // For example `"focus-visible"` name would instead of `"us-visible"`.
     // Return a mapped pseudo else the default catch all bucket.
-    return pseudosMap[sheet.slice(14, sheet.indexOf('{'))] || '';
+    return pseudosMap[sheet.slice(classEnd + 4, firstBracket)] || '';
   }
 
   // Return default catch all bucket
