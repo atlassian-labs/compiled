@@ -97,7 +97,7 @@ function lazyAddStyleBucketToHead(
  * Input:
  *
  * ```
- * "._a1234567890:hover{ color: red; }"
+ * "._a1234567:hover{ color: red; }"
  * ```
  *
  * Output:
@@ -117,16 +117,20 @@ const getStyleBucketName = (sheet: string): string => {
   const firstBracket = sheet.indexOf('{');
 
   /**
-   * Atomic class names vary in length (9-char legacy vs 11-char collision-resistant),
-   * so locate the pseudo-selector relative to the opening bracket instead of a
-   * fixed offset. Keep this aligned with `packages/react/src/runtime/sheet.ts`.
+   * Atomic class names are either 9 chars (legacy hash) or 11 chars
+   * (collisionResistantHash). Detect the width from the boundary character —
+   * index 10 is `:`/`{` for a 9-char class, otherwise the boundary is index 12
+   * for the 11-char hash — and read the pseudo relative to it. Keep this aligned
+   * with `packages/react/src/runtime/sheet.ts`.
    */
-  const colon = sheet.lastIndexOf(':', firstBracket);
-  if (colon !== -1 && colon < firstBracket) {
+  const classEnd =
+    sheet.charCodeAt(10) === 58 /* ":" */ || sheet.charCodeAt(10) === 123 /* "{" */ ? 10 : 12;
+
+  if (sheet.charCodeAt(classEnd) === 58 /* ":" */) {
     // We send through a subset of the string instead of the full pseudo name.
     // For example `"focus-visible"` name would instead of `"us-visible"`.
     // Return a mapped pseudo else the default catch all bucket.
-    return pseudosMap[sheet.slice(colon + 4, firstBracket)] || '';
+    return pseudosMap[sheet.slice(classEnd + 4, firstBracket)] || '';
   }
 
   // Return default catch all bucket

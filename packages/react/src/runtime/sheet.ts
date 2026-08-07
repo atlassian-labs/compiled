@@ -156,20 +156,25 @@ export const getStyleBucketName = (sheet: string): Bucket => {
   const firstBracket = sheet.indexOf('{');
 
   /**
-   * Atomic class names vary in length (9 chars for the legacy hash, 11 for the
-   * collision-resistant hash), so the pseudo-selector cannot be found at a fixed
-   * offset. We search backwards from the opening bracket instead, which also
-   * skips over any colons appearing earlier in the selector (e.g. in an
-   * attribute selector). This mirrors the build-time ordering in
-   * `packages/css/src/utils/sort-pseudo-selectors.ts`, which matches on the
-   * selector's trailing pseudo.
+   * Atomic class names are either 9 chars (legacy hash: `_` + 8) or 11 chars
+   * (collisionResistantHash: `_` + 10). The character immediately after the class
+   * therefore sits at index 10 or 12 — it is a `:` when a pseudo follows, else `{`.
+   *
+   * For a 9-char class index 10 is already that boundary; for an 11-char class
+   * index 10 is still a hash character (never `:` or `{`), so the boundary is two
+   * characters later. Detecting the width this way keeps the legacy 9-char path
+   * byte-identical while adding support for the 11-char hash.
    */
-  const colon = sheet.lastIndexOf(':', firstBracket);
-  if (colon !== -1 && colon < firstBracket) {
-    // We send through a subset of the string instead of the full pseudo name.
-    // For example `"focus-visible"` name would instead of `"us-visible"`.
-    // Return a mapped pseudo else the default catch all bucket.
-    const mapped = pseudosMap[sheet.slice(colon + 4, firstBracket)];
+  const classEnd =
+    sheet.charCodeAt(10) === 58 /* ":" */ || sheet.charCodeAt(10) === 123 /* "{" */ ? 10 : 12;
+
+  if (sheet.charCodeAt(classEnd) === 58 /* ":" */) {
+    // We send through a subset of the string instead of the full pseudo name:
+    // drop the colon plus the first three characters, e.g. `"focus-visible"`
+    // becomes `"us-visible"`. Compound selectors slice an unmapped fragment
+    // (e.g. `"ited:hover"`) and so fall through to the catch-all bucket, matching
+    // the legacy behavior. Return a mapped pseudo else the default catch all bucket.
+    const mapped = pseudosMap[sheet.slice(classEnd + 4, firstBracket)];
     if (mapped) return mapped;
   }
 
