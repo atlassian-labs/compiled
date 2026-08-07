@@ -156,20 +156,14 @@ export const getStyleBucketName = (sheet: string): Bucket => {
   const firstBracket = sheet.indexOf('{');
 
   /**
-   * Atomic class names vary in length (9 chars for the legacy hash, 11 for the
-   * collision-resistant hash), so the pseudo-selector cannot be found at a fixed
-   * offset. We search backwards from the opening bracket instead, which also
-   * skips over any colons appearing earlier in the selector (e.g. in an
-   * attribute selector). This mirrors the build-time ordering in
-   * `packages/css/src/utils/sort-pseudo-selectors.ts`, which matches on the
-   * selector's trailing pseudo.
+   * We assume that classname will always be 9 character long,
+   * using this the 10th characters could be a pseudo declaration.
    */
-  const colon = sheet.lastIndexOf(':', firstBracket);
-  if (colon !== -1 && colon < firstBracket) {
+  if (sheet.charCodeAt(10) === 58 /* ":" */) {
     // We send through a subset of the string instead of the full pseudo name.
     // For example `"focus-visible"` name would instead of `"us-visible"`.
     // Return a mapped pseudo else the default catch all bucket.
-    const mapped = pseudosMap[sheet.slice(colon + 4, firstBracket)];
+    const mapped = pseudosMap[sheet.slice(14, firstBracket)];
     if (mapped) return mapped;
   }
 

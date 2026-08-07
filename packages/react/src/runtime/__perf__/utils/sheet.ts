@@ -97,7 +97,7 @@ function lazyAddStyleBucketToHead(
  * Input:
  *
  * ```
- * "._a1234567890:hover{ color: red; }"
+ * "._a1234567:hover{ color: red; }"
  * ```
  *
  * Output:
@@ -114,19 +114,15 @@ const getStyleBucketName = (sheet: string): string => {
     return 'm';
   }
 
-  const firstBracket = sheet.indexOf('{');
-
   /**
-   * Atomic class names vary in length (9-char legacy vs 11-char collision-resistant),
-   * so locate the pseudo-selector relative to the opening bracket instead of a
-   * fixed offset. Keep this aligned with `packages/react/src/runtime/sheet.ts`.
+   * We assume that classname will always be 9 character long,
+   * using this the 10th character could be a pseudo declaration.
    */
-  const colon = sheet.lastIndexOf(':', firstBracket);
-  if (colon !== -1 && colon < firstBracket) {
+  if (sheet.charCodeAt(10) === 58 /* ":" */) {
     // We send through a subset of the string instead of the full pseudo name.
     // For example `"focus-visible"` name would instead of `"us-visible"`.
     // Return a mapped pseudo else the default catch all bucket.
-    return pseudosMap[sheet.slice(colon + 4, firstBracket)] || '';
+    return pseudosMap[sheet.slice(14, sheet.indexOf('{'))] || '';
   }
 
   // Return default catch all bucket
