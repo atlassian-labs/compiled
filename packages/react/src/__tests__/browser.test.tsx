@@ -96,7 +96,13 @@ describe('browser', () => {
     render(<StyledLink href="https://atlassian.design">Atlassian Design System</StyledLink>);
 
     expect(document.head.innerHTML.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
-      "<style nonce="k0Mp1lEd">._3iDTPbQ4SZ{display:flex}._4ya3eEHMkp{font-size:50px}._1UtDYz5CUP{color:purple}._2ipzJpGowl:link{color:red}._22XfGnaJpK:focus-visible{color:white}._2ipzJpaJpK:link{color:white}._2nTuUYy8mA:visited{color:pink}._10n1R5Jwxv:focus{color:green}._0clgaMFQV5:hover{color:yellow}._0CMRbkynoA:active{color:blue}</style>
+      "<style nonce="k0Mp1lEd">._3iDTPbQ4SZ{display:flex}._4ya3eEHMkp{font-size:50px}._1UtDYz5CUP{color:purple}</style>
+      <style nonce="k0Mp1lEd">._2ipzJpGowl:link{color:red}._2ipzJpaJpK:link{color:white}</style>
+      <style nonce="k0Mp1lEd">._2nTuUYy8mA:visited{color:pink}</style>
+      <style nonce="k0Mp1lEd">._10n1R5Jwxv:focus{color:green}</style>
+      <style nonce="k0Mp1lEd">._22XfGnaJpK:focus-visible{color:white}</style>
+      <style nonce="k0Mp1lEd">._0clgaMFQV5:hover{color:yellow}</style>
+      <style nonce="k0Mp1lEd">._0CMRbkynoA:active{color:blue}</style>
       <style nonce="k0Mp1lEd">@media (max-width:800px){._3YxZqqFQV5:focus{color:yellow}._1h21S5okCM:focus-visible{color:grey}._0oG7IkokCM:hover{color:grey}._3cQMScbqW0:active{color:black}}@supports (display:grid){._3geGi3FQV5:focus{color:yellow}._0vra6NbqW0:active{color:black}}</style>
       "
     `);
