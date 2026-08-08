@@ -1,18 +1,19 @@
 import fs from 'fs';
-import { dirname, join } from 'path';
 
 import { parse } from '@babel/parser';
 import type { NodePath, Binding } from '@babel/traverse';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
 import { DEFAULT_PARSER_BABEL_PLUGINS } from '@compiled/utils';
-import resolve from 'resolve';
 
 import { DEFAULT_CODE_EXTENSIONS } from '../constants';
-import type { Metadata } from '../types';
+import type { Metadata, Resolver } from '../types';
 
 import { getDefaultExport, getNamedExport, setImportedCompiledImports } from './traversers';
 import type { PartialBindingWithMeta, EvaluateExpression } from './types';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const defaultResolver = require('../resolver') as Resolver;
 
 /**
  * Will recursively checks if identifier name is coming from destructuring. If yes,
@@ -176,18 +177,14 @@ const getDestructuredObjectPatternKey = (node: t.ObjectPattern, referenceName: s
   return result;
 };
 
-const resolveRequest = (request: string, extensions: string[], meta: Metadata) => {
+const resolveRequest = (request: string, _extensions: string[], meta: Metadata) => {
   const { filename, resolver } = meta.state;
   if (!filename) {
     throw new Error('Unable to resolve request due to a missing filename, this is probably a bug!');
   }
 
   if (!resolver) {
-    const id = request.charAt(0) === '.' ? join(dirname(filename), request) : request;
-
-    return resolve.sync(id, {
-      extensions,
-    });
+    return defaultResolver.resolveSync(filename, request);
   }
 
   return resolver.resolveSync(filename, request);
