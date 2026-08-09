@@ -1,18 +1,13 @@
 import { getStyleBucketName } from '../sheet';
 
 /**
- * CHARACTERIZATION TESTS — these pin the CURRENT behavior of `getStyleBucketName`,
- * warts and all, before any fix. The point is that a later change to the algorithm
- * shows up here as an explicit assertion diff, so nothing changes silently.
- *
- * This first iteration focuses on the legacy 9-char hash only. The current
- * implementation assumes a fixed 9-char atomic class (`_` + 4-char group + 4-char
- * value) and reads the pseudo at a fixed offset (index 10, slice from 14).
- *
- * Sheets below are real `transformCss()` output.
+ * This suite mirrors the established legacy-hash characterization with
+ * collision-resistant 11-char atomic classes. Expected buckets originate in the
+ * legacy suite, which records the pre-#1930 runtime contract; this suite proves
+ * that changing hash width does not change that contract.
  */
-describe('getStyleBucketName (characterization of current behavior)', () => {
-  describe('legacy hash (9-char class names)', () => {
+describe('getStyleBucketName (collision-resistant hash compatibility)', () => {
+  describe('collision-resistant hash (11-char class names)', () => {
     it.each([
       ['link', '._2ipzJpGowl:link{color:red}', 'l'],
       ['visited', '._2nTuUYGowl:visited{color:red}', 'v'],
@@ -29,9 +24,14 @@ describe('getStyleBucketName (characterization of current behavior)', () => {
       ['a plain declaration', '._1UtDYzGowl{color:red}'],
       ['a longhand (non-shorthand) property', '._3zygPUGowl{border-top-color:red}'],
       ['an unmapped pseudo element', '._3Ku51IR2KL:before{content:"a"}'],
+      // These expectations mirror the pre-#1930 legacy contract: only pseudos
+      // immediately following the atomic class receive a pseudo bucket.
+      ['an attribute-qualified selector', '._1UtDYzGowl[data-selector]{color:red}'],
+      ['an attribute-qualified pseudo selector', '._0clgaMGowl[data-selector]:hover{color:red}'],
       // Compound selectors slice an unmapped fragment from the fixed offset
-      // (`"ited:hover"`, `"er:focus"`), so they land in the catch-all bucket.
+      // (`"ited:hover"`, `"er._2rRmYxGowl:focus"`), so they land in the catch-all bucket.
       ['a compound pseudo selector', '._2rRmYxGowl:hover:focus{color:red}'],
+      ['a transformed compound pseudo selector', '._2rRmYxGowl:hover._2rRmYxGowl:focus{color:red}'],
       ['a compound visited+hover selector', '._1pa1v9Gowl:visited:hover{color:red}'],
       ['a compound visited+active selector', '._2cC3KHGowl:visited:active{color:red}'],
     ])('falls back to the catch-all bucket for %s', (_, sheet) => {

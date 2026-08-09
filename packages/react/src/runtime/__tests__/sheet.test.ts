@@ -25,13 +25,18 @@ describe('getStyleBucketName (characterization of current behavior)', () => {
       expect(getStyleBucketName(sheet)).toEqual(expected);
     });
 
+    // These cases characterize the pre-#1930 implementation: it recognized a
+    // pseudo only when `:` immediately followed the 9-char atomic class at index 10.
     it.each([
       ['a plain declaration', '._syaz5scu{color:red}'],
       ['a longhand (non-shorthand) property', '._6k7l0000{border-top-color:red}'],
       ['an unmapped pseudo element', '._1kt91x3x:before{content:"a"}'],
+      ['an attribute-qualified selector', '._syaz5scu[data-selector]{color:red}'],
+      ['an attribute-qualified pseudo selector', '._30l35scu[data-selector]:hover{color:red}'],
       // Compound selectors slice an unmapped fragment from the fixed offset
-      // (`"ited:hover"`, `"er:focus"`), so they land in the catch-all bucket.
+      // (`"ited:hover"`, `"er._z1ku5scu:focus"`), so they land in the catch-all bucket.
       ['a compound pseudo selector', '._z1ku5scu:hover:focus{color:red}'],
+      ['a transformed compound pseudo selector', '._z1ku5scu:hover._z1ku5scu:focus{color:red}'],
       ['a compound visited+hover selector', '._10535scu:visited:hover{color:red}'],
       ['a compound visited+active selector', '._1vhv17z1:visited:active{color:red}'],
     ])('falls back to the catch-all bucket for %s', (_, sheet) => {
