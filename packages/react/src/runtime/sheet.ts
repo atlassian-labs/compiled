@@ -130,6 +130,26 @@ function lazyAddStyleBucketToContainer(bucketName: Bucket, opts: StyleSheetOpts)
 }
 
 /**
+ * Returns true when `characterCode` is a CSS selector delimiter that can appear
+ * immediately after an atomic class name — i.e. a character that marks the end of
+ * the class token. Covers the declaration block (`{`), pseudo (`:`), attribute
+ * (`[`), class/id qualifiers (`.`/`#`), combinators (space/`>`/`+`/`~`), and the
+ * selector-list separator (`,`). Operates on character codes (not substrings) to
+ * stay allocation-free on the runtime hot path.
+ */
+const isClassBoundary = (characterCode: number): boolean =>
+  characterCode === 58 /* ":" */ ||
+  characterCode === 123 /* "{" */ ||
+  characterCode === 91 /* "[" */ ||
+  characterCode === 46 /* "." */ ||
+  characterCode === 35 /* "#" */ ||
+  characterCode === 32 /* " " */ ||
+  characterCode === 62 /* ">" */ ||
+  characterCode === 43 /* "+" */ ||
+  characterCode === 126 /* "~" */ ||
+  characterCode === 44; /* "," */
+
+/**
  * Gets the bucket depending on the sheet.
  * This function makes assumptions as to the form of the input class name.
  *
@@ -157,16 +177,20 @@ export const getStyleBucketName = (sheet: string): Bucket => {
 
   /**
    * Atomic class names are either 9 chars (legacy hash: `_` + 8) or 11 chars
-   * (collisionResistantHash: `_` + 10). The character immediately after the class
-   * therefore sits at index 10 or 12 — it is a `:` when a pseudo follows, else `{`.
+   * (collisionResistantHash: `_` + 10). We only need to know where the class token
+   * ends so the pseudo (if any) can be read relative to that boundary.
    *
-   * For a 9-char class index 10 is already that boundary; for an 11-char class
-   * index 10 is still a hash character (never `:` or `{`), so the boundary is two
-   * characters later. Detecting the width this way keeps the legacy 9-char path
-   * byte-identical while adding support for the 11-char hash.
+   * Since exactly two widths exist, inspecting index 10 is sufficient: if it holds
+   * a CSS selector delimiter, the class ended at 9 chars; otherwise index 10 is
+   * still a hash character and the class is the 11-char form (boundary at index 12).
+   *
+   * We test for a delimiter (`isClassBoundary`) rather than the hash alphabet: the
+   * question is "did the class token end?", not "which characters did the hasher
+   * emit?". This keeps the legacy 9-char path correct for every continuation
+   * (`:`, `{`, `[`, `.`, `#`, space, `>`, `+`, `~`, `,`), where a delimiter-poor
+   * check would misread e.g. `._legacyhsh a:visited` as an 11-char class.
    */
-  const classEnd =
-    sheet.charCodeAt(10) === 58 /* ":" */ || sheet.charCodeAt(10) === 123 /* "{" */ ? 10 : 12;
+  const classEnd = isClassBoundary(sheet.charCodeAt(10)) ? 10 : 12;
 
   if (sheet.charCodeAt(classEnd) === 58 /* ":" */) {
     // We send through a subset of the string instead of the full pseudo name:

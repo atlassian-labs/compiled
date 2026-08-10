@@ -108,6 +108,26 @@ function lazyAddStyleBucketToHead(
  *
  * @param sheet styles for which we are getting the bucket
  */
+/**
+ * Returns true when `characterCode` is a CSS selector delimiter that can appear
+ * immediately after an atomic class name — i.e. a character that marks the end of
+ * the class token. Covers the declaration block (`{`), pseudo (`:`), attribute
+ * (`[`), class/id qualifiers (`.`/`#`), combinators (space/`>`/`+`/`~`), and the
+ * selector-list separator (`,`). Operates on character codes (not substrings) to
+ * stay allocation-free on the runtime hot path.
+ */
+const isClassBoundary = (characterCode: number): boolean =>
+  characterCode === 58 /* ":" */ ||
+  characterCode === 123 /* "{" */ ||
+  characterCode === 91 /* "[" */ ||
+  characterCode === 46 /* "." */ ||
+  characterCode === 35 /* "#" */ ||
+  characterCode === 32 /* " " */ ||
+  characterCode === 62 /* ">" */ ||
+  characterCode === 43 /* "+" */ ||
+  characterCode === 126 /* "~" */ ||
+  characterCode === 44; /* "," */
+
 const getStyleBucketName = (sheet: string): string => {
   // We are grouping all the at-rules like @media, @supports etc under `m` bucket.
   if (sheet.charCodeAt(0) === 64 /* "@" */) {
@@ -117,14 +137,15 @@ const getStyleBucketName = (sheet: string): string => {
   const firstBracket = sheet.indexOf('{');
 
   /**
-   * Atomic class names are either 9 chars (legacy hash) or 11 chars
-   * (collisionResistantHash). Detect the width from the boundary character —
-   * index 10 is `:`/`{` for a 9-char class, otherwise the boundary is index 12
-   * for the 11-char hash — and read the pseudo relative to it. Keep this aligned
+   * Atomic class names are either 9 chars (legacy hash: `_` + 8) or 11 chars
+   * (collisionResistantHash: `_` + 10). Since exactly two widths exist, inspecting
+   * index 10 is sufficient: a CSS selector delimiter there means the class ended at
+   * 9 chars, otherwise index 10 is still a hash character and the class is the
+   * 11-char form (boundary at index 12). We test for a delimiter rather than the
+   * hash alphabet — the question is "did the class token end?". Keep this aligned
    * with `packages/react/src/runtime/sheet.ts`.
    */
-  const classEnd =
-    sheet.charCodeAt(10) === 58 /* ":" */ || sheet.charCodeAt(10) === 123 /* "{" */ ? 10 : 12;
+  const classEnd = isClassBoundary(sheet.charCodeAt(10)) ? 10 : 12;
 
   if (sheet.charCodeAt(classEnd) === 58 /* ":" */) {
     // We send through a subset of the string instead of the full pseudo name.
