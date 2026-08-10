@@ -20,10 +20,19 @@ describe('getStyleBucketName (collision-resistant hash compatibility)', () => {
       expect(getStyleBucketName(sheet)).toEqual(expected);
     });
 
+    // This mirrors the pre-#1930 legacy alias: dropping `:aft` leaves `er`,
+    // the compact key used by :hover.
+    it('preserves the historical single-colon :after alias to the hover bucket', () => {
+      expect(getStyleBucketName('._3Ku51IR2KL:after{content:"a"}')).toEqual('h');
+    });
+
     it.each([
       ['a plain declaration', '._1UtDYzGowl{color:red}'],
       ['a longhand (non-shorthand) property', '._3zygPUGowl{border-top-color:red}'],
-      ['an unmapped pseudo element', '._3Ku51IR2KL:before{content:"a"}'],
+      ['an unmapped legacy pseudo element', '._3Ku51IR2KL:before{content:"a"}'],
+      ['an unmapped modern pseudo element', '._3Ku51IR2KL::before{content:"a"}'],
+      ['another unmapped modern pseudo element', '._3Ku51IR2KL::after{content:"a"}'],
+      ['an unmapped structural pseudo class', '._3Ku51IR2KL:first-child{color:red}'],
       // These expectations mirror the pre-#1930 legacy contract: only pseudos
       // immediately following the atomic class receive a pseudo bucket.
       ['an attribute-qualified selector', '._1UtDYzGowl[data-selector]{color:red}'],

@@ -25,12 +25,21 @@ describe('getStyleBucketName (characterization of current behavior)', () => {
       expect(getStyleBucketName(sheet)).toEqual(expected);
     });
 
+    // The compact lookup drops `:aft` and sees `er`, which is the same key as
+    // `:hover`. This is a pre-existing legacy alias that must remain stable here.
+    it('preserves the historical single-colon :after alias to the hover bucket', () => {
+      expect(getStyleBucketName('._1kt91x3x:after{content:"a"}')).toEqual('h');
+    });
+
     // These cases characterize the pre-#1930 implementation: it recognized a
     // pseudo only when `:` immediately followed the 9-char atomic class at index 10.
     it.each([
       ['a plain declaration', '._syaz5scu{color:red}'],
       ['a longhand (non-shorthand) property', '._6k7l0000{border-top-color:red}'],
-      ['an unmapped pseudo element', '._1kt91x3x:before{content:"a"}'],
+      ['an unmapped legacy pseudo element', '._1kt91x3x:before{content:"a"}'],
+      ['an unmapped modern pseudo element', '._1kt91x3x::before{content:"a"}'],
+      ['another unmapped modern pseudo element', '._1kt91x3x::after{content:"a"}'],
+      ['an unmapped structural pseudo class', '._1kt91x3x:first-child{color:red}'],
       ['an attribute-qualified selector', '._syaz5scu[data-selector]{color:red}'],
       ['an attribute-qualified pseudo selector', '._30l35scu[data-selector]:hover{color:red}'],
       // Compound selectors slice an unmapped fragment from the fixed offset
