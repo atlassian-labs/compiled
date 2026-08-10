@@ -130,6 +130,26 @@ function lazyAddStyleBucketToContainer(bucketName: Bucket, opts: StyleSheetOpts)
 }
 
 /**
+ * Returns true when `characterCode` is a CSS selector delimiter that can appear
+ * immediately after an atomic class name — i.e. a character that marks the end of
+ * the class token. Covers the declaration block (`{`), pseudo (`:`), attribute
+ * (`[`), class/id qualifiers (`.`/`#`), combinators (space/`>`/`+`/`~`), and the
+ * selector-list separator (`,`). Operates on character codes (not substrings) to
+ * stay allocation-free on the runtime hot path.
+ */
+const isClassBoundary = (characterCode: number): boolean =>
+  characterCode === 58 /* ":" */ ||
+  characterCode === 123 /* "{" */ ||
+  characterCode === 91 /* "[" */ ||
+  characterCode === 46 /* "." */ ||
+  characterCode === 35 /* "#" */ ||
+  characterCode === 32 /* " " */ ||
+  characterCode === 62 /* ">" */ ||
+  characterCode === 43 /* "+" */ ||
+  characterCode === 126 /* "~" */ ||
+  characterCode === 44; /* "," */
+
+/**
  * Gets the bucket depending on the sheet.
  * This function makes assumptions as to the form of the input class name.
  *
@@ -156,20 +176,29 @@ export const getStyleBucketName = (sheet: string): Bucket => {
   const firstBracket = sheet.indexOf('{');
 
   /**
-   * Atomic class names vary in length (9 chars for the legacy hash, 11 for the
-   * collision-resistant hash), so the pseudo-selector cannot be found at a fixed
-   * offset. We search backwards from the opening bracket instead, which also
-   * skips over any colons appearing earlier in the selector (e.g. in an
-   * attribute selector). This mirrors the build-time ordering in
-   * `packages/css/src/utils/sort-pseudo-selectors.ts`, which matches on the
-   * selector's trailing pseudo.
+   * Atomic class names are either 9 chars (legacy hash: `_` + 8) or 11 chars
+   * (collisionResistantHash: `_` + 10). We only need to know where the class token
+   * ends so the pseudo (if any) can be read relative to that boundary.
+   *
+   * Since exactly two widths exist, inspecting index 10 is sufficient: if it holds
+   * a CSS selector delimiter, the class ended at 9 chars; otherwise index 10 is
+   * still a hash character and the class is the 11-char form (boundary at index 12).
+   *
+   * We test for a delimiter (`isClassBoundary`) rather than the hash alphabet: the
+   * question is "did the class token end?", not "which characters did the hasher
+   * emit?". This keeps the legacy 9-char path correct for every continuation
+   * (`:`, `{`, `[`, `.`, `#`, space, `>`, `+`, `~`, `,`), where a delimiter-poor
+   * check would misread e.g. `._legacyhsh a:visited` as an 11-char class.
    */
-  const colon = sheet.lastIndexOf(':', firstBracket);
-  if (colon !== -1 && colon < firstBracket) {
-    // We send through a subset of the string instead of the full pseudo name.
-    // For example `"focus-visible"` name would instead of `"us-visible"`.
-    // Return a mapped pseudo else the default catch all bucket.
-    const mapped = pseudosMap[sheet.slice(colon + 4, firstBracket)];
+  const classEnd = isClassBoundary(sheet.charCodeAt(10)) ? 10 : 12;
+
+  if (sheet.charCodeAt(classEnd) === 58 /* ":" */) {
+    // We send through a subset of the string instead of the full pseudo name:
+    // drop the colon plus the first three characters, e.g. `"focus-visible"`
+    // becomes `"us-visible"`. Compound selectors slice an unmapped fragment
+    // (e.g. `"ited:hover"`) and so fall through to the catch-all bucket, matching
+    // the legacy behavior. Return a mapped pseudo else the default catch all bucket.
+    const mapped = pseudosMap[sheet.slice(classEnd + 4, firstBracket)];
     if (mapped) return mapped;
   }
 

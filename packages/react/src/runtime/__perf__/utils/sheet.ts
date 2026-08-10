@@ -108,6 +108,26 @@ function lazyAddStyleBucketToHead(
  *
  * @param sheet styles for which we are getting the bucket
  */
+/**
+ * Returns true when `characterCode` is a CSS selector delimiter that can appear
+ * immediately after an atomic class name — i.e. a character that marks the end of
+ * the class token. Covers the declaration block (`{`), pseudo (`:`), attribute
+ * (`[`), class/id qualifiers (`.`/`#`), combinators (space/`>`/`+`/`~`), and the
+ * selector-list separator (`,`). Operates on character codes (not substrings) to
+ * stay allocation-free on the runtime hot path.
+ */
+const isClassBoundary = (characterCode: number): boolean =>
+  characterCode === 58 /* ":" */ ||
+  characterCode === 123 /* "{" */ ||
+  characterCode === 91 /* "[" */ ||
+  characterCode === 46 /* "." */ ||
+  characterCode === 35 /* "#" */ ||
+  characterCode === 32 /* " " */ ||
+  characterCode === 62 /* ">" */ ||
+  characterCode === 43 /* "+" */ ||
+  characterCode === 126 /* "~" */ ||
+  characterCode === 44; /* "," */
+
 const getStyleBucketName = (sheet: string): string => {
   // We are grouping all the at-rules like @media, @supports etc under `m` bucket.
   if (sheet.charCodeAt(0) === 64 /* "@" */) {
@@ -117,16 +137,21 @@ const getStyleBucketName = (sheet: string): string => {
   const firstBracket = sheet.indexOf('{');
 
   /**
-   * Atomic class names vary in length (9-char legacy vs 11-char collision-resistant),
-   * so locate the pseudo-selector relative to the opening bracket instead of a
-   * fixed offset. Keep this aligned with `packages/react/src/runtime/sheet.ts`.
+   * Atomic class names are either 9 chars (legacy hash: `_` + 8) or 11 chars
+   * (collisionResistantHash: `_` + 10). Since exactly two widths exist, inspecting
+   * index 10 is sufficient: a CSS selector delimiter there means the class ended at
+   * 9 chars, otherwise index 10 is still a hash character and the class is the
+   * 11-char form (boundary at index 12). We test for a delimiter rather than the
+   * hash alphabet — the question is "did the class token end?". Keep this aligned
+   * with `packages/react/src/runtime/sheet.ts`.
    */
-  const colon = sheet.lastIndexOf(':', firstBracket);
-  if (colon !== -1 && colon < firstBracket) {
+  const classEnd = isClassBoundary(sheet.charCodeAt(10)) ? 10 : 12;
+
+  if (sheet.charCodeAt(classEnd) === 58 /* ":" */) {
     // We send through a subset of the string instead of the full pseudo name.
     // For example `"focus-visible"` name would instead of `"us-visible"`.
     // Return a mapped pseudo else the default catch all bucket.
-    return pseudosMap[sheet.slice(colon + 4, firstBracket)] || '';
+    return pseudosMap[sheet.slice(classEnd + 4, firstBracket)] || '';
   }
 
   // Return default catch all bucket
