@@ -97,7 +97,7 @@ function lazyAddStyleBucketToHead(
  * Input:
  *
  * ```
- * "._a1234567:hover{ color: red; }"
+ * "._a1234567890:hover{ color: red; }"
  * ```
  *
  * Output:
