@@ -325,6 +325,135 @@ describe('<Style />', () => {
         expect(text).toInclude('.cc-abc123 .panel');
       });
     });
+
+    /**
+     * Regression: `@compiled/react` production runtime style wipe when mixing
+     * atomic CSSOM insertion with `cssMapScoped`.
+     *
+     * In production, atomic rules are injected via `sheet.insertRule()` — a
+     * CSSOM-only mutation that leaves the `<style>` element's `textContent`
+     * empty. When a subsequent `.cc-` (cssMapScoped) sheet is appended via
+     * `Text.appendData()` on the SAME `<style>` element, the browser reparses
+     * the sheet from its text node and DISCARDS every previously
+     * `insertRule`-inserted rule → observable global style wipe.
+     *
+     * The fix: non-atomic (`.cc-`) rules must never target a `<style>` element
+     * that atomic rules have `insertRule`-populated. They must live in a
+     * dedicated bucket / DOM node so the two insertion strategies never mix.
+     *
+     * This test asserts the contract at the runtime seam: atomic rules
+     * previously inserted via `insertRule` must still be reachable via
+     * `sheet.cssRules` after a large `.cc-` non-atomic sheet is injected.
+     */
+    describe('regression: production insertRule rules must survive subsequent .cc- appendData injection', () => {
+      // Snapshot rules from every <style> in the head at the moment of call,
+      // reading BOTH the CSSOM (`sheet.cssRules`) and the text-node (`textContent`).
+      // The bug's fingerprint is: CSSOM rule count drops after `.cc-` injection
+      // because the browser reparsed the sheet from its (now non-empty) text node.
+      const snapshotAtomicRules = (): { element: HTMLStyleElement; cssomRules: string[] }[] =>
+        Array.from(document.head.querySelectorAll('style')).map((element) => {
+          const sheet = (element as HTMLStyleElement).sheet as CSSStyleSheet | null;
+          const cssomRules = sheet?.cssRules
+            ? Array.from(sheet.cssRules).map((r) => r.cssText)
+            : [];
+          return { element, cssomRules };
+        });
+
+      // `NODE_ENV` is a process-wide global — mutating it inside a test without
+      // restoring it leaks into every later test in the suite (the runtime paths
+      // change based on it). Wrap each test's body in a save/restore so these
+      // production-only regressions do not affect neighbouring tests (e.g. the
+      // `StyleContainerProvider` block, which renders in the default env).
+      const withProdNodeEnv = (body: () => void): void => {
+        const previousNodeEnv = process.env.NODE_ENV;
+        process.env.NODE_ENV = 'production';
+        try {
+          body();
+        } finally {
+          process.env.NODE_ENV = previousNodeEnv;
+        }
+      };
+
+      it('should not wipe atomic rules when a large .cc- non-atomic sheet is later injected (production)', () => {
+        withProdNodeEnv(() => {
+          createIsolatedTest((Style) => {
+            // 1. Insert many atomic rules — production path uses `insertRule`
+            //    (CSSOM-only; text node stays empty).
+            const atomicRules: string[] = [];
+            for (let i = 0; i < 50; i++) {
+              atomicRules.push(`._atomic${i}{color:rgb(${i},0,0)}`);
+            }
+            render(<Style>{atomicRules}</Style>);
+
+            const before = snapshotAtomicRules();
+            const totalCssomRulesBefore = before.reduce((n, s) => n + s.cssomRules.length, 0);
+            // Sanity: the atomic rules did land somewhere as CSSOM rules.
+            expect(totalCssomRulesBefore).toBeGreaterThanOrEqual(atomicRules.length);
+
+            // 2. Now inject a large non-atomic (.cc-) sheet — the trigger.
+            //    In the buggy runtime this calls `Text.appendData` on the same
+            //    catch-all `<style>` that owns the atomic CSSOM rules, causing
+            //    the browser to reparse from text and discard them.
+            const largeNonAtomicSheet =
+              '.cc-editor .panel{color:blue;padding:8px;border-bottom:1px solid red}' +
+              '.cc-editor .title{font-weight:bold;font-size:16px}' +
+              '.cc-editor .icon{width:24px;height:24px}' +
+              '.cc-editor .icon svg{fill:currentColor}' +
+              '.cc-editor .body{background:white;margin:16px}';
+            render(<Style>{[largeNonAtomicSheet]}</Style>);
+
+            // 3. Assert: every atomic rule that existed before is still present
+            //    in some <style>'s CSSOM. If any atomic rule went missing, the
+            //    runtime mixed CSSOM+text on the same element and we regressed.
+            const after = snapshotAtomicRules();
+            const allCssomRulesAfter = after.flatMap((s) => s.cssomRules).join('\n');
+            for (const atomicRule of atomicRules) {
+              // Match on the atomic class token; browsers may normalize whitespace
+              // inside the rule text (e.g. `{color: rgb(...)}` vs `{color:rgb(...)}`).
+              const classToken = atomicRule.slice(0, atomicRule.indexOf('{'));
+              expect(allCssomRulesAfter).toInclude(classToken);
+            }
+
+            // And the non-atomic sheet itself must still be reachable.
+            const text = getAllCssText();
+            expect(text).toInclude('.cc-editor .panel');
+          });
+        });
+      });
+
+      it('should never Text.appendData onto a <style> whose sheet already has insertRule-inserted rules', () => {
+        withProdNodeEnv(() => {
+          createIsolatedTest((Style) => {
+            // Seed atomic rules first (CSSOM insertion path).
+            render(<Style>{['._atomic1{color:red}', '._atomic2{color:green}']}</Style>);
+
+            // Snapshot which <style> elements have CSSOM rules right now.
+            const cssomOwnedElements = new Set(
+              Array.from(document.head.querySelectorAll('style')).filter((el) => {
+                const sheet = (el as HTMLStyleElement).sheet as CSSStyleSheet | null;
+                return !!sheet?.cssRules && sheet.cssRules.length > 0;
+              })
+            );
+
+            // Capture textContent BEFORE injecting the non-atomic sheet.
+            const textBefore = new Map<HTMLStyleElement, string>();
+            for (const el of cssomOwnedElements) {
+              textBefore.set(el as HTMLStyleElement, el.textContent ?? '');
+            }
+
+            // Inject non-atomic sheet — this is the moment the bug manifests.
+            render(<Style>{['.cc-x .panel{color:blue;padding:8px}']}</Style>);
+
+            // Contract: no CSSOM-owned <style> element should have had its text
+            // content mutated. If any one did, the runtime broke the isolation
+            // invariant and the reparse-wipe becomes possible.
+            for (const [element, before] of textBefore) {
+              expect(element.textContent ?? '').toEqual(before);
+            }
+          });
+        });
+      });
+    });
   });
 
   describe('StyleContainerProvider', () => {

@@ -52,9 +52,18 @@ export default function Style(props: StyleProps): JSX.Element | null {
           hasSheets = true;
         }
 
-        // Non-atomic rules (cc- prefix from cssMapScoped) must go into
-        // the catch-all bucket to preserve source-order cascade.
-        const bucketName = isNonAtomicSheet(sheet) ? ('' as Bucket) : getStyleBucketName(sheet);
+        // Non-atomic rules (cc- prefix from cssMapScoped) go into a
+        // dedicated 'cc' bucket. Keeping them in their own bucket:
+        //   1. Preserves source-order cascade for the multi-rule payload
+        //      (the bucket is text-appended in insertion order).
+        //   2. On the client, guarantees the runtime never mixes CSSOM
+        //      `insertRule` (atomic buckets, production) with `Text.appendData`
+        //      (non-atomic bucket) on the same `<style>` element — the mixing
+        //      that causes a full style wipe when a large `.cc-` sheet is
+        //      injected after atomic rules. See sheet.ts `insertNonAtomicRule`.
+        // On the server, the isolation matters less (we render into a single
+        // `<style>`), but we keep the same bucket key so SSR and CSR agree.
+        const bucketName: Bucket = isNonAtomicSheet(sheet) ? 'cc' : getStyleBucketName(sheet);
         bucketedSheets[bucketName] = (bucketedSheets[bucketName] || '') + sheet;
       }
 
