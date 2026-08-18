@@ -18,10 +18,11 @@ const transform = (
     modules?: boolean;
     styleSheetPath?: string;
     compiledRequireExclude?: boolean;
+    development?: boolean;
     runtime: 'automatic' | 'classic';
   }
 ): string => {
-  const { modules, styleSheetPath, compiledRequireExclude, runtime } = opts;
+  const { modules, styleSheetPath, compiledRequireExclude, development, runtime } = opts;
   const filename = join(__dirname, 'app.tsx');
 
   const initialFileResult = transformSync(code, {
@@ -32,7 +33,7 @@ const transform = (
     presets: [
       ['@babel/preset-env', { targets: { esmodules: true }, modules: modules ?? 'auto' }],
       '@babel/preset-typescript',
-      ['@babel/preset-react', { runtime, useBuiltIns: true }],
+      ['@babel/preset-react', { development, runtime, useBuiltIns: true }],
     ],
   });
 
@@ -119,6 +120,14 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
           });
         "
       `);
+    });
+
+    it('strips the css prop runtime when using the development transform', () => {
+      const actual = transform(code, { development: true, runtime });
+
+      expect(actual).not.toContain('CS');
+      expect(actual).not.toContain('CC');
+      expect(actual).toContain('jsxDEV');
     });
   });
 

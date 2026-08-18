@@ -71,6 +71,33 @@ describe('compiledVitePlugin', () => {
     ).resolves.toBeNull();
   });
 
+  it('registers local development rules with the sorted stylesheet', async () => {
+    const plugin: any = compiledVitePlugin();
+    const resolveOptions = { attributes: {}, isEntry: false };
+    const context = { resolve: jest.fn() };
+    const id = '/project/local.tsx';
+
+    plugin.configResolved({ base: '/', command: 'serve' });
+    const result = await plugin.transform!(
+      `
+        import { css } from '@compiled/react';
+        export const Component = () => <div css={css({ display: 'flex' })} />;
+      `,
+      id
+    );
+
+    expect(result.code).toContain('virtual:@compiled/vite-plugin/local-css:');
+    expect(result.code).not.toContain('CS');
+
+    const source = result.code.match(/"(virtual:@compiled\/vite-plugin\/local-css:[^"]+)"/)?.[1];
+    expect(source).toBeDefined();
+    const virtualId = await plugin.resolveId.call(context, source, id, resolveOptions);
+    const module = plugin.load(virtualId);
+
+    expect(module).toContain('registerCompiledCss');
+    expect(module).toContain('display:flex');
+  });
+
   it('should transform code with Compiled imports', async () => {
     const plugin = compiledVitePlugin({ collisionResistantHash: true });
     const code = `

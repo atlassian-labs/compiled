@@ -9,6 +9,8 @@ const COMPILED_DEV_STYLE_ID = '@compiled/vite-plugin:compiled.css';
 const COMPILED_DEV_SORT_PATH = '@compiled/vite-plugin/sort-css';
 const COMPILED_DEV_PROXY_PREFIX = 'virtual:@compiled/vite-plugin/css-proxy:';
 const RESOLVED_COMPILED_DEV_PROXY_PREFIX = `\0${COMPILED_DEV_PROXY_PREFIX}`;
+const COMPILED_DEV_LOCAL_CSS_PREFIX = 'virtual:@compiled/vite-plugin/local-css:';
+const RESOLVED_COMPILED_DEV_LOCAL_CSS_PREFIX = `\0${COMPILED_DEV_LOCAL_CSS_PREFIX}`;
 const COMPILED_DEV_INLINE_PREFIX = 'virtual:@compiled/vite-plugin/css-inline:';
 const COMPILED_DEV_RUNTIME_ID = 'virtual:@compiled/vite-plugin/css-runtime';
 const RESOLVED_COMPILED_DEV_RUNTIME_ID = `\0${COMPILED_DEV_RUNTIME_ID}`;
@@ -41,7 +43,10 @@ const getRequestPath = (url: string): string => new URL(url, 'http://vite.local'
  * the public `?inline` API and registers it in one browser-side stylesheet,
  * allowing the complete active stylesheet to be sorted across module files.
  */
-export const createDevCssHooks = (sortCss: (css: string) => string): DevCssHooks => {
+export const createDevCssHooks = (
+  sortCss: (css: string) => string,
+  getLocalCss: (id: string) => string | undefined
+): DevCssHooks => {
   let isDevServer = false;
   let sortEndpoint = `/${COMPILED_DEV_SORT_PATH}`;
   let sortEndpointPath = sortEndpoint;
@@ -65,6 +70,12 @@ export const createDevCssHooks = (sortCss: (css: string) => string): DevCssHooks
       if (source.startsWith(COMPILED_DEV_INLINE_PREFIX)) {
         const cssId = decodeModuleId(source.slice(COMPILED_DEV_INLINE_PREFIX.length));
         return cssId ? toInlineRequest(cssId) : null;
+      }
+
+      if (source.startsWith(COMPILED_DEV_LOCAL_CSS_PREFIX)) {
+        return `${RESOLVED_COMPILED_DEV_LOCAL_CSS_PREFIX}${source.slice(
+          COMPILED_DEV_LOCAL_CSS_PREFIX.length
+        )}.js`;
       }
 
       if (
@@ -185,7 +196,27 @@ export const createDevCssHooks = (sortCss: (css: string) => string): DevCssHooks
       }
 
       if (!id.startsWith(RESOLVED_COMPILED_DEV_PROXY_PREFIX) || !id.endsWith('.js')) {
-        return null;
+        if (!id.startsWith(RESOLVED_COMPILED_DEV_LOCAL_CSS_PREFIX) || !id.endsWith('.js')) {
+          return null;
+        }
+
+        const cssId = decodeModuleId(
+          id.slice(RESOLVED_COMPILED_DEV_LOCAL_CSS_PREFIX.length, -'.js'.length)
+        );
+        const css = cssId && getLocalCss(cssId);
+        if (!cssId || !css) {
+          return null;
+        }
+
+        return `
+          import { registerCompiledCss } from ${JSON.stringify(COMPILED_DEV_RUNTIME_ID)}
+
+          registerCompiledCss(${JSON.stringify(`local:${cssId}`)}, ${JSON.stringify(css)})
+
+          if (import.meta.hot) {
+            import.meta.hot.accept()
+          }
+        `;
       }
 
       const cssId = decodeModuleId(

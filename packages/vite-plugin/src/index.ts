@@ -97,10 +97,22 @@ function compiled(userOptions: PluginOptions = {}): Plugin {
   // Name used for the extracted CSS asset
   const EXTRACTED_CSS_NAME = 'compiled-extracted.css';
 
+  // Local source normally relies on the Compiled runtime in development. Keep
+  // those atomic rules in the same stylesheet as imported `.compiled.css`
+  // modules so the cascade is deterministic across both sources.
+  const localDevCssByFile = new Map<string, string>();
+  let isDevServer = false;
+  const devCssHooks = createDevCssHooks(sortCompiledCss, (id) => localDevCssByFile.get(id));
+
   return {
-    ...createDevCssHooks(sortCompiledCss),
+    ...devCssHooks,
     name: '@compiled/vite-plugin',
     enforce: 'pre', // Run before other plugins
+
+    configResolved(config) {
+      isDevServer = config.command === 'serve';
+      devCssHooks.configResolved?.(config);
+    },
 
     async transform(code: string, id: string): Promise<any> {
       if (isCompiledCssRequest(id) && code.includes('._')) {
@@ -155,12 +167,16 @@ function compiled(userOptions: PluginOptions = {}): Plugin {
           return null;
         }
 
-        // Disable stylesheet extraction in development mode
-        const isDevelopment = process.env.NODE_ENV === 'development';
+        // Production extraction writes a CSS asset. In development we instead
+        // strip the runtime and register this module's rules with the virtual
+        // stylesheet that also contains pre-built package CSS.
+        const isDevelopment = process.env.NODE_ENV !== 'production';
         const extract = options.extract && !isDevelopment;
+        const stripRuntime = extract || isDevServer;
 
-        // Transform using the Compiled Babel Plugin
-        const result = await transformFromAstAsync(ast, code, {
+        // First compile the source. Runtime stripping must be a separate
+        // transform so it can observe the JSX calls emitted by Compiled.
+        const compiledResult = await transformFromAstAsync(ast, code, {
           babelrc: false,
           configFile: false,
           sourceMaps: true,
@@ -179,34 +195,69 @@ function compiled(userOptions: PluginOptions = {}): Plugin {
                 cache: false,
               } as BabelPluginOptions,
             ],
-            extract && [
-              '@compiled/babel-plugin-strip-runtime',
-              {
-                compiledRequireExclude: options.ssr || extract,
-                extractStylesToDirectory: options.extractStylesToDirectory,
-              } as BabelStripRuntimePluginOptions,
-            ],
           ].filter(toBoolean),
           caller: {
             name: 'compiled',
           },
         });
 
-        // Store metadata for CSS extraction if enabled
-        if (extract && result?.metadata) {
+        let result = compiledResult;
+        if (stripRuntime && compiledResult?.code) {
+          const compiledAst = await parseAsync(compiledResult.code, {
+            filename: id,
+            babelrc: false,
+            configFile: false,
+            caller: { name: 'compiled' },
+            rootMode: 'upward-optional',
+            parserOpts: {
+              plugins: options.parserBabelPlugins ?? DEFAULT_PARSER_BABEL_PLUGINS,
+            },
+          });
+
+          result = compiledAst
+            ? await transformFromAstAsync(compiledAst, compiledResult.code, {
+                babelrc: false,
+                configFile: false,
+                sourceMaps: true,
+                filename: id,
+                plugins: [
+                  [
+                    '@compiled/babel-plugin-strip-runtime',
+                    {
+                      compiledRequireExclude: true,
+                      extractStylesToDirectory: options.extractStylesToDirectory,
+                    } as BabelStripRuntimePluginOptions,
+                  ],
+                ],
+                caller: { name: 'compiled' },
+              })
+            : compiledResult;
+        }
+
+        // Store metadata for CSS extraction if enabled.
+        if (stripRuntime && result?.metadata) {
           const metadata = result.metadata as BabelFileMetadata;
           // Collect style rules from this file, keyed by filePath for
           // cross-file deterministic ordering at extraction time.
           if (metadata.styleRules && metadata.styleRules.length > 0) {
             collectedStyleRulesByFile.set(id, metadata.styleRules.slice());
+            if (isDevServer) {
+              localDevCssByFile.set(id, metadata.styleRules.join('\n'));
+            }
           }
         }
 
         // Return transformed code and source map
         if (result?.code) {
+          const localCssImport =
+            isDevServer && localDevCssByFile.has(id)
+              ? `import ${JSON.stringify(
+                  `virtual:@compiled/vite-plugin/local-css:${encodeURIComponent(id)}`
+                )};\n`
+              : '';
           return {
-            code: result.code,
-            map: result.map ?? null,
+            code: `${localCssImport}${result.code}`,
+            map: localCssImport ? null : result.map ?? null,
           };
         }
 
