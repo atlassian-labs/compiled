@@ -5,6 +5,8 @@ import React from 'react';
 
 import Style from '../runtime/style';
 
+import { getAllCssText, getStyleCssTexts } from './utils/css-text';
+
 jest.mock('../runtime/is-server-environment', () => ({
   isServerEnvironment: () => false,
 }));
@@ -12,9 +14,18 @@ jest.mock('../runtime/is-server-environment', () => ({
 describe('browser', () => {
   beforeEach(() => {
     // Reset style tags in head before each test so that it will remove styles
-    // injected by test
+    // injected by test. Clearing `textContent` alone is not enough: it only clears the
+    // sheet as a side effect of removing a child text node, and `insertRule` never
+    // creates one — so after the first reset there is nothing left to remove and the
+    // rules survive. The elements themselves must stay, as the runtime caches its style
+    // buckets in a module-level singleton.
     document.head.querySelectorAll('style').forEach((styleElement) => {
       styleElement.textContent = '';
+
+      const { sheet } = styleElement;
+      while (sheet && sheet.cssRules.length > 0) {
+        sheet.deleteRule(sheet.cssRules.length - 1);
+      }
     });
   });
 
@@ -42,9 +53,7 @@ describe('browser', () => {
       </>
     );
 
-    expect(document.head.innerHTML).toMatchInlineSnapshot(
-      `"<style nonce="k0Mp1lEd">._4ya3eEEbN9{font-size:14px}</style>"`
-    );
+    expect(getAllCssText()).toMatchInlineSnapshot(`"._4ya3eEEbN9 {font-size: 14px;}"`);
   });
 
   it('should render style tags in buckets', () => {
@@ -95,16 +104,17 @@ describe('browser', () => {
 
     render(<StyledLink href="https://atlassian.design">Atlassian Design System</StyledLink>);
 
-    expect(document.head.innerHTML.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
-      "<style nonce="k0Mp1lEd">._3iDTPbQ4SZ{display:flex}._4ya3eEHMkp{font-size:50px}._1UtDYz5CUP{color:purple}</style>
-      <style nonce="k0Mp1lEd">._2ipzJpGowl:link{color:red}._2ipzJpaJpK:link{color:white}</style>
-      <style nonce="k0Mp1lEd">._2nTuUYy8mA:visited{color:pink}</style>
-      <style nonce="k0Mp1lEd">._10n1R5Jwxv:focus{color:green}</style>
-      <style nonce="k0Mp1lEd">._22XfGnaJpK:focus-visible{color:white}</style>
-      <style nonce="k0Mp1lEd">._0clgaMFQV5:hover{color:yellow}</style>
-      <style nonce="k0Mp1lEd">._0CMRbkynoA:active{color:blue}</style>
-      <style nonce="k0Mp1lEd">@media (max-width:800px){._3YxZqqFQV5:focus{color:yellow}._1h21S5okCM:focus-visible{color:grey}._0oG7IkokCM:hover{color:grey}._3cQMScbqW0:active{color:black}}@supports (display:grid){._3geGi3FQV5:focus{color:yellow}._0vra6NbqW0:active{color:black}}</style>
-      "
+    expect(getStyleCssTexts()).toMatchInlineSnapshot(`
+      [
+        "._3iDTPbQ4SZ {display: flex;}._4ya3eEHMkp {font-size: 50px;}._1UtDYz5CUP {color: purple;}",
+        "._2ipzJpGowl:link {color: red;}._2ipzJpaJpK:link {color: white;}",
+        "._2nTuUYy8mA:visited {color: pink;}",
+        "._10n1R5Jwxv:focus {color: green;}",
+        "._22XfGnaJpK:focus-visible {color: white;}",
+        "._0clgaMFQV5:hover {color: yellow;}",
+        "._0CMRbkynoA:active {color: blue;}",
+        "@media (max-width:800px) {._3YxZqqFQV5:focus {color: yellow;}._1h21S5okCM:focus-visible {color: grey;}._0oG7IkokCM:hover {color: grey;}._3cQMScbqW0:active {color: black;}}@supports (display:grid) {._3geGi3FQV5:focus {color: yellow;}._0vra6NbqW0:active {color: black;}}",
+      ]
     `);
   });
 
@@ -132,13 +142,11 @@ describe('browser', () => {
     // The `m` bucket precedes the `cc` bucket in `styleBucketOrdering`, so the
     // atomic-`m` `<style>` appears first in `document.head`, then the `cc`
     // `<style>` — the cascade contract for `.cc-` (last-in-head) is preserved.
-    const styleTexts = Array.from(document.head.querySelectorAll('style'))
-      .map((s) => s.textContent ?? '')
-      .filter((t) => t.length > 0);
+    const styleTexts = getStyleCssTexts().filter((t) => t.length > 0);
     expect(styleTexts).toMatchInlineSnapshot(`
       [
-        "@media (min-width:1px){._bbbbbbbb{color:blue}}",
-        "@media (min-width:1px){.cc-zzzzzz .panel{background:gray}}@media (min-width:1px){.cc-aaaaaa .panel{background:pink}}",
+        "@media (min-width:1px) {._bbbbbbbb {color: blue;}}",
+        "@media (min-width:1px) {.cc-zzzzzz .panel {background: gray;}}@media (min-width:1px) {.cc-aaaaaa .panel {background: pink;}}",
       ]
     `);
   });

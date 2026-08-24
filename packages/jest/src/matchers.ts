@@ -28,6 +28,31 @@ const mapProperties = (properties: Record<string, any>) =>
 
 const onlyRules = (rules?: CssAtRuleAST[]) => rules?.filter((r) => r.type === 'rule');
 
+/**
+ * Reads the CSS text out of a `<style>` element.
+ *
+ * The browser runtime injects rules with `sheet.insertRule()`, a CSSOM-only mutation
+ * that leaves the element's `textContent` empty — so those rules have to be read back
+ * off the sheet. Server-rendered styles and non-atomic `cssMapScoped` rules still live
+ * in a text node, hence the `textContent` is preferred when present.
+ *
+ * Preferring text is only safe because no `<style>` ever holds CSS in both places:
+ * atomic rules go exclusively through `insertRule`, non-atomic ones exclusively through
+ * `Text.appendData` on the dedicated `cc` bucket, and the two never share an element
+ * (see `styleBucketOrdering` and `insertNonAtomicRule` in `react/src/runtime/sheet.ts`).
+ * Atomic buckets are created holding an *empty* text node, which is falsy and so falls
+ * through to the sheet.
+ */
+const getCssText = (styleElement: HTMLStyleElement): string => {
+  if (styleElement.textContent) {
+    return styleElement.textContent;
+  }
+
+  const { sheet } = styleElement;
+
+  return sheet ? Array.from(sheet.cssRules, (rule) => rule.cssText).join('') : '';
+};
+
 const findMediaRules = (
   allRules: CssAtRuleAST[] = [],
   media: string
@@ -135,7 +160,7 @@ export function toHaveCompiledCss(
   const classNames = element.classList;
 
   for (const styleElement of styleElements) {
-    let css = styleElement.textContent || '';
+    let css = getCssText(styleElement);
     // This is a hack to get ahold of the styles.
     // Unfortunately JSDOM doesn't handle css variables properly
     // See: https://github.com/jsdom/jsdom/issues/1895

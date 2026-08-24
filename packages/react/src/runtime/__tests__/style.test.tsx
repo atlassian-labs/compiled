@@ -2,6 +2,7 @@ import { render } from '@testing-library/react';
 import React from 'react';
 import type { ComponentType } from 'react';
 
+import { getAllCssText, getStyleCssTexts } from '../../__tests__/utils/css-text';
 import StyleWithContainer from '../style';
 import { StyleContainerProvider } from '../style-container';
 import type * as StyleContainerModule from '../style-container';
@@ -47,7 +48,7 @@ describe('<Style />', () => {
     createIsolatedTest((Style) => {
       render(<Style>{[`.b { display: block; }`]}</Style>);
 
-      expect(document.head.innerHTML).toInclude('<style>.b { display: block; }</style>');
+      expect(getAllCssText()).toInclude('.b {display: block;}');
       expect(console.error).not.toHaveBeenCalled();
     });
   });
@@ -57,7 +58,7 @@ describe('<Style />', () => {
       render(<Style>{[`.c { display: block; }`]}</Style>);
       render(<Style>{[`.c { display: block; }`]}</Style>);
 
-      expect(document.head.innerHTML).toIncludeRepeated('<style>.c { display: block; }</style>', 1);
+      expect(getAllCssText()).toIncludeRepeated('.c {display: block;}', 1);
       expect(console.error).not.toHaveBeenCalled();
     });
   });
@@ -114,17 +115,18 @@ describe('<Style />', () => {
         </Style>
       );
 
-      expect(document.head.innerHTML.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
-        "<style>._d1234567{ display: block; }</style>
-        <style>._c1234567:link{ color: green; }</style>
-        <style>._g1234567:visited{ color: grey; }</style>
-        <style>._i1234567:focus-within{ color: black; }</style>
-        <style>._f1234567:focus{ color: pink; }</style>
-        <style>._h1234567:focus-visible{ color: white; }</style>
-        <style>._a1234567:hover{ color: red; }</style>
-        <style>._b1234567:active{ color: blue; }</style>
-        <style>@media (max-width: 800px){ ._e1234567{ color: yellow; } }</style>
-        "
+      expect(getStyleCssTexts()).toMatchInlineSnapshot(`
+        [
+          "._d1234567 {display: block;}",
+          "._c1234567:link {color: green;}",
+          "._g1234567:visited {color: grey;}",
+          "._i1234567:focus-within {color: black;}",
+          "._f1234567:focus {color: pink;}",
+          "._h1234567:focus-visible {color: white;}",
+          "._a1234567:hover {color: red;}",
+          "._b1234567:active {color: blue;}",
+          "@media (max-width: 800px) {._e1234567 {color: yellow;}}",
+        ]
       `);
       expect(console.error).not.toHaveBeenCalled();
     });
@@ -159,16 +161,17 @@ describe('<Style />', () => {
           ]}
         </Style>
       );
-      expect(document.head.innerHTML.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
-        "<style>._a1234567{ all: unset; }</style>
-        <style>._b1234567{ border: solid 1px blue; }._j1234567{ padding: 5px; }</style>
-        <style>._k1234567{ padding-block: 6px; }._l1234567{ padding-inline: 7px; }</style>
-        <style>._c1234567{ border-block: solid 2px blue; }._g1234567{ border-inline: solid 5px blue; }</style>
-        <style>._e1234567{ border-bottom: solid 4px blue; }._h1234567{ border-top: solid 6px blue; }</style>
-        <style>._d1234567{ border-block-end: solid 3px blue; }</style>
-        <style>._i1234567{ border-top-color: pink; }._m1234567{ padding-top: 8px; }</style>
-        <style>._a1234567:hover{ all: revert; }._g1234567:hover{ border-inline: solid 5px blue; }._k1234567:hover{ padding-block: 6px; }._l1234567:hover{ padding-inline: 7px; }._j1234567:hover{ padding: 5px; }</style>
-        "
+      expect(getStyleCssTexts()).toMatchInlineSnapshot(`
+        [
+          "._a1234567 {all: unset;}",
+          "._b1234567 {border: solid 1px blue;}._j1234567 {padding: 5px;}",
+          "._k1234567 {padding-block: 6px;}._l1234567 {padding-inline: 7px;}",
+          "._c1234567 {border-block: solid 2px blue;}._g1234567 {border-inline: solid 5px blue;}",
+          "._e1234567 {border-bottom: solid 4px blue;}._h1234567 {border-top: solid 6px blue;}",
+          "._d1234567 {border-block-end: solid 3px blue;}",
+          "._i1234567 {border-top-color: pink;}._m1234567 {padding-top: 8px;}",
+          "._a1234567:hover {all: revert;}._g1234567:hover {border-inline: solid 5px blue;}._k1234567:hover {padding-block: 6px;}._l1234567:hover {padding-inline: 7px;}._j1234567:hover {padding: 5px;}",
+        ]
       `);
       expect(console.error).not.toHaveBeenCalled();
     });
@@ -180,28 +183,12 @@ describe('<Style />', () => {
 
       rerender(<Style>{[`.second-render { display: block; }`]}</Style>);
 
-      expect(document.head.innerHTML).toInclude('.second-render { display: block; }');
+      expect(getAllCssText()).toInclude('.second-render {display: block;}');
       expect(console.error).not.toHaveBeenCalled();
     });
   });
 
   describe('cssMapScoped — non-atomic style injection', () => {
-    // Helper: read all CSS text from <style> tags via textContent (works for both
-    // appendData/appendChild text-node paths AND insertRule cssRules-based injection)
-    const getAllCssText = () =>
-      Array.from(document.head.querySelectorAll('style'))
-        .map((s) => {
-          const sheet = (s as HTMLStyleElement).sheet as CSSStyleSheet | null;
-          // Prefer cssRules (real browser path) — falls back to textContent (jsdom path)
-          if (sheet?.cssRules?.length) {
-            return Array.from(sheet.cssRules)
-              .map((r) => r.cssText)
-              .join('');
-          }
-          return s.textContent ?? '';
-        })
-        .join('');
-
     it('should inject cssMapScoped rules into the catch-all style bucket, not a shorthand bucket', () => {
       createIsolatedTest((Style) => {
         // border-bottom is shorthand depth 4 → would normally go to s-4 bucket
@@ -475,8 +462,8 @@ describe('<Style />', () => {
         </StyleContainerProvider>
       );
 
-      expect(container.innerHTML).toInclude('.a { color: red; }');
-      expect(document.head.innerHTML).not.toInclude('.a { color: red; }');
+      expect(getAllCssText(container)).toInclude('.a {color: red;}');
+      expect(getAllCssText()).not.toInclude('.a {color: red;}');
       expect(console.error).not.toHaveBeenCalled();
     });
 
@@ -494,12 +481,13 @@ describe('<Style />', () => {
         </StyleContainerProvider>
       );
 
-      expect(container.innerHTML.split('</style>').join('</style>\n')).toMatchInlineSnapshot(`
-        "<style>._c1234567{ display: block; }</style>
-        <style>._a1234567:hover{ color: red; }</style>
-        <style>._b1234567:active{ color: blue; }</style>
-        <style>@media (max-width: 800px){ ._d1234567{ color: yellow; } }</style>
-        "
+      expect(getStyleCssTexts(container)).toMatchInlineSnapshot(`
+        [
+          "._c1234567 {display: block;}",
+          "._a1234567:hover {color: red;}",
+          "._b1234567:active {color: blue;}",
+          "@media (max-width: 800px) {._d1234567 {color: yellow;}}",
+        ]
       `);
       expect(console.error).not.toHaveBeenCalled();
     });
@@ -512,7 +500,7 @@ describe('<Style />', () => {
         </StyleContainerProvider>
       );
 
-      expect(container.innerHTML).toIncludeRepeated('.b { color: blue; }', 1);
+      expect(getAllCssText(container)).toIncludeRepeated('.b {color: blue;}', 1);
       expect(console.error).not.toHaveBeenCalled();
     });
 
@@ -527,8 +515,8 @@ describe('<Style />', () => {
         </StyleContainerProvider>
       );
 
-      expect(document.head.innerHTML).toInclude('.c { color: green; }');
-      expect(container.innerHTML).toInclude('.c { color: green; }');
+      expect(getAllCssText()).toInclude('.c {color: green;}');
+      expect(getAllCssText(container)).toInclude('.c {color: green;}');
       expect(console.error).not.toHaveBeenCalled();
     });
 
@@ -548,8 +536,8 @@ describe('<Style />', () => {
         </StyleContainerProvider>
       );
 
-      expect(container.innerHTML).toInclude('.d { color: pink; }');
-      expect(container2.innerHTML).toInclude('.d { color: pink; }');
+      expect(getAllCssText(container)).toInclude('.d {color: pink;}');
+      expect(getAllCssText(container2)).toInclude('.d {color: pink;}');
 
       document.body.removeChild(container2);
       expect(console.error).not.toHaveBeenCalled();
@@ -562,7 +550,7 @@ describe('<Style />', () => {
         </StyleContainerProvider>
       );
 
-      expect(container.innerHTML).toInclude('nonce="abc123"');
+      expect(container.querySelector('style')?.getAttribute('nonce')).toBe('abc123');
       expect(console.error).not.toHaveBeenCalled();
     });
 

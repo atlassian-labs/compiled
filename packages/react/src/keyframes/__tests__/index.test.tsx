@@ -3,6 +3,7 @@
 import { keyframes, styled, css } from '@compiled/react';
 import { render } from '@testing-library/react';
 
+import { getStyleCssTexts } from '../../__tests__/utils/css-text';
 import defaultFadeOut, { namedFadeOut, fadeOut as shadowedFadeOut } from '../__fixtures__';
 
 const getOpacity = (str: string | number) => str;
@@ -10,7 +11,8 @@ const getOpacity = (str: string | number) => str;
 const getKeyframe = (name: string) => {
   const searchStr = `@keyframes ${name}`;
 
-  return Array.from(document.head.querySelectorAll('style'), (style) => style.innerHTML)
+  return getStyleCssTexts()
+    .map((style) => style.replace(/\s+/g, ' '))
     .filter((style) => style.indexOf(searchStr) >= 0)
     .map((style) => style.substring(style.indexOf(searchStr)))
     .join('\n');
@@ -49,7 +51,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'k1m8j3od');
         expect(getKeyframe('k1m8j3od')).toMatchInlineSnapshot(
-          `"@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes k1m8j3od { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -59,7 +61,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'klmf72q');
         expect(getKeyframe('klmf72q')).toMatchInlineSnapshot(
-          `"@keyframes klmf72q{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes klmf72q { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -69,7 +71,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'k1b0zjii');
         expect(getKeyframe('k1b0zjii')).toMatchInlineSnapshot(
-          `"@keyframes k1b0zjii{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes k1b0zjii { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -83,7 +85,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'k1vk0ha6');
         expect(getKeyframe('k1vk0ha6')).toMatchInlineSnapshot(
-          `"@keyframes k1vk0ha6{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes k1vk0ha6 { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -94,7 +96,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'k1m8j3od');
         expect(getKeyframe('k1m8j3od')).toMatchInlineSnapshot(
-          `"@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes k1m8j3od { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -103,7 +105,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'k1m8j3od');
         expect(getKeyframe('k1m8j3od')).toMatchInlineSnapshot(
-          `"@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes k1m8j3od { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -114,7 +116,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'k1m8j3od');
         expect(getKeyframe('k1m8j3od')).toMatchInlineSnapshot(
-          `"@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes k1m8j3od { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -135,7 +137,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'kbrsk95');
         expect(getKeyframe('kbrsk95')).toMatchInlineSnapshot(
-          `"@keyframes kbrsk95{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes kbrsk95 { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -156,7 +158,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'korwhog');
         expect(getKeyframe('korwhog')).toMatchInlineSnapshot(
-          `"@keyframes korwhog{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes korwhog { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -177,7 +179,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'korwhog');
         expect(getKeyframe('korwhog')).toMatchInlineSnapshot(
-          `"@keyframes korwhog{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes korwhog { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -203,7 +205,7 @@ describe('keyframes', () => {
           opacity: 'var(--opacity)',
         });
         expect(getKeyframe('k1sm7npi')).toMatchInlineSnapshot(
-          `"@keyframes k1sm7npi{0%{--opacity:1px}to{--opacity:0}}"`
+          `"@keyframes k1sm7npi { 0% {--opacity: 1px;} to {--opacity: 0;} }"`
         );
       });
     });
@@ -227,7 +229,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'k1m8j3od');
         expect(getKeyframe('k1m8j3od')).toMatchInlineSnapshot(
-          `"@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes k1m8j3od { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -238,7 +240,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'klmf72q');
         expect(getKeyframe('klmf72q')).toMatchInlineSnapshot(
-          `"@keyframes klmf72q{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes klmf72q { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -249,7 +251,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'k1b0zjii');
         expect(getKeyframe('k1b0zjii')).toMatchInlineSnapshot(
-          `"@keyframes k1b0zjii{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes k1b0zjii { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -264,7 +266,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'k1vk0ha6');
         expect(getKeyframe('k1vk0ha6')).toMatchInlineSnapshot(
-          `"@keyframes k1vk0ha6{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes k1vk0ha6 { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -274,7 +276,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'k1m8j3od');
         expect(getKeyframe('k1m8j3od')).toMatchInlineSnapshot(
-          `"@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes k1m8j3od { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -284,7 +286,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'k1m8j3od');
         expect(getKeyframe('k1m8j3od')).toMatchInlineSnapshot(
-          `"@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes k1m8j3od { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -294,7 +296,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'k1m8j3od');
         expect(getKeyframe('k1m8j3od')).toMatchInlineSnapshot(
-          `"@keyframes k1m8j3od{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes k1m8j3od { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -316,7 +318,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'kbrsk95');
         expect(getKeyframe('kbrsk95')).toMatchInlineSnapshot(
-          `"@keyframes kbrsk95{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes kbrsk95 { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -338,7 +340,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'korwhog');
         expect(getKeyframe('korwhog')).toMatchInlineSnapshot(
-          `"@keyframes korwhog{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes korwhog { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
 
@@ -360,7 +362,7 @@ describe('keyframes', () => {
 
         expect(getByText('hello world')).toHaveCompiledCss('animation-name', 'korwhog');
         expect(getKeyframe('korwhog')).toMatchInlineSnapshot(
-          `"@keyframes korwhog{0%{opacity:1}to{opacity:0}}"`
+          `"@keyframes korwhog { 0% {opacity: 1;} to {opacity: 0;} }"`
         );
       });
     });
