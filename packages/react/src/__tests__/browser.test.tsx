@@ -108,7 +108,7 @@ describe('browser', () => {
     `);
   });
 
-  it('should inject at-rule-wrapped non-atomic rules into the catch-all bucket, not an at-rule bucket', () => {
+  it('should inject at-rule-wrapped non-atomic rules into their own `cc` bucket, isolated from every atomic bucket', () => {
     // cc-zzzzzz sorts AFTER cc-aaaaaa lexically, but must appear FIRST (source order)
     const baseMediaRule = '@media (min-width:1px){.cc-zzzzzz .panel{background:gray}}';
     const overrideMediaRule = '@media (min-width:1px){.cc-aaaaaa .panel{background:pink}}';
@@ -122,15 +122,23 @@ describe('browser', () => {
       </>
     );
 
-    // Non-atomic @media rules go to catch-all bucket in source order (cc-zzzzzz before cc-aaaaaa),
-    // atomic @media rule goes to a separate at-rule bucket.
+    // Non-atomic .cc- @media rules land in the dedicated `cc` bucket (its own
+    // `<style>` element), preserving source order (cc-zzzzzz before cc-aaaaaa).
+    // The atomic @media rule lands in the separate at-rule (`m`) bucket. The
+    // two live on DIFFERENT DOM nodes — this is the isolation invariant that
+    // prevents `Text.appendData` on the non-atomic bucket from wiping any
+    // `sheet.insertRule()`-inserted atomic rules in production.
+    //
+    // The `m` bucket precedes the `cc` bucket in `styleBucketOrdering`, so the
+    // atomic-`m` `<style>` appears first in `document.head`, then the `cc`
+    // `<style>` — the cascade contract for `.cc-` (last-in-head) is preserved.
     const styleTexts = Array.from(document.head.querySelectorAll('style'))
       .map((s) => s.textContent ?? '')
       .filter((t) => t.length > 0);
     expect(styleTexts).toMatchInlineSnapshot(`
       [
-        "@media (min-width:1px){.cc-zzzzzz .panel{background:gray}}@media (min-width:1px){.cc-aaaaaa .panel{background:pink}}",
         "@media (min-width:1px){._bbbbbbbb{color:blue}}",
+        "@media (min-width:1px){.cc-zzzzzz .panel{background:gray}}@media (min-width:1px){.cc-aaaaaa .panel{background:pink}}",
       ]
     `);
   });

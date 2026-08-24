@@ -49,7 +49,13 @@ export type Bucket =
   // active
   | 'a'
   // at-rules
-  | 'm';
+  | 'm'
+  // non-atomic `cssMapScoped` (`.cc-…`) rules — always text-appended
+  // into a dedicated `<style>` so they never share a DOM element with
+  // atomic buckets, which are populated via `sheet.insertRule()` in
+  // production. See `runtime/style.tsx` and `runtime/sheet.ts` for the
+  // isolation invariant this bucket exists to enforce.
+  | 'cc';
 
 export type UseCacheHook = () => Record<string, true>;
 
