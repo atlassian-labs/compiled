@@ -236,17 +236,12 @@ export const getStyleBucketName = (sheet: string): Bucket => {
 export default function insertRule(css: string, opts: StyleSheetOpts): void {
   const bucketName = getStyleBucketName(css);
   const style = lazyAddStyleBucketToContainer(bucketName, opts);
+  const sheet = style.sheet as CSSStyleSheet;
 
-  if (process.env.NODE_ENV === 'production') {
-    const sheet = style.sheet as CSSStyleSheet;
-
-    // Used to avoid unhandled exceptions across browsers with prefixed selectors such as -moz-placeholder.
-    try {
-      sheet.insertRule(css, sheet.cssRules.length);
-    } catch {}
-  } else {
-    style.appendChild(document.createTextNode(css));
-  }
+  // Used to avoid unhandled exceptions across browsers with prefixed selectors such as -moz-placeholder.
+  try {
+    sheet.insertRule(css, sheet.cssRules.length);
+  } catch {}
 }
 
 /**
