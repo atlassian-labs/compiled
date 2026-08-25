@@ -4,6 +4,13 @@ require('ts-node').register({
 });
 require('tsconfig-paths/register');
 
+// Vite 5 uses the Node 18+ crypto.getRandomValues alias. This repository also
+// validates Node 16, where the same API is available through crypto.webcrypto.
+const nodeCrypto = require('crypto');
+if (!nodeCrypto.getRandomValues && nodeCrypto.webcrypto?.getRandomValues) {
+  nodeCrypto.getRandomValues = nodeCrypto.webcrypto.getRandomValues.bind(nodeCrypto.webcrypto);
+}
+
 const { build, createServer } = require('vite');
 const { join } = require('path');
 
