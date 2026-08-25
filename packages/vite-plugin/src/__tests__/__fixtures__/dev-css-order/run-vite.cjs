@@ -16,6 +16,21 @@ const { request } = require('http');
 const { join } = require('path');
 
 const compiledVitePlugin = require('../../../index').default;
+const localModuleId = join(__dirname, 'local.tsx');
+let localSource = `
+  import { css } from '@compiled/react';
+  export const Component = () => <div css={css({ color: 'red' })} />;
+  if (import.meta.hot) import.meta.hot.accept();
+`;
+const localSourcePlugin = {
+  name: 'local-source-fixture',
+  resolveId(source) {
+    return source === '/local.tsx' ? localModuleId : null;
+  },
+  load(id) {
+    return id === localModuleId ? localSource : null;
+  },
+};
 
 const fetchForTest = (url, options = {}) =>
   new Promise((resolve, reject) => {
@@ -142,6 +157,56 @@ const exerciseRuntime = async (runtimeCode, origin, inlineCss) => {
   }
 };
 
+const exerciseLocalCssHmr = async (server) => {
+  const firstLocalResult = await server.transformRequest('/local.tsx');
+  const firstLocalModule = await server.moduleGraph.getModuleByUrl('/local.tsx');
+  const firstCssModule = [...firstLocalModule.importedModules].find((module) =>
+    module.id.includes('virtual:@compiled/vite-plugin/local-css:')
+  );
+  if (!firstCssModule) {
+    throw new Error('Could not find local Compiled CSS before the hot update');
+  }
+  const firstCssResult = await server.transformRequest(firstCssModule.url);
+
+  localSource = localSource.replace("color: 'red'", "color: 'blue'");
+  const timestamp = Date.now();
+  const hmrContext = {
+    file: localModuleId,
+    timestamp,
+    modules: [firstLocalModule],
+    read: async () => localSource,
+    server,
+  };
+  for (const hook of server.config.getSortedPluginHooks('handleHotUpdate')) {
+    const filteredModules = await hook(hmrContext);
+    if (filteredModules) {
+      hmrContext.modules = filteredModules;
+    }
+  }
+  server.moduleGraph.invalidateModule(firstLocalModule, new Set(), timestamp, true);
+
+  const secondLocalResult = await server.transformRequest('/local.tsx');
+  const secondLocalModule = await server.moduleGraph.getModuleByUrl('/local.tsx');
+  const secondCssModule = [...secondLocalModule.importedModules].find((module) =>
+    module.id.includes('virtual:@compiled/vite-plugin/local-css:')
+  );
+  if (!secondCssModule) {
+    throw new Error('Could not find local Compiled CSS after the hot update');
+  }
+  const secondCssResult = await server.transformRequest(`${secondCssModule.url}?t=${timestamp}`);
+
+  return {
+    firstCss: firstCssResult.code,
+    firstParent: firstLocalResult.code,
+    sameVirtualModule: firstCssModule === secondCssModule,
+    secondCss: secondCssResult.code,
+    secondParent: secondLocalResult.code,
+    virtualModuleCount: [...secondLocalModule.importedModules].filter((module) =>
+      module.id.includes('virtual:@compiled/vite-plugin/local-css:')
+    ).length,
+  };
+};
+
 async function runDevServer() {
   const server = await createServer({
     appType: 'custom',
@@ -151,7 +216,7 @@ async function runDevServer() {
     optimizeDeps: {
       noDiscovery: true,
     },
-    plugins: [compiledVitePlugin()],
+    plugins: [localSourcePlugin, compiledVitePlugin()],
     root: __dirname,
     server: {
       host: '127.0.0.1',
@@ -207,6 +272,7 @@ async function runDevServer() {
     const sortedCss = await response.text();
     const browserRuntime = await exerciseRuntime(runtimeResult.code, origin, inlineCss);
     const ssrResult = await server.transformRequest('/entry.js', { ssr: true });
+    const localHmr = await exerciseLocalCssHmr(server);
 
     return {
       entry: entryResult.code,
@@ -215,6 +281,7 @@ async function runDevServer() {
       runtime: runtimeResult.code,
       sortedCss,
       browserRuntime,
+      localHmr,
       hmr: proxyModules.map((proxy, index) => ({
         proxyIsSelfAccepting: proxy.isSelfAccepting,
         inlineIsSelfAccepting: inlineModules[index].isSelfAccepting,
@@ -260,7 +327,7 @@ async function runBuild() {
 async function main() {
   const dev = await runDevServer();
   const production = await runBuild();
-  process.stdout.write(JSON.stringify({ dev, production }));
+  process.stdout.write(`${JSON.stringify({ dev, production })}\n`);
 }
 
 main().catch((error) => {

@@ -45,9 +45,30 @@ type DevCssServer = {
   };
 };
 
+type DevCssModuleNode = {
+  id: string | null;
+};
+
+type DevCssHotUpdateContext = {
+  file: string;
+  server: {
+    moduleGraph: {
+      getModuleById(id: string): DevCssModuleNode | undefined;
+      invalidateModule(
+        module: DevCssModuleNode,
+        seen: Set<DevCssModuleNode>,
+        timestamp: number,
+        isHmr: boolean
+      ): void;
+    };
+  };
+  timestamp: number;
+};
+
 type DevCssHooks = {
   configResolved(config: { base: string; command: string }): void;
   configureServer(server: DevCssServer): void;
+  handleHotUpdate(context: DevCssHotUpdateContext): void;
   load(id: string, options?: { ssr?: boolean }): string | null;
   resolveId(
     this: DevCssPluginContext,
@@ -69,6 +90,9 @@ const decodeModuleId = (id: string): string | undefined => {
 };
 
 const toInlineRequest = (id: string): string => `${id}${id.includes('?') ? '&' : '?'}inline`;
+
+const toResolvedLocalCssId = (id: string): string =>
+  `${RESOLVED_COMPILED_DEV_LOCAL_CSS_PREFIX}${encodeModuleId(id)}.js`;
 
 const isScriptImport = (importer: string | undefined): importer is string =>
   Boolean(importer && !STYLE_IMPORTER.test(importer) && !HTML_IMPORTER.test(importer));
@@ -97,6 +121,17 @@ export const createDevCssHooks = (
       sortEndpointPath = getRequestPath(sortEndpoint);
     },
 
+    handleHotUpdate({ file, server, timestamp }) {
+      if (!isDevServer) {
+        return;
+      }
+
+      const localCssModule = server.moduleGraph.getModuleById(toResolvedLocalCssId(file));
+      if (localCssModule) {
+        server.moduleGraph.invalidateModule(localCssModule, new Set(), timestamp, true);
+      }
+    },
+
     async resolveId(source, importer, options) {
       if (!isDevServer || options.ssr) {
         return null;
@@ -112,9 +147,8 @@ export const createDevCssHooks = (
       }
 
       if (source.startsWith(COMPILED_DEV_LOCAL_CSS_PREFIX)) {
-        return `${RESOLVED_COMPILED_DEV_LOCAL_CSS_PREFIX}${source.slice(
-          COMPILED_DEV_LOCAL_CSS_PREFIX.length
-        )}.js`;
+        const cssId = decodeModuleId(source.slice(COMPILED_DEV_LOCAL_CSS_PREFIX.length));
+        return cssId ? toResolvedLocalCssId(cssId) : null;
       }
 
       if (options.scan || !isScriptImport(importer) || !COMPILED_CSS_IMPORT.test(source)) {

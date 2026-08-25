@@ -67,6 +67,20 @@ describe('development Compiled CSS', () => {
     expect(dev.runtime).toContain('const endpoint = "/test-base/@compiled/vite-plugin/sort-css"');
     expect(dev.runtime).toContain('data-compiled-vite-dev-id');
 
+    // Local CSS keeps one virtual module while Vite invalidates and reloads
+    // its contents for the source module's normal hot-update request.
+    expect(dev.localHmr).toEqual(
+      expect.objectContaining({
+        sameVirtualModule: true,
+        virtualModuleCount: 1,
+      })
+    );
+    expect(dev.localHmr.firstCss).toContain('color:red');
+    expect(dev.localHmr.secondCss).toContain('color:blue');
+    expect(dev.localHmr.secondCss).not.toContain('color:red');
+    expect(dev.localHmr.firstParent).not.toContain('?t=');
+    expect(dev.localHmr.secondParent).toMatch(/local-css:[^"?]+\?t=\d{13}/);
+
     // Inline CSS updates propagate into self-accepting JavaScript proxies.
     for (const hmr of dev.hmr) {
       expect(hmr.proxyIsSelfAccepting).toBe(true);

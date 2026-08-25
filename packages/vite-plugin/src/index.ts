@@ -263,7 +263,13 @@ function compiled(userOptions: PluginOptions = {}): any {
               : '';
           return {
             code: `${localCssImport}${result.code}`,
-            map: localCssImport ? null : result.map ?? null,
+            map:
+              localCssImport && result.map
+                ? {
+                    ...result.map,
+                    mappings: `;${result.map.mappings}`,
+                  }
+                : result.map ?? null,
           };
         }
 

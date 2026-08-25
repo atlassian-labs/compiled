@@ -76,18 +76,18 @@ describe('compiledVitePlugin', () => {
     const resolveOptions = { attributes: {}, isEntry: false };
     const context = { resolve: jest.fn() };
     const id = '/project/local.tsx';
+    const code = `
+      import { css } from '@compiled/react';
+      export const Component = () => <div css={css({ display: 'flex' })} />;
+    `;
 
     plugin.configResolved({ base: '/', command: 'serve' });
-    const result = await plugin.transform!(
-      `
-        import { css } from '@compiled/react';
-        export const Component = () => <div css={css({ display: 'flex' })} />;
-      `,
-      id
-    );
+    const result = await plugin.transform!(code, id);
 
     expect(result.code).toContain('virtual:@compiled/vite-plugin/local-css:');
     expect(result.code).not.toContain('CS');
+    expect(result.map.sourcesContent).toEqual([code]);
+    expect(result.map.mappings).toMatch(/^;/);
 
     const source = result.code.match(/"(virtual:@compiled\/vite-plugin\/local-css:[^"]+)"/)?.[1];
     expect(source).toBeDefined();
@@ -109,6 +109,38 @@ describe('compiledVitePlugin', () => {
 
     expect(resultWithoutStyles.code).not.toContain('virtual:@compiled/vite-plugin/local-css:');
     expect(plugin.load(virtualId)).toBeNull();
+  });
+
+  it('invalidates local development CSS before a hot update re-transforms its source', async () => {
+    const plugin: any = compiledVitePlugin();
+    const file = '/project/local.tsx';
+    const timestamp = 1_725_000_000_000;
+
+    plugin.configResolved({ base: '/', command: 'serve' });
+    const result = await plugin.transform!(
+      `
+        import { css } from '@compiled/react';
+        export const Component = () => <div css={css({ display: 'flex' })} />;
+      `,
+      file
+    );
+    const source = result.code.match(/"(virtual:@compiled\/vite-plugin\/local-css:[^"]+)"/)?.[1];
+    const virtualId = await plugin.resolveId.call({ resolve: jest.fn() }, source, file, {
+      attributes: {},
+      isEntry: false,
+    });
+    const localCssModule = { id: virtualId };
+    const getModuleById = jest.fn().mockReturnValue(localCssModule);
+    const invalidateModule = jest.fn();
+
+    plugin.handleHotUpdate({
+      file,
+      server: { moduleGraph: { getModuleById, invalidateModule } },
+      timestamp,
+    });
+
+    expect(getModuleById).toHaveBeenCalledWith(virtualId);
+    expect(invalidateModule).toHaveBeenCalledWith(localCssModule, expect.any(Set), timestamp, true);
   });
 
   it('keeps dev SSR transforms on the existing runtime path', async () => {
