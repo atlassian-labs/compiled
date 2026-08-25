@@ -12,9 +12,37 @@ if (!nodeCrypto.getRandomValues && nodeCrypto.webcrypto?.getRandomValues) {
 }
 
 const { build, createServer } = require('vite');
+const { request } = require('http');
 const { join } = require('path');
 
 const compiledVitePlugin = require('../../../index').default;
+
+const fetchForTest = (url, options = {}) =>
+  new Promise((resolve, reject) => {
+    const httpRequest = request(
+      url,
+      {
+        method: options.method,
+        headers: options.headers,
+      },
+      (response) => {
+        const chunks = [];
+        response.on('data', (chunk) => chunks.push(chunk));
+        response.on('end', () => {
+          const body = Buffer.concat(chunks).toString('utf8');
+          resolve({
+            ok: response.statusCode >= 200 && response.statusCode < 300,
+            text: async () => body,
+          });
+        });
+      }
+    );
+    httpRequest.on('error', reject);
+    if (options.body) {
+      httpRequest.write(options.body);
+    }
+    httpRequest.end();
+  });
 
 const extractDefaultExport = (code) => {
   const declaration = code.match(/export default ("(?:[^"\\]|\\.)*")/);
@@ -71,7 +99,7 @@ const exerciseRuntime = async (runtimeCode, origin, inlineCss) => {
       return styles[0];
     },
   };
-  global.fetch = (url, options) => originalFetch(new URL(url, origin), options);
+  global.fetch = (url, options) => fetchForTest(new URL(url, origin), options);
 
   try {
     const runtimeUrl = `data:text/javascript;base64,${Buffer.from(runtimeCode).toString('base64')}`;
@@ -167,7 +195,7 @@ async function runDevServer() {
 
     const address = server.httpServer.address();
     const origin = `http://127.0.0.1:${address.port}`;
-    const response = await fetch(`${origin}/test-base/@compiled/vite-plugin/sort-css`, {
+    const response = await fetchForTest(`${origin}/test-base/@compiled/vite-plugin/sort-css`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(inlineCss),
