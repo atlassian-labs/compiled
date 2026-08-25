@@ -1,4 +1,4 @@
-import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite';
+import type { IncomingMessage, ServerResponse } from 'http';
 
 const COMPILED_CSS_REQUEST = /\.compiled\.css(?:$|\?)/;
 const COMPILED_CSS_IMPORT = /\.compiled\.css$/;
@@ -16,7 +16,46 @@ const COMPILED_DEV_RUNTIME_ID = 'virtual:@compiled/vite-plugin/css-runtime';
 const RESOLVED_COMPILED_DEV_RUNTIME_ID = `\0${COMPILED_DEV_RUNTIME_ID}`;
 const MAX_CSS_PAYLOAD_SIZE = 50_000_000;
 
-type DevCssHooks = Pick<Plugin, 'configResolved' | 'configureServer' | 'load' | 'resolveId'>;
+type ResolveOptions = {
+  scan?: boolean;
+  ssr?: boolean;
+  [key: string]: unknown;
+};
+
+type DevCssPluginContext = {
+  resolve(
+    source: string,
+    importer: string | undefined,
+    options: ResolveOptions & { skipSelf: boolean }
+  ): Promise<{
+    external?: boolean | 'absolute' | 'relative';
+    id: string;
+  } | null>;
+};
+
+type DevCssServer = {
+  middlewares: {
+    use(
+      handler: (
+        request: IncomingMessage,
+        response: ServerResponse,
+        next: () => void
+      ) => void | Promise<void>
+    ): void;
+  };
+};
+
+type DevCssHooks = {
+  configResolved(config: { base: string; command: string }): void;
+  configureServer(server: DevCssServer): void;
+  load(id: string, options?: { ssr?: boolean }): string | null;
+  resolveId(
+    this: DevCssPluginContext,
+    source: string,
+    importer: string | undefined,
+    options: ResolveOptions
+  ): Promise<string | null>;
+};
 
 export const isCompiledCssRequest = (id: string): boolean => COMPILED_CSS_REQUEST.test(id);
 
@@ -52,7 +91,7 @@ export const createDevCssHooks = (
   let sortEndpointPath = sortEndpoint;
 
   return {
-    configResolved(config: ResolvedConfig) {
+    configResolved(config) {
       isDevServer = config.command === 'serve';
       sortEndpoint = `${config.base}${COMPILED_DEV_SORT_PATH}`;
       sortEndpointPath = getRequestPath(sortEndpoint);
@@ -78,11 +117,7 @@ export const createDevCssHooks = (
         )}.js`;
       }
 
-      if (
-        (options as typeof options & { scan?: boolean }).scan ||
-        !isScriptImport(importer) ||
-        !COMPILED_CSS_IMPORT.test(source)
-      ) {
+      if (options.scan || !isScriptImport(importer) || !COMPILED_CSS_IMPORT.test(source)) {
         return null;
       }
 
@@ -209,12 +244,17 @@ export const createDevCssHooks = (
         }
 
         return `
-          import { registerCompiledCss } from ${JSON.stringify(COMPILED_DEV_RUNTIME_ID)}
+          import {
+            registerCompiledCss,
+            unregisterCompiledCss,
+          } from ${JSON.stringify(COMPILED_DEV_RUNTIME_ID)}
 
-          registerCompiledCss(${JSON.stringify(`local:${cssId}`)}, ${JSON.stringify(css)})
+          const id = ${JSON.stringify(`local:${cssId}`)}
+          registerCompiledCss(id, ${JSON.stringify(css)})
 
           if (import.meta.hot) {
             import.meta.hot.accept()
+            import.meta.hot.prune(() => unregisterCompiledCss(id))
           }
         `;
       }
@@ -246,7 +286,7 @@ export const createDevCssHooks = (
       `;
     },
 
-    configureServer(server: ViteDevServer) {
+    configureServer(server) {
       server.middlewares.use(async (request, response, next) => {
         if (
           request.method !== 'POST' ||

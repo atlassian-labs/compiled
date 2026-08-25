@@ -122,12 +122,20 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
       `);
     });
 
-    it('strips the css prop runtime when using the development transform', () => {
-      const actual = transform(code, { development: true, runtime });
+    it('extracts styles and strips the css prop runtime when using the development transform', () => {
+      const actual = transform(code, {
+        development: true,
+        runtime,
+        styleSheetPath: testStyleSheetPath,
+      });
 
       expect(actual).not.toContain('CS');
       expect(actual).not.toContain('CC');
       expect(actual).toContain('jsxDEV');
+      expect(actual.match(regexToFindRequireStatements)).toEqual([
+        `require('${testStyleSheetPath}?style=._4ya3eErjyG%7Bfont-size%3A12px%7D');`,
+        `require('${testStyleSheetPath}?style=._1UtDYzynoA%7Bcolor%3Ablue%7D');`,
+      ]);
     });
   });
 
