@@ -184,7 +184,10 @@ export default declare<PluginPass>((api) => {
           return;
         }
 
-        if (isAutomaticRuntime(path.node, 'jsxs') || isAutomaticRuntime(path.node, 'jsxDEV')) {
+        if (
+          isAutomaticRuntime(path.node, 'jsxs') ||
+          (pass.opts.processJsxDev && isAutomaticRuntime(path.node, 'jsxDEV'))
+        ) {
           // We've found something that looks like _jsxs(...) or _jsxDEV(...)
           // Now we want to check if it's from the Compiled Runtime and if it is - replace with its children.
           const component = path.node.arguments[0];

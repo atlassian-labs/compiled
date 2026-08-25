@@ -226,6 +226,7 @@ function compiled(userOptions: PluginOptions = {}): any {
                     {
                       compiledRequireExclude: true,
                       extractStylesToDirectory: options.extractStylesToDirectory,
+                      processJsxDev: isClientDevTransform,
                     } as BabelStripRuntimePluginOptions,
                   ],
                 ],
