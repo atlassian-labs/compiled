@@ -1,5 +1,13 @@
 # @compiled/vite-plugin
 
+## 2.0.3
+
+### Patch Changes
+
+- @compiled/babel-plugin@3.0.0
+- @compiled/css@3.0.0
+- @compiled/babel-plugin-strip-runtime@3.0.0
+
 ## 2.0.2
 
 ### Patch Changes

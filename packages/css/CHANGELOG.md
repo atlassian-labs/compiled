@@ -1,5 +1,13 @@
 # @compiled/css
 
+## 3.0.0
+
+### Patch Changes
+
+- Updated dependencies [efddb7e]
+- Updated dependencies [3a0d317]
+  - @compiled/react@2.0.0
+
 ## 2.0.0
 
 ### Major Changes
