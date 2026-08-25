@@ -1,5 +1,40 @@
 # @compiled/react
 
+## 2.0.0
+
+### Major Changes
+
+- 3a0d317: Atomic rules are now injected with `sheet.insertRule()` in every environment. Previously only production used the CSSOM; development and test builds appended a text node per rule, which forces the engine to reparse the whole sheet on every insertion.
+
+  Two consequences of dev and test now behaving like production:
+
+  - **`<style>` elements no longer contain text.** `insertRule` is a CSSOM-only mutation, so `styleElement.textContent` and `document.head.innerHTML` come back empty and the rules must be read off `sheet.cssRules`. Tests asserting on injected CSS via the DOM's text need updating; `toHaveCompiledCss` from `@compiled/jest` handles both sources as of the accompanying patch. In devtools, dev-mode `<style>` tags now render as empty, the same as production — inspect the element's CSSOM to see the rules.
+  - **Dev no longer diverges from production.** The previous fork meant CSSOM-specific bugs could only surface in production builds; both paths are now identical by construction.
+
+### Patch Changes
+
+- efddb7e: Fix production runtime style wipe when `cssMapScoped` (`.cc-…`) rules are injected after atomic rules.
+
+  In production, atomic rules were injected via `sheet.insertRule()` (CSSOM-only — `textContent`
+  stays empty) while non-atomic `cssMapScoped` rules were appended via `Text.appendData()` on the
+  SAME catch-all `<style>` element. When a large `.cc-` sheet was later injected (e.g. lazily
+  mounting the editor), the browser reparsed the sheet from its now-populated text node and
+  DISCARDED every previously `insertRule`-inserted rule — an observable global style wipe (unstyled
+  UI on affected surfaces).
+
+  Non-atomic `.cc-` rules now live in a dedicated `'cc'` bucket with its own `<style>` element that
+  `insertRule` never targets. The two insertion strategies can no longer share a DOM node, so the
+  reparse-wipe is impossible by construction. Source-order cascade for `cssMapScoped` variants is
+  preserved (append order within the `cc` bucket), and `.cc-` rules still cascade after every
+  atomic bucket (the `cc` bucket is placed last in `styleBucketOrdering`).
+
+  Regression tests in `runtime/__tests__/style.test.tsx` assert:
+
+  - Atomic rules previously inserted via `insertRule` remain reachable via `sheet.cssRules` after a
+    large `.cc-` non-atomic sheet is later injected.
+  - `Text.appendData` never mutates a `<style>` element whose sheet already has
+    `insertRule`-inserted rules.
+
 ## 1.0.2
 
 ### Patch Changes

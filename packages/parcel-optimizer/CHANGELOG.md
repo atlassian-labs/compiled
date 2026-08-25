@@ -1,5 +1,11 @@
 # @compiled/parcel-optimizer
 
+## 0.6.10
+
+### Patch Changes
+
+- @compiled/css@3.0.0
+
 ## 0.6.9
 
 ### Patch Changes
