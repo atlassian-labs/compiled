@@ -327,7 +327,7 @@ async function runBuild() {
 async function main() {
   const dev = await runDevServer();
   const production = await runBuild();
-  process.stdout.write(`${JSON.stringify({ dev, production })}\n`);
+  process.stdout.write(`${JSON.stringify({ dev, production })}\n`, () => process.exit(0));
 }
 
 main().catch((error) => {
