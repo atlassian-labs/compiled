@@ -27,11 +27,10 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
     `);
 
     expect(actual).toIncludeMultiple([
-      'padding:2px',
-      '@media (min-width:48rem)',
-      'padding:8px',
-      '@container id (width>100px)',
-      'padding:4px',
+      'const _6="@media (min-width:48rem){._34ApswJg58{padding-top:8px}._0NZneVJg58{padding-right:8px}._0jj4l6Jg58{padding-bottom:8px}._4af1G0Jg58{padding-left:8px}}";',
+      'const _5="@container id (width > 100px){._1hIcazUNDJ{padding-top:4px}._3pZtLrUNDJ{padding-right:4px}._2IBldfUNDJ{padding-bottom:4px}._4l5TLWUNDJ{padding-left:4px}}";',
+      'const _4="._2Zuz6Q4Jdh{padding-left:2px}";',
+      'const styles={root:"_0Of8r24Jdh _1Znuxb4Jdh _1wydGW4Jdh _2Zuz6Q4Jdh _1hIcazUNDJ _3pZtLrUNDJ _2IBldfUNDJ _4l5TLWUNDJ _34ApswJg58 _0NZneVJg58 _0jj4l6Jg58 _4af1G0Jg58"};',
     ]);
   });
 

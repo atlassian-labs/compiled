@@ -23,8 +23,10 @@ describe('css prop behaviour', () => {
       }} />;
     `);
 
-    expect(actual).toInclude('@media (min-width:48rem)');
-    expect(actual).toInclude('padding:8px');
+    expect(actual).toIncludeMultiple([
+      'const _="@media (min-width:48rem){._34ApswJg58{padding-top:8px}._0NZneVJg58{padding-right:8px}._0jj4l6Jg58{padding-bottom:8px}._4af1G0Jg58{padding-left:8px}}";',
+      'className={ax(["_34ApswJg58 _0NZneVJg58 _0jj4l6Jg58 _4af1G0Jg58"])}',
+    ]);
   });
 
   it('should not apply class name when no styles are present', () => {
@@ -244,7 +246,8 @@ describe('css prop behaviour', () => {
     const actual = transform(`
       import '@compiled/react';
 
-      const [color] = ['blue'];
+      const colors = getColors();
+      const [color] = colors;
       <div style={{ display: 'block' }} css={{ color: \`\${color}\` }}>hello world</div>
     `);
 
