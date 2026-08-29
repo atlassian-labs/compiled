@@ -9,6 +9,32 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
   const transform = (code: string, opts: TransformOptions = {}) =>
     transformCode(code, { pretty: false, ...opts });
 
+  it('should support satisfies expressions in computed at-rule keys', () => {
+    const actual = transform(`
+      import type { MediaAboveLg } from '@atlaskit/css/at-rules/media-above-lg';
+      import type { Container } from '@atlaskit/css/at-rules/container';
+      import { cssMap } from '@compiled/react';
+
+      const styles = cssMap({
+        root: {
+          padding: '2px',
+          ['@media (min-width: 48rem)' satisfies MediaAboveLg]: { padding: '8px' },
+          ['@container id (width > 100px)' satisfies Container]: { padding: '4px' },
+        },
+      });
+
+      ${EXAMPLE_USAGE}
+    `);
+
+    expect(actual).toIncludeMultiple([
+      'padding:2px',
+      '@media (min-width:48rem)',
+      'padding:8px',
+      '@container id (width>100px)',
+      'padding:4px',
+    ]);
+  });
+
   it('should parse a mix of at rules and the selectors object', () => {
     const actual = transform(`
       import { cssMap } from '@compiled/react';

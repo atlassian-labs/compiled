@@ -28,15 +28,20 @@ const atRules: Record<AtRules, boolean> = {
   '@view-transition': true,
 };
 
-type ObjectKeyWithLiteralValue = t.Identifier | t.StringLiteral;
+type ObjectKeyWithLiteralValue = t.Identifier | t.StringLiteral | t.TSSatisfiesExpression;
 
 export const objectKeyIsLiteralValue = (
   key: t.ObjectProperty['key']
-): key is ObjectKeyWithLiteralValue => t.isIdentifier(key) || t.isStringLiteral(key);
+): key is ObjectKeyWithLiteralValue =>
+  t.isIdentifier(key) || t.isStringLiteral(key) || t.isTSSatisfiesExpression(key);
+
+const unwrapTSSatisfiesExpression = (key: t.Expression): t.Expression =>
+  t.isTSSatisfiesExpression(key) ? unwrapTSSatisfiesExpression(key.expression) : key;
 
 export const getKeyValue = (key: ObjectKeyWithLiteralValue): string => {
-  if (t.isIdentifier(key)) return key.name;
-  else if (t.isStringLiteral(key)) return key.value;
+  const unwrappedKey = unwrapTSSatisfiesExpression(key);
+  if (t.isIdentifier(unwrappedKey)) return unwrappedKey.name;
+  else if (t.isStringLiteral(unwrappedKey)) return unwrappedKey.value;
   throw new Error(`Expected an identifier or a string literal, got type ${(key as any).type}`);
 };
 

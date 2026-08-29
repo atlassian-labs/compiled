@@ -13,6 +13,20 @@ describe('css prop behaviour', () => {
   const transform = (code: string, opts: TransformOptions = {}) =>
     transformCode(code, { pretty: false, ...opts });
 
+  it('should support satisfies expressions in computed at-rule keys', () => {
+    const actual = transform(`
+      import type { MediaAboveSm } from '@atlaskit/css/at-rules/media-above-sm';
+      import '@compiled/react';
+
+      <div css={{
+        ['@media (min-width: 48rem)' satisfies MediaAboveSm]: { padding: '8px' },
+      }} />;
+    `);
+
+    expect(actual).toInclude('@media (min-width:48rem)');
+    expect(actual).toInclude('padding:8px');
+  });
+
   it('should not apply class name when no styles are present', () => {
     const actual = transform(`
       import '@compiled/react';
