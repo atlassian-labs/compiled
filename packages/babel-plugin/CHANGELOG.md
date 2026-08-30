@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 3.0.1
+
+### Patch Changes
+
+- ab8ddc1: Support TypeScript `satisfies` expressions in computed CSS object keys.
+
 ## 3.0.0
 
 ### Patch Changes
