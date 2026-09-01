@@ -8,6 +8,7 @@ import { sort } from '@compiled/css';
 import { DEFAULT_IMPORT_SOURCES, DEFAULT_PARSER_BABEL_PLUGINS, toBoolean } from '@compiled/utils';
 import type { OutputAsset, OutputBundle } from 'rollup';
 
+import { createDevCssHooks, isCompiledCssRequest } from './dev-css.js';
 import type { PluginOptions } from './types';
 import { createDefaultResolver } from './utils.js';
 
@@ -76,6 +77,12 @@ function compiled(userOptions: PluginOptions = {}): any {
     ...userOptions,
   };
 
+  const sortCompiledCss = (css: string): string =>
+    sort(css, {
+      sortAtRulesEnabled: options.sortAtRules,
+      sortShorthandEnabled: options.sortShorthand,
+    });
+
   // Storage for collected style rules during transformation
   // Map of filePath → array of style rules (in source order from the babel
   // transform). We sort by filePath at extraction time for cross-file
@@ -89,11 +96,41 @@ function compiled(userOptions: PluginOptions = {}): any {
   // Name used for the extracted CSS asset
   const EXTRACTED_CSS_NAME = 'compiled-extracted.css';
 
+  // Local source normally relies on the Compiled runtime in development. Keep
+  // those atomic rules in the same stylesheet as imported `.compiled.css`
+  // modules so the cascade is deterministic across both sources.
+  const localDevCssByFile = new Map<string, string>();
+  let isDevServer = false;
+  const devCssHooks = createDevCssHooks(sortCompiledCss, (id) => localDevCssByFile.get(id));
+
   return {
+    ...devCssHooks,
     name: '@compiled/vite-plugin',
     enforce: 'pre', // Run before other plugins
 
-    async transform(code: string, id: string): Promise<any> {
+    configResolved(config: { base: string; command: string }) {
+      isDevServer = config.command === 'serve';
+      devCssHooks.configResolved(config);
+    },
+
+    async transform(code: string, id: string, transformOptions?: { ssr?: boolean }): Promise<any> {
+      const isClientDevTransform = isDevServer && !transformOptions?.ssr;
+
+      if (isClientDevTransform && isCompiledCssRequest(id) && code.includes('._')) {
+        try {
+          return {
+            code: sortCompiledCss(code),
+            map: null,
+          };
+        } catch (error) {
+          const err = error as Error;
+          this.warn({
+            message: `[@compiled/vite-plugin] Failed to sort CSS in ${id}: ${err.message}`,
+          });
+          return null;
+        }
+      }
+
       // Filter out node_modules (except for specific includes if needed)
       if (id.includes('/node_modules/@compiled/react')) {
         return null;
@@ -131,12 +168,14 @@ function compiled(userOptions: PluginOptions = {}): any {
           return null;
         }
 
-        // Disable stylesheet extraction in development mode
-        const isDevelopment = process.env.NODE_ENV === 'development';
-        const extract = options.extract && !isDevelopment;
+        // Build extraction follows the explicit option regardless of NODE_ENV.
+        // Client-side dev transforms force extraction so local rules can join
+        // the virtual stylesheet; dev SSR keeps its existing runtime behavior.
+        const extract = isClientDevTransform || (options.extract && !isDevServer);
 
-        // Transform using the Compiled Babel Plugin
-        const result = await transformFromAstAsync(ast, code, {
+        // First compile the source. Runtime stripping must be a separate
+        // transform so it can observe the JSX calls emitted by Compiled.
+        const compiledResult = await transformFromAstAsync(ast, code, {
           babelrc: false,
           configFile: false,
           sourceMaps: true,
@@ -155,34 +194,82 @@ function compiled(userOptions: PluginOptions = {}): any {
                 cache: false,
               } as BabelPluginOptions,
             ],
-            extract && [
-              '@compiled/babel-plugin-strip-runtime',
-              {
-                compiledRequireExclude: options.ssr || extract,
-                extractStylesToDirectory: options.extractStylesToDirectory,
-              } as BabelStripRuntimePluginOptions,
-            ],
           ].filter(toBoolean),
           caller: {
             name: 'compiled',
           },
         });
 
-        // Store metadata for CSS extraction if enabled
+        let result = compiledResult;
+        if (extract && compiledResult?.code) {
+          const compiledAst = await parseAsync(compiledResult.code, {
+            filename: id,
+            babelrc: false,
+            configFile: false,
+            caller: { name: 'compiled' },
+            rootMode: 'upward-optional',
+            parserOpts: {
+              plugins: options.parserBabelPlugins ?? DEFAULT_PARSER_BABEL_PLUGINS,
+            },
+          });
+
+          result = compiledAst
+            ? await transformFromAstAsync(compiledAst, compiledResult.code, {
+                babelrc: false,
+                configFile: false,
+                sourceMaps: true,
+                inputSourceMap: compiledResult.map ?? undefined,
+                filename: id,
+                plugins: [
+                  [
+                    '@compiled/babel-plugin-strip-runtime',
+                    {
+                      compiledRequireExclude: true,
+                      extractStylesToDirectory: options.extractStylesToDirectory,
+                      processJsxDev: isClientDevTransform,
+                    } as BabelStripRuntimePluginOptions,
+                  ],
+                ],
+                caller: { name: 'compiled' },
+              })
+            : compiledResult;
+        }
+
+        // Store metadata for CSS extraction if enabled. Clear the previous
+        // local value first so HMR updates that remove all styles do not keep
+        // registering stale CSS.
+        if (isClientDevTransform) {
+          localDevCssByFile.delete(id);
+        }
         if (extract && result?.metadata) {
           const metadata = result.metadata as BabelFileMetadata;
           // Collect style rules from this file, keyed by filePath for
           // cross-file deterministic ordering at extraction time.
           if (metadata.styleRules && metadata.styleRules.length > 0) {
             collectedStyleRulesByFile.set(id, metadata.styleRules.slice());
+            if (isClientDevTransform) {
+              localDevCssByFile.set(id, metadata.styleRules.join('\n'));
+            }
           }
         }
 
         // Return transformed code and source map
         if (result?.code) {
+          const localCssImport =
+            isClientDevTransform && localDevCssByFile.has(id)
+              ? `import ${JSON.stringify(
+                  `virtual:@compiled/vite-plugin/local-css:${encodeURIComponent(id)}`
+                )};\n`
+              : '';
           return {
-            code: result.code,
-            map: result.map ?? null,
+            code: `${localCssImport}${result.code}`,
+            map:
+              localCssImport && result.map
+                ? {
+                    ...result.map,
+                    mappings: `;${result.map.mappings}`,
+                  }
+                : result.map ?? null,
           };
         }
 
@@ -199,8 +286,7 @@ function compiled(userOptions: PluginOptions = {}): any {
 
     generateBundle(_outputOptions: any, bundle: OutputBundle) {
       // Post-process CSS assets to apply Compiled's sorting and deduplication
-      const isDevelopment = process.env.NODE_ENV === 'development';
-      const extract = options.extract && !isDevelopment;
+      const extract = options.extract;
 
       // Process each CSS asset in the bundle
       for (const [fileName, output] of Object.entries(bundle)) {
@@ -216,16 +302,8 @@ function compiled(userOptions: PluginOptions = {}): any {
         // This is a heuristic to identify CSS that came from .compiled.css files
         if (cssContent.includes('._')) {
           try {
-            // Apply Compiled's CSS sorting and deduplication
-            const sortConfig = {
-              sortAtRulesEnabled: options.sortAtRules,
-              sortShorthandEnabled: options.sortShorthand,
-            };
-
-            const sortedCss = sort(cssContent, sortConfig);
-
             // Update the asset with sorted CSS
-            asset.source = sortedCss;
+            asset.source = sortCompiledCss(cssContent);
           } catch (error) {
             const err = error as Error;
             this.warn({
@@ -252,19 +330,13 @@ function compiled(userOptions: PluginOptions = {}): any {
 
           // Join all rules and apply CSS sorting
           const combinedCss = allRules.join('\n');
-          const sortConfig = {
-            sortAtRulesEnabled: options.sortAtRules,
-            sortShorthandEnabled: options.sortShorthand,
-          };
-
-          const sortedCss = sort(combinedCss, sortConfig);
 
           // Emit the CSS file with content-based naming
           // Vite will add a content hash to the filename automatically
           this.emitFile({
             type: 'asset',
             name: EXTRACTED_CSS_NAME,
-            source: sortedCss,
+            source: sortCompiledCss(combinedCss),
           });
 
           // Mark that we've emitted the file so transformIndexHtml can inject it
