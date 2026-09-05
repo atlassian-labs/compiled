@@ -217,6 +217,28 @@ function App() {
 }
 ```
 
+### Dangling combinators
+
+A selector must end with something for the combinator to point at. Compiled used to emit these
+rules with the trailing combinator intact, which browsers reject, so the declarations silently
+never applied. They now fail the build.
+
+```jsx
+// Invalid — the combinator has nothing after it
+const styles = css({ '>': { marginLeft: 10 } });
+const styles = css({ '& +': { color: 'red' } });
+
+// Valid — name what the combinator selects
+const styles = css({ '> *': { marginLeft: 10 } });
+const styles = css({ '& + .sibling': { color: 'red' } });
+
+// Valid — the nested child completes the selector
+const styles = css({ '& >': { '.child': { color: 'red' } } });
+```
+
+A rule is rejected as a whole, so `css({ '.a, .b >': { color: 'red' } })` no longer emits its
+working `.a` half either.
+
 ### Other unsupported features
 
 - [Conditional CSS rules for ClassNames](https://github.com/atlassian-labs/compiled/issues/391)
