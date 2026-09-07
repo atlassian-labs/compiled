@@ -5,6 +5,7 @@ import nested from 'postcss-nested';
 import whitespace from 'postcss-normalize-whitespace';
 
 import { atomicifyRules } from './plugins/atomicify-rules';
+import { danglingCombinators } from './plugins/dangling-combinators';
 import { discardDuplicates } from './plugins/discard-duplicates';
 import { discardEmptyRules } from './plugins/discard-empty-rules';
 import { expandShorthands } from './plugins/expand-shorthands';
@@ -88,6 +89,7 @@ export const transformCss = (
       discardDuplicates(),
       discardEmptyRules(),
       parentOrphanedPseudos(),
+      danglingCombinators(),
       nested({
         bubble: [
           'container',

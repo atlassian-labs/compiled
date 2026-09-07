@@ -7,6 +7,18 @@ describe('error handling', () => {
       highlightCode: false,
     });
 
+  it('should throw a build error for a dangling combinator selector (#1751)', () => {
+    expect(() => {
+      transform(`
+        import { css } from '@compiled/react';
+
+        const styles = css({ '>': { marginLeft: 10 } });
+
+        <div css={styles} />
+      `);
+    }).toThrow("Dangling combinator '>' in selector");
+  });
+
   it('should throw when using using an invalid css node', () => {
     expect(() => {
       transform(`
