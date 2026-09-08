@@ -1,0 +1,13 @@
+@media (min-width: 48rem) {
+  ._media {
+    display: grid;
+  }
+}
+
+._weight {
+  font-weight: 700;
+}
+
+._border-width {
+  border-width: 1px;
+}

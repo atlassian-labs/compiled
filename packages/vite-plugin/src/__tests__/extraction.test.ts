@@ -127,7 +127,7 @@ describe('CSS Extraction', () => {
       expect(emittedFiles.length).toBe(0);
     });
 
-    it('should not emit CSS file in development mode', async () => {
+    it('should honor explicit extraction independently of NODE_ENV', async () => {
       process.env.NODE_ENV = 'development';
       const plugin = compiledVitePlugin({ extract: true, collisionResistantHash: true });
       const emittedFiles: any[] = [];
@@ -147,7 +147,11 @@ describe('CSS Extraction', () => {
 
       await plugin.generateBundle.call(context, {}, {});
 
-      expect(emittedFiles.length).toBe(0);
+      expect(emittedFiles.length).toBe(1);
+      expect(emittedFiles[0]).toMatchObject({
+        name: 'compiled-extracted.css',
+        type: 'asset',
+      });
     });
 
     it('should apply sorting and deduplication to CSS assets containing Compiled styles', async () => {

@@ -87,8 +87,11 @@ export const removeStyleDeclarations = (
     return;
   }
 
-  if (isAutomaticRuntime(node, 'jsx')) {
-    // We've found something that looks like _jsx(CS)
+  if (
+    isAutomaticRuntime(node, 'jsx') ||
+    (pass.opts.processJsxDev && isAutomaticRuntime(node, 'jsxDEV'))
+  ) {
+    // We've found something that looks like _jsx(CS) or _jsxDEV(CS)
     const [styles] = getJsxRuntimeChildren(node);
 
     if (t.isArrayExpression(styles)) {

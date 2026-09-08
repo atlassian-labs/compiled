@@ -9,7 +9,7 @@ import * as t from '@babel/types';
  */
 export const isAutomaticRuntime = (
   node: t.Node,
-  func: 'jsx' | 'jsxs'
+  func: 'jsx' | 'jsxs' | 'jsxDEV'
 ): node is t.CallExpression => {
   if (t.isCallExpression(node) && t.isIdentifier(node.callee) && node.callee.name === `_${func}`) {
     return true;

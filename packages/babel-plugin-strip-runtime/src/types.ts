@@ -22,6 +22,12 @@ export interface PluginOptions {
   compiledRequireExclude?: boolean;
 
   /**
+   * Whether to process calls emitted by React's development JSX transform.
+   * Defaults to `false`.
+   */
+  processJsxDev?: boolean;
+
+  /**
    * When set, extract styles to an external CSS file
    */
   extractStylesToDirectory?: { source: string; dest: string };
