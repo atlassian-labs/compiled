@@ -1,5 +1,11 @@
 # @compiled/babel-plugin
 
+## 3.0.2
+
+### Patch Changes
+
+- 05b6fc7: Support TypeScript `satisfies` expressions during static CSS evaluation, including `cssMap` values, nested values, and member access through satisfies-wrapped bindings.
+
 ## 3.0.1
 
 ### Patch Changes
