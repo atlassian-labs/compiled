@@ -29,6 +29,17 @@ describe('css prop behaviour', () => {
     ]);
   });
 
+  it('should resolve member expressions through satisfies expressions', () => {
+    const actual = transform(`
+      import '@compiled/react';
+
+      const theme = { colors: { text: 'red' } } satisfies Theme;
+      <div css={{ color: theme.colors.text }} />;
+    `);
+
+    expect(actual).toInclude('color:red');
+  });
+
   it('should not apply class name when no styles are present', () => {
     const actual = transform(`
       import '@compiled/react';

@@ -128,8 +128,13 @@ export const evaluateExpression = (
   let value: t.Node | undefined | null = undefined;
   let updatedMeta: Metadata = meta;
 
-  // TypeScript AST nodes can be skipped as we don't care about types
-  const targetExpression = t.isTSAsExpression(expression) ? expression.expression : expression;
+  // TypeScript AST nodes can be skipped as we don't care about types. Recursively
+  // unwrap them so a `satisfies` expression can be evaluated just like its value.
+  const unwrapTypeScriptExpression = (node: t.Expression): t.Expression =>
+    t.isTSAsExpression(node) || t.isTSSatisfiesExpression(node)
+      ? unwrapTypeScriptExpression(node.expression)
+      : node;
+  const targetExpression = unwrapTypeScriptExpression(expression);
 
   // --------------
   // NOTE: We are recursively calling evaluateExpression() which is then going to try and evaluate it
