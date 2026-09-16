@@ -6,6 +6,157 @@ describe('compiledVitePlugin', () => {
 
     expect(plugin.name).toBe('@compiled/vite-plugin');
     expect(plugin.enforce).toBe('pre');
+    expect(Array.isArray(plugin)).toBe(false);
+  });
+
+  it('only proxies client-side script imports while serving', async () => {
+    const plugin: any = compiledVitePlugin();
+    const context = {
+      resolve: jest.fn().mockResolvedValue({
+        id: '/project/styles.compiled.css',
+      }),
+    };
+    const resolveOptions = {
+      attributes: {},
+      isEntry: false,
+    };
+
+    plugin.configResolved({ base: '/', command: 'serve' });
+
+    const proxyId = await plugin.resolveId.call(
+      context,
+      './styles.compiled.css',
+      '/project/entry.ts',
+      resolveOptions
+    );
+    expect(proxyId).toMatch(/^\0virtual:@compiled\/vite-plugin\/css-proxy:.*\.js$/);
+    expect(context.resolve).toHaveBeenCalledWith(
+      './styles.compiled.css',
+      '/project/entry.ts',
+      expect.objectContaining({ skipSelf: true })
+    );
+
+    await expect(
+      plugin.resolveId.call(context, './styles.compiled.css', '/project/entry.ts', {
+        ...resolveOptions,
+        ssr: true,
+      })
+    ).resolves.toBeNull();
+    await expect(
+      plugin.resolveId.call(context, './styles.compiled.css', '/project/entry.ts', {
+        ...resolveOptions,
+        scan: true,
+      })
+    ).resolves.toBeNull();
+    await expect(
+      plugin.resolveId.call(
+        context,
+        './styles.compiled.css',
+        '/project/importer.css',
+        resolveOptions
+      )
+    ).resolves.toBeNull();
+    await expect(
+      plugin.resolveId.call(
+        context,
+        './styles.compiled.css?inline',
+        '/project/entry.ts',
+        resolveOptions
+      )
+    ).resolves.toBeNull();
+
+    plugin.configResolved({ base: '/', command: 'build' });
+    await expect(
+      plugin.resolveId.call(context, './styles.compiled.css', '/project/entry.ts', resolveOptions)
+    ).resolves.toBeNull();
+  });
+
+  it('registers local development rules with the sorted stylesheet', async () => {
+    const plugin: any = compiledVitePlugin();
+    const resolveOptions = { attributes: {}, isEntry: false };
+    const context = { resolve: jest.fn() };
+    const id = '/project/local.tsx';
+    const code = `
+      import { css } from '@compiled/react';
+      export const Component = () => <div css={css({ display: 'flex' })} />;
+    `;
+
+    plugin.configResolved({ base: '/', command: 'serve' });
+    const result = await plugin.transform!(code, id);
+
+    expect(result.code).toContain('virtual:@compiled/vite-plugin/local-css:');
+    expect(result.code).not.toContain('CS');
+    expect(result.map.sourcesContent).toEqual([code]);
+    expect(result.map.mappings).toMatch(/^;/);
+
+    const source = result.code.match(/"(virtual:@compiled\/vite-plugin\/local-css:[^"]+)"/)?.[1];
+    expect(source).toBeDefined();
+    const virtualId = await plugin.resolveId.call(context, source, id, resolveOptions);
+    const module = plugin.load(virtualId);
+
+    expect(module).toContain('registerCompiledCss');
+    expect(module).toContain('unregisterCompiledCss');
+    expect(module).toContain('import.meta.hot.prune');
+    expect(module).toContain('display:flex');
+
+    const resultWithoutStyles = await plugin.transform!(
+      `
+        import { css } from '@compiled/react';
+        export const Component = () => <div />;
+      `,
+      id
+    );
+
+    expect(resultWithoutStyles.code).not.toContain('virtual:@compiled/vite-plugin/local-css:');
+    expect(plugin.load(virtualId)).toBeNull();
+  });
+
+  it('invalidates local development CSS before a hot update re-transforms its source', async () => {
+    const plugin: any = compiledVitePlugin();
+    const file = '/project/local.tsx';
+    const timestamp = 1_725_000_000_000;
+
+    plugin.configResolved({ base: '/', command: 'serve' });
+    const result = await plugin.transform!(
+      `
+        import { css } from '@compiled/react';
+        export const Component = () => <div css={css({ display: 'flex' })} />;
+      `,
+      file
+    );
+    const source = result.code.match(/"(virtual:@compiled\/vite-plugin\/local-css:[^"]+)"/)?.[1];
+    const virtualId = await plugin.resolveId.call({ resolve: jest.fn() }, source, file, {
+      attributes: {},
+      isEntry: false,
+    });
+    const localCssModule = { id: virtualId };
+    const getModuleById = jest.fn().mockReturnValue(localCssModule);
+    const invalidateModule = jest.fn();
+
+    plugin.handleHotUpdate({
+      file,
+      server: { moduleGraph: { getModuleById, invalidateModule } },
+      timestamp,
+    });
+
+    expect(getModuleById).toHaveBeenCalledWith(virtualId);
+    expect(invalidateModule).toHaveBeenCalledWith(localCssModule, expect.any(Set), timestamp, true);
+  });
+
+  it('keeps dev SSR transforms on the existing runtime path', async () => {
+    const plugin: any = compiledVitePlugin();
+    const id = '/project/server.tsx';
+    const code = `
+      import { css } from '@compiled/react';
+      export const Component = () => <div css={css({ display: 'flex' })} />;
+    `;
+
+    plugin.configResolved({ base: '/', command: 'serve' });
+    const result = await plugin.transform(code, id, { ssr: true });
+
+    expect(result.code).not.toContain('virtual:@compiled/vite-plugin/local-css:');
+    expect(result.code).toContain('CC');
+    expect(result.code).toContain('CS');
   });
 
   it('should transform code with Compiled imports', async () => {
@@ -31,6 +182,58 @@ describe('compiledVitePlugin', () => {
     }
   });
 
+  it('keeps production transforms unchanged when extraction is disabled', async () => {
+    const plugin: any = compiledVitePlugin();
+    const code = `
+      import { css } from '@compiled/react';
+      export const Component = () => <div css={css({ display: 'flex' })} />;
+    `;
+
+    plugin.configResolved({ base: '/', command: 'build' });
+    const result = await plugin.transform(code, '/project/production.tsx', { ssr: false });
+
+    expect(result.code).not.toContain('virtual:@compiled/vite-plugin/local-css:');
+    expect(result.code).toContain('CC');
+    expect(result.code).toContain('CS');
+  });
+
+  it('extracts during builds independently of NODE_ENV and preserves the original source map', async () => {
+    const previousNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'test';
+
+    try {
+      const plugin: any = compiledVitePlugin({ extract: true });
+      const code = [
+        "import { css } from '@compiled/react';",
+        'export const Component = () => (',
+        "  <div css={css({ display: 'flex' })}>source map target</div>",
+        ');',
+      ].join('\n');
+      const emitFile = jest.fn();
+
+      plugin.configResolved({ base: '/', command: 'build' });
+      const result = await plugin.transform(code, '/project/extracted.tsx', { ssr: false });
+      plugin.generateBundle.call({ emitFile, warn: jest.fn() }, {}, {});
+
+      expect(result.code).not.toContain('CC');
+      expect(result.code).not.toContain('CS');
+      expect(result.map.sourcesContent).toEqual([code]);
+      expect(emitFile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'compiled-extracted.css',
+          source: expect.stringContaining('display:flex'),
+          type: 'asset',
+        })
+      );
+    } finally {
+      if (previousNodeEnv === undefined) {
+        delete process.env.NODE_ENV;
+      } else {
+        process.env.NODE_ENV = previousNodeEnv;
+      }
+    }
+  });
+
   it('should skip files without Compiled imports', async () => {
     const plugin = compiledVitePlugin();
     const code = `
@@ -51,6 +254,58 @@ describe('compiledVitePlugin', () => {
     const result = await plugin.transform!(code, 'test.css');
 
     expect(result).toBeNull();
+  });
+
+  it('should sort extracted Compiled CSS during transformation', async () => {
+    const plugin: any = compiledVitePlugin();
+    const code =
+      '@media (min-width: 768px) { ._fpol1q9b { color: blue } }' +
+      '._bbbk3bke { border-bottom-color: orange }' +
+      '._syaz1q9b { color: red }' +
+      '._bxs1q9b { border: 2px solid transparent }';
+
+    plugin.configResolved({ base: '/', command: 'serve' });
+    const result = await plugin.transform(
+      code,
+      '/node_modules/@atlaskit/example/dist/styles.compiled.css',
+      { ssr: false }
+    );
+
+    expect(result).toEqual({
+      code:
+        '._bxs1q9b { border: 2px solid transparent }' +
+        '._bbbk3bke { border-bottom-color: orange }' +
+        '._syaz1q9b { color: red }' +
+        '@media (min-width: 768px) { ._fpol1q9b { color: blue } }',
+      map: null,
+    });
+  });
+
+  it('does not sort extracted Compiled CSS outside client development transforms', async () => {
+    const plugin: any = compiledVitePlugin();
+    const code = '._syaz1q9b { color: red }';
+    const id = '/node_modules/@atlaskit/example/dist/styles.compiled.css';
+
+    plugin.configResolved({ base: '/', command: 'build' });
+    await expect(plugin.transform(code, id, { ssr: false })).resolves.toBeNull();
+
+    plugin.configResolved({ base: '/', command: 'serve' });
+    await expect(plugin.transform(code, id, { ssr: true })).resolves.toBeNull();
+  });
+
+  it('should preserve invalid extracted Compiled CSS when sorting fails', async () => {
+    const plugin: any = compiledVitePlugin();
+    const context = { warn: jest.fn() };
+    const code = '._syaz1q9b { color: red';
+    const id = '/node_modules/@atlaskit/example/dist/styles.compiled.css';
+
+    plugin.configResolved({ base: '/', command: 'serve' });
+    const result = await plugin.transform.call(context, code, id, { ssr: false });
+
+    expect(result).toBeNull();
+    expect(context.warn).toHaveBeenCalledWith({
+      message: expect.stringContaining(`Failed to sort CSS in ${id}`),
+    });
   });
 
   it('should skip node_modules/@compiled/react', async () => {
