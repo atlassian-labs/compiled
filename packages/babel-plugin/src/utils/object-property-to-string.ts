@@ -6,6 +6,11 @@ import { evaluateExpression } from './evaluate-expression';
 
 type ExpressionToString = (expression: t.Expression | t.PrivateName, meta: Metadata) => string;
 
+const unwrapTSSatisfiesExpression = (expression: t.Expression): t.Expression =>
+  t.isTSSatisfiesExpression(expression)
+    ? unwrapTSSatisfiesExpression(expression.expression)
+    : expression;
+
 const templateLiteralToString = (
   template: t.TemplateLiteral,
   meta: Metadata,
@@ -169,7 +174,8 @@ export const expressionToString: ExpressionToString = (expression, meta) => {
  * @param meta Metadata
  */
 export const objectPropertyToString = (prop: t.ObjectProperty, meta: Metadata): string => {
-  const { computed, key } = prop;
+  const { computed, key: propertyKey } = prop;
+  const key = t.isExpression(propertyKey) ? unwrapTSSatisfiesExpression(propertyKey) : propertyKey;
   // handles {key: 'value'}
   if (t.isIdentifier(key) && !computed) {
     return key.name;

@@ -1,5 +1,11 @@
 # @compiled/eslint-plugin
 
+## 0.20.2
+
+### Patch Changes
+
+- ea174d6: Fix TSSatisfiesExpression, TSAsExpression, and nested as const satisfies in eslint plugin
+
 ## 0.20.1
 
 ### Patch Changes

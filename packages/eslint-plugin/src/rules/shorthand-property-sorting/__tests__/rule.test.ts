@@ -7,6 +7,17 @@ const includedImports = ['@compiled/react', '@atlaskit/css'] as const;
 
 tester.run('shorthand-property-sorting', shorthandFirst, {
   valid: includedImports.flatMap((imp) => [
+    ...['satisfies string', 'as string', 'as const satisfies string'].map((assertion) => ({
+      name: `inline ${assertion} in styled callback (${imp})`,
+      code: outdent`
+        import { styled } from '${imp}';
+        const Component = styled.div<{ expanded?: boolean }>(({ expanded }) =>
+          expanded
+            ? \`width: 100%;\`
+            : \`width: \${'780px' ${assertion}};\`
+        );
+      `,
+    })),
     //
     // correct property ordering
     //
@@ -601,6 +612,32 @@ tester.run('shorthand-property-sorting', shorthandFirst, {
           ({ disableClick }) => disableClick && css({
             padding: '...',
           })
+        );
+      `,
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
+    },
+
+    ...['satisfies', 'as'].map((operator) => ({
+      name: `css inside styled callback with TypeScript ${operator}`,
+      code: outdent`
+        import { css, styled } from '@compiled/react';
+        const Component = styled.div(
+          { paddingTop: '1px' },
+          ({ active }: { active: boolean }) =>
+            (active && css({ padding: '2px' })) ${operator} unknown
+        );
+      `,
+      errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],
+    })),
+
+    {
+      name: 'css inside styled callback with nested as const satisfies',
+      code: outdent`
+        import { css, styled } from '@compiled/react';
+        const Component = styled.div(
+          { paddingTop: '1px' },
+          ({ active }: { active: boolean }) =>
+            [active && css({ padding: '2px' })] as const satisfies readonly unknown[]
         );
       `,
       errors: [{ messageId: 'shorthand-first' }, { messageId: 'shorthand-first' }],

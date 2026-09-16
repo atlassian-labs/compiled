@@ -28,7 +28,7 @@ describe('objectPropertyToString', () => {
   };
 
   const transform = (code: string) => {
-    const ast = parse(code, { sourceType: 'module' });
+    const ast = parse(code, { sourceType: 'module', plugins: ['typescript'] });
     const state: TraverseState = { result: '' };
 
     traverse(ast, testSetupVisitor, undefined, state);
@@ -62,6 +62,14 @@ describe('objectPropertyToString', () => {
       `);
 
       expect(actual).toBe(key);
+    });
+
+    it('gets key value from a satisfies expression when property is computed', () => {
+      const actual = transform(
+        `const obj = { ['@media (min-width: 48rem)' satisfies MediaAboveSm]: "value"};`
+      );
+
+      expect(actual).toBe('@media (min-width: 48rem)');
     });
   });
 
