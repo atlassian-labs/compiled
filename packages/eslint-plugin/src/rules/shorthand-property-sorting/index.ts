@@ -433,6 +433,8 @@ const parseStyled = (context: Rule.RuleContext, node: CallExpression): PropertyA
       //         ({ disableClick }) => disableClick && paddingStyles,
       //     )
       estraverse.traverse(argument, {
+        // Include parser-specific nodes, such as TypeScript's satisfies expressions.
+        keys: context.sourceCode.visitorKeys,
         enter(node) {
           const parseableTypes = [
             'Identifier',
