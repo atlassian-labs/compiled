@@ -1,5 +1,13 @@
 # @compiled/vite-plugin
 
+## 2.0.4
+
+### Patch Changes
+
+- 52913cf: Combine and sort active extracted and local Compiled styles across Vite development modules so cross-file cascade ordering matches production. Allow the Vite plugin to opt into React `jsxDEV` handling when stripping local development runtime styles.
+- Updated dependencies [52913cf]
+  - @compiled/babel-plugin-strip-runtime@3.0.3
+
 ## 2.0.3
 
 ### Patch Changes

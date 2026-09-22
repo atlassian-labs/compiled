@@ -18,10 +18,13 @@ const transform = (
     modules?: boolean;
     styleSheetPath?: string;
     compiledRequireExclude?: boolean;
+    development?: boolean;
+    processJsxDev?: boolean;
     runtime: 'automatic' | 'classic';
   }
 ): string => {
-  const { modules, styleSheetPath, compiledRequireExclude, runtime } = opts;
+  const { modules, styleSheetPath, compiledRequireExclude, development, processJsxDev, runtime } =
+    opts;
   const filename = join(__dirname, 'app.tsx');
 
   const initialFileResult = transformSync(code, {
@@ -32,7 +35,7 @@ const transform = (
     presets: [
       ['@babel/preset-env', { targets: { esmodules: true }, modules: modules ?? 'auto' }],
       '@babel/preset-typescript',
-      ['@babel/preset-react', { runtime, useBuiltIns: true }],
+      ['@babel/preset-react', { development, runtime, useBuiltIns: true }],
     ],
   });
 
@@ -44,7 +47,7 @@ const transform = (
     babelrc: false,
     configFile: false,
     filename,
-    plugins: [[stripRuntimeBabelPlugin, { styleSheetPath, compiledRequireExclude }]],
+    plugins: [[stripRuntimeBabelPlugin, { styleSheetPath, compiledRequireExclude, processJsxDev }]],
   });
 
   if (!fileResult || !fileResult.code) {
@@ -119,6 +122,34 @@ describe('babel-plugin-strip-runtime using transpiled code', () => {
           });
         "
       `);
+    });
+
+    it('leaves development transform handling disabled by default', () => {
+      const actual = transform(code, {
+        development: true,
+        runtime,
+        styleSheetPath: testStyleSheetPath,
+      });
+
+      expect(actual).toContain('jsxDEV');
+      expect(actual.match(regexToFindRequireStatements)).toBeNull();
+    });
+
+    it('extracts styles and strips the css prop runtime when development handling is enabled', () => {
+      const actual = transform(code, {
+        development: true,
+        processJsxDev: true,
+        runtime,
+        styleSheetPath: testStyleSheetPath,
+      });
+
+      expect(actual).not.toContain('CS');
+      expect(actual).not.toContain('CC');
+      expect(actual).toContain('jsxDEV');
+      expect(actual.match(regexToFindRequireStatements)).toEqual([
+        `require('${testStyleSheetPath}?style=._4ya3eErjyG%7Bfont-size%3A12px%7D');`,
+        `require('${testStyleSheetPath}?style=._1UtDYzynoA%7Bcolor%3Ablue%7D');`,
+      ]);
     });
   });
 
