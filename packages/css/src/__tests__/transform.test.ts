@@ -11,6 +11,36 @@ const transformCss = (
 ) => transform(code, opts, localOpts);
 
 describe('#css-transform', () => {
+  it('should throw a build error for a dangling combinator instead of emitting an invalid selector', () => {
+    expect(() =>
+      transformCss(`
+        > {
+          margin-left: 10px;
+        }
+      `)
+    ).toThrow("Dangling combinator '>' in selector '>'");
+
+    expect(() =>
+      transformCss(`
+        &:hover + {
+          color: red;
+        }
+      `)
+    ).toThrow("Dangling combinator '+' in selector '&:hover +'");
+  });
+
+  it('should not treat a combinator completed by a nested child as dangling', () => {
+    const { sheets } = transformCss(`
+      > {
+        .child {
+          color: red;
+        }
+      }
+    `);
+
+    expect(sheets.join('')).toInclude('>.child{color:red}');
+  });
+
   it('should generate the same selectors even if white space is different', () => {
     const { sheets: actualOne } = transformCss(`
       >   :first-child {
