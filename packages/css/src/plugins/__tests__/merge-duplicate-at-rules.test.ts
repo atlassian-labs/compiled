@@ -36,4 +36,112 @@ describe('discard duplicate at-rule children plugin', () => {
           "
     `);
   });
+
+  it('should move merged top-level at-rules after regular rules', () => {
+    const actual = transform`
+      @media (min-width:500px) { color: red; }
+      .default { color: blue; }
+      @media (min-width:500px) { background: white; }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+            .default { color: blue; }
+            @media (min-width:500px) { color: red; background: white; }
+          "
+    `);
+  });
+
+  it('should remove duplicate children from nested at-rules', () => {
+    const actual = transform`
+      @supports not (height: 1lh) {
+        @media (min-width:500px) {
+          color: red;
+          color: green;
+        }
+      }
+
+      @supports not (height: 1lh) {
+        @media (min-width:500px) {
+          color: red;
+          color: blue;
+        }
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+            @supports not (height: 1lh) {
+              @media (min-width:500px) {
+                color: red;
+                color: green;
+                color: blue;
+              }
+            }
+          "
+    `);
+  });
+
+  it('should keep nested at-rules scoped to their parent conditions', () => {
+    const actual = transform`
+      @supports (display: grid) {
+        @media (min-width:500px) {
+          color: red;
+        }
+      }
+
+      @supports (display: flex) {
+        @media (min-width:500px) {
+          color: blue;
+        }
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+            @supports (display: grid) {
+              @media (min-width:500px) {
+                color: red;
+              }
+            }
+            @supports (display: flex) {
+              @media (min-width:500px) {
+                color: blue;
+              }
+            }
+          "
+    `);
+  });
+
+  it('should preserve nested non-atomic at-rules', () => {
+    const actual = transform`
+      @supports (display: grid) {
+        @media (min-width:500px) {
+          .cc-first { color: red; }
+        }
+      }
+
+      @supports (display: grid) {
+        @media (min-width:500px) {
+          .cc-second { color: blue; }
+        }
+      }
+    `;
+
+    expect(actual).toMatchInlineSnapshot(`
+      "
+            @supports (display: grid) {
+              @media (min-width:500px) {
+                .cc-first { color: red; }
+              }
+            }
+
+            @supports (display: grid) {
+              @media (min-width:500px) {
+                .cc-second { color: blue; }
+              }
+            }
+          "
+    `);
+  });
 });
