@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { join, basename } from 'path';
+import { join } from 'path';
 
 import { sort } from '@compiled/css';
 import { hash } from '@compiled/utils';
@@ -138,7 +138,7 @@ export default new Optimizer<ParcelOptimizerOpts, unknown>({
         await outputFS.mkdirp(distDir);
       }
 
-      const cssFileName = basename(bundle.displayName, '.html') + '.' + hash(stylesheet) + '.css';
+      const cssFileName = 'compiled.' + hash(stylesheet) + '.css';
 
       await outputFS.writeFile(
         join(distDir, cssFileName),
