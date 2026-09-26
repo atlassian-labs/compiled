@@ -2,9 +2,9 @@ import postcss from 'postcss';
 
 import { sortStyleSheet } from '../sort-style-sheet';
 
-const transform = (css: string) => {
+const transform = (css: string, sortAtRulesEnabled?: boolean) => {
   const result = postcss([
-    sortStyleSheet({ sortAtRulesEnabled: undefined, sortShorthandEnabled: undefined }),
+    sortStyleSheet({ sortAtRulesEnabled, sortShorthandEnabled: undefined }),
   ]).process(css, {
     from: undefined,
   });
@@ -889,6 +889,140 @@ describe('sort at-rules', () => {
                 }
                 @supports not (height: 1lh) {
                   height: 1lh;
+                }
+              "
+      `);
+    });
+
+    it('should sort media queries nested inside another at-rule', () => {
+      const actual = transform(`
+        @supports not (height: 1lh) {
+          color: red;
+          @media (prefers-reduced-motion: no-preference) and (width > 1500px) {
+            color: blue;
+          }
+          @media (prefers-reduced-motion: no-preference) {
+            color: green;
+          }
+        }
+      `);
+
+      expect(actual).toMatchInlineSnapshot(`
+        "@supports not (height: 1lh) {
+                  color: red;
+                  @media (prefers-reduced-motion: no-preference) {
+                    color: green;
+                  }
+                  @media (prefers-reduced-motion: no-preference) and (width > 1500px) {
+                    color: blue;
+                  }
+                }
+              "
+      `);
+    });
+
+    it('should sort media queries nested three levels deep', () => {
+      const actual = transform(`
+        @layer l {
+          @supports (display: grid) {
+            @media (min-width: 400px) {
+              color: green;
+            }
+            @media (min-width: 200px) {
+              color: blue;
+            }
+          }
+        }
+      `);
+
+      expect(actual).toMatchInlineSnapshot(`
+        "@layer l {
+                  @supports (display: grid) {
+                    @media (min-width: 200px) {
+                      color: blue;
+                    }
+                    @media (min-width: 400px) {
+                      color: green;
+                    }
+                  }
+                }
+              "
+      `);
+    });
+
+    it('should sort media queries nested inside a plain rule', () => {
+      const actual = transform(`
+        .foo {
+          @media (min-width: 400px) {
+            color: green;
+          }
+          @media (min-width: 200px) {
+            color: blue;
+          }
+        }
+      `);
+
+      expect(actual).toMatchInlineSnapshot(`
+        ".foo {
+                  @media (min-width: 200px) {
+                    color: blue;
+                  }
+                  @media (min-width: 400px) {
+                    color: green;
+                  }
+                }
+              "
+      `);
+    });
+
+    it('should preserve nested media query source order when at-rule sorting is disabled', () => {
+      const actual = transform(
+        `
+          @supports (display: grid) {
+            @media (min-width: 400px) {
+              color: green;
+            }
+            @media (min-width: 200px) {
+              color: blue;
+            }
+          }
+        `,
+        false
+      );
+
+      expect(actual).toMatchInlineSnapshot(`
+        "@supports (display: grid) {
+                    @media (min-width: 400px) {
+                      color: green;
+                    }
+                    @media (min-width: 200px) {
+                      color: blue;
+                    }
+                  }
+                "
+      `);
+    });
+
+    it('should preserve nested media query source order in non-atomic rules', () => {
+      const actual = transform(`
+        .cc-x {
+          @media (min-width: 400px) {
+            color: green;
+          }
+          @media (min-width: 200px) {
+            color: blue;
+          }
+        }
+      `);
+
+      expect(actual).toMatchInlineSnapshot(`
+        ".cc-x {
+                  @media (min-width: 400px) {
+                    color: green;
+                  }
+                  @media (min-width: 200px) {
+                    color: blue;
+                  }
                 }
               "
       `);
