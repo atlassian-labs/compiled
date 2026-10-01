@@ -26,6 +26,6 @@
     "razzle": "^4.2.18",
     "razzle-dev-utils": "^4.2.18",
     "webpack": "^5.76.1",
-    "webpack-dev-server": "^4.11.1"
+    "webpack-dev-server": "^5.0.0"
   }
 }
