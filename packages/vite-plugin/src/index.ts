@@ -65,19 +65,56 @@ const withCompiledCssChunk = (manualChunks: unknown): ManualChunks => {
 };
 
 /**
+ * Adds the `compiled-css` group to Rolldown's `codeSplitting` option (Vite 8+), which
+ * makes Rolldown ignore `manualChunks` whenever it is set. Groups are matched by
+ * priority, so ours wins over the user's own groups for `.compiled.css` modules.
+ */
+const withCompiledCssGroup = (codeSplitting: unknown): unknown => {
+  if (codeSplitting === false) {
+    throw new Error(
+      '[@compiled/vite-plugin] `sortOnlyCompiledCss` cannot be combined with `codeSplitting: false`.'
+    );
+  }
+
+  const group = {
+    name: COMPILED_CSS_CHUNK_NAME,
+    test: /\.compiled\.css(?:$|\?)/,
+    priority: Number.MAX_SAFE_INTEGER,
+  };
+  const existing = typeof codeSplitting === 'object' && codeSplitting ? codeSplitting : {};
+
+  return { ...existing, groups: [group, ...((existing as any).groups ?? [])] };
+};
+
+/**
  * Mutates the user's Vite config in place. Returning an object instead would let Vite
- * concatenate an `output` array with ours rather than replace it.
+ * concatenate an `output` array with ours rather than replace it. Vite 8 (Rolldown) accepts
+ * `rolldownOptions` as well as `rollupOptions`, so whichever the user set is edited.
  */
 const groupCompiledCssIntoChunk = (userConfig: any): void => {
   userConfig.build ??= {};
-  userConfig.build.rollupOptions ??= {};
-  const rollupOptions = userConfig.build.rollupOptions;
-  const outputs = Array.isArray(rollupOptions.output)
-    ? rollupOptions.output
-    : [(rollupOptions.output ??= {})];
+  const containers = ['rollupOptions', 'rolldownOptions']
+    .map((key) => userConfig.build[key])
+    .filter(Boolean);
 
-  for (const output of outputs) {
-    output.manualChunks = withCompiledCssChunk(output.manualChunks);
+  if (containers.length === 0) {
+    containers.push((userConfig.build.rollupOptions = {}));
+  }
+
+  for (const container of containers) {
+    const outputs = Array.isArray(container.output)
+      ? container.output
+      : [(container.output ??= {})];
+
+    for (const output of outputs) {
+      const key = ['codeSplitting', 'advancedChunks'].find((name) => output[name] !== undefined);
+
+      if (key) {
+        output[key] = withCompiledCssGroup(output[key]);
+      } else {
+        output.manualChunks = withCompiledCssChunk(output.manualChunks);
+      }
+    }
   }
 };
 
