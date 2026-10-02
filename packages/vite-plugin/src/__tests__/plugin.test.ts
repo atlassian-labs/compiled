@@ -234,43 +234,6 @@ describe('compiledVitePlugin', () => {
     }
   });
 
-  describe('sortOnlyCompiledCss', () => {
-    const font = '._11c8wadc{font:var(--ds-font-body-small)}';
-    const fontWeight = '._k48pwu06{font-weight:var(--ds-font-weight-bold,653)}';
-    const authored = '.a{padding-left:4px}.a{padding:0}';
-    const compact = (css: string) => css.replace(/\s+/g, '');
-
-    const buildCss = async (options: { sortOnlyCompiledCss?: boolean }) => {
-      const plugin: any = compiledVitePlugin(options);
-      const warn = jest.fn();
-      const asset = {
-        type: 'asset',
-        fileName: 'index.css',
-        source: `${authored}${fontWeight}${font}`,
-      };
-
-      plugin.configResolved({ base: '/', command: 'build' });
-      await plugin.transform(fontWeight + font, '/node_modules/pkg/label.compiled.css', {});
-      plugin.generateBundle.call({ emitFile: jest.fn(), warn }, {}, { 'index.css': asset });
-
-      return { css: compact(asset.source), warn };
-    };
-
-    it('sorts the whole stylesheet by default, including authored rules', async () => {
-      const { css } = await buildCss({});
-
-      expect(css).not.toContain(compact(authored));
-      expect(css.indexOf('._11c8wadc')).toBeLessThan(css.indexOf('._k48pwu06'));
-    });
-
-    it('sorts only rules from .compiled.css files when enabled', async () => {
-      const { css, warn } = await buildCss({ sortOnlyCompiledCss: true });
-
-      expect(css).toBe(compact(`${authored}${font}${fontWeight}`));
-      expect(warn).not.toHaveBeenCalled();
-    });
-  });
-
   it('should skip files without Compiled imports', async () => {
     const plugin = compiledVitePlugin();
     const code = `

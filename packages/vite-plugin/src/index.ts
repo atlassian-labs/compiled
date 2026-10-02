@@ -9,7 +9,6 @@ import { DEFAULT_IMPORT_SOURCES, DEFAULT_PARSER_BABEL_PLUGINS, toBoolean } from 
 import type { OutputAsset, OutputBundle } from 'rollup';
 
 import { createDevCssHooks, isCompiledCssRequest } from './dev-css.js';
-import { collectAtomicClassNames, sortAtomicRulesOnly } from './scoped-sort.js';
 import type { PluginOptions } from './types';
 import { createDefaultResolver } from './utils.js';
 
@@ -39,6 +38,47 @@ const sortStyleRulesForDeterministicOutput = (styleRules: string[]): string[] =>
   }
   atomicRules.sort();
   return [...nonAtomicRules, ...atomicRules];
+};
+
+/**
+ * Name of the chunk that all `.compiled.css` modules are grouped into when
+ * `sortOnlyCompiledCss` is enabled, so their CSS is emitted as its own asset.
+ */
+const COMPILED_CSS_CHUNK_NAME = 'compiled-css';
+
+type ManualChunks = ((id: string, meta: unknown) => string | null | undefined | void) | undefined;
+
+/**
+ * Wraps `manualChunks` so every `.compiled.css` module goes into the `compiled-css`
+ * chunk and everything else keeps the chunking the user configured.
+ */
+const withCompiledCssChunk = (manualChunks: unknown): ManualChunks => {
+  if (manualChunks && typeof manualChunks !== 'function') {
+    throw new Error(
+      '[@compiled/vite-plugin] `sortOnlyCompiledCss` cannot be combined with an object-form `build.rollupOptions.output.manualChunks`. Use the function form instead.'
+    );
+  }
+
+  const existing = manualChunks as ManualChunks;
+
+  return (id, meta) => (isCompiledCssRequest(id) ? COMPILED_CSS_CHUNK_NAME : existing?.(id, meta));
+};
+
+/**
+ * Mutates the user's Vite config in place. Returning an object instead would let Vite
+ * concatenate an `output` array with ours rather than replace it.
+ */
+const groupCompiledCssIntoChunk = (userConfig: any): void => {
+  userConfig.build ??= {};
+  userConfig.build.rollupOptions ??= {};
+  const rollupOptions = userConfig.build.rollupOptions;
+  const outputs = Array.isArray(rollupOptions.output)
+    ? rollupOptions.output
+    : [(rollupOptions.output ??= {})];
+
+  for (const output of outputs) {
+    output.manualChunks = withCompiledCssChunk(output.manualChunks);
+  }
 };
 
 /**
@@ -85,10 +125,6 @@ function compiled(userOptions: PluginOptions = {}): any {
       sortShorthandEnabled: options.sortShorthand,
     });
 
-  // Class names declared by imported `.compiled.css` files, used to tell their rules
-  // apart from other CSS when `sortOnlyCompiledCss` is enabled.
-  const compiledCssClassNames = new Set<string>();
-
   // Storage for collected style rules during transformation
   // Map of filePath → array of style rules (in source order from the babel
   // transform). We sort by filePath at extraction time for cross-file
@@ -114,6 +150,12 @@ function compiled(userOptions: PluginOptions = {}): any {
     name: '@compiled/vite-plugin',
     enforce: 'pre', // Run before other plugins
 
+    config(userConfig: any, env: { command: string }) {
+      if (options.sortOnlyCompiledCss && env.command === 'build') {
+        groupCompiledCssIntoChunk(userConfig);
+      }
+    },
+
     configResolved(config: { base: string; command: string }) {
       isDevServer = config.command === 'serve';
       devCssHooks.configResolved(config);
@@ -121,10 +163,6 @@ function compiled(userOptions: PluginOptions = {}): any {
 
     async transform(code: string, id: string, transformOptions?: { ssr?: boolean }): Promise<any> {
       const isClientDevTransform = isDevServer && !transformOptions?.ssr;
-
-      if (options.sortOnlyCompiledCss && isCompiledCssRequest(id)) {
-        collectAtomicClassNames(code, compiledCssClassNames);
-      }
 
       if (isClientDevTransform && isCompiledCssRequest(id) && code.includes('._')) {
         try {
@@ -298,6 +336,19 @@ function compiled(userOptions: PluginOptions = {}): any {
       // Post-process CSS assets to apply Compiled's sorting and deduplication
       const extract = options.extract;
 
+      // With `sortOnlyCompiledCss`, only CSS emitted from the `compiled-css` chunk (the
+      // `.compiled.css` modules) is sorted; other CSS keeps its order.
+      const compiledCssAssets = new Set<string>();
+      if (options.sortOnlyCompiledCss) {
+        for (const output of Object.values(bundle)) {
+          if (output.type === 'chunk' && output.name === COMPILED_CSS_CHUNK_NAME) {
+            (output as any).viteMetadata?.importedCss?.forEach((name: string) =>
+              compiledCssAssets.add(name)
+            );
+          }
+        }
+      }
+
       // Process each CSS asset in the bundle
       for (const [fileName, output] of Object.entries(bundle)) {
         // Only process CSS assets
@@ -309,14 +360,16 @@ function compiled(userOptions: PluginOptions = {}): any {
         const cssContent = asset.source as string;
 
         // By default, any CSS containing Compiled atomic classes (starting with an
-        // underscore) is sorted as a whole. With `sortOnlyCompiledCss`, only the rules
-        // that came from `.compiled.css` files are sorted.
-        if (options.sortOnlyCompiledCss || cssContent.includes('._')) {
+        // underscore) is sorted. This is a heuristic to identify CSS that came from
+        // .compiled.css files.
+        const shouldSort = options.sortOnlyCompiledCss
+          ? compiledCssAssets.has(fileName)
+          : cssContent.includes('._');
+
+        if (shouldSort) {
           try {
             // Update the asset with sorted CSS
-            asset.source = options.sortOnlyCompiledCss
-              ? sortAtomicRulesOnly(cssContent, compiledCssClassNames, sortCompiledCss)
-              : sortCompiledCss(cssContent);
+            asset.source = sortCompiledCss(cssContent);
           } catch (error) {
             const err = error as Error;
             this.warn({
