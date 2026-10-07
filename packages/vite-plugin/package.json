@@ -33,7 +33,8 @@
     "@compiled/babel-plugin-strip-runtime": "^3.0.3",
     "@compiled/css": "^3.0.0",
     "@compiled/utils": "^0.14.0",
-    "enhanced-resolve": "^5.18.1"
+    "enhanced-resolve": "^5.18.1",
+    "postcss": "^8.4.31"
   },
   "devDependencies": {
     "@compiled/react": "^2.0.0",

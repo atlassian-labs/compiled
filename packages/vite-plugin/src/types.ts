@@ -41,4 +41,13 @@ export interface PluginOptions extends BabelPluginOptions {
    * Defaults to `true`.
    */
   sortShorthand?: boolean;
+
+  /**
+   * Sort only the rules that came from imported `.compiled.css` files, instead of
+   * every CSS asset that contains Compiled atomic classes. Other rules, such as CSS
+   * modules and global styles, keep their order. The sorted rules are placed together
+   * where the first of them was.
+   * Defaults to `false`.
+   */
+  sortOnlyCompiledCss?: boolean;
 }

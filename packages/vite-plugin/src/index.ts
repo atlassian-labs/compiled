@@ -9,6 +9,7 @@ import { DEFAULT_IMPORT_SOURCES, DEFAULT_PARSER_BABEL_PLUGINS, toBoolean } from 
 import type { OutputAsset, OutputBundle } from 'rollup';
 
 import { createDevCssHooks, isCompiledCssRequest } from './dev-css.js';
+import { collectAtomicClassNames, sortAtomicRulesOnly } from './scoped-sort.js';
 import type { PluginOptions } from './types';
 import { createDefaultResolver } from './utils.js';
 
@@ -57,6 +58,7 @@ function compiled(userOptions: PluginOptions = {}): any {
     ssr: false,
     extractStylesToDirectory: undefined,
     sortShorthand: true,
+    sortOnlyCompiledCss: false,
 
     // Babel-inherited
     importReact: true,
@@ -82,6 +84,10 @@ function compiled(userOptions: PluginOptions = {}): any {
       sortAtRulesEnabled: options.sortAtRules,
       sortShorthandEnabled: options.sortShorthand,
     });
+
+  // Class names declared by imported `.compiled.css` files, used to tell their rules
+  // apart from other CSS when `sortOnlyCompiledCss` is enabled.
+  const compiledCssClassNames = new Set<string>();
 
   // Storage for collected style rules during transformation
   // Map of filePath → array of style rules (in source order from the babel
@@ -115,6 +121,10 @@ function compiled(userOptions: PluginOptions = {}): any {
 
     async transform(code: string, id: string, transformOptions?: { ssr?: boolean }): Promise<any> {
       const isClientDevTransform = isDevServer && !transformOptions?.ssr;
+
+      if (options.sortOnlyCompiledCss && isCompiledCssRequest(id)) {
+        collectAtomicClassNames(code, compiledCssClassNames);
+      }
 
       if (isClientDevTransform && isCompiledCssRequest(id) && code.includes('._')) {
         try {
@@ -298,12 +308,15 @@ function compiled(userOptions: PluginOptions = {}): any {
         const asset = output as OutputAsset;
         const cssContent = asset.source as string;
 
-        // Check if this CSS contains Compiled atomic classes (starts with underscore)
-        // This is a heuristic to identify CSS that came from .compiled.css files
-        if (cssContent.includes('._')) {
+        // By default, any CSS containing Compiled atomic classes (starting with an
+        // underscore) is sorted as a whole. With `sortOnlyCompiledCss`, only the rules
+        // that came from `.compiled.css` files are sorted.
+        if (options.sortOnlyCompiledCss || cssContent.includes('._')) {
           try {
             // Update the asset with sorted CSS
-            asset.source = sortCompiledCss(cssContent);
+            asset.source = options.sortOnlyCompiledCss
+              ? sortAtomicRulesOnly(cssContent, compiledCssClassNames, sortCompiledCss)
+              : sortCompiledCss(cssContent);
           } catch (error) {
             const err = error as Error;
             this.warn({
