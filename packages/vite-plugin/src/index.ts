@@ -41,6 +41,84 @@ const sortStyleRulesForDeterministicOutput = (styleRules: string[]): string[] =>
 };
 
 /**
+ * Name of the chunk that all `.compiled.css` modules are grouped into when
+ * `sortOnlyCompiledCss` is enabled, so their CSS is emitted as its own asset.
+ */
+const COMPILED_CSS_CHUNK_NAME = 'compiled-css';
+
+type ManualChunks = ((id: string, meta: unknown) => string | null | undefined | void) | undefined;
+
+/**
+ * Wraps `manualChunks` so every `.compiled.css` module goes into the `compiled-css`
+ * chunk and everything else keeps the chunking the user configured.
+ */
+const withCompiledCssChunk = (manualChunks: unknown): ManualChunks => {
+  if (manualChunks && typeof manualChunks !== 'function') {
+    throw new Error(
+      '[@compiled/vite-plugin] `sortOnlyCompiledCss` cannot be combined with an object-form `build.rollupOptions.output.manualChunks`. Use the function form instead.'
+    );
+  }
+
+  const existing = manualChunks as ManualChunks;
+
+  return (id, meta) => (isCompiledCssRequest(id) ? COMPILED_CSS_CHUNK_NAME : existing?.(id, meta));
+};
+
+/**
+ * Adds the `compiled-css` group to Rolldown's `codeSplitting` option (Vite 8+), which
+ * makes Rolldown ignore `manualChunks` whenever it is set. Groups are matched by
+ * priority, so ours wins over the user's own groups for `.compiled.css` modules.
+ */
+const withCompiledCssGroup = (codeSplitting: unknown): unknown => {
+  if (codeSplitting === false) {
+    throw new Error(
+      '[@compiled/vite-plugin] `sortOnlyCompiledCss` cannot be combined with `codeSplitting: false`.'
+    );
+  }
+
+  const group = {
+    name: COMPILED_CSS_CHUNK_NAME,
+    test: /\.compiled\.css(?:$|\?)/,
+    priority: Number.MAX_SAFE_INTEGER,
+  };
+  const existing = typeof codeSplitting === 'object' && codeSplitting ? codeSplitting : {};
+
+  return { ...existing, groups: [group, ...((existing as any).groups ?? [])] };
+};
+
+/**
+ * Mutates the user's Vite config in place. Returning an object instead would let Vite
+ * concatenate an `output` array with ours rather than replace it. Vite 8 (Rolldown) accepts
+ * `rolldownOptions` as well as `rollupOptions`, so whichever the user set is edited.
+ */
+const groupCompiledCssIntoChunk = (userConfig: any): void => {
+  userConfig.build ??= {};
+  const containers = ['rollupOptions', 'rolldownOptions']
+    .map((key) => userConfig.build[key])
+    .filter(Boolean);
+
+  if (containers.length === 0) {
+    containers.push((userConfig.build.rollupOptions = {}));
+  }
+
+  for (const container of containers) {
+    const outputs = Array.isArray(container.output)
+      ? container.output
+      : [(container.output ??= {})];
+
+    for (const output of outputs) {
+      const key = ['codeSplitting', 'advancedChunks'].find((name) => output[name] !== undefined);
+
+      if (key) {
+        output[key] = withCompiledCssGroup(output[key]);
+      } else {
+        output.manualChunks = withCompiledCssChunk(output.manualChunks);
+      }
+    }
+  }
+};
+
+/**
  * Compiled Vite plugin.
  *
  * Transforms CSS-in-JS to atomic CSS at build time using Babel.
@@ -57,6 +135,7 @@ function compiled(userOptions: PluginOptions = {}): any {
     ssr: false,
     extractStylesToDirectory: undefined,
     sortShorthand: true,
+    sortOnlyCompiledCss: false,
 
     // Babel-inherited
     importReact: true,
@@ -107,6 +186,12 @@ function compiled(userOptions: PluginOptions = {}): any {
     ...devCssHooks,
     name: '@compiled/vite-plugin',
     enforce: 'pre', // Run before other plugins
+
+    config(userConfig: any, env: { command: string }) {
+      if (options.sortOnlyCompiledCss && env.command === 'build') {
+        groupCompiledCssIntoChunk(userConfig);
+      }
+    },
 
     configResolved(config: { base: string; command: string }) {
       isDevServer = config.command === 'serve';
@@ -288,6 +373,19 @@ function compiled(userOptions: PluginOptions = {}): any {
       // Post-process CSS assets to apply Compiled's sorting and deduplication
       const extract = options.extract;
 
+      // With `sortOnlyCompiledCss`, only CSS emitted from the `compiled-css` chunk (the
+      // `.compiled.css` modules) is sorted; other CSS keeps its order.
+      const compiledCssAssets = new Set<string>();
+      if (options.sortOnlyCompiledCss) {
+        for (const output of Object.values(bundle)) {
+          if (output.type === 'chunk' && output.name === COMPILED_CSS_CHUNK_NAME) {
+            (output as any).viteMetadata?.importedCss?.forEach((name: string) =>
+              compiledCssAssets.add(name)
+            );
+          }
+        }
+      }
+
       // Process each CSS asset in the bundle
       for (const [fileName, output] of Object.entries(bundle)) {
         // Only process CSS assets
@@ -298,9 +396,14 @@ function compiled(userOptions: PluginOptions = {}): any {
         const asset = output as OutputAsset;
         const cssContent = asset.source as string;
 
-        // Check if this CSS contains Compiled atomic classes (starts with underscore)
-        // This is a heuristic to identify CSS that came from .compiled.css files
-        if (cssContent.includes('._')) {
+        // By default, any CSS containing Compiled atomic classes (starting with an
+        // underscore) is sorted. This is a heuristic to identify CSS that came from
+        // .compiled.css files.
+        const shouldSort = options.sortOnlyCompiledCss
+          ? compiledCssAssets.has(fileName)
+          : cssContent.includes('._');
+
+        if (shouldSort) {
           try {
             // Update the asset with sorted CSS
             asset.source = sortCompiledCss(cssContent);
