@@ -30,6 +30,11 @@ const scenarios = {
     options: { sortOnlyCompiledCss: true },
     output: { manualChunks: (id) => (id.endsWith('authored.css') ? 'authored' : undefined) },
   },
+  'no-css-code-split': {
+    options: { sortOnlyCompiledCss: true },
+    output: {},
+    build: { cssCodeSplit: false },
+  },
   'object-manual-chunks': {
     options: { sortOnlyCompiledCss: true },
     output: { manualChunks: { vendor: ['react'] } },
@@ -58,6 +63,7 @@ const scenarios = {
       build: {
         write: false,
         cssMinify: false,
+        ...scenario.build,
         rollupOptions: { input: join(root, 'entry.js'), output: scenario.output },
       },
     });

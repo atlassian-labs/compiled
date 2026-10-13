@@ -56,4 +56,8 @@ describe('sortOnlyCompiledCss', () => {
       'cannot be combined with an object-form'
     );
   });
+
+  it('throws when CSS code splitting is disabled', () => {
+    expect(runBuild('no-css-code-split').error).toContain('requires `build.cssCodeSplit`');
+  });
 });

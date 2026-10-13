@@ -93,6 +93,16 @@ const withCompiledCssGroup = (codeSplitting: unknown): unknown => {
  */
 const groupCompiledCssIntoChunk = (userConfig: any): void => {
   userConfig.build ??= {};
+
+  // Vite merges all CSS into one asset without CSS code splitting (its default in
+  // library mode), leaving no separate Compiled CSS asset to sort.
+  const { cssCodeSplit, lib } = userConfig.build;
+  if (cssCodeSplit === false || (lib && cssCodeSplit === undefined)) {
+    throw new Error(
+      '[@compiled/vite-plugin] `sortOnlyCompiledCss` requires `build.cssCodeSplit` to be enabled. Remove `cssCodeSplit: false`, or set `cssCodeSplit: true` in library mode.'
+    );
+  }
+
   const containers = ['rollupOptions', 'rolldownOptions']
     .map((key) => userConfig.build[key])
     .filter(Boolean);
