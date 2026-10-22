@@ -304,6 +304,10 @@ export const resolveBinding = (
       return;
     }
 
+    // Every module read during static evaluation is a build dependency, even
+    // when evaluation continues into a nested object or another imported file.
+    meta.state.includedFiles.push(modulePath);
+
     const moduleCode = meta.state.cache.load({
       namespace: 'read-file',
       cacheKey: modulePath,
