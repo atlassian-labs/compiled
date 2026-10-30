@@ -31,7 +31,9 @@
     "@compiled/css": "^3.0.0",
     "@compiled/utils": "^0.14.0",
     "@emotion/is-prop-valid": "^1.3.1",
-    "resolve": "^1.22.12"
+    "enhanced-resolve": "^5.18.1",
+    "resolve": "^1.22.12",
+    "resolve-from": "^5.0.0"
   },
   "devDependencies": {
     "@compiled-private/module-a": "^0.1.0",

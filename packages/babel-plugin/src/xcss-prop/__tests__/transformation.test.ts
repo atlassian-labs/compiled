@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 import { transform } from '../../test-utils';
 
 describe('xcss prop transformation', () => {
@@ -77,6 +79,61 @@ describe('xcss prop transformation', () => {
         <CS>{[_]}</CS>
         {<Component xcss={styles.primary} />}
       </CC>;
+      "
+    `);
+  });
+
+  it('should resolve primitive xcss imports from package exports relative to the transformed file', () => {
+    // Use a fixture package instead of the real Atlaskit package so this test
+    // only verifies source-file-relative package resolution, not dependency setup.
+    const result = transform(
+      `
+      import { Box as AkBox, xcss as akXcss } from '@atlaskit/primitives';
+      import { media as rootMedia } from '@compiled-private/source-relative-responsive';
+      import { media as subpathMedia } from '@compiled-private/source-relative-responsive/media';
+
+      export const CheckboxList = ({ testId = 'checkbox-list' }) => (
+        <AkBox
+          xcss={akXcss({
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            flexWrap: 'wrap',
+            flexDirection: 'column',
+            [rootMedia.above.sm]: {
+              flexWrap: 'nowrap',
+            },
+            [subpathMedia.above.sm]: {
+              display: 'flex',
+            },
+          })}
+          testId={testId}
+        />
+      );
+    `,
+      { filename: join(__dirname, '__fixtures__', 'checkbox-list.jsx') }
+    );
+
+    expect(result).toMatchInlineSnapshot(`
+      "import { Box as AkBox, xcss as akXcss } from "@atlaskit/primitives";
+      import { media as rootMedia } from "@compiled-private/source-relative-responsive";
+      import { media as subpathMedia } from "@compiled-private/source-relative-responsive/media";
+      export const CheckboxList = ({ testId = "checkbox-list" }) => (
+        <AkBox
+          xcss={akXcss({
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            flexWrap: "wrap",
+            flexDirection: "column",
+            [rootMedia.above.sm]: {
+              flexWrap: "nowrap",
+            },
+            [subpathMedia.above.sm]: {
+              display: "flex",
+            },
+          })}
+          testId={testId}
+        />
+      );
       "
     `);
   });
