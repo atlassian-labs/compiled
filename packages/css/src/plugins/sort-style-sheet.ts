@@ -1,4 +1,4 @@
-import type { ChildNode, Rule, Plugin, AtRule } from 'postcss';
+import type { AtRule, ChildNode, Container, Plugin, Rule } from 'postcss';
 
 import { isNonAtomicNode } from '../utils/non-atomic';
 import { sortPseudoSelectors } from '../utils/sort-pseudo-selectors';
@@ -33,11 +33,44 @@ const sortAtRulePseudoSelectors = (atRule: AtRule) => {
   });
 };
 
+const sortNestedAtRules = (container: Container, sortAtRulesEnabled: boolean) => {
+  const atRules: AtRuleInfo[] = [];
+
+  container.each((childNode) => {
+    if (isNonAtomicNode(childNode)) {
+      return;
+    }
+
+    if (childNode.type === 'atrule') {
+      sortNestedAtRules(childNode, sortAtRulesEnabled);
+      atRules.push({
+        parsed:
+          sortAtRulesEnabled && childNode.name === 'media' ? parseMediaQuery(childNode.params) : [],
+        node: childNode,
+        atRuleName: childNode.name,
+        query: childNode.params,
+      });
+    } else if (childNode.type === 'rule') {
+      sortNestedAtRules(childNode, sortAtRulesEnabled);
+    }
+  });
+
+  if (!sortAtRulesEnabled || atRules.length < 2 || !container.nodes) {
+    return;
+  }
+
+  atRules.sort(sortAtRules);
+  let atRuleIndex = 0;
+  container.nodes = container.nodes.map((childNode) =>
+    childNode.type === 'atrule' && !isNonAtomicNode(childNode)
+      ? atRules[atRuleIndex++].node
+      : childNode
+  );
+};
+
 /**
  * PostCSS plugin for sorting pseudo-selectors (inside and outside at-rules)
  * based on lvfha ordering, and the at-rules themselves as well.
- *
- * Only top level CSS rules will be sorted.
  *
  * Using Once due to the catchAll behaviour
  */
@@ -63,7 +96,12 @@ export const sortStyleSheet = (config: {
               // Non-atomic cssMapScoped rules must preserve their source order —
               // skip shorthand and pseudo-selector sorting entirely.
               nonAtomicStyles.push(node);
-            } else if (node.first?.type === 'atrule') {
+            } else {
+              sortNestedAtRules(node, sortAtRulesEnabled);
+              if (node.first?.type !== 'atrule') {
+                atomicRules.push(node);
+                break;
+              }
               atomicAtRules.push({
                 parsed:
                   sortAtRulesEnabled && node.first.name === 'media'
@@ -73,8 +111,6 @@ export const sortStyleSheet = (config: {
                 atRuleName: node.first.name,
                 query: node.first.params,
               });
-            } else {
-              atomicRules.push(node);
             }
             break;
           }
@@ -85,6 +121,7 @@ export const sortStyleSheet = (config: {
               // must preserve source order — skip sorting entirely.
               nonAtomicStyles.push(node);
             } else {
+              sortNestedAtRules(node, sortAtRulesEnabled);
               atomicAtRules.push({
                 parsed:
                   sortAtRulesEnabled && node.name === 'media' ? parseMediaQuery(node.params) : [],
