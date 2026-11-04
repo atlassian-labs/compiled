@@ -1,4 +1,4 @@
-import type { CssAtRuleAST, CssStylesheetAST } from '@adobe/css-tools';
+import type { CssAtRuleAST, CssRuleAST, CssStylesheetAST } from '@adobe/css-tools';
 import { CssTypes, parse } from '@adobe/css-tools';
 
 import type { MatchFilter } from './types';
@@ -10,7 +10,7 @@ type Arg = [{ [key: string]: string }, MatchFilter?];
  * TODO: Use the import from `@compiled/utils`, but doing so results in a circular TS reference, so it's copy and pasted..
  */
 const INCREASE_SPECIFICITY_SELECTOR = ':not(#\\#)';
-const DEFAULT_MATCH_FILTER: MatchFilter = { media: undefined, target: undefined };
+const DEFAULT_MATCH_FILTER: MatchFilter = {};
 
 const kebabCase = (str: string) =>
   str
@@ -25,8 +25,6 @@ const mapProperties = (properties: Record<string, any>) =>
     const key = property.startsWith('--') ? property : kebabCase(property);
     return `${key}:${properties[property]}`;
   });
-
-const onlyRules = (rules?: CssAtRuleAST[]) => rules?.filter((r) => r.type === 'rule');
 
 /**
  * Reads the CSS text out of a `<style>` element.
@@ -53,59 +51,112 @@ const getCssText = (styleElement: HTMLStyleElement): string => {
   return sheet ? Array.from(sheet.cssRules, (rule) => rule.cssText).join('') : '';
 };
 
-const findMediaRules = (
-  allRules: CssAtRuleAST[] = [],
-  media: string
-): CssAtRuleAST[] | undefined => {
-  const rules: CssAtRuleAST[] = [];
+/**
+ * The at-rules a style rule is nested in, as seen from the rule itself.
+ * For `media`, `container` and `supports` the innermost condition wins, which keeps the
+ * existing `media` behaviour where a filter matches the closest `@media` block.
+ */
+interface AtRuleContext {
+  media?: string;
+  container?: string;
+  supports?: string;
+  layer?: string;
+  startingStyle?: boolean;
+}
 
-  for (const rule of allRules) {
-    if (!rule) {
+interface ContextualRule {
+  rule: CssRuleAST;
+  context: AtRuleContext;
+}
+
+/**
+ * Walks the stylesheet and returns every style rule along with the at-rules it is nested in.
+ * At-rules that can't be targeted by a `MatchFilter` (e.g. `@keyframes`, `@font-face`) are skipped.
+ */
+const collectRules = (
+  nodes: CssAtRuleAST[] = [],
+  context: AtRuleContext = {},
+  collected: ContextualRule[] = []
+): ContextualRule[] => {
+  for (const node of nodes) {
+    if (!node) {
       continue;
     }
 
-    if ('media' in rule) {
-      if (removeSpaces(rule.media) === removeSpaces(media) && 'rules' in rule && rule.rules) {
-        rules.push(...rule.rules);
-      } else if ('rules' in rule) {
-        const found = findMediaRules(rule.rules, media);
-        found && rules.push(...found);
-      }
+    switch (node.type) {
+      case CssTypes.rule:
+        collected.push({ rule: node, context });
+        break;
+
+      case CssTypes.media:
+        collectRules(node.rules, { ...context, media: node.media }, collected);
+        break;
+
+      case CssTypes.container:
+        collectRules(node.rules, { ...context, container: node.container }, collected);
+        break;
+
+      case CssTypes.supports:
+        collectRules(node.rules, { ...context, supports: node.supports }, collected);
+        break;
+
+      case CssTypes.layer:
+        // Layer statements such as `@layer a, b;` have no rules.
+        if (node.rules) {
+          const layer = context.layer ? `${context.layer}.${node.layer}` : node.layer;
+          collectRules(node.rules, { ...context, layer: layer.trim() }, collected);
+        }
+        break;
+
+      case CssTypes.startingStyle:
+        collectRules(node.rules, { ...context, startingStyle: true }, collected);
+        break;
+
+      default:
+        break;
     }
   }
 
-  return rules;
+  return collected;
 };
 
-const getRules = (ast: CssStylesheetAST, filter: MatchFilter, className: string) => {
-  const { media, target } = filter;
+const conditionMatches = (expected: string | undefined, actual: string | undefined) =>
+  expected ? removeSpaces(actual) === removeSpaces(expected) : actual === undefined;
 
-  // rules are present directly inside ast.stylesheet.rules
-  // but if a media query is present it is nested inside ast.stylesheet.media.rules
-  // this inner function returns the relevant rules
-  const getAllRules = () => {
-    if (media) {
-      return onlyRules(findMediaRules(ast.stylesheet?.rules, media));
-    }
-    return ast.stylesheet?.rules.filter((r) => (r.type = CssTypes.rule)); // omit media objects
-  };
+/**
+ * A rule matches when every at-rule named in the filter wraps it, and it is not wrapped in
+ * any at-rule the filter leaves out, so `{ media }` doesn't also match styles that only
+ * apply inside a container query.
+ */
+const contextMatches = (context: AtRuleContext, filter: MatchFilter) =>
+  conditionMatches(filter.media, context.media) &&
+  conditionMatches(filter.container, context.container) &&
+  conditionMatches(filter.supports, context.supports) &&
+  conditionMatches(filter.layer, context.layer) &&
+  !!filter.startingStyle === !!context.startingStyle;
 
-  const allRules = getAllRules();
+/**
+ * Returns the style rules whose at-rule context matches the filter.
+ */
+const getRulesInContext = (ast: CssStylesheetAST, filter: MatchFilter): CssRuleAST[] =>
+  collectRules(ast.stylesheet?.rules)
+    .filter(({ context }) => contextMatches(context, filter))
+    .map(({ rule }) => rule);
+
+const getRules = (allRules: CssRuleAST[], filter: MatchFilter, className: string) => {
+  const { target } = filter;
 
   const klass = target ? `.${className}${target}` : `.${className}`;
   const klassIncreased = target
     ? `.${className}${INCREASE_SPECIFICITY_SELECTOR}${target}`
     : `.${className}${INCREASE_SPECIFICITY_SELECTOR}`;
 
-  return allRules?.filter((r) => {
-    if ('selectors' in r) {
-      return r.selectors?.find((s) => {
-        const sTrimmed = removeSpaces(s);
-        return sTrimmed === removeSpaces(klass) || sTrimmed === removeSpaces(klassIncreased);
-      });
-    }
-    return;
-  });
+  return allRules.filter((r) =>
+    r.selectors?.find((s) => {
+      const sTrimmed = removeSpaces(s);
+      return sTrimmed === removeSpaces(klass) || sTrimmed === removeSpaces(klassIncreased);
+    })
+  );
 };
 
 const findStylesInRules = (styles: string[], rules: CssAtRuleAST[] | undefined) => {
@@ -176,9 +227,9 @@ export function toHaveCompiledCss(
       });
     }
 
-    const ast = parse(css);
+    const rulesInContext = getRulesInContext(parse(css), matchFilter);
     classNames.forEach((c) => {
-      const rules = getRules(ast, matchFilter, c);
+      const rules = getRules(rulesInContext, matchFilter, c);
       const search = findStylesInRules(stylesToFind, rules);
 
       foundStyles.push(...search.found);
