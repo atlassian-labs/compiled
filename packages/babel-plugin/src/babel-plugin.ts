@@ -41,6 +41,52 @@ const JSX_SOURCE_ANNOTATION_REGEX = /\*?\s*@jsxImportSource\s+([^\s]+)/;
 
 let globalCache: Cache | undefined;
 
+function ensureRuntimeBinding(path: NodePath<t.Program>, name: 'React' | 'forwardRef'): boolean {
+  const binding = path.scope.getBinding(name);
+  if (!binding) return false;
+
+  const specifier = binding.path;
+  const declaration = specifier.parentPath;
+  if (
+    !declaration?.isImportDeclaration() ||
+    (!specifier.isImportSpecifier() &&
+      !specifier.isImportDefaultSpecifier() &&
+      !specifier.isImportNamespaceSpecifier())
+  ) {
+    return true;
+  }
+
+  const isTypeOnly =
+    declaration.node.importKind === 'type' ||
+    (specifier.isImportSpecifier() && specifier.node.importKind === 'type');
+  if (!isTypeOnly) return true;
+
+  const imported = specifier.isImportSpecifier()
+    ? t.isIdentifier(specifier.node.imported)
+      ? specifier.node.imported.name
+      : specifier.node.imported.value
+    : 'default';
+  if (
+    declaration.node.source.value !== 'react' ||
+    imported !== (name === 'React' ? 'default' : name)
+  ) {
+    throw specifier.buildCodeFrameError(
+      `Compiled requires a runtime ${name} binding from react; the existing type-only import refers to a different module or export.`
+    );
+  }
+
+  if (declaration.node.importKind === 'type') {
+    // Preserve type-only siblings when promoting the declaration to a value import.
+    for (const sibling of declaration.node.specifiers) {
+      if (t.isImportSpecifier(sibling)) sibling.importKind = 'type';
+    }
+    declaration.node.importKind = 'value';
+  }
+  if (specifier.isImportSpecifier()) specifier.node.importKind = 'value';
+  binding.kind = 'module';
+  return true;
+}
+
 const findClassicJsxPragmaImport: Visitor<State> = {
   ImportSpecifier(path, state) {
     const specifier = path.node;
@@ -197,12 +243,16 @@ export default declare<State>((api) => {
 
           appendRuntimeImports(path);
 
-          if (!pragma.jsxImportSource && shouldImportReact && !path.scope.getBinding('React')) {
+          if (
+            !pragma.jsxImportSource &&
+            shouldImportReact &&
+            !ensureRuntimeBinding(path, 'React')
+          ) {
             // React is missing - add it in at the last moment!
             path.unshiftContainer('body', template.ast(`import * as React from 'react'`));
           }
 
-          if (state.compiledImports?.styled && !path.scope.getBinding('forwardRef')) {
+          if (state.compiledImports?.styled && !ensureRuntimeBinding(path, 'forwardRef')) {
             // forwardRef is missing - add it in at the last moment!
             path.unshiftContainer('body', template.ast(`import { forwardRef } from 'react'`));
           }
