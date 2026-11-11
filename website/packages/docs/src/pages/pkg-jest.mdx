@@ -40,6 +40,65 @@ expect(element).toHaveCompiledCss('color', 'red', {
 });
 ```
 
+### Container queries
+
+Narrows the assertion down to a container query.
+Include the container name when the query has one.
+
+```tsx
+expect(element).toHaveCompiledCss('color', 'red', {
+  container: '(width > 400px)',
+});
+
+expect(element).toHaveCompiledCss('color', 'red', {
+  container: 'sidebar (min-width: 300px)',
+});
+```
+
+### Feature queries
+
+Narrows the assertion down to a `@supports` rule.
+
+```tsx
+expect(element).toHaveCompiledCss('display', 'grid', {
+  supports: '(display: grid)',
+});
+```
+
+### Cascade layers
+
+Narrows the assertion down to a cascade layer.
+Nested layers are joined with a dot.
+
+```tsx
+expect(element).toHaveCompiledCss('color', 'red', {
+  layer: 'base.reset',
+});
+```
+
+### Starting style
+
+Narrows the assertion down to a `@starting-style` block.
+
+```tsx
+expect(element).toHaveCompiledCss('opacity', '0', {
+  startingStyle: true,
+});
+```
+
+### Combining at-rules
+
+At-rule options can be combined to match styles nested in more than one at-rule.
+Each option matches the closest at-rule of its kind, and styles nested in an at-rule that isn't named are not matched.
+
+```tsx
+// '@media (min-width: 300px)': { '@container (width > 400px)': { color: 'red' } }
+expect(element).toHaveCompiledCss('color', 'red', {
+  media: '(min-width: 300px)',
+  container: '(width > 400px)',
+});
+```
+
 ### Pseudo selectors
 
 Narrows the assertion down to any valid pseudo selector.
