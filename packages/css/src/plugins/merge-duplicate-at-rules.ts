@@ -1,11 +1,9 @@
-import type { AtRule, ChildNode, Plugin } from 'postcss';
+import type { AtRule, Container, Plugin } from 'postcss';
 
 import { isNonAtomicNode } from '../utils/non-atomic';
 
 /**
  * Plugin to remove duplicate children found in at-rules.
- * Currently does not handle nested at-rules.
- *
  * Before:
  *
  * ```css
@@ -19,42 +17,53 @@ import { isNonAtomicNode } from '../utils/non-atomic';
  * @media (min-width:500px){._171dak0l{border:2px solid red}._1swkri7e:before{content:'large screen'}}
  * ```
  */
+const mergeAtRules = (container: Container, moveAtRulesToEnd = false): void => {
+  const atRuleStore = new Map<string, AtRule>();
+
+  for (const node of [...container.nodes]) {
+    if (node.type !== 'atrule' || isNonAtomicNode(node)) {
+      continue;
+    }
+
+    const name = `${node.name}\0${node.params}`;
+    const existingAtRule = atRuleStore.get(name);
+
+    if (!existingAtRule) {
+      atRuleStore.set(name, node);
+      continue;
+    }
+
+    const existingChildren = new Set(existingAtRule.nodes?.map((child) => child.toString()));
+    for (const child of [...(node.nodes || [])]) {
+      const stringifiedChild = child.toString();
+      if (!existingChildren.has(stringifiedChild)) {
+        existingAtRule.append(child);
+        existingChildren.add(stringifiedChild);
+      }
+    }
+
+    node.remove();
+  }
+
+  for (const node of container.nodes) {
+    if (node.type === 'atrule' && !isNonAtomicNode(node)) {
+      mergeAtRules(node);
+    }
+  }
+
+  if (moveAtRulesToEnd) {
+    for (const atRule of atRuleStore.values()) {
+      atRule.remove();
+      container.append(atRule);
+    }
+  }
+};
+
 export const mergeDuplicateAtRules = (): Plugin => {
   return {
     postcssPlugin: 'merge-duplicate-at-rules',
-    prepare() {
-      const atRuleStore: Record<string, { node: AtRule; children: Record<string, ChildNode> }> = {};
-      return {
-        AtRule(atRule) {
-          // Skip non-atomic cssMapScoped at-rules — merging would break source-order cascade.
-          const hasNonAtomic = isNonAtomicNode(atRule);
-          if (hasNonAtomic) return;
-
-          const name = atRule.name + atRule.params;
-          if (!atRuleStore[name]) {
-            atRuleStore[name] = {
-              node: atRule,
-              children: {},
-            };
-          }
-
-          atRule.each((node) => {
-            const stringifiedNode = node.toString();
-            if (!atRuleStore[name].children[stringifiedNode]) {
-              atRuleStore[name].children[stringifiedNode] = node;
-            }
-          });
-
-          atRule.remove();
-        },
-        OnceExit(root) {
-          for (const key in atRuleStore) {
-            const { node, children } = atRuleStore[key];
-            node.nodes = Object.values(children);
-            root.append(node);
-          }
-        },
-      };
+    OnceExit(root) {
+      mergeAtRules(root, true);
     },
   };
 };
