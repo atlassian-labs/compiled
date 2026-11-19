@@ -380,6 +380,60 @@ describe('module traversal', () => {
       onIncludedFiles = jest.fn();
     });
 
+    it.each([
+      ['an imported style object', 'style', '<div css={style} />', 'font-size:12px'],
+      [
+        'an imported nested style object',
+        'plainObjectMixin',
+        '<div css={plainObjectMixin.success} />',
+        'color:green',
+      ],
+      [
+        'a destructured imported object',
+        'colors',
+        'const { primary } = colors; <div css={{ color: primary }} />',
+        'color:red',
+      ],
+    ])('when using %s', (_description, imported, expression, css) => {
+      const actual = transform(
+        `import '@compiled/react';
+         import { ${imported} } from '../__fixtures__/mixins/objects';
+         ${expression}`,
+        { onIncludedFiles }
+      );
+
+      expect(actual).toInclude(`{${css}}`);
+      expect(onIncludedFiles).toHaveBeenCalledTimes(1);
+      expect(onIncludedFiles).toHaveBeenCalledWith([
+        expect.stringContaining(
+          'compiled/packages/babel-plugin/src/__fixtures__/mixins/objects.js'
+        ),
+      ]);
+    });
+
+    it('includes both an intermediate module and the module supplying its value', () => {
+      const actual = transform(
+        `import '@compiled/react';
+         import { styleModuleInlining } from '../__fixtures__/mixins/objects';
+         <div css={styleModuleInlining} />;`,
+        { onIncludedFiles }
+      );
+
+      expect(actual).toInclude('{color:pink}');
+      expect(onIncludedFiles).toHaveBeenCalledTimes(1);
+      expect(onIncludedFiles.mock.calls[0][0]).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining(
+            'compiled/packages/babel-plugin/src/__fixtures__/mixins/objects.js'
+          ),
+          expect.stringContaining(
+            'compiled/packages/babel-plugin/src/__fixtures__/mixins/simple.js'
+          ),
+        ])
+      );
+      expect(onIncludedFiles.mock.calls[0][0]).toHaveLength(2);
+    });
+
     it('when using a CSS object', () => {
       const code = `
         import '@compiled/react';
