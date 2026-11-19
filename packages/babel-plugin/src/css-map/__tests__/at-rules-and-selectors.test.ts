@@ -302,9 +302,88 @@ describe('css map advanced functionality (at rules, selectors object)', () => {
     }
   });
 
-  // TODO: add a unit test for the `@starting-style` at-rule when it is NOT nested. This is currently not working as
-  // Compiled only supports processing at-rules that have two "halves", e.g. `@media screen`
-  // When nested, the at-rule is not processed like an at-rule - it is processed like a CSS selector.
+  it('should parse the @starting-style at-rule when not nested', () => {
+    const actual = transform(`
+        import { cssMap } from '@compiled/react';
+
+        const styles = cssMap({
+          success: {
+            color: 'red',
+            '@starting-style': {
+              color: 'blue',
+              '&:hover': {
+                color: 'pink',
+              },
+            },
+          },
+        });
+
+        ${EXAMPLE_USAGE}
+      `);
+
+    expect(actual).toIncludeMultiple([
+      '._1UtDYzGowl{color:red}',
+      '@starting-style{._1F7xNhynoA{color:blue}._0hmGsty8mA:hover{color:pink}}',
+      'const styles={success:"_1UtDYzGowl _1F7xNhynoA _0hmGsty8mA"}',
+    ]);
+    expect(actual).not.toContain('@starting-style color');
+  });
+
+  it('should parse @starting-style defined in the selectors object', () => {
+    const actual = transform(`
+        import { cssMap } from '@compiled/react';
+
+        const styles = cssMap({
+          success: {
+            selectors: {
+              '@starting-style': {
+                color: 'blue',
+              },
+            },
+          },
+        });
+
+        ${EXAMPLE_USAGE}
+      `);
+
+    expect(actual).toContain('@starting-style{._1F7xNhynoA{color:blue}}');
+  });
+
+  it('should error if @starting-style is defined both outside and inside the selectors object', () => {
+    expect(() => {
+      transform(`
+        import { cssMap } from '@compiled/react';
+
+        const styles = cssMap({
+          success: {
+            '@starting-style': { color: 'blue' },
+            selectors: {
+              '@starting-style': { color: 'red' },
+            },
+          },
+        });
+
+        ${EXAMPLE_USAGE}
+      `);
+    }).toThrow(ErrorMessages.DUPLICATE_AT_RULE);
+  });
+
+  it('should error if @starting-style value is not an object', () => {
+    expect(() => {
+      transform(`
+        import { cssMap } from '@compiled/react';
+
+        const styles = cssMap({
+          success: {
+            '@starting-style': 'blue',
+          },
+        });
+
+        ${EXAMPLE_USAGE}
+      `);
+    }).toThrow(ErrorMessages.AT_RULE_VALUE_TYPE);
+  });
+
   it('should parse the @starting-style at-rule when nested', () => {
     const actual = transform(`
         import { cssMap } from '@compiled/react';
@@ -620,6 +699,27 @@ describe('cssMapScoped advanced functionality (at rules, nested selectors)', () 
       expect(actual).toContain('@media screen and (min-width:500px)');
       expect(actual).toContain('@media screen');
     }
+  });
+
+  it('should parse the @starting-style at-rule when not nested', () => {
+    const actual = transform(`
+      import { cssMapScoped } from '@compiled/react';
+
+      const styles = cssMapScoped({
+        success: {
+          color: 'red',
+          '@starting-style': {
+            color: 'blue'
+          },
+        },
+      });
+
+      ${EXAMPLE_USAGE}
+    `);
+
+    expect(actual).toContain('const styles={success:"cc-');
+    expect(actual).toMatch(/@starting-style\{\.cc-[^{]*\{color:blue\}\}/);
+    expect(actual).not.toContain('@starting-style color');
   });
 
   it('should parse the @starting-style at-rule when nested', () => {
