@@ -1,0 +1,14 @@
+{
+  "name": "@compiled/parcel-optimizer-external-css-test-app",
+  "version": "0.2.4",
+  "private": true,
+  "dependencies": {
+    "@compiled/react": "^1.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@compiled/parcel-optimizer": "*",
+    "@parcel/config-default": "^2.8.3"
+  }
+}
