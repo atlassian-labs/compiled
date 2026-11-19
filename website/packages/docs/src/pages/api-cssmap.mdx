@@ -130,6 +130,20 @@ const myMap = cssMap({
 });
 ```
 
+At-rules that don't take a condition, such as `@starting-style`, contain styles directly:
+
+```jsx
+const myMap = cssMap({
+  open: {
+    opacity: 1,
+    transition: 'opacity 0.3s',
+    '@starting-style': {
+      opacity: 0,
+    },
+  },
+});
+```
+
 Previously you would specify media queries by splitting the `@media` part and the rest of the media query into two, just like with the [`vanilla-extract`](https://vanilla-extract.style/documentation/styling/#media-queries) library. We no longer recommend this as it is inconsistent with other Compiled APIs, and our type checking now works without the need for splitting media queries into two.
 
 ### Nested selectors and advanced selectors

@@ -10,10 +10,14 @@ type AllPseudos = { [key in CSSPseudos]?: CSSProperties & AllPseudos };
 // Ideally we would do type checking to forbid this from containing the `@media` part,
 // but TypeScript doesn't provide a good way to do this.
 type AtRuleSecondHalf = string;
+// At-rules without a second half, e.g. `@starting-style`, directly contain styles.
+type AtRuleWithoutSecondHalf = '@starting-style';
 type WhitelistedAtRule = {
-  [atRuleFirstHalf in CSS.AtRules]?: {
+  [atRuleFirstHalf in Exclude<CSS.AtRules, AtRuleWithoutSecondHalf>]?: {
     [atRuleSecondHalf in AtRuleSecondHalf]: CSSProperties & AllPseudos & WhitelistedAtRule;
   };
+} & {
+  [atRule in AtRuleWithoutSecondHalf]?: CSSProperties & AllPseudos & WhitelistedAtRule;
 };
 type WhitelistedSelector = AllPseudos & WhitelistedAtRule;
 
