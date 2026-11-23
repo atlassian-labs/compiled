@@ -23,6 +23,6 @@
     "@adobe/css-tools": "^4.4.4"
   },
   "devDependencies": {
-    "csstype": "^3.2.3"
+    "csstype": "^3.2.4"
   }
 }
