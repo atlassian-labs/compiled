@@ -79,7 +79,7 @@
     "typecheck:ts6-installed": "bash src/jsx/__tests__/ts6-installed/typecheck.sh"
   },
   "dependencies": {
-    "csstype": "^3.2.3"
+    "csstype": "^3.2.4"
   },
   "devDependencies": {
     "@compiled/benchmark": "^1.1.0",
