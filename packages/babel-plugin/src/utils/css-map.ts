@@ -52,6 +52,15 @@ export const isAtRuleObject = (
   return keyValue in atRules;
 };
 
+/**
+ * At-rules that have no prelude (the `screen` in `@media screen`), so their value is a block of styles
+ * rather than a record of preludes to styles. These must not be collapsed with a second half.
+ */
+const atRulesWithoutPrelude: Set<string> = new Set(['@starting-style']);
+
+export const isAtRuleWithoutPrelude = (key: ObjectKeyWithLiteralValue): boolean =>
+  atRulesWithoutPrelude.has(getKeyValue(key));
+
 export const isPlainSelector = (selector: string): boolean => selector.startsWith(':');
 
 export const hasExtendedSelectorsKey = (property: t.ObjectProperty): boolean =>

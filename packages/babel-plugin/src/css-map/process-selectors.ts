@@ -9,6 +9,7 @@ import {
   getKeyValue,
   hasExtendedSelectorsKey as propertyHasExtendedSelectorsKey,
   isAtRuleObject,
+  isAtRuleWithoutPrelude,
   objectKeyIsLiteralValue,
   isPlainSelector,
 } from '../utils/css-map';
@@ -90,7 +91,8 @@ const getExtendedSelectors = (
  *
  * This function will merge the two halves of the `@media` query (for example, to get
  * `@media screen and (min-width: 500px)`), and it will merge all of
- * the keys located in the value of `selectors`:
+ * the keys located in the value of `selectors`. At-rules that have no second half,
+ * such as `@starting-style`, are left untouched:
  *
  *     {
  *       color: 'blue',
@@ -142,7 +144,28 @@ export const mergeExtendedSelectorsIntoProperties = (
     // variable, so we can skip it now
     if (propertyHasExtendedSelectorsKey(property)) continue;
 
-    if (isAtRuleObject(propertyKey)) {
+    if (isAtRuleWithoutPrelude(propertyKey)) {
+      // e.g. `'@starting-style': { color: 'blue' }` - there is no second half to merge into the
+      // key, so the block is processed as is, the same way a selector would be.
+      const atRuleName = getKeyValue(propertyKey);
+      if (!t.isObjectExpression(property.value)) {
+        throw buildCodeFrameError(
+          createErrorMessage(ErrorMessages.AT_RULE_VALUE_TYPE),
+          property.value,
+          meta.parentPath
+        );
+      }
+      if (addedSelectors.has(atRuleName)) {
+        throw buildCodeFrameError(
+          createErrorMessage(ErrorMessages.DUPLICATE_AT_RULE),
+          property.key,
+          meta.parentPath
+        );
+      }
+
+      mergedProperties.push(property);
+      addedSelectors.add(atRuleName);
+    } else if (isAtRuleObject(propertyKey)) {
       const atRuleType = getKeyValue(propertyKey);
       const atRules = collapseAtRule(property, atRuleType, meta);
 
